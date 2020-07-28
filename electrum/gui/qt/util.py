@@ -7,27 +7,30 @@ import queue
 import traceback
 import os
 import webbrowser
-
+from decimal import Decimal
 from functools import partial, lru_cache
-from typing import NamedTuple, Callable, Optional, TYPE_CHECKING, Union, List, Dict, Any
+from typing import (NamedTuple, Callable, Optional, TYPE_CHECKING, Union, List, Dict, Any,
+                    Sequence, Iterable)
 
 from PyQt5.QtGui import (QFont, QColor, QCursor, QPixmap, QStandardItem,
                          QPalette, QIcon, QFontMetrics, QShowEvent)
 from PyQt5.QtCore import (Qt, QPersistentModelIndex, QModelIndex, pyqtSignal,
                           QCoreApplication, QItemSelectionModel, QThread,
-                          QSortFilterProxyModel, QSize, QLocale)
+                          QSortFilterProxyModel, QSize, QLocale, QAbstractItemModel)
 from PyQt5.QtWidgets import (QPushButton, QLabel, QMessageBox, QHBoxLayout,
                              QAbstractItemView, QVBoxLayout, QLineEdit,
                              QStyle, QDialog, QGroupBox, QButtonGroup, QRadioButton,
                              QFileDialog, QWidget, QToolButton, QTreeView, QPlainTextEdit,
-                             QHeaderView, QApplication, QToolTip, QTreeWidget, QStyledItemDelegate)
+                             QHeaderView, QApplication, QToolTip, QTreeWidget, QStyledItemDelegate,
+                             QMenu)
 
 from electrum.i18n import _, languages
 from electrum.util import FileImportFailed, FileExportFailed, make_aiohttp_session, resource_path
-from electrum.util import PR_UNPAID, PR_PAID, PR_EXPIRED, PR_INFLIGHT, PR_UNKNOWN, PR_FAILED
+from electrum.invoices import PR_UNPAID, PR_PAID, PR_EXPIRED, PR_INFLIGHT, PR_UNKNOWN, PR_FAILED, PR_ROUTING
 
 if TYPE_CHECKING:
     from .main_window import ElectrumWindow
+    from .installwizard import InstallWizard
 
 
 if platform.system() == 'Windows':
@@ -47,6 +50,7 @@ pr_icons = {
     PR_EXPIRED:"expired.png",
     PR_INFLIGHT:"unconfirmed.png",
     PR_FAILED:"warning.png",
+    PR_ROUTING:"unconfirmed.png",
 }
 
 
@@ -159,6 +163,8 @@ class Buttons(QHBoxLayout):
         QHBoxLayout.__init__(self)
         self.addStretch(1)
         for b in buttons:
+            if b is None:
+                continue
             self.addWidget(b)
 
 class CloseButton(QPushButton):
@@ -462,6 +468,7 @@ def filename_field(parent, config, defaultname, select_msg):
 
     return vbox, filename_e, b1
 
+
 class ElectrumItemDelegate(QStyledItemDelegate):
     def __init__(self, tv: 'MyTreeView'):
         super().__init__(tv)
@@ -473,7 +480,7 @@ class ElectrumItemDelegate(QStyledItemDelegate):
             new_text = editor.text()
             idx = QModelIndex(self.opened)
             row, col = idx.row(), idx.column()
-            _prior_text, user_role = self.tv.text_txid_from_coordinate(row, col)
+            _prior_text, user_role = self.tv.get_text_and_userrole_from_coordinate(row, col)
             # check that we didn't forget to set UserRole on an editable field
             assert user_role is not None, (row, col)
             self.tv.on_edited(idx, user_role, new_text)
@@ -484,8 +491,11 @@ class ElectrumItemDelegate(QStyledItemDelegate):
         self.opened = QPersistentModelIndex(idx)
         return super().createEditor(parent, option, idx)
 
+
 class MyTreeView(QTreeView):
     ROLE_CLIPBOARD_DATA = Qt.UserRole + 100
+
+    filter_columns: Iterable[int]
 
     def __init__(self, parent: 'ElectrumWindow', create_menu, *,
                  stretch_column=None, editable_columns=None):
@@ -532,9 +542,24 @@ class MyTreeView(QTreeView):
     def current_item_user_role(self, col) -> Any:
         idx = self.selectionModel().currentIndex()
         idx = idx.sibling(idx.row(), col)
-        item = self.model().itemFromIndex(idx)
+        item = self.item_from_index(idx)
         if item:
             return item.data(Qt.UserRole)
+
+    def item_from_index(self, idx: QModelIndex) -> Optional[QStandardItem]:
+        model = self.model()
+        if isinstance(model, QSortFilterProxyModel):
+            idx = model.mapToSource(idx)
+            return model.sourceModel().itemFromIndex(idx)
+        else:
+            return model.itemFromIndex(idx)
+
+    def original_model(self) -> QAbstractItemModel:
+        model = self.model()
+        if isinstance(model, QSortFilterProxyModel):
+            return model.sourceModel()
+        else:
+            return model
 
     def set_current_idx(self, set_current: QPersistentModelIndex):
         if set_current:
@@ -547,8 +572,7 @@ class MyTreeView(QTreeView):
         if not isinstance(headers, dict):  # convert to dict
             headers = dict(enumerate(headers))
         col_names = [headers[col_idx] for col_idx in sorted(headers.keys())]
-        model = self.model()
-        model.setHorizontalHeaderLabels(col_names)
+        self.original_model().setHorizontalHeaderLabels(col_names)
         self.header().setStretchLastSection(False)
         for col_idx in headers:
             sm = QHeaderView.Stretch if col_idx == self.stretch_column else QHeaderView.ResizeToContents
@@ -588,10 +612,9 @@ class MyTreeView(QTreeView):
         """
         return False
 
-    def text_txid_from_coordinate(self, row_num, column):
-        assert not isinstance(self.model(), QSortFilterProxyModel)
+    def get_text_and_userrole_from_coordinate(self, row_num, column):
         idx = self.model().index(row_num, column)
-        item = self.model().itemFromIndex(idx)
+        item = self.item_from_index(idx)
         user_role = item.data(Qt.UserRole)
         return item.text(), user_role
 
@@ -606,7 +629,7 @@ class MyTreeView(QTreeView):
             self.setRowHidden(row_num, QModelIndex(), False)
             return
         for column in self.filter_columns:
-            txt, _ = self.text_txid_from_coordinate(row_num, column)
+            txt, _ = self.get_text_and_userrole_from_coordinate(row_num, column)
             txt = txt.lower()
             if self.current_filter in txt:
                 # the filter matched, but the date filter might apply
@@ -657,17 +680,18 @@ class MyTreeView(QTreeView):
     def toggle_toolbar(self, config=None):
         self.show_toolbar(not self.toolbar_shown, config)
 
-    def add_copy_menu(self, menu, idx):
+    def add_copy_menu(self, menu: QMenu, idx) -> QMenu:
         cc = menu.addMenu(_("Copy"))
         for column in self.Columns:
-            column_title = self.model().horizontalHeaderItem(column).text()
-            item_col = self.model().itemFromIndex(idx.sibling(idx.row(), column))
+            column_title = self.original_model().horizontalHeaderItem(column).text()
+            item_col = self.item_from_index(idx.sibling(idx.row(), column))
             clipboard_data = item_col.data(self.ROLE_CLIPBOARD_DATA)
             if clipboard_data is None:
                 clipboard_data = item_col.text().strip()
             cc.addAction(column_title,
                          lambda text=clipboard_data, title=column_title:
                          self.place_text_on_clipboard(text, title=title))
+        return cc
 
     def place_text_on_clipboard(self, text: str, *, title: str = None) -> None:
         self.parent.do_copy(text, title=title)
@@ -687,6 +711,26 @@ class MyTreeView(QTreeView):
         return defer
 
 
+class MySortModel(QSortFilterProxyModel):
+    def __init__(self, parent, *, sort_role):
+        super().__init__(parent)
+        self._sort_role = sort_role
+
+    def lessThan(self, source_left: QModelIndex, source_right: QModelIndex):
+        item1 = self.sourceModel().itemFromIndex(source_left)
+        item2 = self.sourceModel().itemFromIndex(source_right)
+        data1 = item1.data(self._sort_role)
+        data2 = item2.data(self._sort_role)
+        if data1 is not None and data2 is not None:
+            return data1 < data2
+        v1 = item1.text()
+        v2 = item2.text()
+        try:
+            return Decimal(v1) < Decimal(v2)
+        except:
+            return v1 < v2
+
+
 class ButtonsWidget(QWidget):
 
     def __init__(self):
@@ -695,7 +739,7 @@ class ButtonsWidget(QWidget):
 
     def resizeButtons(self):
         frameWidth = self.style().pixelMetric(QStyle.PM_DefaultFrameWidth)
-        x = self.rect().right() - frameWidth
+        x = self.rect().right() - frameWidth - 10
         y = self.rect().bottom() - frameWidth
         for button in self.buttons:
             sz = button.sizeHint()
@@ -743,6 +787,18 @@ class ButtonsTextEdit(QPlainTextEdit, ButtonsWidget):
         o = QPlainTextEdit.resizeEvent(self, e)
         self.resizeButtons()
         return o
+
+
+class PasswordLineEdit(QLineEdit):
+    def __init__(self, *args, **kwargs):
+        QLineEdit.__init__(self, *args, **kwargs)
+        self.setEchoMode(QLineEdit.Password)
+
+    def clear(self):
+        # Try to actually overwrite the memory.
+        # This is really just a best-effort thing...
+        self.setText(len(self.text()) * " ")
+        super().clear()
 
 
 class TaskThread(QThread):
@@ -815,6 +871,7 @@ class ColorScheme:
     RED = ColorSchemeItem("#7c1111", "#f18c8c")
     BLUE = ColorSchemeItem("#123b7c", "#8cb3f2")
     DEFAULT = ColorSchemeItem("black", "white")
+    GRAY = ColorSchemeItem("gray", "gray")
 
     @staticmethod
     def has_dark_background(widget):
@@ -889,19 +946,23 @@ def export_meta_gui(electrum_window, title, exporter):
                                      .format(title, str(filename)))
 
 
-def get_parent_main_window(widget):
+def get_parent_main_window(
+        widget, *, allow_wizard: bool = False,
+) -> Union[None, 'ElectrumWindow', 'InstallWizard']:
     """Returns a reference to the ElectrumWindow this widget belongs to."""
     from .main_window import ElectrumWindow
     from .transaction_dialog import TxDialog
+    from .installwizard import InstallWizard
     for _ in range(100):
         if widget is None:
             return None
         if isinstance(widget, ElectrumWindow):
             return widget
-        elif isinstance(widget, TxDialog):
+        if isinstance(widget, TxDialog):
             return widget.main_window
-        else:
-            widget = widget.parentWidget()
+        if isinstance(widget, InstallWizard) and allow_wizard:
+            return widget
+        widget = widget.parentWidget()
     return None
 
 

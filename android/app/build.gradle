@@ -15,7 +15,7 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         def ecVersion = null
         file("$REPO_ROOT/electrum/version.py").eachLine {
-            def matcher = it =~ / *ELECTRUM_VERSION *= *'([0-9.]+)a0'.*/
+            def matcher = it =~ / *ELECTRUM_VERSION *= *'([0-9.]+)'.*/
             if (matcher.matches()) {
                 ecVersion = matcher.group(1)
             }

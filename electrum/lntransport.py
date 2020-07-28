@@ -8,14 +8,14 @@
 import hashlib
 import asyncio
 from asyncio import StreamReader, StreamWriter
+from typing import Optional
 
-from Cryptodome.Cipher import ChaCha20_Poly1305
-
-from .crypto import sha256, hmac_oneshot
+from .crypto import sha256, hmac_oneshot, chacha20_poly1305_encrypt, chacha20_poly1305_decrypt
 from .lnutil import (get_ecdh, privkey_to_pubkey, LightningPeerConnectionClosed,
                      HandshakeFailed, LNPeerAddr)
 from . import ecc
-from .util import bh2u
+from .util import bh2u, MySocksProxy
+
 
 class HandshakeState(object):
     prologue = b"lightning"
@@ -41,17 +41,17 @@ def get_nonce_bytes(n):
 
 def aead_encrypt(key: bytes, nonce: int, associated_data: bytes, data: bytes) -> bytes:
     nonce_bytes = get_nonce_bytes(nonce)
-    cipher = ChaCha20_Poly1305.new(key=key, nonce=nonce_bytes)
-    cipher.update(associated_data)
-    ciphertext, mac = cipher.encrypt_and_digest(plaintext=data)
-    return ciphertext + mac
+    return chacha20_poly1305_encrypt(key=key,
+                                     nonce=nonce_bytes,
+                                     associated_data=associated_data,
+                                     data=data)
 
 def aead_decrypt(key: bytes, nonce: int, associated_data: bytes, data: bytes) -> bytes:
     nonce_bytes = get_nonce_bytes(nonce)
-    cipher = ChaCha20_Poly1305.new(key=key, nonce=nonce_bytes)
-    cipher.update(associated_data)
-    # raises ValueError if not valid (e.g. incorrect MAC)
-    return cipher.decrypt_and_verify(ciphertext=data[:-16], received_mac_tag=data[-16:])
+    return chacha20_poly1305_decrypt(key=key,
+                                     nonce=nonce_bytes,
+                                     associated_data=associated_data,
+                                     data=data)
 
 def get_bolt8_hkdf(salt, ikm):
     """RFC5869 HKDF instantiated in the specific form
@@ -91,6 +91,7 @@ def create_ephemeral_key() -> (bytes, bytes):
 class LNTransportBase:
     reader: StreamReader
     writer: StreamWriter
+    privkey: bytes
 
     def name(self) -> str:
         raise NotImplementedError()
@@ -156,6 +157,8 @@ class LNTransportBase:
 
 
 class LNResponderTransport(LNTransportBase):
+    """Transport initiated by remote party."""
+
     def __init__(self, privkey: bytes, reader: StreamReader, writer: StreamWriter):
         LNTransportBase.__init__(self)
         self.reader = reader
@@ -212,19 +215,26 @@ class LNResponderTransport(LNTransportBase):
         self.init_counters(ck)
         return rs
 
-class LNTransport(LNTransportBase):
 
-    def __init__(self, privkey: bytes, peer_addr: LNPeerAddr):
+class LNTransport(LNTransportBase):
+    """Transport initiated by local party."""
+
+    def __init__(self, privkey: bytes, peer_addr: LNPeerAddr, *,
+                 proxy: Optional[dict]):
         LNTransportBase.__init__(self)
         assert type(privkey) is bytes and len(privkey) == 32
         self.privkey = privkey
         self.peer_addr = peer_addr
+        self.proxy = MySocksProxy.from_proxy_dict(proxy)
 
     def name(self):
         return self.peer_addr.net_addr_str()
 
     async def handshake(self):
-        self.reader, self.writer = await asyncio.open_connection(self.peer_addr.host, self.peer_addr.port)
+        if not self.proxy:
+            self.reader, self.writer = await asyncio.open_connection(self.peer_addr.host, self.peer_addr.port)
+        else:
+            self.reader, self.writer = await self.proxy.open_connection(self.peer_addr.host, self.peer_addr.port)
         hs = HandshakeState(self.peer_addr.pubkey)
         # Get a new ephemeral key
         epriv, epub = create_ephemeral_key()

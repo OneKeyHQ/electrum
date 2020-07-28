@@ -31,6 +31,8 @@ try:
         InputScriptType, OutputScriptType, MultisigRedeemScriptType,
         TxInputType, TxOutputType, TxOutputBinType, TransactionType, SignTx)
 
+    from trezorlib.client import PASSPHRASE_ON_DEVICE
+
     TREZORLIB = True
 except Exception as e:
     _logger.exception('error importing trezorlib')
@@ -52,6 +54,9 @@ except Exception as e:
     Capability = _EnumMissing()
     BackupType = _EnumMissing()
     RecoveryDeviceType = _EnumMissing()
+
+    PASSPHRASE_ON_DEVICE = object()
+
 
 # Trezor initialization methods
 TIM_NEW, TIM_RECOVER = range(2)
@@ -89,8 +94,8 @@ class TrezorKeyStore(Hardware_KeyStore):
         prev_tx = {}
         for txin in tx.inputs():
             tx_hash = txin.prevout.txid.hex()
-            if txin.utxo is None and not Transaction.is_segwit_input(txin):
-                raise UserFacingException(_('Missing previous tx for legacy input.'))
+            if txin.utxo is None:
+                raise UserFacingException(_('Missing previous tx.'))
             prev_tx[tx_hash] = txin.utxo
 
         self.plugin.sign_transaction(self, tx, prev_tx)
@@ -114,10 +119,10 @@ class TrezorPlugin(HW_PluginBase):
     #     wallet_class, types
 
     firmware_URL = 'https://wallet.trezor.io'
-    libraries_URL = 'https://github.com/trezor/python-trezor'
+    libraries_URL = 'https://pypi.org/project/trezor/'
     minimum_firmware = (1, 5, 2)
     keystore_class = TrezorKeyStore
-    minimum_library = (0, 11, 5)
+    minimum_library = (0, 12, 0)
     maximum_library = (0, 13)
     SUPPORTED_XTYPES = ('standard', 'p2wpkh-p2sh', 'p2wpkh', 'p2wsh-p2sh', 'p2wsh')
     DEVICE_IDS = (TREZOR_PRODUCT_KEY,)
@@ -297,12 +302,8 @@ class TrezorPlugin(HW_PluginBase):
         return HDNodePathType(node=node, address_n=address_n)
 
     def setup_device(self, device_info, wizard, purpose):
-        devmgr = self.device_manager()
         device_id = device_info.device.id_
-        client = devmgr.client_by_id(device_id)
-        if client is None:
-            raise UserFacingException(_('Failed to create a client for this device.') + '\n' +
-                                      _('Make sure it is in the correct state.'))
+        client = self.scan_and_create_client_for_device(device_id=device_id, wizard=wizard)
 
         if not client.is_uptodate():
             msg = (_('Outdated {} firmware for device labelled {}. Please '
@@ -310,20 +311,18 @@ class TrezorPlugin(HW_PluginBase):
                    .format(self.device, client.label(), self.firmware_URL))
             raise OutdatedHwFirmwareException(msg)
 
-        # fixme: we should use: client.handler = wizard
-        client.handler = self.create_handler(wizard)
         if not device_info.initialized:
             self.initialize_device(device_id, wizard, client.handler)
         is_creating_wallet = purpose == HWD_SETUP_NEW_WALLET
-        client.get_xpub('m', 'standard', creating=is_creating_wallet)
+        wizard.run_task_without_blocking_gui(
+            task=lambda: client.get_xpub('m', 'standard', creating=is_creating_wallet))
         client.used()
+        return client
 
     def get_xpub(self, device_id, derivation, xtype, wizard):
         if xtype not in self.SUPPORTED_XTYPES:
             raise ScriptTypeNotSupported(_('This type of script is not supported with {}.').format(self.device))
-        devmgr = self.device_manager()
-        client = devmgr.client_by_id(device_id)
-        client.handler = wizard
+        client = self.scan_and_create_client_for_device(device_id=device_id, wizard=wizard)
         xpub = client.get_xpub(derivation, xtype)
         client.used()
         return xpub

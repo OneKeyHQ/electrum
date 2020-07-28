@@ -145,11 +145,11 @@ class AndroidCommands(commands.Commands):
         if self.network:
             interests = ['wallet_updated', 'network_updated', 'blockchain_updated',
                          'status', 'new_transaction', 'verified', 'set_server_status']
-            self.network.register_callback(self.on_network_event, interests)
-            self.network.register_callback(self.on_fee, ['fee'])
+            util.register_callback(self.on_network_event, interests)
+            util.register_callback(self.on_fee, ['fee'])
             #self.network.register_callback(self.on_fee_histogram, ['fee_histogram'])
-            self.network.register_callback(self.on_quotes, ['on_quotes'])
-            self.network.register_callback(self.on_history, ['on_history'])
+            util.register_callback(self.on_quotes, ['on_quotes'])
+            util.register_callback(self.on_history, ['on_history'])
         self.fiat_unit = self.daemon.fx.ccy if self.daemon.fx.is_enabled() else ''
         self.decimal_point = self.config.get('decimal_point', util.DECIMAL_POINT_DEFAULT)
         for k, v in util.base_units_inverse.items():
@@ -317,7 +317,7 @@ class AndroidCommands(commands.Commands):
         if interface:
             self.server_host = interface.host
         else:
-            self.server_host = str(net_params.host) + ' (connecting...)'
+            self.server_host = str(net_params.server.host) + ' (connecting...)'
         self.proxy_config = net_params.proxy or {}
         mode = self.proxy_config.get('mode')
         host = self.proxy_config.get('host')
@@ -732,7 +732,7 @@ class AndroidCommands(commands.Commands):
             raise BaseException(e)
 
     def format_amount(self, x, is_diff=False, whitespaces=False):
-        return util.format_satoshis(x, self.num_zeros, self.decimal_point, is_diff=is_diff, whitespaces=whitespaces)
+        return util.format_satoshis(x, is_diff=is_diff, num_zeros=self.num_zeros, decimal_point=self.decimal_point, whitespaces=whitespaces)
 
     def base_unit(self):
         return util.decimal_point_to_base_unit_name(self.decimal_point)
@@ -1744,7 +1744,7 @@ class AndroidCommands(commands.Commands):
                 info['parent_feerate'] = self.format_fee_rate(parent_feerate) if parent_feerate else ''
                 info['fee_rate_for_child'] = self.format_fee_rate(suggested_feerate) if suggested_feerate else ''
                 fee_for_child = get_child_fee_from_total_feerate(suggested_feerate)
-                info['fee_for_child'] = util.format_satoshis_plain(fee_for_child, self.decimal_point)
+                info['fee_for_child'] = util.format_satoshis_plain(fee_for_child, decimal_point=self.decimal_point)
                 if fee_for_child is None:
                     raise BaseException("fee_for_child is none")
                 out_amt = max_fee - fee_for_child
@@ -1861,7 +1861,7 @@ class AndroidCommands(commands.Commands):
             print("console.select_wallet[%s] blance = %s wallet_type = %s use_change=%s add = %s " % (
                 name, self.format_amount_and_units(c), self.wallet.wallet_type, self.wallet.use_change,
                 self.wallet.get_addresses()))
-            self.network.trigger_callback("wallet_updated", self.wallet)
+            util.trigger_callback("wallet_updated", self.wallet)
 
             fait = self.daemon.fx.format_amount_and_units(c) if self.daemon.fx else None
             info = {
