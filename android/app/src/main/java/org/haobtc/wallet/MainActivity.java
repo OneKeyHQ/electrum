@@ -3,7 +3,10 @@ package org.haobtc.wallet;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -143,6 +146,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        registerReceiver(languageReceiver, new IntentFilter(Intent.ACTION_LOCALE_CHANGED));//Register broadcast
         //Eventbus register
         EventBus.getDefault().register(this);
         sharedPreferences = getSharedPreferences("Preferences", MODE_PRIVATE);
@@ -218,7 +222,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     getWalletsListInfo = Daemon.commands.callAttr("list_wallets");
                 } catch (Exception e) {
                     e.printStackTrace();
-//                    cardBuyKey.setVisibility(View.VISIBLE);
+                    cardBuyKey.setVisibility(View.VISIBLE);
                     addwalletFragment();
                     return;
                 }
@@ -250,11 +254,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                         walletnameList.add(addressEvent);
                     }
                 }
-                Log.i("showWalletList", "showWalletList: "+softList.size());
-                Log.i("showWalletList", "showWalletList: "+walletnameList.size());
-//                if (softList.size() == walletnameList.size()) {
-//                    cardBuyKey.setVisibility(View.VISIBLE);
-//                }
+                Log.i("showWalletList", "showWalletList: " + softList.size());
+                Log.i("showWalletList", "showWalletList: " + walletnameList.size());
+                if (softList.size() == walletnameList.size()) {
+                    cardBuyKey.setVisibility(View.VISIBLE);
+                }
                 if (walletnameList != null && walletnameList.size() != 0) {
                     strNames = walletnameList.get(0).getName();
                     strType = walletnameList.get(0).getType();
@@ -273,11 +277,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     viewPager.setPageMargin(40);
                     viewPager.setAdapter(new ViewPagerFragmentStateAdapter(getSupportFragmentManager(), fragmentList));
                 } else {
-//                    cardBuyKey.setVisibility(View.VISIBLE);
+                    cardBuyKey.setVisibility(View.VISIBLE);
                     addwalletFragment();
                 }
             } else {
-//                cardBuyKey.setVisibility(View.VISIBLE);
+                cardBuyKey.setVisibility(View.VISIBLE);
                 addwalletFragment();
             }
         }
@@ -759,6 +763,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     public void onDestroy() {
+        unregisterReceiver(languageReceiver);
         super.onDestroy();
         if (manager != null) {
             manager.release();
@@ -897,6 +902,19 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             getunBackupKey();
         }
     }
+
+    //Turn off all activities when switching system languages
+    private BroadcastReceiver languageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            assert action != null;
+            if (action.equals(Intent.ACTION_LOCALE_CHANGED)) {
+                //The current system voice has been changed
+                finishAffinity();
+            }
+        }
+    };
 
     @Override
     public void onButtonClick(int id) {

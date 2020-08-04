@@ -1,7 +1,9 @@
 package org.haobtc.wallet.activities.base;
 
 import android.app.Application;
+import android.content.res.Configuration;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.ProcessLifecycleOwner;
 
 import com.chaquo.python.Python;
@@ -20,7 +22,7 @@ public class MyApplication extends Application {
     private static final String PRIMARY_SERVICE =      "00000001-0000-1000-8000-00805f9b34fb";
     private static final String WRITE_CHARACTERISTIC = "00000002-0000-1000-8000-00805f9b34fb";
     private static final String READ_CHARACTERISTIC =  "00000003-0000-1000-8000-00805f9b34fb";
-
+    public static boolean languageChange=false;
 
     @Override
     public void onCreate() {
@@ -33,6 +35,13 @@ public class MyApplication extends Application {
         initBle();
         initChaquo();
     }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        languageChange=true;
+    }
+
     public static MyApplication getInstance() {
         if (mInstance == null) {
             synchronized (MyApplication.class) {

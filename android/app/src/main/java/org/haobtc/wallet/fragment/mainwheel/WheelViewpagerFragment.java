@@ -167,8 +167,11 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
     }
 
     public void refreshList() {
-        String cnyStrunit = preferences.getString("cny_strunit", "CNY");
-        testStarCny.setText(String.format("%s%s", getString(R.string.cny_star), cnyStrunit));
+        if (preferences != null) {
+            String cnyStrunit = preferences.getString("cny_strunit", "CNY");
+            testStarCny.setText(String.format("%s%s", getString(R.string.cny_star), cnyStrunit));
+        }
+
         try {
             Daemon.commands.callAttr("load_wallet", name);
             getWalletMsg();

@@ -31,6 +31,7 @@
     <application
         android:name=".activities.base.MyApplication"
         android:allowBackup="${allow_backup}"
+        android:configChanges="locale|layoutDirection"
         android:icon="@mipmap/icon_app"
         android:label="${app_name}"
         android:requestLegacyExternalStorage="true"

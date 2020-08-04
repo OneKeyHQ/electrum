@@ -62,7 +62,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
                     android:gravity="center_vertical"
-                    android:visibility="gone"
+                    android:visibility="visible"
                     android:paddingStart="@dimen/text_margin"
                     android:paddingEnd="@dimen/text_margin"
                     android:text="@string/follow_system"
@@ -83,7 +83,7 @@
                     android:paddingStart="@dimen/text_margin"
                     android:paddingEnd="@dimen/text_margin"
                     android:text="@string/zh_simple"
-                    android:textColor="@color/button_bk_disableok" />
+                    android:textColor="@color/text_color1" />
 
                 <View
                     android:layout_width="match_parent"
