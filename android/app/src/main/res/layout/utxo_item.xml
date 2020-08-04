@@ -2,60 +2,80 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="@dimen/dp_10"
-    android:background="@drawable/white_tuo"
-    android:orientation="vertical">
+    android:layout_height="wrap_content">
 
     <LinearLayout
-        android:id="@+id/lin_tractionHash"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_20"
-        android:visibility="visible">
-
-        <TextView
-            android:layout_width="57dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/text_margin"
-            android:text="@string/hash"
-            android:textColor="@color/light_text"
-            android:textSize="@dimen/sp_15" />
-
-        <TextView
-            android:id="@+id/tet_trsactionHash"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/dp_16"
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/sp_15"
-            tools:text="33dfdfdjkfdfjdkfd3jkdfjkdfjdkfdfdjfkdfdnfddfdkfjdkfdfdfn3334j5fjfjffjeejjdk33320" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/lin_tractionTime"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_10"
-        android:layout_marginBottom="@dimen/dp_20"
-        android:visibility="visible">
+        android:background="@drawable/white_tuo"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
-        <TextView
-            android:layout_width="57dp"
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/text_margin"
-            android:text="@string/num"
-            android:textColor="@color/light_text"
-            android:textSize="@dimen/sp_15" />
+            android:layout_marginEnd="@dimen/dp_20"
+            android:layout_weight="1"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tet_trsactionTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            <LinearLayout
+                android:id="@+id/lin_tractionHash"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_20"
+                android:visibility="visible">
+
+                <TextView
+                    android:layout_width="57dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/text_margin"
+                    android:text="@string/hash"
+                    android:textColor="@color/light_text"
+                    android:textSize="@dimen/sp_15" />
+
+                <TextView
+                    android:id="@+id/tet_trsactionHash"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/sp_15"
+                    tools:text="33dfdfdjkfdfjdkfd3jkdfjkdfjdkfdfdjfkdfdnfddfdkfjdkfdfdfn3334j5fjfjffjeejjdk33320" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/lin_tractionTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_10"
+                android:layout_marginBottom="@dimen/dp_20"
+                android:visibility="visible">
+
+                <TextView
+                    android:layout_width="57dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/text_margin"
+                    android:text="@string/num"
+                    android:textColor="@color/light_text"
+                    android:textSize="@dimen/sp_15" />
+
+                <TextView
+                    android:id="@+id/text_transactionNum"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/dp_16"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/sp_15"
+                    tools:text="0.01mBTC" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <CheckBox
+            android:id="@+id/checkbox_utxo"
+            android:layout_width="@dimen/dp_20"
+            android:layout_height="@dimen/dp_20"
             android:layout_marginEnd="@dimen/dp_16"
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/sp_15"
-            tools:text="0.01mBTC" />
+            android:background="@drawable/circle_checkbox"
+            android:button="@null" />
     </LinearLayout>
-
 </LinearLayout>

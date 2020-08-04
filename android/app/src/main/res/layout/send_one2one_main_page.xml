@@ -533,7 +533,7 @@
                 android:layout_marginTop="@dimen/dp_10"
                 android:layout_marginEnd="@dimen/layout_margin"
                 android:outlineSpotShadowColor="@color/shadow_color"
-                android:visibility="gone"
+                android:visibility="visible"
                 app:cardCornerRadius="@dimen/dp_8"
                 app:cardElevation="@dimen/dp_8"
                 tools:ignore="UnusedAttribute">

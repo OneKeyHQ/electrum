@@ -117,7 +117,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="@dimen/dp_30"
                             android:gravity="center"
-                            android:text="@string/check_address"
+                            android:text="@string/change_address"
                             android:textColor="@color/button_bk"
                             android:textSize="@dimen/text_size"
                             android:visibility="visible" />

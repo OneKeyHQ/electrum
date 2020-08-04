@@ -38,6 +38,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
@@ -151,6 +152,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     private int recommendFee;
     private String feeNum;
     private float tjFee;
+    private SharedPreferences preferences;
+    private String utxoListDates = "";
 
     @Override
     public int getLayoutId() {
@@ -163,7 +166,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
         hideRefresh = getIntent().getStringExtra("hideRefresh");
-        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         base_unit = preferences.getString("base_unit", "mBTC");
         strUnit = preferences.getString("cny_strunit", "CNY");
         wallet_type_to_sign = preferences.getString("wallet_type_to_sign", "");//1-n wallet  --> Direct signature and broadcast
@@ -615,7 +618,13 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 textBlocks.setText(String.valueOf(intmaxFee));
                 break;
             case R.id.lin_choose_utxo:
-
+                if (!TextUtils.isEmpty(tetamount.getText().toString())) {
+                    Intent intent1 = new Intent(SendOne2OneMainPageActivity.this, ChooseUtxoActivity.class);
+                    intent1.putExtra("sendNum", tetamount.getText().toString());
+                    startActivityForResult(intent1, 1);
+                } else {
+                    mToast(getString(R.string.please_input_send_num));
+                }
                 break;
             default:
         }
@@ -782,6 +791,18 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                     }
                 }
             }
+        } else if (requestCode == 1 && resultCode == RESULT_OK) {
+            String language = preferences.getString("language", "Chinese");
+            assert data != null;
+            String chooseNum = data.getStringExtra("chooseNum");
+            utxoListDates = data.getStringExtra("listDates");//selected utxo data
+            //getFeerate
+            getFeerate();
+            if ("English".equals(language)) {
+                textChooseNum.setText(String.format("%s%s", getString(R.string.selected), chooseNum));
+            } else {
+                textChooseNum.setText(String.format("%s%s%s", getString(R.string.selected), chooseNum, getString(R.string.ge)));
+            }
         }
     }
 
@@ -861,7 +882,12 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             String strPramas = new Gson().toJson(arrayList);
             PyObject getFeeByFeeRate = null;
             try {
-                getFeeByFeeRate = Daemon.commands.callAttr("get_fee_by_feerate", strPramas, strComment, intmaxFee);
+                if (!TextUtils.isEmpty(utxoListDates)) {
+                    Log.i("utxoListDates", "getFeerate:--- "+utxoListDates);
+                    getFeeByFeeRate = Daemon.commands.callAttr("get_fee_by_feerate", strPramas, strComment, intmaxFee, new Kwarg("customer", utxoListDates));
+                } else {
+                    getFeeByFeeRate = Daemon.commands.callAttr("get_fee_by_feerate", strPramas, strComment, intmaxFee);
+                }
                 errorMessage = "";
             } catch (Exception e) {
                 e.printStackTrace();

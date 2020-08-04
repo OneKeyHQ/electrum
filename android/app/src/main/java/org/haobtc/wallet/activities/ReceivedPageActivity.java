@@ -95,18 +95,18 @@ public class ReceivedPageActivity extends BaseActivity {
         String walletType = getIntent().getStringExtra("walletType");
         hideWalletReceive = getIntent().getStringExtra("hideWalletReceive");
 
-//        if ("standard".equals(walletType)) {
-//            textChangeAddress.setVisibility(View.VISIBLE);
-//            copyAndCheck.setVisibility(View.GONE);
-//        } else {
-//            textChangeAddress.setVisibility(View.GONE);
-//            copyAndCheck.setVisibility(View.VISIBLE);
-//        }
         if ("standard".equals(walletType)) {
-            textChangeAddress.setVisibility(View.GONE);
-        } else {
             textChangeAddress.setVisibility(View.VISIBLE);
+            copyAndCheck.setVisibility(View.GONE);
+        } else {
+            textChangeAddress.setVisibility(View.GONE);
+            copyAndCheck.setVisibility(View.VISIBLE);
         }
+//        if ("standard".equals(walletType)) {
+//            textChangeAddress.setVisibility(View.GONE);
+//        } else {
+//            textChangeAddress.setVisibility(View.VISIBLE);
+//        }
 
     }
 
@@ -123,7 +123,7 @@ public class ReceivedPageActivity extends BaseActivity {
         switch (view.getId()) {
             case R.id.textView6:
                 //change address
-//                mGeneratecode(1);
+                mGeneratecode(1);
                 break;
             case R.id.button:
                 rxPermissions
@@ -154,22 +154,6 @@ public class ReceivedPageActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.text_check_address:
-//                if (checking) {
-//                    CommunicationModeSelector.runnables.clear();
-//                    CommunicationModeSelector.runnables.add(null);
-//                    Intent intent = new Intent(this, CommunicationModeSelector.class);
-//                    intent.putExtra("tag", TAG);
-//                    intent.putExtra("contrastAddress", textView5.getText().toString());
-//                    intent.putExtra("hideWalletReceive", hideWalletReceive);
-//                    startActivity(intent);
-//                } else {
-//                    mToast(getString(R.string.checking));
-//                }
-
-                break;
-            case R.id.text_change_address:
-                //change address
-//                mGeneratecode(1);
                 if (checking) {
                     CommunicationModeSelector.runnables.clear();
                     CommunicationModeSelector.runnables.add(null);
@@ -181,6 +165,11 @@ public class ReceivedPageActivity extends BaseActivity {
                 } else {
                     mToast(getString(R.string.checking));
                 }
+
+                break;
+            case R.id.text_change_address:
+                //change address
+                mGeneratecode(1);
                 break;
             case R.id.textView5:
                 //copy text

@@ -661,7 +661,8 @@ class AndroidCommands(commands.Commands):
         coins = []
         for utxo in self.coins:
             info = utxo.to_json()
-            temp_utxo = [info['prevout_hash'], info['address']]
+            temp_utxo = {}
+            temp_utxo[info['prevout_hash']] = info['address']
             if coins_info.__contains__(temp_utxo):
                 coins.append(utxo)
         return coins
@@ -674,7 +675,7 @@ class AndroidCommands(commands.Commands):
             if customer is None:
                 coins = self.wallet.get_spendable_coins(domain=None)
             else:
-                coins = self.get_coins(customer)
+                coins = self.get_coins(json.loads(customer))
             print(f"coins=========={coins}")
             c, u, x = self.wallet.get_balance()
             if not coins and self.config.get('confirmed_only', False):
