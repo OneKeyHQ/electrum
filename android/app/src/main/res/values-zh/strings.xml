@@ -842,9 +842,9 @@
     <string name="fees">费率</string>
     <string name="choose_UTXO">选择UTXO</string>
     <string name="all_num">总数量</string>
-    <string name="utxo_tips">需 &gt; 1.05 BTC</string>
+    <string name="utxo_tips">需 &gt; </string>
     <string name="choose_input">选择输入</string>
-    <string name="hash">HASH：</string>
+    <string name="hash">地址：</string>
     <string name="num">数量：</string>
     <string name="change_address_success">更改成功！</string>
     <string name="have_not_key">还没有BixinKey？</string>
@@ -852,6 +852,10 @@
     <string name="differnce_deviceId">设备ID不一致，请更换后进行备份</string>
     <string name="internet_wrong">网络错误！</string>
     <string name="operation_cancelled">操作已取消！</string>
+    <string name="please_input_send_num">请输入发币数量</string>
+    <string name="please_choose">请选择！</string>
+    <string name="choose">选择</string>
+    <string name="selected">已选择</string>
 
 
 </resources>

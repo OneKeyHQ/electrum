@@ -879,9 +879,9 @@
     <string name="fees">Fee</string>
     <string name="choose_UTXO">Choose UTXO</string>
     <string name="all_num">Total quantity</string>
-    <string name="utxo_tips">need &gt; 1.05 BTC</string>
+    <string name="utxo_tips">need &gt; </string>
     <string name="choose_input">Select input</string>
-    <string name="hash">HASH：</string>
+    <string name="hash">address：</string>
     <string name="num">number：</string>
     <string name="change_address_success">The change was successful！</string>
     <string name="have_not_key">No bixinkey?</string>
@@ -891,5 +891,10 @@
     <string name="key">BixinKey</string>
     <string name="internet_wrong">Network error!</string>
     <string name="operation_cancelled">Operation cancelled！</string>
+    <string name="please_input_send_num">Please input the amount of currency</string>
+    <string name="zero">0</string>
+    <string name="please_choose">Please choose!</string>
+    <string name="choose">Choose</string>
+    <string name="selected">Selected</string>
 
 </resources>

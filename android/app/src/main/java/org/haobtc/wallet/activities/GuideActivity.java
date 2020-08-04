@@ -110,7 +110,6 @@ public class GuideActivity extends BaseActivity implements ViewPager.OnPageChang
             edit.putBoolean("set_unconf", true);
             edit.apply();
         } catch (Exception e) {
-            Log.i("TAGjixoain", "currency:------------- "+e.getMessage());
             e.printStackTrace();
         }
 
@@ -119,7 +118,6 @@ public class GuideActivity extends BaseActivity implements ViewPager.OnPageChang
             edit.putBoolean("set_syn_server", true);//setting synchronize server
             edit.apply();
         } catch (Exception e) {
-            Log.i("TAGjixoain", "currency:------------- "+e.getMessage());
             e.printStackTrace();
         }
     }

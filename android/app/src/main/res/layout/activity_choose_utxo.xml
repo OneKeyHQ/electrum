@@ -3,10 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:clipToPadding="true"
-    android:fitsSystemWindows="true"
     android:layout_height="match_parent"
     android:background="@android:color/white"
+    android:clipToPadding="true"
+    android:fitsSystemWindows="true"
     tools:context="org.haobtc.wallet.activities.ChooseUtxoActivity">
 
     <RelativeLayout
@@ -39,18 +39,33 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/RelativeLayout"
-        android:layout_marginBottom="@dimen/dp_60"
+        android:paddingBottom="@dimen/dp_70"
         android:background="@color/bk_page">
 
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recl_choose_utxo"
             android:layout_width="match_parent"
-            tools:itemCount="3"
-            tools:listitem="@layout/utxo_item"
+            android:layout_marginStart="@dimen/dp_10"
+            android:layout_marginEnd="@dimen/dp_10"
+            android:visibility="visible"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_16"
-            android:layout_marginBottom="@dimen/dp_10">
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            android:layout_marginTop="@dimen/dp_6"
+            tools:itemCount="3"
+            tools:listitem="@layout/utxo_item">
 
         </androidx.recyclerview.widget.RecyclerView>
+
+        <TextView
+            android:id="@+id/text_no_content"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_200"
+            android:gravity="center"
+            android:text="@string/no_records"
+            android:textColor="@color/light_text"
+            android:textSize="@dimen/text_size"
+            android:visibility="gone" />
+
     </RelativeLayout>
 
     <RelativeLayout
@@ -78,7 +93,7 @@
             android:layout_toEndOf="@+id/text_all"
             android:textColor="@color/utxo_color"
             android:textSize="24sp"
-            tools:text="1.02" />
+            android:text="@string/zero" />
 
         <TextView
             android:id="@+id/text_unit"
@@ -92,17 +107,18 @@
             tools:text="mBTC" />
 
         <TextView
+            android:id="@+id/text_standard"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_2"
             android:layout_below="@+id/text_all"
             android:layout_marginStart="@dimen/dp_16"
+            android:layout_marginTop="@dimen/dp_2"
+            tools:text="需>1.0BTC"
             android:textColor="#b3b3b3"
-            android:textSize="12sp"
-            android:text="@string/utxo_tips" />
+            android:textSize="12sp" />
 
         <Button
-            android:id="@+id/bn_send2many_next"
+            android:id="@+id/btn_finish"
             android:layout_width="@dimen/dp_120"
             android:layout_height="@dimen/dp_40"
             android:layout_alignParentEnd="true"
