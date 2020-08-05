@@ -1,5 +1,6 @@
 package org.haobtc.wallet.activities.transaction;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -56,6 +57,7 @@ public class DeatilMoreAddressActivity extends BaseActivity {
     @Override
     public void initData() {
         if (jsondefGet != null) {
+            Log.i("jsondefGet", "initData: ---  " + jsondefGet.toString());
             MoreAddressAdapter moreAddressAdapter = new MoreAddressAdapter(jsondefGet);
             recyMoreAddress.setAdapter(moreAddressAdapter);
 

@@ -54,5 +54,5 @@
     <color name="share_tip">#FFB12B</color>
     <color name="utxo_color">#4063d5</color>
     <color name="buy_key">#707594</color>
-
+    <color name="change_addr">#838383</color>
 </resources>

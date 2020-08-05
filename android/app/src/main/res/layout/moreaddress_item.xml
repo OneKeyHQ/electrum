@@ -9,6 +9,7 @@
 
     <LinearLayout
         android:layout_marginTop="@dimen/dp_18"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -22,12 +23,28 @@
 
         <TextView
             android:id="@+id/tet_moreaddress"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_marginStart="@dimen/dp_10"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/dp_16"
             android:ellipsize="end"
             tools:text="xxxxxxxxxxxxxxxxxxxx" />
+
+        <TextView
+            android:id="@+id/test_change_address"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dp_18"
+            android:paddingStart="@dimen/dp_9"
+            android:paddingEnd="@dimen/dp_9"
+            android:background="@drawable/gray_tuocircle"
+            android:gravity="center"
+            android:visibility="gone"
+            android:textColor="@color/change_addr"
+            android:layout_marginEnd="@dimen/dp_10"
+            android:singleLine="true"
+            android:text="@string/show_change_address"
+            android:textSize="@dimen/sp_10" />
 
     </LinearLayout>
 

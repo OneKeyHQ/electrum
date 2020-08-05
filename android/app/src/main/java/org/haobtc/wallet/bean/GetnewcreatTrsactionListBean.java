@@ -144,6 +144,8 @@ public class GetnewcreatTrsactionListBean implements Serializable{
         private String addr;
         @SerializedName("amount")
         private String amount;
+        @SerializedName("is_change")
+        private Boolean is_change;
 
         public String getAddr() {
             return addr;
@@ -159,6 +161,14 @@ public class GetnewcreatTrsactionListBean implements Serializable{
 
         public void setAmount(String amount) {
             this.amount = amount;
+        }
+
+        public Boolean getIs_change() {
+            return is_change;
+        }
+
+        public void setIs_change(Boolean is_change) {
+            this.is_change = is_change;
         }
     }
 

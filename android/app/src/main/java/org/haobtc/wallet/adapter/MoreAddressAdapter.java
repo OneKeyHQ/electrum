@@ -1,6 +1,7 @@
 package org.haobtc.wallet.adapter;
 
 import android.text.TextUtils;
+import android.view.View;
 
 import androidx.annotation.Nullable;
 
@@ -21,14 +22,15 @@ public class MoreAddressAdapter extends BaseQuickAdapter<GetnewcreatTrsactionLis
     @Override
     protected void convert(BaseViewHolder helper, GetnewcreatTrsactionListBean.OutputAddrBean item) {
         helper.setText(R.id.tet_moreaddress, item.getAddr());
-
         String amount = item.getAmount();
-//        Log.i("amountamount", "convert: " + amount);
         if (!TextUtils.isEmpty(amount)) {
             helper.setText(R.id.tet_payNum, amount);
-
         }
-
+        if (item.getIs_change()){
+            helper.getView(R.id.test_change_address).setVisibility(View.VISIBLE);
+        }else{
+            helper.getView(R.id.test_change_address).setVisibility(View.GONE);
+        }
     }
 }
 

@@ -856,6 +856,7 @@
     <string name="please_choose">请选择！</string>
     <string name="choose">选择</string>
     <string name="selected">已选择</string>
+    <string name="show_change_address">找零</string>
 
 
 </resources>

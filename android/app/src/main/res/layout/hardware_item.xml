@@ -42,14 +42,30 @@
 
         <TextView
             android:id="@+id/tet_getAddress"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="17dp"
-            android:layout_marginEnd="@dimen/dp_20"
-            tools:text="lnbcdfd4fdsklnb4fdsklnbcdfd4fdsklnbcdfd4fdsk"
+            android:layout_marginEnd="@dimen/dp_16"
+            android:layout_weight="1"
             android:textColor="#494949"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            tools:text="lnbcdfd4fdsklnb4fdsklnbcdfd4fdsklnbcdfd4fdsk" />
 
+        <TextView
+            android:id="@+id/test_change_address"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dp_18"
+            android:paddingStart="@dimen/dp_9"
+            android:paddingEnd="@dimen/dp_9"
+            android:layout_marginTop="17dp"
+            android:layout_marginEnd="@dimen/dp_10"
+            android:background="@drawable/gray_tuocircle"
+            android:gravity="center"
+            android:singleLine="true"
+            android:text="@string/show_change_address"
+            android:textColor="@color/change_addr"
+            android:textSize="@dimen/sp_10"
+            android:visibility="gone" />
     </LinearLayout>
 
     <View
@@ -60,9 +76,9 @@
         android:background="@color/line_color" />
 
     <LinearLayout
-        android:layout_marginBottom="17dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="17dp"
         android:orientation="horizontal">
 
         <TextView

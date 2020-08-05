@@ -100,8 +100,10 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
                     SendMoreAddressEvent sendMoreAddressEvent = new SendMoreAddressEvent();
                     String addr = output.getAddr();
                     String amount = output.getAmount();
+                    Boolean isChange = output.getIs_change();
                     sendMoreAddressEvent.setInputAddress(addr);
                     sendMoreAddressEvent.setInputAmount(amount);
+                    sendMoreAddressEvent.setIs_change(isChange);
                     addressEventList.add(sendMoreAddressEvent);
                 }
                 //    Log.i("addressEventList", "-----: " + addressEventList);
