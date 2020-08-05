@@ -108,6 +108,7 @@
                 android:layout_marginStart="@dimen/dp_16"
                 android:layout_marginTop="3dp"
                 android:layout_marginEnd="@dimen/dp_10"
+                android:visibility="gone"
                 android:gravity="center_vertical"
                 android:text="@string/star"
                 android:textColor="@android:color/white"
@@ -124,7 +125,7 @@
                 android:layout_marginEnd="@dimen/dp_10"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:visibility="gone">
+                android:visibility="visible">
 
                 <TextView
                     android:id="@+id/wallet_card_tv4"
@@ -156,7 +157,7 @@
                 tools:text="≈****CNY"
                 android:textColor="@color/wallet_yue"
                 android:textSize="@dimen/sp_12"
-                android:visibility="visible" />
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/tet_Cny"
@@ -166,7 +167,7 @@
                 android:gravity="center_vertical"
                 android:textColor="@color/wallet_yue"
                 android:textSize="@dimen/sp_12"
-                android:visibility="gone"
+                android:visibility="visible"
                 tools:text="≈74527364CNY" />
 
 

@@ -267,10 +267,10 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
                         } catch (Exception e) {
                             e.printStackTrace();
                             Log.i("ffffffffff", "onViewClicked: " + e.getMessage());
-                            if (e.getMessage().contains("non-hexadecimal number found in fromhex() arg at position 0")) {
+                            if (e.getMessage().contains("non-hexadecimal number found in fromhex() arg at position")) {
                                 mToast(getString(R.string.transaction_wrong));
-                            } else {
-                                mToast(e.getMessage());
+                            } else if (e.getMessage().contains("failed to recognize transaction encoding for txt")) {
+                                mToast(getString(R.string.transaction_wrong));
                             }
                             return;
                         }
@@ -458,7 +458,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
             //scan
             if (data != null) {
                 String content = data.getStringExtra(Constant.CODED_CONTENT);
-                Log.i("xiaomionActivityResult", "onActivityResult: "+content);
+                Log.i("xiaomionActivityResult", "onActivityResult: " + content);
                 editTrsactionTest.setText(content);
             }
         } else if (requestCode == 1 && resultCode == RESULT_OK) {

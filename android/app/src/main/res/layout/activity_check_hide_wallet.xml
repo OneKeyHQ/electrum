@@ -39,7 +39,7 @@
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
-        android:layout_height="240dp"
+        android:layout_height="230dp"
         android:background="@android:color/white"
         android:elevation="@dimen/dp_4"
         android:gravity="center"
@@ -47,7 +47,7 @@
 
         <androidx.cardview.widget.CardView
             android:layout_width="315dp"
-            android:layout_height="180dp"
+            android:layout_height="175dp"
             app:cardCornerRadius="@dimen/dp_14"
             app:cardPreventCornerOverlap="true"
             tools:ignore="UnusedAttribute">
@@ -55,7 +55,7 @@
             <LinearLayout
                 android:id="@+id/conlay_back"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="175dp"
                 android:background="@drawable/home_gray_bg"
                 android:orientation="vertical"
                 android:visibility="visible">
