@@ -883,29 +883,11 @@ class AndroidCommands(commands.Commands):
                     in_list.append(in_info)
         
         out_list = []
-        change_num = 0
-        all_change_num = 0
-        for o in tx.outputs():
+        for o in tx.outputs()[::-1]:
             address, value = o.address, o.value
             out_info = {}
             out_info['addr'] = address
             out_info['amount'] = self.format_amount_and_units(value)
-            if self.wallet.is_mine(address):
-                if tx.is_complete():
-                    change_num += 1
-                    all_change_num += 1
-                else:
-                    if self.wallet.is_change(address) or address == tx.inputs()[0].address:
-                        change_num += 1
-                        all_change_num += 1
-            is_change = False
-            if change_num == 1 and all_change_num == 1:
-                is_change = True
-            
-            if len(tx.outputs()) == 1:
-                is_change = False
-            out_info['is_change'] = is_change
-            change_num = 0
             out_list.insert(0, out_info)
 
         amount_str = ""

@@ -1983,7 +1983,7 @@ class PartialTransaction(Transaction):
 
     def add_outputs(self, outputs: List[PartialTxOutput]) -> None:
         self._outputs.extend(outputs)
-        self.BIP69_sort(inputs=False)
+        self.BIP69_sort(inputs=False, outputs=False)
         self.invalidate_ser_cache()
 
     def set_rbf(self, rbf: bool) -> None:
