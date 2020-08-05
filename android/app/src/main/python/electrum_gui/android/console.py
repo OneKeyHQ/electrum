@@ -670,7 +670,6 @@ class AndroidCommands(commands.Commands):
     def get_fee_by_feerate(self, outputs, message, feerate, customer=None):
         try:
             self._assert_wallet_isvalid()
-            all_output_add = json.loads(outputs)
             outputs_addrs = self.parse_output(outputs)
             if customer is None:
                 coins = self.wallet.get_spendable_coins(domain=None)
@@ -683,6 +682,7 @@ class AndroidCommands(commands.Commands):
             fee_per_kb = 1000 * Decimal(feerate)
             from functools import partial
             fee_estimator = partial(self.config.estimate_fee_for_feerate, fee_per_kb)
+            
             # tx = self.wallet.make_unsigned_transaction(coins=coins, outputs = outputs_addrs, fee=self.get_amount(fee_estimator))
             tx = self.wallet.make_unsigned_transaction(coins=coins, outputs=outputs_addrs, fee=fee_estimator)
             tx.set_rbf(self.rbf)
@@ -881,13 +881,32 @@ class AndroidCommands(commands.Commands):
                 in_info['addr'] = i.address
                 if not in_list.__contains__(in_info):
                     in_list.append(in_info)
+        
         out_list = []
+        change_num = 0
+        all_change_num = 0
         for o in tx.outputs():
             address, value = o.address, o.value
             out_info = {}
             out_info['addr'] = address
             out_info['amount'] = self.format_amount_and_units(value)
-            out_list.append(out_info)
+            if self.wallet.is_mine(address):
+                if tx.is_complete():
+                    change_num += 1
+                    all_change_num += 1
+                else:
+                    if self.wallet.is_change(address) or address == tx.inputs()[0].address:
+                        change_num += 1
+                        all_change_num += 1
+            is_change = False
+            if change_num == 1 and all_change_num == 1:
+                is_change = True
+            
+            if len(tx.outputs()) == 1:
+                is_change = False
+            out_info['is_change'] = is_change
+            change_num = 0
+            out_list.insert(0, out_info)
 
         amount_str = ""
         if tx_details.amount is None:
@@ -1085,7 +1104,7 @@ class AndroidCommands(commands.Commands):
             for txin in self.wallet.get_utxos():
                 d = txin.to_json()
                 v = d.pop("value_sats")
-                d["value"] = str(Decimal(v)/COIN) if v is not None else None
+                d["value"] = self.format_amount(v) + ' ' + self.base_unit
                 coins.append(d)
                 self.coins.append(txin)
             return coins

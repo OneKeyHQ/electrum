@@ -1222,7 +1222,9 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
 
         # Timelock tx to current height.
         tx.locktime = get_locktime_for_new_transaction(self.network)
-
+        for txin in tx.inputs():
+            if txin.block_height == TX_HEIGHT_LOCAL:
+                raise BaseException("Please broadcast the parent tx!!")
         tx.add_info_from_wallet(self)
         run_hook('make_unsigned_transaction', self, tx)
         return tx
