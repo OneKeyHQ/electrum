@@ -122,6 +122,7 @@ public class ReceivedPageActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.textView6:
+                checking = true;
                 //change address
                 mGeneratecode(1);
                 break;

@@ -857,6 +857,8 @@
     <string name="choose">选择</string>
     <string name="selected">已选择</string>
     <string name="show_change_address">找零</string>
+    <string name="broad_parent">请广播父交易！</string>
+    <string name="canceled">已取消</string>
 
 
 </resources>

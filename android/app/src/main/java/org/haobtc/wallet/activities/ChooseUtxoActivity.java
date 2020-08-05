@@ -63,7 +63,7 @@ public class ChooseUtxoActivity extends BaseActivity {
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         mBtcUnit = preferences.getString("base_unit", "mBtc");
         textUnit.setText(mBtcUnit);
-        textStandard.setText(String.format("%s%s%s", getString(R.string.utxo_tips), sendNum, mBtcUnit));
+        textStandard.setText(String.format("%s %s %s", getString(R.string.utxo_tips), sendNum, mBtcUnit));
     }
 
     @Override
@@ -137,7 +137,8 @@ public class ChooseUtxoActivity extends BaseActivity {
         for (int i = 0; i < chooseUtxoList.size(); i++) {
             pramas = new HashMap();
             if (map.get(i)) {
-                BigDecimal bignum1 = new BigDecimal(chooseUtxoList.get(i).getValue());
+                String bitAmount=chooseUtxoList.get(i).getValue().substring(0, chooseUtxoList.get(i).getValue().indexOf(" "));
+                BigDecimal bignum1 = new BigDecimal(bitAmount);
                 //Total transfer quantity
                 totalAmount = totalAmount.add(bignum1);
                 pramas.put(chooseUtxoList.get(i).getHash(),chooseUtxoList.get(i).getAddress());

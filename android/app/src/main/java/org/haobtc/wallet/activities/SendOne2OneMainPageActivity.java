@@ -567,6 +567,10 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                         mToast(getString(R.string.wallet_insufficient));
                     } else if (errorMessage.contains("Please use unconfirmed coins")) {
                         Toast.makeText(this, getString(R.string.please_open_unconfirmed), Toast.LENGTH_LONG).show();
+                    } else if (errorMessage.contains("Please broadcast the parent tx")) {
+                        Toast.makeText(this, getString(R.string.broad_parent), Toast.LENGTH_LONG).show();
+                    } else {
+                        mToast(errorMessage);
                     }
                 }
 
@@ -883,7 +887,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             PyObject getFeeByFeeRate = null;
             try {
                 if (!TextUtils.isEmpty(utxoListDates)) {
-                    Log.i("utxoListDates", "getFeerate:--- "+utxoListDates);
+                    Log.i("utxoListDates", "getFeerate:--- " + utxoListDates);
                     getFeeByFeeRate = Daemon.commands.callAttr("get_fee_by_feerate", strPramas, strComment, intmaxFee, new Kwarg("customer", utxoListDates));
                 } else {
                     getFeeByFeeRate = Daemon.commands.callAttr("get_fee_by_feerate", strPramas, strComment, intmaxFee);
@@ -892,13 +896,17 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             } catch (Exception e) {
                 e.printStackTrace();
                 if (e.getMessage().contains("invalid bitcoin address")) {
-                    Toast.makeText(this, getString(R.string.changeaddress), Toast.LENGTH_LONG).show();
+                    mToast(getString(R.string.changeaddress));
                 } else if (e.getMessage().contains("Insufficient funds")) {
                     mToast(getString(R.string.wallet_insufficient));
                 } else if (e.getMessage().contains("Please use unconfirmed coins")) {
                     if (!errorMessage.contains("Please use unconfirmed coins")) {
-                        Toast.makeText(this, getString(R.string.please_open_unconfirmed), Toast.LENGTH_LONG).show();
+                        mToast(getString(R.string.please_open_unconfirmed));
                     }
+                } else if (errorMessage.contains("Please broadcast the parent tx")) {
+                    mToast(getString(R.string.broad_parent));
+                } else {
+                    mToast(errorMessage);
                 }
                 errorMessage = e.getMessage();
                 return;

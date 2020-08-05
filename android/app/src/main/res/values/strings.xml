@@ -897,5 +897,7 @@
     <string name="choose">Choose</string>
     <string name="selected">Selected</string>
     <string name="show_change_address">Change</string>
+    <string name="broad_parent">Please broadcast the parent transaction!</string>
+    <string name="canceled">Cancelled</string>
 
 </resources>

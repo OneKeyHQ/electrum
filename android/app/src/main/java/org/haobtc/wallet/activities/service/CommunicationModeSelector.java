@@ -1072,6 +1072,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
      **/
     @Override
     public void onException(Exception e) {
+        Log.i("Exceptionjinxiaoin", "onException:-- " + e.getMessage());
         if (dialogFragment != null) {
             dialogFragment.dismiss();
         }
@@ -1089,6 +1090,8 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
                 showErrorDialog(R.string.sign_failed, R.string.transaction_parse_error);
             } else if (BixinExceptions.BLE_RESPONSE_READ_TIMEOUT.getMessage().equals(e.getMessage())) {
                 isTimeout = true;
+            } else if ("BaseException: ".equals(e.getMessage())) {
+                mToast(getString(R.string.canceled));
             } else {
                 showErrorDialog(R.string.key_wrong_prompte, R.string.read_pk_failed);
             }

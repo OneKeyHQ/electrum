@@ -873,7 +873,7 @@ class AndroidCommands(commands.Commands):
                 s = r = len(self.wallet.get_keystores())
             else:
                 s, r = self.wallet.wallet_type.split("of", 1)
-        
+
         in_list = []
         if isinstance(tx, PartialTransaction):
             for i in tx.inputs():
@@ -881,15 +881,16 @@ class AndroidCommands(commands.Commands):
                 in_info['addr'] = i.address
                 if not in_list.__contains__(in_info):
                     in_list.append(in_info)
-        
+
         out_list = []
-        for o in tx.outputs()[::-1]:
+        for index, o in enumerate(tx.outputs()):
             address, value = o.address, o.value
+            print(f"get_dtaile....infol.....{index, o, len(tx.outputs())}")
             out_info = {}
             out_info['addr'] = address
             out_info['amount'] = self.format_amount_and_units(value)
-            out_list.insert(0, out_info)
-
+            out_info['is_change'] = True if (index == len(tx.outputs())-1) else False
+            out_list.append(out_info)
         amount_str = ""
         if tx_details.amount is None:
             amount_str = "Transaction unrelated to your wallet"
