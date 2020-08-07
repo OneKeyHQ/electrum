@@ -25,6 +25,7 @@ from electrum.storage import WalletStorage
 from electrum.wallet import (Standard_Wallet,
                              Wallet)
 from electrum.bitcoin import is_address, hash_160, COIN, TYPE_ADDRESS
+from electrum.interface import PREFERRED_NETWORK_PROTOCOL, ServerAddr
 from electrum import mnemonic
 from electrum.address_synchronizer import TX_HEIGHT_LOCAL, TX_HEIGHT_FUTURE
 from electrum.bip32 import BIP32Node, convert_bip32_path_to_list_of_uint32 as parse_path
@@ -647,6 +648,10 @@ class AndroidCommands(commands.Commands):
         max_prec_amount = int(power * x)
         return max_prec_amount
 
+    # def set_dust(self, dust_max):
+    #     self.dust_max = dust_max
+    #     self.config.set_key('dust_max', self.dust_max)
+
     def parse_output(self, outputs):
         all_output_add = json.loads(outputs)
         outputs_addrs = []
@@ -1048,11 +1053,12 @@ class AndroidCommands(commands.Commands):
     def get_wallet_address_show_UI(self, next=None):
         try:
             self._assert_wallet_isvalid()
-            self.show_addr = self.config.get('show_addr', self.wallet.get_addresses()[0])
+
+            self.show_addr = self.config.get('%s_show_addr' % self.wallet, self.wallet.get_addresses()[0])
             if next:
                 addr = self.wallet.create_new_address(False)
                 self.show_addr = addr
-                self.config.set_key('show_addr', self.show_addr)
+                self.config.set_key('%s_show_addr' % self.wallet, self.show_addr)
             data = util.create_bip21_uri(self.show_addr, "", "")
         except Exception as e:
             raise BaseException(e)
@@ -1084,10 +1090,11 @@ class AndroidCommands(commands.Commands):
             coins = []
             for txin in self.wallet.get_utxos():
                 d = txin.to_json()
-                v = d.pop("value_sats")
-                d["value"] = self.format_amount(v) + ' ' + self.base_unit
-                coins.append(d)
-                self.coins.append(txin)
+                if (int(d['value_sats']) >= self.config.get('dust_max', 546)):
+                    v = d.pop("value_sats")
+                    d["value"] = self.format_amount(v) + ' ' + self.base_unit
+                    coins.append(d)
+                    self.coins.append(txin)
             return coins
         except BaseException as e:
             raise e
@@ -1796,7 +1803,7 @@ class AndroidCommands(commands.Commands):
         try:
             self._assert_daemon_running()
             net_params = self.network.get_parameters()
-            host, port, protocol = net_params.host, net_params.port, net_params.protocol
+            host, port, protocol = net_params.server.host, net_params.server.port, net_params.server.protocol
         except BaseException as e:
             raise e
 
@@ -1810,8 +1817,12 @@ class AndroidCommands(commands.Commands):
         try:
             self._assert_daemon_running()
             net_params = self.network.get_parameters()
-            net_params = net_params._replace(host=str(host),
-                                             port=str(port),
+            try:
+                server = ServerAddr.from_str_with_inference('%s:%s' %(host, port))
+                if not server: raise Exception("failed to parse")
+            except BaseException as e:
+                raise e
+            net_params = net_params._replace(server=server,
                                              auto_connect=True)
             self.network.run_from_another_thread(self.network.set_parameters(net_params))
         except BaseException as e:

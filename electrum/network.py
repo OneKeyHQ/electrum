@@ -757,7 +757,7 @@ class Network(Logger, NetworkRetryManager[ServerAddr]):
         except BaseException as e:
             self.logger.info(f"couldn't launch iface {server} -- {repr(e)}")
             await interface.close()
-            util.trigger_callback('set_server_status', server)
+            util.trigger_callback('set_server_status', '%s:%s' %(server.host, server.port))
             return
         else:
             with self.interfaces_lock:
