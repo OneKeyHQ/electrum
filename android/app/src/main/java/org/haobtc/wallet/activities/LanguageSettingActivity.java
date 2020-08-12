@@ -86,9 +86,6 @@ public class LanguageSettingActivity extends BaseActivity {
                 radioSystem.setTextColor(getColor(R.color.button_bk_disableok));
                 radioEnglish.setTextColor(getColor(R.color.text_color1));
                 radioChineseasy.setTextColor(getColor(R.color.text_color1));
-
-//                finishAffinity();
-
                 Intent intent = new Intent(this, LunchActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);

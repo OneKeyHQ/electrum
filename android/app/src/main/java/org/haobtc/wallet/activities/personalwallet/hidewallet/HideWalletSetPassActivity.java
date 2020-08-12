@@ -8,6 +8,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.chaquo.python.Kwarg;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -15,11 +17,13 @@ import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.NfcNotifyHelper;
 import org.haobtc.wallet.aop.SingleClick;
+import org.haobtc.wallet.event.CheckHideWalletEvent;
 import org.haobtc.wallet.event.CheckReceiveAddress;
 import org.haobtc.wallet.event.FinishEvent;
 import org.haobtc.wallet.event.HideInputPassFinishEvent;
 import org.haobtc.wallet.event.OperationTimeoutEvent;
 import org.haobtc.wallet.event.PinEvent;
+import org.haobtc.wallet.utils.Daemon;
 import org.haobtc.wallet.utils.Global;
 
 import butterknife.BindView;
@@ -90,6 +94,31 @@ public class HideWalletSetPassActivity extends BaseActivity {
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void event(CheckHideWalletEvent updataHint) {
+        String xpub = updataHint.getXpub();
+        String deviceId = updataHint.getDeviceId();
+        String strXpub = "[[\"" + xpub + "\",\"" + deviceId + "\"]]";
+        try {
+            Daemon.commands.callAttr("import_create_hw_wallet", "隐藏钱包", 1, 1, strXpub, new Kwarg("hide_type", true));
+        } catch (Exception e) {
+            e.printStackTrace();
+            String message = e.getMessage();
+            if ("BaseException: file already exists at path".equals(message)) {
+                Toast.makeText(this, getString(R.string.changewalletname), Toast.LENGTH_SHORT).show();
+            } else {
+                assert message != null;
+                if (message.contains("The same xpubs have create wallet")) {
+                    String haveWalletName = message.substring(message.indexOf("name=") + 5);
+                    Toast.makeText(this, getString(R.string.xpub_have_wallet) + haveWalletName, Toast.LENGTH_SHORT).show();
+                }
+            }
+            return;
+        }
+        Intent intent = new Intent(this, CheckHideWalletActivity.class);
+        startActivity(intent);
+        finish();
+    }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onFinish(FinishEvent event) {
         finish();

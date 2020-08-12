@@ -26,6 +26,7 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 
 import com.chaquo.python.PyObject;
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 
 import org.greenrobot.eventbus.EventBus;
@@ -191,7 +192,6 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
 
         if (selectWallet != null) {
             String toString = selectWallet.toString();
-            Log.i("select_wallet", "select_wallet+++: " + toString);
             Gson gson = new Gson();
             MainNewWalletBean mainWheelBean = gson.fromJson(toString, MainNewWalletBean.class);
             String walletType = mainWheelBean.getWalletType();

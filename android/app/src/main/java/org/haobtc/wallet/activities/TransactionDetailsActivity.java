@@ -165,6 +165,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     private String listTxStatus = "";
     private float feeForChild;
 
+
     @Override
     public int getLayoutId() {
         return R.layout.trans_details;
@@ -317,7 +318,6 @@ public class TransactionDetailsActivity extends BaseActivity {
     //intent ->histry or create
     @SuppressLint("DefaultLocale")
     private void jsonDetailData(String detail) {
-        Log.d("jsonDetailData", "transactionDetail==== " + detail);
         GetnewcreatTrsactionListBean getnewcreatTrsactionListBean;
         try {
             Gson gson = new Gson();
@@ -412,7 +412,6 @@ public class TransactionDetailsActivity extends BaseActivity {
     //scan get
     @SuppressLint("DefaultLocale")
     private void scanDataDetailMessage() {
-//        Log.i("scanDataDetailMessage", "scanDataDetailMessage---------: " + strParse);
         Gson gson = new Gson();
         ScanCheckDetailBean scanCheckDetailBean = gson.fromJson(strParse, ScanCheckDetailBean.class);
         ScanCheckDetailBean.DataBean scanListdata = scanCheckDetailBean.getData();

@@ -1,7 +1,7 @@
 package org.haobtc.wallet.bean;
 
 import com.google.gson.annotations.SerializedName;
-
+@Deprecated
 public class MnemonicBean {
 
     /**

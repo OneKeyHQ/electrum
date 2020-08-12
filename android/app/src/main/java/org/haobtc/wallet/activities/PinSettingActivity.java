@@ -147,12 +147,6 @@ public class PinSettingActivity extends BaseActivity {
                             startActivity(intent2);
                             finish();
                             break;
-                        case ConfirmOnHardware.TAG:
-                            Intent intent3 = new Intent(this, SignatureProcessing.class);
-                            intent3.putExtra("pin", pin);
-                            startActivity(intent3);
-                            finish();
-                            break;
                         default:
                             if (isNFC) {
                                 Intent intent = new Intent(this, NfcNotifyHelper.class);

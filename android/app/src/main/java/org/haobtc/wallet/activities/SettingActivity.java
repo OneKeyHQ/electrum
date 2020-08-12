@@ -40,8 +40,8 @@ public class SettingActivity extends BaseActivity {
 
     public static final String TAG = SettingActivity.class.getSimpleName();
     public static final String TAG_CHANGE_PIN = "SETTING_CHANGE_PIN";
-    @BindView(R.id.tetBuckup)
-    TextView tetBuckup;
+    @BindView(R.id.backup)
+    TextView backup;
     @BindView(R.id.tet_language)
     TextView tetLanguage;
     @BindView(R.id.tetSeverSet)
@@ -91,14 +91,14 @@ public class SettingActivity extends BaseActivity {
 
 
     @SingleClick(value = 1000)
-    @OnClick({R.id.tetBuckup, R.id.tet_language, R.id.tetSeverSet, R.id.tetTrsactionSet, R.id.tetVerification, R.id.tetAbout, R.id.img_back, R.id.tet_bixinKey, R.id.tet_Faru, R.id.bluetooth_set, R.id.change_pin, R.id.hardware_update, R.id.check_xpub})
+    @OnClick({R.id.backup, R.id.tet_language, R.id.tetSeverSet, R.id.tetTrsactionSet, R.id.tetVerification, R.id.tetAbout, R.id.img_back, R.id.tet_bixinKey, R.id.tet_Faru, R.id.bluetooth_set, R.id.change_pin, R.id.hardware_update, R.id.check_xpub})
     public void onViewClicked(View view) {
         isChangePin = false;
         switch (view.getId()) {
             case R.id.tet_bixinKey:
                 mIntent(BixinKEYManageActivity.class);
                 break;
-            case R.id.tetBuckup:
+            case R.id.backup:
                 mIntent(BackupRecoveryActivity.class);
                 break;
             case R.id.tet_language:

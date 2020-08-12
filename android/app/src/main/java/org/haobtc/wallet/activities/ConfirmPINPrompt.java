@@ -14,7 +14,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.NfcNotifyHelper;
-import org.haobtc.wallet.activities.settings.ActivateBackupSuccessActivity;
+import org.haobtc.wallet.activities.settings.recovery_set.BackupMessageActivity;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.event.BackupFinishEvent;
 import org.haobtc.wallet.event.FinishEvent;
@@ -26,9 +26,10 @@ import butterknife.OnClick;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.features;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.isNFC;
 
-//
-// Created by liyan on 2020/6/17.
-//
+/**
+ * @author liyan
+ */
+
 public class ConfirmPINPrompt extends BaseActivity {
     @BindView(R.id.img_back)
     ImageView imgBack;
@@ -88,7 +89,9 @@ public class ConfirmPINPrompt extends BaseActivity {
                 : features.getLabel() + ":" + event.getMessage()).apply();
         features.setNeedsBackup(false);
         devices.edit().putString(features.getDeviceId(), features.toString()).apply();
-        Intent intent = new Intent(this, ActivateBackupSuccessActivity.class);
+        Intent intent = new Intent(this, BackupMessageActivity.class);
+        intent.putExtra("label", Strings.isNullOrEmpty(features.getLabel()) ? features.getBleName() : features.getLabel());
+        intent.putExtra("tag", "backup");
         intent.putExtra("message", event.getMessage());
         startActivity(intent);
         EventBus.getDefault().post(new FinishEvent());

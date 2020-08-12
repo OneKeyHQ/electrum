@@ -49,6 +49,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
+import org.haobtc.wallet.activities.BackupWaySelector;
 import org.haobtc.wallet.activities.PinSettingActivity;
 import org.haobtc.wallet.activities.ReceivedPageActivity;
 import org.haobtc.wallet.activities.SendOne2ManyMainPageActivity;
@@ -196,8 +197,20 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
     public static boolean backupTip;
     private static String hideWalletReceive = "";
     private boolean isTimeout;
+    public  boolean isRecovery;
     private AnimationDrawable animationDrawable;
-
+    static {
+        nfc = Global.py.getModule("trezorlib.transport.nfc");
+        ble = Global.py.getModule("trezorlib.transport.bluetooth");
+        usb = Global.py.getModule("trezorlib.transport.android_usb");
+        protocol = Global.py.getModule("trezorlib.transport.protocol");
+        bleHandler = ble.get("BlueToothHandler");
+        nfcHandler = nfc.get("NFCHandle");
+        usbTransport = usb.get("AndroidUsbTransport");
+        nfcTransport = nfc.get("NFCTransport");
+        bleTransport = ble.get("BlueToothTransport");
+        customerUI = Global.py.getModule("trezorlib.customer_ui").get("CustomerUI");
+    }
     @Override
     public int getLayoutId() {
         return R.layout.bluetooth_nfc;
@@ -223,16 +236,6 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
         imageViewCancel.setOnClickListener(this);
         tag = getIntent().getStringExtra("tag");
         action = getIntent().getAction();
-        nfc = Global.py.getModule("trezorlib.transport.nfc");
-        ble = Global.py.getModule("trezorlib.transport.bluetooth");
-        usb = Global.py.getModule("trezorlib.transport.android_usb");
-        protocol = Global.py.getModule("trezorlib.transport.protocol");
-        bleHandler = ble.get("BlueToothHandler");
-        nfcHandler = nfc.get("NFCHandle");
-        usbTransport = usb.get("AndroidUsbTransport");
-        nfcTransport = nfc.get("NFCTransport");
-        bleTransport = ble.get("BlueToothTransport");
-        customerUI = Global.py.getModule("trezorlib.customer_ui").get("CustomerUI");
         handler = MyHandler.getInstance(this);
         customerUI.put("handler", handler);
         extras = getIntent().getStringExtra("extras");
@@ -507,6 +510,10 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
     private void handlerEverything(boolean isNFC) {
         isSign = false;
         isActive = false;
+        if (isRecovery && isNFC) {
+            protocol.callAttr("notify");
+            return;
+        }
         // used for combined init logic only.
         if (isNFC) {
             if (combinedInit()) {
@@ -549,6 +556,14 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
             return true;
         }
         if ("backup".equals(action)) {
+            if (getIntent().getBooleanExtra("get_feature", false)) {
+                try {
+                    features = getFeatures(isNFC);
+                } catch (Exception e) {
+                    finish();
+                    return true;
+                }
+            }
             doBackup(new BackupEvent());
             return true;
         }
@@ -649,7 +664,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
                 }
             } else if (TransactionDetailsActivity.TAG.equals(tag) || SignActivity.TAG.equals(tag) || SignActivity.TAG1.equals(tag) || SignActivity.TAG2.equals(tag) || SignActivity.TAG3.equals(tag) || SendOne2OneMainPageActivity.TAG.equals(tag) || SendOne2ManyMainPageActivity.TAG.equals(tag) || TransactionDetailsActivity.TAG_HIDE_WALLET.equals(tag)) {
                 dealwithSign(isNFC);
-            } else if (BackupRecoveryActivity.TAG.equals(tag) || RecoveryActivity.TAG.equals(tag) || BackupMessageActivity.TAG.equals(tag) || "recovery".equals(action)) {
+            } else if (BackupRecoveryActivity.TAG.equals(tag) || RecoveryActivity.TAG.equals(tag) || BackupMessageActivity.TAG.equals(tag) || "recovery".equals(action) || BackupWaySelector.TAG.equals(tag)) {
                 if (TextUtils.isEmpty(extras)) {
                     //No backup after backup
                     String contrastDeviceId = getIntent().getStringExtra("contrastDeviceId");
@@ -705,6 +720,9 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
             }
         } else {
             if (!TextUtils.isEmpty(extras) && (BackupMessageActivity.TAG.equals(tag) || RecoveryActivity.TAG.equals(tag)) || "recovery".equals(action)) {
+                if (RecoveryActivity.TAG.equals(tag)) {
+                    isRecovery = true;
+                }
                 recovery(isNFC);
                 return;
             }
@@ -1029,6 +1047,11 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
     @Override
     public void onPause() {
         super.onPause();
+        if (isNFC) {
+            if (animationDrawable.isRunning()) {
+                animationDrawable.stop();
+            }
+        }
         // if the below code was commented may make the callback(onException) doesn't work
         if (dialogFragment != null) {
             dialogFragment.dismiss();
@@ -1038,7 +1061,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
     @Override
     protected void onResume() {
         super.onResume();
-        if (isGpsStatueChange) {
+        if (isGpsStatueChange && "ble".equals(way)) {
             isGpsStatueChange = false;
             refreshDeviceList(true);
         }
@@ -1051,6 +1074,12 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
                 }
             } else if (isGetXpub) {
                 dialogFragment = showReadingDialog(R.string.reading_dot);
+            } else {
+                if (isNFC) {
+                    if (!animationDrawable.isRunning()) {
+                        animationDrawable.start();
+                    }
+                }
             }
         } else {
             if (isPairFailed) {
@@ -1196,7 +1225,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
                 }
                 EventBus.getDefault().post(new SignResultEvent(s));
             }
-        } else if (BackupRecoveryActivity.TAG.equals(tag) || BackupMessageActivity.TAG.equals(tag) || RecoveryActivity.TAG.equals(tag) || "backup".equals(action) || "recovery".equals(action)) {
+        } else if (BackupRecoveryActivity.TAG.equals(tag) || BackupMessageActivity.TAG.equals(tag) || RecoveryActivity.TAG.equals(tag) || "backup".equals(action) || "recovery".equals(action) || BackupWaySelector.TAG.equals(tag)) {
             if (TextUtils.isEmpty(extras)) {
                 SharedPreferences backup = getSharedPreferences("backup", Context.MODE_PRIVATE);
                 SharedPreferences devices = getSharedPreferences("devices", Context.MODE_PRIVATE);

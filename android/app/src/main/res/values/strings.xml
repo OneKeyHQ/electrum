@@ -904,5 +904,17 @@
     <string name="add_white_list">Add secret free white list</string>
     <string name="prevent_dust">Prevent dust attack</string>
     <string name="have_address">Address already exists!</string>
-
+    <string name="backup2local">Backup locally</string>
+    <string name="backup2local_finish">Backup to local</string>
+    <string name="step_one">First step，touch BixinKey Lite with phone</string>
+    <string name="step_two">Second step，touch BixinKey Lite with phone</string>
+    <string name="step_three">Third step，touch BixinKey Lite with phone</string>
+    <string name="step_four">Fourth step，touch BixinKey Lite with phone</string>
+    <string name="backup_not_available">Have no useful backup in BixinKey Lite</string>
+    <string name="nfc_only">BixinKey Lite only supported by NFC</string>
+    <string name="old_version">Current version is too old</string>
+    <string name="update2_new_version">Please update to latest version and retry again</string>
+    <string name="need_active">BixinKey is not active yet，please retry after active</string>
+    <string name="need_reset">BixinKey is already active, please retry after reset</string>
+    <string name="old_se_version">The version of current BixinKey\'s SE is too old to support BixinKeyLite</string>
 </resources>

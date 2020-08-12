@@ -1,5 +1,5 @@
 package org.haobtc.wallet.event;
-
+@Deprecated
 public class BatchInputWalletEvent {
     String walletName;
     String m;

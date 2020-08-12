@@ -37,6 +37,7 @@ public class HardwareFeatures {
      * ble_ver : 1.0.5
      * ble_enable: true
      * se_enable: false
+     * se_version: ""
      * backup_message: ""
      */
 
@@ -94,6 +95,8 @@ public class HardwareFeatures {
     private boolean bleEnable;
     @SerializedName("se_enable")
     private boolean seEnable;
+    @SerializedName("se_version")
+    private String seVersion;
     @SerializedName("backup_message")
     private String backupMessage;
 
@@ -319,6 +322,13 @@ public class HardwareFeatures {
     }
     public String getBackupMessage() {
         return backupMessage;
+    }
+    public String getSeVersion() {
+        return seVersion;
+    }
+
+    public void setSeVersion(String seVersion) {
+        this.seVersion = seVersion;
     }
 
     @NonNull

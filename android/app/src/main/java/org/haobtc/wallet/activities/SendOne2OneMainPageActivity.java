@@ -917,7 +917,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 errorMessage = e.getMessage();
                 return;
             }
-            Log.i("get_fee_by_feerate", "getFeerate: " + getFeeByFeeRate);
             if (getFeeByFeeRate != null) {
                 String strnewFee = getFeeByFeeRate.toString();
                 Gson gson = new Gson();

@@ -270,7 +270,6 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
                                 txHash1 = jsonObject.getString("tx_hash");
                                 PyObject getRemoveFlag = Daemon.commands.callAttr("get_remove_flag", txHash1);
                                 status = getRemoveFlag.toBoolean();
-
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }

@@ -1,0 +1,65 @@
+<Keyboard xmlns:android="http://schemas.android.com/apk/res/android"
+    android:horizontalGap="@dimen/dp_6"
+    android:keyWidth="31%p"
+    android:keyHeight="@dimen/dp_46"
+    android:verticalGap="@dimen/dp_7">
+
+    <Row>
+        <Key
+            android:codes="49"
+            android:isRepeatable="true"
+            android:keyLabel="1" />
+        <Key
+            android:codes="50"
+            android:isRepeatable="true"
+            android:keyLabel="2" />
+        <Key
+            android:codes="51"
+            android:isRepeatable="true"
+            android:keyLabel="3" />
+    </Row>
+    <Row>
+        <Key
+            android:codes="52"
+            android:isRepeatable="true"
+            android:keyLabel="4" />
+        <Key
+            android:codes="53"
+            android:isRepeatable="true"
+            android:keyLabel="5" />
+        <Key
+            android:codes="54"
+            android:isRepeatable="true"
+            android:keyLabel="6" />
+    </Row>
+
+    <Row>
+        <Key
+            android:codes="55"
+            android:isRepeatable="true"
+            android:keyLabel="7" />
+        <Key
+            android:codes="56"
+            android:isRepeatable="true"
+            android:keyLabel="8" />
+        <Key
+            android:codes="57"
+            android:isRepeatable="true"
+            android:keyLabel="9" />
+    </Row>
+    <Row>
+        <Key
+            android:codes="-3"
+            android:keyLabel="@string/confirm"
+            android:keyEdgeFlags="left"/>
+        <Key
+            android:codes="48"
+            android:keyLabel="0"/>
+        <Key
+            android:codes="-5"
+            android:isRepeatable="true"
+            android:keyIcon="@drawable/delete_num"
+            android:keyEdgeFlags="right"/>
+    </Row>
+
+</Keyboard>

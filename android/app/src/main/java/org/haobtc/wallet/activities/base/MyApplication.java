@@ -1,13 +1,12 @@
 package org.haobtc.wallet.activities.base;
 
 import android.app.Application;
-import android.content.res.Configuration;
 
-import androidx.annotation.NonNull;
 import androidx.lifecycle.ProcessLifecycleOwner;
 
 import com.chaquo.python.Python;
 import com.chaquo.python.android.AndroidPlatform;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.MyEventBusIndex;
@@ -19,10 +18,10 @@ import cn.com.heaton.blelibrary.ble.Ble;
 
 public class MyApplication extends Application {
     private static volatile MyApplication mInstance;
+    private static final String BUGLY_APPID = "91260a7fcb";
     private static final String PRIMARY_SERVICE =      "00000001-0000-1000-8000-00805f9b34fb";
     private static final String WRITE_CHARACTERISTIC = "00000002-0000-1000-8000-00805f9b34fb";
     private static final String READ_CHARACTERISTIC =  "00000003-0000-1000-8000-00805f9b34fb";
-    public static boolean languageChange=false;
 
     @Override
     public void onCreate() {
@@ -34,13 +33,9 @@ public class MyApplication extends Application {
         mInstance = this;
         initBle();
         initChaquo();
+        CrashReport.initCrashReport(getApplicationContext(), BUGLY_APPID, true);
     }
 
-    @Override
-    public void onConfigurationChanged(@NonNull Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        languageChange=true;
-    }
 
     public static MyApplication getInstance() {
         if (mInstance == null) {

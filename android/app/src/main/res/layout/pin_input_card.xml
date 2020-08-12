@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:clipToPadding="true"
+    android:fitsSystemWindows="true">
+
+    <RelativeLayout
+        android:id="@+id/tb2"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="?attr/colorPrimary"
+        android:navigationIcon="@drawable/back">
+
+        <ImageView
+            android:id="@+id/img_back_pin"
+            android:layout_width="@dimen/dp_50"
+            android:layout_height="@dimen/dp_40"
+            android:layout_centerVertical="true"
+            android:layout_gravity="end"
+            android:layout_marginEnd="15.3dp"
+            android:contentDescription="@string/back"
+            android:padding="8dp"
+            android:src="@drawable/back" />
+
+        <TextView
+            android:id="@+id/testTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:text="@string/create_hide_wallet"
+            android:textColor="@color/text"
+            android:textSize="@dimen/text_size"
+            android:visibility="gone" />
+
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/dp_50"
+        android:orientation="vertical">
+
+
+        <TextView
+            android:id="@+id/pin_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_30"
+            android:layout_marginTop="@dimen/dp_20"
+            android:text="@string/card_pin"
+            android:textColor="@color/text_color"
+            android:textSize="22sp" />
+
+        <TextView
+            android:id="@+id/second_promote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_30"
+            android:layout_marginTop="@dimen/dp_10"
+            android:layout_marginBottom="@dimen/dp_30"
+            android:text="@string/pin_input"
+            android:textColor="@color/light_text"
+            android:textSize="13sp" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <org.haobtc.wallet.utils.PasswordInputView
+                android:id="@+id/trader_pwd_set_pwd_edittext"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginStart="@dimen/dp_30"
+                android:layout_marginEnd="@dimen/dp_30"
+                android:background="@android:color/white"
+                android:focusable="false"
+                android:maxLength="6" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_1"
+                android:layout_marginStart="@dimen/dp_30"
+                android:layout_marginEnd="@dimen/dp_30"
+                android:background="@color/separation_line" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_1"
+                android:layout_marginStart="@dimen/dp_30"
+                android:layout_marginTop="@dimen/dp_50"
+                android:layout_marginEnd="@dimen/dp_30"
+                android:background="@color/separation_line" />
+
+            <View
+                android:layout_width="@dimen/dp_1"
+                android:layout_height="@dimen/dp_50"
+                android:layout_marginStart="@dimen/dp_30"
+                android:layout_marginEnd="@dimen/corner_radius"
+                android:background="@color/separation_line" />
+
+            <View
+                android:layout_width="@dimen/dp_1"
+                android:layout_height="@dimen/dp_50"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="@dimen/dp_30"
+                android:background="@color/separation_line" />
+
+        </RelativeLayout>
+
+
+        <Button
+            android:id="@+id/bn_next"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginStart="38dp"
+            android:layout_marginTop="91dp"
+            android:layout_marginEnd="38dp"
+            android:background="@drawable/button_bk"
+            android:text="@string/next"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white" />
+
+        <RelativeLayout
+            android:id="@+id/relativeLayout_key"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="26dp"
+            android:background="@color/key_bk">
+
+            <android.inputmethodservice.KeyboardView
+                android:id="@+id/keyboard_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:focusable="true"
+                android:background="@color/key_bk"
+                android:focusableInTouchMode="true"
+                android:keyBackground="@drawable/keyboard_selector"
+                android:keyTextColor="@color/set_txt"
+                android:paddingTop="@dimen/dp_6"
+                android:paddingEnd="@dimen/dp_6"
+                android:shadowRadius="0.0"
+                android:shadowColor="@android:color/white"
+                tools:ignore="RtlSymmetry" />
+        </RelativeLayout>
+
+
+    </LinearLayout>
+
+</RelativeLayout>

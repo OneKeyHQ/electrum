@@ -34,14 +34,18 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.bleTransport;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.nfc;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.nfcHandler;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.nfcTag;
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.nfcTransport;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.protocol;
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.usbTransport;
 
-//
-// Created by liyan on 2020/5/24.
-//
+
+/**
+ * @author liyan
+ */
 public class NfcNotifyHelper extends BaseActivity {
     @BindView(R.id.text_prompt)
     TextView textPrompt;
@@ -116,6 +120,7 @@ public class NfcNotifyHelper extends BaseActivity {
             finish();
         }
     }
+
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -126,10 +131,13 @@ public class NfcNotifyHelper extends BaseActivity {
                 || Objects.requireNonNull(action).equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
             animationDrawable.stop();
             Tag tags = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+            usbTransport.put("ENABLED", false);
+            bleTransport.put("ENABLED", false);
+            nfcTransport.put("ENABLED", true);
             new Handler().postDelayed(() -> {
                 nfcHandler.put("device", tags);
-                notifyNfc();
-            } ,1000);
+                    notifyNfc();
+            }, 1000);
         }
     }
 
@@ -153,11 +161,13 @@ public class NfcNotifyHelper extends BaseActivity {
         NfcUtils.mNfcAdapter = null;
         EventBus.getDefault().unregister(this);
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void onFinish(FinishEvent event) {
         EventBus.getDefault().removeStickyEvent(event);
         finish();
     }
+
     @Override
     protected void onRestart() {
         super.onRestart();

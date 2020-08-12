@@ -152,6 +152,10 @@ class TrezorClientBase(HardwareClientBase, Logger):
         with self.run_flow(''):
             return trezorlib.device.se_backup(self.client).hex()
 
+    def se_proxy(self, message) -> str:
+        with self.run_flow(''):
+            return trezorlib.device.se_proxy(self.client, message).hex()
+
     def recovery(self, *args):
         with self.run_flow(''):
             return trezorlib.device.se_restore(self.client, *args)

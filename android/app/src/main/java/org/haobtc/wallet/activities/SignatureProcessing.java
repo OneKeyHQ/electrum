@@ -32,7 +32,7 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-
+@Deprecated
 public class SignatureProcessing extends BaseActivity {
     public static final String TAG = SignatureProcessing.class.getSimpleName();
     @BindView(R.id.img_back)

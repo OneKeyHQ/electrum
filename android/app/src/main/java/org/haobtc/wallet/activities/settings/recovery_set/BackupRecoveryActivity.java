@@ -1,5 +1,6 @@
 package org.haobtc.wallet.activities.settings.recovery_set;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
@@ -10,15 +11,22 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.google.common.base.Strings;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.MainActivity;
 import org.haobtc.wallet.R;
+import org.haobtc.wallet.activities.BackupWaySelector;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
+import org.haobtc.wallet.activities.service.NfcNotifyHelper;
 import org.haobtc.wallet.adapter.BixinkeyBackupAdapter;
 import org.haobtc.wallet.aop.SingleClick;
+import org.haobtc.wallet.event.BackupFinishEvent;
+import org.haobtc.wallet.event.ButtonRequestEvent;
+import org.haobtc.wallet.event.ExitEvent;
 import org.haobtc.wallet.event.FinishEvent;
 import org.haobtc.wallet.event.HandlerEvent;
 
@@ -30,6 +38,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.com.heaton.blelibrary.ble.Ble;
+
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.features;
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.isNFC;
 
 public class BackupRecoveryActivity extends BaseActivity {
 
@@ -97,7 +108,6 @@ public class BackupRecoveryActivity extends BaseActivity {
                 public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
                     switch (view.getId()) {
                         case R.id.relativeLayout_bixinkey:
-
                             Intent intent = new Intent(BackupRecoveryActivity.this, BackupMessageActivity.class);
                             intent.putExtra("label", deviceValue.get(position).split(":", 3)[1]);
                             intent.putExtra("message", deviceValue.get(position).split(":", 3)[2]);
@@ -133,14 +143,17 @@ public class BackupRecoveryActivity extends BaseActivity {
                 }
                 break;
             case R.id.tet_keyName:
-                if (Ble.getInstance().getConnetedDevices().size() != 0) {
-                    if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(bleName)) {
-                        EventBus.getDefault().postSticky(new HandlerEvent());
-                    }
-                }
-                CommunicationModeSelector.backupTip = true;
-                Intent intent = new Intent(this, CommunicationModeSelector.class);
-                intent.putExtra("tag", TAG);
+//                if (Ble.getInstance().getConnetedDevices().size() != 0) {
+//                    if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(bleName)) {
+//                        EventBus.getDefault().postSticky(new HandlerEvent());
+//                    }
+//                }
+//                CommunicationModeSelector.backupTip = true;
+//                Intent intent = new Intent(this, CommunicationModeSelector.class);
+//                intent.putExtra("tag", TAG);
+//                startActivity(intent);
+                Intent intent = new Intent(this, BackupWaySelector.class);
+                intent.putExtra("get_feature", true);
                 startActivity(intent);
                 break;
             default:
@@ -152,7 +165,15 @@ public class BackupRecoveryActivity extends BaseActivity {
             finish();
         }
     }
-
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onButtonRequest(ButtonRequestEvent event) {
+        if (isNFC) {
+            EventBus.getDefault().removeStickyEvent(event);
+            Intent intent = new Intent(this, NfcNotifyHelper.class);
+            intent.putExtra("is_button_request", true);
+            startActivity(intent);
+        }
+    }
     @Override
     protected void onDestroy() {
         super.onDestroy();

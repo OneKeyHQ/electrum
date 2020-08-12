@@ -11,8 +11,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-
-import androidx.annotation.LayoutRes;
+import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -23,6 +22,7 @@ import org.haobtc.wallet.activities.personalwallet.SingleSigWalletCreator;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.activities.settings.recovery_set.RecoveryActivity;
 import org.haobtc.wallet.aop.SingleClick;
+import org.haobtc.wallet.card.BackupHelper;
 import org.haobtc.wallet.event.InitEvent;
 import org.haobtc.wallet.event.ResultEvent;
 import org.haobtc.wallet.event.SendXpubToSigwallet;
@@ -74,8 +74,7 @@ public class WalletUnActivatedActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.button_recover:
-                startActivity(new Intent(this, RecoveryActivity.class));
-                finish();
+                chooseBackupDialog(WalletUnActivatedActivity.this);
                 break;
             case R.id.linear_use_se:
                 if (buseSe) {
@@ -104,6 +103,42 @@ public class WalletUnActivatedActivity extends BaseActivity {
         }
     }
 
+
+    private void chooseBackupDialog(Context context) {
+        //set see view
+        View view = View.inflate(context, R.layout.select_backup_method, null);
+        Dialog dialogBtoms = new Dialog(context, R.style.dialog);
+        view.findViewById(R.id.recovery_from_local_backup).setOnClickListener(v -> {
+            startActivity(new Intent(this, RecoveryActivity.class));
+            dialogBtoms.dismiss();
+            finish();
+        });
+
+        view.findViewById(R.id.recovery_from_key_lite).setOnClickListener(v -> {
+            if (!isNFC) {
+                Toast.makeText(this, R.string.nfc_only, Toast.LENGTH_SHORT).show();
+                dialogBtoms.dismiss();
+                return;
+            }
+            Intent intent = new Intent(this, BackupHelper.class);
+            intent.setAction("recovery");
+            intent.putExtra("message", "00F8010100");
+            startActivity(intent);
+            dialogBtoms.dismiss();
+        });
+
+        dialogBtoms.setContentView(view);
+        Window window = dialogBtoms.getWindow();
+        //set pop_up size
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        //set locate
+        window.setGravity(Gravity.BOTTOM);
+        //set animal
+        window.setWindowAnimations(R.style.AnimBottom);
+        dialogBtoms.setCanceledOnTouchOutside(true);
+        dialogBtoms.show();
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -129,5 +164,11 @@ public class WalletUnActivatedActivity extends BaseActivity {
 
                 throw new IllegalStateException("Unexpected value: " + resultEvent.getResult());
         }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        finish();
     }
 }

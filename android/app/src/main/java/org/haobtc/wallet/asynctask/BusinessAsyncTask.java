@@ -19,8 +19,6 @@ import static org.haobtc.wallet.activities.service.CommunicationModeSelector.nfc
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.protocol;
 
 public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
-    private Helper helper;
-    private final static String TAG = BusinessAsyncTask.class.getSimpleName();
     public final static String GET_EXTEND_PUBLIC_KEY = "get_xpub_from_hw";
     public final static String GET_EXTEND_PUBLIC_KEY_SINGLE = "get_xpub_from_hw_single";
     public final static String SIGN_TX = "sign_tx";
@@ -35,6 +33,15 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
     public static final String SHOW_ADDRESS = "show_address";
     public static final String EDIT_WHITE_LIST = "bx_inquire_whitelist";
     public static final String ADD_AND_DELETE_WHITE_LIST = "bx_add_or_delete_whitelist";
+    /**
+     * method used to pass-through the se message
+     */
+    public static final String SE_PROXY = "se_proxy";
+    private final static String TAG = BusinessAsyncTask.class.getSimpleName();
+    /**
+     * used as callback
+     */
+    private Helper helper;
 
     public BusinessAsyncTask setHelper(Helper helper) {
         this.helper = helper;
@@ -56,6 +63,7 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
             case GET_EXTEND_PUBLIC_KEY_SINGLE:
             case SIGN_TX:
             case COUNTER_VERIFICATION:
+            case SE_PROXY:
                 try {
                     result = Daemon.commands.callAttr(strings[0].endsWith("single") ? GET_EXTEND_PUBLIC_KEY : strings[0], strings[1], strings[2]).toString();
                 } catch (Exception e) {

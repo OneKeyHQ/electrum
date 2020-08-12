@@ -19,7 +19,7 @@ public class BixinkeyManagerAdapter extends BaseQuickAdapter<HardwareFeatures, B
 
     @Override
     protected void convert(BaseViewHolder helper, HardwareFeatures item) {
-        if (!TextUtils.isEmpty(item.getLabel())){
+        if (!TextUtils.isEmpty(item.getLabel())) {
             helper.setText(R.id.tet_keyName,item.getLabel());
         } else {
             helper.setText(R.id.tet_keyName,"BiXinKEY");

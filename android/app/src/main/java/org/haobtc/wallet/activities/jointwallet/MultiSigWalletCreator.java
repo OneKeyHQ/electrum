@@ -9,8 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.net.Uri;
-import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
@@ -361,7 +359,6 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
             boolean success = bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
             fos.flush();
             fos.close();
-            sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + filePic.getAbsolutePath())));
             return success;
 
         } catch (IOException ignored) {
@@ -850,7 +847,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
                 cardViewThree.setVisibility(View.VISIBLE);
                 relFinish.setVisibility(View.VISIBLE);
                 cardThreePublic.setVisibility(View.VISIBLE);
-                tetWhoWallet.setText(String.format("%s  （%s/%s）", strWalletname, strInditor2, strInditor1));
+                tetWhoWallet.setText(String.format("%s  （%s/%s）", strWalletname, strInditor1, strInditor2));
                 tetManyKey.setText(String.format("%s%s%s", getString(R.string.is_use), strInditor1, getString(R.string.the_only_bixinkey)));
             }
         }
@@ -868,12 +865,5 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // TODO: add setContentView(...) invocation
-        ButterKnife.bind(this);
     }
 }

@@ -1,6 +1,5 @@
 package org.haobtc.wallet.activities.settings.fixpin;
 
-import android.annotation.SuppressLint;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -43,7 +42,6 @@ public class ChangePinFailedActivity extends BaseActivity {
         switch (view.getId()) {
             case R.id.img_back:
             case R.id.btn_finish:
-                // Ble.getInstance().disconnectAll();
                 finishAffinity();
                 break;
             default:

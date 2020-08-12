@@ -167,7 +167,7 @@ class AndroidCommands(commands.Commands):
         self.rbf_tx = ""
         self.m = 0
         self.n = 0
-        #self.sync_timer = None
+        # self.sync_timer = None
         self.config.set_key('auto_connect', True, True)
         t = threading.Timer(5.0, self.timer_action)
         t.start()
@@ -216,12 +216,12 @@ class AndroidCommands(commands.Commands):
 
     def on_quotes(self, d):
         self.update_status()
-        #self.update_history()
+        # self.update_history()
 
     def on_history(self, d):
         if self.wallet:
             self.wallet.clear_coin_price_cache()
-        #self.update_history()
+        # self.update_history()
 
     def update_status(self):
         out = {}
@@ -322,9 +322,9 @@ class AndroidCommands(commands.Commands):
         self.update_status()
         # self.callbackIntent.onCallback("update_wallet")
 
-    #def update_history(self):
-        #print("")
-        # self.callbackIntent.onCallback("update_history")
+    # def update_history(self):
+    # print("")
+    # self.callbackIntent.onCallback("update_history")
 
     def on_network_event(self, event, *args):
         if event == 'network_updated':
@@ -420,8 +420,7 @@ class AndroidCommands(commands.Commands):
             raise BaseException(e)
         self.daemon.stop_wallet(self._wallet_path(name))
 
-
-    def set_syn_server(self, flag): 
+    def set_syn_server(self, flag):
         try:
             self.label_flag = flag
             self.config.set_key('use_labels', bool(flag))
@@ -489,10 +488,10 @@ class AndroidCommands(commands.Commands):
         try:
             if self.label_flag:
                 self.label_plugin.set_host(ip, port)
-                self.config.set_key('sync_server_host', '%s:%s' %(ip, port))
+                self.config.set_key('sync_server_host', '%s:%s' % (ip, port))
         except BaseException as e:
             raise e
-        
+
     def get_sync_server_host(self):
         try:
             return self.config.get('sync_server_host', "39.105.86.163:8080")
@@ -575,13 +574,13 @@ class AndroidCommands(commands.Commands):
                         temp_data['error'] = str(e)
                         except_list.append(temp_data)
                         pass
-                #return json.dumps(except_list)
+                # return json.dumps(except_list)
             # self.sync_timer = threading.Timer(5.0, self.pull_tx_infos)
             # self.sync_timer.start()
         except BaseException as e:
             print(f"eeeeeeeeeeeeeee {str(e)}")
             raise BaseException(e)
-        
+
     def bulk_create_wallet(self, wallets_info):
         wallets_list = json.loads(wallets_info)
         create_failed_into = {}
@@ -623,9 +622,9 @@ class AndroidCommands(commands.Commands):
     # #create tx#########################
     def get_default_fee_status(self):
         try:
-            x=2
-            self.config.set_key('mempool_fees', x==2)
-            self.config.set_key('dynamic_fees', x>0)
+            x = 2
+            self.config.set_key('mempool_fees', x == 2)
+            self.config.set_key('dynamic_fees', x > 0)
             return self.config.get_fee_status()
         except BaseException as e:
             raise e
@@ -1325,6 +1324,14 @@ class AndroidCommands(commands.Commands):
             raise BaseException(e)
         return response
 
+    def se_proxy(self, message, path='android_usb') -> str:
+        client = self.get_client(path=path)
+        try:
+            response = client.se_proxy(message)
+        except Exception as e:
+            raise BaseException(e)
+        return response
+
     def recovery_wallet(self, path='android_usb', *args):
         client = self.get_client(path=path)
         try:
@@ -1365,7 +1372,8 @@ class AndroidCommands(commands.Commands):
         try:
             if use_se:
                 device.apply_settings(client.client, use_se=True)
-            response = client.reset_device(skip_backup=True, language=language, pin_protection=False, passphrase_protection=True, label=label)
+            response = client.reset_device(skip_backup=True, language=language, pin_protection=False,
+                                           passphrase_protection=True, label=label)
         except Exception as e:
             raise BaseException(e)
         if response == "Device successfully initialized":
@@ -1423,7 +1431,7 @@ class AndroidCommands(commands.Commands):
         client = self.get_client(path=path)
         return client.features.passphrase_protection
 
-    def get_client(self, path='android_usb',  ui=CustomerUI(), clean=False):
+    def get_client(self, path='android_usb', ui=CustomerUI(), clean=False):
         plugin = self.plugin.get_plugin("trezor")
         if clean:
             plugin.clean()
@@ -1587,7 +1595,7 @@ class AndroidCommands(commands.Commands):
             xpub = node_master.subkey_at_public_derivation((0,)).to_xpub()
             node = BIP32Node.from_xkey(xpub).subkey_at_public_derivation((0,))
             pubkey = node.eckey.get_public_key_bytes(compressed=True).hex()
-            addr = bitcoin.pubkey_to_address('p2wpkh' if type=='electrum' else type, pubkey)
+            addr = bitcoin.pubkey_to_address('p2wpkh' if type == 'electrum' else type, pubkey)
 
             temp = {}
             temp['addr'] = addr
@@ -1595,7 +1603,6 @@ class AndroidCommands(commands.Commands):
             out[type] = temp
         print(f"out==addr = {out}")
         return json.dumps(out)
-    
 
     def create(self, name, password, seed_type="segwit", seed=None, passphrase="", bip39_derivation=None,
                master=None, addresses=None, privkeys=None):
@@ -1815,7 +1822,6 @@ class AndroidCommands(commands.Commands):
         except BaseException as e:
             raise e
 
-
     def create_cpfp_tx(self, tx_hash, fee_for_child):
         try:
             self._assert_wallet_isvalid()
@@ -1838,6 +1844,7 @@ class AndroidCommands(commands.Commands):
             return json.dumps(out)
         except BaseException as e:
             raise e
+
     #######
 
     # network server
@@ -1877,7 +1884,7 @@ class AndroidCommands(commands.Commands):
         except BaseException as e:
             raise e
         return json.dumps(servers)
-        
+
     def rename_wallet(self, old_name, new_name):
         try:
             self._assert_daemon_running()

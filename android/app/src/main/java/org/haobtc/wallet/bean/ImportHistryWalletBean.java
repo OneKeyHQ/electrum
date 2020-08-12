@@ -3,7 +3,7 @@ package org.haobtc.wallet.bean;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
-
+@Deprecated
 public class ImportHistryWalletBean {
 
     /**
