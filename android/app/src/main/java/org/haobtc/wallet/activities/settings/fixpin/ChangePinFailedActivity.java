@@ -16,7 +16,6 @@ import butterknife.OnClick;
 /**
  * @author jinxiaomin
  */
-@SuppressLint("Registered")
 public class ChangePinFailedActivity extends BaseActivity {
     @BindView(R.id.img_back)
     ImageView imgBack;

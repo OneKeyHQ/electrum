@@ -127,25 +127,11 @@ public class SingleSigWalletCreator extends BaseActivity {
             mToast(getString(R.string.set_wallet));
             return;
         }
-//        if (pub == 0) {
-//            mToast(getString(R.string.set_bixinkey_num));
-//            return;
-//        }
-//
-//        if (pub > 1) {
-//            Intent intent = new Intent(SingleSigWalletCreator.this, PersonalMultiSigWalletCreator.class);
-//            intent.putExtra("sigNum", pub);
-//            intent.putExtra("walletNameNum", walletNameNum);
-//            intent.putExtra("walletNames", strWalletName);
-//            startActivity(intent);
-//            finish();
-//        } else {
         CommunicationModeSelector.runnables.clear();
         CommunicationModeSelector.runnables.add(null);
         Intent intent = new Intent(this, CommunicationModeSelector.class);
         intent.putExtra("tag", TAG);
         startActivity(intent);
-//        }
 
     }
 
@@ -190,7 +176,6 @@ public class SingleSigWalletCreator extends BaseActivity {
         } else {
             EventBus.getDefault().post(new FixWalletNameEvent(walletName));
         }
-        finish();
     }
 
     @Override
@@ -199,10 +184,4 @@ public class SingleSigWalletCreator extends BaseActivity {
         EventBus.getDefault().unregister(this);
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // TODO: add setContentView(...) invocation
-        ButterKnife.bind(this);
-    }
 }

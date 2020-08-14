@@ -28,4 +28,5 @@ public class ChooseUtxoEvent {
     public void setValue(String value) {
         this.value = value;
     }
+
 }

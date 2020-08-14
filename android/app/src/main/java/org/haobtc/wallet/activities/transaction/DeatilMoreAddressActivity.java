@@ -34,6 +34,7 @@ public class DeatilMoreAddressActivity extends BaseActivity {
     private List payAddress;
     private List jsondefGetScan;
     private List payAddressScan;
+    private String plusNum;
 
     @Override
     public int getLayoutId() {
@@ -49,6 +50,7 @@ public class DeatilMoreAddressActivity extends BaseActivity {
         addressList = (List) getIntent().getSerializableExtra("listdetail");
         payAddress = (List) getIntent().getSerializableExtra("payAddress");
         payAddressScan = (List) getIntent().getSerializableExtra("payAddressScan");
+        plusNum = getIntent().getStringExtra("plusNum");//receive or send amount
         if ("pay".equals(addressType)) {
             tvInTb2.setText(getString(R.string.from));
         }
@@ -58,7 +60,7 @@ public class DeatilMoreAddressActivity extends BaseActivity {
     public void initData() {
         if (jsondefGet != null) {
             Log.i("jsondefGet", "initData: ---  " + jsondefGet.toString());
-            MoreAddressAdapter moreAddressAdapter = new MoreAddressAdapter(jsondefGet);
+            MoreAddressAdapter moreAddressAdapter = new MoreAddressAdapter(jsondefGet,plusNum);
             recyMoreAddress.setAdapter(moreAddressAdapter);
 
         } else if (jsondefGetScan != null) {

@@ -137,9 +137,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:paddingBottom="@dimen/dp_20"
                 android:gravity="center_horizontal"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:paddingBottom="@dimen/dp_20">
 
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
@@ -164,9 +164,10 @@
                         <TextView
                             android:id="@+id/textView14"
                             android:layout_width="match_parent"
-                            android:layout_height="@dimen/dp_30"
+                            android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/text_margin"
                             android:layout_marginTop="42dp"
+                            android:layout_marginEnd="@dimen/dp_16"
                             android:fontFamily="sans-serif-medium"
                             android:gravity="center"
                             android:textColor="@color/set_txt"
@@ -304,11 +305,11 @@
                                 android:id="@+id/tet_addSpeed"
                                 android:layout_width="wrap_content"
                                 android:layout_height="@dimen/dp_24"
-                                android:paddingStart="@dimen/dp_12"
-                                android:paddingEnd="@dimen/dp_12"
                                 android:layout_marginEnd="@dimen/dp_10"
                                 android:background="@drawable/black_tuo"
                                 android:gravity="center"
+                                android:paddingStart="@dimen/dp_12"
+                                android:paddingEnd="@dimen/dp_12"
                                 android:text="@string/add_speed"
                                 android:textColor="@color/button_bk_disableok"
                                 android:textSize="@dimen/sp_13"
@@ -367,8 +368,8 @@
                                 android:id="@+id/tet_confirm"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:layout_weight="1"
                                 android:layout_marginStart="@dimen/dp_5"
+                                android:layout_weight="1"
                                 android:textColor="@color/text_color"
                                 android:textSize="15sp"
                                 tools:text="@string/confirmnum" />
@@ -378,10 +379,10 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="@dimen/dp_24"
                                 android:layout_marginEnd="@dimen/dp_10"
-                                android:paddingStart="@dimen/dp_12"
-                                android:paddingEnd="@dimen/dp_12"
                                 android:background="@drawable/black_tuo"
                                 android:gravity="center"
+                                android:paddingStart="@dimen/dp_12"
+                                android:paddingEnd="@dimen/dp_12"
                                 android:text="@string/add_speed"
                                 android:textColor="@color/button_bk_disableok"
                                 android:textSize="@dimen/sp_13"

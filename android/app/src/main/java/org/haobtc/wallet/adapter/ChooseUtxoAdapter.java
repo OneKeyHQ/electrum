@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.event.ChooseUtxoEvent;
-import org.haobtc.wallet.event.FirstEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,10 +23,12 @@ public class ChooseUtxoAdapter extends RecyclerView.Adapter<ChooseUtxoAdapter.my
     private Context context;
     private ArrayList<ChooseUtxoEvent> utxoList;
     private Map<Integer, Boolean> checkStatus;
+    private ArrayList<String> utxoPositionDatas;
 
-    public ChooseUtxoAdapter(Context context, ArrayList<ChooseUtxoEvent> utxoList) {
+    public ChooseUtxoAdapter(Context context, ArrayList<ChooseUtxoEvent> utxoList, ArrayList<String> utxoPositionData) {
         this.context = context;
         this.utxoList = utxoList;
+        utxoPositionDatas = utxoPositionData;
         initData();
     }
 
@@ -68,6 +69,15 @@ public class ChooseUtxoAdapter extends RecyclerView.Adapter<ChooseUtxoAdapter.my
         holder.tetTransactionNum.setText(utxoList.get(position).getValue());
         holder.checkboxUtxo.setOnCheckedChangeListener(null);
         holder.checkboxUtxo.setChecked(checkStatus.get(position));
+        if (utxoPositionDatas != null) {
+            for (int i = 0; i < utxoPositionDatas.size(); i++) {
+                if (utxoPositionDatas.get(i).equals(utxoList.get(position).getHash())) {
+                    holder.checkboxUtxo.setChecked(true);
+                    checkStatus.put(position, true);
+                }
+            }
+            EventBus.getDefault().post(new ChooseUtxoEvent());
+        }
         holder.checkboxUtxo.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -84,7 +94,6 @@ public class ChooseUtxoAdapter extends RecyclerView.Adapter<ChooseUtxoAdapter.my
     public int getItemCount() {
         return utxoList == null ? 0 : utxoList.size();
     }
-
 
 
 }

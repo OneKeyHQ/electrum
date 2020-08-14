@@ -41,6 +41,10 @@
         tools:replace="label, android:allowBackup"
         tools:targetApi="q">
         <activity
+            android:name=".activities.settings.EditWhiteListActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
             android:name=".activities.ChooseUtxoActivity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
@@ -438,6 +442,10 @@
             android:theme="@style/dialog" />
         <activity
             android:name=".activities.settings.SelectorActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".activities.settings.fixpin.ChangePinFailedActivity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
 

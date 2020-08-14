@@ -154,6 +154,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     private float tjFee;
     private SharedPreferences preferences;
     private String utxoListDates = "";
+    private ArrayList<String> utxoPosData;
+    private String sumUtxo;
 
     @Override
     public int getLayoutId() {
@@ -625,6 +627,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 if (!TextUtils.isEmpty(tetamount.getText().toString())) {
                     Intent intent1 = new Intent(SendOne2OneMainPageActivity.this, ChooseUtxoActivity.class);
                     intent1.putExtra("sendNum", tetamount.getText().toString());
+                    intent1.putStringArrayListExtra("utxoPositionData",utxoPosData);
+                    intent1.putExtra("sumUtxoTotal",sumUtxo);
                     startActivityForResult(intent1, 1);
                 } else {
                     mToast(getString(R.string.please_input_send_num));
@@ -800,6 +804,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             assert data != null;
             String chooseNum = data.getStringExtra("chooseNum");
             utxoListDates = data.getStringExtra("listDates");//selected utxo data
+            utxoPosData = data.getStringArrayListExtra("UtxoPosData");
+            sumUtxo = data.getStringExtra("sumUtxo");//sum utxo
             //getFeerate
             getFeerate();
             if ("English".equals(language)) {

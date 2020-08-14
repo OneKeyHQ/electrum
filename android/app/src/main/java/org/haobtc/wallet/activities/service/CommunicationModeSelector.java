@@ -649,6 +649,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
                 dealwithSign(isNFC);
             } else if (BackupRecoveryActivity.TAG.equals(tag) || RecoveryActivity.TAG.equals(tag) || BackupMessageActivity.TAG.equals(tag) || "recovery".equals(action)) {
                 if (TextUtils.isEmpty(extras)) {
+                    //No backup after backup
                     String contrastDeviceId = getIntent().getStringExtra("contrastDeviceId");
                     if (!TextUtils.isEmpty(contrastDeviceId)) {
                         if (contrastDeviceId.equals(features.getDeviceId())) {

@@ -3,10 +3,10 @@ package org.haobtc.wallet.activities.settings;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -122,7 +122,7 @@ public class ConfidentialPaymentSettings extends BaseActivity {
     }
 
     @SingleClick
-    @OnClick({R.id.img_back, R.id.btn_set_key})
+    @OnClick({R.id.img_back, R.id.btn_set_key, R.id.test_edit_whitelist})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
@@ -157,6 +157,9 @@ public class ConfidentialPaymentSettings extends BaseActivity {
                 intent.putExtra("noPIN", noPIN);
                 intent.putExtra("noHard", noHard);
                 startActivity(intent);
+                break;
+            case R.id.test_edit_whitelist:
+                mIntent(EditWhiteListActivity.class);
                 break;
             default:
         }

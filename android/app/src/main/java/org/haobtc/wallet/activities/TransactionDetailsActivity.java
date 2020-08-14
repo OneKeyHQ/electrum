@@ -618,6 +618,7 @@ public class TransactionDetailsActivity extends BaseActivity {
             case R.id.lin_getMoreaddress:
                 //transaction detail or create success
                 Intent intent1 = new Intent(TransactionDetailsActivity.this, DeatilMoreAddressActivity.class);
+                intent1.putExtra("plusNum",textView14.getText().toString());
                 if (outputAddr != null) {
                     intent1.putExtra("jsondef_get", (Serializable) outputAddr);
                 } else {
@@ -636,6 +637,7 @@ public class TransactionDetailsActivity extends BaseActivity {
                 break;
             case R.id.lin_payAddress:
                 Intent intent2Pay = new Intent(TransactionDetailsActivity.this, DeatilMoreAddressActivity.class);
+                intent2Pay.putExtra("plusNum",textView14.getText().toString());
                 if (inputAddr != null) {
                     intent2Pay.putExtra("payAddress", (Serializable) inputAddr);
                 } else {

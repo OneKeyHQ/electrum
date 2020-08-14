@@ -2,6 +2,7 @@ package org.haobtc.wallet.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -49,6 +50,8 @@ public class ChooseUtxoActivity extends BaseActivity {
     private BigDecimal totalAmount;
     private String sendNum;
     private String mBtcUnit;
+    private ArrayList<String> utxoPosList;
+    private ArrayList<String> utxoPositionData;
 
     @Override
     public int getLayoutId() {
@@ -64,20 +67,23 @@ public class ChooseUtxoActivity extends BaseActivity {
         mBtcUnit = preferences.getString("base_unit", "mBtc");
         textUnit.setText(mBtcUnit);
         textStandard.setText(String.format("%s %s %s", getString(R.string.utxo_tips), sendNum, mBtcUnit));
+        utxoPositionData = getIntent().getStringArrayListExtra("utxoPositionData");
     }
 
     @Override
     public void initData() {
+        utxoPosList = new ArrayList<>();
         listDates = new ArrayList<>();//choose UTXO data list
         chooseUtxoList = new ArrayList<>();
         //get utxo data
         getUtxoData();
+        mOnlickFinish();
     }
 
     private void getUtxoData() {
         try {
             PyObject getUnspendUtxos = Daemon.commands.callAttr("get_unspend_utxos");
-            Log.i("utxoListDates", "getUtxoData---: "+getUnspendUtxos);
+            Log.i("utxoListDates", "getUtxoData---: " + getUnspendUtxos);
             if (getUnspendUtxos != null && getUnspendUtxos.size() != 0) {
                 JSONArray jsonArray = new JSONArray(getUnspendUtxos.toString());
                 if (jsonArray.length() != 0) {
@@ -89,7 +95,7 @@ public class ChooseUtxoActivity extends BaseActivity {
                         chooseUtxoEvent.setValue(jsonObject.getString("value"));
                         chooseUtxoList.add(chooseUtxoEvent);
                     }
-                    chooseUtxoAdapter = new ChooseUtxoAdapter(ChooseUtxoActivity.this, chooseUtxoList);
+                    chooseUtxoAdapter = new ChooseUtxoAdapter(ChooseUtxoActivity.this, chooseUtxoList, utxoPositionData);
                     reclChooseUtxo.setAdapter(chooseUtxoAdapter);
 
                 } else {
@@ -112,11 +118,14 @@ public class ChooseUtxoActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.btn_finish:
+                Log.i("btn_finishbtn_finish", "onViewClicked: " + utxoPosList.toString());
                 if (listDates != null && listDates.size() > 0) {
                     if (totalAmount.compareTo(new BigDecimal(sendNum)) == 1) {
                         Intent intent = new Intent();
                         intent.putExtra("chooseNum", listDates.size() + "");
                         intent.putExtra("listDates", new Gson().toJson(listDates));
+                        intent.putStringArrayListExtra("UtxoPosData", utxoPosList);
+                        intent.putExtra("sumUtxo", totalAmount.toString());
                         setResult(RESULT_OK, intent);
                         finish();
                     } else {
@@ -130,18 +139,22 @@ public class ChooseUtxoActivity extends BaseActivity {
     }
 
     private void mOnlickFinish() {
+        utxoPosList.clear();
         totalAmount = new BigDecimal("0");
-        Map<String,String> pramas = null;
+        Map<String, String> pramas = null;
         listDates.clear();
         Map<Integer, Boolean> map = chooseUtxoAdapter.getMap();
         for (int i = 0; i < chooseUtxoList.size(); i++) {
             pramas = new HashMap();
             if (map.get(i)) {
-                String bitAmount=chooseUtxoList.get(i).getValue().substring(0, chooseUtxoList.get(i).getValue().indexOf(" "));
+                String bitAmount = chooseUtxoList.get(i).getValue().substring(0, chooseUtxoList.get(i).getValue().indexOf(" "));
                 BigDecimal bignum1 = new BigDecimal(bitAmount);
                 //Total transfer quantity
                 totalAmount = totalAmount.add(bignum1);
-                pramas.put(chooseUtxoList.get(i).getHash(),chooseUtxoList.get(i).getAddress());
+                pramas.put(chooseUtxoList.get(i).getHash(), chooseUtxoList.get(i).getAddress());
+                if (!utxoPosList.contains(chooseUtxoList.get(i).getHash())) {
+                    utxoPosList.add(chooseUtxoList.get(i).getHash());
+                }
                 listDates.add(pramas);
             }
         }
@@ -151,6 +164,7 @@ public class ChooseUtxoActivity extends BaseActivity {
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     public void event(ChooseUtxoEvent updataHint) {
         mOnlickFinish();
+
     }
 
     @Override

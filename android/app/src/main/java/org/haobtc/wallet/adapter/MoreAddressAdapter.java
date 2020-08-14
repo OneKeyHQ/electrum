@@ -14,21 +14,41 @@ import org.haobtc.wallet.bean.GetnewcreatTrsactionListBean;
 import java.util.List;
 
 public class MoreAddressAdapter extends BaseQuickAdapter<GetnewcreatTrsactionListBean.OutputAddrBean, BaseViewHolder> {
+    private String plusNums;
 
-    public MoreAddressAdapter(@Nullable List<GetnewcreatTrsactionListBean.OutputAddrBean> data) {
+    public MoreAddressAdapter(@Nullable List<GetnewcreatTrsactionListBean.OutputAddrBean> data, String plusNum) {
         super(R.layout.moreaddress_item, data);
+        plusNums = plusNum;
     }
 
     @Override
     protected void convert(BaseViewHolder helper, GetnewcreatTrsactionListBean.OutputAddrBean item) {
         helper.setText(R.id.tet_moreaddress, item.getAddr());
         String amount = item.getAmount();
-        if (!TextUtils.isEmpty(amount)) {
-            helper.setText(R.id.tet_payNum, amount);
+        if (plusNums.contains("-")) {
+            if (!TextUtils.isEmpty(amount)) {
+                String amountPlus = plusNums.replace("-", "");
+                if (amountPlus.equals(amount)) {
+                    helper.setText(R.id.tet_payNum, "- " + amount);
+                } else {
+                    helper.setText(R.id.tet_payNum, amount);
+                }
+            }
+
+        } else if (plusNums.contains("+")) {
+            if (!TextUtils.isEmpty(amount)) {
+                String amountPlus = plusNums.replace("+", "");
+                if (amountPlus.equals(amount)) {
+                    helper.setText(R.id.tet_payNum, "+ " + amount);
+                } else {
+                    helper.setText(R.id.tet_payNum, amount);
+                }
+            }
         }
-        if (item.getIs_change()){
+
+        if (item.getIs_change()) {
             helper.getView(R.id.test_change_address).setVisibility(View.VISIBLE);
-        }else{
+        } else {
             helper.getView(R.id.test_change_address).setVisibility(View.GONE);
         }
     }
