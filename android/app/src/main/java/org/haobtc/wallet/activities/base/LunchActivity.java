@@ -95,7 +95,7 @@ public class LunchActivity extends BaseActivity {
         } else if (BuildConfig.net_type.equals(getString(R.string.RegTest))) {
             Global.py.getModule("electrum.constants").callAttr("set_regtest");
         }
-        Global.guiDaemon = Global.py.getModule("electrum_gui.android.daemon");
+        //Global.guiDaemon = Global.py.getModule("electrum_gui.android.daemon");
         Global.guiConsole = Global.py.getModule("electrum_gui.android.console");
         try {
             Daemon.commands = Global.guiConsole.callAttr("AndroidCommands", new Kwarg("callback", Daemon.getInstance()));

@@ -156,6 +156,10 @@ class TrezorClientBase(HardwareClientBase, Logger):
         with self.run_flow(''):
             return trezorlib.device.se_restore(self.client, *args)
 
+    def bx_whitelist(self, *args):
+        with self.run_flow(''):
+            return trezorlib.device.bx_whitelist(self.client, *args)
+
     def anti_counterfeiting_verify(self, inputmessage):
         with self.run_flow(_("Confirm anti_counterfeiting_verify on your {} device")):
             return trezorlib.device.anti_counterfeiting_verify(self.client, inputmessage=inputmessage)

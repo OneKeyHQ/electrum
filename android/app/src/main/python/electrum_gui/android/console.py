@@ -25,7 +25,7 @@ from electrum.storage import WalletStorage
 from electrum.wallet import (Standard_Wallet,
                              Wallet)
 from electrum.bitcoin import is_address, hash_160, COIN, TYPE_ADDRESS
-from electrum.interface import PREFERRED_NETWORK_PROTOCOL, ServerAddr
+from electrum.interface import ServerAddr
 from electrum import mnemonic
 from electrum.address_synchronizer import TX_HEIGHT_LOCAL, TX_HEIGHT_FUTURE
 from electrum.bip32 import BIP32Node, convert_bip32_path_to_list_of_uint32 as parse_path
@@ -648,9 +648,9 @@ class AndroidCommands(commands.Commands):
         max_prec_amount = int(power * x)
         return max_prec_amount
 
-    # def set_dust(self, dust_max):
-    #     self.dust_max = dust_max
-    #     self.config.set_key('dust_max', self.dust_max)
+    def set_dust(self, dust_flag):
+        self.dust_flag = dust_flag
+        self.config.set_key('dust_flag', self.dust_flag)
 
     def parse_output(self, outputs):
         all_output_add = json.loads(outputs)
@@ -736,6 +736,36 @@ class AndroidCommands(commands.Commands):
             tx.deserialize()
         except Exception as e:
             raise BaseException(e)
+
+    # ### coinjoin
+    # def join_tx_with_another(self, tx: 'PartialTransaction', other_tx: 'PartialTransaction') -> None:
+    #     if tx is None or other_tx is None:
+    #         raise BaseException("tx or other_tx is empty")
+    #     try:
+    #         print(f"join_tx_with_another.....in.....")
+    #         tx = tx_from_any(tx)
+    #         other_tx = tx_from_any(other_tx)
+    #         if not isinstance(tx, PartialTransaction):
+    #             raise BaseException('TX must partial transactions.')
+    #     except BaseException as e:
+    #         raise BaseException(("Bixin was unable to parse your transaction") + ":\n" + repr(e))
+    #     try:
+    #         print(f"join_tx_with_another.......{tx, other_tx}")
+    #         tx.join_with_other_psbt(other_tx)
+    #     except BaseException as e:
+    #         raise BaseException(("Error joining partial transactions") + ":\n" + repr(e))
+    #     return tx.serialize_as_bytes().hex()
+
+    # def export_for_coinjoin(self, export_tx) -> PartialTransaction:
+    #     if export_tx is None:
+    #         raise BaseException("export_tx is empty")
+    #     export_tx = tx_from_any(export_tx)
+    #     if not isinstance(export_tx, PartialTransaction):
+    #         raise BaseException("Can only export partial transactions for coinjoins.")
+    #     tx = copy.deepcopy(export_tx)
+    #     tx.prepare_for_export_for_coinjoin()
+    #     return tx.serialize_as_bytes().hex()
+    # ####
 
     def format_amount(self, x, is_diff=False, whitespaces=False):
         return util.format_satoshis(x, is_diff=is_diff, num_zeros=self.num_zeros, decimal_point=self.decimal_point, whitespaces=whitespaces)
@@ -1090,11 +1120,14 @@ class AndroidCommands(commands.Commands):
             coins = []
             for txin in self.wallet.get_utxos():
                 d = txin.to_json()
-                if (int(d['value_sats']) >= self.config.get('dust_max', 546)):
-                    v = d.pop("value_sats")
-                    d["value"] = self.format_amount(v) + ' ' + self.base_unit
-                    coins.append(d)
-                    self.coins.append(txin)
+                dust_sat = int(d['value_sats'])
+                v = d.pop("value_sats")
+                d["value"] = self.format_amount(v) + ' ' + self.base_unit
+                if dust_sat <= 546:
+                    if self.config.get('dust_flag', True):
+                        continue
+                coins.append(d)
+                self.coins.append(txin)
             return coins
         except BaseException as e:
             raise e
@@ -1303,6 +1336,14 @@ class AndroidCommands(commands.Commands):
         client = self.get_client(path=path)
         try:
             response = client.recovery(*args)
+        except Exception as e:
+            raise BaseException(e)
+        return response
+
+    def bx_whitelist(self, path='android_usb', *args):
+        client = self.get_client(path=path)
+        try:
+            response = client.bx_whitelist(*args)
         except Exception as e:
             raise BaseException(e)
         return response
@@ -1619,7 +1660,7 @@ class AndroidCommands(commands.Commands):
             if not tx:
                 return False
             height = self.wallet.get_tx_height(tx_hash).height
-            is_relevant, is_mine, v, fee = self.wallet.get_wallet_delta(tx)
+            _, is_mine, v, fee = self.wallet.get_wallet_delta(tx)
             is_unconfirmed = height <= 0
             if tx:
                 # note: the current implementation of RBF *needs* the old tx fee
