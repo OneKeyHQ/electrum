@@ -4,11 +4,11 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -38,6 +38,8 @@ public class TransactionsSettingActivity extends BaseActivity {
     Switch switchNoConfirm;
     @BindView(R.id.switch_find)
     Switch switchFind;
+    @BindView(R.id.switch_usdt)
+    Switch switchUsdt;
     private SharedPreferences.Editor edit;
     private SharedPreferences preferences;
     private MyDialog myDialog;
@@ -60,6 +62,7 @@ public class TransactionsSettingActivity extends BaseActivity {
         boolean setRbf = preferences.getBoolean("set_rbf", false);
         boolean setUnconf = preferences.getBoolean("set_unconf", false);
         boolean setUseChange = preferences.getBoolean("set_use_change", false);
+        boolean setPreventDust = preferences.getBoolean("set_prevent_dust", false);
         if (setRbf) {
             switchRbf.setChecked(true);
         } else {
@@ -74,6 +77,11 @@ public class TransactionsSettingActivity extends BaseActivity {
             switchFind.setChecked(true);
         } else {
             switchFind.setChecked(false);
+        }
+        if (setPreventDust) {
+            switchUsdt.setChecked(true);
+        } else {
+            switchUsdt.setChecked(false);
         }
 
     }
@@ -141,13 +149,34 @@ public class TransactionsSettingActivity extends BaseActivity {
                 try {
                     Daemon.commands.callAttr("set_use_change", false);
                 } catch (Exception e) {
-                    Log.e("Exception", "Exception++: " + e.getMessage());
                     e.printStackTrace();
                 }
                 edit.putBoolean("set_use_change", false);
                 edit.apply();
             }
         });
+        //Prevent dust attack
+        switchUsdt.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                try {
+                    Daemon.commands.callAttr("set_dust", true);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                edit.putBoolean("set_prevent_dust", true);
+                edit.apply();
+                mToast(getString(R.string.set_success));
+            } else {
+                try {
+                    Daemon.commands.callAttr("set_dust", false);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                edit.putBoolean("set_prevent_dust", false);
+                edit.apply();
+            }
+        });
+
     }
 
     @SingleClick
@@ -220,4 +249,10 @@ public class TransactionsSettingActivity extends BaseActivity {
 
     }
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // TODO: add setContentView(...) invocation
+        ButterKnife.bind(this);
+    }
 }

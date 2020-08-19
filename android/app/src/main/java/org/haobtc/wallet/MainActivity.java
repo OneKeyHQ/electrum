@@ -434,7 +434,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 private String txHash1;
                 private boolean status = false;
 
-                @SingleClick(value = 5000)
+                @SingleClick(value = 500)
                 @Override
                 public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
                     Log.i("onItemChildClick", "onItemChildClick: " + position);

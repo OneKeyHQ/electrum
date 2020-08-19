@@ -40,20 +40,35 @@
             android:layout_height="@dimen/line_hight"
             android:background="@color/line_color" />
 
-        <EditText
-            android:id="@+id/edt_input_addr"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_50"
-            android:layout_marginStart="26dp"
-            android:layout_marginTop="31dp"
-            android:layout_marginEnd="26dp"
-            android:background="@drawable/gray_tuo_6"
-            android:gravity="center_vertical"
-            android:hint="@string/input_address"
-            android:paddingStart="@dimen/dp_10"
-            android:paddingEnd="@dimen/dp_10"
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/sp_15" />
+            android:layout_marginTop="31dp">
+
+            <EditText
+                android:id="@+id/edt_input_addr"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/dp_50"
+                android:layout_marginStart="@dimen/dp_20"
+                android:layout_weight="1"
+                android:background="@drawable/gray_tuo_6"
+                android:gravity="center_vertical"
+                android:hint="@string/input_address"
+                android:paddingStart="@dimen/dp_10"
+                android:paddingEnd="@dimen/dp_10"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/sp_15" />
+
+            <TextView
+                android:id="@+id/test_paste"
+                android:layout_width="@dimen/dp_50"
+                android:textSize="@dimen/sp_12"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/paste"
+                android:textColor="@color/button_bk" />
+
+        </LinearLayout>
 
         <Button
             android:id="@+id/btn_next"
@@ -63,7 +78,6 @@
             android:layout_marginTop="@dimen/dp_30"
             android:layout_marginEnd="@dimen/dp_40"
             android:background="@drawable/button_bk"
-            android:enabled="false"
             android:text="@string/confirm"
             android:textAllCaps="false"
             android:textColor="@android:color/white" />

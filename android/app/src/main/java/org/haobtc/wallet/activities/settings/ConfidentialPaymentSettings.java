@@ -22,6 +22,7 @@ import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.aop.SingleClick;
+import org.haobtc.wallet.event.EditWhiteListEvent;
 import org.haobtc.wallet.event.FastPayEvent;
 import org.haobtc.wallet.event.HandlerEvent;
 
@@ -35,6 +36,7 @@ import cn.com.heaton.blelibrary.ble.Ble;
 public class ConfidentialPaymentSettings extends BaseActivity {
 
     public static final String TAG = ConfidentialPaymentSettings.class.getSimpleName();
+    public static final String TAG_EDIT_WHITE_LIST = "EditWhiteList";
     @BindView(R.id.img_back)
     ImageView imgBack;
     @BindView(R.id.switch_noPin)
@@ -159,7 +161,9 @@ public class ConfidentialPaymentSettings extends BaseActivity {
                 startActivity(intent);
                 break;
             case R.id.test_edit_whitelist:
-                mIntent(EditWhiteListActivity.class);
+                Intent intentA = new Intent(this, CommunicationModeSelector.class);
+                intentA.putExtra("tag", TAG_EDIT_WHITE_LIST);
+                startActivity(intentA);
                 break;
             default:
         }
@@ -227,6 +231,15 @@ public class ConfidentialPaymentSettings extends BaseActivity {
             } else {
                 mToast(getString(R.string.set_fail));
             }
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void doEvent(EditWhiteListEvent event) {
+        if ("checkWhiteList".equals(event.getType())) {
+            Intent intent = new Intent(ConfidentialPaymentSettings.this, EditWhiteListActivity.class);
+            intent.putExtra("whiteListData", event.getContent());
+            startActivity(intent);
         }
     }
 

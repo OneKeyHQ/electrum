@@ -67,6 +67,7 @@ import org.haobtc.wallet.activities.personalwallet.hidewallet.HideWalletSetPassA
 import org.haobtc.wallet.activities.settings.BixinKeyBluetoothSettingActivity;
 import org.haobtc.wallet.activities.settings.CheckXpubResultActivity;
 import org.haobtc.wallet.activities.settings.ConfidentialPaymentSettings;
+import org.haobtc.wallet.activities.settings.EditWhiteListActivity;
 import org.haobtc.wallet.activities.settings.FixBixinkeyNameActivity;
 import org.haobtc.wallet.activities.settings.HardwareDetailsActivity;
 import org.haobtc.wallet.activities.settings.SetShutdownTimeActivity;
@@ -90,6 +91,7 @@ import org.haobtc.wallet.event.ChangePinEvent;
 import org.haobtc.wallet.event.CheckHideWalletEvent;
 import org.haobtc.wallet.event.CheckReceiveAddress;
 import org.haobtc.wallet.event.ConnectingEvent;
+import org.haobtc.wallet.event.EditWhiteListEvent;
 import org.haobtc.wallet.event.ExecuteEvent;
 import org.haobtc.wallet.event.ExitEvent;
 import org.haobtc.wallet.event.FastPayEvent;
@@ -682,6 +684,16 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
             } else if (ConfidentialPaymentSettings.TAG.equals(tag)) {
                 //Fast pay details setting
                 fastPay(isNFC);
+            } else if (ConfidentialPaymentSettings.TAG_EDIT_WHITE_LIST.equals(tag)) {
+                //check white list
+                checkWhiteList(isNFC);
+            } else if (EditWhiteListActivity.TAG_ADD_WHITE_LIST.equals(tag)) {
+
+                //add white list
+                addWhiteList(isNFC);
+            } else if (EditWhiteListActivity.TAG_DELETE_WHITE_LIST.equals(tag)) {
+                //delete white list
+                deleteWhiteList(isNFC);
             } else if (SetShutdownTimeActivity.TAG.equals(tag)) {
                 //modify hardware's automatic shutdown time
                 shutdownSetting(isNFC);
@@ -691,7 +703,6 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
             } else if (ReceivedPageActivity.TAG.equals(tag)) {
                 //contrast phone and hardware address
                 contrastAddress();
-
             }
         } else {
             if (!TextUtils.isEmpty(extras) && (BackupMessageActivity.TAG.equals(tag) || RecoveryActivity.TAG.equals(tag)) || "recovery".equals(action)) {
@@ -780,6 +791,33 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
         Toast.makeText(this, getString(R.string.confirm_finish), Toast.LENGTH_LONG).show();
         try {
             new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.APPLY_SETTING, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "fastPay", limit, times, noPIN, noHard);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void checkWhiteList(boolean isNFC) {
+        try {
+            new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.EDIT_WHITE_LIST, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "Inquire");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void addWhiteList(boolean isNFC) {
+        String whiteAddress = getIntent().getStringExtra("whiteAddress");
+        try {
+            new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.EDIT_WHITE_LIST, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "Add", whiteAddress);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void deleteWhiteList(boolean isNFC) {
+        String whiteAddress = getIntent().getStringExtra("whiteAddress");
+        try {
+            new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.EDIT_WHITE_LIST, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "Delete", whiteAddress);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1188,6 +1226,13 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
             EventBus.getDefault().post(new SetBluetoothEvent(s));
         } else if (ConfidentialPaymentSettings.TAG.equals(tag)) {
             EventBus.getDefault().post(new FastPayEvent(s));
+        } else if (ConfidentialPaymentSettings.TAG_EDIT_WHITE_LIST.equals(tag)) {
+            EventBus.getDefault().post(new EditWhiteListEvent("checkWhiteList", s));
+        } else if (EditWhiteListActivity.TAG_ADD_WHITE_LIST.equals(tag)) {
+            Log.i("EditWhiteListAdd", "onResult: " + s);
+            EventBus.getDefault().post(new EditWhiteListEvent("addWhiteList", s));
+        } else if (EditWhiteListActivity.TAG_DELETE_WHITE_LIST.equals(tag)) {
+            EventBus.getDefault().post(new EditWhiteListEvent("deleteWhiteList", s));
         } else if (FixBixinkeyNameActivity.TAG.equals(tag)) {
             String deviceid = features.getDeviceId();
             EventBus.getDefault().post(new FixAllLabelnameEvent(deviceid, s));

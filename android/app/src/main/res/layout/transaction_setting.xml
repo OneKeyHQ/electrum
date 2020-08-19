@@ -43,7 +43,7 @@
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="240dp"
+            android:layout_height="@dimen/dp_300"
             android:layout_marginStart="@dimen/layout_margin"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="@dimen/layout_margin"
@@ -151,6 +151,38 @@
                     android:layout_marginStart="@dimen/text_margin"
                     android:layout_marginEnd="@dimen/text_margin"
                     android:background="@color/separation_line" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="@dimen/text_margin"
+                    android:layout_marginEnd="@dimen/text_margin"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="47.5dp"
+                        android:layout_weight="1"
+                        android:gravity="center|start"
+                        android:text="@string/prevent_dust"
+                        android:textColor="@color/text"
+                        tools:ignore="NestedWeights" />
+
+                    <Switch
+                        android:id="@+id/switch_usdt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:thumb="@drawable/switch_custom_thumb_selector"
+                        android:track="@drawable/switch_custom_track_selector" />
+                </LinearLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/line_hight"
+                    android:layout_marginStart="@dimen/text_margin"
+                    android:layout_marginEnd="@dimen/text_margin"
+                    android:background="@color/separation_line" />
+
 
                 <TextView
                     android:id="@+id/tet_addNode"

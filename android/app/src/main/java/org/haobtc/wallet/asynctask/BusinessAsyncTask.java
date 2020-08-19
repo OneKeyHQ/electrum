@@ -31,6 +31,7 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
     public static final String COUNTER_VERIFICATION = "hardware_verify";
     public static final String APPLY_SETTING = "apply_setting";
     public static final String SHOW_ADDRESS = "show_address";
+    public static final String EDIT_WHITE_LIST = "bx_whitelist";
 
     public BusinessAsyncTask setHelper(Helper helper) {
         this.helper = helper;
@@ -116,6 +117,22 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
                 }
                 EventBus.getDefault().post(new CheckReceiveAddress("getResult"));
                 break;
+            case EDIT_WHITE_LIST:
+                try {
+                    if ("Inquire".equals(strings[2])) {
+                        result = Daemon.commands.callAttr(strings[0], strings[1], strings[2]).toString();
+                    } else if ("Add".equals(strings[2])) {
+                        result = Daemon.commands.callAttr(strings[0], strings[1], strings[2], strings[3]).toString();
+                        Log.i("EditWhiteListAdd", "doInBackground---+++----: " + result);
+                    } else if ("Delete".equals(strings[2])) {
+                        result = Daemon.commands.callAttr(strings[0], strings[1], strings[2], strings[3]).toString();
+                    }
+                } catch (Exception e) {
+                    Log.i("EditWhiteListAdd", "error----: " + e.getMessage());
+                    onException(e);
+                }
+                break;
+
             default:
                 throw new IllegalStateException("Unexpected value: " + strings[0]);
         }

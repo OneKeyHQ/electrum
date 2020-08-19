@@ -902,5 +902,6 @@
     <string name="edit_whitelist">Edit whitelist</string>
     <string name="no_secret_white_list">Secret free white list</string>
     <string name="add_white_list">Add secret free white list</string>
+    <string name="prevent_dust">Prevent dust attack</string>
 
 </resources>
