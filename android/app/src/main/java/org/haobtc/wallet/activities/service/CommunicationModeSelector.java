@@ -688,7 +688,6 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
                 //check white list
                 checkWhiteList(isNFC);
             } else if (EditWhiteListActivity.TAG_ADD_WHITE_LIST.equals(tag)) {
-
                 //add white list
                 addWhiteList(isNFC);
             } else if (EditWhiteListActivity.TAG_DELETE_WHITE_LIST.equals(tag)) {
@@ -808,7 +807,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
     private void addWhiteList(boolean isNFC) {
         String whiteAddress = getIntent().getStringExtra("whiteAddress");
         try {
-            new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.EDIT_WHITE_LIST, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "Add", whiteAddress);
+            new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.ADD_AND_DELETE_WHITE_LIST, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "Add", whiteAddress);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -817,7 +816,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
     private void deleteWhiteList(boolean isNFC) {
         String whiteAddress = getIntent().getStringExtra("whiteAddress");
         try {
-            new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.EDIT_WHITE_LIST, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "Delete", whiteAddress);
+            new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.ADD_AND_DELETE_WHITE_LIST, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "Delete", whiteAddress);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1131,6 +1130,8 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
                 isTimeout = true;
             } else if ("BaseException: ".equals(e.getMessage())) {
                 mToast(getString(R.string.canceled));
+            } else if (e.getMessage().contains("addres is existed")) {
+                mToast(getString(R.string.have_address));
             } else {
                 showErrorDialog(R.string.key_wrong_prompte, R.string.read_pk_failed);
             }
@@ -1229,9 +1230,9 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
         } else if (ConfidentialPaymentSettings.TAG_EDIT_WHITE_LIST.equals(tag)) {
             EventBus.getDefault().post(new EditWhiteListEvent("checkWhiteList", s));
         } else if (EditWhiteListActivity.TAG_ADD_WHITE_LIST.equals(tag)) {
-            Log.i("EditWhiteListAdd", "onResult: " + s);
             EventBus.getDefault().post(new EditWhiteListEvent("addWhiteList", s));
         } else if (EditWhiteListActivity.TAG_DELETE_WHITE_LIST.equals(tag)) {
+            Log.i("EditWhiteListAdd", "onResult:+============= " + s);
             EventBus.getDefault().post(new EditWhiteListEvent("deleteWhiteList", s));
         } else if (FixBixinkeyNameActivity.TAG.equals(tag)) {
             String deviceid = features.getDeviceId();

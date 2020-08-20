@@ -3,12 +3,14 @@ package org.haobtc.wallet.asynctask;
 import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.chaquo.python.Kwarg;
 
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.wallet.event.CheckReceiveAddress;
 import org.haobtc.wallet.event.OperationTimeoutEvent;
+import org.haobtc.wallet.event.WhiteListEnum;
 import org.haobtc.wallet.exception.BixinExceptions;
 import org.haobtc.wallet.utils.Daemon;
 
@@ -31,7 +33,8 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
     public static final String COUNTER_VERIFICATION = "hardware_verify";
     public static final String APPLY_SETTING = "apply_setting";
     public static final String SHOW_ADDRESS = "show_address";
-    public static final String EDIT_WHITE_LIST = "bx_whitelist";
+    public static final String EDIT_WHITE_LIST = "bx_inquire_whitelist";
+    public static final String ADD_AND_DELETE_WHITE_LIST = "bx_add_or_delete_whitelist";
 
     public BusinessAsyncTask setHelper(Helper helper) {
         this.helper = helper;
@@ -119,17 +122,21 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
                 break;
             case EDIT_WHITE_LIST:
                 try {
-                    if ("Inquire".equals(strings[2])) {
-                        result = Daemon.commands.callAttr(strings[0], strings[1], strings[2]).toString();
-                    } else if ("Add".equals(strings[2])) {
-                        result = Daemon.commands.callAttr(strings[0], strings[1], strings[2], strings[3]).toString();
-                        Log.i("EditWhiteListAdd", "doInBackground---+++----: " + result);
-                    } else if ("Delete".equals(strings[2])) {
-                        result = Daemon.commands.callAttr(strings[0], strings[1], strings[2], strings[3]).toString();
+                    result = Daemon.commands.callAttr(strings[0], strings[1], new Kwarg("type", WhiteListEnum.Inquire.getWhiteListType())).toString();
+                } catch (Exception e) {
+                    onException(e);
+                }
+                break;
+            case ADD_AND_DELETE_WHITE_LIST:
+                try {
+                    if ("Add".equals(strings[2])) {
+                        result = Daemon.commands.callAttr(strings[0], strings[1], new Kwarg("type", WhiteListEnum.Add.getWhiteListType()), new Kwarg("addr_in", strings[3])).toString();
+                    }else if ("Delete".equals(strings[2])){
+                        result = Daemon.commands.callAttr(strings[0], strings[1], new Kwarg("type", WhiteListEnum.Delete.getWhiteListType()), new Kwarg("addr_in", strings[3])).toString();
                     }
                 } catch (Exception e) {
-                    Log.i("EditWhiteListAdd", "error----: " + e.getMessage());
                     onException(e);
+
                 }
                 break;
 

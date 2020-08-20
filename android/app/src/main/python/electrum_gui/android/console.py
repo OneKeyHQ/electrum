@@ -1340,10 +1340,18 @@ class AndroidCommands(commands.Commands):
             raise BaseException(e)
         return response
 
-    def bx_whitelist(self, path='android_usb', *args):
+    def bx_inquire_whitelist(self, path='android_usb', **kwargs):
         client = self.get_client(path=path)
         try:
-            response = client.bx_whitelist(*args)
+            response = json.dumps(client.bx_inquire_whitelist(**kwargs))
+        except Exception as e:
+            raise BaseException(e)
+        return response
+
+    def bx_add_or_delete_whitelist(self, path='android_usb', **kwargs):
+        client = self.get_client(path=path)
+        try:
+            response = json.dumps(client.bx_add_or_delete_whitelist(**kwargs))
         except Exception as e:
             raise BaseException(e)
         return response

@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.wallet.R;
@@ -32,6 +33,8 @@ import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.adapter.AddWhiteListAdapter;
 import org.haobtc.wallet.event.EditWhiteListEvent;
 import org.haobtc.wallet.utils.IndicatorSeekBar;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.math.BigDecimal;
@@ -48,6 +51,12 @@ public class EditWhiteListActivity extends BaseActivity {
     public static final String TAG_DELETE_WHITE_LIST = "DELETE_WHITE_LIST";
     @BindView(R.id.recl_white_ist)
     RecyclerView reclWhiteIst;
+    private String whiteListData;
+    private ArrayList<String> whiteList;
+    private String whiteAddress;
+    private AlertDialog alertDialog;
+    private AddWhiteListAdapter addWhiteListAdapter;
+    private String deleteData;
 
     @Override
     public int getLayoutId() {
@@ -57,9 +66,12 @@ public class EditWhiteListActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
-        String whiteListData = getIntent().getStringExtra("whiteListData");
+        EventBus.getDefault().register(this);
+        whiteListData = getIntent().getStringExtra("whiteListData");
         Log.i("whiteListData", "initView:-- " + whiteListData);
-
+        whiteList = new ArrayList<>();
+        addWhiteListAdapter = new AddWhiteListAdapter(whiteList);
+        reclWhiteIst.setAdapter(addWhiteListAdapter);
     }
 
     @Override
@@ -70,20 +82,18 @@ public class EditWhiteListActivity extends BaseActivity {
     }
 
     private void getWhiteList() {
-        ArrayList<String> whiteList = new ArrayList<>();
-        whiteList.add("asjgdjhbknlkcvbmcnwuy");
-        whiteList.add("ablhituewmmlaplmhsgcvevdgyf");
-        whiteList.add("asjgdjhbknlkcvbmcnwuy");
-        whiteList.add("ablhituewmmlaplmhsgcvevdgyf");
-
-        AddWhiteListAdapter addWhiteListAdapter = new AddWhiteListAdapter(whiteList);
-        reclWhiteIst.setAdapter(addWhiteListAdapter);
+        String[] array = whiteListData.split(",");
+        for (int i = 0; i < array.length; i++) {
+            whiteList.add(array[i].substring(array[i].indexOf("\"") + 1, array[i].lastIndexOf("\"")));
+        }
+        addWhiteListAdapter.notifyDataSetChanged();
         addWhiteListAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                deleteData = whiteList.get(position);
                 Intent intent = new Intent(EditWhiteListActivity.this, CommunicationModeSelector.class);
                 intent.putExtra("tag", TAG_DELETE_WHITE_LIST);
-                intent.putExtra("whiteAddress", whiteList.get(position));
+                intent.putExtra("whiteAddress", deleteData);
                 startActivity(intent);
             }
         });
@@ -104,7 +114,7 @@ public class EditWhiteListActivity extends BaseActivity {
 
     private void addWhiteListDialog() {
         View viewSpeed = LayoutInflater.from(this).inflate(R.layout.add_white_list_dialog, null, false);
-        AlertDialog alertDialog = new AlertDialog.Builder(this).setView(viewSpeed).create();
+        alertDialog = new AlertDialog.Builder(this).setView(viewSpeed).create();
         Objects.requireNonNull(alertDialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         EditText editInputAddr = viewSpeed.findViewById(R.id.edt_input_addr);
         TextView testPaste = viewSpeed.findViewById(R.id.test_paste);
@@ -122,13 +132,14 @@ public class EditWhiteListActivity extends BaseActivity {
             }
         });
         viewSpeed.findViewById(R.id.btn_next).setOnClickListener(v -> {
-            if (TextUtils.isEmpty(editInputAddr.getText().toString())) {
+            whiteAddress = editInputAddr.getText().toString();
+            if (TextUtils.isEmpty(whiteAddress)) {
                 mToast(getString(R.string.input_address));
                 return;
             }
             Intent intent = new Intent(this, CommunicationModeSelector.class);
             intent.putExtra("tag", TAG_ADD_WHITE_LIST);
-            intent.putExtra("whiteAddress", editInputAddr.getText().toString());
+            intent.putExtra("whiteAddress", whiteAddress);
             startActivity(intent);
         });
         alertDialog.show();
@@ -145,7 +156,25 @@ public class EditWhiteListActivity extends BaseActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void doEvent(EditWhiteListEvent event) {
         if ("addWhiteList".equals(event.getType())) {
-            Log.i("addWhiteList", "doEvent: " + event.getContent());
+            if (event.getContent().contains("addres add success")) {
+                whiteList.add(whiteAddress);
+                addWhiteListAdapter.notifyDataSetChanged();
+                alertDialog.dismiss();
+                mToast(getString(R.string.add_success));
+            }
+        } else if ("deleteWhiteList".equals(event.getType())){
+            if (event.getContent().contains("addres delete success")) {
+                whiteList.remove(deleteData);
+                addWhiteListAdapter.notifyDataSetChanged();
+                mToast(getString(R.string.delete_succse));
+            }
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+
     }
 }

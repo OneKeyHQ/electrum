@@ -9,4 +9,4 @@
 	url = https://github.com/spesmilo/electrum-http.git
 [submodule "android/app/src/main/trezor/python-trezor"]
 	path = android/app/src/main/trezor/python-trezor
-	url = https://github.com/bixinkey/python-trezor.git
+	url = https://github.com/BixinKey/python-trezor.git
