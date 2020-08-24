@@ -292,14 +292,6 @@ class AndroidCommands(commands.Commands):
                 print(f"push_tx delete_tx error {e}")
             pass
 
-    def save_tx_to_file(self, path, tx):
-        try:
-            print("save_tx_to_file in.....")
-            with open(path, 'w') as f:
-                f.write(tx)
-        except IOError as e:
-            raise BaseException(e)
-
     def get_wallet_info(self):
         wallet_info = {}
         wallet_info['balance'] = self.balance
@@ -649,8 +641,9 @@ class AndroidCommands(commands.Commands):
         return max_prec_amount
 
     def set_dust(self, dust_flag):
-        self.dust_flag = dust_flag
-        self.config.set_key('dust_flag', self.dust_flag)
+        if dust_flag != self.config.get('dust_flag', True):
+            self.dust_flag = dust_flag
+            self.config.set_key('dust_flag', self.dust_flag)
 
     def parse_output(self, outputs):
         all_output_add = json.loads(outputs)
@@ -695,7 +688,7 @@ class AndroidCommands(commands.Commands):
             size = tx.estimated_size()
             fee = tx.get_fee()
             print("feee-----%s size =%s" % (fee, size))
-            self.tx = tx.serialize_as_bytes().hex()
+            self.tx = tx
             print("console:mkun:tx====%s" % self.tx)
             tx_details = self.wallet.get_tx_info(tx)
             print("tx_details 1111111 = %s" % json.dumps(tx_details))
@@ -712,7 +705,7 @@ class AndroidCommands(commands.Commands):
     def mktx(self, outputs, message):
         try:
             self._assert_wallet_isvalid()
-            tx = tx_from_any(self.tx)
+            tx = tx_from_any(str(self.tx))
             tx.deserialize()
             self.do_save(tx)
         except Exception as e:
@@ -723,7 +716,7 @@ class AndroidCommands(commands.Commands):
         }
         try:
             if self.label_flag and self.wallet.wallet_type != "standard":
-                self.label_plugin.push_tx(self.wallet, 'createtx', tx.txid(), self.tx)
+                self.label_plugin.push_tx(self.wallet, 'createtx', tx.txid(), str(self.tx))
         except Exception as e:
             print(f"push_tx createtx error {e}")
             pass
@@ -870,7 +863,7 @@ class AndroidCommands(commands.Commands):
 
     def recover_tx_info(self, tx):
         try:
-            tx = tx_from_any(bytes.fromhex(tx))
+            tx = tx_from_any(str(tx))
             temp_tx = copy.deepcopy(tx)
             temp_tx.deserialize()
             temp_tx.add_info_from_wallet(self.wallet)
@@ -941,7 +934,7 @@ class AndroidCommands(commands.Commands):
             'output_addr': out_list,
             'input_addr': in_list,
             'cosigner': [x.xpub for x in self.wallet.get_keystores()],
-            'tx': tx.serialize_as_bytes().hex()
+            'tx': str(tx)
         }
         json_data = json.dumps(ret_data)
         return json_data
@@ -1160,7 +1153,7 @@ class AndroidCommands(commands.Commands):
         except (ValueError, IOError, os.error) as reason:
             raise BaseException("BiXin was unable to open your transaction file")
         tx = tx_from_any(file_content)
-        return tx.serialize_as_bytes().hex()
+        return tx
 
     ##Analyze QR data
     def parse_address(self, data):
@@ -1301,11 +1294,11 @@ class AndroidCommands(commands.Commands):
                 pass
             try:
                 if self.label_flag and self.wallet.wallet_type != "standard":
-                    self.label_plugin.push_tx(self.wallet, 'signtx', tx.txid(), sign_tx.serialize_as_bytes().hex())
+                    self.label_plugin.push_tx(self.wallet, 'signtx', tx.txid(), str(sign_tx))
             except Exception as e:
                 print(f"push_tx signtx error {e}")
                 pass
-            return self.get_tx_info_from_raw(sign_tx.serialize_as_bytes().hex())
+            return self.get_tx_info_from_raw(sign_tx)
         except Exception as e:
             raise BaseException(e)
 
@@ -1722,7 +1715,7 @@ class AndroidCommands(commands.Commands):
 
         new_tx.set_rbf(self.rbf)
         out = {
-            'new_tx': new_tx.serialize_as_bytes().hex(),
+            'new_tx': str(new_tx),
             'fee': fee
         }
         self.rbf_tx = new_tx
@@ -1736,11 +1729,11 @@ class AndroidCommands(commands.Commands):
             pass
         try:
             if self.label_flag and self.wallet.wallet_type != "standard":
-                self.label_plugin.push_tx(self.wallet, 'rbftx', self.rbf_tx.txid(), self.rbf_tx.serialize_as_bytes().hex(), tx_hash_old=tx_hash)
+                self.label_plugin.push_tx(self.wallet, 'rbftx', self.rbf_tx.txid(), str(self.rbf_tx), tx_hash_old=tx_hash)
         except Exception as e:
             print(f"push_tx rbftx error {e}")
             pass
-        return self.rbf_tx.serialize_as_bytes().hex()
+        return self.rbf_tx
      
 
     ###cpfp api###
@@ -1832,13 +1825,13 @@ class AndroidCommands(commands.Commands):
             new_tx = self.wallet.cpfp(parent_tx, self.get_amount(fee_for_child))
             new_tx.set_rbf(self.rbf)
             out = {
-                'new_tx': new_tx.serialize_as_bytes().hex()
+                'new_tx': str(new_tx)
             }
 
             try:
                 self.do_save(new_tx)
                 if self.label_flag and self.wallet.wallet_type != "standard":
-                    self.label_plugin.push_tx(self.wallet, 'createtx', new_tx.txid(), new_tx.serialize_as_bytes().hex())
+                    self.label_plugin.push_tx(self.wallet, 'createtx', new_tx.txid(), str(new_tx))
             except BaseException as e:
                 print(f"cpfp push_tx createtx error {e}")
                 pass
