@@ -14,13 +14,13 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.LinearLayoutCompat;
 
 import com.google.zxing.Result;
@@ -48,9 +48,9 @@ public class CaptureActivity extends AppCompatActivity implements SurfaceHolder.
     public ZxingConfig config;
     private SurfaceView previewView;
     private ViewfinderView viewfinderView;
-    private AppCompatImageView flashLightIv;
+    private ImageView flashLightIv;
     private TextView flashLightTv;
-    private AppCompatImageView backIv;
+    private ImageView backIv;
     private LinearLayoutCompat flashLightLayout;
     private LinearLayoutCompat albumLayout;
     private LinearLayoutCompat bottomLayout;
