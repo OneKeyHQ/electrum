@@ -13,7 +13,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Environment;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -27,7 +26,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,26 +35,33 @@ import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.tbruyelle.rxpermissions2.RxPermissions;
+import com.yzq.zxinglibrary.bean.PsbtData;
 
 import org.haobtc.wallet.R;
 import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.aop.SingleClick;
 import org.haobtc.wallet.entries.FsActivity;
+import org.haobtc.wallet.utils.ByteFormatter;
+import org.haobtc.wallet.utils.Digest;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-
 import dr.android.fileselector.FileSelectConstant;
-
 
 import static org.haobtc.wallet.utils.Daemon.commands;
 
@@ -84,6 +89,15 @@ public class ShareOtherActivity extends BaseActivity {
     private Bitmap bitmap;
     private boolean toGallery;
     private String rowTx;
+    private static final int CAPACITY = 800;
+    private static final int DURATION = 330; //ms
+    private  List<String> splitData = new ArrayList<>();
+    private List<Bitmap> bitmaps = new ArrayList<>();
+    private String checksum;
+    private int count;
+    private ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+    int currentIndex = 0;
+    private ScheduledFuture<?> scheduledFuture;
 
     @Override
     public int getLayoutId() {
@@ -106,16 +120,54 @@ public class ShareOtherActivity extends BaseActivity {
         }
 
     }
+    void splitData() {
+        int partLength = (int) Math.ceil(rowTx.length() / (float) count);
+        splitData.clear();
+        for (int i = 0; i < count; i++) {
+            String part = rowTx.substring(partLength * i,
+                    Math.min(partLength * (i + 1), rowTx.length()));
+            formatPartData(i, part);
+        }
+    }
 
+    void formatPartData(int index, String data) {
+        PsbtData psbtData = new PsbtData();
+        psbtData.setCheckSum(checksum);
+        psbtData.setTotal(count);
+        psbtData.setCompress(true);
+        psbtData.setIndex(index);
+        psbtData.setValue(data);
+        psbtData.setValueType("protobuf");
+        splitData.add(psbtData.toString());
+    }
+
+    private String checksum(String msg) {
+        return ByteFormatter.bytes2hex(Digest.MD5.checksum(msg));
+    }
     @Override
     public void initData() {
         //or code
         if (!TextUtils.isEmpty(rowTx)) {
-            bitmap = syncEncodeQRCode(rowTx, dp2px(268), Color.parseColor("#000000"), Color.parseColor("#ffffff"), null);
-
-//            LayoutParams lp = new LinearLayout.LayoutParams(dp2px(268), dp2px(268));
-//            imgOrcode.setLayoutParams(lp);
-            imgOrcode.setBackground(new BitmapDrawable(getResources(), bitmap));
+            checksum = checksum(rowTx);
+            count = (int) Math.ceil(rowTx.length() / (float) CAPACITY);
+            if (count > 1) {
+                splitData();
+                splitData.forEach(s -> {
+                    Bitmap bitmap = syncEncodeQRCode(s, dp2px(268), Color.parseColor("#000000"), Color.parseColor("#ffffff"), null);
+                    bitmaps.add(bitmap);
+                });
+                scheduledFuture = scheduledExecutorService.scheduleAtFixedRate(() -> {
+                    if (hasWindowFocus()) {
+                        runOnUiThread(() -> {
+                            currentIndex = ++currentIndex % count;
+                            imgOrcode.setBackground(new BitmapDrawable(getResources(), bitmaps.get(currentIndex)));
+                        });
+                    }
+                }, 100, DURATION, TimeUnit.MILLISECONDS);
+            } else {
+                bitmap = syncEncodeQRCode(rowTx, dp2px(268), Color.parseColor("#000000"), Color.parseColor("#ffffff"), null);
+                imgOrcode.setBackground(new BitmapDrawable(getResources(), bitmap));
+            }
         }
         tetTrsactionText.setText(rowTx);
     }
@@ -310,5 +362,14 @@ public class ShareOtherActivity extends BaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Optional.ofNullable(scheduledFuture).ifPresent((future) -> {
+            if (!future.isCancelled()) {
+                future.cancel(true);
+            }
+        });
+    }
 }
 
