@@ -3,7 +3,6 @@ package org.haobtc.wallet.asynctask;
 import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.chaquo.python.Kwarg;
 
@@ -18,6 +17,10 @@ import static org.haobtc.wallet.activities.service.CommunicationModeSelector.ble
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.nfc;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.protocol;
 
+/**
+ * @author liyan
+ *
+ */
 public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
     public final static String GET_EXTEND_PUBLIC_KEY = "get_xpub_from_hw";
     public final static String GET_EXTEND_PUBLIC_KEY_SINGLE = "get_xpub_from_hw_single";

@@ -100,5 +100,10 @@ public class CreateWalletActivity extends BaseActivity {
         dialogBtoms.show();
 
     }
-    
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        finish();
+    }
 }

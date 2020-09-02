@@ -917,4 +917,6 @@
     <string name="need_active">BixinKey is not active yet，please retry after active</string>
     <string name="need_reset">BixinKey is already active, please retry after reset</string>
     <string name="old_se_version">The version of current BixinKey\'s SE is too old to support BixinKeyLite</string>
+    <string name="bixinkey_backup_tips">In order to protect your BTC assets，before you use BixinKey, you should backup your BixinKey\'s seed information firstly </string>
+    <string name="bixinkey_backup_hints">There are some ways to backup the seed of your BixinKey ：\n 1、Backup BixinKey locally，you can recovery your BixinKey at your will  \n 2、Backup your BixinKey directly to another different BixinKey，then those BixinKey will be all the same  \n 3、Backup to BixinKey Lite, you can recovery your BixinKey at your will from BixinKey Lite</string>
 </resources>

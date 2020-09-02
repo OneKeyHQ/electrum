@@ -175,6 +175,7 @@ public class SingleSigWalletCreator extends BaseActivity {
         } else {
             EventBus.getDefault().post(new FixWalletNameEvent(walletName));
         }
+        finish();
     }
 
     @Override
