@@ -56,7 +56,7 @@ public class CardPin extends BaseActivity {
         ButterKnife.bind(this);
         boolean isSet = getIntent().getBooleanExtra("set", false);
         if (isSet) {
-           textViewPinDescription.setText("设置BixinKey Lite的PIN码");
+           textViewPinDescription.setText(R.string.bixin_keylite_pin);
         }
         keyboardUtil = new NumKeyboardUtil(this, this, edtPwd, R.xml.plain_numbers);
         init();

@@ -122,6 +122,7 @@ import org.haobtc.wallet.fragment.BleDeviceRecyclerViewAdapter;
 import org.haobtc.wallet.fragment.BluetoothConnectingFragment;
 import org.haobtc.wallet.fragment.BluetoothFragment;
 import org.haobtc.wallet.fragment.ErrorDialogFragment;
+import org.haobtc.wallet.fragment.NeedNewVersion;
 import org.haobtc.wallet.fragment.ReadingOrSendingDialogFragment;
 import org.haobtc.wallet.fragment.mainwheel.CheckHideWalletFragment;
 import org.haobtc.wallet.utils.CustomerUsbManager;
@@ -522,6 +523,13 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
         }
         try {
             features = getFeatures(isNFC);
+            // if the version of stm32 is below 1.9.7, turn to upgrade page
+            if (features.getMajorVersion() <= 1 && features.getMinorVersion() <= 9 && features.getPatchVersion() < 7) {
+                NeedNewVersion fragment = new NeedNewVersion(R.string.update2_new_version, R.string.old_version);
+                fragment.setActivity(this);
+                fragment.show(getSupportFragmentManager(), "");
+                return;
+            }
         } catch (Exception e) {
             finish();
             return;

@@ -153,7 +153,7 @@ public class BackupHelper extends BaseActivity implements BusinessAsyncTask.Help
                             return;
                         }
                         // if the version of stm32 is below 1.9.6, turn to upgrade page
-                        if (features.getMajorVersion() <= 1 && features.getMinorVersion() <= 9 && features.getPatchVersion() < 6) {
+                        if (features.getMajorVersion() <= 1 && features.getMinorVersion() <= 9 && features.getPatchVersion() < 7) {
                             NeedNewVersion fragment = new NeedNewVersion(R.string.update2_new_version, R.string.old_version);
                             fragment.setActivity(this);
                             fragment.show(getSupportFragmentManager(), "");
