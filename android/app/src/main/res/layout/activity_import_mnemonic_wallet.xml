@@ -8,7 +8,7 @@
     android:fitsSystemWindows="true"
     android:background="@color/button_bk_ddake"
     android:orientation="vertical"
-    tools:context="org.haobtc.wallet.activities.personalwallet.mnemonic_word.ImportMnemonicWalletActivity">
+    tools:context="org.haobtc.keymanager.activities.personalwallet.mnemonic_word.ImportMnemonicWalletActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"

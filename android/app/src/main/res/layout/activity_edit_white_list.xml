@@ -8,7 +8,7 @@
     android:clipToPadding="true"
     android:fitsSystemWindows="true"
     android:orientation="vertical"
-    tools:context="org.haobtc.wallet.activities.settings.EditWhiteListActivity">
+    tools:context="org.haobtc.keymanager.activities.settings.EditWhiteListActivity">
 
 
     <RelativeLayout

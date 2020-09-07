@@ -58,7 +58,7 @@ android {
         resConfigs "zh"
         javaCompileOptions {
             annotationProcessorOptions {
-                arguments = [ eventBusIndex : 'org.haobtc.wallet.MyEventBusIndex' ]
+                arguments = [ eventBusIndex : 'org.haobtc.keymanager.MyEventBusIndex' ]
             }
         }
     }
@@ -131,6 +131,9 @@ android {
         variant.outputs.all {
             outputFileName = "bixin-${variant.versionCode}-${variant.productFlavors[0].name}-${variant.variantData.variantConfiguration.buildType.name}.apk"
         }
+    }
+    testOptions {
+        unitTests.returnDefaultValues = true
     }
 }
 
@@ -234,6 +237,12 @@ dependencies {
     implementation 'org.jetbrains:annotations:15.0'
     implementation 'com.tencent.bugly:crashreport:3.2.33' //其中latest.release指代最新Bugly SDK版本号，也可以指定明确的版本号，例如2.1.9
     implementation 'com.tencent.bugly:nativecrashreport:3.7.471' //其中latest.release指代最新Bugly NDK版本号，也可以指定明确的版本号，例如3.0
+
+    //unit testing
+    // Required -- JUnit 4 framework
+    implementation 'junit:junit:4.12'
+    // Optional -- Mockito framework（可选，用于模拟一些依赖对象，以达到隔离依赖的效果）
+    implementation 'org.mockito:mockito-core:2.19.0'
 
 }
 repositories {

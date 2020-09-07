@@ -812,7 +812,7 @@
     <string name="confirm_finish">Please confirm and complete the operation on BixinKey</string>
     <string name="again_input">Please retry again</string>
     <string name="open_location_service">Open location service</string>
-    <string name="promote_ble">In order to scanning ble device Android 6+, Location service is needed</string>
+    <string name="promote_ble">In order to scanning ble device A ndroid 6+, Location service is needed</string>
     <string name="nfc_useless">Your phone is not support NFC, please use other way</string>
     <string name="network_useless">Please check your network and ensure it\'s usable</string>
     <string name="backup_finish">Backup complete</string>
@@ -917,4 +917,9 @@
     <string name="need_active">BixinKey is not active yet，please retry after active</string>
     <string name="need_reset">BixinKey is already active, please retry after reset</string>
     <string name="old_se_version">The version of current BixinKey\'s SE is too old to support BixinKeyLite</string>
+    <string name="verifying">Anti counterfeiting verification</string>
+    <string name="serial">serial number</string>
+    <string name="bixin_name">BixinKey name</string>
+    <string name="communication_settings">Communication settings</string>
+
 </resources>

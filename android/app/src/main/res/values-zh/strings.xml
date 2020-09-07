@@ -877,4 +877,9 @@
     <string name="need_active">BixinKey未激活，请激活后重试</string>
     <string name="need_reset">BixinKey已激活，请恢复出厂设置后重试</string>
     <string name="old_se_version">当前BixinKey的安全芯片的版本过低，不支持备份卡</string>
+    <string name="verifying">防伪校验</string>
+    <string name="serial">序列号</string>
+    <string name="bixin_name">BixinKey名称</string>
+    <string name="communication_settings">通讯设置</string>
+
 </resources>

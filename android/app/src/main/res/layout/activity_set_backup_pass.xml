@@ -9,7 +9,7 @@
     android:background="@color/status_text"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    tools:context="org.haobtc.wallet.activities.settings.recovery_set.SetBackupPassActivity">
+    tools:context="org.haobtc.keymanager.activities.settings.recovery_set.SetBackupPassActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"

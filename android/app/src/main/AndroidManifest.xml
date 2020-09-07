@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="org.haobtc.wallet">
+    package="org.haobtc.keymanager">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
@@ -44,6 +44,11 @@
         android:theme="@style/AppTheme"
         tools:replace="label, android:allowBackup"
         tools:targetApi="q">
+        <activity android:name=".activities.key.KeySettingActivity" />
+        <activity
+            android:name=".activities.base.KeyManageActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".activities.settings.EditWhiteListActivity"
             android:screenOrientation="portrait"
@@ -454,16 +459,17 @@
             tools:ignore="LockedOrientationActivity" />
 
         <activity android:name=".card.SmartCardHelper"
-            android:theme="@style/dialog"/>
-        <activity android:name=".card.CardPin"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".activities.Backup2KeyLiteSuccess"
-            android:screenOrientation="portrait" />
-        <activity android:name=".activities.BackupWaySelector"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".card.BackupHelper"
             android:theme="@style/dialog"
-            android:screenOrientation="portrait"/>
+            tools:ignore="LockedOrientationActivity" />
+        <activity android:name=".card.CardPin"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity android:name=".activities.Backup2KeyLiteSuccess"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity android:name=".activities.BackupWaySelector"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
 
         <meta-data
             android:name="design_width_in_dp"

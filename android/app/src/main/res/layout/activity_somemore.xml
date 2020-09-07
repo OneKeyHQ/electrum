@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/button_bk_ddake"
     android:clipToPadding="true"
     android:fitsSystemWindows="true"
-    android:background="@color/button_bk_ddake"
     android:orientation="vertical"
     tools:context=".activities.settings.HardwareDetailsActivity">
 
@@ -38,15 +38,15 @@
     </RelativeLayout>
 
     <androidx.core.widget.NestedScrollView
-        android:background="@color/bk_page"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/bk_page"
         android:paddingBottom="@dimen/dp_20">
 
         <RelativeLayout
-            android:background="@color/bk_page"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="@color/bk_page">
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/CardView"
@@ -63,7 +63,7 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="540dp"
+                    android:layout_height="wrap_content"
                     android:background="@drawable/white_tuo"
                     android:orientation="vertical">
 
@@ -77,7 +77,7 @@
                             android:layout_height="match_parent"
                             android:layout_marginStart="@dimen/dp_16"
                             android:gravity="center_vertical"
-                            android:text="@string/bixinkey_message"
+                            android:text="@string/bixin_name"
                             android:textColor="@color/text_color"
                             android:textSize="15sp" />
 
@@ -112,8 +112,7 @@
                     <TextView
                         android:id="@+id/tetBuckup"
                         android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
+                        android:layout_height="59.5dp"
                         android:drawableEnd="@drawable/jiantou"
                         android:gravity="center_vertical"
                         android:paddingStart="@dimen/dp_16"
@@ -122,6 +121,36 @@
                         android:textColor="@color/text"
                         android:textSize="@dimen/text_size"
                         android:visibility="visible" />
+
+                    <LinearLayout
+                        android:id="@+id/linear_serial"
+                        android:layout_width="match_parent"
+                        android:layout_height="59.5dp"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="@dimen/dp_16"
+                            android:gravity="center_vertical"
+                            android:text="@string/serial"
+                            android:textColor="@color/text_color"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:id="@+id/tet_serial"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="@dimen/dp_16"
+                            android:layout_weight="1"
+                            android:layout_marginEnd="@dimen/dp_16"
+                            android:gravity="center_vertical|end"
+                            android:singleLine="true"
+                            android:textColor="@color/graytext_color"
+                            android:textSize="@dimen/sp_13"
+                            tools:text="IUDGIUBDUANW" />
+
+                    </LinearLayout>
 
                     <View
                         android:layout_width="match_parent"
@@ -231,6 +260,7 @@
                     </LinearLayout>
 
                     <View
+                        android:id="@+id/view_OnckFour"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/line_hight"
                         android:layout_marginStart="@dimen/dp_16"
@@ -273,82 +303,114 @@
                         android:layout_marginEnd="@dimen/dp_16"
                         android:background="@color/separation_line" />
 
-                    <TextView
-                        android:id="@+id/tetBluetoothSet"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:clickable="true"
-                        android:drawableEnd="@drawable/jiantou"
-                        android:focusable="true"
-                        android:gravity="center_vertical"
-                        android:paddingStart="@dimen/text_margin"
-                        android:paddingEnd="@dimen/text_margin"
-                        android:text="@string/bluetooth_setting"
-                        android:textColor="@color/text"
-                        android:textSize="@dimen/text_size" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/line_hight"
-                        android:layout_marginStart="@dimen/dp_16"
-                        android:layout_marginEnd="@dimen/dp_16"
-                        android:background="@color/separation_line" />
-
-                    <TextView
-                        android:id="@+id/test_set_key_language"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:clickable="true"
-                        android:drawableEnd="@drawable/jiantou"
-                        android:focusable="true"
-                        android:gravity="center_vertical"
-                        android:paddingStart="@dimen/text_margin"
-                        android:paddingEnd="@dimen/text_margin"
-                        android:text="@string/set_key_language"
-                        android:textColor="@color/text"
-                        android:textSize="@dimen/text_size" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/line_hight"
-                        android:layout_marginStart="@dimen/sp_16"
-                        android:layout_marginEnd="@dimen/sp_16"
-                        android:background="@color/separation_line" />
-
                     <LinearLayout
-                        android:id="@+id/linear_shutdown_time"
+                        android:id="@+id/lin_communication"
                         android:layout_width="match_parent"
-                        android:layout_height="59.5dp">
+                        android:layout_height="59.5dp"
+                        android:visibility="gone">
 
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_marginStart="@dimen/dp_16"
+                            android:layout_weight="1"
                             android:gravity="center_vertical"
-                            android:text="@string/set_shutdown_time"
+                            android:text="@string/communication_settings"
                             android:textColor="@color/text_color"
                             android:textSize="15sp" />
 
-                        <TextView
-                            android:id="@+id/test_shutdown_time"
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_marginStart="@dimen/dp_10"
-                            android:layout_weight="1"
-                            android:gravity="center_vertical|end"
-                            android:maxLines="1"
-                            android:singleLine="true"
-                            android:textColor="@color/graytext_color"
-                            android:textSize="@dimen/sp_13"
-                            tools:text="20秒" />
 
                         <ImageView
                             android:layout_width="37dp"
                             android:layout_height="match_parent"
                             android:padding="15dp"
                             android:src="@drawable/jiantou" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/lin_key"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+
+                        <TextView
+                            android:id="@+id/tetBluetoothSet"
+                            android:layout_width="match_parent"
+                            android:layout_height="59.5dp"
+                            android:clickable="true"
+                            android:drawableEnd="@drawable/jiantou"
+                            android:focusable="true"
+                            android:gravity="center_vertical"
+                            android:paddingStart="@dimen/text_margin"
+                            android:paddingEnd="@dimen/text_margin"
+                            android:text="@string/bluetooth_setting"
+                            android:textColor="@color/text"
+                            android:textSize="@dimen/text_size" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/line_hight"
+                            android:layout_marginStart="@dimen/dp_16"
+                            android:layout_marginEnd="@dimen/dp_16"
+                            android:background="@color/separation_line" />
+
+                        <TextView
+                            android:id="@+id/test_set_key_language"
+                            android:layout_width="match_parent"
+                            android:layout_height="59.5dp"
+                            android:clickable="true"
+                            android:drawableEnd="@drawable/jiantou"
+                            android:focusable="true"
+                            android:gravity="center_vertical"
+                            android:paddingStart="@dimen/text_margin"
+                            android:paddingEnd="@dimen/text_margin"
+                            android:text="@string/set_key_language"
+                            android:textColor="@color/text"
+                            android:textSize="@dimen/text_size" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/line_hight"
+                            android:layout_marginStart="@dimen/sp_16"
+                            android:layout_marginEnd="@dimen/sp_16"
+                            android:background="@color/separation_line" />
+
+                        <LinearLayout
+                            android:id="@+id/linear_shutdown_time"
+                            android:layout_width="match_parent"
+                            android:layout_height="59.5dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_marginStart="@dimen/dp_16"
+                                android:gravity="center_vertical"
+                                android:text="@string/set_shutdown_time"
+                                android:textColor="@color/text_color"
+                                android:textSize="15sp" />
+
+                            <TextView
+                                android:id="@+id/test_shutdown_time"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginStart="@dimen/dp_10"
+                                android:layout_weight="1"
+                                android:gravity="center_vertical|end"
+                                android:maxLines="1"
+                                android:singleLine="true"
+                                android:textColor="@color/graytext_color"
+                                android:textSize="@dimen/sp_13"
+                                tools:text="20秒" />
+
+                            <ImageView
+                                android:layout_width="37dp"
+                                android:layout_height="match_parent"
+                                android:padding="15dp"
+                                android:src="@drawable/jiantou" />
+                        </LinearLayout>
+
                     </LinearLayout>
 
 
@@ -356,6 +418,7 @@
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
+                android:id="@+id/card_delete"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/CardView"

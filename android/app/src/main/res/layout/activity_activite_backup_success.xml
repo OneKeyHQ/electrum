@@ -5,7 +5,8 @@
     android:layout_height="match_parent"
     android:background="@color/button_bk_ddake"
     android:clipToPadding="true"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    tools:context="org.haobtc.keymanager.activities.settings.ActivateBackupSuccessActivity">
 
     <RelativeLayout
         android:id="@+id/snkdfnksjndkjsd"

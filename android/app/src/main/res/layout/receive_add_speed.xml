@@ -75,7 +75,7 @@
                 android:layout_marginEnd="@dimen/dp_16"
                 android:background="@drawable/little_gray" />
 
-            <org.haobtc.wallet.utils.IndicatorSeekBar
+            <org.haobtc.keymanager.utils.IndicatorSeekBar
                 android:id="@+id/fee_seek_bar_receive"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

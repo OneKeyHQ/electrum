@@ -8,7 +8,7 @@
     android:fitsSystemWindows="true"
     android:orientation="vertical"
     android:background="@color/button_bk_ddake"
-    tools:context="org.haobtc.wallet.activities.settings.recovery_set.FixHardwareLanguageActivity">
+    tools:context="org.haobtc.keymanager.activities.settings.recovery_set.FixHardwareLanguageActivity">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_50">
