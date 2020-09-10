@@ -15,6 +15,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import org.haobtc.keymanager.R;
 import org.haobtc.keymanager.activities.base.BaseActivity;
+import org.haobtc.keymanager.activities.base.KeyManageActivity;
 import org.haobtc.keymanager.utils.Daemon;
 
 import java.util.ArrayList;
@@ -126,7 +127,7 @@ public class GuideActivity extends BaseActivity implements ViewPager.OnPageChang
     }
 
     private void startNewPage() {
-        Intent intent = new Intent(this, CreateWalletActivity.class);
+        Intent intent = new Intent(this, KeyManageActivity.class);
         intent.putExtra("intentWhere", "guide");
         startActivity(intent);
         finish();
@@ -148,7 +149,7 @@ public class GuideActivity extends BaseActivity implements ViewPager.OnPageChang
                 dots[i].setImageResource(R.drawable.boot_page_greydot);
             }
         }
-        new Handler().postDelayed(this::startNewPage, 3000);
+        new Handler().postDelayed(this::startNewPage, 2500);
     }
 
     @Override

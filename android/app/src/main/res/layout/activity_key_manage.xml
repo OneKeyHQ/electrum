@@ -61,14 +61,24 @@
             android:id="@+id/recl_keyList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_16"
             android:layout_marginStart="@dimen/dp_7"
+            android:layout_marginTop="@dimen/dp_16"
             android:layout_marginEnd="@dimen/dp_7"
             tools:itemCount="3"
             tools:listitem="@layout/home_key_item">
 
         </androidx.recyclerview.widget.RecyclerView>
 
+        <TextView
+            android:id="@+id/tet_None"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_100"
+            android:layout_marginTop="50.5dp"
+            android:gravity="center"
+            android:text="@string/no_records"
+            android:textColor="@color/light_text"
+            android:textSize="@dimen/text_size"
+            android:visibility="gone" />
     </RelativeLayout>
 
 

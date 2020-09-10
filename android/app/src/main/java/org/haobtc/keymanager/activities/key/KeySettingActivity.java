@@ -1,13 +1,11 @@
 package org.haobtc.keymanager.activities.key;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.view.View;
 
 import org.haobtc.keymanager.R;
 import org.haobtc.keymanager.activities.AboutActivity;
 import org.haobtc.keymanager.activities.LanguageSettingActivity;
-import org.haobtc.keymanager.activities.SettingActivity;
 import org.haobtc.keymanager.activities.VerificationKEYActivity;
 import org.haobtc.keymanager.activities.base.BaseActivity;
 import org.haobtc.keymanager.activities.service.CommunicationModeSelector;

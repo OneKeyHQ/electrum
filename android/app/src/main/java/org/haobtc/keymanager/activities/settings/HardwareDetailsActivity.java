@@ -79,7 +79,6 @@ public class HardwareDetailsActivity extends BaseActivity {
     private String label;
     private boolean isWipe;
     private SharedPreferences devices;
-    private boolean whereIntent;
 
     @Override
     public int getLayoutId() {
@@ -98,7 +97,7 @@ public class HardwareDetailsActivity extends BaseActivity {
         devices = getSharedPreferences("devices", MODE_PRIVATE);
         Intent intent = getIntent();
         bleName = intent.getStringExtra("bleName");
-        whereIntent = intent.getBooleanExtra("whereIntent", false);
+        boolean whereIntent = intent.getBooleanExtra("whereIntent", false);
 //        String firmwareVersion = intent.getStringExtra("firmwareVersion");
 //        String bleVerson = intent.getStringExtra("bleVerson");
         deviceId = intent.getStringExtra("device_id");

@@ -3,12 +3,12 @@ package org.haobtc.keymanager.activities.base;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.text.TextUtils;
+import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.google.gson.Gson;
@@ -20,15 +20,11 @@ import org.haobtc.keymanager.R;
 import org.haobtc.keymanager.activities.key.KeySettingActivity;
 import org.haobtc.keymanager.activities.service.CommunicationModeSelector;
 import org.haobtc.keymanager.activities.settings.HardwareDetailsActivity;
-import org.haobtc.keymanager.adapter.HelpWordAdapter;
 import org.haobtc.keymanager.adapter.HomeKeyAdapter;
 import org.haobtc.keymanager.bean.HardwareFeatures;
 import org.haobtc.keymanager.event.AddKeyEvent;
-import org.haobtc.keymanager.event.FirstEvent;
-import org.haobtc.keymanager.event.MnemonicEvent;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -40,6 +36,8 @@ public class KeyManageActivity extends BaseActivity {
     public static final String TAG = KeyManageActivity.class.getSimpleName();
     @BindView(R.id.recl_keyList)
     RecyclerView reclKeyList;
+    @BindView(R.id.tet_None)
+    TextView tetNone;
     private ArrayList<HardwareFeatures> deviceValue;
     private HomeKeyAdapter homeKeyAdapter;
 
@@ -82,6 +80,14 @@ public class KeyManageActivity extends BaseActivity {
         }
         reclKeyList.setLayoutManager(new GridLayoutManager(KeyManageActivity.this, 2));
         homeKeyAdapter.notifyDataSetChanged();
+        if (deviceValue.size() == 0) {
+            tetNone.setVisibility(View.VISIBLE);
+            reclKeyList.setVisibility(View.GONE);
+        } else {
+            tetNone.setVisibility(View.GONE);
+            reclKeyList.setVisibility(View.VISIBLE);
+        }
+
         homeKeyAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
@@ -122,6 +128,13 @@ public class KeyManageActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // TODO: add setContentView(...) invocation
+        ButterKnife.bind(this);
     }
 }
 
