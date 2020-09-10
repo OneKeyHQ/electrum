@@ -60,7 +60,7 @@ public class UpdateInfo {
          * size : 47M
          * changelog_cn : 新特性
          * changelog_en : New feature update
-         * "need_upload": false
+         * "force_update": true
          */
 
         @SerializedName("versionCode")
@@ -75,6 +75,8 @@ public class UpdateInfo {
         private String changelogCn;
         @SerializedName("changelog_en")
         private String changelogEn;
+        @SerializedName("force_update")
+        private boolean forceUpdate;
 
         public static APKBean objectFromData(String str) {
 
@@ -127,6 +129,14 @@ public class UpdateInfo {
 
         public void setChangelogEn(String changelogEn) {
             this.changelogEn = changelogEn;
+        }
+
+        public boolean getForceUpdate() {
+            return forceUpdate;
+        }
+
+        public void setForceUpdate(boolean forceUpdate) {
+            this.forceUpdate = forceUpdate;
         }
     }
 

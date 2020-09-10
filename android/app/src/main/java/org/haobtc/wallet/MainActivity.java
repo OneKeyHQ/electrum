@@ -722,13 +722,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 int versionCode = updateInfo.getAPK().getVersionCode();
                 String size = updateInfo.getAPK().getSize().replace("M", "");
                 String description = "English".equals(locate) ? updateInfo.getAPK().getChangelogEn() : updateInfo.getAPK().getChangelogCn();
-                runOnUiThread(() -> attemptUpdate(url, versionName, versionCode, size, description));
+                boolean force = updateInfo.getAPK().getForceUpdate();
+                runOnUiThread(() -> attemptUpdate(url, versionName, versionCode, size, description, force));
             }
         });
     }
 
     private void attemptUpdate(String uri, String versionName, int versionCode, String
-            size, String description) {
+            size, String description, boolean forceUpdate) {
         String url;
         if (uri.startsWith("https")) {
             url = uri;
@@ -744,7 +745,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 .setDialogImage(R.drawable.update)
                 .setShowNotification(true)
                 .setShowBgdToast(true)
-                .setForcedUpgrade(false)
+                .setForcedUpgrade(forceUpdate)
                 .setButtonClickListener(this)
                 .setOnDownloadListener(this);
 

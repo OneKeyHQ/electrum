@@ -75,7 +75,9 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    dataBinding.enabled = true
+    buildFeatures {
+        dataBinding = true
+    }
     sourceSets {
         main {
             python {
@@ -129,7 +131,7 @@ android {
 
     applicationVariants.all { variant ->
         variant.outputs.all {
-            outputFileName = "bixin-${variant.versionCode}-${variant.productFlavors[0].name}-${variant.variantData.variantConfiguration.buildType.name}.apk"
+            outputFileName = "bixin-${variant.versionCode}-${variant.productFlavors[0].name}-${variant.buildType.name}.apk"
         }
     }
 }
@@ -174,6 +176,7 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+    implementation 'androidx.exifinterface:exifinterface:1.2.0'
     testImplementation 'junit:junit:4.13'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
@@ -183,7 +186,7 @@ dependencies {
 //    implementation 'com.github.yuzhiqiang1993:zxing:2.2.8' // qrcode
     implementation 'com.github.tbruyelle:rxpermissions:0.10.2'
     implementation 'io.reactivex.rxjava2:rxjava:2.2.5'
-    implementation 'com.google.android.material:material:1.2.0'
+    implementation 'com.google.android.material:material:1.2.1'
     def acraVersion = "5.2.0"
     implementation "ch.acra:acra-core:$acraVersion"
     implementation "ch.acra:acra-dialog:$acraVersion"
