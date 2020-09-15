@@ -524,7 +524,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
         try {
             features = getFeatures(isNFC);
             // if the version of stm32 is below 1.9.7, turn to upgrade page
-            if (features.getMajorVersion() <= 1 && features.getMinorVersion() <= 9 && features.getPatchVersion() < 7) {
+            if (features.getMajorVersion() <= 1 && features.getMinorVersion() <= 9 && features.getPatchVersion() < 7 && !VersionUpgradeActivity.TAG.equals(tag)) {
                 NeedNewVersion fragment = new NeedNewVersion(R.string.update2_new_version, R.string.old_version);
                 fragment.setActivity(this);
                 fragment.show(getSupportFragmentManager(), "");

@@ -526,8 +526,8 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
         mTask = null;
     }
 
-    @Subscribe()
-    public void onFinish(FinishEvent event) {
-        finish();
-    }
+//    @Subscribe()
+//    public void onFinish(ExitEvent event) {
+//        finish();
+//    }
 }
