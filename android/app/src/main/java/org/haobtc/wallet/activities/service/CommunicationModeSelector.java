@@ -523,13 +523,6 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
         }
         try {
             features = getFeatures(isNFC);
-            // if the version of stm32 is below 1.9.7, turn to upgrade page
-            if (features.getMajorVersion() <= 1 && features.getMinorVersion() <= 9 && features.getPatchVersion() < 7 && !VersionUpgradeActivity.TAG.equals(tag)) {
-                NeedNewVersion fragment = new NeedNewVersion(R.string.update2_new_version, R.string.old_version);
-                fragment.setActivity(this);
-                fragment.show(getSupportFragmentManager(), "");
-                return;
-            }
         } catch (Exception e) {
             finish();
             return;
@@ -709,13 +702,19 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
                 fastPay(isNFC);
             } else if (ConfidentialPaymentSettings.TAG_EDIT_WHITE_LIST.equals(tag)) {
                 //check white list
-                checkWhiteList(isNFC);
+                if (checkVersion()) {
+                    checkWhiteList(isNFC);
+                }
             } else if (EditWhiteListActivity.TAG_ADD_WHITE_LIST.equals(tag)) {
                 //add white list
-                addWhiteList(isNFC);
+                if (checkVersion()) {
+                    addWhiteList(isNFC);
+                }
             } else if (EditWhiteListActivity.TAG_DELETE_WHITE_LIST.equals(tag)) {
                 //delete white list
-                deleteWhiteList(isNFC);
+                if (checkVersion()) {
+                    deleteWhiteList(isNFC);
+                }
             } else if (SetShutdownTimeActivity.TAG.equals(tag)) {
                 //modify hardware's automatic shutdown time
                 shutdownSetting(isNFC);
@@ -742,7 +741,17 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
             startActivity(intent);
         }
     }
-
+    private boolean checkVersion() {
+        // if the version of stm32 is below 1.9.7, turn to upgrade page
+//        if (features.getMajorVersion() <= 1 && features.getMinorVersion() <= 9 && features.getPatchVersion() < 7 && !VersionUpgradeActivity.TAG.equals(tag)) {
+            if (features.getMajorVersion() <= 1 && features.getMinorVersion() <= 9 && features.getPatchVersion() < 7) {
+            NeedNewVersion fragment = new NeedNewVersion(R.string.update2_new_version, R.string.old_version);
+            fragment.setActivity(this);
+            fragment.show(getSupportFragmentManager(), "");
+            return false;
+        }
+        return true;
+    }
     private void contrastAddress() {
         String contrastAddress = getIntent().getStringExtra("contrastAddress");
         hideWalletReceive = getIntent().getStringExtra("hideWalletReceive");

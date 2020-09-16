@@ -193,8 +193,8 @@ class TrezorPlugin(HW_PluginBase):
         assert len(device) != 0, "Not found the point device"
         client = self.create_client(device[0], ui)
         if not client.features.bootloader_mode:
-            if client.features.major_version > 1 or (client.features.minor_version == 9 and client.features.patch_version >=7):
-                client.set_bixin_app(True)
+            # if client.features.major_version > 1 or (client.features.minor_version == 9 and client.features.patch_version >=7):
+            client.set_bixin_app(True)
         self.client = client
         self.path = path
         return client
