@@ -1,6 +1,5 @@
 package org.haobtc.wallet.activities.settings.recovery_set;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
@@ -11,7 +10,6 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.google.common.base.Strings;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -24,9 +22,7 @@ import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.activities.service.NfcNotifyHelper;
 import org.haobtc.wallet.adapter.BixinkeyBackupAdapter;
 import org.haobtc.wallet.aop.SingleClick;
-import org.haobtc.wallet.event.BackupFinishEvent;
 import org.haobtc.wallet.event.ButtonRequestEvent;
-import org.haobtc.wallet.event.ExitEvent;
 import org.haobtc.wallet.event.FinishEvent;
 import org.haobtc.wallet.event.HandlerEvent;
 
@@ -39,7 +35,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.com.heaton.blelibrary.ble.Ble;
 
-import static org.haobtc.wallet.activities.service.CommunicationModeSelector.features;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.isNFC;
 
 public class BackupRecoveryActivity extends BaseActivity {
@@ -63,26 +58,26 @@ public class BackupRecoveryActivity extends BaseActivity {
 
     @Override
     public void initView() {
+        bleName = getIntent().getStringExtra("ble_name");
         ButterKnife.bind(this);
         homeUnbackup = getIntent().getStringExtra("home_un_backup");
         String contrastDeviceId = getIntent().getStringExtra("contrastDeviceId");
         EventBus.getDefault().register(this);
-        if ("home_un_backup".equals(homeUnbackup) || "create_to_backup".equals(homeUnbackup)) {
-            if (Ble.getInstance().getConnetedDevices().size() != 0) {
-                if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(bleName)) {
-                    EventBus.getDefault().postSticky(new HandlerEvent());
-                }
+        if (Ble.getInstance().getConnetedDevices().size() != 0) {
+            if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(bleName)) {
+                EventBus.getDefault().postSticky(new HandlerEvent());
             }
-            Intent intent = new Intent(this, CommunicationModeSelector.class);
-            intent.putExtra("tag", TAG);
-            intent.putExtra("contrastDeviceId",contrastDeviceId);
-            startActivity(intent);
         }
+        Intent intent = new Intent(this, CommunicationModeSelector.class);
+        intent.putExtra("tag", TAG);
+        if ("home_un_backup".equals(homeUnbackup) || "create_to_backup".equals(homeUnbackup)) {
+            intent.putExtra("contrastDeviceId", contrastDeviceId);
+        }
+        startActivity(intent);
     }
 
     @Override
     public void initData() {
-        bleName = getIntent().getStringExtra("ble_name");
     }
 
     @Override
