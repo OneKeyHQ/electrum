@@ -32,12 +32,7 @@ import org.haobtc.wallet.activities.base.BaseActivity;
 import org.haobtc.wallet.activities.service.CommunicationModeSelector;
 import org.haobtc.wallet.adapter.AddWhiteListAdapter;
 import org.haobtc.wallet.event.EditWhiteListEvent;
-import org.haobtc.wallet.utils.IndicatorSeekBar;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -51,6 +46,8 @@ public class EditWhiteListActivity extends BaseActivity {
     public static final String TAG_DELETE_WHITE_LIST = "DELETE_WHITE_LIST";
     @BindView(R.id.recl_white_ist)
     RecyclerView reclWhiteIst;
+    @BindView(R.id.tet_None)
+    TextView tetNone;
     private String whiteListData;
     private ArrayList<String> whiteList;
     private String whiteAddress;
@@ -82,11 +79,14 @@ public class EditWhiteListActivity extends BaseActivity {
     }
 
     private void getWhiteList() {
-        if (!TextUtils.isEmpty(whiteListData)){
+        if (whiteListData.length() != 2) {
             String[] array = whiteListData.split(",");
             for (int i = 0; i < array.length; i++) {
                 whiteList.add(array[i].substring(array[i].indexOf("\"") + 1, array[i].lastIndexOf("\"")));
             }
+        } else {
+            tetNone.setVisibility(View.VISIBLE);
+            reclWhiteIst.setVisibility(View.GONE);
         }
         addWhiteListAdapter.notifyDataSetChanged();
         addWhiteListAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
@@ -143,6 +143,7 @@ public class EditWhiteListActivity extends BaseActivity {
             intent.putExtra("tag", TAG_ADD_WHITE_LIST);
             intent.putExtra("whiteAddress", whiteAddress);
             startActivity(intent);
+            alertDialog.dismiss();
         });
         alertDialog.show();
         //show center
@@ -163,12 +164,18 @@ public class EditWhiteListActivity extends BaseActivity {
                 addWhiteListAdapter.notifyDataSetChanged();
                 alertDialog.dismiss();
                 mToast(getString(R.string.add_success));
+                tetNone.setVisibility(View.GONE);
+                reclWhiteIst.setVisibility(View.VISIBLE);
             }
-        } else if ("deleteWhiteList".equals(event.getType())){
+        } else if ("deleteWhiteList".equals(event.getType())) {
             if (event.getContent().contains("addres delete success")) {
                 whiteList.remove(deleteData);
                 addWhiteListAdapter.notifyDataSetChanged();
                 mToast(getString(R.string.delete_succse));
+                if (whiteList == null || whiteList.size() == 0){
+                    tetNone.setVisibility(View.VISIBLE);
+                    reclWhiteIst.setVisibility(View.GONE);
+                }
             }
         }
     }

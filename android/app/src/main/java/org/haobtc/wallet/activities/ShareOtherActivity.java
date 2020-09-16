@@ -151,6 +151,7 @@ public class ShareOtherActivity extends BaseActivity {
             checksum = checksum(rowTx);
             count = (int) Math.ceil(rowTx.length() / (float) CAPACITY);
             if (count > 1) {
+                tetPreservation.setVisibility(View.GONE);
                 splitData();
                 splitData.forEach(s -> {
                     Bitmap bitmap = syncEncodeQRCode(s, dp2px(268), Color.parseColor("#000000"), Color.parseColor("#ffffff"), null);

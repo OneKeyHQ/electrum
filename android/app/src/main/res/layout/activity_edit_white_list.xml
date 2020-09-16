@@ -72,6 +72,15 @@
 
         </androidx.recyclerview.widget.RecyclerView>
 
+        <TextView
+            android:id="@+id/tet_None"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_200"
+            android:gravity="center"
+            android:text="@string/no_records"
+            android:textColor="@color/light_text"
+            android:textSize="@dimen/text_size"
+            android:visibility="gone" />
     </RelativeLayout>
 
 </LinearLayout>
