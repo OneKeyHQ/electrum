@@ -232,6 +232,8 @@ public class TransactionsSettingActivity extends BaseActivity {
             Daemon.commands.callAttr("set_rbf", true);
             Daemon.commands.callAttr("set_unconf", false);
             Daemon.commands.callAttr("set_use_change", false);
+            Daemon.commands.callAttr("set_dust", false);
+
         } catch (Exception e) {
             e.printStackTrace();
             myDialog.dismiss();
@@ -240,19 +242,15 @@ public class TransactionsSettingActivity extends BaseActivity {
         edit.putBoolean("set_rbf", true);
         edit.putBoolean("set_use_change", false);
         edit.putBoolean("set_unconf", true);
+        edit.putBoolean("set_prevent_dust", false);
         edit.apply();
         switchRbf.setChecked(true);
         switchNoConfirm.setChecked(true);
         switchFind.setChecked(false);
+        switchUsdt.setChecked(false);
         myDialog.dismiss();
         mToast(getString(R.string.recovery_succse));
 
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // TODO: add setContentView(...) invocation
-        ButterKnife.bind(this);
-    }
 }

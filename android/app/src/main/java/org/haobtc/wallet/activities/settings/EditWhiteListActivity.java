@@ -82,9 +82,11 @@ public class EditWhiteListActivity extends BaseActivity {
     }
 
     private void getWhiteList() {
-        String[] array = whiteListData.split(",");
-        for (int i = 0; i < array.length; i++) {
-            whiteList.add(array[i].substring(array[i].indexOf("\"") + 1, array[i].lastIndexOf("\"")));
+        if (!TextUtils.isEmpty(whiteListData)){
+            String[] array = whiteListData.split(",");
+            for (int i = 0; i < array.length; i++) {
+                whiteList.add(array[i].substring(array[i].indexOf("\"") + 1, array[i].lastIndexOf("\"")));
+            }
         }
         addWhiteListAdapter.notifyDataSetChanged();
         addWhiteListAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
