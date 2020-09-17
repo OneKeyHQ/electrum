@@ -43,6 +43,7 @@ import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.gyf.immersionbar.ImmersionBar;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
@@ -705,15 +706,25 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
                 String locate = preferences.getString("language", "");
                 String info = response.body().string();
-                UpdateInfo updateInfo = UpdateInfo.objectFromData(info);
+                UpdateInfo updateInfo = null;
+                try {
+                    updateInfo = UpdateInfo.objectFromData(info);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    if (e instanceof JsonSyntaxException) {
+                        Log.e("Main", "获取到的更新信息格式错误");
+                    }
+                    return;
+                }
                 String oldInfo = preferences.getString("upgrade_info", null);
+                UpdateInfo finalUpdateInfo = updateInfo;
                 Optional.ofNullable(oldInfo).ifPresent((s) -> {
                     UpdateInfo old = UpdateInfo.objectFromData(s);
-                    if (!old.getStm32().getUrl().equals(updateInfo.getStm32().getUrl())) {
-                        updateInfo.getStm32().setNeedUpload(true);
+                    if (!old.getStm32().getUrl().equals(finalUpdateInfo.getStm32().getUrl())) {
+                        finalUpdateInfo.getStm32().setNeedUpload(true);
                     }
-                    if (!old.getNrf().getUrl().equals(updateInfo.getNrf().getUrl())) {
-                        updateInfo.getNrf().setNeedUpload(true);
+                    if (!old.getNrf().getUrl().equals(finalUpdateInfo.getNrf().getUrl())) {
+                        finalUpdateInfo.getNrf().setNeedUpload(true);
                     }
                 });
                 preferences.edit().putString("upgrade_info", updateInfo.toString()).apply();
