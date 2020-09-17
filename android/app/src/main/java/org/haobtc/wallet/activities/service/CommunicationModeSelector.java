@@ -1175,9 +1175,9 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
             } else if (BixinExceptions.BLE_RESPONSE_READ_TIMEOUT.getMessage().equals(e.getMessage())) {
                 isTimeout = true;
             } else if ("BaseException: ".equals(e.getMessage())) {
-                mToast(getString(R.string.canceled));
+                runOnUiThread(()->mToast(getString(R.string.canceled)));
             } else if (e.getMessage().contains("addres is existed")) {
-                mToast(getString(R.string.have_address));
+                runOnUiThread(()-> mToast(getString(R.string.have_address)));
             } else {
                 showErrorDialog(R.string.key_wrong_prompte, R.string.read_pk_failed);
             }
