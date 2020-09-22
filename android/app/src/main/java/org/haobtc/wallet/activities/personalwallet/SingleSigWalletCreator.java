@@ -3,6 +3,7 @@ package org.haobtc.wallet.activities.personalwallet;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -85,6 +86,7 @@ public class SingleSigWalletCreator extends BaseActivity {
                 }
             }
 
+            @SuppressLint("UseCompatLoadingForDrawables")
             @Override
             public void afterTextChanged(Editable s) {
                 if (!TextUtils.isEmpty(s.toString())) {
@@ -175,7 +177,13 @@ public class SingleSigWalletCreator extends BaseActivity {
         } else {
             EventBus.getDefault().post(new FixWalletNameEvent(walletName));
         }
-        finish();
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                finish();
+            }
+        }, 1000);
     }
 
     @Override
