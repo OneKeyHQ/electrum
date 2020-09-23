@@ -187,7 +187,7 @@ class AddressDetail(AddressDetailBase):
         xtra = []
 
         if entry.is_watch_only:
-            xtra.append(_('watching-only'))
+            xtra.append(_('watching only'))
         if entry.is_change:
             xtra.append(_('Change'))
         if entry.is_used:

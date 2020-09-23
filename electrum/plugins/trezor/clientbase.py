@@ -194,7 +194,7 @@ class TrezorClientBase(HardwareClientBase, Logger):
             trezorlib.device.apply_settings(self.client, homescreen=homescreen)
 
     def set_bixin_app(self, is_bixin):
-        with self.run_flow(_("")):
+        with self.run_flow(_("used in oneKey app only")):
             trezorlib.device.apply_settings(self.client, is_bixinapp=is_bixin)
 
     def set_pin(self, remove):

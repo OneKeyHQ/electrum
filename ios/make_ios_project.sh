@@ -2,9 +2,9 @@
 
 . ./common.sh
 
-/usr/bin/env python3 --version | grep -q " 3.[6789]"
+/usr/bin/env python3.6 --version | grep -q " 3.[6789]"
 if [ "$?" != "0" ]; then
-	if /usr/bin/env python3 --version; then
+	if /usr/bin/env python3.6 --version; then
 		echo "WARNING:: Creating the Briefcase-based Xcode project for iOS requires Python 3.6+."
 		echo "We will proceed anyway -- but if you get errors, try switching to Python 3.6+."
 	else
@@ -13,25 +13,25 @@ if [ "$?" != "0" ]; then
 	fi
 fi
 
-/usr/bin/env python3 -m pip show setuptools > /dev/null
+/usr/bin/env python3.6 -m pip show setuptools > /dev/null
 if [ "$?" != "0" ]; then
 	echo "ERROR: Please install setupdools like so: sudo python3 -m pip install briefcase"
 	exit 2
 fi
 
-/usr/bin/env python3 -m pip show briefcase > /dev/null
+/usr/bin/env python3.6 -m pip show briefcase > /dev/null
 if [ "$?" != "0" ]; then
 	echo "ERROR: Please install briefcase like so: sudo python3 -m pip install briefcase"
 	exit 3
 fi
 
-/usr/bin/env python3 -m pip show cookiecutter > /dev/null
+/usr/bin/env python3.6 -m pip show cookiecutter > /dev/null
 if [ "$?" != "0" ]; then
 	echo "ERROR: Please install cookiecutter like so: sudo python3 -m pip install cookiecutter"
 	exit 4
 fi
 
-/usr/bin/env python3 -m pip show pbxproj > /dev/null
+/usr/bin/env python3.6 -m pip show pbxproj > /dev/null
 if [ "$?" != "0" ]; then
 	echo "ERROR: Please install pbxproj like so: sudo python3 -m pip install pbxproj"
 	exit 5
@@ -71,7 +71,7 @@ echo ""
 echo "Building Briefcase-Based iOS Project..."
 echo ""
 
-python3 setup.py ios
+python3.6 setup.py ios
 if [ "$?" != 0 ]; then
 	echo "An error occurred running setup.py"
 	exit 4
@@ -196,7 +196,7 @@ fi
 echo ""
 echo "Adding HEADER_SEARCH_PATHS to Xcode .pbxproj..."
 echo ""
-python3 -m pbxproj flag -t "${xcode_target}" iOS/"${xcode_file}" -- HEADER_SEARCH_PATHS '"$(SDK_DIR)"/usr/include/libxml2'
+python3.6 -m pbxproj flag -t "${xcode_target}" iOS/"${xcode_file}" -- HEADER_SEARCH_PATHS '"$(SDK_DIR)"/usr/include/libxml2'
 if [ "$?" != 0 ]; then
 	echo "Error adding libxml2 to HEADER_SEARCH_PATHS... aborting."
 	exit 1
@@ -208,12 +208,12 @@ if [ -n "$resources" ]; then
 	echo "Adding Resurces/ and CustomCode/ to project..."
 	echo ""
 	cp -fRav Resources CustomCode iOS/
-	(cd iOS && python3 -m pbxproj folder -t "${xcode_target}" -r -i "${xcode_file}" Resources)
+	(cd iOS && python3.6 -m pbxproj folder -t "${xcode_target}" -r -i "${xcode_file}" Resources)
 	if [ "$?" != 0 ]; then
 		echo "Error adding Resources to iOS/$xcode_file... aborting."
 		exit 1
 	fi
-	(cd iOS && python3 -m pbxproj folder -t "${xcode_target}" -r "${xcode_file}" CustomCode)
+	(cd iOS && python3.6 -m pbxproj folder -t "${xcode_target}" -r "${xcode_file}" CustomCode)
 	if [ "$?" != 0 ]; then
 		echo "Error adding CustomCode to iOS/$xcode_file... aborting."
 		exit 1

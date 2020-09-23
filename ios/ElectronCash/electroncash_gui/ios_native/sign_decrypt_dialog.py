@@ -239,7 +239,7 @@ class SignDecryptVC(SignDecryptBase):
                         "address you have entered does not have a unique public key, so these "
                         "operations cannot be performed.") + '\n\n' + \
                        _('The operation is undefined. Not just in Electron Cash, but in general.')
-            parent().show_message(_('Cannot sign messages with this type of address') + '\n\n' + msg_sign)
+            parent().show_message(_('Cannot sign messages with this type of address.') + '\n\n' + msg_sign)
             return
         if not parent().wallet:
             return
