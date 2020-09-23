@@ -813,7 +813,7 @@
     <string name="key_lite">将手机与BixinKey Lite贴合</string>
     <string name="has_been_recovery">从已有备份恢复</string>
     <string name="from_key_lite">从BixinKey Lite恢复</string>
-    <string name="connect_method">支持如下几种通讯方式，您可以任选其中一种（默认为NFC）：</string>
+    <string name="connect_method">支持如下几种通讯方式，您可以任选其中一种（默认为BLE）：</string>
     <string name="prompt_backup_pin">BixinKEY激活 设置PIN码并备份后使用</string>
     <string name="confirm_backup_prompt">请在BixinKEY上确认PIN码\n确认后请备份BixinKEY</string>
     <string name="card_pin">输入BixinKey Lite的PIN码</string>

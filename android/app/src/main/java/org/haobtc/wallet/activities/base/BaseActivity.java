@@ -74,7 +74,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if ("nfc".equals(getSharedPreferences("Preferences", Context.MODE_PRIVATE).getString("way", "nfc")) &&
+        if ("nfc".equals(getSharedPreferences("Preferences", Context.MODE_PRIVATE).getString("way", "ble")) &&
                 getSharedPreferences("Preferences", Context.MODE_PRIVATE).getBoolean("nfc_support", true)) {
             NfcUtils.nfc(this, false);
         }

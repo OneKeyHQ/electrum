@@ -17,6 +17,7 @@ import org.haobtc.wallet.utils.NfcUtils;
 
 import java.util.Optional;
 
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.COMMUNICATION_MODE_BLE;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.COMMUNICATION_MODE_NFC;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.way;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.isNFC;
@@ -63,7 +64,7 @@ public class LunchActivity extends BaseActivity {
             }
 
         }
-        way = preferences.getString("way", COMMUNICATION_MODE_NFC);
+        way = preferences.getString("way", "ble");
         isNFC = COMMUNICATION_MODE_NFC.equals(way);
     }
 

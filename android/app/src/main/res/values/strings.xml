@@ -851,7 +851,7 @@
     <string name="key_lite">Fit the phone with BixinKey Lite</string>
     <string name="has_been_recovery">Restore from an existing backup</string>
     <string name="from_key_lite">Restore from BixinKey Lite</string>
-    <string name="connect_method">Support the following communication methods, you can choose one of them (default is NFC)：</string>
+    <string name="connect_method">Support the following communication methods, you can choose one of them (default is BLE)：</string>
     <string name="nfc">NFC</string>
     <string name="card_pin">Enter the PIN code of BixinKey Lite</string>
     <string name="backup2lite">Backup to BixinKey Lite</string>

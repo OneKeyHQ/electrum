@@ -51,7 +51,7 @@ public class SelectorActivity extends BaseActivity {
     @Override
     public void initData() {
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-        String way = preferences.getString("way", "nfc");
+        String way = preferences.getString("way", "ble");
         switch (way) {
             case "nfc":
                 nfc.setChecked(true);

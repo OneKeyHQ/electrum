@@ -13,6 +13,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.google.common.base.Strings;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -31,6 +33,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static org.haobtc.wallet.activities.service.CommunicationModeSelector.features;
 import static org.haobtc.wallet.activities.service.CommunicationModeSelector.isNFC;
 
 public class WalletUnActivatedActivity extends BaseActivity {
@@ -47,6 +50,7 @@ public class WalletUnActivatedActivity extends BaseActivity {
     LinearLayout linearUseSe;
     private String tagXpub = "";
     private boolean buseSe = false;
+    private static final String MIN_SELECTABLE_SE_VERSION_NUMBER = "1.0.0.4";
 
     @Override
     public int getLayoutId() {
@@ -58,6 +62,9 @@ public class WalletUnActivatedActivity extends BaseActivity {
         ButterKnife.bind(this);
         Intent intent = getIntent();
         tagXpub = intent.getStringExtra("tag_Xpub");
+        if (Strings.isNullOrEmpty(features.getSeVersion()) || MIN_SELECTABLE_SE_VERSION_NUMBER.compareTo(features.getSeVersion()) >= 0) {
+           linearUseSe.setVisibility(View.GONE);
+        }
     }
 
     @Override

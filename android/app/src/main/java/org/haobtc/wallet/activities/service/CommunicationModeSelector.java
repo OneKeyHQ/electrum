@@ -222,7 +222,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
         ImageView imageViewCancel;
         EventBus.getDefault().post(new ExitEvent());
         SharedPreferences preferences = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
-        way = preferences.getString("way", COMMUNICATION_MODE_NFC);
+        way = preferences.getString("way", "ble");
         isNFC = COMMUNICATION_MODE_NFC.equals(way);
         ImageView imageView = findViewById(R.id.touch_nfc);
         TextView textView = findViewById(R.id.text_prompt);
