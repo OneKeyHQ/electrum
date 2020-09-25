@@ -43,13 +43,18 @@ public class VerificationSuccessActivity extends BaseActivity {
         ButterKnife.bind(this);
         Intent intent = getIntent();
         String verificationFail = intent.getStringExtra("verification_fail");
-        if (!TextUtils.isEmpty(verificationFail)) {
+        if ("verificationConnect_fail".equals(verificationFail)) {
+            status = 3;
+        } else if ("verification_fail".equals(verificationFail)) {
             status = 1;
+        } else if ("verification".equals(verificationFail)) {
+            status = 0;
         } else {
+            status = 2;
             String checkTime = intent.getStringExtra("last_check_time");
-            if (!Strings.isNullOrEmpty(checkTime)){
+            if (!Strings.isNullOrEmpty(checkTime)) {
                 long aLong = Long.parseLong(checkTime);
-                String lastCheckTime = DateUitls.getDateToStringX(aLong*1000);
+                String lastCheckTime = DateUitls.getDateToStringX(aLong * 1000);
                 testLastTime.setText(String.format("%s%s", getString(R.string.last_check_time), lastCheckTime));
             }
         }
@@ -72,6 +77,11 @@ public class VerificationSuccessActivity extends BaseActivity {
                 imgStatus.setImageDrawable(getDrawable(R.drawable.overtime));
                 testStatus.setText(getString(R.string.verifying_overtime));
                 testContent.setText(getString(R.string.verifying_retry));
+                break;
+            case 3:
+                imgStatus.setImageDrawable(getDrawable(R.drawable.overtime));
+                testStatus.setText(getString(R.string.connect_fail));
+                testContent.setText(getString(R.string.please_retry));
                 break;
             default:
         }

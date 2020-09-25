@@ -920,4 +920,6 @@
     <string name="bixinkey_backup_tips">In order to protect your BTC assets，before you use BixinKey, you should backup your BixinKey\'s seed information firstly </string>
     <string name="bixinkey_backup_hints">There are some ways to backup the seed of your BixinKey ：\n 1、Backup BixinKey locally，you can recovery your BixinKey at your will  \n 2、Backup your BixinKey directly to another different BixinKey，then those BixinKey will be all the same  \n 3、Backup to BixinKey Lite, you can recovery your BixinKey at your will from BixinKey Lite</string>
     <string name="bixin_keylite_pin">Please set a PIN for your BixinKey Lite</string>
+    <string name="connect_fail">Connection failed</string>
+    <string name="please_retry">Connection failed. Please try again</string>
 </resources>

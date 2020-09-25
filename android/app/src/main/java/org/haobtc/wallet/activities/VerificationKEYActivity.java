@@ -128,7 +128,7 @@ public class VerificationKEYActivity extends BaseActivity {
                         }
                         thirdPromote.setCompoundDrawables(drawableStartFail, null, null, null);
                         Intent intent = new Intent(VerificationKEYActivity.this, VerificationSuccessActivity.class);
-                        intent.putExtra("verification_fail", "verification_fail");
+                        intent.putExtra("verification_fail", "verificationConnect_fail");
                         startActivity(intent);
                         finish();
 
@@ -150,6 +150,7 @@ public class VerificationKEYActivity extends BaseActivity {
                                 if (isVerified) {
                                     String lastCheckTime = jsonObject.getString("last_check_time");
                                     if (!TextUtils.isEmpty(lastCheckTime)) {
+                                        intent.putExtra("verification_fail", "verification");
                                         intent.putExtra("last_check_time", lastCheckTime);
                                     }
                                 }

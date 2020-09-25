@@ -880,4 +880,6 @@
     <string name="bixinkey_backup_tips">为了你的BTC资产安全，需备份BixinKey的Seed信息后方能使用BixinKey保管BTC资产</string>
     <string name="bixinkey_backup_hints">BixinKey 私钥seed可通过以下方式备份：\n 1、将Seed加密备份到手机，可使用备份文件随时恢复BixinKey \n 2、将Seed导入到新BixinKey，将得到Seed完全相同的两个BixinKey \n 3、将Seed备份到BixinKey Lite，需要时从BixinKey Lite恢复即可</string>
     <string name="bixin_keylite_pin">设置BixinKey Lite的PIN码</string>
+    <string name="connect_fail">连接失败</string>
+    <string name="please_retry">连接失败，请重试</string>
 </resources>
