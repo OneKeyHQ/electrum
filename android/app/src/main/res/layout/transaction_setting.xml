@@ -43,7 +43,7 @@
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_300"
+            android:layout_height="180dp"
             android:layout_marginStart="@dimen/layout_margin"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="@dimen/layout_margin"
@@ -117,6 +117,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/line_hight"
+                    android:visibility="gone"
                     android:layout_marginStart="@dimen/text_margin"
                     android:layout_marginEnd="@dimen/text_margin"
                     android:background="@color/separation_line" />
@@ -125,6 +126,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_marginStart="@dimen/text_margin"
+                    android:visibility="gone"
                     android:layout_marginEnd="@dimen/text_margin"
                     android:layout_weight="1"
                     android:orientation="horizontal">
@@ -148,6 +150,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/line_hight"
+                    android:visibility="gone"
                     android:layout_marginStart="@dimen/text_margin"
                     android:layout_marginEnd="@dimen/text_margin"
                     android:background="@color/separation_line" />
@@ -156,6 +159,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_marginStart="@dimen/text_margin"
+                    android:visibility="gone"
                     android:layout_marginEnd="@dimen/text_margin"
                     android:layout_weight="1"
                     android:orientation="horizontal">
@@ -174,7 +178,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:thumb="@drawable/switch_custom_thumb_selector"
-                        android:track="@drawable/switch_custom_track_selector" />
+                        android:track="@drawable/switch_custom_track_selector"
+                        tools:ignore="UseSwitchCompatOrMaterialXml" />
                 </LinearLayout>
                 <View
                     android:layout_width="match_parent"

@@ -231,8 +231,8 @@ public class TransactionsSettingActivity extends BaseActivity {
         try {
             Daemon.commands.callAttr("set_rbf", true);
             Daemon.commands.callAttr("set_unconf", false);
-            Daemon.commands.callAttr("set_use_change", false);
-            Daemon.commands.callAttr("set_dust", false);
+//            Daemon.commands.callAttr("set_use_change", false);
+//            Daemon.commands.callAttr("set_dust", false);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -240,9 +240,9 @@ public class TransactionsSettingActivity extends BaseActivity {
             return;
         }
         edit.putBoolean("set_rbf", true);
-        edit.putBoolean("set_use_change", false);
+//        edit.putBoolean("set_use_change", false);
         edit.putBoolean("set_unconf", true);
-        edit.putBoolean("set_prevent_dust", false);
+//        edit.putBoolean("set_prevent_dust", false);
         edit.apply();
         switchRbf.setChecked(true);
         switchNoConfirm.setChecked(true);

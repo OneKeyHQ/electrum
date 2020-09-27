@@ -78,6 +78,8 @@ public class ChooseUtxoActivity extends BaseActivity {
         //get utxo data
         getUtxoData();
         mOnlickFinish();
+        chooseUtxoAdapter = new ChooseUtxoAdapter(ChooseUtxoActivity.this, chooseUtxoList, utxoPositionData);
+        reclChooseUtxo.setAdapter(chooseUtxoAdapter);
     }
 
     private void getUtxoData() {
@@ -95,8 +97,7 @@ public class ChooseUtxoActivity extends BaseActivity {
                         chooseUtxoEvent.setValue(jsonObject.getString("value"));
                         chooseUtxoList.add(chooseUtxoEvent);
                     }
-                    chooseUtxoAdapter = new ChooseUtxoAdapter(ChooseUtxoActivity.this, chooseUtxoList, utxoPositionData);
-                    reclChooseUtxo.setAdapter(chooseUtxoAdapter);
+                    chooseUtxoAdapter.notifyDataSetChanged();
 
                 } else {
                     reclChooseUtxo.setVisibility(View.GONE);

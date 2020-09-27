@@ -120,6 +120,13 @@ public class GuideActivity extends BaseActivity implements ViewPager.OnPageChang
         } catch (Exception e) {
             e.printStackTrace();
         }
+        try {
+            Daemon.commands.callAttr("set_dust", false);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        edit.putBoolean("set_prevent_dust", false);
+        edit.apply();
     }
 
     private void initDots() {

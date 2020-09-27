@@ -15,9 +15,12 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!--  Solve  荣耀HLK AL00 compatibility  -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
     <uses-feature
@@ -33,8 +36,8 @@
     <application
         android:name=".activities.base.MyApplication"
         android:allowBackup="${allow_backup}"
-        android:fullBackupContent="@xml/backup_rules"
         android:configChanges="locale|layoutDirection"
+        android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/icon_app"
         android:label="${app_name}"
         android:networkSecurityConfig="@xml/network_security_config"
@@ -453,16 +456,21 @@
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
 
-        <activity android:name=".card.SmartCardHelper"
-            android:theme="@style/dialog"/>
-        <activity android:name=".card.CardPin"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".activities.Backup2KeyLiteSuccess"
+        <activity
+            android:name=".card.SmartCardHelper"
+            android:theme="@style/dialog" />
+        <activity
+            android:name=".card.CardPin"
             android:screenOrientation="portrait" />
-        <activity android:name=".activities.BackupWaySelector"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".card.BackupHelper"
-            android:theme="@style/dialog"/>
+        <activity
+            android:name=".activities.Backup2KeyLiteSuccess"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.BackupWaySelector"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".card.BackupHelper"
+            android:theme="@style/dialog" />
 
         <meta-data
             android:name="design_width_in_dp"
