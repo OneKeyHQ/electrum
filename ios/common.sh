@@ -9,5 +9,5 @@
 # 1. Make sure to rename the code directory (currently ElectronCash/) in this folder to match compact_name!
 # 2. Make sure overrides/ElectronCash gets renamed to exactly match compact_name!
 
-compact_name="ElectronCash"
-xcode_target="Electron-Cash"
+compact_name="OneKey"
+xcode_target="OneKey"

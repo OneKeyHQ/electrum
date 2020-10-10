@@ -1,3 +1,4 @@
+PACKAGE_VERSION  = '4.1.1'
 ELECTRUM_VERSION = '4.0.2'     # version of the client package
 APK_VERSION = '4.0.2.0'        # read by buildozer.spec
 

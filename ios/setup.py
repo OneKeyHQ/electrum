@@ -19,7 +19,7 @@ with io.open('./common.sh') as f:
         raise RuntimeError("Unable to find xcode_target in ./common.sh")
     del name_match, formal_name_match, contents
 
-version_py = './{}/electroncash/version.py'.format(compact_name)
+version_py = './{}/onekey/version.py'.format(compact_name)
 with io.open(version_py, encoding='utf8') as version_file:
     version_match = re.search(r"^ *PACKAGE_VERSION *= *['\"]([^'\"]*)['\"]", version_file.read(), re.M)
     if version_match:
@@ -36,7 +36,7 @@ with io.open('README.rst', encoding='utf8') as readme:
 setup(
     name=compact_name, # comes from common.sh
     version=version,
-    description='A Bitcoin Cash SPV Wallet',
+    description='A Cold Hardware Wallet',
     long_description=long_description,
     author='Calin Culianu',
     author_email='calin.culianu@gmail.com',

@@ -15,7 +15,7 @@ fi
 
 /usr/bin/env python3.6 -m pip show setuptools > /dev/null
 if [ "$?" != "0" ]; then
-	echo "ERROR: Please install setupdools like so: sudo python3 -m pip install briefcase"
+	echo "ERROR: Please install setuptools like so: sudo python3 -m pip install briefcase"
 	exit 2
 fi
 
@@ -49,23 +49,25 @@ if [ -d iOS ]; then
 	rm -fr iOS
 fi
 
-if [ -d ${compact_name}/electroncash ]; then
-	echo "Deleting old ${compact_name}/electroncash..."
-	rm -fr ${compact_name}/electroncash
+if [ -d ${compact_name}/onekey ]; then
+	echo "Deleting old ${compact_name}/onekey..."
+	rm -fr ${compact_name}/onekey
 fi
 
-echo "Pulling 'electroncash' libs into project from ../lib ..."
-if [ ! -d ../lib/locale ]; then
+echo "Pulling 'onekey' libs into project from ../electrum ..."
+if [ ! -d ../electrum/locale ]; then
 	(cd .. && contrib/make_locale && cd ios)
 	if [ "$?" != 0 ]; then
 		echo ERROR: Could not build locales
 		exit 1
 	fi
 fi
-cp -fpR ../lib ${compact_name}/electroncash
-echo "Removing lib/tests..."
-rm -fr ${compact_name}/electroncash/tests
-find ${compact_name} -name \*.pyc -exec rm -f {} \;
+cp -fpR ../electrum ${compact_name}/onekey
+cp -fpR ../trezor/python-trezor/src/trezorlib/* ${compact_name}/trezorlib
+cp -fpR ../electrum_gui/* ${compact_name}/api
+echo "Removing electrum/tests..."
+rm -fr ${compact_name}/onekey/tests
+find ${compact_name} -name \*.pyc -exec  rm -f {} \;
 
 echo ""
 echo "Building Briefcase-Based iOS Project..."
@@ -170,7 +172,7 @@ cd scratch || exit 1
 git clone http://www.github.com/cculianu/rubicon-objc
 gitexit="$?"
 cd rubicon-objc
-git checkout send_super_fix
+git checkout "fe054117056d33059a5db8addbc14e8535f08d3b^{commit}"
 gitexit2="$?"
 cd ..
 cd ..
@@ -236,6 +238,74 @@ echo ""
 main_m="iOS/${compact_name}/main.m"
 if cat $main_m | sed -e '1 s/putenv/putenv("PYTHONIOENCODING=UTF-8"); putenv/; t' -e '1,// s//putenv("PYTHONIOENCODING=UTF-8"); putenv/' | sed -e 's/PYTHONOPTIMIZE=1/PYTHONOPTIMIZE=/;' > ${main_m}.new; then
 	mv -fv ${main_m}.new $main_m
+    echo '//
+    // main.m
+    //
+    #import <Foundation/Foundation.h>
+    #import <UIKit/UIKit.h>
+    #include <Python.h>
+    #include <dlfcn.h>
+    #import "AppDelegate.h"
+    int main(int argc, char *argv[]) {
+       NSString * appDelegateClassName;
+       int ret = 0;
+       NSString *tmp_path;
+       NSString *python_home;
+       NSString *python_path;
+       wchar_t *wpython_home;
+       PyThreadState * tstate;
+       @autoreleasepool {
+        NSString * resourcePath = [[NSBundle mainBundle] resourcePath];
+        // Special environment to prefer .pyo; also, don’t write bytecode
+        // because the process will not have write permissions on the device.
+        putenv("PYTHONIOENCODING=UTF-8"); putenv("PYTHONOPTIMIZE=");
+        putenv("PYTHONDONTWRITEBYTECODE=1");
+        putenv("PYTHONUNBUFFERED=1");
+        // Set the home for the Python interpreter
+        python_home = [NSString stringWithFormat:@"%@/Library/Python", resourcePath, nil];
+        NSLog(@"PythonHome is: %@", python_home);
+        wpython_home = Py_DecodeLocale([python_home UTF8String], NULL);
+        Py_SetPythonHome(wpython_home);
+        // Set the PYTHONPATH
+        python_path = [NSString stringWithFormat:@"PYTHONPATH=%@/Library/Application Support/com.c3-soft.OneKey/app:%@/Library/Application Support/com.c3-soft.OneKey/app_packages:%@/Library/Application Support/com.c3-soft.OneKey/app/onekey:%@/Library/Application Support/com.c3-soft.OneKey/app/api:%@/Library/Application Support/com.c3-soft.OneKey/app/",resourcePath, resourcePath, resourcePath, nil];
+        NSLog(@"PYTHONPATH is: %@", python_path);
+        putenv((char *)[python_path UTF8String]);
+        // iOS provides a specific directory for temp files.
+        tmp_path = [NSString stringWithFormat:@"TMP=%@/tmp", resourcePath, nil];
+        putenv((char *)[tmp_path UTF8String]);
+        NSLog(@"Initializing Python runtime...");
+        Py_Initialize();
+        // If other modules are using threads, we need to initialize them.
+        PyEval_InitThreads();
+        @try {
+          tstate = PyEval_SaveThread();
+          appDelegateClassName = NSStringFromClass([AppDelegate class]);
+          ret = UIApplicationMain(argc, argv, nil, appDelegateClassName);
+          // In a normal iOS application, the following line is what
+          // actually runs the application. It requires that the
+          // Objective-C runtime environment has a class named
+          // "PythonAppDelegate". This project doesn’t define
+          // one, because Objective-C bridging isn’t something
+          // Python does out of the box. You’ll need to use
+          // a library like Rubicon-ObjC [1], Pyobjus [2] or
+          // PyObjC [3] if you want to run an *actual* iOS app.
+          // [1] http://pybee.org/rubicon
+          // [2] http://pyobjus.readthedocs.org/
+          // [3] https://pythonhosted.org/pyobjc/
+        }
+        @catch (NSException *exception) {
+         NSLog(@"Python runtime error: %@", [exception reason]);
+        }
+        @finally {
+         PyEval_RestoreThread(tstate);
+         Py_Finalize();
+        }
+        PyMem_RawFree(wpython_home);
+        NSLog(@"Leaving...");
+       }
+       exit(ret);
+       return ret;
+    }' > ${main_m}
 else
 	echo "** WARNING: Failed to modify main.m to include PYTHONIOENCODING=UTF-8"
 fi
@@ -243,13 +313,15 @@ fi
 echo ""
 echo "Copying google protobuf paymentrequests.proto to app lib dir..."
 echo ""
-cp -fva ${compact_name}/electroncash/*.proto iOS/app/${compact_name}/electroncash
+cp -fva ${compact_name}/onekey/*.proto iOS/app/${compact_name}/onekey
 if [ "$?" != "0" ]; then
 	echo "** WARNING: Failed to copy google protobuf .proto file to app lib dir!"
 fi
 
 # Clean up no-longer-needed electroncash/ dir that is outside of Xcode project
-rm -fr ${compact_name}/electroncash/*
+rm -fr ${compact_name}/onekey/*
+rm -fr ${compact_name}/trezorlib/*
+rm -fr ${compact_name}/api/*
 
 # Can add this back when it works uniformly without issues
 # /usr/bin/env ruby update_project.rb

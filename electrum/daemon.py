@@ -53,12 +53,12 @@ from .simple_config import SimpleConfig
 from .exchange_rate import FxThread
 from .logging import get_logger, Logger
 
-
 _logger = get_logger(__name__)
 
 
 class DaemonNotRunning(Exception):
     pass
+
 
 def get_lockfile(config: SimpleConfig):
     return os.path.join(config.path, 'daemon')
@@ -88,7 +88,6 @@ def get_file_descriptor(config: SimpleConfig):
             remove_lockfile(lockfile)
 
 
-
 def request(config: SimpleConfig, endpoint, args=(), timeout=60):
     lockfile = get_lockfile(config)
     while True:
@@ -102,10 +101,12 @@ def request(config: SimpleConfig, endpoint, args=(), timeout=60):
         server_url = 'http://%s:%d' % (host, port)
         auth = aiohttp.BasicAuth(login=rpc_user, password=rpc_password)
         loop = asyncio.get_event_loop()
+
         async def request_coroutine():
             async with aiohttp.ClientSession(auth=auth) as session:
                 c = util.JsonRPCClient(session, server_url)
                 return await c.request(endpoint, *args)
+
         try:
             fut = asyncio.run_coroutine_threadsafe(request_coroutine(), loop)
             return fut.result(timeout=timeout)
@@ -138,11 +139,14 @@ def get_rpc_credentials(config: SimpleConfig) -> Tuple[str, str]:
 class AuthenticationError(Exception):
     pass
 
+
 class AuthenticationInvalidOrMissing(AuthenticationError):
     pass
 
+
 class AuthenticationCredentialsInvalid(AuthenticationError):
     pass
+
 
 class AuthenticatedServer(Logger):
 
@@ -271,7 +275,7 @@ class CommandsServer(AuthenticatedServer):
         try:
             result = await func(*args, **kwargs)
         except Exception as e:
-            result = {'error':str(e)}
+            result = {'error': str(e)}
         return result
 
 
@@ -293,7 +297,8 @@ class WatchTowerServer(AuthenticatedServer):
     async def run(self):
         self.runner = web.AppRunner(self.app)
         await self.runner.setup()
-        site = web.TCPSite(self.runner, host=str(self.addr.host), port=self.addr.port, ssl_context=self.config.get_ssl_context())
+        site = web.TCPSite(self.runner, host=str(self.addr.host), port=self.addr.port,
+                           ssl_context=self.config.get_ssl_context())
         await site.start()
 
     async def get_ctn(self, *args):
@@ -335,7 +340,8 @@ class PayServer(Logger):
             app.add_routes([web.post('/api/create_invoice', self.create_request)])
         runner = web.AppRunner(app)
         await runner.setup()
-        site = web.TCPSite(runner, host=str(self.addr.host), port=self.addr.port, ssl_context=self.config.get_ssl_context())
+        site = web.TCPSite(runner, host=str(self.addr.host), port=self.addr.port,
+                           ssl_context=self.config.get_ssl_context())
         await site.start()
 
     async def create_request(self, request):
@@ -395,9 +401,7 @@ class PayServer(Logger):
         return ws
 
 
-
 class Daemon(Logger):
-
     network: Optional[Network]
 
     @profiler

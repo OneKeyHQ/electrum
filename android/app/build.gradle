@@ -69,12 +69,13 @@ android {
         main {
             python {
                 srcDir REPO_ROOT
-                include "electrum/**"                               // In ../.. (renamed below)
-                include("chaquopy/**", "electrum_gui/**",  // In src/main/python
-                        "electrum_plugins/**")
+//                include "electrum/**"                               // In ../.. (renamed below)
+//                include("chaquopy/**", "electrum_gui/**",  // In src/main/python
+//                        "electrum_plugins/**")
+                include ("electrum/**","electrum_gui/**")
                 exclude "**/*.po", "**/*.pot"
-
-                srcDir "src/main/trezor/python-trezor/src"
+//                srcDir "src/main/trezor/python-trezor/src"
+                srcDir "$REPO_ROOT/trezor/python-trezor/src"
                 include "trezorlib/**"
             }
         }
