@@ -104,6 +104,7 @@ android {
 
         disable "MissingTranslation"
     }
+
     signingConfigs {
         debug {
             storeFile file("../debug.keystore")
@@ -116,10 +117,10 @@ android {
             v2SigningEnabled true
         }
 		release {
-			storeFile file(RELEASE_STORE_FILE)
-			keyAlias RELEASE_KEY_ALIAS
-			storePassword RELEASE_STORE_PASSWORD
-			keyPassword RELEASE_KEY_PASSWORD
+			storeFile file(System.getenv("RELEASE_STORE_FILE") ?: "../debug.keystore")
+			keyAlias System.getenv("RELEASE_KEY_ALIAS") ?: "androiddebugkey"
+			storePassword System.getenv("RELEASE_STORE_PASSWORD") ?: "android"
+			keyPassword System.getenv("RELEASE_KEY_PASSWORD") ?: "android"
 
 			// Optional, specify signing versions used
 			v1SigningEnabled true
