@@ -9,7 +9,7 @@
     android:fitsSystemWindows="true"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    tools:context="org.haobtc.wallet.activities.settings.SetShutdownTimeActivity">
+    tools:context="org.haobtc.onekey.activities.settings.SetShutdownTimeActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/button_bk_ddake"
+    android:clipToPadding="true"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical"
+    tools:context="org.haobtc.onekey.onekeys.dialog.recovery.importmethod.WatchWalletActivity">
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_50">
+
+        <ImageView
+            android:id="@+id/img_back"
+            android:layout_width="@dimen/dp_40"
+            android:layout_height="@dimen/dp_40"
+            android:layout_centerVertical="true"
+            android:padding="@dimen/dp_8"
+            android:src="@drawable/left_arrow" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:fontFamily="sans-serif-medium"
+            android:text="@string/watch_wallet"
+            android:textColor="@color/text"
+            android:textSize="@dimen/text_size" />
+
+        <ImageView
+            android:id="@+id/img_scan"
+            android:layout_width="@dimen/dp_28"
+            android:layout_height="@dimen/dp_28"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/dp_7"
+            android:layout_marginEnd="@dimen/dp_20"
+            android:src="@drawable/scan_right" />
+
+    </RelativeLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="@dimen/dp_36"
+                android:layout_height="@dimen/dp_36"
+                android:layout_marginTop="@dimen/dp_30"
+                android:src="@drawable/token_btc" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="92dp"
+                android:layout_marginStart="34dp"
+                android:layout_marginTop="@dimen/dp_50"
+                android:layout_marginEnd="34dp"
+                android:background="@drawable/gray_broken"
+                android:hint="@string/watch_tip"
+                android:paddingStart="@dimen/dp_20"
+                android:paddingEnd="@dimen/dp_20"
+                android:textSize="@dimen/sp_14" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_60"
+                android:layout_marginStart="34dp"
+                android:layout_marginTop="@dimen/dp_25"
+                android:layout_marginEnd="34dp"
+                android:layout_marginBottom="@dimen/dp_15"
+                android:background="@drawable/gray_broken"
+                android:hint="@string/set_wallet_name"
+                android:paddingStart="@dimen/dp_20"
+                android:paddingEnd="@dimen/dp_20"
+                android:textSize="@dimen/sp_16" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="34dp"
+                android:layout_marginTop="@dimen/dp_25"
+                android:layout_marginEnd="34dp"
+                android:text="@string/watch_only_tip"
+                android:textColor="@color/text_two"
+                android:textSize="@dimen/sp_14" />
+
+            <Button
+                android:id="@+id/btn_recovery"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_60"
+                android:layout_marginStart="34dp"
+                android:layout_marginTop="@dimen/dp_25"
+                android:layout_marginEnd="34dp"
+                android:layout_marginBottom="@dimen/dp_80"
+                android:background="@drawable/btn_checked"
+                android:enabled="true"
+                android:text="@string/imports"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/sp_20" />
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>

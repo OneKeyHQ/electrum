@@ -9,44 +9,53 @@
     android:fitsSystemWindows="true"
     tools:context=".activities.base.LunchActivity">
 
-    <ImageView
-        android:id="@+id/img_lunch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <RelativeLayout
+        android:layout_width="38dp"
+        android:layout_height="73dp"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:src="@drawable/invalid_text" />
+        android:layout_marginTop="250dp">
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/quan_1" />
+        <ImageView
+            android:id="@+id/imgview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="3dp"
+            android:src="@drawable/keyup" />
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="120dp"
-        android:src="@drawable/quan_2" />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/imgview"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/dp_5"
+            android:src="@drawable/green_circle" />
 
-    <ImageView
-        android:layout_width="87dp"
-        android:layout_height="24dp"
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="88dp"
+        android:layout_height="@dimen/dp_30"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="57dp"
-        android:src="@drawable/bixinkey_logo" />
+        android:layout_marginBottom="@dimen/dp_66">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/dp_40"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"
-        android:textColor="@color/graytext_color"
-        android:textSize="@dimen/sp_7"
-        android:text="@string/lunch_invalid_text" />
+        <View
+            android:id="@+id/tm"
+            android:layout_width="11.13dp"
+            android:layout_height="6dp"
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/tm" />
+
+        <ImageView
+            android:id="@+id/onekey"
+            android:layout_width="@dimen/dp_76"
+            android:layout_height="@dimen/dp_24"
+            android:layout_below="@+id/tm"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/onekey_text" />
+
+    </RelativeLayout>
+
 
 
 </RelativeLayout>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="org.haobtc.wallet">
+    package="org.haobtc.onekey">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
@@ -14,8 +14,7 @@
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <!--  Solve  荣耀HLK AL00 compatibility  -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- Solve  荣耀HLK AL00 compatibility -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -38,15 +37,31 @@
         android:allowBackup="${allow_backup}"
         android:configChanges="locale|layoutDirection"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/icon_app"
+        android:icon="@drawable/logo_square"
         android:label="${app_name}"
         android:networkSecurityConfig="@xml/network_security_config"
         android:requestLegacyExternalStorage="true"
-        android:roundIcon="@mipmap/icon_app_round"
+        android:roundIcon="@drawable/logo_square"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="label, android:allowBackup"
         tools:targetApi="q">
+        <activity android:name=".onekeys.homepage.process.ChooseCurrencyActivity"></activity>
+        <activity android:name=".onekeys.homepage.process.ReceiveHDActivity" />
+        <activity android:name=".onekeys.homepage.process.SendHdActivity" />
+        <activity android:name=".onekeys.homepage.WalletListActivity" />
+        <activity android:name=".onekeys.dialog.recovery.importmethod.WatchWalletActivity" />
+        <activity android:name=".onekeys.dialog.recovery.importmethod.ImportKeystoreActivity" />
+        <activity android:name=".onekeys.dialog.recovery.importmethod.ImportMnemonicActivity" />
+        <activity android:name=".onekeys.dialog.recovery.importmethod.ImportPrivateKeyActivity" />
+        <activity android:name=".onekeys.dialog.recovery.ChooseImportMethodActivity" />
+        <activity android:name=".onekeys.dialog.recovery.ImprotSingleActivity" />
+        <activity android:name=".onekeys.dialog.recovery.HardwareRecoveryActivity" />
+        <activity android:name=".onekeys.dialog.RecoverHdWalletActivity" />
+        <activity android:name=".onekeys.dialog.SetLongPassActivity" />
+        <activity android:name=".onekeys.dialog.SetHDWalletPassActivity" />
+        <activity android:name=".onekeys.HomeOnekeyActivity" />
+        <activity android:name=".onekeys.GuidanceActivity" />
         <activity
             android:name=".activities.settings.EditWhiteListActivity"
             android:screenOrientation="portrait"
@@ -455,7 +470,6 @@
             android:name=".activities.settings.fixpin.ChangePinFailedActivity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
-
         <activity
             android:name=".card.SmartCardHelper"
             android:theme="@style/dialog" />

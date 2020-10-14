@@ -20,7 +20,7 @@
             android:id="@+id/conlay_back"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/home_bg"
+            android:background="@drawable/home_bg_up"
             android:orientation="vertical"
             android:visibility="visible">
 

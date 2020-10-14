@@ -9,7 +9,7 @@
     android:background="@color/status_text"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    tools:context="org.haobtc.wallet.activities.personalwallet.FixWalletNameActivity">
+    tools:context="org.haobtc.onekey.activities.personalwallet.FixWalletNameActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"

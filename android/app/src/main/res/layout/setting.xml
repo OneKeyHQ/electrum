@@ -388,7 +388,8 @@
                             android:focusable="true"
                             android:gravity="center_vertical"
                             android:text="@string/_1_0_0"
-                            android:textColor="@color/graytext_color" />
+                            android:textColor="@color/graytext_color"
+                            tools:ignore="UseCompatTextViewDrawableXml" />
                     </RelativeLayout>
 
 

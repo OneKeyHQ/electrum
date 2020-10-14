@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="262dp"
+        android:layout_marginBottom="@dimen/dp_10"
+        android:layout_marginStart="@dimen/dp_10"
+        android:layout_marginEnd="@dimen/dp_10"
+        android:background="@drawable/white_back_tuo">
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/dp_30"
+            android:text="@string/wallet_list"
+            android:textColor="@color/text_two"
+            android:textSize="@dimen/sp_18" />
+
+        <ImageView
+            android:id="@+id/img_cancel"
+            android:layout_width="@dimen/dp_40"
+            android:layout_height="@dimen/dp_40"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="@dimen/dp_7"
+            android:padding="@dimen/dp_14"
+            android:src="@drawable/close_dark_small" />
+
+
+        <Button
+            android:id="@+id/btn_next"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_60"
+            android:layout_marginStart="@dimen/dp_25"
+            android:layout_marginTop="92dp"
+            android:layout_marginEnd="@dimen/dp_25"
+            android:background="@drawable/btn_checked"
+            android:text="@string/create_"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/sp_16" />
+
+
+        <Button
+            android:id="@+id/btn_import"
+            android:layout_below="@+id/btn_next"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_60"
+            android:layout_marginStart="@dimen/dp_25"
+            android:layout_marginTop="@dimen/dp_20"
+            android:layout_marginEnd="@dimen/dp_25"
+            android:background="@drawable/gray_stoken"
+            android:text="@string/imports"
+            android:textAllCaps="false"
+            android:textColor="@color/text_two"
+            android:textSize="@dimen/sp_16" />
+
+    </RelativeLayout>
+</RelativeLayout>

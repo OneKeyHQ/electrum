@@ -1644,7 +1644,12 @@ class AndroidCommands(commands.Commands):
         #self.create_eth("ETH-1", password, seed, passphrase, bip39_derivation=bip44_derivation(60, 44), hd=True)
         return new_seed
 
+<<<<<<< HEAD
     def create_eth(self, name, password, seed=None, passphrase="", addresses=None, privkeys=None, keystores=None, bip39_derivation=None, hd=False):
+=======
+    '''
+    def create_eth(self, name, password, seed=None, passphrase="", addresses=None, privkeys=None, keystore=None, hd=False):
+>>>>>>> one key app
         """Create or restore a new wallet"""
         print("CREATE in....name = %s" % name)
         new_seed = ""
@@ -1708,7 +1713,11 @@ class AndroidCommands(commands.Commands):
         # if self.label_flag:
         #     self.label_plugin.load_wallet(self.wallet, None)
         return new_seed
+<<<<<<< HEAD
 
+=======
+    '''
+>>>>>>> one key app
     def is_watch_only(self):
         self._assert_wallet_isvalid()
         return self.wallet.is_watching_only()

@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:clipToPadding="true"
+    android:fitsSystemWindows="true"
+    tools:context="org.haobtc.onekey.onekeys.dialog.SetLongPassActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:id="@+id/RelativeLayout"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_50">
+
+            <ImageView
+                android:id="@+id/img_back"
+                android:layout_width="@dimen/dp_40"
+                android:layout_height="@dimen/dp_40"
+                android:layout_centerVertical="true"
+                android:padding="@dimen/dp_8"
+                android:src="@drawable/left_arrow" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:fontFamily="sans-serif-medium"
+                android:text="@string/create_new_walt"
+                android:textColor="@color/text"
+                android:textSize="@dimen/text_size" />
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/test_set_pass"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_10"
+            android:gravity="center_horizontal"
+            android:text="@string/set_you_pass"
+            android:textColor="@color/text_two"
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/text_tip"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_10"
+            android:gravity="center_horizontal|top"
+            android:text="@string/only_you"
+            android:textColor="@color/text_two" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_60"
+            android:layout_marginStart="34dp"
+            android:layout_marginTop="26dp"
+            android:layout_marginEnd="34dp"
+            android:background="@drawable/gray_broken"
+            android:gravity="center_vertical">
+
+            <ScrollView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:fillViewport="true">
+
+                <EditText
+                    android:id="@+id/edit_pass"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:hint="@string/input_new_pass"
+                    android:inputType="textPassword"
+                    android:paddingStart="@dimen/dp_15"
+                    android:textColor="@color/text_two"
+                    android:textSize="@dimen/sp_14"
+                    android:textStyle="normal"
+                    tools:ignore="RtlSymmetry" />
+            </ScrollView>
+
+
+            <ImageView
+                android:id="@+id/img_eye_yes"
+                android:layout_width="@dimen/dp_50"
+                android:layout_height="match_parent"
+                android:padding="@dimen/dp_16"
+                android:src="@drawable/hide_on" />
+
+            <ImageView
+                android:id="@+id/img_eye_no"
+                android:layout_width="@dimen/dp_50"
+                android:layout_height="match_parent"
+                android:padding="@dimen/dp_12"
+                android:src="@drawable/watch_only_wallet"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_next"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_60"
+            android:layout_marginStart="34dp"
+            android:layout_marginTop="@dimen/dp_25"
+            android:layout_marginEnd="34dp"
+            android:background="@drawable/btn_no_check"
+            android:enabled="false"
+            android:text="@string/next"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/sp_20" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="@dimen/dp_25"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/lin_short_pass"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dp_28"
+            android:layout_marginBottom="@dimen/dp_9"
+            android:background="@drawable/green_bacj"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_15"
+                android:text="@string/use_short_pass"
+                android:textColor="@color/onekey"
+                android:textSize="@dimen/sp_14"
+                android:textStyle="normal" />
+
+            <ImageView
+                android:layout_width="@dimen/dp_15"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/dp_15"
+                android:layout_marginEnd="@dimen/dp_15"
+                android:src="@drawable/green_right" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/text_long"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="38dp"
+            android:layout_marginEnd="38dp"
+            android:gravity="center_horizontal"
+            android:text="@string/short_pass_tip"
+            android:textColor="@color/text_three"
+            android:textSize="@dimen/sp_12" />
+    </LinearLayout>
+
+
+</RelativeLayout>

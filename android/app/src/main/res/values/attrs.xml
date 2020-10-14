@@ -9,5 +9,19 @@
         <attr name="passwordColor" format="color"/>
         <attr name="passwordRadius" format="dimension"/>
     </declare-styleable>
-
+    <declare-styleable name="PwdEditText">
+        <attr name="space" format="dimension" />
+        <attr name="strokeWidth" format="dimension" />
+        <attr name="checkedColor" format="color" />
+        <attr name="defaultColor" format="color" />
+        <attr name="textLength" format="integer" />
+        <attr name="backColor" format="color" />
+        <attr name="textColor" format="color" />
+        <attr name="circle" format="dimension" />
+        <attr name="round" format="dimension" />
+        <attr name="textSize" format="dimension" />
+        <attr name="isPwd" format="boolean" />
+        <attr name="waitInputColor" format="color" />
+        <attr name="isWaitInput" format="boolean" />
+    </declare-styleable>
 </resources>

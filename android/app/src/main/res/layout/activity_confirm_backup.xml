@@ -72,7 +72,7 @@
             android:layout_height="0dp"
             android:layout_weight="1">
 
-            <org.haobtc.wallet.utils.PasswordInputView
+            <org.haobtc.onekey.utils.PasswordInputView
                 android:id="@+id/trader_pwd_set_pwd_edittext"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"

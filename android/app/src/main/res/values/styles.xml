@@ -59,7 +59,7 @@
     <style name="LunchTheme" parent="@style/AppTheme">
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:windowBackground">@drawable/splash</item>
+        <item name="android:windowBackground">@drawable/launch_page</item>
     </style>
     <style name="spinner_style">
 <!--        <item name="android:background">@drawable/spinner_selector</item>-->

@@ -7,7 +7,7 @@ android {
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
     defaultConfig {
-        applicationId "org.haobtc.wallet"
+        applicationId "org.haobtc.onekey"
         minSdkVersion 26 // android 8.0.0
         targetSdkVersion 29
         versionCode 1
@@ -58,7 +58,7 @@ android {
         resConfigs "zh"
         javaCompileOptions {
             annotationProcessorOptions {
-                arguments = [ eventBusIndex : 'org.haobtc.wallet.MyEventBusIndex' ]
+                arguments = [ eventBusIndex : 'org.haobtc.onekey.MyEventBusIndex' ]
             }
         }
     }
