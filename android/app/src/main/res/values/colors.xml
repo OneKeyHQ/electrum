@@ -55,4 +55,15 @@
     <color name="utxo_color">#4063d5</color>
     <color name="buy_key">#707594</color>
     <color name="change_addr">#838383</color>
+    <color name="onekey">#00B812</color>
+    <color name="onykey_color_text">#151B3E</color>
+    <color name="text_color_one">#14293B</color>
+    <color name="onekey_grey_tuo">#33C4C4C4</color>
+    <color name="text_one">#99FFFFFF</color>
+    <color name="text_two">#142A3B</color>
+    <color name="text_three">#546370</color>
+    <color name="text_four">#f2f2f2</color>
+    <color name="text_five">#59000000</color>
+    <color name="text_six">#9FA6AD</color>
+
 </resources>

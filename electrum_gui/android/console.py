@@ -1645,6 +1645,7 @@ class AndroidCommands(commands.Commands):
         return new_seed
 
     def create_eth(self, name, password, seed=None, passphrase="", addresses=None, privkeys=None, keystores=None, bip39_derivation=None, hd=False):
+
         """Create or restore a new wallet"""
         print("CREATE in....name = %s" % name)
         new_seed = ""

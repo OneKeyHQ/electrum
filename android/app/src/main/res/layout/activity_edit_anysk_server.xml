@@ -8,7 +8,7 @@
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    tools:context="org.haobtc.wallet.activities.settings.EditAnyskServerActivity">
+    tools:context="org.haobtc.onekey.activities.settings.EditAnyskServerActivity">
 
     <RelativeLayout
         android:id="@+id/relativeLayout"

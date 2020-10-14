@@ -8,7 +8,7 @@
     android:fitsSystemWindows="true"
     android:background="@android:color/white"
     android:orientation="vertical"
-    tools:context="org.haobtc.wallet.activities.settings.AnyskServerSetActivity">
+    tools:context="org.haobtc.onekey.activities.settings.AnyskServerSetActivity">
 
     <RelativeLayout
         android:id="@+id/reclvlerview"

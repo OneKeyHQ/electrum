@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:clipToPadding="true"
+    android:fitsSystemWindows="true"
+    tools:context="org.haobtc.onekey.onekeys.HomeOnekeyActivity">
+
+    <FrameLayout
+        android:id="@+id/linear_mains"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/dp_50"
+        android:orientation="vertical">
+
+    </FrameLayout>
+
+    <View
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="@dimen/dp_50"
+        android:background="@color/line_color"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/line_hight"/>
+
+    <RadioGroup
+        android:id="@+id/sj_radiogroup"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_50"
+        android:layout_alignParentBottom="true"
+        android:background="#ffffff"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/radio_one"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_50"
+            android:layout_weight="1"
+            android:button="@null"
+            android:drawableTop="@drawable/home_wallet"
+            android:drawablePadding="@dimen/dp_5"
+            android:gravity="center_horizontal"
+            android:paddingTop="7dp"
+            android:text="@string/wallet"
+            android:textColor="@drawable/home_text_color"
+            android:textSize="@dimen/sp_10" />
+
+        <RadioButton
+            android:id="@+id/radio_two"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_50"
+            android:layout_weight="1"
+            android:button="@null"
+            android:visibility="gone"
+            android:drawableTop="@drawable/dh_yanyi"
+            android:drawablePadding="@dimen/dp_5"
+            android:gravity="center_horizontal"
+            android:paddingTop="7dp"
+            android:text="@string/find"
+            android:textColor="@drawable/home_text_color"
+            android:textSize="@dimen/sp_10" />
+
+        <RadioButton
+            android:id="@+id/radio_three"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_50"
+            android:layout_weight="1"
+            android:button="@null"
+            android:drawableTop="@drawable/dh_mine"
+            android:drawablePadding="@dimen/dp_5"
+            android:gravity="center_horizontal"
+            android:paddingTop="7dp"
+            android:text="@string/mind"
+            android:textColor="@drawable/home_text_color"
+            android:textSize="@dimen/sp_10" />
+
+    </RadioGroup>
+</RelativeLayout>

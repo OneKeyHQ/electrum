@@ -235,7 +235,7 @@
                                 android:layout_marginEnd="@dimen/dp_16"
                                 android:background="@drawable/little_gray" />
 
-                            <org.haobtc.wallet.utils.IndicatorSeekBar
+                            <org.haobtc.onekey.utils.IndicatorSeekBar
                                 android:id="@+id/seek_bar_fee"
                                 android:layout_width="match_parent"
                                 android:layout_height="@dimen/dp_30"
@@ -338,7 +338,7 @@
                                 android:layout_marginEnd="@dimen/dp_16"
                                 android:background="@drawable/little_gray" />
 
-                            <org.haobtc.wallet.utils.IndicatorSeekBar
+                            <org.haobtc.onekey.utils.IndicatorSeekBar
                                 android:id="@+id/seek_bar_num"
                                 android:splitTrack="false"
                                 android:layout_width="match_parent"
