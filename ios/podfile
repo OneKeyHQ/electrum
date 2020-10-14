@@ -1,0 +1,15 @@
+target 'OneKey’ do
+  # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
+   use_frameworks!
+  # Pods for OneKey
+pod 'AFNetworking', '~> 4.0'
+pod 'HMSegmentedControl', '~> 1.5.4'
+pod 'FMDB', '~> 2.7.2'
+pod 'IQKeyboardManager', '~> 6.5.5'
+#pod 'MJRefresh', '~> 3.1.12'
+pod 'SDWebImage', '~> 5.8.1'
+pod 'Masonry','~> 1.1.0'
+pod 'MJExtension', '~> 3.0.13'
+#pod 'ZWPullMenuView', '~> 0.1.0'
+end
+

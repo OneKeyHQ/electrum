@@ -215,7 +215,7 @@ if [ -n "$resources" ]; then
 		echo "Error adding Resources to iOS/$xcode_file... aborting."
 		exit 1
 	fi
-	(cd iOS && python3.6 -m pbxproj folder -t "${xcode_target}" -r "${xcode_file}" CustomCode)
+	(cd iOS && python3.6 -m pbxproj folder -t "${xcode_target}" -r -i "${xcode_file}" CustomCode)
 	if [ "$?" != 0 ]; then
 		echo "Error adding CustomCode to iOS/$xcode_file... aborting."
 		exit 1
@@ -235,6 +235,7 @@ fi
 echo ""
 echo "Modifying main.m to include PYTHONIOENCODING=UTF-8..."
 echo ""
+
 main_m="iOS/${compact_name}/main.m"
 if cat $main_m | sed -e '1 s/putenv/putenv("PYTHONIOENCODING=UTF-8"); putenv/; t' -e '1,// s//putenv("PYTHONIOENCODING=UTF-8"); putenv/' | sed -e 's/PYTHONOPTIMIZE=1/PYTHONOPTIMIZE=/;' > ${main_m}.new; then
 	mv -fv ${main_m}.new $main_m
@@ -267,7 +268,10 @@ if cat $main_m | sed -e '1 s/putenv/putenv("PYTHONIOENCODING=UTF-8"); putenv/; t
         wpython_home = Py_DecodeLocale([python_home UTF8String], NULL);
         Py_SetPythonHome(wpython_home);
         // Set the PYTHONPATH
-        python_path = [NSString stringWithFormat:@"PYTHONPATH=%@/Library/Application Support/com.c3-soft.OneKey/app:%@/Library/Application Support/com.c3-soft.OneKey/app_packages:%@/Library/Application Support/com.c3-soft.OneKey/app/onekey:%@/Library/Application Support/com.c3-soft.OneKey/app/api:%@/Library/Application Support/com.c3-soft.OneKey/app/",resourcePath, resourcePath, resourcePath, nil];
+//        python_path = [NSString stringWithFormat:@"PYTHONPATH=%@/Library/Application Support/com.c3-soft.OneKey/app:%@/Library/Application Support/com.c3-soft.OneKey/app_packages:%@/Library/Application Support/com.c3-soft.OneKey/app/OneKey",resourcePath, resourcePath, resourcePath, nil];
+           
+        python_path = [NSString stringWithFormat:@"PYTHONPATH=%@/Library/Application Support/com.c3-soft.OneKey/app:%@/Library/Application Support/com.c3-soft.OneKey/app_packages:%@/Library/Application Support/com.c3-soft.OneKey/app/OneKey",resourcePath, resourcePath, resourcePath, nil];
+           //:%@/Library/Application Support/com.c3-soft.OneKey/app/OneKey/api:%@/Library/Application Support/com.c3-soft.OneKey/app/OneKey/trezorlib
         NSLog(@"PYTHONPATH is: %@", python_path);
         putenv((char *)[python_path UTF8String]);
         // iOS provides a specific directory for temp files.
@@ -281,6 +285,7 @@ if cat $main_m | sed -e '1 s/putenv/putenv("PYTHONIOENCODING=UTF-8"); putenv/; t
           tstate = PyEval_SaveThread();
           appDelegateClassName = NSStringFromClass([AppDelegate class]);
           ret = UIApplicationMain(argc, argv, nil, appDelegateClassName);
+        
           // In a normal iOS application, the following line is what
           // actually runs the application. It requires that the
           // Objective-C runtime environment has a class named
@@ -305,7 +310,31 @@ if cat $main_m | sed -e '1 s/putenv/putenv("PYTHONIOENCODING=UTF-8"); putenv/; t
        }
        exit(ret);
        return ret;
-    }' > ${main_m}
+    }
+' > ${main_m}
+    
+    pch="iOS/${compact_name}/${compact_name}-Prefix.pch"
+    echo '
+//  Prefix header
+//
+//  The contents of this file are implicitly included at the beginning of every source file.
+//
+
+#import <Availability.h>
+
+#ifndef __IPHONE_3_0
+#warning "This project uses features only available in iOS SDK 3.0 and later."
+#endif
+
+#ifdef __OBJC__
+
+#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
+#import "OneKeyImport.h"
+
+#endif
+' > ${pch}
+    
 else
 	echo "** WARNING: Failed to modify main.m to include PYTHONIOENCODING=UTF-8"
 fi
