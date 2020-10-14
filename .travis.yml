@@ -77,3 +77,9 @@ deploy:
   on:
     branch: bixin_dev
     tags: false
+
+notifications:
+  slack:
+    secure: cQ7Bjpd2IbL4YrTK/5YfmHmoxRGd/9TPPjZ94K4HuVCLsSM25JSXg6lsTuPrfriOivJkfW7tbqsr5s+l6croid724G/B/VgzertDg3iB8l9Hlq9PSLMDY6QPTSukuUjVUxpLQs+Go6Z0aN3yGrXx0ATrMP75kdpeV+Z/HdYBi/sVBeiQcskc7KWEMysupRWjYP1fZvs4TQr8icq7bP8vPaXoo9VdfmFRiyTaxOZNhMNRMFu6/LAsu+VlvpvQ7msY/kWx5pi+C1nFSy/nqOKcTcc02h9bbQESgtzOoXRFVoxR7+abkVxSJW5w/tFVc3+2KMfjechh0WQ7YPZ6FQ23+5EIls9hYJHTOKcEgzZJG2XpE2vXuJBWI2ssksAtwROhAgdNgC4r6Ag8izknQPMcAn7pdKpUY35H3OcNPA+R9SaByz7gVo/ejDiw0fshZ9a8jLkmCG4ONSJyoQg6xtbrPGb7jBkJ3cJRe4A43SaeMXGzvTIHR/SqRgbvB0aP4De766f5VBKv7PHftXH8/kPkIRWszaQ8XVCJ+TM+Gh2/21QHNwCscufKDqyv3cs6GLgfEc3kLYV0uog6e1LO8htx+m0hYBDZn1kehknumwAizI+OcorjYxNRTWiZjv7JGtiGfATlI0IP9b7IBxA9FvP335yCNAni4DHtFE383JnuKPE=
+  on_success: change  # change: send a notification when the build status changes.
+  on_failure: always  # always: always send a notification.
