@@ -16,7 +16,7 @@ from electrum import daemon
 from electrum import keystore
 from electrum.logging import get_logger, configure_logging
 _logger = get_logger(__name__)
-from console import AndroidCommands
+from electrum_gui.android.console import AndroidCommands
 
 import time
 #util.setup_thread_excepthook()
@@ -37,6 +37,10 @@ password = "111111"
 #password = "None"
 #test hardware
 #testcommond.get_xpub_from_hw()
+
+testcommond.load_all_wallet(password)
+testcommond.select_wallet("BTC-1")
+#testcommond.create_hd_wallet(password)
 
 # #create_wallet 2-N HW wallet
 #
@@ -148,7 +152,9 @@ password = "111111"
 
 #name = "test1wwtest"
 #password = "111"
+
 testcommond.delete_wallet(name)
+
 #testcommond.create(name, password, seed='rocket omit review divert bomb brief mushroom family fatal limb goose lion', bip39_derivation="m/84'/0'/0'")
 #seed = testcommond.create(name, password, bip39_derivation="")
 #print(f"new seed---------{seed}")
@@ -159,7 +165,21 @@ testcommond.delete_wallet(name)
 #testcommond.create(name, password, seed='rocket omit review divert bomb brief mushroom family fatal limb goose lion')
 #testcommond.create(name, password, seed='pool friend inherit unhappy quote dwarf drill suit coil advance cage debate')
 #testcommond.create_eth_wallet(name, password=password, seed='pool friend inherit unhappy quote dwarf drill suit coil advance cage debate')
-testcommond.create_eth_wallet(name, password=password, seed='legend innocent climb kingdom first shoulder waste swap sleep comic ripple hip')
+#test create hd wallet
+#testcommond.create_eth_wallet(name, password=password, seed='legend innocent climb kingdom first shoulder waste swap sleep comic ripple hip')
+#test create import private wallet
+testcommond.create_eth(name, password=password, privkeys="0xe6841ceb170becade0a4aa3e157f08871192f9de1c35835de5e1b47fc167d27e")
+keystore_info = testcommond.export_keystore()
+private_info = testcommond.export_private()
+stata = testcommond.is_watch_only()
+# #test create import keystore wallet
+# testcommond.create_eth_wallet(name, password=password, seed='legend innocent climb kingdom first shoulder waste swap sleep comic ripple hip')
+# testcommond.export_keystore()
+# testcommond.export_private()
+# testcommond.is_watch_only()
+# #test create import address wallet
+# testcommond.create_eth_wallet(name, password=password, seed='legend innocent climb kingdom first shoulder waste swap sleep comic ripple hip')
+# testcommond.is_watch_only()
 #ret = testcommond.is_valiad_xpub("Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm")
 #print("=======ret1 = %s" %ret)
 # ret = testcommond.is_valiad_xpub("Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41v1111111111111111")

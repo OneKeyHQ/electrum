@@ -22,7 +22,7 @@ from electrum.util import Fiat, create_and_start_event_loop, decimal_point_to_ba
 from electrum import MutiBase
 from electrum.i18n import _
 from electrum.storage import WalletStorage
-#from electrum.eth_wallet import (Imported_Eth_Wallet, Standard_Eth_Wallet, Eth_Wallet)
+from electrum.eth_wallet import (Imported_Eth_Wallet, Standard_Eth_Wallet, Eth_Wallet)
 from electrum.wallet import (Imported_Wallet, Standard_Wallet, Wallet)
 from electrum.bitcoin import is_address, hash_160, COIN, TYPE_ADDRESS
 from electrum.interface import ServerAddr
@@ -32,7 +32,7 @@ from electrum.address_synchronizer import TX_HEIGHT_LOCAL, TX_HEIGHT_FUTURE
 from electrum.bip32 import BIP32Node, convert_bip32_path_to_list_of_uint32 as parse_path
 from electrum.network import Network, TxBroadcastError, BestEffortRequestFailed
 from electrum import ecc
-#from electrum.pywalib import InvalidPasswordException
+from electrum.pywalib import InvalidPasswordException
 from trezorlib.customer_ui import CustomerUI
 from trezorlib import (
     btc,
@@ -140,6 +140,7 @@ class AndroidCommands(commands.Commands):
         self.label_plugin = self.plugin.load_plugin("labels")
         self.label_flag = self.config.get('use_labels', False)
         self.callbackIntent = None
+        self.btc_hd_wallet = None
         self.wallet = None
         self.client = None
         self.path = ''
@@ -217,7 +218,7 @@ class AndroidCommands(commands.Commands):
     #     self.update_history()
 
     def on_quotes(self, d):
-        if -1 == self.wallet.wallet_type.find("eth"):
+        if self.wallet is not None and -1 == self.wallet.wallet_type.find("eth"):
             self.update_status()
         # self.update_history()
 
@@ -326,7 +327,7 @@ class AndroidCommands(commands.Commands):
     # self.callbackIntent.onCallback("update_history")
 
     def on_network_event(self, event, *args):
-        if -1 == self.wallet.wallet_type.find("eth"):
+        if self.wallet is not None and -1 == self.wallet.wallet_type.find("eth"):
             if event == 'network_updated':
                 self.update_interfaces()
                 self.update_status()
@@ -347,7 +348,7 @@ class AndroidCommands(commands.Commands):
                     self.callbackIntent.onCallback("set_server_status", args[0])
 
     def timer_action(self):
-        if -1 == self.wallet.wallet_type.find("eth"):
+        if self.wallet is not None and -1 == self.wallet.wallet_type.find("eth"):
             self.update_wallet()
             self.update_interfaces()
             t = threading.Timer(5.0, self.timer_action)
@@ -409,9 +410,9 @@ class AndroidCommands(commands.Commands):
                 return
             if db.get_action():
                 return
-            if db.get('wallet_type') == "eth_standard":
+            if -1 != db.get('wallet_type').find("eth"):
                 print("load eth wallet")
-                #wallet = Eth_Wallet(db, storage, config=self.config)
+                wallet = Eth_Wallet(db, storage, config=self.config)
             else:
                 wallet = Wallet(db, storage, config=self.config)
                 wallet.start_network(self.network)
@@ -985,7 +986,7 @@ class AndroidCommands(commands.Commands):
             raise BaseException(e)
         else:
             self.wallet.save_db()
-            self.callbackIntent.onCallback("update_history", "update history")
+            #self.callbackIntent.onCallback("update_history", "update history")
             # need to update at least: history_list, utxo_list, address_list
 
     def update_invoices(self, old_tx, new_tx):
@@ -1411,12 +1412,12 @@ class AndroidCommands(commands.Commands):
         else:
             return 0
 
-    def show_address(self, address, path='android_usb'):
-        try:
-            plugin = self.plugin.get_plugin("trezor")
-            plugin.show_address(path=path, ui=CustomerUI(), wallet=self.wallet, address=address)
-        except Exception as e:
-            raise BaseException(e)
+    # def show_address(self, address, path='android_usb'):
+    #     try:
+    #         plugin = self.plugin.get_plugin("trezor")
+    #         plugin.show_address(path=path, ui=CustomerUI(), wallet=self.wallet, address=address)
+    #     except Exception as e:
+    #         raise BaseException(e)
 
 
     def wipe_device(self, path='android_usb') -> int:
@@ -1557,7 +1558,6 @@ class AndroidCommands(commands.Commands):
                 print("Update aborted on device.")
             except exceptions.TrezorException as e:
                 raise BaseException("Update failed: {}".format(e))
-
     ####################################################
     ## app wallet
     def export_seed(self, password):
@@ -1629,15 +1629,22 @@ class AndroidCommands(commands.Commands):
         print(f"out==addr = {out}")
         return json.dumps(out)
 
-    def create_hd_wallet(self, password, seed=None, passphrase="", bip39_derivation=None):
+    def create_hd_wallet(self, password, seed=None, passphrase=""):
+        if seed is None:
+            seed = Mnemonic("english").generate()
+            new_seed = seed
+            print("Your wallet generation seed is:\n\"%s\"" % seed)
+            print("seed type = %s" % type(seed))
+
         ###create BTC-1
-        self.create("BTC-1", password, seed, passphrase, bip39_derivation, hd=True)
-
+        self.create("BTC-1", password, seed, passphrase, bip39_derivation=bip44_derivation(0, 44), hd=True)
+        ##RECOVERY WALLET
+        print("TODO recovery derivate wallet 1~20")
         ###create ETH-1
-        #self.create_eth("ETH-1", password, seed, passphrase, hd=True)
+        #self.create_eth("ETH-1", password, seed, passphrase, bip39_derivation=bip44_derivation(60, 44), hd=True)
+        return new_seed
 
-    '''
-    def create_eth(self, name, password, seed=None, passphrase="", addresses=None, privkeys=None, keystore=None, hd=False):
+    def create_eth(self, name, password, seed=None, passphrase="", addresses=None, privkeys=None, keystores=None, bip39_derivation=None, hd=False):
         """Create or restore a new wallet"""
         print("CREATE in....name = %s" % name)
         new_seed = ""
@@ -1654,18 +1661,18 @@ class AndroidCommands(commands.Commands):
             # FIXME tell user about bad_inputs
             if not good_inputs:
                 raise BaseException("None of the given address can be imported")
-        elif privkeys is not None or keystore is not None:
-            if keystore is not None:
+        elif privkeys is not None or keystores is not None:
+            if keystores is not None:
                 try:
                     from eth_account import Account
-                    privkeys = Account.decrypt(keystore, password)
+                    privkeys = Account.decrypt(keystores, password)
                 except ValueError:
                     raise InvalidPasswordException()
 
-            k = keystore.Imported_Prv_KeyStore({})
+            k = keystore.Imported_KeyStore({})
             db.put('keystore', k.dump())
-            wallet = Imported_Wallet(db, storage, config=self.config)
-            keys = keystore.get_private_keys(privkeys, allow_spaces_inside_key=False)
+            wallet = Imported_Eth_Wallet(db, storage, config=self.config)
+            keys = keystore.get_eth_private_key(privkeys, allow_spaces_inside_key=False)
             good_inputs, bad_inputs = wallet.import_private_keys(keys, None, write_to_disk=False)
             # FIXME tell user about bad_inputs
             if not good_inputs:
@@ -1679,7 +1686,7 @@ class AndroidCommands(commands.Commands):
             save_flag = False
             if new_seed is not None:
                 save_flag = True
-            ks, bip32_seed = keystore.from_eth_bip39_seed(seed, passphrase, derivation="m/44'/60'/0'", create=save_flag)
+            ks, bip32_seed = keystore.from_eth_bip39_seed(seed, passphrase, derivation=bip39_derivation, create=save_flag)
             db.put('keystore', ks.dump())
             wallet = Standard_Eth_Wallet(db, storage, config=self.config)
         wallet.update_password(old_pw=None, new_pw=password, encrypt_storage=False)
@@ -1701,15 +1708,49 @@ class AndroidCommands(commands.Commands):
         # if self.label_flag:
         #     self.label_plugin.load_wallet(self.wallet, None)
         return new_seed
-    '''
+
     def is_watch_only(self):
         self._assert_wallet_isvalid()
         return self.wallet.is_watching_only()
 
-    def create(self, name, password, seed_type="segwit", seed=None, passphrase="", bip39_derivation=None,
+    def load_all_wallet(self, password):
+        name_wallets = sorted([name for name in os.listdir(self._wallet_path())])
+        name_info = {}
+        for name in name_wallets:
+            self.load_wallet(name, password=password)
+
+    def update_password(self, old_password, new_password):
+        self._assert_daemon_running()
+        for name, wallet in self.daemon._wallets:
+            wallet.update_password(old_password, new_password)
+
+    def check_password(self, password):
+        try:
+            assert self.btc_hd_wallet
+            self.btc_hd_wallet.check_password(password)
+        except BaseException as e:
+            raise e
+
+    def create_btc_der_wallet(self, name, password):
+        try:
+            self.check_password(password)
+        except BaseException as e:
+            raise e
+
+        account_id = self.config.get_key("btc_derivat_path").split('/')[-1] + 1
+        derivat_path = bip44_derivation(account_id, 44)
+        self.create(name, self.btc_hd_wallet.get_seed(), bip39_derivation=derivat_path)
+        self.config.set_key("btc_derivat_path", derivat_path)
+
+    def create(self, name, password, seed_type="segwit", seed=None, passphrase="", bip39_derivation='None',
                master=None, addresses=None, privkeys=None, hd=False):
         """Create or restore a new wallet"""
         print("CREATE in....name = %s" % name)
+        try:
+            if not hd:
+                self.check_password(password)
+        except BaseException as e:
+            raise e
         new_seed = ""
         path = self._wallet_path(name)
         if exists(path):
@@ -1739,15 +1780,20 @@ class AndroidCommands(commands.Commands):
                 ks = keystore.from_master_key(master)
             else:
                 if seed is None:
-                    seed = mnemonic.Mnemonic('en').make_seed(seed_type=seed_type)
+                    seed = Mnemonic("english").generate()
+                    #seed = mnemonic.Mnemonic('en').make_seed(seed_type=seed_type)
                     new_seed = seed
                     print("Your wallet generation seed is:\n\"%s\"" % seed)
                     print("seed type = %s" % type(seed))
-                ks = keystore.from_seed(seed, passphrase, False)
+                #ks = keystore.from_seed(seed, passphrase, False)
+                ks = keystore.from_bip39_seed(seed, passphrase, bip39_derivation)
             db.put('keystore', ks.dump())
             wallet = Standard_Wallet(db, storage, config=self.config)
         if hd and seed is not None:
             wallet.status_flag = "hd"
+            self.config.set_key("btc_derivat_path", bip39_derivation)
+            self.btc_hd_wallet = wallet
+
         wallet.update_password(old_pw=None, new_pw=password, encrypt_storage=False)
         wallet.start_network(self.daemon.network)
         wallet.save_db()
