@@ -254,6 +254,7 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
         self.db = db
         self.hide_type = False
         self.storage = storage
+        self.storage_pw = None
         # load addresses needs to be called before constructor for sanity checks
         db.load_addresses(self.wallet_type)
         self.keystore = None  # type: Optional[KeyStore]  # will be set by load_keystore
@@ -1934,22 +1935,26 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
     def may_have_password(cls):
         return True
 
-    def check_password(self, password):
+    def check_password(self, password, str_pw=None):
         if self.has_keystore_encryption():
             self.keystore.check_password(password)
         if self.has_storage_encryption():
-            self.storage.check_password(password)
+            if str_pw is not None:
+                self.storage.check_password(str_pw)
+            else:
+                self.storage.check_password(self.storage_pw)
 
-    def update_password(self, old_pw, new_pw, *, encrypt_storage: bool = True):
+    def update_password(self, old_pw, new_pw, str_pw=None, *, encrypt_storage: bool = True):
         if old_pw is None and self.has_password():
             raise InvalidPassword()
         self.check_password(old_pw)
-        if self.storage:
+        if self.storage and str_pw is not None:
             if encrypt_storage:
                 enc_version = self.get_available_storage_encryption_version()
             else:
                 enc_version = StorageEncryptionVersion.PLAINTEXT
-            self.storage.set_password(new_pw, enc_version)
+            self.storage.set_password(str_pw, enc_version)
+            self.storage_pw = str_pw
         # make sure next storage.write() saves changes
         self.db.set_modified(True)
 

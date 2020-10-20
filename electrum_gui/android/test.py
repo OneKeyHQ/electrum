@@ -21,11 +21,11 @@ from electrum_gui.android.console import AndroidCommands
 import time
 #util.setup_thread_excepthook()
 print("before time = %s" %time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())))
-constants.set_testnet()
-#constants.set_regtest()
+#constants.set_testnet()
+constants.set_regtest()
 print("after time = %s" %time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())))
 
-testcommond = AndroidCommands()
+testcommond = AndroidCommands(android_id='123456')
 testcommond.start()
 testcommond.set_syn_server(True)
 #name = 'hahahahhahh777' #2-2 multi wallet
@@ -38,9 +38,24 @@ password = "111111"
 #test hardware
 #testcommond.get_xpub_from_hw()
 
-testcommond.load_all_wallet(password)
-testcommond.select_wallet("BTC-1")
+#testcommond.load_all_wallet()
+#testcommond.select_wallet("BTC-1")
 #testcommond.create_hd_wallet(password)
+
+#info = testcommond.create_hd_wallet(password=password, seed='rocket omit review divert bomb brief mushroom family fatal limb goose lion')
+testcommond.load_all_wallet()
+data = testcommond.list_wallets()
+#data = json.loads(info)
+wallet_name = []
+wallet_name.append('der_1')
+testcommond.recovery_confirmed(wallet_name)
+#testcommond.create_btc_der_wallet("der_1", password)
+#testcommond.create_btc_der_wallet("der_2", password)
+testcommond.delete_wallet('BTC-1')
+##need recovery
+#testcommond.create_hd_wallet()
+#testcommond.create_btc_der_wallet()
+
 
 # #create_wallet 2-N HW wallet
 #
@@ -212,7 +227,7 @@ testcommond.set_currency("CNY")
 data = testcommond.get_wallet_type(name)
 print("11111111111 %s type is %s" %(name, data))
 #time.sleep(5)
-testcommond.load_wallet(name, password)
+testcommond.load_wallet(name)
 data = testcommond.select_wallet(name)
 print("select data ============%s" %data)
 time.sleep(5)
