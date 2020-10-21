@@ -1377,6 +1377,23 @@ class AndroidCommands(commands.Commands):
             raise BaseException(e)
         return response
 
+    def bixin_backup_device(self, path='android_usb'):
+        client = self.get_client(path=path)
+        try:
+            response = client.bixin_backup_device()
+        except Exception as e:
+            raise BaseException(e)
+        print(f"seed......{response}")
+        return response
+
+    def bixin_load_device(self, mnemonics, path='android_usb'):
+        client = self.get_client(path=path)
+        try:
+            response = client.bixin_load_device(mnemonics=mnemonics)
+        except Exception as e:
+            raise BaseException(e)
+        return response
+
     def recovery_wallet(self, path='android_usb', *args):
         client = self.get_client(path=path)
         try:
@@ -1616,6 +1633,10 @@ class AndroidCommands(commands.Commands):
         except BaseException as e:
             raise e
 
+    def has_seed(self):
+        if not self.wallet.has_seed():
+            raise BaseException('This wallet has no seed')
+
     def check_seed(self, check_seed, password):
         try:
             self._assert_wallet_isvalid()
@@ -1770,7 +1791,7 @@ class AndroidCommands(commands.Commands):
         for name in name_wallets:
             self.load_wallet(name, password=self.android_id)
 
-    def update_hd_password(self, old_password, new_password):
+    def update_wallet_password(self, old_password, new_password):
         self._assert_daemon_running()
         for name, wallet in self.daemon._wallets:
             wallet.update_password(old_pw=old_password, new_pw=new_password)
@@ -1963,7 +1984,8 @@ class AndroidCommands(commands.Commands):
         print("CREATE in....name = %s" % name)
         try:
             if not hd:
-                self.check_password(password)
+                if addresses is None:
+                    self.check_password(password)
         except BaseException as e:
             raise e
         new_seed = ""

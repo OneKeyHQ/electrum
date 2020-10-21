@@ -38,7 +38,9 @@ password = "111111"
 #test hardware
 #testcommond.get_xpub_from_hw()
 
-#testcommond.load_all_wallet()
+testcommond.bixin_load_device(path='android_usb',mnemonics="rocket omit review divert bomb brief mushroom family fatal limb goose lion")
+data = testcommond.bixin_backup_device()
+#testcommond.load_all_wallet(password)
 #testcommond.select_wallet("BTC-1")
 #testcommond.create_hd_wallet(password)
 
@@ -168,7 +170,7 @@ testcommond.delete_wallet('BTC-1')
 #name = "test1wwtest"
 #password = "111"
 
-testcommond.delete_wallet(name)
+#testcommond.delete_wallet(name)
 
 #testcommond.create(name, password, seed='rocket omit review divert bomb brief mushroom family fatal limb goose lion', bip39_derivation="m/84'/0'/0'")
 #seed = testcommond.create(name, password, bip39_derivation="")
