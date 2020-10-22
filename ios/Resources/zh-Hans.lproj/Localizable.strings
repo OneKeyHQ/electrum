@@ -1,0 +1,33 @@
+/* 
+  Localizable.strings
+  ElectronCash
+
+  Created by bixin on 2020/10/9.
+  Copyright © 2020 Calin Culianu. All rights reserved.
+*/
+"With OneKey, you can certainly have it both safe and easy to use" = "有 OneKey，安全和好用当然可以兼得。";
+"Your assets are only in your hands" = "你的资产，只在你手";
+"Our server will not store your private key or mnemonic in any way. Both software and hardware are open source and can be used safely" = "我们的服务器不会以任何方式存储您的私钥或助记词，软、硬件均开源，放心使用。";
+"End-to-end encryption" = "端到端加密";
+"We use industry-leading encryption technology to store information locally. Only you can decrypt the information, we will not and cannot view, use or sell any of your data" = "我们采用业内先进的加密技术将信息储存在本地。只有您能解密信息，我们不会也无法查看、使用或出售任何您的数据。";
+"By starting to use, you agree to Onekey's User Agreement and Privacy Policy" = "开始使用即意味着您同意 Onekey 的《用户协议》和《隐私政策》";
+"User Agreement" = "《用户协议》";
+"Privacy policy" = "《隐私政策》";
+"Begin to use" = "开始使用";
+"Create a new wallet" = "创建新钱包";
+"Create HD Wallet" = "创建 HD 钱包";
+"Completely free and unlimited quantity" = "完全免费且不限数量";
+"It takes just a few minutes to create a wallet for free and quickly, and then you're free to send and receive assets, make transactions, and explore the blockchain world" = "只要几分钟就可以免费、快速创建钱包，然后你就可以自由地收发资产，进行各类交易，尽情探索区块链世界。";
+"Recover HD Wallet" = "恢复 HD 钱包";
+"Paired hardware wallet" = "配对硬件钱包";
+"Support BixinKey" = "支持 BixinKey";
+"Recovery by mnemonic" = "助记词导入";
+"Set the password" = "设置密码";
+"Only you can unlock your wallet" = "只有您可以解锁自己的钱包";
+"Use longer passwords that are more complex and more secure" = "使用更复杂，同时也更安全的长密码";
+"It is used to encrypt your wallet, is simple and easy to remember, and is suitable for most people" = "它被用来加密您的钱包，简单好记，适用于大多数人。";
+"We do not store any of your information, so if you forget your password, we will not be able to retrieve it for you" = "我们不存储任何您的信息，因此一旦您忘记自己的密码，我们也无法帮您找回。";
+"Enter your password again" = "再一次输入您的密码";
+"Don't reveal your password to anyone else" = "不要将密码透露给其它人";
+"Complex passwords are relatively more secure, so keep in mind that it's best not to set them the same as your passwords for other sites" = "复杂的密码安全性相对更高，设置完后要牢记，最好次不要设置的跟您其他网站的密码一样。";
+"Use a short password" = "使用简短密码";

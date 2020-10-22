@@ -36,7 +36,11 @@ if [ "$?" != "0" ]; then
 	echo "ERROR: Please install pbxproj like so: sudo python3 -m pip install pbxproj"
 	exit 5
 fi
-
+pod > /dev/null
+if [ "$?" != "0" ]; then
+	echo "ERROR: Please install pod command-line tools"
+	exit 4
+fi
 if [ -d iOS ]; then
 	echo "Warning: 'iOS' directory exists. All modifications will be lost if you continue."
 	echo "Continue? [y/N]?"
@@ -49,9 +53,17 @@ if [ -d iOS ]; then
 	rm -fr iOS
 fi
 
-if [ -d ${compact_name}/onekey ]; then
+if [ -d ${compact_name}/electrum ]; then
 	echo "Deleting old ${compact_name}/onekey..."
-	rm -fr ${compact_name}/onekey
+	rm -fr ${compact_name}/electrum
+fi
+if [ -d ${compact_name}/api ]; then
+	echo "Deleting old ${compact_name}/api..."
+	rm -fr ${compact_name}/api
+fi
+if [ -d ${compact_name}/trezorlib ]; then
+	echo "Deleting old ${compact_name}/trezorlib..."
+	rm -fr ${compact_name}/trezorlib
 fi
 
 echo "Pulling 'onekey' libs into project from ../electrum ..."
@@ -62,12 +74,12 @@ if [ ! -d ../electrum/locale ]; then
 		exit 1
 	fi
 fi
-cp -fpR ../electrum ${compact_name}/onekey
-cp -fpR ../trezor/python-trezor/src/trezorlib/* ${compact_name}/trezorlib
-cp -fpR ../electrum_gui/* ${compact_name}/api
+cp -fpR ../electrum ${compact_name}/electrum
+cp -fpR ../trezor/python-trezor/src/trezorlib ${compact_name}/trezorlib
+cp -fpR ../electrum_gui ${compact_name}/api
 echo "Removing electrum/tests..."
-rm -fr ${compact_name}/onekey/tests
-find ${compact_name} -name \*.pyc -exec  rm -f {} \;
+rm -fr ${compact_name}/onekey/electrum/tests
+find ${compact_name} -name '*.pyc' -exec  rm -f {} \;
 
 echo ""
 echo "Building Briefcase-Based iOS Project..."
@@ -119,8 +131,8 @@ if [ -f "${infoplist}" ]; then
 
 	# Stuff related to being able to open .txn and .txt files (open transaction from context menu in other apps)
 	plutil -insert "CFBundleDocumentTypes" -xml '<array><dict><key>CFBundleTypeIconFiles</key><array/><key>CFBundleTypeName</key><string>Transaction</string><key>LSItemContentTypes</key><array><string>public.plain-text</string></array><key>LSHandlerRank</key><string>Owner</string></dict></array>' -- ${infoplist}
-	plutil -insert "UTExportedTypeDeclarations" -xml '<array><dict><key>UTTypeConformsTo</key><array><string>public.plain-text</string></array><key>UTTypeDescription</key><string>Transaction</string><key>UTTypeIdentifier</key><string>com.c3-soft.ElectronCash.txn</string><key>UTTypeSize320IconFile</key><string>signed@2x</string><key>UTTypeSize64IconFile</key><string>signed</string><key>UTTypeTagSpecification</key><dict><key>public.filename-extension</key><array><string>txn</string><string>txt</string></array></dict></dict></array>' -- ${infoplist}
-	plutil -insert "UTImportedTypeDeclarations" -xml '<array><dict><key>UTTypeConformsTo</key><array><string>public.plain-text</string></array><key>UTTypeDescription</key><string>Transaction</string><key>UTTypeIdentifier</key><string>com.c3-soft.ElectronCash.txn</string><key>UTTypeSize320IconFile</key><string>signed@2x</string><key>UTTypeSize64IconFile</key><string>signed</string><key>UTTypeTagSpecification</key><dict><key>public.filename-extension</key><array><string>txn</string><string>txt</string></array></dict></dict></array>' -- ${infoplist}
+	plutil -insert "UTExportedTypeDeclarations" -xml '<array><dict><key>UTTypeConformsTo</key><array><string>public.plain-text</string></array><key>UTTypeDescription</key><string>Transaction</string><key>UTTypeIdentifier</key><string>com.c3-soft.OneKey.txn</string><key>UTTypeSize320IconFile</key><string>signed@2x</string><key>UTTypeSize64IconFile</key><string>signed</string><key>UTTypeTagSpecification</key><dict><key>public.filename-extension</key><array><string>txn</string><string>txt</string></array></dict></dict></array>' -- ${infoplist}
+	plutil -insert "UTImportedTypeDeclarations" -xml '<array><dict><key>UTTypeConformsTo</key><array><string>public.plain-text</string></array><key>UTTypeDescription</key><string>Transaction</string><key>UTTypeIdentifier</key><string>com.c3-soft.OneKey.txn</string><key>UTTypeSize320IconFile</key><string>signed@2x</string><key>UTTypeSize64IconFile</key><string>signed</string><key>UTTypeTagSpecification</key><dict><key>public.filename-extension</key><array><string>txn</string><string>txt</string></array></dict></dict></array>' -- ${infoplist}
 	plutil -insert 'CFBundleURLTypes' -xml '<array><dict><key>CFBundleTypeRole</key><string>Viewer</string><key>CFBundleURLName</key><string>bitcoincash</string><key>CFBundleURLSchemes</key><array><string>bitcoincash</string></array></dict></array>' -- ${infoplist}
 	plutil -replace 'UIRequiresFullScreen' -bool NO -- ${infoplist}
 	plutil -insert 'NSFaceIDUsageDescription' -string 'FaceID is used for wallet authentication' -- ${infoplist}
@@ -169,7 +181,7 @@ echo ""
 [ -e scratch ] && rm -fr scratch
 mkdir -v scratch || exit 1
 cd scratch || exit 1
-git clone http://www.github.com/cculianu/rubicon-objc
+git clone https://www.github.com/cculianu/rubicon-objc
 gitexit="$?"
 cd rubicon-objc
 git checkout "fe054117056d33059a5db8addbc14e8535f08d3b^{commit}"
@@ -209,13 +221,13 @@ if [ -n "$resources" ]; then
 	echo ""
 	echo "Adding Resurces/ and CustomCode/ to project..."
 	echo ""
-	cp -fRav Resources CustomCode iOS/
+	cp -fRav Resources CustomCode podfile iOS/
 	(cd iOS && python3.6 -m pbxproj folder -t "${xcode_target}" -r -i "${xcode_file}" Resources)
 	if [ "$?" != 0 ]; then
 		echo "Error adding Resources to iOS/$xcode_file... aborting."
 		exit 1
 	fi
-	(cd iOS && python3.6 -m pbxproj folder -t "${xcode_target}" -r "${xcode_file}" CustomCode)
+	(cd iOS && python3.6 -m pbxproj folder -t "${xcode_target}" -r -i "${xcode_file}" CustomCode)
 	if [ "$?" != 0 ]; then
 		echo "Error adding CustomCode to iOS/$xcode_file... aborting."
 		exit 1
@@ -235,6 +247,7 @@ fi
 echo ""
 echo "Modifying main.m to include PYTHONIOENCODING=UTF-8..."
 echo ""
+
 main_m="iOS/${compact_name}/main.m"
 if cat $main_m | sed -e '1 s/putenv/putenv("PYTHONIOENCODING=UTF-8"); putenv/; t' -e '1,// s//putenv("PYTHONIOENCODING=UTF-8"); putenv/' | sed -e 's/PYTHONOPTIMIZE=1/PYTHONOPTIMIZE=/;' > ${main_m}.new; then
 	mv -fv ${main_m}.new $main_m
@@ -245,7 +258,10 @@ if cat $main_m | sed -e '1 s/putenv/putenv("PYTHONIOENCODING=UTF-8"); putenv/; t
     #import <UIKit/UIKit.h>
     #include <Python.h>
     #include <dlfcn.h>
-    #import "AppDelegate.h"
+    #import <AppDelegate.h>
+
+extern PyMODINIT_FUNC PyInit__cffi_backend(void);
+
     int main(int argc, char *argv[]) {
        NSString * appDelegateClassName;
        int ret = 0;
@@ -267,13 +283,15 @@ if cat $main_m | sed -e '1 s/putenv/putenv("PYTHONIOENCODING=UTF-8"); putenv/; t
         wpython_home = Py_DecodeLocale([python_home UTF8String], NULL);
         Py_SetPythonHome(wpython_home);
         // Set the PYTHONPATH
-        python_path = [NSString stringWithFormat:@"PYTHONPATH=%@/Library/Application Support/com.c3-soft.OneKey/app:%@/Library/Application Support/com.c3-soft.OneKey/app_packages:%@/Library/Application Support/com.c3-soft.OneKey/app/onekey:%@/Library/Application Support/com.c3-soft.OneKey/app/api:%@/Library/Application Support/com.c3-soft.OneKey/app/",resourcePath, resourcePath, resourcePath, nil];
+        python_path = [NSString stringWithFormat:@"PYTHONPATH=%@/Library/Application Support/com.c3-soft.OneKey/app:%@/Library/Application Support/com.c3-soft.OneKey/app_packages:%@/Library/Application Support/com.c3-soft.OneKey/app/OneKey", resourcePath, resourcePath, resourcePath, nil];
         NSLog(@"PYTHONPATH is: %@", python_path);
         putenv((char *)[python_path UTF8String]);
         // iOS provides a specific directory for temp files.
         tmp_path = [NSString stringWithFormat:@"TMP=%@/tmp", resourcePath, nil];
         putenv((char *)[tmp_path UTF8String]);
         NSLog(@"Initializing Python runtime...");
+        PyImport_AppendInittab("_cffi_backend", &PyInit__cffi_backend);
+
         Py_Initialize();
         // If other modules are using threads, we need to initialize them.
         PyEval_InitThreads();
@@ -305,7 +323,31 @@ if cat $main_m | sed -e '1 s/putenv/putenv("PYTHONIOENCODING=UTF-8"); putenv/; t
        }
        exit(ret);
        return ret;
-    }' > ${main_m}
+    }
+' > ${main_m}
+
+pch="iOS/${compact_name}/${compact_name}-Prefix.pch"
+echo '
+//  Prefix header
+//
+//  The contents of this file are implicitly included at the beginning of every source file.
+//
+
+#import <Availability.h>
+
+#ifndef __IPHONE_3_0
+#warning "This project uses features only available in iOS SDK 3.0 and later."
+#endif
+
+#ifdef __OBJC__
+
+#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
+#import "OneKeyImport.h"
+
+#endif
+' > ${pch}
+    
 else
 	echo "** WARNING: Failed to modify main.m to include PYTHONIOENCODING=UTF-8"
 fi
@@ -313,16 +355,23 @@ fi
 echo ""
 echo "Copying google protobuf paymentrequests.proto to app lib dir..."
 echo ""
-cp -fva ${compact_name}/onekey/*.proto iOS/app/${compact_name}/onekey
+cp -fva ${compact_name}/electrum/*.proto iOS/app/${compact_name}/electrum/
 if [ "$?" != "0" ]; then
 	echo "** WARNING: Failed to copy google protobuf .proto file to app lib dir!"
 fi
-
-# Clean up no-longer-needed electroncash/ dir that is outside of Xcode project
-rm -fr ${compact_name}/onekey/*
+cp -fva Support/*.a iOS/Support/
+cp -fRav 'Support/Cryptodome' 'Support/pycryptodomex-3.9.4.dist-info' 'iOS/app_packages/'
+cp -fRav ../electrum/lnwire  iOS/app/${compact_name}/electrum
+# Clean up no-longer-needed electrum/ dir that is outside of Xcode project
+rm -fr ${compact_name}/electrum/*
 rm -fr ${compact_name}/trezorlib/*
 rm -fr ${compact_name}/api/*
-
+find iOS/app/${compact_name} -name '*.pyc' -exec  rm -f {} \;
+cd iOS && pod install
+if [ "$?" != "0" ]; then
+			echo "Encountered an error when execute pod install!"
+			exit 1
+		fi
 # Can add this back when it works uniformly without issues
 # /usr/bin/env ruby update_project.rb
 
