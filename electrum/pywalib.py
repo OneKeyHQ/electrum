@@ -161,7 +161,6 @@ class PyWalib:
         #self.web3 = Web3(self.provider)
         self.web3 = Web3(HTTPProvider("https://ropsten.infura.io/v3/57caa86e6f454063b13d717be8cc3408"))
 
-    @staticmethod
     def get_web3(self):
         return self.web3
 

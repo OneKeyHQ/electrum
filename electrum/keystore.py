@@ -46,6 +46,8 @@ from .mnemonic import Mnemonic, Wordlist, seed_type, is_seed
 from .plugin import run_hook
 from .logging import Logger
 from eth_account import Account
+from eth_keys import keys
+from hexbytes import HexBytes
 
 if TYPE_CHECKING:
     from .gui.qt.util import TaskThread
@@ -230,9 +232,12 @@ class Imported_KeyStore(Software_KeyStore):
     def can_import(self):
         return True
 
-    def check_password(self, password):
+    def check_password(self, password, eth_status=None):
         pubkey = list(self.keypairs.keys())[0]
-        self.get_private_key(pubkey, password)
+        if eth_status is not None:
+            self.get_eth_private_key(pubkey, password)
+        else:
+            self.get_private_key(pubkey, password)
 
     def import_privkey(self, sec, password):
         txin_type, privkey, compressed = deserialize_privkey(sec)
@@ -248,13 +253,21 @@ class Imported_KeyStore(Software_KeyStore):
         return txin_type, pubkey
 
     def import_eth_privkey(self, sec, password):
-        from eth_keys import keys
-        priv_key = keys.PrivateKey(sec)
+        priv_key = keys.PrivateKey(HexBytes(sec))
         pub_key = priv_key.public_key
 
         # pubkey = ecc.ECPrivkey(sec).get_public_key_hex(compressed=False)
-        # self.keypairs[pubkey] = pw_encode(sec, password, version=self.pw_hash_version)
+        test = pub_key.__str__()
+        self.keypairs[pub_key.__str__()] = pw_encode(sec, password, version=self.pw_hash_version)
         return pub_key
+
+    def get_eth_private_key(self, pubkey: str, password):
+        sec = pw_decode(self.keypairs[pubkey], password, version=self.pw_hash_version)
+        priv_key = keys.PrivateKey(HexBytes(sec))
+        pub_key = priv_key.public_key
+        if pub_key.__str__() != pubkey:
+            raise InvalidPassword()
+        return sec
 
     def delete_imported_key(self, key):
         self.keypairs.pop(key)
@@ -272,8 +285,8 @@ class Imported_KeyStore(Software_KeyStore):
             return pubkey.hex()
         return None
 
-    def update_password(self, old_password, new_password):
-        self.check_password(old_password)
+    def update_password(self, old_password, new_password, eth_status=None):
+        self.check_password(old_password, eth_status=eth_status)
         if new_password == '':
             new_password = None
         for k, v in self.keypairs.items():
@@ -490,7 +503,7 @@ class Xpub(MasterPublicKeyMixin):
         self.is_requesting_to_be_rewritten_to_wallet_file = True
 
     @lru_cache(maxsize=None)
-    def derive_pubkey(self, for_change: int, n: int, compressed=None) -> bytes:
+    def derive_pubkey(self, for_change: int, n: int, compressed=True) -> bytes:
         for_change = int(for_change)
         assert for_change in (0, 1)
         xpub = self.xpub_change if for_change else self.xpub_receive
@@ -504,7 +517,7 @@ class Xpub(MasterPublicKeyMixin):
         return self.get_pubkey_from_xpub(xpub, (n,), compressed)
 
     @classmethod
-    def get_pubkey_from_xpub(self, xpub: str, sequence, compressed=None) -> bytes:
+    def get_pubkey_from_xpub(self, xpub: str, sequence, compressed=True) -> bytes:
         node = BIP32Node.from_xkey(xpub).subkey_at_public_derivation(sequence)
         return node.eckey.get_public_key_bytes(compressed)
 
@@ -538,7 +551,7 @@ class BIP32_KeyStore(Xpub, Deterministic_KeyStore):
         if BIP32Node.from_xkey(xprv).chaincode != self.get_bip32_node_for_xpub().chaincode:
             raise InvalidPassword()
 
-    def update_password(self, old_password, new_password):
+    def update_password(self, old_password, new_password, eth_status=None):
         self.check_password(old_password)
         if new_password == '':
             new_password = None
@@ -994,6 +1007,11 @@ def is_bip32_key(x):
 
 def bip44_derivation(account_id, bip43_purpose=44):
     coin = constants.net.BIP44_COIN_TYPE
+    der = "m/%d'/%d'/%d'" % (bip43_purpose, coin, int(account_id))
+    return normalize_bip32_derivation(der)
+
+def bip44_eth_derivation(account_id, bip43_purpose=44):
+    coin = 60
     der = "m/%d'/%d'/%d'" % (bip43_purpose, coin, int(account_id))
     return normalize_bip32_derivation(der)
 

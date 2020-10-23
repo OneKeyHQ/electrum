@@ -2587,7 +2587,7 @@ class Simple_Deterministic_Wallet(Simple_Wallet, Deterministic_Wallet):
     def get_master_public_key(self):
         return self.keystore.get_master_public_key()
 
-    def derive_pubkeys(self, c, i, compressed=None):
+    def derive_pubkeys(self, c, i, compressed=True):
         return [self.keystore.derive_pubkey(c, i, compressed).hex()]
 
 

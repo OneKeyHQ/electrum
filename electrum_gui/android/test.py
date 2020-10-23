@@ -22,7 +22,7 @@ import time
 #util.setup_thread_excepthook()
 print("before time = %s" %time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())))
 #constants.set_testnet()
-constants.set_regtest()
+#constants.set_regtest()
 print("after time = %s" %time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())))
 
 testcommond = AndroidCommands(android_id='123456')
@@ -37,23 +37,26 @@ password = "111111"
 #password = "None"
 #test hardware
 #testcommond.get_xpub_from_hw()
-
-testcommond.bixin_load_device(path='android_usb',mnemonics="rocket omit review divert bomb brief mushroom family fatal limb goose lion")
-data = testcommond.bixin_backup_device()
-#testcommond.load_all_wallet(password)
+#testcommond.bixin_load_device(path='android_usb',mnemonics="rocket omit review divert bomb brief mushroom family fatal limb goose lion")
+# data = testcommond.bixin_backup_device()
+# testcommond.load_all_wallet()
+# testcommond.select_wallet('BTC-1')
+# tx = 'cHNidP8BAHcCAAAAAcny3Df2+QeVX1q6Z6Od26cvF7qT2PS2++HcC2co26OAAQAAAAD9////AgAAAAAAAAAAGXapFIsnKYltSXUB21OiEBOHQ5/43GqSiKwY4ZcAAAAAABl2qRSLJymJbUl1AdtTohATh0Of+NxqkoisAAAAAAABAOECAAAAAAEBspXL1JU8cZewirTQJMWRhmlyOlsJO2unVrwjL2MXweMBAAAAAP7///8CVDyuRgAAAAAWABR45N26W2qOhL4s/7Xsn/t0cqWeWYCWmAAAAAAAGXapFIsnKYltSXUB21OiEBOHQ5/43GqSiKwCRzBEAiBudIFX3JM09tyMbPwKDzbPqbI/K7+T3sFnfVQN3gqtXAIgXJ4ldMdvTMp12TlxaKBOyKeNJ9G2m8bpPbuGRGPk9DABIQI/c3Qs7wI9WOCsNTU7PPb+et7TsuNoV1JN5w7B7aRbyq4OAABCBgTuF/H0tleUwFpnYS6tRxc4hNIgYsgVDhhjulcJsSqe1QdRSHeTJRwLocbA1Pbrz7hNiVylTz96IY7keh1L2OlzDF3WrSQAAAAAAAAAAABCAgTuF/H0tleUwFpnYS6tRxc4hNIgYsgVDhhjulcJsSqe1QdRSHeTJRwLocbA1Pbrz7hNiVylTz96IY7keh1L2OlzDF3WrSQAAAAAAAAAAABCAgTuF/H0tleUwFpnYS6tRxc4hNIgYsgVDhhjulcJsSqe1QdRSHeTJRwLocbA1Pbrz7hNiVylTz96IY7keh1L2OlzDF3WrSQAAAAAAAAAAAA='
+# testcommond.mktx(tx)
 #testcommond.select_wallet("BTC-1")
 #testcommond.create_hd_wallet(password)
 
-#info = testcommond.create_hd_wallet(password=password, seed='rocket omit review divert bomb brief mushroom family fatal limb goose lion')
-testcommond.load_all_wallet()
-data = testcommond.list_wallets()
-#data = json.loads(info)
+## test recovery
+info = testcommond.create_hd_wallet(password=password, seed='rocket omit review divert bomb brief mushroom family fatal limb goose lion')
+#testcommond.load_all_wallet()
+# data = testcommond.list_wallets()
+# #data = json.loads(info)
 wallet_name = []
 wallet_name.append('der_1')
 testcommond.recovery_confirmed(wallet_name)
-#testcommond.create_btc_der_wallet("der_1", password)
-#testcommond.create_btc_der_wallet("der_2", password)
-testcommond.delete_wallet('BTC-1')
+#testcommond.create_derived_wallet("der_ETH_1", password, 'eth')
+#testcommond.create_derived_wallet("der_ETH_2", password, 'eth')
+#testcommond.delete_wallet('ETH-1')
 ##need recovery
 #testcommond.create_hd_wallet()
 #testcommond.create_btc_der_wallet()
@@ -170,7 +173,7 @@ testcommond.delete_wallet('BTC-1')
 #name = "test1wwtest"
 #password = "111"
 
-#testcommond.delete_wallet(name)
+testcommond.delete_wallet(name)
 
 #testcommond.create(name, password, seed='rocket omit review divert bomb brief mushroom family fatal limb goose lion', bip39_derivation="m/84'/0'/0'")
 #seed = testcommond.create(name, password, bip39_derivation="")
@@ -181,14 +184,20 @@ testcommond.delete_wallet('BTC-1')
 # ret1 = testcommond.is_seed("wls")
 #testcommond.create(name, password, seed='rocket omit review divert bomb brief mushroom family fatal limb goose lion')
 #testcommond.create(name, password, seed='pool friend inherit unhappy quote dwarf drill suit coil advance cage debate')
-#testcommond.create_eth_wallet(name, password=password, seed='pool friend inherit unhappy quote dwarf drill suit coil advance cage debate')
+#testcommond.create(name, password, seed='pottery curtain belt canal cart include raise receive sponsor vote embody offer')
+testcommond.create_eth(name, password=password, seed='pottery curtain belt canal cart include raise receive sponsor vote embody offer')
 #test create hd wallet
 #testcommond.create_eth_wallet(name, password=password, seed='legend innocent climb kingdom first shoulder waste swap sleep comic ripple hip')
 #test create import private wallet
-testcommond.create_eth(name, password=password, privkeys="0xe6841ceb170becade0a4aa3e157f08871192f9de1c35835de5e1b47fc167d27e")
-keystore_info = testcommond.export_keystore()
-private_info = testcommond.export_private()
-stata = testcommond.is_watch_only()
+#testcommond.load_all_wallet()
+#testcommond.create(name, password=password, privkeys="p2wpkh:cRR5YkkGHTph8RsM1bQv7YSzY27hxBBhoJnVdHjGnuKntY7RgoGw")
+#testcommond.create_eth(name, password=password, privkeys="0xe6841ceb170becade0a4aa3e157f08871192f9de1c35835de5e1b47fc167d27e")
+# keystore = {'address': 'ae2425eb0235c2df1ad39d91fc50978edb7bea83', 'crypto': {'cipher': 'aes-128-ctr', 'cipherparams': {'iv': 'c46726d14060bec5a7a0c44718cb6ef8'}, 'ciphertext': '2c0f6e49754d0471288302d5c1de8623b6e4440563f47af4f178534fd9489da6', 'kdf': 'pbkdf2', 'kdfparams': {'c': 1000000, 'dklen': 32, 'prf': 'hmac-sha256', 'salt': 'd3e21673bfcc20c3438c00c0200d2eba'}, 'mac': 'b4e6b735d0fd6ea709cd7ba4c040dbcfe2ad4cafe411dbce0ca2e4eef3c3d701'}, 'id': 'ee6f2e41-6435-4f14-b3ff-f765804ca872', 'version': 3}
+# testcommond.create_eth(name, password=password, keystores=keystore)
+#testcommond.create_eth(name, addresses='0x1796c64fBb9A3fd96e89B08110bb294992b686E1')
+# keystore_info = testcommond.export_keystore()
+# private_info = testcommond.export_private()
+# stata = testcommond.is_watch_only()
 # #test create import keystore wallet
 # testcommond.create_eth_wallet(name, password=password, seed='legend innocent climb kingdom first shoulder waste swap sleep comic ripple hip')
 # testcommond.export_keystore()
@@ -206,7 +215,7 @@ stata = testcommond.is_watch_only()
 
 #path = '/storage/emulated/0/Pictures/test'
 #testcommond.save_tx_to_file(path, '123')
-
+testcommond.load_all_wallet()
 list = testcommond.list_wallets()
 print("3333333333-list = %s" %list)
 #time.sleep(10000)
@@ -360,11 +369,14 @@ elif flag:
     all_output = []
     #output_info = {'bcrt1qq53vkwezxvuueyzmgdncj0p78qahg355gd720p':'0.1'}
     #output_info = {'tb1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paq6htvpe':'0.005'}
-    output_info = {'bcrt1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paqhwp25r':'0.005'}
+    #output_info = {'bcrt1qnuh3qc9g6lwlqqvmf7hg05pzlujhua9emdqdty4znjstr5886paqhwp25r':'0.005'}
+    output_info = {'mtCj8m1EPxMiD3TLd39bR9ASTPxJ53dtbP': '0'}
     #output_info = {'bcrt1qdvzlw6z7lwr5cgxtglculx3p52su6jw7mvfvmr':'5000'}
     all_output.append(output_info)
     #all_output.append(output_info1)
+    all_output = [{"mtCj8m1EPxMiD3TLd39bR9ASTPxJ53dtbP": "0"}]
     output_str = json.dumps(all_output)
+
     message = 'test111'
     print("--------------all_output= %s" %output_str)
     feerate = testcommond.get_default_fee_status()
@@ -373,6 +385,7 @@ elif flag:
     print("get_fee_by_feerate================%s" % ret_list)
 
     ret_str = testcommond.mktx(output_str, message)
+
     ret_list = json.loads(ret_str)
     print("----mktx================%s" % ret_list)
 

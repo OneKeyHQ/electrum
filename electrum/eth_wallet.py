@@ -112,6 +112,7 @@ class Abstract_Eth_Wallet(ABC):
         self.db = db
         self.hide_type=False
         self.storage = storage
+        self.storage_pw = None
         # load addresses needs to be called before constructor for sanity checks
         db.load_addresses(self.wallet_type)
         self.keystore = None  # type: Optional[KeyStore]  # will be set by load_keystore
@@ -180,7 +181,7 @@ class Abstract_Eth_Wallet(ABC):
         return json.dumps(eth_info)
 
     def add_contract_token(self, contract_symbol, contract_address):
-        contract = Eth_Contract(contract_symbol, contract_address)
+        contract = Eth_Contract(contract_symbol, contract_address, self.pywalib)
         self.contacts[contract_symbol] = contract
 
     def delete_contract_token(self, contract_symbol):
@@ -358,18 +359,19 @@ class Abstract_Eth_Wallet(ABC):
         pass
 
     def export_private_key(self, address: str, password: Optional[str]) -> str:
-        if self.is_watching_only():
-            raise Exception(_("This is a watching-only wallet"))
-        print("TODO")
-        # if not is_address(address):
-        #     raise Exception(f"Invalid bitcoin address: {address}")
-        if not self.is_mine(address):
-            raise Exception(_('Address not in wallet.') + f' {address}')
-        index = self.get_address_index(address)
-        pk, compressed = self.keystore.get_private_key(index, password)
-        txin_type = self.get_txin_type(address)
-        serialized_privkey = bitcoin.serialize_privkey(pk, compressed, txin_type)
-        return serialized_privkey
+        # if self.is_watching_only():
+        #     raise Exception(_("This is a watching-only wallet"))
+        # print("TODO")
+        # # if not is_address(address):
+        # #     raise Exception(f"Invalid bitcoin address: {address}")
+        # if not self.is_mine(address):
+        #     raise Exception(_('Address not in wallet.') + f' {address}')
+        # index = self.get_address_index(address)
+        # pk, compressed = self.keystore.get_private_key(index, password)
+        # txin_type = self.get_txin_type(address)
+        # serialized_privkey = bitcoin.serialize_privkey(pk, compressed, txin_type)
+        # return serialized_privkey
+        pass
 
     def export_private_key_for_path(self, path: Union[Sequence[int], str], password: Optional[str]) -> str:
         raise Exception("this wallet is not deterministic")
@@ -576,22 +578,26 @@ class Abstract_Eth_Wallet(ABC):
     def may_have_password(cls):
         return True
 
-    def check_password(self, password):
+    def check_password(self, password, str_pw=None):
         if self.has_keystore_encryption():
             self.keystore.check_password(password)
         if self.has_storage_encryption():
-            self.storage.check_password(password)
+            if str_pw is not None:
+                self.storage.check_password(str_pw)
+            else:
+                self.storage.check_password(self.storage_pw)
 
-    def update_password(self, old_pw, new_pw, *, encrypt_storage: bool = True):
+    def update_password(self, old_pw, new_pw, str_pw=None, *, encrypt_storage: bool = True):
         if old_pw is None and self.has_password():
             raise InvalidPassword()
         self.check_password(old_pw)
-        if self.storage:
+        if self.storage and str_pw is not None:
             if encrypt_storage:
                 enc_version = self.get_available_storage_encryption_version()
             else:
                 enc_version = StorageEncryptionVersion.PLAINTEXT
-            self.storage.set_password(new_pw, enc_version)
+            self.storage.set_password(str_pw, enc_version)
+            self.storage_pw = str_pw
         # make sure next storage.write() saves changes
         self.db.set_modified(True)
 
@@ -618,9 +624,9 @@ class Abstract_Eth_Wallet(ABC):
         index = self.get_address_index(addr)
         return self.keystore.decrypt_message(index, message, password)
 
-    @abstractmethod
-    def pubkeys_to_address(self, pubkeys: Sequence[str]) -> Optional[str]:
-        pass
+    # @abstractmethod
+    # def pubkeys_to_address(self, pubkeys: Sequence[str]) -> Optional[str]:
+    #     pass
 
     def clear_coin_price_cache(self):
         self._coin_price_cache = {}
@@ -655,12 +661,15 @@ class Abstract_Eth_Wallet(ABC):
 class Simple_Eth_Wallet(Abstract_Eth_Wallet):
     # wallet with a single keystore
 
+    def pubkeys_to_address(self, public_key: str):
+        super().pubkeys_to_address(public_key)
+
     def is_watching_only(self):
         return self.keystore.is_watching_only()
 
     def _update_password_for_keystore(self, old_pw, new_pw):
         if self.keystore and self.keystore.may_have_password():
-            self.keystore.update_password(old_pw, new_pw)
+            self.keystore.update_password(old_pw, new_pw, eth_status='eth' if -1 != self.wallet_type.find('eth') else None)
             self.save_keystore()
 
     def save_keystore(self):
@@ -723,7 +732,7 @@ class Imported_Eth_Wallet(Simple_Eth_Wallet):
 
     def export_private_key(self, address, password):
         pubk = self.get_public_key(address)
-        prvk = self.keystore.get_private_key(pubk, password)
+        prvk = self.keystore.get_eth_private_key(pubk, password)
         return prvk
 
     def export_keystore(self, address, password):
@@ -788,14 +797,14 @@ class Imported_Eth_Wallet(Simple_Eth_Wallet):
         for key in keys:
             try:
                 #maybe error, need test
-                pubkey = self.keystore.import_eth_privkey(bytes.fromhex(key), password)
+                pubkey = self.keystore.import_eth_privkey(key, password)
             except BaseException as e:
                 bad_keys.append((key, _('invalid private key') + f': {e}'))
                 continue
 
-            addr = self.pubkeys_to_address(pubkey)
+            addr = pubkey.to_address()
             good_addr.append(addr)
-            self.db.add_imported_address(addr, {'pubkey':pubkey})
+            self.db.add_imported_address(addr, {'pubkey':pubkey.__str__()})
             #self.add_address(addr)
         self.save_keystore()
         if write_to_disk:
@@ -809,12 +818,12 @@ class Imported_Eth_Wallet(Simple_Eth_Wallet):
         else:
             raise BitcoinException(str(bad_keys[0][1]))
 
-    def pubkeys_to_address(self, pubkeys):
-        pubkey = pubkeys[0]
-        for addr in self.db.get_imported_addresses():  # FIXME slow...
-            if self.db.get_imported_address(addr)['pubkey'] == pubkey:
-                return addr
-        return None
+    # def pubkeys_to_address(self, pubkeys):
+    #     pubkey = pubkeys[0]
+    #     for addr in self.db.get_imported_addresses():  # FIXME slow...
+    #         if self.db.get_imported_address(addr)['pubkey'] == pubkey:
+    #             return addr
+    #     return None
 
     def get_txin_type(self, ):
         print("11")
@@ -1024,7 +1033,7 @@ class Simple_Eth_Deterministic_Wallet(Simple_Eth_Wallet, Deterministic_Eth_Walle
     def get_master_public_key(self):
         return self.keystore.get_master_public_key()
 
-    def derive_pubkeys(self, c, i, compressed=None):
+    def derive_pubkeys(self, c, i, compressed=False):
         return [self.keystore.derive_pubkey(c, i, compressed).hex()]
 
 
@@ -1034,6 +1043,9 @@ class Standard_Eth_Wallet(Simple_Eth_Deterministic_Wallet):
     def __init__(self, db, storage, *, config):
         Simple_Eth_Deterministic_Wallet.__init__(self, db, storage, config=config)
         self.hd_main_eth_address = ''
+
+    def pubkeys_to_address(self, public_key: str):
+        return to_checksum_address(public_key_bytes_to_address(bytes.fromhex(public_key)))
 
     def get_keystore_by_address(self, address, password):
         privatekey = self.get_private_key(address, password)
@@ -1075,6 +1087,14 @@ class Standard_Eth_Wallet(Simple_Eth_Deterministic_Wallet):
     def synchronize(self):
         with self.lock:
             self.synchronize_sequence(False)
+
+    def export_private_key(self, address, password):
+        return self.get_private_key(address, password=password)
+
+    def export_keystore(self, address, password):
+        prvk = self.export_private_key(address, password)
+        encrypted_private_key = Account.encrypt(prvk, password)
+        return encrypted_private_key
 
     def get_private_key(self, address, password):
         path = self.db.get_address_index(address)
