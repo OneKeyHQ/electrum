@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/button_bk_ddake"
+    android:clickable="true"
+    android:fitsSystemWindows="true"
+    tools:context="org.haobtc.onekey.onekeys.homepage.process.TransactionDetailWalletActivity">
+
+    <RelativeLayout
+        android:id="@+id/RelativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_50">
+
+        <ImageView
+            android:id="@+id/img_back"
+            android:layout_width="@dimen/dp_40"
+            android:layout_height="@dimen/dp_40"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/dp_10"
+            android:padding="@dimen/dp_8"
+            android:src="@drawable/left_arrow" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:text="@string/btc_c"
+            android:textColor="@color/text"
+            android:textSize="@dimen/sp_20" />
+
+        <ImageView
+            android:layout_width="@dimen/dp_30"
+            android:layout_height="@dimen/dp_30"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="@dimen/dp_22"
+            android:src="@drawable/token_btc" />
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/text_wallet_amount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/RelativeLayout"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/dp_40"
+        android:textColor="@color/text_two"
+        android:textSize="23sp"
+        tools:text="0.113723" />
+
+    <TextView
+        android:id="@+id/text_wallet_dollar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/text_wallet_amount"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/dp_10"
+        android:textColor="@color/text_five"
+        android:textSize="@dimen/sp_16"
+        tools:text="≈ $ 1457.81" />
+
+    <LinearLayout
+        android:id="@+id/linear"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:layout_below="@+id/text_wallet_dollar"
+        android:layout_marginStart="@dimen/dp_20"
+        android:layout_marginTop="@dimen/dp_45"
+        android:layout_marginEnd="@dimen/dp_20"
+        android:background="@drawable/gray_ovle"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/text_All"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/dp_2"
+            android:layout_marginTop="@dimen/dp_2"
+            android:layout_marginBottom="@dimen/dp_2"
+            android:layout_weight="1"
+            android:background="@drawable/back_white_6"
+            android:gravity="center"
+            android:text="@string/spin_all"
+            android:textColor="@color/text_two"
+            android:textSize="@dimen/sp_14" />
+
+        <TextView
+            android:id="@+id/text_into"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/dp_2"
+            android:layout_marginBottom="@dimen/dp_2"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/change_into"
+            android:textColor="@color/text_two"
+            android:textSize="@dimen/sp_14" />
+
+        <TextView
+            android:id="@+id/text_output"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/dp_2"
+            android:layout_marginBottom="@dimen/dp_2"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/roll_out"
+            android:textColor="@color/text_two"
+            android:textSize="@dimen/sp_14" />
+
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recl_transaction_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/linear"
+        android:layout_marginStart="@dimen/dp_20"
+        android:visibility="visible"
+        android:layout_marginTop="@dimen/dp_30"
+        android:layout_marginEnd="@dimen/dp_20"
+        android:layout_marginBottom="@dimen/dp_100"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:itemCount="3"
+        tools:listitem="@layout/btc_detail_item">
+
+    </androidx.recyclerview.widget.RecyclerView>
+    <TextView
+        android:id="@+id/tet_None"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_200"
+        android:layout_below="@+id/linear"
+        android:gravity="center"
+        android:text="@string/no_records"
+        android:textColor="@color/light_text"
+        android:textSize="@dimen/text_size"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_50"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="@dimen/dp_30"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_forward"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/dp_45"
+            android:layout_marginStart="23dp"
+            android:layout_marginEnd="@dimen/dp_6"
+            android:layout_marginBottom="@dimen/dp_5"
+            android:layout_weight="1"
+            android:background="@drawable/blue_button"
+            android:text="@string/forword"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/sp_16" />
+
+        <Button
+            android:id="@+id/btn_collect"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/dp_45"
+            android:layout_marginStart="@dimen/dp_6"
+            android:layout_marginBottom="@dimen/dp_5"
+            android:layout_marginEnd="23dp"
+            android:layout_weight="1"
+            android:background="@drawable/green_btn"
+            android:text="@string/collect"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/sp_16" />
+
+    </LinearLayout>
+
+</RelativeLayout>

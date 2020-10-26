@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="68dp"
+    android:background="@color/button_bk_ddake">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="@dimen/dp_40"
+        android:layout_height="@dimen/dp_40"
+        android:layout_centerVertical="true"
+        android:src="@drawable/send_" />
+
+    <TextView
+        android:id="@+id/text_address"
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_8"
+        android:layout_marginTop="@dimen/dp_10"
+        android:layout_toEndOf="@+id/imageView"
+        android:ellipsize="middle"
+        android:singleLine="true"
+        android:textColor="@color/text_two"
+        android:textSize="@dimen/sp_14"
+        tools:text="shbjdbjshbdsjndksnkdal" />
+
+    <TextView
+        android:id="@+id/text_time"
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="@dimen/dp_8"
+        android:layout_marginBottom="@dimen/dp_10"
+        android:layout_toEndOf="@+id/imageView"
+        android:ellipsize="middle"
+        android:singleLine="true"
+        android:textColor="@color/text_six"
+        android:textSize="@dimen/sp_12"
+        tools:text="09/18 22:03" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:gravity="end"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/text_send_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:textColor="@color/text_eight"
+            android:textSize="@dimen/sp_16"
+            tools:text="-5 BTC" />
+
+        <TextView
+            android:id="@+id/text_send_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_8"
+            android:singleLine="true"
+            android:textColor="@color/text_nine"
+            android:textSize="@dimen/sp_12"
+            tools:text="0/1" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/line_hight"
+        android:layout_alignParentBottom="true"
+        android:background="@color/line_color" />
+
+</RelativeLayout>

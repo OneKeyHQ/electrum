@@ -46,22 +46,78 @@
         android:theme="@style/AppTheme"
         tools:replace="label, android:allowBackup"
         tools:targetApi="q">
-        <activity android:name=".onekeys.homepage.process.ChooseCurrencyActivity"></activity>
-        <activity android:name=".onekeys.homepage.process.ReceiveHDActivity" />
-        <activity android:name=".onekeys.homepage.process.SendHdActivity" />
-        <activity android:name=".onekeys.homepage.WalletListActivity" />
-        <activity android:name=".onekeys.dialog.recovery.importmethod.WatchWalletActivity" />
-        <activity android:name=".onekeys.dialog.recovery.importmethod.ImportKeystoreActivity" />
-        <activity android:name=".onekeys.dialog.recovery.importmethod.ImportMnemonicActivity" />
-        <activity android:name=".onekeys.dialog.recovery.importmethod.ImportPrivateKeyActivity" />
-        <activity android:name=".onekeys.dialog.recovery.ChooseImportMethodActivity" />
-        <activity android:name=".onekeys.dialog.recovery.ImprotSingleActivity" />
-        <activity android:name=".onekeys.dialog.recovery.HardwareRecoveryActivity" />
-        <activity android:name=".onekeys.dialog.RecoverHdWalletActivity" />
-        <activity android:name=".onekeys.dialog.SetLongPassActivity" />
-        <activity android:name=".onekeys.dialog.SetHDWalletPassActivity" />
-        <activity android:name=".onekeys.HomeOnekeyActivity" />
-        <activity android:name=".onekeys.GuidanceActivity" />
+        <activity
+            android:name=".onekeys.homepage.process.TransactionDetailWalletActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".onekeys.homepage.process.HdWalletDetailActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".onekeys.homepage.process.ChooseCurrencyActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".onekeys.homepage.process.ReceiveHDActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".onekeys.homepage.process.SendHdActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".onekeys.homepage.WalletListActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".onekeys.dialog.recovery.importmethod.WatchWalletActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".onekeys.dialog.recovery.importmethod.ImportKeystoreActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".onekeys.dialog.recovery.importmethod.ImportMnemonicActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".onekeys.dialog.recovery.importmethod.ImportPrivateKeyActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".onekeys.dialog.recovery.ChooseImportMethodActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".onekeys.dialog.recovery.ImprotSingleActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".onekeys.dialog.recovery.HardwareRecoveryActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".onekeys.dialog.RecoverHdWalletActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".onekeys.dialog.SetLongPassActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".onekeys.dialog.SetHDWalletPassActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".onekeys.HomeOnekeyActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".onekeys.GuidanceActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".activities.settings.EditWhiteListActivity"
             android:screenOrientation="portrait"

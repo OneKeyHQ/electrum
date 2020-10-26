@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/onekey_gredient"
+    android:background="@drawable/home_bg_onekey"
     android:clipToPadding="true"
     android:fitsSystemWindows="true"
     tools:context="org.haobtc.onekey.onekeys.homepage.WalletFragment">
@@ -23,35 +23,36 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
-                <View
-                    android:layout_width="122dp"
+                <LinearLayout
+                    android:layout_width="wrap_content"
                     android:layout_height="@dimen/dp_28"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="31dp"
-                    android:background="@drawable/onekey_grey_tuo" />
+                    android:background="@drawable/onekey_grey_tuo"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/text_wallet_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/dp_18"
+                        android:layout_marginStart="@dimen/dp_30"
+                        android:text="@string/no_use_wallet" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/dp_7"
+                        android:layout_marginEnd="@dimen/dp_10"
+                        android:src="@drawable/right" />
+                </LinearLayout>
+
 
                 <ImageView
                     android:layout_width="@dimen/dp_36"
                     android:layout_height="@dimen/dp_36"
                     android:layout_marginStart="@dimen/dp_20"
                     android:src="@drawable/loco_round" />
-
-                <TextView
-                    android:id="@+id/text_wallet_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="@dimen/dp_18"
-                    android:layout_centerVertical="true"
-                    android:layout_marginStart="62dp"
-                    android:text="@string/no_use_wallet" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginStart="@dimen/dp_7"
-                    android:layout_toEndOf="@+id/text_wallet_name"
-                    android:src="@drawable/right" />
-
             </RelativeLayout>
 
             <ImageView
@@ -67,13 +68,14 @@
         </RelativeLayout>
 
         <LinearLayout
+            android:id="@+id/lin_no_wallet"
             android:layout_width="match_parent"
             android:layout_height="345dp"
             android:layout_marginStart="@dimen/dp_20"
             android:layout_marginTop="23dp"
             android:layout_marginEnd="@dimen/dp_20"
             android:orientation="vertical"
-            android:visibility="gone">
+            android:visibility="visible">
 
             <RelativeLayout
                 android:id="@+id/rel_create_hd"
@@ -259,34 +261,53 @@
 
 
         <LinearLayout
+            android:id="@+id/lin_have_wallet"
             android:layout_width="match_parent"
-            android:visibility="visible"
             android:layout_height="236dp"
             android:layout_marginStart="@dimen/dp_20"
             android:layout_marginTop="23dp"
             android:layout_marginEnd="@dimen/dp_20"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:visibility="visible">
 
             <RelativeLayout
+                android:id="@+id/rel_wallet_detail"
                 android:layout_width="match_parent"
                 android:layout_height="168dp"
                 android:background="@drawable/home_bg_up">
 
-
-                <TextView
-                    android:id="@+id/text_amount"
-                    android:layout_width="match_parent"
+                <RelativeLayout
+                    android:id="@+id/RelativeLayout11"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dp_60"
-                    android:gravity="center_horizontal"
-                    android:textColor="@color/button_bk_ddake"
-                    android:textSize="32sp"
-                    android:text="@string/_0" />
+                    android:layout_marginTop="@dimen/dp_60">
+
+                    <TextView
+                        android:id="@+id/text_amount"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal"
+                        android:visibility="visible"
+                        android:text="@string/_0"
+                        android:textColor="@color/button_bk_ddake"
+                        android:textSize="32sp" />
+
+                    <TextView
+                        android:id="@+id/text_amount_star"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        android:gravity="center_horizontal"
+                        android:text="@string/star"
+                        android:textColor="@color/button_bk_ddake"
+                        android:textSize="32sp" />
+                </RelativeLayout>
+
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="17dp"
-                    android:layout_below="@+id/text_amount"
+                    android:layout_below="@+id/RelativeLayout11"
                     android:layout_marginTop="@dimen/dp_12"
                     android:gravity="center_horizontal">
 
@@ -338,7 +359,7 @@
                         android:layout_height="wrap_content"
                         android:drawableStart="@drawable/plane"
                         android:drawablePadding="@dimen/dp_16"
-                        android:text="@string/send"
+                        android:text="@string/forword"
                         android:textColor="@color/button_bk_ddake"
                         android:textSize="@dimen/sp_16"
                         tools:ignore="UseCompatTextViewDrawableXml" />
@@ -359,7 +380,7 @@
                         android:layout_height="wrap_content"
                         android:drawableStart="@drawable/downlowd"
                         android:drawablePadding="@dimen/dp_16"
-                        android:text="@string/receive"
+                        android:text="@string/collect"
                         android:textColor="@color/button_bk_ddake"
                         android:textSize="@dimen/sp_16"
                         tools:ignore="UseCompatTextViewDrawableXml" />
@@ -369,15 +390,17 @@
 
         </LinearLayout>
 
+
         <LinearLayout
+            android:id="@+id/lin_wallet_list"
             android:layout_width="match_parent"
-            android:visibility="visible"
             android:layout_height="match_parent"
             android:layout_marginStart="@dimen/dp_20"
             android:layout_marginTop="@dimen/dp_30"
             android:layout_marginEnd="@dimen/dp_20"
-            android:background="@drawable/white_back_tuo"
-            android:orientation="vertical">
+            android:background="@drawable/salf_white_tuo_20"
+            android:orientation="vertical"
+            android:visibility="visible">
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -418,12 +441,73 @@
 
             </RelativeLayout>
 
+            <RelativeLayout
+                android:id="@+id/rel_bi_detail"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_70">
+
+                <ImageView
+                    android:id="@+id/token_btc"
+                    android:layout_width="@dimen/dp_40"
+                    android:layout_height="@dimen/dp_40"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="@dimen/dp_20"
+                    android:src="@drawable/token_btc" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="@dimen/dp_15"
+                    android:layout_toEndOf="@+id/token_btc"
+                    android:text="@string/btc_c"
+                    android:textColor="@color/text_two"
+                    android:textSize="@dimen/sp_16" />
+
+                <ImageView
+                    android:layout_width="@dimen/dp_25"
+                    android:layout_height="@dimen/dp_25"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="@dimen/dp_15"
+                    android:src="@drawable/right_arrow_small" />
+
+                <TextView
+                    android:id="@+id/text_btc_amount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginTop="@dimen/dp_18"
+                    android:layout_marginEnd="57dp"
+                    android:textColor="@color/text_two"
+                    android:textSize="@dimen/sp_18"
+                    tools:text="0" />
+
+                <TextView
+                    android:id="@+id/text_dollar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/text_btc_amount"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginTop="@dimen/dp_2"
+                    android:layout_marginEnd="57dp"
+                    android:text="@string/_00"
+                    android:textColor="@color/text_five"
+                    android:textSize="@dimen/sp_10" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/line_hight"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/line_color" />
+            </RelativeLayout>
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recl_hd_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:visibility="gone"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                android:background="@color/button_bk_ddake"
                 tools:itemCount="2"
                 tools:listitem="@layout/home_item">
 

@@ -1,19 +1,25 @@
 package org.haobtc.onekey.onekeys.dialog;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.chaquo.python.PyObject;
+
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.onekeys.HomeOnekeyActivity;
+import org.haobtc.onekey.utils.Daemon;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -37,6 +43,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
     TextView textLong;
     private boolean input = false;
     private String firstPass;
+    private SharedPreferences.Editor edit;
 
     @Override
     public int getLayoutId() {
@@ -46,6 +53,8 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        edit = preferences.edit();
         editPass.addTextChangedListener(this);
     }
 
@@ -84,9 +93,22 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
                     if (!firstPass.equals(editPass.getText().toString())) {
                         mToast(getString(R.string.two_different_pass));
                         return;
-                    }else{
-                        mIntent(HomeOnekeyActivity.class);
+                    }
+                    PyObject createHdWallet = null;
+                    try {
+                        createHdWallet = Daemon.commands.callAttr("create_hd_wallet", editPass.getText().toString());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return;
+                    }
+                    if (createHdWallet != null) {
+                        Log.i("createHdWallet", "onViewClicked:-- " + createHdWallet);
+                        Intent intent = new Intent(SetLongPassActivity.this, HomeOnekeyActivity.class);
+                        startActivity(intent);
+                        edit.putBoolean("isHaveWallet", true);
+                        edit.apply();
                         finish();
+
                     }
                 }
 

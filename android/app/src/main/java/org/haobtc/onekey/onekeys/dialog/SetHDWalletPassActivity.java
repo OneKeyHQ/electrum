@@ -1,6 +1,8 @@
 package org.haobtc.onekey.onekeys.dialog;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -35,6 +37,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
     Button btnNext;
     private boolean input = false;
     private String sixPass;
+    private SharedPreferences.Editor edit;
 
     @Override
     public int getLayoutId() {
@@ -44,6 +47,8 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        edit = preferences.edit();
     }
 
     @Override
@@ -64,7 +69,6 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
             case R.id.btn_next:
                 if (!input) {
                     sixPass = pwdEdittext.getText().toString();
-
                     testSetPass.setText(getString(R.string.input_pass));
                     textTip.setText(getString(R.string.dont_tell));
                     pwdEdittext.clearText();
@@ -84,9 +88,11 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
                     }
                     if (createHdWallet != null) {
                         Log.i("createHdWallet", "onViewClicked:-- " + createHdWallet);
-
+                        Intent intent = new Intent(SetHDWalletPassActivity.this, HomeOnekeyActivity.class);
+                        startActivity(intent);
+                        edit.putBoolean("isHaveWallet", true);
+                        edit.apply();
                     }
-//                    mIntent(HomeOnekeyActivity.class);
 
                 }
                 break;

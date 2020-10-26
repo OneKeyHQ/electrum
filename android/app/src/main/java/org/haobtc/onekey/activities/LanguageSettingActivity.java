@@ -16,6 +16,7 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.activities.base.LunchActivity;
 import org.haobtc.onekey.aop.SingleClick;
+import org.haobtc.onekey.onekeys.HomeOnekeyActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -120,7 +121,7 @@ public class LanguageSettingActivity extends BaseActivity {
     }
 
     public void refreshSelf() {
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, HomeOnekeyActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }

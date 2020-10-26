@@ -326,6 +326,7 @@
                 android:textSize="@dimen/sp_14" />
 
             <RelativeLayout
+                android:id="@+id/rel_language"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dp_70"
                 android:background="@color/button_bk_ddake">
@@ -364,6 +365,7 @@
                 android:background="@color/line_color" />
 
             <RelativeLayout
+                android:id="@+id/rel_currency"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dp_70"
                 android:background="@color/button_bk_ddake">
@@ -440,6 +442,7 @@
                 android:background="@color/line_color" />
 
             <RelativeLayout
+                android:id="@+id/rel_tx_set"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dp_70"
                 android:background="@color/button_bk_ddake">

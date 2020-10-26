@@ -71,6 +71,7 @@
                 android:layout_marginStart="@dimen/dp_28"
                 android:layout_marginTop="47dp"
                 android:layout_marginEnd="@dimen/dp_28"
+                android:maxLength="6"
                 android:background="@null"
                 android:inputType="number"
                 android:textColor="@color/black_0"

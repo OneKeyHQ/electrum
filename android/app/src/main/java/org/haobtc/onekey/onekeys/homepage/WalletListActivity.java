@@ -3,6 +3,7 @@ package org.haobtc.onekey.onekeys.homepage;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -14,18 +15,23 @@ import android.widget.RelativeLayout;
 import androidx.annotation.LayoutRes;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.chaquo.python.PyObject;
+
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.CreateWalletActivity;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.activities.personalwallet.CreatAppWalletActivity;
 import org.haobtc.onekey.activities.personalwallet.mnemonic_word.MnemonicWordActivity;
 import org.haobtc.onekey.adapter.WalletListAdapter;
+import org.haobtc.onekey.utils.Daemon;
 
 import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
+import static org.haobtc.onekey.activities.service.CommunicationModeSelector.executorService;
 
 public class WalletListActivity extends BaseActivity {
 
@@ -79,6 +85,30 @@ public class WalletListActivity extends BaseActivity {
                 createWalletChooseDialog(WalletListActivity.this, R.layout.add_wallet);
                 break;
         }
+    }
+
+    private void getHomeWalletList() {
+        executorService.execute(new Runnable() {
+            private PyObject getWalletsListInfo;
+
+            @Override
+            public void run() {
+                //wallet list
+                try {
+                    getWalletsListInfo = Daemon.commands.callAttr("list_wallets");
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return;
+                }
+                if (getWalletsListInfo != null && getWalletsListInfo.size() != 0) {
+                    String toStrings = getWalletsListInfo.toString();
+                    Log.i("mWheelplanting", "toStrings: " + toStrings);
+
+                }
+
+            }
+        });
     }
 
     private void createWalletChooseDialog(Context context, @LayoutRes int resource) {

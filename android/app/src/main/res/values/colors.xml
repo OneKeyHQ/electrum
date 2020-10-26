@@ -65,5 +65,8 @@
     <color name="text_four">#f2f2f2</color>
     <color name="text_five">#59000000</color>
     <color name="text_six">#9FA6AD</color>
+    <color name="text_seven">#F5F6F7</color>
+    <color name="text_eight">#3E70F2</color>
+    <color name="text_nine">#F7931B</color>
 
 </resources>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@color/button_bk_ddake" />
+    <corners
+        android:bottomLeftRadius="0dp"
+        android:bottomRightRadius="0dp"
+        android:topLeftRadius="@dimen/dp_20"
+        android:topRightRadius="@dimen/dp_20" />
+    <stroke
+        android:width="@dimen/dp_1"
+        android:color="#F1EDED" />
+
+</shape>
