@@ -892,7 +892,8 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
             String locate = preferences.getString("language", "");
             String language = "English".equals(locate) ? "english" : "chinese";
             boolean useSe = Optional.of(event.isUseSE()).orElse(true);
-            new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.INIT_DEVICE, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "BIXIN KEY", language, useSe ? "1" : "");
+            new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.INIT_DEVICE, isNFC ?
+                    COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "BIXIN KEY", language, useSe ? "1" : "");
         }
     }
 

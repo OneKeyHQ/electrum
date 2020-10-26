@@ -10,6 +10,9 @@ import com.tencent.bugly.crashreport.CrashReport;
 
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.MyEventBusIndex;
+import org.haobtc.onekey.constant.Constant;
+import org.haobtc.onekey.constant.SpConstant;
+import org.haobtc.onekey.data.prefs.PreferencesManager;
 import org.haobtc.onekey.utils.Global;
 
 import java.util.UUID;
@@ -17,11 +20,12 @@ import java.util.UUID;
 import cn.com.heaton.blelibrary.ble.Ble;
 
 public class MyApplication extends Application {
+
     private static volatile MyApplication mInstance;
     private static final String BUGLY_APPID = "91260a7fcb";
-    private static final String PRIMARY_SERVICE =      "00000001-0000-1000-8000-00805f9b34fb";
+    private static final String PRIMARY_SERVICE = "00000001-0000-1000-8000-00805f9b34fb";
     private static final String WRITE_CHARACTERISTIC = "00000002-0000-1000-8000-00805f9b34fb";
-    private static final String READ_CHARACTERISTIC =  "00000003-0000-1000-8000-00805f9b34fb";
+    private static final String READ_CHARACTERISTIC = "00000003-0000-1000-8000-00805f9b34fb";
 
     @Override
     public void onCreate() {
@@ -47,6 +51,7 @@ public class MyApplication extends Application {
         }
         return mInstance;
     }
+
     // init ble
     private void initBle() {
         //Set whether to print Bluetooth log
@@ -72,10 +77,16 @@ public class MyApplication extends Application {
                 .setUuidReadCha(UUID.fromString(READ_CHARACTERISTIC))
                 .create(mInstance);
     }
+
     private void initChaquo() {
         if (!Python.isStarted()) {
             Python.start(new AndroidPlatform(mInstance));
         }
         Global.py = Python.getInstance();
+    }
+
+    public static String getDeviceWay() {
+        return (String) PreferencesManager.get(getInstance(), SpConstant.SP_NAME_PREFERENCES
+                , SpConstant.Preferences.WAY, Constant.WAY_MODE_BLE);
     }
 }

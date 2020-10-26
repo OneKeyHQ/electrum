@@ -1,5 +1,6 @@
 package org.haobtc.onekey.utils;
 
+import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -13,7 +14,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.FragmentActivity;
 
 import org.haobtc.onekey.R;
 
@@ -24,7 +24,7 @@ public class NfcUtils {
     public static PendingIntent mPendingIntent;
     public static String[][] mTechList;
 
-    public static void nfc(FragmentActivity activity, boolean promote) {
+    public static void nfc(Activity activity, boolean promote) {
         mNfcAdapter = nfcCheck(activity, promote);
         nfcInit(activity);
     }
@@ -32,7 +32,7 @@ public class NfcUtils {
     /**
      * check if NFC enabled
      */
-    public static NfcAdapter nfcCheck(FragmentActivity activity, boolean promote) {
+    public static NfcAdapter nfcCheck(Activity activity, boolean promote) {
         NfcAdapter mNfcAdapter = NfcAdapter.getDefaultAdapter(activity);
         if (mNfcAdapter == null) {
             Toast.makeText(activity, activity.getString(R.string.dont_use_nfc), Toast.LENGTH_SHORT).show();
@@ -50,7 +50,7 @@ public class NfcUtils {
     /**
      * init nfc
      */
-    private static void nfcInit(FragmentActivity activity) {
+    private static void nfcInit(Activity activity) {
         // tag tech_list
         mTechList = new String[][]{{Ndef.class.getName()}, {NfcV.class.getName()}, {NfcF.class.getName()}, {IsoDep.class.getName()}};
 
@@ -65,7 +65,7 @@ public class NfcUtils {
         }
     }
     // if
-    private static void isToSet(final FragmentActivity activity) {
+    private static void isToSet(final Activity activity) {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setMessage("是否跳转到设置页面打开NFC功能");
 //        builder.setTitle("提示");
@@ -77,7 +77,7 @@ public class NfcUtils {
         builder.create().show();
     }
 
-    private static void goToSet(FragmentActivity activity) {
+    private static void goToSet(Activity activity) {
             // 进入设置系统应用权限界面
             Intent intent = new Intent(Settings.ACTION_SETTINGS);
             activity.startActivity(intent);
