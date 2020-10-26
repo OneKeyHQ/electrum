@@ -5,9 +5,9 @@ package org.haobtc.onekey.constant;
  */
 public final class Constant {
 
-    public static final String WAY_MODE_BLE = "BLE";
-    public static final String WAY_MODE_NFC = "NFC";
-    public static final String WAY_MODE_USB = "USB";
+    public static final String WAY_MODE_BLE = "bluetooth";
+    public static final String WAY_MODE_NFC = "nfc";
+    public static final String WAY_MODE_USB = "usb";
 
     //ble name start with
     public static final String BLE_NAME_PREFIX = "BixinKey";

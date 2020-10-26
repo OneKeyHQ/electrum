@@ -4,6 +4,7 @@ import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
 
 import org.haobtc.onekey.activities.base.MyApplication;
+import org.haobtc.onekey.bean.HardwareFeatures;
 import org.haobtc.onekey.constant.PyConstant;
 import org.haobtc.onekey.utils.Daemon;
 import org.haobtc.onekey.utils.Global;
@@ -84,7 +85,7 @@ public final class HandleCommands {
         });
     }
 
-    public static void wipeDevice(String label, String language, String useSe, CallBack<String> callBack) {
+    public static void wipeDevice(CallBack<String> callBack) {
         sExecutorService.execute(() -> {
             synchronized (HandleCommands.class) {
                 try {
@@ -104,17 +105,17 @@ public final class HandleCommands {
 
 
     /**
-     * get deivce info
+     * get feature
      *
      * @param callBack
      */
-    public static void getFeature(CallBack callBack) {
+    public static void getFeature(CallBack<HardwareFeatures> callBack) {
         sExecutorService.execute(() -> {
             synchronized (HandleCommands.class) {
                 try {
                     String result = sCommand.callAttr(CommandMethod.GET_FEATURE,
                             MyApplication.getDeviceWay()).toString();
-                    callBack.onResult(result);
+                    callBack.onResult(HardwareFeatures.objectFromData(result));
                 } catch (Exception e) {
                     //todo err info
                     //onException(e);
@@ -137,5 +138,7 @@ public final class HandleCommands {
             }
         });
     }
+
+
 
 }

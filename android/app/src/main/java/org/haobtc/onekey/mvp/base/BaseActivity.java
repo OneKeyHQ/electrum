@@ -7,8 +7,16 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
+import org.haobtc.onekey.R;
 
 public abstract class BaseActivity extends AppCompatActivity implements IBaseView, IBaseActivity {
+
+
+    public Fragment mCurrentFragment;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -36,4 +44,29 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
         }
         return super.dispatchTouchEvent(ev);
     }
+<<<<<<< HEAD
+=======
+
+    public void startFragment(Fragment fragment) {
+        hideKeyboard();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager
+                .beginTransaction();
+        if (mCurrentFragment == null) {
+            fragmentTransaction.add(R.id.container, fragment).commitAllowingStateLoss();
+            mCurrentFragment = fragment;
+        }
+        if (mCurrentFragment != fragment) {
+            if (!fragment.isAdded()) {
+                fragmentTransaction.hide(mCurrentFragment)
+                        .add(R.id.container, fragment).commitAllowingStateLoss();
+            } else {
+                fragmentTransaction.hide(mCurrentFragment).show(fragment)
+                        .commitAllowingStateLoss();
+            }
+            mCurrentFragment = fragment;
+        }
+    }
+
+>>>>>>> bc82ce22d... add activate cold wallet logic
 }

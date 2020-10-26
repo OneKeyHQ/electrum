@@ -335,7 +335,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.base.LunchActivity"
+            android:name=".ui.activity.ActivateColdWalletActivity"
             android:screenOrientation="portrait"
             android:theme="@style/LunchTheme"
             tools:ignore="LockedOrientationActivity">
@@ -527,6 +527,18 @@
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
         <activity
+<<<<<<< HEAD
+=======
+            android:name=".ui.activity.SearchDevicesActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity"
+            android:launchMode="singleTask"/>
+<!--        <activity-->
+<!--            android:name=".ui.activity.FindNewDeviceActivity"-->
+<!--            android:screenOrientation="portrait"-->
+<!--            tools:ignore="LockedOrientationActivity" />-->
+        <activity
+>>>>>>> bc82ce22d... add activate cold wallet logic
             android:name=".card.SmartCardHelper"
             android:theme="@style/dialog" />
         <activity
