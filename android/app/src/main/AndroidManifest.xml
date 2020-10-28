@@ -335,7 +335,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.activity.ActivateColdWalletActivity"
+            android:name=".activities.base.LunchActivity"
             android:screenOrientation="portrait"
             android:theme="@style/LunchTheme"
             tools:ignore="LockedOrientationActivity">
