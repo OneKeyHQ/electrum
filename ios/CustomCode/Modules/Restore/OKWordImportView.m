@@ -6,7 +6,7 @@
 //
 
 #import "OKWordImportView.h"
-#import "OKTextField.h"
+#import "OKDeleteTextField.h"
 
 #define Margin 10
 #define CountPerRow  3
@@ -14,10 +14,10 @@
 #define MinCountPerColumn 4
 #define HeightPerCell 35
 
-@interface OKWordImportView()<UITextFieldDelegate, OKTextFieldDeleteProtocol>
+@interface OKWordImportView()<UITextFieldDelegate, OKDeleteTextFieldDeleteProtocol>
 {
     NSInteger _selectedIndex;
-    NSMutableArray<OKTextField *> *_tfs;
+    NSMutableArray<OKDeleteTextField *> *_tfs;
 }
 @property (weak, nonatomic) IBOutlet UIStackView *stackView;
 
@@ -43,7 +43,7 @@
     int column = 0;
     for (UIView *bgView in _stackView.subviews) {
         for (int i = 0; i < CountPerRow; ++i) {
-            OKTextField *textF = [[OKTextField alloc] init];
+            OKDeleteTextField *textF = [[OKDeleteTextField alloc] init];
             textF.tag = i + column * CountPerRow;
             textF.layer.cornerRadius = 5;
             textF.backgroundColor = [UIColor whiteColor];

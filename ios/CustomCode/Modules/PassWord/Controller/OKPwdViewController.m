@@ -65,6 +65,8 @@ typedef enum {
 
 @property (nonatomic,assign)PwdType type;
 
+@property (nonatomic,strong)OKPythonExecute *pythonExecute;
+
 @end
 
 @implementation OKPwdViewController
@@ -267,7 +269,14 @@ typedef enum {
 #pragma mark -  两次输入密码相同
 - (void)passwordIsCorrect
 {
-    NSLog(@"两次输入密码相同");
+    OKPythonExecute *pythonExecute = [[OKPythonExecute alloc] initWithModuleDirName:@"android" moduleName:@"console"];
+    _pythonExecute = pythonExecute;
+    NSDictionary *params = @{@"kkkk":@"helo"};
+    [pythonExecute executeWithClass:@"AndroidCommands" methodName:@"create_hd_wallet" parameter:params success:^(id result) {
+        NSLog(@"===resutl = %@",result);
+    } fail:^(NSError *error) {
+        NSLog(@"====error = %@",error.domain);
+    }];
 }
 
 

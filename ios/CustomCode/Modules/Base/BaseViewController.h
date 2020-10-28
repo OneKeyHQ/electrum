@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)backButtonWhiteColor;
 
 - (void)hideBackBtn;
-
+- (void)setNavigationBarBackgroundColorWithClearColor;
 @end
 
 NS_ASSUME_NONNULL_END

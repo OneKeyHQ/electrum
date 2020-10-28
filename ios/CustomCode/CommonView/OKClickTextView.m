@@ -47,7 +47,6 @@
     if(self.textColor){
         [self.content addAttribute:NSForegroundColorAttributeName value:self.textColor range:NSMakeRange(0, text.length)];
     }
-    
 }
 
 

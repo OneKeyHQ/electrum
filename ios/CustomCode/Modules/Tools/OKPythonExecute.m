@@ -74,9 +74,9 @@
     NSString *moudleName = [NSString stringWithFormat:@"%@.%@",_moduleDirName,_moduleName];
     const char * fileName = [moudleName UTF8String];
 
-    
     PyObject * pModule = PyImport_ImportModule(fileName);//Python文件名
     if (!pModule) {
+        PyErr_Print();
         [self p_handleWithError:[self p_errorMsg:@"导入module出错,请重试"]];
         return NO;
     }
@@ -91,7 +91,6 @@
         [self p_handleWithError:[self p_errorMsg:@"初始化对象出错,请重试"]];
         return NO;
     }
-    
     return YES;
 }
 

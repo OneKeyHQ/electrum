@@ -17,7 +17,7 @@
 }
 
 - (void)setLayerDefaultRadius {
-    [self setLayerRadius:2.5];
+    [self setLayerRadius:20];
 }
 
 - (void)setLayerBoarderColor:(UIColor *)color width:(CGFloat)width radius:(CGFloat)radius {
@@ -154,7 +154,6 @@
         }
     });
 }
-
 - (void)createPlaceholder:(NSMutableArray*)imgs{
     UIGraphicsBeginImageContextWithOptions(self.bounds.size, NO, 0.0);
     [self.layer renderInContext:UIGraphicsGetCurrentContext()];
@@ -428,22 +427,22 @@
         btn.enabled = YES;
     }
 }
-- (void)setCornerWith:(CGFloat)radius side:(ATCornerPathSide)side withSize:(CGSize)size
+- (void)setCornerWith:(CGFloat)radius side:(OKCornerPathSide)side withSize:(CGSize)size
 {
     CGFloat cornerTopLeft = 0;
     CGFloat cornerTopRight = 0;
     CGFloat cornerBottomLeft = 0;
     CGFloat cornerBottomRight = 0;
-    if (side & ATCornerPathTopLeft) {
+    if (side & OKCornerPathTopLeft) {
         cornerTopLeft = radius;
     }
-    if (side & ATCornerPathTopRight) {
+    if (side & OKCornerPathTopRight) {
         cornerTopRight = radius;
     }
-    if (side & ATCornerPathBottomLeft) {
+    if (side & OKCornerPathBottomLeft) {
         cornerBottomLeft = radius;
     }
-    if (side & ATCornerPathBottomRight) {
+    if (side & OKCornerPathBottomRight) {
         cornerBottomRight = radius;
     }
     UIBezierPath * path = [UIBezierPath new];

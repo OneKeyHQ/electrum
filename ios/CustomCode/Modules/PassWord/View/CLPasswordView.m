@@ -119,8 +119,8 @@
     [_viewArray mas_distributeViewsAlongAxis:MASAxisTypeHorizontal withFixedItemLength:50 leadSpacing:(2.5 * ((self.width - 50 * 6) / 8.0)) tailSpacing:(2.5 * ((self.width - 50 * 6) / 8.0))];
 }
 
-//- (void)becomeFirstResponder
-//{
-//    [(UITextField *)[_viewArray firstObject] becomeFirstResponder];
-//}
+- (void)becomeFirstResponder
+{
+    [(UITextField *)[_viewArray firstObject] becomeFirstResponder];
+}
 @end

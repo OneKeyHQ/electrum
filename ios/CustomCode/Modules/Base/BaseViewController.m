@@ -33,7 +33,7 @@
     [super viewDidLoad];
     // 替换返回按钮
     if ([self.navigationController.viewControllers count] > 1) {
-        self.navigationItem.leftBarButtonItem = [UIBarButtonItem backBarButtonItemWithTitle:MyLocalizedString(@"Return", nil) target:self selector:@selector(backToPrevious)];
+        self.navigationItem.leftBarButtonItem = [UIBarButtonItem backBarButtonItemWithTarget:self selector:@selector(backToPrevious)];
     };
     
     if (_isNavigationBarTranslucent) {
@@ -42,6 +42,8 @@
         _navigationBarTitleTextAttributes = self.navigationController.navigationBar.titleTextAttributes;
     }
     _interactivePopEnable = self.navigationController.interactivePopGestureRecognizer.isEnabled;
+    
+    
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -76,7 +78,7 @@
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
     if (_navigationbarTranslucent) {
-        UINavigationController *naVC = self.navigationController ?:self.AT_NavigationController;
+        UINavigationController *naVC = self.navigationController ?:self.OK_NavigationController;
         [naVC.navigationBar setTranslucent:_isNavigationBarTranslucent];
         [naVC.navigationBar setBackgroundImage:_navigationBarBackgroundImage forBarMetrics:UIBarMetricsDefault];
         naVC.navigationBar.titleTextAttributes = _navigationBarTitleTextAttributes;
@@ -84,7 +86,7 @@
 }
 
 - (void)backButtonWhiteColor {
-    UIImage *whiteImage = [[UIImage imageNamed:@"Common_Back"] imageWithColor:[UIColor whiteColor]];
+    UIImage *whiteImage = [[UIImage imageNamed:@"arrow_left_white"] imageWithColor:[UIColor whiteColor]];
     [(UIButton *)self.navigationItem.leftBarButtonItem.customView setImage:whiteImage forState:UIControlStateNormal];
     [(UIButton *)self.navigationItem.leftBarButtonItem.customView setImage:whiteImage forState:UIControlStateHighlighted];
 }

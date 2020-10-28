@@ -10,7 +10,7 @@
 
 @implementation NSObject (OneKey)
 
-- (UINavigationController *)AT_NavigationController {
+- (UINavigationController *)OK_NavigationController {
     UIViewController *VC = [UIApplication sharedApplication].keyWindow.rootViewController;
     if(![VC isKindOfClass:NSClassFromString(@"MainViewController")]){
         if([VC isKindOfClass:[UINavigationController class]]) {
@@ -29,7 +29,7 @@
     return nil;
 }
 
-- (UITabBarController *)AT_TabBarController {
+- (UITabBarController *)OK_TabBarController {
     UIViewController *VC = [UIApplication sharedApplication].keyWindow.rootViewController;
     if(![VC isKindOfClass:NSClassFromString(@"MainViewController")]){
         return nil;
@@ -37,7 +37,7 @@
     return [[[UIApplication sharedApplication] keyWindow].rootViewController valueForKey:@"tab"];
 }
 
-- (UIViewController *)AT_TopViewController {
+- (UIViewController *)OK_TopViewController {
     UIViewController *resultVC;
     resultVC = [self _topViewController:[[UIApplication sharedApplication].keyWindow rootViewController]];
     while (resultVC.presentedViewController) {
@@ -52,7 +52,7 @@
     } else if ([vc isKindOfClass:[UITabBarController class]]) {
         return [self _topViewController:[(UITabBarController *)vc selectedViewController]];
     } else if ([vc isKindOfClass:NSClassFromString(@"MainViewController")]){
-        return self.AT_NavigationController.topViewController;
+        return self.OK_NavigationController.topViewController;
     } else {
         return vc;
     }

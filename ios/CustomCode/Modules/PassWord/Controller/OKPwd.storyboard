@@ -346,6 +346,94 @@
             </objects>
             <point key="canvasLocation" x="-39.130434782608695" y="154.01785714285714"/>
         </scene>
+        <!--View Controller-->
+        <scene sceneID="Amj-HM-kbc">
+            <objects>
+                <viewController id="Ioe-Ud-hTt" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="SKL-VM-egN">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="设置面容识别" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="afh-Cu-ihE">
+                                <rect key="frame" x="116" y="69" width="182" height="35"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="35" id="ECd-m4-DFK"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="30"/>
+                                <color key="textColor" red="0.078431372549019607" green="0.16470588235294117" blue="0.23137254901960785" alpha="1" colorSpace="deviceRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="您可以方便的解锁钱包，不用每次都输PIN码。" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="akf-dN-dfY">
+                                <rect key="frame" x="30" y="114" width="354" height="17"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <color key="textColor" red="0.078431372549019607" green="0.16470588235294117" blue="0.23137254901960785" alpha="1" colorSpace="deviceRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="MJl-Wu-qLM">
+                                <rect key="frame" x="153" y="208" width="108" height="108"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="108" id="deo-07-xwE"/>
+                                    <constraint firstAttribute="height" constant="108" id="rKs-bz-n9C"/>
+                                </constraints>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yT6-P8-N8O">
+                                <rect key="frame" x="55" y="348" width="304" height="50.5"/>
+                                <string key="text">您的面容、指纹等生物数据都留存在本机，
+由您手机厂商的操作系统加密保存，
+我们既无法接触，也不会保存这些数据。</string>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <color key="textColor" red="0.078431372549019607" green="0.16470588235294117" blue="0.23137254901960785" alpha="1" colorSpace="deviceRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LJF-wL-dTH">
+                                <rect key="frame" x="34" y="772" width="346" height="60"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="60" id="mcw-GX-4UP"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="20"/>
+                                <state key="normal" title="下次再说">
+                                    <color key="titleColor" red="0.078431372549019607" green="0.16470588235294117" blue="0.23137254901960785" alpha="1" colorSpace="deviceRGB"/>
+                                </state>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bB2-tI-ONC">
+                                <rect key="frame" x="34" y="687" width="346" height="60"/>
+                                <color key="backgroundColor" red="0.0010134851330000001" green="0.7278487682" blue="0.070087678730000005" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="60" id="diH-fM-OXM"/>
+                                    <constraint firstAttribute="height" constant="60" id="i3Q-eM-kB6"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" weight="medium" pointSize="20"/>
+                                <state key="normal" title="下次再说">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                            </button>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="m67-Kh-wto"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="LJF-wL-dTH" firstAttribute="trailing" secondItem="bB2-tI-ONC" secondAttribute="trailing" id="A15-sU-WHl"/>
+                            <constraint firstItem="MJl-Wu-qLM" firstAttribute="centerX" secondItem="SKL-VM-egN" secondAttribute="centerX" id="AaK-n7-8pQ"/>
+                            <constraint firstItem="LJF-wL-dTH" firstAttribute="leading" secondItem="bB2-tI-ONC" secondAttribute="leading" id="D5p-q6-tLn"/>
+                            <constraint firstItem="LJF-wL-dTH" firstAttribute="leading" secondItem="m67-Kh-wto" secondAttribute="leading" constant="34" id="Er4-6H-e26"/>
+                            <constraint firstItem="akf-dN-dfY" firstAttribute="leading" secondItem="m67-Kh-wto" secondAttribute="leading" constant="30" id="ODO-VH-r3e"/>
+                            <constraint firstItem="m67-Kh-wto" firstAttribute="trailing" secondItem="yT6-P8-N8O" secondAttribute="trailing" constant="55" id="SeA-Zu-ABx"/>
+                            <constraint firstItem="m67-Kh-wto" firstAttribute="bottom" secondItem="LJF-wL-dTH" secondAttribute="bottom" constant="30" id="cab-DC-rsV"/>
+                            <constraint firstItem="afh-Cu-ihE" firstAttribute="top" secondItem="m67-Kh-wto" secondAttribute="top" constant="25" id="d4S-dg-Nob"/>
+                            <constraint firstItem="MJl-Wu-qLM" firstAttribute="top" secondItem="akf-dN-dfY" secondAttribute="bottom" constant="77" id="d8v-0b-G5A"/>
+                            <constraint firstItem="yT6-P8-N8O" firstAttribute="leading" secondItem="m67-Kh-wto" secondAttribute="leading" constant="55" id="dPO-kX-nNF"/>
+                            <constraint firstItem="afh-Cu-ihE" firstAttribute="centerX" secondItem="SKL-VM-egN" secondAttribute="centerX" id="f2a-oV-KDn"/>
+                            <constraint firstItem="m67-Kh-wto" firstAttribute="trailing" secondItem="LJF-wL-dTH" secondAttribute="trailing" constant="34" id="fyy-4d-Y8H"/>
+                            <constraint firstItem="LJF-wL-dTH" firstAttribute="top" secondItem="bB2-tI-ONC" secondAttribute="bottom" constant="25" id="oM1-Re-1ds"/>
+                            <constraint firstItem="akf-dN-dfY" firstAttribute="top" secondItem="afh-Cu-ihE" secondAttribute="bottom" constant="10" id="rlf-xg-Kn6"/>
+                            <constraint firstItem="m67-Kh-wto" firstAttribute="trailing" secondItem="akf-dN-dfY" secondAttribute="trailing" constant="30" id="uID-Si-rDh"/>
+                            <constraint firstItem="yT6-P8-N8O" firstAttribute="top" secondItem="MJl-Wu-qLM" secondAttribute="bottom" constant="32" id="uKJ-tr-8qj"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="IYa-B3-gTZ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1359.4202898550725" y="154.01785714285714"/>
+        </scene>
     </scenes>
     <resources>
         <image name="Vectorright" width="15" height="10"/>
