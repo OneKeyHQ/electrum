@@ -1,4 +1,4 @@
-package org.haobtc.wallet.mvp.base;
+package org.haobtc.onekey.mvp.base;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -44,8 +44,6 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
         }
         return super.dispatchTouchEvent(ev);
     }
-<<<<<<< HEAD
-=======
 
     public void startFragment(Fragment fragment) {
         hideKeyboard();
@@ -67,6 +65,4 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
             mCurrentFragment = fragment;
         }
     }
-
->>>>>>> bc82ce22d... add activate cold wallet logic
 }

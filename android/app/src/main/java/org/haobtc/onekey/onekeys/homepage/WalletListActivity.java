@@ -24,12 +24,9 @@ import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.activities.personalwallet.CreatAppWalletActivity;
 import org.haobtc.onekey.activities.personalwallet.mnemonic_word.MnemonicWordActivity;
 import org.haobtc.onekey.adapter.WalletListAdapter;
-<<<<<<< HEAD
-import org.haobtc.onekey.utils.Daemon;
-=======
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
->>>>>>> 5ad6c8b69... add nfc and interface
+import org.haobtc.onekey.utils.Daemon;
 
 import java.util.ArrayList;
 
@@ -86,12 +83,9 @@ public class WalletListActivity extends BaseActivity {
             case R.id.recl_wallet:
                 break;
             case R.id.lin_pair_wallet:
-<<<<<<< HEAD
-=======
                 Intent intent = new Intent(this, SearchDevicesActivity.class);
                 intent.putExtra(Constant.SEARCH_DEVICE_MODE,Constant.SearchDeviceMode.MODE_PAIR_WALLET_TO_COLD);
                 startActivity(intent);
->>>>>>> 5ad6c8b69... add nfc and interface
                 break;
             case R.id.lin_add_wallet:
                 createWalletChooseDialog(WalletListActivity.this, R.layout.add_wallet);

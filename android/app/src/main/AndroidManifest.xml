@@ -527,18 +527,15 @@
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
         <activity
-<<<<<<< HEAD
-=======
             android:name=".ui.activity.SearchDevicesActivity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity"
             android:launchMode="singleTask"/>
-<!--        <activity-->
-<!--            android:name=".ui.activity.FindNewDeviceActivity"-->
-<!--            android:screenOrientation="portrait"-->
-<!--            tools:ignore="LockedOrientationActivity" />-->
         <activity
->>>>>>> bc82ce22d... add activate cold wallet logic
+            android:name=".ui.activity.FindNewDeviceActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
             android:name=".card.SmartCardHelper"
             android:theme="@style/dialog" />
         <activity

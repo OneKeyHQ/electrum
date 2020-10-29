@@ -1,4 +1,4 @@
-package org.haobtc.wallet.mvp.base;
+package org.haobtc.onekey.mvp.base;
 
 import android.content.Context;
 import android.os.Bundle;

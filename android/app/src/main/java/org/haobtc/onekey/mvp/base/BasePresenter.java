@@ -1,9 +1,10 @@
-package org.haobtc.wallet.mvp.base;
+package org.haobtc.onekey.mvp.base;
 
 
 import android.app.Activity;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
 import java.lang.ref.WeakReference;
 
@@ -30,11 +31,11 @@ public class BasePresenter<V> {
         System.gc();
     }
 
-    public Activity getActivity() {
+    public FragmentActivity getActivity() {
         if (getView() instanceof Fragment) {
             return ((Fragment) getView()).getActivity();
         } else {
-            return (Activity) getView();
+            return (FragmentActivity) getView();
         }
     }
 }

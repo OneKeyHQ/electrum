@@ -1,4 +1,4 @@
-package org.haobtc.wallet.mvp.base;
+package org.haobtc.onekey.mvp.base;
 
 public interface IBaseActivity {
 

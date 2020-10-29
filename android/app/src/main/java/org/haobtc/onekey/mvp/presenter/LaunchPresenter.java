@@ -1,10 +1,10 @@
-package org.haobtc.wallet.mvp.presenter;
+package org.haobtc.onekey.mvp.presenter;
 
 
-import org.haobtc.wallet.mvp.base.BaseMvpPresenter;
-import org.haobtc.wallet.mvp.model.ILaunchModel;
-import org.haobtc.wallet.mvp.model.impl.LaunchModel;
-import org.haobtc.wallet.mvp.view.ILaunchView;
+import org.haobtc.onekey.mvp.base.BaseMvpPresenter;
+import org.haobtc.onekey.mvp.model.ILaunchModel;
+import org.haobtc.onekey.mvp.model.impl.LaunchModel;
+import org.haobtc.onekey.mvp.view.ILaunchView;
 
 public class LaunchPresenter extends BaseMvpPresenter<ILaunchView, ILaunchModel> {
 

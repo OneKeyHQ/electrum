@@ -1021,7 +1021,6 @@
     <string name="second_0">Estimated time is about</string>
     <string name="fee_per_byte_sat_b">Fee per byte (sat/b)</string>
     <string name="size_byte">Size(byte)</string>
-<<<<<<< HEAD
     <string name="input_token">Enter token or contract address</string>
     <string name="all_device">All equipment</string>
     <string name="connect_method_">Link mode</string>
@@ -1037,13 +1036,6 @@
     <string name="wallet_detail">Wallet details</string>
     <string name="change_into">to change into</string>
     <string name="roll_out">Transfer out</string>
-=======
-    <string name="input_token">输入 Token 或合约地址</string>
-    <string name="all_device">全部设备</string>
-    <string name="connect_method_">链接方式</string>
-    <string name="send_">发送</string>
-    <string name="input_number">请输入收款账号</string>
-    <string name="input_out_number">请输入转出金额</string>
 
     <string name="ready_wallet">准备好您的硬件钱包</string>
     <string name="ready_active_wallet">准备一个已激活的新硬件钱包</string>

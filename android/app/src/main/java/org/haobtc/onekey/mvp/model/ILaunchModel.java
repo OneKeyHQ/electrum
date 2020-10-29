@@ -1,4 +1,4 @@
-package org.haobtc.wallet.mvp.model;
+package org.haobtc.onekey.mvp.model;
 
 public interface ILaunchModel {
 

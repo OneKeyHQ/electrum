@@ -977,7 +977,7 @@
     <string name="send_">发送</string>
     <string name="input_number">请输入收款账号</string>
     <string name="input_out_number">请输入转出金额</string>
-<<<<<<< HEAD
+
     <string name="forword">转账</string>
     <string name="collect">收款</string>
     <string name="wallet_detail_tip">所有由 HD 钱包根助记词派生的子钱包，都可以通过根助记词一键恢复，因此没有必要导出单个钱包的助记词。如果您要获得 HD 钱包的根助记词，请前往我的 ➡ 资产 ➡ HD 钱包进行操作。</string>
@@ -985,11 +985,8 @@
     <string name="wallet_detail">钱包详情</string>
     <string name="change_into">转入</string>
     <string name="roll_out">转出</string>
-=======
-
     <string name="ready_wallet">准备好您的硬件钱包</string>
     <string name="support_device">目前支持 OneKey（含币信限量版）</string>
     <string name="open_cold_wallet">开启您的硬件钱包，并且靠近手机。</string>
     <string name="recovery_hd_wallet">恢复 HD 钱包</string>
->>>>>>> 5ad6c8b69... add nfc and interface
 </resources>

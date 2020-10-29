@@ -1,4 +1,4 @@
-package org.haobtc.wallet.mvp.base;
+package org.haobtc.onekey.mvp.base;
 
 import android.app.Activity;
 import android.content.Context;
@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
@@ -156,6 +157,18 @@ public interface IBaseView {
             return;
         }
         runOnUiThread(() -> Toast.makeText(getActivity(), getActivity().getString(id), Toast.LENGTH_SHORT).show());
+
+    }
+    /**
+     * toast
+     *
+     * @param info
+     */
+    default void showToast(String info) {
+        if (TextUtils.isEmpty(info)) {
+            return;
+        }
+        runOnUiThread(() -> Toast.makeText(getActivity(), info, Toast.LENGTH_SHORT).show());
 
     }
 

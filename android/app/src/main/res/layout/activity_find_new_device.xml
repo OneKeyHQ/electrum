@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/onekey_gredient"
+    android:background="@drawable/home_bg_onekey"
     android:orientation="vertical">
 
 
@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_36"
-        android:background="@drawable/white_bg_up">
+        android:background="@drawable/white_bg">
 
         <ImageView
             android:id="@+id/img_back"

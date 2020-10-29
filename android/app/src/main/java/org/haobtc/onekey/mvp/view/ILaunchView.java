@@ -1,7 +1,7 @@
-package org.haobtc.wallet.mvp.view;
+package org.haobtc.onekey.mvp.view;
 
 
-import org.haobtc.wallet.mvp.base.IBaseView;
+import org.haobtc.onekey.mvp.base.IBaseView;
 
 public interface ILaunchView extends IBaseView {
 

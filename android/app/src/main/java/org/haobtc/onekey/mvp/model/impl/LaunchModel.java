@@ -1,7 +1,7 @@
-package org.haobtc.wallet.mvp.model.impl;
+package org.haobtc.onekey.mvp.model.impl;
 
 
-import org.haobtc.wallet.mvp.model.ILaunchModel;
+import org.haobtc.onekey.mvp.model.ILaunchModel;
 
 public class LaunchModel implements ILaunchModel {
 
