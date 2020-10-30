@@ -103,9 +103,6 @@ public interface IBaseView {
             activity.getWindow().setNavigationBarColor(Color.TRANSPARENT);
             activity.getWindow().setStatusBarColor(Color.TRANSPARENT);
         }
-        if (activity instanceof AppCompatActivity) {
-            ((AppCompatActivity) activity).getSupportActionBar().hide();
-        }
     }
 
 
