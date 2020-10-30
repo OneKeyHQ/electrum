@@ -1037,31 +1037,30 @@
     <string name="change_into">to change into</string>
     <string name="roll_out">Transfer out</string>
 
-    <string name="ready_wallet">准备好您的硬件钱包</string>
-    <string name="ready_active_wallet">准备一个已激活的新硬件钱包</string>
-    <string name="ready_unactive_wallet">准备一个未激活的新硬件钱包</string>
-    <string name="support_device">目前支持 OneKey（含币信限量版）</string>
-    <string name="open_cold_wallet">开启您的硬件钱包，并且靠近手机。</string>
-    <string name="find_device">寻找设备中...</string>
-    <string name="already_find_devices">寻找到以下设备</string>
-    <string name="pair">配对</string>
-    <string name="backup_wallet">备份钱包</string>
-    <string name="bind_admin_person">绑定共管人</string>
-    <string name="recovery_hd_wallet">恢复 HD 钱包</string>
-    <string name="find_new_device">🎉 发现一个新设备 您可以...</string>
-    <string name="init_as_new_device">作为新设备激活（推荐）</string>
-    <string name="new_device_hide">适用于绝大部分第一次使用硬件钱包的用户</string>
-    <string name="import_seed">导入助记词</string>
-    <string name="import_seed_hide">导入您在其他钱包的资产</string>
-    <string name="recovery_device">从手机备份中恢复这台设备</string>
-    <string name="recovery_device_hide">适用于原先将加密的备份信息存在手机的用户</string>
-    <string name="multi_sig_wallet">创建共管钱包（高级）</string>
-    <string name="multi_sig_wallet_hide">需至少2台设备配合，目前只适用于 BTC 钱包。</string>
-    <string name="activate_cold_wallet">激活硬件钱包</string>
-    <string name="activate_cold_wallet_warn">根据设备显示的\nPIN 码位置对照表\n设置您的6位密码</string>
-    <string name="cold_device_confirm">在设备上\n进行确认</string>
-    <string name="give_name">给它起个名儿</string>
+    <string name="ready_wallet">Get your hardware wallet ready</string>
+    <string name="ready_active_wallet">Prepare an activated new hardware Wallet</string>
+    <string name="ready_unactive_wallet">Prepare an inactive new hardware Wallet</string>
+    <string name="support_device">Currently, OneKey is supported (including limited edition of coin credit)</string>
+    <string name="open_cold_wallet">Open your hardware wallet and be close to your phone.</string>
+    <string name="find_device">Looking for devices</string>
+    <string name="already_find_devices">The following devices were found</string>
+    <string name="pair">pair</string>
+    <string name="backup_wallet">Backup Wallet</string>
+    <string name="bind_admin_person">Binding co Manager</string>
+    <string name="recovery_hd_wallet">Restore HD Wallet</string>
+    <string name="find_new_device">🎉 Discover a new device that you can...</string>
+    <string name="init_as_new_device">Activate as new device (recommended)</string>
+    <string name="new_device_hide">It is suitable for most users who use hardware wallet for the first time</string>
+    <string name="import_seed">Import mnemonics</string>
+    <string name="import_seed_hide">Import your assets in other wallets</string>
+    <string name="recovery_device">Recover this device from the phone backup</string>
+    <string name="recovery_device_hide">It is applicable to the users who have stored the encrypted backup information in the mobile phone</string>
+    <string name="multi_sig_wallet">Create shared wallet (Advanced)</string>
+    <string name="multi_sig_wallet_hide">At least two devices are required to cooperate. Currently, it is only applicable to BTC wallet.</string>
+    <string name="activate_cold_wallet">Activate hardware Wallet</string>
+    <string name="activate_cold_wallet_warn">Set your 6-digit password according to the table of pin code location displayed on the device</string>
+    <string name="cold_device_confirm">Confirm on device</string>
+    <string name="give_name">Give it a name</string>
+    <string name="no_permission">No permission</string>
 
-
->>>>>>> 5ad6c8b69... add nfc and interface
 </resources>

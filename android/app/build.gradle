@@ -84,7 +84,6 @@ android {
     productFlavors {
         MainNet {
             buildConfigField "String", "net_type", "\"MainNet\""
-            buildConfigField "Boolean", "IS_DEBUG", "false"
             applicationId "com.bixin.wallet.mainnet"
             manifestPlaceholders = [app_name: "@string/app_name", allow_backup: false]
         }

@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 
 import org.haobtc.onekey.R;
-import org.haobtc.onekey.bean.HardwareFeatures;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.mvp.base.BaseMvpActivity;
 import org.haobtc.onekey.mvp.presenter.SearchDevicesPresenter;
@@ -26,7 +25,6 @@ import org.haobtc.onekey.passageway.BlePassageway;
 import org.haobtc.onekey.passageway.HandleCommands;
 import org.haobtc.onekey.passageway.NfcPassageway;
 import org.haobtc.onekey.ui.adapter.BleDeviceAdapter;
-import org.haobtc.onekey.utils.LogUtils;
 import org.haobtc.onekey.utils.NfcUtils;
 import org.haobtc.onekey.utils.ValueAnimatorUtil;
 
@@ -212,7 +210,6 @@ public class SearchDevicesActivity extends BaseMvpActivity<SearchDevicesPresente
 
     @Override
     public void connectSucceeded() {
-        showToast("连接成功");
         toNextActivity();
     }
 
@@ -248,7 +245,6 @@ public class SearchDevicesActivity extends BaseMvpActivity<SearchDevicesPresente
     public void connectFailed() {
         //todo connect failed
 
-        showToast("连接失败");
     }
 
     @Override

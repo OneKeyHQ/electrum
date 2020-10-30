@@ -1,21 +1,14 @@
 package org.haobtc.onekey.mvp.presenter;
 
 import android.Manifest;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.view.LayoutInflater;
-import android.widget.RelativeLayout;
 
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.constant.Constant;
-import org.haobtc.onekey.constant.SpConstant;
-import org.haobtc.onekey.data.prefs.PreferencesManager;
 import org.haobtc.onekey.mvp.base.BasePresenter;
 import org.haobtc.onekey.mvp.view.ISearchDevicesView;
-import org.haobtc.onekey.utils.LogUtils;
 
 import cn.com.heaton.blelibrary.ble.Ble;
 import cn.com.heaton.blelibrary.ble.callback.BleScanCallback;
@@ -69,7 +62,6 @@ public class SearchDevicesPresenter extends BasePresenter<ISearchDevicesView> {
             @Override
             public void onLeScan(BleDevice device, int rssi, byte[] scanRecord) {
                 synchronized (mBle.getLocker()) {
-                    LogUtils.d("BLE Device Find====" + device.getBleName());
                     if (getView() != null) {
                         getView().onBleScanDevice(device);
                     }
@@ -104,7 +96,7 @@ public class SearchDevicesPresenter extends BasePresenter<ISearchDevicesView> {
                                 openBle();
                             } else {
                                 if (getView() != null) {
-                                    getView().showToast("无权限");
+                                    getView().showToast(R.string.no_permission);
                                 }
                             }
                         }

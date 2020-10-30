@@ -989,4 +989,27 @@
     <string name="support_device">目前支持 OneKey（含币信限量版）</string>
     <string name="open_cold_wallet">开启您的硬件钱包，并且靠近手机。</string>
     <string name="recovery_hd_wallet">恢复 HD 钱包</string>
+
+
+    <string name="ready_active_wallet">准备一个已激活的新硬件钱包</string>
+    <string name="ready_unactive_wallet">准备一个未激活的新硬件钱包</string>
+    <string name="find_device">寻找设备中...</string>
+    <string name="already_find_devices">寻找到以下设备</string>
+    <string name="pair">配对</string>
+    <string name="backup_wallet">备份钱包</string>
+    <string name="bind_admin_person">绑定共管人</string>
+    <string name="find_new_device">🎉 发现一个新设备 您可以...</string>
+    <string name="init_as_new_device">作为新设备激活（推荐）</string>
+    <string name="new_device_hide">适用于绝大部分第一次使用硬件钱包的用户</string>
+    <string name="import_seed">导入助记词</string>
+    <string name="import_seed_hide">导入您在其他钱包的资产</string>
+    <string name="recovery_device">从手机备份中恢复这台设备</string>
+    <string name="recovery_device_hide">适用于原先将加密的备份信息存在手机的用户</string>
+    <string name="multi_sig_wallet">创建共管钱包（高级）</string>
+    <string name="multi_sig_wallet_hide">需至少2台设备配合，目前只适用于 BTC 钱包。</string>
+    <string name="activate_cold_wallet">激活硬件钱包</string>
+    <string name="activate_cold_wallet_warn">根据设备显示的\nPIN 码位置对照表\n设置您的6位密码</string>
+    <string name="cold_device_confirm">在设备上\n进行确认</string>
+    <string name="give_name">给它起个名儿</string>
+    <string name="no_permission">无权限</string>
 </resources>

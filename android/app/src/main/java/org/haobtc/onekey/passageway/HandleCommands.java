@@ -1,5 +1,7 @@
 package org.haobtc.onekey.passageway;
 
+import android.util.Log;
+
 import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
 
@@ -8,12 +10,13 @@ import org.haobtc.onekey.bean.HardwareFeatures;
 import org.haobtc.onekey.constant.PyConstant;
 import org.haobtc.onekey.utils.Daemon;
 import org.haobtc.onekey.utils.Global;
-import org.haobtc.onekey.utils.LogUtils;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public final class HandleCommands {
+
+    private static final String TAG = HandleCommands.class.getSimpleName();
 
     public static PyObject sBle, sCustomerUI, sNfc, sUsb, sBleHandler, sNfcHandler, sBleTransport,
             sNfcTransport, sUsbTransport, sProtocol;
@@ -77,7 +80,7 @@ public final class HandleCommands {
                 } catch (Exception e) {
                     //todo err info
                     //onException(e);
-                    LogUtils.d("err : " + e);
+                    Log.e(TAG,"err : " + e);
                     callBack.onResult(e.toString());
                 }
 
@@ -95,7 +98,7 @@ public final class HandleCommands {
                 } catch (Exception e) {
                     //todo err info
                     //onException(e);
-                    LogUtils.d("err : " + e);
+                    Log.e(TAG,"err : " + e);
                     callBack.onResult(e.toString());
                 }
 
@@ -119,7 +122,7 @@ public final class HandleCommands {
                 } catch (Exception e) {
                     //todo err info
                     //onException(e);
-                    LogUtils.d("err : " + e);
+                    Log.e(TAG,"err : " + e);
                 }
             }
         });
@@ -133,7 +136,7 @@ public final class HandleCommands {
                 } catch (Exception e) {
                     //todo err info
                     //onException(e);
-                    LogUtils.d("err : " + e);
+                    Log.e(TAG,"err : " + e);
                 }
             }
         });
