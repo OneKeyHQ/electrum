@@ -53,7 +53,7 @@
         android:layout_marginBottom="@dimen/dp_80"
         android:background="@color/line_color" />
 
-    <RadioGroup
+    <LinearLayout
         android:id="@+id/sj_radiogroup"
         android:layout_width="64dp"
         android:layout_height="wrap_content"
@@ -61,40 +61,36 @@
         android:gravity="center"
         android:orientation="vertical">
 
-        <RadioButton
-            android:id="@+id/radio_one"
+        <ImageView
+            android:id="@+id/view_all"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_50"
-            android:button="@null"
-            android:checked="true"
-            android:drawableTop="@drawable/wallet_list_hd"
-            android:paddingTop="@dimen/dp_15" />
+            android:layout_height="@dimen/dp_36"
+            android:layout_marginTop="@dimen/dp_15"
+            android:src="@drawable/hd_wallet_1" />
 
-        <RadioButton
-            android:id="@+id/radio_two"
+
+        <ImageView
+            android:id="@+id/view_btc"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_50"
-            android:button="@null"
-            android:drawableTop="@drawable/wallet_list_hd"
-            android:paddingTop="@dimen/dp_15" />
+            android:layout_height="@dimen/dp_36"
+            android:layout_marginTop="27dp"
+            android:src="@drawable/token_trans_btc" />
 
-        <RadioButton
-            android:id="@+id/radio_three"
+        <ImageView
+            android:id="@+id/view_eth"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_50"
-            android:button="@null"
-            android:drawableTop="@drawable/wallet_list_hd"
-            android:paddingTop="@dimen/dp_15" />
+            android:layout_height="@dimen/dp_36"
+            android:layout_marginTop="27dp"
+            android:src="@drawable/eth_icon_gray" />
 
-        <RadioButton
-            android:id="@+id/radio_four"
+        <ImageView
+            android:id="@+id/view_eos"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_50"
-            android:button="@null"
-            android:drawableTop="@drawable/wallet_list_hd"
-            android:paddingTop="@dimen/dp_15" />
+            android:layout_height="@dimen/dp_36"
+            android:layout_marginTop="27dp"
+            android:src="@drawable/eos_icon" />
 
-    </RadioGroup>
+    </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/recl_wallet"
@@ -124,6 +120,7 @@
             android:src="@drawable/info" />
 
         <TextView
+            android:id="@+id/text_wallet_num"
             android:layout_width="31dp"
             android:layout_height="@dimen/dp_18"
             android:layout_centerVertical="true"
@@ -173,18 +170,75 @@
 
     </RelativeLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recl_wallet_list"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/recl_wallet"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         android:layout_marginBottom="81dp"
         android:layout_toEndOf="@+id/view1"
-        tools:itemCount="3"
-        tools:listitem="@layout/hd_wallet_item">
+        android:orientation="vertical">
 
-    </androidx.recyclerview.widget.RecyclerView>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recl_wallet_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:itemCount="3"
+            tools:listitem="@layout/hd_wallet_item">
+
+        </androidx.recyclerview.widget.RecyclerView>
+
+        <RelativeLayout
+            android:id="@+id/recl_add_wallet"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_70"
+            android:layout_marginStart="@dimen/dp_14"
+            android:layout_marginTop="@dimen/dp_10"
+            android:layout_marginEnd="@dimen/dp_20"
+            android:background="@drawable/eos_gray_back">
+
+            <TextView
+                android:id="@+id/text_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_20"
+                android:layout_marginTop="@dimen/dp_12"
+                android:drawablePadding="@dimen/dp_5"
+                android:gravity="center_vertical"
+                android:text="@string/add_wallet_"
+                android:textColor="@color/button_bk_ddake"
+                android:textSize="@dimen/sp_14"
+                app:drawableStartCompat="@drawable/tou_add" />
+
+
+            <TextView
+                android:id="@+id/text_wallet"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:layout_below="@+id/text_name"
+                android:layout_marginStart="@dimen/dp_20"
+                android:gravity="center_vertical"
+                android:singleLine="true"
+                android:text="@string/support_btc_eth"
+                android:textColor="@color/button_bk_ddake"
+                android:textSize="@dimen/sp_12" />
+
+        </RelativeLayout>
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/tet_None"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_200"
+        android:layout_below="@+id/recl_wallet"
+        android:layout_toEndOf="@+id/view1"
+        android:gravity="center"
+        android:text="@string/no_records"
+        android:textColor="@color/light_text"
+        android:textSize="@dimen/text_size"
+        android:visibility="gone" />
 
     <View
         android:layout_width="match_parent"

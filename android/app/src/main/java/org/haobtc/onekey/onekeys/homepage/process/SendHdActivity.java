@@ -1,18 +1,24 @@
 package org.haobtc.onekey.onekeys.homepage.process;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.Window;
@@ -25,18 +31,27 @@ import android.widget.TextView;
 
 import androidx.annotation.LayoutRes;
 
+import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
+import com.yzq.zxinglibrary.encode.CodeCreator;
 
+import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
+import org.haobtc.onekey.activities.TransactionDetailsActivity;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.activities.sign.SignActivity;
 import org.haobtc.onekey.bean.GetAddressBean;
+import org.haobtc.onekey.bean.GetCodeAddressBean;
+import org.haobtc.onekey.bean.GetnewcreatTrsactionListBean;
 import org.haobtc.onekey.bean.GetsendFeenumBean;
+import org.haobtc.onekey.event.FirstEvent;
 import org.haobtc.onekey.utils.Daemon;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -100,6 +115,14 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
     private int recommend = 0;
     private BigInteger customFee;
     private int customTime;
+    private SharedPreferences preferences;
+    private String hdWalletName;
+    private String strGive;
+    private String fastTx;
+    private String recommendTx;
+    private String slowTx;
+    private String customTx;
+    private String useTx = "";
 
     @Override
     public int getLayoutId() {
@@ -109,8 +132,10 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        hdWalletName = getIntent().getStringExtra("hdWalletName");
+        preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         sendNum = getIntent().getStringExtra("sendNum");
-        textNum.setText(sendNum);
+        textNum.setText(String.format("%s%s", sendNum, preferences.getString("base_unit", "")));
         textSlowTime.setText(String.format("%s0%s", getString(R.string.about_), getString(R.string.minute)));
         textRecommendTime.setText(String.format("%s0%s", getString(R.string.about_), getString(R.string.minute)));
         textFastTime.setText(String.format("%s0%s", getString(R.string.about_), getString(R.string.minute)));
@@ -129,8 +154,8 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
                 finish();
                 break;
             case R.id.tet_choose_type:
-                Intent intent = new Intent(SendHdActivity.this, ChooseCurrencyActivity.class);
-                startActivity(intent);
+//                Intent intent = new Intent(SendHdActivity.this, ChooseCurrencyActivity.class);
+//                startActivity(intent);
                 break;
             case R.id.text_max:
                 tetamount.setText(sendNum);
@@ -151,32 +176,67 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
                 createWalletChooseDialog(SendHdActivity.this, R.layout.custom_fee);
                 break;
             case R.id.lin_slow:
+                if (TextUtils.isEmpty(editInputAddress.getText().toString())) {
+                    mToast(getString(R.string.input_number));
+                    return;
+                }
+                if (TextUtils.isEmpty(tetamount.getText().toString())) {
+                    mToast(getString(R.string.input_out_number));
+                    return;
+                }
                 viewSlow.setVisibility(View.VISIBLE);
                 viewRecommend.setVisibility(View.GONE);
                 viewFast.setVisibility(View.GONE);
                 checkboxSlow.setVisibility(View.VISIBLE);
                 checkboxRecommend.setVisibility(View.GONE);
                 checkboxFast.setVisibility(View.GONE);
+                useTx = slowTx;
                 break;
             case R.id.lin_recommend:
+                if (TextUtils.isEmpty(editInputAddress.getText().toString())) {
+                    mToast(getString(R.string.input_number));
+                    return;
+                }
+                if (TextUtils.isEmpty(tetamount.getText().toString())) {
+                    mToast(getString(R.string.input_out_number));
+                    return;
+                }
                 viewSlow.setVisibility(View.GONE);
                 viewRecommend.setVisibility(View.VISIBLE);
                 viewFast.setVisibility(View.GONE);
                 checkboxSlow.setVisibility(View.GONE);
                 checkboxRecommend.setVisibility(View.VISIBLE);
                 checkboxFast.setVisibility(View.GONE);
+                useTx = recommendTx;
                 break;
             case R.id.lin_fast:
+                if (TextUtils.isEmpty(editInputAddress.getText().toString())) {
+                    mToast(getString(R.string.input_number));
+                    return;
+                }
+                if (TextUtils.isEmpty(tetamount.getText().toString())) {
+                    mToast(getString(R.string.input_out_number));
+                    return;
+                }
                 viewSlow.setVisibility(View.GONE);
                 viewRecommend.setVisibility(View.GONE);
                 viewFast.setVisibility(View.VISIBLE);
                 checkboxSlow.setVisibility(View.GONE);
                 checkboxRecommend.setVisibility(View.GONE);
                 checkboxFast.setVisibility(View.VISIBLE);
+                useTx = fastTx;
                 break;
             case R.id.btn_next:
-                sendCurrency();
-
+                PyObject infoFromRaw = null;
+                try {
+                    infoFromRaw = Daemon.commands.callAttr("get_tx_info_from_raw", useTx);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return;
+                }
+                if (!TextUtils.isEmpty(infoFromRaw.toString())) {
+                    sendConfirmDialog(SendHdActivity.this, R.layout.send_confirm_dialog, infoFromRaw.toString());
+                }
                 break;
             case R.id.img_paste:
                 ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
@@ -194,13 +254,12 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
         }
     }
 
-    private void sendCurrency() {
+    private void sendCurrency(String pass) {
         ArrayList<Map<String, String>> arrayList = new ArrayList<>();
         Map<String, String> pramas = new HashMap<>();
         pramas.put(editInputAddress.getText().toString(), tetamount.getText().toString());
         arrayList.add(pramas);
         String strPramas = new Gson().toJson(arrayList);
-        Log.i("strPramasstrPramasstrPramas", "sendCurrency: ==" + strPramas);
         PyObject mktx;
         try {
             mktx = Daemon.commands.callAttr("mktx", strPramas, "");
@@ -219,10 +278,103 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
             Gson gson = new Gson();
             GetAddressBean getAddressBean = gson.fromJson(jsonObj, GetAddressBean.class);
             String rowtx = getAddressBean.getTx();
+            //sign
+            signTx(rowtx, pass);
 
-            mToast("chenhgong");
         }
 
+    }
+
+    //sign
+    private void signTx(String rowtx, String password) {
+        try {
+            PyObject signContent = Daemon.commands.callAttr("sign_tx", rowtx, "", new Kwarg("password", password));
+            if (!TextUtils.isEmpty(signContent.toString())) {
+                Gson gson = new Gson();
+                GetnewcreatTrsactionListBean trsactionListBean = gson.fromJson(signContent.toString(), GetnewcreatTrsactionListBean.class);
+                Daemon.commands.callAttr("broadcast_tx", trsactionListBean.getTx());
+                Intent intent = new Intent(SendHdActivity.this, DetailTransactionActivity.class);
+                intent.putExtra("txDetail", rowtx);
+                startActivity(intent);
+                finish();
+            }
+        } catch (Exception e) {
+            if (e.getMessage().contains("Incorrect password")) {
+                mToast(getString(R.string.wrong_pass));
+            }
+            e.printStackTrace();
+        }
+
+    }
+
+    private void sendConfirmDialog(Context context, @LayoutRes int resource, String detail) {
+        Gson gson = new Gson();
+        GetnewcreatTrsactionListBean fromJson = gson.fromJson(detail, GetnewcreatTrsactionListBean.class);
+        Log.i("Tjindetail", "sendConfirmDialog:--=====  " + detail);
+        //set see view
+        View view = View.inflate(context, resource, null);
+        Dialog dialogBtoms = new Dialog(context, R.style.dialog);
+        TextView txAmount = view.findViewById(R.id.text_tx_amount);
+        txAmount.setText(String.format("%s%s", tetamount.getText().toString(), preferences.getString("base_unit", "")));
+        TextView sendAddress = view.findViewById(R.id.text_send_address);
+        TextView receiveAddr = view.findViewById(R.id.text_receive_address);
+        if (fromJson.getInputAddr() != null && fromJson.getInputAddr().size() != 0) {
+            String inputAddr = fromJson.getInputAddr().get(0).getAddr();
+            sendAddress.setText(inputAddr);
+        }
+        if (fromJson.getOutputAddr() != null && fromJson.getOutputAddr().size() != 0) {
+            String outputAddr = fromJson.getOutputAddr().get(0).getAddr();
+            receiveAddr.setText(outputAddr);
+        }
+        TextView sendName = view.findViewById(R.id.text_send_name);
+        sendName.setText(hdWalletName);
+        TextView txFee = view.findViewById(R.id.text_tx_fee);
+        txFee.setText(fromJson.getFee());
+
+        view.findViewById(R.id.btn_confirm_pay).setOnClickListener(v -> {
+            //sign trsaction
+            inputPassDialog();
+        });
+        view.findViewById(R.id.img_cancel).setOnClickListener(v -> {
+            dialogBtoms.dismiss();
+        });
+        dialogBtoms.setContentView(view);
+        Window window = dialogBtoms.getWindow();
+        //set pop_up size
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        //set locate
+        window.setGravity(Gravity.BOTTOM);
+        //set animal
+        window.setWindowAnimations(R.style.AnimBottom);
+        dialogBtoms.setCanceledOnTouchOutside(true);
+        dialogBtoms.show();
+
+
+    }
+
+    private void inputPassDialog() {
+        View view1 = LayoutInflater.from(SendHdActivity.this).inflate(R.layout.input_wallet_pass, null, false);
+        AlertDialog alertDialog = new AlertDialog.Builder(SendHdActivity.this).setView(view1).create();
+        EditText strPass = view1.findViewById(R.id.edit_password);
+        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        view1.findViewById(R.id.btn_enter_wallet).setOnClickListener(v -> {
+            //create and sign、broadcast
+            sendCurrency(strPass.getText().toString());
+
+        });
+
+        view1.findViewById(R.id.cancel_select_wallet).setOnClickListener(v -> {
+            alertDialog.dismiss();
+        });
+        alertDialog.show();
+        //show center
+        Window dialogWindow = alertDialog.getWindow();
+        WindowManager m = getWindowManager();
+        Display d = m.getDefaultDisplay();
+        WindowManager.LayoutParams p = dialogWindow.getAttributes();
+        p.width = (int) (d.getWidth() * 0.95);
+        p.gravity = Gravity.CENTER;
+        dialogWindow.setAttributes(p);
     }
 
     private void getFeeamont() {
@@ -242,15 +394,50 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
                 if (strFee.contains("sat/byte")) {
                     String strFeeamont = strFee.substring(0, strFee.indexOf("sat/byte"));
                     String strMaxTemp = strFeeamont.replaceAll(" ", "");
-                    String strGive = strMaxTemp.split("\\.", 2)[0];
+                    strGive = strMaxTemp.split("\\.", 2)[0];
                     Log.i("strMaxsss", "getFeeamont:-- " + strGive);
+                    int feeMax = (Integer.parseInt(strGive)) * 2;
                     getFeerate(strGive);
-
+                    getSlowFeerate("1");
+                    getFastFeerate(feeMax + "");
                 }
             }
         }
     }
 
+    //get fast fee
+    private void getFastFeerate(String fastFee) {
+        ArrayList<Map<String, String>> arrayList = new ArrayList<>();
+        Map<String, String> pramas = new HashMap<>();
+        pramas.put(editInputAddress.getText().toString(), tetamount.getText().toString());
+        arrayList.add(pramas);
+        String strPramas = new Gson().toJson(arrayList);
+        float strRecommend = Float.parseFloat(fastFee);
+        PyObject getFeeByFeeRate = null;
+        try {
+            getFeeByFeeRate = Daemon.commands.callAttr("get_fee_by_feerate", strPramas, "", strRecommend);
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (e.getMessage().contains("Insufficient funds")) {
+                mToast(getString(R.string.wallet_insufficient));
+            }
+            return;
+        }
+        if (getFeeByFeeRate != null) {
+            String strnewFee = getFeeByFeeRate.toString();
+            Log.i("strnewFeestrnewFee", "getFeerate:-- " + strnewFee);
+            Gson gson = new Gson();
+            GetsendFeenumBean getsendFeenumBean = gson.fromJson(strnewFee, GetsendFeenumBean.class);
+            BigInteger fee = getsendFeenumBean.getFee();
+            int time = getsendFeenumBean.getTime();
+            String feeNum = String.valueOf(fee);
+            fastTx = getsendFeenumBean.getTx();
+            textFastTime.setText(String.format("%s%s%s", getString(R.string.about_), time + "", getString(R.string.minute)));
+            textFee10.setText(String.format("%s sat", feeNum));
+        }
+    }
+
+    //get Recommend fee
     private void getFeerate(String strGive) {
         ArrayList<Map<String, String>> arrayList = new ArrayList<>();
         Map<String, String> pramas = new HashMap<>();
@@ -263,6 +450,9 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
             getFeeByFeeRate = Daemon.commands.callAttr("get_fee_by_feerate", strPramas, "", strRecommend);
         } catch (Exception e) {
             e.printStackTrace();
+            if (e.getMessage().contains("Insufficient funds")) {
+                mToast(getString(R.string.wallet_insufficient));
+            }
             return;
         }
         if (getFeeByFeeRate != null) {
@@ -273,16 +463,45 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
             BigInteger fee = getsendFeenumBean.getFee();
             int time = getsendFeenumBean.getTime();
             String feeNum = String.valueOf(fee);
-            int feeMax = (Integer.parseInt(feeNum)) * 2;
-            String maxNum = String.valueOf(feeMax);
-            int slowTime = (int) Math.floor(time / 2);
-            textSlowTime.setText(String.format("%s%s%s", getString(R.string.about_), slowTime + "", getString(R.string.minute)));
+            recommendTx = getsendFeenumBean.getTx();
+            useTx = recommendTx;
             textRecommendTime.setText(String.format("%s%s%s", getString(R.string.about_), time + "", getString(R.string.minute)));
-            textFastTime.setText(String.format("%s%s%s", getString(R.string.about_), (time * 2) + "", getString(R.string.minute)));
             textFee20.setText(String.format("%s sat", feeNum));
-            textFee10.setText(String.format("%s sat", maxNum));
-//            recommend = feeNum;
         }
+
+    }
+
+    //get slow fee
+    private void getSlowFeerate(String slowFee) {
+        ArrayList<Map<String, String>> arrayList = new ArrayList<>();
+        Map<String, String> pramas = new HashMap<>();
+        pramas.put(editInputAddress.getText().toString(), tetamount.getText().toString());
+        arrayList.add(pramas);
+        String strPramas = new Gson().toJson(arrayList);
+        float strRecommend = Float.parseFloat(slowFee);
+        PyObject getFeeByFeeRate = null;
+        try {
+            getFeeByFeeRate = Daemon.commands.callAttr("get_fee_by_feerate", strPramas, "", strRecommend);
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (e.getMessage().contains("Insufficient funds")) {
+                mToast(getString(R.string.wallet_insufficient));
+            }
+            return;
+        }
+        if (getFeeByFeeRate != null) {
+            String strnewFee = getFeeByFeeRate.toString();
+            Log.i("strnewFeestrnewFee", "getFeerate:-- " + strnewFee);
+            Gson gson = new Gson();
+            GetsendFeenumBean getsendFeenumBean = gson.fromJson(strnewFee, GetsendFeenumBean.class);
+            BigInteger fee = getsendFeenumBean.getFee();
+            int time = getsendFeenumBean.getTime();
+            String feeNum = String.valueOf(fee);
+            slowTx = getsendFeenumBean.getTx();
+            textSlowTime.setText(String.format("%s%s%s", getString(R.string.about_), time + "", getString(R.string.minute)));
+            textFee50.setText(String.format("%s sat", feeNum));
+        }
+
 
     }
 
@@ -339,6 +558,7 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
                         customTime = getsendFeenumBean.getTime();
                         int size = getsendFeenumBean.getSize();
                         textSize.setText(String.valueOf(size));
+                        customTx = getsendFeenumBean.getTx();
                         textTime.setText(String.format("%s%s%s", getString(R.string.second_0), customTime + "", getString(R.string.minute)));
                         textBtc.setText(String.format("%ssat", customFee));
 
@@ -353,8 +573,12 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
         btnConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                useTx = customTx;
                 linChooseFee.setVisibility(View.GONE);
                 linCustom.setVisibility(View.VISIBLE);
+                viewSlow.setVisibility(View.GONE);
+                viewRecommend.setVisibility(View.GONE);
+                viewFast.setVisibility(View.GONE);
                 textFeeCustom.setText(String.format("%s", customFee + ""));
                 textCustomTime.setText(String.format("%s%s%s", getString(R.string.about_), customTime + "", getString(R.string.minute)));
                 dialogBtoms.dismiss();

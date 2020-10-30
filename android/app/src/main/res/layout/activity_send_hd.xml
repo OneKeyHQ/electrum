@@ -269,7 +269,7 @@
                             android:layout_below="@+id/textView1"
                             android:layout_centerHorizontal="true"
                             android:layout_marginTop="@dimen/dp_6"
-                            android:text="200sat"
+                            android:text="@string/_0_00_btc"
                             android:textColor="@color/text_six"
                             android:textSize="@dimen/sp_10" />
 

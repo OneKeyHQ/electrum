@@ -165,10 +165,8 @@ public class CurrencyActivity extends BaseActivity {
         List<PyObject> pyObjects;
         try {
             get_currencies = Daemon.commands.callAttr("get_currencies");
-            Log.i("get_currenciesget_currencies", "radioSelectTwo:-- " + get_currencies);
         } catch (Exception e) {
             e.printStackTrace();
-            Log.e("set_currency", "set_base_unit:==== " + e.getMessage());
             return;
         }
         listCNY.add(new CNYBean(getString(R.string.money_cny), false));

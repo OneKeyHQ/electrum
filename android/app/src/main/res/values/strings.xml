@@ -1036,4 +1036,14 @@
     <string name="wallet_detail">Wallet details</string>
     <string name="change_into">to change into</string>
     <string name="roll_out">Transfer out</string>
+    <string name="sender">Sender</string>
+    <string name="receiver">Receiver</string>
+    <string name="confirm_pay">Confirm payment</string>
+    <string name="create_success">success</string>
+    <string name="block_high">block height</string>
+    <string name="tx_num">Transaction number</string>
+    <string name="tx_time">Trading hours</string>
+    <string name="remarks">remarks</string>
+    <string name="no">nothing</string>
+    <string name="support_btc_eth">Support BTC, Eth and other main chains</string>
 </resources>

@@ -29,7 +29,7 @@ public class Daemon {
     }
 
     public void onCallback(String event, String msg) {
-        Log.i("onCallback", "==================" + event + "   ============================    " + msg);
+//        Log.i("onCallback", "==================" + event + "   ============================    " + msg);
         if ("update_status".equals(event)) {
             if (!TextUtils.isEmpty(msg) && msg.length() != 2) {
                 EventBus.getDefault().post(new SecondEvent(msg));

@@ -32,6 +32,16 @@ public class OnekeyTxListAdapter extends BaseQuickAdapter<MaintrsactionlistEvent
             tetAmount.setTextColor(mContext.getColor(R.color.onekey));
             helper.setText(R.id.text_send_amount, "+" + amount);
         }
+        TextView sendStatus = helper.getView(R.id.text_send_status);
+        if ("Unconfirmed".equals(item.getTxStatus())) {
+            sendStatus.setTextColor(mContext.getColor(R.color.text_six));
+            sendStatus.setText(mContext.getString(R.string.waitchoose));
+        } else if (item.getTxStatus().contains("confirmations")) {
+            sendStatus.setTextColor(mContext.getColor(R.color.text_six));
+            sendStatus.setText(mContext.getString(R.string.alreadychoose));
+        } else {
+            sendStatus.setVisibility(View.GONE);
+        }
 
     }
 }

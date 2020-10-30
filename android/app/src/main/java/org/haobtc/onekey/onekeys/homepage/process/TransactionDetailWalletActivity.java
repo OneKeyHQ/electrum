@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chaquo.python.PyObject;
 
 import org.haobtc.onekey.R;
@@ -88,6 +89,7 @@ public class TransactionDetailWalletActivity extends BaseActivity {
             return;
 
         }
+        Log.i("jxmgetHistoryTx", "getTxList===: "+getHistoryTx);
         if (getHistoryTx.toString().length() > 2) {
             reclTransactionList.setVisibility(View.VISIBLE);
             tetNone.setVisibility(View.GONE);
@@ -115,8 +117,18 @@ public class TransactionDetailWalletActivity extends BaseActivity {
                         maintrsactionlistEvent.setTxStatus(txStatus);
                         listBeans.add(maintrsactionlistEvent);
                     }
-                    onekeyTxListAdapter.notifyDataSetChanged();
                 }
+                onekeyTxListAdapter.notifyDataSetChanged();
+                onekeyTxListAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                        Intent intent = new Intent(TransactionDetailWalletActivity.this, DetailTransactionActivity.class);
+                        intent.putExtra("hashDetail",listBeans.get(position).getTxHash());
+                        intent.putExtra("txTime",listBeans.get(position).getDate());
+                        startActivity(intent);
+                    }
+                });
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }

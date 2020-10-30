@@ -60,6 +60,7 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
     private TextView textBtcAmount;
     private String changeBalance;
     private TextView textStar;
+    private String name;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -80,6 +81,7 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
         LinearLayout linearReceive = view.findViewById(R.id.linear_receive);
         RelativeLayout relWalletDetail = view.findViewById(R.id.rel_wallet_detail);
         RelativeLayout relBiDetail = view.findViewById(R.id.rel_bi_detail);
+        ImageView imgAdd = view.findViewById(R.id.img_add);
         CheckBox imgCheckMoney = view.findViewById(R.id.img_check_money);
         textStar = view.findViewById(R.id.text_amount_star);
         textBtcAmount = view.findViewById(R.id.text_btc_amount);
@@ -89,7 +91,7 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
         linearWalletList = view.findViewById(R.id.lin_wallet_list);
 
         imgBottom = view.findViewById(R.id.img_bottom);
-
+        imgAdd.setOnClickListener(this);
         relCreateHd.setOnClickListener(this);
         relRecovery.setOnClickListener(this);
         relCheckWallet.setOnClickListener(this);
@@ -116,30 +118,49 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
             //get home page wallet list
 //            getHomeWalletList();
 
+        } else {
+            linearNoWallet.setVisibility(View.VISIBLE);
+            imgBottom.setVisibility(View.VISIBLE);
+            linearHaveWallet.setVisibility(View.GONE);
+            linearWalletList.setVisibility(View.GONE);
         }
     }
 
     private void getWalletBalance() {
         try {
-            Daemon.commands.callAttr("load_all_wallet", "111111");
             PyObject selectWallet = Daemon.commands.callAttr("select_wallet", "BTC-1");
             Log.i("iiiigetWalletBalance", "getWalletBalance:--- " + selectWallet);
             if (!TextUtils.isEmpty(selectWallet.toString())) {
                 HomeWalletBean homeWalletBean = new Gson().fromJson(selectWallet.toString(), HomeWalletBean.class);
                 String balance = homeWalletBean.getBalance();
-                String name = homeWalletBean.getName();
+                name = homeWalletBean.getName();
                 textWalletName.setText(name);
                 num = balance.substring(0, balance.indexOf(" "));
                 String strCny = balance.substring(balance.indexOf("(") + 1, balance.indexOf(")"));
                 tetAmount.setText(strCny);
+                textBtcAmount.setText(String.format("%s%s", num, preferences.getString("base_unit", "")));
+                getCny(num);
+
             }
 
         } catch (Exception e) {
-            Log.i("iiiigetWalletBalance", "-------------------- " + e.getMessage());
             e.printStackTrace();
             return;
         }
 
+    }
+
+    private void getCny(String changeBalance) {
+        try {
+            PyObject money = Daemon.commands.callAttr("get_exchange_currency", "base", changeBalance);
+            if (!TextUtils.isEmpty(money.toString())) {
+                tetAmount.setText(money.toString());
+            } else {
+                tetAmount.setText(getString(R.string.zero));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void downWalletList() {
@@ -169,7 +190,8 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
             case R.id.img_scan:
                 break;
             case R.id.rel_create_hd:
-                createHdwallet();
+                Intent intent0 = new Intent(getActivity(), SetHDWalletPassActivity.class);
+                startActivity(intent0);
                 break;
             case R.id.rel_recovery_hd:
                 Intent intent = new Intent(getActivity(), RecoverHdWalletActivity.class);
@@ -179,7 +201,8 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
                 break;
             case R.id.linear_send:
                 Intent intent2 = new Intent(getActivity(), SendHdActivity.class);
-                intent2.putExtra("sendNum", textBtcAmount.getText().toString());
+                intent2.putExtra("sendNum", changeBalance);
+                intent2.putExtra("hdWalletName", name);
                 startActivity(intent2);
                 break;
             case R.id.linear_receive:
@@ -197,14 +220,11 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
                 intent5.putExtra("walletDollar", textDollar.getText().toString());
                 startActivity(intent5);
                 break;
+            case R.id.img_add:
+
+                break;
 
         }
-    }
-
-    private void createHdwallet() {
-        Intent intent = new Intent(getActivity(), SetHDWalletPassActivity.class);
-        startActivity(intent);
-
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)

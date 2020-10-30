@@ -984,4 +984,14 @@
     <string name="wallet_detail">钱包详情</string>
     <string name="change_into">转入</string>
     <string name="roll_out">转出</string>
+    <string name="sender">发送方</string>
+    <string name="receiver">接收方</string>
+    <string name="confirm_pay">确认支付</string>
+    <string name="create_success">成功</string>
+    <string name="block_high">区块高度</string>
+    <string name="tx_num">交易号</string>
+    <string name="tx_time">交易时间</string>
+    <string name="remarks">备注</string>
+    <string name="no">无</string>
+    <string name="support_btc_eth">支持 BTC、ETH等多种主链</string>
 </resources>
