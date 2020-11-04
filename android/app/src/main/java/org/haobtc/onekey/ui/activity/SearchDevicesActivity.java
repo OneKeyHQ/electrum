@@ -232,8 +232,8 @@ public class SearchDevicesActivity extends BaseMvpActivity<SearchDevicesPresente
                 HandleCommands.getFeature(result -> {
                     if (!result.isInitialized()) {
                         toActivity(FindNewDeviceActivity.class);
-                    } else {
-
+                    } else if(result.isNeedsBackup()){
+                        toActivity(FindDeviceNoBackupActivity.class);
                     }
                 });
 

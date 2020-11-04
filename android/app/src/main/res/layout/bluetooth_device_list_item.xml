@@ -14,8 +14,8 @@
         android:layout_marginEnd="@dimen/dp_16"
         android:layout_marginBottom="@dimen/dp_10"
 
-        android:outlineSpotShadowColor="@color/shadow_color"
-        app:cardCornerRadius="@dimen/dp_2"
+        android:outlineSpotShadowColor="@android:color/white"
+        app:cardCornerRadius="@dimen/dp_20"
         app:cardElevation="@dimen/dp_8"
         tools:ignore="UnusedAttribute">
 
@@ -23,7 +23,7 @@
             android:id="@+id/device_alias"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/bluetooth_item_bk"
+            android:background="@android:color/white"
             android:drawableStart="@drawable/bluetooth"
             android:drawableEnd="@drawable/jiantou"
             android:drawablePadding="@dimen/dp_10"

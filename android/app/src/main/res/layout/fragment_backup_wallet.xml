@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:orientation="vertical">
+
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:gravity="center_horizontal"
+        android:paddingLeft="@dimen/dp_30"
+        android:paddingTop="@dimen/dp_20"
+        android:paddingRight="@dimen/dp_30"
+        android:paddingBottom="@dimen/dp_20"
+        android:text="@string/copy_mnemonics"
+        android:textColor="#142A3B"
+        android:textSize="30sp" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/hand_write"
+        android:layout_gravity="right"
+        android:layout_marginTop="@dimen/dp_100"/>
+
+
+
+    <Button
+        android:id="@+id/ready_go"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:background="@drawable/btn_enable_selector"
+        android:text="@string/ready_go"
+        android:textAllCaps="false"
+        android:layout_marginTop="@dimen/dp_80"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/sp_14"
+        android:layout_gravity="center_horizontal"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/no_hand_write"
+        android:layout_marginTop="@dimen/dp_20"
+        android:layout_gravity="center_horizontal"/>
+
+    <Button
+        android:id="@+id/copy_to_other_device"
+        android:layout_width="240dp"
+        android:layout_height="30dp"
+        android:background="@drawable/btn_copy_to_other"
+        android:text="@string/copy_to_other_device"
+        android:textAllCaps="false"
+        android:layout_marginTop="@dimen/dp_20"
+        android:textColor="@color/onekey"
+        android:layout_gravity="center_horizontal"/>
+
+
+</LinearLayout>

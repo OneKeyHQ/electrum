@@ -6,46 +6,13 @@
     android:background="@drawable/home_bg_onekey"
     android:orientation="vertical">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_36"
-        android:background="@drawable/white_bg">
-
-        <ImageView
-            android:id="@+id/img_back"
-            android:layout_width="@dimen/dp_40"
-            android:layout_height="@dimen/dp_40"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="@dimen/dp_20"
-            android:layout_marginTop="@dimen/dp_20"
-            android:layout_marginRight="@dimen/dp_20"
-            android:padding="@dimen/dp_8"
-            android:src="@drawable/left_arrow" />
-
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:layout_gravity="center"
-            android:layout_marginLeft="@dimen/dp_20"
-            android:layout_marginTop="@dimen/dp_10"
-            android:layout_marginRight="@dimen/dp_20"
-            android:fontFamily="sans-serif-medium"
-            android:text="@string/activate_cold_wallet"
-            android:textColor="@color/text"
-            android:textSize="@dimen/sp_20"
-            tools:ignore="InvalidId" />
-    </RelativeLayout>
-
+    <include layout="@layout/title_layout" />
 
     <FrameLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        />
+        android:background="@android:color/white"/>
 
 
 </LinearLayout>

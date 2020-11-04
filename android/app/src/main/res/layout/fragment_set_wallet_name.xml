@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:orientation="vertical">
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:gravity="center_horizontal"
+        android:paddingLeft="@dimen/dp_30"
+        android:paddingTop="@dimen/dp_20"
+        android:paddingRight="@dimen/dp_30"
+        android:paddingBottom="@dimen/dp_20"
+        android:text="@string/set_wallet_name"
+        android:textColor="#142A3B"
+        android:textSize="30sp" />
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:gravity="center_horizontal"
+        android:text="@string/set_wallet_name_hide"
+        android:textColor="#142A3B"
+        android:textSize="14sp" />
+
+    <EditText
+        android:id="@+id/device_name"
+        android:layout_width="300dp"
+        android:layout_height="@dimen/dp_50"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="@dimen/dp_20"
+        android:background="@drawable/edit_text_bg"
+        android:hint="@string/input_device_name_hide"
+        android:paddingLeft="@dimen/dp_10" />
+
+
+    <Button
+        android:id="@+id/btn_create"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/dp_20"
+        android:layout_marginBottom="@dimen/dp_30"
+        android:background="@drawable/btn_enable_selector"
+        android:enabled="false"
+        android:text="@string/create_"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/sp_14" />
+
+</LinearLayout>

@@ -1058,6 +1058,15 @@
     <string name="cold_device_confirm">Confirm on device</string>
     <string name="give_name">Give it a name</string>
     <string name="no_permission">No permission</string>
+    <string name="input_device_name_hide">Enter device name</string>
+    <string name="copy_mnemonics">Be ready to copy your mnemonics</string>
+    <string name="ready_go">Get ready to go</string>
+    <string name="no_hand_write">I don\'t want to copy mnemonics？</string>
+    <string name="copy_to_other_device">Backup to another hardware wallet (Advanced) -> </string>
+    <string name="complete_hand_write">Write on the hardware device</string>
+    <string name="pin_input_warn">The number keys on the phone change randomly every time. The pin code can\'t be retrieved if you forget it. You must keep it in mind.</string>
+    <string name="recovery_device_title">Recovery of equipment</string>
+    <string name="find_backup_from_phone">The following backup was found in your phone</string>
 
     <string name="sender">Sender</string>
     <string name="receiver">Receiver</string>
@@ -1103,4 +1112,16 @@
     <string name="electrum_tips">使用其开源分布式节点进行交易广播和链上信息获取</string>
     <string name="agent_tips">使用代理服务器，隐藏网络痕迹</string>
 
+    <string name="active_no_backup">🔑 This is an activated device. You can...</string>
+    <string name="add_new_wallet">Add new wallet (recommended)</string>
+    <string name="add_new_wallet_hide">Unlimited number, created on demand.</string>
+    <string name="recovery_used_wallet">Restore used wallets</string>
+    <string name="recovery_used_wallet_hide">If you have ever deleted a wallet created by the device in your mobile phone, you can use this method to restore it.</string>
+    <string name="clone_to_other">Clone it to another new device</string>
+    <string name="clone_to_other_hide">If you have multiple hardware devices, you can use this method to achieve the purpose of multiple backups.</string>
+    <string name="has_hd_wallet">🔑 This is a special device that stores the mnemonics of the HD wallet. You can...</string>
+    <string name="recovery_phone_hd_wallet">Restore HD wallet</string>
+    <string name="recovery_phone_hd_wallet_hide">Full recovery of your HD wallet, any wallet derived from the original HD mnemonic will be restored.</string>
+    <string name="recovery_phone_hd_wallet_info"><b>Devices with HD mnemonics backed up will only be used to restore HD wallets you created on the app,</b>if you want to use more features of this device, you can restore the device to factory mode after properly keeping the mnemonics of HD wallet (manual copying), and then re pair and activate the device to use it as a normal hardware wallet.</string>
+    <string name="set_wallet_name_hide">Easy to identify</string>
 </resources>

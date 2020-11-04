@@ -37,4 +37,9 @@ public final class Constant {
         public static final int MODE_BIND_ADMIN_PERSON = 5;
 
     }
+
+    /**
+     * 助记词个数
+     */
+    public static final int MNEMONIC_SIZE = 12;
 }

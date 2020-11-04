@@ -33,11 +33,11 @@ public class FindNewDeviceActivity extends BaseActivity implements View.OnClickL
                 break;
             case R.id.init_as_new_wallet:
             case R.id.init_as_new_wallet_hide:
-
+                toActivity(ActivateColdWalletActivity.class);
                 break;
             case R.id.import_seed:
             case R.id.import_seed_hide:
-
+                toActivity(ImportMnemonicToDeviceActivity.class);
                 break;
             case R.id.recovery_device:
             case R.id.recovery_device_hide:

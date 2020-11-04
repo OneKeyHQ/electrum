@@ -7,6 +7,7 @@ import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
 import android.text.Editable;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.IdRes;
@@ -18,7 +19,7 @@ import org.haobtc.onekey.event.SecondEvent;
 
 public class NumKeyboardUtil {
     private KeyboardView keyboardView;
-    private PasswordInputView ed;
+    private EditText ed;
     private int xmlId;
 
     @SuppressLint("ResourceAsColor")
@@ -84,6 +85,70 @@ public class NumKeyboardUtil {
 
     }
 
+
+    @SuppressLint("ResourceAsColor")
+    public NumKeyboardUtil(View view, Context ctx, EditText edit, @XmlRes int id,CallBack callBack) {
+        this.ed = edit;
+        this.xmlId = id;
+        // num keyboard
+        Keyboard k = new Keyboard(ctx, id);
+        keyboardView = view.findViewById(R.id.keyboard_view);
+        keyboardView.setKeyboard(k);
+        keyboardView.setEnabled(true);
+        keyboardView.setPreviewEnabled(false);
+        keyboardView.setOnKeyboardActionListener( new KeyboardView.OnKeyboardActionListener() {
+            @Override
+            public void swipeUp() {
+            }
+
+            @Override
+            public void swipeRight() {
+            }
+
+            @Override
+            public void swipeLeft() {
+            }
+
+            @Override
+            public void swipeDown() {
+            }
+
+            @Override
+            public void onText(CharSequence text) {
+            }
+
+            @Override
+            public void onRelease(int primaryCode) {
+            }
+
+            @Override
+            public void onPress(int primaryCode) {
+            }
+
+            //The codes of some special operation keys are fixed, such as completion, fallback, etc
+            @Override
+            public void onKey(int primaryCode, int[] keyCodes) {
+                Editable editable = ed.getEditableText();
+                int start = ed.getSelectionStart();
+                if (primaryCode == Keyboard.KEYCODE_DELETE) {// exit
+                    if (editable != null && editable.length() > 0) {
+                        if (start > 0) {
+                            editable.delete(start - 1, start);
+                        }
+                    }
+                } else if (primaryCode == Keyboard.KEYCODE_CANCEL) {// finish
+                    EventBus.getDefault().post(new SecondEvent("Keyboard"));
+                    hideKeyboard();
+                } else if (primaryCode == 48 && xmlId == R.xml.number) {
+                    editable.clear();
+                } else { //The number to be entered is now in the edit box
+                    editable.insert(start, Character.toString((char) primaryCode));
+                }
+                callBack.onKey(primaryCode);
+            }
+        });
+
+    }
     public void showKeyboard() {
         keyboardView.setVisibility(View.VISIBLE);
     }
@@ -94,5 +159,9 @@ public class NumKeyboardUtil {
 
     public int getKeyboardVisible() {
         return keyboardView.getVisibility();
+    }
+
+    public interface CallBack{
+        void onKey(int key);
     }
 }

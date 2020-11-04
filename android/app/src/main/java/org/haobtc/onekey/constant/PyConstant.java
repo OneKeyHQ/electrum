@@ -32,6 +32,8 @@ public final class PyConstant {
     public static final String ANDROID_ID = "android_id";
     public static final String CALLBACK = "callback";
     public static final String ELECTRUM_GUI_ANDROID_CONSOLE = "electrum_gui.android.console";
+    public static final String USER_CANCEL = "user_cancel";
+    public static final String PIN = "pin";
 
 
 }

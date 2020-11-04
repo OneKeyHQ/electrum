@@ -13,7 +13,9 @@ import androidx.fragment.app.FragmentTransaction;
 
 import org.haobtc.onekey.R;
 
-public abstract class BaseActivity extends AppCompatActivity implements IBaseView, IBaseActivity {
+import butterknife.ButterKnife;
+
+public abstract class BaseActivity extends AppCompatActivity implements IBaseView {
 
 
     public Fragment mCurrentFragment;
@@ -23,9 +25,15 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
         setCustomDensity();
         super.onCreate(savedInstanceState);
         setContentView(getContentViewId());
+        ButterKnife.bind(this);
         setActionBar();
         init();
     }
+
+    /**
+     * init
+     */
+    public abstract void init();
 
 
     @Override

@@ -1,6 +1,10 @@
 package org.haobtc.onekey.activities.base;
 
 import android.app.Application;
+import android.os.Handler;
+import android.os.Looper;
+import android.text.TextUtils;
+import android.widget.Toast;
 
 import androidx.lifecycle.ProcessLifecycleOwner;
 
@@ -26,6 +30,7 @@ public class MyApplication extends Application {
     private static final String PRIMARY_SERVICE = "00000001-0000-1000-8000-00805f9b34fb";
     private static final String WRITE_CHARACTERISTIC = "00000002-0000-1000-8000-00805f9b34fb";
     private static final String READ_CHARACTERISTIC = "00000003-0000-1000-8000-00805f9b34fb";
+    private static final Handler sHandler = new Handler(Looper.myLooper());
 
     @Override
     public void onCreate() {
@@ -85,8 +90,21 @@ public class MyApplication extends Application {
         Global.py = Python.getInstance();
     }
 
-    public static String getDeviceWay() {
+    public String getDeviceWay() {
         return (String) PreferencesManager.get(getInstance(), SpConstant.SP_NAME_PREFERENCES
                 , SpConstant.Preferences.WAY, Constant.WAY_MODE_BLE);
     }
+
+
+    public void toastErr(Exception e){
+        if(e == null){
+            return;
+        }
+        String info = e.toString();
+        if(TextUtils.isEmpty(info)){
+            return;
+        }
+        sHandler.post(() -> Toast.makeText(MyApplication.this,info,Toast.LENGTH_SHORT).show());
+    }
+
 }

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/dp_20">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/dark_bg"
+            android:padding="@dimen/dp_10">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/mnemonics_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="@dimen/dp_10" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="14dp"
+            android:layout_marginTop="@dimen/dp_25"
+            android:layout_marginEnd="14dp"
+            android:text="@string/recovery_hd__tip"
+            android:textColor="@color/text_two"
+            android:textSize="@dimen/sp_14" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="14dp"
+            android:layout_marginTop="@dimen/dp_30"
+            android:layout_marginEnd="@dimen/dp_30"
+            android:minHeight="@dimen/dp_96">
+
+            <View
+                android:id="@+id/view"
+                android:layout_width="@dimen/dp_4"
+                android:layout_height="@dimen/dp_82"
+                android:layout_centerVertical="true"
+                android:background="@drawable/rectangle" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_10"
+                android:layout_marginTop="@dimen/dp_10"
+                android:layout_toEndOf="@+id/view"
+                android:text="@string/hd_tip1"
+                android:textColor="@color/text_three"
+                android:textSize="@dimen/sp_13" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="@dimen/dp_10"
+                android:layout_toEndOf="@+id/view"
+                android:text="@string/hd_tip2"
+                android:textColor="@color/text_three"
+                android:textSize="@dimen/sp_13" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="@dimen/dp_10"
+                android:layout_toEndOf="@+id/view"
+                android:text="@string/hd_tip3"
+                android:textColor="@color/text_three"
+                android:textSize="@dimen/sp_13" />
+
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/btn_import"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_60"
+            android:layout_marginStart="34dp"
+            android:layout_marginTop="@dimen/dp_25"
+            android:layout_marginEnd="34dp"
+            android:layout_marginBottom="@dimen/dp_80"
+            android:background="@drawable/btn_enable_selector"
+            android:enabled="false"
+            android:text="@string/imports"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/sp_20" />
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

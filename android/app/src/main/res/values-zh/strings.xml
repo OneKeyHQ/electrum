@@ -973,6 +973,7 @@
     <string name="send_">发送</string>
     <string name="input_number">请输入收款账号</string>
     <string name="input_out_number">请输入转出金额</string>
+
     <string name="forword">转账</string>
     <string name="collect">收款</string>
     <string name="wallet_detail_tip">所有由 HD 钱包根助记词派生的子钱包，都可以通过根助记词一键恢复，因此没有必要导出单个钱包的助记词。如果您要获得 HD 钱包的根助记词，请前往我的 ➡ 资产 ➡ HD 钱包进行操作。</string>
@@ -1007,6 +1008,27 @@
     <string name="cold_device_confirm">在设备上\n进行确认</string>
     <string name="give_name">给它起个名儿</string>
     <string name="no_permission">无权限</string>
+    <string name="input_device_name_hide">输入设备名称</string>
+    <string name="copy_mnemonics">准备好将您的助记\n词抄写下来</string>
+    <string name="ready_go">准备开始</string>
+    <string name="no_hand_write">不想抄助记词？</string>
+    <string name="copy_to_other_device">备份到另一个硬件钱包（高级）-> </string>
+    <string name="complete_hand_write">在硬件设备上\n完成抄写</string>
+    <string name="pin_input_warn">手机上的数字键位每次都会随机改变。\nPIN 码忘记不可找回，您务必要牢记。</string>
+    <string name="recovery_device_title">恢复设备</string>
+    <string name="find_backup_from_phone">在您的手机中\n找到如下备份</string>
+    <string name="active_no_backup">🔑 这是个已激活的\n设备，您可以...</string>
+    <string name="add_new_wallet">添加新钱包（推荐）</string>
+    <string name="add_new_wallet_hide">不限数量，按需创建。</string>
+    <string name="recovery_used_wallet">恢复曾经使用过的钱包</string>
+    <string name="recovery_used_wallet_hide">如果您曾经在手机删除过由该设备创建的钱包，可以用此办法恢复。</string>
+    <string name="clone_to_other">将其克隆至另一个新设备</string>
+    <string name="clone_to_other_hide">如果您有多个硬件设备，可以通过这个办法达到多处备份的目的。</string>
+    <string name="has_hd_wallet">🔑 这是一台存储了\n HD 钱包助记词的特\n殊设备，您可以...</string>
+    <string name="recovery_phone_hd_wallet">恢复手机 HD 钱包.</string>
+    <string name="recovery_phone_hd_wallet_hide">完整恢复您的 HD 钱包，任何由原 HD 助记词派生的钱包都将获得复原。</string>
+    <string name="recovery_phone_hd_wallet_info"><b>备份了 HD 助记词的设备将仅被用来恢复您在 App 上创建的 HD 钱包，</b>如果您希望使用这台设备的更多功能，可以在妥善保管好 HD 钱包的助记词后（手动抄写），将这台设备恢复到出厂模式，然后重新配对并激活设备，将其作为普通硬件钱包使用。</string>
+    <string name="set_wallet_name_hide">方便您轻松识别</string>
     <string name="sender">发送方</string>
     <string name="receiver">接收方</string>
     <string name="confirm_pay">确认支付</string>

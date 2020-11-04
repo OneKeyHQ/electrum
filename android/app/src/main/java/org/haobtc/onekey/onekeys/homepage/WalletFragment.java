@@ -37,6 +37,7 @@ import org.haobtc.onekey.onekeys.homepage.process.HdWalletDetailActivity;
 import org.haobtc.onekey.onekeys.homepage.process.ReceiveHDActivity;
 import org.haobtc.onekey.onekeys.homepage.process.SendHdActivity;
 import org.haobtc.onekey.onekeys.homepage.process.TransactionDetailWalletActivity;
+import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
 import org.haobtc.onekey.utils.Daemon;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -196,6 +197,8 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
                 startActivity(intent);
                 break;
             case R.id.rel_pair_hard:
+                Intent pair = new Intent(getActivity(), SearchDevicesActivity.class);
+                startActivity(pair);
                 break;
             case R.id.linear_send:
                 Intent intent2 = new Intent(getActivity(), SendHdActivity.class);

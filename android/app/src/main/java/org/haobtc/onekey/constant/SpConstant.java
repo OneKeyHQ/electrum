@@ -12,6 +12,8 @@ public final class SpConstant {
 
     public static class Preferences{
         public static final String WAY = "way";
+        public static final String LANGUAGE = "language";
+        public static final String LANGUAGE_DEFAULT = "English";
     }
 
 

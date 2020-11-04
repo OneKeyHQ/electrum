@@ -1,7 +1,5 @@
 package org.haobtc.onekey.passageway;
 
-import android.util.Log;
-
 import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
 
@@ -75,35 +73,43 @@ public final class HandleCommands {
             synchronized (HandleCommands.class) {
                 try {
                     String result = sCommand.callAttr(CommandMethod.INIT,
-                            "bluetooth", label, language, useSe).toString();
+                            MyApplication.getInstance().getDeviceWay(), label, language, useSe).toString();
                     callBack.onResult(result);
                 } catch (Exception e) {
-                    //todo err info
-                    //onException(e);
-                    Log.e(TAG,"err : " + e);
-                    callBack.onResult(e.toString());
+                    showException(e);
                 }
 
             }
         });
     }
 
+    /**
+     * wipe device
+     *
+     * @param callBack
+     */
     public static void wipeDevice(CallBack<String> callBack) {
         sExecutorService.execute(() -> {
             synchronized (HandleCommands.class) {
                 try {
                     String result = sCommand.callAttr(CommandMethod.WIPE_DEVICE,
-                            MyApplication.getDeviceWay()).toString();
+                            MyApplication.getInstance().getDeviceWay()).toString();
                     callBack.onResult(result);
                 } catch (Exception e) {
-                    //todo err info
-                    //onException(e);
-                    Log.e(TAG,"err : " + e);
-                    callBack.onResult(e.toString());
+                    showException(e);
                 }
 
             }
         });
+    }
+
+    /**
+     * show err by toast
+     *
+     * @param e
+     */
+    private static void showException(Exception e) {
+        MyApplication.getInstance().toastErr(e);
     }
 
 
@@ -117,31 +123,97 @@ public final class HandleCommands {
             synchronized (HandleCommands.class) {
                 try {
                     String result = sCommand.callAttr(CommandMethod.GET_FEATURE,
-                            MyApplication.getDeviceWay()).toString();
+                            MyApplication.getInstance().getDeviceWay()).toString();
                     callBack.onResult(HardwareFeatures.objectFromData(result));
                 } catch (Exception e) {
-                    //todo err info
-                    //onException(e);
-                    Log.e(TAG,"err : " + e);
+                    showException(e);
                 }
             }
         });
     }
 
+
+    /**
+     * reset pin
+     */
+    public static void resetPin(CallBack callBack) {
+        sExecutorService.execute(() -> {
+            synchronized (HandleCommands.class) {
+                try {
+                    String ret = sCommand.callAttr(CommandMethod.RESET_PIN,
+                            MyApplication.getInstance().getDeviceWay()).toString();
+                    callBack.onResult(ret);
+                } catch (Exception e) {
+                    showException(e);
+                }
+            }
+        });
+    }
+
+
+    /**
+     * cancel ui by user
+     */
+    public static void cancelPinUi() {
+        sExecutorService.execute(() -> {
+            synchronized (HandleCommands.class) {
+                try {
+                    sCustomerUI.put(PyConstant.USER_CANCEL, 1);
+                } catch (Exception e) {
+                    showException(e);
+                }
+            }
+        });
+    }
+
+
+    /**
+     * set pin
+     */
+    public static void setPin(String pinCode) {
+        sExecutorService.execute(() -> {
+            synchronized (HandleCommands.class) {
+                try {
+                    sCustomerUI.put(PyConstant.PIN, pinCode);
+                } catch (Exception e) {
+                    showException(e);
+                }
+            }
+        });
+    }
+
+
+    /**
+     * import mnemonics
+     */
+    public static void importMnemonicsToDevice(String mnemonics, CallBack callBack) {
+        sExecutorService.execute(() -> {
+            synchronized (HandleCommands.class) {
+                try {
+                    String ret = sCommand.callAttr(CommandMethod.BIXIN_LOAD_DEVICE,
+                            MyApplication.getInstance().getDeviceWay(), mnemonics).toString();
+                    callBack.onResult(ret);
+                } catch (Exception e) {
+                    showException(e);
+                }
+            }
+        });
+    }
+
+    /**
+     * notify
+     */
     public static void pyNotify() {
         sExecutorService.execute(() -> {
             synchronized (HandleCommands.class) {
                 try {
                     sCommand.callAttr(CommandMethod.NOTIFY);
                 } catch (Exception e) {
-                    //todo err info
-                    //onException(e);
-                    Log.e(TAG,"err : " + e);
+                    showException(e);
                 }
             }
         });
     }
-
 
 
 }

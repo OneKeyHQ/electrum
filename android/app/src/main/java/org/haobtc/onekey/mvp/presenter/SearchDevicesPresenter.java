@@ -27,7 +27,7 @@ public class SearchDevicesPresenter extends BasePresenter<ISearchDevicesView> {
 
     public SearchDevicesPresenter(ISearchDevicesView view) {
         super(view);
-        mWay = MyApplication.getDeviceWay();
+        mWay = MyApplication.getInstance().getDeviceWay();
     }
 
     public void init() {
