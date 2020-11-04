@@ -19,8 +19,6 @@ import org.haobtc.onekey.utils.NfcUtils;
 
 import java.util.Optional;
 
-import dr.android.utils.LogUtil;
-
 import static org.haobtc.onekey.activities.service.CommunicationModeSelector.COMMUNICATION_MODE_NFC;
 import static org.haobtc.onekey.activities.service.CommunicationModeSelector.way;
 import static org.haobtc.onekey.activities.service.CommunicationModeSelector.isNFC;
@@ -73,6 +71,7 @@ public class LunchActivity extends BaseActivity {
                 mTextChinese();
             }
         }
+
     }
 
     private void initGuide() {
@@ -92,10 +91,10 @@ public class LunchActivity extends BaseActivity {
         //Global.guiDaemon = Global.py.getModule("electrum_gui.android.daemon");
         Global.guiConsole = Global.py.getModule("electrum_gui.android.console");
         try {
-            Daemon.commands = Global.guiConsole.callAttr("AndroidCommands",new Kwarg("android_id","123456"), new Kwarg("callback", Daemon.getInstance()));
+            Daemon.commands = Global.guiConsole.callAttr("AndroidCommands","123", new Kwarg("callback", Daemon.getInstance()));
+            Daemon.commands.callAttr("load_all_wallet");
         } catch (Exception ignored) {
             ignored.printStackTrace();
-            LogUtil.d("exception : " + ignored);
         }
         //Daemon.commands.callAttr("start", Daemon.getInstance());
         //Daemon.commands.callAttr("set_callback_fun", Daemon.getInstance());

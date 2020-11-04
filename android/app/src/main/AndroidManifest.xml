@@ -47,6 +47,10 @@
         tools:replace="label, android:allowBackup"
         tools:targetApi="q">
         <activity
+            android:name=".onekeys.homepage.process.DetailTransactionActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
             android:name=".onekeys.homepage.process.TransactionDetailWalletActivity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
