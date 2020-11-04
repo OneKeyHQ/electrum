@@ -41,8 +41,6 @@ public class SearchDevicesActivity extends BaseMvpActivity<SearchDevicesPresente
 
     @BindView(R.id.device_list)
     protected RecyclerView mRecyclerView;
-    @BindView(R.id.smart_RefreshLayout)
-    protected SmartRefreshLayout mRefreshLayout;
     @BindView(R.id.device_list_layout)
     protected LinearLayout mDeviceListLayout;
     @BindView(R.id.container)
@@ -82,7 +80,7 @@ public class SearchDevicesActivity extends BaseMvpActivity<SearchDevicesPresente
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_ENABLE_BT && resultCode == Activity.RESULT_CANCELED) {
-            showToast("失败");
+
         } else if (requestCode == REQUEST_ENABLE_BT && resultCode == Activity.RESULT_OK) {
             if (mPresenter != null) {
                 mPresenter.refreshBleDeviceList();
@@ -104,15 +102,6 @@ public class SearchDevicesActivity extends BaseMvpActivity<SearchDevicesPresente
         }
         if (mDeviceListLayout.getVisibility() != View.VISIBLE) {
             mDeviceListLayout.setVisibility(View.VISIBLE);
-            mDeviceListLayout.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout
-                            .LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-                    lp.setMargins(20, 20, 20, 20);
-                    mDeviceListLayout.setLayoutParams(lp);
-                }
-            }, 505);
         }
         if (mOpenWalletHide.getVisibility() != View.VISIBLE) {
             mOpenWalletHide.postDelayed(() -> mOpenWalletHide.setVisibility(View.VISIBLE), 400);
@@ -182,13 +171,6 @@ public class SearchDevicesActivity extends BaseMvpActivity<SearchDevicesPresente
         }
         mContainer.addView(mLayoutView, 1);
         mBleAdapter = new BleDeviceAdapter(this, this);
-        mRefreshLayout.setEnableLoadMore(false);
-        mRefreshLayout.setEnableRefresh(true);
-        mRefreshLayout.setOnRefreshListener(refreshLayout -> {
-            if (mPresenter != null) {
-                mPresenter.refreshBleDeviceList();
-            }
-        });
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setAdapter(mBleAdapter);
     }

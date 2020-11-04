@@ -6,11 +6,13 @@ import android.widget.TextView;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.mvp.base.BaseActivity;
 import org.haobtc.onekey.passageway.HandleCommands;
+import org.haobtc.onekey.ui.fragment.AddAssetFragment;
 import org.haobtc.onekey.ui.fragment.BackupWalletFragment;
 import org.haobtc.onekey.ui.fragment.ColdDeviceConfirmFragment;
 import org.haobtc.onekey.ui.fragment.CompleteBackupFragment;
 import org.haobtc.onekey.ui.fragment.GiveNameFragment;
 import org.haobtc.onekey.ui.fragment.SetDevicePINFragment;
+import org.haobtc.onekey.ui.listener.IAddAssetListener;
 import org.haobtc.onekey.ui.listener.IBackupWalletListener;
 import org.haobtc.onekey.ui.listener.IColdDeviceConfirmListener;
 import org.haobtc.onekey.ui.listener.IGiveNameListener;
@@ -30,7 +32,7 @@ public class ActivateColdWalletActivity extends BaseActivity implements View.OnC
     @Override
     public void init() {
         findViewById(R.id.img_back).setOnClickListener(this);
-        startFragment(new BackupWalletFragment());
+        startFragment(new SetDevicePINFragment());
     }
 
     @Override

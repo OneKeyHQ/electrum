@@ -40,7 +40,7 @@ public class GiveNameFragment extends BaseFragment<IGiveNameListener> implements
             @Override
             public void afterTextChanged(Editable s) {
                 String name = s.toString();
-                mNext.setEnabled(TextUtils.isEmpty(name));
+                mNext.setEnabled(!TextUtils.isEmpty(name));
             }
         });
     }

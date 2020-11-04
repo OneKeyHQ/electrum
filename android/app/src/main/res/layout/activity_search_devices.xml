@@ -78,9 +78,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:indeterminateOnly="true"
                 android:indeterminateBehavior="repeat"
-                android:indeterminateDrawable="@drawable/progressbar_drawable" />
+                android:indeterminateDrawable="@drawable/progressbar_drawable"
+                android:indeterminateOnly="true" />
 
         </RelativeLayout>
 
@@ -88,12 +88,11 @@
             android:id="@+id/device_list_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_gravity="top"
             android:layout_margin="@dimen/dp_20"
             android:background="@drawable/dark_bg"
             android:orientation="vertical"
-            android:layout_gravity="top"
-            android:visibility="gone"
-            >
+            android:visibility="gone">
 
             <TextView
                 android:id="@+id/relode"
@@ -105,27 +104,12 @@
                 android:drawablePadding="@dimen/dp_5"
                 android:text="@string/already_find_devices" />
 
-            <com.scwang.smartrefresh.layout.SmartRefreshLayout
-                android:id="@+id/smart_RefreshLayout"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/device_list"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="@dimen/dp_20"
-                >
-
-                <com.scwang.smartrefresh.layout.header.ClassicsHeader
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/device_list"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dp_20"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    tools:itemCount="5"
-                    tools:listitem="@layout/bluetooth_device_list_item" />
-
-            </com.scwang.smartrefresh.layout.SmartRefreshLayout>
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_20"
+                />
 
         </LinearLayout>
 

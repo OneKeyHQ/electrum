@@ -1124,4 +1124,9 @@
     <string name="recovery_phone_hd_wallet_hide">Full recovery of your HD wallet, any wallet derived from the original HD mnemonic will be restored.</string>
     <string name="recovery_phone_hd_wallet_info"><b>Devices with HD mnemonics backed up will only be used to restore HD wallets you created on the app,</b>if you want to use more features of this device, you can restore the device to factory mode after properly keeping the mnemonics of HD wallet (manual copying), and then re pair and activate the device to use it as a normal hardware wallet.</string>
     <string name="set_wallet_name_hide">Easy to identify</string>
+    <string name="add_asset">Adding assets</string>
+    <string name="select_asset">Select assets to add</string>
+    <string name="coin_btc">BTC</string>
+    <string name="coin_eth">ETH</string>
+    <string name="coin_eos">EOS</string>
 </resources>

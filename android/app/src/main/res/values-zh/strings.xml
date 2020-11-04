@@ -1039,6 +1039,12 @@
     <string name="remarks">备注</string>
     <string name="no">无</string>
     <string name="support_btc_eth">支持 BTC、ETH等多种主链</string>
+    <string name="add_asset">添加资产</string>
+    <string name="select_asset">选择要添加的资产</string>
+    <string name="coin_btc">比特币</string>
+    <string name="coin_eth">以太坊</string>
+    <string name="coin_eos">柚子</string>
+
     <string name="manage">管理</string>
     <string name="export_word">导出 HD 钱包的根助记词</string>
     <string name="danger">危险操作</string>

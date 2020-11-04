@@ -572,6 +572,16 @@
             tools:ignore="LockedOrientationActivity"
             android:launchMode="singleTask"/>
         <activity
+            android:name=".ui.activity.ActivateColdWalletActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity"
+            />
+        <activity
+            android:name=".ui.activity.ImportMnemonicToDeviceActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity"
+            />
+        <activity
             android:name=".ui.activity.FindNewDeviceActivity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
