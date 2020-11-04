@@ -28,9 +28,12 @@ public class Daemon {
         return daemon;
     }
 
-    public void onCallback(String event, String msg) {
-//        Log.i("onCallback", "==================" + event + "   ============================    " + msg);
-        if ("update_status".equals(event)) {
+    public void onCallback(String event) {
+        String[] info = event.split("=");
+        String type = info[0];
+        String msg = info[1];
+        Log.i("onCallback", "==================" + type + "   ============================    " + msg);
+        if ("update_status".equals(type)) {
             if (!TextUtils.isEmpty(msg) && msg.length() != 2) {
                 EventBus.getDefault().post(new SecondEvent(msg));
                 EventBus.getDefault().post(new FirstEvent("22"));
