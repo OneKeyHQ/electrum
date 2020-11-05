@@ -240,17 +240,24 @@ class Imported_KeyStore(Software_KeyStore):
             self.get_private_key(pubkey, password)
 
     def import_privkey(self, sec, password):
-        txin_type, privkey, compressed = deserialize_privkey(sec)
-        pubkey = ecc.ECPrivkey(privkey).get_public_key_hex(compressed=compressed)
-        # re-serialize the key so the internal storage format is consistent
-        serialized_privkey = serialize_privkey(
-            privkey, compressed, txin_type, internal_use=True)
-        # NOTE: if the same pubkey is reused for multiple addresses (script types),
-        # there will only be one pubkey-privkey pair for it in self.keypairs,
-        # and the privkey will encode a txin_type but that txin_type cannot be trusted.
-        # Removing keys complicates this further.
-        self.keypairs[pubkey] = pw_encode(serialized_privkey, password, version=self.pw_hash_version)
+        try:
+            ecc.ECPrivkey(bfh(sec))
+            pubkey = ecc.ECPrivkey(bfh(sec)).get_public_key_hex(compressed=True)
+            self.keypairs[pubkey] = pw_encode(sec, password, version=self.pw_hash_version)
+            return "p2wpkh", pubkey
+        except BaseException as e:
+            txin_type, privkey, compressed = deserialize_privkey(sec)
+            pubkey = ecc.ECPrivkey(privkey).get_public_key_hex(compressed=compressed)
+            # re-serialize the key so the internal storage format is consistent
+            serialized_privkey = serialize_privkey(
+                privkey, compressed, txin_type, internal_use=True)
+            # NOTE: if the same pubkey is reused for multiple addresses (script types),
+            # there will only be one pubkey-privkey pair for it in self.keypairs,
+            # and the privkey will encode a txin_type but that txin_type cannot be trusted.
+            # Removing keys complicates this further.
+            self.keypairs[pubkey] = pw_encode(serialized_privkey, password, version=self.pw_hash_version)
         return txin_type, pubkey
+
 
     def import_eth_privkey(self, sec, password):
         print("")
@@ -276,11 +283,17 @@ class Imported_KeyStore(Software_KeyStore):
 
     def get_private_key(self, pubkey: str, password):
         sec = pw_decode(self.keypairs[pubkey], password, version=self.pw_hash_version)
-        txin_type, privkey, compressed = deserialize_privkey(sec)
-        # this checks the password
-        if pubkey != ecc.ECPrivkey(privkey).get_public_key_hex(compressed=compressed):
-            raise InvalidPassword()
-        return privkey, compressed
+        try:
+            ecc.ECPrivkey(sec)
+            if pubkey != ecc.ECPrivkey(sec).get_public_key_hex(compressed=True):
+                raise InvalidPassword()
+            return sec, True
+        except BaseException as e:
+            txin_type, privkey, compressed = deserialize_privkey(sec)
+            # this checks the password
+            if pubkey != ecc.ECPrivkey(privkey).get_public_key_hex(compressed=compressed):
+                raise InvalidPassword()
+            return privkey, compressed
 
     def get_pubkey_derivation(self, pubkey, txin, *, only_der_suffix=True):
         if pubkey.hex() in self.keypairs:

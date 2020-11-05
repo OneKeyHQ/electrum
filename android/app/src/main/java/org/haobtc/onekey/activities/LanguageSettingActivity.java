@@ -60,14 +60,14 @@ public class LanguageSettingActivity extends BaseActivity {
     public void initData() {
         if ("English".equals(language)) {
             radioSystem.setTextColor(getColor(R.color.text_color1));
-            radioEnglish.setTextColor(getColor(R.color.button_bk_disableok));
+            radioEnglish.setTextColor(getColor(R.color.onekey));
             radioChineseasy.setTextColor(getColor(R.color.text_color1));
         } else if ("Chinese".equals(language)) {
             radioSystem.setTextColor(getColor(R.color.text_color1));
             radioEnglish.setTextColor(getColor(R.color.text_color1));
-            radioChineseasy.setTextColor(getColor(R.color.button_bk_disableok));
+            radioChineseasy.setTextColor(getColor(R.color.onekey));
         } else {
-            radioSystem.setTextColor(getColor(R.color.button_bk_disableok));
+            radioSystem.setTextColor(getColor(R.color.onekey));
             radioEnglish.setTextColor(getColor(R.color.text_color1));
             radioChineseasy.setTextColor(getColor(R.color.text_color1));
         }

@@ -40,8 +40,11 @@ public class WalletListAdapter extends BaseQuickAdapter<AddressEvent, BaseViewHo
         } else if (item.getType().contains("eos")) {
             view.setBackground(mContext.getDrawable(R.drawable.eos_gray_back));
         }
-        if (item.getType().contains("hd")) {
+        if (item.getType().contains("hd") || item.getType().contains("derived")) {
+            helper.getView(R.id.text_type).setVisibility(View.VISIBLE);
             helper.setText(R.id.text_type, "HD");
+        }else {
+            helper.getView(R.id.text_type).setVisibility(View.INVISIBLE);
         }
         TextView textAddr = helper.getView(R.id.text_address);
         textAddr.setText(item.getAmount());

@@ -63,6 +63,7 @@
                 android:src="@drawable/token_btc" />
 
             <EditText
+                android:id="@+id/edit_address"
                 android:layout_width="match_parent"
                 android:layout_height="92dp"
                 android:layout_marginStart="34dp"
@@ -75,6 +76,7 @@
                 android:textSize="@dimen/sp_14" />
 
             <EditText
+                android:id="@+id/edit_wallet_name"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dp_60"
                 android:layout_marginStart="34dp"
@@ -98,7 +100,7 @@
                 android:textSize="@dimen/sp_14" />
 
             <Button
-                android:id="@+id/btn_recovery"
+                android:id="@+id/btn_import"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dp_60"
                 android:layout_marginStart="34dp"

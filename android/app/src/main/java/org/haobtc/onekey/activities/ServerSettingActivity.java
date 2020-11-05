@@ -42,8 +42,6 @@ public class ServerSettingActivity extends BaseActivity {
     ImageView imgBack;
     @BindView(R.id.rel_quotationChoose)
     RelativeLayout relQuotationChoose;
-    @BindView(R.id.rel_blockChoose)
-    RelativeLayout relBlockChoose;
     @BindView(R.id.rel_Electrum_Choose)
     RelativeLayout relElectrumChoose;
     @BindView(R.id.tet_defaultServer)
@@ -70,13 +68,12 @@ public class ServerSettingActivity extends BaseActivity {
         EventBus.getDefault().register(this);
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         exchangeName = preferences.getString("exchangeName", "");
-        blockServerLine = preferences.getString("blockServerLine", "");
+        blockServerLine = preferences.getString("blockServerLine", "https://btc.com/");
         inits();
 
     }
 
     private void inits() {
-
         //get default Server
         if (!TextUtils.isEmpty(exchangeName)) {
             tetDefaultServer.setText(exchangeName);
@@ -139,7 +136,7 @@ public class ServerSettingActivity extends BaseActivity {
     }
 
     @SingleClick
-    @OnClick({R.id.img_back, R.id.rel_quotationChoose, R.id.rel_blockChoose, R.id.rel_Electrum_Choose, R.id.relAgent_Choose, R.id.testNodeType})
+    @OnClick({R.id.img_back, R.id.rel_quotationChoose, R.id.rel_blockChoose, R.id.rel_Electrum_Choose, R.id.relAgent_Choose, R.id.rel_syn_server})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
@@ -157,7 +154,7 @@ public class ServerSettingActivity extends BaseActivity {
             case R.id.relAgent_Choose:
                 mIntent(AgentServerActivity.class);
                 break;
-            case R.id.testNodeType:
+            case R.id.rel_syn_server:
                 Intent intent = new Intent(ServerSettingActivity.this, AnyskServerSetActivity.class);
                 intent.putExtra("ip_port", testNodeType.getText().toString());
                 startActivity(intent);
