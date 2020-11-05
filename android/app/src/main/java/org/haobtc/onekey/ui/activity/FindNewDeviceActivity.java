@@ -41,7 +41,7 @@ public class FindNewDeviceActivity extends BaseActivity implements View.OnClickL
                 break;
             case R.id.recovery_device:
             case R.id.recovery_device_hide:
-
+                toActivity(RecoveryDeviceFromPhoneBackupActivity.class);
                 break;
             case R.id.multi_sig_wallet:
             case R.id.multi_sig_wallet_hide:

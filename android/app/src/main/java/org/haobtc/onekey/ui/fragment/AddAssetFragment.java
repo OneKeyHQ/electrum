@@ -43,8 +43,17 @@ public class AddAssetFragment extends BaseFragment<IAddAssetListener> implements
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.complete:
-
+                addAssets();
                 break;
+        }
+    }
+
+    private void addAssets() {
+        //todo add asset
+
+
+        if(getListener() != null){
+            getListener().onAddAssetsComplete();
         }
     }
 }

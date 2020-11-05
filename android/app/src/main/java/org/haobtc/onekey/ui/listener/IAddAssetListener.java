@@ -4,4 +4,6 @@ import org.haobtc.onekey.mvp.base.IBaseListener;
 
 public interface IAddAssetListener extends IBaseListener,IUpdateTitleListener {
 
+    void onAddAssetsComplete();
+
 }
