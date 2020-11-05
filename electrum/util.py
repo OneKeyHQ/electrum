@@ -537,6 +537,8 @@ def xor_bytes(a: bytes, b: bytes) -> bytes:
 def user_dir():
     if "ELECTRUMDIR" in os.environ:
         return os.environ["ELECTRUMDIR"]
+    elif "iOS_DATA" in os.environ:
+        return os.environ["iOS_DATA"]
     elif 'ANDROID_DATA' in os.environ:
         return android_data_dir()
     elif os.name == 'posix':

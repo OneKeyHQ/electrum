@@ -5,7 +5,7 @@
     <string name="check">查看/激活币信Key</string>
     <string name="message_manager">消息管理</string>
     <string name="language">语言</string>
-    <string name="server_setting">网络设置</string>
+    <string name="server_setting">网络</string>
     <string name="transaction_setting">交易设置</string>
     <string name="service_online">在线服务</string>
     <string name="about">关于（协议条款）</string>
@@ -349,10 +349,7 @@
     <string name="verson_updates">版本更新</string>
     <string name="user_agreement">用户协议</string>
     <string name="syncnneth">同步服务器仅存储钱包公钥、名称等公开信息，不存储任何私钥和个人信息。</string>
-    <string name="electrum_tips">BixinKey使用Electrum开源分布式节点进行交易广播和链上信息获取</string>
     <string name="get_btc_price">选择第三方服务获取比特币价格</string>
-    <string name="blockchain_choose">区块链浏览器选择</string>
-    <string name="check_trsaction_msg">选择区块链浏览器查看链上交易信息</string>
     <string name="quotation_choose">行情服务器选择</string>
     <string name="import_hardware">导入硬件钱包</string>
     <string name="bixinkey_import">请通过BixinKey导入</string>
@@ -569,7 +566,6 @@
     <string name="confirm_fix">确认修改</string>
     <string name="original_pin_wrong">原PIN码错误</string>
     <string name="reset_device_failed">BixinKey恢复出厂设置失败</string>
-    <string name="agent_tips">使用代理服务器，隐藏网络痕迹</string>
     <string name="last_check_time">上次验证时间为 </string>
     <string name="broad_fail">广播失败</string>
     <string name="is_new">当前已是最新版本</string>
@@ -1021,4 +1017,38 @@
     <string name="remarks">备注</string>
     <string name="no">无</string>
     <string name="support_btc_eth">支持 BTC、ETH等多种主链</string>
+    <string name="manage">管理</string>
+    <string name="export_word">导出 HD 钱包的根助记词</string>
+    <string name="danger">危险操作</string>
+    <string name="delete_hd_wallet">删除 HD 钱包</string>
+    <string name="risk_tip">风险提示</string>
+    <string name="risk_tip_1">一旦删除：</string>
+    <string name="risk_tip_2">1. 所有 HD 钱包都会被抹除。</string>
+    <string name="risk_tip_3">2. 请您在删除前务必确认 HD 钱包的根助记词已经抄写并保管好，您可以使用它恢复所有 HD 钱包，从而找回资产。</string>
+    <string name="i_know_danger">我已知晓以上风险</string>
+    <string name="choose_wallet_type">选择钱包类型</string>
+    <string name="hd_derive">基于 HD 钱包派生（推荐）</string>
+    <string name="hd_derive_tip">带有 HD 标识，从钱包根助记词（您初次创建钱包时抄录的那个助记词）派生而来，一个助记词可以创建无数钱包，支持多个币种。也可以用它恢复所有派生出的钱包，省时省力且安全，是比特币核心协议 BIP44 的实现。</string>
+    <string name="single_wallet">独立钱包</string>
+    <string name="single_wallet_tip">独立的钱包，由本地加密算法生成独立私钥。需要重新抄写助记词，一切都不与 HD 钱包共享。</string>
+    <string name="easy_see">方便您轻松识别</string>
+    <string name="please_input_addr_or_xpub">请输入地址或公钥</string>
+    <string name="input_your_pass">输入您的密码</string>
+    <string name="hd_root">HD 钱包根助记词</string>
+    <string name="hd_root_tip">助记词用来在其他 App 或钱包中恢复资产，将它们按照正确的顺序抄写，并放置在只有您知道的安全地方。</string>
+    <string name="copy_it">我抄好了</string>
+    <string name="change_keyboard">切换至长密码键盘</string>
+    <string name="change_short_keyboard">切换短密码键盘</string>
+    <string name="fix_pass_tip1">您的密码将被用来加密敏感信息，</string>
+    <string name="fix_pass_tip2">"并在需要安全校验的步骤用来验证。"</string>
+    <string name="fix_pass">修改密码</string>
+    <string name="input_your_former_pass">输入您的原密码</string>
+    <string name="fix_former_tip">修改完密码后，您原先的生物识别（面部、指纹）将会失效，需要重新设置。</string>
+    <string name="set_new_pass">设置您的新密码</string>
+    <string name="price_quotation">价格行情（只影响 BTC 和 ETH 价格的显示）</string>
+    <string name="blockchain_choose">区块浏览器（BTC）</string>
+    <string name="check_trsaction_msg">使用您喜欢的浏览器查看链上交易信息</string>
+    <string name="electrum_tips">使用其开源分布式节点进行交易广播和链上信息获取</string>
+    <string name="agent_tips">使用代理服务器，隐藏网络痕迹</string>
+
 </resources>

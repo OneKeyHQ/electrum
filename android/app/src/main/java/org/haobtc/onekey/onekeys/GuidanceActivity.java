@@ -12,6 +12,7 @@ import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
 
 import org.haobtc.onekey.R;
+import org.haobtc.onekey.activities.UserAgreementActivity;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.bean.HomeWalletBean;
 import org.haobtc.onekey.utils.Daemon;
@@ -108,9 +109,8 @@ public class GuidanceActivity extends BaseActivity implements CompoundButton.OnC
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.text_user1:
+                mIntent(UserAgreementActivity.class);
                 break;
-//            case R.id.text_user2:
-//                break;
             case R.id.btn_begin:
                 if (isAgree) {
                     edit.putBoolean("is_first_run", true);

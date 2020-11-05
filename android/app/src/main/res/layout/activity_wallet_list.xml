@@ -83,13 +83,6 @@
             android:layout_marginTop="27dp"
             android:src="@drawable/eth_icon_gray" />
 
-        <ImageView
-            android:id="@+id/view_eos"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_36"
-            android:layout_marginTop="27dp"
-            android:src="@drawable/eos_icon" />
-
     </LinearLayout>
 
     <RelativeLayout
@@ -157,16 +150,6 @@
                 android:layout_marginEnd="@dimen/dp_10"
                 android:src="@drawable/right_arrow_small" />
         </RelativeLayout>
-
-        <ImageView
-            android:id="@+id/img_add_wallet"
-            android:layout_width="@dimen/dp_50"
-            android:layout_height="@dimen/dp_50"
-            android:layout_alignParentEnd="true"
-            android:layout_marginEnd="@dimen/dp_5"
-            android:padding="@dimen/dp_14"
-            android:src="@drawable/add_gray"
-            android:visibility="gone" />
 
     </RelativeLayout>
 

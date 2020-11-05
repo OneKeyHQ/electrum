@@ -47,6 +47,42 @@
         tools:replace="label, android:allowBackup"
         tools:targetApi="q">
         <activity
+            android:name=".onekeys.homepage.mindmenu.FixHdPassActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".onekeys.homepage.mindmenu.AllAssetsActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".onekeys.homepage.mindmenu.HdRootMnemonicsActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".onekeys.homepage.process.SetDeriveWalletNameActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".onekeys.homepage.process.CreateDeriveChooseTypeActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".onekeys.homepage.process.CreateWalletChooseTypeActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".onekeys.homepage.mindmenu.DeleteWalletActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".onekeys.homepage.mindmenu.WalletManageActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".onekeys.homepage.mindmenu.HDWalletActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
             android:name=".onekeys.homepage.process.DetailTransactionActivity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />

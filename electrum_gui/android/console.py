@@ -11,6 +11,8 @@ from os.path import exists, join
 import pkgutil
 import unittest
 import threading
+import random
+import string
 from electrum.bitcoin import base_decode, is_address
 from electrum.keystore import bip44_derivation, bip44_eth_derivation, purpose48_derivation
 from electrum.plugin import Plugins
@@ -18,7 +20,8 @@ from electrum.plugins.trezor.clientbase import TrezorClientBase
 from electrum.transaction import PartialTransaction, Transaction, TxOutput, PartialTxOutput, tx_from_any, TxInput, \
     PartialTxInput
 from electrum import commands, daemon, keystore, simple_config, storage, util, bitcoin
-from electrum.util import Fiat, create_and_start_event_loop, decimal_point_to_base_unit_name, standardize_path
+from electrum.util import bfh, Fiat, create_and_start_event_loop, decimal_point_to_base_unit_name, standardize_path
+from electrum.util import user_dir as get_dir
 from electrum import MutiBase
 from electrum.i18n import _
 from electrum.storage import WalletStorage
@@ -128,7 +131,7 @@ class AndroidCommands(commands.Commands):
         else:
             self.config = config
         if user_dir is None:
-            self.user_dir = util.user_dir()
+            self.user_dir = get_dir()
         else:
             self.user_dir = user_dir
         fd = daemon.get_file_descriptor(self.config)
@@ -156,8 +159,6 @@ class AndroidCommands(commands.Commands):
         self.derived_info = self.config.get("derived_info", dict())
         self.btc_derived_account_id = self.init_account_id_list('btc')
         self.eth_derived_account_id = self.init_account_id_list('eth')
-        import random
-        import string
         ran_str = self.config.get("ra_str", None)
         if ran_str is None:
             ran_str = ''.join(random.sample(string.ascii_letters + string.digits, 8))
@@ -193,8 +194,13 @@ class AndroidCommands(commands.Commands):
         self.config.set_key('auto_connect', True, True)
         t = threading.Timer(5.0, self.timer_action)
         t.start()
-        if callback is not None:
-            self.set_callback_fun(callback)
+
+        if 'iOS_DATA' in os.environ:
+            self.my_handler = CallHandler.alloc().initWithValue(42)
+            self.set_callback_fun(my_handler)
+        elif 'ANDROID_DATA' in os.environ:
+            if callback is not None:        
+                self.set_callback_fun(callback)
         self.start()
 
     def init_account_id_list(self, coin):
@@ -290,7 +296,7 @@ class AndroidCommands(commands.Commands):
                 if self.daemon.fx.is_enabled():
                     text += self.daemon.fx.get_fiat_status_text(c + u + x, self.base_unit, self.decimal_point) or ''
            # print("update_statue out = %s" % (out))
-            self.callbackIntent.onCallback("update_status", json.dumps(out))
+            self.callbackIntent.onCallback("update_status=%s" %json.dumps(out))
 
     def get_remove_flag(self, tx_hash):
         height = self.wallet.get_tx_height(tx_hash).height
@@ -371,7 +377,7 @@ class AndroidCommands(commands.Commands):
                 self.update_wallet()
             elif event == 'set_server_status':
                 if self.callbackIntent is not None:
-                    self.callbackIntent.onCallback("set_server_status", args[0])
+                    self.callbackIntent.onCallback("set_server_status=%s" %args[0])
 
     def timer_action(self):
         if self.wallet is not None and -1 == self.wallet.wallet_type.find("eth"):
@@ -832,7 +838,7 @@ class AndroidCommands(commands.Commands):
     def get_currencies(self):
         self._assert_daemon_running()
         currencies = sorted(self.daemon.fx.get_currencies(self.daemon.fx.get_history_config()))
-        return currencies
+        return json.dumps(currencies)
 
     def get_exchanges(self):
         if not self.daemon.fx: return
@@ -2089,16 +2095,23 @@ class AndroidCommands(commands.Commands):
                     self.derived_info[xpub].append(wallet_info)
                     self.config.set_key("derived_info", self.derived_info)
 
+    def check_file_exist(self):
+        print("TODO")
+
     def create(self, name, password, seed_type="segwit", seed=None, passphrase="", bip39_derivation=None,
                master=None, addresses=None, privkeys=None, hd=False):
         """Create or restore a new wallet"""
         print("CREATE in....name = %s" % name)
+
         try:
             if not hd:
                 if addresses is None:
                     self.check_password(password)
         except BaseException as e:
             raise e
+
+        if name == "":
+            name = ''.join(random.sample(string.ascii_letters + string.digits, 8))+'.tmp.file'
         new_seed = ""
         wallet_type = "btc-standard"
         path = self._wallet_path(name)
@@ -2117,7 +2130,11 @@ class AndroidCommands(commands.Commands):
             ks = keystore.Imported_KeyStore({})
             db.put('keystore', ks.dump())
             wallet = Imported_Wallet(db, storage, config=self.config)
-            keys = keystore.get_private_keys(privkeys, allow_spaces_inside_key=False)
+            try:
+                ecc.ECPrivkey(bfh(privkeys))
+                keys = [bfh(privkeys)]
+            except BaseException as e:
+                keys = keystore.get_private_keys(privkeys, allow_spaces_inside_key=False)
             good_inputs, bad_inputs = wallet.import_private_keys(keys, None, write_to_disk=False)
             # FIXME tell user about bad_inputs
             if not good_inputs:
@@ -2157,17 +2174,20 @@ class AndroidCommands(commands.Commands):
             self.btc_hd_wallet = wallet
             self.check_pw_wallet = self.btc_hd_wallet
             wallet_type = 'btc-hd-standard'
-
         wallet.update_password(old_pw=None, new_pw=password, str_pw=self.android_id, encrypt_storage=True)
         wallet.start_network(self.daemon.network)
         wallet.save_db()
         self.daemon.add_wallet(wallet)
+        if -1 != name.find("tmp.file"):
+            addr = wallet.get_addresses()[0]
+            new_name = '%s...%s' %(addr[0:6], addr[-6:])
+            self.rename_wallet(name, new_name)
         wallet_info = {}
         wallet_info['type'] = wallet_type
         wallet_info['time'] = time.time()
-        wallet_info['xpubs'] = wallet.get_keystore().xpub
+        wallet_info['xpubs'] = "wallet.get_keystore().xpub"
         wallet_info['seed'] = ""
-        print(f"crate()-----------{wallet.get_keystore().xpub}")
+        #print(f"crate()-----------{wallet.get_keystore().xpub}")
         self.local_wallet_info[name] = wallet_info
         self.config.set_key('all_wallet_type_info', self.local_wallet_info)
         # if self.label_flag:
@@ -2425,7 +2445,7 @@ class AndroidCommands(commands.Commands):
                         temp_local_wallet_info[key] = value
                 self.local_wallet_info = temp_local_wallet_info
                 self.config.set_key('all_wallet_type_info', self.local_wallet_info)
-                self.load_wallet(new_name)
+                self.load_wallet(new_name, password=self.android_id)
                 self.select_wallet(new_name)
                 return new_name
         except BaseException as e:
