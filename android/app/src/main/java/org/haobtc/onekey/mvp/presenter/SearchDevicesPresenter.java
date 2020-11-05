@@ -116,8 +116,14 @@ public class SearchDevicesPresenter extends BasePresenter<ISearchDevicesView> {
      * search ble devices
      */
     public void refreshBleDeviceList() {
-
-        mBle.startScan(mBleScanCallBack, SCAN_TIME);
+        if (mBle == null) {
+            return;
+        }
+        if (mBle.isBleEnable()) {
+            mBle.startScan(mBleScanCallBack, SCAN_TIME);
+        } else {
+            mBle.turnOnBlueTooth(getActivity());
+        }
 
     }
 
