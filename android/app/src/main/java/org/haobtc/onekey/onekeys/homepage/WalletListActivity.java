@@ -26,6 +26,10 @@ import org.haobtc.onekey.adapter.WalletListAdapter;
 import org.haobtc.onekey.bean.AddressEvent;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
+import org.haobtc.onekey.onekeys.HomeOnekeyActivity;
+import org.haobtc.onekey.onekeys.dialog.recovery.ImprotSingleActivity;
+import org.haobtc.onekey.onekeys.homepage.process.CreateDeriveChooseTypeActivity;
+import org.haobtc.onekey.onekeys.homepage.process.CreateWalletChooseTypeActivity;
 import org.haobtc.onekey.utils.Daemon;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -45,8 +49,6 @@ public class WalletListActivity extends BaseActivity {
 
     @BindView(R.id.recl_wallet_detail)
     RelativeLayout reclWalletDetail;
-    @BindView(R.id.img_add_wallet)
-    ImageView imgAddWallet;
     @BindView(R.id.recl_wallet_list)
     RecyclerView reclWalletList;
     @BindView(R.id.text_wallet_num)
@@ -57,8 +59,6 @@ public class WalletListActivity extends BaseActivity {
     ImageView viewBtc;
     @BindView(R.id.view_eth)
     ImageView viewEth;
-    @BindView(R.id.view_eos)
-    ImageView viewEos;
     @BindView(R.id.tet_None)
     TextView tetNone;
     @BindView(R.id.recl_add_wallet)
@@ -92,15 +92,14 @@ public class WalletListActivity extends BaseActivity {
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
-    @OnClick({R.id.img_close, R.id.img_add_wallet, R.id.recl_wallet, R.id.lin_pair_wallet, R.id.lin_add_wallet, R.id.view_all, R.id.view_btc, R.id.view_eth, R.id.view_eos})
+    @OnClick({R.id.img_close, R.id.recl_wallet, R.id.lin_pair_wallet, R.id.lin_add_wallet, R.id.view_all, R.id.view_btc, R.id.view_eth, R.id.recl_add_wallet})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_close:
                 finish();
                 break;
-            case R.id.img_add_wallet:
-                break;
             case R.id.recl_wallet:
+                mIntent(HomeOnekeyActivity.class);
                 break;
             case R.id.lin_pair_wallet:
                 Intent intent = new Intent(this, SearchDevicesActivity.class);
@@ -114,7 +113,6 @@ public class WalletListActivity extends BaseActivity {
                 viewAll.setImageDrawable(getDrawable(R.drawable.hd_wallet_1));
                 viewBtc.setImageDrawable(getDrawable(R.drawable.token_trans_btc));
                 viewEth.setImageDrawable(getDrawable(R.drawable.eth_icon_gray));
-                viewEos.setImageDrawable(getDrawable(R.drawable.eos_icon));
                 textWalletNum.setText(String.valueOf(hdWalletList.size()));
                 reclAddWallet.setVisibility(View.VISIBLE);
                 if (hdWalletList == null || hdWalletList.size() == 0) {
@@ -131,7 +129,6 @@ public class WalletListActivity extends BaseActivity {
                 viewAll.setImageDrawable(getDrawable(R.drawable.id_wallet_icon));
                 viewBtc.setImageDrawable(getDrawable(R.drawable.token_btc));
                 viewEth.setImageDrawable(getDrawable(R.drawable.eth_icon_gray));
-                viewEos.setImageDrawable(getDrawable(R.drawable.eos_icon));
                 textWalletNum.setText(String.valueOf(btcList.size()));
                 reclAddWallet.setVisibility(View.GONE);
                 if (btcList == null || btcList.size() == 0) {
@@ -149,7 +146,6 @@ public class WalletListActivity extends BaseActivity {
                 viewAll.setImageDrawable(getDrawable(R.drawable.id_wallet_icon));
                 viewBtc.setImageDrawable(getDrawable(R.drawable.token_trans_btc));
                 viewEth.setImageDrawable(getDrawable(R.drawable.token_eth));
-                viewEos.setImageDrawable(getDrawable(R.drawable.eos_icon));
                 textWalletNum.setText(String.valueOf(ethList.size()));
                 reclAddWallet.setVisibility(View.GONE);
                 if (ethList == null || ethList.size() == 0) {
@@ -162,22 +158,10 @@ public class WalletListActivity extends BaseActivity {
                     reclWalletList.setAdapter(ethListAdapter);
                 }
                 break;
-            case R.id.view_eos:
-                viewAll.setImageDrawable(getDrawable(R.drawable.id_wallet_icon));
-                viewBtc.setImageDrawable(getDrawable(R.drawable.token_trans_btc));
-                viewEth.setImageDrawable(getDrawable(R.drawable.eth_icon_gray));
-                viewEos.setImageDrawable(getDrawable(R.drawable.token_eos));
-                textWalletNum.setText(String.valueOf(eosList.size()));
-                reclAddWallet.setVisibility(View.GONE);
-                if (eosList == null || eosList.size() == 0) {
-                    reclWalletList.setVisibility(View.GONE);
-                    tetNone.setVisibility(View.VISIBLE);
-                } else {
-                    reclWalletList.setVisibility(View.VISIBLE);
-                    tetNone.setVisibility(View.GONE);
-                    WalletListAdapter eosListAdapter = new WalletListAdapter(eosList);
-                    reclWalletList.setAdapter(eosListAdapter);
-                }
+            case R.id.recl_add_wallet:
+                Intent intent1 = new Intent(WalletListActivity.this, CreateDeriveChooseTypeActivity.class);
+                intent1.putExtra("walletType","derive");
+                startActivity(intent1);
                 break;
         }
     }
@@ -218,7 +202,7 @@ public class WalletListActivity extends BaseActivity {
                                     JSONObject jsonObject = new JSONObject(value);
                                     String addr = jsonObject.getString("addr");
                                     String type = jsonObject.getString("type");
-                                    if (type.contains("hd")) {
+                                    if (type.contains("hd") || type.contains("derived")) {
                                         addressEvent.setName(key);
                                         addressEvent.setType(type);
                                         addressEvent.setAmount(addr);
@@ -263,10 +247,19 @@ public class WalletListActivity extends BaseActivity {
         //set see view
         View view = View.inflate(context, resource, null);
         Dialog dialogBtoms = new Dialog(context, R.style.dialog);
+        view.findViewById(R.id.btn_next).setOnClickListener(v -> {
+            Intent intent = new Intent(context, CreateWalletChooseTypeActivity.class);
+            startActivity(intent);
+            dialogBtoms.dismiss();
+        });
+        view.findViewById(R.id.btn_import).setOnClickListener(v -> {
+            Intent intent = new Intent(context, ImprotSingleActivity.class);
+            startActivity(intent);
+            dialogBtoms.dismiss();
+        });
         view.findViewById(R.id.img_cancel).setOnClickListener(v -> {
             dialogBtoms.dismiss();
         });
-
         dialogBtoms.setContentView(view);
         Window window = dialogBtoms.getWindow();
         //set pop_up size
@@ -280,14 +273,4 @@ public class WalletListActivity extends BaseActivity {
 
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // TODO: add setContentView(...) invocation
-        ButterKnife.bind(this);
-    }
-
-    @OnClick(R.id.recl_add_wallet)
-    public void onViewClicked() {
-    }
 }

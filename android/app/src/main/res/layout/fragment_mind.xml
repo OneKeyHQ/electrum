@@ -38,6 +38,7 @@
                 android:textSize="@dimen/sp_14" />
 
             <RelativeLayout
+                android:id="@+id/all_assets"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dp_70"
                 android:background="@color/button_bk_ddake">
@@ -76,6 +77,7 @@
                 android:background="@color/line_color" />
 
             <RelativeLayout
+                android:id="@+id/rel_hd_wallet"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dp_70"
                 android:background="@color/button_bk_ddake">
@@ -120,6 +122,7 @@
                 android:textSize="@dimen/sp_14" />
 
             <RelativeLayout
+                android:id="@+id/rel_all_device"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dp_70"
                 android:background="@color/button_bk_ddake">
@@ -158,6 +161,7 @@
                 android:background="@color/line_color" />
 
             <RelativeLayout
+                android:id="@+id/rel_link_method"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dp_70"
                 android:background="@color/button_bk_ddake">
@@ -202,6 +206,7 @@
                 android:textSize="@dimen/sp_14" />
 
             <RelativeLayout
+                android:id="@+id/rel_pass"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dp_70"
                 android:background="@color/button_bk_ddake">
@@ -404,6 +409,7 @@
                 android:background="@color/line_color" />
 
             <RelativeLayout
+                android:id="@+id/rel_internet"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dp_70"
                 android:background="@color/button_bk_ddake">
@@ -481,6 +487,7 @@
                 android:background="@color/line_color" />
 
             <RelativeLayout
+                android:id="@+id/rel_about"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dp_70"
                 android:background="@color/button_bk_ddake">

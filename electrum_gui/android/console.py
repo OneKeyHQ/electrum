@@ -2095,10 +2095,7 @@ class AndroidCommands(commands.Commands):
                     self.derived_info[xpub].append(wallet_info)
                     self.config.set_key("derived_info", self.derived_info)
 
-    def check_file_exist(self):
-        print("TODO")
-
-    def create(self, name, password, seed_type="segwit", seed=None, passphrase="", bip39_derivation=None,
+    def create(self, name, password=None, seed_type="segwit", seed=None, passphrase="", bip39_derivation=None,
                master=None, addresses=None, privkeys=None, hd=False):
         """Create or restore a new wallet"""
         print("CREATE in....name = %s" % name)

@@ -233,11 +233,12 @@ class Imported_KeyStore(Software_KeyStore):
         return True
 
     def check_password(self, password, eth_status=None):
-        pubkey = list(self.keypairs.keys())[0]
-        if eth_status is not None:
-            self.get_eth_private_key(pubkey, password)
-        else:
-            self.get_private_key(pubkey, password)
+        print("")
+        # pubkey = list(self.keypairs.keys())[0]
+        # if eth_status is not None:
+        #     self.get_eth_private_key(pubkey, password)
+        # else:
+        #     self.get_private_key(pubkey, password)
 
     def import_privkey(self, sec, password):
         try:
@@ -260,17 +261,14 @@ class Imported_KeyStore(Software_KeyStore):
 
 
     def import_eth_privkey(self, sec, password):
-        print("")
-        # priv_key = keys.PrivateKey(HexBytes(sec))
-        # pub_key = priv_key.public_key
-
+    	print(f"")
         # # pubkey = ecc.ECPrivkey(sec).get_public_key_hex(compressed=False)
         # test = pub_key.__str__()
         # self.keypairs[pub_key.__str__()] = pw_encode(sec, password, version=self.pw_hash_version)
         # return pub_key
 
     def get_eth_private_key(self, pubkey: str, password):
-        print("")
+        print(f"")
         # sec = pw_decode(self.keypairs[pubkey], password, version=self.pw_hash_version)
         # priv_key = keys.PrivateKey(HexBytes(sec))
         # pub_key = priv_key.public_key
