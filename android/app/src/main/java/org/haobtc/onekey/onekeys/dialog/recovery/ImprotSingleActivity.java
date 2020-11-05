@@ -26,7 +26,7 @@ public class ImprotSingleActivity extends BaseActivity {
 
     }
 
-    @OnClick({R.id.img_back, R.id.rel_import_btc, R.id.rel_import_eth, R.id.rel_import_eos})
+    @OnClick({R.id.img_back, R.id.rel_import_btc, R.id.rel_import_eth})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
@@ -34,15 +34,13 @@ public class ImprotSingleActivity extends BaseActivity {
                 break;
             case R.id.rel_import_btc:
                 Intent intent = new Intent(ImprotSingleActivity.this, ChooseImportMethodActivity.class);
+                intent.putExtra("importType", "BTC");
                 startActivity(intent);
                 break;
             case R.id.rel_import_eth:
                 Intent intent1 = new Intent(ImprotSingleActivity.this, ChooseImportMethodActivity.class);
+                intent1.putExtra("importType", "ETH");
                 startActivity(intent1);
-                break;
-            case R.id.rel_import_eos:
-                Intent intent2 = new Intent(ImprotSingleActivity.this, ChooseImportMethodActivity.class);
-                startActivity(intent2);
                 break;
         }
     }

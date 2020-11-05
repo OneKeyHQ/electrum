@@ -38,8 +38,6 @@ public class AboutActivity extends BaseActivity implements OnButtonClickListener
     ImageView imgBack;
     @BindView(R.id.attempt_update)
     RelativeLayout update;
-    @BindView(R.id.version_code)
-    TextView versionCodetext;
     @BindView(R.id.update_version)
     TextView updateVersion;
     @BindView(R.id.tet_s5)
@@ -59,7 +57,6 @@ public class AboutActivity extends BaseActivity implements OnButtonClickListener
     @Override
     public void initData() {
         String versionName = ApkUtil.getVersionName(this);
-        versionCodetext.setText(String.format("V%s", versionName));
         updateVersion.setText(String.format("V%s", versionName));
     }
 

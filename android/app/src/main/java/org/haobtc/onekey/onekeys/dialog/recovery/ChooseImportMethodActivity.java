@@ -3,6 +3,7 @@ package org.haobtc.onekey.onekeys.dialog.recovery;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.RelativeLayout;
 
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
@@ -11,10 +12,14 @@ import org.haobtc.onekey.onekeys.dialog.recovery.importmethod.ImportMnemonicActi
 import org.haobtc.onekey.onekeys.dialog.recovery.importmethod.ImportPrivateKeyActivity;
 import org.haobtc.onekey.onekeys.dialog.recovery.importmethod.WatchWalletActivity;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class ChooseImportMethodActivity extends BaseActivity {
+
+    @BindView(R.id.rel_import_keystore)
+    RelativeLayout relImportKeystore;
 
     @Override
     public int getLayoutId() {
@@ -24,6 +29,13 @@ public class ChooseImportMethodActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        String importType = getIntent().getStringExtra("importType");
+        if ("BTC".equals(importType)) {
+            relImportKeystore.setVisibility(View.GONE);
+        }else{
+            relImportKeystore.setVisibility(View.VISIBLE);
+        }
+
     }
 
     @Override
@@ -46,6 +58,7 @@ public class ChooseImportMethodActivity extends BaseActivity {
                 startActivity(intent1);
                 break;
             case R.id.rel_import_keystore:
+                //eth
                 Intent intent2 = new Intent(ChooseImportMethodActivity.this, ImportKeystoreActivity.class);
                 startActivity(intent2);
                 break;
@@ -54,5 +67,12 @@ public class ChooseImportMethodActivity extends BaseActivity {
                 startActivity(intent3);
                 break;
         }
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // TODO: add setContentView(...) invocation
+        ButterKnife.bind(this);
     }
 }

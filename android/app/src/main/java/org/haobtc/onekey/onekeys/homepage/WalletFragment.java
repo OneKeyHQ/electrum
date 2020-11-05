@@ -115,8 +115,6 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
             linearWalletList.setVisibility(View.VISIBLE);
             //get wallet balance
             getWalletBalance();
-            //get home page wallet list
-//            getHomeWalletList();
 
         } else {
             linearNoWallet.setVisibility(View.VISIBLE);

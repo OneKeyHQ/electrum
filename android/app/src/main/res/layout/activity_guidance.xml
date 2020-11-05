@@ -9,11 +9,6 @@
     android:fitsSystemWindows="true"
     tools:context="org.haobtc.onekey.onekeys.GuidanceActivity">
 
-    <!--    <ImageView-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:src="@drawable/green_back"-->
-    <!--        android:layout_alignParentEnd="true"-->
-    <!--        android:layout_height="match_parent"/>-->
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
