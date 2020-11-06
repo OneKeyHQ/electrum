@@ -26,10 +26,11 @@ from electrum import MutiBase
 from electrum.i18n import _
 from electrum.storage import WalletStorage
 #from electrum.eth_wallet import (Imported_Eth_Wallet, Standard_Eth_Wallet, Eth_Wallet)
-from electrum.wallet import (Imported_Wallet, Standard_Wallet, Wallet)
+from electrum.wallet import (Imported_Wallet, Standard_Wallet, Wallet, Deterministic_Wallet)
 from electrum.bitcoin import is_address, hash_160, COIN, TYPE_ADDRESS
 from electrum.interface import ServerAddr
 from electrum import mnemonic
+from electrum.mnemonic import Wordlist
 from mnemonic import Mnemonic
 from electrum.address_synchronizer import TX_HEIGHT_LOCAL, TX_HEIGHT_FUTURE
 from electrum.bip32 import BIP32Node, convert_bip32_path_to_list_of_uint32 as parse_path
@@ -156,6 +157,7 @@ class AndroidCommands(commands.Commands):
         self.client = None
         self.recovery_wallets = {}
         self.path = ''
+        self.backup_info = self.config.get("backupinfo", {})
         self.derived_info = self.config.get("derived_info", dict())
         self.btc_derived_account_id = self.init_account_id_list('btc')
         self.eth_derived_account_id = self.init_account_id_list('eth')
@@ -196,10 +198,12 @@ class AndroidCommands(commands.Commands):
         t.start()
 
         if 'iOS_DATA' in os.environ:
+            from .custom_objc import *
+            from .ioscallback import *
             self.my_handler = CallHandler.alloc().initWithValue(42)
-            self.set_callback_fun(my_handler)
+            self.set_callback_fun(self.my_handler)
         elif 'ANDROID_DATA' in os.environ:
-            if callback is not None:        
+            if callback is not None:
                 self.set_callback_fun(callback)
         self.start()
 
@@ -306,12 +310,17 @@ class AndroidCommands(commands.Commands):
             return False
 
     def remove_local_tx(self, delete_tx):
+        '''
+        :param delete_tx: tx_hash that you need to delete
+        :return :
+        '''
         to_delete = {delete_tx}
         to_delete |= self.wallet.get_depending_transactions(delete_tx)
         for tx in to_delete:
             self.wallet.remove_transaction(tx)
             self.delete_tx(tx)
         self.wallet.save_db()
+        return ""
         # need to update at least: history_list, utxo_list, address_list
         # self.parent.need_update.set()
 
@@ -353,10 +362,6 @@ class AndroidCommands(commands.Commands):
     def update_wallet(self):
         self.update_status()
         # self.callbackIntent.onCallback("update_wallet")
-
-    # def update_history(self):
-    # print("")
-    # self.callbackIntent.onCallback("update_history")
 
     def on_network_event(self, event, *args):
         if self.wallet is not None and -1 == self.wallet.wallet_type.find("eth"):
@@ -420,7 +425,12 @@ class AndroidCommands(commands.Commands):
         return self.local_wallet_info.get(name)
 
     def load_wallet(self, name, password=None):
-        """Load a wallet"""
+        '''
+        load an wallet
+        :param name: wallet name as a string
+        :param password: the wallet password as a string
+        :return:
+        '''
         try:
             self._assert_daemon_running()
         except Exception as e:
@@ -455,6 +465,7 @@ class AndroidCommands(commands.Commands):
                 if -1 != self.local_wallet_info.get(name)['type'].find('eth-hd'):
                     self.eth_hd_wallet = wallet
             self.daemon.add_wallet(wallet)
+        return ""
 
     def close_wallet(self, name=None):
         """Close a wallet"""
@@ -463,8 +474,14 @@ class AndroidCommands(commands.Commands):
         except Exception as e:
             raise BaseException(e)
         self.daemon.stop_wallet(self._wallet_path(name))
+        return ""
 
     def set_syn_server(self, flag):
+        '''
+        Enable/disable sync server
+        :param flag: flag as bool
+        :return:
+        '''
         try:
             self.label_flag = flag
             self.config.set_key('use_labels', bool(flag))
@@ -472,7 +489,7 @@ class AndroidCommands(commands.Commands):
                 self.label_plugin.load_wallet(self.wallet)
         except Exception as e:
             raise BaseException(e)
-
+        return ""
     # #set callback##############################
     def set_callback_fun(self, callbackIntent):
         self.callbackIntent = callbackIntent
@@ -504,20 +521,31 @@ class AndroidCommands(commands.Commands):
             raise BaseException(e)
 
     def get_device_info(self):
+        '''
+        Get hardware device info
+        :return:
+        '''
         try:
             self._assert_wallet_isvalid()
             device_info = self.wallet.get_device_info()
             return json.dumps(device_info)
         except BaseException as e:
             raise e
+        return ""
 
     def delete_xpub(self, xpub):
+        '''
+        Delete xpub when create multi-signature wallet
+        :param xpub: WIF pubkey
+        :return:
+        '''
         try:
             self._assert_daemon_running()
             self._assert_wizard_isvalid()
             self.wizard.delete_xpub(xpub)
         except Exception as e:
             raise BaseException(e)
+        return ""
 
     def get_keystores_info(self):
         try:
@@ -529,14 +557,25 @@ class AndroidCommands(commands.Commands):
         return ret
 
     def set_sync_server_host(self, ip, port):
+        '''
+        Set sync server host/port
+        :param ip: the server host (exp..."127.0.0.1")
+        :param port: the server port (exp..."port")
+        :return:
+        '''
         try:
             if self.label_flag:
                 self.label_plugin.set_host(ip, port)
                 self.config.set_key('sync_server_host', '%s:%s' % (ip, port))
         except BaseException as e:
             raise e
+        return ""
 
     def get_sync_server_host(self):
+        '''
+        Get sync server host,you can pull label/xpubs/tx to server
+        :return:
+        '''
         try:
             return self.config.get('sync_server_host', "39.105.86.163:8080")
         except BaseException as e:
@@ -634,6 +673,11 @@ class AndroidCommands(commands.Commands):
             raise BaseException(e)
 
     def bulk_create_wallet(self, wallets_info):
+        '''
+        Create wallets in bulk
+        :param wallets_info:[{m,n,name,[xpub1,xpub2,xpub3]}, ....]
+        :return:
+        '''
         wallets_list = json.loads(wallets_info)
         create_failed_into = {}
         for m, n, name, xpubs in wallets_list:
@@ -644,6 +688,17 @@ class AndroidCommands(commands.Commands):
         return json.dumps(create_failed_into)
 
     def import_create_hw_wallet(self, name, m, n, xpubs, hide_type=False, hd=False, derived=False):
+        '''
+        Create a wallet
+        :param name: wallet name as str
+        :param m: number of consigner as str
+        :param n: number of signers as str
+        :param xpubs: all xpubs as [xpub1, xpub2....]
+        :param hide_type: whether to create a hidden wallet as bool
+        :param hd: whether to create hd wallet as bool
+        :param derived: whether to create hd derived wallet as bool
+        :return: the wallet info recovered
+        '''
         try:
             print(f"xpubs=========={m, n, xpubs}")
             self.set_multi_wallet_info(name, m, n)
@@ -658,9 +713,14 @@ class AndroidCommands(commands.Commands):
                 return self.recovery_hd_derived_wallet_from_hw(hd_xpub=xpubs_list[0])
         except BaseException as e:
             raise e
-
+        return ""
     ############
     def get_wallet_info_from_server(self, xpub):
+        '''
+        Get all wallet info that created by the xpub
+        :param xpub: xpub from read by hardware as str
+        :return:
+        '''
         try:
             if self.label_flag:
                 Vpub_data = []
@@ -672,9 +732,13 @@ class AndroidCommands(commands.Commands):
                 return json.dumps(Vpub_data + vpub_data if Vpub_data is not None else vpub_data)
         except BaseException as e:
             raise e
-
+        return ""
     # #create tx#########################
     def get_default_fee_status(self):
+        '''
+        Get default fee,now is ETA
+        :return: the fee info as 180sat/byte
+        '''
         try:
             x = 1
             self.config.set_key('mempool_fees', x == 2)
@@ -682,6 +746,7 @@ class AndroidCommands(commands.Commands):
             return self.config.get_fee_status()
         except BaseException as e:
             raise e
+        return ""
 
     def get_amount(self, amount):
         try:
@@ -694,9 +759,15 @@ class AndroidCommands(commands.Commands):
         return max_prec_amount
 
     def set_dust(self, dust_flag):
+        '''
+        Enable/disable use dust
+        :param dust_flag: as bool
+        :return:
+        '''
         if dust_flag != self.config.get('dust_flag', True):
             self.dust_flag = dust_flag
             self.config.set_key('dust_flag', self.dust_flag)
+        return ""
 
     def parse_output(self, outputs):
         all_output_add = json.loads(outputs)
@@ -719,6 +790,14 @@ class AndroidCommands(commands.Commands):
         return coins
 
     def get_fee_by_feerate(self, outputs, message, feerate, customer=None):
+        '''
+        Get fee info when transfer
+        :param outputs: outputs info as json [{addr1, value}, ...]
+        :param message: what you want say as sting
+        :param feerate: feerate retruned by get_default_fee_status api
+        :param customer: User choose coin as bool
+        :return: json
+        '''
         try:
             self._assert_wallet_isvalid()
             outputs_addrs = self.parse_output(outputs)
@@ -733,7 +812,6 @@ class AndroidCommands(commands.Commands):
             fee_per_kb = 1000 * Decimal(feerate)
             from functools import partial
             fee_estimator = partial(self.config.estimate_fee_for_feerate, fee_per_kb)
-            
             # tx = self.wallet.make_unsigned_transaction(coins=coins, outputs = outputs_addrs, fee=self.get_amount(fee_estimator))
             tx = self.wallet.make_unsigned_transaction(coins=coins, outputs=outputs_addrs, fee=fee_estimator)
             tx.set_rbf(self.rbf)
@@ -762,8 +840,14 @@ class AndroidCommands(commands.Commands):
             return json.dumps(ret_data)
         except Exception as e:
             raise BaseException(e)
+        return ""
 
-    def mktx(self, tx=None, outputs=None, message=None):
+    def mktx(self, tx=None):
+        '''
+        Confirm to create transaction
+        :param tx: tx that created by get_fee_by_feerate
+        :return: tx info
+        '''
         try:
             self._assert_wallet_isvalid()
             tx = tx_from_any(tx)
@@ -793,6 +877,7 @@ class AndroidCommands(commands.Commands):
             tx.deserialize()
         except Exception as e:
             raise BaseException(e)
+        return ""
 
     # ### coinjoin
     # def join_tx_with_another(self, tx: 'PartialTransaction', other_tx: 'PartialTransaction') -> None:
@@ -832,15 +917,29 @@ class AndroidCommands(commands.Commands):
 
     # set use unconfirmed coin
     def set_unconf(self, x):
+        '''
+        Enable/disable spend confirmed_only input
+        :param x: as bool
+        :return:
+        '''
         self.config.set_key('confirmed_only', bool(x))
+        return ""
 
     # fiat balance
     def get_currencies(self):
+        '''
+        Get fiat list
+        :return:json exp:{'CNY', 'USD'...}
+        '''
         self._assert_daemon_running()
         currencies = sorted(self.daemon.fx.get_currencies(self.daemon.fx.get_history_config()))
         return json.dumps(currencies)
 
     def get_exchanges(self):
+        '''
+        Get exchange server list
+        :return: json exp:{'exchanges', ...}
+        '''
         if not self.daemon.fx: return
         b = self.daemon.fx.is_enabled()
         if b:
@@ -852,17 +951,42 @@ class AndroidCommands(commands.Commands):
         return sorted(exchanges)
 
     def set_exchange(self, exchange):
+        '''
+        Set exchange server
+        :param exchange: exchange server name
+        :return:
+        '''
         if self.daemon.fx and self.daemon.fx.is_enabled() and exchange and exchange != self.daemon.fx.exchange.name():
             self.daemon.fx.set_exchange(exchange)
+        return ""
 
     def set_currency(self, ccy):
+        '''
+        Set fiat
+        :param ccy: fiat as str
+        :return:
+        '''
         self.daemon.fx.set_enabled(True)
         if ccy != self.ccy:
             self.daemon.fx.set_currency(ccy)
             self.ccy = ccy
         self.update_status()
+        return ""
 
     def get_exchange_currency(self, type, amount):
+        '''
+        You can get coin to fiat or get fiat to coin
+        :param type: base/fiat as str
+        :param amount: value
+        exp:
+            if you want get fiat from coin,like this:
+                get_exchange_currency("base", 1)
+            return: 1,000.34 CNY
+
+            if you want get coin from fiat, like this:
+                get_exchange_currency("fiat", 1000)
+            return: 1 mBTC
+        '''
         text = ""
         rate = self.daemon.fx.exchange_rate() if self.daemon.fx else Decimal('NaN')
         if rate.is_nan() or amount is None:
@@ -875,12 +999,17 @@ class AndroidCommands(commands.Commands):
                 text = self.format_amount((int(Decimal(amount) / Decimal(rate) * COIN)))
             return text
 
-    # set base unit for(BTC/mBTC/bits/sat)
     def set_base_uint(self, base_unit):
+        '''
+        Set base unit for(BTC/mBTC/bits/sat)
+        :param base_unit: (BTC or mBTC or bits or sat) as str
+        :return:
+        '''
         self.base_unit = base_unit
         self.decimal_point = util.base_unit_name_to_decimal_point(self.base_unit)
         self.config.set_key('decimal_point', self.decimal_point, True)
         self.update_status()
+        return ""
 
     def format_amount_and_units(self, amount):
         try:
@@ -895,6 +1024,15 @@ class AndroidCommands(commands.Commands):
 
     # #proxy
     def set_proxy(self, proxy_mode, proxy_host, proxy_port, proxy_user, proxy_password):
+        '''
+        Set proxy server
+        :param proxy_mode: SOCK4/SOCK5 as str
+        :param proxy_host: server ip
+        :param proxy_port: server port
+        :param proxy_user: login user that you registed
+        :param proxy_password: login password that you registed
+        :return:
+        '''
         try:
             net_params = self.network.get_parameters()
             proxy = None
@@ -908,6 +1046,7 @@ class AndroidCommands(commands.Commands):
             self.network.run_from_another_thread(self.network.set_parameters(net_params))
         except BaseException as e:
             raise e
+        return ""
 
     # #qr api
     def get_raw_tx_from_qr_data(self, data):
@@ -935,8 +1074,12 @@ class AndroidCommands(commands.Commands):
         except BaseException as e:
             raise e
 
-    # # get tx info from raw_tx
     def get_tx_info_from_raw(self, raw_tx):
+        '''
+        You can get detail info from a raw_tx
+        :param raw_tx: raw tx
+        :return:
+        '''
         try:
             print("console:get_tx_info_from_raw:tx===%s" % raw_tx)
             tx = self.recover_tx_info(raw_tx)
@@ -1019,15 +1162,6 @@ class AndroidCommands(commands.Commands):
         except Exception as e:
             raise BaseException(e)
 
-    # def do_save(self, outputs, message, tx):
-    # try:
-    #     invoice = self.wallet.create_invoice(outputs, message, None, None, tx=tx)
-    #     if not invoice:
-    #         return
-    #     self.wallet.save_invoice(invoice)
-    # except Exception as e:
-    #     raise BaseException(e)
-
     def do_save(self, tx):
         try:
             if not self.wallet.add_transaction(tx):
@@ -1037,8 +1171,6 @@ class AndroidCommands(commands.Commands):
             raise BaseException(e)
         else:
             self.wallet.save_db()
-            #self.callbackIntent.onCallback("update_history", "update history")
-            # need to update at least: history_list, utxo_list, address_list
 
     def update_invoices(self, old_tx, new_tx):
         try:
@@ -1056,6 +1188,11 @@ class AndroidCommands(commands.Commands):
 
     ##get history
     def get_all_tx_list(self, search_type=None):
+        '''
+        Get the histroy list with the wallet that you select
+        :param search_type: None/send/receive as str
+        :return:
+        '''
         try:
             self.pull_tx_infos()
         except BaseException as e:
@@ -1097,6 +1234,11 @@ class AndroidCommands(commands.Commands):
         return json.dumps(all_data)
 
     def get_tx_info(self, tx_hash):
+        '''
+        Get detail info by tx_hash
+        :param tx_hash:
+        :return:
+        '''
         try:
             self._assert_wallet_isvalid()
         except Exception as e:
@@ -1139,6 +1281,11 @@ class AndroidCommands(commands.Commands):
         return ri
 
     def get_wallet_address_show_UI(self, next=None):
+        '''
+        Get receving address
+        :param next: if you want change address, you can set the param
+        :return:
+        '''
         try:
             self._assert_wallet_isvalid()
             self.show_addr = self.config.get('%s_show_addr' % self.wallet, self.wallet.get_addresses()[0])
@@ -1155,6 +1302,10 @@ class AndroidCommands(commands.Commands):
         return json.dumps(data_json)
 
     def get_all_funded_address(self):
+        '''
+        Get a address list of have balance
+        :return:
+        '''
         try:
             self._assert_wallet_isvalid()
             all_addr = self.wallet.get_addresses()
@@ -1171,8 +1322,13 @@ class AndroidCommands(commands.Commands):
             return json.dumps(funded_addrs_list)
         except Exception as e:
             raise BaseException(e)
+        return ""
 
     def get_unspend_utxos(self):
+        '''
+        Get unspend utxos if you need
+        :return:
+        '''
         try:
             coins = []
             for txin in self.wallet.get_utxos():
@@ -1188,9 +1344,15 @@ class AndroidCommands(commands.Commands):
             return coins
         except BaseException as e:
             raise e
+        return ""
 
-    ##save tx to file
     def save_tx_to_file(self, path, tx):
+        '''
+        Save the psbt/tx to path
+        :param path: path as str
+        :param tx: tx as str
+        :return:
+        '''
         try:
             if tx is None:
                 raise BaseException("tx is empty")
@@ -1209,8 +1371,14 @@ class AndroidCommands(commands.Commands):
                     f.write(tx.serialize_as_bytes())
         except Exception as e:
             raise BaseException(e)
+        return ""
 
     def read_tx_from_file(self, path):
+        '''
+        Import tx info from path
+        :param path: path as str
+        :return:
+        '''
         try:
             with open(path, "rb") as f:
                 file_content = f.read()
@@ -1229,6 +1397,7 @@ class AndroidCommands(commands.Commands):
             return uri
         except Exception as e:
             raise Exception(e)
+        return ""
 
     def parse_tx(self, data):
         # try to decode transaction
@@ -1245,6 +1414,11 @@ class AndroidCommands(commands.Commands):
         return data
 
     def parse_pr(self, data):
+        '''
+        Parse qr code which generated by address or tx
+        :param data: qr cata as str
+        :return:
+        '''
         add_status_flag = False
         tx_status_flag = False
         add_data = {}
@@ -1273,6 +1447,11 @@ class AndroidCommands(commands.Commands):
         return json.dumps(out_data)
 
     def broadcast_tx(self, tx):
+        '''
+        Broadcast the tx
+        :param tx: tx as str
+        :return: 'success'/raise except
+        '''
         if self.network and self.network.is_connected():
             status = False
             try:
@@ -1288,13 +1467,19 @@ class AndroidCommands(commands.Commands):
                 raise BaseException(msg)
             else:
                 print("--------broadcast ok............")
+                return "success"
                 status, msg = True, tx.txid()
         #          self.callbackIntent.onCallback(Status.broadcast, msg)
         else:
             raise BaseException(('Cannot broadcast transaction') + ':\n' + ('Not connected'))
+        return ""
 
-    ## setting
     def set_use_change(self, status_change):
+        '''
+        Enable/disable change address
+        :param status_change: as bool
+        :return:
+        '''
         try:
             self._assert_wallet_isvalid()
         except Exception as e:
@@ -1303,9 +1488,16 @@ class AndroidCommands(commands.Commands):
             return
         self.config.set_key('use_change', status_change, False)
         self.wallet.use_change = status_change
+        return ""
 
-    #####sign message###########
     def sign_message(self, address, message, path='android_usb', password=None):
+        '''
+        :param address: must bitcoin address, must in current wallet as str
+        :param message: message need be signed as str
+        :param path: NFC/android_usb/bluetooth as str, used by hardware
+        :param password: as str
+        :return:
+        '''
         try:
             if path:
                 self.get_client(path=path)
@@ -1326,8 +1518,16 @@ class AndroidCommands(commands.Commands):
             return base64.b64encode(sig).decode('ascii')
         except Exception as e:
             raise BaseException(e)
+        return ""
 
     def verify_message(self, address, message, signature):
+        '''
+        Verify the message that you signed by sign_message
+        :param address: must bitcoin address as str
+        :param message: message as str
+        :param signature: sign info retured by sign_message api
+        :return: true/false as bool
+        '''
         address = address.strip()
         message = message.strip().encode('utf-8')
         if not bitcoin.is_address(address):
@@ -1354,6 +1554,13 @@ class AndroidCommands(commands.Commands):
     #                                          contract=con_addr)
 
     def sign_tx(self, tx, path='android_usb', password=None):
+        '''
+        Sign one transaction
+        :param tx: tx info as str
+        :param path: NFC/android_usb/bluetooth as str, used by hardware
+        :param password: password as str
+        :return: signed tx on success and raise except on failure
+        '''
         try:
             if path:
                 self.get_client(path=path)
@@ -1375,9 +1582,16 @@ class AndroidCommands(commands.Commands):
             return self.get_tx_info_from_raw(sign_tx)
         except Exception as e:
             raise BaseException(e)
+        return ""
 
     ##connection with terzorlib#########################
     def hardware_verify(self, msg, path='android_usb'):
+        '''
+        Anti-counterfeiting verification
+        :param msg: msg as str
+        :param path: NFC/android_usb/bluetooth as str, used by hardware
+        :return: json like {"data":, "cert":, "signature":,}
+        '''
         client = self.get_client(path=path)
         try:
             from hashlib import sha256
@@ -1392,6 +1606,11 @@ class AndroidCommands(commands.Commands):
         return json.dumps(verify_info)
 
     def backup_wallet(self, path='android_usb'):
+        '''
+        Backup wallet by se
+        :param path: NFC/android_usb/bluetooth as str, used by hardware
+        :return:
+        '''
         client = self.get_client(path=path)
         try:
             response = client.backup()
@@ -1408,6 +1627,11 @@ class AndroidCommands(commands.Commands):
         return response
 
     def bixin_backup_device(self, path='android_usb'):
+        '''
+        Export seed
+        :param path: NFC/android_usb/bluetooth as str, used by hardware
+        :return:
+        '''
         client = self.get_client(path=path)
         try:
             response = client.bixin_backup_device()
@@ -1417,6 +1641,12 @@ class AndroidCommands(commands.Commands):
         return response
 
     def bixin_load_device(self, mnemonics, path='android_usb'):
+        '''
+        Import seed
+        :param mnemonics: as str
+        :param path: NFC/android_usb/bluetooth as str, used by hardware
+        :return:
+        '''
         client = self.get_client(path=path)
         try:
             response = client.bixin_load_device(mnemonics=mnemonics)
@@ -1425,6 +1655,12 @@ class AndroidCommands(commands.Commands):
         return response
 
     def recovery_wallet(self, path='android_usb', *args):
+        '''
+        Recovery wallet by encryption
+        :param path: NFC/android_usb/bluetooth as str, used by hardware
+        :param args: encryption data as str
+        :return:
+        '''
         client = self.get_client(path=path)
         try:
             response = client.recovery(*args)
@@ -1433,6 +1669,14 @@ class AndroidCommands(commands.Commands):
         return response
 
     def bx_inquire_whitelist(self, path='android_usb', **kwargs):
+        '''
+        Inquire
+        :param path: NFC/android_usb/bluetooth as str, used by hardware
+        :param kwargs:
+            type:2=inquire
+            addr_in: addreess as str
+        :return:
+        '''
         client = self.get_client(path=path)
         try:
             response = json.dumps(client.bx_inquire_whitelist(**kwargs))
@@ -1441,6 +1685,14 @@ class AndroidCommands(commands.Commands):
         return response
 
     def bx_add_or_delete_whitelist(self, path='android_usb', **kwargs):
+        '''
+        Add and delete whitelist
+        :param path: NFC/android_usb/bluetooth as str, used by hardware
+        :param kwargs:
+            type:0=add 1=delete
+            addr_in: addreess as str
+        :return:
+        '''
         client = self.get_client(path=path)
         try:
             response = json.dumps(client.bx_add_or_delete_whitelist(**kwargs))
@@ -1449,6 +1701,24 @@ class AndroidCommands(commands.Commands):
         return response
 
     def apply_setting(self, path='nfc', **kwargs):
+        '''
+        Set the hardware function
+        :param path: NFC/android_usb/bluetooth as str, used by hardware
+        :param kwargs:
+            下边罗列的参数 使用哪个传哪个 不用都传
+            label                 钱包名称
+            language              语言
+            use_passphrase        隐藏钱包
+            auto_lock_delay_ms    自动解锁时间
+            fastpay_pin           快捷支付是否需要验PIN
+            use_ble               是否启动蓝牙
+            use_se                是否启动se
+            is_bixinapp           设置是否是币信app
+            fastpay_confirm       快捷支付是否需要摁键确认
+            fastpay_money_limit   快捷支付额度限制
+            fastpay_times         快捷支付次数
+        :return:
+        '''
         client = self.get_client(path=path)
         try:
             resp = device.apply_settings(client.client, **kwargs)
@@ -1458,8 +1728,17 @@ class AndroidCommands(commands.Commands):
                 return 0
         except Exception as e:
             raise BaseException(e)
+        return ""
 
     def init(self, path='android_usb', label="BIXIN KEY", language='english', use_se=True):
+        '''
+        Activate the device
+        :param path: NFC/android_usb/bluetooth as str, used by hardware
+        :param label: name as str
+        :param language: as str
+        :param use_se: as bool
+        :return:
+        '''
         client = self.get_client(path=path)
         try:
             if use_se:
@@ -1474,8 +1753,11 @@ class AndroidCommands(commands.Commands):
             return 0
 
     def reset_pin(self, path='android_usb') -> int:
-        # self.client = None
-        # self.path = ''
+        '''
+        Reset pin
+        :param path:NFC/android_usb/bluetooth as str, used by hardware
+        :return:
+        '''
         try:
             client = self.get_client(path)
             resp = client.set_pin(False)
@@ -1489,17 +1771,26 @@ class AndroidCommands(commands.Commands):
         else:
             return 0
 
-    # def show_address(self, address, path='android_usb'):
-    #     try:
-    #         plugin = self.plugin.get_plugin("trezor")
-    #         plugin.show_address(path=path, ui=CustomerUI(), wallet=self.wallet, address=address)
-    #     except Exception as e:
-    #         raise BaseException(e)
-
+    def show_address(self, address, path='android_usb'):
+        '''
+        Verify address on hardware
+        :param address: address as str
+        :param path: NFC/android_usb/bluetooth as str, used by hardware
+        :return:
+        '''
+        try:
+            plugin = self.plugin.get_plugin("trezor")
+            plugin.show_address(path=path, ui=CustomerUI(), wallet=self.wallet, address=address)
+        except Exception as e:
+            raise BaseException(e)
+        return ""
 
     def wipe_device(self, path='android_usb') -> int:
-        # self.client = None
-        # self.path = ''
+        '''
+        Reset device
+        :param path: NFC/android_usb/bluetooth as str, used by hardware
+        :return:
+        '''
         try:
             client = self.get_client(path)
             resp = client.wipe_device()
@@ -1512,10 +1803,6 @@ class AndroidCommands(commands.Commands):
             return 1
         else:
             return 0
-
-    def toggle_passphrash(self, path='android_usb'):
-        client = self.get_client(path)
-        client.toggle_passphrase()
 
     def get_passphrase_status(self, path='android_usb'):
         # self.client = None
@@ -1532,15 +1819,25 @@ class AndroidCommands(commands.Commands):
     def is_encrypted_with_hw_device(self):
         ret = self.wallet.storage.is_encrypted_with_hw_device()
         print(f"hw device....{ret}")
+        return ""
 
     def get_feature(self, path='android_usb'):
-        # self.client = None
-        # self.path = ''
+        '''
+        Get hardware information
+        :param path: NFC/android_usb/bluetooth as str, used by hardware
+        :return:
+        '''
         with self.lock:
             client = self.get_client(path=path, clean=True)
         return json.dumps(protobuf.to_dict(client.features))
 
     def get_xpub_from_hw(self, path='android_usb', _type='p2wsh', is_creating=True, account_id=None):
+        '''
+        Get extended public key from hardware
+        :param path: NFC/android_usb/bluetooth as str, used by hardware
+        :param _type: p2wsh/p2wsh/p2pkh/p2pkh-p2sh as str
+        :return: xpub str
+        '''
         client = self.get_client(path=path)
         if account_id is None:
             account_id = 0
@@ -1559,7 +1856,13 @@ class AndroidCommands(commands.Commands):
             raise BaseException(e)
         return xpub
     
-    def create_btc_hw_derived_wallet(self, path='android_usb', _type='p2pkh', is_creating=True):
+    def create_btc_hw_derived_wallet(self, path='android_usb', _type='p2pkh'):
+        '''
+        Create derived wallet by hardware
+        :param path: NFC/android_usb/bluetooth as str, used by hardware
+        :param _type: p2wsh/p2wsh/p2pkh/p2pkh-p2sh as str
+        :return: xpub as str
+        '''
         if len(self.btc_derived_account_id) == 0:
             raise BaseException("Support up to 20 derived wallets")
         #derivat_path = bip44_derivation(self.btc_derived_account_id[0], 44)
@@ -1653,6 +1956,11 @@ class AndroidCommands(commands.Commands):
     ####################################################
     ## app wallet
     def export_seed(self, password):
+        '''
+        Export seed by on-chain wallet
+        :param password: password by str
+        :return: Mnemonic as str
+        '''
         if not self.wallet.has_seed():
             raise BaseException('This wallet has no seed')
         keystore = self.wallet.get_keystore()
@@ -1662,38 +1970,51 @@ class AndroidCommands(commands.Commands):
             return seed + passphrase
         except BaseException as e:
             raise e
+        return ""
 
     def has_seed(self):
+        '''
+        Check if the wallet have seed
+        :return: True/False as bool
+        '''
         if not self.wallet.has_seed():
             raise BaseException('This wallet has no seed')
+        return self.wallet.has_seed()
 
-    def check_seed(self, check_seed, password):
-        try:
-            self._assert_wallet_isvalid()
-            if not self.wallet.has_seed():
-                raise BaseException('This wallet has no seed')
-            keystore = self.wallet.get_keystore()
-            seed = keystore.get_seed(password)
-            if seed != check_seed:
-                raise BaseException("pair seed failed")
-            print("pair seed successfule.....")
-        except BaseException as e:
-            raise BaseException(e)
+    # def check_seed(self, check_seed, password):
+    #     try:
+    #         self._assert_wallet_isvalid()
+    #         if not self.wallet.has_seed():
+    #             raise BaseException('This wallet has no seed')
+    #         keystore = self.wallet.get_keystore()
+    #         seed = keystore.get_seed(password)
+    #         if seed != check_seed:
+    #             raise BaseException("pair seed failed")
+    #         print("pair seed successfule.....")
+    #     except BaseException as e:
+    #         raise BaseException(e)
 
     def is_seed(self, x):
         return mnemonic.is_seed(x)
 
-    def is_exist_seed(self, seed):
-        ks = keystore.from_seed(seed, '', False)
-        ks44 = keystore.from_bip39_seed(seed, '', bip44_derivation(0, bip43_purpose=44))
-        ks84 = keystore.from_bip39_seed(seed, '', bip44_derivation(0, bip43_purpose=84))
-        ks49 = keystore.from_bip39_seed(seed, '', bip44_derivation(0, bip43_purpose=49))
-        for key, value in self.local_wallet_info.items():
-            if value['xpubs'][0] == ks.xpub or value['xpubs'][0] == ks44.xpub or value['xpubs'][0] == ks84.xpub or \
-                    value['xpubs'][0] == ks49.xpub:
-                raise BaseException(f"The same seed have create wallet, name={key}")
+    # def is_exist_seed(self, seed):
+    #     ks = keystore.from_seed(seed, '', False)
+    #     ks44 = keystore.from_bip39_seed(seed, '', bip44_derivation(0, bip43_purpose=44))
+    #     ks84 = keystore.from_bip39_seed(seed, '', bip44_derivation(0, bip43_purpose=84))
+    #     ks49 = keystore.from_bip39_seed(seed, '', bip44_derivation(0, bip43_purpose=49))
+    #     for key, value in self.local_wallet_info.items():
+    #         if value['xpubs'][0] == ks.xpub or value['xpubs'][0] == ks44.xpub or value['xpubs'][0] == ks84.xpub or \
+    #                 value['xpubs'][0] == ks49.xpub:
+    #             raise BaseException(f"The same seed have create wallet, name={key}")
+
 
     def get_addrs_from_seed(self, seed, passphrase=""):
+        '''
+        Get p2wpkh/p2wpkh-p2sh/p2pkh/electrum address by one seed
+        :param seed: seed as str
+        :param passphrase: passphrase if you need
+        :return:
+        '''
         list_type_info = ["p2wpkh", "p2wpkh-p2sh", "p2pkh", "electrum"]
         out = {}
         for type in list_type_info:
@@ -1730,7 +2051,56 @@ class AndroidCommands(commands.Commands):
         print(f"out==addr = {out}")
         return json.dumps(out)
 
+    def update_backup_info(self, encrypt_seed):
+        '''
+        Add wallet backup info to config file
+        :param encrypt_seed: encrypt_seed is key as str
+        :return:
+        '''
+        try:
+            if not self.backup_info.__contains__(encrypt_seed):
+                self.backup_info[encrypt_seed] = False
+                self.config.set_key("backupinfo", self.backup_info)
+        except BaseException as e:
+            raise e
+        return ""
+
+    def get_backup_info(self):
+        '''
+        Get backup status
+        :return: True/False as bool
+        '''
+        try:
+            if self.wallet.has_seed():
+                return self.backup_info[self.wallet.keystore.seed]
+        except BaseException as e:
+            raise e
+        return ""
+
+    def delete_backup_info(self):
+        '''
+        Delete one backup status in the config
+        :return:
+        '''
+        try:
+            seed = self.wallet.keystore.seed
+            if self.backup_info.__contains__(seed):
+                del self.backup_info[seed]
+                self.config.set_key("backupinfo", self.backup_info)
+        except BaseException as e:
+            raise e
+        return ""
+
     def create_hd_wallet(self, password, seed=None, passphrase=""):
+        '''
+        Create hd wallet
+        :param password: password as str
+        :param seed: import create hd wallet if seed is not None
+        :return:
+            will return created derived wallet if seed is not none
+            new Mnemonic if seed is None
+        '''
+        self._assert_daemon_running()
         new_seed = None
         if seed is None:
             seed = Mnemonic("english").generate()
@@ -1744,6 +2114,10 @@ class AndroidCommands(commands.Commands):
         self.create_eth("ETH-1", password, seed=seed, passphrase=passphrase, bip39_derivation=bip44_eth_derivation(0, 44), hd=True)
         if new_seed is None:
             return self.recovery_hd_derived_wallet(password, seed, passphrase)
+        else:
+            wallet = self.daemon._wallets[self._wallet_path("BTC-1")]
+            encrypt_seed = wallet.keystore.seed
+            self.update_backup_info(encrypt_seed)
         return new_seed
 
     def create_eth(self, name, password=None, seed=None, passphrase="", addresses=None, privkeys=None, keystores=None, bip39_derivation=None, hd=False):
@@ -1848,19 +2222,35 @@ class AndroidCommands(commands.Commands):
         '''
 
     def is_watch_only(self):
+        '''
+        Check if it is watch only wallet
+        :return: True/False as bool
+        '''
         self._assert_wallet_isvalid()
         return self.wallet.is_watching_only()
 
     def load_all_wallet(self):
+        '''
+        Load all wallet info
+        :return:
+        '''
         name_wallets = sorted([name for name in os.listdir(self._wallet_path())])
         name_info = {}
         for name in name_wallets:
             self.load_wallet(name, password=self.android_id)
+        return ""
 
     def update_wallet_password(self, old_password, new_password):
+        '''
+        Update password
+        :param old_password: old_password as str
+        :param new_password: new_password as str
+        :return:
+        '''
         self._assert_daemon_running()
         for name, wallet in self.daemon._wallets:
             wallet.update_password(old_pw=old_password, new_pw=new_password)
+        return ""
 
     def check_password(self, password):
         try:
@@ -1877,6 +2267,13 @@ class AndroidCommands(commands.Commands):
 
 
     def recovery_confirmed(self, name_list, hw=False):
+        '''
+        If you import hd wallet by seed, you will get a name list
+        and you need confirm which wallets you want to import
+        :param name_list: wallets you want to import as list like {[name, name2,...]}
+        :param hw: True if you recovery from hardware
+        :return:
+        '''
         recovery_btc_num = []
         recovery_eth_num = []
         if len(name_list) != 0:
@@ -1914,6 +2311,7 @@ class AndroidCommands(commands.Commands):
             self.update_account_id_list(self.btc_derived_account_id, i, 'btc')
         for i in recovery_eth_num:
             self.update_account_id_list(self.eth_derived_account_id, i, 'eth')
+        return ""
 
     def delete_derived_wallet(self, hd_wallet):
         for xpub, derived_wallet in self.derived_info.items():
@@ -2028,6 +2426,13 @@ class AndroidCommands(commands.Commands):
         return json.dumps(recovery_list)
 
     def create_derived_wallet(self, name, password, coin):
+        '''
+        Create BTC/ETH derived wallet
+        :param name: name as str
+        :param password: password as str
+        :param coin: btc/eth as str
+        :return:
+        '''
         try:
             self.check_password(password)
         except BaseException as e:
@@ -2043,6 +2448,7 @@ class AndroidCommands(commands.Commands):
         else:
             self.create_eth(name, password, seed=hd_wallet.get_seed(password), bip39_derivation=derivat_path)
         self.update_account_id_list(account_list, account_list[0], coin)
+        return ""
 
     def recovery_create(self, name, seed, password, bip39_derivation, passphrase=''):
         try:
@@ -2095,15 +2501,69 @@ class AndroidCommands(commands.Commands):
                     self.derived_info[xpub].append(wallet_info)
                     self.config.set_key("derived_info", self.derived_info)
 
-    def check_file_exist(self):
-        print("TODO")
+    def get_all_mnemonic(self):
+        '''
+        get all mnemonic, num is 2048
+        '''
+        return Wordlist.from_file('english.txt')
+
+    def get_all_wallet_balance(self):
+        '''
+        Get all wallet balances
+        :return:
+        '''
+        try:
+            all_balance = float(0)
+            for name, wallet in self.daemon._wallets.items():
+                if wallet.wallet_type[0:3] == "eth":
+                    print(f"")
+                    #fiat = wallet.get_all_balance()
+                else:
+                    c,u,x = wallet.get_balance()
+                    balance = self.daemon.fx.format_amount_and_units(c) if self.daemon.fx else None
+                    str = float(balance.split()[0].replace(',', ""))
+                all_balance += str
+            return ('%s %s' %(all_balance, self.ccy))
+        except BaseException as e:
+            raise e
+        return ""
+
+    def check_file_exist(self, password=None, seed=None, master=None, addresses=None, privkeys=None):
+        self._assert_daemon_running()
+        error_msg = BaseException("The file already exists")
+        if seed is not None:
+            for _, wallet in self.daemon._wallets.items():
+                if wallet.has_seed():
+                    wallet_seed = wallet.get_seed(password)
+                    #passphrase = wallet.get_passphrase(password)
+                    if wallet_seed == seed:
+                        raise error_msg
+        elif master is not None:
+            for _, wallet in self.daemon._wallets.items():
+                if isinstance(wallet, Deterministic_Wallet):
+                    if wallet.get_keystores().xpub == master:
+                        raise error_msg
+        elif addresses is not None:
+            for _, wallet in self.daemon._wallets.items():
+                if addresses in wallet.get_addresses():
+                    raise error_msg
+        elif privkeys is not None:
+            for _, wallet in self.daemon._wallets.items():
+                if isinstance(wallet, Imported_Wallet):
+                    if wallet.can_import_privkey():
+                        ecc.ECPrivkey(bfh(privkeys))
+                        pubkey = ecc.ECPrivkey(bfh(privkeys)).get_public_key_hex(compressed=True)
+                        try:
+                            wallet.keystore.get_private_key(pubkey, password)
+                        except BaseException as e:
+                            raise error_msg
 
     def create(self, name, password, seed_type="segwit", seed=None, passphrase="", bip39_derivation=None,
                master=None, addresses=None, privkeys=None, hd=False):
         """Create or restore a new wallet"""
         print("CREATE in....name = %s" % name)
-
         try:
+            self.check_file_exist(password=password, seed=seed, master=master, addresses=addresses, privkeys=privkeys)
             if not hd:
                 if addresses is None:
                     self.check_password(password)
@@ -2131,6 +2591,7 @@ class AndroidCommands(commands.Commands):
             db.put('keystore', ks.dump())
             wallet = Imported_Wallet(db, storage, config=self.config)
             try:
+                #TODO:need script(p2pkh/p2wpkh/p2wpkh-p2sh)
                 ecc.ECPrivkey(bfh(privkeys))
                 keys = [bfh(privkeys)]
             except BaseException as e:
@@ -2192,6 +2653,9 @@ class AndroidCommands(commands.Commands):
         self.config.set_key('all_wallet_type_info', self.local_wallet_info)
         # if self.label_flag:
         #     self.label_plugin.load_wallet(self.wallet, None)
+        if new_seed != '':
+            encrypt_seed = wallet.keystore.seed
+            self.update_backup_info(encrypt_seed)
         return new_seed
 
     # END commands from the argparse interface.
@@ -2200,11 +2664,17 @@ class AndroidCommands(commands.Commands):
     #####
     # rbf api
     def set_rbf(self, status_rbf):
+        '''
+        Enable/disable rbf
+        :param status_rbf:True/False as bool
+        :return:
+        '''
         use_rbf = self.config.get('use_rbf', True)
         if use_rbf == status_rbf:
             return
         self.config.set_key('use_rbf', status_rbf)
         self.rbf = status_rbf
+        return ""
 
     def get_rbf_status(self, tx_hash):
         try:
@@ -2393,6 +2863,10 @@ class AndroidCommands(commands.Commands):
 
     # network server
     def get_default_server(self):
+        '''
+        Get default electrum server
+        :return: json like {'host':'127.0.0.1', 'port':'3456'}
+        '''
         try:
             self._assert_daemon_running()
             net_params = self.network.get_parameters()
@@ -2407,6 +2881,12 @@ class AndroidCommands(commands.Commands):
         return json.dumps(default_server)
 
     def set_server(self, host, port):
+        '''
+        Custom server
+        :param host: host as str
+        :param port: port as str
+        :return:
+        '''
         try:
             self._assert_daemon_running()
             net_params = self.network.get_parameters()
@@ -2420,8 +2900,13 @@ class AndroidCommands(commands.Commands):
             self.network.run_from_another_thread(self.network.set_parameters(net_params))
         except BaseException as e:
             raise e
+        return ""
 
     def get_server_list(self):
+        '''
+        Get Servers
+        :return: servers info as json
+        '''
         try:
             self._assert_daemon_running()
             servers = self.daemon.network.get_servers()
@@ -2430,6 +2915,12 @@ class AndroidCommands(commands.Commands):
         return json.dumps(servers)
 
     def rename_wallet(self, old_name, new_name):
+        '''
+        Rename the wallet
+        :param old_name: old name as str
+        :param new_name: new name as str
+        :return:
+        '''
         try:
             self._assert_daemon_running()
             if old_name is None or new_name is None:
@@ -2450,8 +2941,14 @@ class AndroidCommands(commands.Commands):
                 return new_name
         except BaseException as e:
             raise e
+        return ""
 
     def select_wallet(self, name):
+        '''
+        Select wallet by name
+        :param name: name as str
+        :return:
+        '''
         try:
             self._assert_daemon_running()
             if name is None:
@@ -2463,7 +2960,6 @@ class AndroidCommands(commands.Commands):
 
             if -1 != self.wallet.wallet_type.find("eth"):
                 print("ETH get balance")
-
                 # addrs = self.wallet.get_addresses()
                 # checksum_from_address = self.pywalib.web3.toChecksumAddress(addrs[0])
                 # all_balance = self.wallet.get_all_balance(checksum_from_address)
@@ -2485,6 +2981,7 @@ class AndroidCommands(commands.Commands):
             return json.dumps(info)
         except BaseException as e:
             raise BaseException(e)
+        return ""
 
     def list_wallets(self):
         """List available wallets"""

@@ -241,8 +241,8 @@ class Imported_KeyStore(Software_KeyStore):
 
     def import_privkey(self, sec, password):
         try:
-            ecc.ECPrivkey(bfh(sec))
-            pubkey = ecc.ECPrivkey(bfh(sec)).get_public_key_hex(compressed=True)
+            ecc.ECPrivkey(sec)
+            pubkey = ecc.ECPrivkey(sec).get_public_key_hex(compressed=True)
             self.keypairs[pubkey] = pw_encode(sec, password, version=self.pw_hash_version)
             return "p2wpkh", pubkey
         except BaseException as e:
