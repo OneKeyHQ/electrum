@@ -15,8 +15,6 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.scwang.smartrefresh.layout.SmartRefreshLayout;
-
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.mvp.base.BaseMvpActivity;
@@ -209,10 +207,10 @@ public class SearchDevicesActivity extends BaseMvpActivity<SearchDevicesPresente
 
         switch (mSearchMode) {
             case Constant.SearchDeviceMode.MODE_RECOVERY_WALLET_BY_COLD:
-
+                toActivity(RecoveryWalletByColdWalletActivity.class);
                 break;
             case Constant.SearchDeviceMode.MODE_BACKUP_WALLET_TO_COLD:
-
+                toActivity(BackupToColdWalletActivity.class);
                 break;
             case Constant.SearchDeviceMode.MODE_CLONE_TO_OTHER_COLD:
 
@@ -224,8 +222,10 @@ public class SearchDevicesActivity extends BaseMvpActivity<SearchDevicesPresente
                 HandleCommands.getFeature(result -> {
                     if (!result.isInitialized()) {
                         toActivity(FindNewDeviceActivity.class);
-                    } else if(result.isNeedsBackup()){
+                    } else if (result.isNeedsBackup()) {
                         toActivity(FindDeviceNoBackupActivity.class);
+                    } else {
+                        toActivity(FindDeviceAndBackedUpActivity.class);
                     }
                 });
 

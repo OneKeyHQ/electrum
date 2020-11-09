@@ -23,12 +23,6 @@ public class ImportMnemonicToDevicePresenter extends BasePresenter<IImportMnemon
         });
     }
 
-    public void requestSetPin(){
-        HandleCommands.resetPin((HandleCommands.CallBack<String>) result -> {
-
-        });
-    }
-
 
     private String getMnemonics(List<MnemonicInfo> list) {
         StringBuffer buffer = new StringBuffer();

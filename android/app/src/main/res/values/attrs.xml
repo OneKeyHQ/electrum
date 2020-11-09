@@ -24,4 +24,8 @@
         <attr name="waitInputColor" format="color" />
         <attr name="isWaitInput" format="boolean" />
     </declare-styleable>
+
+    <declare-styleable name="LoadingTextView">
+        <attr name="text" format="string"/>
+    </declare-styleable>
 </resources>

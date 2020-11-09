@@ -2,13 +2,13 @@ package org.haobtc.onekey.bean;
 
 import android.graphics.drawable.Drawable;
 
-public class AssetBean {
+public class CoinBean {
 
     private Drawable mIcon;
     private String mName;
     private boolean mChecked = false;
 
-    public AssetBean(Drawable mIcon, String mName) {
+    public CoinBean(Drawable mIcon, String mName) {
         this.mIcon = mIcon;
         this.mName = mName;
     }

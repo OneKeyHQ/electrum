@@ -30,7 +30,7 @@
             android:fontFamily="sans-serif-medium"
             android:text="@string/input_help_word"
             android:textColor="@color/text"
-            android:textSize="@dimen/text_size" />
+            android:textSize="@dimen/sp_20" />
 
     </RelativeLayout>
 

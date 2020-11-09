@@ -1137,4 +1137,17 @@
     <string name="coin_btc">BTC</string>
     <string name="coin_eth">ETH</string>
     <string name="coin_eos">EOS</string>
+
+    <string name="get_info_by_cold_wallet">Getting data from hardware Wallet</string>
+    <string name="get_info_by_cold_wallet_hide">Data transfer takes a while, and your device is next to your phone.</string>
+    <string name="recovery_process">Processing...</string>
+    <string name="wait_response">Waiting for hardware wallet to respond</string>
+    <string name="import_to_phone">Import data into mobile phone</string>
+    <string name="complete_recovery">Complete recovery</string>
+    <string name="backup_wallet_to">Backing up mnemonics to %s</string>
+    <string name="backup_info_to_device">Import backup to device</string>
+    <string name="backup_success">be accomplished</string>
+    <string name="back_wallet">Back to Wallet</string>
+    <string name="backup_hide">Your mnemonics have been successfully backed up to this device, and we have nothing to remind you. In a word, remember to take good care of it. If it is lost, no one can help you find it back. Have a good time in the world of blockchain ❤️.</string>
+
 </resources>

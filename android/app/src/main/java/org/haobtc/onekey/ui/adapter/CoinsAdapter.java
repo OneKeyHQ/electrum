@@ -16,14 +16,16 @@ import org.haobtc.onekey.bean.CoinBean;
 import java.util.List;
 
 
-public class AssetAdapter extends RecyclerView.Adapter<AssetAdapter.ViewHolder> {
+public class CoinsAdapter extends RecyclerView.Adapter<CoinsAdapter.ViewHolder> {
 
     public List<CoinBean> mValues;
     private LayoutInflater mInflater;
+    private CallBack mCallBack;
 
 
-    public AssetAdapter(Context context, List<CoinBean> list) {
+    public CoinsAdapter(Context context, List<CoinBean> list, CallBack callBack) {
         this.mValues = list;
+        this.mCallBack = callBack;
         this.mInflater = LayoutInflater.from(context);
     }
 
@@ -37,13 +39,13 @@ public class AssetAdapter extends RecyclerView.Adapter<AssetAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.mAsset = mValues.get(position);
-        holder.mIcon.setImageDrawable(holder.mAsset.getIcon());
-        holder.mName.setText(holder.mAsset.getName());
-        holder.mChecked.setVisibility(holder.mAsset.isChecked() ? View.VISIBLE : View.INVISIBLE);
+        holder.mCoin = mValues.get(position);
+        holder.mIcon.setImageDrawable(holder.mCoin.getIcon());
+        holder.mName.setText(holder.mCoin.getName());
         holder.mView.setOnClickListener(v -> {
-            holder.mAsset.setChecked(!holder.mAsset.isChecked());
-            notifyItemChanged(position);
+            if (this.mCallBack != null) {
+                this.mCallBack.onItemClick(position);
+            }
         });
 
     }
@@ -57,17 +59,20 @@ public class AssetAdapter extends RecyclerView.Adapter<AssetAdapter.ViewHolder> 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public final TextView mName;
         public final ImageView mIcon;
-        public final ImageView mChecked;
         public final View mView;
-        public CoinBean mAsset;
+        public CoinBean mCoin;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
             mName = view.findViewById(R.id.item_name);
             mIcon = view.findViewById(R.id.item_icon);
-            mChecked = view.findViewById(R.id.item_checked);
         }
 
     }
+
+    public interface CallBack {
+        void onItemClick(int position);
+    }
+
 }

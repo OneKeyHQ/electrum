@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:orientation="vertical">
+
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:gravity="center_horizontal"
+        android:paddingLeft="@dimen/dp_30"
+        android:paddingTop="@dimen/dp_20"
+        android:paddingRight="@dimen/dp_30"
+        android:paddingBottom="@dimen/dp_20"
+        android:text="@string/backup_success"
+        android:textColor="#142A3B"
+        android:textSize="30sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:layout_marginTop="@dimen/dp_20">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/device_success"/>
+    </LinearLayout>
+
+
+    <Button
+        android:id="@+id/wallet_name"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:background="@drawable/btn_copy_to_other"
+        android:textAllCaps="false"
+        android:layout_marginTop="@dimen/dp_20"
+        android:textColor="@color/onekey"
+        android:layout_gravity="center_horizontal"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/dp_30"
+        android:text="@string/backup_hide"
+        android:textColor="#546370"/>
+
+
+    <Button
+        android:id="@+id/back_wallet"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/dp_20"
+        android:layout_marginBottom="@dimen/dp_30"
+        android:background="@drawable/btn_enable_selector"
+        android:text="@string/back_wallet"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/sp_14" />
+
+
+
+</LinearLayout>

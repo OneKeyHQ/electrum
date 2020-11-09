@@ -2,8 +2,10 @@ package org.haobtc.onekey.mvp.base;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,12 +15,16 @@ import androidx.fragment.app.FragmentTransaction;
 
 import org.haobtc.onekey.R;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public abstract class BaseActivity extends AppCompatActivity implements IBaseView {
 
 
     public Fragment mCurrentFragment;
+
+    @BindView(R.id.title)
+    protected TextView mTitle;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -72,5 +78,13 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
             }
             mCurrentFragment = fragment;
         }
+    }
+
+    public void onUpdateTitle(int title) {
+        runOnUiThread(() -> {
+            if(mTitle != null){
+                mTitle.setText(title);
+            }
+        });
     }
 }

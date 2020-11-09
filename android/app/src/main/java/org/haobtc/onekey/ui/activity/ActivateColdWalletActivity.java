@@ -24,9 +24,6 @@ import butterknife.BindView;
 public class ActivateColdWalletActivity extends BaseActivity implements View.OnClickListener
         , ISetDevicePassListener, IColdDeviceConfirmListener, IGiveNameListener, IBackupWalletListener {
 
-    @BindView(R.id.title)
-    protected TextView mTitle;
-
     @Override
     public void init() {
         findViewById(R.id.img_back).setOnClickListener(this);
@@ -59,18 +56,6 @@ public class ActivateColdWalletActivity extends BaseActivity implements View.OnC
     @Override
     public void onSetDevicePassSuccess() {
         startFragment(new ColdDeviceConfirmFragment());
-    }
-
-    @Override
-    public void onResetPin() {
-        HandleCommands.resetPin((HandleCommands.CallBack<String>) result -> {
-
-        });
-    }
-
-    @Override
-    public void onUpdateTitle(int title) {
-        runOnUiThread(() -> mTitle.setText(title));
     }
 
     @Override

@@ -26,9 +26,6 @@ public class RecoveryDeviceFromPhoneBackupActivity extends BaseMvpActivity<Recov
         implements IRecoveryDeviceFromPhoneView, IFindBackupFromPhoneListener, View.OnClickListener
         , ISetDevicePassListener, IColdDeviceConfirmListener, IGiveNameListener, IAddAssetListener {
 
-    @BindView(R.id.title)
-    protected TextView mTitle;
-
     @Override
     protected RecoveryDeviceFromPhonePresenter initPresenter() {
         return new RecoveryDeviceFromPhonePresenter(this);
@@ -56,11 +53,6 @@ public class RecoveryDeviceFromPhoneBackupActivity extends BaseMvpActivity<Recov
     }
 
     @Override
-    public void onUpdateTitle(int title) {
-        runOnUiThread(() -> mTitle.setText(title));
-    }
-
-    @Override
     public void onBackupToRecovery(BackupWalletBean bean) {
         //todo  backup info to recovery
 
@@ -70,13 +62,6 @@ public class RecoveryDeviceFromPhoneBackupActivity extends BaseMvpActivity<Recov
     @Override
     public void onSetDevicePassSuccess() {
         startFragment(new ColdDeviceConfirmFragment());
-    }
-
-    @Override
-    public void onResetPin() {
-        if (mPresenter != null) {
-            mPresenter.requestSetPin();
-        }
     }
 
     @Override

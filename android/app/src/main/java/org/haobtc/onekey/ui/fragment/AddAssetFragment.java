@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.haobtc.onekey.R;
-import org.haobtc.onekey.bean.AssetBean;
+import org.haobtc.onekey.bean.CoinBean;
 import org.haobtc.onekey.mvp.base.BaseFragment;
 import org.haobtc.onekey.ui.adapter.AssetAdapter;
 import org.haobtc.onekey.ui.listener.IAddAssetListener;
@@ -20,7 +20,7 @@ public class AddAssetFragment extends BaseFragment<IAddAssetListener> implements
 
     @BindView(R.id.asset_list)
     protected RecyclerView mAssetView;
-    private List<AssetBean> mAssetList;
+    private List<CoinBean> mAssetList;
     private AssetAdapter mAdapter;
 
     @Override

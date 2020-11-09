@@ -6,6 +6,4 @@ public interface ISetDevicePassListener extends IBaseListener,IUpdateTitleListen
 
     void onSetDevicePassSuccess();
 
-    void onResetPin();
-
 }

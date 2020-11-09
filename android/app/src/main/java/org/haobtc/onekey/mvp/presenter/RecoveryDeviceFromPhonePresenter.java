@@ -10,9 +10,4 @@ public class RecoveryDeviceFromPhonePresenter extends BasePresenter<IRecoveryDev
         super(view);
     }
 
-    public void requestSetPin(){
-        HandleCommands.resetPin((HandleCommands.CallBack<String>) result -> {
-
-        });
-    }
 }

@@ -35,7 +35,9 @@ public class SetDevicePINFragment extends BaseFragment<ISetDevicePassListener> i
             }
             return true;
         });
-        getListener().onResetPin();
+        HandleCommands.resetPin((HandleCommands.CallBack<String>) result -> {
+
+        });
     }
 
     @Override

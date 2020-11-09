@@ -28,9 +28,6 @@ public class ImportMnemonicToDeviceActivity extends BaseMvpActivity<ImportMnemon
         implements View.OnClickListener, IImportMnemonicToDeviceListener, IImportMnemonicToDeviceView
         , ISetDevicePassListener, IColdDeviceConfirmListener, IGiveNameListener, IAddAssetListener {
 
-    @BindView(R.id.title)
-    protected TextView mTitle;
-
     @Override
     public void init() {
         findViewById(R.id.img_back).setOnClickListener(this);
@@ -72,18 +69,6 @@ public class ImportMnemonicToDeviceActivity extends BaseMvpActivity<ImportMnemon
     @Override
     public void onSetDevicePassSuccess() {
         startFragment(new ColdDeviceConfirmFragment());
-    }
-
-    @Override
-    public void onResetPin() {
-        if (mPresenter != null) {
-            mPresenter.requestSetPin();
-        }
-    }
-
-    @Override
-    public void onUpdateTitle(int title) {
-        runOnUiThread(() -> mTitle.setText(title));
     }
 
     @Override

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:orientation="vertical">
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:paddingLeft="@dimen/dp_30"
+        android:paddingTop="@dimen/dp_20"
+        android:paddingRight="@dimen/dp_30"
+        android:paddingBottom="@dimen/dp_20"
+        android:text="@string/get_info_by_cold_wallet"
+        android:textColor="#142A3B"
+        android:textSize="30sp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:paddingLeft="@dimen/dp_30"
+        android:paddingTop="@dimen/dp_20"
+        android:paddingRight="@dimen/dp_30"
+        android:paddingBottom="@dimen/dp_20"
+        android:text="@string/get_info_by_cold_wallet_hide"
+        android:textColor="#142A3B"
+        android:textSize="@dimen/sp_14" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <ImageView
+            android:id="@+id/way_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="100dp"
+            android:src="@drawable/link_via_ble" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/dp_20"
+        android:background="@drawable/dark_bg"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/dp_20"
+            android:text="@string/recovery_process" />
+
+        <org.haobtc.onekey.ui.custom.LoadingTextView
+            android:id="@+id/loading_wait_response"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_30"
+            app:text="@string/wait_response" />
+
+
+        <org.haobtc.onekey.ui.custom.LoadingTextView
+            android:id="@+id/loading_import_to_phone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:text="@string/import_to_phone" />
+
+
+        <org.haobtc.onekey.ui.custom.LoadingTextView
+            android:id="@+id/loading_complete_recovery"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/dp_20"
+            app:text="@string/complete_recovery" />
+
+
+    </LinearLayout>
+
+
+</LinearLayout>

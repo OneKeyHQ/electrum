@@ -1,14 +1,15 @@
 package org.haobtc.onekey.onekeys.dialog;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.onekeys.dialog.recovery.ImprotSingleActivity;
+import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -70,6 +71,9 @@ public class RecoverHdWalletActivity extends BaseActivity {
                 startActivity(intent);
                 break;
             case R.id.lin_hard_recovery:
+                Intent recovery = new Intent(RecoverHdWalletActivity.this, SearchDevicesActivity.class);
+                recovery.putExtra(Constant.SEARCH_DEVICE_MODE, Constant.SearchDeviceMode.MODE_RECOVERY_WALLET_BY_COLD);
+                startActivity(recovery);
                 break;
             case R.id.lin_import:
                 Intent intent2 = new Intent(RecoverHdWalletActivity.this, ImprotSingleActivity.class);
