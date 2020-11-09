@@ -1947,7 +1947,7 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
     def update_password(self, old_pw, new_pw, str_pw=None, *, encrypt_storage: bool = True):
         if old_pw is None and self.has_password():
             raise InvalidPassword()
-        self.check_password(old_pw)
+        self.check_password(old_pw, str_pw=str_pw)
         if self.storage and str_pw is not None:
             if encrypt_storage:
                 enc_version = self.get_available_storage_encryption_version()

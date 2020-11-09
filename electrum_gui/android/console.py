@@ -52,7 +52,9 @@ from electrum.wallet_db import WalletDB
 from enum import Enum
 from .firmware_sign_nordic_dfu import parse
 from electrum import constants
-
+if "iOS_DATA" in os.environ:
+    from .custom_objc import *
+    from .ioscallback import *
 COIN_POS = 2
 ACCOUNT_POS = 3
 RECOVERY_DERIVAT_NUM = 20
@@ -198,8 +200,6 @@ class AndroidCommands(commands.Commands):
         t.start()
 
         if 'iOS_DATA' in os.environ:
-            from .custom_objc import *
-            from .ioscallback import *
             self.my_handler = CallHandler.alloc().initWithValue(42)
             self.set_callback_fun(self.my_handler)
         elif 'ANDROID_DATA' in os.environ:
@@ -1880,10 +1880,10 @@ class AndroidCommands(commands.Commands):
             raw=False,
             dry_run=False,
     ):
-        """
+        '''
         Upload new firmware to device.
         Note : Device must be in bootloader mode.
-        """
+        '''
         # self.client = None
         # self.path = ''
         client = self.get_client(path)
@@ -2248,8 +2248,8 @@ class AndroidCommands(commands.Commands):
         :return:
         '''
         self._assert_daemon_running()
-        for name, wallet in self.daemon._wallets:
-            wallet.update_password(old_pw=old_password, new_pw=new_password)
+        for name, wallet in self.daemon._wallets.items():
+            wallet.update_password(old_pw=old_password, new_pw=new_password, str_pw=self.android_id)
         return ""
 
     def check_password(self, password):
@@ -2551,8 +2551,13 @@ class AndroidCommands(commands.Commands):
             for _, wallet in self.daemon._wallets.items():
                 if isinstance(wallet, Imported_Wallet):
                     if wallet.can_import_privkey():
-                        ecc.ECPrivkey(bfh(privkeys))
-                        pubkey = ecc.ECPrivkey(bfh(privkeys)).get_public_key_hex(compressed=True)
+                        try:
+                            ecc.ECPrivkey(bfh(privkeys))
+                            pubkey = ecc.ECPrivkey(bfh(privkeys)).get_public_key_hex(compressed=True)
+                        except BaseException as e:
+                            from electrum.bitcoin import deserialize_privkey
+                            txin_type, privkey, compressed = deserialize_privkey(privkeys)
+                            pubkey = ecc.ECPrivkey(privkey).get_public_key_hex(compressed=compressed)
                         try:
                             wallet.keystore.get_private_key(pubkey, password)
                         except BaseException as e:
@@ -2593,7 +2598,7 @@ class AndroidCommands(commands.Commands):
             try:
                 #TODO:need script(p2pkh/p2wpkh/p2wpkh-p2sh)
                 ecc.ECPrivkey(bfh(privkeys))
-                keys = [bfh(privkeys)]
+                keys = [privkeys]
             except BaseException as e:
                 keys = keystore.get_private_keys(privkeys, allow_spaces_inside_key=False)
             good_inputs, bad_inputs = wallet.import_private_keys(keys, None, write_to_disk=False)
@@ -3010,9 +3015,12 @@ class AndroidCommands(commands.Commands):
         except BaseException as e:
             raise BaseException(e)
 
-    def delete_wallet(self, name=None):
+    def delete_wallet(self, password, name=None):
         """Delete a wallet"""
         try:
+            wallet = self.daemon._wallets[self._wallet_path(name)]
+            if not wallet.is_watching_only():
+                self.check_password(password=password)
             self.delete_wallet_from_deamon(self._wallet_path(name))
             if self.local_wallet_info.__contains__(name):
                 wallet_type = self.local_wallet_info.get(name)['type']

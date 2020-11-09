@@ -241,8 +241,7 @@ class Imported_KeyStore(Software_KeyStore):
 
     def import_privkey(self, sec, password):
         try:
-            ecc.ECPrivkey(sec)
-            pubkey = ecc.ECPrivkey(sec).get_public_key_hex(compressed=True)
+            pubkey = ecc.ECPrivkey(bfh(sec)).get_public_key_hex(compressed=True)
             self.keypairs[pubkey] = pw_encode(sec, password, version=self.pw_hash_version)
             return "p2wpkh", pubkey
         except BaseException as e:
@@ -284,8 +283,7 @@ class Imported_KeyStore(Software_KeyStore):
     def get_private_key(self, pubkey: str, password):
         sec = pw_decode(self.keypairs[pubkey], password, version=self.pw_hash_version)
         try:
-            ecc.ECPrivkey(sec)
-            if pubkey != ecc.ECPrivkey(sec).get_public_key_hex(compressed=True):
+            if pubkey != ecc.ECPrivkey(bfh(sec)).get_public_key_hex(compressed=True):
                 raise InvalidPassword()
             return sec, True
         except BaseException as e:
