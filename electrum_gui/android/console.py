@@ -2503,9 +2503,9 @@ class AndroidCommands(commands.Commands):
 
     def get_all_mnemonic(self):
         '''
-        get all mnemonic, num is 2048
+        Get all mnemonic, num is 2048
         '''
-        return Wordlist.from_file('english.txt')
+        return json.dumps(Wordlist.from_file('english.txt'))
 
     def get_all_wallet_balance(self):
         '''
