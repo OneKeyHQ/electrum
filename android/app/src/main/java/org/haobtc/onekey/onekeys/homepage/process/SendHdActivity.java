@@ -255,14 +255,9 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
     }
 
     private void sendCurrency(String pass) {
-        ArrayList<Map<String, String>> arrayList = new ArrayList<>();
-        Map<String, String> pramas = new HashMap<>();
-        pramas.put(editInputAddress.getText().toString(), tetamount.getText().toString());
-        arrayList.add(pramas);
-        String strPramas = new Gson().toJson(arrayList);
         PyObject mktx;
         try {
-            mktx = Daemon.commands.callAttr("mktx", strPramas, "");
+            mktx = Daemon.commands.callAttr("mktx", useTx);
 
         } catch (Exception e) {
             e.printStackTrace();

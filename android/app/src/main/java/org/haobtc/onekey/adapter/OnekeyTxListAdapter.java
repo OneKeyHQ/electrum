@@ -1,6 +1,8 @@
 package org.haobtc.onekey.adapter;
 
+import android.annotation.SuppressLint;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -18,19 +20,24 @@ public class OnekeyTxListAdapter extends BaseQuickAdapter<MaintrsactionlistEvent
         super(R.layout.btc_detail_item, data);
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     @Override
     protected void convert(BaseViewHolder helper, MaintrsactionlistEvent item) {
         String amount = item.getAmount().substring(0, item.getAmount().indexOf("("));
         helper.setText(R.id.text_address, item.getTxHash()).setText(R.id.text_time, item.getDate());
         TextView tetAmount = helper.getView(R.id.text_send_amount);
+        ImageView imgStatus = helper.getView(R.id.imageView);
         if (item.isMine()) {
             //send
             tetAmount.setTextColor(mContext.getColor(R.color.text_eight));
             helper.setText(R.id.text_send_amount, "-" + amount);
+            imgStatus.setImageDrawable(mContext.getDrawable(R.drawable.send_));
+
         } else {
             //get
             tetAmount.setTextColor(mContext.getColor(R.color.onekey));
             helper.setText(R.id.text_send_amount, "+" + amount);
+            imgStatus.setImageDrawable(mContext.getDrawable(R.drawable.receive_));
         }
         TextView sendStatus = helper.getView(R.id.text_send_status);
         if ("Unconfirmed".equals(item.getTxStatus())) {

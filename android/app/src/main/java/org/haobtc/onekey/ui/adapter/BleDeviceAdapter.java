@@ -15,6 +15,7 @@ import org.haobtc.onekey.constant.Constant;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import cn.com.heaton.blelibrary.ble.model.BleDevice;
@@ -36,8 +37,8 @@ public class BleDeviceAdapter extends RecyclerView.Adapter<BleDeviceAdapter.View
     public void add(BleDevice device) {
         mValues.add(device);
         mValues = mValues.stream().distinct().
-                filter(bleDevice -> bleDevice.getBleName() != null && (bleDevice.getBleName().toLowerCase()
-                        .startsWith(Constant.BLE_NAME_PREFIX.toLowerCase()))).collect(Collectors.toList());
+                filter(bleDevice -> bleDevice.getBleName() != null && ((bleDevice.getBleName().toLowerCase()
+                        .startsWith(Constant.BLE_NAME_PREFIX.toLowerCase())) || Pattern.matches(Constant.PATTERN, bleDevice.getBleName()))).collect(Collectors.toList());
         //notifyDataSetChanged();
     }
 

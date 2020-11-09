@@ -31,6 +31,7 @@ public class AnyskServerSetActivity extends BaseActivity {
 
     @BindView(R.id.img_back)
     ImageView imgBack;
+    @SuppressLint("UseSwitchCompatOrMaterialCode")
     @BindView(R.id.switch_cynchronez)
     Switch switchCynchronez;
     @BindView(R.id.tet_electrumName)

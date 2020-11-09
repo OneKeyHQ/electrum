@@ -151,6 +151,17 @@
                 android:src="@drawable/right_arrow_small" />
         </RelativeLayout>
 
+        <ImageView
+            android:id="@+id/img_add"
+            android:layout_width="@dimen/dp_40"
+            android:layout_height="@dimen/dp_40"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="@dimen/dp_10"
+            android:padding="@dimen/dp_9"
+            android:src="@drawable/add_gray"
+            android:visibility="gone" />
+
     </RelativeLayout>
 
     <LinearLayout

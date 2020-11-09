@@ -115,6 +115,7 @@ public class WatchWalletActivity extends BaseActivity {
             return;
         }
         edit.putBoolean("isHaveWallet", true);
+        edit.putString("loadWalletName",editWalletName.getText().toString());
         edit.apply();
         mIntent(HomeOnekeyActivity.class);
 

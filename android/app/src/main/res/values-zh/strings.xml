@@ -1050,5 +1050,13 @@
     <string name="check_trsaction_msg">使用您喜欢的浏览器查看链上交易信息</string>
     <string name="electrum_tips">使用其开源分布式节点进行交易广播和链上信息获取</string>
     <string name="agent_tips">使用代理服务器，隐藏网络痕迹</string>
+    <string name="export_word_">导出助记词</string>
+    <string name="export_private_key">导出私钥</string>
+    <string name="export_keystore">导出 keystore</string>
+    <string name="backup_wallet_save">备份钱包来保障您的资产安全</string>
+    <string name="backup_wallet_tip">如果不备份钱包，一旦您丢失自己的手机，便再也无法找回资产。在某些极端情况下，手机厂商在系统升级过程中可能会出现意外，导致您的所有资料或 App 丢失，如果您恰好没有备份，会造成难以预料的后果。</string>
+    <string name="backup_wallet_tip2">保护您资产的唯一方式，就是正确的做好备份。</string>
+    <string name="next_tall">下次再说</string>
+    <string name="now_backup">现在备份</string>
 
 </resources>

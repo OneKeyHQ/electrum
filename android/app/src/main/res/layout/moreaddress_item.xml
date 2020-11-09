@@ -39,7 +39,7 @@
             android:paddingEnd="@dimen/dp_9"
             android:background="@drawable/gray_tuocircle"
             android:gravity="center"
-            android:visibility="gone"
+            android:visibility="visible"
             android:textColor="@color/change_addr"
             android:layout_marginEnd="@dimen/dp_10"
             android:singleLine="true"

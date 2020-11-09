@@ -31,6 +31,7 @@ import org.haobtc.onekey.utils.ValueAnimatorUtil;
 import java.util.Objects;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import cn.com.heaton.blelibrary.ble.model.BleDevice;
 
 import static cn.com.heaton.blelibrary.ble.Ble.REQUEST_ENABLE_BT;
@@ -65,6 +66,7 @@ public class SearchDevicesActivity extends BaseMvpActivity<SearchDevicesPresente
 
     @Override
     public void init() {
+        ButterKnife.bind(this);
         findViewById(R.id.img_back).setOnClickListener(this);
         findViewById(R.id.relode).setOnClickListener(this);
         mSearchMode = getIntent().getIntExtra(Constant.SEARCH_DEVICE_MODE, Constant.SearchDeviceMode.MODE_PAIR_WALLET_TO_COLD);

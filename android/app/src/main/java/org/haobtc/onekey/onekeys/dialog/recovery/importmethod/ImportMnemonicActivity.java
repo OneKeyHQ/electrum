@@ -150,6 +150,7 @@ public class ImportMnemonicActivity extends BaseActivity {
             return;
         }
         edit.putBoolean("isHaveWallet", true);
+        edit.putString("loadWalletName",editSetWalletName.getText().toString());
         edit.apply();
         mIntent(HomeOnekeyActivity.class);
 

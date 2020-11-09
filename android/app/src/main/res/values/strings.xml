@@ -1044,7 +1044,7 @@
     <string name="backup_wallet">Backup Wallet</string>
     <string name="bind_admin_person">Binding co Manager</string>
     <string name="recovery_hd_wallet">Restore HD Wallet</string>
-    <string name="find_new_device">🎉 Discover a new device that you can...</string>
+    <string name="find_new_device">Discover a new device that you can...</string>
     <string name="init_as_new_device">Activate as new device (recommended)</string>
     <string name="new_device_hide">It is suitable for most users who use hardware wallet for the first time</string>
     <string name="import_seed">Import mnemonics</string>
@@ -1097,10 +1097,18 @@
     <string name="input_your_former_pass">Enter your original password</string>
     <string name="fix_former_tip">After changing the password, your original biometric identification (face, fingerprint) will be invalid and needs to be reset.</string>
     <string name="set_new_pass">Set your new password</string>
-    <string name="price_quotation">价格行情（只影响 BTC 和 ETH 价格的显示）</string>
-    <string name="blockchain_choose">区块浏览器（BTC）</string>
-    <string name="check_trsaction_msg">使用您喜欢的浏览器查看链上交易信息</string>
-    <string name="electrum_tips">使用其开源分布式节点进行交易广播和链上信息获取</string>
-    <string name="agent_tips">使用代理服务器，隐藏网络痕迹</string>
+    <string name="price_quotation">Price quotation (only affects the display of BTC and eth prices)</string>
+    <string name="blockchain_choose">Block browser (BTC)</string>
+    <string name="check_trsaction_msg">Use your favorite browser to view the transaction information on the chain</string>
+    <string name="electrum_tips">It uses its open source distributed nodes to broadcast transactions and obtain information on the chain</string>
+    <string name="agent_tips">Use proxy server to hide network trace</string>
+    <string name="export_word_">Deriving mnemonics</string>
+    <string name="export_private_key">Export private key</string>
+    <string name="export_keystore">Export keystore</string>
+    <string name="backup_wallet_save">Back up your wallet to protect your assets</string>
+    <string name="backup_wallet_tip">If you don\'t back up your wallet, you will never be able to recover your assets once you lose your mobile phone. In some extreme cases, mobile phone manufacturers may have accidents in the process of system upgrade, resulting in the loss of all your data or apps. If you happen to have no backup, it will cause unpredictable consequences.</string>
+    <string name="backup_wallet_tip2">The only way to protect your assets is to make proper backup.</string>
+    <string name="next_tall">Next time</string>
+    <string name="now_backup">Backup now</string>
 
 </resources>

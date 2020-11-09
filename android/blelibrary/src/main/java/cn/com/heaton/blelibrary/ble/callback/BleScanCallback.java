@@ -38,6 +38,5 @@ public abstract class BleScanCallback<T> {
      */
     public void onScanFailed(int errorCode){}
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void onParsedData(T device, ScanRecord scanRecord){}
 }

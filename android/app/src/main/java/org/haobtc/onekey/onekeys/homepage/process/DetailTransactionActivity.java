@@ -133,6 +133,8 @@ public class DetailTransactionActivity extends BaseActivity {
         } else {
             textRemarks.setText(getString(R.string.no));
         }
+        String high = String.valueOf(listBean.getHeight());
+        textBlockHigh.setText(high);
     }
 
     @OnClick({R.id.img_back, R.id.img_send_copy, R.id.img_receive_copy, R.id.text_block_high, R.id.text_tx_num})

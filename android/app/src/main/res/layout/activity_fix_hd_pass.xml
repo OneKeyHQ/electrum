@@ -48,7 +48,7 @@
             android:layout_marginStart="@dimen/dp_20"
             android:layout_marginTop="41dp"
             android:text="@string/fix_pass_tip1"
-            android:textColor="@color/text_six"
+            android:textColor="@color/text_three"
             android:textSize="@dimen/sp_14" />
 
         <TextView
@@ -57,7 +57,7 @@
             android:layout_marginStart="@dimen/dp_20"
             android:layout_marginTop="3dp"
             android:text="@string/fix_pass_tip2"
-            android:textColor="@color/text_six"
+            android:textColor="@color/text_three"
             android:textSize="@dimen/sp_14" />
 
         <RelativeLayout

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -18,6 +19,7 @@ import androidx.annotation.LayoutRes;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONArray;
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chaquo.python.PyObject;
 
 import org.haobtc.onekey.R;
@@ -25,11 +27,12 @@ import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.adapter.WalletListAdapter;
 import org.haobtc.onekey.bean.AddressEvent;
 import org.haobtc.onekey.constant.Constant;
-import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
 import org.haobtc.onekey.onekeys.HomeOnekeyActivity;
 import org.haobtc.onekey.onekeys.dialog.recovery.ImprotSingleActivity;
 import org.haobtc.onekey.onekeys.homepage.process.CreateDeriveChooseTypeActivity;
 import org.haobtc.onekey.onekeys.homepage.process.CreateWalletChooseTypeActivity;
+import org.haobtc.onekey.onekeys.homepage.process.SetDeriveWalletNameActivity;
+import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
 import org.haobtc.onekey.utils.Daemon;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -63,10 +66,14 @@ public class WalletListActivity extends BaseActivity {
     TextView tetNone;
     @BindView(R.id.recl_add_wallet)
     RelativeLayout reclAddWallet;
+    @BindView(R.id.img_add)
+    ImageView imgAdd;
     private ArrayList<AddressEvent> hdWalletList;
     private ArrayList<AddressEvent> btcList;
     private ArrayList<AddressEvent> ethList;
     private ArrayList<AddressEvent> eosList;
+    private SharedPreferences.Editor edit;
+    private int createWalletType = 0;//create derive wallet type
 
     @Override
     public int getLayoutId() {
@@ -76,6 +83,9 @@ public class WalletListActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        edit = preferences.edit();
+
     }
 
     @Override
@@ -92,7 +102,7 @@ public class WalletListActivity extends BaseActivity {
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
-    @OnClick({R.id.img_close, R.id.recl_wallet, R.id.lin_pair_wallet, R.id.lin_add_wallet, R.id.view_all, R.id.view_btc, R.id.view_eth, R.id.recl_add_wallet})
+    @OnClick({R.id.img_close, R.id.recl_wallet, R.id.lin_pair_wallet, R.id.lin_add_wallet, R.id.view_all, R.id.view_btc, R.id.view_eth, R.id.recl_add_wallet, R.id.img_add})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_close:
@@ -103,7 +113,7 @@ public class WalletListActivity extends BaseActivity {
                 break;
             case R.id.lin_pair_wallet:
                 Intent intent = new Intent(this, SearchDevicesActivity.class);
-                intent.putExtra(Constant.SEARCH_DEVICE_MODE,Constant.SearchDeviceMode.MODE_PAIR_WALLET_TO_COLD);
+                intent.putExtra(Constant.SEARCH_DEVICE_MODE, Constant.SearchDeviceMode.MODE_PAIR_WALLET_TO_COLD);
                 startActivity(intent);
                 break;
             case R.id.lin_add_wallet:
@@ -115,6 +125,8 @@ public class WalletListActivity extends BaseActivity {
                 viewEth.setImageDrawable(getDrawable(R.drawable.eth_icon_gray));
                 textWalletNum.setText(String.valueOf(hdWalletList.size()));
                 reclAddWallet.setVisibility(View.VISIBLE);
+                reclWalletDetail.setVisibility(View.VISIBLE);
+                imgAdd.setVisibility(View.GONE);
                 if (hdWalletList == null || hdWalletList.size() == 0) {
                     reclWalletList.setVisibility(View.GONE);
                     tetNone.setVisibility(View.VISIBLE);
@@ -123,14 +135,26 @@ public class WalletListActivity extends BaseActivity {
                     tetNone.setVisibility(View.GONE);
                     WalletListAdapter walletListAdapter = new WalletListAdapter(hdWalletList);
                     reclWalletList.setAdapter(walletListAdapter);
+                    walletListAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                            String name = hdWalletList.get(position).getName();
+                            edit.putString("loadWalletName", name);
+                            edit.apply();
+                            mIntent(HomeOnekeyActivity.class);
+                        }
+                    });
                 }
                 break;
             case R.id.view_btc:
+                createWalletType = 0;//createWalletType = 0   ----> create btc derive wallet
                 viewAll.setImageDrawable(getDrawable(R.drawable.id_wallet_icon));
                 viewBtc.setImageDrawable(getDrawable(R.drawable.token_btc));
                 viewEth.setImageDrawable(getDrawable(R.drawable.eth_icon_gray));
                 textWalletNum.setText(String.valueOf(btcList.size()));
                 reclAddWallet.setVisibility(View.GONE);
+                reclWalletDetail.setVisibility(View.GONE);
+                imgAdd.setVisibility(View.VISIBLE);
                 if (btcList == null || btcList.size() == 0) {
                     reclWalletList.setVisibility(View.GONE);
                     tetNone.setVisibility(View.VISIBLE);
@@ -139,15 +163,27 @@ public class WalletListActivity extends BaseActivity {
                     tetNone.setVisibility(View.GONE);
                     WalletListAdapter btcListAdapter = new WalletListAdapter(btcList);
                     reclWalletList.setAdapter(btcListAdapter);
+                    btcListAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                            String name = btcList.get(position).getName();
+                            edit.putString("loadWalletName", name);
+                            edit.apply();
+                            mIntent(HomeOnekeyActivity.class);
+                        }
+                    });
                 }
 
                 break;
             case R.id.view_eth:
+                createWalletType = 1;//createWalletType = 1   ----> create eth derive wallet
                 viewAll.setImageDrawable(getDrawable(R.drawable.id_wallet_icon));
                 viewBtc.setImageDrawable(getDrawable(R.drawable.token_trans_btc));
                 viewEth.setImageDrawable(getDrawable(R.drawable.token_eth));
                 textWalletNum.setText(String.valueOf(ethList.size()));
                 reclAddWallet.setVisibility(View.GONE);
+                reclWalletDetail.setVisibility(View.GONE);
+                imgAdd.setVisibility(View.GONE);
                 if (ethList == null || ethList.size() == 0) {
                     reclWalletList.setVisibility(View.GONE);
                     tetNone.setVisibility(View.VISIBLE);
@@ -156,11 +192,30 @@ public class WalletListActivity extends BaseActivity {
                     tetNone.setVisibility(View.GONE);
                     WalletListAdapter ethListAdapter = new WalletListAdapter(ethList);
                     reclWalletList.setAdapter(ethListAdapter);
+                    ethListAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                            String name = ethList.get(position).getName();
+                            edit.putString("loadWalletName", name);
+                            edit.apply();
+                            mIntent(HomeOnekeyActivity.class);
+                        }
+                    });
                 }
+                break;
+            case R.id.img_add:
+                Intent intents = new Intent(WalletListActivity.this, SetDeriveWalletNameActivity.class);
+                intents.putExtra("walletType", "derive");
+                if (createWalletType == 0) {
+                    intents.putExtra("currencyType", "btc");
+                } else {
+                    intents.putExtra("currencyType", "eth");
+                }
+                startActivity(intents);
                 break;
             case R.id.recl_add_wallet:
                 Intent intent1 = new Intent(WalletListActivity.this, CreateDeriveChooseTypeActivity.class);
-                intent1.putExtra("walletType","derive");
+                intent1.putExtra("walletType", "derive");
                 startActivity(intent1);
                 break;
         }
@@ -236,6 +291,15 @@ public class WalletListActivity extends BaseActivity {
                         } else {
                             WalletListAdapter walletListAdapter = new WalletListAdapter(hdWalletList);
                             reclWalletList.setAdapter(walletListAdapter);
+                            walletListAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+                                @Override
+                                public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                                    String name = hdWalletList.get(position).getName();
+                                    edit.putString("loadWalletName", name);
+                                    edit.apply();
+                                    mIntent(HomeOnekeyActivity.class);
+                                }
+                            });
                         }
                     }
                 }

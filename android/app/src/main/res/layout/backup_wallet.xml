@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_10"
+        android:layout_marginEnd="@dimen/dp_10"
+        android:layout_marginBottom="@dimen/dp_20"
+        android:background="@drawable/white_back_tuo">
+
+        <ImageView
+            android:id="@+id/img_close"
+            android:layout_width="@dimen/dp_50"
+            android:layout_height="@dimen/dp_50"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="@dimen/dp_7"
+            android:padding="@dimen/dp_19"
+            android:src="@drawable/close_dark_small" />
+
+        <TextView
+            android:id="@+id/text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/dp_30"
+            android:text="@string/backup_wallet_save"
+            android:textColor="@color/text_two"
+            android:textSize="@dimen/sp_18" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/text"
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/dp_20"
+            android:layout_marginTop="@dimen/dp_15"
+            android:layout_marginEnd="@dimen/dp_20"
+            android:lineSpacingExtra="@dimen/sp_12"
+            android:text="@string/backup_wallet_tip"
+            android:textColor="@color/text_two"
+            android:textSize="@dimen/sp_14" />
+
+        <TextView
+            android:id="@+id/text1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textView"
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/dp_20"
+            android:layout_marginTop="35dp"
+            android:layout_marginEnd="@dimen/dp_20"
+            android:lineSpacingExtra="@dimen/sp_12"
+            android:text="@string/backup_wallet_tip2"
+            android:textColor="@color/text_two"
+            android:textSize="@dimen/sp_14"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/text1"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/dp_30"
+            android:layout_marginBottom="@dimen/dp_30"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_next_backup"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/dp_60"
+                android:layout_marginStart="@dimen/dp_15"
+                android:layout_marginEnd="@dimen/dp_15"
+                android:layout_weight="1"
+                android:background="@drawable/gray_stoken"
+                android:text="@string/next_tall" />
+
+            <Button
+                android:id="@+id/btn_now_backup"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/dp_60"
+                android:layout_marginStart="@dimen/dp_14"
+                android:layout_marginEnd="@dimen/dp_15"
+                android:layout_weight="1"
+                android:background="@drawable/green_tuo"
+                android:text="@string/now_backup"
+                android:textColor="@color/button_bk_ddake" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</LinearLayout>

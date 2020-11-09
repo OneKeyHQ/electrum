@@ -46,7 +46,7 @@ public class MoreAddressAdapter extends BaseQuickAdapter<GetnewcreatTrsactionLis
             }
         }
 
-        if (item.getIs_change()) {
+        if (item.isIsChange()) {
             helper.getView(R.id.test_change_address).setVisibility(View.VISIBLE);
         } else {
             helper.getView(R.id.test_change_address).setVisibility(View.GONE);

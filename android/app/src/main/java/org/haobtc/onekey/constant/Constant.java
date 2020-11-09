@@ -8,6 +8,7 @@ public final class Constant {
     public static final String WAY_MODE_BLE = "bluetooth";
     public static final String WAY_MODE_NFC = "nfc";
     public static final String WAY_MODE_USB = "usb";
+    public static final String PATTERN = "^K\\d{4}";
 
     //ble name start with
     public static final String BLE_NAME_PREFIX = "BixinKey";
