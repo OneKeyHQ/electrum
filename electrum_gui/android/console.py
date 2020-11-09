@@ -2544,6 +2544,12 @@ class AndroidCommands(commands.Commands):
                     if wallet.get_keystores().xpub == master:
                         raise error_msg
         elif addresses is not None:
+            if not bitcoin.is_address(addresses):
+                try:
+                    pubkey = ecc.ECPubkey(bfh(addresses)).get_public_key_hex()
+                    addresses = bitcoin.pubkey_to_address("p2wpkh", pubkey)
+                except:
+                    raise BaseException("Please enter the correct address or pubkey")
             for _, wallet in self.daemon._wallets.items():
                 if addresses in wallet.get_addresses():
                     raise error_msg
@@ -2562,6 +2568,51 @@ class AndroidCommands(commands.Commands):
                             wallet.keystore.get_private_key(pubkey, password)
                         except BaseException as e:
                             raise error_msg
+
+    def create_by_import_seed(self, name, password, seed):
+        '''
+        Create wallet by import seed
+        :param name: wallet name as str
+        :param password: password as str
+        :param seed: Mnemonic as str
+        exp:
+            create(name, password, seed='pottery curtain belt canal cart include raise receive sponsor vote embody offer')
+        :return:
+        '''
+        self.create(name, password, seed=seed)
+        return ""
+
+    def create_by_privkey(self, name, password, privkey):
+        '''
+        Create by privkey
+        :param name: wallet name as str
+        :param password: password as str
+        :param privkey: privkey as str
+        exp:
+            create("test3", password=password, privkeys="p2wpkh:cRR5YkkGHTph8RsM1bQv7YSzY27hxBBhoJnVdHjGnuKntY7RgoGw")
+            or
+            create("test3", password=password, privkeys="e6841ceb170becade0a4aa3e157f08871192f9de1c35835de5e1b47fc167d27e")
+        :return:
+        '''
+        self.create(name, password, privkeys=privkey)
+        return ""
+
+    def create_by_address(self, name, address):
+        '''
+        Create wallet by address or pubkey
+        :param name: wallet name as str
+        :param address: wallst address/pubkey as str
+        exp:
+            create("test4", addresses="037f4e0eaf45aa391cd57b44cc48db5a26e0db66402a15a75c8ab2eb793a8823c4")
+            or
+            create("test5", addresses="bcrt1qzm6y9j0zg9nnludkgtc0pvhet0sf76szjw7fjw")
+        :return:
+        '''
+        self.create(name, addresses=address)
+        return ""
+
+    def create_by_xpub(self, name, password, master):
+        self.create(name, password, master=master)
 
     def create(self, name, password, seed_type="segwit", seed=None, passphrase="", bip39_derivation=None,
                master=None, addresses=None, privkeys=None, hd=False):
@@ -2587,6 +2638,12 @@ class AndroidCommands(commands.Commands):
         if addresses is not None:
             wallet = Imported_Wallet(db, storage, config=self.config)
             addresses = addresses.split()
+            if not bitcoin.is_address(addresses[0]):
+                try:
+                    pubkey = ecc.ECPubkey(bfh(addresses[0])).get_public_key_hex()
+                    addresses = [bitcoin.pubkey_to_address("p2wpkh", pubkey)]
+                except BaseException as e:
+                    raise BaseException("Please enter the correct address or pubkey")
             good_inputs, bad_inputs = wallet.import_addresses(addresses, write_to_disk=False)
             # FIXME tell user about bad_inputs
             if not good_inputs:
