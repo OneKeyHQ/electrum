@@ -185,6 +185,7 @@ password = "111111"
 #testcommond.create(name, password, seed='rocket omit review divert bomb brief mushroom family fatal limb goose lion')
 #testcommond.get_all_mnemonic()
 testcommond.load_all_wallet()
+testcommond.create_derived_wallet("test11", password, "btc")
 #new_seed = testcommond.create("test", password)
 #testcommond.create("test", password, seed="crash frost drive trigger render dizzy vacuum cement enact minute curve blanket")
 #testcommond.create("test1", password=password, privkeys="e6841ceb170becade0a4aa3e157f08871192f9de1c35835de5e1b47fc167d27e")

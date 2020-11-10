@@ -285,7 +285,7 @@ class Imported_KeyStore(Software_KeyStore):
         try:
             if pubkey != ecc.ECPrivkey(bfh(sec)).get_public_key_hex(compressed=True):
                 raise InvalidPassword()
-            return sec, True
+            return bfh(sec), True
         except BaseException as e:
             txin_type, privkey, compressed = deserialize_privkey(sec)
             # this checks the password

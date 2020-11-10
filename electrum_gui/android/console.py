@@ -1952,9 +1952,28 @@ class AndroidCommands(commands.Commands):
                 print("Update aborted on device.")
             except exceptions.TrezorException as e:
                 raise BaseException("Update failed: {}".format(e))
-
+    
     ####################################################
     ## app wallet
+    def export_privkey(self, password):
+        '''
+        Export privkey for the first receiving address
+        :param password: as str
+        :return: priv as str
+
+        .. code-block:: python
+            testcommond.load_all_wallet()
+            testcommond.select_wallet("BTC-1")
+            priv = testcommond.export_privkey(password)
+            {priv='p2wpkh:cVJo3o48E6j8xxbTQprEzaCWQJ7aL3Y59R2W1owzJnX8NBh5AXnt'}
+        '''
+        try:
+            address = self.wallet.get_addresses()[0]
+            priv = self.wallet.export_private_key(address, password=password)
+            return priv
+        except BaseException as e:
+            raise e
+
     def export_seed(self, password):
         '''
         Export seed by on-chain wallet
@@ -2070,12 +2089,14 @@ class AndroidCommands(commands.Commands):
         Get backup status
         :return: True/False as bool
         '''
+        backup_flag = True
         try:
             if self.wallet.has_seed():
-                return self.backup_info[self.wallet.keystore.seed]
+                if not self.backup_info.__contains__(self.wallet.keystore.seed):
+                    backup_flag = False
         except BaseException as e:
             raise e
-        return ""
+        return backup_flag
 
     def delete_backup_info(self):
         '''
@@ -2619,7 +2640,11 @@ class AndroidCommands(commands.Commands):
         """Create or restore a new wallet"""
         print("CREATE in....name = %s" % name)
         try:
-            self.check_file_exist(password=password, seed=seed, master=master, addresses=addresses, privkeys=privkeys)
+            check_flag = True
+            if bip39_derivation is not None and int(bip39_derivation.split('/')[ACCOUNT_POS].split('\'')[0]) != 0:
+                check_flag = False
+            if check_flag:
+                self.check_file_exist(password=password, seed=seed, master=master, addresses=addresses, privkeys=privkeys)
             if not hd:
                 if addresses is None:
                     self.check_password(password)
