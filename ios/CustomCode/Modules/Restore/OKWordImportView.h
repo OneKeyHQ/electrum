@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) void(^completed)(BOOL isCompleted);
 
 - (void)configureData:(NSArray <NSString *> *)data;
+
 @end
 
 NS_ASSUME_NONNULL_END

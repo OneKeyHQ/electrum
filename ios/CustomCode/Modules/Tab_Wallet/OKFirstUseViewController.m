@@ -55,13 +55,13 @@
     XXWeakSelf(self);
     NSRange range1 = [content rangeOfString:MyLocalizedString(@"User Agreement", nil)];
     [self.textViewClick setUnderlineTextWithRange:range1 withUnderlineColor:HexColor(RGB_THEME_GREEN) withClickCoverColor:nil withBlock:^(NSString *clickText) {
-        WebViewVC *webVc = [WebViewVC loadWebViewControllerWithTitle:@"OneKey" url:@"https://www.baidu.com"];
+        WebViewVC *webVc = [WebViewVC loadWebViewControllerWithTitle:@"OneKey" url:kTheServiceAgreement];
         [weakself.navigationController pushViewController:webVc animated:YES];
         
     }];
     NSRange range2 = [content rangeOfString:MyLocalizedString(@"Privacy policy", nil)];
     [self.textViewClick setUnderlineTextWithRange:range2 withUnderlineColor:HexColor(RGB_THEME_GREEN) withClickCoverColor:nil withBlock:^(NSString *clickText) {
-        WebViewVC *webVc = [WebViewVC loadWebViewControllerWithTitle:@"OneKey" url:@"https://www.baidu.com"];
+        WebViewVC *webVc = [WebViewVC loadWebViewControllerWithTitle:@"OneKey" url:kPrivacyAgreement];
         [weakself.navigationController pushViewController:webVc animated:YES];
     }];
     
@@ -75,6 +75,7 @@
 }
 
 - (IBAction)startBtnClick:(UIButton *)sender {
+    [OKStorageManager saveToUserDefaults:@"1" key:kFirstUsedShowed];
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 

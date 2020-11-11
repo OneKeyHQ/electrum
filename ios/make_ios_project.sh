@@ -1,39 +1,41 @@
 #!/bin/bash
-
+set -e
+set -u
+set -x
 . ./common.sh
 
-/usr/bin/env python3.6 --version | grep -q " 3.[6789]"
+/usr/bin/env python3.8 --version | grep -q " 3.[6789]"
 if [ "$?" != "0" ]; then
-	if /usr/bin/env python3.6 --version; then
+	if /usr/bin/env python3.8 --version; then
 		echo "WARNING:: Creating the Briefcase-based Xcode project for iOS requires Python 3.6+."
 		echo "We will proceed anyway -- but if you get errors, try switching to Python 3.6+."
 	else
-		echo "ERROR: Python3+ is required"
+		echo "ERROR: Python3.6+ is required"
 		exit 1
 	fi
 fi
 
-/usr/bin/env python3.6 -m pip show setuptools > /dev/null
+/usr/bin/env python3.8 -m pip show setuptools > /dev/null
 if [ "$?" != "0" ]; then
-	echo "ERROR: Please install setuptools like so: sudo python3 -m pip install briefcase"
+	echo "ERROR: Please install setuptools like so: sudo python3.8 -m pip install briefcase"
 	exit 2
 fi
 
-/usr/bin/env python3.6 -m pip show briefcase > /dev/null
+/usr/bin/env python3.8 -m pip show briefcase > /dev/null
 if [ "$?" != "0" ]; then
-	echo "ERROR: Please install briefcase like so: sudo python3 -m pip install briefcase"
+	echo "ERROR: Please install briefcase like so: sudo python3.8 -m pip install briefcase"
 	exit 3
 fi
 
-/usr/bin/env python3.6 -m pip show cookiecutter > /dev/null
+/usr/bin/env python3.8 -m pip show cookiecutter > /dev/null
 if [ "$?" != "0" ]; then
-	echo "ERROR: Please install cookiecutter like so: sudo python3 -m pip install cookiecutter"
+	echo "ERROR: Please install cookiecutter like so: sudo python3.8 -m pip install cookiecutter"
 	exit 4
 fi
 
-/usr/bin/env python3.6 -m pip show pbxproj > /dev/null
+/usr/bin/env python3.8 -m pip show pbxproj > /dev/null
 if [ "$?" != "0" ]; then
-	echo "ERROR: Please install pbxproj like so: sudo python3 -m pip install pbxproj"
+	echo "ERROR: Please install pbxproj like so: sudo python3.8 -m pip install pbxproj"
 	exit 5
 fi
 pod > /dev/null
@@ -41,6 +43,7 @@ if [ "$?" != "0" ]; then
 	echo "ERROR: Please install pod command-line tools"
 	exit 4
 fi
+set +x
 if [ -d iOS ]; then
 	echo "Warning: 'iOS' directory exists. All modifications will be lost if you continue."
 	echo "Continue? [y/N]?"
@@ -50,7 +53,7 @@ if [ -d iOS ]; then
 		exit 0
 	fi
 	echo "Cleaning up old iOS dir..."
-	rm -fr iOS
+	rm -rf iOS
 fi
 
 if [ -d ${compact_name}/electrum ]; then
@@ -84,8 +87,10 @@ find ${compact_name} -name '*.pyc' -exec  rm -f {} \;
 echo ""
 echo "Building Briefcase-Based iOS Project..."
 echo ""
-
-python3.6 setup.py ios
+if [ ! -e  ${HOME}/.briefcase/Python-3.8-iOS-support.b3.tar ]; then
+   curl -C -L "https://briefcase-support.org/python?platform=iOS&version=3.8" -o ${HOME}/.briefcase/Python-3.8-iOS-support.b3.tar
+fi
+python3.8 setup.py ios --support-pkg=${HOME}/.briefcase/Python-3.8-iOS-support.b3.tar
 if [ "$?" != 0 ]; then
 	echo "An error occurred running setup.py"
 	exit 4
@@ -128,12 +133,13 @@ if [ -f "${infoplist}" ]; then
 	fi
 	# Camera Usage key -- required!
 	plutil -insert "NSCameraUsageDescription" -string "The camera is needed to scan QR codes" -- ${infoplist}
-
+	# Bluetooth Usage key -- required!! added by sweepmonkli
+  plutil -insert "NSBluetoothAlwaysUsageDescription" -string "The Bluetooth is needed to communication with our hardware." -- ${infoplist}
 	# Stuff related to being able to open .txn and .txt files (open transaction from context menu in other apps)
 	plutil -insert "CFBundleDocumentTypes" -xml '<array><dict><key>CFBundleTypeIconFiles</key><array/><key>CFBundleTypeName</key><string>Transaction</string><key>LSItemContentTypes</key><array><string>public.plain-text</string></array><key>LSHandlerRank</key><string>Owner</string></dict></array>' -- ${infoplist}
 	plutil -insert "UTExportedTypeDeclarations" -xml '<array><dict><key>UTTypeConformsTo</key><array><string>public.plain-text</string></array><key>UTTypeDescription</key><string>Transaction</string><key>UTTypeIdentifier</key><string>com.c3-soft.OneKey.txn</string><key>UTTypeSize320IconFile</key><string>signed@2x</string><key>UTTypeSize64IconFile</key><string>signed</string><key>UTTypeTagSpecification</key><dict><key>public.filename-extension</key><array><string>txn</string><string>txt</string></array></dict></dict></array>' -- ${infoplist}
 	plutil -insert "UTImportedTypeDeclarations" -xml '<array><dict><key>UTTypeConformsTo</key><array><string>public.plain-text</string></array><key>UTTypeDescription</key><string>Transaction</string><key>UTTypeIdentifier</key><string>com.c3-soft.OneKey.txn</string><key>UTTypeSize320IconFile</key><string>signed@2x</string><key>UTTypeSize64IconFile</key><string>signed</string><key>UTTypeTagSpecification</key><dict><key>public.filename-extension</key><array><string>txn</string><string>txt</string></array></dict></dict></array>' -- ${infoplist}
-	plutil -insert 'CFBundleURLTypes' -xml '<array><dict><key>CFBundleTypeRole</key><string>Viewer</string><key>CFBundleURLName</key><string>bitcoincash</string><key>CFBundleURLSchemes</key><array><string>bitcoincash</string></array></dict></array>' -- ${infoplist}
+	plutil -insert 'CFBundleURLTypes' -xml '<array><dict><key>CFBundleTypeRole</key><string>Viewer</string><key>CFBundleURLName</key><string>onekey</string><key>CFBundleURLSchemes</key><array><string>onekey</string></array></dict></array>' -- ${infoplist}
 	plutil -replace 'UIRequiresFullScreen' -bool NO -- ${infoplist}
 	plutil -insert 'NSFaceIDUsageDescription' -string 'FaceID is used for wallet authentication' -- ${infoplist}
 	plutil -insert 'ITSAppUsesNonExemptEncryption' -bool NO -- ${infoplist}
@@ -153,7 +159,7 @@ if [ -d overrides/ ]; then
 	echo ""
 	echo "Applying overrides..."
 	echo ""
-	(cd overrides && cp -fpvR * ../iOS/ && cd ..)
+	(cd overrides && cp -fpR * ../iOS/ && cd ..)
 fi
 
 stupid_launch_image_grr="iOS/${compact_name}/Images.xcassets/LaunchImage.launchimage"
@@ -164,41 +170,11 @@ if [ -d "${stupid_launch_image_grr}" ]; then
 	rm -fvr "${stupid_launch_image_grr}"
 fi
 
-patches=patches/*.patch
-if [ -n "$patches" ]; then
-	echo ""
-	echo "Applying patches..."
-	echo ""
-	for p in $patches; do
-		[ -e $p ] && patch -p 1 < $p
-	done
-fi
-
-# Get latest rubicon with all the patches from Github
-echo ""
-echo "Updating rubicon-objc to latest from forked repository on github..."
-echo ""
-[ -e scratch ] && rm -fr scratch
-mkdir -v scratch || exit 1
-cd scratch || exit 1
-git clone https://www.github.com/cculianu/rubicon-objc
-gitexit="$?"
-cd rubicon-objc
-git checkout "fe054117056d33059a5db8addbc14e8535f08d3b^{commit}"
-gitexit2="$?"
-cd ..
-cd ..
-[ "$gitexit" != "0" -o "$gitexit2" != 0 ] && echo '*** Error grabbing the latest rubicon off of github' && exit 1
-rm -fr iOS/app_packages/rubicon/objc
-cp -fpvr scratch/rubicon-objc/rubicon/objc iOS/app_packages/rubicon/
-[ "$?" != "0" ] && echo '*** Error copying rubicon files' && exit 1
-rm -fr scratch
-
 xcode_file="${xcode_target}.xcodeproj/project.pbxproj"
 echo ""
 echo "Mogrifying Xcode .pbxproj file to use iOS 10.0 deployment target..."
 echo ""
-sed  -E -i original1 's/(.*)IPHONEOS_DEPLOYMENT_TARGET = [0-9.]+(.*)/\1IPHONEOS_DEPLOYMENT_TARGET = 10.0\2/g' "iOS/${xcode_file}" && \
+sed  -E -i original1 's/(.*)IPHONEOS_DEPLOYMENT_TARGET = [0-9.]+(.*)/\1IPHONEOS_DEPLOYMENT_TARGET = 11.0\2/g' "iOS/${xcode_file}" && \
   sed  -n -i original2 '/ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME/!p' "iOS/${xcode_file}"
 if [ "$?" != 0 ]; then
 	echo "Error modifying Xcode project file iOS/$xcode_file... aborting."
@@ -210,7 +186,7 @@ fi
 echo ""
 echo "Adding HEADER_SEARCH_PATHS to Xcode .pbxproj..."
 echo ""
-python3.6 -m pbxproj flag -t "${xcode_target}" iOS/"${xcode_file}" -- HEADER_SEARCH_PATHS '"$(SDK_DIR)"/usr/include/libxml2'
+python3.8 -m pbxproj flag -t "${xcode_target}" iOS/"${xcode_file}" -- HEADER_SEARCH_PATHS '"$(SDK_DIR)"/usr/include/libxml2'
 if [ "$?" != 0 ]; then
 	echo "Error adding libxml2 to HEADER_SEARCH_PATHS... aborting."
 	exit 1
@@ -221,13 +197,13 @@ if [ -n "$resources" ]; then
 	echo ""
 	echo "Adding Resurces/ and CustomCode/ to project..."
 	echo ""
-	cp -fRav Resources CustomCode podfile iOS/
-	(cd iOS && python3.6 -m pbxproj folder -t "${xcode_target}" -r -i "${xcode_file}" Resources)
+	cp -fRa Resources CustomCode podfile iOS/
+	(cd iOS && python3.8 -m pbxproj folder -t "${xcode_target}" -r -i "${xcode_file}" Resources)
 	if [ "$?" != 0 ]; then
 		echo "Error adding Resources to iOS/$xcode_file... aborting."
 		exit 1
 	fi
-	(cd iOS && python3.6 -m pbxproj folder -t "${xcode_target}" -r -i "${xcode_file}" CustomCode)
+	(cd iOS && python3.8 -m pbxproj folder -t "${xcode_target}" -r -i "${xcode_file}" CustomCode)
 	if [ "$?" != 0 ]; then
 		echo "Error adding CustomCode to iOS/$xcode_file... aborting."
 		exit 1
@@ -249,83 +225,7 @@ echo "Modifying main.m to include PYTHONIOENCODING=UTF-8..."
 echo ""
 
 main_m="iOS/${compact_name}/main.m"
-if cat $main_m | sed -e '1 s/putenv/putenv("PYTHONIOENCODING=UTF-8"); putenv/; t' -e '1,// s//putenv("PYTHONIOENCODING=UTF-8"); putenv/' | sed -e 's/PYTHONOPTIMIZE=1/PYTHONOPTIMIZE=/;' > ${main_m}.new; then
-	mv -fv ${main_m}.new $main_m
-    echo '//
-    // main.m
-    //
-    #import <Foundation/Foundation.h>
-    #import <UIKit/UIKit.h>
-    #include <Python.h>
-    #include <dlfcn.h>
-    #import <AppDelegate.h>
-
-extern PyMODINIT_FUNC PyInit__cffi_backend(void);
-
-    int main(int argc, char *argv[]) {
-       NSString * appDelegateClassName;
-       int ret = 0;
-       NSString *tmp_path;
-       NSString *python_home;
-       NSString *python_path;
-       wchar_t *wpython_home;
-       PyThreadState * tstate;
-       @autoreleasepool {
-        NSString * resourcePath = [[NSBundle mainBundle] resourcePath];
-        // Special environment to prefer .pyo; also, don’t write bytecode
-        // because the process will not have write permissions on the device.
-        putenv("PYTHONIOENCODING=UTF-8"); putenv("PYTHONOPTIMIZE=");
-        putenv("PYTHONDONTWRITEBYTECODE=1");
-        putenv("PYTHONUNBUFFERED=1");
-        // Set the home for the Python interpreter
-        python_home = [NSString stringWithFormat:@"%@/Library/Python", resourcePath, nil];
-        NSLog(@"PythonHome is: %@", python_home);
-        wpython_home = Py_DecodeLocale([python_home UTF8String], NULL);
-        Py_SetPythonHome(wpython_home);
-        // Set the PYTHONPATH
-        python_path = [NSString stringWithFormat:@"PYTHONPATH=%@/Library/Application Support/com.c3-soft.OneKey/app:%@/Library/Application Support/com.c3-soft.OneKey/app_packages:%@/Library/Application Support/com.c3-soft.OneKey/app/OneKey", resourcePath, resourcePath, resourcePath, nil];
-        NSLog(@"PYTHONPATH is: %@", python_path);
-        putenv((char *)[python_path UTF8String]);
-        // iOS provides a specific directory for temp files.
-        tmp_path = [NSString stringWithFormat:@"TMP=%@/tmp", resourcePath, nil];
-        putenv((char *)[tmp_path UTF8String]);
-        NSLog(@"Initializing Python runtime...");
-        PyImport_AppendInittab("_cffi_backend", &PyInit__cffi_backend);
-
-        Py_Initialize();
-        // If other modules are using threads, we need to initialize them.
-        PyEval_InitThreads();
-        @try {
-          tstate = PyEval_SaveThread();
-          appDelegateClassName = NSStringFromClass([AppDelegate class]);
-          ret = UIApplicationMain(argc, argv, nil, appDelegateClassName);
-          // In a normal iOS application, the following line is what
-          // actually runs the application. It requires that the
-          // Objective-C runtime environment has a class named
-          // "PythonAppDelegate". This project doesn’t define
-          // one, because Objective-C bridging isn’t something
-          // Python does out of the box. You’ll need to use
-          // a library like Rubicon-ObjC [1], Pyobjus [2] or
-          // PyObjC [3] if you want to run an *actual* iOS app.
-          // [1] http://pybee.org/rubicon
-          // [2] http://pyobjus.readthedocs.org/
-          // [3] https://pythonhosted.org/pyobjc/
-        }
-        @catch (NSException *exception) {
-         NSLog(@"Python runtime error: %@", [exception reason]);
-        }
-        @finally {
-         PyEval_RestoreThread(tstate);
-         Py_Finalize();
-        }
-        PyMem_RawFree(wpython_home);
-        NSLog(@"Leaving...");
-       }
-       exit(ret);
-       return ret;
-    }
-' > ${main_m}
-
+cat Support/main.m > ${main_m}
 pch="iOS/${compact_name}/${compact_name}-Prefix.pch"
 echo '
 //  Prefix header
@@ -347,26 +247,31 @@ echo '
 
 #endif
 ' > ${pch}
-    
-else
-	echo "** WARNING: Failed to modify main.m to include PYTHONIOENCODING=UTF-8"
-fi
 
 echo ""
 echo "Copying google protobuf paymentrequests.proto to app lib dir..."
 echo ""
-cp -fva ${compact_name}/electrum/*.proto iOS/app/${compact_name}/electrum/
+cp -fa ${compact_name}/electrum/*.proto iOS/app/${compact_name}/electrum/
 if [ "$?" != "0" ]; then
 	echo "** WARNING: Failed to copy google protobuf .proto file to app lib dir!"
 fi
-cp -fva Support/*.a iOS/Support/
-cp -fRav 'Support/Cryptodome' 'Support/pycryptodomex-3.9.4.dist-info' 'iOS/app_packages/'
-cp -fRav ../electrum/lnwire  iOS/app/${compact_name}/electrum
-# Clean up no-longer-needed electrum/ dir that is outside of Xcode project
+if [ ! -d iOS/Support ]; then
+     mkdir iOS/Support
+fi
+
+mv iOS/BZip2 iOS/OpenSSL iOS/Python iOS/XZ iOS/VERSIONS iOS/Support/
+cp -fa  ${compact_name}/CFFI  iOS/app/${compact_name}/CFFI
+cp -fa  ${compact_name}/bitarray  iOS/app/${compact_name}/bitarray
+cp -fa  ${compact_name}/LRU  iOS/app/${compact_name}/LRU
+cp -fa  ${compact_name}/cytoolz  iOS/app/${compact_name}/cytoolz
+cp -fRa Support/site-package/ iOS/app_packages/
+cp -fRa ../electrum/lnwire  iOS/app/${compact_name}/electrum
+
 rm -fr ${compact_name}/electrum/*
 rm -fr ${compact_name}/trezorlib/*
 rm -fr ${compact_name}/api/*
 find iOS/app/${compact_name} -name '*.pyc' -exec  rm -f {} \;
+
 cd iOS && pod install
 if [ "$?" != "0" ]; then
 			echo "Encountered an error when execute pod install!"

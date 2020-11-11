@@ -12,6 +12,11 @@
 //颜色
 // rgb颜色转换（16进制->10进制）
 #define HexColor(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
+
+//颜色
+// rgb颜色转换（16进制->10进制）
+#define HexColorA(rgbValue,aValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:aValue]
+
 /**
  *  2.返回一个RGBA格式的UIColor对象
  */

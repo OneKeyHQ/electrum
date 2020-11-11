@@ -16,7 +16,7 @@ typedef NS_ENUM(NSInteger, WebViewLoadType) {
     WebViewLoadTypeHTML,
 };
 
-@interface WebViewVC () <WKNavigationDelegate, WKUIDelegate>
+@interface WebViewVC () <WKNavigationDelegate, WKUIDelegate, UINavigationControllerDelegate>
 {
     BOOL _autoTitle;
     NSString *_currentUrl;
@@ -116,7 +116,10 @@ typedef NS_ENUM(NSInteger, WebViewLoadType) {
     // 设置代理
     _wkWebView.navigationDelegate = self;
     _wkWebView.DSUIDelegate = self;
-
+    //self.navigationController.delegate = self;
+    
+    [self setNavigationBarBackgroundColorWithClearColor];
+    
     if (_webTag != WebViewTagNativeDiscover) {
         //添加进度条
         [self.view addSubview:self.progressView];
@@ -430,5 +433,10 @@ typedef NS_ENUM(NSInteger, WebViewLoadType) {
     [_wkWebView.backForwardList performSelector:NSSelectorFromString(@"_removeAllItems")];
 #pragma clang diagnostic pop
 }
-
+#pragma mark - UINavigationControllerDelegate
+// 将要显示控制器
+- (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
+    BOOL isShowFirstVc = [viewController isKindOfClass:[self class]];
+    [self.navigationController setNavigationBarHidden:isShowFirstVc animated:YES];
+}
 @end

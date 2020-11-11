@@ -8,6 +8,7 @@
 
 #import "OKPwdViewController.h"
 #import "CLPasswordInputView.h"
+#import "OKBiologicalViewController.h"
 
 typedef enum {
     PageTypeFirst = 0,
@@ -65,6 +66,7 @@ typedef enum {
 
 @property (nonatomic,assign)PwdType type;
 
+
 @end
 
 @implementation OKPwdViewController
@@ -84,12 +86,31 @@ typedef enum {
 
 - (void)stupUI
 {
-    self.title = MyLocalizedString(@"Create a new wallet", nil);
-    self.titleLabelFirst.text  = MyLocalizedString(@"Set the password", nil);
-    self.titleDescLabelFirst.text = MyLocalizedString(@"Only you can unlock your wallet", nil);
-    self.titleLabelSecond.text  = MyLocalizedString(@"Enter your password again", nil);
-    self.titleDescLabelSecond.text = MyLocalizedString(@"Don't reveal your password to anyone else", nil);
-    
+    switch (_pwdUseType) {
+        case OKPwdUseTypeInitPassword:
+        {
+            self.navTitleFirstLabel.text = MyLocalizedString(@"Create a new wallet", nil);
+            self.navTitleSecondLabel.text = MyLocalizedString(@"Create a new wallet", nil);
+            self.titleLabelFirst.text  = MyLocalizedString(@"Set the password", nil);
+            self.titleDescLabelFirst.text = MyLocalizedString(@"Only you can unlock your wallet", nil);
+            self.titleLabelSecond.text  = MyLocalizedString(@"Enter your password again", nil);
+            self.titleDescLabelSecond.text = MyLocalizedString(@"Don't reveal your password to anyone else", nil);
+        }
+            break;
+        case OKPwdUseTypeUpdatePassword:
+        {
+            self.navTitleFirstLabel.text = MyLocalizedString(@"Change the password", nil);;
+            self.navTitleSecondLabel.text = MyLocalizedString(@"Change the password", nil);;
+            self.titleLabelFirst.text  = MyLocalizedString(@"Enter your original password", nil);
+            self.titleDescLabelFirst.text = MyLocalizedString(@"After changing the password, your original biometrics (face, fingerprint) will become invalid and need to be reset", nil);
+            self.titleLabelSecond.text  = MyLocalizedString(@"Set your new password", nil);
+            self.titleDescLabelSecond.text = MyLocalizedString(@"After changing the password, your original biometrics (face, fingerprint) will become invalid and need to be reset", nil);
+        }
+            break;
+            
+        default:
+            break;
+    }
     self.switchPwdViewBtn.layer.cornerRadius = 14;
     self.switchPwdViewBtn.layer.masksToBounds = YES;
     
@@ -213,13 +234,22 @@ typedef enum {
         [self resetViewWithAnimated:YES];
         [self resetPwdViewTips];
     }else if (passwordInputView ==self.pwdInputViewSecond){
-        if ([self.pwdInputViewFirst.text isEqualToString:self.pwdInputViewSecond.text] && self.pwdInputViewFirst.text.length > 0) {//两次输入相同 加密种子进入下一步
-            //创建钱包加密保存
-            [self passwordIsCorrect];
-        }else{
-            [self pwdWrongTip];
-        }
+        if (self.pwdUseType == OKPwdUseTypeInitPassword) {
+            if ([self.pwdInputViewFirst.text isEqualToString:self.pwdInputViewSecond.text] && self.pwdInputViewFirst.text.length > 0) {
+                [self passwordIsCorrect:self.pwdInputViewFirst.text];
+            }else{
+                [self pwdWrongTip];
+            }
+        }else if (self.pwdUseType == OKPwdUseTypeUpdatePassword){
+            NSString *old_password  = self.pwdInputViewFirst.text;
+            NSString *new_password = self.pwdInputViewSecond.text;
+            if ([old_password isEqualToString:new_password]) {
+                [kTools tipMessage:@"新密码不能与旧密码相同"];
+                return;
+            }
+            [kPyCommandsManager callInterface:kInterfaceUpdate_password parameter:@{@"old_password":old_password,@"new_password":new_password}];
         
+        }
     }
 }
 - (void)passwordInputViewDidDeleteBackward:(CLPasswordInputView *)passwordInputView {
@@ -257,23 +287,53 @@ typedef enum {
     [self resetPwdViewTips];
 }
 - (IBAction)nextBtnSecondClick:(UIButton *)sender {
-    if ([self.longPwdFirstTextField.text isEqualToString:self.longPwdSecondTextField.text]&&self.longPwdFirstTextField.text.length > 0) { //密码一致
-        [self passwordIsCorrect];
-    }else{
-        [self pwdWrongTip];
+    switch (self.pwdUseType) {
+        case OKPwdUseTypeInitPassword:
+        {
+            if ([self.longPwdFirstTextField.text isEqualToString:self.longPwdSecondTextField.text]&&self.longPwdFirstTextField.text.length > 0) { //密码一致
+                [self passwordIsCorrect:self.longPwdSecondTextField.text];
+            }else{
+                [self pwdWrongTip];
+            }
+        }
+            break;
+        case OKPwdUseTypeUpdatePassword:
+        {
+            NSString *old_password  = self.longPwdFirstTextField.text;
+            NSString *new_password = self.longPwdSecondTextField.text;
+            if ([old_password isEqualToString:new_password]) {
+                [kTools tipMessage:@"新密码不能与旧密码相同"];
+                return;
+            }
+            [kPyCommandsManager callInterface:kInterfaceUpdate_password parameter:@{@"old_password":old_password,@"new_password":new_password}];
+        }
+        default:
+            break;
     }
 }
 
 #pragma mark -  两次输入密码相同
-- (void)passwordIsCorrect
+- (void)passwordIsCorrect:(NSString *)pwd
 {
-    NSLog(@"两次输入密码相同");
+    NSString *seed = @"";
+    if (self.words.length > 0) {
+        seed = self.words;
+    }
+    NSString *createHD =  [kPyCommandsManager callInterface:kInterfaceCreate_hd_wallet parameter:@{@"password":pwd,@"seed":seed}];
+    NSArray *words = [createHD componentsSeparatedByString:@" "];
+    if (words.count > 0) {
+        [OKStorageManager saveToUserDefaults:@"BTC-1" key:kCurrentWalletName];
+        //第一次创建成功刷新首页的UI
+        [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletFirstCreateComplete object:nil];
+        OKBiologicalViewController *biologicalVc = [OKBiologicalViewController biologicalViewController];
+        [self.navigationController pushViewController:biologicalVc animated:YES];
+    }
 }
 
 
 #pragma mark - 输入错误的提示信息
 - (void)pwdWrongTip
 {
-    NSLog(@"两次密码不同，请重新输入");
+    [kTools tipMessage:MyLocalizedString(@"The two passwords are different. Please re-enter them", nil)];
 }
 @end

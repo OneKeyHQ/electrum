@@ -10,7 +10,7 @@
 
 @interface UIBarButtonItem (CustomBarButtonItem) 
 // 创建导航栏返回按钮
-+ (UIBarButtonItem *)backBarButtonItemWithTitle:(NSString *)title target:(UIViewController *)target selector:(SEL)action;
++ (UIBarButtonItem *)backBarButtonItemWithTarget:(UIViewController *)target selector:(SEL)action;
 
 // 自定义的右上角按钮
 + (UIBarButtonItem *)barButtonItemWithTitle:(NSString *)title bounds:(CGSize)bounds size:(CGFloat)size titleColor:(UIColor *)titleColor backgroundColor:(UIColor *)bgColor isSetLayer:(BOOL)isSetLayer target:(id)object selector:(SEL)action;

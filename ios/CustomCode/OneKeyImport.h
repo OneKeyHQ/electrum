@@ -9,9 +9,9 @@
 #ifndef OneKeyImport_h
 #define OneKeyImport_h
 
+#import "Notification.h"
 #import "OKComMarco.h"
 #import "OKColors.h"
-#import "OKPythonExecute.h"
 #import "NSString+OKAdd.h"
 #import "UIView+Helper.h"
 #import "OKSelectCellModel.h"
@@ -28,5 +28,23 @@
 #import "UIView+YCExtension.h"
 #import "Masonry.h"
 #import "IQKeyboardManager.h"
+#import "OKLabel.h"
+#import "OKButton.h"
+#import "OKTextField.h"
+#import "QRCodeGenerator.h"
+#import "OKTools.h"
+#import "UILabel+OneKey.h"
+#import "OKPyCommandsManager.h"
+#import "NSDictionary+OneKey.h"
+#import "MJExtension.h"
+#import "UIView+Toast.h"
+#import "OKTools.h"
+#import "BaseTableViewController.h"
+#import "OKWalletManager.h"
+#import "OKValidationPwdController.h"
+#import "NSTimer+TimerBlock.h"
+#import "OKWalletScanVC.h"
+#import "OKSystemShareView.h"
+#import "OneKeyDefine.h"
 
 #endif /* OneKeyImport_h */

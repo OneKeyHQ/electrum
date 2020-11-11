@@ -13,4 +13,3 @@ except Exception as e:
 
 
 OKNSObject = ObjCClass('OKNSObject')
-OKNSObject = ObjCClass('OKNSObject')

@@ -7,7 +7,6 @@
 
 #import "MainViewController.h"
 #import "AppDelegate.h"
-#import "OKPythonInterpreter.h"
 #import <CoreBluetooth/CoreBluetooth.h>
 #import "OKFirstUseViewController.h"
 
@@ -19,6 +18,9 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    
+    [OKPyCommandsManager setNetwork];
+    
     self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     self.window.rootViewController = self.mainVC;
     [self.window makeKeyAndVisible];

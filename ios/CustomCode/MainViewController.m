@@ -27,7 +27,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-   
     [self addTabBarController];
     [self tabBarAppearance];
     [self tabBarResetLineColor];
@@ -39,7 +38,7 @@
 {
     NSMutableArray *viewControllers = [[NSMutableArray alloc] init];
     [viewControllers addObject:self.walletVC];
-    [viewControllers addObject:self.discoverVC];
+//    [viewControllers addObject:self.discoverVC];
     [viewControllers addObject:self.mineVC];
     [self.tab setViewControllers:viewControllers animated:NO];
     [self.view addSubview:self.tab.view];
@@ -87,6 +86,7 @@
     }
     return _walletVC;
 }
+
 - (BaseNavigationController *)discoverVC {
     if (_discoverVC == nil) {
         _discoverVC = [[BaseNavigationController alloc] initWithRootViewController:[OKDiscoverViewController discoverViewController]];
@@ -96,6 +96,7 @@
     }
     return _discoverVC;
 }
+
 - (BaseNavigationController *)mineVC {
     if (_mineVC == nil) {
         _mineVC = [[BaseNavigationController alloc] initWithRootViewController:[OKMineViewController mineViewController]];

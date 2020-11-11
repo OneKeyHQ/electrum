@@ -7,10 +7,17 @@
 //
 
 #import <UIKit/UIKit.h>
+typedef enum {
+    OKPwdUseTypeInitPassword,
+    OKPwdUseTypeUpdatePassword
+}OKPwdUseType;
 
 NS_ASSUME_NONNULL_BEGIN
 
+
 @interface OKPwdViewController : BaseViewController
+@property (nonatomic,assign)OKPwdUseType pwdUseType;
+@property (nonatomic,copy)NSString *words;
 + (instancetype)pwdViewController;
 @end
 

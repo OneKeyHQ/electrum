@@ -4,18 +4,17 @@
 #
 # MIT License
 #
-from ctypes import *
-from ctypes import util
+
+from ctypes import util as c_utils, c_int, cdll, c_char_p, c_void_p, POINTER, Structure, c_ulong, c_double
 from enum import Enum
 
 from rubicon.objc import *
-import typing
 
 ######################################################################
 
 # UIKit
 
-uikit = cdll.LoadLibrary(util.find_library('UIKit'))
+uikit = cdll.LoadLibrary(c_utils.find_library('UIKit'))
 
 uikit.UIApplicationMain.restype = c_int
 uikit.UIApplicationMain.argtypes = [c_int, POINTER(c_char_p), c_void_p, c_void_p]

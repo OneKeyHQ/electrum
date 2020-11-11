@@ -7,6 +7,8 @@
 
 #import "OKWordImportVC.h"
 #import "OKWordImportView.h"
+#import "OKBiologicalViewController.h"
+#import "OKPwdViewController.h"
 
 @interface OKWordImportVC ()
 
@@ -24,9 +26,9 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self checkButtonEnabled];
+    [self setNavigationBarBackgroundColorWithClearColor];
     [_wordInputView configureData:_wordsArr];
-
+    [self checkButtonEnabled];
     [self.nextBtn setTitle:MyLocalizedString(@"Next", nil) forState:UIControlStateNormal];
 }
 
@@ -53,34 +55,30 @@
 }
 
 - (void)checkButtonEnabled {
+    OKWeakSelf(self)
     self.wordInputView.completed = ^(BOOL isCompleted) {
         if (isCompleted) {
-            [_nextBtn enabled:YES alpha:1];
+            [weakself.nextBtn enabled:YES alpha:1];
         } else {
            NSArray *arrays = [[UIPasteboard generalPasteboard].string componentsSeparatedByString:@" "];
             if (arrays.count == 12 || arrays.count == 15 || arrays.count == 18 || arrays.count == 21 || arrays.count == 24) {
-//                JZWeakSelf(self)
-//                [kTools showMessage:MyLocalizedString(@"Incorrect phrase", nil) HUDType:ATProgressHUDTypeFailure onView:weakself.view];
+                [kTools tipMessage:MyLocalizedString(@"Incorrect phrase", nil)];
                 [UIPasteboard removePasteboardWithName:UIPasteboardNameGeneral];
             }
-            [_nextBtn enabled:NO alpha:0.5];
+            [weakself.nextBtn enabled:NO alpha:0.5];
         }
     };
 }
 
 - (IBAction)next:(id)sender {
-    NSString *mnemonicStr = [_wordInputView.wordsArr componentsJoinedByString:@" "];
-//    NSData *data = [ATCreateWalletService mnemonicProcess:&mnemonicStr wordType:nil];
-//
-//    if (data) {
-//        ATImportWalletVC *vc = [ATImportWalletVC initViewController];
-//        vc.isFromSpread = YES;
-//        vc.wordsArr = _wordInputView.wordsArr;
-//        vc.enterPath = self.enterPath;
-//        [self.navigationController pushViewController:vc animated:YES];
-//    }else{
-//        [kTools showMessage:MyLocalizedString(@"Incorrect phrase", nil) HUDType:ATProgressHUDTypeFailure onView:self.view];
-//    }
+    if (_wordInputView.wordsArr.count == 12 || _wordInputView.wordsArr.count == 24) {
+        NSString *mnemonicStr = [_wordInputView.wordsArr componentsJoinedByString:@" "];
+        OKPwdViewController *pwdVc = [OKPwdViewController pwdViewController];
+        pwdVc.pwdUseType = OKPwdUseTypeInitPassword;
+        pwdVc.words = mnemonicStr;
+        [self.navigationController pushViewController:pwdVc animated:YES];
+    }else{
+        [kTools tipMessage:MyLocalizedString(@"Incorrect phrase", nil)];
+    }
 }
-
 @end

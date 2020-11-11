@@ -6,18 +6,19 @@
 //
 
 #import "OKWordImportView.h"
-#import "OKTextField.h"
+#import "OKDeleteTextField.h"
 
-#define Margin 10
+#define Margin 18
 #define CountPerRow  3
 #define MaxCountPerColumn 4
 #define MinCountPerColumn 4
-#define HeightPerCell 35
-
-@interface OKWordImportView()<UITextFieldDelegate, OKTextFieldDeleteProtocol>
+#define HeightPerCell 44
+#define HeightIndexL 18
+@interface OKWordImportView()<UITextFieldDelegate, OKDeleteTextFieldDeleteProtocol>
 {
     NSInteger _selectedIndex;
-    NSMutableArray<OKTextField *> *_tfs;
+    NSMutableArray<OKDeleteTextField *> *_tfs;
+    NSMutableArray<UILabel *> *_idnexls;
 }
 @property (weak, nonatomic) IBOutlet UIStackView *stackView;
 
@@ -39,20 +40,28 @@
 
 - (void)configSubviews {
     _tfs = [NSMutableArray arrayWithCapacity:CountPerRow * MinCountPerColumn];
-
+    _idnexls = [NSMutableArray arrayWithCapacity:CountPerRow *MinCountPerColumn];
     int column = 0;
     for (UIView *bgView in _stackView.subviews) {
         for (int i = 0; i < CountPerRow; ++i) {
-            OKTextField *textF = [[OKTextField alloc] init];
+            
+            UILabel *indexLabel = [[UILabel alloc]init];
+            indexLabel.text = [NSString stringWithFormat:@"%d",column * CountPerRow + i + 1];
+            indexLabel.textColor = HexColor(0x546370);
+            indexLabel.textAlignment = NSTextAlignmentCenter;
+            [bgView addSubview:indexLabel];
+            [_idnexls addObject:indexLabel];
+            OKDeleteTextField *textF = [[OKDeleteTextField alloc] init];
             textF.tag = i + column * CountPerRow;
-            textF.layer.cornerRadius = 5;
+            textF.layer.cornerRadius = HeightPerCell * 0.5;
             textF.backgroundColor = [UIColor whiteColor];
             textF.textColor = [UIColor blackColor];
             textF.textAlignment = NSTextAlignmentCenter;
             textF.autocorrectionType = UITextAutocorrectionTypeNo;
             textF.autocapitalizationType = UITextAutocapitalizationTypeNone;
             textF.font = [UIFont fontWithName:kFontPingFangMediumBold size:16];
-            textF.hidden = YES;
+            textF.hidden = NO;
+            textF.mark = YES;
             textF.delegate = self;
             textF.deleteDelegate = self;
             textF.inputAccessoryView = [UIView new];
@@ -68,13 +77,19 @@
 
     CGFloat width = (self.frame.size.width - Margin * (CountPerRow + 1)) / CountPerRow;
     int i = 0;
+    CGFloat Y = 26;
     for (UITextField *textF in _tfs) {
-
         CGFloat x = Margin + (Margin + width) * (i % CountPerRow);
-        textF.frame = CGRectMake(x, 0, width, HeightPerCell);
-
+        textF.frame = CGRectMake(x, Y, width, HeightPerCell);
         ++i;
     }
+    int j = 0;
+    for (UILabel *indexl in _idnexls) {
+        CGFloat x = Margin + (Margin + width) * (j % CountPerRow);
+        indexl.frame = CGRectMake(x, 0, width, HeightIndexL);
+        ++j;
+    }
+    
 }
 
 - (void)textFieldDidBeginEditing:(UITextField *)textField {
@@ -101,7 +116,7 @@
     }
 
     if ([string isEqualToString:@" "]) { // 后移1个
-        if (_tfs.lastObject.hidden == NO) {
+        if (_tfs.lastObject.mark == NO) {
             [self.superview endEditing:YES];
             return NO;
         }
@@ -111,9 +126,9 @@
         NSInteger targetIndex = _selectedIndex + 1;
 
         for (NSInteger i = targetIndex; i < _tfs.count; ++i) {
-            UITextField *textF = _tfs[i];
-            if (textF.hidden) { // 寻找距离最近的一个
-                textF.hidden = NO;
+            OKDeleteTextField *textF = _tfs[i];
+            if (textF.mark) { // 寻找距离最近的一个
+                textF.mark = NO;
                 // 反向赋值
                 for (NSInteger j = i; j > targetIndex; --j) {
                     _tfs[j].text = _tfs[j-1].text;
@@ -132,13 +147,13 @@
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     for (NSInteger i = _tfs.count - 1; i >= 0; --i) {
-        if (_tfs[i].hidden == NO) {
+        if (_tfs[i].mark == NO) {
             [_tfs[i] becomeFirstResponder];
             break;
         }
         if (i == 0) {
-            UITextField *textF = _tfs[0];
-            textF.hidden = NO;
+            OKDeleteTextField *textF = _tfs[0];
+            textF.mark = NO;
             [textF becomeFirstResponder];
         }
     }
@@ -147,15 +162,15 @@
 - (void)deleteBackward {
 
     if (!_tfs[_selectedIndex].text.length &&
-        !(_selectedIndex == 0 && _tfs[_selectedIndex+1].hidden)) { // 往前删除1个
+        !(_selectedIndex == 0 && _tfs[_selectedIndex+1].mark)) { // 往前删除1个
 
         for (NSInteger i = _selectedIndex; i < _tfs.count; ++i) {
 
             if (_selectedIndex == _tfs.count - 1) {
-                _tfs[i].hidden = YES;
+                _tfs[i].mark = YES;
 
-            }else if (_tfs[i+1].hidden) { // 后一个赋值给前一个
-                _tfs[i].hidden = YES;
+            }else if (_tfs[i+1].mark) { // 后一个赋值给前一个
+                _tfs[i].mark = YES;
                 _tfs[i].text = nil;
                 break;
 
@@ -163,7 +178,7 @@
                 _tfs[i].text = _tfs[i+1].text;
                 [self changeColor:_tfs[i]];
                 if (i == _tfs.count - 2) { // 最后一个
-                    _tfs[i+1].hidden = YES;
+                    _tfs[i+1].mark = YES;
                     _tfs[i+1].text = nil;
                 }
             }
@@ -202,8 +217,8 @@
 
 - (void)configureData:(NSArray *)data {
     if (!data || !data.count) {
-        UITextField *textF = _tfs[0];
-        textF.hidden = NO;
+        OKDeleteTextField *textF = _tfs[0];
+        textF.mark = NO;
         [textF becomeFirstResponder];
         return;
     }
@@ -211,7 +226,7 @@
     // 找出最近的hide为起始点
     NSInteger start = 0;
     for (NSInteger j = 0; j < _tfs.count; ++j) {
-        if (!_tfs[j].text.length || _tfs[j].hidden == YES) {
+        if (!_tfs[j].text.length || _tfs[j].mark == YES) {
             start = j;
             break;
         }
@@ -220,9 +235,9 @@
     // 顺序赋值
     for (NSInteger i = 0; i < data.count; ++i) {
         if (start+i < _tfs.count) {
-            UITextField *textF = _tfs[start+i];
+            OKDeleteTextField *textF = _tfs[start+i];
             textF.text = data[i];
-            textF.hidden = NO;
+            textF.mark = NO;
             [self changeColor:textF];
             [self autoAdjustHeight:2];
         }
@@ -233,27 +248,26 @@
 }
 
 - (void)checkCompleted {
-//    if (_completed) {
-//        BOOL completed = NO;
-//        if (!_tfs[11].hidden && _tfs[11].text.length) {
-//            completed = [ATCreateWalletService checkEveryWordInPlist:self.wordsArr];
-//        }else{
-//            completed = NO;
-//        }
-//        _completed(completed);
-//    }
+    if (_completed) {
+        BOOL completed = NO;
+        if (!_tfs[11].mark && _tfs[11].text.length) {
+            completed = [kWalletManager checkEveryWordInPlist:self.wordsArr];
+        }else{
+            completed = NO;
+        }
+        _completed(completed);
+    }
     
     if (_completed) {
         _completed(YES);
     }
-
 }
 
 - (void)autoAdjustHeight:(NSUInteger)tag { // tag: 0 删除；1 新增；2 批量导入
     NSInteger lastIndex = _selectedIndex;
 
-    for (OKTextField *textF in _tfs) {
-        if (textF.hidden) {
+    for (OKDeleteTextField *textF in _tfs) {
+        if (textF.mark) {
             lastIndex = textF.tag;
             if (tag == 2) {
                 --lastIndex;
@@ -267,12 +281,14 @@
     if (tag == 0) {
         if (lastIndex % CountPerRow == 0 &&
             column >= MinCountPerColumn) {
-            _stackView.subviews[column].hidden = column >= MinCountPerColumn;
+            OKDeleteTextField *tv = _stackView.subviews[column];
+            tv.mark = column >= MinCountPerColumn;
         }
     }else{
         if (lastIndex % CountPerRow == 0 &&
             column >= MinCountPerColumn) {
-            _stackView.subviews[column].hidden = !(column >= MinCountPerColumn);
+            OKDeleteTextField *tv = _stackView.subviews[column];
+            tv.mark = !(column >= MinCountPerColumn);
         }
     }
 }

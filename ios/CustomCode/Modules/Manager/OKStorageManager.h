@@ -6,6 +6,10 @@
 //  Copyright © 2020 Calin Culianu. All rights reserved.
 //
 
+#define kFirstUsedShowed        @"kFirstUsedShowed"
+
+
+
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN

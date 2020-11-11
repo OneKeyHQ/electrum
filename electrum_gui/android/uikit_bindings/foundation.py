@@ -4,8 +4,8 @@
 #
 # MIT License
 #
-from ctypes import *
-from ctypes import util
+from ctypes import cdll, c_bool
+from ctypes import util as c_utils
 
 
 from rubicon.objc import *
@@ -14,7 +14,7 @@ from rubicon.objc import *
 
 # FOUNDATION
 
-foundation = cdll.LoadLibrary(util.find_library('Foundation'))
+foundation = cdll.LoadLibrary(c_utils.find_library('Foundation'))
 
 foundation.NSMouseInRect.restype = c_bool
 foundation.NSMouseInRect.argtypes = [NSPoint, NSRect, c_bool]
@@ -52,3 +52,7 @@ NSBundle = ObjCClass('NSBundle')
 
 NSRunLoop = ObjCClass('NSRunLoop')
 NSDefaultRunLoopMode='kCFRunLoopDefaultMode'
+
+__all__ = [
+
+]

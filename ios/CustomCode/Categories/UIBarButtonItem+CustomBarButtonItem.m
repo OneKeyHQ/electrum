@@ -11,9 +11,9 @@
 @implementation UIBarButtonItem (CustomBarButtonItem)
 
 // 创建导航栏返回按钮
-+ (UIBarButtonItem *)backBarButtonItemWithTitle:(NSString *)title target:(UIViewController *)target selector:(SEL)action {
++ (UIBarButtonItem *)backBarButtonItemWithTarget:(UIViewController *)target selector:(SEL)action {
     UIButton *backButton = [[UIButton alloc] initWithFrame: CGRectMake(0, 0, 30, 30)];
-    UIImage *image = [UIImage imageNamed:@"Common_Back"];
+    UIImage *image = [UIImage imageNamed:@"left_arrow"];
     [backButton setImage:image forState:UIControlStateNormal];
     [backButton setImage:image forState:UIControlStateHighlighted];
     [backButton setContentHorizontalAlignment:UIControlContentHorizontalAlignmentLeft];
@@ -55,7 +55,7 @@
 }
 
 + (UIBarButtonItem *)barButtonItemScanBtnWithTarget:(id)target selector:(SEL)action {
-    return [self barButtonItemWithImage:[UIImage imageNamed:@"Wallet_Scan"] frame:CGRectMake(0, 0, 20, 20) target:target selector:action];
+    return [self barButtonItemWithImage:[UIImage imageNamed:@"scan"] frame:CGRectMake(0, 0, 28, 28) target:target selector:action];
 }
 
 + (UIBarButtonItem *)barButtonItemWithImage:(UIImage *)image frame:(CGRect)frame target:(id)target selector:(SEL)action {
