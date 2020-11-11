@@ -260,10 +260,9 @@ if [ ! -d iOS/Support ]; then
 fi
 
 mv iOS/BZip2 iOS/OpenSSL iOS/Python iOS/XZ iOS/VERSIONS iOS/Support/
-cp -fa  ${compact_name}/CFFI  iOS/app/${compact_name}/CFFI
-cp -fa  ${compact_name}/bitarray  iOS/app/${compact_name}/bitarray
-cp -fa  ${compact_name}/LRU  iOS/app/${compact_name}/LRU
-cp -fa  ${compact_name}/cytoolz  iOS/app/${compact_name}/cytoolz
+cp -fa  Support/CFFI  iOS/app/${compact_name}/CFFI
+cp -fa  Support/bitarray  iOS/app/${compact_name}/bitarray
+cp -fa  Support/LRU  iOS/app/${compact_name}/LRU
 cp -fRa Support/site-package/ iOS/app_packages/
 cp -fRa ../electrum/lnwire  iOS/app/${compact_name}/electrum
 

@@ -28,7 +28,7 @@ Temporary Items
 .apdisk
 
 # C extensions
-#*.so
+*.so
 
 # Distribution / packaging
 .Python

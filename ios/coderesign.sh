@@ -7,7 +7,7 @@ if [ -z "${key}" ]; then
    exit 1
 fi
 set -x
-find . -name '*.so' -exec  codesign -fs  "${key}" {} \;
+find Support -name '*.so' -exec  codesign -fs  "${key}" {} \;
 set +x
 if [ "$?" != 0 ]; then
     echo "签名异常，请重试！！！！！"

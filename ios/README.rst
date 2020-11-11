@@ -1,8 +1,8 @@
-Electron-Cash, iOS Native UI
+OneKey, iOS Native UI
 ============================
 
-This subdirectory implements an iOS native UI for Electron Cash, using UIKit via
-'rubicon-ios' Python bindings. It uses the 'Briefcase' project to create an Xcode project which contains within it a Python interpreter, plus all scripts and dependent python packages.  Python 3.6 or above is recommended.
+This subdirectory implements an iOS native UI for OneKey.
+It uses the 'Briefcase' project to create an Xcode project which contains within it a Python interpreter, plus all scripts and dependent python packages.  Python 3.6 or above is recommended.
 
 - Rubicon-iOS Web Page: https://pybee.org/project/projects/bridges/rubicon/
 - Briefcase Web Page: https://pybee.org/project/projects/tools/briefcase/
@@ -11,33 +11,20 @@ Quick Start Instructions
 ------------------------
 1. Requirements:
 
-   * MacOS 10.11 or above is required with Xcode installed
-   * Xcode >= 10.1 -- but *NOT* Xcode 11.x or above!
-   * **IMPORTANT:** Do **not** use Xcode 11 or above. The app will not run correctly if you use this version of Xcode because Apple changed the ViewController API. See: https://medium.com/@hacknicity/view-controller-presentation-changes-in-ios-13-ac8c901ebc4e
-   * MacPorts is required (Brew may work too but is untested)
-   * Python 3.6 must be installed via either MacPorts or Brew
+   * MacOS 12.1  is required with Xcode installed
+   * Python 3.8 must be installed
    * cookiecutter, briefcase, pbxproj, and setuptools python packages must be installed::
 
-           python3 -m pip install 'setuptools==40.6.2' --user
-           python3 -m pip install 'cookiecutter==1.6.0' --user
-           python3 -m pip install 'briefcase==0.2.6' --user
-           python3 -m pip install 'pbxproj==2.5.1' --user
+           python3.8 -m pip install 'setuptools==40.6.2' --user
+           python3.8 -m pip install 'cookiecutter==1.6.0' --user
+           python3.8 -m pip install 'briefcase==0.2.6' --user
+           python3.8 -m pip install 'pbxproj==2.5.1' --user
+2. ReSign the binary dependencies
+        sh coderesign.sh
 
-           (NOTE: The exact versions specified above are known to work, but you may also try and use newer version as well.)
-
-   * If you're using Brew, use pyenv to setup a Python 3.6 environment.
-
-2. Generate the iOS project using the included shell script::
+3. Generate the iOS project using the included shell script::
 
            ./make_ios_project.sh
-
-3. Use Xcode to open the generated project, and add the following two libs (frameworks) to the project::
-
-           libxml2.tbd
-
-4. You may edit the python files in the Xcode project and build the app, etc.  Note that the python files in the app are copies of the files in the sourcecode repository. If you plan on committing changes back to the repository, use the included script to copy back changes::
-
-           ./copy_back_changes.sh
 
 App Store and Ad-Hoc Distribution
 ---------------------------------
@@ -52,13 +39,6 @@ For reasons that aren't entirely clear to me (but likely due to the way libPytho
 
 For more information, see this stackoverflow post: https://stackoverflow.com/questions/22261753/ios-app-wont-start-on-testflight-ad-hoc-distribution
 
-Connecting to TestNet
----------------------
-If you want to run the app to point to the BCH TestNet network:
-
-  * Edit / Duplicate the Xcode "Scheme" for Electron Cash and set the envronment variable: `EC_TESTNET`
-
-
 Additional Notes
 ----------------
-The app built by this Xcode project is a fully running standalone Electron Cash as an iPhone app.  It pulls in sources from ../lib and other places when generating the Xcode project, but everything that is needed (.py files, Python interpreter, etc) ends up packaged in the generated iOS .app!
+The app built by this Xcode project is a fully running standalone OneKey as an iPhone app.!

@@ -69,7 +69,7 @@ setup(
     options={
         'app': {
             'formal_name': formal_name,  # comes from common.sh
-            'bundle': 'com.c3-soft'
+            'bundle': 'so.onekey.one'
         },
 
         # Mobile deployments
