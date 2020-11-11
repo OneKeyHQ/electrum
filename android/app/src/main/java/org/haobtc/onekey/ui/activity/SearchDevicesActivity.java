@@ -209,11 +209,9 @@ public class SearchDevicesActivity extends BaseMvpActivity<SearchDevicesPresente
             case Constant.SearchDeviceMode.MODE_RECOVERY_WALLET_BY_COLD:
                 toActivity(RecoveryWalletByColdWalletActivity.class);
                 break;
+            case Constant.SearchDeviceMode.MODE_CLONE_TO_OTHER_COLD:
             case Constant.SearchDeviceMode.MODE_BACKUP_WALLET_TO_COLD:
                 toActivity(BackupToColdWalletActivity.class);
-                break;
-            case Constant.SearchDeviceMode.MODE_CLONE_TO_OTHER_COLD:
-
                 break;
             case Constant.SearchDeviceMode.MODE_BIND_ADMIN_PERSON:
 

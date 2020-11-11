@@ -5,6 +5,19 @@
     android:background="@android:color/white"
     android:orientation="vertical">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:gravity="center_horizontal"
+        android:paddingLeft="@dimen/dp_30"
+        android:paddingTop="@dimen/dp_20"
+        android:paddingRight="@dimen/dp_30"
+        android:paddingBottom="@dimen/dp_20"
+        android:text="@string/update_pin_last_confirm"
+        android:textColor="#142A3B"
+        android:textSize="30sp" />
+
 
     <TextView
         android:layout_width="match_parent"
@@ -15,45 +28,28 @@
         android:paddingTop="@dimen/dp_20"
         android:paddingRight="@dimen/dp_30"
         android:paddingBottom="@dimen/dp_20"
-        android:text="@string/backup_success"
+        android:text="@string/update_pin_last_confirm_hide"
         android:textColor="#142A3B"
-        android:textSize="30sp" />
+        android:textSize="@dimen/sp_14" />
+
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/dp_20"
-        android:src="@drawable/device_success" />
+        android:layout_marginTop="@dimen/dp_80"
+        android:src="@mipmap/device_confirm" />
 
 
     <Button
-        android:id="@+id/wallet_name"
-        android:layout_width="wrap_content"
-        android:layout_height="30dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/dp_20"
-        android:background="@drawable/btn_copy_to_other"
-        android:textAllCaps="false"
-        android:textColor="@color/onekey" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/dp_30"
-        android:text="@string/backup_hide"
-        android:textColor="#546370" />
-
-
-    <Button
-        android:id="@+id/back_wallet"
+        android:id="@+id/back_device"
         android:layout_width="300dp"
         android:layout_height="50dp"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/dp_20"
+        android:layout_marginTop="@dimen/dp_240"
         android:layout_marginBottom="@dimen/dp_30"
-        android:background="@drawable/btn_enable_selector"
-        android:text="@string/back_wallet"
+        android:background="@drawable/btn_checked"
+        android:text="@string/back_device"
         android:textAllCaps="false"
         android:textColor="@android:color/white"
         android:textSize="@dimen/sp_14" />

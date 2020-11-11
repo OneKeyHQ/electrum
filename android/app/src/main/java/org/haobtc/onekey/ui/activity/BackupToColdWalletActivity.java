@@ -7,7 +7,7 @@ import org.haobtc.onekey.ui.fragment.BackupSuccessFragment;
 import org.haobtc.onekey.ui.fragment.BackupWalletToColdWalletFragment;
 import org.haobtc.onekey.ui.fragment.ColdDeviceConfirmFragment;
 import org.haobtc.onekey.ui.fragment.GiveNameFragment;
-import org.haobtc.onekey.ui.fragment.SetDevicePINFragment;
+import org.haobtc.onekey.ui.fragment.DevicePINFragment;
 import org.haobtc.onekey.ui.listener.IBackupSuccessListener;
 import org.haobtc.onekey.ui.listener.IBackupWalletToColdWalletListener;
 import org.haobtc.onekey.ui.listener.IColdDeviceConfirmListener;
@@ -20,7 +20,7 @@ public class BackupToColdWalletActivity extends BaseActivity implements ISetDevi
 
     @Override
     public void init() {
-        startFragment(new SetDevicePINFragment());
+        startFragment(new DevicePINFragment());
     }
 
     @Override

@@ -7,6 +7,7 @@
 
 
     <TextView
+        android:id="@+id/verify_ret"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/white"
@@ -15,11 +16,12 @@
         android:paddingTop="@dimen/dp_20"
         android:paddingRight="@dimen/dp_30"
         android:paddingBottom="@dimen/dp_20"
-        android:text="@string/backup_success"
-        android:textColor="#142A3B"
+        android:textColor="#00B812"
         android:textSize="30sp" />
 
+
     <ImageView
+        android:id="@+id/verify_img"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -28,7 +30,7 @@
 
 
     <Button
-        android:id="@+id/wallet_name"
+        android:id="@+id/verify_wallet_name"
         android:layout_width="wrap_content"
         android:layout_height="30dp"
         android:layout_gravity="center_horizontal"
@@ -38,6 +40,7 @@
         android:textColor="@color/onekey" />
 
     <TextView
+        android:id="@+id/verify_hide"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/dp_30"
@@ -46,14 +49,14 @@
 
 
     <Button
-        android:id="@+id/back_wallet"
+        android:id="@+id/back_device"
         android:layout_width="300dp"
         android:layout_height="50dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/dp_20"
         android:layout_marginBottom="@dimen/dp_30"
         android:background="@drawable/btn_enable_selector"
-        android:text="@string/back_wallet"
+        android:text="@string/back_device"
         android:textAllCaps="false"
         android:textColor="@android:color/white"
         android:textSize="@dimen/sp_14" />

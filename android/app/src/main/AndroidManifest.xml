@@ -602,6 +602,10 @@
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
         <activity
+            android:name=".ui.activity.AuthVerifyActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
             android:name=".ui.activity.AddNewWalletByActivatedColdWalletActivity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />

@@ -1097,5 +1097,17 @@
     <string name="backup_success">大功告成</string>
     <string name="back_wallet">返回钱包</string>
     <string name="backup_hide">您的助记词已经成功备份到这台设备，\n我们也没什么可提醒您的了。\n总之，切记保管好它，\n搞丢了没有任何人可以帮您找回来。\n祝您在区块链的世界玩儿开心❤️。</string>
+    <string name="auth_verify">防伪校验</string>
+    <string name="connecting_device">正在连接设备</string>
+    <string name="conn_device">连接设备</string>
+    <string name="get_auth_sign">获取防伪签名</string>
+    <string name="push_auth_sign">提交防伪验证信息</string>
+    <string name="verify_success">验证通过</string>
+    <string name="verify_success_hide">这是 OneKey 官方出品\n内置官方固件\n请放心使用</string>
+    <string name="verify_failed">验证失败</string>
+    <string name="back_device">返回设备</string>
+    <string name="verify_failed_hide">这台设备并未运行官方固件\n可能被篡改\n如果这不是您自己的行为\n请联系销售方处理</string>
+    <string name="update_pin_last_confirm">最终确认</string>
+    <string name="update_pin_last_confirm_hide">在您的设备上确认新的 PIN 码，\n这是最后一步。</string>
 
 </resources>

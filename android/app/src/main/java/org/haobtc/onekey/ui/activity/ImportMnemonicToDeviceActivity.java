@@ -1,7 +1,6 @@
 package org.haobtc.onekey.ui.activity;
 
 import android.view.View;
-import android.widget.TextView;
 
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.bean.MnemonicInfo;
@@ -11,9 +10,9 @@ import org.haobtc.onekey.mvp.view.IImportMnemonicToDeviceView;
 import org.haobtc.onekey.onekeys.HomeOnekeyActivity;
 import org.haobtc.onekey.ui.fragment.AddAssetFragment;
 import org.haobtc.onekey.ui.fragment.ColdDeviceConfirmFragment;
+import org.haobtc.onekey.ui.fragment.DevicePINFragment;
 import org.haobtc.onekey.ui.fragment.GiveNameFragment;
 import org.haobtc.onekey.ui.fragment.ImportMnemonicToDeviceFragment;
-import org.haobtc.onekey.ui.fragment.SetDevicePINFragment;
 import org.haobtc.onekey.ui.listener.IAddAssetListener;
 import org.haobtc.onekey.ui.listener.IColdDeviceConfirmListener;
 import org.haobtc.onekey.ui.listener.IGiveNameListener;
@@ -21,8 +20,6 @@ import org.haobtc.onekey.ui.listener.IImportMnemonicToDeviceListener;
 import org.haobtc.onekey.ui.listener.ISetDevicePassListener;
 
 import java.util.List;
-
-import butterknife.BindView;
 
 public class ImportMnemonicToDeviceActivity extends BaseMvpActivity<ImportMnemonicToDevicePresenter>
         implements View.OnClickListener, IImportMnemonicToDeviceListener, IImportMnemonicToDeviceView
@@ -63,7 +60,7 @@ public class ImportMnemonicToDeviceActivity extends BaseMvpActivity<ImportMnemon
 
     @Override
     public void onImportMnemonicSuccess() {
-        startFragment(new SetDevicePINFragment());
+        startFragment(new DevicePINFragment());
     }
 
     @Override

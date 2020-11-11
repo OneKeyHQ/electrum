@@ -1149,5 +1149,17 @@
     <string name="backup_success">be accomplished</string>
     <string name="back_wallet">Back to Wallet</string>
     <string name="backup_hide">Your mnemonics have been successfully backed up to this device, and we have nothing to remind you. In a word, remember to take good care of it. If it is lost, no one can help you find it back. Have a good time in the world of blockchain ❤️.</string>
+    <string name="auth_verify">Anti counterfeiting verification</string>
+    <string name="connecting_device">Connecting device</string>
+    <string name="conn_device">Connected Devices</string>
+    <string name="get_auth_sign">Get security signature</string>
+    <string name="push_auth_sign">Submit anti-counterfeiting verification information</string>
+    <string name="verify_success">Validation passed</string>
+    <string name="verify_success_hide">This is the official product of OneKey. It has built-in official firmware. Please feel free to use it</string>
+    <string name="verify_failed">Validation failed</string>
+    <string name="back_device">Return device</string>
+    <string name="verify_failed_hide">This device is not running the official firmware. It may be tampered with. If this is not your own behavior, please contact the seller</string>
+    <string name="update_pin_last_confirm">Final confirmation</string>
+    <string name="update_pin_last_confirm_hide">Confirm the new pin on your device, which is the last step.</string>
 
 </resources>

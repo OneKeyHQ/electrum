@@ -14,14 +14,17 @@ import org.haobtc.onekey.utils.NumKeyboardUtil;
 
 import butterknife.BindView;
 
-public class SetDevicePINFragment extends BaseFragment<ISetDevicePassListener> implements NumKeyboardUtil.CallBack {
+public class DevicePINFragment extends BaseFragment<ISetDevicePassListener> implements NumKeyboardUtil.CallBack {
 
-    private static final String TAG = SetDevicePINFragment.class.getSimpleName();
+    private static final String TAG = DevicePINFragment.class.getSimpleName();
     @BindView(R.id.pwd_edit_text)
     protected PwdInputView mPwdInputView;
     private NumKeyboardUtil mKeyboardUtil;
     @BindView(R.id.relativeLayout_key)
     protected RelativeLayout mRelativeLayoutKey;
+
+    public static final int TYPE_VERIFY_PIN = 1;
+    public static final int TYPE_SET_PIN = 2;
 
 
     @Override

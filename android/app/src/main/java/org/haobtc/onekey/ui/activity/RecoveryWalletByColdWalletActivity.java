@@ -1,17 +1,14 @@
 package org.haobtc.onekey.ui.activity;
 
 import android.view.View;
-import android.widget.TextView;
 
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.mvp.base.BaseActivity;
 import org.haobtc.onekey.onekeys.HomeOnekeyActivity;
 import org.haobtc.onekey.ui.fragment.RecoveryWalletByColdWalletFragment;
-import org.haobtc.onekey.ui.fragment.SetDevicePINFragment;
+import org.haobtc.onekey.ui.fragment.DevicePINFragment;
 import org.haobtc.onekey.ui.listener.IRecoveryWalletByColdWalletListener;
 import org.haobtc.onekey.ui.listener.ISetDevicePassListener;
-
-import butterknife.BindView;
 
 public class RecoveryWalletByColdWalletActivity extends BaseActivity implements ISetDevicePassListener
         , IRecoveryWalletByColdWalletListener, View.OnClickListener {
@@ -20,7 +17,7 @@ public class RecoveryWalletByColdWalletActivity extends BaseActivity implements 
     public void init() {
         mTitle.setText(R.string.recovery_hd_wallet);
         findViewById(R.id.img_back).setOnClickListener(this);
-        startFragment(new SetDevicePINFragment());
+        startFragment(new DevicePINFragment());
     }
 
     @Override

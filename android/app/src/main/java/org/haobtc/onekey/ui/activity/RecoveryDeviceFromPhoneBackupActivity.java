@@ -1,7 +1,6 @@
 package org.haobtc.onekey.ui.activity;
 
 import android.view.View;
-import android.widget.TextView;
 
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.bean.BackupWalletBean;
@@ -11,16 +10,14 @@ import org.haobtc.onekey.mvp.view.IRecoveryDeviceFromPhoneView;
 import org.haobtc.onekey.onekeys.HomeOnekeyActivity;
 import org.haobtc.onekey.ui.fragment.AddAssetFragment;
 import org.haobtc.onekey.ui.fragment.ColdDeviceConfirmFragment;
+import org.haobtc.onekey.ui.fragment.DevicePINFragment;
 import org.haobtc.onekey.ui.fragment.FindBackupFromPhoneFragment;
 import org.haobtc.onekey.ui.fragment.GiveNameFragment;
-import org.haobtc.onekey.ui.fragment.SetDevicePINFragment;
 import org.haobtc.onekey.ui.listener.IAddAssetListener;
 import org.haobtc.onekey.ui.listener.IColdDeviceConfirmListener;
 import org.haobtc.onekey.ui.listener.IFindBackupFromPhoneListener;
 import org.haobtc.onekey.ui.listener.IGiveNameListener;
 import org.haobtc.onekey.ui.listener.ISetDevicePassListener;
-
-import butterknife.BindView;
 
 public class RecoveryDeviceFromPhoneBackupActivity extends BaseMvpActivity<RecoveryDeviceFromPhonePresenter>
         implements IRecoveryDeviceFromPhoneView, IFindBackupFromPhoneListener, View.OnClickListener
@@ -56,7 +53,7 @@ public class RecoveryDeviceFromPhoneBackupActivity extends BaseMvpActivity<Recov
     public void onBackupToRecovery(BackupWalletBean bean) {
         //todo  backup info to recovery
 
-        startFragment(new SetDevicePINFragment());
+        startFragment(new DevicePINFragment());
     }
 
     @Override
