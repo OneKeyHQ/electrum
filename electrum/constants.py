@@ -168,7 +168,6 @@ def set_testnet():
     global net
     net = BitcoinTestnet
 
-
 def set_regtest():
     global net
     net = BitcoinRegtest
