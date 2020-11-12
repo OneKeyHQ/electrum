@@ -26,7 +26,6 @@
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
-
     // Do any additional setup after loading the view.
     self.title = MyLocalizedString(@"Observe the purse import", nil);
     self.iconImageView.image = [UIImage imageNamed:@"token_btc"];
@@ -63,7 +62,7 @@
 }
 
 - (void)textChange{
-    if (self.textView.text.length > 10) {
+    if (self.textView.text.length > 0) {
         [self.importBtn status:OKButtonStatusEnabled];
     }
     else{
@@ -77,7 +76,7 @@
         return NO;
     }
     if (textView == self.textView) {
-        if (text.length == 0) { // 退格
+        if (text.length == 0) { 
             if (textView.text.length == 1) {
                 self.textPlacehoderLabel.hidden = NO;
             }

@@ -58,7 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (OKPyCommandsManager *)sharedInstance;
 + (void)setNetwork;
 - (id)callInterface:(NSString *)method parameter:(NSDictionary *)parameter;
-- (id)call:(NSString *)method parameter:(NSDictionary *)parameter;
+- (id)testcall:(NSString *)method parameter:(NSDictionary *)parameter;
 @property (nonatomic,assign)PyObject *pyInstance;
 @end
 

@@ -177,3 +177,6 @@
 "(Open)" = "（打开）";
 "management" = "管理";
 "Incorrect phrase" = "助记词错误";
+"HD Wallet root mnemonic" = "HD 钱包根助记词";
+"Mnemonics are used to recover assets in other apps or wallets, transcribe them in the correct order, and place them in a safe place known only to you" = "助记词用来在其他 App 或钱包中恢复资产，将它们按照正确的顺序抄写，并放置在只有您知道的安全地方";
+"- Do not uninstall OneKey App easily - do not disclose mnemonics or private keys to anyone - do not take screenshots, send sensitive information via chat tools, etc" = "- 不要轻易卸载 OneKey App - 不要将助记词、私钥泄露给任何人 - 不要截屏、通过聊天工具等传送以上敏感信息";

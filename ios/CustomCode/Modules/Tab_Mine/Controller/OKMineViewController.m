@@ -17,6 +17,7 @@
 #import "OKAllAssetsViewController.h"
 #import "OKHDWalletViewController.h"
 #import "OKChangePwdViewController.h"
+#import "YZAuthID.h"
 
 @interface OKMineViewController ()<UINavigationControllerDelegate,UITableViewDelegate,UITableViewDataSource>
 
@@ -88,13 +89,13 @@
         case 0:
             label.text = MyLocalizedString(@"assets", nil);
             break;
+//        case 1:
+//            label.text = MyLocalizedString(@"hardware", nil);
+//            break;
         case 1:
-            label.text = MyLocalizedString(@"hardware", nil);
-            break;
-        case 2:
             label.text = MyLocalizedString(@"security", nil);
             break;
-        case 3:
+        case 2:
             label.text = MyLocalizedString(@"System Settings", nil);
             break;
         default:
@@ -133,25 +134,7 @@
             }
         }
             break;
-        case 1: //硬件
-        {
-            switch (indexPath.section) {
-                case 0:  //全部设备
-                {
-                    
-                }
-                    break;
-                case 1:  //连接方式
-                {
-                    
-                }
-                    break;
-                default:
-                    break;
-            }
-        }
-            break;
-        case 2: //安全
+        case 1: //安全
         {
             switch (indexPath.row) {
                 case 0: //密码
@@ -170,34 +153,34 @@
             }
         }
             break;
-        case 3: //系统设置
+        case 2:
         {
             switch (indexPath.row) {
-                case 0: //语言
+                case 0:
                 {
                     OKLanguageViewController *lanVc = [OKLanguageViewController languageViewController];
                     [self.navigationController pushViewController:lanVc animated:YES];
                 }
                     break;
-                case 1: //货币单位
+                case 1:
                 {
                     OKMonetaryUnitViewController *monVc = [OKMonetaryUnitViewController monetaryUnitViewController];
                     [self.navigationController pushViewController:monVc animated:YES];
                 }
                     break;
-                case 2: //网络
+                case 2:
                 {
                     OKNetworkViewController *netVc = [OKNetworkViewController networkViewController];
                     [self.navigationController pushViewController:netVc animated:YES];
                 }
                     break;
-                case 3: //交易设置（高级）
+                case 3:
                 {
                     OKTradeSettingViewController *tradeVc = [OKTradeSettingViewController tradeSettingViewController];
                     [self.navigationController pushViewController:tradeVc animated:YES];
                 }
                     break;
-                case 4: //关于
+                case 4:
                 {
                     OKAboutViewController *aboutVc = [OKAboutViewController aboutViewController];
                     [self.navigationController pushViewController:aboutVc animated:YES];
@@ -221,61 +204,87 @@
         OKMineTableViewCellModel *model1 = [OKMineTableViewCellModel new];
         model1.menuName = MyLocalizedString(@"All assets", nil);
         model1.imageName = @"money";
+        model1.isAuth = NO;
         
         OKMineTableViewCellModel *model2 = [OKMineTableViewCellModel new];
         model2.menuName = MyLocalizedString(@"HD wallet", nil);
         model2.imageName = @"hd_wallet";
+        model2.isAuth = NO;
         
         OKMineTableViewCellModel *model3 = [OKMineTableViewCellModel new];
         model3.menuName = MyLocalizedString(@"All the equipment", nil);
         model3.imageName = @"device_link";
+        model3.isAuth = NO;
         
         OKMineTableViewCellModel *model4 = [OKMineTableViewCellModel new];
         model4.menuName = MyLocalizedString(@"The connection method", nil);
         model4.imageName = @"link";
+        model4.isAuth = NO;
         
         OKMineTableViewCellModel *model5 = [OKMineTableViewCellModel new];
         model5.menuName = MyLocalizedString(@"password", nil);
         model5.imageName = @"lockpwd";
+        model5.isAuth = NO;
         
         
         OKMineTableViewCellModel *model6 = [OKMineTableViewCellModel new];
         model6.menuName = MyLocalizedString(@"Facial recognition", nil);
         model6.imageName = @"faceid";
+        model6.isAuth = YES;
         
         OKMineTableViewCellModel *model7 = [OKMineTableViewCellModel new];
         model7.menuName = MyLocalizedString(@"Fingerprint identification", nil);
         model7.imageName = @"zhiwen";
-        
+        model7.isAuth = YES;
         
         OKMineTableViewCellModel *model8 = [OKMineTableViewCellModel new];
         model8.menuName = MyLocalizedString(@"language", nil);
         model8.imageName = @"translation 2";
+        model8.isAuth = NO;
         
         OKMineTableViewCellModel *model9 = [OKMineTableViewCellModel new];
         model9.menuName = MyLocalizedString(@"Monetary unit", nil);
         model9.imageName = @"currency-dollar 2";
+        model9.isAuth = NO;
         
         OKMineTableViewCellModel *model10 = [OKMineTableViewCellModel new];
         model10.menuName = MyLocalizedString(@"network", nil);
         model10.imageName = @"hotspot 1";
-        
+        model10.isAuth = NO;
         
         OKMineTableViewCellModel *model11 = [OKMineTableViewCellModel new];
         model11.menuName = MyLocalizedString(@"Transaction Settings (Advanced)", nil);
         model11.imageName = @"bold-direction 1";
+        model11.isAuth = NO;
         
         OKMineTableViewCellModel *model12 = [OKMineTableViewCellModel new];
         model12.menuName = MyLocalizedString(@"about", nil);
         model12.imageName = @"c-question 4";
+        model12.isAuth = NO;
         
-        
-        _allMenuData = @[@[model1,model2],@[model3,model4],@[model5,model6,model7],@[model8,model9,model10,model11,model12]];
+        __block NSArray *biologicaArray = [NSArray array];
+        [YZAuthID biologicalRecognitionResult:^(YZAuthenticationType type) {
+            switch (type) {
+                case YZAuthenticationFace:
+                {
+                    biologicaArray = @[model5,model6];
+                }
+                        break;
+                case YZAuthenticationTouch:
+                {
+                    biologicaArray = @[model5,model7];
+                }
+                        break;
+                default:
+                    
+                        break;
+                }
+        }];
+        _allMenuData = @[@[model1,model2],biologicaArray,@[model8,model9,model10,model11,model12]];
     }
     return _allMenuData;
 }
 #pragma mark - UINavigationControllerDelegate
-// 将要显示控制器
 - (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
     BOOL isShowMine = [viewController isKindOfClass:[self class]];
     [self.navigationController setNavigationBarHidden:isShowMine animated:YES];

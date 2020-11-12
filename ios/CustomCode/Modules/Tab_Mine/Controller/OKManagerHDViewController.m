@@ -7,6 +7,7 @@
 //
 
 #import "OKManagerHDViewController.h"
+#import "OKBackUpViewController.h"
 
 @interface OKManagerHDViewController () <UITableViewDelegate,UITableViewDataSource>
 
@@ -30,6 +31,28 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSLog(@"didSelectRowAtIndexPath");
+    switch (indexPath.row) {
+        case 1:
+        {
+            OKWeakSelf(self)
+            [OKValidationPwdController showValidationPwdPageOn:self isDis:NO complete:^(NSString * _Nonnull pwd) {
+                NSString *result = [kPyCommandsManager callInterface:kInterfaceexport_seed parameter:@{@"password":pwd}];
+                if (![result isEqualToString:kErrorMsg]) {
+                    OKBackUpViewController *backUpVc = [OKBackUpViewController backUpViewController];
+                    backUpVc.words = [result componentsSeparatedByString:@" "];
+                    backUpVc.showType = WordsShowTypeExport;
+                    [weakself.OK_TopViewController.navigationController pushViewController:backUpVc animated:YES];
+                }
+            }];
+        }
+            break;
+        case 3:
+        {
+            
+        }
+            break;
+        default:
+            break;
+    };
 }
 @end

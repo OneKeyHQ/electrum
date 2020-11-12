@@ -248,7 +248,8 @@ typedef enum {
                 return;
             }
             [kPyCommandsManager callInterface:kInterfaceUpdate_password parameter:@{@"old_password":old_password,@"new_password":new_password}];
-        
+            [kTools tipMessage:@"密码修改成功"];
+            [self dismissViewControllerAnimated:YES completion:nil];
         }
     }
 }
@@ -305,7 +306,11 @@ typedef enum {
                 [kTools tipMessage:@"新密码不能与旧密码相同"];
                 return;
             }
-            [kPyCommandsManager callInterface:kInterfaceUpdate_password parameter:@{@"old_password":old_password,@"new_password":new_password}];
+            NSString *result = [kPyCommandsManager callInterface:kInterfaceUpdate_password parameter:@{@"old_password":old_password,@"new_password":new_password}];
+            if (![result isEqualToString:kErrorMsg]) {
+                [kTools tipMessage:@"密码修改成功"];
+            }
+            [self dismissViewControllerAnimated:YES completion:nil];
         }
         default:
             break;

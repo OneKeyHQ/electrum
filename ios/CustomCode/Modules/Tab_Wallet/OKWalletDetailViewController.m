@@ -117,11 +117,13 @@
             break;
         case OKClickTypeDeleteWallet:
         {
-            [kPyCommandsManager callInterface:kInterfaceDelete_wallet parameter:@{@"name":kWalletManager.currentWalletName}];
-            [kWalletManager clearCurrentWalletInfo];
-            [kTools tipMessage:@"删除钱包成功"];
-            [[NSNotificationCenter defaultCenter]postNotificationName:kNotiDeleteWalletComplete object:nil];
-            [self.navigationController popViewControllerAnimated:YES];
+            [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
+                [kPyCommandsManager callInterface:kInterfaceDelete_wallet parameter:@{@"name":kWalletManager.currentWalletName,@"password":pwd}];
+                [kWalletManager clearCurrentWalletInfo];
+                [kTools tipMessage:@"删除钱包成功"];
+                [[NSNotificationCenter defaultCenter]postNotificationName:kNotiDeleteWalletComplete object:nil];
+                [self.navigationController popViewControllerAnimated:YES];
+            }];
         }
             break;
         default:

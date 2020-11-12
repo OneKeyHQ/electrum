@@ -46,5 +46,7 @@
 #import "OKWalletScanVC.h"
 #import "OKSystemShareView.h"
 #import "OneKeyDefine.h"
+#import "YZAuthID.h"
+#import "OKStorageManager.h"
 
 #endif /* OneKeyImport_h */
