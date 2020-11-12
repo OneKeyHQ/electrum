@@ -69,12 +69,20 @@
                                                         <constraint firstAttribute="height" constant="24" id="WtF-AU-XB2"/>
                                                     </constraints>
                                                 </imageView>
+                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="XYS-gB-nqm">
+                                                    <rect key="frame" x="345" y="21" width="51" height="31"/>
+                                                    <connections>
+                                                        <action selector="switchClick:" destination="T0J-ZU-irA" eventType="valueChanged" id="VmW-Ig-l4F"/>
+                                                    </connections>
+                                                </switch>
                                             </subviews>
                                             <constraints>
                                                 <constraint firstItem="f5F-8B-ni2" firstAttribute="leading" secondItem="ky9-8Y-7xu" secondAttribute="leading" constant="20" id="6Nx-aA-lBD"/>
                                                 <constraint firstItem="ysa-Cl-l3D" firstAttribute="centerY" secondItem="ky9-8Y-7xu" secondAttribute="centerY" id="EFs-bF-lMi"/>
                                                 <constraint firstItem="93q-aD-gKe" firstAttribute="leading" secondItem="f5F-8B-ni2" secondAttribute="trailing" constant="10" id="atF-xk-2Nl"/>
+                                                <constraint firstItem="XYS-gB-nqm" firstAttribute="centerY" secondItem="ky9-8Y-7xu" secondAttribute="centerY" id="et6-z5-HAg"/>
                                                 <constraint firstAttribute="trailing" secondItem="ysa-Cl-l3D" secondAttribute="trailing" constant="20" id="hz9-Ct-l5r"/>
+                                                <constraint firstAttribute="trailing" secondItem="XYS-gB-nqm" secondAttribute="trailing" constant="20" id="ijO-B3-0aD"/>
                                                 <constraint firstItem="93q-aD-gKe" firstAttribute="centerY" secondItem="f5F-8B-ni2" secondAttribute="centerY" id="n5Q-B8-w8V"/>
                                                 <constraint firstItem="f5F-8B-ni2" firstAttribute="centerY" secondItem="ky9-8Y-7xu" secondAttribute="centerY" id="vjP-jQ-x6Y"/>
                                             </constraints>
@@ -82,6 +90,7 @@
                                         <connections>
                                             <outlet property="iconView" destination="f5F-8B-ni2" id="AtB-aG-2Dl"/>
                                             <outlet property="rightArrow" destination="ysa-Cl-l3D" id="ilN-PH-RXq"/>
+                                            <outlet property="rightSwitch" destination="XYS-gB-nqm" id="6pM-UZ-EMt"/>
                                             <outlet property="titleLabel" destination="93q-aD-gKe" id="Ec5-dH-iRb"/>
                                         </connections>
                                     </tableViewCell>
@@ -213,6 +222,9 @@
                                         </label>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gUh-Tj-Btb">
                                             <rect key="frame" x="0.0" y="0.0" width="374" height="70"/>
+                                            <connections>
+                                                <action selector="bottomBtnClick:" destination="u7l-Uo-VVO" eventType="touchUpInside" id="Ddi-MG-bYC"/>
+                                            </connections>
                                         </button>
                                     </subviews>
                                     <color key="backgroundColor" red="0.3294117647" green="0.38823529410000002" blue="0.43921568630000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
@@ -1244,7 +1256,7 @@
         <image name="checked" width="24" height="24"/>
         <image name="copy_white" width="16" height="16"/>
         <image name="iconwriteselect" width="16.666666030883789" height="12.333333015441895"/>
-        <image name="info" width="24" height="24"/>
+        <image name="info" width="16" height="16"/>
         <image name="logo" width="38" height="73.333335876464844"/>
         <image name="logo_text" width="87.333335876464844" height="27.333333969116211"/>
         <image name="right_arrow_small" width="24" height="24"/>

@@ -11,5 +11,6 @@ pod 'SDWebImage', '~> 5.8.1'
 pod 'Masonry','~> 1.1.0'
 pod 'MJExtension', '~> 3.0.13'
 #pod 'ZWPullMenuView', '~> 0.1.0'
+pod 'BabyBluetooth','~> 0.7.0'
 end
 

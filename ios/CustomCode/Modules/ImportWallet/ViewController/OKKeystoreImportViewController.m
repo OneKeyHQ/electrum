@@ -87,7 +87,7 @@
         return NO;
     }
     if (textView == self.textView) {
-        if (text.length == 0) { // 退格
+        if (text.length == 0) { 
             if (textView.text.length == 1) {
                 self.textPlacehoderLabel.hidden = NO;
             }

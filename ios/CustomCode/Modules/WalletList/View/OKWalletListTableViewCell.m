@@ -53,6 +53,6 @@
 }
 
 - (IBAction)btnCopyClick:(UIButton *)sender {
-    [kTools pasteboardCopyString:self.addressLabel.text msg:MyLocalizedString(@"copied", nil)];
+    [kTools pasteboardCopyString:self.addressLabel.text msg:MyLocalizedString(@"Copied", nil)];
 }
 @end

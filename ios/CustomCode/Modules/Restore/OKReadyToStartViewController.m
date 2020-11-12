@@ -46,6 +46,7 @@
 - (IBAction)startBtnClick:(UIButton *)sender {
     OKBackUpViewController *backUpVc = [OKBackUpViewController backUpViewController];
     backUpVc.words = [self.words componentsSeparatedByString:@" "];
+    backUpVc.showType = WordsShowTypeRestore;
     [self.navigationController pushViewController:backUpVc animated:YES];
 }
 

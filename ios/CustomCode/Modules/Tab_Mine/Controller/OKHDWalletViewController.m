@@ -11,6 +11,7 @@
 #import "OKWalletListTableViewCell.h"
 #import "OKWalletListTableViewCellModel.h"
 #import "OKManagerHDViewController.h"
+#import "OKSelectCoinTypeViewController.h"
 
 @interface OKHDWalletViewController ()<UITableViewDelegate,UITableViewDataSource>
 
@@ -21,6 +22,7 @@
 @property (nonatomic,strong)NSArray *showList;
 @property (weak, nonatomic) IBOutlet UIView *footerBgView;
 @property (weak, nonatomic) IBOutlet UIView *countBgView;
+- (IBAction)bottomBtnClick:(UIButton *)sender;
 
 @end
 
@@ -140,4 +142,9 @@
     return _showList;
 }
 
+- (IBAction)bottomBtnClick:(UIButton *)sender {
+    OKSelectCoinTypeViewController *selectVc = [OKSelectCoinTypeViewController selectCoinTypeViewController];
+    selectVc.addType = OKAddTypeCreateHDDerived;
+    [self.navigationController pushViewController:selectVc animated:YES];
+}
 @end

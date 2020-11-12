@@ -9,9 +9,14 @@
 #import "BaseViewController.h"
 
 NS_ASSUME_NONNULL_BEGIN
+typedef enum {
+    WordsShowTypeRestore,
+    WordsShowTypeExport
+}WordsShowType;
 
 @interface OKBackUpViewController : BaseViewController
 @property (nonatomic,strong)NSArray *words;
+@property (nonatomic,assign)WordsShowType showType;
 + (instancetype)backUpViewController;
 @end
 

@@ -177,13 +177,14 @@
 }
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    OKWalletListTableViewCellModel *model = self.walletListArray[indexPath.row];
+    OKWalletListTableViewCellModel *model = self.showList[indexPath.row];
     [OKStorageManager saveToUserDefaults:model.walletName key:kCurrentWalletName];
     [OKStorageManager saveToUserDefaults:model.address key:kCurrentWalletAddress];
     [OKStorageManager saveToUserDefaults:model.walletType key:kCurrentWalletType];
     [kPyCommandsManager callInterface:kInterfaceSelect_wallet parameter:@{@"name":kWalletManager.currentWalletName}];
     [[NSNotificationCenter defaultCenter]postNotificationName:kNotiSelectWalletComplete object:nil];
     [self refreshListData];
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (IBAction)macthWalletBtnClick:(OKWalletListBottomBtn *)sender {
@@ -261,12 +262,13 @@
         model1.isSelected = [kWalletManager.currentSelectCoinType isEqualToString:model1.coinType];
         model1.headerWaletType = MyLocalizedString(@"BTC wallet", nil);
         
-        OKWalletListCollectionViewCellModel *model2 = [OKWalletListCollectionViewCellModel new];
-        model2.coinType = @"ETH";
-        model2.iconName = @"cointype_eth";
-        model2.isSelected = [kWalletManager.currentSelectCoinType isEqualToString:model2.coinType];
-        model2.headerWaletType = MyLocalizedString(@"ETH wallet", nil);
-        _allCoinTypeArray = @[model0,model1,model2];
+//        OKWalletListCollectionViewCellModel *model2 = [OKWalletListCollectionViewCellModel new];
+//        model2.coinType = @"ETH";
+//        model2.iconName = @"cointype_eth";
+//        model2.isSelected = [kWalletManager.currentSelectCoinType isEqualToString:model2.coinType];
+//        model2.headerWaletType = MyLocalizedString(@"ETH wallet", nil);
+//        _allCoinTypeArray = @[model0,model1,model2];
+         _allCoinTypeArray = @[model0,model1];
     }
     return _allCoinTypeArray;
 }

@@ -48,29 +48,35 @@
         return;
     }
     OKWeakSelf(self)
+    if (weakself.addType == OKAddTypeImportAddresses) {
+        NSString *result =  [kPyCommandsManager callInterface:kInterfaceImport_Address parameter:@{@"name":self.walletNameTextfield.text,@"address":self.address}];
+        if (![result isEqualToString:kErrorMsg]) {
+            [kTools tipMessage:@"导入成功"];
+        }
+        [[NSNotificationCenter defaultCenter]postNotification:[NSNotification notificationWithName:kNotiRefreshWalletList object:nil]];
+        [self.navigationController popToRootViewControllerAnimated:YES];
+        return;
+    }
+    
     [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
         switch (weakself.addType) {
-            case OKAddTypeCreateHDDerived:  //创建基于HD的派生钱包
+            case OKAddTypeCreateHDDerived:
             {
-                //创建派生钱包
+  
                 [kPyCommandsManager callInterface:kInterfaceCreate_derived_wallet parameter:@{@"name":self.walletNameTextfield.text,@"password":pwd,@"coin":[self.coinType lowercaseString]}];
             }
                 break;
-            case OKAddTypeCreateSolo:  //创建独立钱包
+            case OKAddTypeCreateSolo:
             {
                 [kPyCommandsManager callInterface:kInterfaceCreate_create parameter:@{@"name":self.walletNameTextfield.text,@"password":pwd}];
             }
                 break;
-            case OKAddTypeImportPrivkeys:  //创建私钥
+            case OKAddTypeImportPrivkeys:
             {
                 [kPyCommandsManager callInterface:kInterfaceImport_Privkeys parameter:@{@"name":self.walletNameTextfield.text,@"password":pwd,@"privkeys":self.privkeys}];
             }
                 break;
-            case OKAddTypeImportAddresses:  //创建观察钱包
-            {
-                [kPyCommandsManager callInterface:kInterfaceImport_Address parameter:@{@"name":self.walletNameTextfield.text,@"address":self.address}];
-            }
-                break;
+                
             default:
                 break;
         }

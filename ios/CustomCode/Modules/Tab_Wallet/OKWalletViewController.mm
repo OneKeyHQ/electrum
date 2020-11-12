@@ -239,7 +239,7 @@
     if (self.listWallets.count > 0) { //创建过
         self.createBgView.hidden = YES;
         self.walletHomeBgView.hidden = NO;
-        isBackUp = [[kPyCommandsManager call:kInterfaceImport_Privkeys parameter:@{}] boolValue];
+        isBackUp = [kPyCommandsManager callInterface:kInterfaceget_backup_info parameter:@{}];
     }else{
         self.createBgView.hidden = NO;
         self.walletHomeBgView.hidden = YES;

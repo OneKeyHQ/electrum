@@ -87,7 +87,7 @@ static dispatch_once_t once;
 - (NSArray *)supportCoinArray
 {
     if (!_supportCoinArray) {
-        _supportCoinArray = @[COIN_BTC,COIN_ETH];
+        _supportCoinArray = @[COIN_BTC];
     }
     return _supportCoinArray;
 }
@@ -100,6 +100,16 @@ static dispatch_once_t once;
 {
     [OKStorageManager saveToUserDefaults:@(showAsset) key:kShowAssetKey];
 }
+
+- (BOOL)isOpenAuthBiological
+{
+    return [[OKStorageManager loadFromUserDefaults:kIsOpenAuthBiologicalKey] boolValue];
+}
+- (void)setIsOpenAuthBiological:(BOOL)isOpenAuthBiological
+{
+    [OKStorageManager saveToUserDefaults:@(isOpenAuthBiological) key:kIsOpenAuthBiologicalKey];
+}
+
 
 
 

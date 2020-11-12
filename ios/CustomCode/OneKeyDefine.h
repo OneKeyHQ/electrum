@@ -9,6 +9,7 @@
 #ifndef OneKeyDefine_h
 #define OneKeyDefine_h
 
+#define kErrorMsg                   @"kErrorMsg"
 
 #define kTheServiceAgreement        @"https://onekey.zendesk.com/hc/articles/360002014776"
 #define kPrivacyAgreement           @"https://onekey.zendesk.com/hc/articles/360002003315"

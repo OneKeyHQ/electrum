@@ -81,30 +81,43 @@ static dispatch_once_t once;
         NSString *name = [parameter safeStringForKey:@"name"];
         NSString *password = [parameter safeStringForKey:@"password"];
         NSString *privkeys = [parameter safeStringForKey:@"privkeys"];
-        result = PyObject_CallMethod(self.pyInstance, [kInterfaceCreate_create UTF8String], "(s,s,s)",[name UTF8String],[password UTF8String],[privkeys UTF8String]);
+        PyObject *args =  Py_BuildValue("(s)", [name UTF8String]);
+        PyObject *kwargs;
+        kwargs = Py_BuildValue("{s:s,s:s}", "password", [password UTF8String],"privkeys",[privkeys UTF8String]);
+        PyObject *myobject_method = PyObject_GetAttrString(self.pyInstance, [kInterfaceCreate_create UTF8String]);
+        result = PyObject_Call(myobject_method, args, kwargs);
+    
      
     }else if([method isEqualToString:kInterfaceImport_Seed]){
         NSString *name = [parameter safeStringForKey:@"name"];
         NSString *password = [parameter safeStringForKey:@"password"];
         NSString *seed = [parameter safeStringForKey:@"seed"];
-        result = PyObject_CallMethod(self.pyInstance, [kInterfaceCreate_create UTF8String], "(s,s,s)",[name UTF8String],[password UTF8String],[seed UTF8String]);
+        PyObject *args =  Py_BuildValue("(s)", [name UTF8String]);
+        PyObject *kwargs;
+        kwargs = Py_BuildValue("{s:s,s:s}", "password", [password UTF8String],"seed",[seed UTF8String]);
+        PyObject *myobject_method = PyObject_GetAttrString(self.pyInstance, [kInterfaceCreate_create UTF8String]);
+        result = PyObject_Call(myobject_method, args, kwargs);
+        
         
     }else if([method isEqualToString:kInterfaceImport_Address]){
         NSString *name = [parameter safeStringForKey:@"name"];
-        //NSString *addresses = [parameter safeStringForKey:@"address"];
-        PyObject *args = Py_BuildValue("(s)",[name UTF8String]);
-        PyObject *keywords = PyDict_New();
-        PyDict_SetItemString(keywords, "hd", Py_False);
+        NSString *addresses = [parameter safeStringForKey:@"address"];
+        PyObject *args =  Py_BuildValue("(s)", [name UTF8String]);
+        PyObject *kwargs;
+        kwargs = Py_BuildValue("{s:s}", "addresses", [addresses UTF8String]);
         PyObject *myobject_method = PyObject_GetAttrString(self.pyInstance, [kInterfaceCreate_create UTF8String]);
-        result = PyObject_Call(myobject_method,args,keywords);
-        Py_DECREF(args);
-        Py_DECREF(keywords);
-        Py_DECREF(myobject_method);
+        result = PyObject_Call(myobject_method, args, kwargs);
+        
         
         
     }else if([method isEqualToString:kInterfaceDelete_wallet]){
+        NSString *password = [parameter safeStringForKey:@"password"];
         NSString *name = [parameter safeStringForKey:@"name"];
-        result = PyObject_CallMethod(self.pyInstance, [kInterfaceDelete_wallet UTF8String], "(s)",[name UTF8String]);
+        PyObject *args =  Py_BuildValue("(s)", [password UTF8String]);
+        PyObject *kwargs;
+        kwargs = Py_BuildValue("{s:s}", "name", [name UTF8String]);
+        PyObject *myobject_method = PyObject_GetAttrString(self.pyInstance, [kInterfaceDelete_wallet UTF8String]);
+        result = PyObject_Call(myobject_method, args, kwargs);
         
         
     }else if([method isEqualToString:kInterfaceImport_xpub]){
@@ -156,7 +169,11 @@ static dispatch_once_t once;
     }else if([method isEqualToString:kInterfaceSign_tx]){
         NSString *tx = [parameter safeStringForKey:@"tx"];
         NSString *password = [parameter safeStringForKey:@"password"];
-        result = PyObject_CallMethod(self.pyInstance, [kInterfaceSign_tx UTF8String], "(s,s)", [tx UTF8String],[password UTF8String]);
+        PyObject *args =  Py_BuildValue("(s)", [tx UTF8String]);
+        PyObject *kwargs;
+        kwargs = Py_BuildValue("{s:s,s:s}", "password", [password UTF8String],"path","");
+        PyObject *myobject_method = PyObject_GetAttrString(self.pyInstance, [kInterfaceSign_tx UTF8String]);
+        result = PyObject_Call(myobject_method, args, kwargs);
         
         
     }else if([method isEqualToString:kInterfaceList_wallets]){
@@ -185,6 +202,7 @@ static dispatch_once_t once;
         NSString *new_password = [parameter safeStringForKey:@"new_password"];
         result = PyObject_CallMethod(self.pyInstance, [kInterfaceUpdate_password UTF8String], "(s,s)",[old_password UTF8String],[new_password UTF8String]);
         
+        
     }else if([method isEqualToString:kInterfaceget_all_mnemonic]){
         result = PyObject_CallMethod(self.pyInstance, [kInterfaceget_all_mnemonic UTF8String], "()");
         
@@ -208,23 +226,29 @@ static dispatch_once_t once;
     }
   
     if (result == NULL) {
-        PyErr_Print();
+//        PyErr_Print();
+        if (PyErr_Occurred()) {
+            PyObject* ptype,*pvalue,*ptraceback;
+            PyObject* pystr;
+            char *msg;
+            PyErr_Fetch(&ptype,&pvalue,&ptraceback);
+            pystr = PyObject_Str(pvalue);
+            PyArg_Parse(pystr, "s", &msg);
+            NSLog(@"错误信息  %s ", msg);
+            dispatch_main_async_safe(
+                [kTools tipMessage:[NSString stringWithCString:msg encoding:NSUTF8StringEncoding]];
+            );
+            return kErrorMsg;
+        }
     }
-    char * resultCString = NULL;
+    id object;
     if (result != NULL) {
-        PyArg_Parse(result, "s", &resultCString); //将python类型的返回值转换为c
+        object =  [self getFormatSpecifier:result];
     }
     PyGILState_Release(state);
-    NSLog(@"%s", resultCString);
-    if (resultCString == NULL) {
-        return @"";
+    if (result != NULL) {
+        Py_DECREF(result);
     }
-    NSString *jsonStrResult = [NSString stringWithCString:resultCString encoding:NSUTF8StringEncoding];
-    id object = [jsonStrResult mj_JSONObject];
-    if (object == NULL) {
-        return jsonStrResult;
-    }
-    Py_DECREF(result);
     return object;
 }
 
@@ -248,82 +272,49 @@ static dispatch_once_t once;
     PyGILState_Release(state);
 }
 
-
-- (id)call:(NSString *)method parameter:(NSDictionary *)parameter
-{
-    if (parameter == nil) {
-        parameter = [NSDictionary dictionary];
-    }
-    PyGILState_STATE state = PyGILState_Ensure();
-    PyObject *result = NULL;
-    
-    if([method isEqualToString:kInterfaceImport_Privkeys]){
-//        接口名：create
-//        参数：name     钱包名
-//              password 验证password
-//              privkeys 私钥
-//        返回值：无
-//        PyObject* pArgs = NULL;
-//        pArgs = PyTuple_New(3);
-//        PyTuple_SetItem(pArgs, 0, Py_BuildValue("s",@"XLLL"));
-//        PyTuple_SetItem(pArgs, 1, Py_BuildValue("s",@"123456"));
-//        PyTuple_SetItem(pArgs, 2, Py_BuildValue("s",@"e6841ceb170becade0a4aa3e157f08871192f9de1c35835de5e1b47fc167d27e"));
-//        PyObject *kwargs;
-//        kwargs = Py_BuildValue("{s:s,s:s,s:s}", "name", "XLLL","password","123456","e6841ceb170becade0a4aa3e157f08871192f9de1c35835de5e1b47fc167d27e");
-        
-        PyObject *args =  Py_BuildValue("(s)", "BTC-777");
-        PyObject *kwargs;
-        //password, seed_type="segwit", seed=None, passphrase="", bip39_derivation=None,master=None, addresses=None, privkeys=None, hd=False
-        kwargs = Py_BuildValue("{s:s,s:s}", "password", "123456","privkeys","e6841ceb170becade0a4aa3e157f08871192f9de1c35835de5e1b47fc167d27e");
-        
-        PyObject *myobject_method = PyObject_GetAttrString(self.pyInstance, [kInterfaceCreate_create UTF8String]);
-        result = PyObject_Call(myobject_method, args, kwargs);
-    }
-    if (result == NULL) {
-//        PyErr_Print();
-        if (PyErr_Occurred()) {
-            PyObject* ptype,*pvalue,*ptraceback;
-            PyObject* pystr;
-            char *msg;
-            PyErr_Fetch(&ptype,&pvalue,&ptraceback);
-            pystr = PyObject_Str(pvalue);
-            PyArg_Parse(pystr, "s", &msg);
-            NSLog(@"错误信息  %s", msg);
-            dispatch_main_async_safe(
-                [kTools tipMessage:[NSString stringWithCString:msg encoding:NSUTF8StringEncoding]];
-            );
-//            py_Err
-            return @"";
-        }
-    }
-    char * resultCString = NULL;
-    if (result != NULL) {
-        NSString *formatSpecifier = [self getFormatSpecifier:result];
-        PyArg_Parse(result, [formatSpecifier UTF8String], &resultCString); //将python类型的返回值转换为c
-    }
-    PyGILState_Release(state);
-    NSLog(@"%s", resultCString);
-    if (resultCString == NULL) {
-        return @"";
-    }
-    NSString *jsonStrResult = [NSString stringWithCString:resultCString encoding:NSUTF8StringEncoding];
-    id object = [jsonStrResult mj_JSONObject];
-    if (object == NULL) {
-        return jsonStrResult;
-    }
-    Py_DECREF(result);
-    return object;
-}
-
-- (NSString *)getFormatSpecifier:(PyObject *)result
+- (id)getFormatSpecifier:(PyObject *)result
 {
     NSString *tp_name = [NSString stringWithCString:result->ob_type->tp_name encoding:NSUTF8StringEncoding];
-    if ([tp_name isEqualToString:@"str"]) {
-        return @"s";
-    }if([tp_name isEqualToString:@"str"]) {
-        return @"s";
+    if ([tp_name isEqualToString:@"str"]) { //字符串
+        char *  resultCString = NULL;
+        PyArg_Parse(result, "s", &resultCString); //将python类型的返回值转换为c
+        if (resultCString == NULL) {
+            return @"";
+        }
+        NSString *jsonStrResult = [NSString stringWithCString:resultCString encoding:NSUTF8StringEncoding];
+        id object = [jsonStrResult mj_JSONObject];
+        if (object == NULL) {
+            return jsonStrResult;
+        }else{
+            return object;
+        }
+        
+    }else if([tp_name isEqualToString:@"bool"]) { //布尔
+        bool boolnum;
+        PyArg_Parse(result, "i", &boolnum); //将python类型的返回值转换为c
+        return @(boolnum);
+        
+    }else if ([tp_name isEqualToString:@"int"]){  //整型
+        bool boolnum;
+        PyArg_Parse(result, "i", &boolnum); //将python类型的返回值转换为c
+        return @(boolnum);
+    }else if ([tp_name isEqualToString:@"NULL"]){ //空
+        return @"";
+    }else if ([tp_name isEqualToString:@"NoneType"]){
+        return @"";
     }
-
     return @"";
 }
+
+
+
+//数组等过于复杂的类型  传递json字符串
+//else if ([tp_name isEqualToString:@"list"]){ //数组
+//    for (int i = 0; i < PyList_Size(result); i++) {
+//        char *string  = NULL;
+//        PyObject *item = PyList_GetItem(result,i);
+//        PyArg_Parse(item, "s" , &string);
+//        NSLog(@"string == %s",string);
+//    }
+//}
 @end

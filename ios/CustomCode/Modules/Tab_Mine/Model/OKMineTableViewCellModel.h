@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,copy) NSString* imageName;
 @property (nonatomic,copy) NSString* menuName;
 @property (nonatomic,assign) BOOL isSwitch;
+@property (nonatomic,assign) BOOL isAuth;
 @end
 
 NS_ASSUME_NONNULL_END

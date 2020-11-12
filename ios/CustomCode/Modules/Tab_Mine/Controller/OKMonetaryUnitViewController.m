@@ -189,16 +189,16 @@
         [btcUnitGroup addObject:model7];
         
         
-        NSMutableArray *ethUnitGroup = [NSMutableArray array];
-        OKUnitTableViewCellModel *model8 = [[OKUnitTableViewCellModel alloc]init];
-        model8.titleStr = @"ETH";
-        model8.isSelected = YES;
-        model8.type = GroupTypeBitcoinETH;
-        [ethUnitGroup addObject:model8];
-        
+//        NSMutableArray *ethUnitGroup = [NSMutableArray array];
+//        OKUnitTableViewCellModel *model8 = [[OKUnitTableViewCellModel alloc]init];
+//        model8.titleStr = @"ETH";
+//        model8.isSelected = YES;
+//        model8.type = GroupTypeBitcoinETH;
+//        [ethUnitGroup addObject:model8];
+//
         
         [allDataM addObject:btcUnitGroup];
-        [allDataM addObject:ethUnitGroup];
+//        [allDataM addObject:ethUnitGroup];
         _allData = allDataM;
     }
     return _allData;

@@ -621,7 +621,10 @@
                     </view>
                     <navigationItem key="navigationItem" id="exb-xT-1uk"/>
                     <connections>
+                        <outlet property="bottomDescLabel" destination="Y8k-fq-A7F" id="7tY-fq-NRd"/>
+                        <outlet property="descLabel" destination="q11-f1-cG2" id="hdy-Ek-WAb"/>
                         <outlet property="nextBtn" destination="K0g-N6-8wh" id="Npy-vZ-nY4"/>
+                        <outlet property="titleLabel" destination="hqD-jf-Itj" id="Hzi-5q-2Zm"/>
                         <outlet property="wordInputView" destination="Ee1-BG-ydR" id="eIp-1v-8wB"/>
                     </connections>
                 </viewController>
