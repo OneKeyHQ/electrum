@@ -11,6 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OKManagerHDViewController : BaseTableViewController
+@property (nonatomic,copy)NSString *walletName;
 + (instancetype)managerHDViewController;
 @end
 

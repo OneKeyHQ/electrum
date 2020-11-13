@@ -8,6 +8,8 @@
 
 #import "OKManagerHDViewController.h"
 #import "OKBackUpViewController.h"
+#import "OKDontScreenshotTipsViewController.h"
+#import "OKDeleteWalletTipsViewController.h"
 
 @interface OKManagerHDViewController () <UITableViewDelegate,UITableViewDataSource>
 
@@ -28,7 +30,6 @@
 }
 
 #pragma mark - Table view data source
-
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     switch (indexPath.row) {
@@ -38,17 +39,23 @@
             [OKValidationPwdController showValidationPwdPageOn:self isDis:NO complete:^(NSString * _Nonnull pwd) {
                 NSString *result = [kPyCommandsManager callInterface:kInterfaceexport_seed parameter:@{@"password":pwd}];
                 if (![result isEqualToString:kErrorMsg]) {
-                    OKBackUpViewController *backUpVc = [OKBackUpViewController backUpViewController];
-                    backUpVc.words = [result componentsSeparatedByString:@" "];
-                    backUpVc.showType = WordsShowTypeExport;
-                    [weakself.OK_TopViewController.navigationController pushViewController:backUpVc animated:YES];
+                    OKDontScreenshotTipsViewController *dontScreenshotTipsVc = [OKDontScreenshotTipsViewController dontScreenshotTipsViewController:^{
+                        OKBackUpViewController *backUpVc = [OKBackUpViewController backUpViewController];
+                        backUpVc.words = [result componentsSeparatedByString:@" "];
+                        backUpVc.showType = WordsShowTypeExport;
+                        [weakself.OK_TopViewController.navigationController pushViewController:backUpVc animated:YES];
+                    }];
+                    dontScreenshotTipsVc.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+                    [weakself.OK_TopViewController presentViewController:dontScreenshotTipsVc animated:NO completion:nil];
                 }
             }];
         }
             break;
         case 3:
         {
-            
+            OKDeleteWalletTipsViewController *deleteWalletVc = [OKDeleteWalletTipsViewController deleteWalletTipsViewController];
+            deleteWalletVc.walletName = self.walletName;
+            [self.navigationController pushViewController:deleteWalletVc animated:YES];
         }
             break;
         default:

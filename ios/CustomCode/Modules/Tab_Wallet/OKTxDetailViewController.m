@@ -145,15 +145,15 @@
 {
     //Unconfirmed 未确认 3 confirmations已确认 Signed签名完成 Partially signed 2/3部分签名 Unsigned 未签名
     if ([status containsString:@"Unconfirmed"]) {
-        return MyLocalizedString(@"未确认", nil);
+        return MyLocalizedString(@"unconfirmed", nil);
     }else if ([status containsString:@"confirmations"]){
-        return MyLocalizedString(@"已确认", nil);
+        return MyLocalizedString(@"confirmations", nil);
     }else if ([status containsString:@"Signed"]){
-        return MyLocalizedString(@"签名完成", nil);
+        return MyLocalizedString(@"Signed", nil);
     }else if ([status containsString:@"Partially signed"]){
-        return MyLocalizedString(@"部分签名", nil);
+        return MyLocalizedString(@"Partially signed", nil);
     }else if ([status containsString:@"Unsigned"]){
-        return MyLocalizedString(@"未签名", nil);
+        return MyLocalizedString(@"Unsigned", nil);
     }else{
         return @"";
     }
@@ -161,10 +161,10 @@
 
 
 - (IBAction)txHashBtnClick:(UIButton *)sender {
-    [kTools tipMessage:@"跳转到浏览器"];;
+    
 }
 
 - (IBAction)blockNumBtnClick:(UIButton *)sender {
-    [kTools tipMessage:@"跳转到浏览器"];
+    
 }
 @end

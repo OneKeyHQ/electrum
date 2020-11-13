@@ -51,7 +51,7 @@
     switch (indexPath.row) {
         case 0:
         {
-            [kTools tipMessage:@"点击了版本更新"];
+            NSLog(@"click update");
         }
             break;
         case 1:

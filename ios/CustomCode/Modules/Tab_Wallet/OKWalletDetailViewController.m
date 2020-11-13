@@ -102,17 +102,17 @@
     switch (model.clickType) {
         case OKClickTypeExportMnemonic:
         {
-            [kTools tipMessage:@"点击了导出助记词"];
+            
         }
             break;
         case OKClickTypeExportPrivatekey:
         {
-            [kTools tipMessage:@"点击了导出私钥"];
+           
         }
             break;
         case OKClickTypeExportKeystore:
         {
-            [kTools tipMessage:@"点击了导出 keystore"];
+           
         }
             break;
         case OKClickTypeDeleteWallet:
@@ -120,7 +120,7 @@
             [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
                 [kPyCommandsManager callInterface:kInterfaceDelete_wallet parameter:@{@"name":kWalletManager.currentWalletName,@"password":pwd}];
                 [kWalletManager clearCurrentWalletInfo];
-                [kTools tipMessage:@"删除钱包成功"];
+                [kTools tipMessage:MyLocalizedString(@"Wallet deleted successfully", nil)];
                 [[NSNotificationCenter defaultCenter]postNotificationName:kNotiDeleteWalletComplete object:nil];
                 [self.navigationController popViewControllerAnimated:YES];
             }];

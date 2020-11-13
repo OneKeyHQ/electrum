@@ -173,31 +173,31 @@ typedef enum {
 }
 
 - (IBAction)addressbookBtnClick:(UIButton *)sender {
-    [kTools tipMessage:@"点击了通讯录"];
+    
 }
 - (IBAction)moreBtnClick:(UIButton *)sender {
     self.amountTextField.text = self.balanceLabel.text;
 }
 - (IBAction)coinTypeBtnClick:(UIButton *)sender {
-    NSLog(@"点击了币种类型切换");
+    
 }
-- (IBAction)customBtnClick:(UIButton *)sender {
-    [kTools tipMessage:@"点击了自定义"];
+- (IBAction)customBtnClick:(UIButton *)sender { //点击了自定义
+
 }
 - (IBAction)sendBtnClick:(OKButton *)sender {
     
     if (self.addressTextField.text.length == 0) {
-        [kTools tipMessage:@"请输入转账地址"];
+        [kTools tipMessage:MyLocalizedString(@"Please enter the transfer address", nil)];
         return;
     }
 
     if (self.amountTextField.text.length == 0) {
-        [kTools tipMessage:@"请输入转账金额"];
+        [kTools tipMessage:MyLocalizedString(@"Please enter the transfer amount", nil)];
         return;
     }
     
     if ([self.balanceLabel.text doubleValue] < [self.amountTextField.text doubleValue]) {
-        [kTools tipMessage:@"余额不足"];
+        [kTools tipMessage:MyLocalizedString(@"Lack of balance", nil)];
         return;
     }
     
@@ -232,7 +232,7 @@ typedef enum {
         NSDictionary *signTxDict =  [kPyCommandsManager callInterface:kInterfaceSign_tx parameter:@{@"tx":tx,@"password":password}];
         NSString *signTx = [signTxDict safeStringForKey:@"tx"];
         [kPyCommandsManager callInterface:kInterfaceBroadcast_tx parameter:@{@"tx":signTx}];
-        [kTools tipMessage:@"发送成功"];
+        [kTools tipMessage:MyLocalizedString(@"Send a success", nil)];
         [weakself.navigationController popViewControllerAnimated:YES];
     }];
 }

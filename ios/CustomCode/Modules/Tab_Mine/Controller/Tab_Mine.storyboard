@@ -1250,15 +1250,192 @@
             </objects>
             <point key="canvasLocation" x="2605.7971014492755" y="10.714285714285714"/>
         </scene>
+        <!--Dont Screenshot Tips View Controller-->
+        <scene sceneID="5Ej-UK-c2F">
+            <objects>
+                <viewController storyboardIdentifier="OKDontScreenshotTipsViewController" id="TPr-Uh-CuK" customClass="OKDontScreenshotTipsViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="HvL-dD-Y9h"/>
+                        <viewControllerLayoutGuide type="bottom" id="JH1-DD-i4i"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="k2u-9v-1ke">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tmq-3C-WrN">
+                                <rect key="frame" x="10" y="523.66666666666663" width="394" height="342.33333333333337"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="--" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="DeF-vp-QMl">
+                                        <rect key="frame" x="50" y="30" width="294" height="25"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="25" id="aSi-ET-uwQ"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="18"/>
+                                        <color key="textColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GsJ-IT-bu0">
+                                        <rect key="frame" x="25" y="252.33333333333337" width="344" height="60"/>
+                                        <color key="backgroundColor" red="0.0010134851330000001" green="0.7278487682" blue="0.070087678730000005" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="60" id="Aba-xX-5Q6"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="16"/>
+                                        <state key="normal" title="我知道了">
+                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="iKnowBtnClick:" destination="TPr-Uh-CuK" eventType="touchUpInside" id="2Wy-pD-JB1"/>
+                                        </connections>
+                                    </button>
+                                    <button hidden="YES" opaque="NO" contentMode="center" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="98M-dq-3GC">
+                                        <rect key="frame" x="341" y="10" width="40" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="40" id="Qtx-p1-MpL"/>
+                                            <constraint firstAttribute="height" constant="40" id="gtx-k2-YCO"/>
+                                        </constraints>
+                                        <state key="normal" image="close"/>
+                                        <connections>
+                                            <action selector="closeBtnClick:" destination="TPr-Uh-CuK" eventType="touchUpInside" id="3dG-q8-UJV"/>
+                                        </connections>
+                                    </button>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="The_camera" translatesAutoresizingMaskIntoConstraints="NO" id="uH8-EC-3so">
+                                        <rect key="frame" x="177" y="75" width="40" height="56"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="40" id="8bw-CH-eP1"/>
+                                            <constraint firstAttribute="height" constant="56" id="Rsa-JM-bRS"/>
+                                        </constraints>
+                                    </imageView>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="助记词是非常敏感和隐私的内容，一旦被其他人获取，您的资产有可能全部丢失，因此不要截屏，并注意您的周边有无摄像头。" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YSA-X2-d7B">
+                                        <rect key="frame" x="34" y="151" width="326" height="81.333333333333314"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="GsJ-IT-bu0" secondAttribute="trailing" constant="25" id="0MG-rR-KRO"/>
+                                    <constraint firstItem="GsJ-IT-bu0" firstAttribute="top" secondItem="YSA-X2-d7B" secondAttribute="bottom" constant="20" id="Asg-Pd-5nG"/>
+                                    <constraint firstItem="uH8-EC-3so" firstAttribute="top" secondItem="DeF-vp-QMl" secondAttribute="bottom" constant="20" id="CaQ-Ji-sDG"/>
+                                    <constraint firstItem="uH8-EC-3so" firstAttribute="centerX" secondItem="tmq-3C-WrN" secondAttribute="centerX" id="Hgr-bm-pfq"/>
+                                    <constraint firstItem="DeF-vp-QMl" firstAttribute="top" secondItem="98M-dq-3GC" secondAttribute="bottom" constant="-20" id="Ixw-wH-UoO"/>
+                                    <constraint firstItem="YSA-X2-d7B" firstAttribute="top" secondItem="uH8-EC-3so" secondAttribute="bottom" constant="20" id="MnH-nS-967"/>
+                                    <constraint firstItem="DeF-vp-QMl" firstAttribute="centerX" secondItem="tmq-3C-WrN" secondAttribute="centerX" id="OEJ-X6-24b"/>
+                                    <constraint firstAttribute="trailing" secondItem="YSA-X2-d7B" secondAttribute="trailing" constant="34" id="ReH-PA-xgT"/>
+                                    <constraint firstAttribute="trailing" secondItem="98M-dq-3GC" secondAttribute="trailing" constant="13" id="XAB-rt-9gX"/>
+                                    <constraint firstItem="DeF-vp-QMl" firstAttribute="top" secondItem="tmq-3C-WrN" secondAttribute="top" constant="30" id="aBl-Pc-8c6"/>
+                                    <constraint firstItem="YSA-X2-d7B" firstAttribute="leading" secondItem="tmq-3C-WrN" secondAttribute="leading" constant="34" id="aRl-BF-vSf"/>
+                                    <constraint firstAttribute="bottom" secondItem="GsJ-IT-bu0" secondAttribute="bottom" constant="30" id="acH-yk-3am"/>
+                                    <constraint firstAttribute="trailing" secondItem="DeF-vp-QMl" secondAttribute="trailing" priority="750" constant="50" id="q7f-vO-fIq"/>
+                                    <constraint firstItem="GsJ-IT-bu0" firstAttribute="leading" secondItem="tmq-3C-WrN" secondAttribute="leading" constant="25" id="tBQ-A5-O9p"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="QDm-ie-dmD"/>
+                        <color key="backgroundColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="0.1953392551" colorSpace="custom" customColorSpace="displayP3"/>
+                        <constraints>
+                            <constraint firstItem="tmq-3C-WrN" firstAttribute="leading" secondItem="k2u-9v-1ke" secondAttribute="leading" constant="10" id="Jhn-wY-9TS"/>
+                            <constraint firstAttribute="bottom" secondItem="tmq-3C-WrN" secondAttribute="bottom" constant="30" id="wnu-fp-jea"/>
+                            <constraint firstAttribute="trailing" secondItem="tmq-3C-WrN" secondAttribute="trailing" constant="10" id="zjf-92-tGL"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="contentView" destination="tmq-3C-WrN" id="GUn-bE-aAX"/>
+                        <outlet property="detailLabel" destination="YSA-X2-d7B" id="uVk-pW-FUs"/>
+                        <outlet property="iKnowBtn" destination="GsJ-IT-bu0" id="hBm-kR-ZbD"/>
+                        <outlet property="titleLabel" destination="DeF-vp-QMl" id="563-FD-nBl"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="JuZ-MI-LyG" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2643" y="673"/>
+        </scene>
+        <!--Delete Wallet Tips View Controller-->
+        <scene sceneID="baB-fN-Izb">
+            <objects>
+                <viewController storyboardIdentifier="OKDeleteWalletTipsViewController" id="Wcd-NA-RU2" customClass="OKDeleteWalletTipsViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Jh3-1W-Si9">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ufS-0T-Z73">
+                                <rect key="frame" x="126" y="78" width="162" height="48"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="30"/>
+                                <state key="normal" title="⚠️ 风险提示">
+                                    <color key="titleColor" red="0.078431372549019607" green="0.16470588235294117" blue="0.23137254901960785" alpha="1" colorSpace="deviceRGB"/>
+                                </state>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="一旦删除： 1. 所有 HD 钱包都会被抹除。 2. 请您在删除前务必确认 HD 钱包的根助记词已经抄写并保管好，您可以使用它恢复所有 HD 钱包，从而找回资产。" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="a67-VP-4dz">
+                                <rect key="frame" x="34" y="151" width="346" height="81.333333333333314"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SzC-cw-AY2">
+                                <rect key="frame" x="34" y="680" width="346" height="60"/>
+                                <color key="backgroundColor" red="0.92156862745098034" green="0.3411764705882353" blue="0.3411764705882353" alpha="1" colorSpace="deviceRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="60" id="I4e-hn-Zbp"/>
+                                </constraints>
+                                <state key="normal">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="deleteBtnClick:" destination="Wcd-NA-RU2" eventType="touchUpInside" id="Nal-QR-F6x"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iL7-Ev-HmR">
+                                <rect key="frame" x="123" y="630" width="168" height="22"/>
+                                <state key="normal" title=" 我已知晓以上风险" image="notselected">
+                                    <color key="titleColor" red="0.33085581660000002" green="0.38708245749999998" blue="0.43922376629999998" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                </state>
+                                <state key="selected" image="isselected"/>
+                                <connections>
+                                    <action selector="iAgreeClick:" destination="Wcd-NA-RU2" eventType="touchUpInside" id="C0l-2U-cXZ"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="94k-PO-qJa"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="ufS-0T-Z73" firstAttribute="centerX" secondItem="Jh3-1W-Si9" secondAttribute="centerX" id="1Ff-cH-CX4"/>
+                            <constraint firstItem="94k-PO-qJa" firstAttribute="trailing" secondItem="SzC-cw-AY2" secondAttribute="trailing" constant="34" id="23D-3a-YiE"/>
+                            <constraint firstItem="ufS-0T-Z73" firstAttribute="top" secondItem="94k-PO-qJa" secondAttribute="top" constant="34" id="EfN-8y-ZCc"/>
+                            <constraint firstItem="a67-VP-4dz" firstAttribute="centerX" secondItem="Jh3-1W-Si9" secondAttribute="centerX" id="PPM-ZV-5tO"/>
+                            <constraint firstItem="SzC-cw-AY2" firstAttribute="top" secondItem="iL7-Ev-HmR" secondAttribute="bottom" constant="28" id="QXu-Vn-fpO"/>
+                            <constraint firstItem="a67-VP-4dz" firstAttribute="leading" secondItem="Jh3-1W-Si9" secondAttribute="leading" constant="34" id="UQV-uR-iX2"/>
+                            <constraint firstItem="a67-VP-4dz" firstAttribute="top" secondItem="ufS-0T-Z73" secondAttribute="bottom" constant="25" id="aFq-wI-rOR"/>
+                            <constraint firstAttribute="trailing" secondItem="a67-VP-4dz" secondAttribute="trailing" constant="34" id="bid-hG-L8h"/>
+                            <constraint firstItem="SzC-cw-AY2" firstAttribute="leading" secondItem="94k-PO-qJa" secondAttribute="leading" constant="34" id="fK9-mX-JLl"/>
+                            <constraint firstItem="94k-PO-qJa" firstAttribute="bottom" secondItem="SzC-cw-AY2" secondAttribute="bottom" constant="122" id="faq-pO-r3O"/>
+                            <constraint firstItem="iL7-Ev-HmR" firstAttribute="centerX" secondItem="Jh3-1W-Si9" secondAttribute="centerX" id="yW5-bX-oeg"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="deleteBtn" destination="SzC-cw-AY2" id="PHh-Ik-cij"/>
+                        <outlet property="descLabel" destination="a67-VP-4dz" id="aud-VY-vVb"/>
+                        <outlet property="iAgree" destination="iL7-Ev-HmR" id="gdf-No-6Ur"/>
+                        <outlet property="titleLabel" destination="ufS-0T-Z73" id="2Td-mM-Lfi"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="kwM-P8-xLE" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3511.594202898551" y="675"/>
+        </scene>
     </scenes>
     <resources>
+        <image name="The_camera" width="36" height="31.666666030883789"/>
         <image name="add" width="40" height="40"/>
         <image name="checked" width="24" height="24"/>
+        <image name="close" width="24" height="24"/>
         <image name="copy_white" width="16" height="16"/>
         <image name="iconwriteselect" width="16.666666030883789" height="12.333333015441895"/>
         <image name="info" width="16" height="16"/>
+        <image name="isselected" width="16" height="16"/>
         <image name="logo" width="38" height="73.333335876464844"/>
         <image name="logo_text" width="87.333335876464844" height="27.333333969116211"/>
+        <image name="notselected" width="16" height="16"/>
         <image name="right_arrow_small" width="24" height="24"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
