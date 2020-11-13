@@ -274,9 +274,6 @@ class TrezorClientBase(HardwareClientBase, Logger):
 
     # ========= Unmodified trezorlib methods =========
 
-    def sign_eth_tx(self):
-        print("TODO")
-
     def bixin_backup_device(self):
         with self.run_flow(''):
             return trezorlib.device.bixin_backup_device(self.client)

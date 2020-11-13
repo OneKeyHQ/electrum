@@ -45,9 +45,9 @@ from .util import (InvalidPassword, WalletFileException,
 from .mnemonic import Mnemonic, Wordlist, seed_type, is_seed
 from .plugin import run_hook
 from .logging import Logger
-#from eth_account import Account
-#from eth_keys import keys
-#from hexbytes import HexBytes
+from eth_account import Account
+from eth_keys import keys
+from hexbytes import HexBytes
 
 if TYPE_CHECKING:
     from .gui.qt.util import TaskThread
@@ -259,23 +259,21 @@ class Imported_KeyStore(Software_KeyStore):
 
 
     def import_eth_privkey(self, sec, password):
-        print("")
-        # priv_key = keys.PrivateKey(HexBytes(sec))
-        # pub_key = priv_key.public_key
+        priv_key = keys.PrivateKey(HexBytes(sec))
+        pub_key = priv_key.public_key
 
-        # # pubkey = ecc.ECPrivkey(sec).get_public_key_hex(compressed=False)
-        # test = pub_key.__str__()
-        # self.keypairs[pub_key.__str__()] = pw_encode(sec, password, version=self.pw_hash_version)
-        # return pub_key
+        # pubkey = ecc.ECPrivkey(sec).get_public_key_hex(compressed=False)
+        test = pub_key.__str__()
+        self.keypairs[pub_key.__str__()] = pw_encode(sec, password, version=self.pw_hash_version)
+        return pub_key
 
     def get_eth_private_key(self, pubkey: str, password):
-        print("")
-        # sec = pw_decode(self.keypairs[pubkey], password, version=self.pw_hash_version)
-        # priv_key = keys.PrivateKey(HexBytes(sec))
-        # pub_key = priv_key.public_key
-        # if pub_key.__str__() != pubkey:
-        #     raise InvalidPassword()
-        # return sec
+        sec = pw_decode(self.keypairs[pubkey], password, version=self.pw_hash_version)
+        priv_key = keys.PrivateKey(HexBytes(sec))
+        pub_key = priv_key.public_key
+        if pub_key.__str__() != pubkey:
+            raise InvalidPassword()
+        return sec
 
     def delete_imported_key(self, key):
         self.keypairs.pop(key)
