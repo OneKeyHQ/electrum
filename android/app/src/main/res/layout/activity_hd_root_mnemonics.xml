@@ -24,6 +24,7 @@
             android:src="@drawable/left_arrow" />
 
         <TextView
+            android:id="@+id/tet_title_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
@@ -46,6 +47,7 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/text_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/dp_10"
@@ -97,15 +99,13 @@
                             android:textColor="@color/text_three"
                             android:textSize="@dimen/sp_14" />
 
-                        <EditText
+                        <TextView
                             android:id="@+id/edit_one"
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/dp_44"
                             android:layout_marginTop="3dp"
                             android:background="@drawable/white_clrcle"
                             android:gravity="center"
-                            android:imeOptions="actionNext"
-                            android:nextFocusForward="@id/edit_two"
                             android:paddingStart="@dimen/dp_6"
                             android:paddingEnd="@dimen/dp_6"
                             android:singleLine="true"
@@ -131,15 +131,13 @@
                             android:textSize="@dimen/sp_14"
                             tools:ignore="HardcodedText" />
 
-                        <EditText
+                        <TextView
                             android:id="@+id/edit_two"
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/dp_44"
                             android:layout_marginTop="3dp"
                             android:background="@drawable/white_clrcle"
                             android:gravity="center"
-                            android:imeOptions="actionNext"
-                            android:nextFocusForward="@id/edit_three"
                             android:paddingStart="@dimen/dp_6"
                             android:paddingEnd="@dimen/dp_6"
                             android:singleLine="true"
@@ -165,15 +163,13 @@
                             android:textSize="@dimen/sp_14"
                             tools:ignore="HardcodedText" />
 
-                        <EditText
+                        <TextView
                             android:id="@+id/edit_three"
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/dp_44"
                             android:layout_marginTop="3dp"
                             android:background="@drawable/white_clrcle"
                             android:gravity="center"
-                            android:imeOptions="actionNext"
-                            android:nextFocusForward="@id/edit_four"
                             android:paddingStart="@dimen/dp_6"
                             android:paddingEnd="@dimen/dp_6"
                             android:singleLine="true"
@@ -207,15 +203,13 @@
                             android:textSize="@dimen/sp_14"
                             tools:ignore="HardcodedText" />
 
-                        <EditText
+                        <TextView
                             android:id="@+id/edit_four"
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/dp_44"
                             android:layout_marginTop="3dp"
                             android:background="@drawable/white_clrcle"
                             android:gravity="center"
-                            android:imeOptions="actionNext"
-                            android:nextFocusForward="@id/edit_five"
                             android:paddingStart="@dimen/dp_6"
                             android:paddingEnd="@dimen/dp_6"
                             android:singleLine="true"
@@ -241,15 +235,13 @@
                             android:textSize="@dimen/sp_14"
                             tools:ignore="HardcodedText" />
 
-                        <EditText
+                        <TextView
                             android:id="@+id/edit_five"
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/dp_44"
                             android:layout_marginTop="3dp"
                             android:background="@drawable/white_clrcle"
                             android:gravity="center"
-                            android:imeOptions="actionNext"
-                            android:nextFocusForward="@id/edit_six"
                             android:paddingStart="@dimen/dp_6"
                             android:paddingEnd="@dimen/dp_6"
                             android:singleLine="true"
@@ -275,15 +267,13 @@
                             android:textSize="@dimen/sp_14"
                             tools:ignore="HardcodedText" />
 
-                        <EditText
+                        <TextView
                             android:id="@+id/edit_six"
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/dp_44"
                             android:layout_marginTop="3dp"
                             android:background="@drawable/white_clrcle"
                             android:gravity="center"
-                            android:imeOptions="actionNext"
-                            android:nextFocusForward="@id/edit_seven"
                             android:paddingStart="@dimen/dp_6"
                             android:paddingEnd="@dimen/dp_6"
                             android:singleLine="true"
@@ -317,15 +307,13 @@
                             android:textSize="@dimen/sp_14"
                             tools:ignore="HardcodedText" />
 
-                        <EditText
+                        <TextView
                             android:id="@+id/edit_seven"
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/dp_44"
                             android:layout_marginTop="3dp"
                             android:background="@drawable/white_clrcle"
                             android:gravity="center"
-                            android:imeOptions="actionNext"
-                            android:nextFocusForward="@id/edit_eight"
                             android:paddingStart="@dimen/dp_6"
                             android:paddingEnd="@dimen/dp_6"
                             android:singleLine="true"
@@ -351,15 +339,13 @@
                             android:textSize="@dimen/sp_14"
                             tools:ignore="HardcodedText" />
 
-                        <EditText
+                        <TextView
                             android:id="@+id/edit_eight"
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/dp_44"
                             android:layout_marginTop="3dp"
                             android:background="@drawable/white_clrcle"
                             android:gravity="center"
-                            android:imeOptions="actionNext"
-                            android:nextFocusForward="@id/edit_nine"
                             android:paddingStart="@dimen/dp_6"
                             android:paddingEnd="@dimen/dp_6"
                             android:singleLine="true"
@@ -385,15 +371,13 @@
                             android:textSize="@dimen/sp_14"
                             tools:ignore="HardcodedText" />
 
-                        <EditText
+                        <TextView
                             android:id="@+id/edit_nine"
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/dp_44"
                             android:layout_marginTop="3dp"
                             android:background="@drawable/white_clrcle"
                             android:gravity="center"
-                            android:imeOptions="actionNext"
-                            android:nextFocusForward="@id/edit_ten"
                             android:paddingStart="@dimen/dp_6"
                             android:paddingEnd="@dimen/dp_6"
                             android:singleLine="true"
@@ -428,15 +412,13 @@
                             android:textSize="@dimen/sp_14"
                             tools:ignore="HardcodedText" />
 
-                        <EditText
+                        <TextView
                             android:id="@+id/edit_ten"
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/dp_44"
                             android:layout_marginTop="3dp"
                             android:background="@drawable/white_clrcle"
                             android:gravity="center"
-                            android:imeOptions="actionNext"
-                            android:nextFocusForward="@id/edit_eleven"
                             android:paddingStart="@dimen/dp_6"
                             android:paddingEnd="@dimen/dp_6"
                             android:singleLine="true"
@@ -462,15 +444,13 @@
                             android:textSize="@dimen/sp_14"
                             tools:ignore="HardcodedText" />
 
-                        <EditText
+                        <TextView
                             android:id="@+id/edit_eleven"
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/dp_44"
                             android:layout_marginTop="3dp"
                             android:background="@drawable/white_clrcle"
                             android:gravity="center"
-                            android:imeOptions="actionNext"
-                            android:nextFocusForward="@id/edit_twelve"
                             android:paddingStart="@dimen/dp_6"
                             android:paddingEnd="@dimen/dp_6"
                             android:singleLine="true"
@@ -496,7 +476,7 @@
                             android:textSize="@dimen/sp_14"
                             tools:ignore="HardcodedText" />
 
-                        <EditText
+                        <TextView
                             android:id="@+id/edit_twelve"
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/dp_44"

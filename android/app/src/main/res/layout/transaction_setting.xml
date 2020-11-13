@@ -112,7 +112,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:thumb="@drawable/switch_custom_thumb_selector"
-                        android:track="@drawable/switch_custom_track_selector" />
+                        android:track="@drawable/switch_custom_track_selector"
+                        tools:ignore="UseSwitchCompatOrMaterialXml" />
                 </LinearLayout>
 
                 <View
@@ -146,7 +147,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:thumb="@drawable/switch_custom_thumb_selector"
-                        android:track="@drawable/switch_custom_track_selector" />
+                        android:track="@drawable/switch_custom_track_selector"
+                        tools:ignore="UseSwitchCompatOrMaterialXml" />
                 </LinearLayout>
                 <View
                     android:layout_width="match_parent"
@@ -196,7 +198,7 @@
                     android:layout_height="59.5dp"
                     android:gravity="center"
                     android:text="@string/restore_default_set"
-                    android:textColor="@color/button_bk_disableok"
+                    android:textColor="@color/onekey"
 
                     android:textSize="15sp" />
 

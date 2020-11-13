@@ -28,13 +28,14 @@
                 android:src="@drawable/left_arrow" />
 
             <TextView
+                android:id="@+id/text_page_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
                 android:layout_gravity="center"
                 android:fontFamily="sans-serif-medium"
-                android:text="@string/create_new_walt"
+                android:text="@string/check_pass"
                 android:textColor="@color/text"
                 android:textSize="@dimen/text_size" />
 
@@ -70,26 +71,19 @@
             android:background="@drawable/gray_broken"
             android:gravity="center_vertical">
 
-            <ScrollView
+            <EditText
+                android:id="@+id/edit_pass"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:fillViewport="true">
-
-                <EditText
-                    android:id="@+id/edit_pass"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@null"
-                    android:hint="@string/input_new_pass"
-                    android:inputType="textPassword"
-                    android:paddingStart="@dimen/dp_15"
-                    android:textColor="@color/text_two"
-                    android:textSize="@dimen/sp_14"
-                    android:textStyle="normal"
-                    tools:ignore="RtlSymmetry" />
-            </ScrollView>
-
+                android:background="@null"
+                android:hint="@string/input_new_pass"
+                android:inputType="textPassword"
+                android:paddingStart="@dimen/dp_15"
+                android:textColor="@color/text_two"
+                android:textSize="@dimen/sp_14"
+                android:textStyle="normal"
+                tools:ignore="RtlSymmetry" />
 
             <ImageView
                 android:id="@+id/img_eye_yes"

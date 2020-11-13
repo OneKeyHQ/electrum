@@ -66,7 +66,7 @@
                     android:paddingStart="@dimen/text_margin"
                     android:paddingEnd="@dimen/text_margin"
                     android:text="@string/follow_system"
-                    android:textColor="@color/onekey" />
+                    android:textColor="@color/text_color1" />
 
                 <View
                     android:layout_width="match_parent"
@@ -83,7 +83,7 @@
                     android:paddingStart="@dimen/text_margin"
                     android:paddingEnd="@dimen/text_margin"
                     android:text="@string/zh_simple"
-                    android:textColor="@color/text_color1" />
+                    android:textColor="@color/onekey" />
 
                 <View
                     android:layout_width="match_parent"

@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:clipToPadding="true"
     android:fitsSystemWindows="true"
-    android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".activities.settings.CurrencyActivity">
 
@@ -53,6 +53,68 @@
                 android:layout_marginStart="@dimen/dp_10"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="@dimen/dp_10"
+                android:outlineSpotShadowColor="@color/shadow_color"
+                app:cardCornerRadius="@dimen/dp_8"
+                app:cardElevation="@dimen/dp_8"
+                tools:ignore="UnusedAttribute">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/uyuerbfjhb"
+                        android:layout_width="wrap_content"
+                        android:layout_height="59.5dp"
+                        android:layout_marginStart="@dimen/dp_16"
+                        android:gravity="center_vertical"
+                        android:text="@string/legal_table"
+                        android:textColor="@color/graytext_color"
+                        android:textSize="@dimen/sp_13" />
+
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recl_cnyTable"
+                        android:layout_width="match_parent"
+                        android:layout_height="180dp"
+                        android:layout_below="@+id/uyuerbfjhb"
+                        android:layout_marginBottom="@dimen/dp_10"
+                        android:visibility="gone"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        tools:itemCount="3"
+                        tools:listitem="@layout/cny_item">
+
+                    </androidx.recyclerview.widget.RecyclerView>
+
+                    <View
+                        android:id="@+id/msjdhkjskdj"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/line_hight"
+                        android:layout_below="@+id/recl_cnyTable"
+                        android:layout_marginStart="@dimen/dp_16"
+                        android:layout_marginEnd="@dimen/dp_16"
+                        android:background="@color/line_color" />
+
+                    <TextView
+                        android:id="@+id/tet_CheckAll"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/dp_50"
+                        android:layout_below="@+id/msjdhkjskdj"
+                        android:gravity="center"
+                        android:text="@string/check_all"
+                        android:textColor="@color/button_bk_disableok"
+                        android:textSize="15sp" />
+                </RelativeLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_10"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="@dimen/dp_10"
+                android:layout_marginBottom="@dimen/dp_10"
                 android:outlineSpotShadowColor="@color/shadow_color"
                 app:cardCornerRadius="@dimen/dp_8"
                 app:cardElevation="@dimen/dp_8"
@@ -124,8 +186,8 @@
                             android:id="@+id/btn_btcOne"
                             android:layout_width="match_parent"
                             android:layout_height="59dp"
-                            android:button="@null"
                             android:background="@color/transparent"
+                            android:button="@null"
                             android:text="@string/_BTC"
                             android:textColor="@drawable/textcolor"
                             android:textSize="15sp" />
@@ -153,8 +215,8 @@
                         <RadioButton
                             android:id="@+id/btn_btcFour"
                             android:layout_width="match_parent"
-                            android:background="@color/transparent"
                             android:layout_height="59dp"
+                            android:background="@color/transparent"
                             android:button="@null"
                             android:text="@string/sat_0_00000001_btc"
                             android:textColor="@drawable/textcolor"
@@ -164,68 +226,6 @@
                 </RelativeLayout>
             </androidx.cardview.widget.CardView>
 
-            <androidx.cardview.widget.CardView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/dp_10"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="@dimen/dp_10"
-                android:layout_marginBottom="@dimen/dp_10"
-                android:outlineSpotShadowColor="@color/shadow_color"
-                app:cardCornerRadius="@dimen/dp_8"
-                app:cardElevation="@dimen/dp_8"
-                tools:ignore="UnusedAttribute">
-
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/uyuerbfjhb"
-                        android:layout_width="wrap_content"
-                        android:layout_height="59.5dp"
-                        android:layout_marginStart="@dimen/dp_16"
-                        android:gravity="center_vertical"
-                        android:text="@string/legal_table"
-                        android:textColor="@color/graytext_color"
-                        android:textSize="@dimen/sp_13" />
-
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/recl_cnyTable"
-                        android:layout_width="match_parent"
-                        android:layout_height="180dp"
-                        android:layout_below="@+id/uyuerbfjhb"
-                        android:layout_marginBottom="@dimen/dp_10"
-                        android:visibility="gone"
-                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                        tools:itemCount="3"
-                        tools:listitem="@layout/cny_item">
-
-                    </androidx.recyclerview.widget.RecyclerView>
-
-                    <View
-                        android:id="@+id/msjdhkjskdj"
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/line_hight"
-                        android:layout_below="@+id/recl_cnyTable"
-                        android:layout_marginStart="@dimen/dp_16"
-                        android:layout_marginEnd="@dimen/dp_16"
-                        android:background="@color/line_color" />
-
-                    <TextView
-                        android:id="@+id/tet_CheckAll"
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/dp_50"
-                        android:layout_below="@+id/msjdhkjskdj"
-                        android:gravity="center"
-                        android:text="@string/check_all"
-                        android:textColor="@color/button_bk_disableok"
-                        android:textSize="15sp" />
-                </RelativeLayout>
-            </androidx.cardview.widget.CardView>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </LinearLayout>

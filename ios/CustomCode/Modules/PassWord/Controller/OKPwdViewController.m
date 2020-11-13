@@ -244,11 +244,11 @@ typedef enum {
             NSString *old_password  = self.pwdInputViewFirst.text;
             NSString *new_password = self.pwdInputViewSecond.text;
             if ([old_password isEqualToString:new_password]) {
-                [kTools tipMessage:@"新密码不能与旧密码相同"];
+                [kTools tipMessage:MyLocalizedString(@"The new password cannot be the same as the old one", nil)];
                 return;
             }
             [kPyCommandsManager callInterface:kInterfaceUpdate_password parameter:@{@"old_password":old_password,@"new_password":new_password}];
-            [kTools tipMessage:@"密码修改成功"];
+            [kTools tipMessage:MyLocalizedString(@"Password changed successfully", nil)];
             [self dismissViewControllerAnimated:YES completion:nil];
         }
     }
@@ -303,12 +303,12 @@ typedef enum {
             NSString *old_password  = self.longPwdFirstTextField.text;
             NSString *new_password = self.longPwdSecondTextField.text;
             if ([old_password isEqualToString:new_password]) {
-                [kTools tipMessage:@"新密码不能与旧密码相同"];
+                [kTools tipMessage:MyLocalizedString(@"The new password cannot be the same as the old one", nil)];
                 return;
             }
             NSString *result = [kPyCommandsManager callInterface:kInterfaceUpdate_password parameter:@{@"old_password":old_password,@"new_password":new_password}];
             if (![result isEqualToString:kErrorMsg]) {
-                [kTools tipMessage:@"密码修改成功"];
+                [kTools tipMessage:MyLocalizedString(@"Password changed successfully", nil)];
             }
             [self dismissViewControllerAnimated:YES completion:nil];
         }

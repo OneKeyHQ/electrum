@@ -4,8 +4,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.event.FinishEvent;
 import org.haobtc.onekey.onekeys.dialog.SetHDWalletPassActivity;
 
 import butterknife.ButterKnife;
@@ -21,6 +24,7 @@ public class WalletManageActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        EventBus.getDefault().register(this);
     }
 
     @Override
@@ -36,7 +40,7 @@ public class WalletManageActivity extends BaseActivity {
                 break;
             case R.id.rel_export_word:
                 Intent intent1 = new Intent(WalletManageActivity.this, SetHDWalletPassActivity.class);
-                intent1.putExtra("importHdword","importHdword");
+                intent1.putExtra("importHdword", "importHdword");
                 startActivity(intent1);
                 break;
             case R.id.rel_delete_wallet:
@@ -44,5 +48,16 @@ public class WalletManageActivity extends BaseActivity {
                 startActivity(intent);
                 break;
         }
+    }
+
+    @Subscribe
+    public void onFinish(FinishEvent event) {
+        finish();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 }

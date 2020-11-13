@@ -88,7 +88,7 @@ echo ""
 echo "Building Briefcase-Based iOS Project..."
 echo ""
 if [ ! -e  ${HOME}/.briefcase/Python-3.8-iOS-support.b3.tar ]; then
-   curl -C -L "https://briefcase-support.org/python?platform=iOS&version=3.8" -o ${HOME}/.briefcase/Python-3.8-iOS-support.b3.tar
+   curl -C - -L "https://briefcase-support.org/python?platform=iOS&version=3.8" -o ${HOME}/.briefcase/Python-3.8-iOS-support.b3.tar
 fi
 python3.8 setup.py ios --support-pkg=${HOME}/.briefcase/Python-3.8-iOS-support.b3.tar
 if [ "$?" != 0 ]; then

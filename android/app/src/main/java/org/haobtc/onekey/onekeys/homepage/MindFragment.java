@@ -1,6 +1,8 @@
 package org.haobtc.onekey.onekeys.homepage;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -9,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.AboutActivity;
@@ -26,11 +29,15 @@ import org.haobtc.onekey.onekeys.homepage.process.SendHdActivity;
 
 
 public class MindFragment extends Fragment implements View.OnClickListener {
+
+    private SharedPreferences preferences;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_mind, container, false);
+        preferences = getActivity().getSharedPreferences("Preferences", Context.MODE_PRIVATE);
         RelativeLayout txSet = view.findViewById(R.id.rel_tx_set);
         txSet.setOnClickListener(this);
         RelativeLayout txLanguage = view.findViewById(R.id.rel_language);
@@ -90,8 +97,13 @@ public class MindFragment extends Fragment implements View.OnClickListener {
                 startActivity(intent7);
                 break;
             case R.id.rel_pass:
-                Intent intent8 = new Intent(getActivity(), FixHdPassActivity.class);
-                startActivity(intent8);
+                boolean isHaveWallet = preferences.getBoolean("isHaveWallet", false);
+                if (isHaveWallet){
+                    Intent intent8 = new Intent(getActivity(), FixHdPassActivity.class);
+                    startActivity(intent8);
+                }else{
+                    Toast.makeText(getActivity(), getString(R.string.please_create_wallet), Toast.LENGTH_SHORT).show();
+                }
                 break;
             case R.id.rel_internet:
                 Intent intent9 = new Intent(getActivity(), ServerSettingActivity.class);

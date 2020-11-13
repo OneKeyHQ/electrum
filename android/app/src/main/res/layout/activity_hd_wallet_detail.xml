@@ -260,7 +260,8 @@
                     android:id="@+id/rel_export_keystore"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/dp_66"
-                    android:background="@color/button_bk_ddake">
+                    android:background="@color/button_bk_ddake"
+                    android:visibility="gone">
 
                     <TextView
                         android:layout_width="wrap_content"

@@ -59,7 +59,7 @@ public class CNYAdapter extends RecyclerView.Adapter<CNYAdapter.myViewHolder> {
             }
         });
         if (listCNY.get(position).isStatus()) {
-            holder.tetCny.setTextColor(context.getColor(R.color.button_bk_disableok));
+            holder.tetCny.setTextColor(context.getColor(R.color.onekey));
 //            holder.tet_types.setBackgroundColor(Color.parseColor("#ffffff"));
         } else {
             holder.tetCny.setTextColor(context.getColor(R.color.text));

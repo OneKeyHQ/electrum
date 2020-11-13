@@ -1,6 +1,11 @@
 package org.haobtc.onekey.onekeys.dialog;
 
 import android.content.Intent;
+
+import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -8,6 +13,7 @@ import android.widget.EditText;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.constant.Constant;
+import org.haobtc.onekey.activities.personalwallet.mnemonic_word.MnemonicWordActivity;
 import org.haobtc.onekey.onekeys.dialog.recovery.ImprotSingleActivity;
 import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
 
@@ -52,7 +58,19 @@ public class RecoverHdWalletActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
-
+        TextWatcher1 textWatcher1 = new TextWatcher1();
+        editOne.addTextChangedListener(textWatcher1);
+        editTwo.addTextChangedListener(textWatcher1);
+        editThree.addTextChangedListener(textWatcher1);
+        editFour.addTextChangedListener(textWatcher1);
+        editFive.addTextChangedListener(textWatcher1);
+        editSix.addTextChangedListener(textWatcher1);
+        editSeven.addTextChangedListener(textWatcher1);
+        editEight.addTextChangedListener(textWatcher1);
+        editNine.addTextChangedListener(textWatcher1);
+        editTen.addTextChangedListener(textWatcher1);
+        editEleven.addTextChangedListener(textWatcher1);
+        editTwelve.addTextChangedListener(textWatcher1);
     }
 
     @Override
@@ -67,7 +85,22 @@ public class RecoverHdWalletActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.btn_recovery:
+                String strone = editOne.getText().toString();
+                String strtwo = editTwo.getText().toString();
+                String strthree = editThree.getText().toString();
+                String strfour = editFour.getText().toString();
+                String strfive = editFive.getText().toString();
+                String strsix = editSix.getText().toString();
+                String strseven = editSeven.getText().toString();
+                String streight = editEight.getText().toString();
+                String strnine = editNine.getText().toString();
+                String strten = editTen.getText().toString();
+                String streleven = editEleven.getText().toString();
+                String strtwelve = editTwelve.getText().toString();
+                String strNewseed = strone + " " + strtwo + " " + strthree + " " + strfour + " " + strfive + " " + strsix + " " + strseven + " " + streight + " " + strnine + " " + strten + " " + streleven + " " + strtwelve;
                 Intent intent = new Intent(RecoverHdWalletActivity.this, SetHDWalletPassActivity.class);
+                intent.putExtra("importHdword", "recoveryHdWallet");
+                intent.putExtra("recoverySeed", strNewseed);
                 startActivity(intent);
                 break;
             case R.id.lin_hard_recovery:
@@ -79,6 +112,31 @@ public class RecoverHdWalletActivity extends BaseActivity {
                 Intent intent2 = new Intent(RecoverHdWalletActivity.this, ImprotSingleActivity.class);
                 startActivity(intent2);
                 break;
+        }
+    }
+
+    class TextWatcher1 implements TextWatcher {
+
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        }
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+            if ((editOne.length() > 0 && editTwo.length() > 0 && editThree.length() > 0 && editFour.length() > 0)
+                    && editFive.length() > 0 && editSix.length() > 0 && editSeven.length() > 0 && editEight.length() > 0
+                    && editNine.length() > 0 && editTen.length() > 0 && editEleven.length() > 0 && editTwelve.length() > 0) {
+                btnRecovery.setEnabled(true);
+                btnRecovery.setBackground(getDrawable(R.drawable.btn_checked));
+            } else {
+                btnRecovery.setEnabled(false);
+                btnRecovery.setBackground(getDrawable(R.drawable.btn_no_check));
+            }
         }
     }
 }

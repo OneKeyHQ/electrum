@@ -58,13 +58,11 @@
     [self.authIDControl yz_showAuthIDWithDescribe:@"aaa" BlockState:^(YZAuthIDState state, NSError *error) {
         if (state == YZAuthIDStateNotSupport
             || state == YZAuthIDStatePasswordNotSet || state == YZAuthIDStateTouchIDNotSet) { // 不支持TouchID/FaceID
-            [kTools tipMessage:@"不支持FaceID"];
+            [kTools tipMessage:MyLocalizedString(@"Does not support FaceID", nil)];
             [self.rightSwitch setOn:NO];
         } else if(state == YZAuthIDStateFail) { // 认证失败
             self.rightSwitch.on = !sender.isOn;
-            NSLog(@"指纹/面部ID不正确，认证失败");
         } else if(state == YZAuthIDStateTouchIDLockout) {   // 多次错误，已被锁定
-            NSLog(@"多次错误，指纹/面部ID已被锁定，请到手机解锁界面输入密码");
             self.rightSwitch.on = !sender.isOn;
         } else if (state == YZAuthIDStateSuccess) { // TouchID/FaceID验证成功
             kWalletManager.isOpenAuthBiological = self.rightSwitch.on;

@@ -384,7 +384,7 @@
             BaseNavigationController *baseVc = [[BaseNavigationController alloc]initWithRootViewController:wordImport];
             [weakself.view.window.rootViewController presentViewController:baseVc animated:YES completion:nil];
         }else if (model.type == OKSelectCellTypeMatchHD){ //匹配硬件
-            [kTools tipMessage:@"匹配硬件钱包"];
+            
         }
         return;
     }

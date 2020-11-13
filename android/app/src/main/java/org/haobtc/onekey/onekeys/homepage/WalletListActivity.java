@@ -5,13 +5,13 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -51,7 +51,7 @@ import static org.haobtc.onekey.activities.service.CommunicationModeSelector.exe
 public class WalletListActivity extends BaseActivity {
 
     @BindView(R.id.recl_wallet_detail)
-    RelativeLayout reclWalletDetail;
+    LinearLayout reclWalletDetail;
     @BindView(R.id.recl_wallet_list)
     RecyclerView reclWalletList;
     @BindView(R.id.text_wallet_num)
@@ -102,13 +102,13 @@ public class WalletListActivity extends BaseActivity {
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
-    @OnClick({R.id.img_close, R.id.recl_wallet, R.id.lin_pair_wallet, R.id.lin_add_wallet, R.id.view_all, R.id.view_btc, R.id.view_eth, R.id.recl_add_wallet, R.id.img_add})
+    @OnClick({R.id.img_close, R.id.recl_wallet_detail, R.id.lin_pair_wallet, R.id.lin_add_wallet, R.id.view_all, R.id.view_btc, R.id.view_eth, R.id.recl_add_wallet, R.id.img_add, R.id.img_w})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_close:
                 finish();
                 break;
-            case R.id.recl_wallet:
+            case R.id.recl_wallet_detail:
                 mIntent(HomeOnekeyActivity.class);
                 break;
             case R.id.lin_pair_wallet:
@@ -183,7 +183,7 @@ public class WalletListActivity extends BaseActivity {
                 textWalletNum.setText(String.valueOf(ethList.size()));
                 reclAddWallet.setVisibility(View.GONE);
                 reclWalletDetail.setVisibility(View.GONE);
-                imgAdd.setVisibility(View.GONE);
+                imgAdd.setVisibility(View.VISIBLE);
                 if (ethList == null || ethList.size() == 0) {
                     reclWalletList.setVisibility(View.GONE);
                     tetNone.setVisibility(View.VISIBLE);
@@ -218,7 +218,32 @@ public class WalletListActivity extends BaseActivity {
                 intent1.putExtra("walletType", "derive");
                 startActivity(intent1);
                 break;
+            case R.id.img_w:
+                whatIsHd(WalletListActivity.this, R.layout.what_is_hd);
+                break;
         }
+    }
+
+    private void whatIsHd(Context context, @LayoutRes int resource) {
+        //set see view
+        View view = View.inflate(context, resource, null);
+        Dialog dialogBtoms = new Dialog(context, R.style.dialog);
+        view.findViewById(R.id.btn_next).setOnClickListener(v -> {
+            dialogBtoms.dismiss();
+        });
+        view.findViewById(R.id.img_cancel).setOnClickListener(v -> {
+            dialogBtoms.dismiss();
+        });
+        dialogBtoms.setContentView(view);
+        Window window = dialogBtoms.getWindow();
+        //set pop_up size
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        //set locate
+        window.setGravity(Gravity.BOTTOM);
+        //set animal
+        window.setWindowAnimations(R.style.AnimBottom);
+        dialogBtoms.setCanceledOnTouchOutside(true);
+        dialogBtoms.show();
     }
 
     private void getHomeWalletList() {
@@ -237,70 +262,67 @@ public class WalletListActivity extends BaseActivity {
                 if (getWalletsListInfo.toString().length() > 2) {
                     String toStrings = getWalletsListInfo.toString();
                     Log.i("mWheelplanting", "toStrings: " + toStrings);
+                    JSONArray jsonDatas = com.alibaba.fastjson.JSONObject.parseArray(toStrings);
+                    for (int i = 0; i < jsonDatas.size(); i++) {
+                        Map jsonToMap = (Map) jsonDatas.get(i);
+                        Set keySets = jsonToMap.keySet();
+                        Iterator ki = keySets.iterator();
+                        AddressEvent addressEvent = new AddressEvent();
+                        AddressEvent btcEvent = new AddressEvent();
+                        AddressEvent ethEvent = new AddressEvent();
+                        AddressEvent eosEvent = new AddressEvent();
 
-                    if (toStrings.length() != 2) {
-                        JSONArray jsonDatas = com.alibaba.fastjson.JSONObject.parseArray(toStrings);
-                        for (int i = 0; i < jsonDatas.size(); i++) {
-                            Map jsonToMap = (Map) jsonDatas.get(i);
-                            Set keySets = jsonToMap.keySet();
-                            Iterator ki = keySets.iterator();
-                            AddressEvent addressEvent = new AddressEvent();
-                            AddressEvent btcEvent = new AddressEvent();
-                            AddressEvent ethEvent = new AddressEvent();
-                            AddressEvent eosEvent = new AddressEvent();
-
-                            while (ki.hasNext()) {
-                                try {
-                                    //get key
-                                    String key = (String) ki.next();
-                                    String value = jsonToMap.get(key).toString();
-                                    JSONObject jsonObject = new JSONObject(value);
-                                    String addr = jsonObject.getString("addr");
-                                    String type = jsonObject.getString("type");
-                                    if (type.contains("hd") || type.contains("derived")) {
-                                        addressEvent.setName(key);
-                                        addressEvent.setType(type);
-                                        addressEvent.setAmount(addr);
-                                        hdWalletList.add(addressEvent);
-                                    }
-                                    if (type.contains("btc")) {
-                                        btcEvent.setName(key);
-                                        btcEvent.setType(type);
-                                        btcEvent.setAmount(addr);
-                                        btcList.add(btcEvent);
-                                    } else if (type.contains("eth")) {
-                                        ethEvent.setName(key);
-                                        ethEvent.setType(type);
-                                        ethEvent.setAmount(addr);
-                                        ethList.add(ethEvent);
-                                    } else if (type.contains("eos")) {
-                                        eosEvent.setName(key);
-                                        eosEvent.setType(type);
-                                        eosEvent.setAmount(addr);
-                                        eosList.add(eosEvent);
-                                    }
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
+                        while (ki.hasNext()) {
+                            try {
+                                //get key
+                                String key = (String) ki.next();
+                                String value = jsonToMap.get(key).toString();
+                                JSONObject jsonObject = new JSONObject(value);
+                                String addr = jsonObject.getString("addr");
+                                String type = jsonObject.getString("type");
+                                if (type.contains("hd") || type.contains("derived")) {
+                                    addressEvent.setName(key);
+                                    addressEvent.setType(type);
+                                    addressEvent.setAmount(addr);
+                                    hdWalletList.add(addressEvent);
                                 }
+                                if (type.contains("btc")) {
+                                    btcEvent.setName(key);
+                                    btcEvent.setType(type);
+                                    btcEvent.setAmount(addr);
+                                    btcList.add(btcEvent);
+                                } else if (type.contains("eth")) {
+                                    ethEvent.setName(key);
+                                    ethEvent.setType(type);
+                                    ethEvent.setAmount(addr);
+                                    ethList.add(ethEvent);
+                                } else if (type.contains("eos")) {
+                                    eosEvent.setName(key);
+                                    eosEvent.setType(type);
+                                    eosEvent.setAmount(addr);
+                                    eosList.add(eosEvent);
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
                         }
-                        textWalletNum.setText(String.valueOf(hdWalletList.size()));
-                        if (hdWalletList == null || hdWalletList.size() == 0) {
-                            reclWalletList.setVisibility(View.GONE);
-                            tetNone.setVisibility(View.VISIBLE);
-                        } else {
-                            WalletListAdapter walletListAdapter = new WalletListAdapter(hdWalletList);
-                            reclWalletList.setAdapter(walletListAdapter);
-                            walletListAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
-                                @Override
-                                public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                                    String name = hdWalletList.get(position).getName();
-                                    edit.putString("loadWalletName", name);
-                                    edit.apply();
-                                    mIntent(HomeOnekeyActivity.class);
-                                }
-                            });
-                        }
+                    }
+                    textWalletNum.setText(String.valueOf(hdWalletList.size()));
+                    if (hdWalletList == null || hdWalletList.size() == 0) {
+                        reclWalletList.setVisibility(View.GONE);
+                        tetNone.setVisibility(View.VISIBLE);
+                    } else {
+                        WalletListAdapter walletListAdapter = new WalletListAdapter(hdWalletList);
+                        reclWalletList.setAdapter(walletListAdapter);
+                        walletListAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                                String name = hdWalletList.get(position).getName();
+                                edit.putString("loadWalletName", name);
+                                edit.apply();
+                                mIntent(HomeOnekeyActivity.class);
+                            }
+                        });
                     }
                 }
             }

@@ -1,6 +1,7 @@
 package org.haobtc.onekey.onekeys.dialog.recovery.importmethod;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -20,6 +21,7 @@ import com.chaquo.python.Kwarg;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.onekeys.HomeOnekeyActivity;
+import org.haobtc.onekey.onekeys.dialog.SetHDWalletPassActivity;
 import org.haobtc.onekey.onekeys.homepage.process.SetDeriveWalletNameActivity;
 import org.haobtc.onekey.utils.Daemon;
 
@@ -104,55 +106,13 @@ public class ImportMnemonicActivity extends BaseActivity {
                     return;
                 }
                 String strNewseed = strone + " " + strtwo + " " + strthree + " " + strfour + " " + strfive + " " + strsix + " " + strseven + " " + streight + " " + strnine + " " + strten + " " + streleven + " " + strtwelve;
-                inputPassDialog(strNewseed);
+                Intent intent = new Intent(ImportMnemonicActivity.this, SetHDWalletPassActivity.class);
+                intent.putExtra("importHdword", "importMnemonic");
+                intent.putExtra("recoverySeed", strNewseed);
+                intent.putExtra("walletName", editSetWalletName.getText().toString());
+                startActivity(intent);
 
                 break;
         }
-    }
-
-    private void inputPassDialog(String seed) {
-        View view1 = LayoutInflater.from(ImportMnemonicActivity.this).inflate(R.layout.input_wallet_pass, null, false);
-        AlertDialog alertDialog = new AlertDialog.Builder(ImportMnemonicActivity.this).setView(view1).create();
-        EditText strPass = view1.findViewById(R.id.edit_password);
-        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        view1.findViewById(R.id.btn_enter_wallet).setOnClickListener(v -> {
-            //import mnemonic wallet
-            importMnemonicWallet(strPass.getText().toString(),seed);
-
-        });
-
-        view1.findViewById(R.id.cancel_select_wallet).setOnClickListener(v -> {
-            alertDialog.dismiss();
-        });
-        alertDialog.show();
-        //show center
-        Window dialogWindow = alertDialog.getWindow();
-        WindowManager m = getWindowManager();
-        Display d = m.getDefaultDisplay();
-        WindowManager.LayoutParams p = dialogWindow.getAttributes();
-        p.width = (int) (d.getWidth() * 0.95);
-        p.gravity = Gravity.CENTER;
-        dialogWindow.setAttributes(p);
-    }
-
-    private void importMnemonicWallet(String pass,String seed) {
-        try {
-            Daemon.commands.callAttr("create", editSetWalletName.getText().toString(), pass, new Kwarg("seed", seed));
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            if (e.getMessage().contains("path is exist")) {
-                mToast(getString(R.string.changewalletname));
-            } else if (e.getMessage().contains("The same seed have create wallet")) {
-                String haveWalletName = e.getMessage().substring(e.getMessage().indexOf("name=") + 5);
-                mToast(getString(R.string.same_seed_have) + haveWalletName);
-            }
-            return;
-        }
-        edit.putBoolean("isHaveWallet", true);
-        edit.putString("loadWalletName",editSetWalletName.getText().toString());
-        edit.apply();
-        mIntent(HomeOnekeyActivity.class);
-
     }
 }

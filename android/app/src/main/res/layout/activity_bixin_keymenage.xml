@@ -35,7 +35,7 @@
                 android:layout_centerVertical="true"
                 android:layout_gravity="center"
                 android:fontFamily="sans-serif-medium"
-                android:text="@string/bixinkey_manage"
+                android:text="@string/all_device"
                 android:textColor="@color/text"
                 android:textSize="@dimen/text_size" />
 

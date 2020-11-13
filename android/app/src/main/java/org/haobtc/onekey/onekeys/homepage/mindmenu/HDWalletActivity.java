@@ -12,10 +12,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alibaba.fastjson.JSONArray;
 import com.chaquo.python.PyObject;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.adapter.WalletListAdapter;
 import org.haobtc.onekey.bean.AddressEvent;
+import org.haobtc.onekey.event.FinishEvent;
+import org.haobtc.onekey.event.LoadWalletlistEvent;
 import org.haobtc.onekey.onekeys.homepage.WalletListActivity;
 import org.haobtc.onekey.onekeys.homepage.process.CreateDeriveChooseTypeActivity;
 import org.haobtc.onekey.utils.Daemon;
@@ -51,6 +55,7 @@ public class HDWalletActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        EventBus.getDefault().register(this);
     }
 
     @Override
@@ -71,13 +76,14 @@ public class HDWalletActivity extends BaseActivity {
                 break;
             case R.id.recl_add_wallet:
                 Intent intent = new Intent(HDWalletActivity.this, CreateDeriveChooseTypeActivity.class);
-                intent.putExtra("walletType","derive");
+                intent.putExtra("walletType", "derive");
                 startActivity(intent);
                 break;
         }
     }
 
     private void getHomeWalletList() {
+        hdWalletList.clear();
         executorService.execute(new Runnable() {
             private PyObject getWalletsListInfo;
 
@@ -131,4 +137,14 @@ public class HDWalletActivity extends BaseActivity {
         });
     }
 
+    @Subscribe
+    public void onFinish(LoadWalletlistEvent event) {
+        getHomeWalletList();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
 }

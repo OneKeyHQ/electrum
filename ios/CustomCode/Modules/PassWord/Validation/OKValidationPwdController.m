@@ -154,7 +154,7 @@ typedef enum {
 }
 - (IBAction)nextBtnFirstClick:(UIButton *)sender {
     if (self.longPwdFirstTextField.text.length == 0) {
-        [kTools tipMessage:@"密码不能为空"];
+        [kTools tipMessage:MyLocalizedString(@"The password cannot be empty", nil)];
         return;
     }
     [self validationPwd:self.longPwdFirstTextField.text];
