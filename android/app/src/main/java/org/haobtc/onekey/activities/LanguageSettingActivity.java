@@ -84,7 +84,7 @@ public class LanguageSettingActivity extends BaseActivity {
             case R.id.radio_system:
                 edit.putString("language", "");
                 edit.commit();
-                radioSystem.setTextColor(getColor(R.color.button_bk_disableok));
+                radioSystem.setTextColor(getColor(R.color.onekey));
                 radioEnglish.setTextColor(getColor(R.color.text_color1));
                 radioChineseasy.setTextColor(getColor(R.color.text_color1));
                 Intent intent = new Intent(this, LunchActivity.class);
@@ -97,7 +97,7 @@ public class LanguageSettingActivity extends BaseActivity {
                 edit.putString("language", "Chinese");
                 edit.apply();
                 radioSystem.setTextColor(getColor(R.color.text_color1));
-                radioChineseasy.setTextColor(getColor(R.color.button_bk_disableok));
+                radioChineseasy.setTextColor(getColor(R.color.onekey));
                 radioEnglish.setTextColor(getColor(R.color.text_color1));
                 refreshSelf();
                 break;
@@ -109,7 +109,7 @@ public class LanguageSettingActivity extends BaseActivity {
                 edit.apply();
                 radioSystem.setTextColor(getColor(R.color.text_color1));
                 radioChineseasy.setTextColor(getColor(R.color.text_color1));
-                radioEnglish.setTextColor(getColor(R.color.button_bk_disableok));
+                radioEnglish.setTextColor(getColor(R.color.onekey));
                 refreshSelf();
                 break;
             case R.id.radio_Korean:

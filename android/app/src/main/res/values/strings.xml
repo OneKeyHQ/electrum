@@ -1019,7 +1019,7 @@
     <string name="size_byte">Size(byte)</string>
     <string name="input_token">Enter token or contract address</string>
     <string name="all_device">All equipment</string>
-    <string name="connect_method_">Link mode</string>
+    <string name="connect_method_">Connection mode</string>
     <string name="send_">send out</string>
     <string name="input_number">Please input the collection account number</string>
     <string name="input_out_number">Please input the transfer out amount</string>
@@ -1119,15 +1119,16 @@
     <string name="backup_wallet_tip2">The only way to protect your assets is to make proper backup.</string>
     <string name="next_tall">Next time</string>
     <string name="now_backup">Backup now</string>
+    <string name="now_backup_tip">安全提醒，你还没有备份这个钱包的助记词。为了您的资产安全，在完成备份前，请不要往这个钱包转币。</string>
 
-    <string name="active_no_backup">🔑 This is an activated device. You can...</string>
+    <string name="active_no_backup">This is an activated device. You can…</string>
     <string name="add_new_wallet">Add new wallet (recommended)</string>
     <string name="add_new_wallet_hide">Unlimited number, created on demand.</string>
     <string name="recovery_used_wallet">Restore used wallets</string>
     <string name="recovery_used_wallet_hide">If you have ever deleted a wallet created by the device in your mobile phone, you can use this method to restore it.</string>
     <string name="clone_to_other">Clone it to another new device</string>
     <string name="clone_to_other_hide">If you have multiple hardware devices, you can use this method to achieve the purpose of multiple backups.</string>
-    <string name="has_hd_wallet">🔑 This is a special device that stores the mnemonics of the HD wallet. You can...</string>
+    <string name="has_hd_wallet">This is a special device that stores the mnemonics of the HD wallet. You can…</string>
     <string name="recovery_phone_hd_wallet">Restore HD wallet</string>
     <string name="recovery_phone_hd_wallet_hide">Full recovery of your HD wallet, any wallet derived from the original HD mnemonic will be restored.</string>
     <string name="recovery_phone_hd_wallet_info"><b>Devices with HD mnemonics backed up will only be used to restore HD wallets you created on the app,</b>if you want to use more features of this device, you can restore the device to factory mode after properly keeping the mnemonics of HD wallet (manual copying), and then re pair and activate the device to use it as a normal hardware wallet.</string>
@@ -1137,7 +1138,6 @@
     <string name="coin_btc">BTC</string>
     <string name="coin_eth">ETH</string>
     <string name="coin_eos">EOS</string>
-
     <string name="get_info_by_cold_wallet">Getting data from hardware Wallet</string>
     <string name="get_info_by_cold_wallet_hide">Data transfer takes a while, and your device is next to your phone.</string>
     <string name="recovery_process">Processing...</string>
@@ -1161,5 +1161,29 @@
     <string name="verify_failed_hide">This device is not running the official firmware. It may be tampered with. If this is not your own behavior, please contact the seller</string>
     <string name="update_pin_last_confirm">Final confirmation</string>
     <string name="update_pin_last_confirm_hide">Confirm the new pin on your device, which is the last step.</string>
-
+    <string name="backups_tip1">Be ready to copy your mnemonics</string>
+    <string name="backups_tip2">OneKey™ use advanced encryption algorithms and protocols, you can create countless wallets, any currency, any number, once and for all, by copying the mnemonics * once and for all.</string>
+    <string name="backups_tip3">Once your phone is lost or stolen, you can use mnemonics to recover all your wallets, take out paper and pen, and let\'s get started.</string>
+    <string name="dont_write">Don\'t want to copy mnemonics?</string>
+    <string name="backup_to_hardware">Back up to hardware Wallet</string>
+    <string name="this_mnemonic">This is your recovery mnemonic</string>
+    <string name="input_private_key">Please enter the private key</string>
+    <string name="edit_name">Edit name</string>
+    <string name="delete_tip">This operation will delete all data of the wallet. Please make sure the wallet is backed up before deleting</string>
+    <string name="export_tip">Export tips</string>
+    <string name="export_tip1">To master the private data of the wallet means to master the wallet asset itself. Please</string>
+    <string name="export_tip2">1. Prepare paper and pen, copy carefully, and keep it in a safe place after confirmation</string>
+    <string name="export_tip3">2. Please do not take screenshots! Photo albums are easy to access with other mobile apps</string>
+    <string name="export_tip4">3. OneKey does not store any private key. Once the private key is lost, it cannot be retrieved</string>
+    <string name="i_know">I already know</string>
+    <string name="export_mnemonic">Mnemonic derivation</string>
+    <string name="recovery_default">Restore default options</string>
+    <string name="please_input_fee">Please enter the rate</string>
+    <string name="check_pass">Verify password</string>
+    <string name="wrong_pass_next_input">Original password input error</string>
+    <string name="what_is_hd">HD wallet is a hierarchical deterministic wallet, which is called hierarchical deterministic wallet in Chinese. It\'s the best and most convenient certainty wallet for now.</string>
+    <string name="i_know_">I got it!</string>
+    <string name="please_create_wallet">Please create a wallet first</string>
+    <string name="dont_greater_than">No more than 1 * 10 ^ 8</string>
+    <string name="private_key_wrong">私钥导入错误，请重新输入</string>
 </resources>

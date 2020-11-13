@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/button_bk_ddake"
+    android:clipToPadding="true"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical"
+    tools:context="org.haobtc.onekey.onekeys.backup.BackupGuideActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_50"
+        android:layout_marginTop="@dimen/dp_10">
+
+        <ImageView
+            android:id="@+id/img_back"
+            android:layout_width="@dimen/dp_40"
+            android:layout_height="@dimen/dp_40"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/dp_10"
+            android:padding="@dimen/dp_8"
+            android:src="@drawable/left_arrow" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:text="@string/backups_wallet"
+            android:textColor="@color/text"
+            android:textSize="@dimen/sp_20" />
+
+    </RelativeLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="@dimen/dp_60"
+                android:layout_marginTop="@dimen/dp_10"
+                android:layout_marginEnd="@dimen/dp_60"
+                android:gravity="center"
+                android:text="@string/backups_tip1"
+                android:textColor="@color/text_two"
+                android:textSize="30sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="34dp"
+                android:layout_marginTop="@dimen/dp_15"
+                android:layout_marginEnd="34dp"
+                android:gravity="center"
+                android:text="@string/backups_tip2"
+                android:textColor="@color/text_two"
+                android:textSize="@dimen/sp_14" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="34dp"
+                android:layout_marginTop="@dimen/dp_25"
+                android:layout_marginEnd="34dp"
+                android:gravity="center"
+                android:text="@string/backups_tip3"
+                android:textColor="@color/text_two"
+                android:textSize="@dimen/sp_14" />
+
+            <ImageView
+                android:layout_width="248dp"
+                android:layout_height="197dp"
+                android:layout_gravity="end"
+                android:layout_marginTop="26dp"
+                android:src="@drawable/hand_write" />
+
+            <Button
+                android:id="@+id/btn_ready_go"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_60"
+                android:layout_marginStart="34dp"
+                android:layout_marginTop="@dimen/dp_30"
+                android:layout_marginEnd="34dp"
+                android:background="@drawable/btn_checked"
+                android:enabled="true"
+                android:text="@string/ready_go"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/sp_20" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="34dp"
+                android:layout_marginTop="23dp"
+                android:layout_marginEnd="34dp"
+                android:gravity="center"
+                android:text="@string/dont_write"
+                android:textColor="@color/text_three"
+                android:textSize="@dimen/sp_14"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/lin_backup_hardware"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/dp_28"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/dp_15"
+                android:layout_marginBottom="@dimen/dp_70"
+                android:background="@drawable/green_bacj"
+                android:gravity="center_vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/text_confirm"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dp_15"
+                    android:text="@string/backup_to_hardware"
+                    android:textColor="@color/onekey"
+                    android:textSize="@dimen/sp_14"
+                    android:textStyle="normal" />
+
+                <ImageView
+                    android:layout_width="@dimen/dp_15"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/dp_15"
+                    android:layout_marginEnd="@dimen/dp_15"
+                    android:src="@drawable/green_right" />
+
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>

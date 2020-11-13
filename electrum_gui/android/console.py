@@ -14,7 +14,7 @@ import threading
 import random
 import string
 from electrum.bitcoin import base_decode, is_address
-from electrum.keystore import bip44_derivation, bip44_eth_derivation, purpose48_derivation
+from electrum.keystore import bip44_derivation, bip44_eth_derivation, purpose48_derivation, Imported_KeyStore
 from electrum.plugin import Plugins
 from electrum.plugins.trezor.clientbase import TrezorClientBase
 from electrum.transaction import PartialTransaction, Transaction, TxOutput, PartialTxOutput, tx_from_any, TxInput, \
@@ -2121,7 +2121,7 @@ class AndroidCommands(commands.Commands):
         backup_flag = True
         try:
             if self.wallet.has_seed():
-                if not self.backup_info.__contains__(self.wallet.keystore.seed):
+                if self.backup_info.__contains__(self.wallet.keystore.seed):
                     backup_flag = False
         except BaseException as e:
             raise e
@@ -2697,7 +2697,8 @@ class AndroidCommands(commands.Commands):
         wallet.save_db()
         self.daemon.add_wallet(wallet)
         self.update_file_name(name,  wallet.get_addresses()[0])
-        self.update_local_wallet_info(name, wallet_type, keystores=wallet.get_keystore().xpub)
+        keyinfo = wallet.get_keystore().xpub if not isinstance(wallet.get_keystore(), Imported_KeyStore) else None
+        self.update_local_wallet_info(name, wallet_type, keystores=keyinfo)
         # if self.label_flag:
         #     self.label_plugin.load_wallet(self.wallet, None)
         if new_seed != '':

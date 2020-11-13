@@ -6,7 +6,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_300"
+        android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_10"
         android:layout_marginEnd="@dimen/dp_10"
         android:layout_marginBottom="@dimen/dp_10"
@@ -37,7 +37,7 @@
         <LinearLayout
             android:id="@+id/linearlayout"
             android:layout_width="match_parent"
-            android:layout_height="116dp"
+            android:layout_height="wrap_content"
             android:layout_below="@+id/text"
             android:layout_marginTop="@dimen/dp_14">
 
@@ -63,6 +63,7 @@
                     android:layout_marginTop="@dimen/dp_9"
                     android:background="@drawable/gray_broken"
                     android:inputType="number"
+                    android:maxLength="9"
                     android:maxLines="1"
                     android:paddingStart="@dimen/dp_20"
                     android:paddingEnd="@dimen/dp_20"
@@ -120,19 +121,20 @@
                         android:id="@+id/text_btc"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        tools:text="0.00019BTC"
                         android:textColor="@color/text_three"
                         android:textSize="@dimen/sp_12"
-                        android:textStyle="normal" />
+                        android:textStyle="normal"
+                        tools:text="0.00019BTC" />
+
                     <TextView
                         android:id="@+id/text_dollar"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        tools:text="≈ $ 0.12"
-                        android:textColor="@color/text_six"
                         android:layout_marginStart="@dimen/dp_10"
+                        android:textColor="@color/text_six"
                         android:textSize="@dimen/sp_10"
-                        android:textStyle="normal" />
+                        android:textStyle="normal"
+                        tools:text="≈ $ 0.12" />
 
                 </LinearLayout>
 
@@ -147,6 +149,7 @@
             android:layout_marginStart="@dimen/dp_25"
             android:layout_marginTop="@dimen/dp_21"
             android:layout_marginEnd="@dimen/dp_25"
+            android:layout_marginBottom="29dp"
             android:background="@drawable/btn_checked"
             android:text="@string/create_"
             android:textAllCaps="false"

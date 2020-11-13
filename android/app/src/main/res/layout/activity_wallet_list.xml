@@ -81,23 +81,25 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_36"
             android:layout_marginTop="27dp"
-            android:src="@drawable/eth_icon_gray" />
+            android:src="@drawable/eth_icon_gray"
+            android:visibility="gone" />
 
     </LinearLayout>
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/recl_wallet"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_52"
         android:layout_below="@+id/view"
         android:layout_marginBottom="@dimen/dp_5"
-        android:layout_toEndOf="@+id/view1">
+        android:layout_toEndOf="@+id/view1"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/hd"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
             android:layout_marginStart="@dimen/dp_15"
             android:text="@string/hd_wallet"
             android:textColor="@color/text_three"
@@ -105,39 +107,41 @@
 
         <ImageView
             android:id="@+id/img_w"
-            android:layout_width="@dimen/dp_16"
-            android:layout_height="@dimen/dp_16"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="@dimen/dp_6"
-            android:layout_toEndOf="@+id/hd"
+            android:layout_width="@dimen/dp_30"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/divider_height_3dp"
+            android:padding="@dimen/dp_7"
             android:src="@drawable/info" />
 
         <TextView
             android:id="@+id/text_wallet_num"
             android:layout_width="31dp"
             android:layout_height="@dimen/dp_18"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="@dimen/dp_10"
-            android:layout_toEndOf="@+id/img_w"
+            android:layout_marginStart="@dimen/divider_height_3dp"
             android:background="@drawable/gray_tuo_c4"
             android:gravity="center"
             android:text="@string/_1"
             android:textColor="@color/text_two"
             android:textSize="@dimen/sp_12" />
 
-        <RelativeLayout
-            android:id="@+id/recl_wallet_detail"
-            android:layout_width="@dimen/dp_70"
+        <View
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
+            android:layout_weight="1" />
+
+        <LinearLayout
+            android:id="@+id/recl_wallet_detail"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:paddingStart="@dimen/dp_10"
+            android:paddingEnd="@dimen/dp_20"
             android:visibility="visible">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginEnd="41dp"
+                android:layout_marginEnd="@dimen/dp_12"
                 android:text="@string/detail"
                 android:textColor="@color/text_six"
                 android:textSize="@dimen/sp_14" />
@@ -145,24 +149,19 @@
             <ImageView
                 android:layout_width="@dimen/dp_25"
                 android:layout_height="@dimen/dp_25"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:layout_marginEnd="@dimen/dp_10"
                 android:src="@drawable/right_arrow_small" />
-        </RelativeLayout>
+        </LinearLayout>
 
         <ImageView
             android:id="@+id/img_add"
             android:layout_width="@dimen/dp_40"
             android:layout_height="@dimen/dp_40"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
             android:layout_marginEnd="@dimen/dp_10"
             android:padding="@dimen/dp_9"
             android:src="@drawable/add_gray"
             android:visibility="gone" />
 
-    </RelativeLayout>
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"

@@ -82,7 +82,7 @@
                 android:layout_marginTop="23dp"
                 android:layout_marginEnd="@dimen/dp_20"
                 android:orientation="vertical"
-                android:visibility="visible">
+                android:visibility="gone">
 
                 <RelativeLayout
                     android:id="@+id/rel_create_hd"
@@ -275,7 +275,7 @@
                 android:layout_marginTop="23dp"
                 android:layout_marginEnd="@dimen/dp_20"
                 android:orientation="vertical"
-                android:visibility="gone">
+                android:visibility="visible">
 
                 <RelativeLayout
                     android:id="@+id/rel_wallet_detail"
@@ -398,13 +398,70 @@
 
             </LinearLayout>
 
+            <RelativeLayout
+                android:id="@+id/rel_now_back_up"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="visible"
+                android:layout_marginStart="@dimen/dp_20"
+                android:layout_marginTop="@dimen/dp_25"
+                android:layout_marginEnd="@dimen/dp_20"
+                android:background="@drawable/white_back_tuo">
+
+                <RelativeLayout
+                    android:id="@+id/RelativeLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="65dp">
+
+                    <ImageView
+                        android:id="@+id/money"
+                        android:layout_width="29dp"
+                        android:layout_height="@dimen/dp_36"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="@dimen/dp_20"
+                        android:src="@drawable/now_backup" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="11dp"
+                        android:layout_toEndOf="@+id/money"
+                        android:text="@string/now_backup"
+                        android:textColor="@color/text_color_one"
+                        android:textSize="@dimen/sp_16" />
+
+                    <ImageView
+                        android:layout_width="@dimen/dp_28"
+                        android:layout_height="@dimen/dp_28"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="@dimen/dp_10"
+                        android:src="@drawable/right_arrow_small" />
+
+                </RelativeLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_marginBottom="@dimen/dp_12"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/RelativeLayout"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="@dimen/dp_15"
+                    android:layout_marginEnd="@dimen/dp_15"
+                    android:lineSpacingExtra="5sp"
+                    android:text="@string/now_backup_tip"
+                    android:textColor="@color/text_three"
+                    android:textSize="@dimen/sp_12" />
+
+            </RelativeLayout>
 
             <LinearLayout
                 android:id="@+id/lin_wallet_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginStart="@dimen/dp_20"
-                android:layout_marginTop="@dimen/dp_30"
+                android:layout_marginTop="@dimen/dp_25"
                 android:layout_marginEnd="@dimen/dp_20"
                 android:background="@drawable/salf_white_tuo_20"
                 android:orientation="vertical"
@@ -452,9 +509,9 @@
                 </RelativeLayout>
 
                 <View
-                    android:background="@color/line_color"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/line_hight"/>
+                    android:layout_height="@dimen/line_hight"
+                    android:background="@color/line_color" />
 
                 <RelativeLayout
                     android:id="@+id/rel_bi_detail"
@@ -496,7 +553,7 @@
                         android:layout_marginEnd="57dp"
                         android:textColor="@color/text_two"
                         android:textSize="@dimen/sp_18"
-                        tools:text="0" />
+                        android:text="@string/zero" />
 
                     <TextView
                         android:id="@+id/text_dollar"

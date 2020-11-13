@@ -1,14 +1,22 @@
 package org.haobtc.onekey.onekeys.homepage.mindmenu;
 
 import android.annotation.SuppressLint;
-import android.os.Bundle;
+import android.content.Intent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
+import com.chaquo.python.Kwarg;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.event.FinishEvent;
+import org.haobtc.onekey.event.LoadOtherWalletEvent;
+import org.haobtc.onekey.onekeys.dialog.SetHDWalletPassActivity;
+import org.haobtc.onekey.utils.Daemon;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -29,6 +37,7 @@ public class DeleteWalletActivity extends BaseActivity implements CompoundButton
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        EventBus.getDefault().register(this);
         checkboxOk.setOnCheckedChangeListener(this);
     }
 
@@ -44,6 +53,9 @@ public class DeleteWalletActivity extends BaseActivity implements CompoundButton
                 finish();
                 break;
             case R.id.btn_forward:
+                Intent intent = new Intent(DeleteWalletActivity.this, SetHDWalletPassActivity.class);
+                intent.putExtra("importHdword", "deleteAllWallet");
+                startActivity(intent);
                 break;
         }
     }
@@ -51,9 +63,23 @@ public class DeleteWalletActivity extends BaseActivity implements CompoundButton
     @SuppressLint("UseCompatLoadingForDrawables")
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        if (isChecked){
+        if (isChecked) {
             btnForward.setEnabled(true);
             btnForward.setBackground(getDrawable(R.drawable.delete_wallet_yes));
+        } else {
+            btnForward.setEnabled(false);
+            btnForward.setBackground(getDrawable(R.drawable.delete_wallet_no));
         }
+    }
+
+    @Subscribe
+    public void onFinish(FinishEvent event) {
+        finish();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 }

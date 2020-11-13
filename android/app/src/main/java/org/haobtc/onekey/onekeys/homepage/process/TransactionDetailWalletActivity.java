@@ -45,6 +45,7 @@ public class TransactionDetailWalletActivity extends BaseActivity {
     TextView tetNone;
     private ArrayList<MaintrsactionlistEvent> listBeans;
     private OnekeyTxListAdapter onekeyTxListAdapter;
+    private String hdWalletName;
 
     @Override
     public int getLayoutId() {
@@ -56,6 +57,7 @@ public class TransactionDetailWalletActivity extends BaseActivity {
         ButterKnife.bind(this);
         String walletBalance = getIntent().getStringExtra("walletBalance");
         String walletDollar = getIntent().getStringExtra("walletDollar");
+        hdWalletName = getIntent().getStringExtra("hdWalletName");
         textWalletAmount.setText(walletBalance);
         textWalletDollar.setText(walletDollar);
 
@@ -89,7 +91,7 @@ public class TransactionDetailWalletActivity extends BaseActivity {
             return;
 
         }
-        Log.i("jxmgetHistoryTx", "getTxList===: "+getHistoryTx);
+        Log.i("jxmgetHistoryTx", "getTxList===: " + getHistoryTx);
         if (getHistoryTx.toString().length() > 2) {
             reclTransactionList.setVisibility(View.VISIBLE);
             tetNone.setVisibility(View.GONE);
@@ -123,8 +125,8 @@ public class TransactionDetailWalletActivity extends BaseActivity {
                     @Override
                     public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                         Intent intent = new Intent(TransactionDetailWalletActivity.this, DetailTransactionActivity.class);
-                        intent.putExtra("hashDetail",listBeans.get(position).getTxHash());
-                        intent.putExtra("txTime",listBeans.get(position).getDate());
+                        intent.putExtra("hashDetail", listBeans.get(position).getTxHash());
+                        intent.putExtra("txTime", listBeans.get(position).getDate());
                         startActivity(intent);
                     }
                 });
@@ -173,6 +175,8 @@ public class TransactionDetailWalletActivity extends BaseActivity {
             case R.id.btn_forward:
                 Intent intent2 = new Intent(TransactionDetailWalletActivity.this, SendHdActivity.class);
                 intent2.putExtra("sendNum", textWalletAmount.getText().toString());
+                intent2.putExtra("hdWalletName", hdWalletName);
+                intent2.putExtra("detailDontUnit","detailDontUnit");
                 startActivity(intent2);
                 break;
             case R.id.btn_collect:

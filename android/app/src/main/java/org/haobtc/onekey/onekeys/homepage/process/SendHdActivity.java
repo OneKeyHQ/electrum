@@ -34,24 +34,24 @@ import androidx.annotation.LayoutRes;
 import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
-import com.yzq.zxinglibrary.encode.CodeCreator;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 import org.haobtc.onekey.R;
-import org.haobtc.onekey.activities.TransactionDetailsActivity;
 import org.haobtc.onekey.activities.base.BaseActivity;
-import org.haobtc.onekey.activities.sign.SignActivity;
 import org.haobtc.onekey.bean.GetAddressBean;
-import org.haobtc.onekey.bean.GetCodeAddressBean;
 import org.haobtc.onekey.bean.GetnewcreatTrsactionListBean;
 import org.haobtc.onekey.bean.GetsendFeenumBean;
-import org.haobtc.onekey.event.FirstEvent;
+import org.haobtc.onekey.event.FinishEvent;
+import org.haobtc.onekey.event.InputPassSendEvent;
+import org.haobtc.onekey.event.SecondEvent;
+import org.haobtc.onekey.onekeys.dialog.SetHDWalletPassActivity;
+import org.haobtc.onekey.onekeys.dialog.recovery.importmethod.ImportPrivateKeyActivity;
 import org.haobtc.onekey.utils.Daemon;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -123,6 +123,10 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
     private String slowTx;
     private String customTx;
     private String useTx = "";
+    float feeForChild;
+    private String baseUnit;
+    private String cnyUnit;
+    private String detailDontUnit;
 
     @Override
     public int getLayoutId() {
@@ -132,13 +136,26 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        EventBus.getDefault().register(this);
         hdWalletName = getIntent().getStringExtra("hdWalletName");
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         sendNum = getIntent().getStringExtra("sendNum");
-        textNum.setText(String.format("%s%s", sendNum, preferences.getString("base_unit", "")));
+
         textSlowTime.setText(String.format("%s0%s", getString(R.string.about_), getString(R.string.minute)));
         textRecommendTime.setText(String.format("%s0%s", getString(R.string.about_), getString(R.string.minute)));
         textFastTime.setText(String.format("%s0%s", getString(R.string.about_), getString(R.string.minute)));
+        baseUnit = preferences.getString("base_unit", "");
+        cnyUnit = preferences.getString("cny_strunit", "CNY");
+        detailDontUnit = getIntent().getStringExtra("detailDontUnit");//from transactionActivity don't unit
+        String addressScan = getIntent().getStringExtra("addressScan");
+        if (!TextUtils.isEmpty(addressScan)) {
+            editInputAddress.setText(addressScan);
+        }
+        if ("detailDontUnit".equals(detailDontUnit)) {
+            textNum.setText(sendNum);
+        } else {
+            textNum.setText(String.format("%s%s", sendNum, preferences.getString("base_unit", "")));
+        }
     }
 
     @Override
@@ -147,7 +164,7 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
         tetamount.addTextChangedListener(this);
     }
 
-    @OnClick({R.id.img_back, R.id.tet_choose_type, R.id.text_max, R.id.tet_custom_fee, R.id.lin_slow, R.id.lin_recommend, R.id.lin_fast, R.id.btn_next, R.id.img_paste})
+    @OnClick({R.id.img_back, R.id.tet_choose_type, R.id.text_max, R.id.tet_custom_fee, R.id.lin_slow, R.id.lin_recommend, R.id.lin_fast, R.id.btn_next, R.id.img_paste, R.id.text_recovery_default})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
@@ -251,6 +268,17 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
                     }
                 }
                 break;
+            case R.id.text_recovery_default:
+                useTx = recommendTx;
+                linChooseFee.setVisibility(View.VISIBLE);
+                linCustom.setVisibility(View.GONE);
+                viewSlow.setVisibility(View.GONE);
+                viewRecommend.setVisibility(View.VISIBLE);
+                viewFast.setVisibility(View.GONE);
+                checkboxSlow.setVisibility(View.GONE);
+                checkboxRecommend.setVisibility(View.VISIBLE);
+                checkboxFast.setVisibility(View.GONE);
+                break;
         }
     }
 
@@ -291,6 +319,7 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
                 Intent intent = new Intent(SendHdActivity.this, DetailTransactionActivity.class);
                 intent.putExtra("txDetail", rowtx);
                 startActivity(intent);
+                EventBus.getDefault().post(new SecondEvent("finish"));
                 finish();
             }
         } catch (Exception e) {
@@ -328,7 +357,11 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
 
         view.findViewById(R.id.btn_confirm_pay).setOnClickListener(v -> {
             //sign trsaction
-            inputPassDialog();
+            Intent intent = new Intent(SendHdActivity.this, SetHDWalletPassActivity.class);
+            intent.putExtra("importHdword", "send");
+            intent.putExtra("useTx", useTx);
+            startActivity(intent);
+
         });
         view.findViewById(R.id.img_cancel).setOnClickListener(v -> {
             dialogBtoms.dismiss();
@@ -345,31 +378,6 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
         dialogBtoms.show();
 
 
-    }
-
-    private void inputPassDialog() {
-        View view1 = LayoutInflater.from(SendHdActivity.this).inflate(R.layout.input_wallet_pass, null, false);
-        AlertDialog alertDialog = new AlertDialog.Builder(SendHdActivity.this).setView(view1).create();
-        EditText strPass = view1.findViewById(R.id.edit_password);
-        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        view1.findViewById(R.id.btn_enter_wallet).setOnClickListener(v -> {
-            //create and sign、broadcast
-            sendCurrency(strPass.getText().toString());
-
-        });
-
-        view1.findViewById(R.id.cancel_select_wallet).setOnClickListener(v -> {
-            alertDialog.dismiss();
-        });
-        alertDialog.show();
-        //show center
-        Window dialogWindow = alertDialog.getWindow();
-        WindowManager m = getWindowManager();
-        Display d = m.getDefaultDisplay();
-        WindowManager.LayoutParams p = dialogWindow.getAttributes();
-        p.width = (int) (d.getWidth() * 0.95);
-        p.gravity = Gravity.CENTER;
-        dialogWindow.setAttributes(p);
     }
 
     private void getFeeamont() {
@@ -429,6 +437,26 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
             fastTx = getsendFeenumBean.getTx();
             textFastTime.setText(String.format("%s%s%s", getString(R.string.about_), time + "", getString(R.string.minute)));
             textFee10.setText(String.format("%s sat", feeNum));
+            if ("BTC".equals(baseUnit)) {
+                feeForChild = Float.parseFloat(feeNum) / 100000000;
+            } else if ("mBTC".equals(baseUnit)) {
+                feeForChild = Float.parseFloat(feeNum) / 100000;
+            } else if ("bits".equals(baseUnit)) {
+                feeForChild = Float.parseFloat(feeNum) / 100;
+            }
+            try {
+                PyObject money = Daemon.commands.callAttr("get_exchange_currency", "base", String.valueOf(feeForChild));
+                if ("CNY".equals(cnyUnit)) {
+                    textDollar10.setText(String.format("￥ %s", money.toString()));
+                } else if ("USD".equals(cnyUnit)) {
+                    textDollar10.setText(String.format("$ %s", money.toString()));
+                } else {
+                    textDollar10.setText(money.toString());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                return;
+            }
         }
     }
 
@@ -462,6 +490,26 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
             useTx = recommendTx;
             textRecommendTime.setText(String.format("%s%s%s", getString(R.string.about_), time + "", getString(R.string.minute)));
             textFee20.setText(String.format("%s sat", feeNum));
+            if ("BTC".equals(baseUnit)) {
+                feeForChild = Float.parseFloat(feeNum) / 100000000;
+            } else if ("mBTC".equals(baseUnit)) {
+                feeForChild = Float.parseFloat(feeNum) / 100000;
+            } else if ("bits".equals(baseUnit)) {
+                feeForChild = Float.parseFloat(feeNum) / 100;
+            }
+            try {
+                PyObject money = Daemon.commands.callAttr("get_exchange_currency", "base", String.valueOf(feeForChild));
+                if ("CNY".equals(cnyUnit)) {
+                    textDollar20.setText(String.format("￥ %s", money.toString()));
+                } else if ("USD".equals(cnyUnit)) {
+                    textDollar20.setText(String.format("$ %s", money.toString()));
+                } else {
+                    textDollar20.setText(money.toString());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                return;
+            }
         }
 
     }
@@ -495,8 +543,27 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
             slowTx = getsendFeenumBean.getTx();
             textSlowTime.setText(String.format("%s%s%s", getString(R.string.about_), time + "", getString(R.string.minute)));
             textFee50.setText(String.format("%s sat", feeNum));
+            if ("BTC".equals(baseUnit)) {
+                feeForChild = Float.parseFloat(feeNum) / 100000000;
+            } else if ("mBTC".equals(baseUnit)) {
+                feeForChild = Float.parseFloat(feeNum) / 100000;
+            } else if ("bits".equals(baseUnit)) {
+                feeForChild = Float.parseFloat(feeNum) / 100;
+            }
+            try {
+                PyObject money = Daemon.commands.callAttr("get_exchange_currency", "base", String.valueOf(feeForChild));
+                if ("CNY".equals(cnyUnit)) {
+                    textDollar50.setText(String.format("￥ %s", money.toString()));
+                } else if ("USD".equals(cnyUnit)) {
+                    textDollar50.setText(String.format("$ %s", money.toString()));
+                } else {
+                    textDollar50.setText(money.toString());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                return;
+            }
         }
-
 
     }
 
@@ -531,6 +598,15 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
             @Override
             public void afterTextChanged(Editable s) {
                 if (!TextUtils.isEmpty(s.toString())) {
+                    Long aLong = Long.valueOf(s.toString());
+                    if (aLong > 100000000) {
+                        mToast(getString(R.string.dont_greater_than));
+                        textSize.setText("");
+                        textTime.setText(String.format("%s", getString(R.string.second_0)));
+                        textBtc.setText("");
+                        editFeeByte.setText("");
+                        return;
+                    }
                     ArrayList<Map<String, String>> arrayList = new ArrayList<>();
                     Map<String, String> pramas = new HashMap<>();
                     pramas.put(editInputAddress.getText().toString(), tetamount.getText().toString());
@@ -568,6 +644,10 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
         btnConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (TextUtils.isEmpty(editFeeByte.getText().toString())) {
+                    mToast(getString(R.string.please_input_fee));
+                    return;
+                }
                 useTx = customTx;
                 linChooseFee.setVisibility(View.GONE);
                 linCustom.setVisibility(View.VISIBLE);
@@ -576,8 +656,27 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
                 viewFast.setVisibility(View.GONE);
                 textFeeCustom.setText(String.format("%s", customFee + ""));
                 textCustomTime.setText(String.format("%s%s%s", getString(R.string.about_), customTime + "", getString(R.string.minute)));
+                if ("BTC".equals(baseUnit)) {
+                    feeForChild = Float.parseFloat(String.valueOf(customFee)) / 100000000;
+                } else if ("mBTC".equals(baseUnit)) {
+                    feeForChild = Float.parseFloat(String.valueOf(customFee)) / 100000;
+                } else if ("bits".equals(baseUnit)) {
+                    feeForChild = Float.parseFloat(String.valueOf(customFee)) / 100;
+                }
+                try {
+                    PyObject money = Daemon.commands.callAttr("get_exchange_currency", "base", String.valueOf(feeForChild));
+                    if ("CNY".equals(cnyUnit)) {
+                        textDollarCustom.setText(String.format("￥ %s", money.toString()));
+                    } else if ("USD".equals(cnyUnit)) {
+                        textDollarCustom.setText(String.format("$ %s", money.toString()));
+                    } else {
+                        textDollarCustom.setText(money.toString());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return;
+                }
                 dialogBtoms.dismiss();
-
             }
         });
         view.findViewById(R.id.img_cancel).setOnClickListener(v -> {
@@ -659,4 +758,15 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
 
     }
 
+    @Subscribe
+    public void event(InputPassSendEvent event) {
+        //create and sign、broadcast
+        sendCurrency(event.getPass());
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
 }

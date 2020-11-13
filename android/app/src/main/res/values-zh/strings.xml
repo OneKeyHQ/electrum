@@ -969,7 +969,7 @@
     <string name="second_0">预计时间约</string>
     <string name="input_token">输入 Token 或合约地址</string>
     <string name="all_device">全部设备</string>
-    <string name="connect_method_">链接方式</string>
+    <string name="connect_method_">连接方式</string>
     <string name="send_">发送</string>
     <string name="input_number">请输入收款账号</string>
     <string name="input_out_number">请输入转出金额</string>
@@ -1088,7 +1088,7 @@
     <string name="now_backup">现在备份</string>
     <string name="get_info_by_cold_wallet">正在从硬件钱包\n获取数据</string>
     <string name="get_info_by_cold_wallet_hide">数据传输需要一定时间，\n把您的设备放在手机旁边。</string>
-    <string name="recovery_process">正在处理...</string>
+    <string name="recovery_process">正在处理…</string>
     <string name="wait_response">等待硬件钱包响应</string>
     <string name="import_to_phone">将数据导入手机</string>
     <string name="complete_recovery">完成恢复</string>
@@ -1109,5 +1109,30 @@
     <string name="verify_failed_hide">这台设备并未运行官方固件\n可能被篡改\n如果这不是您自己的行为\n请联系销售方处理</string>
     <string name="update_pin_last_confirm">最终确认</string>
     <string name="update_pin_last_confirm_hide">在您的设备上确认新的 PIN 码，\n这是最后一步。</string>
+    <string name="now_backup_tip">安全提醒，你还没有备份这个钱包的助记词。为了您的资产安全，在完成备份前，请不要往这个钱包转币。</string>
+    <string name="backups_tip1">准备好将您的助记词抄写下来</string>
+    <string name="backups_tip2">OneKey™ 使用先进的加密算法和协议，只需抄一次助记词*，便可以创建无数钱包， 任意币种，任意数量，一劳永逸。</string>
+    <string name="backups_tip3">一旦您的手机遗失或被偷窃，你可以使用助记词恢复您的全部钱包，拿出纸和笔，我们开始吧。</string>
+    <string name="dont_write">不想抄助记词？</string>
+    <string name="backup_to_hardware">备份到硬件钱包</string>
+    <string name="this_mnemonic">这是您的恢复助记词</string>
+    <string name="input_private_key">请输入私钥</string>
+    <string name="edit_name">编辑名称</string>
+    <string name="delete_tip">此操作将会删除该钱包的所有数据，请在删除前确保该钱包已备份</string>
+    <string name="export_tip">导出提示</string>
+    <string name="export_tip2">1. 备好纸笔认真抄写，确认无误后并保管在安全处</string>
+    <string name="export_tip3">2. 请勿截屏！手机相册很容易被其他应用访问…</string>
+    <string name="export_tip4">3. OneKey不存储任何私钥，私钥一旦丢失无法找回</string>
+    <string name="i_know">我已知晓</string>
+    <string name="export_mnemonic">助记词导出</string>
+    <string name="recovery_default">恢复默认选项</string>
+    <string name="please_input_fee">请输入费率</string>
+    <string name="check_pass">校验密码</string>
+    <string name="wrong_pass_next_input">原密码输入错误</string>
+    <string name="what_is_hd">HD钱包即 Hierarchical Deterministic Wallet，中文称为分层确定性钱包。它是目前来说最好用的、最方便的确定性钱包。</string>
+    <string name="i_know_">我知道了</string>
+    <string name="please_create_wallet">请先创建钱包</string>
+    <string name="dont_greater_than">不得超过1*10^8</string>
+    <string name="private_key_wrong">私钥导入错误，请重新输入</string>
 
 </resources>

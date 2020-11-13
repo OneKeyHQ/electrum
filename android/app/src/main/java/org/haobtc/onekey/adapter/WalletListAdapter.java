@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -49,6 +50,13 @@ public class WalletListAdapter extends BaseQuickAdapter<AddressEvent, BaseViewHo
         TextView textAddr = helper.getView(R.id.text_address);
         textAddr.setText(item.getAmount());
         ImageView copyAddr = helper.getView(R.id.img_copy_addr);
+
+        SharedPreferences preferences = mContext.getSharedPreferences("Preferences", Context.MODE_PRIVATE);
+        String loadWalletName = preferences.getString("loadWalletName", "");
+        ImageView chooseView = helper.getView(R.id.img_choose);
+        if ( loadWalletName.equals(item.getName())){
+            chooseView.setVisibility(View.VISIBLE);
+        }
 
         copyAddr.setOnClickListener(new View.OnClickListener() {
             @Override

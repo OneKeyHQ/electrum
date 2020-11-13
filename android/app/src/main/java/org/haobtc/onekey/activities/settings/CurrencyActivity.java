@@ -26,6 +26,7 @@ import org.haobtc.onekey.event.FirstEvent;
 import org.haobtc.onekey.utils.Daemon;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import butterknife.BindView;
@@ -162,7 +163,6 @@ public class CurrencyActivity extends BaseActivity {
 
     private void radioSelectTwo() {
         PyObject get_currencies;
-        List<PyObject> pyObjects;
         try {
             get_currencies = Daemon.commands.callAttr("get_currencies");
         } catch (Exception e) {
@@ -172,11 +172,16 @@ public class CurrencyActivity extends BaseActivity {
         listCNY.add(new CNYBean(getString(R.string.money_cny), false));
         listCNY.add(new CNYBean(getString(R.string.doller), false));
         listCNY.add(new CNYBean(getString(R.string.korean_money), false));
+        Log.i("get_currenciesjxm", "radioSelectTwo: " + get_currencies);
         if (get_currencies != null) {
-            pyObjects = get_currencies.asList();
-            for (int i = 0; i < pyObjects.size(); i++) {
-                if (!"CNY".equals(pyObjects.get(i).toString()) && !"USD".equals(pyObjects.get(i).toString()) && !"KMR".equals(pyObjects.get(i).toString())) {
-                    listCNY.add(new CNYBean(String.valueOf(pyObjects.get(i)), false));
+            String content = get_currencies.toString();
+            String unit = content.replaceAll("\"", "");
+            String[] pathArr = (unit.substring(1, unit.length() - 1)).split(",");
+            List<String> pathList = Arrays.asList(pathArr);
+
+            for (int i = 0; i < pathList.size(); i++) {
+                if (!"CNY".equals(pathList.get(i)) && !"USD".equals(pathList.get(i)) && !"KMR".equals(pathList.get(i))) {
+                    listCNY.add(new CNYBean(pathList.get(i), false));
                 }
             }
             reclCnyTable.setVisibility(View.VISIBLE);

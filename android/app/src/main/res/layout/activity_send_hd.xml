@@ -486,7 +486,6 @@
                         android:layout_height="match_parent"
                         android:layout_marginStart="@dimen/dp_10"
                         android:layout_marginTop="@dimen/dp_10"
-                        android:layout_marginEnd="@dimen/dp_10"
                         android:layout_marginBottom="@dimen/dp_10"
                         android:background="@drawable/white_back_"
                         android:clickable="true"
@@ -555,6 +554,19 @@
                             android:layout_height="match_parent"
                             android:background="@drawable/green_broken_" />
                     </RelativeLayout>
+
+                    <TextView
+                        android:id="@+id/text_recovery_default"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/dp_40"
+                        android:layout_marginStart="@dimen/dp_60"
+                        android:drawablePadding="@dimen/dp_6"
+                        android:gravity="center_vertical"
+                        android:layout_gravity="center_vertical"
+                        android:text="@string/recovery_default"
+                        android:textColor="@color/onekey"
+                        android:textSize="@dimen/sp_14"
+                        app:drawableEndCompat="@drawable/recovery_default" />
 
                 </LinearLayout>
 

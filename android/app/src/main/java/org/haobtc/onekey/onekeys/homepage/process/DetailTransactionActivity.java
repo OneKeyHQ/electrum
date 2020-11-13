@@ -67,7 +67,15 @@ public class DetailTransactionActivity extends BaseActivity {
 
     @Override
     public void initData() {
-        getTxDetail();
+        String detailType = getIntent().getStringExtra("detailType");
+        if ("homeScanDetail".equals(detailType)){
+            String nowDatetime = mGetNowDatetime();
+            textTxTime.setText(nowDatetime);
+            String scanDetail = getIntent().getStringExtra("scanDetail");
+            jsonDetailData(scanDetail);
+        }else{
+            getTxDetail();
+        }
     }
 
     private void getTxDetail() {

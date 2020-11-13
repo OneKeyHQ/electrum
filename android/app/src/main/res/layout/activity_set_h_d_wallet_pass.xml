@@ -28,13 +28,14 @@
                 android:src="@drawable/left_arrow" />
 
             <TextView
+                android:id="@+id/text_page_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
                 android:layout_gravity="center"
                 android:fontFamily="sans-serif-medium"
-                android:text="@string/create_new_walt"
+                android:text="@string/check_pass"
                 android:textColor="@color/text"
                 android:textSize="@dimen/text_size" />
 
@@ -61,27 +62,21 @@
             android:text="@string/only_you"
             android:textColor="@color/text_two" />
 
-        <ScrollView
+        <org.haobtc.onekey.utils.PwdEditText
+            android:id="@+id/pwd_edittext"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_100"
-            android:fillViewport="true">
-
-            <org.haobtc.onekey.utils.PwdEditText
-                android:id="@+id/pwd_edittext"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/dp_55"
-                android:layout_marginStart="@dimen/dp_28"
-                android:layout_marginTop="47dp"
-                android:layout_marginEnd="@dimen/dp_28"
-                android:background="@null"
-                android:inputType="number"
-                android:maxLength="6"
-                android:textColor="@color/black_0"
-                app:defaultColor="@color/text_four"
-                app:isPwd="true"
-                app:round="14dp"
-                app:space="@dimen/dp_5" />
-        </ScrollView>
+            android:layout_height="@dimen/dp_55"
+            android:layout_marginStart="@dimen/dp_28"
+            android:layout_marginTop="47dp"
+            android:layout_marginEnd="@dimen/dp_28"
+            android:background="@null"
+            android:inputType="number"
+            android:maxLength="6"
+            android:textColor="@color/black_0"
+            app:defaultColor="@color/text_four"
+            app:isPwd="true"
+            app:round="14dp"
+            app:space="@dimen/dp_5" />
 
         <Button
             android:id="@+id/btn_next"

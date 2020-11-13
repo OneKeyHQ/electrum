@@ -1,5 +1,6 @@
 package org.haobtc.onekey.onekeys.homepage;
 
+import android.Manifest;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -19,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.LayoutRes;
 import androidx.fragment.app.Fragment;
@@ -28,21 +30,34 @@ import com.alibaba.fastjson.JSONArray;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
+import com.tbruyelle.rxpermissions2.RxPermissions;
+import com.yzq.zxinglibrary.android.CaptureActivity;
+import com.yzq.zxinglibrary.bean.ZxingConfig;
+import com.yzq.zxinglibrary.common.Constant;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.haobtc.onekey.MainActivity;
 import org.haobtc.onekey.R;
+import org.haobtc.onekey.activities.SendOne2OneMainPageActivity;
+import org.haobtc.onekey.activities.TransactionDetailsActivity;
 import org.haobtc.onekey.adapter.HomeHdAdapter;
 import org.haobtc.onekey.adapter.WalletListAdapter;
 import org.haobtc.onekey.bean.AddressEvent;
 import org.haobtc.onekey.bean.HomeWalletBean;
+import org.haobtc.onekey.bean.MainSweepcodeBean;
+import org.haobtc.onekey.event.BackupEvent;
+import org.haobtc.onekey.event.FixWalletNameEvent;
+import org.haobtc.onekey.event.LoadOtherWalletEvent;
 import org.haobtc.onekey.event.SecondEvent;
 import org.haobtc.onekey.onekeys.HomeOnekeyActivity;
+import org.haobtc.onekey.onekeys.backup.BackupGuideActivity;
 import org.haobtc.onekey.onekeys.dialog.RecoverHdWalletActivity;
 import org.haobtc.onekey.onekeys.dialog.SetHDWalletPassActivity;
 import org.haobtc.onekey.onekeys.dialog.recovery.ImprotSingleActivity;
 import org.haobtc.onekey.onekeys.homepage.process.CreateWalletChooseTypeActivity;
+import org.haobtc.onekey.onekeys.homepage.process.DetailTransactionActivity;
 import org.haobtc.onekey.onekeys.homepage.process.HdWalletDetailActivity;
 import org.haobtc.onekey.onekeys.homepage.process.ReceiveHDActivity;
 import org.haobtc.onekey.onekeys.homepage.process.SendHdActivity;
@@ -57,6 +72,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import static android.app.Activity.RESULT_OK;
 import static org.haobtc.onekey.activities.service.CommunicationModeSelector.executorService;
 
 public class WalletFragment extends Fragment implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
@@ -76,6 +92,9 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
     private String name;
     private String loadWalletMsg = "";
     private SharedPreferences.Editor edit;
+    private RelativeLayout relNowBackUp;
+    private RxPermissions rxPermissions;
+    private static final int REQUEST_CODE = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -83,9 +102,9 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_wallet, container, false);
         EventBus.getDefault().register(this);
+        rxPermissions = new RxPermissions(this);
         preferences = getActivity().getSharedPreferences("Preferences", Context.MODE_PRIVATE);
         edit = preferences.edit();
-        loadWalletMsg = preferences.getString("loadWalletName", "BTC-1");//Get current wallet name
         textWalletName = view.findViewById(R.id.text_wallet_name);
         tetAmount = view.findViewById(R.id.text_amount);
         recyclerview = view.findViewById(R.id.recl_hd_list);
@@ -106,6 +125,7 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
         linearNoWallet = view.findViewById(R.id.lin_no_wallet);
         linearHaveWallet = view.findViewById(R.id.lin_have_wallet);
         linearWalletList = view.findViewById(R.id.lin_wallet_list);
+        relNowBackUp = view.findViewById(R.id.rel_now_back_up);
 
         imgBottom = view.findViewById(R.id.img_bottom);
         imgAdd.setOnClickListener(this);
@@ -119,24 +139,24 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
         relWalletDetail.setOnClickListener(this);
         relBiDetail.setOnClickListener(this);
         imgCheckMoney.setOnCheckedChangeListener(this);
+        relNowBackUp.setOnClickListener(this);
         initdata();
         return view;
     }
 
     private void initdata() {
-        //判断有没有备份
-        if (preferences.getBoolean("isBack_up",false)){
-//            isBackup(getActivity(), R.layout.backup_wallet);
-        }
         boolean isHaveWallet = preferences.getBoolean("isHaveWallet", false);
         if (isHaveWallet) {
             linearNoWallet.setVisibility(View.GONE);
             imgBottom.setVisibility(View.GONE);
             linearHaveWallet.setVisibility(View.VISIBLE);
             linearWalletList.setVisibility(View.VISIBLE);
+            //whether to backup
+            if (!preferences.getBoolean("isBack_up", false)) {
+                isBackup(getActivity(), R.layout.backup_wallet);
+            }
             //get wallet balance
             getWalletBalance();
-
         } else {
             linearNoWallet.setVisibility(View.VISIBLE);
             imgBottom.setVisibility(View.VISIBLE);
@@ -153,23 +173,20 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
         View view = View.inflate(context, resource, null);
         Dialog dialogBtoms = new Dialog(context, R.style.dialog);
         view.findViewById(R.id.btn_next_backup).setOnClickListener(v -> {
-            edit.putBoolean("isBack_up",true);
+            edit.putBoolean("isBack_up", true);
             edit.apply();
-            //back up now
-
             dialogBtoms.dismiss();
         });
         view.findViewById(R.id.btn_now_backup).setOnClickListener(v -> {
-            edit.putBoolean("isBack_up",true);
+            edit.putBoolean("isBack_up", true);
             edit.apply();
+            startActivity(new Intent(getActivity(), BackupGuideActivity.class));
             //Next time
-
             dialogBtoms.dismiss();
         });
         view.findViewById(R.id.img_close).setOnClickListener(v -> {
-            edit.putBoolean("isBack_up",true);
+            edit.putBoolean("isBack_up", true);
             edit.apply();
-
             dialogBtoms.dismiss();
         });
         dialogBtoms.setContentView(view);
@@ -185,6 +202,7 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
     }
 
     private void getHomeWalletList() {
+        loadWalletMsg = preferences.getString("loadWalletName", "BTC-1");//Get current wallet name
         executorService.execute(new Runnable() {
             private PyObject getWalletsListInfo;
 
@@ -228,6 +246,7 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
     }
 
     private void getWalletBalance() {
+        loadWalletMsg = preferences.getString("loadWalletName", "BTC-1");//Get current wallet name
         try {
             PyObject selectWallet = Daemon.commands.callAttr("select_wallet", loadWalletMsg);
             Log.i("iiiigetWalletBalance", "getWalletBalance:--- " + selectWallet);
@@ -241,12 +260,30 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
                 tetAmount.setText(strCny);
                 textBtcAmount.setText(String.format("%s%s", num, preferences.getString("base_unit", "")));
                 getCny(num);
-
+                //whether back up
+                whetherBackup();
             }
 
         } catch (Exception e) {
             e.printStackTrace();
             return;
+        }
+
+    }
+
+    private void whetherBackup() {
+        try {
+            PyObject isBackup = Daemon.commands.callAttr("get_backup_info");
+            Log.i("isBackupisBackup", "whetherBackup: " + isBackup.toString());
+            if ("False".equals(isBackup.toString())) {
+                //no back up
+                relNowBackUp.setVisibility(View.VISIBLE);
+            } else {
+                relNowBackUp.setVisibility(View.GONE);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            relNowBackUp.setVisibility(View.GONE);
         }
 
     }
@@ -272,6 +309,25 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
                 startActivity(intent1);
                 break;
             case R.id.img_scan:
+                rxPermissions
+                        .request(Manifest.permission.CAMERA)
+                        .subscribe(granted -> {
+                            if (granted) { // Always true pre-M
+                                //If you have already authorized it, you can directly jump to the QR code scanning interface
+                                Intent intent2 = new Intent(getActivity(), CaptureActivity.class);
+                                ZxingConfig config = new ZxingConfig();
+                                config.setPlayBeep(true);
+                                config.setShake(true);
+                                config.setDecodeBarCode(false);
+                                config.setFullScreenScan(true);
+                                config.setShowAlbum(false);
+                                config.setShowbottomLayout(false);
+                                intent2.putExtra(Constant.INTENT_ZXING_CONFIG, config);
+                                startActivityForResult(intent2, REQUEST_CODE);
+                            } else { // Oups permission denied
+                                Toast.makeText(getActivity(), R.string.photopersion, Toast.LENGTH_SHORT).show();
+                            }
+                        }).dispose();
                 break;
             case R.id.rel_create_hd:
                 Intent intent0 = new Intent(getActivity(), SetHDWalletPassActivity.class);
@@ -304,10 +360,15 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
                 Intent intent5 = new Intent(getActivity(), TransactionDetailWalletActivity.class);
                 intent5.putExtra("walletBalance", textBtcAmount.getText().toString());
                 intent5.putExtra("walletDollar", textDollar.getText().toString());
+                intent5.putExtra("hdWalletName", textWalletName.getText().toString());
                 startActivity(intent5);
                 break;
             case R.id.img_add:
 
+                break;
+            case R.id.rel_now_back_up:
+                Intent intent6 = new Intent(getActivity(), BackupGuideActivity.class);
+                startActivity(intent6);
                 break;
 
         }
@@ -321,13 +382,62 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
+    public void event(BackupEvent updataHint) {
+        //whether back up
+        whetherBackup();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void fixName(FixWalletNameEvent event) {
+        textWalletName.setText(event.getNewName());
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
+    public void event(LoadOtherWalletEvent event) {
+        //load other wallet
+        try {
+            PyObject listWallets = Daemon.commands.callAttr("list_wallets");
+            if (listWallets.toString().length() > 2) {
+                JSONArray jsonDatas = com.alibaba.fastjson.JSONObject.parseArray(listWallets.toString());
+                if (jsonDatas != null) {
+                    Map jsonToMap = (Map) jsonDatas.get(0);
+                    Set keySets = jsonToMap.keySet();
+                    Iterator ki = keySets.iterator();
+                    String key = (String) ki.next();
+                    String value = jsonToMap.get(key).toString();
+                    JSONObject jsonObject = new JSONObject(value);
+                    String type = jsonObject.getString("type");
+                    edit.putString("loadWalletName", key);
+                    edit.putString("showWalletType", type);
+                    edit.apply();
+                    //get wallet balance
+                    getWalletBalance();
+
+                }
+            } else {
+                edit.putBoolean("isHaveWallet", false);
+                edit.apply();
+                textWalletName.setText(getString(R.string.no_use_wallet));
+                linearNoWallet.setVisibility(View.VISIBLE);
+                imgBottom.setVisibility(View.VISIBLE);
+                linearHaveWallet.setVisibility(View.GONE);
+                linearWalletList.setVisibility(View.GONE);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+
+    }
+
+
     public void setValue(String msgVote) {
         try {
             JSONObject jsonObject = new JSONObject(msgVote);
             if (msgVote.contains("fiat")) {
                 String fiat = jsonObject.getString("fiat");
                 changeBalance = jsonObject.getString("balance");
-
                 textBtcAmount.setText(String.format("%s%s", changeBalance, preferences.getString("base_unit", "")));
                 if (!TextUtils.isEmpty(fiat)) {
                     if (fiat.contains("USD")) {
@@ -347,6 +457,62 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        // Scan QR code / barcode return
+        if (requestCode == 0 && resultCode == RESULT_OK) {
+            if (data != null) {
+                String content = data.getStringExtra(Constant.CODED_CONTENT);
+                if (!TextUtils.isEmpty(content)) {
+                    PyObject parseQr;
+                    try {
+                        parseQr = Daemon.commands.callAttr("parse_pr", content);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Toast.makeText(getActivity(), getString(R.string.address_wrong), Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    if (parseQr.toString().length() > 2) {
+                        String strParse = parseQr.toString();
+                        Log.i("PyObjectjxm", "parse_qr:  " + strParse);
+                        String substring = strParse.substring(20);
+                        String detailScan = substring.substring(0, substring.length() - 1);
+                        Log.i("PyObjectjxm", "parse_qr:---------  " + detailScan);
+                        try {
+                            JSONObject jsonObject = new JSONObject(strParse);
+                            int type = jsonObject.getInt("type");
+                            Gson gson = new Gson();
+                            if (type == 1) {
+                                MainSweepcodeBean mainSweepcodeBean = gson.fromJson(strParse, MainSweepcodeBean.class);
+                                MainSweepcodeBean.DataBean listData = mainSweepcodeBean.getData();
+                                String address = listData.getAddress();
+                                Intent intent2 = new Intent(getActivity(), SendHdActivity.class);
+                                intent2.putExtra("sendNum", changeBalance);
+                                intent2.putExtra("hdWalletName", name);
+                                intent2.putExtra("addressScan", address);
+                                startActivity(intent2);
+
+                            } else if (type == 2) {
+                                Intent intent = new Intent(getActivity(), DetailTransactionActivity.class);
+                                intent.putExtra("scanDetail", detailScan);
+                                intent.putExtra("detailType", "homeScanDetail");
+                                startActivity(intent);
+                            } else {
+                                Toast.makeText(getActivity(), getString(R.string.address_wrong), Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Toast.makeText(getActivity(), getString(R.string.address_wrong), Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+                }
+            }
+        }
+
     }
 
     @Override

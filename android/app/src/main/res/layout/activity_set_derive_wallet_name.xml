@@ -60,6 +60,7 @@
         android:layout_marginStart="34dp"
         android:layout_marginTop="26dp"
         android:layout_marginEnd="34dp"
+        android:digits="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
         android:background="@drawable/gray_broken"
         android:hint="@string/set_wallet_name"
         android:paddingStart="@dimen/dp_20"
