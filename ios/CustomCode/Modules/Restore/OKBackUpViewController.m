@@ -59,6 +59,7 @@
     [self.wordInputView configureData:self.words];
 }
 
+
 - (IBAction)next:(id)sender {
     switch (_showType) {
         case WordsShowTypeRestore:
@@ -70,11 +71,7 @@
             break;
         case WordsShowTypeExport:
         {
-            for (UIViewController *vc in self.navigationController.viewControllers) {
-                if ([vc isKindOfClass:NSClassFromString(@"OKHDWalletViewController")]) {
-                    [self.navigationController popToViewController:vc animated:YES];
-                }
-            }
+            [self dismissViewControllerAnimated:YES completion:nil];
         }
             break;
         default:

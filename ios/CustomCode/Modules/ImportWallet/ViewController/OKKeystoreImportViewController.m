@@ -64,7 +64,7 @@
 #pragma mark - 扫描
 - (void)scanBtnClick
 {
-    [kTools tipMessage:@"点击了扫描二维码"];
+    NSLog(@"scanBtnClick");
 }
 #pragma mark - TextView
 - (void)textViewDidChange:(UITextView *)textView

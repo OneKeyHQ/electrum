@@ -41,7 +41,7 @@
 - (IBAction)importBtnClick:(UIButton *)sender
 {
     if (self.textView.text.length == 0) {
-        [kTools tipMessage:@"地址不能为空"];
+        [kTools tipMessage:MyLocalizedString(@"The address cannot be empty", nil)];
         return;
     }
     
@@ -53,7 +53,7 @@
 #pragma mark - 扫描
 - (void)scanBtnClick
 {
-    [kTools tipMessage:@"点击扫描二维码"];
+    NSLog(@"scanBtnClick");
 }
 #pragma mark - TextView
 - (void)textViewDidChange:(UITextView *)textView

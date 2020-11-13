@@ -46,7 +46,7 @@
 
 - (IBAction)importBtnClick:(UIButton *)sender {
     if (self.textView.text.length == 0) {
-        [kTools tipMessage:@"私钥不能为空"];
+        [kTools tipMessage:MyLocalizedString(@"The private key cannot be empty", nil)];
         return;
     }
     
@@ -59,7 +59,7 @@
 #pragma mark - 扫描二维码
 - (void)scanBtnClick
 {
-    [kTools tipMessage:@"待写"];
+    NSLog(@"");
 }
 
 

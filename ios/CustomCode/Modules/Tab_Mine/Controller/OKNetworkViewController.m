@@ -28,22 +28,22 @@
 {
     switch (indexPath.row) {
         case 1:
-            [kTools tipMessage:@"点击了同步服务器"];
+            
             break;
         case 3:
-            [kTools tipMessage:@"点击了价格行情"];
+            
             break;
         case 5:
-            [kTools tipMessage:@"点击了区块浏览器BTC"];
+            
             break;
         case 7:
-            [kTools tipMessage:@"点击了区块浏览器ETH"];
+            
             break;
         case 9:
-            [kTools tipMessage:@"点击了ETH节点选择"];
+            
             break;
         case 11:
-            [kTools tipMessage:@"点击了代理服务器"];
+            
             break;
         case 13:
             

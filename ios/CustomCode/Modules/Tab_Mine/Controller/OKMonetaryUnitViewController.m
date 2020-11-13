@@ -131,7 +131,7 @@
 
 - (void)moreMoneyUnitClick
 {
-    [kTools tipMessage:@"暂不支持"];
+    NSLog(@"moreMoneyUnitClick");
 }
 
 

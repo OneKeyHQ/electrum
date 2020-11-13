@@ -23,7 +23,7 @@
 @property (weak, nonatomic) IBOutlet UIView *footerBgView;
 @property (weak, nonatomic) IBOutlet UIView *countBgView;
 - (IBAction)bottomBtnClick:(UIButton *)sender;
-
+@property (nonatomic,copy)NSString *HDWalletName;
 @end
 
 @implementation OKHDWalletViewController
@@ -73,6 +73,7 @@
 - (void)tapRightViewClick
 {
     OKManagerHDViewController *managerHDVc = [OKManagerHDViewController managerHDViewController];
+    managerHDVc.walletName = self.HDWalletName;
     [self.navigationController pushViewController:managerHDVc animated:YES];
 }
 
@@ -97,6 +98,8 @@
     }
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"walletType contains %@",[@"HD" lowercaseString]];
     self.showList = [walletArray filteredArrayUsingPredicate:predicate];
+    OKWalletListTableViewCellModel *hdModel = [self.showList firstObject];
+    self.HDWalletName = hdModel.walletName;
     self.countLabel.text = [NSString stringWithFormat:@"%zd",self.showList.count];
     self.headerTitleLabel.text = MyLocalizedString(@"HD wallet", nil);
     [self.tableView reloadData];
