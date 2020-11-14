@@ -70,13 +70,7 @@ if [ -d ${compact_name}/trezorlib ]; then
 fi
 
 echo "Pulling 'onekey' libs into project from ../electrum ..."
-if [ ! -d ../electrum/locale ]; then
-	(cd .. && contrib/make_locale && cd ios)
-	if [ "$?" != 0 ]; then
-		echo ERROR: Could not build locales
-		exit 1
-	fi
-fi
+
 cp -fpR ../electrum ${compact_name}/electrum
 cp -fpR ../trezor/python-trezor/src/trezorlib ${compact_name}/trezorlib
 cp -fpR ../electrum_gui ${compact_name}/api
@@ -87,9 +81,9 @@ find ${compact_name} -name '*.pyc' -exec  rm -f {} \;
 echo ""
 echo "Building Briefcase-Based iOS Project..."
 echo ""
-if [ ! -e  ${HOME}/.briefcase/Python-3.8-iOS-support.b3.tar ]; then
-   curl -C - -L "https://briefcase-support.org/python?platform=iOS&version=3.8" -o ${HOME}/.briefcase/Python-3.8-iOS-support.b3.tar
-fi
+
+curl -C - -L "https://briefcase-support.org/python?platform=iOS&version=3.8" -o ${HOME}/.briefcase/Python-3.8-iOS-support.b3.tar
+
 python3.8 setup.py ios --support-pkg=${HOME}/.briefcase/Python-3.8-iOS-support.b3.tar
 if [ "$?" != 0 ]; then
 	echo "An error occurred running setup.py"
