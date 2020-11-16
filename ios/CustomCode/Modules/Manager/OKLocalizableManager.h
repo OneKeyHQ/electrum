@@ -13,11 +13,21 @@
 
 #define MyLocalizedStringFromTable(key, tbl, comment) \
 [kLocalizableManager.languageBundle localizedStringForKey:(key) value:@"" table:(tbl)]
+#define kOnekey_language            @"onekey_language"
+#define kOnekey_languageSys         @"kOnekey_languageSys"
 
 typedef NS_ENUM(NSInteger, AppLanguageType) {
-    AppLanguageTypeEn = 0,
-    AppLanguageTypeZh_Hans, // 中文
+    AppLanguageTypeFollowSys = 0,
+    AppLanguageTypeEn,
+    AppLanguageTypeZh_Hans,
 };
+
+#define kLanguageTypeKeyEn          @"en"
+#define kLanguageTypeKeyCh          @"zh-Hans"
+
+
+
+
 NS_ASSUME_NONNULL_BEGIN
 #define kLocalizableManager (OKLocalizableManager.sharedInstance)
 @interface OKLocalizableManager : NSObject

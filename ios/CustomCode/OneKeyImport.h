@@ -48,5 +48,6 @@
 #import "OneKeyDefine.h"
 #import "YZAuthID.h"
 #import "OKStorageManager.h"
+#import "OKLocalizableManager.h"
 
 #endif /* OneKeyImport_h */

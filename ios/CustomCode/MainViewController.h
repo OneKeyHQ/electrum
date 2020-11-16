@@ -8,7 +8,6 @@
 #import <UIKit/UIKit.h>
 
 @interface MainViewController : UIViewController
-
-
+@property (nonatomic) BOOL isTabSettingVC;
 @end
 
