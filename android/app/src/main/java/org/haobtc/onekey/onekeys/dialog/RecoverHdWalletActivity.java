@@ -1,7 +1,9 @@
 package org.haobtc.onekey.onekeys.dialog;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
-
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -13,9 +15,11 @@ import android.widget.EditText;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.constant.Constant;
-import org.haobtc.onekey.activities.personalwallet.mnemonic_word.MnemonicWordActivity;
 import org.haobtc.onekey.onekeys.dialog.recovery.ImprotSingleActivity;
 import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -78,7 +82,7 @@ public class RecoverHdWalletActivity extends BaseActivity {
 
     }
 
-    @OnClick({R.id.img_back, R.id.btn_recovery, R.id.lin_hard_recovery, R.id.lin_import})
+    @OnClick({R.id.img_back, R.id.btn_recovery, R.id.lin_hard_recovery, R.id.lin_import, R.id.img_copy_test})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
@@ -112,6 +116,52 @@ public class RecoverHdWalletActivity extends BaseActivity {
                 Intent intent2 = new Intent(RecoverHdWalletActivity.this, ImprotSingleActivity.class);
                 startActivity(intent2);
                 break;
+            case R.id.img_copy_test:
+                pasteSeed();
+                break;
+        }
+    }
+
+    private void pasteSeed() {
+        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        if (clipboard != null) {
+            ClipData data = clipboard.getPrimaryClip();
+            if (data != null && data.getItemCount() > 0) {
+                CharSequence text = data.getItemAt(0).getText();
+                if (!TextUtils.isEmpty(text.toString())) {
+                    String[] wordsList = text.toString().split("\\s+");
+                    ArrayList<String> wordList = new ArrayList<>(Arrays.asList(wordsList));
+                    switch (wordList.size()) {
+                        case 12:
+                            editTwelve.setText(wordList.get(11));
+                        case 11:
+                            editEleven.setText(wordList.get(10));
+                        case 10:
+                            editTen.setText(wordList.get(9));
+                        case 9:
+                            editNine.setText(wordList.get(8));
+                        case 8:
+                            editEight.setText(wordList.get(7));
+                        case 7:
+                            editSeven.setText(wordList.get(6));
+                        case 6:
+                            editSix.setText(wordList.get(5));
+                        case 5:
+                            editFive.setText(wordList.get(4));
+                        case 4:
+                            editFour.setText(wordList.get(3));
+                        case 3:
+                            editThree.setText(wordList.get(2));
+                        case 2:
+                            editTwo.setText(wordList.get(1));
+                        case 1:
+                            editOne.setText(wordList.get(0));
+                            break;
+                        default:
+                            throw new IllegalStateException("Unexpected value: " + wordList.size());
+                    }
+                }
+            }
         }
     }
 

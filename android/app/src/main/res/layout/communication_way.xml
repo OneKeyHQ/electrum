@@ -11,16 +11,16 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_50">
+        android:layout_height="@dimen/dp_50"
+        android:layout_marginTop="@dimen/dp_20">
 
         <ImageView
             android:id="@+id/img_back"
             android:layout_width="@dimen/dp_40"
             android:layout_height="@dimen/dp_40"
             android:layout_centerVertical="true"
-
             android:padding="@dimen/dp_8"
-            android:src="@drawable/back" />
+            android:src="@drawable/left_arrow" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -46,104 +46,117 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_16"
+            android:layout_marginTop="@dimen/dp_30"
             android:layout_marginEnd="@dimen/dp_16"
-            android:textSize="@dimen/sp_13"
-            android:layout_marginTop="@dimen/dp_16"
+            android:layout_marginBottom="@dimen/dp_30"
             android:text="@string/connect_method"
-            android:textColor="@color/light_text" />
+            android:textColor="@color/light_text"
+            android:textSize="@dimen/sp_13" />
 
-        <androidx.cardview.widget.CardView
+        <RelativeLayout
             android:id="@+id/nfc_item"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_60"
-            android:layout_marginStart="@dimen/layout_margin"
-            android:layout_marginTop="@dimen/dp_16"
-            android:layout_marginEnd="@dimen/layout_margin"
-            android:outlineSpotShadowColor="@color/shadow_color"
-            app:cardCornerRadius="@dimen/dp_8"
-            app:cardElevation="@dimen/dp_8"
-            tools:ignore="UnusedAttribute">
+            android:layout_height="74dp"
+            android:background="@color/button_bk_ddake"
+            android:paddingStart="@dimen/dp_22"
+            android:paddingEnd="@dimen/dp_22">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
                 android:layout_gravity="center_vertical"
-                android:layout_marginStart="@dimen/dp_16"
+                android:drawablePadding="@dimen/dp_10"
+                android:gravity="center_vertical"
                 android:text="@string/nfc"
-                android:textColor="@color/text" />
+                android:textColor="@color/text"
+                app:drawableStartCompat="@drawable/nfc_link_logo" />
 
             <CheckBox
                 android:id="@+id/nfc"
                 android:layout_width="@dimen/dp_20"
                 android:layout_height="@dimen/dp_20"
-                android:layout_gravity="center_vertical|end"
-                android:layout_marginEnd="@dimen/dp_16"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
                 android:background="@drawable/circle_checkbox"
                 android:button="@null"
                 android:checked="true" />
-        </androidx.cardview.widget.CardView>
+        </RelativeLayout>
 
-        <androidx.cardview.widget.CardView
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/line_hight"
+            android:layout_marginStart="@dimen/dp_20"
+            android:layout_marginEnd="@dimen/dp_20"
+            android:background="@color/line_color" />
+
+        <RelativeLayout
             android:id="@+id/ble_item"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_60"
-            android:layout_marginStart="@dimen/layout_margin"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="@dimen/layout_margin"
-            android:outlineSpotShadowColor="@color/shadow_color"
-            app:cardCornerRadius="@dimen/dp_8"
-            app:cardElevation="@dimen/dp_8"
-            tools:ignore="UnusedAttribute">
+            android:layout_height="74dp"
+            android:background="@color/button_bk_ddake"
+            android:paddingStart="@dimen/dp_22"
+            android:paddingEnd="@dimen/dp_22">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginStart="@dimen/dp_16"
+                android:layout_centerVertical="true"
+                android:drawablePadding="@dimen/dp_10"
+                android:gravity="center_vertical"
                 android:text="@string/ble"
-                android:textColor="@color/text" />
+                android:textColor="@color/text"
+                app:drawableStartCompat="@drawable/blue_link_logo" />
 
             <CheckBox
                 android:id="@+id/ble"
                 android:layout_width="@dimen/dp_20"
                 android:layout_height="@dimen/dp_20"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
                 android:layout_gravity="center_vertical|end"
-                android:layout_marginEnd="@dimen/dp_16"
                 android:background="@drawable/circle_checkbox"
                 android:button="@null"
                 android:checked="false" />
-        </androidx.cardview.widget.CardView>
+        </RelativeLayout>
 
-        <androidx.cardview.widget.CardView
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/line_hight"
+            android:layout_marginStart="@dimen/dp_20"
+            android:layout_marginEnd="@dimen/dp_20"
+            android:background="@color/line_color" />
+
+        <RelativeLayout
             android:id="@+id/usb_item"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_60"
-            android:layout_marginStart="@dimen/layout_margin"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="@dimen/layout_margin"
-            android:outlineSpotShadowColor="@color/shadow_color"
-            app:cardCornerRadius="@dimen/dp_8"
-            app:cardElevation="@dimen/dp_8"
-            tools:ignore="UnusedAttribute">
+            android:layout_height="74dp"
+            android:background="@color/button_bk_ddake"
+            android:paddingStart="@dimen/dp_22"
+            android:paddingEnd="@dimen/dp_22">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
                 android:layout_gravity="center_vertical"
-                android:layout_marginStart="@dimen/dp_16"
-                android:text="USB"
-                android:textColor="@color/text" />
+                android:drawablePadding="@dimen/dp_10"
+                android:gravity="center_vertical"
+                android:text="@string/usb"
+                android:textColor="@color/text"
+                app:drawableStartCompat="@drawable/usb_link_logo" />
 
             <CheckBox
                 android:id="@+id/usb"
                 android:layout_width="@dimen/dp_20"
                 android:layout_height="@dimen/dp_20"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
                 android:layout_gravity="center_vertical|end"
-                android:layout_marginEnd="@dimen/dp_16"
                 android:background="@drawable/circle_checkbox"
                 android:button="@null"
                 android:checked="false" />
-        </androidx.cardview.widget.CardView>
+        </RelativeLayout>
 
     </LinearLayout>
 </LinearLayout>

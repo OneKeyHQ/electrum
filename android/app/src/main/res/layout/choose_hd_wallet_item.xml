@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:background="@drawable/white_stoken"
+        android:layout_height="@dimen/dp_70"
+        android:layout_marginBottom="@dimen/dp_20">
+
+        <ImageView
+            android:id="@+id/token_btc"
+            android:layout_width="@dimen/dp_40"
+            android:layout_height="@dimen/dp_40"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/dp_16"
+            android:src="@drawable/token_btc" />
+
+        <TextView
+            android:id="@+id/text_wallet_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_20"
+            android:layout_marginTop="@dimen/dp_14"
+            android:layout_toEndOf="@+id/token_btc"
+            android:text="@string/btc_c"
+            android:textColor="@color/text_two"
+            android:textSize="@dimen/sp_16" />
+
+        <TextView
+            android:id="@+id/text_wallet_balance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/text_wallet_name"
+            android:layout_marginStart="@dimen/dp_20"
+            android:layout_marginTop="@dimen/dp_7"
+            android:layout_toEndOf="@+id/token_btc"
+            android:textColor="@color/text_three"
+            android:textSize="@dimen/sp_12"
+            tools:text="0.124 BTC" />
+
+        <CheckBox
+            android:id="@+id/check_wallet"
+            android:layout_width="@dimen/dp_24"
+            android:layout_height="@dimen/dp_24"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="@dimen/dp_21"
+            android:background="@drawable/circle_checkbox"
+            android:button="@null" />
+
+    </RelativeLayout>
+
+</RelativeLayout>
+

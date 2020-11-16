@@ -24,10 +24,15 @@ import org.haobtc.onekey.event.InputPassSendEvent;
 import org.haobtc.onekey.event.LoadOtherWalletEvent;
 import org.haobtc.onekey.event.LoadWalletlistEvent;
 import org.haobtc.onekey.event.SecondEvent;
+import org.haobtc.onekey.event.WalletAddressEvent;
 import org.haobtc.onekey.onekeys.HomeOnekeyActivity;
+import org.haobtc.onekey.onekeys.dialog.recovery.RecoveryChooseWalletActivity;
 import org.haobtc.onekey.onekeys.homepage.mindmenu.HdRootMnemonicsActivity;
+import org.haobtc.onekey.onekeys.homepage.process.ExportPrivateActivity;
 import org.haobtc.onekey.utils.Daemon;
 import org.haobtc.onekey.utils.PwdEditText;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -176,6 +181,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
                             Intent intent = new Intent(SetHDWalletPassActivity.this, HomeOnekeyActivity.class);
                             startActivity(intent);
                             edit.putBoolean("isHaveWallet", true);
+                            edit.putString("loadWalletName", "BTC-1");
                             edit.apply();
                         }
                     }
@@ -212,7 +218,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
             } else if (e.getMessage().contains("The same seed have create wallet")) {
                 String haveWalletName = e.getMessage().substring(e.getMessage().indexOf("name=") + 5);
                 mToast(getString(R.string.same_seed_have) + haveWalletName);
-            }else if (e.getMessage().contains("'NoneType' object is not iterable")){
+            } else if (e.getMessage().contains("'NoneType' object is not iterable")) {
                 mToast(getString(R.string.private_key_wrong));
             }
             finish();
@@ -282,22 +288,31 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
     //recovery Hd Wallet
     private void recoveryHdWallet() {
         try {
-            Daemon.commands.callAttr("create", "BTC-1", pwdEdittext.getText().toString(), new Kwarg("seed", seed));
+            PyObject pyObject = Daemon.commands.callAttr("create_hd_wallet", pwdEdittext.getText().toString(), new Kwarg("seed", seed));
+            if (pyObject.toString().length() > 2) {
+                Intent intent = new Intent(SetHDWalletPassActivity.this, RecoveryChooseWalletActivity.class);
+                intent.putExtra("recoveryData", pyObject.toString());
+                startActivity(intent);
+                finish();
+            } else {
+                try {
+                    Daemon.commands.callAttr("recovery_confirmed", "");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return;
+                }
+                mToast(getString(R.string.not_recovery_wallet));
+                edit.putBoolean("isHaveWallet", true);
+                edit.putString("loadWalletName", "BTC-1");
+                edit.apply();
+                mIntent(HomeOnekeyActivity.class);
+                finish();
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
-            if (e.getMessage().contains("path is exist")) {
-                mToast(getString(R.string.changewalletname));
-            } else if (e.getMessage().contains("The same seed have create wallet")) {
-                String haveWalletName = e.getMessage().substring(e.getMessage().indexOf("name=") + 5);
-                mToast(getString(R.string.same_seed_have) + haveWalletName);
-            }
-            return;
         }
-        edit.putBoolean("isHaveWallet", true);
-        edit.putString("loadWalletName", "BTC-1");
-        edit.apply();
-        mIntent(HomeOnekeyActivity.class);
+
     }
 
     private void deleteAllWallet() {
@@ -317,7 +332,16 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
     }
 
     private void exportPrivateKey() {
-
+        try {
+            PyObject exportPrivateKey = Daemon.commands.callAttr("export_privkey", pwdEdittext.getText().toString());
+            Intent intent = new Intent(SetHDWalletPassActivity.this, ExportPrivateActivity.class);
+            intent.putExtra("privateKey", exportPrivateKey.toString());
+            startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+            mToast(e.getMessage());
+            return;
+        }
     }
 
     //fix pass

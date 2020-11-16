@@ -111,11 +111,13 @@ public class WatchWalletActivity extends BaseActivity {
             } else if (e.getMessage().contains("The same seed have create wallet")) {
                 String haveWalletName = e.getMessage().substring(e.getMessage().indexOf("name=") + 5);
                 mToast(getString(R.string.same_seed_have) + haveWalletName);
+            }else if (e.getMessage().contains("The file already exists")){
+                mToast(getString(R.string.have_address));
             }
             return;
         }
         edit.putBoolean("isHaveWallet", true);
-        edit.putString("loadWalletName",editWalletName.getText().toString());
+        edit.putString("loadWalletName", editWalletName.getText().toString());
         edit.apply();
         mIntent(HomeOnekeyActivity.class);
 

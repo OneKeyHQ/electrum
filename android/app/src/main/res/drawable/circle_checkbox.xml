@@ -3,6 +3,6 @@
     <item android:drawable="@drawable/checked" android:state_checked="true"/>
     <item android:drawable="@drawable/checked" android:state_selected="true"/>
     <item android:drawable="@drawable/checked" android:state_pressed="true"/>
-    <item android:drawable="@drawable/circle_empty"/>
+    <item android:drawable="@drawable/gray_not_check"/>
 
 </selector>

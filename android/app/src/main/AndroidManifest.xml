@@ -47,6 +47,14 @@
         tools:replace="label, android:allowBackup"
         tools:targetApi="q">
         <activity
+            android:name=".onekeys.dialog.recovery.RecoveryChooseWalletActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".onekeys.homepage.process.ExportPrivateActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
             android:name=".onekeys.backup.BackupGuideActivity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />

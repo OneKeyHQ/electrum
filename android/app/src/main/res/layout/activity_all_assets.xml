@@ -36,46 +36,67 @@
 
     </RelativeLayout>
 
-    <TextView
-        android:id="@+id/test_all_assets"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_55"
-        android:gravity="center_horizontal"
-        tools:text="$1024.98"
-        android:textColor="@color/text_two"
-        android:textSize="24sp" />
+        android:layout_height="match_parent">
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_10"
-        android:layout_marginTop="@dimen/dp_80"
-        android:background="@color/text_seven" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/edit_search"
-        android:layout_width="match_parent"
-        android:layout_height="38dp"
-        android:layout_marginStart="42dp"
-        android:layout_marginTop="@dimen/dp_21"
-        android:layout_marginEnd="42dp"
-        android:background="@drawable/gray_tuo_broken"
-        android:gravity="center"
-        android:hint="@string/search"
-        android:textColor="@color/text_two"
-        android:textSize="@dimen/sp_14" />
+            <TextView
+                android:id="@+id/test_all_assets"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_55"
+                android:gravity="center_horizontal"
+                android:text="@string/_0"
+                android:textColor="@color/text_two"
+                android:textSize="32sp" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recl_assets"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/dp_20"
-        android:layout_marginTop="27dp"
-        android:layout_marginEnd="@dimen/dp_20"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:itemCount="4"
-        tools:listitem="@layout/all_assets_item">
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_10"
+                android:layout_marginTop="@dimen/dp_80"
+                android:background="@color/text_seven" />
 
-    </androidx.recyclerview.widget.RecyclerView>
+            <EditText
+                android:id="@+id/edit_search"
+                android:layout_width="match_parent"
+                android:layout_height="38dp"
+                android:layout_marginStart="42dp"
+                android:layout_marginTop="@dimen/dp_21"
+                android:layout_marginEnd="42dp"
+                android:background="@drawable/gray_tuo_broken"
+                android:gravity="center"
+                android:hint="@string/search"
+                android:textColor="@color/text_two"
+                android:textSize="@dimen/sp_14" />
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recl_assets"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_20"
+                android:layout_marginTop="27dp"
+                android:layout_marginEnd="@dimen/dp_20"
+                android:visibility="visible"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:itemCount="4"
+                tools:listitem="@layout/all_assets_item">
+
+            </androidx.recyclerview.widget.RecyclerView>
+
+            <TextView
+                android:id="@+id/tet_None"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_100"
+                android:gravity="center"
+                android:text="@string/none_wallet"
+                android:textColor="@color/light_text"
+                android:textSize="@dimen/text_size"
+                android:visibility="gone" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 </LinearLayout>

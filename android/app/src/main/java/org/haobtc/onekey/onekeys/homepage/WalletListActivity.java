@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -28,6 +29,8 @@ import org.haobtc.onekey.adapter.WalletListAdapter;
 import org.haobtc.onekey.bean.AddressEvent;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.onekeys.HomeOnekeyActivity;
+import org.haobtc.onekey.onekeys.dialog.RecoverHdWalletActivity;
+import org.haobtc.onekey.onekeys.dialog.SetHDWalletPassActivity;
 import org.haobtc.onekey.onekeys.dialog.recovery.ImprotSingleActivity;
 import org.haobtc.onekey.onekeys.homepage.process.CreateDeriveChooseTypeActivity;
 import org.haobtc.onekey.onekeys.homepage.process.CreateWalletChooseTypeActivity;
@@ -68,6 +71,10 @@ public class WalletListActivity extends BaseActivity {
     RelativeLayout reclAddWallet;
     @BindView(R.id.img_add)
     ImageView imgAdd;
+    @BindView(R.id.recl_add_hd_wallet)
+    RelativeLayout reclAddHdWallet;
+    @BindView(R.id.recl_recovery_wallet)
+    RelativeLayout reclRecoveryWallet;
     private ArrayList<AddressEvent> hdWalletList;
     private ArrayList<AddressEvent> btcList;
     private ArrayList<AddressEvent> ethList;
@@ -102,7 +109,7 @@ public class WalletListActivity extends BaseActivity {
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
-    @OnClick({R.id.img_close, R.id.recl_wallet_detail, R.id.lin_pair_wallet, R.id.lin_add_wallet, R.id.view_all, R.id.view_btc, R.id.view_eth, R.id.recl_add_wallet, R.id.img_add, R.id.img_w})
+    @OnClick({R.id.img_close, R.id.recl_wallet_detail, R.id.lin_pair_wallet, R.id.lin_add_wallet, R.id.view_all, R.id.view_btc, R.id.view_eth, R.id.recl_add_wallet, R.id.img_add, R.id.img_w, R.id.recl_add_hd_wallet, R.id.recl_recovery_wallet})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_close:
@@ -124,13 +131,19 @@ public class WalletListActivity extends BaseActivity {
                 viewBtc.setImageDrawable(getDrawable(R.drawable.token_trans_btc));
                 viewEth.setImageDrawable(getDrawable(R.drawable.eth_icon_gray));
                 textWalletNum.setText(String.valueOf(hdWalletList.size()));
-                reclAddWallet.setVisibility(View.VISIBLE);
                 reclWalletDetail.setVisibility(View.VISIBLE);
                 imgAdd.setVisibility(View.GONE);
                 if (hdWalletList == null || hdWalletList.size() == 0) {
                     reclWalletList.setVisibility(View.GONE);
-                    tetNone.setVisibility(View.VISIBLE);
+                    tetNone.setVisibility(View.GONE);
+                    reclWalletDetail.setVisibility(View.GONE);
+                    reclAddWallet.setVisibility(View.GONE);
+                    reclAddHdWallet.setVisibility(View.VISIBLE);
+                    reclRecoveryWallet.setVisibility(View.VISIBLE);
                 } else {
+                    reclAddHdWallet.setVisibility(View.GONE);//add hd wallet
+                    reclRecoveryWallet.setVisibility(View.GONE);//recovery wallet
+                    reclAddWallet.setVisibility(View.VISIBLE);
                     reclWalletList.setVisibility(View.VISIBLE);
                     tetNone.setVisibility(View.GONE);
                     WalletListAdapter walletListAdapter = new WalletListAdapter(hdWalletList);
@@ -151,6 +164,8 @@ public class WalletListActivity extends BaseActivity {
                 viewAll.setImageDrawable(getDrawable(R.drawable.id_wallet_icon));
                 viewBtc.setImageDrawable(getDrawable(R.drawable.token_btc));
                 viewEth.setImageDrawable(getDrawable(R.drawable.eth_icon_gray));
+                reclAddHdWallet.setVisibility(View.GONE);//add hd wallet
+                reclRecoveryWallet.setVisibility(View.GONE);//recovery wallet
                 textWalletNum.setText(String.valueOf(btcList.size()));
                 reclAddWallet.setVisibility(View.GONE);
                 reclWalletDetail.setVisibility(View.GONE);
@@ -181,6 +196,8 @@ public class WalletListActivity extends BaseActivity {
                 viewBtc.setImageDrawable(getDrawable(R.drawable.token_trans_btc));
                 viewEth.setImageDrawable(getDrawable(R.drawable.token_eth));
                 textWalletNum.setText(String.valueOf(ethList.size()));
+                reclAddHdWallet.setVisibility(View.GONE);//add hd wallet
+                reclRecoveryWallet.setVisibility(View.GONE);//recovery wallet
                 reclAddWallet.setVisibility(View.GONE);
                 reclWalletDetail.setVisibility(View.GONE);
                 imgAdd.setVisibility(View.VISIBLE);
@@ -220,6 +237,14 @@ public class WalletListActivity extends BaseActivity {
                 break;
             case R.id.img_w:
                 whatIsHd(WalletListActivity.this, R.layout.what_is_hd);
+                break;
+            case R.id.recl_add_hd_wallet:
+                Intent intent0 = new Intent(WalletListActivity.this, SetHDWalletPassActivity.class);
+                startActivity(intent0);
+                break;
+            case R.id.recl_recovery_wallet:
+                Intent intent2 = new Intent(WalletListActivity.this, RecoverHdWalletActivity.class);
+                startActivity(intent2);
                 break;
         }
     }
@@ -309,8 +334,10 @@ public class WalletListActivity extends BaseActivity {
                     }
                     textWalletNum.setText(String.valueOf(hdWalletList.size()));
                     if (hdWalletList == null || hdWalletList.size() == 0) {
-                        reclWalletList.setVisibility(View.GONE);
-                        tetNone.setVisibility(View.VISIBLE);
+                        reclWalletDetail.setVisibility(View.GONE);
+                        reclAddWallet.setVisibility(View.GONE);
+                        reclAddHdWallet.setVisibility(View.VISIBLE);
+                        reclRecoveryWallet.setVisibility(View.VISIBLE);
                     } else {
                         WalletListAdapter walletListAdapter = new WalletListAdapter(hdWalletList);
                         reclWalletList.setAdapter(walletListAdapter);

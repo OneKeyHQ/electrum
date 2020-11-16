@@ -11,7 +11,8 @@
         android:layout_marginTop="@dimen/dp_10"
         android:layout_marginEnd="@dimen/dp_20"
         android:layout_marginBottom="@dimen/dp_10"
-        android:background="@drawable/orange_back">
+        android:background="@drawable/orange_back"
+        android:clipToPadding="false">
 
         <TextView
             android:id="@+id/text_name"
@@ -60,16 +61,26 @@
             android:src="@drawable/copy_white" />
 
         <ImageView
+            android:id="@+id/img_type"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginEnd="-15dp"
+            android:layout_marginBottom="-14dp"
+            android:padding="@dimen/dp_7"
+            android:src="@drawable/token_trans_btc_list" />
+
+        <ImageView
             android:id="@+id/img_choose"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:layout_marginEnd="27dp"
+            android:layout_marginEnd="@dimen/dp_46"
             android:padding="@dimen/dp_7"
             android:src="@drawable/yes"
             android:visibility="gone" />
-
     </RelativeLayout>
 
 </LinearLayout>

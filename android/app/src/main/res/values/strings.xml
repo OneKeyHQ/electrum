@@ -273,9 +273,9 @@
     <string name="bee_table">Unit of currency</string>
     <string name="btc_table">Unit of Bitcoin</string>
     <string name="legal_table">Unit of fiat</string>
-    <string name="money_cny">RMB (CNY)</string>
-    <string name="doller">US dollar (USD)</string>
-    <string name="korean_money">Korean dollar (KRW)</string>
+    <string name="money_cny">CNY</string>
+    <string name="doller">USD</string>
+    <string name="korean_money">KRW</string>
     <string name="synchroniz_service">Syncing server</string>
     <string name="electrum_select">Select Electrum node</string>
     <string name="add_custom_node">Add customized node</string>
@@ -1185,5 +1185,13 @@
     <string name="i_know_">I got it!</string>
     <string name="please_create_wallet">Please create a wallet first</string>
     <string name="dont_greater_than">No more than 1 * 10 ^ 8</string>
-    <string name="private_key_wrong">私钥导入错误，请重新输入</string>
+    <string name="private_key_wrong">Private key import error, please re-enter</string>
+    <string name="private_key_export">Private key export</string>
+    <string name="find_this_wallet">Find the following Wallet</string>
+    <string name="find_wallet_tip">You have used the HD mnemonic to derive the following wallets. Select the one you want to restore. The HD wallet you do not want to temporarily add to your wallet will not be recovered later.</string>
+    <string name="add_hd_wallet">Add HD Wallet</string>
+    <string name="recovery_wallet">Recovery Wallet</string>
+    <string name="input_seed_import">Import through mnemonics</string>
+    <string name="not_recovery_wallet">No wallet to import</string>
+    <string name="usb">USB</string>
 </resources>

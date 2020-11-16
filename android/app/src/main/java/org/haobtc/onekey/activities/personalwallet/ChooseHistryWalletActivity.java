@@ -129,8 +129,7 @@ public class ChooseHistryWalletActivity extends BaseActivity {
                         }
                         flag = false;
                     }
-                    histryWalletAdapter = new ImportHistryWalletAdapter(ChooseHistryWalletActivity.this, list);
-                    reclImportWallet.setAdapter(histryWalletAdapter);
+                    histryWalletAdapter.notifyDataSetChanged();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

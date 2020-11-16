@@ -34,12 +34,13 @@ public class WalletListAdapter extends BaseQuickAdapter<AddressEvent, BaseViewHo
     protected void convert(BaseViewHolder helper, AddressEvent item) {
         helper.setText(R.id.text_name, item.getName());
         RelativeLayout view = helper.getView(R.id.rel_background);
+        ImageView imgType = helper.getView(R.id.img_type);
         if (item.getType().contains("btc")) {
             view.setBackground(mContext.getDrawable(R.drawable.orange_back));
+            imgType.setImageDrawable(mContext.getDrawable(R.drawable.token_trans_btc_list));
         } else if (item.getType().contains("eth")) {
             view.setBackground(mContext.getDrawable(R.drawable.eth_blue_back));
-        } else if (item.getType().contains("eos")) {
-            view.setBackground(mContext.getDrawable(R.drawable.eos_gray_back));
+            imgType.setImageDrawable(mContext.getDrawable(R.drawable.token_trans_eth_list));
         }
         if (item.getType().contains("hd") || item.getType().contains("derived")) {
             helper.getView(R.id.text_type).setVisibility(View.VISIBLE);

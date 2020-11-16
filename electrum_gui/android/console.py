@@ -2722,8 +2722,8 @@ class AndroidCommands(commands.Commands):
         wallet.start_network(self.daemon.network)
         wallet.save_db()
         self.daemon.add_wallet(wallet)
-        self.update_file_name(name, wallet.get_addresses()[0])
-        keyinfo = wallet.get_keystore().xpub if not isinstance(wallet.get_keystore(), Imported_KeyStore) else None
+        self.update_file_name(name,  wallet.get_addresses()[0])
+        keyinfo = wallet.get_keystore().xpub if not isinstance(wallet, Imported_Wallet) else None
         self.update_local_wallet_info(name, wallet_type, keystores=keyinfo)
         # if self.label_flag:
         #     self.label_plugin.load_wallet(self.wallet, None)

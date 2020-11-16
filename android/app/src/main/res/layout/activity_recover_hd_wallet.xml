@@ -48,6 +48,7 @@
             android:orientation="vertical">
 
             <ImageView
+                android:id="@+id/img_copy_test"
                 android:layout_width="@dimen/dp_36"
                 android:layout_height="@dimen/dp_36"
                 android:layout_marginTop="@dimen/dp_30"

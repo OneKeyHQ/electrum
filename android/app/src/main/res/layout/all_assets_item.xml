@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/dp_80"
-    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
     <RelativeLayout
@@ -11,44 +11,49 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/dp_28"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="11dp"
-            android:background="@drawable/onekey_grey_tuo"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/text_wallet_name"
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/dp_18"
-                android:layout_marginStart="@dimen/dp_30"
-                android:layout_marginEnd="@dimen/dp_14"
-                android:gravity="center_vertical"
-                android:text="@string/no_use_wallet"
-                android:textColor="@color/text_two"
-                android:textSize="@dimen/sp_14" />
-
-        </LinearLayout>
-
         <ImageView
+            android:id="@+id/imageView"
             android:layout_width="@dimen/dp_36"
             android:layout_height="@dimen/dp_36"
+            android:layout_centerVertical="true"
             android:src="@drawable/token_btc" />
 
         <TextView
-            android:id="@+id/text_amount"
-            android:layout_width="wrap_content"
+            android:id="@+id/text_wallet_name"
+            android:layout_width="match_parent"
             android:layout_height="@dimen/dp_18"
-            android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:layout_marginEnd="@dimen/dp_18"
-            tools:text="$1024.76"
+            android:layout_marginStart="@dimen/dp_15"
+            android:layout_marginEnd="160dp"
+            android:layout_toEndOf="@+id/imageView"
+            android:gravity="center_vertical"
+            android:text="@string/btc_c"
             android:textColor="@color/text_two"
             android:textSize="@dimen/sp_14" />
 
+        <TextView
+            android:id="@+id/text_balance"
+            android:layout_width="150dp"
+            android:layout_height="@dimen/dp_18"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="@dimen/dp_18"
+            android:gravity="end"
+            android:textColor="@color/text_two"
+            android:textSize="@dimen/sp_14"
+            tools:text="$1024.76" />
+
+        <TextView
+            android:id="@+id/text_fiat"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dp_18"
+            android:layout_below="@+id/text_balance"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="@dimen/dp_5"
+            android:layout_marginEnd="@dimen/dp_18"
+            android:textColor="@color/text_six"
+            android:textSize="9sp"
+            tools:ignore="SmallSp"
+            tools:text="$1024.76" />
 
     </RelativeLayout>
 

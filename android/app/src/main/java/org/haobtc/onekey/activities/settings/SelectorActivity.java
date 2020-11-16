@@ -4,9 +4,8 @@ import android.content.SharedPreferences;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
-
-import androidx.cardview.widget.CardView;
 
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
@@ -26,15 +25,15 @@ public class SelectorActivity extends BaseActivity {
     @BindView(R.id.nfc)
     CheckBox nfc;
     @BindView(R.id.nfc_item)
-    CardView nfcItem;
+    RelativeLayout nfcItem;
     @BindView(R.id.ble)
     CheckBox ble;
     @BindView(R.id.ble_item)
-    CardView bleItem;
+    RelativeLayout bleItem;
     @BindView(R.id.usb)
     CheckBox usb;
     @BindView(R.id.usb_item)
-    CardView usbItem;
+    RelativeLayout usbItem;
     SharedPreferences preferences;
 
     @Override
