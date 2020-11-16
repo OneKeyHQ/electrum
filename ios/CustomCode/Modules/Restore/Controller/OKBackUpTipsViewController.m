@@ -7,7 +7,6 @@
 //
 
 #import "OKBackUpTipsViewController.h"
-#import "OKReadyToStartViewController.h"
 
 @interface OKBackUpTipsViewController ()
 @property (weak, nonatomic) IBOutlet UIView *contentView;
@@ -61,8 +60,6 @@
 - (IBAction)backUpNowBtnClick:(UIButton *)sender {
     if (self.clickBlock) {
         self.clickBlock(BackUpBtnClickTypeBackUp);
-        OKReadyToStartViewController *readyToStartVc = [OKReadyToStartViewController readyToStartViewController];
-        [self.navigationController pushViewController:readyToStartVc animated:YES];
     }
 }
 @end

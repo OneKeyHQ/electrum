@@ -10,12 +10,11 @@
 #import "OKSelectCellModel.h"
 
 @interface  OKCreateHDCell()
+
 @property (weak, nonatomic) IBOutlet UIImageView *icon;
 @property (weak, nonatomic) IBOutlet UILabel *titleLabel;
 @property (weak, nonatomic) IBOutlet UILabel *descLabel;
 @property (weak, nonatomic) IBOutlet UILabel *descMoreLabel;
-
-
 
 @end
 

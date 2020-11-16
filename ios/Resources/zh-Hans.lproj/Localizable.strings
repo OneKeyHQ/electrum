@@ -208,3 +208,8 @@
 "Unsigned" =  "未签名";
 "Import success" = "导入成功";
 "Legal tender units" = "法币单位";
+"Add HD Wallet" = "添加 HD 钱包";
+"Support BTC, ETH and other main chain" = "支持 BTC、ETH等多种主链";
+"Restore the purse" = "恢复钱包";
+"Import through mnemonic" = "通过助记词导入";
+"No purse" = "无可用钱包";

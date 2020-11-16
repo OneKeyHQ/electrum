@@ -81,10 +81,6 @@
 
 @property (weak, nonatomic) IBOutlet UIView *tableViewHeaderView;
 
-
-@property (nonatomic,assign)PyObject *pyInstance;
-@property (nonatomic,assign)PyObject *pyClass;
-
 @property (nonatomic,strong)NSArray *listWallets;
 
 @property (nonatomic,strong)OKAssetTableViewCellModel *model;
@@ -104,13 +100,14 @@
     
     [self stupUI];
     [self showFirstUse];
-    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notiWalletCreateComplete) name:kNotiWalletFirstCreateComplete object:nil];
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notiWalletCreateComplete:) name:kNotiWalletFirstCreateComplete object:nil];
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notiSelectWalletComplete) name:kNotiSelectWalletComplete object:nil];
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notiUpdate_status:) name:kNotiUpdate_status object:nil];
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notiDeleteWalletComplete) name:kNotiDeleteWalletComplete object:nil];
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notiBackUPWalletComplete) name:kNotiBackUPWalletComplete object:nil];
     
     [kPyCommandsManager callInterface:kInterfaceLoad_all_wallet parameter:@{}];
+    
     [self loadWalletList];
     [self refreshUI];
     [self setDefault];
@@ -170,11 +167,10 @@
             bStr = @"****";
         }
         self.balance.text =  bStr;
-        self.walletName.text = kWalletManager.currentWalletName;
+        self.walletName.text = kWalletManager.currentWalletName.length > 0 ? kWalletManager.currentWalletName : MyLocalizedString(@"No purse", nil);
         [self.assetTableView reloadData];
     });
 }
-
 
 #pragma mark -  初始化UI
 - (void)stupUI
@@ -230,6 +226,8 @@
             [OKStorageManager saveToUserDefaults:[dataDict safeStringForKey:@"addr"] key:kCurrentWalletAddress];
             [OKStorageManager saveToUserDefaults:@"type" key:kCurrentWalletType];
         }
+    }else{
+        self.walletName.text = MyLocalizedString(@"No purse", nil);
     }
 }
 - (void)refreshUI
@@ -241,6 +239,7 @@
         self.walletHomeBgView.hidden = NO;
         isBackUp = [kPyCommandsManager callInterface:kInterfaceget_backup_info parameter:@{}];
     }else{
+        self.walletName.text = MyLocalizedString(@"No purse", nil);
         self.createBgView.hidden = NO;
         self.walletHomeBgView.hidden = YES;
     }
@@ -304,20 +303,19 @@
 {
     OKWalletListViewController *walletListVc = [OKWalletListViewController walletListViewController];
     BaseNavigationController *baseVc = [[BaseNavigationController alloc]initWithRootViewController:walletListVc];
-    [self.view.window.rootViewController presentViewController:baseVc animated:YES completion:nil];
+    [self.OK_TopViewController presentViewController:baseVc animated:YES completion:nil];
 }
 #pragma mark - 扫描二维码
 - (void)scanBtnClick
 {
     OKWalletScanVC *vc = [OKWalletScanVC initViewControllerWithStoryboardName:@"Scan"];
     vc.scanningType = ScanningTypeAddress;
-    OKWeakSelf(self)
     vc.scanningCompleteBlock = ^(id result) {
         if (result) {
             [kTools tipMessage:result];
         }
     };
-    [vc authorizePushOn:self];;
+    [vc authorizePushOn:self];
 }
 #pragma mark - TableView
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -333,7 +331,6 @@
         return self.allData.count;
     }
     return  1;
-    
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -378,11 +375,11 @@
             OKPwdViewController *pwdVc = [OKPwdViewController pwdViewController];
             pwdVc.pwdUseType = OKPwdUseTypeInitPassword;
             BaseNavigationController *baseVc = [[BaseNavigationController alloc]initWithRootViewController:pwdVc];
-            [weakself.view.window.rootViewController presentViewController:baseVc animated:YES completion:nil];
+            [weakself.OK_TopViewController presentViewController:baseVc animated:YES completion:nil];
         }else if (model.type == OKSelectCellTypeRestoreHD){ //恢复
             OKWordImportVC *wordImport = [OKWordImportVC initViewController];
             BaseNavigationController *baseVc = [[BaseNavigationController alloc]initWithRootViewController:wordImport];
-            [weakself.view.window.rootViewController presentViewController:baseVc animated:YES completion:nil];
+            [weakself.OK_TopViewController presentViewController:baseVc animated:YES completion:nil];
         }else if (model.type == OKSelectCellTypeMatchHD){ //匹配硬件
             
         }
@@ -461,20 +458,25 @@
 }
 
 #pragma mark - NotiWalletCreateComplete
-- (void)notiWalletCreateComplete
+- (void)notiWalletCreateComplete:(NSNotification *)noti
 {
     [self checkWalletResetUI];
+    NSDictionary *dict = noti.object;
+    NSString *pwd = [dict safeStringForKey:@"pwd"];
+    OKWeakSelf(self)
     OKBackUpTipsViewController *backUpTips = [OKBackUpTipsViewController backUpTipsViewController:^(BackUpBtnClickType type) {
             if (type == BackUpBtnClickTypeClose) {
                 //下次再说  关闭窗口
             }else if (type == BackUpBtnClickTypeBackUp){
-                
+                OKReadyToStartViewController *readyToStart = [OKReadyToStartViewController readyToStartViewController];
+                readyToStart.pwd = pwd;
+                [weakself.OK_TopViewController.navigationController pushViewController:readyToStart animated:YES];
             }
     }];
     
     UINavigationController *navVc = [[UINavigationController alloc]initWithRootViewController:backUpTips];
     navVc.modalPresentationStyle = UIModalPresentationOverFullScreen;
-    [self.navigationController presentViewController:navVc animated:NO completion:nil];
+    [self.OK_TopViewController presentViewController:navVc animated:NO completion:nil];
 }
 - (void)notiSelectWalletComplete
 {
@@ -488,7 +490,6 @@
 
 - (void)notiDeleteWalletComplete
 {
-    [self selectWallet];
     [self checkWalletResetUI];
 }
 

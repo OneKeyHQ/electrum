@@ -18,6 +18,10 @@
 #import "OKWalletDetailViewController.h"
 #import "OKTipsViewController.h"
 #import "OKCreateSelectWalletTypeController.h"
+#import "OKWalletListNoHDTableViewCellModel.h"
+#import "OKWalletListNoHDTableViewCell.h"
+#import "OKPwdViewController.h"
+#import "OKWordImportVC.h"
 
 
 #define kDefaultType  @"HD"
@@ -35,6 +39,9 @@
 @property (nonatomic,strong)NSArray *allCoinTypeArray;
 @property (nonatomic,strong)NSArray* walletListArray;
 @property (nonatomic,strong)NSArray *showList;
+
+@property (nonatomic,strong)NSArray *NoHDArray;
+
 
 //tableViewHeaderView
 @property (weak, nonatomic) IBOutlet UILabel *headerWalletTypeLabel;
@@ -89,6 +96,7 @@
     if (coinType.length == 0 || coinType == nil) {
         [OKStorageManager saveToUserDefaults:kDefaultType key:kSelectedWalletListType];
     }
+    [self.footBgView setLayerBoarderColor:HexColorA(0x546370, 0.3) width:1 radius:20];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -119,8 +127,8 @@
     self.walletListArray = walletArray;
     NSString *walletType =  [OKStorageManager loadFromUserDefaults:kSelectedWalletListType];
     if ([walletType isEqualToString:kDefaultType]) {
-        self.detailBtn.hidden = NO;
-        self.detailLabel.hidden = NO;
+        self.detailBtn.hidden = self.showList.count== 0 ? YES:NO;
+        self.detailLabel.hidden = self.showList.count== 0 ? YES:NO;
         self.circlePlusBtn.hidden = YES;
     }else{
         self.detailBtn.hidden = YES;
@@ -132,6 +140,11 @@
     
     self.countLabel.text = [NSString stringWithFormat:@"%zd",self.showList.count];
     self.headerWalletTypeLabel.text = [self headerWalletType:walletType];
+    if([kWalletManager.currentSelectCoinType isEqualToString:kDefaultType]){
+        self.footBgView.hidden = self.showList.count == 0 ? YES : NO;
+    }else{
+        self.footBgView.hidden = YES;
+    }
     [self.tableView reloadData];
 }
 
@@ -158,6 +171,9 @@
 #pragma mark - UITableViewDelegate | UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
+    if([kWalletManager.currentSelectCoinType isEqualToString:kDefaultType] && self.showList.count == 0){
+        return self.NoHDArray.count;
+    }
     return self.showList.count;
 }
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -166,6 +182,16 @@
 }
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    if([kWalletManager.currentSelectCoinType isEqualToString:kDefaultType] && self.showList.count == 0){
+        static NSString *ID = @"OKWalletListNoHDTableViewCell";
+        OKWalletListNoHDTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:ID];
+        if (cell == nil) {
+            cell = [[OKWalletListNoHDTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ID];
+        }
+        OKWalletListNoHDTableViewCellModel *model = self.NoHDArray[indexPath.row];
+        cell.model = model;
+        return cell;
+    }
     static NSString *ID = @"OKWalletListTableViewCell";
     OKWalletListTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:ID];
     if (cell == nil) {
@@ -177,6 +203,32 @@
 }
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    if([kWalletManager.currentSelectCoinType isEqualToString:kDefaultType] && self.showList.count == 0){
+        switch (indexPath.row) {
+            case 0:
+            {
+                OKWeakSelf(self)
+                [self.OK_TopViewController dismissViewControllerAnimated:NO completion:^{
+                    OKPwdViewController *pwdVc = [OKPwdViewController pwdViewController];
+                    pwdVc.pwdUseType = OKPwdUseTypeInitPassword;
+                    BaseNavigationController *baseVc = [[BaseNavigationController alloc]initWithRootViewController:pwdVc];
+                    [weakself.OK_TopViewController presentViewController:baseVc animated:YES completion:nil];
+                }];
+
+            }
+                break;
+            case 1:
+            {
+                OKWordImportVC *wordImport = [OKWordImportVC initViewController];
+                [self.OK_TopViewController presentViewController:wordImport animated:YES completion:nil];
+            }
+                break;
+            default:
+                break;
+        }
+        return;
+    }
+    
     OKWalletListTableViewCellModel *model = self.showList[indexPath.row];
     [OKStorageManager saveToUserDefaults:model.walletName key:kCurrentWalletName];
     [OKStorageManager saveToUserDefaults:model.address key:kCurrentWalletAddress];
@@ -245,7 +297,6 @@
     [self.leftCollectionView reloadData];
 }
 
-
 - (NSArray *)allCoinTypeArray
 {
     if (!_allCoinTypeArray) {
@@ -272,6 +323,27 @@
     }
     return _allCoinTypeArray;
 }
+
+- (NSArray *)NoHDArray
+{
+    if (!_NoHDArray) {
+        
+        OKWalletListNoHDTableViewCellModel *model1 = [OKWalletListNoHDTableViewCellModel new];
+        model1.iconName = @"retorei_add";
+        model1.titleStr = MyLocalizedString(@"Add HD Wallet", nil);
+        model1.descStr = MyLocalizedString(@"Support BTC, ETH and other main chain", nil);
+        
+        OKWalletListNoHDTableViewCellModel *model2 = [OKWalletListNoHDTableViewCellModel new];
+        model2.iconName = @"restore_phone";
+        model2.titleStr = MyLocalizedString(@"Restore the purse", nil);
+        model2.descStr = MyLocalizedString(@"Import through mnemonic", nil);
+        
+        _NoHDArray = @[model1,model2];
+    }
+    return _NoHDArray;
+}
+
+
 
 #pragma mark - 点击问号提示
 - (IBAction)tipsBtnClick:(UIButton *)sender {

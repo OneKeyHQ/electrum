@@ -328,8 +328,8 @@ typedef enum {
     NSArray *words = [createHD componentsSeparatedByString:@" "];
     if (words.count > 0) {
         [OKStorageManager saveToUserDefaults:@"BTC-1" key:kCurrentWalletName];
-        //第一次创建成功刷新首页的UI
-        [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletFirstCreateComplete object:nil];
+        //创建HD成功刷新首页的UI
+        [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletFirstCreateComplete object:@{@"pwd":pwd}];
         OKBiologicalViewController *biologicalVc = [OKBiologicalViewController biologicalViewController];
         [self.navigationController pushViewController:biologicalVc animated:YES];
     }

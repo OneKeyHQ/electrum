@@ -37,6 +37,10 @@
     [self.backToWallet setLayerRadius:20];
 }
 
+
+
+
+
 - (IBAction)backToWalletClick:(UIButton *)sender {
     [self dismissViewControllerAnimated:YES completion:nil];
 }

@@ -234,7 +234,7 @@ static dispatch_once_t once;
             PyErr_Fetch(&ptype,&pvalue,&ptraceback);
             pystr = PyObject_Str(pvalue);
             PyArg_Parse(pystr, "s", &msg);
-            NSLog(@"错误信息  %s ", msg);
+            NSLog(@"错误信息  %s  method = %@ ", msg ,method);
             // 释放GIL ！！！！！
             PyGILState_Release(state);
             dispatch_main_async_safe(

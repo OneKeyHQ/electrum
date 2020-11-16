@@ -46,7 +46,7 @@
 #define RGB_TEXT_GRAY               0x656565    // 交易记录灰色
 #define RGB_TEXT_ORANGE             0xFFA817    // 橙色
 #define RGB_HOME_TEXT_GRAY          0x9A9A9A    // 首页灰色字体
-#define RGB_THEME_GREEN             0x00B812    // 主题绿色
+#define RGB_THEME_GREEN             0x00BA12    // 主题绿色
 #define RGB_NAVI_BAR_TEXT_BLACK     0x2F2F33    // 导航栏字体颜色
 #define RGB_INTERVAL_LINE_GRAY      0xEEEEEE    // 分割线颜色
 #define APP_MAIN_TITLE_COLOR        0x3C3F44    // 主字体颜色

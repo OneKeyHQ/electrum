@@ -17,6 +17,7 @@ typedef void(^BackUpBtnClickBlock)(BackUpBtnClickType type);
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OKBackUpTipsViewController : BaseViewController
+@property (nonatomic,copy)NSString *pwd;
 + (instancetype)backUpTipsViewController:(BackUpBtnClickBlock)blockClick;
 @end
 
