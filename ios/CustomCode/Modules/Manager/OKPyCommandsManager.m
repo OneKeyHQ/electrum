@@ -235,6 +235,8 @@ static dispatch_once_t once;
             pystr = PyObject_Str(pvalue);
             PyArg_Parse(pystr, "s", &msg);
             NSLog(@"错误信息  %s ", msg);
+            // 释放GIL ！！！！！
+            PyGILState_Release(state);
             dispatch_main_async_safe(
                 [kTools tipMessage:[NSString stringWithCString:msg encoding:NSUTF8StringEncoding]];
             );
