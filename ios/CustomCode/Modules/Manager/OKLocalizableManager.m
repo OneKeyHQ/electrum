@@ -7,6 +7,9 @@
 //
 
 #import "OKLocalizableManager.h"
+@interface OKLocalizableManager()
+
+@end
 
 @implementation OKLocalizableManager
 static dispatch_once_t once;
@@ -20,31 +23,38 @@ static dispatch_once_t once;
 }
 
 + (NSString *)getCurrentLanguageString {
-    NSString *languageStr = [OKStorageManager loadFromUserDefaults:@"onekey_language"];
-    if ([languageStr isKindOfClass:[NSString class]] || languageStr.length != 0) {
+    NSString *languageStr = [OKStorageManager loadFromUserDefaults:kOnekey_language];
+    if ([languageStr isKindOfClass:[NSString class]] && languageStr.length != 0 && ![languageStr isEqualToString:kOnekey_languageSys]) {
         return languageStr;
     }
-    // （iOS获取的语言字符串比较不稳定）目前框架只处理en、zh-Hans、zh-Hant三种情况，其他按照系统默认处理
     NSString *language = [NSLocale preferredLanguages].firstObject;
     if ([language hasPrefix:@"en-"]) {
         language = @"en";
     }else if ([language hasPrefix:@"zh-"]) {
-        language = @"zh-Hans"; // 简体中文
+        language = @"zh-Hans";
     }
     return language;
 }
 
 + (AppLanguageType)getCurrentLanguageType {
+    NSString *languageStr = [OKStorageManager loadFromUserDefaults:kOnekey_language];
+    if ([languageStr isEqualToString:kOnekey_languageSys]) {
+        return AppLanguageTypeFollowSys;
+    }
     return [self getLanguageType:[self getCurrentLanguageString]];
 }
 
 + (AppLanguageType)getLanguageType:(NSString *)languageString {
-    if ([languageString hasPrefix:@"en"]) {
-        return AppLanguageTypeEn;
-    } else if ([languageString hasPrefix:@"zh"]) {
-        return AppLanguageTypeZh_Hans;
-    }else{//其它情况使用英文
-        return AppLanguageTypeEn;
+    if ([languageString isEqualToString:kOnekey_languageSys]) {
+        return AppLanguageTypeFollowSys;
+    }else{
+        if ([languageString hasPrefix:@"en"]) {
+            return AppLanguageTypeEn;
+        } else if ([languageString hasPrefix:@"zh"]) {
+            return AppLanguageTypeZh_Hans;
+        }else {//其它情况使用英文
+            return AppLanguageTypeEn;
+        }
     }
 }
 
@@ -57,6 +67,8 @@ static dispatch_once_t once;
         case AppLanguageTypeZh_Hans:
             languageString = @"zh-Hans";
             break;
+        case AppLanguageTypeFollowSys:
+            languageString = kOnekey_languageSys;
         default:
             break;
     }
@@ -66,6 +78,18 @@ static dispatch_once_t once;
 - (void)setupAppLanguage:(AppLanguageType)languageType {
     NSString *languageString = [OKLocalizableManager getLanguageString:languageType];
     NSString *bundleName = languageString;
+    if ([languageString isEqualToString:kOnekey_languageSys]) {
+        NSArray  *languages = [NSLocale preferredLanguages];
+        NSString *language = [languages objectAtIndex:0];
+        if ([language hasPrefix:@"en"]) {
+            bundleName = @"en";
+        } else if ([language hasPrefix:@"zh"]) {
+            bundleName = @"zh-Hans";
+        }else {//其它情况使用英文
+            bundleName = @"en";
+        }
+    }
+    
     NSString *path = [[NSBundle mainBundle] pathForResource:bundleName ofType:@"lproj"];
     self.languageBundle = [NSBundle bundleWithPath:path];
     self.languageType = languageType;
@@ -73,6 +97,10 @@ static dispatch_once_t once;
     if (currentType == languageType) {
         return;
     }
-    [OKStorageManager saveToUserDefaults:languageString key:@"onekey_language"];
+    if (![languageString isEqualToString:kOnekey_languageSys]) {
+        [OKStorageManager saveToUserDefaults:languageString key:kOnekey_language];
+    }else{
+        [OKStorageManager saveToUserDefaults:kOnekey_languageSys key:kOnekey_language];
+    }
 }
 @end

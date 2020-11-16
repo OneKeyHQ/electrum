@@ -7,7 +7,11 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "AppDelegate.h"
 #define kTools (OKTools.sharedInstance)
+
+#define kAppdelegate ((AppDelegate *)[[UIApplication sharedApplication] delegate])
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OKTools : NSObject

@@ -10,6 +10,7 @@
 #import "OKUnitTableViewCell.h"
 #import "OKUnitTableViewCellModel.h"
 #import "OKMoreBtn.h"
+#import "OKFiatSelectViewController.h"
 
 @interface OKMonetaryUnitViewController ()<UITableViewDataSource,UITableViewDelegate>
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
@@ -29,8 +30,6 @@
     // Do any additional setup after loading the view.
     self.title = MyLocalizedString(@"Monetary unit", nil);
     self.tableView.tableFooterView = [UIView new];
-    
-    //NSArray *currencies = [kPyCommandsManager callInterface:kInterfaceGet_currencies parameter:@{}];
 }
 
 #pragma mark - UITableViewDataSource
@@ -124,14 +123,14 @@
         [kWalletManager setCurrentBitcoinUnit:typeString];
     }
     [self.tableView reloadData];
-   
 }
 
 
 
 - (void)moreMoneyUnitClick
 {
-    NSLog(@"moreMoneyUnitClick");
+    OKFiatSelectViewController *fiatVc = [OKFiatSelectViewController fiatSelectViewController];
+    [self.navigationController pushViewController:fiatVc animated:YES];
 }
 
 
@@ -144,14 +143,15 @@
         NSMutableArray *moneyUnitGroup = [NSMutableArray array];
  
         OKUnitTableViewCellModel *model1 = [[OKUnitTableViewCellModel alloc]init];
-        model1.titleStr = MyLocalizedString(@"人民币（CNY）", nil);
+        model1.titleStr = @"CNY";
         model1.typeString = @"CNY";
         model1.type = GroupTypeFait;
         
         OKUnitTableViewCellModel *model2 = [[OKUnitTableViewCellModel alloc]init];
-        model2.titleStr = MyLocalizedString(@"Us Dollar (USD)", nil);
+        model2.titleStr = @"USD";
         model2.typeString = @"USD";
         model2.type = GroupTypeFait;
+        
         
         [moneyUnitGroup addObject:model1];
         [moneyUnitGroup addObject:model2];
