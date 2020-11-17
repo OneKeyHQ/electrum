@@ -440,3 +440,22 @@ def is_xkey_consistent_with_key_origin_info(xkey: str, *,
         if bfh(root_fingerprint) != bip32node.fingerprint:
             return False
     return True
+
+def get_uncompressed_key(compressed_key):
+    p_hex = 'FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F'
+    p = int(p_hex, 16)
+    x_hex = compressed_key[2:66]
+    x = int(x_hex, 16)
+    prefix = compressed_key[0:2]
+
+    y_square = (pow(x, 3, p) + 7) % p
+    y_square_square_root = pow(y_square, (p + 1) // 4, p)
+    if prefix == "02":
+        y = (-y_square_square_root) % p
+    else:
+        y = y_square_square_root
+
+    computed_y_hex = hex(y)[2:66]
+    computed_y_hex = computed_y_hex.zfill(64)
+    computed_uncompressed_key = "04" + x_hex + computed_y_hex
+    return computed_uncompressed_key

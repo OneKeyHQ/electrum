@@ -1,0 +1,14 @@
+{
+    "Provider": {
+        "mainnet": "https://mainnet.infura.io/v3/",
+        "ropsten": "https://ropsten.infura.io/v3/",
+        "customer": "http://127.0.0.1:8545"
+    },
+    "Etherscan": {
+        "mainnet": "https://api.etherscan.io/api",
+        "ropsten": "https://api-ropsten.etherscan.io/api"
+    },
+    "Market": "https://mkline.bixin.com/api/v1/ticker?symbol=",
+    "GasServer": "https://www.gasnow.org/api/v3/gas/price?utm_source=onekey"
+
+}

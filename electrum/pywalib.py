@@ -6,7 +6,7 @@ import os
 import json
 from enum import Enum
 from os.path import expanduser
-
+from electrum_gui.android.utils import Ticker
 import requests
 # from eth_accounts.account_utils import AccountUtils
 from eth_keyfile import keyfile
@@ -14,6 +14,8 @@ from eth_utils import to_checksum_address
 from web3 import HTTPProvider, Web3
 from .eth_transaction import Eth_Transaction
 from decimal import Decimal
+from electrum.constants import read_json
+eth_servers = {}
 
 ETHERSCAN_API_KEY = "R796P9T31MEA24P8FNDZBCA88UHW8YCNVW"
 INFURA_PROJECT_ID = "f001ce716b6e4a33a557f74df6fe8eff"
@@ -106,13 +108,12 @@ class ChainID(Enum):
 
 
 class HTTPProviderFactory:
-
+    global eth_servers
+    eth_servers = read_json('eth_servers.json', {})
     PROVIDER_URLS = {
-        # ChainID.MAINNET: 'https://api.myetherapi.com/eth',
-        ChainID.MAINNET: f"https://mainnet.infura.io/v3/{INFURA_PROJECT_ID}",
-        # ChainID.ROPSTEN: 'https://api.myetherapi.com/rop',
-        ChainID.ROPSTEN: f"https://ropsten.infura.io/v3/{INFURA_PROJECT_ID}",
-        ChainID.CUSTOMER: f"http://127.0.0.1:8545",
+        ChainID.MAINNET: f"{eth_servers['Provider']['mainnet']+INFURA_PROJECT_ID}",
+        ChainID.ROPSTEN: f"{eth_servers['Provider']['ropsten']+INFURA_PROJECT_ID}",
+        ChainID.CUSTOMER: f"{eth_servers['Provider']['customer']}",
     }
 
     @classmethod
@@ -123,8 +124,8 @@ class HTTPProviderFactory:
 
 def get_etherscan_prefix(chain_id=ChainID.MAINNET) -> str:
     PREFIXES = {
-        ChainID.MAINNET: 'https://api.etherscan.io/api',
-        ChainID.ROPSTEN: 'https://api-ropsten.etherscan.io/api',
+        ChainID.MAINNET: eth_servers['Etherscan']['mainnet'],
+        ChainID.ROPSTEN: eth_servers['Etherscan']['ropsten'],
     }
     return PREFIXES[chain_id]
 
@@ -162,29 +163,67 @@ headers = {
 
 class PyWalib:
     web3 = None
-    def __init__(self, chain_id=ChainID.MAINNET):
-        self.chain_id = chain_id
-        self.provider = HTTPProviderFactory.create(self.chain_id)
+    symbols_price = {}
+    config = None
+    chain_id = None
+    def __init__(self, config, chain_id=ChainID.MAINNET):
+        PyWalib.chain_id = chain_id
+        PyWalib.config = config
+        self.provider = HTTPProviderFactory.create(PyWalib.chain_id)
         PyWalib.web3 = Web3(self.provider)
-        # self.web3 =f Web3(HTTPProvider("https://ropsten.infura.io/v3/f001ce716b6e4a33a557f74df6fe8eff"))
-        # #self.web3 = Web3(HTTPProvider("https://mainnet.infura.io/v3/57caa86e6f454063b13d717be8cc3408"))
+        self.init_symbols()
+
+    def init_symbols(self):
+        symbol_list = self.config.get("symbol_list", {'ETH':'','EOS':''})
+        for symbol in symbol_list:
+            PyWalib.symbols_price[symbol] = self.get_currency(symbol, 'BTC')
+        global symbol_ticker
+        symbol_ticker = Ticker(5.0, self.get_symbols_price)
+        symbol_ticker.start()
+
+    def get_symbols_price(self):
+        try:
+            for symbol, price in PyWalib.symbols_price.items():
+                PyWalib.symbols_price[symbol] = self.get_currency(symbol, 'BTC')
+                PyWalib.config.set_key("symbol_list", PyWalib.symbols_price)
+            print(f"symbol info.......{PyWalib.symbols_price}")
+        except BaseException as e:
+            raise e
+
+    @staticmethod
+    def get_currency(from_cur, to_cur):
+        try:
+            url = eth_servers['Market']
+            url += from_cur.upper()+'/'+to_cur.upper()
+            response = requests.get(url, timeout=2, verify=False)
+            obj = response.json()
+            return obj['data']['price']
+        except BaseException as e:
+            print(f"get symbol price error {e}")
+            pass
 
     @staticmethod
     def get_web3():
         return PyWalib.web3
 
     @staticmethod
-    def get_currency(from_cur, to_cur):
+    def get_coin_price(from_cur):
         try:
-            response = requests.get('https://api.binance.com/api/v1/ticker/24hr?symbol='+from_cur.upper()+to_cur.upper())
-            obj = response.json()
-            return obj['lastPrice']
-        except BaseException as ex:
-            raise ex
+            from_cur = from_cur.upper()
+            if from_cur in PyWalib.symbols_price:
+                return PyWalib.symbols_price[from_cur]
+            else:
+                symbol_price = PyWalib.get_currency(from_cur, 'BTC')
+                PyWalib.symbols_price[from_cur] = symbol_price
+                PyWalib.config.set_key("symbol_list", PyWalib.symbols_price)
+                return symbol_price
+        except BaseException as e:
+            raise e
+
 
     def get_gas_price(self):
         try:
-            response = requests.get('https://www.gasnow.org/api/v3/gas/price?utm_source=onekey', headers=headers)
+            response = requests.get(eth_servers['GasServer'], headers=headers)
             obj = response.json()
             out = dict()
             if obj['code'] == 200:
@@ -219,7 +258,7 @@ class PyWalib:
                 gas_price=self.web3.toWei(gasprice, "gwei"),
                 # be careful about sending more transactions in row, nonce will be duplicated
                 nonce=self.web3.eth.getTransactionCount(self.web3.toChecksumAddress(from_address)),
-                chain_id=self.chain_id.value
+                chain_id=PyWalib.chain_id.value
             )
         else:  # create ERC20 contract transaction dictionary
             erc20_decimals = contract.get_decimals()
@@ -247,7 +286,7 @@ class PyWalib:
                 gas_price=self.web3.toWei(gasprice, "gwei"),
                 # be careful about sending more transactions in row, nonce will be duplicated
                 nonce=self.web3.eth.getTransactionCount(self.web3.toChecksumAddress(from_address)),
-                chain_id=self.chain_id.value,
+                chain_id=PyWalib.chain_id.value,
                 data=data_for_contract
             )
 
@@ -318,12 +357,12 @@ class PyWalib:
     #     return balance_eth
 
     @staticmethod
-    def get_transaction_history(address, chain_id=ChainID.MAINNET):
+    def get_transaction_history(address):
         """
         Retrieves the transaction history from etherscan.io.
         """
         address = to_checksum_address(address)
-        url = get_etherscan_prefix(chain_id)
+        url = get_etherscan_prefix(PyWalib.chain_id)
         url += (
             '?module=account&action=txlist'
             '&sort=asc'
@@ -359,11 +398,11 @@ class PyWalib:
         return transactions
 
     @staticmethod
-    def get_out_transaction_history(address, chain_id=ChainID.MAINNET):
+    def get_out_transaction_history(address):
         """
         Retrieves the outbound transaction history from Etherscan.
         """
-        transactions = PyWalib.get_transaction_history(address, chain_id)
+        transactions = PyWalib.get_transaction_history(address, PyWalib.chain_id)
         out_transactions = []
         for transaction in transactions:
             if transaction['extra_dict']['sent']:
@@ -372,14 +411,14 @@ class PyWalib:
 
     # TODO: can be removed since the migration to web3
     @staticmethod
-    def get_nonce(address, chain_id=ChainID.MAINNET):
+    def get_nonce(address):
         """
         Gets the nonce by counting the list of outbound transactions from
         Etherscan.
         """
         try:
             out_transactions = PyWalib.get_out_transaction_history(
-                address, chain_id)
+                address, PyWalib.chain_id)
         except NoTransactionFoundException:
             out_transactions = []
         nonce = len(out_transactions)

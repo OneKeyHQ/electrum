@@ -159,7 +159,7 @@ class Abstract_Eth_Wallet(ABC):
 
     def get_all_balance(self, wallet_address):
         eth_info = {}
-        last_price = PyWalib.get_currency("ETH", "BTC")
+        last_price = PyWalib.get_coin_price("ETH")
         eth, balance = PyWalib.get_balance(wallet_address)
         balance_info = {}
         balance_info['eth'] = balance
@@ -167,7 +167,7 @@ class Abstract_Eth_Wallet(ABC):
         eth_info['eth'] = balance_info
         for symbol, contract in self.contacts.items():
             symbol, balance = PyWalib.get_balance(wallet_address, contract)
-            last_price = PyWalib.get_currency(symbol, "BTC")
+            last_price = PyWalib.get_coin_price(symbol)
             balance_info = {}
             balance_info[symbol] = balance
             balance_info['fiat'] = balance * last_price
@@ -774,7 +774,6 @@ class Imported_Eth_Wallet(Simple_Eth_Wallet):
         bad_keys = []  # type: List[Tuple[str, str]]
         for key in keys:
             try:
-                #maybe error, need test
                 pubkey = self.keystore.import_eth_privkey(key, password)
             except BaseException as e:
                 bad_keys.append((key, _('invalid private key') + f': {e}'))
