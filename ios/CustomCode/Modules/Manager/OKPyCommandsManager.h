@@ -52,6 +52,10 @@
 #define kInterfaceexport_seed            @"export_seed"   //导出助记词
 
 
+#define kInterfaceget_all_wallet_balance @"get_all_wallet_balance" //获取全部资产
+
+
+
 #define kPyCommandsManager (OKPyCommandsManager.sharedInstance)
 NS_ASSUME_NONNULL_BEGIN
 @interface OKPyCommandsManager : NSObject

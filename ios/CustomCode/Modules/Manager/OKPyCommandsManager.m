@@ -218,7 +218,9 @@ static dispatch_once_t once;
     }else if([method isEqualToString:kInterfaceexport_seed]){
         NSString *password = [parameter safeStringForKey:@"password"];
         result = PyObject_CallMethod(self.pyInstance, [kInterfaceexport_seed UTF8String], "(s)",[password UTF8String]);
-       
+
+    }else if([method isEqualToString:kInterfaceget_all_wallet_balance]){
+        result = PyObject_CallMethod(self.pyInstance, [kInterfaceget_all_wallet_balance UTF8String], "()",NULL);
         
     }else if([method isEqualToString:kInterfaceBroadcast_tx]){
         NSString *tx = [parameter safeStringForKey:@"tx"];
