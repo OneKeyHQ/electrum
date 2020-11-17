@@ -222,6 +222,19 @@ static dispatch_once_t once;
     }else if([method isEqualToString:kInterfaceget_all_wallet_balance]){
         result = PyObject_CallMethod(self.pyInstance, [kInterfaceget_all_wallet_balance UTF8String], "()",NULL);
         
+        
+        
+    }else if([method isEqualToString:kInterfacerename_wallet]){
+        NSString * old_name = [parameter safeStringForKey:@"old_name"];
+        NSString * new_name = [parameter safeStringForKey:@"new_name"];
+        result = PyObject_CallMethod(self.pyInstance, [kInterfacerename_wallet UTF8String], "(s,s)",[old_name UTF8String],[new_name UTF8String]);
+        
+        
+    }else if([method isEqualToString:kInterfaceexport_privkey]){
+        NSString * password = [parameter safeStringForKey:@"password"];
+        result = PyObject_CallMethod(self.pyInstance, [kInterfaceexport_privkey UTF8String], "(s)",[password UTF8String]);
+        
+        
     }else if([method isEqualToString:kInterfaceBroadcast_tx]){
         NSString *tx = [parameter safeStringForKey:@"tx"];
         result = PyObject_CallMethod(self.pyInstance, [kInterfaceBroadcast_tx UTF8String], "(s)", [tx UTF8String]);

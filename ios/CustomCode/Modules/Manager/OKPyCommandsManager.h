@@ -53,8 +53,8 @@
 
 
 #define kInterfaceget_all_wallet_balance @"get_all_wallet_balance" //获取全部资产
-
-
+#define kInterfacerename_wallet          @"rename_wallet"  //修改名称
+#define kInterfaceexport_privkey         @"export_privkey" //导出私钥
 
 #define kPyCommandsManager (OKPyCommandsManager.sharedInstance)
 NS_ASSUME_NONNULL_BEGIN

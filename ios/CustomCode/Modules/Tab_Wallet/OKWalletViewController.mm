@@ -224,7 +224,7 @@
             NSDictionary *dataDict = dict[name];
             [OKStorageManager saveToUserDefaults:name key:kCurrentWalletName];
             [OKStorageManager saveToUserDefaults:[dataDict safeStringForKey:@"addr"] key:kCurrentWalletAddress];
-            [OKStorageManager saveToUserDefaults:@"type" key:kCurrentWalletType];
+            [OKStorageManager saveToUserDefaults:[dataDict safeStringForKey:@"type"] key:kCurrentWalletType];
         }
     }else{
         self.walletName.text = MyLocalizedString(@"No purse", nil);

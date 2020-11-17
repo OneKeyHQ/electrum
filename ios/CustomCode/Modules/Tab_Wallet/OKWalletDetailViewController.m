@@ -9,6 +9,12 @@
 #import "OKWalletDetailViewController.h"
 #import "OKWalletDetailTableViewCell.h"
 #import "OKWalletDetailModel.h"
+#import "OKEditWalletNameViewController.h"
+#import "OKDeleteWalletConfirmController.h"
+#import "OKExportTipsViewController.h"
+#import "OKDontScreenshotTipsViewController.h"
+#import "OKBackUpViewController.h"
+#import "OKPrivateKeyExportViewController.h"
 
 @interface OKWalletDetailViewController ()<UITableViewDelegate,UITableViewDataSource>
 
@@ -39,12 +45,12 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self setNavigationBarBackgroundColorWithClearColor];
-    [self stupUI];
+    [self loadUI];
     _walletType = [kWalletManager getWalletDetailType];
     self.tableView.tableFooterView = [UIView new];
 }
 
-- (void)stupUI
+- (void)loadUI
 {
     self.title = MyLocalizedString(@"Wallet Detail", nil);
     self.nameLabel.text = kWalletManager.currentWalletName;
@@ -99,31 +105,68 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     OKWalletDetailModel *model = self.allData[indexPath.section][indexPath.row];
+    OKWeakSelf(self)
     switch (model.clickType) {
         case OKClickTypeExportMnemonic:
         {
-            
+            OKExportTipsViewController *exportTipsVc = [OKExportTipsViewController exportTipsViewController:^{
+                [OKValidationPwdController showValidationPwdPageOn:self isDis:NO complete:^(NSString * _Nonnull pwd) {
+                    NSString *result = [kPyCommandsManager callInterface:kInterfaceexport_seed parameter:@{@"password":pwd}];
+                    if (![result isEqualToString:kErrorMsg]) {
+                        OKDontScreenshotTipsViewController *dontScreenshotTipsVc = [OKDontScreenshotTipsViewController dontScreenshotTipsViewController:^{
+                            OKBackUpViewController *backUpVc = [OKBackUpViewController backUpViewController];
+                            backUpVc.words = [result componentsSeparatedByString:@" "];
+                            backUpVc.showType = WordsShowTypeExport;
+                            [weakself.OK_TopViewController.navigationController pushViewController:backUpVc animated:YES];
+                        }];
+                        dontScreenshotTipsVc.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+                        [weakself.OK_TopViewController presentViewController:dontScreenshotTipsVc animated:NO completion:nil];
+                    }
+                }];
+            }];
+            exportTipsVc.modalPresentationStyle = UIModalPresentationOverFullScreen;
+            [self.OK_TopViewController presentViewController:exportTipsVc animated:NO completion:nil];
         }
             break;
         case OKClickTypeExportPrivatekey:
         {
-           
+            OKExportTipsViewController *exportTipsVc = [OKExportTipsViewController exportTipsViewController:^{
+                [OKValidationPwdController showValidationPwdPageOn:self isDis:NO complete:^(NSString * _Nonnull pwd) {
+                    NSString *result =  [kPyCommandsManager callInterface:kInterfaceexport_privkey parameter:@{@"password":pwd}];
+                     if (![result isEqualToString:kErrorMsg]) {
+                         OKPrivateKeyExportViewController *privateKeyExportVc = [OKPrivateKeyExportViewController privateKeyExportViewController];
+                         privateKeyExportVc.privateKey = result;
+                         [weakself.OK_TopViewController.navigationController pushViewController:privateKeyExportVc animated:YES];
+                     }
+                }];
+            }];
+            exportTipsVc.modalPresentationStyle = UIModalPresentationOverFullScreen;
+            [self.OK_TopViewController presentViewController:exportTipsVc animated:NO completion:nil];
         }
             break;
         case OKClickTypeExportKeystore:
         {
-           
+            OKExportTipsViewController *exportTipsVc = [OKExportTipsViewController exportTipsViewController:^{
+                
+            }];
+            exportTipsVc.modalPresentationStyle = UIModalPresentationOverFullScreen;
+            [self.OK_TopViewController presentViewController:exportTipsVc animated:NO completion:nil];
         }
             break;
         case OKClickTypeDeleteWallet:
         {
-            [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
-                [kPyCommandsManager callInterface:kInterfaceDelete_wallet parameter:@{@"name":kWalletManager.currentWalletName,@"password":pwd}];
-                [kWalletManager clearCurrentWalletInfo];
-                [kTools tipMessage:MyLocalizedString(@"Wallet deleted successfully", nil)];
-                [[NSNotificationCenter defaultCenter]postNotificationName:kNotiDeleteWalletComplete object:nil];
-                [self.navigationController popViewControllerAnimated:YES];
+            OKWeakSelf(self)
+            OKDeleteWalletConfirmController *deleteVc = [OKDeleteWalletConfirmController deleteWalletConfirmController:^{
+                    [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
+                        [kPyCommandsManager callInterface:kInterfaceDelete_wallet parameter:@{@"name":kWalletManager.currentWalletName,@"password":pwd}];
+                        [kWalletManager clearCurrentWalletInfo];
+                        [kTools tipMessage:MyLocalizedString(@"Wallet deleted successfully", nil)];
+                        [[NSNotificationCenter defaultCenter]postNotificationName:kNotiDeleteWalletComplete object:nil];
+                        [weakself.navigationController popViewControllerAnimated:YES];
+                   }];
             }];
+            deleteVc.modalPresentationStyle = UIModalPresentationOverFullScreen;
+            [self.OK_TopViewController presentViewController:deleteVc animated:NO completion:nil];
         }
             break;
         default:
@@ -268,7 +311,12 @@
     }
 }
 - (IBAction)editWalletNameClick:(UIButton *)sender {
-    NSLog(@"点击了编辑钱包名称");
+    OKWeakSelf(self)
+    OKEditWalletNameViewController *vc = [OKEditWalletNameViewController editWalletNameViewController:^{
+        [weakself loadUI];
+    }];
+    vc.modalPresentationStyle = UIModalPresentationOverFullScreen;
+    [self.OK_TopViewController presentViewController:vc animated:NO completion:nil];
 }
 
 - (NSArray *)groupNameArray

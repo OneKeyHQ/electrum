@@ -12,18 +12,22 @@
 #import "OKWalletListTableViewCellModel.h"
 #import "OKManagerHDViewController.h"
 #import "OKSelectCoinTypeViewController.h"
+#import "OKWalletListNoHDTableViewCellModel.h"
+#import "OKWalletListNoHDTableViewCell.h"
+#import "OKPwdViewController.h"
+#import "OKWordImportVC.h"
 
 @interface OKHDWalletViewController ()<UITableViewDelegate,UITableViewDataSource>
-
 @property (strong, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet UILabel *headerTitleLabel;
 - (IBAction)headerTipsBtnclick:(UIButton *)sender;
 @property (weak, nonatomic) IBOutlet UILabel *countLabel;
 @property (nonatomic,strong)NSArray *showList;
-@property (weak, nonatomic) IBOutlet UIView *footerBgView;
 @property (weak, nonatomic) IBOutlet UIView *countBgView;
 - (IBAction)bottomBtnClick:(UIButton *)sender;
 @property (nonatomic,copy)NSString *HDWalletName;
+@property (nonatomic,strong)NSArray *NoHDArray;
+@property (weak, nonatomic) IBOutlet UIView *footerBgView;
 @end
 
 @implementation OKHDWalletViewController
@@ -36,6 +40,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(createWalletComplete) name:kNotiWalletFirstCreateComplete object:nil];
     [self stupUI];
 }
 
@@ -68,6 +73,8 @@
     
     UITapGestureRecognizer *tapRightViewClick = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapRightViewClick)];
     [rightView addGestureRecognizer:tapRightViewClick];
+    
+    [self.footerBgView setLayerBoarderColor:HexColorA(0x546370, 0.3) width:1 radius:20];
 }
 
 - (void)tapRightViewClick
@@ -102,11 +109,23 @@
     self.HDWalletName = hdModel.walletName;
     self.countLabel.text = [NSString stringWithFormat:@"%zd",self.showList.count];
     self.headerTitleLabel.text = MyLocalizedString(@"HD wallet", nil);
+    self.footerBgView.hidden = self.showList.count == 0 ? YES : NO;
+    
+    if (self.showList.count == 0) {
+        self.navigationItem.rightBarButtonItem.customView.userInteractionEnabled = NO;
+        self.navigationItem.rightBarButtonItem.customView.alpha = 0.5;
+    }else{
+        self.navigationItem.rightBarButtonItem.customView.userInteractionEnabled = YES;
+        self.navigationItem.rightBarButtonItem.customView.alpha = 1.0;
+    }
     [self.tableView reloadData];
 }
 #pragma mark - UITableViewDelegate | UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
+    if (self.showList.count == 0) {
+        return self.NoHDArray.count;
+    }
     return self.showList.count;
 }
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -116,6 +135,17 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    if(self.showList.count == 0){
+        static NSString *ID = @"OKWalletListNoHDTableViewCell";
+        OKWalletListNoHDTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:ID];
+        if (cell == nil) {
+            cell = [[OKWalletListNoHDTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ID];
+        }
+        OKWalletListNoHDTableViewCellModel *model = self.NoHDArray[indexPath.row];
+        cell.model = model;
+        return cell;
+    }
+    
     static NSString *ID = @"OKWalletListTableViewCell";
     OKWalletListTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:ID];
     if (cell == nil) {
@@ -128,7 +158,28 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSLog(@"点击了其中一行");
+    if (self.showList.count == 0) {
+        switch (indexPath.row) {
+            case 0:
+            {
+                OKWeakSelf(self)
+                OKPwdViewController *pwdVc = [OKPwdViewController pwdViewController];
+                pwdVc.pwdUseType = OKPwdUseTypeInitPassword;
+                BaseNavigationController *baseVc = [[BaseNavigationController alloc]initWithRootViewController:pwdVc];
+                [weakself.OK_TopViewController presentViewController:baseVc animated:YES completion:nil];
+            }
+                break;
+            case 1:
+            {
+                OKWordImportVC *wordImport = [OKWordImportVC initViewController];
+                [self.OK_TopViewController presentViewController:wordImport animated:YES completion:nil];
+            }
+                break;
+            default:
+                break;
+        }
+        return;
+    }
 }
 
 - (IBAction)headerTipsBtnclick:(UIButton *)sender {
@@ -149,5 +200,36 @@
     OKSelectCoinTypeViewController *selectVc = [OKSelectCoinTypeViewController selectCoinTypeViewController];
     selectVc.addType = OKAddTypeCreateHDDerived;
     [self.navigationController pushViewController:selectVc animated:YES];
+}
+
+
+#pragma mark - createWalletComplete
+- (void)createWalletComplete
+{
+    [self  refreshListData];
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter]removeObserver:self];
+}
+
+- (NSArray *)NoHDArray
+{
+    if (!_NoHDArray) {
+        
+        OKWalletListNoHDTableViewCellModel *model1 = [OKWalletListNoHDTableViewCellModel new];
+        model1.iconName = @"retorei_add";
+        model1.titleStr = MyLocalizedString(@"Add HD Wallet", nil);
+        model1.descStr = MyLocalizedString(@"Support BTC, ETH and other main chain", nil);
+        
+        OKWalletListNoHDTableViewCellModel *model2 = [OKWalletListNoHDTableViewCellModel new];
+        model2.iconName = @"restore_phone";
+        model2.titleStr = MyLocalizedString(@"Restore the purse", nil);
+        model2.descStr = MyLocalizedString(@"Import through mnemonic", nil);
+        
+        _NoHDArray = @[model1,model2];
+    }
+    return _NoHDArray;
 }
 @end
