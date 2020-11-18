@@ -2,8 +2,8 @@
 //  OKTools.h
 //  OneKey
 //
-//  Created by bixin on 2020/10/19.
-//  Copyright © 2020 Calin Culianu. All rights reserved.
+//  Created by xiaoliang on 2020/10/19.
+//  Copyright © 2020 OneKey. All rights reserved..
 //
 
 #import <Foundation/Foundation.h>
@@ -23,6 +23,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)getAppVersionString;
 - (NSString *)getAppDisplayName;
 - (NSString *)getAppBundleID;
+- (int)findNumFromStr:(NSString *)string;
+- (BOOL)isJailBreak;
+- (BOOL)isNotchScreen;
 @end
 
 NS_ASSUME_NONNULL_END

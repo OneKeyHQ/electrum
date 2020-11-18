@@ -2,8 +2,8 @@
 //  NSString+BXAdd.h
 //  Electron-Cash
 //
-//  Created by bixin on 2020/9/28.
-//  Copyright © 2020 Calin Culianu. All rights reserved.
+//  Created by xiaoliang on 2020/9/28.
+//  Copyright © 2020 OneKey. All rights reserved..
 //
 
 #import <Foundation/Foundation.h>

@@ -3,7 +3,7 @@
 //  OneKey
 //
 //  Created by xiaoliang on 2020/11/16.
-//  Copyright © 2020 Calin Culianu. All rights reserved.
+//  Copyright © 2020 OneKey. All rights reserved..
 //
 
 #import "BaseViewController.h"

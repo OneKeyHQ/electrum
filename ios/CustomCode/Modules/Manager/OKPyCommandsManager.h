@@ -2,8 +2,8 @@
 //  OKPyCommandsManager.h
 //  OneKey
 //
-//  Created by bixin on 2020/10/27.
-//  Copyright © 2020 Calin Culianu. All rights reserved.
+//  Created by xiaoliang on 2020/10/27.
+//  Copyright © 2020 OneKey. All rights reserved..
 //
 
 #import <Foundation/Foundation.h>
@@ -62,7 +62,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (OKPyCommandsManager *)sharedInstance;
 + (void)setNetwork;
 - (id)callInterface:(NSString *)method parameter:(NSDictionary *)parameter;
-- (id)testcall:(NSString *)method parameter:(NSDictionary *)parameter;
 @property (nonatomic,assign)PyObject *pyInstance;
 @end
 

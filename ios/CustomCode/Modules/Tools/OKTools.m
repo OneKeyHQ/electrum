@@ -2,8 +2,8 @@
 //  OKTools.m
 //  OneKey
 //
-//  Created by bixin on 2020/10/19.
-//  Copyright © 2020 Calin Culianu. All rights reserved.
+//  Created by xiaoliang on 2020/10/19.
+//  Copyright © 2020 OneKey. All rights reserved..
 //
 
 #import "OKTools.h"
@@ -88,4 +88,54 @@
 - (NSString *)getAppBundleID {
     return [[NSBundle mainBundle] bundleIdentifier];
 }
+
+
+
+- (int)findNumFromStr:(NSString *)string
+{
+    // Intermediate
+    NSMutableString *numberString = [[NSMutableString alloc] init];
+    NSString *tempStr = @"";
+    NSScanner *scanner = [NSScanner scannerWithString:string];
+    NSCharacterSet *numbers = [NSCharacterSet characterSetWithCharactersInString:@"0123456789"];
+    
+    while (![scanner isAtEnd]) {
+        // Throw away characters before the first number.
+        [scanner scanUpToCharactersFromSet:numbers intoString:NULL];
+        
+        // Collect numbers.
+        [scanner scanCharactersFromSet:numbers intoString:&tempStr];
+        if (tempStr != nil) {
+            [numberString appendString:tempStr];
+        }
+        tempStr = @"";
+        break;
+    }
+    // Result.
+    int number = [numberString intValue];
+    
+    return number;
+}
+
+
+#define USER_APP_PATH                 @"/User/Applications/"
+- (BOOL)isJailBreak
+{
+    if ([[NSFileManager defaultManager] fileExistsAtPath:USER_APP_PATH]) {
+        NSArray *applist = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:USER_APP_PATH error:nil];
+        return YES;
+    }
+    return NO;
+}
+
+- (BOOL)isNotchScreen {
+    if (@available(iOS 11.0, *)) {
+        CGFloat height = [[UIApplication sharedApplication] delegate].window.safeAreaInsets.bottom;
+        return (height > 0);
+    } else {
+        return NO;
+    }
+}
+
+
 @end

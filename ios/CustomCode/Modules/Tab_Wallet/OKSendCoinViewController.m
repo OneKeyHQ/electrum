@@ -2,8 +2,8 @@
 //  OKSendCoinViewController.m
 //  OneKey
 //
-//  Created by bixin on 2020/10/16.
-//  Copyright © 2020 Calin Culianu. All rights reserved.
+//  Created by xiaoliang on 2020/10/16.
+//  Copyright © 2020 OneKey. All rights reserved..
 //
 
 typedef enum {
@@ -14,6 +14,7 @@ typedef enum {
 
 
 #import "OKSendCoinViewController.h"
+#import "OKWalletInputFeeView.h"
 
 
 @interface OKSendCoinViewController ()<UITextFieldDelegate>
@@ -166,7 +167,6 @@ typedef enum {
     self.recommendTitleLabel.text = MyLocalizedString(@"推荐", nil);
     self.recommendCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",[self.recommendFeeDict safeStringForKey:@"fee"],kWalletManager.currentBitcoinUnit];
     self.recommendTimeLabel.text = [NSString stringWithFormat:@"约%@分钟",[self.recommendFeeDict safeStringForKey:@"time"]];
-    
     self.fastTitleLabel.text = MyLocalizedString(@"快", nil);
     self.fastCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",[self.fastFeeDict safeStringForKey:@"fee"],kWalletManager.currentBitcoinUnit];
     self.fastTimeLabel.text = [NSString stringWithFormat:@"约%@分钟",[self.fastFeeDict safeStringForKey:@"time"]];
@@ -181,8 +181,12 @@ typedef enum {
 - (IBAction)coinTypeBtnClick:(UIButton *)sender {
     
 }
-- (IBAction)customBtnClick:(UIButton *)sender { //点击了自定义
-
+- (IBAction)customBtnClick:(UIButton *)sender {
+    [OKWalletInputFeeView showWalletCustomFeeInputSize:@"42" sure:^(NSString *fee) {
+        NSLog(@"ssss");
+    } Cancel:^{
+        NSLog(@"Cancel");
+    }];
 }
 - (IBAction)sendBtnClick:(OKButton *)sender {
     

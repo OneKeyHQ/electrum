@@ -2,8 +2,8 @@
   Localizable.strings
   ElectronCash
 
-  Created by bixin on 2020/10/9.
-  Copyright © 2020 Calin Culianu. All rights reserved.
+  Created by xiaoliang on 2020/10/9.
+  Copyright © 2020 OneKey. All rights reserved..
 */
 "With OneKey, you can certainly have it both safe and easy to use" = "有 OneKey，安全和好用当然可以兼得。";
 "Your assets are only in your hands" = "你的资产，只在你手";
@@ -229,3 +229,5 @@
 "1. Carefully copy with pen and paper and keep it in a safe place after confirmation. 2. Mobile photo albums are easily accessible by other apps. 2. OneKey does not store any private key, which cannot be recovered once lost" = "1. 备好纸笔认真抄写，确认无误后并保管在安全处 \n2. 请勿截屏！手机相册很容易被其他应用访问。 \n3. OneKey不存储任何私钥，私钥一旦丢失无法找回";
 "copy" = "复制";
 "The private key export" = "私钥导出";
+"Custom rate" = "自定义费率";
+"Please enter the rate" = "请输入费率";

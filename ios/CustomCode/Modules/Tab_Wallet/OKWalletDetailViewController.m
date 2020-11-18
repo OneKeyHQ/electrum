@@ -2,8 +2,8 @@
 //  OKWalletDetailViewController.m
 //  OneKey
 //
-//  Created by bixin on 2020/10/15.
-//  Copyright © 2020 Calin Culianu. All rights reserved.
+//  Created by xiaoliang on 2020/10/15.
+//  Copyright © 2020 OneKey. All rights reserved..
 //
 
 #import "OKWalletDetailViewController.h"

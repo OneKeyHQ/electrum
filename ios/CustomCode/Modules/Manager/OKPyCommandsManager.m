@@ -2,8 +2,8 @@
 //  OKPyCommandsManager.m
 //  OneKey
 //
-//  Created by bixin on 2020/10/27.
-//  Copyright © 2020 Calin Culianu. All rights reserved.
+//  Created by xiaoliang on 2020/10/27.
+//  Copyright © 2020 OneKey. All rights reserved..
 //
 
 #import "OKPyCommandsManager.h"
@@ -249,7 +249,7 @@ static dispatch_once_t once;
             PyErr_Fetch(&ptype,&pvalue,&ptraceback);
             pystr = PyObject_Str(pvalue);
             PyArg_Parse(pystr, "s", &msg);
-            NSLog(@"错误信息  %s  method = %@ ", msg ,method);
+            NSLog(@"错误信息  %s  method = %@ parameter = %@", msg ,method,parameter);
             // 释放GIL ！！！！！
             PyGILState_Release(state);
             dispatch_main_async_safe(
