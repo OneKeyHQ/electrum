@@ -175,10 +175,10 @@ public class ElectrumNodeChooseActivity extends BaseActivity {
         public void afterTextChanged(Editable editable) {
             if ((editIp.length() > 0 && editPort.length() > 0)) {
                 btnFinish.setEnabled(true);
-                btnFinish.setBackground(getDrawable(R.drawable.little_radio_blue));
+                btnFinish.setBackground(getDrawable(R.drawable.btn_checked));
             } else {
                 btnFinish.setEnabled(false);
-                btnFinish.setBackground(getDrawable(R.drawable.little_radio_qian));
+                btnFinish.setBackground(getDrawable(R.drawable.btn_no_check));
             }
         }
     }

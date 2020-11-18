@@ -85,7 +85,7 @@
             android:layout_marginStart="@dimen/dp_10"
             android:background="@drawable/gray_tuo_c4"
             android:gravity="center"
-            android:text="@string/_1"
+            android:text="@string/zero"
             android:textColor="@color/text_two"
             android:textSize="@dimen/sp_12" />
 

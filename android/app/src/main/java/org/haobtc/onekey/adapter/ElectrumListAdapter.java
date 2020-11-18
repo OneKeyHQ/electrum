@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -28,10 +29,11 @@ public class ElectrumListAdapter extends RecyclerView.Adapter<ElectrumListAdapte
 
     public class myViewHolder extends BaseViewHolder {
         TextView tetElectrumName;
-
+        ImageView imgChoose;
         public myViewHolder(View view) {
             super(view);
             tetElectrumName = view.findViewById(R.id.tet_electrumName);
+            imgChoose = view.findViewById(R.id.img_choose);
         }
     }
 
@@ -58,10 +60,9 @@ public class ElectrumListAdapter extends RecyclerView.Adapter<ElectrumListAdapte
             }
         });
         if (electrumList.get(position).isStatus()) {
-            holder.tetElectrumName.setTextColor(context.getColor(R.color.button_bk_disableok));
-//            holder.tet_types.setBackgroundColor(Color.parseColor("#ffffff"));
+            holder.imgChoose.setVisibility(View.VISIBLE);
         } else {
-            holder.tetElectrumName.setTextColor(context.getColor(R.color.text));
+            holder.imgChoose.setVisibility(View.GONE);
         }
     }
 

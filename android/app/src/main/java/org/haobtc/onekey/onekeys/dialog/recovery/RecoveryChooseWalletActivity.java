@@ -98,17 +98,20 @@ public class RecoveryChooseWalletActivity extends BaseActivity {
                     }
                 }
                 String recoveryName = new Gson().toJson(listDates);
-                Log.i("recoveryNamejxm", "onViewClicked: " + recoveryName);
-                try {
-                    Daemon.commands.callAttr("recovery_confirmed", recoveryName);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return;
+                if (listDates != null && recoveryName.length() > 2) {
+                    try {
+                        Daemon.commands.callAttr("recovery_confirmed", recoveryName);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return;
+                    }
+                    edit.putBoolean("isHaveWallet", true);
+                    edit.putString("loadWalletName", "BTC-1");
+                    edit.apply();
+                    mIntent(HomeOnekeyActivity.class);
+                } else {
+                    mToast(getString(R.string.choose_recovery_wallet));
                 }
-                edit.putBoolean("isHaveWallet", true);
-                edit.putString("loadWalletName", "BTC-1");
-                edit.apply();
-                mIntent(HomeOnekeyActivity.class);
                 break;
         }
     }

@@ -127,6 +127,7 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
     private String baseUnit;
     private String cnyUnit;
     private String detailDontUnit;
+    private String errorMessage = "";
 
     @Override
     public int getLayoutId() {
@@ -244,6 +245,15 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
                 useTx = fastTx;
                 break;
             case R.id.btn_next:
+                if (!TextUtils.isEmpty(errorMessage)) {
+                    if (errorMessage.contains("Insufficient funds")) {
+                        mToast(getString(R.string.wallet_insufficient));
+                        return;
+                    } else {
+                        mToast(errorMessage);
+                        return;
+                    }
+                }
                 PyObject infoFromRaw = null;
                 try {
                     infoFromRaw = Daemon.commands.callAttr("get_tx_info_from_raw", useTx);
@@ -387,18 +397,14 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
                 getDefaultFeeStatus = Daemon.commands.callAttr("get_default_fee_status");
             } catch (Exception e) {
                 e.printStackTrace();
-                mToast(e.getMessage());
                 return;
             }
-
-            if (getDefaultFeeStatus != null) {
-                String strFee = getDefaultFeeStatus.toString();
-                Log.i("get_default_fee", "strFee:   " + strFee);
+            String strFee = getDefaultFeeStatus.toString();
+            if (!TextUtils.isEmpty(strFee)) {
                 if (strFee.contains("sat/byte")) {
                     String strFeeamont = strFee.substring(0, strFee.indexOf("sat/byte"));
                     String strMaxTemp = strFeeamont.replaceAll(" ", "");
                     strGive = strMaxTemp.split("\\.", 2)[0];
-                    Log.i("strMaxsss", "getFeeamont:-- " + strGive);
                     int feeMax = (Integer.parseInt(strGive)) * 2;
                     getFeerate(strGive);
                     getSlowFeerate("1");
@@ -421,9 +427,6 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
             getFeeByFeeRate = Daemon.commands.callAttr("get_fee_by_feerate", strPramas, "", strRecommend);
         } catch (Exception e) {
             e.printStackTrace();
-            if (e.getMessage().contains("Insufficient funds")) {
-                mToast(getString(R.string.wallet_insufficient));
-            }
             return;
         }
         if (getFeeByFeeRate != null) {
@@ -473,7 +476,8 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
             getFeeByFeeRate = Daemon.commands.callAttr("get_fee_by_feerate", strPramas, "", strRecommend);
         } catch (Exception e) {
             e.printStackTrace();
-            if (e.getMessage().contains("Insufficient funds")) {
+            errorMessage = e.getMessage();
+            if (errorMessage.contains("Insufficient funds")) {
                 mToast(getString(R.string.wallet_insufficient));
             }
             return;
@@ -527,9 +531,6 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
             getFeeByFeeRate = Daemon.commands.callAttr("get_fee_by_feerate", strPramas, "", strRecommend);
         } catch (Exception e) {
             e.printStackTrace();
-            if (e.getMessage().contains("Insufficient funds")) {
-                mToast(getString(R.string.wallet_insufficient));
-            }
             return;
         }
         if (getFeeByFeeRate != null) {

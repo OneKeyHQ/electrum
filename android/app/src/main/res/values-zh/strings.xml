@@ -338,7 +338,6 @@
     <string name="publickey_wrong">公钥格式错误，请重试</string>
     <string name="publicer">共管人</string>
     <string name="set_success">设置成功</string>
-    <string name="check_all">查看全部</string>
     <string name="add_speed">加速</string>
     <string name="tips_addspeed">提示</string>
     <string name="Confirm_speed">确认加速</string>
@@ -350,7 +349,6 @@
     <string name="user_agreement">用户协议</string>
     <string name="syncnneth">同步服务器仅存储钱包公钥、名称等公开信息，不存储任何私钥和个人信息。</string>
     <string name="get_btc_price">选择第三方服务获取比特币价格</string>
-    <string name="quotation_choose">行情服务器选择</string>
     <string name="import_hardware">导入硬件钱包</string>
     <string name="bixinkey_import">请通过BixinKey导入</string>
     <string name="begin_import">开始导入</string>
@@ -364,7 +362,6 @@
     <string name="delete_succse">删除成功</string>
     <string name="ifconfirm_recovery">是否确认恢复</string>
     <string name="recovery_succse">恢复成功</string>
-    <string name="block_choose">区块链服务器选择</string>
     <string name="send_num">发币数量</string>
     <string name="wrong_pass">密码输入错误</string>
     <string name="msg_get_wrong">信息获取失败</string>
@@ -472,7 +469,7 @@
     <string name="agreement_msg">签名信息与公钥原始信息一致</string>
     <string name="sign_check_fail">签名核实失败</string>
     <string name="agent_server">代理服务器</string>
-    <string name="useAgent_hideIP">使用代理服务器隐藏真实IP</string>
+    <string name="useAgent_hideIP">隐藏真实 IP 地址</string>
     <string name="add_agentserver">添加代理服务器</string>
     <string name="edit_agent">编辑代理服务器</string>
     <string name="node_type">节点类型</string>
@@ -799,10 +796,9 @@
     <string name="device_activat_fail">设备激活失败</string>
     <string name="usb_break_link">USB设备断开连接</string>
     <string name="retouch">请把硬件与手机重新贴合</string>
-    <string name="anysk_server_set">同步服务器设置</string>
     <string name="add_anysk_server">添加同步服务器</string>
     <string name="edit_anysk_server">编辑同步服务器</string>
-    <string name="ip_address">IP地址</string>
+    <string name="ip_address">IP 地址</string>
     <string name="add_success">添加成功</string>
     <string name="switch_server">链接异常，建议切换为bixin服务器</string>
     <string name="recovery_new_key">恢复到新BixinKey</string>
@@ -881,7 +877,7 @@
     <string name="onekey_tips">有OneKey，安全和好用当然可以兼得</string>
     <string name="in_your">你的资产，只在你手</string>
     <string name="server_tip">我们的服务器不会以任何方式存储您的私钥或助记词，软、硬件均开源，放心使用。</string>
-    <string name="onekey_user1">开始使用即意味着您同意OneKey的<font color="#00B812">《用户协议》和<font color="#00B812">《隐私政策》</font></font></string>
+    <string name="onekey_user1">开始使用即意味着您同意OneKey的<font color="#00B812">《用户协议》</font></string>
     <string name="onekey_user2">和<font color="#00B812">《隐私政策》</font></string>
     <string name="begin_use">开始使用</string>
     <string name="find">发现</string>
@@ -1142,5 +1138,19 @@
     <string name="recovery_wallet">恢复钱包</string>
     <string name="input_seed_import">通过助记词导入</string>
     <string name="not_recovery_wallet">暂无可导入的钱包</string>
+    <string name="quotation_choose">价格行情</string>
+    <string name="price_quotation_tip">选择适合的行情来源\n只影响 BTC 和 ETH 的价格显示</string>
+    <string name="recovery_default_">恢复默认</string>
+    <string name="block_choose">区块浏览器（BTC）</string>
+    <string name="block_choose_tip">区块浏览器（BTC）\n使用您喜欢的浏览器查看链上交易信息</string>
+    <string name="choose_recovery_wallet">请选择要恢复的钱包</string>
+    <string name="input_username">输入用户名</string>
+    <string name="input_password">输入密码</string>
+    <string name="input_ip_address">输入IP 地址</string>
+    <string name="input_port">输入端口号</string>
+    <string name="trsaction_set_tip">以下设置适用于硬件钱包的比特币账户</string>
+    <string name="language_tip">选择硬件钱包的显示语言</string>
+    <string name="eth_table">以太坊单位</string>
+    <string name="privacy_agreement">隐私政策</string>
 
 </resources>

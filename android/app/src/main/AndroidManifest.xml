@@ -183,10 +183,6 @@
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
         <activity
-            android:name=".activities.settings.EditAnyskServerActivity"
-            android:screenOrientation="portrait"
-            tools:ignore="LockedOrientationActivity" />
-        <activity
             android:name=".activities.settings.AnyskServerSetActivity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
@@ -196,10 +192,6 @@
             tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".activities.settings.recovery_set.SetBackupPassActivity"
-            android:screenOrientation="portrait"
-            tools:ignore="LockedOrientationActivity" />
-        <activity
-            android:name=".activities.settings.Backup2LocalSuccess"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
         <activity

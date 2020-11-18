@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -19,7 +20,7 @@ public class CNYAdapter extends RecyclerView.Adapter<CNYAdapter.myViewHolder> {
     private Context context;
     private ArrayList<CNYBean> listCNY;
 
-    public CNYAdapter(Context context, ArrayList<CNYBean> listCNY,int cnypos) {
+    public CNYAdapter(Context context, ArrayList<CNYBean> listCNY, int cnypos) {
         this.context = context;
         this.listCNY = listCNY;
         this.listCNY.get(cnypos).setStatus(true);
@@ -27,10 +28,12 @@ public class CNYAdapter extends RecyclerView.Adapter<CNYAdapter.myViewHolder> {
 
     public class myViewHolder extends RecyclerView.ViewHolder {
         TextView tetCny;
+        ImageView imgCheck;
 
         public myViewHolder(@NonNull View itemView) {
             super(itemView);
             tetCny = itemView.findViewById(R.id.tet_Cny);
+            imgCheck = itemView.findViewById(R.id.img_check);
         }
     }
 
@@ -52,25 +55,24 @@ public class CNYAdapter extends RecyclerView.Adapter<CNYAdapter.myViewHolder> {
                     listCNY.get(i).setStatus(false);
                 }
                 listCNY.get(position).setStatus(true);
-                Log.i("onClickJXM", "onClick: "+listCNY.get(position).isStatus());
+                Log.i("onClickJXM", "onClick: " + listCNY.get(position).isStatus());
                 onLisennorClick.itemClick(position);
                 notifyDataSetChanged();
 
             }
         });
         if (listCNY.get(position).isStatus()) {
-            holder.tetCny.setTextColor(context.getColor(R.color.onekey));
-//            holder.tet_types.setBackgroundColor(Color.parseColor("#ffffff"));
+            holder.imgCheck.setVisibility(View.VISIBLE);
         } else {
-            holder.tetCny.setTextColor(context.getColor(R.color.text));
+            holder.imgCheck.setVisibility(View.GONE);
         }
     }
 
     @Override
     public int getItemCount() {
-        if (listCNY!=null){
+        if (listCNY != null) {
             return listCNY.size();
-        }else{
+        } else {
             return 0;
         }
 

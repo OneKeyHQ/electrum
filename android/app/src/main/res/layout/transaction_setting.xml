@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@android:color/white"
     android:clipToPadding="true"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_50">
+        android:layout_height="@dimen/dp_50"
+        android:layout_marginTop="@dimen/dp_10">
 
         <ImageView
             android:id="@+id/img_back"
@@ -20,190 +20,183 @@
             android:layout_height="@dimen/dp_40"
             android:layout_centerVertical="true"
             android:padding="@dimen/dp_8"
-
-            android:src="@drawable/back" />
+            android:src="@drawable/left_arrow" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:fontFamily="sans-serif-medium"
             android:layout_centerVertical="true"
             android:layout_gravity="center"
-            android:text="@string/transaction_setting"
+            android:fontFamily="sans-serif-medium"
+            android:text="@string/transaction_set"
             android:textColor="@color/text"
             android:textSize="@dimen/text_size" />
 
+        <TextView
+            android:id="@+id/tet_addNode"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dp_30"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/dp_15"
+            android:layout_marginEnd="@dimen/dp_15"
+            android:background="@drawable/green_bacj"
+            android:gravity="center"
+            android:paddingStart="@dimen/dp_15"
+            android:paddingEnd="@dimen/dp_15"
+            android:text="@string/recovery_default_"
+            android:textColor="@color/onekey"
+            android:textSize="@dimen/sp_14" />
+
     </RelativeLayout>
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/bk_page">
+        android:layout_marginTop="10dp"
+        android:background="@color/bk_page"
+        android:orientation="vertical">
 
-        <androidx.cardview.widget.CardView
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_20"
+            android:layout_marginTop="41dp"
+            android:text="@string/trsaction_set_tip"
+            android:textColor="@color/text_six"
+            android:textSize="@dimen/sp_14" />
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="180dp"
-            android:layout_marginStart="@dimen/layout_margin"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="@dimen/layout_margin"
-            android:outlineSpotShadowColor="@color/shadow_color"
-            app:cardCornerRadius="@dimen/dp_8"
-            app:cardElevation="@dimen/dp_8"
-            tools:ignore="UnusedAttribute">
+            android:layout_height="@dimen/dp_70"
+            android:layout_marginTop="@dimen/dp_10"
+            android:background="@color/button_bk_ddake"
+            android:orientation="horizontal"
+            android:paddingStart="@dimen/dp_20"
+            android:paddingEnd="@dimen/dp_20">
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:layout_weight="1"
+                android:gravity="center|start"
+                android:text="@string/rbf"
+                android:textColor="@color/text"
+                tools:ignore="NestedWeights" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_marginStart="@dimen/text_margin"
-                    android:layout_marginEnd="@dimen/text_margin"
-                    android:layout_weight="1"
-                    android:orientation="horizontal">
+            <Switch
+                android:id="@+id/switch_rbf"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:thumb="@drawable/switch_custom_thumb_selector"
+                android:track="@drawable/switch_custom_track_selector"
+                tools:ignore="UseSwitchCompatOrMaterialXml" />
+        </LinearLayout>
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:gravity="center|start"
-                        android:text="@string/rbf"
-                        android:textColor="@color/text"
-                        tools:ignore="NestedWeights" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/line_hight"
+            android:layout_marginStart="@dimen/text_margin"
+            android:layout_marginEnd="@dimen/text_margin"
+            android:background="@color/separation_line" />
 
-                    <Switch
-                        android:id="@+id/switch_rbf"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:thumb="@drawable/switch_custom_thumb_selector"
-                        android:track="@drawable/switch_custom_track_selector"
-                        tools:ignore="UseSwitchCompatOrMaterialXml" />
-                </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_70"
+            android:background="@color/button_bk_ddake"
+            android:orientation="horizontal"
+            android:paddingStart="@dimen/dp_20"
+            android:paddingEnd="@dimen/dp_20">
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/line_hight"
-                    android:layout_marginStart="@dimen/text_margin"
-                    android:layout_marginEnd="@dimen/text_margin"
-                    android:background="@color/separation_line" />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center|start"
+                android:text="@string/use_unconfirmed"
+                android:textColor="@color/text"
+                tools:ignore="NestedWeights" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_marginStart="@dimen/text_margin"
-                    android:layout_marginEnd="@dimen/text_margin"
-                    android:layout_weight="1"
-                    android:orientation="horizontal">
+            <Switch
+                android:id="@+id/switch_noConfirm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:thumb="@drawable/switch_custom_thumb_selector"
+                android:track="@drawable/switch_custom_track_selector"
+                tools:ignore="UseSwitchCompatOrMaterialXml" />
+        </LinearLayout>
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:gravity="center|start"
-                        android:text="@string/use_unconfirmed"
-                        android:textColor="@color/text"
-                        tools:ignore="NestedWeights" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/line_hight"
+            android:layout_marginStart="@dimen/text_margin"
+            android:layout_marginEnd="@dimen/text_margin"
+            android:background="@color/separation_line"
+            android:visibility="gone" />
 
-                    <Switch
-                        android:id="@+id/switch_noConfirm"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:thumb="@drawable/switch_custom_thumb_selector"
-                        android:track="@drawable/switch_custom_track_selector"
-                        tools:ignore="UseSwitchCompatOrMaterialXml" />
-                </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginStart="@dimen/text_margin"
+            android:layout_marginEnd="@dimen/text_margin"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:visibility="gone">
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/line_hight"
-                    android:visibility="gone"
-                    android:layout_marginStart="@dimen/text_margin"
-                    android:layout_marginEnd="@dimen/text_margin"
-                    android:background="@color/separation_line" />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="47.5dp"
+                android:layout_weight="1"
+                android:gravity="center|start"
+                android:text="@string/use_change"
+                android:textColor="@color/text"
+                tools:ignore="NestedWeights" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_marginStart="@dimen/text_margin"
-                    android:visibility="gone"
-                    android:layout_marginEnd="@dimen/text_margin"
-                    android:layout_weight="1"
-                    android:orientation="horizontal">
+            <Switch
+                android:id="@+id/switch_find"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:thumb="@drawable/switch_custom_thumb_selector"
+                android:track="@drawable/switch_custom_track_selector"
+                tools:ignore="UseSwitchCompatOrMaterialXml" />
+        </LinearLayout>
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="47.5dp"
-                        android:layout_weight="1"
-                        android:gravity="center|start"
-                        android:text="@string/use_change"
-                        android:textColor="@color/text"
-                        tools:ignore="NestedWeights" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/line_hight"
+            android:layout_marginStart="@dimen/text_margin"
+            android:layout_marginEnd="@dimen/text_margin"
+            android:background="@color/separation_line"
+            android:visibility="gone" />
 
-                    <Switch
-                        android:id="@+id/switch_find"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:thumb="@drawable/switch_custom_thumb_selector"
-                        android:track="@drawable/switch_custom_track_selector"
-                        tools:ignore="UseSwitchCompatOrMaterialXml" />
-                </LinearLayout>
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/line_hight"
-                    android:visibility="gone"
-                    android:layout_marginStart="@dimen/text_margin"
-                    android:layout_marginEnd="@dimen/text_margin"
-                    android:background="@color/separation_line" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginStart="@dimen/text_margin"
+            android:layout_marginEnd="@dimen/text_margin"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:visibility="gone">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_marginStart="@dimen/text_margin"
-                    android:visibility="gone"
-                    android:layout_marginEnd="@dimen/text_margin"
-                    android:layout_weight="1"
-                    android:orientation="horizontal">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="47.5dp"
+                android:layout_weight="1"
+                android:gravity="center|start"
+                android:text="@string/prevent_dust"
+                android:textColor="@color/text"
+                tools:ignore="NestedWeights" />
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="47.5dp"
-                        android:layout_weight="1"
-                        android:gravity="center|start"
-                        android:text="@string/prevent_dust"
-                        android:textColor="@color/text"
-                        tools:ignore="NestedWeights" />
+            <Switch
+                android:id="@+id/switch_usdt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:thumb="@drawable/switch_custom_thumb_selector"
+                android:track="@drawable/switch_custom_track_selector"
+                tools:ignore="UseSwitchCompatOrMaterialXml" />
+        </LinearLayout>
 
-                    <Switch
-                        android:id="@+id/switch_usdt"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:thumb="@drawable/switch_custom_thumb_selector"
-                        android:track="@drawable/switch_custom_track_selector"
-                        tools:ignore="UseSwitchCompatOrMaterialXml" />
-                </LinearLayout>
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/line_hight"
-                    android:layout_marginStart="@dimen/text_margin"
-                    android:layout_marginEnd="@dimen/text_margin"
-                    android:background="@color/separation_line" />
-
-
-                <TextView
-                    android:id="@+id/tet_addNode"
-                    android:layout_width="match_parent"
-                    android:layout_height="59.5dp"
-                    android:gravity="center"
-                    android:text="@string/restore_default_set"
-                    android:textColor="@color/onekey"
-
-                    android:textSize="15sp" />
-
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-    </RelativeLayout>
+    </LinearLayout>
 
 </LinearLayout>

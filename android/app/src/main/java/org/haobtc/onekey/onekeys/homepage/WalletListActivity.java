@@ -351,6 +351,11 @@ public class WalletListActivity extends BaseActivity {
                             }
                         });
                     }
+                } else {
+                    reclWalletDetail.setVisibility(View.GONE);
+                    reclAddWallet.setVisibility(View.GONE);
+                    reclAddHdWallet.setVisibility(View.VISIBLE);
+                    reclRecoveryWallet.setVisibility(View.VISIBLE);
                 }
             }
         });

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -28,20 +29,20 @@ public class QuetationChooseAdapter extends RecyclerView.Adapter<QuetationChoose
         }
     }
 
-
     public class myViewHolder extends BaseViewHolder {
         TextView tetWalletName;
-
+        ImageView imgChoose;
         public myViewHolder(View view) {
             super(view);
             tetWalletName = view.findViewById(R.id.tet_WalletName);
+            imgChoose = view.findViewById(R.id.img_choose);
         }
     }
 
     @NonNull
     @Override
     public myViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View inflate = LayoutInflater.from(context).inflate(R.layout.chooseaddress, null);
+        View inflate = LayoutInflater.from(context).inflate(R.layout.price_quotation_item, null);
         return new myViewHolder(inflate);
     }
 
@@ -61,10 +62,9 @@ public class QuetationChooseAdapter extends RecyclerView.Adapter<QuetationChoose
             }
         });
         if (exchangeList.get(position).isStatus()) {
-            holder.tetWalletName.setTextColor(context.getColor(R.color.button_bk_disableok));
-//            holder.tet_types.setBackgroundColor(Color.parseColor("#ffffff"));
+            holder.imgChoose.setVisibility(View.VISIBLE);
         } else {
-            holder.tetWalletName.setTextColor(context.getColor(R.color.text));
+            holder.imgChoose.setVisibility(View.GONE);
         }
 
     }

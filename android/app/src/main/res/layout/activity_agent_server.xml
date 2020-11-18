@@ -3,10 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:clipToPadding="true"
-    android:fitsSystemWindows="true"
     android:layout_height="match_parent"
     android:background="@color/button_bk_ddake"
+    android:clipToPadding="true"
+    android:fitsSystemWindows="true"
     android:orientation="vertical"
     tools:context=".activities.settings.AgentServerActivity">
 
@@ -14,6 +14,7 @@
         android:id="@+id/RelativeLayout"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_50"
+        android:layout_marginTop="@dimen/dp_10"
         android:background="@color/button_bk_ddake">
 
         <ImageView
@@ -21,9 +22,8 @@
             android:layout_width="@dimen/dp_40"
             android:layout_height="@dimen/dp_40"
             android:layout_centerVertical="true"
-
             android:padding="@dimen/dp_8"
-            android:src="@drawable/back" />
+            android:src="@drawable/left_arrow" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -46,210 +46,253 @@
         android:orientation="vertical"
         android:paddingBottom="@dimen/dp_70">
 
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/layout_margin"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="@dimen/layout_margin"
-            android:outlineSpotShadowColor="@color/shadow_color"
-            app:cardCornerRadius="@dimen/dp_8"
-            app:cardElevation="@dimen/dp_8"
-            tools:ignore="UnusedAttribute">
+            android:layout_marginStart="@dimen/dp_20"
+            android:layout_marginTop="41dp"
+            android:text="@string/useAgent_hideIP"
+            android:textColor="@color/text_six"
+            android:textSize="@dimen/sp_14" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="59.5dp"
-                    android:layout_marginStart="@dimen/text_margin"
-                    android:layout_marginEnd="@dimen/text_margin"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:gravity="center_vertical"
-                        android:text="@string/agent_server"
-                        android:textColor="@color/text" />
-
-                    <Switch
-                        android:id="@+id/switchAgent"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:thumb="@drawable/switch_custom_thumb_selector"
-                        android:track="@drawable/switch_custom_track_selector" />
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/text_margin"
-                    android:layout_marginEnd="@dimen/text_margin"
-                    android:layout_marginBottom="@dimen/dp_16"
-                    android:gravity="center|start"
-                    android:text="@string/useAgent_hideIP"
-                    android:textColor="@color/light_text"
-                    android:textSize="@dimen/sp_13" />
-
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <androidx.cardview.widget.CardView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/layout_margin"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="@dimen/layout_margin"
-            android:outlineSpotShadowColor="@color/shadow_color"
-            app:cardCornerRadius="@dimen/dp_8"
-            app:cardElevation="@dimen/dp_8"
-            tools:ignore="UnusedAttribute">
+            android:layout_height="@dimen/dp_70"
+            android:layout_marginTop="@dimen/dp_10"
+            android:background="@color/button_bk_ddake"
+            android:orientation="horizontal"
+            android:paddingStart="@dimen/dp_20"
+            android:paddingEnd="@dimen/dp_20">
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:text="@string/agent_server"
+                android:textColor="@color/text" />
+
+            <Switch
+                android:id="@+id/switchAgent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:thumb="@drawable/switch_custom_thumb_selector"
+                android:track="@drawable/switch_custom_track_selector"
+                tools:ignore="UseSwitchCompatOrMaterialXml" />
+        </LinearLayout>
 
-                <RelativeLayout
-                    android:id="@+id/relNodeType"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp">
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/line_hight"
+            android:layout_marginStart="@dimen/dp_20"
+            android:layout_marginEnd="@dimen/dp_20"
+            android:background="@color/line_color" />
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+        <RelativeLayout
+            android:id="@+id/relNodeType"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_70"
+            android:background="@color/button_bk_ddake">
 
-                        android:focusable="true"
-                        android:gravity="center_vertical"
-                        android:paddingStart="@dimen/dp_16"
-                        android:text="@string/node_type"
-                        android:textColor="@color/text"
-                        tools:ignore="RtlSymmetry" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:paddingStart="@dimen/dp_20"
+                android:text="@string/node_type"
+                android:textColor="@color/text"
+                tools:ignore="RtlSymmetry" />
 
-                    <TextView
-                        android:id="@+id/testNodeType"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_alignParentEnd="true"
-                        android:drawableEnd="@drawable/jiantou"
-                        android:drawablePadding="@dimen/dp_10"
-                        android:focusable="true"
-                        android:gravity="center_vertical|end"
-                        android:hint="@string/select"
-                        android:paddingEnd="@dimen/dp_16"
-                        android:textColor="@color/text"
-                        android:textSize="@dimen/sp_14"
-                        tools:ignore="RtlSymmetry" />
-                </RelativeLayout>
+            <TextView
+                android:id="@+id/testNodeType"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="true"
+                android:drawablePadding="@dimen/dp_10"
+                android:focusable="true"
+                android:gravity="center_vertical|end"
+                android:paddingEnd="@dimen/dp_20"
+                android:textColor="@color/text"
+                android:textSize="@dimen/sp_14"
+                app:drawableEndCompat="@drawable/jiantou"
+                tools:ignore="RtlSymmetry" />
+        </RelativeLayout>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/line_hight"
-                    android:layout_marginStart="@dimen/dp_16"
-                    android:layout_marginEnd="@dimen/dp_16"
-                    android:background="@color/line_color" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/line_hight"
+            android:layout_marginStart="@dimen/dp_20"
+            android:layout_marginEnd="@dimen/dp_20"
+            android:background="@color/line_color" />
 
-                <EditText
-                    android:id="@+id/editAgentIP"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/dp_50"
-                    android:layout_marginStart="@dimen/dp_16"
-                    android:layout_marginTop="@dimen/dp_10"
-                    android:layout_marginEnd="@dimen/dp_16"
-                    android:background="@drawable/gray_tuo_6"
-                    android:hint="@string/agent_IP_address"
-                    android:paddingStart="@dimen/dp_16"
-                    android:paddingEnd="@dimen/dp_16"
-                    android:singleLine="true"
-                    android:textColor="@color/text_color"
-                    android:textSize="15sp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:background="@color/button_bk_ddake"
+            android:orientation="horizontal">
 
-                <EditText
-                    android:id="@+id/editPort"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/dp_50"
-                    android:layout_marginStart="@dimen/dp_16"
-                    android:layout_marginTop="@dimen/dp_10"
-                    android:layout_marginEnd="@dimen/dp_16"
-                    android:background="@drawable/gray_tuo_6"
-                    android:hint="@string/port_number"
-                    android:paddingStart="@dimen/dp_16"
-                    android:paddingEnd="@dimen/dp_16"
-                    android:singleLine="true"
-                    android:textColor="@color/text_color"
-                    android:textSize="15sp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/dp_20"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:text="@string/ip_address"
+                android:textColor="@color/text"
+                android:textSize="@dimen/sp_16" />
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/line_hight"
-                    android:layout_marginStart="@dimen/dp_16"
-                    android:layout_marginTop="@dimen/dp_15"
-                    android:layout_marginEnd="@dimen/dp_16"
-                    android:background="@color/line_color" />
+            <EditText
+                android:id="@+id/editAgentIP"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@null"
+                android:gravity="center_vertical|end"
+                android:hint="@string/input_ip_address"
+                android:paddingStart="@dimen/dp_20"
+                android:paddingEnd="@dimen/dp_20"
+                android:singleLine="true"
+                android:textColor="@color/text_color"
+                android:textSize="15sp" />
+        </LinearLayout>
 
-                <EditText
-                    android:id="@+id/editUsername"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/dp_50"
-                    android:layout_marginStart="@dimen/dp_16"
-                    android:layout_marginTop="@dimen/dp_15"
-                    android:layout_marginEnd="@dimen/dp_16"
-                    android:background="@drawable/gray_tuo_6"
-                    android:hint="@string/username"
-                    android:paddingStart="@dimen/dp_16"
-                    android:paddingEnd="@dimen/dp_16"
-                    android:singleLine="true"
-                    android:textColor="@color/text_color"
-                    android:textSize="15sp" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/line_hight"
+            android:layout_marginStart="@dimen/dp_20"
+            android:layout_marginEnd="@dimen/dp_20"
+            android:background="@color/line_color" />
 
-                <EditText
-                    android:id="@+id/editPass"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/dp_50"
-                    android:layout_marginStart="@dimen/dp_16"
-                    android:layout_marginTop="@dimen/dp_10"
-                    android:layout_marginEnd="@dimen/dp_16"
-                    android:layout_marginBottom="@dimen/dp_20"
-                    android:background="@drawable/gray_tuo_6"
-                    android:hint="@string/password"
-                    android:inputType="textPassword"
-                    android:paddingStart="@dimen/dp_16"
-                    android:paddingEnd="@dimen/dp_16"
-                    android:singleLine="true"
-                    android:textColor="@color/text_color"
-                    android:textSize="15sp" />
-            </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_70"
+            android:background="@color/button_bk_ddake"
+            android:orientation="horizontal">
 
-        </androidx.cardview.widget.CardView>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/dp_20"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:text="@string/port_number"
+                android:textColor="@color/text"
+                android:textSize="@dimen/sp_16" />
+
+            <EditText
+                android:id="@+id/editPort"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:gravity="center_vertical|end"
+                android:hint="@string/input_port"
+                android:paddingStart="@dimen/dp_20"
+                android:paddingEnd="@dimen/dp_20"
+                android:singleLine="true"
+                android:textColor="@color/text_color"
+                android:textSize="15sp" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/line_hight"
+            android:layout_marginStart="@dimen/dp_20"
+            android:layout_marginEnd="@dimen/dp_20"
+            android:background="@color/line_color" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:background="@color/button_bk_ddake"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/dp_20"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:text="@string/username"
+                android:textColor="@color/text"
+                android:textSize="@dimen/sp_16" />
+
+            <EditText
+                android:id="@+id/editUsername"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@null"
+                android:gravity="center_vertical|end"
+                android:hint="@string/input_username"
+                android:paddingStart="@dimen/dp_20"
+                android:paddingEnd="@dimen/dp_20"
+                android:singleLine="true"
+                android:textColor="@color/text_color"
+                android:textSize="15sp" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/line_hight"
+            android:layout_marginStart="@dimen/dp_20"
+            android:layout_marginEnd="@dimen/dp_20"
+            android:background="@color/line_color" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_70"
+            android:background="@color/button_bk_ddake"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/dp_20"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:text="@string/password"
+                android:textColor="@color/text"
+                android:textSize="@dimen/sp_16" />
+
+            <EditText
+                android:id="@+id/editPass"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:gravity="center_vertical|end"
+                android:hint="@string/input_password"
+                android:paddingStart="@dimen/dp_20"
+                android:paddingEnd="@dimen/dp_20"
+                android:singleLine="true"
+                android:textColor="@color/text_color"
+                android:textSize="15sp" />
+
+        </LinearLayout>
 
     </LinearLayout>
 
-    <RelativeLayout
+    <Button
+        android:id="@+id/btnConfirm"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="@dimen/dp_60"
         android:layout_alignParentBottom="true"
-        android:background="@android:color/white">
-
-        <Button
-            android:id="@+id/btnConfirm"
-            android:layout_width="343dp"
-            android:layout_height="@dimen/dp_40"
-            android:layout_centerInParent="true"
-            android:background="@drawable/little_radio_qian"
-            android:enabled="false"
-            android:text="@string/comfirm"
-            android:textAllCaps="false"
-            android:textColor="@android:color/white">
-
-        </Button>
-
-    </RelativeLayout>
+        android:layout_marginStart="34dp"
+        android:layout_marginTop="35dp"
+        android:layout_marginEnd="34dp"
+        android:layout_marginBottom="@dimen/dp_20"
+        android:background="@drawable/btn_no_check"
+        android:enabled="false"
+        android:text="@string/confirm"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/sp_20" />
 
 </RelativeLayout>

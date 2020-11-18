@@ -1,75 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@color/t_white">
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent">
+
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="440dp"
-        app:cardCornerRadius="@dimen/corner_radius"
+        android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/layout_margin"
         android:layout_marginEnd="@dimen/layout_margin"
-        android:layout_marginBottom="@dimen/layout_margin">
-        <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_marginBottom="@dimen/layout_margin"
+        app:cardCornerRadius="@dimen/dp_20">
+
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
             <TextView
+                android:id="@+id/textView"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_14"
-                android:text="@string/select_wallet"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:layout_height="@dimen/dp_50"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/dp_20"
+                android:textColor="@color/text_two"
+                android:gravity="center_vertical"
+                android:text="@string/select_node_type"
+                android:textSize="@dimen/sp_18"
+                android:textStyle="bold" />
 
             <ImageView
                 android:id="@+id/cancel_select_wallet"
                 android:layout_width="@dimen/dp_40"
                 android:layout_height="@dimen/dp_40"
-                android:layout_marginTop="@dimen/dp_4"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="@dimen/dp_5"
+                android:layout_marginEnd="@dimen/dp_5"
                 android:padding="@dimen/dp_14"
-
-                android:src="@drawable/close_big_black"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:src="@drawable/close_big_black" />
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/line_hight"
-                android:background="@color/separation_line"
-                app:layout_constraintTop_toTopOf="parent"
-                android:layout_marginTop="50dp"/>
+                android:layout_below="@+id/textView"
+                android:layout_marginTop="@dimen/dp_10"
+                android:background="@color/separation_line" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recy_payAdress"
                 android:layout_width="match_parent"
-                android:layout_height="315dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/textView"
+                android:layout_marginTop="@dimen/dp_10"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                android:layout_marginTop="50dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                tools:itemCount="5"
-                tools:listitem="@layout/chooseaddress"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+                app:layout_constraintTop_toTopOf="parent"
+                tools:itemCount="2"
+                tools:listitem="@layout/chooseaddress">
 
-            <Button
-                android:id="@+id/bn_select_wallet"
-                android:layout_width="300dp"
-                android:layout_height="50dp"
-                android:textAllCaps="false"
-                android:textColor="@android:color/white"
-                android:background="@drawable/button_bk"
-                android:text="@string/confirm"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:layout_marginBottom="@dimen/dp_20"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.recyclerview.widget.RecyclerView>
+
+        </RelativeLayout>
 
     </androidx.cardview.widget.CardView>
-
 
 </RelativeLayout>

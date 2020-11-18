@@ -3,6 +3,7 @@ package org.haobtc.onekey.activities.settings;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -13,9 +14,6 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Switch;
-import android.widget.TextView;
-
-import com.chaquo.python.PyObject;
 
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
@@ -34,8 +32,6 @@ public class AnyskServerSetActivity extends BaseActivity {
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     @BindView(R.id.switch_cynchronez)
     Switch switchCynchronez;
-    @BindView(R.id.tet_electrumName)
-    TextView reclNodeChose;
     @BindView(R.id.btn_add_server)
     Button btnAddServer;
     @BindView(R.id.editAgentIP)
@@ -67,13 +63,13 @@ public class AnyskServerSetActivity extends BaseActivity {
     private void inits() {
         Intent intent = getIntent();
         //get ip and port
-        String ip_port = intent.getStringExtra("ip_port");
-        assert ip_port != null;
-        String str_ip = ip_port.substring(0, ip_port.indexOf(":"));
-        int length = ip_port.length();
-        String str_port = ip_port.substring(str_ip.length() + 1, length);
-        editAgentIP.setText(str_ip);
-        editPort.setText(str_port);
+        String ipPort = intent.getStringExtra("ip_port");
+        assert ipPort != null;
+        String strIp = ipPort.substring(0, ipPort.indexOf(":"));
+        int length = ipPort.length();
+        String strPort = ipPort.substring(strIp.length() + 1, length);
+        editAgentIP.setText(strIp);
+        editPort.setText(strPort);
 
         //editText Listener
         TextChange textChange = new TextChange();
@@ -105,6 +101,7 @@ public class AnyskServerSetActivity extends BaseActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
+                    Log.i("sdjfklsndfssd", "--------------33: ");
                     open = true;
                     try {
                         Daemon.commands.callAttr("set_syn_server", true);
@@ -131,22 +128,20 @@ public class AnyskServerSetActivity extends BaseActivity {
     }
 
     @SuppressLint("SetTextI18n")
-    @OnClick({R.id.img_back, R.id.btn_add_server, R.id.tet_electrumName})
+    @OnClick({R.id.img_back, R.id.btn_add_server, R.id.text_recovery_default})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
                 finish();
                 break;
             case R.id.btn_add_server:
-//                Intent intent = new Intent(AnyskServerSetActivity.this, EditAnyskServerActivity.class);
-//                intent.putExtra("edit_server", "editServer");
-//                startActivity(intent);
                 strAgentIP = editAgentIP.getText().toString();
                 strPort = editPort.getText().toString();
                 addAnyskServer(strAgentIP, strPort);
 
                 break;
-            case R.id.tet_electrumName:
+            case R.id.text_recovery_default:
+                switchCynchronez.setChecked(true);
                 editAgentIP.setText("39.105.86.163");
                 editPort.setText("8080");
                 addAnyskServer("39.105.86.163", "8080");
@@ -163,7 +158,6 @@ public class AnyskServerSetActivity extends BaseActivity {
             return;
         }
         EventBus.getDefault().post(new FirstEvent("add_anysk_server"));
-        finish();
     }
 
     class TextChange implements TextWatcher {
@@ -191,15 +185,15 @@ public class AnyskServerSetActivity extends BaseActivity {
 
         if (TextUtils.isEmpty(strAgentIP) || TextUtils.isEmpty(strPort)) {
             btnAddServer.setEnabled(false);
-            btnAddServer.setBackground(getDrawable(R.drawable.little_radio_qian));
+            btnAddServer.setBackground(getDrawable(R.drawable.btn_no_check));
 
         } else {
             if (open) {
                 btnAddServer.setEnabled(true);
-                btnAddServer.setBackground(getDrawable(R.drawable.little_radio_blue));
+                btnAddServer.setBackground(getDrawable(R.drawable.btn_checked));
             } else {
                 btnAddServer.setEnabled(false);
-                btnAddServer.setBackground(getDrawable(R.drawable.little_radio_qian));
+                btnAddServer.setBackground(getDrawable(R.drawable.btn_no_check));
             }
 
         }

@@ -40,30 +40,30 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/bk_page">
+        android:background="@color/bk_page"
+        android:orientation="vertical">
 
-        <androidx.cardview.widget.CardView
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_20"
+            android:layout_marginTop="41dp"
+            android:lineSpacingExtra="@dimen/dp_10"
+            android:text="@string/block_choose_tip"
+            android:textColor="@color/text_six"
+            android:textSize="@dimen/sp_14" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recl_Quetation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/dp_10"
-            android:layout_marginBottom="@dimen/dp_10"
-            android:outlineSpotShadowColor="@color/shadow_color"
-            app:cardCornerRadius="@dimen/dp_8"
-            app:cardElevation="@dimen/dp_8"
-            tools:ignore="UnusedAttribute">
+            android:layout_marginTop="@dimen/dp_10"
+            android:background="@drawable/white_tuo"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:itemCount="3"
+            tools:listitem="@layout/price_quotation_item">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recl_Quetation"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/white_tuo"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:itemCount="3"
-                tools:listitem="@layout/chooseaddress">
-
-            </androidx.recyclerview.widget.RecyclerView>
-
-        </androidx.cardview.widget.CardView>
+        </androidx.recyclerview.widget.RecyclerView>
 
     </LinearLayout>
 

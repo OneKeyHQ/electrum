@@ -1,9 +1,6 @@
 package org.haobtc.onekey.activities;
 
 import android.annotation.SuppressLint;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -11,7 +8,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.haobtc.onekey.MainActivity;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.activities.base.LunchActivity;
@@ -34,10 +30,12 @@ public class LanguageSettingActivity extends BaseActivity {
     TextView radioKorean;
     @BindView(R.id.radio_Japanese)
     TextView radioJapanese;
-    @BindView(R.id.img_back)
-    ImageView imgBack;
     @BindView(R.id.radio_system)
     TextView radioSystem;
+    @BindView(R.id.img_chinese)
+    ImageView imgChinese;
+    @BindView(R.id.img_english)
+    ImageView imgEnglish;
     private SharedPreferences.Editor edit;
     private String language;
 
@@ -62,10 +60,14 @@ public class LanguageSettingActivity extends BaseActivity {
             radioSystem.setTextColor(getColor(R.color.text_color1));
             radioEnglish.setTextColor(getColor(R.color.onekey));
             radioChineseasy.setTextColor(getColor(R.color.text_color1));
+            imgChinese.setVisibility(View.GONE);
+            imgEnglish.setVisibility(View.VISIBLE);
         } else if ("Chinese".equals(language)) {
             radioSystem.setTextColor(getColor(R.color.text_color1));
             radioEnglish.setTextColor(getColor(R.color.text_color1));
             radioChineseasy.setTextColor(getColor(R.color.onekey));
+            imgChinese.setVisibility(View.VISIBLE);
+            imgEnglish.setVisibility(View.GONE);
         } else {
             radioSystem.setTextColor(getColor(R.color.onekey));
             radioEnglish.setTextColor(getColor(R.color.text_color1));
@@ -99,6 +101,8 @@ public class LanguageSettingActivity extends BaseActivity {
                 radioSystem.setTextColor(getColor(R.color.text_color1));
                 radioChineseasy.setTextColor(getColor(R.color.onekey));
                 radioEnglish.setTextColor(getColor(R.color.text_color1));
+                imgChinese.setVisibility(View.VISIBLE);
+                imgEnglish.setVisibility(View.GONE);
                 refreshSelf();
                 break;
             case R.id.radio_character:
@@ -110,6 +114,8 @@ public class LanguageSettingActivity extends BaseActivity {
                 radioSystem.setTextColor(getColor(R.color.text_color1));
                 radioChineseasy.setTextColor(getColor(R.color.text_color1));
                 radioEnglish.setTextColor(getColor(R.color.onekey));
+                imgChinese.setVisibility(View.GONE);
+                imgEnglish.setVisibility(View.VISIBLE);
                 refreshSelf();
                 break;
             case R.id.radio_Korean:

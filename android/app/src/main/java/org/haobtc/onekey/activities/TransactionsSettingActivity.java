@@ -4,10 +4,8 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Switch;
@@ -32,12 +30,16 @@ public class TransactionsSettingActivity extends BaseActivity {
     ImageView imgBack;
     @BindView(R.id.tet_addNode)
     TextView tetAddNode;
+    @SuppressLint("UseSwitchCompatOrMaterialCode")
     @BindView(R.id.switch_rbf)
     Switch switchRbf;
+    @SuppressLint("UseSwitchCompatOrMaterialCode")
     @BindView(R.id.switch_noConfirm)
     Switch switchNoConfirm;
+    @SuppressLint("UseSwitchCompatOrMaterialCode")
     @BindView(R.id.switch_find)
     Switch switchFind;
+    @SuppressLint("UseSwitchCompatOrMaterialCode")
     @BindView(R.id.switch_usdt)
     Switch switchUsdt;
     private SharedPreferences.Editor edit;
@@ -188,33 +190,11 @@ public class TransactionsSettingActivity extends BaseActivity {
                 break;
             case R.id.tet_addNode:
                 //Restore default settings
-                restoreSetDialog();
+                handler.sendEmptyMessage(1);
                 break;
             default:
         }
     }
-
-    //Restore default settings
-    private void restoreSetDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(TransactionsSettingActivity.this);
-        builder.setMessage(R.string.ifconfirm_recovery);
-        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                builder.create().dismiss();
-            }
-        });
-        builder.setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                myDialog.show();
-                handler.sendEmptyMessage(1);
-
-            }
-        });
-        builder.create().show();
-    }
-
 
     @SuppressLint("HandlerLeak")
     Handler handler = new Handler() {

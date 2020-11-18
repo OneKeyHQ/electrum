@@ -3,9 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/button_bk_ddake"
     android:clipToPadding="true"
     android:fitsSystemWindows="true"
-    android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".activities.transaction.CheckChainDetailWebActivity">
 
@@ -13,6 +14,7 @@
         android:id="@+id/ksdhkhskdj"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_50"
+        android:layout_marginTop="@dimen/dp_10"
         android:background="@color/button_bk_ddake">
 
         <ImageView
@@ -21,7 +23,7 @@
             android:layout_height="@dimen/dp_40"
             android:layout_centerVertical="true"
             android:padding="@dimen/dp_8"
-            android:src="@drawable/back" />
+            android:src="@drawable/left_arrow" />
 
         <TextView
             android:id="@+id/text_title"

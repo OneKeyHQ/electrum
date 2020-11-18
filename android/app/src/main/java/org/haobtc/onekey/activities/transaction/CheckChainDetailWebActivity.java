@@ -66,6 +66,7 @@ public class CheckChainDetailWebActivity extends BaseActivity implements NetBroa
     private NetBroadcastReceiver netBroadcastReceiver;
     private String blockServerLine;
     private String keyLink;
+    private String loadUrl = "";
 
     @Override
     public int getLayoutId() {
@@ -80,8 +81,17 @@ public class CheckChainDetailWebActivity extends BaseActivity implements NetBroa
         myDialog = MyDialog.showDialog(CheckChainDetailWebActivity.this);
         myDialog.show();
         Intent intent = getIntent();
-        checkTxid = intent.getStringExtra("checkTxid");
-        keyLink = intent.getStringExtra("key_link");
+        String loadWhere = intent.getStringExtra("loadWhere");
+        if ("userAgreement".equals(loadWhere)) {
+            loadUrl = intent.getStringExtra("loadUrl");
+            textTitle.setText(getString(R.string.user_agreement));
+        } else if ("privacyAgreement".equals(loadWhere)) {
+            loadUrl = intent.getStringExtra("loadUrl");
+            textTitle.setText(getString(R.string.privacy_agreement));
+        } else {
+            checkTxid = intent.getStringExtra("checkTxid");
+            keyLink = intent.getStringExtra("key_link");
+        }
 
     }
 
@@ -116,11 +126,15 @@ public class CheckChainDetailWebActivity extends BaseActivity implements NetBroa
         });
 
         if (nets == 2) {
-            if (!TextUtils.isEmpty(keyLink)) {
-                textTitle.setText(getString(R.string.key));
-                webHeckChain.loadUrl(keyLink);
+            if (!TextUtils.isEmpty(loadUrl)) {
+                webHeckChain.loadUrl(loadUrl);
             } else {
-                webHeckChain.loadUrl(blockServerLine + checkTxid);
+                if (!TextUtils.isEmpty(keyLink)) {
+                    textTitle.setText(getString(R.string.key));
+                    webHeckChain.loadUrl(keyLink);
+                } else {
+                    webHeckChain.loadUrl(blockServerLine + checkTxid);
+                }
             }
         }
     }
@@ -184,16 +198,8 @@ public class CheckChainDetailWebActivity extends BaseActivity implements NetBroa
             webHeckChain.destroy();
         }
         if (netBroadcastReceiver != null) {
-            //注销广播
             unregisterReceiver(netBroadcastReceiver);
         }
     }
 
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // TODO: add setContentView(...) invocation
-        ButterKnife.bind(this);
-    }
 }

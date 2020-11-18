@@ -1,6 +1,7 @@
 package org.haobtc.onekey.activities.settings;
 
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
@@ -44,7 +45,14 @@ public class CurrencyActivity extends BaseActivity {
     RecyclerView reclCnyTable;
     @BindView(R.id.tet_CheckAll)
     TextView tetCheckAll;
-
+    @BindView(R.id.img_btc_check)
+    ImageView imgBtcCheck;
+    @BindView(R.id.img_mbtc_check)
+    ImageView imgMbtcCheck;
+    @BindView(R.id.img_bits_check)
+    ImageView imgBitsCheck;
+    @BindView(R.id.img_sat_check)
+    ImageView imgSatCheck;
     private SharedPreferences.Editor edit;
     private String base_unit;
     private ArrayList<CNYBean> listCNY;
@@ -90,15 +98,19 @@ public class CurrencyActivity extends BaseActivity {
         switch (base_unit) {
             case "BTC":
                 radioOnearray[0].setChecked(true);
+                imgBtcCheck.setVisibility(View.VISIBLE);
                 break;
             case "mBTC":
                 radioOnearray[1].setChecked(true);
+                imgMbtcCheck.setVisibility(View.VISIBLE);
                 break;
             case "bits":
                 radioOnearray[2].setChecked(true);
+                imgBitsCheck.setVisibility(View.VISIBLE);
                 break;
             case "sat":
                 radioOnearray[3].setChecked(true);
+                imgSatCheck.setVisibility(View.VISIBLE);
                 break;
             default:
         }
@@ -116,6 +128,10 @@ public class CurrencyActivity extends BaseActivity {
                         }
                         EventBus.getDefault().post(new FirstEvent("11"));
                         EventBus.getDefault().post(new FirstEvent("22"));
+                        imgBtcCheck.setVisibility(View.VISIBLE);
+                        imgMbtcCheck.setVisibility(View.GONE);
+                        imgBitsCheck.setVisibility(View.GONE);
+                        imgSatCheck.setVisibility(View.GONE);
                         edit.putString("base_unit", "BTC");
                         edit.apply();
                         break;
@@ -128,6 +144,10 @@ public class CurrencyActivity extends BaseActivity {
                         }
                         EventBus.getDefault().post(new FirstEvent("11"));
                         EventBus.getDefault().post(new FirstEvent("22"));
+                        imgBtcCheck.setVisibility(View.GONE);
+                        imgMbtcCheck.setVisibility(View.VISIBLE);
+                        imgBitsCheck.setVisibility(View.GONE);
+                        imgSatCheck.setVisibility(View.GONE);
                         edit.putString("base_unit", "mBTC");
                         edit.apply();
                         break;
@@ -140,6 +160,10 @@ public class CurrencyActivity extends BaseActivity {
                         }
                         EventBus.getDefault().post(new FirstEvent("11"));
                         EventBus.getDefault().post(new FirstEvent("22"));
+                        imgBtcCheck.setVisibility(View.GONE);
+                        imgMbtcCheck.setVisibility(View.GONE);
+                        imgBitsCheck.setVisibility(View.VISIBLE);
+                        imgSatCheck.setVisibility(View.GONE);
                         edit.putString("base_unit", "bits");
                         edit.apply();
                         break;
@@ -152,6 +176,10 @@ public class CurrencyActivity extends BaseActivity {
                         }
                         EventBus.getDefault().post(new FirstEvent("11"));
                         EventBus.getDefault().post(new FirstEvent("22"));
+                        imgBtcCheck.setVisibility(View.GONE);
+                        imgMbtcCheck.setVisibility(View.GONE);
+                        imgBitsCheck.setVisibility(View.GONE);
+                        imgSatCheck.setVisibility(View.VISIBLE);
                         edit.putString("base_unit", "sat");
                         edit.apply();
                         break;
@@ -242,7 +270,7 @@ public class CurrencyActivity extends BaseActivity {
                 break;
             case R.id.tet_CheckAll:
                 String strOpen = tetCheckAll.getText().toString();
-                if (strOpen.equals(getString(R.string.check_all))) {
+                if (strOpen.equals(getString(R.string.more))) {
                     RelativeLayout.LayoutParams linearParams1 = (RelativeLayout.LayoutParams) reclCnyTable.getLayoutParams();
                     linearParams1.height = ViewGroup.LayoutParams.WRAP_CONTENT;
                     reclCnyTable.setLayoutParams(linearParams1);
@@ -251,7 +279,7 @@ public class CurrencyActivity extends BaseActivity {
                     RelativeLayout.LayoutParams linearParams1 = (RelativeLayout.LayoutParams) reclCnyTable.getLayoutParams();
                     linearParams1.height = 530;
                     reclCnyTable.setLayoutParams(linearParams1);
-                    tetCheckAll.setText(getString(R.string.check_all));
+                    tetCheckAll.setText(getString(R.string.more));
                 }
                 break;
             default:

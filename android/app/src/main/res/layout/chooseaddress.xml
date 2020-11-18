@@ -1,39 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/rel_background"
-    android:layout_height="60dp">
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/dp_70">
 
     <TextView
         android:id="@+id/tet_WalletName"
-        android:text="@string/wallet_name"
-        android:textColor="@color/text_color"
-        android:layout_centerVertical="true"
-        android:gravity="center_vertical"
-        android:layout_marginStart="@dimen/sp_16"
-        android:textSize="15sp"
         android:layout_width="match_parent"
-        android:layout_height="60dp"/>
+        android:layout_height="@dimen/dp_70"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="@dimen/sp_16"
+        android:gravity="center_vertical"
+        android:text="@string/wallet_name"
+        android:textColor="@color/text_two"
+        android:textSize="@dimen/sp_16" />
 
     <TextView
         android:id="@+id/tet_WalletType"
-        tools:text="2/2"
-        android:textColor="#6182F5"
-        android:gravity="center_vertical"
-        android:layout_centerVertical="true"
-        android:layout_alignParentEnd="true"
-        android:textSize="15sp"
-        android:layout_marginEnd="@dimen/sp_16"
         android:layout_width="wrap_content"
-        android:layout_height="60dp"/>
+        android:layout_height="60dp"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="@dimen/sp_16"
+        android:gravity="center_vertical"
+        android:textColor="#6182F5"
+        android:textSize="15sp"
+        tools:text="2/2" />
 
     <View
-        android:background="@color/line_color"
-        android:layout_marginEnd="@dimen/sp_16"
-        android:layout_marginStart="@dimen/sp_16"
-        android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
-        android:layout_height="0.5dp"/>
+        android:layout_height="0.5dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="@dimen/sp_16"
+        android:layout_marginEnd="@dimen/sp_16"
+        android:background="@color/line_color" />
 
 </RelativeLayout>

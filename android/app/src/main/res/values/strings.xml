@@ -339,7 +339,6 @@
     <string name="publickey_wrong">Public key format wrong, please try again</string>
     <string name="publicer">Mutual manager</string>
     <string name="set_success">Set successfully</string>
-    <string name="check_all">View all</string>
     <string name="add_speed">Accelerate</string>
     <string name="tips_addspeed">Hint</string>
     <string name="Confirm_speed">Confirm acceleration</string>
@@ -352,7 +351,6 @@
     <string name="syncnneth">Syncing servers only keep openly available info such as public keys, names, etc. No private keys or personal info will be stored</string>
     <string name="btc_com">https://btc.com/</string>
     <string name="get_btc_price">Select 3rd party service to get bitcoin price</string>
-    <string name="quotation_choose">Select market info server</string>
     <string name="import_hardware">Import using hardware wallet</string>
     <string name="bixinkey_import">Please import through BixinKey</string>
     <string name="begin_import">Importing</string>
@@ -366,7 +364,6 @@
     <string name="delete_succse">Deleted</string>
     <string name="ifconfirm_recovery">Whether to confirm recovery</string>
     <string name="recovery_succse">Restored successfully</string>
-    <string name="block_choose">Select blockchain server</string>
     <string name="send_num">Amount to send</string>
     <string name="wrong_pass">Incorrect password entered</string>
     <string name="msg_get_wrong">Failed to retrieve information</string>
@@ -428,7 +425,7 @@
     <string name="agreement_msg">The signature information is consistent with the original public key information</string>
     <string name="sign_check_fail">Signature verification failed</string>
     <string name="agent_server">proxy server</string>
-    <string name="useAgent_hideIP">Hide real IP using proxy server</string>
+    <string name="useAgent_hideIP">Hide real IP</string>
     <string name="add_agentserver">Add proxy server</string>
     <string name="edit_agent">Edit proxy server</string>
     <string name="node_type">Node type</string>
@@ -837,7 +834,6 @@
     <string name="retouch">Please retouch the phone with BixinKey</string>
     <string name="prompt_backup_pin">BixinKey activation set pin code and use after backup</string>
     <string name="confirm_backup_prompt">Please confirm the pin code on BixinKey \n backup BixinKey after confirmation</string>
-    <string name="anysk_server_set">Sync server settings</string>
     <string name="add_anysk_server">Add synchronization server</string>
     <string name="edit_anysk_server">Edit synchronization server</string>
     <string name="ip_address">IP address</string>
@@ -922,7 +918,7 @@
     <string name="in_your">Your assets are in your hands</string>
     <string name="server_tip">Our server will not store your private key or mnemonics in any way. Both hardware and software are open source and can be used safely.</string>
     <string name="onekey_user1">Starting to use means that you agree to OneKey\'s user agreement</string>
-    <string name="onekey_user2">Privacy policy</string>
+    <string name="onekey_user2">and privacy policy</string>
     <string name="begin_use">Getting started</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -963,7 +959,7 @@
     <string name="system_set">System settings</string>
     <string name="hb_unit">Monetary unit</string>
     <string name="internet">network</string>
-    <string name="transaction_set">Transaction settings (Advanced)</string>
+    <string name="transaction_set">Tx settings (Advanced)</string>
     <string name="mind_tip">Privacy policies, usage protocols, and open source software.</string>
     <string name="_0">$0</string>
     <string name="_00">≈ $ 0</string>
@@ -1194,4 +1190,19 @@
     <string name="input_seed_import">Import through mnemonics</string>
     <string name="not_recovery_wallet">No wallet to import</string>
     <string name="usb">USB</string>
+    <string name="quotation_choose">Price quotation</string>
+    <string name="price_quotation_tip">Choosing the appropriate market source will \nonly affect the price display of BTC and eth</string>
+    <string name="recovery_default_">Restore default</string>
+    <string name="block_choose">Block browser（BTC）</string>
+    <string name="block_choose_tip">Block browser (BTC) \n use your favorite browser to view transaction information on the chain</string>
+    <string name="choose_recovery_wallet">Please select the wallet to recover</string>
+    <string name="input_username">Enter one user name</string>
+    <string name="input_password">Input password</string>
+    <string name="input_ip_address">Enter IP address</string>
+    <string name="input_port">Enter the port number</string>
+    <string name="trsaction_set_tip">The following settings apply to the bitcoin account of the hardware wallet</string>
+    <string name="language_tip">Select the display language of the hardware Wallet</string>
+    <string name="eth_table">Ethereum unit</string>
+    <string name="privacy_agreement">Privacy policy</string>
+
 </resources>

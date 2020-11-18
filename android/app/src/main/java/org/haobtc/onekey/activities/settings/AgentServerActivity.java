@@ -105,15 +105,15 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
                         editPort.setText(wordsList[2]);
 
                 }
-            }else{
+            } else {
                 btnConfirm.setEnabled(false);
-                btnConfirm.setBackground(getDrawable(R.drawable.little_radio_qian));
+                btnConfirm.setBackground(getDrawable(R.drawable.btn_no_check));
             }
         } else {
             switchAgent.setChecked(false);
             proxy_switch = false;
             btnConfirm.setEnabled(true);
-            btnConfirm.setBackground(getDrawable(R.drawable.little_radio_blue));
+            btnConfirm.setBackground(getDrawable(R.drawable.btn_checked));
         }
     }
 
@@ -176,18 +176,15 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
             @Override
             public void onItemClick(int position) {
                 nodetype = dataList.get(position).getName();
+                testNodeType.setText(nodetype);
+                //judge button status
+                buttonColorStatus();
+                dialogBtom.cancel();
             }
         });
         //cancel dialog
         view.findViewById(R.id.cancel_select_wallet).setOnClickListener(v -> {
             dialogBtom.cancel();
-        });
-        view.findViewById(R.id.bn_select_wallet).setOnClickListener(v -> {
-            testNodeType.setText(nodetype);
-            //judge button status
-            buttonColorStatus();
-            dialogBtom.cancel();
-
         });
         dialogBtom.setContentView(view);
         Window window = dialogBtom.getWindow();
@@ -220,12 +217,11 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
                         editAgentIp.setText(wordsList[1]);
                         editPort.setText(wordsList[2]);
                 }
-            }else{
+            } else {
                 btnConfirm.setEnabled(false);
-                btnConfirm.setBackground(getDrawable(R.drawable.little_radio_qian));
+                btnConfirm.setBackground(getDrawable(R.drawable.btn_no_check));
             }
         } else {
-            Log.i("ddddadwefwev", "onCheckedChanged: ");
             proxy_switch = false;
             testNodeType.setText("");
             editAgentIp.setText("");
@@ -280,15 +276,15 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
         if (TextUtils.isEmpty(strAgentIp) || TextUtils.isEmpty(strPort) || TextUtils.isEmpty(strNodetype)) {
             if (proxy_switch) {
                 btnConfirm.setEnabled(false);
-                btnConfirm.setBackground(getDrawable(R.drawable.little_radio_qian));
+                btnConfirm.setBackground(getDrawable(R.drawable.btn_no_check));
             } else {
                 btnConfirm.setEnabled(true);
-                btnConfirm.setBackground(getDrawable(R.drawable.little_radio_blue));
+                btnConfirm.setBackground(getDrawable(R.drawable.btn_checked));
             }
 
         } else {
             btnConfirm.setEnabled(true);
-            btnConfirm.setBackground(getDrawable(R.drawable.little_radio_blue));
+            btnConfirm.setBackground(getDrawable(R.drawable.btn_checked));
 
         }
 

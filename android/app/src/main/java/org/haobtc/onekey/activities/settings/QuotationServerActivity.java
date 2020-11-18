@@ -51,6 +51,7 @@ public class QuotationServerActivity extends BaseActivity {
 
     @Override
     public void initData() {
+        reclQuetation.setNestedScrollingEnabled(false);
         exchangeList = new ArrayList<>();
         //get exchanges list
         getExchangelist();
@@ -64,27 +65,27 @@ public class QuotationServerActivity extends BaseActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (get_exchanges!=null){
-            Log.i("get_exchanges", "getExchangelist: "+get_exchanges);
+        if (get_exchanges != null) {
+            Log.i("get_exchanges", "getExchangelist: " + get_exchanges);
             List<PyObject> pyObjects = get_exchanges.asList();
             for (int i = 0; i < pyObjects.size(); i++) {
                 CNYBean cnyBean = new CNYBean(pyObjects.get(i).toString(), false);
                 exchangeList.add(cnyBean);
             }
         }
-        QuetationChooseAdapter quetationChooseAdapter = new QuetationChooseAdapter(QuotationServerActivity.this,exchangeList,exChange);
+        QuetationChooseAdapter quetationChooseAdapter = new QuetationChooseAdapter(QuotationServerActivity.this, exchangeList, exChange);
         reclQuetation.setAdapter(quetationChooseAdapter);
         quetationChooseAdapter.setOnLisennorClick(new QuetationChooseAdapter.onLisennorClick() {
             @Override
             public void itemClick(int pos) {
                 String exchangeName = exchangeList.get(pos).getName();
                 try {
-                    Daemon.commands.callAttr("set_exchange",exchangeName);
+                    Daemon.commands.callAttr("set_exchange", exchangeName);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                edit.putInt("exChange",pos);
-                edit.putString("exchangeName",exchangeName);
+                edit.putInt("exChange", pos);
+                edit.putString("exchangeName", exchangeName);
                 edit.apply();
                 EventBus.getDefault().post(new FirstEvent("defaultServer"));
             }

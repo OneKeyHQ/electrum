@@ -55,12 +55,14 @@
                 android:background="@color/button_bk_ddake">
 
                 <TextView
-                    android:layout_width="@dimen/dp_72"
+                    android:layout_width="wrap_content"
                     android:layout_height="@dimen/dp_24"
                     android:layout_marginStart="@dimen/dp_20"
                     android:layout_marginTop="@dimen/dp_15"
                     android:background="@drawable/gray_tuo_c4"
                     android:gravity="center"
+                    android:paddingStart="@dimen/dp_10"
+                    android:paddingEnd="@dimen/dp_10"
                     android:text="@string/collection"
                     android:textColor="@color/text_two"
                     android:textSize="@dimen/sp_14" />
@@ -99,12 +101,14 @@
                 android:background="@color/button_bk_ddake">
 
                 <TextView
-                    android:layout_width="49dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="@dimen/dp_24"
                     android:layout_marginStart="@dimen/dp_20"
                     android:layout_marginTop="@dimen/dp_15"
                     android:background="@drawable/gray_tuo_c4"
                     android:gravity="center"
+                    android:paddingStart="@dimen/dp_10"
+                    android:paddingEnd="@dimen/dp_10"
                     android:text="@string/feenum"
                     android:textColor="@color/text_two"
                     android:textSize="@dimen/sp_14" />
@@ -126,7 +130,7 @@
 
                 <EditText
                     android:id="@+id/edit_amount"
-                    android:layout_width="match_parent"
+                    android:layout_width="250dp"
                     android:layout_height="@dimen/dp_40"
                     android:layout_marginStart="@dimen/dp_20"
                     android:layout_marginTop="@dimen/dp_60"
@@ -139,7 +143,7 @@
 
                 <TextView
                     android:id="@+id/text_max"
-                    android:layout_width="49dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="@dimen/dp_24"
                     android:layout_alignParentEnd="true"
                     android:layout_marginStart="@dimen/dp_20"
@@ -147,6 +151,8 @@
                     android:layout_marginEnd="@dimen/dp_20"
                     android:background="@drawable/gray_tuo_c4"
                     android:gravity="center"
+                    android:paddingStart="@dimen/dp_10"
+                    android:paddingEnd="@dimen/dp_10"
                     android:text="@string/max"
                     android:textColor="@color/onekey"
                     android:textSize="@dimen/sp_14" />
@@ -191,12 +197,14 @@
                 android:background="@color/button_bk_ddake">
 
                 <TextView
-                    android:layout_width="62dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="@dimen/dp_24"
                     android:layout_marginStart="@dimen/dp_20"
                     android:layout_marginTop="@dimen/dp_15"
                     android:background="@drawable/gray_tuo_c4"
                     android:gravity="center"
+                    android:paddingStart="@dimen/dp_10"
+                    android:paddingEnd="@dimen/dp_10"
                     android:text="@string/transaction_fee"
                     android:textColor="@color/text_two"
                     android:textSize="@dimen/sp_14" />
@@ -559,10 +567,10 @@
                         android:id="@+id/text_recovery_default"
                         android:layout_width="wrap_content"
                         android:layout_height="@dimen/dp_40"
+                        android:layout_gravity="center_vertical"
                         android:layout_marginStart="@dimen/dp_60"
                         android:drawablePadding="@dimen/dp_6"
                         android:gravity="center_vertical"
-                        android:layout_gravity="center_vertical"
                         android:text="@string/recovery_default"
                         android:textColor="@color/onekey"
                         android:textSize="@dimen/sp_14"

@@ -1,5 +1,6 @@
 package org.haobtc.onekey.activities;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.view.View;
@@ -17,6 +18,7 @@ import com.azhon.appupdate.utils.ApkUtil;
 import org.haobtc.onekey.BuildConfig;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.activities.transaction.CheckChainDetailWebActivity;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.UpdateInfo;
 
@@ -71,7 +73,11 @@ public class AboutActivity extends BaseActivity implements OnButtonClickListener
                 getUpdateInfo();
                 break;
             case R.id.tet_s5:
-                mIntent(UserAgreementActivity.class);
+//                mIntent(UserAgreementActivity.class);
+                Intent intent = new Intent(AboutActivity.this, CheckChainDetailWebActivity.class);
+                intent.putExtra("loadWhere", "userAgreement");
+                intent.putExtra("loadUrl","https://onekey.zendesk.com/hc/articles/360002014776");
+                startActivity(intent);
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + view.getId());

@@ -120,7 +120,7 @@
             android:layout_marginStart="@dimen/divider_height_3dp"
             android:background="@drawable/gray_tuo_c4"
             android:gravity="center"
-            android:text="@string/_1"
+            android:text="@string/zero"
             android:textColor="@color/text_two"
             android:textSize="@dimen/sp_12" />
 
@@ -343,10 +343,10 @@
 
     <LinearLayout
         android:id="@+id/lin_pair_wallet"
-        android:layout_width="@dimen/dp_60"
+        android:layout_width="wrap_content"
         android:layout_height="@dimen/dp_80"
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="@dimen/dp_80"
+        android:layout_marginStart="90dp"
         android:gravity="center_horizontal"
         android:orientation="vertical">
 
@@ -368,11 +368,11 @@
 
     <LinearLayout
         android:id="@+id/lin_add_wallet"
-        android:layout_width="@dimen/dp_60"
+        android:layout_width="wrap_content"
         android:layout_height="@dimen/dp_80"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginEnd="@dimen/dp_80"
+        android:layout_marginEnd="90dp"
         android:gravity="center_horizontal"
         android:orientation="vertical">
 

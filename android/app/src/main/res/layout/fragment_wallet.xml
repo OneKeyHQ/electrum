@@ -82,7 +82,7 @@
                 android:layout_marginTop="23dp"
                 android:layout_marginEnd="@dimen/dp_20"
                 android:orientation="vertical"
-                android:visibility="visible">
+                android:visibility="gone">
 
                 <RelativeLayout
                     android:id="@+id/rel_create_hd"
@@ -365,6 +365,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:drawableStart="@drawable/plane"
+                            android:layout_marginStart="@dimen/dp_10"
                             android:drawablePadding="@dimen/dp_16"
                             android:singleLine="true"
                             android:text="@string/forword"

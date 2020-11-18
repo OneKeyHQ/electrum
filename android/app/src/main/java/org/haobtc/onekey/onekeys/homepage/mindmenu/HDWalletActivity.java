@@ -145,6 +145,9 @@ public class HDWalletActivity extends BaseActivity {
                 reclAddWallet.setVisibility(View.GONE);
                 linNotWallet.setVisibility(View.VISIBLE);
             }
+        }else{
+            reclAddWallet.setVisibility(View.GONE);
+            linNotWallet.setVisibility(View.VISIBLE);
         }
     }
 

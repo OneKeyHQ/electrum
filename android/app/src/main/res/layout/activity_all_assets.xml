@@ -69,17 +69,18 @@
                 android:layout_marginTop="@dimen/dp_21"
                 android:layout_marginEnd="42dp"
                 android:background="@drawable/gray_tuo_broken"
+                android:layout_marginBottom="27dp"
                 android:gravity="center"
                 android:hint="@string/search"
                 android:textColor="@color/text_two"
-                android:textSize="@dimen/sp_14" />
+                android:textSize="@dimen/sp_14"
+                android:visibility="gone" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recl_assets"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_20"
-                android:layout_marginTop="27dp"
                 android:layout_marginEnd="@dimen/dp_20"
                 android:visibility="visible"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"

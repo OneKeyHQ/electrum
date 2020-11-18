@@ -174,6 +174,9 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
                             createHdWallet = Daemon.commands.callAttr("create_hd_wallet", pwdEdittext.getText().toString());
                         } catch (Exception e) {
                             e.printStackTrace();
+                            if (e.getMessage().contains("Incorrect password")) {
+                                mToast(getString(R.string.wrong_pass));
+                            }
                             return;
                         }
                         if (createHdWallet != null) {
@@ -220,6 +223,8 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
                 mToast(getString(R.string.same_seed_have) + haveWalletName);
             } else if (e.getMessage().contains("'NoneType' object is not iterable")) {
                 mToast(getString(R.string.private_key_wrong));
+            } else if (e.getMessage().contains("Incorrect password")) {
+                mToast(getString(R.string.wrong_pass));
             }
             finish();
             return;
@@ -240,6 +245,8 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
             } else if (e.getMessage().contains("The same seed have create wallet")) {
                 String haveWalletName = e.getMessage().substring(e.getMessage().indexOf("name=") + 5);
                 mToast(getString(R.string.same_seed_have) + haveWalletName);
+            } else if (e.getMessage().contains("Incorrect password")) {
+                mToast(getString(R.string.wrong_pass));
             }
             return;
         }
@@ -293,6 +300,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
                 Intent intent = new Intent(SetHDWalletPassActivity.this, RecoveryChooseWalletActivity.class);
                 intent.putExtra("recoveryData", pyObject.toString());
                 startActivity(intent);
+                mlToast(getString(R.string.loading));
                 finish();
             } else {
                 try {
@@ -310,6 +318,9 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
             }
 
         } catch (Exception e) {
+            if (e.getMessage().contains("Incorrect password")) {
+                mToast(getString(R.string.wrong_pass));
+            }
             e.printStackTrace();
         }
 
@@ -321,7 +332,9 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
 //            Daemon.commands.callAttr("delete_wallet", pwdEdittext.getText().toString(), new Kwarg("name", "ETH-1"));
         } catch (Exception e) {
             e.printStackTrace();
-            mToast(e.getMessage());
+            if (e.getMessage().contains("Incorrect password")) {
+                mToast(getString(R.string.wrong_pass));
+            }
             return;
         }
         mToast(getString(R.string.delete_succse));
@@ -339,7 +352,9 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
             startActivity(intent);
         } catch (Exception e) {
             e.printStackTrace();
-            mToast(e.getMessage());
+            if (e.getMessage().contains("Incorrect password")) {
+                mToast(getString(R.string.wrong_pass));
+            }
             return;
         }
     }
@@ -379,6 +394,9 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
         try {
             createHdWallet = Daemon.commands.callAttr("export_seed", pwdEdittext.getText().toString());
         } catch (Exception e) {
+            if (e.getMessage().contains("Incorrect password")) {
+                mToast(getString(R.string.wrong_pass));
+            }
             e.printStackTrace();
             return;
         }

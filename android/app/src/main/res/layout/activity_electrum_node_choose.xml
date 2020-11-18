@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:clipToPadding="true"
-    android:fitsSystemWindows="true"
     android:layout_height="match_parent"
     android:background="@color/button_bk_ddake"
-    android:orientation="vertical"
+    android:clipToPadding="true"
+    android:fitsSystemWindows="true"
     tools:context=".activities.settings.ElectrumNodeChooseActivity">
 
 
     <RelativeLayout
+        android:id="@+id/relatilayout"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_50">
+        android:layout_height="@dimen/dp_50"
+        android:layout_marginTop="@dimen/dp_10">
 
         <ImageView
             android:id="@+id/img_back"
             android:layout_width="@dimen/dp_40"
             android:layout_height="@dimen/dp_40"
             android:layout_centerVertical="true"
-
             android:padding="@dimen/dp_8"
-            android:src="@drawable/back" />
+            android:src="@drawable/left_arrow" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -40,166 +40,147 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@+id/relatilayout"
         android:background="@color/bk_page">
 
-        <LinearLayout
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="@dimen/dp_70"
-            android:orientation="vertical">
+            android:layout_marginBottom="90dp">
 
-
-            <androidx.cardview.widget.CardView
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/layout_margin"
-                android:layout_marginTop="@dimen/dp_16"
-                android:layout_marginEnd="@dimen/layout_margin"
-                android:outlineSpotShadowColor="@color/shadow_color"
-                app:cardCornerRadius="@dimen/dp_8"
-                app:cardElevation="@dimen/dp_8"
-                tools:ignore="UnusedAttribute">
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dp_20"
+                    android:layout_marginTop="41dp"
+                    android:text="@string/electrum_select"
+                    android:textColor="@color/text_six"
+                    android:textSize="@dimen/sp_14" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dp_20"
+                    android:layout_marginTop="@dimen/dp_10"
+                    android:layout_marginEnd="@dimen/dp_20"
+                    android:text="@string/electrum_tips"
+                    android:textColor="@color/text_six"
+                    android:textSize="@dimen/sp_14" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:layout_height="70dp"
+                    android:layout_marginTop="@dimen/dp_10"
+                    android:background="@color/button_bk_ddake"
+                    android:orientation="horizontal">
 
                     <TextView
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/dp_16"
-                        android:layout_marginTop="@dimen/dp_20"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="@dimen/dp_20"
+                        android:clickable="true"
+                        android:focusable="true"
                         android:gravity="center_vertical"
-                        android:text="@string/electrum_select"
+                        android:text="@string/ip_address"
                         android:textColor="@color/text"
-                        android:textSize="@dimen/sp_14" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/dp_16"
-                        android:layout_marginTop="@dimen/dp_5"
-                        android:layout_marginEnd="@dimen/dp_16"
-                        android:gravity="center_vertical"
-                        android:text="@string/electrum_tips"
-                        android:textColor="@color/graytext_color"
-                        android:textSize="@dimen/sp_14" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="0.5dp"
-                        android:layout_marginStart="@dimen/dp_16"
-                        android:layout_marginTop="@dimen/dp_16"
-                        android:layout_marginEnd="@dimen/dp_16"
-                        android:background="@color/line_color" />
-
-                </LinearLayout>
-
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/layout_margin"
-                android:layout_marginTop="@dimen/dp_16"
-                android:layout_marginEnd="@dimen/layout_margin"
-                android:outlineSpotShadowColor="@color/shadow_color"
-                app:cardCornerRadius="@dimen/dp_8"
-                app:cardElevation="@dimen/dp_8"
-                tools:ignore="UnusedAttribute">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/white_tuo_big"
-                    android:gravity="center_horizontal"
-                    android:orientation="vertical">
+                        android:textSize="@dimen/sp_16" />
 
                     <EditText
                         android:id="@+id/edit_ip"
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/dp_50"
-                        android:layout_marginStart="@dimen/dp_16"
-                        android:layout_marginTop="@dimen/dp_20"
-                        android:layout_marginEnd="@dimen/dp_16"
-                        android:background="@drawable/gray_tuo_6"
-                        android:hint="@string/ip"
-                        android:paddingStart="@dimen/dp_16"
-                        android:inputType="text"
-                        android:digits="0,1,2,3,4,5,6,7,8,9,."
-                        android:paddingEnd="@dimen/dp_16"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:gravity="center_vertical|end"
+                        android:hint="@string/ip_address"
+                        android:paddingStart="@dimen/dp_20"
+                        android:paddingEnd="@dimen/dp_20"
                         android:singleLine="true"
                         android:textColor="@color/text_color"
                         android:textSize="15sp" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/line_hight"
+                    android:layout_marginStart="@dimen/dp_20"
+                    android:layout_marginEnd="@dimen/dp_20"
+                    android:background="@color/line_color" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp_70"
+                    android:background="@color/button_bk_ddake"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="@dimen/dp_20"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center_vertical"
+                        android:text="@string/port_number"
+                        android:textColor="@color/text"
+                        android:textSize="@dimen/sp_16" />
 
                     <EditText
                         android:id="@+id/edit_port"
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/dp_50"
-                        android:layout_marginStart="@dimen/dp_16"
-                        android:layout_marginTop="@dimen/dp_15"
-                        android:layout_marginEnd="@dimen/dp_16"
-                        android:layout_marginBottom="@dimen/dp_20"
-                        android:background="@drawable/gray_tuo_6"
+                        android:layout_height="match_parent"
+                        android:background="@null"
+                        android:gravity="center_vertical|end"
                         android:hint="@string/port_number"
-                        android:paddingStart="@dimen/dp_16"
-                        android:paddingEnd="@dimen/dp_16"
+                        android:paddingStart="@dimen/dp_20"
+                        android:paddingEnd="@dimen/dp_20"
                         android:singleLine="true"
                         android:textColor="@color/text_color"
                         android:textSize="15sp" />
 
                 </LinearLayout>
-            </androidx.cardview.widget.CardView>
 
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/layout_margin"
-                android:layout_marginTop="@dimen/dp_16"
-                android:layout_marginEnd="@dimen/layout_margin"
-                android:outlineSpotShadowColor="@color/shadow_color"
-                app:cardCornerRadius="@dimen/dp_8"
-                app:cardElevation="@dimen/dp_8"
-                tools:ignore="UnusedAttribute">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dp_20"
+                    android:layout_marginTop="@dimen/dp_40"
+                    android:text="@string/electrum_select"
+                    android:textColor="@color/text_six"
+                    android:textSize="@dimen/sp_14" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recl_nodeChose"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/white_tuo"
+                    android:layout_marginTop="@dimen/dp_10"
+                    android:background="@color/button_bk_ddake"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:itemCount="3"
                     tools:listitem="@layout/node_item">
 
                 </androidx.recyclerview.widget.RecyclerView>
-            </androidx.cardview.widget.CardView>
-        </LinearLayout>
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
 
-        <RelativeLayout
+        <Button
+            android:id="@+id/btn_Finish"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="@dimen/dp_60"
             android:layout_alignParentBottom="true"
-            android:background="@android:color/white">
-
-            <Button
-                android:id="@+id/btn_Finish"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/dp_40"
-                android:layout_centerInParent="true"
-                android:layout_marginStart="@dimen/dp_16"
-                android:layout_marginEnd="@dimen/dp_16"
-                android:background="@drawable/little_radio_qian"
-                android:enabled="false"
-                android:text="@string/comfirm"
-                android:textAllCaps="false"
-                android:textColor="@android:color/white">
-
-            </Button>
-
-
-        </RelativeLayout>
-
+            android:layout_marginStart="34dp"
+            android:layout_marginTop="35dp"
+            android:layout_marginEnd="34dp"
+            android:layout_marginBottom="@dimen/dp_20"
+            android:background="@drawable/btn_no_check"
+            android:enabled="false"
+            android:text="@string/confirm"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/sp_20" />
     </RelativeLayout>
-
-</LinearLayout>
+</RelativeLayout>

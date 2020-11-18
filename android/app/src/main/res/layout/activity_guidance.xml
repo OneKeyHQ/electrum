@@ -121,9 +121,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/relatilayout2"
-                android:layout_marginStart="@dimen/dp_30"
+                android:layout_marginStart="@dimen/dp_25"
                 android:layout_marginTop="56dp"
-                android:layout_marginEnd="@dimen/dp_30">
+                android:layout_marginEnd="@dimen/dp_25">
 
                 <CheckBox
                     android:id="@+id/checkbox_ok"
@@ -142,15 +142,15 @@
                     android:text="@string/onekey_user1"
                     android:textSize="@dimen/sp_12" />
 
-                <!--                <TextView-->
-                <!--                    android:id="@+id/text_user2"-->
-                <!--                    android:layout_width="match_parent"-->
-                <!--                    android:layout_height="wrap_content"-->
-                <!--                    android:layout_below="@+id/text_user1"-->
-                <!--                    android:layout_marginStart="@dimen/dp_14"-->
-                <!--                    android:layout_toEndOf="@+id/checkbox_ok"-->
-                <!--                    android:text="@string/onekey_user2"-->
-                <!--                    android:textSize="@dimen/sp_12" />-->
+                <TextView
+                    android:id="@+id/text_user2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/text_user1"
+                    android:layout_marginStart="@dimen/dp_14"
+                    android:layout_toEndOf="@+id/checkbox_ok"
+                    android:text="@string/onekey_user2"
+                    android:textSize="@dimen/sp_12" />
 
             </RelativeLayout>
 

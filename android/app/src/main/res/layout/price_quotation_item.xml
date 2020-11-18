@@ -2,21 +2,18 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/dp_70"
-    android:orientation="vertical">
+    android:layout_height="74dp">
 
     <TextView
-        android:id="@+id/tet_electrumName"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/dp_70"
+        android:id="@+id/tet_WalletName"
+        android:layout_width="match_parent"
+        android:layout_height="74dp"
+        android:layout_centerVertical="true"
         android:layout_marginStart="@dimen/dp_20"
-        android:layout_marginEnd="@dimen/dp_20"
-        android:ellipsize="end"
         android:gravity="center_vertical"
-        android:maxLines="1"
-        android:textColor="@drawable/textcolor"
-        android:textSize="15sp"
-        tools:text="bixin.com" />
+        android:text="@string/btc_c"
+        android:textColor="@color/text_color"
+        android:textSize="15sp" />
 
     <ImageView
         android:id="@+id/img_choose"
@@ -30,9 +27,11 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="0.5dp"
+        android:layout_height="@dimen/line_hight"
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="@dimen/dp_16"
-        android:layout_marginEnd="@dimen/dp_16"
+        android:layout_marginStart="@dimen/dp_20"
+        android:layout_marginEnd="@dimen/dp_20"
         android:background="@color/line_color" />
+
+
 </RelativeLayout>

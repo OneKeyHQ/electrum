@@ -1,20 +1,18 @@
 package org.haobtc.onekey.onekeys;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
-import android.text.TextUtils;
-import android.util.Log;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
-import com.chaquo.python.PyObject;
-import com.google.gson.Gson;
-
 import org.haobtc.onekey.R;
+import org.haobtc.onekey.activities.AboutActivity;
 import org.haobtc.onekey.activities.UserAgreementActivity;
 import org.haobtc.onekey.activities.base.BaseActivity;
-import org.haobtc.onekey.bean.HomeWalletBean;
+import org.haobtc.onekey.activities.transaction.CheckChainDetailWebActivity;
 import org.haobtc.onekey.utils.Daemon;
 
 import butterknife.BindView;
@@ -105,11 +103,20 @@ public class GuidanceActivity extends BaseActivity implements CompoundButton.OnC
         }
     }
 
-    @OnClick({R.id.text_user1, R.id.btn_begin})
+    @OnClick({R.id.text_user1, R.id.btn_begin, R.id.text_user2})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.text_user1:
-                mIntent(UserAgreementActivity.class);
+                Intent intent = new Intent(GuidanceActivity.this, CheckChainDetailWebActivity.class);
+                intent.putExtra("loadWhere", "userAgreement");
+                intent.putExtra("loadUrl", "https://onekey.zendesk.com/hc/articles/360002014776");
+                startActivity(intent);
+                break;
+            case R.id.text_user2:
+                Intent intent1 = new Intent(GuidanceActivity.this, CheckChainDetailWebActivity.class);
+                intent1.putExtra("loadWhere", "privacyAgreement");
+                intent1.putExtra("loadUrl", "https://onekey.zendesk.com/hc/articles/360002003315");
+                startActivity(intent1);
                 break;
             case R.id.btn_begin:
                 if (isAgree) {

@@ -11,7 +11,8 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_50">
+        android:layout_height="@dimen/dp_50"
+        android:layout_marginTop="@dimen/dp_10">
 
         <ImageView
             android:id="@+id/img_back"
@@ -19,7 +20,7 @@
             android:layout_height="@dimen/dp_40"
             android:layout_centerVertical="true"
             android:padding="@dimen/dp_8"
-            android:src="@drawable/back" />
+            android:src="@drawable/left_arrow" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -246,8 +247,8 @@
                 android:id="@+id/relAgent_Choose"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dp_66"
-                android:layout_marginBottom="@dimen/dp_80"
                 android:layout_marginTop="@dimen/dp_8"
+                android:layout_marginBottom="@dimen/dp_80"
                 android:background="@color/button_bk_ddake">
 
                 <TextView
