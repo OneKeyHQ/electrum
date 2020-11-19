@@ -18,6 +18,7 @@
 #import "OKHDWalletViewController.h"
 #import "OKChangePwdViewController.h"
 #import "YZAuthID.h"
+#import "OKBluetoothViewController.h"
 
 @interface OKMineViewController ()<UINavigationControllerDelegate,UITableViewDelegate,UITableViewDataSource>
 
@@ -186,6 +187,12 @@
                     [self.navigationController pushViewController:aboutVc animated:YES];
                 }
                     break;
+                case 5:
+                {
+                    OKBluetoothViewController *bluetoothVc = [OKBluetoothViewController bluetoothViewController];
+                    [self.navigationController pushViewController:bluetoothVc animated:YES];
+                }
+                    break;
                 default:
                     break;
             }
@@ -280,7 +287,7 @@
                         break;
                 }
         }];
-        _allMenuData = @[@[model1,model2],biologicaArray,@[model8,model9,model10,model11,model12]];
+        _allMenuData = @[@[model1,model2],biologicaArray,@[model8,model9,model10,model11,model12,model3]];
     }
     return _allMenuData;
 }

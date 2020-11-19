@@ -24,7 +24,8 @@
 
 @property (weak, nonatomic) IBOutlet UIButton *startBtn;
 - (IBAction)startBtnClick:(UIButton *)sender;
-
+- (IBAction)checkBtnClick:(UIButton *)sender;
+@property (weak, nonatomic) IBOutlet UIButton *checkBtn;
 
 @end
 
@@ -67,11 +68,28 @@
     
     [self.startBtn setTitle:MyLocalizedString(@"Begin to use", nil) forState:UIControlStateNormal];
     self.navigationController.delegate = self;
+    
+    [self checkUI];
 }
 
 + (instancetype)firstUseViewController
 {
     return [[UIStoryboard storyboardWithName:@"Tab_Wallet" bundle:nil] instantiateViewControllerWithIdentifier:@"OKFirstUseViewController"];
+}
+
+- (IBAction)checkBtnClick:(UIButton *)sender {
+    sender.selected = !sender.selected;
+    [self checkUI];
+}
+- (void)checkUI
+{
+    if (self.checkBtn.selected) {
+        self.startBtn.enabled = YES;
+        self.startBtn.alpha = 1.0;
+    }else{
+        self.startBtn.enabled = NO;
+        self.startBtn.alpha = 0.5;
+    }
 }
 
 - (IBAction)startBtnClick:(UIButton *)sender {

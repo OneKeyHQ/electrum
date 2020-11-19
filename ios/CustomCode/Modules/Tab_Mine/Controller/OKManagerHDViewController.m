@@ -38,7 +38,7 @@
             OKWeakSelf(self)
             [OKValidationPwdController showValidationPwdPageOn:self isDis:NO complete:^(NSString * _Nonnull pwd) {
                 NSString *result = [kPyCommandsManager callInterface:kInterfaceexport_seed parameter:@{@"password":pwd}];
-                if (![result isEqualToString:kErrorMsg]) {
+                if (result != nil) {
                     OKDontScreenshotTipsViewController *dontScreenshotTipsVc = [OKDontScreenshotTipsViewController dontScreenshotTipsViewController:^{
                         OKBackUpViewController *backUpVc = [OKBackUpViewController backUpViewController];
                         backUpVc.words = [result componentsSeparatedByString:@" "];

@@ -307,7 +307,7 @@ typedef enum {
                 return;
             }
             NSString *result = [kPyCommandsManager callInterface:kInterfaceUpdate_password parameter:@{@"old_password":old_password,@"new_password":new_password}];
-            if (![result isEqualToString:kErrorMsg]) {
+            if (result != nil) {
                 [kTools tipMessage:MyLocalizedString(@"Password changed successfully", nil)];
             }
             [self dismissViewControllerAnimated:YES completion:nil];

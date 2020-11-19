@@ -46,7 +46,7 @@
     OKWeakSelf(self)
     [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
         NSString *result =  [kPyCommandsManager callInterface:kInterfaceImport_Seed parameter:@{@"name":self.walletNameTextField.text,@"password":pwd,@"seed":[self.wordInputView.wordsArr componentsJoinedByString:@" "]}];
-        if (![result isEqualToString:kErrorMsg]) {
+        if (result != nil) {
             [kTools tipMessage:MyLocalizedString(@"Mnemonic import successful", nil)];
         }
         [weakself.navigationController popToRootViewControllerAnimated:YES];

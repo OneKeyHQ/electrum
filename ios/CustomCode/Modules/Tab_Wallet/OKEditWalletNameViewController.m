@@ -55,7 +55,7 @@
         return;
     }
     NSString *msg =  [kPyCommandsManager callInterface:kInterfacerename_wallet parameter:@{@"old_name": kWalletManager.currentWalletName,@"new_name" : self.textField.text}];
-    if (![msg isEqualToString:kErrorMsg]) {
+    if (msg != nil) {
         [kTools tipMessage:MyLocalizedString(@"Name modification successful", nil)];
         kWalletManager.currentWalletName = self.textField.text;
         [self closeBtnClick:nil];

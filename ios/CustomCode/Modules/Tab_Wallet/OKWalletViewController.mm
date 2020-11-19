@@ -106,8 +106,10 @@
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notiDeleteWalletComplete) name:kNotiDeleteWalletComplete object:nil];
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notiBackUPWalletComplete) name:kNotiBackUPWalletComplete object:nil];
     
+    [OKPyCommandsManager sharedInstance];
+
     [kPyCommandsManager callInterface:kInterfaceLoad_all_wallet parameter:@{}];
-    
+
     [self loadWalletList];
     [self refreshUI];
     [self setDefault];
@@ -227,7 +229,9 @@
             [OKStorageManager saveToUserDefaults:[dataDict safeStringForKey:@"type"] key:kCurrentWalletType];
         }
     }else{
-        self.walletName.text = MyLocalizedString(@"No purse", nil);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.walletName.text = MyLocalizedString(@"No purse", nil);
+        });
     }
 }
 - (void)refreshUI
@@ -263,6 +267,9 @@
     }
     OKFirstUseViewController *firstUseVc = [OKFirstUseViewController firstUseViewController];
     BaseNavigationController *navVc = [[BaseNavigationController alloc]initWithRootViewController:firstUseVc];
+    if (@available(iOS 13.0, *)) {
+        navVc.modalInPresentation = YES;
+    }
     [self.navigationController presentViewController:navVc animated:NO completion:nil];
 }
 

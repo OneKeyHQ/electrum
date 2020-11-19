@@ -255,7 +255,8 @@ static dispatch_once_t once;
             dispatch_main_async_safe(
                 [kTools tipMessage:[NSString stringWithCString:msg encoding:NSUTF8StringEncoding]];
             );
-            return kErrorMsg;
+            
+            return nil;
         }
     }
     id object;

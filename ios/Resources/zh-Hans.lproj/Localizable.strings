@@ -231,3 +231,6 @@
 "The private key export" = "私钥导出";
 "Custom rate" = "自定义费率";
 "Please enter the rate" = "请输入费率";
+"pairing" = "配对";
+"Open your hardware wallet and hold it close to your phone" = "开启您的硬件钱包，并且靠近手机。";
+"Locate the following devices" = "找到以下设备";

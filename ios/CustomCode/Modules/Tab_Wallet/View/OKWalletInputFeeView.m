@@ -19,13 +19,9 @@
 @property (weak, nonatomic) IBOutlet UIButton *sureBtn;
 @property (weak, nonatomic) IBOutlet UILabel *tipsStrLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *consBottomY;
-
 @property (weak, nonatomic) IBOutlet UIButton *closeBtn;
-
 @property (weak, nonatomic) IBOutlet UIView *feeBgView;
 @property (weak, nonatomic) IBOutlet UIView *sizeBgView;
-
-
 
 @end
 

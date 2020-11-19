@@ -50,7 +50,7 @@
     OKWeakSelf(self)
     if (weakself.addType == OKAddTypeImportAddresses) {
         NSString *result =  [kPyCommandsManager callInterface:kInterfaceImport_Address parameter:@{@"name":self.walletNameTextfield.text,@"address":self.address}];
-        if (![result isEqualToString:kErrorMsg]) {
+        if (result != nil) {
             [kTools tipMessage:MyLocalizedString(@"Import success", nil)];
         }
         [[NSNotificationCenter defaultCenter]postNotification:[NSNotification notificationWithName:kNotiRefreshWalletList object:nil]];

@@ -51,4 +51,5 @@
     [kTools pasteboardCopyString:self.privateKeyLabel.text msg:MyLocalizedString(@"Copied", nil)];
 
 }
+
 @end
