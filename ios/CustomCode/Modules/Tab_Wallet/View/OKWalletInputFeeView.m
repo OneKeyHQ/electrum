@@ -17,11 +17,17 @@
 @property (weak, nonatomic) IBOutlet OKDeleteTextField *feeTF;
 @property (weak, nonatomic) IBOutlet OKDeleteTextField *sizeTF;
 @property (weak, nonatomic) IBOutlet UIButton *sureBtn;
-@property (weak, nonatomic) IBOutlet UILabel *tipsStrLabel;
+@property (weak, nonatomic) IBOutlet UILabel *timeStrLabel;
+@property (weak, nonatomic) IBOutlet UILabel *equaltoLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *consBottomY;
 @property (weak, nonatomic) IBOutlet UIButton *closeBtn;
 @property (weak, nonatomic) IBOutlet UIView *feeBgView;
 @property (weak, nonatomic) IBOutlet UIView *sizeBgView;
+
+@property (nonatomic,copy)NSString *address;
+@property (nonatomic,copy)NSString *amount;
+@property (nonatomic,strong)NSDictionary *customFeeDict;
+@property (nonatomic,copy)NSString *fiatCustom;
 
 @end
 
@@ -31,11 +37,14 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-+ (void)showWalletCustomFeeInputSize:(NSString *)size sure:(SureBlock)sureBlock Cancel:(CancelBlock)cancelBlock{
++ (void)showWalletCustomFeeAddress:(NSString *)address amount:(NSString *)amount sure:(SureBlock)sureBlock Cancel:(CancelBlock)cancelBlock{
     OKWalletInputFeeView *inputView = [[[NSBundle mainBundle] loadNibNamed:@"OKWalletInputFeeView" owner:self options:nil] firstObject];
     inputView.cancelBlock = cancelBlock;
     inputView.sureBlock = sureBlock;
-    inputView.sizeTF.text = size;
+    inputView.address = address;
+    inputView.amount = amount;
+    [[NSNotificationCenter defaultCenter] addObserver:inputView selector:@selector(textChange:) name:UITextFieldTextDidChangeNotification object:nil];
+    
     [[NSNotificationCenter defaultCenter] addObserver:inputView
                                              selector:@selector(keyboardWillShow:)
                                                  name:UIKeyboardWillShowNotification
@@ -70,7 +79,8 @@
         return;
     }
     if (self.sureBlock) {
-        self.sureBlock(self.feeTF.text);
+        self.sureBlock(self.customFeeDict,self.fiatCustom);
+        [self closeBtnClick:nil];
     }
 }
 - (IBAction)closeBtnClick:(id)sender {
@@ -96,5 +106,33 @@
     }
     return YES;
 }
+- (void)textChange:(NSString *)str
+{
+    if (self.address > 0 && self.amount.length > 0) {
+        [self loadCustomFee];
+        [self refreshFeeUI];
+    }
+}
 
+- (void)refreshFeeUI
+{
+    self.sizeTF.text = [self.customFeeDict safeStringForKey:@"size"];
+    self.equaltoLabel.text = [NSString stringWithFormat:@"%@ %@",[self.customFeeDict safeStringForKey:@"fee"],@"sat"];
+    self.timeStrLabel.text = [NSString stringWithFormat:@"预计时间：约%@分钟",[self.customFeeDict safeStringForKey:@"time"]];
+}
+
+- (void)loadCustomFee
+{
+    NSString *status = self.feeTF.text;
+    //输入地址和转账额度 获取fee
+    NSDictionary *outputsDict = @{self.address:self.amount};
+    NSArray *outputsArray = @[outputsDict];
+    NSString *outputs = [outputsArray mj_JSONString];
+    NSString *memo = @"";
+    NSDictionary *dict =  [kPyCommandsManager callInterface:kInterfaceGet_fee_by_feerate parameter:@{@"outputs":outputs,@"message":memo,@"feerate":status}];
+    self.customFeeDict = dict;
+    
+    NSString *feesat = [dict safeStringForKey:@"fee"];
+    self.fiatCustom =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":[kWalletManager getFeeBaseWithSat:feesat]}];
+}
 @end

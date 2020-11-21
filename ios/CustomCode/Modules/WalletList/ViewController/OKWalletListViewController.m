@@ -62,7 +62,6 @@
 @property (weak, nonatomic) IBOutlet UILabel *footerDescLabel;
 - (IBAction)addWalletClick:(UIButton *)sender;
 
-
 @end
 
 @implementation OKWalletListViewController
@@ -92,10 +91,6 @@
     self.leftCollectionView.dataSource = self;
     [self.countBgView setLayerRadius:10];
     [self.footBgView setLayerDefaultRadius];
-    NSString *coinType = [OKStorageManager loadFromUserDefaults:kSelectedWalletListType];
-    if (coinType.length == 0 || coinType == nil) {
-        [OKStorageManager saveToUserDefaults:kDefaultType key:kSelectedWalletListType];
-    }
     [self.footBgView setLayerBoarderColor:HexColorA(0x546370, 0.3) width:1 radius:20];
 }
 
@@ -126,14 +121,8 @@
     }
     self.walletListArray = walletArray;
     NSString *walletType =  [OKStorageManager loadFromUserDefaults:kSelectedWalletListType];
-    if ([walletType isEqualToString:kDefaultType]) {
-        self.detailBtn.hidden = self.showList.count== 0 ? YES:NO;
-        self.detailLabel.hidden = self.showList.count== 0 ? YES:NO;
-        self.circlePlusBtn.hidden = YES;
-    }else{
-        self.detailBtn.hidden = YES;
-        self.detailLabel.hidden = YES;
-        self.circlePlusBtn.hidden = NO;
+    if (walletType.length == 0 || walletType == nil) {
+        [OKStorageManager saveToUserDefaults:kDefaultType key:kSelectedWalletListType];
     }
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"walletType contains %@",[walletType lowercaseString]];
     self.showList = [self.walletListArray filteredArrayUsingPredicate:predicate];
@@ -145,6 +134,18 @@
     }else{
         self.footBgView.hidden = YES;
     }
+    
+    if ([walletType isEqualToString:kDefaultType]) {
+        self.detailBtn.hidden = self.showList.count== 0 ? YES:NO;
+        self.detailLabel.hidden = self.showList.count== 0 ? YES:NO;
+        self.circlePlusBtn.hidden = YES;
+    }else{
+        self.detailBtn.hidden = YES;
+        self.detailLabel.hidden = YES;
+        self.circlePlusBtn.hidden = NO;
+    }
+    
+    
     [self.tableView reloadData];
 }
 

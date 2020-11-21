@@ -140,6 +140,21 @@ static dispatch_once_t once;
     }
 }
 
+- (NSString *)getFeeBaseWithSat:(NSString *)sat
+{
+    NSString *cuUnit = kWalletManager.currentBitcoinUnit;
+    NSDecimalNumber *num = [NSDecimalNumber decimalNumberWithString:sat];
+    if ([cuUnit isEqualToString:@"sat"]) {
+        return sat;
+    }else if ([cuUnit isEqualToString:@"bits"]) {
+        return [num decimalNumberByDividingBy:[NSDecimalNumber decimalNumberWithString:@"100"]].stringValue;
+    }else if ([cuUnit isEqualToString:@"mBTC"]) {
+        return [num decimalNumberByDividingBy:[NSDecimalNumber decimalNumberWithString:@"100000"]].stringValue;
+    }else if ([cuUnit isEqualToString:@"BTC"]) {
+        return [num decimalNumberByDividingBy:[NSDecimalNumber decimalNumberWithString:@"100000000"]].stringValue;
+    }
+    return sat;
+}
 
 /**
  btc-hd-standard      HD钱包

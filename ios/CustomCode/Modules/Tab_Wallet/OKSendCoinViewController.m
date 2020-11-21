@@ -49,6 +49,9 @@ typedef enum {
 @property (weak, nonatomic) IBOutlet UIView *slowBg;
 @property (weak, nonatomic) IBOutlet UIView *recommendedBg;
 @property (weak, nonatomic) IBOutlet UIView *fastBg;
+@property (weak, nonatomic) IBOutlet UIView *custom_BGView;
+
+
 
 @property (weak, nonatomic) IBOutlet OKButton *sendBtn;
 - (IBAction)sendBtnClick:(OKButton *)sender;
@@ -56,6 +59,10 @@ typedef enum {
 @property (weak, nonatomic) IBOutlet UIView *slowBottomLabelBg;
 @property (weak, nonatomic) IBOutlet UIView *recommendBottomLabelBg;
 @property (weak, nonatomic) IBOutlet UIView *fastBottomLabelBg;
+@property (weak, nonatomic) IBOutlet UIView *customBottomLabelBg;
+
+
+
 
 //手势
 - (IBAction)tapSlowBgClick:(UITapGestureRecognizer *)sender;
@@ -81,17 +88,39 @@ typedef enum {
 @property (weak, nonatomic) IBOutlet UILabel *fastTimeLabel;
 @property (weak, nonatomic) IBOutlet UIButton *fastSelectBtn;
 
+
+@property (weak, nonatomic) IBOutlet UILabel *customTitleLabel;
+@property (weak, nonatomic) IBOutlet UILabel *customCoinAmountLabel;
+@property (weak, nonatomic) IBOutlet UILabel *customMoneyAmountLabel;
+@property (weak, nonatomic) IBOutlet UILabel *customTimeLabel;
+@property (weak, nonatomic) IBOutlet UIButton *customSelectBtn;
+
+//Restore default options
+@property (weak, nonatomic) IBOutlet UIButton *RestoreDefaultOptionsBtn;
+@property (weak, nonatomic) IBOutlet UIView *restoreDefaultBgView;
+- (IBAction)restoreDefaultOptionsBtnClick:(UIButton *)sender;
+
+
+
 @property (nonatomic,copy)NSString* currentFee_status;
 
 @property (nonatomic,assign)OKFeeType currentFeeType;
 
 @property (nonatomic,strong)NSDictionary *lowFeeDict;
+@property (nonatomic,copy)NSString *fiatLow;
 
 @property (nonatomic,strong)NSDictionary *recommendFeeDict;
+@property (nonatomic,copy)NSString *fiatRecommend;
 
 @property (nonatomic,strong)NSDictionary *fastFeeDict;
+@property (nonatomic,copy)NSString *fiatFast;
+
+@property (nonatomic,strong)NSDictionary *customFeeDict;
+@property (nonatomic,copy)NSString *fiatCustom;
 
 @property (nonatomic,copy)NSString *currentMemo;
+
+@property (nonatomic,assign)BOOL custom;
 
 @end
 
@@ -106,6 +135,7 @@ typedef enum {
     // Do any additional setup after loading the view.
     [self setNavigationBarBackgroundColorWithClearColor];
     self.title = MyLocalizedString(@"transfer", nil);
+    _custom = NO;
     [self stupUI];
     [self changeFeeType:OKFeeTypeRecommend];
     NSString *default_fee_status =  [kPyCommandsManager callInterface:kInterfaceGet_default_fee_status parameter:@{}];
@@ -131,21 +161,31 @@ typedef enum {
     [self.slowBottomLabelBg setLayerRadius:20];
     [self.recommendBottomLabelBg setLayerRadius:20];
     [self.fastBottomLabelBg setLayerRadius:20];
+    [self.customBottomLabelBg setLayerRadius:20];
+    [self.custom_BGView shadowWithLayerCornerRadius:20 borderColor:HexColor(RGB_THEME_GREEN) borderWidth:2 shadowColor:RGBA(0, 0, 0, 0.1) shadowOffset:CGSizeMake(0, 4) shadowOpacity:1 shadowRadius:10];
     [self.sendBtn setLayerDefaultRadius];
+    
 
-    self.slowTitleLabel.text = MyLocalizedString(@"慢", nil);
+    self.slowTitleLabel.text = MyLocalizedString(@"slow", nil);
     self.slowCoinAmountLabel.text = [NSString stringWithFormat:@"0 %@",kWalletManager.currentBitcoinUnit];
-    self.slowTimeLabel.text = MyLocalizedString(@"约0分钟", nil);
+    self.slowTimeLabel.text = MyLocalizedString(@"About 0 minutes", nil);
     
-    self.recommendTitleLabel.text = MyLocalizedString(@"推荐", nil);
+    self.recommendTitleLabel.text = MyLocalizedString(@"recommended", nil);
     self.recommendCoinAmountLabel.text = [NSString stringWithFormat:@"0 %@",kWalletManager.currentBitcoinUnit];
-    self.recommendTimeLabel.text = MyLocalizedString(@"约0分钟", nil);
+    self.recommendTimeLabel.text = MyLocalizedString(@"About 0 minutes", nil);
     
-    self.fastTitleLabel.text = MyLocalizedString(@"快", nil);
+    self.fastTitleLabel.text = MyLocalizedString(@"fast", nil);
     self.fastCoinAmountLabel.text = [NSString stringWithFormat:@"0 %@",kWalletManager.currentBitcoinUnit];
-    self.fastTimeLabel.text = MyLocalizedString(@"约0分钟", nil);
+    self.fastTimeLabel.text = MyLocalizedString(@"About 0 minutes", nil);
     [self.coinTypeBtn setTitle:kWalletManager.currentBitcoinUnit forState:UIControlStateNormal];
     
+    self.customTitleLabel.text = MyLocalizedString(@"The custom", nil);
+    self.customCoinAmountLabel.text = [NSString stringWithFormat:@"0 %@",kWalletManager.currentBitcoinUnit];
+    self.customTimeLabel.text = MyLocalizedString(@"About 0 minutes", nil);
+    [self.coinTypeBtn setTitle:kWalletManager.currentBitcoinUnit forState:UIControlStateNormal];
+    
+    [self changUIForCustom];
+
     //self.coinTypeBtn.hidden  = YES;
 }
 
@@ -161,20 +201,47 @@ typedef enum {
 
 - (void)refreshFeeSelect
 {
-    self.slowTitleLabel.text = MyLocalizedString(@"慢", nil);
-    self.slowCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",[self.lowFeeDict safeStringForKey:@"fee"],kWalletManager.currentBitcoinUnit];
-    self.slowTimeLabel.text = [NSString stringWithFormat:@"约%@分钟",[self.lowFeeDict safeStringForKey:@"time"]];
-    self.recommendTitleLabel.text = MyLocalizedString(@"推荐", nil);
-    self.recommendCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",[self.recommendFeeDict safeStringForKey:@"fee"],kWalletManager.currentBitcoinUnit];
-    self.recommendTimeLabel.text = [NSString stringWithFormat:@"约%@分钟",[self.recommendFeeDict safeStringForKey:@"time"]];
-    self.fastTitleLabel.text = MyLocalizedString(@"快", nil);
-    self.fastCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",[self.fastFeeDict safeStringForKey:@"fee"],kWalletManager.currentBitcoinUnit];
-    self.fastTimeLabel.text = [NSString stringWithFormat:@"约%@分钟",[self.fastFeeDict safeStringForKey:@"time"]];
+    if (_custom) {
+        self.customTitleLabel.text = MyLocalizedString(@"The custom", nil);
+        self.customCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",[self.customFeeDict safeStringForKey:@"fee"],kWalletManager.currentBitcoinUnit];
+        self.customTimeLabel.text = [NSString stringWithFormat:@"约%@分钟",[self.customFeeDict safeStringForKey:@"time"]];
+        self.customMoneyAmountLabel.text = self.fiatCustom;
+    }else{
+        self.slowTitleLabel.text = MyLocalizedString(@"slow", nil);
+        self.slowCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",[self.lowFeeDict safeStringForKey:@"fee"],kWalletManager.currentBitcoinUnit];
+        self.slowTimeLabel.text = [NSString stringWithFormat:@"约%@分钟",[self.lowFeeDict safeStringForKey:@"time"]];
+        self.slowMoneyAmountLabel.text = self.fiatLow;
+        
+        
+        self.recommendTitleLabel.text = MyLocalizedString(@"recommended", nil);
+        self.recommendCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",[self.recommendFeeDict safeStringForKey:@"fee"],kWalletManager.currentBitcoinUnit];
+        self.recommendTimeLabel.text = [NSString stringWithFormat:@"约%@分钟",[self.recommendFeeDict safeStringForKey:@"time"]];
+        self.recommendMoneyAmountLabel.text = self.fiatRecommend;
+        
+        self.fastTitleLabel.text = MyLocalizedString(@"fast", nil);
+        self.fastCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",[self.fastFeeDict safeStringForKey:@"fee"],kWalletManager.currentBitcoinUnit];
+        self.fastTimeLabel.text = [NSString stringWithFormat:@"约%@分钟",[self.fastFeeDict safeStringForKey:@"time"]];
+        self.fastMoneyAmountLabel.text = self.fiatFast;
+    }
+    [self changUIForCustom];
 }
+
+- (void)changUIForCustom
+{
+    self.custom_BGView.hidden = !_custom;
+    self.slowBg.hidden = _custom;
+    self.fastBg.hidden = _custom;
+    self.recommendedBg.hidden = _custom;
+    self.restoreDefaultBgView.hidden = !_custom;
+}
+
+
 
 - (IBAction)addressbookBtnClick:(UIButton *)sender {
     
+    
 }
+
 - (IBAction)moreBtnClick:(UIButton *)sender {
     self.amountTextField.text = self.balanceLabel.text;
 }
@@ -182,50 +249,66 @@ typedef enum {
     
 }
 - (IBAction)customBtnClick:(UIButton *)sender {
-    [OKWalletInputFeeView showWalletCustomFeeInputSize:@"42" sure:^(NSString *fee) {
-        NSLog(@"ssss");
-    } Cancel:^{
-        NSLog(@"Cancel");
-    }];
-}
-- (IBAction)sendBtnClick:(OKButton *)sender {
     
+    if (![self checkTextField]) {
+        return;
+    }
+    OKWeakSelf(self)
+    [OKWalletInputFeeView showWalletCustomFeeAddress:self.addressTextField.text amount:self.amountTextField.text sure:^(NSDictionary *customFeeDict, NSString *fiat) {
+        weakself.customFeeDict = customFeeDict;
+        weakself.fiatCustom = fiat;
+        weakself.custom = YES;
+        [weakself refreshFeeSelect];
+    } Cancel:nil];
+}
+
+- (BOOL)checkTextField
+{
     if (self.addressTextField.text.length == 0) {
         [kTools tipMessage:MyLocalizedString(@"Please enter the transfer address", nil)];
-        return;
+        return NO;
     }
 
     if (self.amountTextField.text.length == 0) {
         [kTools tipMessage:MyLocalizedString(@"Please enter the transfer amount", nil)];
-        return;
+        return NO;
     }
     
     if ([self.balanceLabel.text doubleValue] < [self.amountTextField.text doubleValue]) {
         [kTools tipMessage:MyLocalizedString(@"Lack of balance", nil)];
+        return NO;
+    }
+    return YES;
+}
+- (IBAction)sendBtnClick:(OKButton *)sender {
+    if (![self checkTextField]) {
         return;
     }
-    
-    
     NSDictionary *dict = [NSDictionary dictionary];
-    switch (_currentFeeType) {
-        case OKFeeTypeSlow:
-        {
-            dict = self.lowFeeDict;
+    if (_custom) {
+        dict = self.customFeeDict;
+    }else{
+        switch (_currentFeeType) {
+            case OKFeeTypeSlow:
+            {
+                dict = self.lowFeeDict;
+            }
+                break;
+            case OKFeeTypeRecommend:
+            {
+                dict = self.recommendFeeDict;
+            }
+                break;
+            case OKFeeTypeFast:
+            {
+                dict = self.fastFeeDict;
+            }
+                break;
+            default:
+                break;
         }
-            break;
-        case OKFeeTypeRecommend:
-        {
-            dict = self.recommendFeeDict;
-        }
-            break;
-        case OKFeeTypeFast:
-        {
-            dict = self.fastFeeDict;
-        }
-            break;
-        default:
-            break;
     }
+
     OKWeakSelf(self)
     [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
         NSString *feerateTx = [dict safeStringForKey:@"tx"];
@@ -259,7 +342,11 @@ typedef enum {
     NSString *memo = @"";
     NSDictionary *dict =  [kPyCommandsManager callInterface:kInterfaceGet_fee_by_feerate parameter:@{@"outputs":outputs,@"message":memo,@"feerate":status}];
     self.fastFeeDict = dict;
+    
+    NSString *feesat = [dict safeStringForKey:@"fee"];
+    self.fiatFast =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":[kWalletManager getFeeBaseWithSat:feesat]}];
 }
+
 - (void)loadReRecommendFee
 {
     //输入地址和转账额度 获取fee
@@ -269,6 +356,9 @@ typedef enum {
     NSString *memo = @"";
     NSDictionary *dict =  [kPyCommandsManager callInterface:kInterfaceGet_fee_by_feerate parameter:@{@"outputs":outputs,@"message":memo,@"feerate":self.currentFee_status}];
     self.recommendFeeDict = dict;
+    
+    NSString *feesat = [dict safeStringForKey:@"fee"];
+    self.fiatRecommend =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":[kWalletManager getFeeBaseWithSat:feesat]}];
 }
 - (void)loadZeroFee
 {
@@ -279,6 +369,9 @@ typedef enum {
     NSString *memo = @"";
     NSDictionary *dict =  [kPyCommandsManager callInterface:kInterfaceGet_fee_by_feerate parameter:@{@"outputs":outputs,@"message":memo,@"feerate":@"0"}];
     self.lowFeeDict = dict;
+    
+    NSString *feesat = [dict safeStringForKey:@"fee"];
+    self.fiatLow =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":[kWalletManager getFeeBaseWithSat:feesat]}];
 }
 
 
@@ -349,5 +442,9 @@ typedef enum {
         [self loadFee];
         [self refreshFeeSelect];
     }
+}
+- (IBAction)restoreDefaultOptionsBtnClick:(UIButton *)sender {
+    _custom = NO;
+    [self changUIForCustom];
 }
 @end

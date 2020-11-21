@@ -9,6 +9,7 @@
 #import "OKBackUpViewController.h"
 #import "OKWordImportView.h"
 #import "OKWordCheckViewController.h"
+#import "OKScreenshotsTipsController.h"
 
 @interface OKBackUpViewController ()
 
@@ -19,9 +20,6 @@
 @property (weak, nonatomic) IBOutlet UILabel *descLabel;
 @property (weak, nonatomic) IBOutlet UILabel *bottomDescLabel;
 @property (weak, nonatomic) IBOutlet UILabel *titleLabel;
-
-
-
 
 @end
 
@@ -35,7 +33,10 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(userDidTakeScreenshot:)
+                                                     name:UIApplicationUserDidTakeScreenshotNotification object:nil];
     switch (_showType) {
         case WordsShowTypeRestore:
         {
@@ -78,4 +79,13 @@
             break;
     }
 }
+
+- (void)userDidTakeScreenshot:(NSNotification *)noti
+{
+    OKScreenshotsTipsController *screenshotsTips = [OKScreenshotsTipsController screenshotsTipsController];
+    screenshotsTips.modalPresentationStyle = UIModalPresentationOverFullScreen;
+    [self.OK_TopViewController presentViewController:screenshotsTips animated:NO completion:nil];
+    
+}
+
 @end

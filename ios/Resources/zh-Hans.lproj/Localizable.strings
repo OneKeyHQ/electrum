@@ -236,3 +236,10 @@
 "Locate the following devices" = "找到以下设备";
 "The connection is successful" = "连接成功";
 "disconnect" = "断开连接";
+"The custom" = "自定义";
+"slow" = "慢";
+"About 0 minutes" = "约0分钟";
+"recommended" = "推荐";
+"fast" = "快";
+"Mobile photo albums are very insecure and can be accessed by any app. Go to the phone photo album immediately and permanently delete the screen capture. Your future self will thank you for your decision now." = "手机相册非常不安全，任何应用都可以访问。立刻前往手机相册，将刚才的屏幕截图永久删除。将来的您会感谢现在自己的决定。";
+"You seem to have taken a screenshot just now" = "您刚才似乎截图了";

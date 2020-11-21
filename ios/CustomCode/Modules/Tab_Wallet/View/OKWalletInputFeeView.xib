@@ -103,7 +103,7 @@
                                             <color key="textColor" red="0.33085581660000002" green="0.38708245749999998" blue="0.43922376629999998" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0.00019 BTC ≈ ￥0.12" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="8" translatesAutoresizingMaskIntoConstraints="NO" id="7Sf-dG-D5A">
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0.0 sat" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="8" translatesAutoresizingMaskIntoConstraints="NO" id="7Sf-dG-D5A">
                                             <rect key="frame" x="177.5" y="113" width="157.5" height="18"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="18" id="YmW-6z-sVt"/>
@@ -214,12 +214,13 @@
                 <outlet property="bgView" destination="J3T-Nx-MjB" id="bs2-nr-ShD"/>
                 <outlet property="closeBtn" destination="APi-1x-LUb" id="nov-sc-gKj"/>
                 <outlet property="consBottomY" destination="s2P-JA-dUU" id="tXT-UH-6ZX"/>
+                <outlet property="equaltoLabel" destination="7Sf-dG-D5A" id="FnJ-Is-ABL"/>
                 <outlet property="feeBgView" destination="ICK-6e-8Lq" id="J78-Yl-yKu"/>
                 <outlet property="feeTF" destination="RPm-8V-ZIK" id="cWf-HV-nJN"/>
                 <outlet property="sizeBgView" destination="FZD-Qy-sSM" id="SmC-QN-ocd"/>
                 <outlet property="sizeTF" destination="tmW-BF-8ty" id="QNP-M3-FVx"/>
                 <outlet property="sureBtn" destination="sSL-Nd-c6u" id="4ti-03-K0r"/>
-                <outlet property="tipsStrLabel" destination="gWX-qK-xBK" id="hbp-Rs-d0j"/>
+                <outlet property="timeStrLabel" destination="gWX-qK-xBK" id="KkB-qq-jGH"/>
                 <outlet property="viewTitleLabel" destination="VVW-Lh-Ic2" id="e4G-cV-H9c"/>
             </connections>
             <point key="canvasLocation" x="76" y="80.50974512743629"/>

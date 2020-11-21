@@ -233,7 +233,11 @@ static dispatch_once_t once;
     }else if([method isEqualToString:kInterfaceexport_privkey]){
         NSString * password = [parameter safeStringForKey:@"password"];
         result = PyObject_CallMethod(self.pyInstance, [kInterfaceexport_privkey UTF8String], "(s)",[password UTF8String]);
-        
+
+    }else if([method isEqualToString:kInterfaceget_exchange_currency]){
+        NSString * type = [parameter safeStringForKey:@"type"];
+        NSString * amount = [parameter safeStringForKey:@"amount"];
+        result = PyObject_CallMethod(self.pyInstance, [kInterfaceget_exchange_currency UTF8String], "(s,s)",[type UTF8String],[amount UTF8String]);
         
     }else if([method isEqualToString:kInterfaceBroadcast_tx]){
         NSString *tx = [parameter safeStringForKey:@"tx"];

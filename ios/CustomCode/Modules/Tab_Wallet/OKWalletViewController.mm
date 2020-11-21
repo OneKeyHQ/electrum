@@ -157,7 +157,7 @@
 
 - (void)updateStatus:(NSDictionary *)dict
 {
-    NSLog(@"dict = %@",dict);
+//    NSLog(@"dict = %@",dict);
     self.model.balance = [dict safeStringForKey:@"balance"];
     self.model.coinType = @"BTC";
     self.model.iconImage = @"token_btc";
@@ -241,7 +241,7 @@
     if (self.listWallets.count > 0) { //创建过
         self.createBgView.hidden = YES;
         self.walletHomeBgView.hidden = NO;
-        isBackUp = [kPyCommandsManager callInterface:kInterfaceget_backup_info parameter:@{}];
+        isBackUp = [[kPyCommandsManager callInterface:kInterfaceget_backup_info parameter:@{}] boolValue];
     }else{
         self.walletName.text = MyLocalizedString(@"No purse", nil);
         self.createBgView.hidden = NO;
