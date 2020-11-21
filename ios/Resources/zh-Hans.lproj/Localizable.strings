@@ -234,3 +234,5 @@
 "pairing" = "配对";
 "Open your hardware wallet and hold it close to your phone" = "开启您的硬件钱包，并且靠近手机。";
 "Locate the following devices" = "找到以下设备";
+"The connection is successful" = "连接成功";
+"disconnect" = "断开连接";
