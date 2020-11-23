@@ -2669,12 +2669,15 @@ class Multisig_Wallet(Deterministic_Wallet):
                 keystore.update_password(old_pw, new_pw)
                 self.db.put(name, keystore.dump())
 
-    def check_password(self, password):
+    def check_password(self, password, str_pw=None):
         for name, keystore in self.keystores.items():
             if keystore.may_have_password():
                 keystore.check_password(password)
         if self.has_storage_encryption():
-            self.storage.check_password(password)
+            if str_pw is not None:
+                self.storage.check_password(str_pw)
+            else:
+                self.storage.check_password(self.storage_pw)
 
     def get_available_storage_encryption_version(self):
         # multisig wallets are not offered hw device encryption

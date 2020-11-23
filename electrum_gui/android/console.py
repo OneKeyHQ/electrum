@@ -3093,6 +3093,8 @@ class AndroidCommands(commands.Commands):
         name_info = sorted(name_info.items(), key=lambda item: item[1]['time'], reverse=True)
         out = []
         for key, value in name_info:
+            if -1 != key.find(".tmp."):
+                continue
             temp_info = {}
             addr_type = {}
             addr_type['type'] = value['type']

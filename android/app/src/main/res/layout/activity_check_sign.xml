@@ -3,26 +3,26 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/button_bk_ddake"
     android:clipToPadding="true"
     android:fitsSystemWindows="true"
-    android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".activities.sign.CheckSignActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_50"
-        android:background="@color/button_bk_ddake">
+        android:layout_marginTop="@dimen/dp_10">
 
         <ImageView
             android:id="@+id/img_back"
             android:layout_width="@dimen/dp_40"
             android:layout_height="@dimen/dp_40"
             android:layout_centerVertical="true"
-
             android:fontFamily="sans-serif-medium"
             android:padding="@dimen/dp_8"
-            android:src="@drawable/back" />
+            android:src="@drawable/left_arrow" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -41,199 +41,167 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center_horizontal"
             android:orientation="vertical">
 
-            <androidx.cardview.widget.CardView
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/dp_10"
-                android:outlineSpotShadowColor="@color/shadow_color"
-                app:cardCornerRadius="@dimen/dp_8"
-                app:cardElevation="@dimen/dp_8"
-                tools:ignore="UnusedAttribute">
+                android:layout_marginStart="@dimen/dp_20"
+                android:layout_marginTop="@dimen/dp_30"
+                android:layout_marginEnd="@dimen/dp_20">
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:gravity="center"
+                    android:text="@string/original_msg"
+                    android:textColor="@color/text_six"
+                    android:textSize="@dimen/sp_14" />
 
-                <LinearLayout
+                <ImageView
+                    android:id="@+id/sweepAddress"
+                    android:layout_width="@dimen/dp_30"
+                    android:layout_height="@dimen/dp_30"
+                    android:layout_alignParentEnd="true"
+                    android:padding="3dp"
+                    android:src="@drawable/scan_gray" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_20"
+                android:layout_marginTop="@dimen/dp_10"
+                android:layout_marginEnd="@dimen/dp_20"
+                android:background="@drawable/gray_broken">
+
+                <EditText
+                    android:id="@+id/editInputAddress"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/white_tuo"
-                    android:orientation="vertical"
-                    android:paddingStart="@dimen/dp_16"
-                    android:paddingEnd="@dimen/text_margin"
-                    android:paddingBottom="@dimen/dp_20">
+                    android:background="@null"
+                    android:ellipsize="end"
+                    android:hint="@string/input_msg"
+                    android:padding="@dimen/dp_20"
+                    android:textSize="@dimen/text_size" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="@dimen/dp_21"
-                        android:layout_marginTop="@dimen/dp_19"
-                        android:ellipsize="middle"
-                        android:fontFamily="sans-serif-medium"
-                        android:gravity="center"
-                        android:singleLine="true"
-                        android:text="@string/original_msg"
-                        android:textColor="@color/text"
-                        android:textSize="@dimen/text_size" />
+                <TextView
+                    android:id="@+id/pasteAddress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/dp_30"
+                    android:layout_below="@+id/editInputAddress"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="@dimen/dp_18"
+                    android:layout_marginBottom="@dimen/dp_8"
+                    android:gravity="center_vertical"
+                    android:text="@string/paste"
+                    android:textColor="@color/text_three"
+                    android:textSize="@dimen/sp_14" />
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:layout_marginTop="@dimen/dp_10"
-                        android:background="@color/little_circle_color">
+            </RelativeLayout>
 
-                        <EditText
-                            android:id="@+id/editInputAddress"
-                            android:layout_width="0dp"
-                            android:layout_height="@dimen/dp_50"
-                            android:layout_marginStart="@dimen/dp_10"
-                            android:layout_weight="1"
-                            android:background="@null"
-                            android:ellipsize="end"
-                            android:hint="@string/input_address"
-                            android:singleLine="true"
-                            android:textSize="@dimen/text_size" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/dp_21"
+                android:layout_marginStart="@dimen/dp_20"
+                android:layout_marginTop="@dimen/dp_25"
+                android:gravity="center"
+                android:text="@string/public_address"
+                android:textColor="@color/text_six"
+                android:textSize="@dimen/sp_14" />
 
-                        <ImageView
-                            android:id="@+id/sweepAddress"
-                            android:layout_width="@dimen/dp_30"
-                            android:layout_height="@dimen/dp_50"
-                            android:padding="@dimen/dp_8"
-                            android:src="@drawable/saoyisao" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_20"
+                android:layout_marginTop="@dimen/dp_10"
+                android:layout_marginEnd="@dimen/dp_20"
+                android:background="@drawable/gray_broken">
 
-                        <TextView
-                            android:id="@+id/pasteAddress"
-                            android:layout_width="@dimen/dp_45"
-                            android:layout_height="match_parent"
-                            android:layout_marginStart="@dimen/dp_8"
-                            android:gravity="center_vertical"
-                            android:text="@string/paste"
-                            android:textColor="@color/button_bk"
-                            android:textSize="@dimen/smaller_text_size" />
+                <EditText
+                    android:id="@+id/editInputPublicKey"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@null"
+                    android:gravity="top"
+                    android:hint="@string/inputPublickey"
+                    android:padding="@dimen/dp_20"
+                    android:textColor="@color/set_txt"
+                    android:textSize="@dimen/sp_15" />
 
+                <TextView
+                    android:id="@+id/pastePublicKey"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/dp_30"
+                    android:layout_below="@+id/editInputPublicKey"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="@dimen/dp_18"
+                    android:layout_marginBottom="@dimen/dp_8"
+                    android:gravity="center_vertical"
+                    android:text="@string/paste"
+                    android:textColor="@color/text_three"
+                    android:textSize="@dimen/sp_14" />
 
-                    </LinearLayout>
+            </RelativeLayout>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="@dimen/dp_21"
-                        android:layout_marginTop="@dimen/dp_19"
-                        android:ellipsize="middle"
-                        android:fontFamily="sans-serif-medium"
-                        android:gravity="center"
-                        android:singleLine="true"
-                        android:text="@string/address"
-                        android:textColor="@color/text"
-                        android:textSize="@dimen/text_size" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/dp_21"
+                android:layout_marginStart="@dimen/dp_20"
+                android:layout_marginTop="@dimen/dp_25"
+                android:gravity="center"
+                android:text="@string/signed_msg"
+                android:textColor="@color/text_six"
+                android:textSize="@dimen/sp_14" />
 
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="140dp"
-                        android:layout_marginTop="@dimen/dp_10"
-                        android:background="@color/little_circle_color">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_20"
+                android:layout_marginTop="@dimen/dp_10"
+                android:layout_marginEnd="@dimen/dp_20"
+                android:background="@drawable/gray_broken">
 
-                        <EditText
-                            android:id="@+id/editInputPublicKey"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_marginBottom="@dimen/dp_45"
-                            android:background="@null"
-                            android:gravity="top"
-                            android:hint="@string/input_address"
-                            android:paddingStart="@dimen/dp_10"
-                            android:paddingTop="@dimen/dp_16"
-                            android:paddingEnd="@dimen/dp_10"
-                            android:paddingBottom="@dimen/dp_10"
-                            android:textColor="@color/set_txt"
-                            android:textSize="@dimen/sp_15" />
+                <EditText
+                    android:id="@+id/editInputSignedMsg"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:gravity="top"
+                    android:hint="@string/input_signed_msg"
+                    android:padding="@dimen/dp_20"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/sp_15" />
 
-                        <Button
-                            android:id="@+id/pastePublicKey"
-                            android:layout_width="80dp"
-                            android:layout_height="30dp"
-                            android:layout_alignParentEnd="true"
-                            android:layout_alignParentBottom="true"
-                            android:layout_marginEnd="@dimen/dp_16"
-                            android:layout_marginBottom="@dimen/dp_16"
-                            android:background="@color/paste_bk"
-                            android:drawableStart="@drawable/zhantie"
-                            android:maxLines="1"
-                            android:paddingStart="@dimen/dp_14"
-                            android:paddingEnd="@dimen/dp_14"
-                            android:stateListAnimator="@null"
-                            android:text="@string/paste"
-                            android:textAllCaps="false"
-                            android:textColor="@color/button_bk"
-                            android:textSize="@dimen/sp_12" />
+                <TextView
+                    android:id="@+id/pasteSignedMsg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/dp_30"
+                    android:layout_below="@+id/editInputSignedMsg"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="@dimen/dp_18"
+                    android:layout_marginBottom="@dimen/dp_8"
+                    android:gravity="center_vertical"
+                    android:text="@string/paste"
+                    android:textColor="@color/text_three"
+                    android:textSize="@dimen/sp_14" />
 
-                    </RelativeLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="@dimen/dp_21"
-                        android:layout_marginTop="@dimen/dp_19"
-                        android:ellipsize="middle"
-                        android:fontFamily="sans-serif-medium"
-                        android:gravity="center"
-                        android:singleLine="true"
-                        android:text="@string/signed_msg"
-                        android:textColor="@color/text"
-                        android:textSize="@dimen/text_size" />
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="140dp"
-                        android:layout_marginTop="@dimen/dp_10"
-                        android:background="@color/little_circle_color">
-
-                        <EditText
-                            android:id="@+id/editInputSignedMsg"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_marginBottom="@dimen/dp_45"
-                            android:background="@null"
-                            android:gravity="top"
-                            android:hint="@string/input_signed_msg"
-                            android:paddingStart="@dimen/dp_10"
-                            android:paddingTop="@dimen/dp_16"
-                            android:paddingEnd="@dimen/dp_10"
-                            android:paddingBottom="@dimen/dp_10"
-                            android:textColor="@color/text_color"
-                            android:textSize="@dimen/sp_15" />
-
-                        <Button
-                            android:id="@+id/pasteSignedMsg"
-                            android:layout_width="80dp"
-                            android:layout_height="30dp"
-                            android:layout_alignParentEnd="true"
-                            android:layout_alignParentBottom="true"
-                            android:layout_marginEnd="@dimen/dp_16"
-                            android:layout_marginBottom="@dimen/dp_16"
-                            android:background="@color/paste_bk"
-                            android:drawableStart="@drawable/zhantie"
-                            android:maxLines="1"
-                            android:paddingStart="@dimen/dp_14"
-                            android:paddingEnd="@dimen/dp_14"
-                            android:stateListAnimator="@null"
-                            android:text="@string/paste"
-                            android:textAllCaps="false"
-                            android:textColor="@color/button_bk"
-                            android:textSize="@dimen/sp_12" />
-
-                    </RelativeLayout>
-
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
+            </RelativeLayout>
 
             <Button
                 android:id="@+id/btnConfirm"
-                android:layout_width="300dp"
-                android:layout_height="50dp"
-                android:layout_marginTop="@dimen/dp_30"
-                android:background="@drawable/button_bk_grey"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_60"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginStart="@dimen/dp_20"
+                android:layout_marginTop="@dimen/dp_60"
+                android:layout_marginEnd="@dimen/dp_20"
+                android:layout_marginBottom="@dimen/dp_50"
+                android:background="@drawable/btn_no_check"
                 android:enabled="false"
                 android:text="@string/verification"
                 android:textAllCaps="false"

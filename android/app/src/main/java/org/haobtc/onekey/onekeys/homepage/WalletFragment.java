@@ -1,6 +1,7 @@
 package org.haobtc.onekey.onekeys.homepage;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -38,6 +39,8 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
+import org.haobtc.onekey.activities.jointwallet.MultiSigWalletCreator;
+import org.haobtc.onekey.activities.sign.SignActivity;
 import org.haobtc.onekey.bean.HomeWalletBean;
 import org.haobtc.onekey.bean.MainSweepcodeBean;
 import org.haobtc.onekey.event.BackupEvent;
@@ -45,6 +48,7 @@ import org.haobtc.onekey.event.FixWalletNameEvent;
 import org.haobtc.onekey.event.LoadOtherWalletEvent;
 import org.haobtc.onekey.event.SecondEvent;
 import org.haobtc.onekey.onekeys.backup.BackupGuideActivity;
+import org.haobtc.onekey.onekeys.backup.CheckMnemonicActivity;
 import org.haobtc.onekey.onekeys.dialog.RecoverHdWalletActivity;
 import org.haobtc.onekey.onekeys.dialog.SetHDWalletPassActivity;
 import org.haobtc.onekey.onekeys.homepage.process.DetailTransactionActivity;
@@ -59,6 +63,7 @@ import org.json.JSONObject;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import static android.app.Activity.RESULT_OK;
@@ -84,7 +89,10 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
     private RelativeLayout relNowBackUp;
     private RxPermissions rxPermissions;
     private static final int REQUEST_CODE = 0;
+    private TextView textHard;
+    private LinearLayout linearSign;
 
+    @SuppressLint("CommitPrefEdits")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -92,7 +100,7 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
         View view = inflater.inflate(R.layout.fragment_wallet, container, false);
         EventBus.getDefault().register(this);
         rxPermissions = new RxPermissions(this);
-        preferences = getActivity().getSharedPreferences("Preferences", Context.MODE_PRIVATE);
+        preferences = requireActivity().getSharedPreferences("Preferences", Context.MODE_PRIVATE);
         edit = preferences.edit();
         textWalletName = view.findViewById(R.id.text_wallet_name);
         tetAmount = view.findViewById(R.id.text_amount);
@@ -115,6 +123,8 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
         linearHaveWallet = view.findViewById(R.id.lin_have_wallet);
         linearWalletList = view.findViewById(R.id.lin_wallet_list);
         relNowBackUp = view.findViewById(R.id.rel_now_back_up);
+        textHard = view.findViewById(R.id.text_hard);
+        linearSign = view.findViewById(R.id.linear_sign);
 
         imgBottom = view.findViewById(R.id.img_bottom);
         imgAdd.setOnClickListener(this);
@@ -129,6 +139,7 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
         relBiDetail.setOnClickListener(this);
         imgCheckMoney.setOnCheckedChangeListener(this);
         relNowBackUp.setOnClickListener(this);
+        linearSign.setOnClickListener(this);
         initdata();
         return view;
     }
@@ -222,6 +233,15 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
                                     if (loadWalletMsg.equals(key)) {
                                         edit.putString("showWalletType", type);
                                         edit.apply();
+                                        if (type.contains("hw")) {
+                                            textHard.setVisibility(View.VISIBLE);
+                                            linearSign.setVisibility(View.VISIBLE);
+                                            String nowType = type.substring(type.indexOf("hw-") + 3);
+                                            textHard.setText(nowType);
+                                        } else {
+                                            linearSign.setVisibility(View.GONE);
+                                            textHard.setVisibility(View.GONE);
+                                        }
                                     }
                                 } catch (JSONException e) {
                                     e.printStackTrace();
@@ -298,6 +318,14 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
                 startActivity(intent1);
                 break;
             case R.id.img_scan:
+                //create public
+//                Intent intent7 = new Intent(getActivity(), MultiSigWalletCreator.class);
+//                startActivity(intent7);
+
+                //check mnemonic
+//                Intent intent7 = new Intent(getActivity(), CheckMnemonicActivity.class);
+//                startActivity(intent7);
+
                 rxPermissions
                         .request(Manifest.permission.CAMERA)
                         .subscribe(granted -> {
@@ -358,6 +386,10 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
             case R.id.rel_now_back_up:
                 Intent intent6 = new Intent(getActivity(), BackupGuideActivity.class);
                 startActivity(intent6);
+                break;
+            case R.id.linear_sign:
+                Intent intent8 = new Intent(getActivity(), SignActivity.class);
+                startActivity(intent8);
                 break;
 
         }

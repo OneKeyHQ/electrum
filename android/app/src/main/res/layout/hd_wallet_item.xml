@@ -26,13 +26,15 @@
 
         <TextView
             android:id="@+id/text_type"
-            android:layout_width="32dp"
+            android:layout_width="wrap_content"
             android:layout_height="@dimen/dp_18"
             android:layout_marginStart="@dimen/dp_5"
             android:layout_marginTop="@dimen/dp_12"
             android:layout_toEndOf="@+id/text_name"
             android:background="@drawable/orange_tou"
             android:gravity="center"
+            android:paddingStart="@dimen/dp_10"
+            android:paddingEnd="@dimen/dp_10"
             android:text="@string/hd"
             android:textColor="@color/button_bk_ddake"
             android:textSize="@dimen/sp_12" />

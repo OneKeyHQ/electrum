@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
@@ -271,12 +272,12 @@ public class CurrencyActivity extends BaseActivity {
             case R.id.tet_CheckAll:
                 String strOpen = tetCheckAll.getText().toString();
                 if (strOpen.equals(getString(R.string.more))) {
-                    RelativeLayout.LayoutParams linearParams1 = (RelativeLayout.LayoutParams) reclCnyTable.getLayoutParams();
+                    LinearLayout.LayoutParams linearParams1 = (LinearLayout.LayoutParams) reclCnyTable.getLayoutParams();
                     linearParams1.height = ViewGroup.LayoutParams.WRAP_CONTENT;
                     reclCnyTable.setLayoutParams(linearParams1);
                     tetCheckAll.setText(getString(R.string.retract));
                 } else {
-                    RelativeLayout.LayoutParams linearParams1 = (RelativeLayout.LayoutParams) reclCnyTable.getLayoutParams();
+                    LinearLayout.LayoutParams linearParams1 = (LinearLayout.LayoutParams) reclCnyTable.getLayoutParams();
                     linearParams1.height = 530;
                     reclCnyTable.setLayoutParams(linearParams1);
                     tetCheckAll.setText(getString(R.string.more));

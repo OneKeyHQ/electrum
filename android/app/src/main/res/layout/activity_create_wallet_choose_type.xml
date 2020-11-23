@@ -41,6 +41,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_40"
+        android:layout_marginBottom="26dp"
         android:text="@string/choose_wallet_type"
         android:textColor="@color/text_two"
         android:textSize="30sp" />
@@ -49,7 +50,7 @@
         android:id="@+id/rel_derive_hd"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_46">
+        android:layout_marginTop="@dimen/dp_20">
 
         <ImageView
             android:id="@+id/img_Add"

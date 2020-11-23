@@ -75,7 +75,7 @@
                         android:layout_marginStart="@dimen/dp_20"
                         android:visibility="gone"
                         android:layout_marginTop="@dimen/corner_radius"
-                        android:text="@string/choose_onekey"
+                        tools:text="每次动用该钱包内的资金，都需要3人中的至少2人授权才能完成。"
                         android:textColor="@color/light_text"
                         android:textSize="@dimen/sp_12" />
 

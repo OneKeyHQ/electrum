@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/button_bk_ddake"
+    android:clipToPadding="true"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical"
+    tools:context="org.haobtc.onekey.onekeys.backup.CheckMnemonicActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_50"
+        android:layout_marginTop="@dimen/dp_10">
+
+        <ImageView
+            android:id="@+id/img_back"
+            android:layout_width="@dimen/dp_40"
+            android:layout_height="@dimen/dp_40"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/dp_10"
+            android:padding="@dimen/dp_8"
+            android:src="@drawable/left_arrow" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:text="@string/backups_wallet"
+            android:textColor="@color/text"
+            android:textSize="@dimen/sp_20" />
+
+    </RelativeLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_10"
+                android:gravity="center_horizontal"
+                android:text="@string/check_it"
+                android:textColor="@color/text_two"
+                android:textSize="30sp" />
+
+            <TextView
+                android:id="@+id/text_word_one"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_20"
+                android:layout_marginTop="@dimen/dp_25"
+                android:layout_marginEnd="43dp"
+                android:textColor="@color/text_two"
+                android:textSize="@dimen/sp_14"
+                tools:text="选择刚才抄写的第3个单词" />
+
+            <RadioGroup
+                android:id="@+id/red_group_one"
+                android:layout_width="match_parent"
+                android:layout_height="85dp"
+                android:layout_marginStart="@dimen/dp_20"
+                android:layout_marginTop="13dp"
+                android:layout_marginEnd="@dimen/dp_20"
+                android:background="@drawable/gray_qian_tuo"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/one_line_1"
+                    android:layout_width="90dp"
+                    android:layout_height="@dimen/dp_44"
+                    android:layout_marginStart="@dimen/dp_14"
+                    android:background="@drawable/check_mnemonic"
+                    android:button="@null"
+                    android:checked="false"
+                    android:gravity="center"
+                    android:singleLine="true"
+                    android:textColor="@drawable/check_mnemonic_color"
+                    android:textSize="@dimen/sp_14"
+                    tools:text="apple" />
+
+                <View
+                    android:layout_width="@dimen/dp_0"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <RadioButton
+                    android:id="@+id/one_line_2"
+                    android:layout_width="90dp"
+                    android:layout_height="@dimen/dp_44"
+                    android:background="@drawable/check_mnemonic"
+                    android:button="@null"
+                    android:checked="false"
+                    android:gravity="center"
+                    android:singleLine="true"
+                    android:textColor="@drawable/check_mnemonic_color"
+                    android:textSize="@dimen/sp_14"
+                    tools:text="apple" />
+
+                <View
+                    android:layout_width="@dimen/dp_0"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <RadioButton
+                    android:id="@+id/one_line_3"
+                    android:layout_width="90dp"
+                    android:layout_height="@dimen/dp_44"
+                    android:layout_marginEnd="@dimen/dp_14"
+                    android:background="@drawable/check_mnemonic"
+                    android:button="@null"
+                    android:checked="false"
+                    android:gravity="center"
+                    android:singleLine="true"
+                    android:textColor="@drawable/check_mnemonic_color"
+                    android:textSize="@dimen/sp_14"
+                    tools:text="apple" />
+
+            </RadioGroup>
+
+            <TextView
+                android:id="@+id/text_word_two"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_20"
+                android:layout_marginTop="13dp"
+                android:layout_marginEnd="43dp"
+                android:textColor="@color/text_two"
+                android:textSize="@dimen/sp_14"
+                tools:text="选择刚才抄写的第3个单词" />
+
+            <RadioGroup
+                android:id="@+id/red_group_two"
+                android:layout_width="match_parent"
+                android:layout_height="85dp"
+                android:layout_marginStart="@dimen/dp_20"
+                android:layout_marginTop="13dp"
+                android:layout_marginEnd="@dimen/dp_20"
+                android:background="@drawable/gray_qian_tuo"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/two_line_1"
+                    android:layout_width="90dp"
+                    android:layout_height="@dimen/dp_44"
+                    android:layout_marginStart="@dimen/dp_14"
+                    android:background="@drawable/check_mnemonic"
+                    android:button="@null"
+                    android:checked="false"
+                    android:gravity="center"
+                    android:singleLine="true"
+                    android:textColor="@drawable/check_mnemonic_color"
+                    android:textSize="@dimen/sp_14"
+                    tools:text="apple" />
+
+                <View
+                    android:layout_width="@dimen/dp_0"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <RadioButton
+                    android:id="@+id/two_line_2"
+                    android:layout_width="90dp"
+                    android:layout_height="@dimen/dp_44"
+                    android:background="@drawable/check_mnemonic"
+                    android:button="@null"
+                    android:checked="false"
+                    android:gravity="center"
+                    android:singleLine="true"
+                    android:textColor="@drawable/check_mnemonic_color"
+                    android:textSize="@dimen/sp_14"
+                    tools:text="apple" />
+
+                <View
+                    android:layout_width="@dimen/dp_0"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <RadioButton
+                    android:id="@+id/two_line_3"
+                    android:layout_width="90dp"
+                    android:layout_height="@dimen/dp_44"
+                    android:layout_marginEnd="@dimen/dp_14"
+                    android:background="@drawable/check_mnemonic"
+                    android:button="@null"
+                    android:checked="false"
+                    android:gravity="center"
+                    android:singleLine="true"
+                    android:textColor="@drawable/check_mnemonic_color"
+                    android:textSize="@dimen/sp_14"
+                    tools:text="apple" />
+
+            </RadioGroup>
+
+            <TextView
+                android:id="@+id/text_word_three"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_20"
+                android:layout_marginTop="13dp"
+                android:layout_marginEnd="43dp"
+                android:textColor="@color/text_two"
+                android:textSize="@dimen/sp_14"
+                tools:text="选择刚才抄写的第3个单词" />
+
+            <RadioGroup
+                android:id="@+id/red_group_three"
+                android:layout_width="match_parent"
+                android:layout_height="85dp"
+                android:layout_marginStart="@dimen/dp_20"
+                android:layout_marginTop="13dp"
+                android:layout_marginEnd="@dimen/dp_20"
+                android:background="@drawable/gray_qian_tuo"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/three_line_1"
+                    android:layout_width="90dp"
+                    android:layout_height="@dimen/dp_44"
+                    android:layout_marginStart="@dimen/dp_14"
+                    android:background="@drawable/check_mnemonic"
+                    android:button="@null"
+                    android:checked="false"
+                    android:gravity="center"
+                    android:singleLine="true"
+                    android:textColor="@drawable/check_mnemonic_color"
+                    android:textSize="@dimen/sp_14"
+                    tools:text="apple" />
+
+                <View
+                    android:layout_width="@dimen/dp_0"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <RadioButton
+                    android:id="@+id/three_line_2"
+                    android:layout_width="90dp"
+                    android:layout_height="@dimen/dp_44"
+                    android:background="@drawable/check_mnemonic"
+                    android:button="@null"
+                    android:checked="false"
+                    android:gravity="center"
+                    android:singleLine="true"
+                    android:textColor="@drawable/check_mnemonic_color"
+                    android:textSize="@dimen/sp_14"
+                    tools:text="apple" />
+
+                <View
+                    android:layout_width="@dimen/dp_0"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <RadioButton
+                    android:id="@+id/three_line_3"
+                    android:layout_width="90dp"
+                    android:layout_height="@dimen/dp_44"
+                    android:layout_marginEnd="@dimen/dp_14"
+                    android:background="@drawable/check_mnemonic"
+                    android:button="@null"
+                    android:checked="false"
+                    android:gravity="center"
+                    android:singleLine="true"
+                    android:textColor="@drawable/check_mnemonic_color"
+                    android:textSize="@dimen/sp_14"
+                    tools:text="apple" />
+
+            </RadioGroup>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="34dp"
+                android:layout_marginTop="@dimen/dp_30"
+                android:layout_marginEnd="@dimen/dp_30">
+
+                <View
+                    android:id="@+id/view"
+                    android:layout_width="@dimen/dp_4"
+                    android:layout_height="@dimen/dp_50"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/rectangle" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dp_10"
+                    android:layout_toEndOf="@+id/view"
+                    android:lineSpacingExtra="@dimen/dp_10"
+                    android:text="@string/check_word_tip"
+                    android:textColor="@color/text_three"
+                    android:textSize="@dimen/sp_13" />
+
+            </RelativeLayout>
+
+            <Button
+                android:id="@+id/btn_check"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_60"
+                android:layout_marginStart="34dp"
+                android:layout_marginTop="@dimen/dp_30"
+                android:layout_marginEnd="34dp"
+                android:layout_marginBottom="@dimen/dp_80"
+                android:background="@drawable/btn_no_check"
+                android:enabled="true"
+                android:text="@string/check_"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/sp_20" />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>

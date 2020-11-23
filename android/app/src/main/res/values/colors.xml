@@ -69,5 +69,6 @@
     <color name="text_eight">#3E70F2</color>
     <color name="text_nine">#F7931B</color>
     <color name="text_ten">#EB5757</color>
+    <color name="text_eleven">#BFFFFFFF</color>
 
 </resources>

@@ -1,5 +1,6 @@
 package org.haobtc.onekey.activities.sign;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.view.View;
 import android.widget.Button;
@@ -24,26 +25,24 @@ public class CheckSignResultActivity extends BaseActivity {
     TextView testStatus;
     @BindView(R.id.testContent)
     TextView testContent;
-    @BindView(R.id.btn_finish)
-    Button btnFinish;
 
     @Override
     public int getLayoutId() {
         return R.layout.activity_check_sign_result;
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     @Override
     public void initView() {
         ButterKnife.bind(this);
         Intent intent = getIntent();
         boolean verify = intent.getBooleanExtra("verify", false);
         if (!verify) {
-            imgStatus.setImageDrawable(getDrawable(R.drawable.fail));
-            testStatus.setText(getString(R.string.sign_check_fail));
-            btnFinish.setText(getString(R.string.confirm));
-            testContent.setVisibility(View.GONE);
+            imgStatus.setImageDrawable(getDrawable(R.drawable.check_sign_no));
+            testStatus.setText(getString(R.string.verify_failed));
+            testStatus.setTextColor(getColor(R.color.text_ten));
+            testContent.setText(getString(R.string.agreement_msg_no));
         }
-
     }
 
     @Override

@@ -45,6 +45,7 @@
 
 
         <TextView
+            android:id="@+id/text_safe"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_60"
             android:gravity="bottom"

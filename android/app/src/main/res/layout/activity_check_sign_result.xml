@@ -4,68 +4,82 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/button_bk_ddake"
     android:clipToPadding="true"
     android:fitsSystemWindows="true"
-    android:background="@color/button_bk_ddake"
     tools:context=".activities.sign.CheckSignResultActivity">
 
     <RelativeLayout
-        android:id="@+id/snkdfnksjndkjsd"
+        android:id="@+id/relativeLayout"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_50">
+        android:layout_height="@dimen/dp_50"
+        android:layout_marginTop="@dimen/dp_10"
+        android:background="@color/button_bk_ddake">
 
         <ImageView
             android:id="@+id/img_back"
             android:layout_width="@dimen/dp_40"
             android:layout_height="@dimen/dp_40"
             android:layout_centerVertical="true"
+            android:fontFamily="sans-serif-medium"
             android:padding="@dimen/dp_8"
+            android:src="@drawable/left_arrow" />
 
-            android:src="@drawable/back" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:fontFamily="sans-serif-medium"
+            android:text="@string/checksigning"
+            android:textColor="@color/text"
+            android:textSize="@dimen/text_size" />
 
     </RelativeLayout>
-
-    <ImageView
-        android:id="@+id/imgStatus"
-        android:layout_width="@dimen/dp_80"
-        android:layout_height="@dimen/dp_80"
-        android:layout_below="@+id/snkdfnksjndkjsd"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="62dp"
-        android:src="@drawable/tongguo" />
 
     <TextView
         android:id="@+id/testStatus"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fontFamily="sans-serif-medium"
-        android:layout_below="@+id/imgStatus"
+        android:layout_below="@+id/relativeLayout"
         android:layout_marginTop="@dimen/dp_30"
         android:gravity="center_horizontal"
-        android:text="@string/sign_checked"
-        android:textColor="@color/text_color"
-        android:textSize="@dimen/sp_18" />
+        android:text="@string/verify_success"
+        android:textColor="@color/onekey"
+        android:textSize="30sp"
+        android:textStyle="bold" />
+
+    <ImageView
+        android:id="@+id/imgStatus"
+        android:layout_width="110dp"
+        android:layout_height="110dp"
+        android:layout_below="@+id/testStatus"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/dp_80"
+        android:src="@drawable/check_sign_yes" />
 
     <TextView
         android:id="@+id/testContent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/testStatus"
-        android:layout_marginTop="@dimen/dp_10"
+        android:layout_below="@+id/imgStatus"
         android:gravity="center_horizontal"
-        android:textColor="@color/graytext_color"
-        android:textSize="@dimen/sp_13"
-        android:text="@string/agreement_msg" />
+        android:text="@string/agreement_msg"
+        android:textColor="@color/text_three"
+        android:textSize="@dimen/sp_14" />
 
     <Button
         android:id="@+id/btn_finish"
-        android:layout_width="300dp"
-        android:layout_height="50dp"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_60"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="@dimen/dp_30"
-        android:background="@drawable/button_bk"
-        android:text="@string/finish"
+        android:layout_marginStart="34dp"
+        android:layout_marginEnd="34dp"
+        android:layout_marginBottom="90dp"
+        android:background="@drawable/btn_checked"
+        android:text="@string/back"
         android:textAllCaps="false"
         android:textColor="@android:color/white"
         android:textSize="@dimen/sp_14" />

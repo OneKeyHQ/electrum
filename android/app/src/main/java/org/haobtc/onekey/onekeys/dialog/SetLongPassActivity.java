@@ -385,7 +385,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
     private void exportWord() {
         PyObject createHdWallet = null;
         try {
-            createHdWallet = Daemon.commands.callAttr("export_seed", editPass.getText().toString());
+            createHdWallet = Daemon.commands.callAttr("export_seed", editPass.getText().toString(), walletName);
         } catch (Exception e) {
             if (e.getMessage().contains("Incorrect password")) {
                 mToast(getString(R.string.wrong_pass));

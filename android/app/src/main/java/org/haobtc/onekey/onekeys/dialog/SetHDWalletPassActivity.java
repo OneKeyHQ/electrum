@@ -200,8 +200,8 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
             e.printStackTrace();
             if (e.getMessage().contains("Incorrect password")) {
                 mToast(getString(R.string.wrong_pass));
-                return;
             }
+            return;
         }
         mToast(getString(R.string.delete_succse));
         EventBus.getDefault().post(new LoadOtherWalletEvent());
@@ -304,7 +304,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
                 finish();
             } else {
                 try {
-                    Daemon.commands.callAttr("recovery_confirmed", "");
+                    Daemon.commands.callAttr("recovery_confirmed", "[]");
                 } catch (Exception e) {
                     e.printStackTrace();
                     return;
@@ -380,8 +380,8 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
                     btnNext.setEnabled(false);
                     btnNext.setBackground(getDrawable(R.drawable.btn_no_check));
                     input = false;
-                    return;
                 }
+                return;
             }
             mToast(getString(R.string.fix_success));
             finish();
@@ -392,7 +392,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
     private void exportWord() {
         PyObject createHdWallet = null;
         try {
-            createHdWallet = Daemon.commands.callAttr("export_seed", pwdEdittext.getText().toString());
+            createHdWallet = Daemon.commands.callAttr("export_seed", pwdEdittext.getText().toString(), walletName);
         } catch (Exception e) {
             if (e.getMessage().contains("Incorrect password")) {
                 mToast(getString(R.string.wrong_pass));

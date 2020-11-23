@@ -45,7 +45,10 @@ public class WalletListAdapter extends BaseQuickAdapter<AddressEvent, BaseViewHo
         if (item.getType().contains("hd") || item.getType().contains("derived")) {
             helper.getView(R.id.text_type).setVisibility(View.VISIBLE);
             helper.setText(R.id.text_type, "HD");
-        }else {
+        } else if (item.getType().contains("hw")) {
+            String type = item.getType().substring(item.getType().indexOf("hw-") + 3);
+            helper.setText(R.id.text_type, mContext.getString(R.string.hardwares) + " " + type);
+        } else {
             helper.getView(R.id.text_type).setVisibility(View.INVISIBLE);
         }
         TextView textAddr = helper.getView(R.id.text_address);
@@ -55,7 +58,7 @@ public class WalletListAdapter extends BaseQuickAdapter<AddressEvent, BaseViewHo
         SharedPreferences preferences = mContext.getSharedPreferences("Preferences", Context.MODE_PRIVATE);
         String loadWalletName = preferences.getString("loadWalletName", "");
         ImageView chooseView = helper.getView(R.id.img_choose);
-        if ( loadWalletName.equals(item.getName())){
+        if (loadWalletName.equals(item.getName())) {
             chooseView.setVisibility(View.VISIBLE);
         }
 

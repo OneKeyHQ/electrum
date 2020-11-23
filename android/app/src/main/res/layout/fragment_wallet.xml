@@ -283,6 +283,19 @@
                     android:layout_height="168dp"
                     android:background="@drawable/home_bg_up">
 
+                    <TextView
+                        android:id="@+id/text_hard"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/dp_30"
+                        android:layout_marginStart="@dimen/dp_20"
+                        android:layout_marginTop="@dimen/dp_15"
+                        android:drawablePadding="@dimen/dp_4"
+                        android:gravity="center_vertical"
+                        android:textColor="@color/button_bk_ddake"
+                        android:textSize="@dimen/sp_14"
+                        app:drawableStartCompat="@drawable/hard_wallet_key"
+                        tools:text="1-3" />
+
                     <RelativeLayout
                         android:id="@+id/RelativeLayout11"
                         android:layout_width="wrap_content"
@@ -364,8 +377,8 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:drawableStart="@drawable/plane"
                             android:layout_marginStart="@dimen/dp_10"
+                            android:drawableStart="@drawable/plane"
                             android:drawablePadding="@dimen/dp_16"
                             android:singleLine="true"
                             android:text="@string/forword"
@@ -395,6 +408,27 @@
                             tools:ignore="UseCompatTextViewDrawableXml" />
 
                     </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/linear_sign"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:clickable="true"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:drawableStart="@drawable/onekey_sign"
+                            android:drawablePadding="@dimen/dp_16"
+                            android:text="@string/signature"
+                            android:textColor="@color/button_bk_ddake"
+                            android:textSize="@dimen/sp_16"
+                            tools:ignore="UseCompatTextViewDrawableXml" />
+
+                    </LinearLayout>
                 </LinearLayout>
 
             </LinearLayout>
@@ -403,11 +437,11 @@
                 android:id="@+id/rel_now_back_up"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="visible"
                 android:layout_marginStart="@dimen/dp_20"
                 android:layout_marginTop="@dimen/dp_25"
                 android:layout_marginEnd="@dimen/dp_20"
-                android:background="@drawable/white_back_tuo">
+                android:background="@drawable/white_back_tuo"
+                android:visibility="visible">
 
                 <RelativeLayout
                     android:id="@+id/RelativeLayout"
@@ -444,12 +478,12 @@
 
                 <TextView
                     android:layout_width="match_parent"
-                    android:layout_marginBottom="@dimen/dp_12"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/RelativeLayout"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="@dimen/dp_15"
                     android:layout_marginEnd="@dimen/dp_15"
+                    android:layout_marginBottom="@dimen/dp_12"
                     android:lineSpacingExtra="5sp"
                     android:text="@string/now_backup_tip"
                     android:textColor="@color/text_three"
@@ -552,9 +586,9 @@
                         android:layout_alignParentEnd="true"
                         android:layout_marginTop="@dimen/dp_18"
                         android:layout_marginEnd="57dp"
+                        android:text="@string/zero"
                         android:textColor="@color/text_two"
-                        android:textSize="@dimen/sp_18"
-                        android:text="@string/zero" />
+                        android:textSize="@dimen/sp_18" />
 
                     <TextView
                         android:id="@+id/text_dollar"

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:layout_width="@dimen/dp_100"
+        android:layout_height="119dp"
+        android:layout_marginEnd="@dimen/dp_10"
+        android:background="@drawable/black_broken">
+
+        <TextView
+            android:id="@+id/tet_publicperson_item_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_10"
+            android:layout_marginTop="@dimen/dp_30"
+            android:layout_marginEnd="@dimen/dp_10"
+            android:gravity="center_horizontal"
+            android:textColor="@color/text_two"
+            android:textSize="@dimen/sp_14"
+            tools:text="KEY1" />
+
+        <TextView
+            android:id="@+id/text_pub_num"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_36"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="@dimen/dp_1"
+            android:background="@drawable/gray_down_tuo"
+            android:gravity="center"
+            android:text="@string/key"
+            android:textColor="@color/text_two"
+            android:textSize="@dimen/sp_10" />
+    </RelativeLayout>
+
+</RelativeLayout>

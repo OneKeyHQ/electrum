@@ -4,16 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/button_bk_ddake"
     android:clipToPadding="true"
     android:fitsSystemWindows="true"
-    android:background="@color/button_bk_ddake"
     android:orientation="vertical"
     tools:context=".activities.sign.SignActivity">
 
     <RelativeLayout
         android:id="@+id/relativeLayout"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_50">
+        android:layout_height="@dimen/dp_50"
+        android:layout_marginTop="@dimen/dp_10">
 
         <ImageView
             android:id="@+id/img_back"
@@ -21,7 +22,7 @@
             android:layout_height="@dimen/dp_40"
             android:layout_centerVertical="true"
             android:padding="@dimen/dp_8"
-            android:src="@drawable/back" />
+            android:src="@drawable/left_arrow" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -37,121 +38,105 @@
         <TextView
             android:id="@+id/textCheckSign"
             android:layout_width="wrap_content"
-            android:paddingStart="@dimen/dp_10"
-            android:paddingEnd="@dimen/dp_10"
-            android:layout_height="@dimen/dp_40"
+            android:layout_height="@dimen/dp_30"
             android:layout_alignParentEnd="true"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:layout_marginEnd="@dimen/dp_10"
+            android:background="@drawable/green_bacj"
             android:gravity="center"
+            android:paddingStart="@dimen/dp_10"
+            android:paddingEnd="@dimen/dp_10"
             android:text="@string/check_sign"
-            android:textColor="@color/button_bk_disableok"
-            android:textSize="@dimen/text_size" />
+            android:textColor="@color/onekey"
+            android:textSize="@dimen/sp_14" />
 
     </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/bk_page">
+        android:layout_height="match_parent">
 
-        <androidx.cardview.widget.CardView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:layout_marginStart="@dimen/dp_10"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_20"
             android:layout_marginTop="@dimen/dp_16"
-            android:layout_marginEnd="@dimen/dp_10"
+            android:layout_marginEnd="@dimen/dp_20"
             android:layout_marginBottom="@dimen/dp_10"
-            android:outlineSpotShadowColor="@color/shadow_color"
-            app:cardCornerRadius="@dimen/dp_8"
-            app:cardElevation="@dimen/dp_8"
-            tools:ignore="UnusedAttribute">
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <RadioGroup
+                android:id="@+id/radio_group"
+                android:layout_width="match_parent"
+                android:layout_height="32dp"
+                android:layout_marginTop="@dimen/dp_14"
+                android:layout_marginBottom="@dimen/dp_5"
+                android:background="@drawable/gray_tuo_little_6"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/radioSignTrsaction"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/dp_2"
+                    android:layout_weight="1"
+                    android:background="@drawable/sign_check_back"
+                    android:button="@null"
+                    android:checked="true"
+                    android:gravity="center"
+                    android:text="@string/transaction"
+                    android:textColor="@color/text_two"
+                    android:textSize="@dimen/sp_15" />
+
+                <RadioButton
+                    android:id="@+id/radioSignMsg"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/dp_2"
+                    android:layout_weight="1"
+                    android:background="@drawable/sign_check_back"
+                    android:button="@null"
+                    android:checked="false"
+                    android:gravity="center"
+                    android:text="@string/message"
+                    android:textColor="@drawable/textcolor"
+                    android:textSize="@dimen/sp_16" />
+
+            </RadioGroup>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:background="@drawable/white_tuo"
-                android:gravity="center_horizontal"
+                android:layout_height="236dp"
+                android:layout_marginTop="33dp"
+                android:background="@drawable/gray_broken"
                 android:orientation="vertical">
 
-                <RadioGroup
-                    android:id="@+id/radio_group"
-                    android:layout_width="wrap_content"
-                    android:layout_height="30dp"
-                    android:layout_marginTop="@dimen/dp_14"
-                    android:layout_marginBottom="@dimen/dp_5"
-                    android:orientation="horizontal">
-
-
-                    <RadioButton
-                        android:id="@+id/radioSignTrsaction"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_marginEnd="@dimen/dp_20"
-                        android:button="@null"
-                        android:checked="true"
-                        android:drawableBottom="@drawable/src_qiye"
-                        android:gravity="center"
-                        android:text="@string/sign_trsaction"
-                        android:textColor="@drawable/textcolor"
-                        android:textSize="@dimen/sp_16"
-                        android:textStyle="bold" />
-
-                    <RadioButton
-                        android:id="@+id/radioSignMsg"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="@dimen/dp_20"
-                        android:button="@null"
-                        android:drawableBottom="@drawable/src_qiye"
-                        android:gravity="center"
-                        android:text="@string/sign_message"
-                        android:textColor="@drawable/textcolor"
-                        android:textSize="@dimen/sp_16"
-                        android:textStyle="bold" />
-
-                </RadioGroup>
-
-                <LinearLayout
+                <EditText
+                    android:id="@+id/editTrsactionTest"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_marginBottom="@dimen/dp_10"
                     android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:visibility="visible">
-
-                    <TextView
-                        android:id="@+id/test_sign_tips"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/dp_10"
-                        android:gravity="center_horizontal"
-                        android:text="@string/prompt_sig"
-                        android:textColor="@color/graytext_color"
-                        android:textSize="@dimen/sp_12" />
-
-                    <EditText
-                        android:id="@+id/editTrsactionTest"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_marginStart="@dimen/dp_21"
-                        android:layout_marginTop="@dimen/dp_14"
-                        android:layout_marginEnd="@dimen/dp_21"
-                        android:layout_weight="1"
-                        android:background="@null"
-                        android:gravity="top"
-                        android:hint="@string/input_tsaction_text"
-                        android:textColor="@color/text"
-                        android:textSize="15sp"
-                        tools:ignore="NestedWeights" />
-
-                </LinearLayout>
+                    android:background="@null"
+                    android:gravity="top"
+                    android:hint="@string/input_tsaction_text"
+                    android:paddingStart="@dimen/dp_30"
+                    android:paddingTop="27dp"
+                    android:paddingEnd="@dimen/dp_30"
+                    android:paddingBottom="@dimen/dp_30"
+                    android:textColor="@color/text"
+                    android:textSize="15sp"
+                    tools:ignore="NestedWeights" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="35dp"
-                    android:layout_marginBottom="@dimen/dp_16"
+                    android:layout_height="68dp"
+                    android:layout_marginStart="@dimen/dp_1"
+                    android:layout_marginEnd="@dimen/dp_1"
+                    android:layout_marginBottom="@dimen/dp_1"
+                    android:background="@drawable/gray_down_tuo"
                     android:paddingStart="@dimen/dp_16"
                     android:paddingEnd="@dimen/dp_16">
 
@@ -161,16 +146,16 @@
                         android:layout_height="match_parent"
                         android:layout_marginEnd="@dimen/dp_16"
                         android:layout_weight="1"
-                        android:background="@color/paste_bk"
-                        android:drawableStart="@drawable/file"
+                        android:background="@null"
+                        android:drawableStart="@drawable/folder_upload_1"
                         android:maxLines="1"
-                        android:paddingStart="10dp"
+                        android:paddingStart="@dimen/dp_10"
                         android:paddingEnd="@dimen/dp_10"
                         android:stateListAnimator="@null"
-                        android:text="@string/import_file"
+                        android:text="@string/imports"
                         android:textAllCaps="false"
-                        android:textColor="@color/button_bk"
-                        android:textSize="@dimen/sp_13" />
+                        android:textColor="@color/text_three"
+                        android:textSize="@dimen/sp_16" />
 
                     <Button
                         android:id="@+id/btn_sweep"
@@ -178,44 +163,48 @@
                         android:layout_height="match_parent"
                         android:layout_marginEnd="@dimen/dp_16"
                         android:layout_weight="1"
-                        android:background="@color/paste_bk"
-                        android:drawableStart="@drawable/saoyisao"
+                        android:background="@null"
+                        android:drawableStart="@drawable/scan_gray"
                         android:maxLines="1"
-                        android:paddingStart="@dimen/dp_16"
+                        android:paddingStart="@dimen/dp_10"
                         android:paddingEnd="@dimen/dp_10"
                         android:stateListAnimator="@null"
                         android:text="@string/scaning"
                         android:textAllCaps="false"
-                        android:textColor="@color/button_bk"
-                        android:textSize="@dimen/sp_13" />
+                        android:textColor="@color/text_three"
+                        android:textSize="@dimen/sp_16" />
 
                     <Button
                         android:id="@+id/pasteSignTrsaction"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:background="@color/paste_bk"
-                        android:drawableStart="@drawable/zhantie"
+                        android:background="@null"
+                        android:drawableStart="@drawable/duplicate_1"
                         android:maxLines="1"
-                        android:paddingStart="@dimen/dp_20"
-                        android:paddingEnd="@dimen/dp_16"
+                        android:paddingStart="@dimen/dp_10"
+                        android:paddingEnd="@dimen/dp_10"
                         android:stateListAnimator="@null"
                         android:text="@string/paste"
                         android:textAllCaps="false"
-                        android:textColor="@color/button_bk"
-                        android:textSize="@dimen/sp_13" />
+                        android:textColor="@color/text_three"
+                        android:textSize="@dimen/sp_16" />
                 </LinearLayout>
             </LinearLayout>
-        </androidx.cardview.widget.CardView>
+
+
+        </LinearLayout>
 
         <Button
             android:id="@+id/btnConfirm"
-            android:layout_width="300dp"
+            android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
+            android:layout_marginStart="34dp"
+            android:layout_marginEnd="34dp"
             android:layout_marginBottom="37dp"
-            android:background="@drawable/button_bk_grey"
+            android:background="@drawable/btn_no_check"
             android:enabled="false"
             android:text="@string/signature"
             android:textAllCaps="false"

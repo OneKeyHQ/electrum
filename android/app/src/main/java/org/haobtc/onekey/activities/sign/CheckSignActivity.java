@@ -140,15 +140,9 @@ public class CheckSignActivity extends BaseActivity {
         }
         if (verify_message != null) {
             boolean verify = verify_message.toBoolean();
-            if (verify) {
-                Intent intent = new Intent(CheckSignActivity.this, CheckSignResultActivity.class);
-                intent.putExtra("verify", verify);
-                startActivity(intent);
-            } else {
-                Intent intent = new Intent(CheckSignActivity.this, CheckSignResultActivity.class);
-                intent.putExtra("verify", verify);
-                startActivity(intent);
-            }
+            Intent intent = new Intent(CheckSignActivity.this, CheckSignResultActivity.class);
+            intent.putExtra("verify", verify);
+            startActivity(intent);
         }
     }
 
@@ -197,10 +191,10 @@ public class CheckSignActivity extends BaseActivity {
         String strInputSignedMsg = editInputSignedMsg.getText().toString();
         if (TextUtils.isEmpty(strinputAddress) || TextUtils.isEmpty(strInputPublicKey) || TextUtils.isEmpty(strInputSignedMsg)) {
             btnConfirm.setEnabled(false);
-            btnConfirm.setBackground(getDrawable(R.drawable.button_bk_grey));
+            btnConfirm.setBackground(getDrawable(R.drawable.btn_no_check));
         } else {
             btnConfirm.setEnabled(true);
-            btnConfirm.setBackground(getDrawable(R.drawable.button_bk));
+            btnConfirm.setBackground(getDrawable(R.drawable.btn_checked));
         }
 
     }

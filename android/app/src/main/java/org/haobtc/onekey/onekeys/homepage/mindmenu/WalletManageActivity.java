@@ -3,6 +3,8 @@ package org.haobtc.onekey.onekeys.homepage.mindmenu;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -11,10 +13,16 @@ import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.event.FinishEvent;
 import org.haobtc.onekey.onekeys.dialog.SetHDWalletPassActivity;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class WalletManageActivity extends BaseActivity {
+
+    @BindView(R.id.text_safe)
+    TextView textSafe;
+    @BindView(R.id.rel_export_word)
+    RelativeLayout relExportWord;
 
     @Override
     public int getLayoutId() {
@@ -29,6 +37,11 @@ public class WalletManageActivity extends BaseActivity {
 
     @Override
     public void initData() {
+        int hdHum = getIntent().getIntExtra("hd_num", 0);
+        if (hdHum == 0) {
+            textSafe.setVisibility(View.GONE);
+            relExportWord.setVisibility(View.GONE);
+        }
 
     }
 
@@ -59,5 +72,12 @@ public class WalletManageActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // TODO: add setContentView(...) invocation
+        ButterKnife.bind(this);
     }
 }

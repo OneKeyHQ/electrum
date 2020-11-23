@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
@@ -24,7 +25,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +33,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chaquo.python.PyObject;
@@ -49,17 +50,18 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.MainActivity;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
-import org.haobtc.onekey.activities.personalwallet.ImportHistoryWalletActivity;
 import org.haobtc.onekey.activities.service.CommunicationModeSelector;
 import org.haobtc.onekey.adapter.AddBixinKeyAdapter;
+import org.haobtc.onekey.adapter.PublicAdapter;
 import org.haobtc.onekey.adapter.PublicPersonAdapter;
+import org.haobtc.onekey.adapter.SignNumAdapter;
 import org.haobtc.onekey.aop.SingleClick;
+import org.haobtc.onekey.bean.CNYBean;
 import org.haobtc.onekey.bean.GetCodeAddressBean;
 import org.haobtc.onekey.event.AddBixinKeyEvent;
 import org.haobtc.onekey.event.FirstEvent;
 import org.haobtc.onekey.event.MutiSigWalletEvent;
 import org.haobtc.onekey.utils.Daemon;
-import org.haobtc.onekey.utils.IndicatorSeekBar;
 import org.haobtc.onekey.utils.MyDialog;
 
 import java.io.File;
@@ -84,18 +86,10 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
     TextView tetTrthree;
     @BindView(R.id.edit_Walletname)
     EditText editWalletname;
-    @BindView(R.id.seek_bar_fee)
-    IndicatorSeekBar seekBarFee;
-    @BindView(R.id.seek_bar_num)
-    IndicatorSeekBar seekBarNum;
     @BindView(R.id.button)
     Button button;
-    @BindView(R.id.tv_indicator)
-    TextView tvIndicator;
-    @BindView(R.id.tv_indicatorTwo)
-    TextView tvIndicatorTwo;
     @BindView(R.id.bn_add_key)
-    LinearLayout bnAddKey;
+    RelativeLayout bnAddKey;
     @BindView(R.id.img_Progree1)
     ImageView imgProgree1;
     @BindView(R.id.img_Progree2)
@@ -103,61 +97,46 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
     @BindView(R.id.img_Progree3)
     ImageView imgProgree3;
     @BindView(R.id.card_viewOne)
-    CardView cardViewOne;
+    LinearLayout cardViewOne;
     @BindView(R.id.card_viewThree)
-    CardView cardViewThree;
+    RelativeLayout cardViewThree;
     @BindView(R.id.recl_BinxinKey)
     RecyclerView reclBinxinKey;
-    @BindView(R.id.rel_Finish)
-    RelativeLayout relFinish;
-    @BindView(R.id.rel_TwoNext1)
-    RelativeLayout relTwoNext1;
     @BindView(R.id.bn_complete_add_cosigner)
     Button bnCompleteAddCosigner;
-    @BindView(R.id.card_three_public)
-    CardView cardThreePublic;
     @BindView(R.id.tet_who_wallet)
     TextView tetWhoWallet;
     @BindView(R.id.tet_many_key)
     TextView tetManyKey;
-    @BindView(R.id.img_Orcode)
-    ImageView imgOrcode;
-    @BindView(R.id.tet_Preservation)
-    TextView tetPreservation;
     @BindView(R.id.recl_publicPerson)
     RecyclerView reclPublicPerson;
-    @BindView(R.id.btn_Finish)
-    Button btnFinish;
-    @BindView(R.id.testseekNum)
-    TextView testseekNum;
     public String pin = "";
     public static final String TAG = MultiSigWalletCreator.class.getSimpleName();
-    @BindView(R.id.test_input_wallet)
-    TextView testInputWallet;
-    @BindView(R.id.test_public_key)
-    TextView testPublicKey;
-    @BindView(R.id.test_sign_num)
-    TextView testSignNum;
+    @BindView(R.id.recl_public)
+    RecyclerView reclPublic;
+    @BindView(R.id.recl_sign_num)
+    RecyclerView reclSignNum;
+    @BindView(R.id.text_pub_num)
+    TextView textPubNum;
+    @BindView(R.id.rel_text_two)
+    RelativeLayout relTextTwo;
     private RxPermissions rxPermissions;
     private static final int REQUEST_CODE = 0;
     private EditText editScan;
     private TextView textView;
     private ArrayList<AddBixinKeyEvent> addEventsDatas;
-    private String strInditor2;
-    private String strInditor1;
     private MyDialog myDialog;
     private PyObject walletAddressShowUi;
     private SharedPreferences.Editor edit;
     private int walletNameNum;
     private Bitmap bitmap;
-    private int strUp1;
-    private int strUp2;
     private SharedPreferences preferences;
     private int defaultKeyNameNum;
     private int page = 0;
     private int cosignerNum;
-    private String indicatorTextUp;
-    private String indicatorTextDown;
+    private String publicNum = "3";
+    private String signNum = "2";
+    private SignNumAdapter signNumAdapter;
 
     @Override
     public int getLayoutId() {
@@ -177,99 +156,81 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
         editWalletname.addTextChangedListener(this);
         walletNameNum = defaultName + 1;
         editWalletname.setText(String.format("钱包%s", String.valueOf(walletNameNum)));
+        StaggeredGridLayoutManager manager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
+        reclPublicPerson.setLayoutManager(manager);
         reclPublicPerson.setNestedScrollingEnabled(false);
     }
 
     @Override
     public void initData() {
         addEventsDatas = new ArrayList<>();
-        seekbarLatoutup();
-        seekbarLatoutdown();
+        publicData();
+        signNumData(3);
     }
 
-    private void seekbarLatoutup() {
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) tvIndicator.getLayoutParams();
-        seekBarFee.setProgress(1);
-        seekBarFee.setOnSeekBarChangeListener(new IndicatorSeekBar.OnIndicatorSeekBarChangeListener() {
+    private void publicData() {
+        StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(6, StaggeredGridLayoutManager.VERTICAL);
+        reclPublic.setLayoutManager(layoutManager);
+        ArrayList<CNYBean> pubList = new ArrayList<>();
+        for (int i = 2; i < 13; i++) {
+            CNYBean cnyBean = new CNYBean(i + "", false);
+            pubList.add(cnyBean);
+        }
+        PublicAdapter publicAdapter = new PublicAdapter(MultiSigWalletCreator.this, pubList, 1);
+        reclPublic.setAdapter(publicAdapter);
+        publicAdapter.setOnLisennorClick(new PublicAdapter.onLisennorClick() {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, float indicatorOffset) {
-                indicatorTextUp = String.valueOf(progress + 2);
-                seekBarNum.setMax(progress + 1);
-                testseekNum.setText(indicatorTextUp);
-                tvIndicator.setText(indicatorTextUp);
-                params.leftMargin = (int) indicatorOffset;
-                testPublicKey.setText(String.format("%s%s%s", getString(R.string.public1), indicatorTextUp, getString(R.string.key1)));
-                if ("English".equals(preferences.getString("language", ""))) {
-                    testSignNum.setText(String.format("%s%s%s%s%s", getString(R.string.tet_tips1), indicatorTextDown, getString(R.string.tet_tips2), indicatorTextUp, getString(R.string.tet_tips3)));
-                } else {
-                    testSignNum.setText(String.format("%s%s%s%s%s", getString(R.string.tet_tips1), indicatorTextUp, getString(R.string.tet_tips2), indicatorTextDown, getString(R.string.tet_tips3)));
-                }
-                tvIndicator.setLayoutParams(params);
-                if (testseekNum.getText().toString().equals(tvIndicatorTwo.getText().toString())) {
-                    testseekNum.setVisibility(View.GONE);
-                } else {
-                    testseekNum.setVisibility(View.VISIBLE);
-                }
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                tvIndicator.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                tvIndicator.setVisibility(View.VISIBLE);
-
+            public void itemClick(int pos) {
+                publicNum = pubList.get(pos).getName();
+                signNumData(Integer.parseInt(publicNum));
             }
         });
 
     }
 
-    private void seekbarLatoutdown() {
-        RelativeLayout.LayoutParams paramsTwo = (RelativeLayout.LayoutParams) tvIndicatorTwo.getLayoutParams();
-        seekBarNum.setProgress(1);
-        seekBarNum.setOnSeekBarChangeListener(new IndicatorSeekBar.OnIndicatorSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, float indicatorOffset) {
-                indicatorTextDown = String.valueOf(progress + 1);
-                tvIndicatorTwo.setText(indicatorTextDown);
-                paramsTwo.leftMargin = (int) indicatorOffset;
-                tvIndicatorTwo.setLayoutParams(paramsTwo);
-                if ("English".equals(preferences.getString("language", ""))) {
-                    testSignNum.setText(String.format("%s%s%s%s%s", getString(R.string.tet_tips1), indicatorTextDown, getString(R.string.tet_tips2), indicatorTextUp, getString(R.string.tet_tips3)));
-                } else {
-                    testSignNum.setText(String.format("%s%s%s%s%s", getString(R.string.tet_tips1), indicatorTextUp, getString(R.string.tet_tips2), indicatorTextDown, getString(R.string.tet_tips3)));
-                }
-                if (testseekNum.getText().toString().equals(tvIndicatorTwo.getText().toString())) {
-                    testseekNum.setVisibility(View.GONE);
-                } else {
-                    testseekNum.setVisibility(View.VISIBLE);
-                }
-            }
+    @SuppressLint("UseCompatLoadingForDrawables")
+    private void signNumData(int num) {
+        StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(6, StaggeredGridLayoutManager.VERTICAL);
+        reclSignNum.setLayoutManager(layoutManager);
+        ArrayList<CNYBean> signNumList = new ArrayList<>();
+        for (int i = 1; i < 13; i++) {
+            CNYBean cnyBean = new CNYBean(i + "", false);
+            signNumList.add(cnyBean);
+        }
+        if (Integer.parseInt(signNum) > Integer.parseInt(publicNum)) {
+            signNumAdapter = new SignNumAdapter(MultiSigWalletCreator.this, signNumList, -1, num);
+            signNum = "";
+        } else {
+            signNumAdapter = new SignNumAdapter(MultiSigWalletCreator.this, signNumList, Integer.parseInt(signNum) - 1, num);
+        }
 
+        reclSignNum.setAdapter(signNumAdapter);
+        signNumAdapter.setOnLisennorClick(new SignNumAdapter.onLisennorClick() {
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                tvIndicatorTwo.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                tvIndicatorTwo.setVisibility(View.VISIBLE);
+            public void itemClick(int pos) {
+                signNum = signNumList.get(pos).getName();
 
             }
         });
+        if (!TextUtils.isEmpty(editWalletname.getText().toString()) && !TextUtils.isEmpty(signNum)) {
+            button.setEnabled(true);
+            button.setBackground(getDrawable(R.drawable.btn_checked));
+
+        } else {
+            button.setEnabled(false);
+            button.setBackground(getDrawable(R.drawable.btn_no_check));
+        }
+
     }
 
     @SingleClick
-    @OnClick({R.id.img_back, R.id.button, R.id.bn_add_key, R.id.btn_Finish, R.id.bn_complete_add_cosigner, R.id.tet_Preservation, R.id.test_input_wallet})
+    @OnClick({R.id.img_back, R.id.button, R.id.bn_add_key, R.id.btn_Finish, R.id.bn_complete_add_cosigner})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
                 if (page == 0) {
                     finish();
                 } else if (page == 1) {
-                    testInputWallet.setVisibility(View.VISIBLE);
                     cardViewOne.setVisibility(View.VISIBLE);
                     button.setVisibility(View.VISIBLE);
                     imgProgree1.setVisibility(View.VISIBLE);
@@ -277,8 +238,9 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
                     imgProgree3.setVisibility(View.GONE);
                     reclBinxinKey.setVisibility(View.GONE);
                     bnAddKey.setVisibility(View.GONE);
-                    relTwoNext1.setVisibility(View.GONE);
-                    tetTrtwo.setTextColor(getColor(R.color.light_text));
+                    relTextTwo.setVisibility(View.GONE);
+                    bnCompleteAddCosigner.setVisibility(View.GONE);
+                    tetTrtwo.setTextColor(getColor(R.color.text_two));
                     page = 0;
                 } else if (page == 2) {
                     cardViewOne.setVisibility(View.GONE);
@@ -286,14 +248,12 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
                     imgProgree1.setVisibility(View.GONE);
                     imgProgree2.setVisibility(View.VISIBLE);
                     imgProgree3.setVisibility(View.GONE);
+                    relTextTwo.setVisibility(View.VISIBLE);
                     reclBinxinKey.setVisibility(View.VISIBLE);
                     bnAddKey.setVisibility(View.VISIBLE);
-                    relTwoNext1.setVisibility(View.VISIBLE);
-                    relFinish.setVisibility(View.GONE);
-                    tetTrthree.setTextColor(getColor(R.color.light_text));
+                    bnCompleteAddCosigner.setVisibility(View.VISIBLE);
+                    tetTrthree.setTextColor(getColor(R.color.text_two));
                     cardViewThree.setVisibility(View.GONE);
-                    relFinish.setVisibility(View.GONE);
-                    cardThreePublic.setVisibility(View.GONE);
                     page = 1;
                 }
 
@@ -302,50 +262,48 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
                 mCreatWalletNext();
                 break;
             case R.id.bn_add_key:
-                CommunicationModeSelector.runnables.clear();
-                CommunicationModeSelector.runnables.add(runnable);
-                CommunicationModeSelector.runnables.add(null);
-                Intent intent = new Intent(this, CommunicationModeSelector.class);
-                intent.putExtra("tag", TAG);
-                startActivity(intent);
+                chooseAddMethod(MultiSigWalletCreator.this, R.layout.add_public_dialog);
+
                 break;
             case R.id.btn_Finish:
-                Intent intent1 = new Intent(this, MainActivity.class);
-                startActivity(intent1);
-                finishAffinity();
+                finish();
                 break;
             case R.id.bn_complete_add_cosigner:
                 myDialog.show();
                 handler.sendEmptyMessage(1);
                 break;
-            case R.id.tet_Preservation:
-                rxPermissions
-                        .request(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        .subscribe(granted -> {
-                            if (granted) { // Always true pre-M
-                                boolean toGallery = saveBitmap(bitmap);
-                                if (toGallery) {
-                                    mToast(getString(R.string.preservationbitmappic));
-                                } else {
-                                    Toast.makeText(this, R.string.preservationfail, Toast.LENGTH_SHORT).show();
-                                }
-
-                            } else { // Oups permission denied
-                                Toast.makeText(this, R.string.reservatpion_photo, Toast.LENGTH_SHORT).show();
-                            }
-                        }).dispose();
-                break;
-            case R.id.test_input_wallet:
-                boolean set_syn_server = preferences.getBoolean("set_syn_server", false);
-                if (set_syn_server) {
-                    mIntent(ImportHistoryWalletActivity.class);
-                } else {
-                    mToast(getString(R.string.open_server_input));
-                }
-                break;
             default:
                 throw new IllegalStateException("Unexpected value: " + view.getId());
         }
+    }
+
+    private void chooseAddMethod(Context context, @LayoutRes int resource) {
+        View view = View.inflate(context, resource, null);
+        Dialog dialogBtoms = new Dialog(context, R.style.dialog);
+        //hardware
+        view.findViewById(R.id.rel_hardware_Add).setOnClickListener(v -> {
+            dialogBtoms.cancel();
+        });
+        //input
+        view.findViewById(R.id.rel_input_pub).setOnClickListener(v -> {
+            showInputDialogs(MultiSigWalletCreator.this, R.layout.bixinkey_input);
+            dialogBtoms.cancel();
+        });
+        //cancel dialog
+        view.findViewById(R.id.img_cancel).setOnClickListener(v -> {
+            dialogBtoms.cancel();
+        });
+
+        dialogBtoms.setContentView(view);
+        Window window = dialogBtoms.getWindow();
+        //set pop_up size
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        //set locate
+        window.setGravity(Gravity.BOTTOM);
+        //set animal
+        window.setWindowAnimations(R.style.AnimBottom);
+        dialogBtoms.show();
+
     }
 
     public boolean saveBitmap(Bitmap bitmap) {
@@ -366,53 +324,8 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
         }
     }
 
-    //get code
-    private void mGeneratecode() {
-        try {
-            walletAddressShowUi = Daemon.commands.callAttr("get_wallet_address_show_UI");
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        if (walletAddressShowUi != null) {
-            String strCode = walletAddressShowUi.toString();
-            Gson gson = new Gson();
-            GetCodeAddressBean getCodeAddressBean = gson.fromJson(strCode, GetCodeAddressBean.class);
-            String qrData = getCodeAddressBean.getQrData();
-            bitmap = CodeCreator.createQRCode(qrData, 248, 248, null);
-            imgOrcode.setImageBitmap(bitmap);
-
-        }
-    }
-
     private void mCreatWalletNext() {
         page = 1;
-        strInditor1 = tvIndicator.getText().toString();
-        strInditor2 = tvIndicatorTwo.getText().toString();
-        String strWalletname = editWalletname.getText().toString();
-        strUp1 = Integer.parseInt(strInditor1);
-        strUp2 = Integer.parseInt(strInditor2);
-        if (TextUtils.isEmpty(strWalletname)) {
-            mToast(getString(R.string.set_wallet));
-            return;
-        }
-        if (strUp1 == 0) {
-            mToast(getString(R.string.set_public_num));
-            return;
-        }
-        if (strUp2 == 0) {
-            mToast(getString(R.string.set_sign_num));
-            return;
-        }
-        if (strUp1 < 2) {
-            mToast(getString(R.string.public_person_2));
-            return;
-        }
-        if (strUp2 > strUp1) {
-            mToast(getString(R.string.signnum_dongt_public));
-            return;
-        }
-        testInputWallet.setVisibility(View.GONE);
         cardViewOne.setVisibility(View.GONE);
         button.setVisibility(View.GONE);
         imgProgree1.setVisibility(View.GONE);
@@ -421,16 +334,16 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
         reclBinxinKey.setNestedScrollingEnabled(false);
         reclBinxinKey.setVisibility(View.VISIBLE);
         bnAddKey.setVisibility(View.VISIBLE);
-        relTwoNext1.setVisibility(View.VISIBLE);
-        tetTrtwo.setTextColor(getColor(R.color.button_bk_disableok));
-        bnCompleteAddCosigner.setText(String.format("%s (%s-%s)", getString(R.string.next), addEventsDatas.size() + "", strInditor1));
-        if (addEventsDatas.size() == strUp1) {
+        bnCompleteAddCosigner.setVisibility(View.VISIBLE);
+        relTextTwo.setVisibility(View.VISIBLE);
+        tetTrtwo.setTextColor(getColor(R.color.onekey));
+        textPubNum.setText(String.format("%s/%s", addEventsDatas.size() + "", publicNum));
+        if (addEventsDatas.size() == Integer.parseInt(publicNum)) {
             bnCompleteAddCosigner.setEnabled(true);
-            bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.little_radio_blue));
-            bnAddKey.setVisibility(View.GONE);
+            bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.btn_checked));
         } else {
             bnCompleteAddCosigner.setEnabled(false);
-            bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.little_radio_qian));
+            bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.btn_no_check));
         }
     }
 
@@ -440,57 +353,11 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
         View view = View.inflate(context, resource, null);
         Dialog dialogBtoms = new Dialog(context, R.style.dialog);
         EditText editBixinName = view.findViewById(R.id.edit_keyName);
-        TextView tetNum = view.findViewById(R.id.txt_textNum);
         editScan = view.findViewById(R.id.edit_public_key_cosigner_popup);
         int defaultKeyNum = preferences.getInt("defaultKeyNum", 0);
         defaultKeyNameNum = defaultKeyNum + 1;
         editBixinName.setText(String.format("BixinKey%s", String.valueOf(defaultKeyNameNum)));
-        editBixinName.addTextChangedListener(new TextWatcher() {
-            CharSequence input;
 
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                input = s;
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                tetNum.setText(String.format(Locale.CHINA, "%d/20", input.length()));
-                if (input.length() > 19) {
-                    Toast.makeText(MultiSigWalletCreator.this, R.string.moreinput_text, Toast.LENGTH_SHORT).show();
-                }
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-
-        editScan.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                String strLine = editScan.getText().toString();
-                if (!TextUtils.isEmpty(strLine)) {
-                    view.findViewById(R.id.btn_ConfirmAll).setVisibility(View.GONE);
-                    view.findViewById(R.id.lin_ComfirmAll).setVisibility(View.VISIBLE);
-                } else {
-                    view.findViewById(R.id.btn_ConfirmAll).setVisibility(View.VISIBLE);
-                    view.findViewById(R.id.lin_ComfirmAll).setVisibility(View.GONE);
-                }
-            }
-        });
         //sweep
         view.findViewById(R.id.sweep_cosigner_popup).setOnClickListener(v -> {
             rxPermissions
@@ -526,21 +393,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
             }
         });
 
-        view.findViewById(R.id.btn_Clear).setOnClickListener(v -> {
-            editScan.setText("");
-        });
         view.findViewById(R.id.btn_ConfirmAll).setOnClickListener(v -> {
-            String strBixinname = editBixinName.getText().toString();
-            String strSweep = editScan.getText().toString();
-            if (TextUtils.isEmpty(strBixinname)) {
-                mToast(getString(R.string.input_name));
-                return;
-            }
-            if (TextUtils.isEmpty(strSweep)) {
-                mToast(getString(R.string.input_public_address));
-            }
-        });
-        view.findViewById(R.id.btn_Confirm).setOnClickListener(v -> {
             String strBixinname = editBixinName.getText().toString();
             String strSweep = editScan.getText().toString();
             if (TextUtils.isEmpty(strBixinname)) {
@@ -581,12 +434,12 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
             //bixinKEY
             AddBixinKeyAdapter addBixinKeyAdapter = new AddBixinKeyAdapter(addEventsDatas);
             reclBinxinKey.setAdapter(addBixinKeyAdapter);
-            cosignerNum = Integer.parseInt(tvIndicator.getText().toString());
-            bnCompleteAddCosigner.setText(String.format("%s (%s-%s)", getString(R.string.next), addEventsDatas.size() + "", cosignerNum));
+            cosignerNum = Integer.parseInt(publicNum);
+            textPubNum.setText(String.format("%s/%s", addEventsDatas.size() + "", cosignerNum));
 
             if (addEventsDatas.size() == cosignerNum) {
                 bnCompleteAddCosigner.setEnabled(true);
-                bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.little_radio_blue));
+                bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.btn_checked));
                 bnAddKey.setVisibility(View.GONE);
             }
             edit.putInt("defaultKeyNum", defaultKeyNameNum);
@@ -594,7 +447,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
             addBixinKeyAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
                 @Override
                 public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
-                    cosignerNum = Integer.parseInt(tvIndicator.getText().toString());
+                    cosignerNum = Integer.parseInt(publicNum);
                     switch (view.getId()) {
                         case R.id.img_deleteKey:
                             try {
@@ -608,14 +461,14 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
                             addEventsDatas.remove(position);
                             addBixinKeyAdapter.notifyDataSetChanged();
                             bnAddKey.setVisibility(View.VISIBLE);
-                            bnCompleteAddCosigner.setText(String.format("%s (%s-%s)", getString(R.string.next), addEventsDatas.size() + "", cosignerNum));
+                            textPubNum.setText(String.format("%s/%s", addEventsDatas.size() + "", cosignerNum));
                             if (addEventsDatas.size() == cosignerNum) {
                                 bnCompleteAddCosigner.setEnabled(true);
-                                bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.little_radio_blue));
+                                bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.btn_checked));
                                 bnAddKey.setVisibility(View.GONE);
                             } else {
                                 bnCompleteAddCosigner.setEnabled(false);
-                                bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.little_radio_qian));
+                                bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.btn_no_check));
                             }
                             break;
                         default:
@@ -697,8 +550,8 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
             //bixinKEY
             AddBixinKeyAdapter addBixinKeyAdapter = new AddBixinKeyAdapter(addEventsDatas);
             reclBinxinKey.setAdapter(addBixinKeyAdapter);
-            cosignerNum = Integer.parseInt(tvIndicator.getText().toString());
-            bnCompleteAddCosigner.setText(String.format("%s (%s-%s)", getString(R.string.next), addEventsDatas.size() + "", cosignerNum));
+            cosignerNum = Integer.parseInt(publicNum);
+            textPubNum.setText(String.format("%s/%s", addEventsDatas.size() + "", cosignerNum));
             if (addEventsDatas.size() == cosignerNum) {
                 bnCompleteAddCosigner.setEnabled(true);
                 bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.little_radio_blue));
@@ -708,7 +561,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
             addBixinKeyAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
                 @Override
                 public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
-                    cosignerNum = Integer.parseInt(tvIndicator.getText().toString());
+                    cosignerNum = Integer.parseInt(publicNum);
                     if (view.getId() == R.id.img_deleteKey) {
                         try {
                             Daemon.commands.callAttr("delete_xpub", strSweep);
@@ -718,7 +571,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
                         }
                         addEventsDatas.remove(position);
                         addBixinKeyAdapter.notifyDataSetChanged();
-                        bnCompleteAddCosigner.setText(String.format("%s (%s-%s)", getString(R.string.next), addEventsDatas.size() + "", cosignerNum));
+                        textPubNum.setText(String.format("%s/%s", addEventsDatas.size() + "", cosignerNum));
                         bnAddKey.setVisibility(View.VISIBLE);
                         if (addEventsDatas.size() == cosignerNum) {
                             bnCompleteAddCosigner.setEnabled(true);
@@ -751,9 +604,6 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
         dialogBtoms.show();
     }
 
-
-    private Runnable runnable = () -> showInputDialogs(MultiSigWalletCreator.this, R.layout.bixinkey_input);
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -777,18 +627,18 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
 
     @Override
     public void afterTextChanged(Editable s) {
-        if (!TextUtils.isEmpty(s.toString())) {
+        if (!TextUtils.isEmpty(s.toString()) && !TextUtils.isEmpty(signNum)) {
             if (s.length() > 13) {
                 editWalletname.setTextSize(13);
             } else {
                 editWalletname.setTextSize(15);
             }
             button.setEnabled(true);
-            button.setBackground(getDrawable(R.drawable.button_bk));
+            button.setBackground(getDrawable(R.drawable.btn_checked));
 
         } else {
             button.setEnabled(false);
-            button.setBackground(getDrawable(R.drawable.button_bk_grey));
+            button.setBackground(getDrawable(R.drawable.btn_no_check));
         }
 
     }
@@ -801,8 +651,6 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
             if (msg.what == 1) {
                 ArrayList<String> pubList = new ArrayList<>();
                 String strWalletname = editWalletname.getText().toString();
-                strInditor1 = tvIndicator.getText().toString();
-                strInditor2 = tvIndicatorTwo.getText().toString();
                 for (int i = 0; i < addEventsDatas.size(); i++) {
                     String keyaddress = addEventsDatas.get(i).getKeyaddress();
                     String deviceId = addEventsDatas.get(i).getDeviceId();
@@ -810,7 +658,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
                 }
 
                 try {
-                    Daemon.commands.callAttr("import_create_hw_wallet", strWalletname, strUp2, strUp1, pubList.toString());
+                    Daemon.commands.callAttr("import_create_hw_wallet", strWalletname, Integer.parseInt(signNum), Integer.parseInt(publicNum), pubList.toString());
                 } catch (Exception e) {
                     e.printStackTrace();
                     myDialog.dismiss();
@@ -831,24 +679,20 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
                 EventBus.getDefault().post(new FirstEvent("11"));
                 edit.putInt("defaultName", walletNameNum);
                 edit.apply();
-                //Generate QR code
-                mGeneratecode();
                 myDialog.dismiss();
                 cardViewOne.setVisibility(View.GONE);
                 button.setVisibility(View.GONE);
                 imgProgree1.setVisibility(View.GONE);
                 imgProgree2.setVisibility(View.GONE);
                 imgProgree3.setVisibility(View.VISIBLE);
+                relTextTwo.setVisibility(View.GONE);
                 reclBinxinKey.setVisibility(View.GONE);
                 bnAddKey.setVisibility(View.GONE);
-                relTwoNext1.setVisibility(View.GONE);
-                relFinish.setVisibility(View.VISIBLE);
-                tetTrthree.setTextColor(getColor(R.color.button_bk_disableok));
+                bnCompleteAddCosigner.setVisibility(View.GONE);
+                tetTrthree.setTextColor(getColor(R.color.onekey));
                 cardViewThree.setVisibility(View.VISIBLE);
-                relFinish.setVisibility(View.VISIBLE);
-                cardThreePublic.setVisibility(View.VISIBLE);
-                tetWhoWallet.setText(String.format("%s  （%s/%s）", strWalletname, strInditor1, strInditor2));
-                tetManyKey.setText(String.format("%s%s%s", getString(R.string.is_use), strInditor1, getString(R.string.the_only_bixinkey)));
+                tetWhoWallet.setText(String.format("%s %s of %s %s", getString(R.string.created_succse), signNum, publicNum, getString(R.string.public_wallet)));
+                tetManyKey.setText(String.format("%s%s%s%s%s", getString(R.string.use_front), publicNum, getString(R.string.use_center), signNum, getString(R.string.use_behind)));
             }
         }
     };

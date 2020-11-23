@@ -81,7 +81,9 @@ public class HDWalletActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.text_manage:
-                mIntent(WalletManageActivity.class);
+                Intent intent1 = new Intent(HDWalletActivity.this, WalletManageActivity.class);
+                intent1.putExtra("hd_num", hdWalletList.size());
+                startActivity(intent1);
                 break;
             case R.id.recl_add_wallet:
                 Intent intent = new Intent(HDWalletActivity.this, CreateDeriveChooseTypeActivity.class);
@@ -145,7 +147,7 @@ public class HDWalletActivity extends BaseActivity {
                 reclAddWallet.setVisibility(View.GONE);
                 linNotWallet.setVisibility(View.VISIBLE);
             }
-        }else{
+        } else {
             reclAddWallet.setVisibility(View.GONE);
             linNotWallet.setVisibility(View.VISIBLE);
         }

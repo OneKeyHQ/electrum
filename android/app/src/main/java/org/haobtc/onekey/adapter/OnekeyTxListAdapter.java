@@ -1,6 +1,7 @@
 package org.haobtc.onekey.adapter;
 
 import android.annotation.SuppressLint;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -16,6 +17,7 @@ import org.haobtc.onekey.bean.MaintrsactionlistEvent;
 import java.util.List;
 
 public class OnekeyTxListAdapter extends BaseQuickAdapter<MaintrsactionlistEvent, BaseViewHolder> {
+
     public OnekeyTxListAdapter(@Nullable List<MaintrsactionlistEvent> data) {
         super(R.layout.btc_detail_item, data);
     }
@@ -23,7 +25,13 @@ public class OnekeyTxListAdapter extends BaseQuickAdapter<MaintrsactionlistEvent
     @SuppressLint("UseCompatLoadingForDrawables")
     @Override
     protected void convert(BaseViewHolder helper, MaintrsactionlistEvent item) {
-        String amount = item.getAmount().substring(0, item.getAmount().indexOf("("));
+        String amount = "";
+        if (item.getAmount().contains("(")) {
+            amount = item.getAmount().substring(0, item.getAmount().indexOf("("));
+        } else {
+            amount = item.getAmount();
+        }
+
         helper.setText(R.id.text_address, item.getTxHash()).setText(R.id.text_time, item.getDate());
         TextView tetAmount = helper.getView(R.id.text_send_amount);
         ImageView imgStatus = helper.getView(R.id.imageView);

@@ -219,16 +219,10 @@
     <string name="creat_finish">Creation complete</string>
     <string name="please_input">Please enter</string>
     <string name="together_num">Number of mutual managers</string>
-    <string name="public_key">Creating mutual wallet entails adding public keys of the 3 public managers</string>
     <string name="public1">Creating mutual wallet entails adding public keys of the </string>
     <string name="key1">public managers</string>
     <string name="signed_num">Number of signers</string>
-    <string name="tet_tips">For mutual wallet to work, 2 signatures out of 3 public managers will be required</string>
-    <string name="tet_tips1">For mutual wallet to work, </string>
-    <string name="tet_tips2">signatures out of </string>
-    <string name="tet_tips3">public managers will be required</string>
     <string name="title_name">Tutu\'s key</string>
-    <string name="choose_onekey">Can use any of the 3 BixinKeys to authorize transactions</string>
     <string name="creat_personal">Create personal wallet</string>
     <string name="set_two_num">Set number of backups</string>
     <string name="creat_bixinkey">Needs to bind 3 BixinKeys, and any of the 3 devices can be used for transactions</string>
@@ -421,9 +415,7 @@
     <string name="copyAddress">Copy address</string>
     <string name="copySignedMsg">Copy signed message</string>
     <string name="inputWalletPass">Please enter the wallet code</string>
-    <string name="sign_checked">Signature verification completed</string>
     <string name="agreement_msg">The signature information is consistent with the original public key information</string>
-    <string name="sign_check_fail">Signature verification failed</string>
     <string name="agent_server">proxy server</string>
     <string name="useAgent_hideIP">Hide real IP</string>
     <string name="add_agentserver">Add proxy server</string>
@@ -462,8 +454,6 @@
     <string name="blurtooth_need_permission">Bluetooth requires location permission</string>
     <string name="task_cancle">Current task to cancel</string>
     <string name="input_backup_wallet">Import backup wallet</string>
-    <string name="is_use">Usable</string>
-    <string name="the_only_bixinkey">Use any BixinKey to authorize transaction</string>
     <string name="iknow_risk">I understand risks involved</string>
     <string name="key_backup">BixinKey backup &#38; restore</string>
     <string name="pin_wrong">Wrong PIN code, please re-enter</string>
@@ -1204,5 +1194,35 @@
     <string name="language_tip">Select the display language of the hardware Wallet</string>
     <string name="eth_table">Ethereum unit</string>
     <string name="privacy_agreement">Privacy policy</string>
+    <string name="public_greater_sign">The number of co owners should be >= the number of signatures</string>
+    <string name="public_key">Decide how many people are involved in wallet management</string>
+    <string name="tet_tips">It\'s about how many people can sign their wallets</string>
+    <string name="add_public_tip">Support OneKey (including limited edition of currency and credit), or input public key directly to complete binding.</string>
+    <string name="band_pub">Bound co management number:</string>
+    <string name="band_pub_tip">The co managed wallet can only be activated after all participants have completed binding.</string>
+    <string name="choose_add_method">Select how to add</string>
+    <string name="add_key_to_hard">Add through hardware device</string>
+    <string name="input_pub_key_">Input public key directly</string>
+    <string name="input_pub_tip">The co owner only provides his / her public key and can still participate in activating the co managed wallet.</string>
+    <string name="public_address_">Public key address</string>
+    <string name="public_wallet">Shared Purse</string>
+    <string name="created_succse">You have successfully created</string>
+    <string name="use_front">Every time you use the money in the wallet, you need to</string>
+    <string name="use_center">At least among people</string>
+    <string name="use_behind">It can only be done by authorization</string>
+    <string name="some_sign">Multisignature</string>
+    <string name="sign_num">(number of signatures - Total)</string>
+    <string name="sign_num_tip">The private key or mnemonic of the wallet has been properly stored in the hardware device. If you need to export mnemonics for hardware wallets, please go to "my" ➡️ All hardware to find the device you want to export.</string>
+    <string name="transaction">transaction</string>
+    <string name="message">news</string>
+    <string name="input_msg">Enter the original message</string>
+    <string name="agreement_msg_no">The signature information does not match the public key / original information</string>
+    <string name="check_word_tip">Check again to make sure that you have copied all the mnemonics and that they are in the same order.</string>
+    <string name="chooseword_left">Choose the </string>
+    <string name="chooseword_right">word you just copied</string>
+    <string name="check_it">Let\'s check it out</string>
+    <string name="backup_success_tip">It seems that everything is ready! \nWe have nothing to remind you of.\n In a word, remember to keep the mnemonics well. \nIf you lose them, no one can help you find them back.\n Have a good time in the world of blockchain ❤️。</string>
+    <string name="mnemonic_wrong">Errors in mnemonics</string>
+    <string name="begin_check">Recheck</string>
 
 </resources>

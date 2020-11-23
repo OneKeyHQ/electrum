@@ -1,21 +1,19 @@
 package org.haobtc.onekey.onekeys.homepage.mindmenu;
 
-import android.os.Bundle;
+import android.content.Intent;
 import android.text.TextUtils;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.chaquo.python.PyObject;
 
 import org.greenrobot.eventbus.EventBus;
-import org.haobtc.onekey.MainActivity;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
-import org.haobtc.onekey.event.BackupEvent;
+import org.haobtc.onekey.event.FinishEvent;
+import org.haobtc.onekey.onekeys.backup.CheckMnemonicActivity;
 import org.haobtc.onekey.utils.Daemon;
 
 import java.util.ArrayList;
@@ -56,6 +54,7 @@ public class HdRootMnemonicsActivity extends BaseActivity {
     @BindView(R.id.tet_title_name)
     TextView tetTitleName;
     private String status = "";
+    private String exportWord;
 
     @Override
     public int getLayoutId() {
@@ -65,8 +64,10 @@ public class HdRootMnemonicsActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        EventBus.getDefault().register(this);
         String exportType = getIntent().getStringExtra("exportType");
         String importHdword = getIntent().getStringExtra("importHdword");
+        exportWord = getIntent().getStringExtra("exportWord");
         if ("importHdword".equals(importHdword)) {
             textTitle.setVisibility(View.GONE);
             tetTitleName.setText(getString(R.string.export_mnemonic));
@@ -96,7 +97,6 @@ public class HdRootMnemonicsActivity extends BaseActivity {
     }
 
     private void writeMnemonicWord() {
-        String exportWord = getIntent().getStringExtra("exportWord");
         if (!TextUtils.isEmpty(exportWord)) {
             String[] wordsList = exportWord.split("\\s+");
             ArrayList<String> wordList = new ArrayList<>(Arrays.asList(wordsList));
@@ -149,14 +149,20 @@ public class HdRootMnemonicsActivity extends BaseActivity {
     }
 
     private void backupInfo() {
-        try {
-            Daemon.commands.callAttr("delete_backup_info");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
-        EventBus.getDefault().post(new BackupEvent());
+        Intent intent = new Intent(HdRootMnemonicsActivity.this, CheckMnemonicActivity.class);
+        intent.putExtra("mnemonic", exportWord);
+        startActivity(intent);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onFinish(FinishEvent event) {
         finish();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 
 }

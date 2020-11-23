@@ -169,7 +169,11 @@ public class WalletListActivity extends BaseActivity {
                 textWalletNum.setText(String.valueOf(btcList.size()));
                 reclAddWallet.setVisibility(View.GONE);
                 reclWalletDetail.setVisibility(View.GONE);
-                imgAdd.setVisibility(View.VISIBLE);
+                if (hdWalletList == null || hdWalletList.size() == 0) {
+                    imgAdd.setVisibility(View.GONE);
+                }else{
+                    imgAdd.setVisibility(View.VISIBLE);
+                }
                 if (btcList == null || btcList.size() == 0) {
                     reclWalletList.setVisibility(View.GONE);
                     tetNone.setVisibility(View.VISIBLE);
@@ -367,6 +371,7 @@ public class WalletListActivity extends BaseActivity {
         Dialog dialogBtoms = new Dialog(context, R.style.dialog);
         view.findViewById(R.id.btn_next).setOnClickListener(v -> {
             Intent intent = new Intent(context, CreateWalletChooseTypeActivity.class);
+            intent.putExtra("ifHaveHd",hdWalletList.size());
             startActivity(intent);
             dialogBtoms.dismiss();
         });

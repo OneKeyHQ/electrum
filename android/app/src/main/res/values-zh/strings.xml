@@ -53,7 +53,7 @@
     <string name="method_two">方式二：输入公钥地址</string>
     <string name="import_address">输入公钥地址</string>
     <string name="input_address">请输入地址</string>
-    <string name="scaning">扫一扫</string>
+    <string name="scaning">扫码</string>
     <string name="paste">粘贴</string>
     <string name="confirm">确认</string>
     <string name="cosigner_num_select">设置联署人</string>
@@ -218,16 +218,10 @@
     <string name="creat_finish">创建完成</string>
     <string name="please_input">请输入</string>
     <string name="together_num">共管人数</string>
-    <string name="public_key">创建共管钱包需添加3位共管人的公钥</string>
     <string name="public1">创建共管钱包需添加</string>
     <string name="key1">位共管人的公钥</string>
     <string name="signed_num">签名人数</string>
-    <string name="tet_tips">共管钱包需要3位共管人中的2位签名</string>
-    <string name="tet_tips1">共管钱需要</string>
-    <string name="tet_tips2">位共管人中的</string>
-    <string name="tet_tips3">位签名</string>
     <string name="title_name">图图的钥匙</string>
-    <string name="choose_onekey">可使用3个BixinKey中任意一个授权转账</string>
     <string name="creat_personal">创建个人钱包</string>
     <string name="set_two_num">设置备份数</string>
     <string name="creat_bixinkey">需绑定3个BixinKey，可使用任一硬件完成交易</string>
@@ -389,8 +383,6 @@
     <string name="tip_ble_bonding">请开启BixinKey, 确认配对码</string>
     <string name="confirm_pub">确认公钥</string>
     <string name="input_backup_wallet">导入备份钱包</string>
-    <string name="is_use">可使用</string>
-    <string name="the_only_bixinkey">个BixinKey中任意一个授权转账</string>
     <string name="iknow_risk">我已知晓以上风险</string>
     <string name="key_backup">BixinKey备份&#38;恢复</string>
     <string name="pin_wrong">PIN码输入有误，请重新输入</string>
@@ -452,7 +444,7 @@
     <string name="hide_wallet_is">什么是隐藏钱包？</string>
     <string name="set_hidewallet_pass">设置隐藏钱包的密码</string>
     <string name="bluetooth_abnormal">蓝牙连接异常</string>
-    <string name="check_sign">验签</string>
+    <string name="check_sign">验证签名</string>
     <string name="checksigning">验证签名</string>
     <string name="original_msg">原始消息</string>
     <string name="sign_address">公钥</string>
@@ -465,9 +457,7 @@
     <string name="copyAddress">复制地址</string>
     <string name="copySignedMsg">复制签名后消息</string>
     <string name="inputWalletPass">请输入钱包密码</string>
-    <string name="sign_checked">签名核实完成</string>
-    <string name="agreement_msg">签名信息与公钥原始信息一致</string>
-    <string name="sign_check_fail">签名核实失败</string>
+    <string name="agreement_msg">签名信息与公钥/原始信息一致</string>
     <string name="agent_server">代理服务器</string>
     <string name="useAgent_hideIP">隐藏真实 IP 地址</string>
     <string name="add_agentserver">添加代理服务器</string>
@@ -1152,5 +1142,35 @@
     <string name="language_tip">选择硬件钱包的显示语言</string>
     <string name="eth_table">以太坊单位</string>
     <string name="privacy_agreement">隐私政策</string>
+    <string name="public_greater_sign">共管人数需 >= 签名人数</string>
+    <string name="public_key">决定共有多少人参与钱包管理</string>
+    <string name="tet_tips">指的是有多少人签名就能动用钱包的资金</string>
+    <string name="add_public_tip">支持 OneKey（含币信限量版），也可以直接输入公钥 完成绑定。</string>
+    <string name="band_pub">已绑定共管人数：</string>
+    <string name="band_pub_tip">所有参与者都完成绑定后，共管钱包才能激活。</string>
+    <string name="choose_add_method">选择添加方式</string>
+    <string name="add_key_to_hard">通过硬件设备添加</string>
+    <string name="input_pub_key_">直接输入公钥</string>
+    <string name="input_pub_tip">共管人只提供自己的公钥，依然可以参与激活共管钱包。</string>
+    <string name="public_address_">公钥地址</string>
+    <string name="public_wallet">共管钱包</string>
+    <string name="created_succse">您已成功创建</string>
+    <string name="use_front">每次动用该钱包内的资金，都需要</string>
+    <string name="use_center">人中的至少</string>
+    <string name="use_behind">人授权才能完成</string>
+    <string name="some_sign">多重签名</string>
+    <string name="sign_num">（起签名数-总数）</string>
+    <string name="sign_num_tip">该钱包的私钥或助记词已经妥善的保管在硬件设备中。如果您需要导出硬件钱包的助记词，请前往「我的 ➡️ 全部硬件」查找您要导出的设备。</string>
+    <string name="transaction">交易</string>
+    <string name="message">消息</string>
+    <string name="input_msg">输入原始消息</string>
+    <string name="agreement_msg_no">签名信息与公钥/原始信息不符</string>
+    <string name="check_word_tip">再检查一遍，确保您助记词都抄全了，并且一\n字不差，顺序也一致。</string>
+    <string name="chooseword_left">选择刚才抄写的第</string>
+    <string name="chooseword_right">个单词</string>
+    <string name="check_it">让我们来检查一下</string>
+    <string name="backup_success_tip">看来一切都已就绪！\n我们也没什么可提醒您的了。\n 总之，切记保管好助记词，\n搞丢了没有任何人可以帮您找回来。\n祝您在区块链的世界玩儿开心❤️。</string>
+    <string name="mnemonic_wrong">助记词有误</string>
+    <string name="begin_check">重新核对</string>
 
 </resources>

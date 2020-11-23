@@ -94,8 +94,6 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
     Button buttonConfirm;
     @BindView(R.id.textCheckSign)
     TextView textCheckSign;
-    @BindView(R.id.test_sign_tips)
-    TextView testSignTips;
     @BindView(R.id.radioSignMsg)
     RadioButton radioSignMsg;
     private RxPermissions rxPermissions;
@@ -128,8 +126,14 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
 
     @Override
     public void initData() {
+        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        String showWalletType = preferences.getString("showWalletType", "");
         //get sign address
         mGeneratecode();
+        if (showWalletType.contains("hw")) {
+            radioSignMsg.setVisibility(View.GONE);
+            textCheckSign.setVisibility(View.GONE);
+        }
         if (!TextUtils.isEmpty(personceType)) {
             if (!"1-1".equals(personceType) && !personceType.contains("standard")) {
                 radioSignMsg.setVisibility(View.GONE);
@@ -172,10 +176,10 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
         String strRaw = editTrsactionTest.getText().toString();
         if (!TextUtils.isEmpty(strRaw)) {
             buttonConfirm.setEnabled(true);
-            buttonConfirm.setBackground(getResources().getDrawable(R.drawable.button_bk));
+            buttonConfirm.setBackground(getResources().getDrawable(R.drawable.btn_checked));
         } else {
             buttonConfirm.setEnabled(false);
-            buttonConfirm.setBackground(getResources().getDrawable(R.drawable.button_bk_grey));
+            buttonConfirm.setBackground(getResources().getDrawable(R.drawable.btn_no_check));
         }
 
     }
@@ -185,12 +189,10 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
         switch (checkedId) {
             case R.id.radioSignTrsaction:
                 signWhich = true;
-                testSignTips.setText(getString(R.string.prompt_sig));
                 editTrsactionTest.setHint(getString(R.string.input_tsaction_text));
                 break;
             case R.id.radioSignMsg:
                 signWhich = false;
-                testSignTips.setText(getString(R.string.input_message));
                 editTrsactionTest.setHint(getString(R.string.input_sign_msg));
                 break;
             default:

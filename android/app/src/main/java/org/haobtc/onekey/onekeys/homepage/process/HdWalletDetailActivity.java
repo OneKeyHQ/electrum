@@ -1,19 +1,14 @@
 package org.haobtc.onekey.onekeys.homepage.process;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.Display;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -24,7 +19,6 @@ import android.widget.Toast;
 
 import androidx.annotation.LayoutRes;
 
-import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
 
@@ -33,17 +27,11 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.activities.sign.SignActivity;
 import org.haobtc.onekey.bean.GetCodeAddressBean;
-import org.haobtc.onekey.event.FirstEvent;
 import org.haobtc.onekey.event.FixWalletNameEvent;
-import org.haobtc.onekey.event.LoadOtherWalletEvent;
 import org.haobtc.onekey.event.SecondEvent;
-import org.haobtc.onekey.onekeys.HomeOnekeyActivity;
 import org.haobtc.onekey.onekeys.dialog.SetHDWalletPassActivity;
-import org.haobtc.onekey.onekeys.dialog.recovery.ImprotSingleActivity;
-import org.haobtc.onekey.onekeys.dialog.recovery.importmethod.ImportPrivateKeyActivity;
-import org.haobtc.onekey.onekeys.homepage.WalletListActivity;
-import org.haobtc.onekey.onekeys.homepage.mindmenu.WalletManageActivity;
 import org.haobtc.onekey.utils.Daemon;
 
 import java.util.Objects;
@@ -64,6 +52,13 @@ public class HdWalletDetailActivity extends BaseActivity {
     LinearLayout linSingleShow;
     @BindView(R.id.text_hd_wallet)
     TextView textHdWallet;
+    @BindView(R.id.lin_single)
+    LinearLayout linSingle;
+    @BindView(R.id.text_sign)
+    TextView textSign;
+    @BindView(R.id.lin_hardware)
+    LinearLayout linHardware;
+    private String type;
 
     @Override
     public int getLayoutId() {
@@ -87,6 +82,14 @@ public class HdWalletDetailActivity extends BaseActivity {
             //HD wallet detail and derive wallet
             linHdWalletShow.setVisibility(View.VISIBLE);
             linSingleShow.setVisibility(View.GONE);
+        } else if (showWalletType.contains("hw")) {
+            textHdWallet.setText(getString(R.string.multi_sig));
+            linSingleShow.setVisibility(View.VISIBLE);
+            linSingle.setVisibility(View.GONE);
+            linHardware.setVisibility(View.VISIBLE);
+            type = showWalletType.substring(showWalletType.indexOf("hw-") + 3);
+            textSign.setText(String.format("%s %s", type, getString(R.string.sign_num)));
+
         } else if ("btc-standard".equals(showWalletType)) {
             textHdWallet.setText(getString(R.string.single_wallet));
             //Independent Wallet
@@ -122,7 +125,7 @@ public class HdWalletDetailActivity extends BaseActivity {
 
     }
 
-    @OnClick({R.id.img_back, R.id.img_copy, R.id.rel_export_word, R.id.rel_export_private_key, R.id.rel_export_keystore, R.id.rel_delete_wallet, R.id.text_wallet_name})
+    @OnClick({R.id.img_back, R.id.img_copy, R.id.rel_export_word, R.id.rel_export_private_key, R.id.rel_export_keystore, R.id.rel_delete_wallet, R.id.text_wallet_name, R.id.text_sign})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
@@ -153,7 +156,11 @@ public class HdWalletDetailActivity extends BaseActivity {
                 intent.putExtra("importHdword", "deleteSingleWallet");
                 intent.putExtra("walletName", textWalletName.getText().toString());
                 startActivity(intent);
-
+                break;
+            case R.id.text_sign:
+                Intent intent1 = new Intent(HdWalletDetailActivity.this, SignActivity.class);
+                intent1.putExtra("personceType", type);
+                startActivity(intent1);
                 break;
 
         }
@@ -192,6 +199,10 @@ public class HdWalletDetailActivity extends BaseActivity {
         EditText walletName = view.findViewById(R.id.edit_wallet_name);
         walletName.setText(textWalletName.getText().toString());
         view.findViewById(R.id.btn_import).setOnClickListener(v -> {
+            if (TextUtils.isEmpty(walletName.getText().toString())) {
+                mToast(getString(R.string.please_input_walletname));
+                return;
+            }
             try {
                 Daemon.commands.callAttr("rename_wallet", textWalletName.getText().toString(), walletName.getText().toString());
             } catch (Exception e) {

@@ -1,58 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginStart="@dimen/layout_margin"
-    android:layout_marginTop="@dimen/layout_margin"
-    android:layout_marginEnd="@dimen/layout_margin"
-    android:background="@drawable/white_tuo"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:layout_height="153dp"
+    android:layout_marginStart="@dimen/dp_20"
+    android:layout_marginTop="@dimen/dp_20"
+    android:layout_marginEnd="@dimen/dp_20"
+    android:background="@drawable/gray_broken">
 
+    <View
+        android:id="@+id/ewrwerw"
+        android:layout_width="match_parent"
+        android:layout_height="68dp"
+        android:layout_marginStart="@dimen/dp_1"
+        android:layout_marginTop="@dimen/dp_1"
+        android:layout_marginEnd="@dimen/dp_1"
+        android:background="@drawable/gray_up_tuo" />
 
-        <TextView
-            android:id="@+id/tet_Walletname"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dp_16"
-            android:layout_marginTop="15dp"
-            android:text="@string/title_name"
-            android:textColor="#494949"
-            android:textSize="15sp" />
+    <TextView
+        android:id="@+id/tet_Walletname"
+        android:layout_width="wrap_content"
+        android:layout_height="68dp"
+        android:layout_marginStart="@dimen/dp_14"
+        android:gravity="center_vertical"
+        android:text="@string/title_name"
+        android:textColor="@color/text_three"
+        android:textSize="@dimen/sp_16" />
 
-        <ImageView
-            android:id="@+id/img_deleteKey"
-            android:layout_width="@dimen/dp_40"
-            android:layout_height="@dimen/dp_40"
-            android:layout_alignParentEnd="true"
-            android:padding="12dp"
+    <TextView
+        android:id="@+id/img_deleteKey"
+        android:layout_width="wrap_content"
+        android:layout_height="68dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="@dimen/dp_14"
+        android:gravity="center"
+        android:text="@string/delete"
+        android:textColor="@color/text_ten" />
 
-            android:src="@drawable/close_big_black" />
-
-
-        <View
-            android:id="@+id/ewrwerw"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/line_hight"
-            android:layout_below="@+id/img_deleteKey"
-            android:layout_marginStart="@dimen/dp_16"
-            android:layout_marginTop="13.5dp"
-            android:layout_marginEnd="@dimen/dp_16"
-            android:background="@color/line_color" />
-
-        <TextView
-            android:id="@+id/tet_AddBixinkey"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/ewrwerw"
-            android:maxLines="4"
-            android:layout_marginStart="@dimen/dp_16"
-            android:layout_marginBottom="@dimen/dp_16"
-            android:layout_marginTop="15.5dp"
-            android:layout_marginEnd="@dimen/dp_16"
-            android:textColor="#b1b7c5"
-            android:textSize="15sp"
-            tools:text="33dfdfdjkfdfjdkfd3jkdfjkdfjdkfdfdjfkdfdnfddfdkfjdkfdfdfn3334j5fjfjffjeejjdk3k3033dfdfdjkfdfjdkfd3jkdfjkdfjdkfdfdjfkdfdnfddfdkfjdkfdfdfn3334j5fjfjffjeejjdk3k3033dfdfdjkfdfjdkfd3jkdfjkdfjdkfdfdjfkdfdnfd" />
-
+    <TextView
+        android:id="@+id/tet_AddBixinkey"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ewrwerw"
+        android:layout_marginStart="@dimen/dp_16"
+        android:layout_marginTop="15.5dp"
+        android:layout_marginEnd="@dimen/dp_16"
+        android:layout_marginBottom="@dimen/dp_16"
+        android:maxLines="4"
+        android:textColor="#b1b7c5"
+        android:textSize="15sp"
+        tools:text="33dfdfdjkfdfjdkfd3dfdfn3334j5fjfjffjeejjdk3k3033dfdfdjkfdfjdkfd3jkdfjkdfjdkfdfdjfkdfdnfd" />
 
 
 </RelativeLayout>
