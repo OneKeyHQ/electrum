@@ -980,7 +980,7 @@
     <string name="pair">配对</string>
     <string name="backup_wallet">备份钱包</string>
     <string name="bind_admin_person">绑定共管人</string>
-    <string name="find_new_device">发现一个新设备 您可以…</string>
+    <string name="find_new_device">🎉 发现一个新设备 您可以…</string>
     <string name="init_as_new_device">作为新设备激活（推荐）</string>
     <string name="new_device_hide">适用于绝大部分第一次使用硬件钱包的用户</string>
     <string name="import_seed">导入助记词</string>
@@ -1003,7 +1003,7 @@
     <string name="pin_input_warn">手机上的数字键位每次都会随机改变。PIN 码忘记不可找回，您务必要牢记。</string>
     <string name="recovery_device_title">恢复设备</string>
     <string name="find_backup_from_phone">在您的手机中找到如下备份</string>
-    <string name="active_no_backup">这是个已激活的设备，您可以…</string>
+    <string name="active_no_backup">🔑 这是个已激活的设备，您可以...</string>
     <string name="add_new_wallet">添加新钱包（推荐）</string>
     <string name="add_new_wallet_hide">不限数量，按需创建。</string>
     <string name="recovery_used_wallet">恢复曾经使用过的钱包</string>
@@ -1172,5 +1172,6 @@
     <string name="backup_success_tip">看来一切都已就绪！\n我们也没什么可提醒您的了。\n 总之，切记保管好助记词，\n搞丢了没有任何人可以帮您找回来。\n祝您在区块链的世界玩儿开心❤️。</string>
     <string name="mnemonic_wrong">助记词有误</string>
     <string name="begin_check">重新核对</string>
+    <string name="active_hardware">激活硬件钱包</string>
 
 </resources>

@@ -166,4 +166,9 @@ public class BackupWaySelector extends BaseActivity implements BusinessAsyncTask
     public void onCancelled() {
 
     }
+
+    @Override
+    public void currentMethod(String methodName) {
+
+    }
 }

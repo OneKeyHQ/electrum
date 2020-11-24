@@ -28,6 +28,9 @@ import org.haobtc.onekey.onekeys.homepage.process.ChooseCurrencyActivity;
 import org.haobtc.onekey.onekeys.homepage.process.SendHdActivity;
 
 
+/**
+ * @author jinxiaomin
+ */
 public class MindFragment extends Fragment implements View.OnClickListener {
 
     private SharedPreferences preferences;

@@ -117,7 +117,7 @@ import org.haobtc.onekey.event.ShutdownTimeEvent;
 import org.haobtc.onekey.event.SignMessageEvent;
 import org.haobtc.onekey.event.SignResultEvent;
 import org.haobtc.onekey.event.WipeEvent;
-import org.haobtc.onekey.exception.BixinExceptions;
+import org.haobtc.onekey.exception.HardWareExceptions;
 import org.haobtc.onekey.fragment.BleDeviceRecyclerViewAdapter;
 import org.haobtc.onekey.fragment.BluetoothConnectingFragment;
 import org.haobtc.onekey.fragment.BluetoothFragment;
@@ -222,7 +222,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
         ImageView imageViewCancel;
         EventBus.getDefault().post(new ExitEvent());
         SharedPreferences preferences = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
-        way = preferences.getString("way", "ble");
+        way = preferences.getString("way", "bluetooth");
         isNFC = COMMUNICATION_MODE_NFC.equals(way);
         ImageView imageView = findViewById(R.id.touch_nfc);
         TextView textView = findViewById(R.id.text_prompt);
@@ -1164,16 +1164,16 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
         isErrorOccurred = true;
         EventBus.getDefault().post(new FinishEvent());
         if (!isFinishing()) {
-            if (BixinExceptions.PIN_INVALID.getMessage().equals(e.getMessage())) {
+            if (HardWareExceptions.PIN_INVALID.getMessage().equals(e.getMessage())) {
                 showErrorDialog(0, R.string.pin_wrong);
-            } else if (BixinExceptions.UN_PAIRABLE.getMessage().equals(e.getMessage())) {
+            } else if (HardWareExceptions.UN_PAIRABLE.getMessage().equals(e.getMessage())) {
                 // state variable that can be useful with pin request
                 isPairFailed = true;
                 // can be useful without pin request
                 showErrorDialog(R.string.try_another_key, R.string.sign_failed_device);
-            } else if (BixinExceptions.TRANSACTION_FORMAT_ERROR.getMessage().equals(e.getMessage())) {
+            } else if (HardWareExceptions.TRANSACTION_FORMAT_ERROR.getMessage().equals(e.getMessage())) {
                 showErrorDialog(R.string.sign_failed, R.string.transaction_parse_error);
-            } else if (BixinExceptions.BLE_RESPONSE_READ_TIMEOUT.getMessage().equals(e.getMessage())) {
+            } else if (HardWareExceptions.BLE_RESPONSE_READ_TIMEOUT.getMessage().equals(e.getMessage())) {
                 isTimeout = true;
             } else if ("BaseException: ".equals(e.getMessage())) {
                 runOnUiThread(()->mToast(getString(R.string.canceled)));
@@ -1296,6 +1296,11 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
     public void onCancelled() {
     }
 
+    @Override
+    public void currentMethod(String methodName) {
+
+    }
+
     /**
      * DCL singleton used for hardware callback
      * works in UI thread
@@ -1349,7 +1354,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
                     fragmentActivity.startActivity(intent1);
                     break;
                 case BUTTON_REQUEST:
-                    EventBus.getDefault().postSticky(new ButtonRequestEvent());
+                    EventBus.getDefault().postSticky(new ButtonRequestEvent(0));
                     break;
                 case PASS_NEW_PASSPHRASS:
                 case PASS_PASSPHRASS:

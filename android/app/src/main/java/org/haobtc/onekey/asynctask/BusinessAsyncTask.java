@@ -10,7 +10,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.event.CheckReceiveAddress;
 import org.haobtc.onekey.event.OperationTimeoutEvent;
 import org.haobtc.onekey.event.WhiteListEnum;
-import org.haobtc.onekey.exception.BixinExceptions;
+import org.haobtc.onekey.exception.HardWareExceptions;
 import org.haobtc.onekey.utils.Daemon;
 
 import static org.haobtc.onekey.activities.service.CommunicationModeSelector.ble;
@@ -22,6 +22,7 @@ import static org.haobtc.onekey.activities.service.CommunicationModeSelector.pro
  *
  */
 public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
+
     public final static String GET_EXTEND_PUBLIC_KEY = "get_xpub_from_hw";
     public final static String GET_EXTEND_PUBLIC_KEY_SINGLE = "get_xpub_from_hw_single";
     public final static String SIGN_TX = "sign_tx";
@@ -36,6 +37,10 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
     public static final String SHOW_ADDRESS = "show_address";
     public static final String EDIT_WHITE_LIST = "bx_inquire_whitelist";
     public static final String ADD_AND_DELETE_WHITE_LIST = "bx_add_or_delete_whitelist";
+    /**
+     * 导入助记词
+     * */
+    public static final String IMPORT_MNEMONIC = "bixin_load_device";
     /**
      * method used to pass-through the se message
      */
@@ -60,6 +65,7 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
     @SuppressLint("DefaultLocale")
     @Override
     protected String doInBackground(String... strings) {
+        helper.currentMethod(strings[0]);
         System.out.println(String.format("method==%s===in thread===%d", strings[0], Thread.currentThread().getId()));
         String result = "";
         switch (strings[0]) {
@@ -95,6 +101,7 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
                 }
                 break;
             case INIT_DEVICE:
+            case IMPORT_MNEMONIC:
                 try {
                     result = Daemon.commands.callAttr(strings[0], strings[1], strings[2], strings[3], strings[4]).toString();
                 } catch (Exception e) {
@@ -159,9 +166,9 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
 
     private void onException(Exception e) {
         Log.e(TAG, e.getMessage() == null ? "unknown exception" : e.getMessage());
-        if (BixinExceptions.PASSPHRASE_OPERATION_TIMEOUT.getMessage().equals(e.getMessage()) || BixinExceptions.PIN_OPERATION_TIMEOUT.getMessage().equals(e.getMessage())) {
+        if (HardWareExceptions.PASSPHRASE_OPERATION_TIMEOUT.getMessage().equals(e.getMessage()) || HardWareExceptions.PIN_OPERATION_TIMEOUT.getMessage().equals(e.getMessage())) {
             EventBus.getDefault().post(new OperationTimeoutEvent());
-        } else if (BixinExceptions.USER_CANCEL.getMessage().equals(e.getMessage())) {
+        } else if (HardWareExceptions.USER_CANCEL.getMessage().equals(e.getMessage())) {
             Log.d(TAG, "cancel by user");
         } else {
             helper.onException(e);
@@ -193,6 +200,8 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
         void onResult(String s);
 
         void onCancelled();
+
+        void currentMethod(String methodName);
     }
 
 }

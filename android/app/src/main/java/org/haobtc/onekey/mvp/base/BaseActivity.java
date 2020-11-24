@@ -13,11 +13,15 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+/**
+ * @author liyan
+ */
 public abstract class BaseActivity extends AppCompatActivity implements IBaseView {
 
 
@@ -34,6 +38,9 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
         ButterKnife.bind(this);
         setActionBar();
         init();
+        if (needEvents()) {
+            EventBus.getDefault().register(this);
+        }
     }
 
     /**
@@ -80,11 +87,27 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
         }
     }
 
-    public void onUpdateTitle(int title) {
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (needEvents()) {
+            EventBus.getDefault().unregister(this);
+        }
+    }
+    /**
+     * 修改标题
+     * */
+    public void updateTitle(int title) {
         runOnUiThread(() -> {
             if(mTitle != null){
                 mTitle.setText(title);
             }
         });
+    }
+    /**
+     * 是否注册eventBus的钩子函数
+     * */
+    public boolean needEvents() {
+        return false;
     }
 }

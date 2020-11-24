@@ -4,43 +4,59 @@ import android.inputmethodservice.Keyboard;
 import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
+import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
+import org.haobtc.onekey.constant.PyConstant;
+import org.haobtc.onekey.event.ChangePinEvent;
 import org.haobtc.onekey.mvp.base.BaseFragment;
-import org.haobtc.onekey.passageway.HandleCommands;
 import org.haobtc.onekey.ui.custom.PwdInputView;
-import org.haobtc.onekey.ui.listener.ISetDevicePassListener;
 import org.haobtc.onekey.utils.NumKeyboardUtil;
 
 import butterknife.BindView;
+import butterknife.OnTouch;
 
-public class DevicePINFragment extends BaseFragment<ISetDevicePassListener> implements NumKeyboardUtil.CallBack {
+/**
+ * @author liyan
+ */
+public class DevicePINFragment extends BaseFragment implements NumKeyboardUtil.CallBack {
 
     private static final String TAG = DevicePINFragment.class.getSimpleName();
     @BindView(R.id.pwd_edit_text)
     protected PwdInputView mPwdInputView;
+    @BindView(R.id.promote)
+    TextView promote;
     private NumKeyboardUtil mKeyboardUtil;
     @BindView(R.id.relativeLayout_key)
     protected RelativeLayout mRelativeLayoutKey;
+    private int type;
 
-    public static final int TYPE_VERIFY_PIN = 1;
-    public static final int TYPE_SET_PIN = 2;
-
+    public DevicePINFragment(int type) {
+        this.type = type;
+    }
 
     @Override
     public void init(View view) {
-        getListener().onUpdateTitle(R.string.activate_cold_wallet);
-        mKeyboardUtil = new NumKeyboardUtil(view, getContext(), mPwdInputView, R.xml.number, this);
-        mPwdInputView.setOnTouchListener((v, event) -> {
-            if (mKeyboardUtil.getKeyboardVisible() != View.VISIBLE) {
-                mRelativeLayoutKey.setVisibility(View.VISIBLE);
-                mKeyboardUtil.showKeyboard();
-            }
-            return true;
-        });
-        HandleCommands.resetPin((HandleCommands.CallBack<String>) result -> {
+        switch (type) {
+            case PyConstant.PIN_CURRENT:
+                promote.setText("根据设备显示的\n" +
+                        "PIN 码位置对照表\n" +
+                        "输入您曾设置的6位密码");
+            default:
 
-        });
+
+        }
+        mKeyboardUtil = new NumKeyboardUtil(view, getContext(), mPwdInputView, R.xml.number, this);
+    }
+
+    @OnTouch(R.id.pwd_edit_text)
+    public boolean onTouch() {
+        if (mKeyboardUtil.getKeyboardVisible() != View.VISIBLE) {
+            mRelativeLayoutKey.setVisibility(View.VISIBLE);
+            mKeyboardUtil.showKeyboard();
+        }
+        return true;
     }
 
     @Override
@@ -60,12 +76,7 @@ public class DevicePINFragment extends BaseFragment<ISetDevicePassListener> impl
             }
             mRelativeLayoutKey.setVisibility(View.GONE);
             mKeyboardUtil.hideKeyboard();
-
-            HandleCommands.setPin(pin);
-            if (getListener() != null) {
-                getListener().onSetDevicePassSuccess();
-            }
-
+            EventBus.getDefault().post(new ChangePinEvent(pin, ""));
         }
     }
 

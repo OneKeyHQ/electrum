@@ -114,30 +114,30 @@
     </LinearLayout>
 
 
-    <TextView
-        android:id="@+id/clone_to_other"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:drawableLeft="@drawable/clone"
-        android:drawableRight="@mipmap/right_arrow_small"
-        android:drawablePadding="@dimen/dp_10"
-        android:gravity="center_vertical"
-        android:padding="@dimen/dp_20"
-        android:text="@string/clone_to_other"
-        android:textColor="#142A3B"
-        android:textSize="@dimen/sp_16" />
+<!--    <TextView-->
+<!--        android:id="@+id/clone_to_other"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:drawableLeft="@drawable/clone"-->
+<!--        android:drawableRight="@mipmap/right_arrow_small"-->
+<!--        android:drawablePadding="@dimen/dp_10"-->
+<!--        android:gravity="center_vertical"-->
+<!--        android:padding="@dimen/dp_20"-->
+<!--        android:text="@string/clone_to_other"-->
+<!--        android:textColor="#142A3B"-->
+<!--        android:textSize="@dimen/sp_16" />-->
 
-    <TextView
-        android:id="@+id/clone_to_other_hide"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:paddingLeft="@dimen/dp_20"
-        android:paddingRight="@dimen/dp_20"
-        android:paddingBottom="@dimen/dp_20"
-        android:text="@string/clone_to_other_hide"
-        android:textColor="#9FA6AD"
-        android:textSize="@dimen/sp_12" />
+<!--    <TextView-->
+<!--        android:id="@+id/clone_to_other_hide"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:gravity="center_vertical"-->
+<!--        android:paddingLeft="@dimen/dp_20"-->
+<!--        android:paddingRight="@dimen/dp_20"-->
+<!--        android:paddingBottom="@dimen/dp_20"-->
+<!--        android:text="@string/clone_to_other_hide"-->
+<!--        android:textColor="#9FA6AD"-->
+<!--        android:textSize="@dimen/sp_12" />-->
 
 
     <LinearLayout

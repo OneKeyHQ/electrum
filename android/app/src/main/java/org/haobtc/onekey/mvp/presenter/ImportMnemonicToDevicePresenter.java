@@ -3,7 +3,7 @@ package org.haobtc.onekey.mvp.presenter;
 import org.haobtc.onekey.bean.MnemonicInfo;
 import org.haobtc.onekey.mvp.base.BasePresenter;
 import org.haobtc.onekey.mvp.view.IImportMnemonicToDeviceView;
-import org.haobtc.onekey.passageway.HandleCommands;
+import org.haobtc.onekey.manager.PyEnv;
 
 import java.util.List;
 
@@ -15,12 +15,7 @@ public class ImportMnemonicToDevicePresenter extends BasePresenter<IImportMnemon
 
     public void importMnemonics(List<MnemonicInfo> list){
         String mnemonicInfos = getMnemonics(list);
-        HandleCommands.importMnemonicsToDevice(mnemonicInfos, result -> {
-            //todo result
-            if(getView() != null){
-                getView().onImportMnemonicSuccess();
-            }
-        });
+
     }
 
 

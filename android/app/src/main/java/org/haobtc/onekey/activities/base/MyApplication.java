@@ -74,7 +74,7 @@ public class MyApplication extends Application {
                 // Set the connection timeout
                 .setConnectTimeout(10 * 1000)
                 // Set the Scanning period
-                .setScanPeriod(12 * 1000)
+                .setScanPeriod(5 * 1000)
                 .setServiceBindFailedRetryCount(3)
                 .setUuidService(UUID.fromString(PRIMARY_SERVICE))
                 .setUuidWriteCha(UUID.fromString(WRITE_CHARACTERISTIC))

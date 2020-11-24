@@ -10,7 +10,7 @@ import org.haobtc.onekey.ui.listener.IRecoveryWalletByColdWalletListener;
 
 import butterknife.BindView;
 
-public class RecoveryWalletByColdWalletFragment extends BaseFragment<IRecoveryWalletByColdWalletListener> {
+public class RecoveryWalletByColdWalletFragment extends BaseFragment {
 
     @BindView(R.id.way_img)
     protected ImageView mWayImageView;
@@ -26,9 +26,6 @@ public class RecoveryWalletByColdWalletFragment extends BaseFragment<IRecoveryWa
 
         //todo recovery wallet
 
-        if(getListener() != null){
-            getListener().onRecoverySuccess();
-        }
     }
 
     @Override

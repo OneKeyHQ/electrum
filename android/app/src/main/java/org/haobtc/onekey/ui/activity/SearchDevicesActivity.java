@@ -6,6 +6,7 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -15,59 +16,62 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
+import org.haobtc.onekey.bean.HardwareFeatures;
 import org.haobtc.onekey.constant.Constant;
-import org.haobtc.onekey.mvp.base.BaseMvpActivity;
-import org.haobtc.onekey.mvp.presenter.SearchDevicesPresenter;
-import org.haobtc.onekey.mvp.view.ISearchDevicesView;
-import org.haobtc.onekey.passageway.BlePassageway;
-import org.haobtc.onekey.passageway.HandleCommands;
-import org.haobtc.onekey.passageway.NfcPassageway;
+import org.haobtc.onekey.event.BleScanStopEvent;
+import org.haobtc.onekey.event.NotifySuccessfulEvent;
+import org.haobtc.onekey.manager.BleManager;
+import org.haobtc.onekey.manager.NfcManager;
+import org.haobtc.onekey.manager.PyEnv;
+import org.haobtc.onekey.mvp.base.BaseActivity;
 import org.haobtc.onekey.ui.adapter.BleDeviceAdapter;
-import org.haobtc.onekey.utils.NfcUtils;
 import org.haobtc.onekey.utils.ValueAnimatorUtil;
 
 import java.util.Objects;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
+import butterknife.OnClick;
 import cn.com.heaton.blelibrary.ble.model.BleDevice;
 
 import static cn.com.heaton.blelibrary.ble.Ble.REQUEST_ENABLE_BT;
 
-public class SearchDevicesActivity extends BaseMvpActivity<SearchDevicesPresenter> implements ISearchDevicesView
-        , BleDeviceAdapter.OnItemBleDeviceClick, BlePassageway.BleConnectCallBack, View.OnClickListener {
+/**
+ * @author liyan
+ */
+public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdapter.OnItemBleDeviceClick {
 
 
     @BindView(R.id.device_list)
-    protected RecyclerView mRecyclerView;
+    RecyclerView mRecyclerView;
     @BindView(R.id.device_list_layout)
-    protected LinearLayout mDeviceListLayout;
+    LinearLayout mDeviceListLayout;
     @BindView(R.id.container)
-    protected LinearLayout mContainer;
+    LinearLayout mContainer;
+    @BindView(R.id.img_back)
+    ImageView imgBack;
+    @BindView(R.id.relode)
+    TextView relode;
+    @BindView(R.id.load_device)
+    RelativeLayout mLoadingLayout;
+    @BindView(R.id.title)
+    TextView mTitle;
+    @BindView(R.id.open_wallet_hide)
+
+    protected TextView mOpenWalletHide;
     private LinearLayout mLayoutView;
     private BleDeviceAdapter mBleAdapter;
-    @BindView(R.id.load_device)
-    protected RelativeLayout mLoadingLayout;
-    @BindView(R.id.title)
-    protected TextView mTitle;
-    @BindView(R.id.open_wallet_hide)
-    protected TextView mOpenWalletHide;
     private int mSearchMode;
-
-    @Override
-    protected SearchDevicesPresenter initPresenter() {
-        return new SearchDevicesPresenter(this);
-    }
+    private BleManager bleManager;
 
     @Override
     public void init() {
-        ButterKnife.bind(this);
-        findViewById(R.id.img_back).setOnClickListener(this);
-        findViewById(R.id.relode).setOnClickListener(this);
         mSearchMode = getIntent().getIntExtra(Constant.SEARCH_DEVICE_MODE, Constant.SearchDeviceMode.MODE_PAIR_WALLET_TO_COLD);
-        mPresenter.init();
-
+        addBleView();
+        bleManager = BleManager.getInstance(this);
+        bleManager.initBle();
     }
 
     @Override
@@ -80,31 +84,26 @@ public class SearchDevicesActivity extends BaseMvpActivity<SearchDevicesPresente
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_ENABLE_BT && resultCode == Activity.RESULT_CANCELED) {
-
+            finish();
         } else if (requestCode == REQUEST_ENABLE_BT && resultCode == Activity.RESULT_OK) {
-            if (mPresenter != null) {
-                mPresenter.refreshBleDeviceList();
-            }
+
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (mPresenter != null) {
-            mPresenter.refreshBleDeviceList();
-        }
-    }
 
-    @Override
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onBleScanDevice(BleDevice device) {
         if (mBleAdapter != null) {
+            System.out.println("find device ====" + device.getBleName());
             mBleAdapter.add(device);
         }
     }
-
-    @Override
-    public void onBleScanStop() {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onBleScanStop(BleScanStopEvent event) {
         if (mLoadingLayout.getVisibility() != View.GONE) {
             mLoadingLayout.setVisibility(View.GONE);
         }
@@ -122,7 +121,6 @@ public class SearchDevicesActivity extends BaseMvpActivity<SearchDevicesPresente
         }
     }
 
-    @Override
     public void addBleView() {
         mLayoutView = (LinearLayout) LayoutInflater.from(this)
                 .inflate(R.layout.layout_search_device_ble, null);
@@ -178,28 +176,19 @@ public class SearchDevicesActivity extends BaseMvpActivity<SearchDevicesPresente
                 break;
         }
         mContainer.addView(mLayoutView, 1);
-        mBleAdapter = new BleDeviceAdapter(this, this);
+        mBleAdapter = new BleDeviceAdapter(this);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setAdapter(mBleAdapter);
     }
 
-    @Override
-    public void addNfcView() {
-        NfcUtils.nfc(getActivity(), true);
-    }
-
-    @Override
-    public void addUsbView() {
-
-    }
 
     @Override
     public void connectBle(BleDevice device) {
-        BlePassageway.getInstance().connDev(device, this);
+        bleManager.connDev(device);
     }
 
-    @Override
-    public void connectSucceeded() {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onReadyBle(NotifySuccessfulEvent event) {
         toNextActivity();
     }
 
@@ -217,57 +206,63 @@ public class SearchDevicesActivity extends BaseMvpActivity<SearchDevicesPresente
 
                 break;
             default:
-                HandleCommands.getFeature(result -> {
-                    if (!result.isInitialized()) {
-                        toActivity(FindNewDeviceActivity.class);
-                    } else if (result.isNeedsBackup()) {
-                        toActivity(FindDeviceNoBackupActivity.class);
+                try {
+                    HardwareFeatures features =  PyEnv.getFeature(this);
+                    if (!features.isInitialized()) {
+                        startActivity(new Intent(this, FindUnInitDeviceActivity.class));
+                        finish();
+                    } else if (features.isBackupOnly()) {
+                        startActivity(new Intent(this, FindBackupOnlyDeviceActivity.class));
+                        finish();
                     } else {
-                        toActivity(FindDeviceAndBackedUpActivity.class);
+                        startActivity(new Intent(this, FindNormalDeviceActivity.class));
+                        finish();
                     }
-                });
+                } catch (Exception e) {
+                    showToast("获取硬件信息失败请重试");
+                    e.printStackTrace();
+                }
 
                 break;
         }
     }
 
-    @Override
-    public void connectFailed() {
-        //todo connect failed
-
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
+    @OnClick({R.id.img_back, R.id.relode})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
             case R.id.img_back:
                 finish();
                 break;
             case R.id.relode:
-                if (mPresenter == null) {
-                    return;
-                }
                 if (mLoadingLayout.getVisibility() != View.VISIBLE) {
                     mLoadingLayout.setVisibility(View.VISIBLE);
                 }
                 if (mDeviceListLayout.getVisibility() != View.GONE) {
                     mDeviceListLayout.setVisibility(View.GONE);
                 }
-                mPresenter.refreshBleDeviceList();
+                bleManager.refreshBleDeviceList();
                 break;
         }
     }
-
-
+    /**
+     * 响应NFC贴合
+     * */
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        String action = intent.getAction(); // get the action of the coming intent
-        if (Objects.equals(action, NfcAdapter.ACTION_NDEF_DISCOVERED) // NDEF type
+        // get the action of the coming intent
+        String action = intent.getAction();
+        // NDEF type
+        if (Objects.equals(action, NfcAdapter.ACTION_NDEF_DISCOVERED)
                 || Objects.equals(action, NfcAdapter.ACTION_TECH_DISCOVERED)
                 || Objects.requireNonNull(action).equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
             Tag tags = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            NfcPassageway.getInstance().initNfc(tags);
+            NfcManager.getInstance().initNfc(tags);
         }
+    }
+
+    @Override
+    public boolean needEvents() {
+        return true;
     }
 }

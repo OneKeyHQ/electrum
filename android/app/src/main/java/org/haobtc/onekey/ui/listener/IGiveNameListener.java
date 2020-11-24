@@ -4,5 +4,5 @@ import org.haobtc.onekey.mvp.base.IBaseListener;
 
 public interface IGiveNameListener extends IBaseListener {
 
-    void onWalletInitSuccess();
+    void onWalletNameSetted(String name);
 }

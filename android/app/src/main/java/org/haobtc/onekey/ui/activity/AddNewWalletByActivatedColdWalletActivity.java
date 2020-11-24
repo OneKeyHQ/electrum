@@ -12,8 +12,10 @@ import org.haobtc.onekey.ui.listener.ISelectCoinListener;
 
 import butterknife.BindView;
 
-public class AddNewWalletByActivatedColdWalletActivity extends BaseActivity implements
-        ISelectCoinListener, IGiveNameListener {
+/**
+ * @author liyan
+ */
+public class AddNewWalletByActivatedColdWalletActivity extends BaseActivity {
 
     @Override
     public void init() {
@@ -24,17 +26,5 @@ public class AddNewWalletByActivatedColdWalletActivity extends BaseActivity impl
     @Override
     public int getContentViewId() {
         return R.layout.activity_title_container;
-    }
-
-    @Override
-    public void onCoinChoose(CoinBean bean) {
-        //todo create wallet
-
-        startFragment(new SetWalletNameFragment());
-    }
-
-    @Override
-    public void onWalletInitSuccess() {
-        toActivity(HomeOnekeyActivity.class);
     }
 }

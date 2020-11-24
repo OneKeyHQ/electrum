@@ -1653,7 +1653,7 @@ class AndroidCommands(commands.Commands):
         print(f"seed......{response}")
         return response
 
-    def bixin_load_device(self, mnemonics, path='android_usb'):
+    def bixin_load_device(self, path='android_usb', mnemonics=None, language="en-US", label="BIXIN KEY"):
         '''
         Import seed
         :param mnemonics: as str
@@ -1662,7 +1662,7 @@ class AndroidCommands(commands.Commands):
         '''
         client = self.get_client(path=path)
         try:
-            response = client.bixin_load_device(mnemonics=mnemonics)
+            response = client.bixin_load_device(mnemonics=mnemonics, language=language, label=label)
         except Exception as e:
             raise BaseException(e)
         return response
@@ -1742,9 +1742,10 @@ class AndroidCommands(commands.Commands):
         except Exception as e:
             raise BaseException(e)
 
-    def init(self, path='android_usb', label="BIXIN KEY", language='english', use_se=True):
+    def init(self, path='android_usb', label="BIXIN KEY", language='english', stronger_mnemonic=None, use_se=False):
         '''
         Activate the device
+        :param stronger_mnemonic: if not None 256  else 128
         :param path: NFC/android_usb/bluetooth as str, used by hardware
         :param label: name as str
         :param language: as str
@@ -1752,11 +1753,13 @@ class AndroidCommands(commands.Commands):
         :return:
         '''
         client = self.get_client(path=path)
+        strength = 128
         try:
             if use_se:
                 device.apply_settings(client.client, use_se=True)
-            response = client.reset_device(skip_backup=True, language=language, pin_protection=False,
-                                           passphrase_protection=True, label=label)
+            if stronger_mnemonic:
+                strength = 256
+            response = client.reset_device(language=language, passphrase_protection=True, label=label, strength=strength)
         except Exception as e:
             raise BaseException(e)
         if response == "Device successfully initialized":
@@ -3091,18 +3094,15 @@ class AndroidCommands(commands.Commands):
                 'type': 'unknow', 'time': time.time(), 'xpubs': [], 'seed': ''}
 
         name_info = sorted(name_info.items(), key=lambda item: item[1]['time'], reverse=True)
-        out = []
+        wallet_infos = []
         for key, value in name_info:
             if -1 != key.find(".tmp."):
                 continue
-            temp_info = {}
-            addr_type = {}
-            addr_type['type'] = value['type']
-            wallet_temp = self.daemon._wallets[self._wallet_path(key)]
-            addr_type['addr'] = wallet_temp.get_addresses()[0]
-            temp_info[key] = addr_type
-            out.append(temp_info)
-        return json.dumps(out)
+            temp = {}
+            wallet_info = {'type': value['type'], 'addr': self.daemon.wallets[self._wallet_path(key)].get_addresses()[0]}
+            temp[key] = wallet_info
+            wallet_infos.append(temp)
+        return json.dumps(wallet_infos)
 
     def delete_wallet_from_deamon(self, name):
         try:

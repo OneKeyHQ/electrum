@@ -1,40 +1,30 @@
 package org.haobtc.onekey.bean;
 
-import android.graphics.drawable.Drawable;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.StringRes;
 
+/**
+ * @author liyan
+ */
 public class CoinBean {
 
-    private Drawable mIcon;
-    private String mName;
-    private boolean mChecked = false;
+    private int mIconId;
+    private int mNameId;
 
-    public CoinBean(Drawable mIcon, String mName) {
-        this.mIcon = mIcon;
-        this.mName = mName;
+    public CoinBean(@DrawableRes int mIconId, @StringRes int mNameId) {
+        this.mIconId = mIconId;
+        this.mNameId = mNameId;
     }
 
-    public boolean isChecked() {
-        return mChecked;
+
+
+    public int getIconId() {
+        return mIconId;
     }
 
-    public void setChecked(boolean mChecked) {
-        this.mChecked = mChecked;
-    }
 
-    public Drawable getIcon() {
-        return mIcon;
-    }
-
-    public void setIcon(Drawable mIcon) {
-        this.mIcon = mIcon;
-    }
-
-    public String getName() {
-        return mName;
-    }
-
-    public void setName(String mName) {
-        this.mName = mName;
+    public int getNameId() {
+        return mNameId;
     }
 
 

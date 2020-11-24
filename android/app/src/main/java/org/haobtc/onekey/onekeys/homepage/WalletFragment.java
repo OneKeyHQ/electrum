@@ -39,16 +39,15 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
-import org.haobtc.onekey.activities.jointwallet.MultiSigWalletCreator;
 import org.haobtc.onekey.activities.sign.SignActivity;
-import org.haobtc.onekey.bean.HomeWalletBean;
+import org.haobtc.onekey.bean.BalanceInfo;
 import org.haobtc.onekey.bean.MainSweepcodeBean;
+import org.haobtc.onekey.data.prefs.PreferencesManager;
 import org.haobtc.onekey.event.BackupEvent;
 import org.haobtc.onekey.event.FixWalletNameEvent;
 import org.haobtc.onekey.event.LoadOtherWalletEvent;
 import org.haobtc.onekey.event.SecondEvent;
 import org.haobtc.onekey.onekeys.backup.BackupGuideActivity;
-import org.haobtc.onekey.onekeys.backup.CheckMnemonicActivity;
 import org.haobtc.onekey.onekeys.dialog.RecoverHdWalletActivity;
 import org.haobtc.onekey.onekeys.dialog.SetHDWalletPassActivity;
 import org.haobtc.onekey.onekeys.homepage.process.DetailTransactionActivity;
@@ -57,18 +56,20 @@ import org.haobtc.onekey.onekeys.homepage.process.ReceiveHDActivity;
 import org.haobtc.onekey.onekeys.homepage.process.SendHdActivity;
 import org.haobtc.onekey.onekeys.homepage.process.TransactionDetailWalletActivity;
 import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
+import static org.haobtc.onekey.activities.service.CommunicationModeSelector.executorService;
 import org.haobtc.onekey.utils.Daemon;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 import static android.app.Activity.RESULT_OK;
-import static org.haobtc.onekey.activities.service.CommunicationModeSelector.executorService;
 
+/**
+ * @author jinxiaomin
+ */
 public class WalletFragment extends Fragment implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
     TextView textWalletName;
     private RecyclerView recyclerview;
@@ -145,8 +146,8 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
     }
 
     private void initdata() {
-        boolean isHaveWallet = preferences.getBoolean("isHaveWallet", false);
-        if (isHaveWallet) {
+        boolean isHaveWallet = PreferencesManager.getAll(getContext(), org.haobtc.onekey.constant.Constant.WALLETS).isEmpty();;
+        if (!isHaveWallet) {
             linearNoWallet.setVisibility(View.GONE);
             imgBottom.setVisibility(View.GONE);
             linearHaveWallet.setVisibility(View.VISIBLE);
@@ -164,7 +165,7 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
             linearWalletList.setVisibility(View.GONE);
         }
         //get wallet list save wallet type
-        getHomeWalletList();
+       // getHomeWalletList();
 
     }
 
@@ -260,9 +261,9 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
             PyObject selectWallet = Daemon.commands.callAttr("select_wallet", loadWalletMsg);
             Log.i("iiiigetWalletBalance", "getWalletBalance:--- " + selectWallet);
             if (!TextUtils.isEmpty(selectWallet.toString())) {
-                HomeWalletBean homeWalletBean = new Gson().fromJson(selectWallet.toString(), HomeWalletBean.class);
-                String balance = homeWalletBean.getBalance();
-                name = homeWalletBean.getName();
+                BalanceInfo balanceInfo = new Gson().fromJson(selectWallet.toString(), BalanceInfo.class);
+                String balance = balanceInfo.getBalance();
+                name = balanceInfo.getName();
                 textWalletName.setText(name);
                 num = balance.substring(0, balance.indexOf(" "));
                 String strCny = balance.substring(balance.indexOf("(") + 1, balance.indexOf(")"));

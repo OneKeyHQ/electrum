@@ -568,3 +568,7 @@ class Daemon(Logger):
         finally:
             # app will exit now
             self.on_stop()
+
+    @property
+    def wallets(self):
+        return self._wallets

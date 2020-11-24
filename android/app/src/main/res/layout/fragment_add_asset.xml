@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@android:color/white"
     android:orientation="vertical">
 
@@ -14,7 +15,7 @@
         android:paddingTop="@dimen/dp_20"
         android:paddingRight="@dimen/dp_30"
         android:paddingBottom="@dimen/dp_20"
-        android:text="@string/select_asset"
+        android:text="选择币种"
         android:textColor="#142A3B"
         android:textSize="30sp" />
 
@@ -24,21 +25,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_margin="@dimen/dp_20"
+        tools:listitem="@layout/item_asset"
+        tools:itemCount="3"
         android:layout_weight="1" />
-
-
-    <Button
-        android:id="@+id/complete"
-        android:layout_width="300dp"
-        android:layout_height="50dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/dp_40"
-        android:layout_marginBottom="@dimen/dp_80"
-        android:background="@drawable/btn_enable_selector"
-        android:text="@string/finish"
-        android:textAllCaps="false"
-        android:textColor="@android:color/white"
-        android:textSize="@dimen/sp_14" />
-
 
 </LinearLayout>

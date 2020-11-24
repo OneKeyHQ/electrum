@@ -8,20 +8,21 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.bean.MnemonicInfo;
 import org.haobtc.onekey.constant.Constant;
+import org.haobtc.onekey.event.InitDeviceEvent;
 import org.haobtc.onekey.mvp.base.BaseFragment;
-import org.haobtc.onekey.passageway.HandleCommands;
 import org.haobtc.onekey.ui.adapter.MnemonicsAdapter;
-import org.haobtc.onekey.ui.listener.IImportMnemonicToDeviceListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 
-public class ImportMnemonicToDeviceFragment extends BaseFragment<IImportMnemonicToDeviceListener> implements MnemonicsAdapter.CallBack, View.OnClickListener {
+public class ImportMnemonicToDeviceFragment extends BaseFragment implements MnemonicsAdapter.CallBack {
 
 
     @BindView(R.id.mnemonics_list)
@@ -35,7 +36,6 @@ public class ImportMnemonicToDeviceFragment extends BaseFragment<IImportMnemonic
     public void init(View view) {
 
         mMnemonicsListView.setNestedScrollingEnabled(false);
-        mImport.setOnClickListener(this);
 
         GridLayoutManager manager = new GridLayoutManager(getContext(), 3);
         manager.setOrientation(RecyclerView.VERTICAL);
@@ -74,16 +74,10 @@ public class ImportMnemonicToDeviceFragment extends BaseFragment<IImportMnemonic
         return true;
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.btn_import:
-                if (getListener() != null) {
-                    getListener().onImport(mMnemonicsList);
-                }
-                break;
-        }
+    @OnClick(R.id.btn_import)
+    public void onViewClicked() {
+        StringBuilder builder = new StringBuilder();
+        mMnemonicsList.forEach((s) -> builder.append(s.getMnemonic()));
+        EventBus.getDefault().post(new InitDeviceEvent(false, builder.toString()));
     }
-
-
 }

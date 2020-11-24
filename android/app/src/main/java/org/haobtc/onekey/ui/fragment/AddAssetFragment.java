@@ -9,14 +9,16 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.bean.CoinBean;
 import org.haobtc.onekey.mvp.base.BaseFragment;
 import org.haobtc.onekey.ui.adapter.AssetAdapter;
-import org.haobtc.onekey.ui.listener.IAddAssetListener;
 import org.haobtc.onekey.utils.CoinUtils;
 
 import java.util.List;
 
 import butterknife.BindView;
 
-public class AddAssetFragment extends BaseFragment<IAddAssetListener> implements View.OnClickListener {
+/**
+ * @author liyan
+ */
+public class AddAssetFragment extends BaseFragment {
 
     @BindView(R.id.asset_list)
     protected RecyclerView mAssetView;
@@ -25,10 +27,8 @@ public class AddAssetFragment extends BaseFragment<IAddAssetListener> implements
 
     @Override
     public void init(View view) {
-        getListener().onUpdateTitle(R.string.add_asset);
-        view.findViewById(R.id.complete).setOnClickListener(this);
-        mAssetList = CoinUtils.getSupportCoins(getContext());
-        mAdapter = new AssetAdapter(getContext(),mAssetList);
+        mAssetList = CoinUtils.getSupportCoins();
+        mAdapter = new AssetAdapter(getContext(), mAssetList);
         mAssetView.setLayoutManager(new LinearLayoutManager(getContext()));
         mAssetView.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
@@ -37,23 +37,5 @@ public class AddAssetFragment extends BaseFragment<IAddAssetListener> implements
     @Override
     public int getContentViewId() {
         return R.layout.fragment_add_asset;
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.complete:
-                addAssets();
-                break;
-        }
-    }
-
-    private void addAssets() {
-        //todo add asset
-
-
-        if(getListener() != null){
-            getListener().onAddAssetsComplete();
-        }
     }
 }

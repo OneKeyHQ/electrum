@@ -12,6 +12,9 @@ import org.haobtc.onekey.activities.base.MyApplication;
 
 import java.lang.reflect.Method;
 
+/**
+ * @author liyan
+ */
 @Aspect
 public class SingleClickAspect {
 

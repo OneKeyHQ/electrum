@@ -14,7 +14,7 @@
         android:paddingTop="@dimen/dp_20"
         android:paddingRight="@dimen/dp_30"
         android:paddingBottom="@dimen/dp_20"
-        android:text="@string/update_pin_last_confirm"
+        android:text="在设备上进行确认"
         android:textColor="#142A3B"
         android:textSize="30sp" />
 
@@ -48,8 +48,9 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/dp_240"
         android:layout_marginBottom="@dimen/dp_30"
-        android:background="@drawable/btn_checked"
-        android:text="@string/back_device"
+        android:enabled="false"
+        android:background="@drawable/btn_enable_selector"
+        android:text="@string/next"
         android:textAllCaps="false"
         android:textColor="@android:color/white"
         android:textSize="@dimen/sp_14" />

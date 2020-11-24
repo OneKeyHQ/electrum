@@ -1,23 +1,26 @@
 package org.haobtc.onekey.ui.activity;
 
-import android.view.View;
+import android.widget.ImageView;
 
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.mvp.base.BaseActivity;
-import org.haobtc.onekey.onekeys.HomeOnekeyActivity;
-import org.haobtc.onekey.ui.fragment.RecoveryWalletByColdWalletFragment;
 import org.haobtc.onekey.ui.fragment.DevicePINFragment;
-import org.haobtc.onekey.ui.listener.IRecoveryWalletByColdWalletListener;
-import org.haobtc.onekey.ui.listener.ISetDevicePassListener;
 
-public class RecoveryWalletByColdWalletActivity extends BaseActivity implements ISetDevicePassListener
-        , IRecoveryWalletByColdWalletListener, View.OnClickListener {
+import butterknife.BindView;
+import butterknife.OnClick;
+
+/**
+ * @author liyan
+ */
+public class RecoveryWalletByColdWalletActivity extends BaseActivity {
+
+    @BindView(R.id.img_back)
+    ImageView imgBack;
 
     @Override
     public void init() {
         mTitle.setText(R.string.recovery_hd_wallet);
-        findViewById(R.id.img_back).setOnClickListener(this);
-        startFragment(new DevicePINFragment());
+//        startFragment(new DevicePINFragment());
     }
 
     @Override
@@ -25,22 +28,7 @@ public class RecoveryWalletByColdWalletActivity extends BaseActivity implements 
         return R.layout.activity_title_container;
     }
 
-    @Override
-    public void onSetDevicePassSuccess() {
-        startFragment(new RecoveryWalletByColdWalletFragment());
-    }
-
-    @Override
-    public void onRecoverySuccess() {
-        toActivity(HomeOnekeyActivity.class);
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.img_back:
-                finish();
-                break;
-        }
+    @OnClick(R.id.img_back)
+    public void onViewClicked() {
     }
 }

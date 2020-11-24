@@ -1,7 +1,6 @@
 package org.haobtc.onekey.ui.adapter;
 
 import android.content.Context;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +21,9 @@ import java.util.stream.Collectors;
 import cn.com.heaton.blelibrary.ble.model.BleDevice;
 
 
+/**
+ * @author liyan
+ */
 public class BleDeviceAdapter extends RecyclerView.Adapter<BleDeviceAdapter.ViewHolder> {
 
     public static List<BleDevice> mValues = new ArrayList<>();
@@ -30,25 +32,20 @@ public class BleDeviceAdapter extends RecyclerView.Adapter<BleDeviceAdapter.View
     private static final String PATTERN = "^K\\d{4}";
 
 
-    public BleDeviceAdapter(Context context, OnItemBleDeviceClick click) {
-        this.mOnItemBleDeviceClick = click;
+    public BleDeviceAdapter(Context context) {
+        this.mOnItemBleDeviceClick = (OnItemBleDeviceClick)context;
         this.mInflater = LayoutInflater.from(context);
     }
 
 
     public void add(BleDevice device) {
-        if (device == null) {
+        if (device.getBleName() == null) {
             return;
         }
-//        String name = device.getBleName();
-//        if (TextUtils.isEmpty(name) || !Pattern.matches(PATTERN, name)) {
-//            return;
-//        }
-
         mValues.add(device);
+
         mValues = mValues.stream().distinct().
-                filter(bleDevice -> bleDevice.getBleName() != null && ((bleDevice.getBleName().toLowerCase()
-                        .startsWith(Constant.BLE_NAME_PREFIX.toLowerCase())) || Pattern.matches(Constant.PATTERN, bleDevice.getBleName()))).collect(Collectors.toList());
+                filter(bleDevice ->  Pattern.matches(Constant.PATTERN, bleDevice.getBleName())).collect(Collectors.toList());
         //notifyDataSetChanged();
     }
 

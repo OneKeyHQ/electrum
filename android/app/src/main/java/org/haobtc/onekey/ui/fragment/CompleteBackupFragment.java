@@ -6,7 +6,7 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.mvp.base.BaseFragment;
 import org.haobtc.onekey.mvp.base.IBaseListener;
 
-public class CompleteBackupFragment extends BaseFragment<IBaseListener> {
+public class CompleteBackupFragment extends BaseFragment {
 
 
     @Override

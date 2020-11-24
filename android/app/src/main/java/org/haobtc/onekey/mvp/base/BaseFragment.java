@@ -12,21 +12,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import java.lang.ref.WeakReference;
+import org.greenrobot.eventbus.EventBus;
 
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 
 
-public abstract class BaseFragment<L extends IBaseListener> extends Fragment implements IBaseView {
-
-    /**
-     * weak reference
-     */
-    private WeakReference<L> viewRef;
-
-    public L getListener() {
-        return viewRef == null ? null : viewRef.get();
-    }
+public abstract class BaseFragment extends Fragment implements IBaseView{
+    protected Unbinder unbinder;
 
     public Handler mHandler;
 
@@ -39,7 +32,6 @@ public abstract class BaseFragment<L extends IBaseListener> extends Fragment imp
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        viewRef = new WeakReference<>((L) context);
     }
 
     @Nullable
@@ -48,7 +40,10 @@ public abstract class BaseFragment<L extends IBaseListener> extends Fragment imp
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(getContentViewId(), container, false);
         setActionBar();
-        ButterKnife.bind(this, view);
+        unbinder = ButterKnife.bind(this, view);
+        if (needEvents()) {
+            EventBus.getDefault().register(this);
+        }
         init(view);
         return view;
     }
@@ -64,14 +59,17 @@ public abstract class BaseFragment<L extends IBaseListener> extends Fragment imp
     @Override
     public void onDetach() {
         super.onDetach();
-        if (viewRef != null) {
-            viewRef.clear();
-            viewRef = null;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (unbinder != null) {
+            unbinder.unbind();
+        } else if (needEvents()) {
+            EventBus.getDefault().unregister(this);
         }
-        System.gc();
-        if (mHandler != null) {
-            mHandler.removeCallbacksAndMessages(null);
-        }
+
     }
 
     @Override
@@ -81,5 +79,7 @@ public abstract class BaseFragment<L extends IBaseListener> extends Fragment imp
         }
         mHandler.post(runnable);
     }
-
+    public boolean needEvents() {
+        return false;
+    }
 }

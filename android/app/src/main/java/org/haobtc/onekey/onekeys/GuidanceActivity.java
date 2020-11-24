@@ -3,14 +3,11 @@ package org.haobtc.onekey.onekeys;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
 import org.haobtc.onekey.R;
-import org.haobtc.onekey.activities.AboutActivity;
-import org.haobtc.onekey.activities.UserAgreementActivity;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.activities.transaction.CheckChainDetailWebActivity;
 import org.haobtc.onekey.utils.Daemon;
@@ -19,6 +16,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+/**
+ * @author jinxiaomin
+ */
 public class GuidanceActivity extends BaseActivity implements CompoundButton.OnCheckedChangeListener {
 
     @BindView(R.id.checkbox_ok)

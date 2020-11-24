@@ -18,6 +18,9 @@ import org.haobtc.onekey.bean.MnemonicInfo;
 import java.util.List;
 
 
+/**
+ * @author liyan
+ */
 public class MnemonicsAdapter extends RecyclerView.Adapter<MnemonicsAdapter.ViewHolder> {
 
     public List<MnemonicInfo> mValues;

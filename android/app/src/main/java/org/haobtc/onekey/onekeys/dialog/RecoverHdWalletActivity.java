@@ -109,7 +109,7 @@ public class RecoverHdWalletActivity extends BaseActivity {
                 break;
             case R.id.lin_hard_recovery:
                 Intent recovery = new Intent(RecoverHdWalletActivity.this, SearchDevicesActivity.class);
-                recovery.putExtra(Constant.SEARCH_DEVICE_MODE, Constant.SearchDeviceMode.MODE_RECOVERY_WALLET_BY_COLD);
+//                recovery.putExtra(Constant.SEARCH_DEVICE_MODE, Constant.SearchDeviceMode.MODE_RECOVERY_WALLET_BY_COLD);
                 startActivity(recovery);
                 break;
             case R.id.lin_import:

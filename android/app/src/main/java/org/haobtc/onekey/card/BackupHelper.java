@@ -236,4 +236,9 @@ public class BackupHelper extends BaseActivity implements BusinessAsyncTask.Help
     public void onCancelled() {
 
     }
+
+    @Override
+    public void currentMethod(String methodName) {
+
+    }
 }

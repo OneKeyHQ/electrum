@@ -3,6 +3,9 @@ package org.haobtc.onekey.utils;
 import android.animation.ValueAnimator;
 import android.view.View;
 
+/**
+ * @author liyan
+ */
 public final class ValueAnimatorUtil {
 
     private ValueAnimatorUtil(){}

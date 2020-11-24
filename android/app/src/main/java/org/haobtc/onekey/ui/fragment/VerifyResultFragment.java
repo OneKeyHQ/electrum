@@ -13,7 +13,10 @@ import org.haobtc.onekey.ui.listener.IVerifyResultListener;
 
 import butterknife.BindView;
 
-public class VerifyResultFragment extends BaseFragment<IVerifyResultListener> implements View.OnClickListener {
+/**
+ * @author liyan
+ */
+public class VerifyResultFragment extends BaseFragment {
 
     @BindView(R.id.verify_ret)
     protected TextView mVerifyRet;
@@ -27,8 +30,8 @@ public class VerifyResultFragment extends BaseFragment<IVerifyResultListener> im
     @Override
     public void init(View view) {
 
-        view.findViewById(R.id.back_device).setOnClickListener(this);
-        boolean ret = ((AuthVerifyActivity) getListener()).getVerifyRet();
+//        view.findViewById(R.id.back_device).setOnClickListener(this);
+        boolean ret = false;
 
         mVerifyWalletName.setText("wallet1");
 
@@ -50,14 +53,4 @@ public class VerifyResultFragment extends BaseFragment<IVerifyResultListener> im
         return R.layout.fragment_verify_result;
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.back_device:
-                if (getListener() != null) {
-                    getListener().onBackDevice();
-                }
-                break;
-        }
-    }
 }

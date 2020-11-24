@@ -10,27 +10,34 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+
+import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.bean.CoinBean;
+import org.haobtc.onekey.constant.Constant;
+import org.haobtc.onekey.event.GetXpubEvent;
 
 import java.util.List;
 
 
+/**
+ * @author liyan
+ */
 public class AssetAdapter extends RecyclerView.Adapter<AssetAdapter.ViewHolder> {
 
     public List<CoinBean> mValues;
-    private LayoutInflater mInflater;
+    private Context context;
 
 
     public AssetAdapter(Context context, List<CoinBean> list) {
         this.mValues = list;
-        this.mInflater = LayoutInflater.from(context);
+        this.context = context;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = mInflater
+        View view = LayoutInflater.from(context)
                 .inflate(R.layout.item_asset, parent, false);
         return new ViewHolder(view);
     }
@@ -38,12 +45,22 @@ public class AssetAdapter extends RecyclerView.Adapter<AssetAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mAsset = mValues.get(position);
-        holder.mIcon.setImageDrawable(holder.mAsset.getIcon());
-        holder.mName.setText(holder.mAsset.getName());
-        holder.mChecked.setVisibility(holder.mAsset.isChecked() ? View.VISIBLE : View.INVISIBLE);
+        holder.mIcon.setImageDrawable(context.getDrawable(holder.mAsset.getIconId()));
+        holder.mName.setText(context.getString(holder.mAsset.getNameId()));
         holder.mView.setOnClickListener(v -> {
-            holder.mAsset.setChecked(!holder.mAsset.isChecked());
-            notifyItemChanged(position);
+            holder.mView.setClickable(false);
+            switch (holder.mAsset.getNameId()) {
+                case R.string.coin_btc:
+                    EventBus.getDefault().post(new GetXpubEvent(Constant.COIN_TYPE_BTC));
+                    break;
+                case R.string.coin_eth:
+                    EventBus.getDefault().post(new GetXpubEvent(Constant.COIN_TYPE_ETH));
+                    break;
+                case R.string.coin_eos:
+                    EventBus.getDefault().post(new GetXpubEvent(Constant.COIN_TYPE_EOS));
+                    break;
+                default:
+            }
         });
 
     }
@@ -57,7 +74,6 @@ public class AssetAdapter extends RecyclerView.Adapter<AssetAdapter.ViewHolder> 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public final TextView mName;
         public final ImageView mIcon;
-        public final ImageView mChecked;
         public final View mView;
         public CoinBean mAsset;
 
@@ -66,7 +82,6 @@ public class AssetAdapter extends RecyclerView.Adapter<AssetAdapter.ViewHolder> 
             mView = view;
             mName = view.findViewById(R.id.item_name);
             mIcon = view.findViewById(R.id.item_icon);
-            mChecked = view.findViewById(R.id.item_checked);
         }
 
     }

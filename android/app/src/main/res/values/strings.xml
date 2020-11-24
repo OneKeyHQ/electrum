@@ -1030,7 +1030,7 @@
     <string name="backup_wallet">Backup Wallet</string>
     <string name="bind_admin_person">Binding co Manager</string>
     <string name="recovery_hd_wallet">Restore HD Wallet</string>
-    <string name="find_new_device">Discover a new device that you can...</string>
+    <string name="find_new_device">🎉 Discover a new device that you can...</string>
     <string name="init_as_new_device">Activate as new device (recommended)</string>
     <string name="new_device_hide">It is suitable for most users who use hardware wallet for the first time</string>
     <string name="import_seed">Import mnemonics</string>
@@ -1107,7 +1107,7 @@
     <string name="now_backup">Backup now</string>
     <string name="now_backup_tip">安全提醒，你还没有备份这个钱包的助记词。为了您的资产安全，在完成备份前，请不要往这个钱包转币。</string>
 
-    <string name="active_no_backup">This is an activated device. You can…</string>
+    <string name="active_no_backup">🔑 This is an activated device. You can…</string>
     <string name="add_new_wallet">Add new wallet (recommended)</string>
     <string name="add_new_wallet_hide">Unlimited number, created on demand.</string>
     <string name="recovery_used_wallet">Restore used wallets</string>
@@ -1224,5 +1224,6 @@
     <string name="backup_success_tip">It seems that everything is ready! \nWe have nothing to remind you of.\n In a word, remember to keep the mnemonics well. \nIf you lose them, no one can help you find them back.\n Have a good time in the world of blockchain ❤️。</string>
     <string name="mnemonic_wrong">Errors in mnemonics</string>
     <string name="begin_check">Recheck</string>
+    <string name="active_hardware">Active Hardware wallet</string>
 
 </resources>

@@ -1,8 +1,12 @@
 package org.haobtc.onekey.bean;
 
+import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
-public class HomeWalletBean {
+/**
+ * @author liyan
+ */
+public class BalanceInfo {
 
     /**
      * balance : 0 ()
@@ -14,6 +18,9 @@ public class HomeWalletBean {
     @SerializedName("name")
     private String name;
 
+    public static BalanceInfo objectFromData(String str) {
+        return new Gson().fromJson(str, BalanceInfo.class);
+    }
     public String getBalance() {
         return balance;
     }

@@ -28,7 +28,6 @@ public class BasePresenter<V> {
             viewRef.clear();
             viewRef = null;
         }
-        System.gc();
     }
 
     public FragmentActivity getActivity() {

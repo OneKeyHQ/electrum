@@ -36,8 +36,7 @@ import org.haobtc.onekey.event.DfuEvent;
 import org.haobtc.onekey.event.ExceptionEvent;
 import org.haobtc.onekey.event.ExecuteEvent;
 import org.haobtc.onekey.event.ExitEvent;
-import org.haobtc.onekey.event.FinishEvent;
-import org.haobtc.onekey.exception.BixinExceptions;
+import org.haobtc.onekey.exception.HardWareExceptions;
 import org.haobtc.onekey.fragment.BleDeviceRecyclerViewAdapter;
 import org.haobtc.onekey.utils.Daemon;
 import org.haobtc.onekey.utils.Global;
@@ -226,7 +225,7 @@ public class UpgradeBixinKEYActivity extends BaseActivity {
 
             } catch (Exception e) {
                 e.printStackTrace();
-                if (BixinExceptions.FILE_FORMAT_ERROR.getMessage().equals(e.getMessage())) {
+                if (HardWareExceptions.FILE_FORMAT_ERROR.getMessage().equals(e.getMessage())) {
                     Optional.ofNullable(file).ifPresent(File::delete);
                 }
                 // clear state

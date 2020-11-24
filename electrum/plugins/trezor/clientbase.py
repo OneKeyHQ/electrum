@@ -278,9 +278,9 @@ class TrezorClientBase(HardwareClientBase, Logger):
         with self.run_flow(''):
             return trezorlib.device.bixin_backup_device(self.client)
 
-    def bixin_load_device(self, *args):
+    def bixin_load_device(self, *args, **kwargs):
         with self.run_flow(''):
-            return trezorlib.device.bixin_load_device(self.client, *args)
+            return trezorlib.device.bixin_load_device(self.client, *args, **kwargs)
 
     def sign_tx(self, *args, **kwargs):
         with self.run_flow():

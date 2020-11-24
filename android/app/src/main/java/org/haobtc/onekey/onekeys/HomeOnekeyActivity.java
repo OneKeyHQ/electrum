@@ -1,6 +1,5 @@
 package org.haobtc.onekey.onekeys;
 
-import android.os.Bundle;
 import android.view.KeyEvent;
 import android.widget.FrameLayout;
 import android.widget.RadioButton;
@@ -11,9 +10,15 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import org.haobtc.onekey.MainActivity;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.event.CreateSuccessEvent;
+import org.haobtc.onekey.manager.BleManager;
+import org.haobtc.onekey.manager.HardwareCallbackHandler;
+import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.homepage.DiscoverFragment;
 import org.haobtc.onekey.onekeys.homepage.MindFragment;
 import org.haobtc.onekey.onekeys.homepage.WalletFragment;
@@ -23,6 +28,9 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+/**
+ * @author jinxiaomin
+ */
 public class HomeOnekeyActivity extends BaseActivity implements RadioGroup.OnCheckedChangeListener {
 
     @BindView(R.id.linear_mains)
@@ -33,7 +41,6 @@ public class HomeOnekeyActivity extends BaseActivity implements RadioGroup.OnChe
     private WalletFragment walletFragment;
     private DiscoverFragment discoverFragment;
     private MindFragment mindFragment;
-    private RadioButton radioButton[];
     private ArrayList<Fragment> fragments;
 
     @Override
@@ -45,6 +52,10 @@ public class HomeOnekeyActivity extends BaseActivity implements RadioGroup.OnChe
     public void initView() {
         ButterKnife.bind(this);
         inits();
+        HardwareCallbackHandler callbackHandler = HardwareCallbackHandler.getInstance(this);
+        PyEnv.setHandle(callbackHandler);
+        BleManager.getInstance(this);
+        EventBus.getDefault().register(this);
     }
 
     private void inits() {
@@ -57,7 +68,7 @@ public class HomeOnekeyActivity extends BaseActivity implements RadioGroup.OnChe
         switchFragment(walletFragment);
 
         //radiobutton长度
-        radioButton = new RadioButton[sjRadiogroup.getChildCount()];
+        RadioButton[] radioButton = new RadioButton[sjRadiogroup.getChildCount()];
         for (int i = 0; i < radioButton.length; i++) {
             radioButton[i] = (RadioButton) sjRadiogroup.getChildAt(i);
         }
@@ -65,17 +76,15 @@ public class HomeOnekeyActivity extends BaseActivity implements RadioGroup.OnChe
         sjRadiogroup.setOnCheckedChangeListener(this);
     }
 
-    //switch fragment
+    // switch fragment
     public void switchFragment(Fragment fragment) {
+        FragmentManager manager = getSupportFragmentManager();
+        FragmentTransaction transaction = manager.beginTransaction();
         if (!fragments.contains(fragment)) {
-            FragmentManager manager = getSupportFragmentManager();
-            FragmentTransaction transaction = manager.beginTransaction();
             transaction.add(R.id.linear_mains, fragment);
             transaction.commit();
             fragments.add(fragment);
         } else {
-            FragmentManager manager = getSupportFragmentManager();
-            FragmentTransaction transaction = manager.beginTransaction();
             hideAllFragment(manager);
             transaction.show(fragment);
             transaction.commit();
@@ -110,6 +119,17 @@ public class HomeOnekeyActivity extends BaseActivity implements RadioGroup.OnChe
                 break;
 
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
+    public void onCreateWalletSuccess(CreateSuccessEvent event) {
+        PyEnv.loadLocalWalletInfo(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 
     @Override

@@ -8,6 +8,9 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
+/**
+ * @author liyan
+ */
 public class HardwareFeatures {
     /**
      * vendor : trezor.io
@@ -38,6 +41,7 @@ public class HardwareFeatures {
      * ble_enable: true
      * se_enable: false
      * se_version: ""
+     * backup_only: false
      * backup_message: ""
      */
 
@@ -97,6 +101,8 @@ public class HardwareFeatures {
     private boolean seEnable;
     @SerializedName("se_version")
     private String seVersion;
+    @SerializedName("backup_only")
+    private boolean backupOnly;
     @SerializedName("backup_message")
     private String backupMessage;
 
@@ -325,6 +331,10 @@ public class HardwareFeatures {
     }
     public String getSeVersion() {
         return seVersion;
+    }
+
+    public boolean isBackupOnly() {
+        return backupOnly;
     }
 
     public void setSeVersion(String seVersion) {

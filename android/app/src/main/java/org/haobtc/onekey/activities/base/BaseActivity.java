@@ -23,6 +23,8 @@ import com.google.common.base.Strings;
 
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.service.CommunicationModeSelector;
+import org.haobtc.onekey.constant.Constant;
+import org.haobtc.onekey.ui.adapter.MnemonicsAdapter;
 import org.haobtc.onekey.utils.NfcUtils;
 
 import java.io.UnsupportedEncodingException;
@@ -74,8 +76,8 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if ("nfc".equals(getSharedPreferences("Preferences", Context.MODE_PRIVATE).getString("way", "ble")) &&
-                getSharedPreferences("Preferences", Context.MODE_PRIVATE).getBoolean("nfc_support", true)) {
+        if ("nfc".equals(getSharedPreferences("Preferences", Context.MODE_PRIVATE).getString(Constant.WAY, Constant.WAY_MODE_BLE)) &&
+                getSharedPreferences("Preferences", Context.MODE_PRIVATE).getBoolean(Constant.NFC_SUPPORT, true)) {
             NfcUtils.nfc(this, false);
         }
         if (NfcUtils.mNfcAdapter != null && NfcUtils.mNfcAdapter.isEnabled()) {
@@ -107,7 +109,8 @@ public abstract class BaseActivity extends AppCompatActivity {
         String action = intent.getAction();
         // to fix the activity started with flag `FLAG_ACTIVITY_SINGLE_TOP` in stm32 1.9.5
         if (!Strings.isNullOrEmpty(action)) {
-            if (Objects.equals(action, NfcAdapter.ACTION_NDEF_DISCOVERED) // NDEF type
+            // NDEF type
+            if (Objects.equals(action, NfcAdapter.ACTION_NDEF_DISCOVERED)
                     || Objects.equals(action, NfcAdapter.ACTION_TECH_DISCOVERED)
                     || Objects.requireNonNull(action).equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
 //            isNFC = true;

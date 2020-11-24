@@ -5,11 +5,13 @@ import android.view.View;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.event.ExitEvent;
+import org.haobtc.onekey.manager.PyEnv;
 
 import static org.haobtc.onekey.activities.service.CommunicationModeSelector.ble;
-import static org.haobtc.onekey.activities.service.CommunicationModeSelector.nfc;
-import static org.haobtc.onekey.activities.service.CommunicationModeSelector.protocol;
 
+/**
+ * @author liyan
+ */
 public class ClickUtil {
     /**
      * the last click time
@@ -32,9 +34,9 @@ public class ClickUtil {
         if (viewId == R.id.img_back || viewId == R.id.img_cancel) {
             EventBus.getDefault().post(new ExitEvent());
             if (ble != null) {
-                ble.put("IS_CANCEL", true);
-                nfc.put("IS_CANCEL", true);
-                protocol.callAttr("notify");
+                PyEnv.bleCancel();
+                PyEnv.nfcCancel();
+                PyEnv.sNotify();
             }
             return false;
         }

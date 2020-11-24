@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:orientation="vertical">
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:gravity="center_horizontal"
+        android:paddingLeft="@dimen/dp_30"
+        android:paddingTop="@dimen/dp_20"
+        android:paddingRight="@dimen/dp_30"
+        android:paddingBottom="@dimen/dp_20"
+        android:text="钱包激活成功"
+        android:textColor="#142A3B"
+        android:textSize="30sp" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/dp_51"
+        android:src="@drawable/device_success" />
+
+
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_26"
+        android:layout_gravity="center"
+        android:background="@drawable/btn_no_check"
+        android:textSize="@dimen/sp_18"
+        android:paddingHorizontal="@dimen/dp_15"
+        android:paddingVertical="@dimen/dp_5"
+        android:gravity="center"
+        android:text="lable"/>
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_marginTop="49dp"
+        android:gravity="center"
+        android:text="您的硬件钱包激活成功，\n
+我们也没什么可提醒您的了。\n
+总之，切记保管好它，\n
+搞丢了没有任何人可以帮您找回来。\n
+祝您在区块链的世界玩儿开心❤️。"
+        android:lineSpacingExtra="10dp"
+        android:textColor="#546370"
+        android:textSize="@dimen/sp_14" />
+
+    <Button
+        android:id="@+id/back_wallet"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+       android:layout_marginTop="100dp"
+        android:layout_gravity="bottom|center_horizontal"
+        android:background="@drawable/btn_enable_selector"
+        android:text="@string/back_wallet"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/sp_14" />
+
+</LinearLayout>

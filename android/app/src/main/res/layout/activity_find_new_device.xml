@@ -162,7 +162,7 @@
     </LinearLayout>
 
 
-    <TextView
+<!--    <TextView
         android:id="@+id/multi_sig_wallet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -185,7 +185,7 @@
         android:paddingBottom="@dimen/dp_20"
         android:text="@string/multi_sig_wallet_hide"
         android:textColor="#9FA6AD"
-        android:textSize="@dimen/sp_12" />
+        android:textSize="@dimen/sp_12" />-->
 
 
     <LinearLayout

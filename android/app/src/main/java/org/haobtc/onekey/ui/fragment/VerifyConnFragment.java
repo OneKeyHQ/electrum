@@ -6,16 +6,16 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.mvp.base.BaseFragment;
 import org.haobtc.onekey.ui.listener.IVerifyConnListener;
 
-public class VerifyConnFragment extends BaseFragment<IVerifyConnListener> {
+public class VerifyConnFragment extends BaseFragment {
 
 
     @Override
     public void init(View view) {
-        getListener().onUpdateTitle(R.string.auth_verify);
+//        getListener().onUpdateTitle(R.string.auth_verify);
 
         //todo verify
 
-        getListener().onVerifyComplete(true);
+//        getListener().onVerifyComplete(true);
 
     }
 

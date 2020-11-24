@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/white_title_bg"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <include
+        android:id="@+id/include"
+        layout="@layout/title_layout" />
+
+    <TextView
+        android:id="@+id/promote"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:text="选择助记词个数"
+        android:gravity="center"
+        android:textSize="@dimen/sp_30"
+        android:textColor="#142A3B"
+        app:layout_constraintTop_toBottomOf="@id/include"
+        />
+    <TextView
+        android:id="@+id/tv1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:text="12"
+        android:layout_marginStart="@dimen/dp_20"
+        android:layout_marginEnd="@dimen/dp_20"
+        android:gravity="start"
+        android:textSize="@dimen/sp_16"
+        android:textColor="#142A3B"
+        android:layout_marginTop="@dimen/dp_54"
+        app:layout_constraintTop_toBottomOf="@id/promote"
+        app:drawableEndCompat="@drawable/right_arrow_small" />
+    <View
+        android:id="@+id/ln1"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_1"
+        android:background="#F1F1F1"
+        android:layout_marginStart="@dimen/dp_20"
+        android:layout_marginEnd="@dimen/dp_20"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv1"
+        android:layout_marginTop="@dimen/dp_26"/>
+    <TextView
+        android:id="@+id/tv2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:text="24"
+        android:layout_marginStart="@dimen/dp_20"
+        android:layout_marginEnd="@dimen/dp_20"
+        android:gravity="start"
+        android:textSize="@dimen/sp_16"
+        android:textColor="#142A3B"
+        android:layout_marginTop="@dimen/dp_27"
+        app:layout_constraintTop_toBottomOf="@id/ln1"
+        app:drawableEndCompat="@drawable/right_arrow_small" />
+    <View
+        android:id="@+id/ln2"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_1"
+        android:background="#F1F1F1"
+        android:layout_marginStart="@dimen/dp_20"
+        android:layout_marginEnd="@dimen/dp_20"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv2"
+        android:layout_marginTop="@dimen/dp_26"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

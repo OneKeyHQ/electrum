@@ -15,6 +15,9 @@ import org.haobtc.onekey.bean.BackupWalletBean;
 import java.util.List;
 
 
+/**
+ * @author liyan
+ */
 public class BackupWalletListAdapter extends RecyclerView.Adapter<BackupWalletListAdapter.ViewHolder> {
 
     public List<BackupWalletBean> mValues;

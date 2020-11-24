@@ -13,6 +13,9 @@ import androidx.annotation.Nullable;
 
 import org.haobtc.onekey.R;
 
+/**
+ * @author liyan
+ */
 public class LoadingTextView extends LinearLayout {
 
     private TextView mText;

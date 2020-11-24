@@ -11,6 +11,9 @@ import android.view.ViewGroup;
 import org.haobtc.onekey.R;
 
 
+/**
+ * @author jinxiaomin
+ */
 public class DiscoverFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

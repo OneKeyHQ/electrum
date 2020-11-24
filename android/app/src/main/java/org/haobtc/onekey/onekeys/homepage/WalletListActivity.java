@@ -51,6 +51,9 @@ import butterknife.OnClick;
 
 import static org.haobtc.onekey.activities.service.CommunicationModeSelector.executorService;
 
+/**
+ * @author jinxiaomin
+ */
 public class WalletListActivity extends BaseActivity {
 
     @BindView(R.id.recl_wallet_detail)

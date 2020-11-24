@@ -50,14 +50,14 @@ public class SelectorActivity extends BaseActivity {
     @Override
     public void initData() {
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-        String way = preferences.getString("way", "ble");
+        String way = preferences.getString("way", "bluetooth");
         switch (way) {
             case "nfc":
                 nfc.setChecked(true);
                 ble.setChecked(false);
                 usb.setChecked(false);
                 break;
-            case "ble":
+            case "bluetooth":
                 nfc.setChecked(false);
                 ble.setChecked(true);
                 usb.setChecked(false);
@@ -121,7 +121,7 @@ public class SelectorActivity extends BaseActivity {
         if (nfc.isChecked()) {
             preferences.edit().putString("way", "nfc").apply();
         } else if (ble.isChecked()) {
-            preferences.edit().putString("way", "ble").apply();
+            preferences.edit().putString("way", "bluetooth").apply();
         } else if (usb.isChecked()) {
             preferences.edit().putString("way", "usb").apply();
         }

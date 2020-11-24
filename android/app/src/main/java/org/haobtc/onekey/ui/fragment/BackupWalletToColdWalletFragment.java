@@ -11,7 +11,10 @@ import org.haobtc.onekey.ui.listener.IBackupWalletToColdWalletListener;
 
 import butterknife.BindView;
 
-public class BackupWalletToColdWalletFragment extends BaseFragment<IBackupWalletToColdWalletListener> {
+/**
+ * @author liyan
+ */
+public class BackupWalletToColdWalletFragment extends BaseFragment {
 
     @BindView(R.id.way_img)
     protected ImageView mWayImageView;
@@ -31,9 +34,9 @@ public class BackupWalletToColdWalletFragment extends BaseFragment<IBackupWallet
 
         //todo backwallet wallet
 
-        if (getListener() != null) {
-            getListener().onBackupSuccess();
-        }
+//        if (getListener() != null) {
+//            getListener().onBackupSuccess();
+//        }
     }
 
     @Override

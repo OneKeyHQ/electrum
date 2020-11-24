@@ -12,6 +12,9 @@ import androidx.appcompat.widget.AppCompatEditText;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author liyan
+ */
 public class PwdInputView extends AppCompatEditText {
 
     private Paint mBackPaint, mTextPaint;

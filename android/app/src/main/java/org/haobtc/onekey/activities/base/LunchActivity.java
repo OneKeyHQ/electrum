@@ -1,31 +1,27 @@
 package org.haobtc.onekey.activities.base;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.text.TextUtils;
 
-import com.chaquo.python.Kwarg;
-
-import org.haobtc.onekey.BuildConfig;
-import org.haobtc.onekey.MainActivity;
 import org.haobtc.onekey.R;
-import org.haobtc.onekey.activities.CreateWalletActivity;
-import org.haobtc.onekey.activities.GuideActivity;
+import org.haobtc.onekey.constant.Constant;
+import org.haobtc.onekey.data.prefs.PreferencesManager;
+import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.GuidanceActivity;
 import org.haobtc.onekey.onekeys.HomeOnekeyActivity;
-import org.haobtc.onekey.utils.Daemon;
-import org.haobtc.onekey.utils.Global;
 import org.haobtc.onekey.utils.NfcUtils;
 
 import java.util.Optional;
 
 import static org.haobtc.onekey.activities.service.CommunicationModeSelector.COMMUNICATION_MODE_NFC;
-import static org.haobtc.onekey.activities.service.CommunicationModeSelector.way;
 import static org.haobtc.onekey.activities.service.CommunicationModeSelector.isNFC;
+import static org.haobtc.onekey.activities.service.CommunicationModeSelector.way;
 
+/**
+ * @author liyan
+ */
 public class LunchActivity extends BaseActivity {
 
-    private SharedPreferences preferences;
 
     @Override
     public int getLayoutId() {
@@ -34,22 +30,18 @@ public class LunchActivity extends BaseActivity {
 
     @Override
     public void initView() {
-        preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-        SharedPreferences.Editor edit = preferences.edit();
         if (!Optional.ofNullable(NfcUtils.nfcCheck(this, false)).isPresent()) {
-            edit.putString("way", "ble");
-            edit.putBoolean("nfc_support", false);
+            PreferencesManager.put(this, "Preferences", Constant.WAY, Constant.WAY_MODE_BLE);
+            PreferencesManager.put(this, "Preferences", Constant.NFC_SUPPORT, false);
         }
-        edit.putBoolean("haveCreateNopass", false);//No password is required to create app wallet for the first time
-        edit.apply();
     }
 
     private void init() {
-        String language = preferences.getString("language", "");
+        String language =  PreferencesManager.get(this, "Preferences", Constant.LANGUAGE, "").toString();
         judgeLanguage(language);
 
-        String firstRun = "is_first_run";
-        if (preferences.getBoolean(firstRun, false)) {
+        boolean firstRun = (boolean)PreferencesManager.get(this, "Preferences", Constant.FIRST_RUN, false);
+        if (firstRun) {
             Intent intent = new Intent(LunchActivity.this, HomeOnekeyActivity.class);
             startActivity(intent);
             finish();
@@ -58,7 +50,7 @@ public class LunchActivity extends BaseActivity {
             initGuide();
 
         }
-        way = preferences.getString("way", "ble");
+        way =  PreferencesManager.get(this, "Preferences", Constant.WAY, Constant.WAY_MODE_BLE).toString();
         isNFC = COMMUNICATION_MODE_NFC.equals(way);
     }
 
@@ -83,21 +75,7 @@ public class LunchActivity extends BaseActivity {
 
     @Override
     public void initData() {
-        if (BuildConfig.net_type.equals(getString(R.string.TestNet))) {
-            Global.py.getModule("electrum.constants").callAttr("set_testnet");
-        } else if (BuildConfig.net_type.equals(getString(R.string.RegTest))) {
-            Global.py.getModule("electrum.constants").callAttr("set_regtest");
-        }
-        //Global.guiDaemon = Global.py.getModule("electrum_gui.android.daemon");
-        Global.guiConsole = Global.py.getModule("electrum_gui.android.console");
-        try {
-            Daemon.commands = Global.guiConsole.callAttr("AndroidCommands","123", new Kwarg("callback", Daemon.getInstance()));
-            Daemon.commands.callAttr("load_all_wallet");
-        } catch (Exception ignored) {
-            ignored.printStackTrace();
-        }
-        //Daemon.commands.callAttr("start", Daemon.getInstance());
-        //Daemon.commands.callAttr("set_callback_fun", Daemon.getInstance());
+        PyEnv.init(this);
         init();
     }
 }

@@ -9,7 +9,10 @@ import org.haobtc.onekey.ui.listener.IBackupSuccessListener;
 
 import butterknife.BindView;
 
-public class BackupSuccessFragment extends BaseFragment<IBackupSuccessListener> implements View.OnClickListener {
+/**
+ * @author liyan
+ */
+public class BackupSuccessFragment extends BaseFragment {
 
     @BindView(R.id.wallet_name)
     protected Button mWalletName;
@@ -18,7 +21,7 @@ public class BackupSuccessFragment extends BaseFragment<IBackupSuccessListener> 
     public void init(View view) {
 
         mWalletName.setText("test");
-        view.findViewById(R.id.back_wallet).setOnClickListener(this);
+//        view.findViewById(R.id.back_wallet).setOnClickListener(this);
 
     }
 
@@ -27,15 +30,4 @@ public class BackupSuccessFragment extends BaseFragment<IBackupSuccessListener> 
         return R.layout.fragment_backup_success;
     }
 
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.back_wallet:
-                if (getListener() != null) {
-                    getListener().onToHome();
-                }
-                break;
-        }
-    }
 }
