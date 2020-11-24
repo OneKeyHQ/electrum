@@ -6,7 +6,7 @@ import os
 import json
 from enum import Enum
 from os.path import expanduser
-from electrum_gui.android.utils import Ticker
+from electrum.util import Ticker
 import requests
 # from eth_accounts.account_utils import AccountUtils
 from eth_keyfile import keyfile
@@ -28,9 +28,12 @@ KEYSTORE_DIR_PREFIX = expanduser("~")
 # default pyethapp keystore path
 KEYSTORE_DIR_SUFFIX = ".electrum/eth/keystore/"
 
-REQUESTS_HEADERS = {
-    "User-Agent": "https://github.com/AndreMiras/PyWallet",
-}
+# REQUESTS_HEADERS = {
+#     "User-Agent": "https://github.com/AndreMiras/PyWallet",
+# }
+
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 class InsufficientFundsException(Exception):
     """
@@ -100,36 +103,6 @@ def get_abi_json():
         fitcoin = json.load(f)
     return fitcoin
 
-class ChainID(Enum):
-    MAINNET = 1
-    MORDEN = 2
-    ROPSTEN = 3
-    CUSTOMER = 11
-
-
-class HTTPProviderFactory:
-    global eth_servers
-    eth_servers = read_json('eth_servers.json', {})
-    PROVIDER_URLS = {
-        ChainID.MAINNET: f"{eth_servers['Provider']['mainnet']+INFURA_PROJECT_ID}",
-        ChainID.ROPSTEN: f"{eth_servers['Provider']['ropsten']+INFURA_PROJECT_ID}",
-        ChainID.CUSTOMER: f"{eth_servers['Provider']['customer']}",
-    }
-
-    @classmethod
-    def create(cls, chain_id=ChainID.MAINNET) -> HTTPProvider:
-        url = cls.PROVIDER_URLS[chain_id]
-        return HTTPProvider(url)
-
-
-def get_etherscan_prefix(chain_id=ChainID.MAINNET) -> str:
-    PREFIXES = {
-        ChainID.MAINNET: eth_servers['Etherscan']['mainnet'],
-        ChainID.ROPSTEN: eth_servers['Etherscan']['ropsten'],
-    }
-    return PREFIXES[chain_id]
-
-
 def handle_etherscan_response_json(response_json):
     """Raises an exception on unexpected response json."""
     status = response_json["status"]
@@ -155,7 +128,10 @@ def handle_etherscan_response(response):
 
 
 def requests_get(url):
-    return requests.get(url, headers=REQUESTS_HEADERS)
+    try:
+        return requests.get(url, timeout=5, verify=False)
+    except BaseException as e:
+        raise e
 
 headers = {
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36"
@@ -163,14 +139,16 @@ headers = {
 
 class PyWalib:
     web3 = None
+    market_server = None
+    tx_list_server = None
+    gas_server = None
     symbols_price = {}
     config = None
+    chain_type = None
     chain_id = None
-    def __init__(self, config, chain_id=ChainID.MAINNET):
-        PyWalib.chain_id = chain_id
+    def __init__(self, config, chain_type="mainnet"):
+        PyWalib.chain_type = chain_type
         PyWalib.config = config
-        self.provider = HTTPProviderFactory.create(PyWalib.chain_id)
-        PyWalib.web3 = Web3(self.provider)
         self.init_symbols()
 
     def init_symbols(self):
@@ -178,7 +156,7 @@ class PyWalib:
         for symbol in symbol_list:
             PyWalib.symbols_price[symbol] = self.get_currency(symbol, 'BTC')
         global symbol_ticker
-        symbol_ticker = Ticker(5.0, self.get_symbols_price)
+        symbol_ticker = Ticker(30*60, self.get_symbols_price)
         symbol_ticker.start()
 
     def get_symbols_price(self):
@@ -186,18 +164,19 @@ class PyWalib:
             for symbol, price in PyWalib.symbols_price.items():
                 PyWalib.symbols_price[symbol] = self.get_currency(symbol, 'BTC')
                 PyWalib.config.set_key("symbol_list", PyWalib.symbols_price)
-            print(f"symbol info.......{PyWalib.symbols_price}")
         except BaseException as e:
             raise e
 
     @staticmethod
     def get_currency(from_cur, to_cur):
         try:
-            url = eth_servers['Market']
-            url += from_cur.upper()+'/'+to_cur.upper()
-            response = requests.get(url, timeout=2, verify=False)
-            obj = response.json()
-            return obj['data']['price']
+            #url = eth_servers['Market']
+            if PyWalib.market_server is not None:
+                url = PyWalib.market_server
+                url += from_cur.upper()+'/'+to_cur.upper()
+                response = requests.get(url, timeout=2, verify=False)
+                obj = response.json()
+                return obj['data']['price']
         except BaseException as e:
             print(f"get symbol price error {e}")
             pass
@@ -207,11 +186,24 @@ class PyWalib:
         return PyWalib.web3
 
     @staticmethod
+    def set_server(info):
+        PyWalib.market_server = info['Market']
+        PyWalib.tx_list_servers = info['TxliServer']
+        PyWalib.gas_server = info['GasServer']
+        for i in info['Provider']:
+            if PyWalib.chain_type in i:
+                url = i[PyWalib.chain_type]
+                chain_id = i['chainid']
+        PyWalib.web3 = Web3(HTTPProvider(url))
+        PyWalib.chain_id = chain_id
+
+    @staticmethod
     def get_coin_price(from_cur):
         try:
             from_cur = from_cur.upper()
             if from_cur in PyWalib.symbols_price:
-                return PyWalib.symbols_price[from_cur]
+                symbol_price = PyWalib.symbols_price[from_cur]
+                return symbol_price if symbol_price is not None else PyWalib.get_currency(from_cur, 'BTC')
             else:
                 symbol_price = PyWalib.get_currency(from_cur, 'BTC')
                 PyWalib.symbols_price[from_cur] = symbol_price
@@ -220,28 +212,33 @@ class PyWalib:
         except BaseException as e:
             raise e
 
-
     def get_gas_price(self):
         try:
-            response = requests.get(eth_servers['GasServer'], headers=headers)
-            obj = response.json()
-            out = dict()
-            if obj['code'] == 200:
-                for type, wei in obj['data'].items():
-                    fee_info = dict()
-                    fee_info['price'] = int(self.web3.fromWei(wei, "gwei"))
-                    if type == "rapid":
-                        fee_info['time'] = "15 Seconds"
-                    elif type == "fast":
-                        fee_info['time'] = "1 Minute"
-                    elif type == "standard":
-                        fee_info['time'] = "3 Minutes"
-                    elif type == "timestamp":
-                        fee_info['time'] = "> 10 Minutes"
-                    out[type] = fee_info
-            return json.dumps(out)
+            #response = requests.get(eth_servers['GasServer'], headers=headers)
+            if PyWalib.gas_server is not None:
+                response = requests.get(PyWalib.gas_server, headers=headers)
+                obj = response.json()
+                out = dict()
+                if obj['code'] == 200:
+                    for type, wei in obj['data'].items():
+                        fee_info = dict()
+                        fee_info['price'] = int(self.web3.fromWei(wei, "gwei"))
+                        if type == "rapid":
+                            fee_info['time'] = "15 Seconds"
+                        elif type == "fast":
+                            fee_info['time'] = "1 Minute"
+                        elif type == "standard":
+                            fee_info['time'] = "3 Minutes"
+                        elif type == "timestamp":
+                            fee_info['time'] = "> 10 Minutes"
+                        out[type] = fee_info
+                return json.dumps(out)
         except BaseException as ex:
             raise ex
+
+    def get_max_use_gas(self, gas_price):
+        gas = gas_price * DEFAULT_GAS_LIMIT
+        return self.web3.fromWei(gas * GWEI_BASE, 'ether')
 
     def get_transaction(self, from_address, to_address, value, contract=None, gasprice = DEFAULT_GAS_PRICE_GWEI * (10 ** 9)):
         try:
@@ -258,7 +255,7 @@ class PyWalib:
                 gas_price=self.web3.toWei(gasprice, "gwei"),
                 # be careful about sending more transactions in row, nonce will be duplicated
                 nonce=self.web3.eth.getTransactionCount(self.web3.toChecksumAddress(from_address)),
-                chain_id=PyWalib.chain_id.value
+                chain_id=PyWalib.chain_id
             )
         else:  # create ERC20 contract transaction dictionary
             erc20_decimals = contract.get_decimals()
@@ -286,7 +283,7 @@ class PyWalib:
                 gas_price=self.web3.toWei(gasprice, "gwei"),
                 # be careful about sending more transactions in row, nonce will be duplicated
                 nonce=self.web3.eth.getTransactionCount(self.web3.toChecksumAddress(from_address)),
-                chain_id=PyWalib.chain_id.value,
+                chain_id=PyWalib.chain_id,
                 data=data_for_contract
             )
 
@@ -362,12 +359,12 @@ class PyWalib:
         Retrieves the transaction history from etherscan.io.
         """
         address = to_checksum_address(address)
-        url = get_etherscan_prefix(PyWalib.chain_id)
+        #url = get_etherscan_prefix(PyWalib.chain_id)
+        url = PyWalib.tx_list_servers['etherscan']
         url += (
             '?module=account&action=txlist'
             '&sort=asc'
             f'&address={address}'
-            f'&apikey={ETHERSCAN_API_KEY}'
         )
         response = requests_get(url)
         handle_etherscan_response(response)

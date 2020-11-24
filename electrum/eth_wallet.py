@@ -157,14 +157,14 @@ class Abstract_Eth_Wallet(ABC):
     def pubkeys_to_address(self, public_key: str):
         return to_checksum_address(public_key_bytes_to_address(bytes.fromhex(public_key)))
 
-    def get_all_balance(self, wallet_address):
+    def get_all_balance(self, wallet_address, from_coin):
         eth_info = {}
-        last_price = PyWalib.get_coin_price("ETH")
+        last_price = PyWalib.get_coin_price(from_coin)
         eth, balance = PyWalib.get_balance(wallet_address)
         balance_info = {}
-        balance_info['eth'] = balance
-        balance_info['fiat'] = balance * last_price
-        eth_info['eth'] = balance_info
+        balance_info['%s' %self.wallet_type[0:3]] = balance
+        balance_info['fiat'] = balance * Decimal(last_price)
+        eth_info['%s' %self.wallet_type[0:3]] = balance_info
         for symbol, contract in self.contacts.items():
             symbol, balance = PyWalib.get_balance(wallet_address, contract)
             last_price = PyWalib.get_coin_price(symbol)

@@ -1,14 +1,29 @@
 {
-    "Provider": {
-        "mainnet": "https://mainnet.infura.io/v3/",
-        "ropsten": "https://ropsten.infura.io/v3/",
-        "customer": "http://127.0.0.1:8545"
-    },
-    "Etherscan": {
-        "mainnet": "https://api.etherscan.io/api",
-        "ropsten": "https://api-ropsten.etherscan.io/api"
-    },
+  "eth": {
+    "id": "ethereum",
+    "name": "Ethereum",
+    "coinId": 60,
+    "addressType": 44,
+    "symbol": "ETH",
+    "decimals": 18,
+    "blockchain": "Ethereum",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "derived_info": "",
+    "Provider": [
+      {"mainnet": "https://mainnet.infura.io/v3/f001ce716b6e4a33a557f74df6fe8eff", "chainid": "1"},
+      {"testnet": "https://ropsten.infura.io/v3/f001ce716b6e4a33a557f74df6fe8eff", "chainid": "3"},
+      {"customer": "http://127.0.0.1:8545", "chainid": "11"}
+    ],
+    "TxliServer": [
+         {"etherscan-mainnet": "https://api-cn.etherscan.com/api"},
+         {"etherscan-testnet": "https://ropsten.etherscan.io/apis"},
+         {"trezor-mainnet": "https://eth1.trezor.io/api/v2/"},
+         {"trezor-mainnet1": "https://eth2.trezor.io/api/v2/"},
+         {"trezor-testnet": "https://eth1.ropsten1.trezor.io/api/v2/"},
+         {"trezor-testnet1": "https://eth2.ropsten1.trezor.io/api/v2/"}
+      ],
     "Market": "https://mkline.bixin.com/api/v1/ticker?symbol=",
     "GasServer": "https://www.gasnow.org/api/v3/gas/price?utm_source=onekey"
-
+  }
 }

@@ -30,10 +30,6 @@ from .util import inv_dict
 from . import bitcoin
 from enum import Enum
 
-class CoinType(Enum):
-    ETH = 60
-    EOS = 194
-
 def read_json(filename, default):
     path = os.path.join(os.path.dirname(__file__), filename)
     try:
