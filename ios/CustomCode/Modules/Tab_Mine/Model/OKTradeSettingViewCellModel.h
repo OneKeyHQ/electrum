@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OKTradeSettingViewCellModel : NSObject
 @property (nonatomic,copy) NSString* titleStr;
 @property (nonatomic,assign) BOOL switchOn;
+@property (nonatomic,assign)NSInteger index;
 @end
 
 NS_ASSUME_NONNULL_END

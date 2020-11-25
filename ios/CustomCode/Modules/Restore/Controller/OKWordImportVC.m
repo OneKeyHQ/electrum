@@ -10,10 +10,11 @@
 #import "OKBiologicalViewController.h"
 #import "OKPwdViewController.h"
 
-@interface OKWordImportVC ()
+@interface OKWordImportVC ()<UIScrollViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UIButton *nextBtn;
 @property (weak, nonatomic) IBOutlet OKWordImportView *wordInputView;
+@property (weak, nonatomic) IBOutlet UIScrollView *scrollView;
 
 @end
 
@@ -80,5 +81,11 @@
     }else{
         [kTools tipMessage:MyLocalizedString(@"Incorrect phrase", nil)];
     }
+}
+
+#pragma mark - scrollView
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    [self.view endEditing:YES];
 }
 @end

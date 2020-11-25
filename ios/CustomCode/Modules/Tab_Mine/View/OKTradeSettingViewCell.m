@@ -35,6 +35,10 @@
     // Configure the view for the selected state
 }
 
-- (IBAction)rightSwitchClick:(id)sender {
+- (IBAction)rightSwitchClick:(UISwitch *)sender {
+    
+    if ([self.delegate respondsToSelector:@selector(switchClick:on:)]) {
+        [self.delegate switchClick:self.model on:sender.isOn];
+    }
 }
 @end

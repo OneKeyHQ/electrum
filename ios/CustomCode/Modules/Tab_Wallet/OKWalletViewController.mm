@@ -135,6 +135,36 @@
     }else{
         [kPyCommandsManager callInterface:kInterfaceSet_base_uint parameter:@{@"base_unit":kWalletManager.currentBitcoinUnit}];
     }
+    
+    
+    //设置默认的浏览器
+    if (kUserSettingManager.currentBtcBrowser == nil || kUserSettingManager.currentBtcBrowser.length == 0) {
+        [kUserSettingManager setCurrentBtcBrowser:kUserSettingManager.btcBrowserList.firstObject];
+    }
+    
+
+    [kPyCommandsManager callInterface:kInterfaceset_rbf parameter:@{@"status_rbf":@"1"}];
+    [kPyCommandsManager callInterface:kInterfaceset_unconf parameter:@{@"x":@"1"}];
+    [kUserSettingManager setUnconfFlag:YES];
+    [kUserSettingManager setRbfFlag:YES];
+    
+    
+    if (kUserSettingManager.currentMarketSource == nil || kUserSettingManager.currentMarketSource.length == 0) {
+        NSArray *marketSource =  [kPyCommandsManager callInterface:kInterfaceget_exchanges parameter:@{}];
+        NSString *first =  marketSource.firstObject;
+        [kUserSettingManager setCurrentMarketSource:first];
+        [kPyCommandsManager callInterface:kInterfaceset_exchange parameter:@{@"exchange":first}];
+    }
+    
+    if (kUserSettingManager.electrum_server == nil || kUserSettingManager.electrum_server.length == 0) {
+       NSDictionary *dict =   [kPyCommandsManager callInterface:kInterfaceget_default_server parameter:@{}];
+        if (dict != nil) {
+            NSString *electrumNode = [NSString stringWithFormat:@"%@:%@",[dict safeStringForKey:@"host"],[dict safeStringForKey:@"port"]];
+            [kUserSettingManager setElectrum_server:electrumNode];
+        }
+    }
+    
+    
 }
 
 
@@ -185,6 +215,10 @@
     UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapGestureClick)];
     [self.leftView addGestureRecognizer:tapGesture];
     self.navigationController.delegate = self;
+    
+    [self.coinImage addTarget:self action:@selector(tapGestureClick) forControlEvents:UIControlEventTouchUpInside];
+    
+    
     
     //asset界面
     [self.walletTopBgView setCornerWith:20 side:OKCornerPathTopLeft|OKCornerPathTopRight withSize:CGSizeMake(SCREEN_WIDTH - 40, 168)];
@@ -267,9 +301,7 @@
     }
     OKFirstUseViewController *firstUseVc = [OKFirstUseViewController firstUseViewController];
     BaseNavigationController *navVc = [[BaseNavigationController alloc]initWithRootViewController:firstUseVc];
-    if (@available(iOS 13.0, *)) {
-        navVc.modalInPresentation = YES;
-    }
+    navVc.modalPresentationStyle = UIModalPresentationFullScreen;
     [self.navigationController presentViewController:navVc animated:NO completion:nil];
 }
 

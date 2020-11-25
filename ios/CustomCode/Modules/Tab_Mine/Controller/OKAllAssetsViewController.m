@@ -50,8 +50,6 @@
     [self.tableView reloadData];
 }
 
-
-
 #pragma mark - UITableViewDataSource ,UITableViewDelegate
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section

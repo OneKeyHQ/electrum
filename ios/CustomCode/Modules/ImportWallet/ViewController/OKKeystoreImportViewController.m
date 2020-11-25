@@ -48,7 +48,7 @@
     [self.leftBgView setLayerRadius:2];
     [self.importBtn setLayerDefaultRadius];
     [self.pwdBgView setLayerBoarderColor:HexColor(0xDBDEE7) width:1 radius:20];
-
+    
     self.pwdTextField.placeholder = MyLocalizedString(@"Enter the Keystore file password", nil);
     [self textChange];
     self.navigationItem.rightBarButtonItem = [UIBarButtonItem barButtonItemScanBtnWithTarget:self selector:@selector(scanBtnClick)];

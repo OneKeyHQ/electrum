@@ -11,6 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 typedef enum {
     WordsShowTypeRestore,
+    WordsShowTypeHDExport,
     WordsShowTypeExport
 }WordsShowType;
 

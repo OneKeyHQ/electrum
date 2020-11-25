@@ -100,7 +100,7 @@
                                             </view>
                                             <button opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="E0W-O6-RM2">
                                                 <rect key="frame" x="43" y="715" width="328" height="60"/>
-                                                <color key="backgroundColor" red="0.0" green="0.72156862749999995" blue="0.070588235289999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                <color key="backgroundColor" red="0.0010134851330000001" green="0.7278487682" blue="0.070087678730000005" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="60" id="GMb-th-Yu7"/>
                                                 </constraints>
@@ -210,6 +210,9 @@
                                 </constraints>
                                 <viewLayoutGuide key="contentLayoutGuide" id="IjI-A9-Rit"/>
                                 <viewLayoutGuide key="frameLayoutGuide" id="ZYs-qD-d7D"/>
+                                <connections>
+                                    <outlet property="delegate" destination="D2y-tl-wHA" id="AoH-Gc-UQK"/>
+                                </connections>
                             </scrollView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="srZ-M4-Y1i"/>
@@ -225,6 +228,7 @@
                     <navigationItem key="navigationItem" id="GbB-hJ-Pj8"/>
                     <connections>
                         <outlet property="nextBtn" destination="E0W-O6-RM2" id="57k-gF-D7x"/>
+                        <outlet property="scrollView" destination="Ubn-pf-VUi" id="Iq2-nD-6fp"/>
                         <outlet property="wordInputView" destination="Yle-OW-nuz" id="gvu-ZD-i4a"/>
                     </connections>
                 </viewController>
@@ -1029,6 +1033,7 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="descLabel" destination="PDf-Pu-vYc" id="8yr-Xd-8bP"/>
                         <outlet property="headerView" destination="cUz-87-2bV" id="cnL-e0-j67"/>
                         <outlet property="restoreBtn" destination="16r-Tw-QtQ" id="Ki2-eq-bFA"/>
                         <outlet property="tableViewBgView" destination="bTw-IY-hJ4" id="9Se-Gm-H0g"/>

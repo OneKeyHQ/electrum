@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<string>https://btc.com/</string>
+	<string>https://www.blockin.com/tx/</string>
+	<string>https://www.blockchain.com/btc/tx/</string>
+	<string>https://blockchair.com/bitcoin/transaction/</string>
+	<string>http://blockr.io/tx/info/</string>
+	<string>https://bchain.info/BTC/tx/</string>
+	<string>https://bitinfocharts.com/bitcoin/tx/</string>
+	<string>https://live.blockcypher.com/btc/tx/</string>
+	<string>https://insight.bitpay.com/tx/</string>
+	<string>https://chain.so/tx/BTC/</string>
+	<string>https://www.smartbit.com.au/tx/</string>
+</array>
+</plist>

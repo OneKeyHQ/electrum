@@ -15,6 +15,7 @@
 
 #define kInterfaceDelete_wallet          @"delete_wallet"   //删除钱包
 
+#define kInterfacerecovery_confirmed     @"recovery_confirmed" //确认需要恢复的钱包列表
 
 
 #define kInterfaceImport_Privkeys          @"Import_create_privkeys"     // 私钥导入钱包
@@ -59,6 +60,26 @@
 #define kInterfaceget_exchange_currency  @"get_exchange_currency" //BTC和法币之间的转换
 #define kExchange_currencyTypeBase       @"base"
 #define kExchange_currencyTypeFiat       @"fiat"
+
+
+
+#define kInterfaceset_server             @"set_server"      //设置服务器
+#define kInterfaceget_default_server     @"get_default_server" //获取默认节点
+#define kInterfaceget_server_list        @"get_server_list"   //服务器列表
+
+#define kInterfaceget_sync_server_host   @"get_sync_server_host" //获取默认同步服务器
+#define kInterfaceset_sync_server_host   @"set_sync_server_host" //设置同步服务器
+#define kInterfaceset_syn_server         @"set_syn_server"  //使用同步服务器的开关
+
+#define kInterfaceget_exchanges          @"get_exchanges" //获取行情服务器列表
+#define kInterfaceset_exchange           @"set_exchange"  //设置行情服务器
+
+#define kInterfaceset_unconf             @"set_unconf"  //设置未确认花费
+#define kInterfaceset_rbf                @"set_rbf" //设置rbf功能
+
+
+#define kInterfaceset_proxy              @"set_proxy"  //设置代理服务器
+
 
 #define kPyCommandsManager (OKPyCommandsManager.sharedInstance)
 NS_ASSUME_NONNULL_BEGIN

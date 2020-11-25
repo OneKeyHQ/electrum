@@ -9,6 +9,7 @@
 #import "OKPwdViewController.h"
 #import "CLPasswordInputView.h"
 #import "OKBiologicalViewController.h"
+#import "OKFindFollowingWalletController.h"
 
 typedef enum {
     PageTypeFirst = 0,
@@ -321,17 +322,38 @@ typedef enum {
 - (void)passwordIsCorrect:(NSString *)pwd
 {
     NSString *seed = @"";
+    NSString *createHD = @"";
+    NSArray *restoreHD = [NSArray array];
+    NSArray *words = [NSArray array];
     if (self.words.length > 0) {
         seed = self.words;
+        restoreHD =  [kPyCommandsManager callInterface:kInterfaceCreate_hd_wallet parameter:@{@"password":pwd,@"seed":seed}];
+        
+    }else{
+        createHD =  [kPyCommandsManager callInterface:kInterfaceCreate_hd_wallet parameter:@{@"password":pwd,@"seed":seed}];
+        words = [createHD componentsSeparatedByString:@" "];
     }
-    NSString *createHD =  [kPyCommandsManager callInterface:kInterfaceCreate_hd_wallet parameter:@{@"password":pwd,@"seed":seed}];
-    NSArray *words = [createHD componentsSeparatedByString:@" "];
+    
     if (words.count > 0) {
         [OKStorageManager saveToUserDefaults:@"BTC-1" key:kCurrentWalletName];
         //创建HD成功刷新首页的UI
         [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletFirstCreateComplete object:@{@"pwd":pwd}];
         OKBiologicalViewController *biologicalVc = [OKBiologicalViewController biologicalViewController];
         [self.navigationController pushViewController:biologicalVc animated:YES];
+    }else{
+        if (restoreHD.count == 0) {
+            [kPyCommandsManager callInterface:kInterfacerecovery_confirmed parameter:@{@"name_list":@[]}];
+            [OKStorageManager saveToUserDefaults:@"BTC-1" key:kCurrentWalletName];
+            //创建HD成功刷新首页的UI
+            [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletFirstCreateComplete object:@{@"pwd":pwd}];
+            OKBiologicalViewController *biologicalVc = [OKBiologicalViewController biologicalViewController];
+            [self.navigationController pushViewController:biologicalVc animated:YES];
+        }else{
+            OKFindFollowingWalletController *findFollowingWalletVc = [OKFindFollowingWalletController findFollowingWalletController];
+            findFollowingWalletVc.restoreHD = restoreHD;
+            NSLog(@"restoreHD == %@",restoreHD);
+            [self.navigationController pushViewController:findFollowingWalletVc animated:YES];
+        }
     }
 }
 

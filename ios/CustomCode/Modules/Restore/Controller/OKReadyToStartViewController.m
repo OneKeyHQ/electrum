@@ -40,7 +40,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    self.words = [kPyCommandsManager callInterface:kInterfaceexport_seed parameter:@{@"password":self.pwd}];
+    self.words = [kPyCommandsManager callInterface:kInterfaceexport_seed parameter:@{@"password":self.pwd,@"name":kWalletManager.currentWalletName}];
 }
 
 - (IBAction)startBtnClick:(UIButton *)sender {

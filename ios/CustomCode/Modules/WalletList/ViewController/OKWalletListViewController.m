@@ -221,7 +221,8 @@
             case 1:
             {
                 OKWordImportVC *wordImport = [OKWordImportVC initViewController];
-                [self.OK_TopViewController presentViewController:wordImport animated:YES completion:nil];
+                BaseNavigationController *baseVc = [[BaseNavigationController alloc]initWithRootViewController:wordImport];
+                [self.OK_TopViewController presentViewController:baseVc animated:YES completion:nil];
             }
                 break;
             default:
@@ -359,10 +360,16 @@
 }
 #pragma mark - 点击详情
 - (IBAction)detailBtnClick:(UIButton *)sender {
+    [self detailClick];
+}
+- (IBAction)detailLabelClick:(UITapGestureRecognizer *)sender {
+    [self detailClick];
+}
+- (void)detailClick
+{
     OKWalletDetailViewController *walletDetail = [OKWalletDetailViewController walletDetailViewController];
     [self.navigationController pushViewController:walletDetail animated:YES];
 }
-
 #pragma mark - 点击添加钱包
 - (IBAction)addWalletClick:(UIButton *)sender {
     OKSelectCoinTypeViewController *selectVc = [OKSelectCoinTypeViewController selectCoinTypeViewController];

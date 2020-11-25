@@ -18,6 +18,7 @@
 @property (weak, nonatomic) IBOutlet UIView *headerView;
 @property (weak, nonatomic) IBOutlet UIButton *restoreBtn;
 - (IBAction)restoreBtnClick:(UIButton *)sender;
+@property (weak, nonatomic) IBOutlet UILabel *descLabel;
 
 @property (nonatomic,strong)NSArray *walletList;
 
@@ -33,6 +34,10 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+    //        [OKStorageManager saveToUserDefaults:@"BTC-1" key:kCurrentWalletName];
+    //        //创建HD成功刷新首页的UI
+    //        [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletFirstCreateComplete object:@{@"pwd":pwd}];
     
 }
 

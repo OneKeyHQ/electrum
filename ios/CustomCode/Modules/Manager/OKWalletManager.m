@@ -172,7 +172,7 @@ static dispatch_once_t once;
     }else if ([type isEqualToString:@"btc-standard"]){
         return @"";
     }else if ([type isEqualToString:@"btc-derived-standard"]){
-        return @"";
+        return @"HD";
     }else if ([type isEqualToString:@"btc-hw-m-n"]){
         return @"";
     }else if ([type isEqualToString:@"btc-hd-hw-1-1"]){
@@ -193,7 +193,6 @@ static dispatch_once_t once;
 
 
 - (BOOL)checkEveryWordInPlist:(NSArray *)wordsArr {
-
     int count = 0;
     for (NSString *word in wordsArr) {
         if ([self containsInAllWords:word] == NO) {
@@ -202,11 +201,9 @@ static dispatch_once_t once;
             ++count;
         }
     }
-
     if (count == wordsArr.count) {
         return YES;
     }
-
     return NO;
 }
 - (BOOL)containsInAllWords:(NSString *)word {
@@ -223,4 +220,6 @@ static dispatch_once_t once;
     }
     return _englishWords;
 }
+
+
 @end

@@ -20,7 +20,7 @@ static dispatch_once_t once;
     dispatch_once(&once, ^{
         PyGILState_STATE state = PyGILState_Ensure();
         _sharedInstance = [[OKPyCommandsManager alloc] init];
-        PyObject *pModule = PyImport_ImportModule([@"api.android.console" UTF8String]);//导入模块
+        PyObject *pModule = PyImport_ImportModule([@"electrum_gui.android.console" UTF8String]);//导入模块
         if (pModule == NULL) {
                PyErr_Print();
         }
@@ -187,6 +187,7 @@ static dispatch_once_t once;
         NSString *ccy = [parameter safeStringForKey:@"ccy"];
         result = PyObject_CallMethod(self.pyInstance, [kInterfaceSet_currency UTF8String], "(s)",[ccy UTF8String]);
         
+        
     }else if([method isEqualToString:kInterfaceSet_base_uint]){
         //比特币单位(BTC/mBTC/bits/sat)
         NSString *base_unit = [parameter safeStringForKey:@"base_unit"];
@@ -217,7 +218,8 @@ static dispatch_once_t once;
         
     }else if([method isEqualToString:kInterfaceexport_seed]){
         NSString *password = [parameter safeStringForKey:@"password"];
-        result = PyObject_CallMethod(self.pyInstance, [kInterfaceexport_seed UTF8String], "(s)",[password UTF8String]);
+        NSString *name = [parameter safeStringForKey:@"name"];
+        result = PyObject_CallMethod(self.pyInstance, [kInterfaceexport_seed UTF8String], "(s,s)",[password UTF8String],[name UTF8String]);
 
     }else if([method isEqualToString:kInterfaceget_all_wallet_balance]){
         result = PyObject_CallMethod(self.pyInstance, [kInterfaceget_all_wallet_balance UTF8String], "()",NULL);
@@ -238,6 +240,67 @@ static dispatch_once_t once;
         NSString * type = [parameter safeStringForKey:@"type"];
         NSString * amount = [parameter safeStringForKey:@"amount"];
         result = PyObject_CallMethod(self.pyInstance, [kInterfaceget_exchange_currency UTF8String], "(s,s)",[type UTF8String],[amount UTF8String]);
+       
+        
+    }else if([method isEqualToString:kInterfacerecovery_confirmed]){
+        NSArray *nameList = parameter[@"name_list"];
+        NSString * name_list = [nameList mj_JSONString];
+        NSString * hw = [parameter safeStringForKey:@"hw"];
+        if (hw == nil) {
+            result = PyObject_CallMethod(self.pyInstance, [kInterfacerecovery_confirmed UTF8String], "(s,i)",[name_list UTF8String],[hw boolValue]);
+        }else{
+            result = PyObject_CallMethod(self.pyInstance, [kInterfacerecovery_confirmed UTF8String], "(s)",[name_list UTF8String]);
+        }
+        
+    }else if([method isEqualToString:kInterfaceget_default_server]){
+        result = PyObject_CallMethod(self.pyInstance, [kInterfaceget_default_server UTF8String], "()",NULL);
+        
+        
+    }else if([method isEqualToString:kInterfaceset_sync_server_host]){
+        NSString *ip = [parameter safeStringForKey:@"ip"];
+        NSString *port = [parameter safeStringForKey:@"port"];
+        result = PyObject_CallMethod(self.pyInstance, [kInterfaceset_sync_server_host UTF8String], "(s,s)",[ip UTF8String],[port UTF8String]);
+        
+    }else if([method isEqualToString:kInterfaceget_exchanges]){
+        result = PyObject_CallMethod(self.pyInstance, [kInterfaceget_exchanges UTF8String], "()",NULL);
+        
+    }else if([method isEqualToString:kInterfaceset_exchange]){
+        NSString *exchange = [parameter safeStringForKey:@"exchange"];
+        result = PyObject_CallMethod(self.pyInstance, [kInterfaceset_exchange UTF8String], "(s)",[exchange UTF8String]);
+
+    }else if([method isEqualToString:kInterfaceget_sync_server_host]){
+        result = PyObject_CallMethod(self.pyInstance, [kInterfaceget_sync_server_host UTF8String], "()",NULL);
+
+    }else if([method isEqualToString:kInterfaceset_syn_server]){
+        BOOL flag = [[parameter safeStringForKey:@"flag"]boolValue];
+        result = PyObject_CallMethod(self.pyInstance, [kInterfaceset_syn_server UTF8String], "(i)",flag);
+       
+        
+    }else if([method isEqualToString:kInterfaceset_rbf]){
+        BOOL status_rbf = [[parameter safeStringForKey:@"status_rbf"]boolValue];
+        result = PyObject_CallMethod(self.pyInstance, [kInterfaceset_rbf UTF8String], "(i)",status_rbf);
+        
+    }else if([method isEqualToString:kInterfaceset_unconf]){
+        BOOL x = [[parameter safeStringForKey:@"x"]boolValue];
+        result = PyObject_CallMethod(self.pyInstance, [kInterfaceset_rbf UTF8String], "(i)",x);
+        
+
+    }else if([method isEqualToString:kInterfaceget_server_list]){
+        result = PyObject_CallMethod(self.pyInstance, [kInterfaceget_server_list UTF8String], "()",NULL);
+      
+      
+    }else if([method isEqualToString:kInterfaceset_server]){
+        NSString *host = [parameter safeStringForKey:@"host"];
+        NSString *port = [parameter safeStringForKey:@"port"];
+        result = PyObject_CallMethod(self.pyInstance, [kInterfaceset_server UTF8String], "(s,s)",[host UTF8String],[port UTF8String]);
+    
+    }else if([method isEqualToString:kInterfaceset_proxy]){
+        NSString *proxy_mode = [parameter safeStringForKey:@"proxy_mode"];
+        NSString *proxy_host = [parameter safeStringForKey:@"proxy_host"];
+        NSString *proxy_port = [parameter safeStringForKey:@"proxy_port"];
+        NSString *proxy_user = [parameter safeStringForKey:@"proxy_user"];
+        NSString *proxy_password = [parameter safeStringForKey:@"proxy_password"];
+        result = PyObject_CallMethod(self.pyInstance, [kInterfaceset_proxy UTF8String], "(s,s,s,s,s)",[proxy_mode UTF8String],[proxy_host UTF8String],[proxy_port UTF8String],[proxy_user UTF8String],[proxy_password UTF8String]);
         
     }else if([method isEqualToString:kInterfaceBroadcast_tx]){
         NSString *tx = [parameter safeStringForKey:@"tx"];

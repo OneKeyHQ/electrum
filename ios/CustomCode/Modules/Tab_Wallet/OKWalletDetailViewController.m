@@ -111,7 +111,7 @@
         {
             OKExportTipsViewController *exportTipsVc = [OKExportTipsViewController exportTipsViewController:^{
                 [OKValidationPwdController showValidationPwdPageOn:self isDis:NO complete:^(NSString * _Nonnull pwd) {
-                    NSString *result = [kPyCommandsManager callInterface:kInterfaceexport_seed parameter:@{@"password":pwd}];
+                    NSString *result = [kPyCommandsManager callInterface:kInterfaceexport_seed parameter:@{@"password":pwd,@"name":kWalletManager.currentWalletName}];
                     if (result != nil) {
                         OKDontScreenshotTipsViewController *dontScreenshotTipsVc = [OKDontScreenshotTipsViewController dontScreenshotTipsViewController:^{
                             OKBackUpViewController *backUpVc = [OKBackUpViewController backUpViewController];

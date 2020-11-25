@@ -37,12 +37,12 @@
         {
             OKWeakSelf(self)
             [OKValidationPwdController showValidationPwdPageOn:self isDis:NO complete:^(NSString * _Nonnull pwd) {
-                NSString *result = [kPyCommandsManager callInterface:kInterfaceexport_seed parameter:@{@"password":pwd}];
+                NSString *result = [kPyCommandsManager callInterface:kInterfaceexport_seed parameter:@{@"password":pwd,@"name":self.walletName}];
                 if (result != nil) {
                     OKDontScreenshotTipsViewController *dontScreenshotTipsVc = [OKDontScreenshotTipsViewController dontScreenshotTipsViewController:^{
                         OKBackUpViewController *backUpVc = [OKBackUpViewController backUpViewController];
                         backUpVc.words = [result componentsSeparatedByString:@" "];
-                        backUpVc.showType = WordsShowTypeExport;
+                        backUpVc.showType = WordsShowTypeHDExport;
                         [weakself.OK_TopViewController.navigationController pushViewController:backUpVc animated:YES];
                     }];
                     dontScreenshotTipsVc.modalPresentationStyle = UIModalPresentationOverCurrentContext;

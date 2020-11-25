@@ -23,4 +23,11 @@
 
 #define kNotiUpdate_status                      @"kNotiUpdate_status"
 
+
+#define kUserSetingSysServerComplete            @"kUserSetingSysServerComplete"
+#define kUserSetingBtcBComplete                 @"kUserSetingBtcBComplete"
+#define kUserSetingMarketSource                 @"kUserSetingMarketSource"
+#define kUserSetingElectrumServer               @"kUserSetingElectrumServer"
+
+
 #endif /* Notification_h */

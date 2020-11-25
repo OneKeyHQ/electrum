@@ -283,9 +283,11 @@
                 }
                         break;
                 default:
-                    
-                        break;
+                {
+                    biologicaArray = @[model5];
                 }
+                        break;
+            }
         }];
         _allMenuData = @[@[model1,model2],biologicaArray,@[model8,model9,model10,model11,model12,model3]];
     }

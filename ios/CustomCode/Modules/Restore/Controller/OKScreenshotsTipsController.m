@@ -13,6 +13,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *detailLabel;
 - (IBAction)closeBtnClick:(UIButton *)sender;
 @property (weak, nonatomic) IBOutlet UIView *contentView;
+
 @end
 
 @implementation OKScreenshotsTipsController

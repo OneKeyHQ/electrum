@@ -101,6 +101,16 @@
                                                 <constraint firstItem="BkK-qC-YpK" firstAttribute="top" secondItem="hgD-i1-Dek" secondAttribute="top" id="eVy-vh-kfb"/>
                                             </constraints>
                                         </view>
+                                        <label opaque="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="详情" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ind-IT-yED">
+                                            <rect key="frame" x="260" y="5" width="29" height="52"/>
+                                            <gestureRecognizers/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                            <color key="textColor" red="0.62352941176470589" green="0.65098039215686276" blue="0.67843137254901964" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                            <nil key="highlightedColor"/>
+                                            <connections>
+                                                <outletCollection property="gestureRecognizers" destination="SCd-s5-bno" appends="YES" id="1nn-Zj-vQK"/>
+                                            </connections>
+                                        </label>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yxf-cJ-Fuj">
                                             <rect key="frame" x="289" y="11" width="40" height="40"/>
                                             <constraints>
@@ -112,12 +122,6 @@
                                                 <action selector="detailBtnClick:" destination="N4V-Vq-0uB" eventType="touchUpInside" id="xAe-xp-dGt"/>
                                             </connections>
                                         </button>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="详情" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ind-IT-yED">
-                                            <rect key="frame" x="260" y="22.5" width="29" height="17"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                            <color key="textColor" red="0.62352941176470589" green="0.65098039215686276" blue="0.67843137254901964" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pf9-hV-gbY">
                                             <rect key="frame" x="305" y="19" width="24" height="24"/>
                                             <constraints>
@@ -135,6 +139,8 @@
                                         <constraint firstItem="yxf-cJ-Fuj" firstAttribute="centerY" secondItem="ind-IT-yED" secondAttribute="centerY" id="3Kn-f4-qGr"/>
                                         <constraint firstItem="hgD-i1-Dek" firstAttribute="leading" secondItem="yRL-bR-0YR" secondAttribute="trailing" constant="5" id="8L5-tD-DKv"/>
                                         <constraint firstAttribute="trailing" secondItem="pf9-hV-gbY" secondAttribute="trailing" constant="20" id="9dQ-0L-VJV"/>
+                                        <constraint firstItem="ind-IT-yED" firstAttribute="top" secondItem="cdD-Cm-uTa" secondAttribute="top" constant="5" id="DYQ-g3-3Ae"/>
+                                        <constraint firstAttribute="bottom" secondItem="ind-IT-yED" secondAttribute="bottom" constant="5" id="E43-En-dSg"/>
                                         <constraint firstItem="pf9-hV-gbY" firstAttribute="centerY" secondItem="cdD-Cm-uTa" secondAttribute="centerY" id="ROo-zc-2TH"/>
                                         <constraint firstItem="hgD-i1-Dek" firstAttribute="centerY" secondItem="yRL-bR-0YR" secondAttribute="centerY" id="cQt-4g-5ms"/>
                                         <constraint firstItem="yRL-bR-0YR" firstAttribute="centerY" secondItem="Mtl-Dl-4c2" secondAttribute="centerY" id="eax-a9-oRa"/>
@@ -477,6 +483,11 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="F3h-DD-Mhk" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <tapGestureRecognizer id="SCd-s5-bno">
+                    <connections>
+                        <action selector="detailLabelClick:" destination="N4V-Vq-0uB" id="fCL-yL-mF1"/>
+                    </connections>
+                </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="-20.289855072463769" y="113.83928571428571"/>
         </scene>
@@ -1034,7 +1045,7 @@
         <image name="close" width="24" height="24"/>
         <image name="copy_white" width="16" height="16"/>
         <image name="iconwriteselect" width="16.5" height="12.5"/>
-        <image name="info" width="24" height="24"/>
+        <image name="info" width="16" height="16"/>
         <image name="match_device" width="24" height="24"/>
         <image name="right_arrow_small" width="24" height="24"/>
         <image name="token_btc" width="40" height="40"/>

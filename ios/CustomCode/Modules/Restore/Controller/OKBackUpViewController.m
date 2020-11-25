@@ -14,9 +14,7 @@
 @interface OKBackUpViewController ()
 
 @property (weak, nonatomic) IBOutlet UIButton *nextBtn;
-
 @property (weak, nonatomic) IBOutlet OKWordImportView *wordInputView;
-
 @property (weak, nonatomic) IBOutlet UILabel *descLabel;
 @property (weak, nonatomic) IBOutlet UILabel *bottomDescLabel;
 @property (weak, nonatomic) IBOutlet UILabel *titleLabel;
@@ -40,6 +38,7 @@
     switch (_showType) {
         case WordsShowTypeRestore:
         {
+            self.title = MyLocalizedString(@"Backup the purse", nil);
             self.titleLabel.text = MyLocalizedString(@"HD Wallet root mnemonic", nil);
             self.descLabel.text = MyLocalizedString(@"Mnemonics are used to recover assets in other apps or wallets, transcribe them in the correct order, and place them in a safe place known only to you", nil);
             self.bottomDescLabel.text = MyLocalizedString(@"- Do not uninstall OneKey App easily - do not disclose mnemonics or private keys to anyone - do not take screenshots, send sensitive information via chat tools, etc", nil);
@@ -47,6 +46,15 @@
             break;
         case WordsShowTypeExport:
         {
+            self.title = MyLocalizedString(@"Mnemonic derivation", nil);
+            self.titleLabel.text = MyLocalizedString(@"HD Wallet root mnemonic", nil);
+            self.descLabel.text = MyLocalizedString(@"Mnemonics are used to recover assets in other apps or wallets, transcribe them in the correct order, and place them in a safe place known only to you", nil);
+            self.bottomDescLabel.text = MyLocalizedString(@"- Do not uninstall OneKey App easily - do not disclose mnemonics or private keys to anyone - do not take screenshots, send sensitive information via chat tools, etc", nil);
+        }
+            break;
+        case WordsShowTypeHDExport:
+        {
+            self.title = MyLocalizedString(@"Mnemonic derivation", nil);
             self.titleLabel.text = MyLocalizedString(@"HD Wallet root mnemonic", nil);
             self.descLabel.text = MyLocalizedString(@"Mnemonics are used to recover assets in other apps or wallets, transcribe them in the correct order, and place them in a safe place known only to you", nil);
             self.bottomDescLabel.text = MyLocalizedString(@"- Do not uninstall OneKey App easily - do not disclose mnemonics or private keys to anyone - do not take screenshots, send sensitive information via chat tools, etc", nil);
@@ -55,7 +63,6 @@
         default:
             break;
     }
-    self.title = MyLocalizedString(@"Backup the purse", nil);
     self.wordInputView.userInteractionEnabled = NO;
     [self.wordInputView configureData:self.words];
 }
@@ -72,7 +79,7 @@
             break;
         case WordsShowTypeExport:
         {
-            [self dismissViewControllerAnimated:YES completion:nil];
+            [self.OK_TopViewController dismissViewControllerAnimated:YES completion:nil];
         }
             break;
         default:

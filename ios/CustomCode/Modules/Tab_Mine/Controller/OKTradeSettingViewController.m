@@ -10,13 +10,12 @@
 #import "OKTradeSettingViewCell.h"
 #import "OKTradeSettingViewCellModel.h"
 
-@interface OKTradeSettingViewController ()<UITableViewDelegate,UITableViewDataSource>
+@interface OKTradeSettingViewController ()<UITableViewDelegate,UITableViewDataSource,OKTradeSettingViewCellDelegate>
 
 @property (nonatomic,strong)NSArray *allData;
+
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet UILabel *topTipsLabel;
-
-
 
 @end
 
@@ -68,6 +67,7 @@
     if (cell == nil) {
         cell = [[OKTradeSettingViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ID];
     }
+    cell.delegate = self;
     cell.model = self.allData[indexPath.row];
     return  cell;
 }
@@ -79,22 +79,53 @@
 #pragma mark - tapRightViewClick
 - (void)tapRightViewClick
 {
-    NSLog(@"点击了恢复默认");
+    [kPyCommandsManager callInterface:kInterfaceset_rbf parameter:@{@"status_rbf":@"1"}];
+    [kPyCommandsManager callInterface:kInterfaceset_unconf parameter:@{@"x":@"1"}];
+    [kUserSettingManager setUnconfFlag:YES];
+    [kUserSettingManager setRbfFlag:YES];
+    [self.tableView reloadData];
 }
 - (NSArray *)allData
 {
-    if (!_allData) {
-        
-        OKTradeSettingViewCellModel *model1 = [[OKTradeSettingViewCellModel alloc]init];
-        model1.titleStr = MyLocalizedString(@"Use RBF (trade substitution)", nil);
-        model1.switchOn = YES;
-        
-        OKTradeSettingViewCellModel *model2 = [[OKTradeSettingViewCellModel alloc]init];
-        model2.titleStr = MyLocalizedString(@"Spend unrecognized income", nil);
-        model2.switchOn = YES;
-        
-        _allData = @[model1,model2];
-    }
+    OKTradeSettingViewCellModel *model1 = [[OKTradeSettingViewCellModel alloc]init];
+    model1.titleStr = MyLocalizedString(@"Use RBF (trade substitution)", nil);
+    model1.switchOn = kUserSettingManager.rbfFlag;
+    model1.index = 0;
+    
+    OKTradeSettingViewCellModel *model2 = [[OKTradeSettingViewCellModel alloc]init];
+    model2.titleStr = MyLocalizedString(@"Spend unrecognized income", nil);
+    model2.switchOn = kUserSettingManager.unconfFlag;
+    model2.index = 1;
+    _allData = @[model1,model2];
+    
     return _allData;
 }
+
+
+
+
+#pragma mark - OKTradeSettingViewCellDelegate
+- (void)switchClick:(OKTradeSettingViewCellModel *)model on:(BOOL)on
+{
+    switch (model.index) {
+        case 0:
+        {
+            NSString *onStr = [NSString stringWithFormat:@"%d",on];
+            [kPyCommandsManager callInterface:kInterfaceset_rbf parameter:@{@"status_rbf":onStr}];
+            [kUserSettingManager setRbfFlag:on];
+        }
+            break;
+        case 1:
+        {
+            NSString *onStr = [NSString stringWithFormat:@"%d",on];
+            [kPyCommandsManager callInterface:kInterfaceset_unconf parameter:@{@"x":onStr}];
+            [kUserSettingManager setUnconfFlag:on];
+        }
+            break;
+            
+        default:
+            break;
+    }
+}
+
 @end

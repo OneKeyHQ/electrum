@@ -51,5 +51,7 @@
 #import "OKLocalizableManager.h"
 #import "OKBlueManager.h"
 #import "NSData+StringToData.h"
+#import "OKUserSettingManager.h"
+#import "UIButton+OneKey.h"
 
 #endif /* OneKeyImport_h */

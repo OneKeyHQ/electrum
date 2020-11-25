@@ -59,6 +59,7 @@
             textF.textAlignment = NSTextAlignmentCenter;
             textF.autocorrectionType = UITextAutocorrectionTypeNo;
             textF.autocapitalizationType = UITextAutocapitalizationTypeNone;
+            textF.keyboardType = UIKeyboardTypeASCIICapable;
             textF.font = [UIFont fontWithName:kFontPingFangMediumBold size:16];
             textF.hidden = NO;
             textF.mark = YES;
