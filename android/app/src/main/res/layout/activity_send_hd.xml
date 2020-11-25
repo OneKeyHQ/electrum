@@ -82,15 +82,17 @@
                     android:textColor="@color/text_two"
                     android:textSize="@dimen/sp_14" />
 
-                <ImageView
+                <TextView
                     android:id="@+id/img_paste"
-                    android:layout_width="26dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="26dp"
+                    android:gravity="center"
+                    android:textColor="@color/onekey"
                     android:layout_alignParentEnd="true"
+                    android:text="@string/paste"
                     android:layout_alignParentBottom="true"
                     android:layout_marginEnd="@dimen/dp_20"
-                    android:layout_marginBottom="23dp"
-                    android:src="@drawable/contacts_2_1" />
+                    android:layout_marginBottom="23dp"/>
 
             </RelativeLayout>
 

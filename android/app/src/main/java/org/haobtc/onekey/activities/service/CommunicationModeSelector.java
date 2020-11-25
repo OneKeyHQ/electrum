@@ -65,7 +65,6 @@ import org.haobtc.onekey.activities.personalwallet.ImportHistoryWalletActivity;
 import org.haobtc.onekey.activities.personalwallet.PersonalMultiSigWalletCreator;
 import org.haobtc.onekey.activities.personalwallet.SingleSigWalletCreator;
 import org.haobtc.onekey.activities.personalwallet.hidewallet.HideWalletSetPassActivity;
-import org.haobtc.onekey.activities.settings.BixinKeyBluetoothSettingActivity;
 import org.haobtc.onekey.activities.settings.CheckXpubResultActivity;
 import org.haobtc.onekey.activities.settings.ConfidentialPaymentSettings;
 import org.haobtc.onekey.activities.settings.EditWhiteListActivity;
@@ -198,8 +197,9 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
     public static boolean backupTip;
     private static String hideWalletReceive = "";
     private boolean isTimeout;
-    public  boolean isRecovery;
+    public boolean isRecovery;
     private AnimationDrawable animationDrawable;
+
     static {
         nfc = Global.py.getModule("trezorlib.transport.nfc");
         ble = Global.py.getModule("trezorlib.transport.bluetooth");
@@ -212,6 +212,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
         bleTransport = ble.get("BlueToothTransport");
         customerUI = Global.py.getModule("trezorlib.customer_ui").get("CustomerUI");
     }
+
     @Override
     public int getLayoutId() {
         return R.layout.bluetooth_nfc;
@@ -687,13 +688,6 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
                 String strRandom = UUID.randomUUID().toString().replaceAll("-", "");
                 //Anti counterfeiting verification
                 new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.COUNTER_VERIFICATION, strRandom, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
-            } else if (BixinKeyBluetoothSettingActivity.TAG_TRUE.equals(tag) || BixinKeyBluetoothSettingActivity.TAG_FALSE.equals(tag)) {
-                //bluetooth set to hardware
-                if (BixinKeyBluetoothSettingActivity.TAG_TRUE.equals(tag)) {
-                    new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.APPLY_SETTING, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "setBluetooth", "one");
-                } else {
-                    new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.APPLY_SETTING, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE, "setBluetooth", "zero");
-                }
             } else if (FixBixinkeyNameActivity.TAG.equals(tag)) {
                 //modify hardware label
                 modifyHardwareLabel(isNFC);
@@ -741,10 +735,11 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
             startActivity(intent);
         }
     }
+
     private boolean checkVersion() {
         // if the version of stm32 is below 1.9.7, turn to upgrade page
 //        if (features.getMajorVersion() <= 1 && features.getMinorVersion() <= 9 && features.getPatchVersion() < 7 && !VersionUpgradeActivity.TAG.equals(tag)) {
-            if (features.getMajorVersion() <= 1 && features.getMinorVersion() <= 9 && features.getPatchVersion() < 7) {
+        if (features.getMajorVersion() <= 1 && features.getMinorVersion() <= 9 && features.getPatchVersion() < 7) {
             NeedNewVersion fragment = new NeedNewVersion(R.string.update2_new_version, R.string.old_version);
             fragment.setActivity(this);
             fragment.show(getSupportFragmentManager(), "");
@@ -752,6 +747,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
         }
         return true;
     }
+
     private void contrastAddress() {
         String contrastAddress = getIntent().getStringExtra("contrastAddress");
         hideWalletReceive = getIntent().getStringExtra("hideWalletReceive");
@@ -1034,9 +1030,6 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.img_cancel:
-                if (BixinKeyBluetoothSettingActivity.TAG_TRUE.equals(tag) || BixinKeyBluetoothSettingActivity.TAG_FALSE.equals(tag)) {
-                    EventBus.getDefault().post(new SetBluetoothEvent("recovery_status"));
-                }
                 if (mBle != null) {
                     refreshDeviceList(false);
                     mBle.disconnectAll();
@@ -1176,9 +1169,9 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
             } else if (HardWareExceptions.BLE_RESPONSE_READ_TIMEOUT.getMessage().equals(e.getMessage())) {
                 isTimeout = true;
             } else if ("BaseException: ".equals(e.getMessage())) {
-                runOnUiThread(()->mToast(getString(R.string.canceled)));
+                runOnUiThread(() -> mToast(getString(R.string.canceled)));
             } else if (e.getMessage().contains("addres is existed")) {
-                runOnUiThread(()-> mToast(getString(R.string.have_address)));
+                runOnUiThread(() -> mToast(getString(R.string.have_address)));
             } else {
                 showErrorDialog(R.string.key_wrong_prompte, R.string.read_pk_failed);
             }
@@ -1270,8 +1263,6 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
             }
         } else if (ResetDeviceActivity.TAG.equals(tag) || HardwareDetailsActivity.TAG.equals(tag) || SettingActivity.TAG_CHANGE_PIN.equals(tag) || SettingActivity.TAG.equals(tag)) {
             EventBus.getDefault().postSticky(new ResultEvent(s));
-        } else if (BixinKeyBluetoothSettingActivity.TAG_TRUE.equals(tag) || BixinKeyBluetoothSettingActivity.TAG_FALSE.equals(tag)) {
-            EventBus.getDefault().post(new SetBluetoothEvent(s));
         } else if (ConfidentialPaymentSettings.TAG.equals(tag)) {
             EventBus.getDefault().post(new FastPayEvent(s));
         } else if (ConfidentialPaymentSettings.TAG_EDIT_WHITE_LIST.equals(tag)) {
@@ -1279,7 +1270,6 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
         } else if (EditWhiteListActivity.TAG_ADD_WHITE_LIST.equals(tag)) {
             EventBus.getDefault().post(new EditWhiteListEvent("addWhiteList", s));
         } else if (EditWhiteListActivity.TAG_DELETE_WHITE_LIST.equals(tag)) {
-            Log.i("EditWhiteListAdd", "onResult:+============= " + s);
             EventBus.getDefault().post(new EditWhiteListEvent("deleteWhiteList", s));
         } else if (FixBixinkeyNameActivity.TAG.equals(tag)) {
             String deviceid = features.getDeviceId();

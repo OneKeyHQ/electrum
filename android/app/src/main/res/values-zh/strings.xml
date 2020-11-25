@@ -270,15 +270,15 @@
     <string name="doller">USD</string>
     <string name="korean_money">KMR</string>
     <string name="synchroniz_service">同步服务器</string>
-    <string name="electrum_select">Electrum节点选择</string>
+    <string name="electrum_select">Electrum 节点选择</string>
     <string name="add_custom_node">添加自定义节点</string>
     <string name="restore_factory">恢复出厂设置</string>
     <string name="somemore_wallet">**的钱包</string>
-    <string name="bixinkey_message">BixinKey信息</string>
+    <string name="bixinkey_message">设备信息</string>
     <string name="bixinkey">小米的BixinKey</string>
-    <string name="verson_update">固件版本（升级）</string>
+    <string name="verson_update">升级固件</string>
     <string name="v_1_2_3">V 1.2.3</string>
-    <string name="fix_pin">修改PIN码</string>
+    <string name="fix_pin">修改 PIN 码</string>
     <string name="nopass_pay">快捷支付</string>
     <string name="opened">已开启</string>
     <string name="bluetooth_name">蓝牙名称</string>
@@ -407,7 +407,6 @@
     <string name="no_need_hardware">不需要在硬件按键确认</string>
     <string name="set_to_Bixinkey">设置到BixinKey</string>
     <string name="please_input_walletname">请输入钱包名称</string>
-    <string name="import_wallet">导入钱包</string>
     <string name="Cancelled">已取消</string>
     <string name="choose_import_wallet">选择要导入的钱包</string>
     <string name="key_check">已通过BixinKey搜索到包含BixinKey公钥的钱包，请选择并导入</string>
@@ -420,7 +419,6 @@
     <string name="sign_message">签名消息</string>
     <string name="input_message">可输入任何信息获取签名后的消息</string>
     <string name="input_sign_msg">输入待签名的消息</string>
-    <string name="verification_key">BixinKey防伪验证</string>
     <string name="connection_success">设备连接成功</string>
     <string name="sign_success">获取防伪签名成功</string>
     <string name="submit_verification">正在提交防伪验证</string>
@@ -561,7 +559,6 @@
     <string name="not_yet">暂不</string>
     <string name="goto_set">前去备份</string>
     <string name="some_wallet_existence">部分钱包已存在，导入完成</string>
-    <string name="get_xpub">查看BiXinKEY扩展公钥</string>
     <string name="check_xpub">查看扩展公钥</string>
     <string name="copy_xpub">复制扩展公钥</string>
     <string name="diy_hardware">选择自定义固件文件</string>
@@ -733,7 +730,6 @@
     <string name="ble">蓝牙</string>
     <string name="check_key_name">BixinKey 名称：</string>
     <string name="check_pub_key">BixinKey 扩展公钥：</string>
-    <string name="set_shutdown_time">设置BixinKey自动关机或锁屏时间</string>
     <string name="second">秒</string>
     <string name="please_input_time">请输入关机时间</string>
     <string name="little_time">时间最短为10秒哦！</string>
@@ -763,8 +759,7 @@
     <string name="promote_ble">Android 6+ 需要获得位置许可与定位服务来扫描蓝牙低功耗设备, 并不会使用您的位置信息</string>
     <string name="nfc_useless">该设备不支持NFC,请选择其他方式</string>
     <string name="network_useless">网络不可用</string>
-    <string name="backup_finish_tips">BixinKey 私钥seed已使用PIN码加密保存到本机，请在【设置-BixinKey备份】中查看；
-请牢记当前PIN码。</string>
+    <string name="backup_finish_tips">BixinKey 私钥seed已使用PIN码加密保存到本机，请在【设置-BixinKey备份】中查看；请牢记当前PIN码。</string>
     <string name="backup_content">通过其他方式保存PIN码：
         \n 1.通过【设置-BixinKey备份】查看并将备份文件保存到其他设备；
         \n 2.备份到新BixinKey，使多个BixinKey拥有相同的私钥。</string>
@@ -911,7 +906,7 @@
     <string name="mind_tip">隐私政策、使用协议以及开源软件。</string>
     <string name="recovery_hd__tip"><b>助记词一旦导入，就会经过加密存储在您的本地设备中并妥当保管。</b>OneKey 不存储任何私密数据，也无法帮您找回。</string>
     <string name="hd_tip1">- 不要轻易卸载 OneKey App</string>
-    <string name="hd_tip2">- 不要将助记词、私钥泄露给任何人</string>
+    <string name="hd_tip2">- 不要将助记词泄露给任何人</string>
     <string name="hd_tip3">- 不要截屏、通过聊天工具等传送以上敏感信息</string>
     <string name="recovery_only">恢复</string>
     <string name="recovery_hd_tips">HD 钱包仅支持助记词和硬件钱包恢复，如果您要导入单币种的普通钱包，请从通用入口导入。</string>
@@ -919,10 +914,9 @@
     <string name="import_single">导入单币种钱包</string>
     <string name="choose_amount">选择币种</string>
     <string name="choose_method">选择您的导入方式</string>
-    <string name="import_private">导入私钥（直接输入或扫码）</string>
-    <string name="import_word">导入助记词</string>
-    <string name="import_keystore">导入 Keystore</string>
-    <string name="watch_only">观察钱包 （Watch Only）</string>
+    <string name="import_private">私钥导入（直接输入或扫码）</string>
+    <string name="import_word">助记词导入</string>
+    <string name="import_keystore">Keystore 导入</string>
     <string name="import_private_key">导入私钥</string>
     <string name="imput_private_tip">输入私钥或扫描其二维码（注意大小写）</string>
     <string name="import_hd_tip"><b>私钥一旦导入，就会经过加密存储在您的本地设备中并妥当保管。</b>OneKey 不存储任何私密数据，也无法帮您找回。</string>
@@ -952,7 +946,7 @@
     <string name="copy_">复制</string>
     <string name="check_">核对</string>
     <string name="custom_fee">自定义费率</string>
-    <string name="second_0">预计时间约</string>
+    <string name="second_0">预计时间：约 </string>
     <string name="input_token">输入 Token 或合约地址</string>
     <string name="all_device">全部设备</string>
     <string name="connect_method_">连接方式</string>
@@ -1107,10 +1101,10 @@
     <string name="delete_tip">此操作将会删除该钱包的所有数据，请在删除前确保该钱包已备份</string>
     <string name="export_tip">导出提示</string>
     <string name="export_tip1">掌握钱包的私密数据即等于掌握钱包资产本身，请 </string>
-    <string name="export_tip2">1. 备好纸笔认真抄写，确认无误后并保管在安全处</string>
-    <string name="export_tip3">2. 请勿截屏！手机相册很容易被其他应用访问…</string>
-    <string name="export_tip4">3. OneKey不存储任何私钥，私钥一旦丢失无法找回</string>
-    <string name="i_know">我已知晓</string>
+    <string name="export_tip2">1. 备好纸笔认真抄写，确认无误后请妥善保管</string>
+    <string name="export_tip3">2. 请勿截屏！手机相册很容易被其他应用访问。</string>
+    <string name="export_tip4">3. OneKey 不会为您存储私密数据，私密数据一旦丢失将无法找回。</string>
+    <string name="i_know">导出</string>
     <string name="export_mnemonic">助记词导出</string>
     <string name="recovery_default">恢复默认选项</string>
     <string name="please_input_fee">请输入费率</string>
@@ -1173,5 +1167,19 @@
     <string name="mnemonic_wrong">助记词有误</string>
     <string name="begin_check">重新核对</string>
     <string name="active_hardware">激活硬件钱包</string>
+    <string name="electrum_node">Electrum 节点</string>
+    <string name="btc_wallet">比特币钱包</string>
+    <string name="eth_wallet">以太坊钱包</string>
+    <string name="show_code">显示二维码</string>
+    <string name="hide_code">隐藏二维码</string>
+    <string name="import_wallet">导入单币种钱包</string>
+    <string name="app_language_tip">选择 App 的显示语言</string>
+    <string name="public_use">通用</string>
+    <string name="senior">高级</string>
+    <string name="hide_wallet_msg">隐藏钱包模式</string>
+    <string name="delete_device">删除设备</string>
+    <string name="get_xpub">查看扩展公钥（xPub）</string>
+    <string name="set_shutdown_time">自动关机</string>
+    <string name="verification_key">防伪校验</string>
 
 </resources>

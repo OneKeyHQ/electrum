@@ -2,7 +2,9 @@ package org.haobtc.onekey.onekeys.homepage.mindmenu;
 
 import android.content.Intent;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.chaquo.python.PyObject;
@@ -65,6 +67,7 @@ public class HdRootMnemonicsActivity extends BaseActivity {
     public void initView() {
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);//禁止截屏
         String exportType = getIntent().getStringExtra("exportType");
         String importHdword = getIntent().getStringExtra("importHdword");
         exportWord = getIntent().getStringExtra("exportWord");
@@ -79,21 +82,8 @@ public class HdRootMnemonicsActivity extends BaseActivity {
 
     @Override
     public void initData() {
-        //check is there a backup
-        whetherBackup();
         //get mnemonic
         writeMnemonicWord();
-    }
-
-    private void whetherBackup() {
-        try {
-            PyObject isBackup = Daemon.commands.callAttr("get_backup_info");
-            status = isBackup.toString();
-        } catch (Exception e) {
-            status = "exception";
-            e.printStackTrace();
-        }
-
     }
 
     private void writeMnemonicWord() {
@@ -126,8 +116,7 @@ public class HdRootMnemonicsActivity extends BaseActivity {
                 case 1:
                     editOne.setText(wordList.get(0));
                     break;
-                default:
-                    throw new IllegalStateException("Unexpected value: " + wordList.size());
+
             }
         }
     }
@@ -139,11 +128,7 @@ public class HdRootMnemonicsActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.btn_copy_it:
-                if ("False".equals(status)) {
-                    backupInfo();
-                } else {
-                    finish();
-                }
+                backupInfo();
                 break;
         }
     }

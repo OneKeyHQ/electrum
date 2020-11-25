@@ -19,6 +19,7 @@ import org.haobtc.onekey.event.FirstEvent;
 import org.haobtc.onekey.utils.Daemon;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import butterknife.BindView;
@@ -65,13 +66,18 @@ public class QuotationServerActivity extends BaseActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        Log.i("get_exchanges", "getExchangelist: " + get_exchanges);
         if (get_exchanges != null) {
-            Log.i("get_exchanges", "getExchangelist: " + get_exchanges);
-            List<PyObject> pyObjects = get_exchanges.asList();
-            for (int i = 0; i < pyObjects.size(); i++) {
-                CNYBean cnyBean = new CNYBean(pyObjects.get(i).toString(), false);
+            String content = get_exchanges.toString();
+            String unit = content.replaceAll("\"", "");
+            String[] pathArr = (unit.substring(1, unit.length() - 1)).split(",");
+            List<String> pathList = Arrays.asList(pathArr);
+
+            for (int i = 0; i < pathList.size(); i++) {
+                CNYBean cnyBean = new CNYBean(pathList.get(i), false);
                 exchangeList.add(cnyBean);
             }
+
         }
         QuetationChooseAdapter quetationChooseAdapter = new QuetationChooseAdapter(QuotationServerActivity.this, exchangeList, exChange);
         reclQuetation.setAdapter(quetationChooseAdapter);

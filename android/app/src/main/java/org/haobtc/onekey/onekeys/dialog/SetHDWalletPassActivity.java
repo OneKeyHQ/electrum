@@ -19,12 +19,15 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.constant.Constant;
+import org.haobtc.onekey.data.prefs.PreferencesManager;
 import org.haobtc.onekey.event.FinishEvent;
 import org.haobtc.onekey.event.InputPassSendEvent;
 import org.haobtc.onekey.event.LoadOtherWalletEvent;
 import org.haobtc.onekey.event.LoadWalletlistEvent;
 import org.haobtc.onekey.event.SecondEvent;
 import org.haobtc.onekey.event.WalletAddressEvent;
+import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.HomeOnekeyActivity;
 import org.haobtc.onekey.onekeys.dialog.recovery.RecoveryChooseWalletActivity;
 import org.haobtc.onekey.onekeys.homepage.mindmenu.HdRootMnemonicsActivity;
@@ -183,7 +186,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
                             Log.i("createHdWallet", "onViewClicked:-- " + createHdWallet);
                             Intent intent = new Intent(SetHDWalletPassActivity.this, HomeOnekeyActivity.class);
                             startActivity(intent);
-                            edit.putBoolean("isHaveWallet", true);
+                            PyEnv.loadLocalWalletInfo(this);
                             edit.putString("loadWalletName", "BTC-1");
                             edit.apply();
                         }
@@ -204,6 +207,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
             return;
         }
         mToast(getString(R.string.delete_succse));
+        PreferencesManager.remove(this,Constant.WALLETS,walletName);
         EventBus.getDefault().post(new LoadOtherWalletEvent());
         EventBus.getDefault().post(new SecondEvent("finish"));
         finish();
@@ -229,7 +233,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
             finish();
             return;
         }
-        edit.putBoolean("isHaveWallet", true);
+        PyEnv.loadLocalWalletInfo(this);
         edit.putString("loadWalletName", walletName);
         edit.apply();
         mIntent(HomeOnekeyActivity.class);
@@ -250,7 +254,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
             }
             return;
         }
-        edit.putBoolean("isHaveWallet", true);
+        PyEnv.loadLocalWalletInfo(this);
         edit.putString("loadWalletName", walletName);
         edit.apply();
         mIntent(HomeOnekeyActivity.class);
@@ -268,7 +272,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
             e.printStackTrace();
             return;
         }
-        edit.putBoolean("isHaveWallet", true);
+        PyEnv.loadLocalWalletInfo(this);
         edit.putString("loadWalletName", walletName);
         edit.apply();
         mIntent(HomeOnekeyActivity.class);
@@ -281,11 +285,13 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
         } catch (Exception e) {
             if (e.getMessage().contains("Incorrect password")) {
                 mToast(getString(R.string.wrong_pass));
+            } else if (e.getMessage().contains("path is exist")) {
+                mToast(getString(R.string.changewalletname));
             }
             e.printStackTrace();
             return;
         }
-        edit.putBoolean("isHaveWallet", true);
+        PyEnv.loadLocalWalletInfo(this);
         edit.putString("loadWalletName", walletName);
         edit.apply();
         mIntent(HomeOnekeyActivity.class);
@@ -310,7 +316,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
                     return;
                 }
                 mToast(getString(R.string.not_recovery_wallet));
-                edit.putBoolean("isHaveWallet", true);
+                PyEnv.loadLocalWalletInfo(this);
                 edit.putString("loadWalletName", "BTC-1");
                 edit.apply();
                 mIntent(HomeOnekeyActivity.class);
@@ -329,6 +335,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
     private void deleteAllWallet() {
         try {
             Daemon.commands.callAttr("delete_wallet", pwdEdittext.getText().toString(), new Kwarg("name", "BTC-1"));
+
 //            Daemon.commands.callAttr("delete_wallet", pwdEdittext.getText().toString(), new Kwarg("name", "ETH-1"));
         } catch (Exception e) {
             e.printStackTrace();
@@ -338,6 +345,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
             return;
         }
         mToast(getString(R.string.delete_succse));
+        PreferencesManager.clear(this, Constant.WALLETS);
         EventBus.getDefault().post(new LoadOtherWalletEvent());
         EventBus.getDefault().post(new LoadWalletlistEvent());
         EventBus.getDefault().post(new FinishEvent());

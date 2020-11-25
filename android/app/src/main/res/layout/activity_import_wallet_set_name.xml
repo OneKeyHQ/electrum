@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/button_bk_ddake"
+    android:clipToPadding="true"
+    android:fitsSystemWindows="true"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    tools:context="org.haobtc.onekey.onekeys.dialog.recovery.importmethod.ImportWalletSetNameActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_50">
+
+        <ImageView
+            android:id="@+id/img_back"
+            android:layout_width="@dimen/dp_40"
+            android:layout_height="@dimen/dp_40"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/dp_10"
+            android:padding="@dimen/dp_8"
+            android:src="@drawable/left_arrow" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:fontFamily="sans-serif-medium"
+            android:text="@string/create_new_walt"
+            android:textColor="@color/text"
+            android:textSize="@dimen/text_size" />
+
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_30"
+        android:text="@string/set_wallet_name"
+        android:textColor="@color/text_two"
+        android:textSize="30sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_15"
+        android:text="@string/easy_see"
+        android:textColor="@color/text_two"
+        android:textSize="@dimen/sp_14" />
+
+    <org.haobtc.onekey.utils.ContainsEmojiEditText
+        android:id="@+id/edit_set_wallet_name"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_60"
+        android:layout_marginStart="34dp"
+        android:layout_marginTop="26dp"
+        android:layout_marginEnd="34dp"
+        android:background="@drawable/gray_broken"
+        android:hint="@string/set_wallet_name"
+        android:maxLength="16"
+        android:paddingStart="@dimen/dp_20"
+        android:paddingEnd="@dimen/dp_20"
+        android:textColor="@color/text_two"
+        android:textSize="@dimen/sp_16" />
+
+    <Button
+        android:id="@+id/btn_import"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_60"
+        android:layout_marginStart="34dp"
+        android:layout_marginTop="@dimen/dp_25"
+        android:layout_marginEnd="34dp"
+        android:layout_marginBottom="@dimen/dp_80"
+        android:background="@drawable/btn_checked"
+        android:enabled="true"
+        android:text="@string/create_"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/sp_20" />
+</LinearLayout>

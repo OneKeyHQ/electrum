@@ -47,6 +47,10 @@
         tools:replace="label, android:allowBackup"
         tools:targetApi="q">
         <activity
+            android:name=".onekeys.dialog.recovery.importmethod.ImportWalletSetNameActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
             android:name=".onekeys.backup.BackupCheckSuccessActivity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
@@ -220,10 +224,6 @@
             tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".activities.settings.FixBixinkeyNameActivity"
-            android:screenOrientation="portrait"
-            tools:ignore="LockedOrientationActivity" />
-        <activity
-            android:name=".activities.settings.BixinKeyBluetoothSettingActivity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
         <activity

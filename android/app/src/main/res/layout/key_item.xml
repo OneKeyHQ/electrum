@@ -21,12 +21,21 @@
                 android:layout_marginEnd="@dimen/dp_16"
                 android:background="@color/line_color" />
 
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="@dimen/dp_19"
+                android:layout_marginStart="@dimen/dp_20"
+                android:layout_height="@dimen/dp_26"
+                android:layout_centerVertical="true"
+                android:src="@drawable/img_bixinkey" />
+
             <TextView
                 android:id="@+id/tet_keyName"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/dp_60"
-                android:layout_marginStart="@dimen/dp_16"
+                android:layout_marginStart="@dimen/dp_10"
                 android:layout_marginEnd="@dimen/dp_40"
+                android:layout_toEndOf="@+id/imageView"
                 android:gravity="center_vertical"
                 android:textColor="@color/text_color"
                 android:textSize="15sp"

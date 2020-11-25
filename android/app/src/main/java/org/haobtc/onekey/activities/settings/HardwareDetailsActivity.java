@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.greenrobot.eventbus.EventBus;
@@ -43,7 +44,7 @@ public class HardwareDetailsActivity extends BaseActivity {
     @BindView(R.id.tet_keyName)
     TextView tetKeyName;
     @BindView(R.id.lin_OnckOne)
-    LinearLayout linOnckOne;
+    RelativeLayout linOnckOne;
     @BindView(R.id.tet_code)
     TextView tetCode;
     @BindView(R.id.lin_OnckTwo)
@@ -99,7 +100,7 @@ public class HardwareDetailsActivity extends BaseActivity {
     }
 
     @SingleClick
-    @OnClick({R.id.img_back, R.id.lin_OnckOne, R.id.lin_OnckTwo, R.id.change_pin, R.id.lin_OnckFour, R.id.wipe_device, R.id.tetBluetoothSet, R.id.linear_shutdown_time, R.id.tetBuckup, R.id.tet_deleteWallet, R.id.test_set_key_language})
+    @OnClick({R.id.img_back, R.id.lin_OnckOne, R.id.lin_OnckTwo, R.id.change_pin, R.id.lin_OnckFour, R.id.wipe_device, R.id.linear_shutdown_time, R.id.tetBuckup, R.id.tet_deleteWallet, R.id.test_set_key_language, R.id.tetVerification, R.id.check_xpub, R.id.text_hide_wallet})
     public void onViewClicked(View view) {
         isWipe = false;
         switch (view.getId()) {
@@ -118,8 +119,8 @@ public class HardwareDetailsActivity extends BaseActivity {
                 break;
             case R.id.change_pin:
                 if (Ble.getInstance().getConnetedDevices().size() != 0) {
-                        if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(bleName)) {
-                            EventBus.getDefault().postSticky(new HandlerEvent());
+                    if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(bleName)) {
+                        EventBus.getDefault().postSticky(new HandlerEvent());
                     }
                 }
                 Intent intent1 = new Intent(this, CommunicationModeSelector.class);
@@ -137,11 +138,6 @@ public class HardwareDetailsActivity extends BaseActivity {
                 Intent intent5 = new Intent(this, ResetDeviceActivity.class);
                 intent5.putExtra("ble_name", bleName);
                 startActivity(intent5);
-                break;
-            case R.id.tetBluetoothSet:
-                Intent intent6 = new Intent(this, BixinKeyBluetoothSettingActivity.class);
-                intent6.putExtra("ble_name", bleName);
-                startActivity(intent6);
                 break;
             case R.id.linear_shutdown_time:
                 Intent intent2 = new Intent(this, SetShutdownTimeActivity.class);
@@ -164,6 +160,15 @@ public class HardwareDetailsActivity extends BaseActivity {
                 Intent intent3 = new Intent(HardwareDetailsActivity.this, FixHardwareLanguageActivity.class);
                 intent3.putExtra("ble_name", bleName);
                 startActivity(intent3);
+                break;
+            case R.id.tetVerification:
+
+                break;
+            case R.id.check_xpub:
+
+                break;
+            case R.id.text_hide_wallet:
+
                 break;
             default:
         }

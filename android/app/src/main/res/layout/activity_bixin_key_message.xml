@@ -3,10 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:clipToPadding="true"
-    android:fitsSystemWindows="true"
     android:layout_height="match_parent"
     android:background="@color/button_bk_ddake"
+    android:clipToPadding="true"
+    android:fitsSystemWindows="true"
     android:orientation="vertical"
     tools:context=".activities.settings.BixinKeyMessageActivity">
 
@@ -30,7 +30,7 @@
             android:layout_centerVertical="true"
             android:layout_gravity="center"
             android:fontFamily="sans-serif-medium"
-            android:text="@string/bixinkey_set"
+            android:text="@string/bixinkey_message"
             android:textColor="@color/text"
             android:textSize="@dimen/text_size" />
 
@@ -41,130 +41,134 @@
         android:layout_height="match_parent"
         android:background="@color/bk_page">
 
-        <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dp_10"
-            android:layout_marginTop="@dimen/dp_16"
-            android:layout_marginEnd="@dimen/dp_10"
-            android:outlineSpotShadowColor="@color/shadow_color"
-            app:cardCornerRadius="@dimen/dp_8"
-            app:cardElevation="@dimen/dp_8"
-            tools:ignore="UnusedAttribute">
+            android:background="@color/button_bk_ddake"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="@dimen/dp_55"
+                android:layout_height="@dimen/dp_76"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/dp_50"
+                android:src="@drawable/img_bixinkey" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_30"
+                android:layout_marginTop="@dimen/dp_7"
+                android:gravity="center"
+                android:text="@string/limited_edition"
+                android:textColor="@color/text_six"
+                android:textSize="@dimen/sp_12" />
+
+            <LinearLayout
+                android:id="@+id/linear_fix_key"
+                android:layout_width="match_parent"
+                android:layout_height="59.5dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/dp_16"
+                    android:gravity="center_vertical"
+                    android:text="@string/bixinkey_name"
+                    android:textColor="@color/text_color"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/tet_keyName"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/dp_16"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical|end"
+                    android:singleLine="true"
+                    android:text="@string/bixinkey"
+                    android:textColor="@color/graytext_color"
+                    android:textSize="@dimen/sp_13" />
+
+                <ImageView
+                    android:layout_width="37dp"
+                    android:layout_height="match_parent"
+                    android:padding="15dp"
+                    android:src="@drawable/jiantou" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/line_hight"
+                android:layout_marginStart="@dimen/sp_16"
+                android:layout_marginEnd="@dimen/sp_16"
+                android:background="@color/separation_line" />
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="180dp"
-                android:background="@drawable/white_tuo"
-                android:orientation="vertical">
+                android:layout_height="59.5dp"
+                android:background="@color/button_bk_ddake">
 
-                <LinearLayout
-                    android:id="@+id/linear_fix_key"
-                    android:layout_width="match_parent"
-                    android:layout_height="59.5dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/dp_16"
+                    android:gravity="center_vertical"
+                    android:text="@string/seq"
+                    android:textColor="@color/text_color"
+                    android:textSize="15sp" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="@dimen/dp_16"
-                        android:gravity="center_vertical"
-                        android:text="@string/bixinkey_name"
-                        android:textColor="@color/text_color"
-                        android:textSize="15sp" />
-
-                    <TextView
-                        android:id="@+id/tet_keyName"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="@dimen/dp_16"
-                        android:layout_weight="1"
-                        android:gravity="center_vertical|end"
-                        android:singleLine="true"
-                        android:text="@string/bixinkey"
-                        android:textColor="@color/graytext_color"
-                        android:textSize="@dimen/sp_13" />
-
-                    <ImageView
-                        android:layout_width="37dp"
-                        android:layout_height="match_parent"
-                        android:padding="15dp"
-                        android:src="@drawable/jiantou" />
-                </LinearLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/line_hight"
-                    android:layout_marginStart="@dimen/sp_16"
-                    android:layout_marginEnd="@dimen/sp_16"
-                    android:background="@color/separation_line" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="59.5dp"
-                    android:background="@color/button_bk_ddake">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="@dimen/dp_16"
-                        android:gravity="center_vertical"
-                        android:text="@string/seq"
-                        android:textColor="@color/text_color"
-                        android:textSize="15sp" />
-
-                    <TextView
-                        android:id="@+id/tet_code"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="@dimen/dp_16"
-                        android:layout_marginEnd="@dimen/dp_16"
-                        android:layout_weight="1"
-                        android:gravity="center_vertical|end"
-                        android:singleLine="true"
-                        android:text="@string/v_1_2_3"
-                        android:textColor="@color/graytext_color"
-                        android:textSize="@dimen/sp_13" />
-
-                </LinearLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/line_hight"
-                    android:layout_marginStart="@dimen/sp_16"
-                    android:layout_marginEnd="@dimen/sp_16"
-                    android:background="@color/separation_line" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="59.5dp"
-                    android:background="@color/button_bk_ddake">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="@dimen/dp_16"
-                        android:gravity="center_vertical"
-                        android:text="@string/bluetooth_name"
-                        android:textColor="@color/text_color"
-                        android:textSize="15sp" />
-
-                    <TextView
-                        android:id="@+id/tet_Bluetoose"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="@dimen/dp_16"
-                        android:layout_marginEnd="@dimen/dp_16"
-                        android:layout_weight="1"
-                        android:gravity="center_vertical|end"
-                        android:singleLine="true"
-                        android:textColor="@color/graytext_color"
-                        android:textSize="@dimen/sp_13"
-                        tools:text="bixinkey132" />
-
-                </LinearLayout>
+                <TextView
+                    android:id="@+id/tet_code"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/dp_16"
+                    android:layout_marginEnd="@dimen/dp_16"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical|end"
+                    android:singleLine="true"
+                    android:text="@string/v_1_2_3"
+                    android:textColor="@color/graytext_color"
+                    android:textSize="@dimen/sp_13" />
 
             </LinearLayout>
-        </androidx.cardview.widget.CardView>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/line_hight"
+                android:layout_marginStart="@dimen/sp_16"
+                android:layout_marginEnd="@dimen/sp_16"
+                android:background="@color/separation_line" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="59.5dp"
+                android:background="@color/button_bk_ddake">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/dp_16"
+                    android:gravity="center_vertical"
+                    android:text="@string/bluetooth_name"
+                    android:textColor="@color/text_color"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/tet_Bluetoose"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/dp_16"
+                    android:layout_marginEnd="@dimen/dp_16"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical|end"
+                    android:singleLine="true"
+                    android:textColor="@color/graytext_color"
+                    android:textSize="@dimen/sp_13"
+                    tools:text="bixinkey132" />
+
+            </LinearLayout>
+
+        </LinearLayout>
     </RelativeLayout>
 
 </LinearLayout>

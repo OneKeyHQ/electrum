@@ -35,8 +35,6 @@ public class WatchWalletActivity extends BaseActivity {
 
     @BindView(R.id.edit_address)
     EditText editAddress;
-    @BindView(R.id.edit_wallet_name)
-    EditText editWalletName;
     private RxPermissions rxPermissions;
     private static final int REQUEST_CODE = 0;
     private SharedPreferences.Editor edit;
@@ -91,36 +89,11 @@ public class WatchWalletActivity extends BaseActivity {
                     mToast(getString(R.string.please_input_addr_or_xpub));
                     return;
                 }
-                if (TextUtils.isEmpty(editWalletName.getText().toString())) {
-                    mToast(getString(R.string.please_input_walletname));
-                    return;
-                }
-                importMnemonicWallet();
+                Intent intent = new Intent(WatchWalletActivity.this, ImportWalletSetNameActivity.class);
+                intent.putExtra("watchAddress",editAddress.getText().toString());
+                startActivity(intent);
                 break;
         }
-    }
-
-    private void importMnemonicWallet() {
-        try {
-            Daemon.commands.callAttr("create", editWalletName.getText().toString(), new Kwarg("addresses", editAddress.getText().toString()));
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            if (e.getMessage().contains("path is exist")) {
-                mToast(getString(R.string.changewalletname));
-            } else if (e.getMessage().contains("The same seed have create wallet")) {
-                String haveWalletName = e.getMessage().substring(e.getMessage().indexOf("name=") + 5);
-                mToast(getString(R.string.same_seed_have) + haveWalletName);
-            }else if (e.getMessage().contains("The file already exists")){
-                mToast(getString(R.string.have_address));
-            }
-            return;
-        }
-        edit.putBoolean("isHaveWallet", true);
-        edit.putString("loadWalletName", editWalletName.getText().toString());
-        edit.apply();
-        mIntent(HomeOnekeyActivity.class);
-
     }
 
     @Override

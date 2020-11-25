@@ -152,10 +152,8 @@ public class HdWalletDetailActivity extends BaseActivity {
 //                exportTipDialog(HdWalletDetailActivity.this, R.layout.export_mnemonic_tip,"exportPrivateKey");
                 break;
             case R.id.rel_delete_wallet:
-                Intent intent = new Intent(HdWalletDetailActivity.this, SetHDWalletPassActivity.class);
-                intent.putExtra("importHdword", "deleteSingleWallet");
-                intent.putExtra("walletName", textWalletName.getText().toString());
-                startActivity(intent);
+                deleteHdWallet(HdWalletDetailActivity.this, R.layout.confrim_delete_hdwallet);
+
                 break;
             case R.id.text_sign:
                 Intent intent1 = new Intent(HdWalletDetailActivity.this, SignActivity.class);
@@ -164,6 +162,32 @@ public class HdWalletDetailActivity extends BaseActivity {
                 break;
 
         }
+    }
+
+    private void deleteHdWallet(Context context, @LayoutRes int resource) {
+        //set see view
+        View view = View.inflate(context, resource, null);
+        Dialog dialogBtoms = new Dialog(context, R.style.dialog);
+        view.findViewById(R.id.btn_confirm_delete).setOnClickListener(v -> {
+            Intent intent = new Intent(HdWalletDetailActivity.this, SetHDWalletPassActivity.class);
+            intent.putExtra("importHdword", "deleteSingleWallet");
+            intent.putExtra("walletName", textWalletName.getText().toString());
+            startActivity(intent);
+            dialogBtoms.dismiss();
+        });
+        view.findViewById(R.id.btn_cancel).setOnClickListener(v -> {
+            dialogBtoms.dismiss();
+        });
+        dialogBtoms.setContentView(view);
+        Window window = dialogBtoms.getWindow();
+        //set pop_up size
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        //set locate
+        window.setGravity(Gravity.BOTTOM);
+        //set animal
+        window.setWindowAnimations(R.style.AnimBottom);
+        dialogBtoms.setCanceledOnTouchOutside(true);
+        dialogBtoms.show();
     }
 
     private void exportTipDialog(Context context, @LayoutRes int resource, String export) {
@@ -177,6 +201,9 @@ public class HdWalletDetailActivity extends BaseActivity {
             dialogBtoms.dismiss();
         });
         view.findViewById(R.id.btn_cancel).setOnClickListener(v -> {
+            dialogBtoms.dismiss();
+        });
+        view.findViewById(R.id.img_cancel).setOnClickListener(v -> {
             dialogBtoms.dismiss();
         });
         dialogBtoms.setContentView(view);

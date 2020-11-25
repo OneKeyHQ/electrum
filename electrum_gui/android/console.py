@@ -2213,7 +2213,7 @@ class AndroidCommands(commands.Commands):
             self.rename_wallet(name, new_name)
 
     def create(self, name, password=None, seed_type="segwit", seed=None, passphrase="", bip39_derivation=None,
-               master=None, addresses=None, privkeys=None, hd=False, purpose=84, coin="btc", keystores=None, strength=256):
+               master=None, addresses=None, privkeys=None, hd=False, purpose=84, coin="btc", keystores=None, strength=128):
         '''
             Create or restore a new wallet
             exp:

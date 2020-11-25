@@ -8,7 +8,7 @@
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_60"
+        android:layout_height="110dp"
         android:background="@color/button_bk_ddake"
         android:gravity="center"
         android:text="@string/mind"
@@ -16,9 +16,9 @@
         android:textSize="17sp" />
 
     <androidx.core.widget.NestedScrollView
-        android:background="#F5F6F7"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="#F5F6F7">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -243,13 +243,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/line_hight"
                 android:background="@color/line_color"
-                android:visibility="gone" />
+                android:visibility="visible" />
 
             <RelativeLayout
+                android:id="@+id/face_id"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dp_70"
                 android:background="@color/button_bk_ddake"
-                android:visibility="gone">
+                android:visibility="visible">
 
                 <ImageView
                     android:id="@+id/discern"
@@ -283,16 +284,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/line_hight"
                 android:background="@color/line_color"
-                android:visibility="gone" />
+                android:visibility="visible" />
 
             <RelativeLayout
+                android:id="@+id/fingerprint"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dp_70"
                 android:background="@color/button_bk_ddake"
-                android:visibility="gone">
+                android:visibility="visible">
 
                 <ImageView
-                    android:id="@+id/fingerprint"
+                    android:id="@+id/fingerprint_img"
                     android:layout_width="@dimen/dp_22"
                     android:layout_height="@dimen/dp_22"
                     android:layout_centerVertical="true"
@@ -304,7 +306,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="11dp"
-                    android:layout_toEndOf="@+id/fingerprint"
+                    android:layout_toEndOf="@+id/fingerprint_img"
                     android:text="@string/finger_disccern"
                     android:textColor="@color/text_color_one"
                     android:textSize="@dimen/sp_16" />

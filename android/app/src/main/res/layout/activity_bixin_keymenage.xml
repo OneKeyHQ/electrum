@@ -41,31 +41,28 @@
 
         </RelativeLayout>
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/sec_view"
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_20"
+            android:layout_marginTop="41dp"
+            android:lineSpacingExtra="@dimen/dp_10"
+            android:text="@string/language_tip"
+            android:textColor="@color/text_six"
+            android:textSize="@dimen/sp_14" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recl_bixinKey_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dp_10"
-            android:layout_marginTop="@dimen/dp_16"
-            android:layout_marginEnd="@dimen/dp_10"
-            android:outlineSpotShadowColor="@color/shadow_color"
-            app:cardCornerRadius="@dimen/dp_8"
-            app:cardElevation="@dimen/dp_8"
-            tools:ignore="UnusedAttribute">
+            android:layout_marginTop="@dimen/dp_5"
+            android:background="@color/button_bk_ddake"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:itemCount="6"
+            tools:listitem="@layout/key_item">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recl_bixinKey_list"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:itemCount="6"
-                tools:listitem="@layout/key_item">
-
-            </androidx.recyclerview.widget.RecyclerView>
-        </androidx.cardview.widget.CardView>
-
+        </androidx.recyclerview.widget.RecyclerView>
 
     </LinearLayout>
-
 
 </LinearLayout>

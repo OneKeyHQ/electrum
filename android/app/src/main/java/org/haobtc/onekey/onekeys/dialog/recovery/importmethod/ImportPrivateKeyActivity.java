@@ -40,8 +40,6 @@ public class ImportPrivateKeyActivity extends BaseActivity {
 
     @BindView(R.id.edit_input_private)
     EditText editInputPrivate;
-    @BindView(R.id.edit_set_wallet_name)
-    EditText editSetWalletName;
     @BindView(R.id.btn_import)
     Button btnImport;
     private SharedPreferences.Editor edit;
@@ -98,14 +96,9 @@ public class ImportPrivateKeyActivity extends BaseActivity {
                     mToast(getString(R.string.input_private_key));
                     return;
                 }
-                if (TextUtils.isEmpty(editSetWalletName.getText().toString())) {
-                    mToast(getString(R.string.input_private_key));
-                    return;
-                }
-                Intent intent = new Intent(ImportPrivateKeyActivity.this, SetHDWalletPassActivity.class);
+                Intent intent = new Intent(ImportPrivateKeyActivity.this, ImportWalletSetNameActivity.class);
                 intent.putExtra("importHdword", "importPrivateKey");
                 intent.putExtra("privateKey", editInputPrivate.getText().toString());
-                intent.putExtra("walletName", editSetWalletName.getText().toString());
                 startActivity(intent);
                 break;
         }

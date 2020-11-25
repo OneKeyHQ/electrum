@@ -28,6 +28,7 @@ import org.haobtc.onekey.onekeys.homepage.process.CreateWalletChooseTypeActivity
 import org.haobtc.onekey.utils.Daemon;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -204,6 +205,8 @@ public class CheckMnemonicActivity extends BaseActivity {
                 list1.add(word);
             }
         }
+        Collections.shuffle(list1);
+
         oneLine1.setText(list1.get(0).toString());
         oneLine2.setText(list1.get(1).toString());
         oneLine3.setText(list1.get(2).toString());
@@ -227,6 +230,8 @@ public class CheckMnemonicActivity extends BaseActivity {
                 list2.add(word);
             }
         }
+        Collections.shuffle(list2);
+
         twoLine1.setText(list2.get(0).toString());
         twoLine2.setText(list2.get(1).toString());
         twoLine3.setText(list2.get(2).toString());
@@ -249,6 +254,8 @@ public class CheckMnemonicActivity extends BaseActivity {
                 list3.add(word);
             }
         }
+        Collections.shuffle(list3);
+
         threeLine1.setText(list3.get(0).toString());
         threeLine2.setText(list3.get(1).toString());
         threeLine3.setText(list3.get(2).toString());

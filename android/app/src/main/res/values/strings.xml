@@ -275,9 +275,9 @@
     <string name="add_custom_node">Add customized node</string>
     <string name="restore_factory">Restore factory settings</string>
     <string name="somemore_wallet">**\'s wallet</string>
-    <string name="bixinkey_message">BixinKey info</string>
+    <string name="bixinkey_message">Device info</string>
     <string name="bixinkey">Xiaomi\'s BixinKey</string>
-    <string name="verson_update">Firmware version (upgrade)</string>
+    <string name="verson_update">Upgrade firmware</string>
     <string name="v_1_2_3">V 1.2.3</string>
     <string name="fix_pin">Change Pin code</string>
     <string name="nopass_pay">Fast payment</string>
@@ -478,7 +478,6 @@
     <string name="no_need_hardware">No need for confirmation on device</string>
     <string name="set_to_Bixinkey">Set to BixinKey</string>
     <string name="please_input_walletname">Enter wallet name</string>
-    <string name="import_wallet">Import wallet</string>
     <string name="_0_0">0/0</string>
     <string name="Cancelled">Cancelled</string>
     <string name="choose_import_wallet">Choose wallet to import</string>
@@ -492,7 +491,6 @@
     <string name="sign_message">Sign message</string>
     <string name="input_message">Enter any message to get signed</string>
     <string name="input_sign_msg">Enter message to be signed</string>
-    <string name="verification_key">BixinKey\'s anti-Forgery verification</string>
     <string name="connection_success">Device connection successful</string>
     <string name="sign_success">Anti-Forgery signature obtained</string>
     <string name="submit_verification">Verification being submitted</string>
@@ -591,7 +589,6 @@
     <string name="not_yet">Not yet</string>
     <string name="goto_set">Go to backup</string>
     <string name="some_wallet_existence">Some wallets already exist, import complete</string>
-    <string name="get_xpub">View the BixinKey extended public key</string>
     <string name="check_xpub">View XPub</string>
     <string name="copy_xpub">Copy XPub</string>
     <string name="diy_hardware">Custom firmware files</string>
@@ -766,7 +763,6 @@
     <string name="ble">Bluetooth</string>
     <string name="check_key_name">BixinKey name:</string>
     <string name="check_pub_key">BixinKey ePub:</string>
-    <string name="set_shutdown_time">Auto-Lock &#038; Shutdown Delay</string>
     <string name="second">seconds</string>
     <string name="please_input_time">Please enter the shutdown time</string>
     <string name="little_time">The minimum time is 10 seconds</string>
@@ -969,7 +965,6 @@
     <string name="import_private">Import private key (input directly or scan code)</string>
     <string name="import_word">Import mnemonics</string>
     <string name="import_keystore">Import Keystore</string>
-    <string name="watch_only">观察钱包 （Watch Only）</string>
     <string name="import_private_key">Import private key</string>
     <string name="imput_private_tip">Input private key or scan its QR code (pay attention to case)</string>
     <string name="import_hd_tip"><b>Once the private key is imported, it will be encrypted and stored in your local device and properly kept.</b>OneKey does not store any private data and cannot help you retrieve it.</string>
@@ -1000,7 +995,7 @@
     <string name="copy_">copy</string>
     <string name="check_">check</string>
     <string name="custom_fee">Custom rate</string>
-    <string name="second_0">Estimated time is about</string>
+    <string name="second_0">Estimated time is:about </string>
     <string name="fee_per_byte_sat_b">Fee per byte (sat/b)</string>
     <string name="size_byte">Size(byte)</string>
     <string name="input_token">Enter token or contract address</string>
@@ -1161,7 +1156,7 @@
     <string name="export_tip2">1. Prepare paper and pen, copy carefully, and keep it in a safe place after confirmation</string>
     <string name="export_tip3">2. Please do not take screenshots! Photo albums are easy to access with other mobile apps</string>
     <string name="export_tip4">3. OneKey does not store any private key. Once the private key is lost, it cannot be retrieved</string>
-    <string name="i_know">I already know</string>
+    <string name="i_know">Export</string>
     <string name="export_mnemonic">Mnemonic derivation</string>
     <string name="recovery_default">Restore default options</string>
     <string name="please_input_fee">Please enter the rate</string>
@@ -1225,5 +1220,20 @@
     <string name="mnemonic_wrong">Errors in mnemonics</string>
     <string name="begin_check">Recheck</string>
     <string name="active_hardware">Active Hardware wallet</string>
+    <string name="electrum_node">Electrum node</string>
+    <string name="btc_wallet">BTC Wallet</string>
+    <string name="eth_wallet">ETH Wallet</string>
+    <string name="show_code">Display QR code</string>
+    <string name="hide_code">Hidden QR code</string>
+    <string name="import_wallet">Import single currency Wallet</string>
+    <string name="app_language_tip">Select the display language of the app</string>
+    <string name="public_use">currency</string>
+    <string name="senior">senior</string>
+    <string name="hide_wallet_msg">Hide wallet mode</string>
+    <string name="delete_device">Delete device</string>
+    <string name="get_xpub">View the BixinKey extended public key</string>
+    <string name="set_shutdown_time">Automatic shutdown</string>
+    <string name="verification_key">Anti-Forgery verification</string>
+    <string name="limited_edition">OneKey - Bixin Limited Edition</string>
 
 </resources>

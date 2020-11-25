@@ -2,6 +2,7 @@ package org.haobtc.onekey.activities.settings;
 
 import android.content.SharedPreferences;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;

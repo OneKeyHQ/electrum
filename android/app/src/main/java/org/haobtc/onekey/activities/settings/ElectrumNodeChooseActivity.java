@@ -25,6 +25,7 @@ import org.haobtc.onekey.adapter.ElectrumListAdapter;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.CNYBean;
 import org.haobtc.onekey.bean.DefaultNodeBean;
+import org.haobtc.onekey.event.FinishEvent;
 import org.haobtc.onekey.event.FirstEvent;
 import org.haobtc.onekey.event.SendMoreAddressEvent;
 import org.haobtc.onekey.utils.Daemon;
@@ -155,6 +156,7 @@ public class ElectrumNodeChooseActivity extends BaseActivity {
                     }
                     return;
                 }
+                EventBus.getDefault().post(new FirstEvent("fixElectrumNode"));
                 mToast(getString(R.string.add_finished));
                 break;
             default:

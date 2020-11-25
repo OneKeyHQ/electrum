@@ -179,7 +179,7 @@
             android:layout_centerVertical="true"
             android:layout_marginStart="@dimen/dp_15"
             android:layout_toEndOf="@+id/watch_only_wallet"
-            android:text="@string/watch_only"
+            android:text="@string/watch_wallet"
             android:textColor="@color/text_two"
             android:textSize="@dimen/sp_16" />
 

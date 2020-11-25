@@ -1,14 +1,20 @@
 package org.haobtc.onekey.onekeys.homepage.mindmenu;
 
+import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.LayoutRes;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONArray;
@@ -23,6 +29,7 @@ import org.haobtc.onekey.bean.AddressEvent;
 import org.haobtc.onekey.event.LoadWalletlistEvent;
 import org.haobtc.onekey.onekeys.dialog.RecoverHdWalletActivity;
 import org.haobtc.onekey.onekeys.dialog.SetHDWalletPassActivity;
+import org.haobtc.onekey.onekeys.homepage.WalletListActivity;
 import org.haobtc.onekey.onekeys.homepage.process.CreateDeriveChooseTypeActivity;
 import org.haobtc.onekey.utils.Daemon;
 import org.json.JSONException;
@@ -36,8 +43,6 @@ import java.util.Set;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-
-import static org.haobtc.onekey.activities.service.CommunicationModeSelector.executorService;
 
 public class HDWalletActivity extends BaseActivity {
 
@@ -67,6 +72,7 @@ public class HDWalletActivity extends BaseActivity {
 
     @Override
     public void initData() {
+        reclWalletList.setNestedScrollingEnabled(false);
         //wallet name and balance list
         hdWalletList = new ArrayList<>();
         walletListAdapter = new WalletListAdapter(hdWalletList);
@@ -74,7 +80,7 @@ public class HDWalletActivity extends BaseActivity {
         getHomeWalletList();
     }
 
-    @OnClick({R.id.img_back, R.id.text_manage, R.id.recl_add_wallet, R.id.recl_add_hd_wallet, R.id.recl_recovery_wallet})
+    @OnClick({R.id.img_back, R.id.text_manage, R.id.recl_add_wallet, R.id.recl_add_hd_wallet, R.id.recl_recovery_wallet, R.id.img_what_hd})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
@@ -98,7 +104,32 @@ public class HDWalletActivity extends BaseActivity {
                 Intent intent2 = new Intent(HDWalletActivity.this, RecoverHdWalletActivity.class);
                 startActivity(intent2);
                 break;
+            case R.id.img_what_hd:
+                whatIsHd(HDWalletActivity.this, R.layout.what_is_hd);
+                break;
         }
+    }
+
+    private void whatIsHd(Context context, @LayoutRes int resource) {
+        //set see view
+        View view = View.inflate(context, resource, null);
+        Dialog dialogBtoms = new Dialog(context, R.style.dialog);
+        view.findViewById(R.id.btn_next).setOnClickListener(v -> {
+            dialogBtoms.dismiss();
+        });
+        view.findViewById(R.id.img_cancel).setOnClickListener(v -> {
+            dialogBtoms.dismiss();
+        });
+        dialogBtoms.setContentView(view);
+        Window window = dialogBtoms.getWindow();
+        //set pop_up size
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        //set locate
+        window.setGravity(Gravity.BOTTOM);
+        //set animal
+        window.setWindowAnimations(R.style.AnimBottom);
+        dialogBtoms.setCanceledOnTouchOutside(true);
+        dialogBtoms.show();
     }
 
     private void getHomeWalletList() {
@@ -148,13 +179,14 @@ public class HDWalletActivity extends BaseActivity {
                 linNotWallet.setVisibility(View.VISIBLE);
             }
         } else {
+            textWalletNum.setText(String.valueOf(hdWalletList.size()));
             reclAddWallet.setVisibility(View.GONE);
             linNotWallet.setVisibility(View.VISIBLE);
         }
     }
 
     @Subscribe
-    public void onFinish(LoadWalletlistEvent event) {
+    public void onLoad(LoadWalletlistEvent event) {
         getHomeWalletList();
     }
 

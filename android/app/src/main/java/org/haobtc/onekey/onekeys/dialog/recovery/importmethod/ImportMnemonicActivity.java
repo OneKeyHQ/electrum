@@ -1,29 +1,24 @@
 package org.haobtc.onekey.onekeys.dialog.recovery.importmethod;
 
-import android.app.AlertDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.Display;
-import android.view.Gravity;
-import android.view.LayoutInflater;
+import android.util.Log;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.EditText;
 
-import com.chaquo.python.Kwarg;
+import com.chaquo.python.PyObject;
 
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
-import org.haobtc.onekey.onekeys.HomeOnekeyActivity;
-import org.haobtc.onekey.onekeys.dialog.SetHDWalletPassActivity;
-import org.haobtc.onekey.onekeys.homepage.process.SetDeriveWalletNameActivity;
 import org.haobtc.onekey.utils.Daemon;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -55,8 +50,6 @@ public class ImportMnemonicActivity extends BaseActivity {
     EditText editEleven;
     @BindView(R.id.edit_twelve)
     EditText editTwelve;
-    @BindView(R.id.edit_set_wallet_name)
-    EditText editSetWalletName;
     private SharedPreferences.Editor edit;
 
     @Override
@@ -76,17 +69,13 @@ public class ImportMnemonicActivity extends BaseActivity {
 
     }
 
-    @OnClick({R.id.img_back, R.id.btn_recovery})
+    @OnClick({R.id.img_back, R.id.btn_recovery,R.id.img_test_paste})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
                 finish();
                 break;
             case R.id.btn_recovery:
-                if (TextUtils.isEmpty(editSetWalletName.getText().toString())){
-                    mToast(getString(R.string.please_input_walletname));
-                    return;
-                }
                 String strone = editOne.getText().toString();
                 String strtwo = editTwo.getText().toString();
                 String strthree = editThree.getText().toString();
@@ -106,13 +95,66 @@ public class ImportMnemonicActivity extends BaseActivity {
                     return;
                 }
                 String strNewseed = strone + " " + strtwo + " " + strthree + " " + strfour + " " + strfive + " " + strsix + " " + strseven + " " + streight + " " + strnine + " " + strten + " " + streleven + " " + strtwelve;
-                Intent intent = new Intent(ImportMnemonicActivity.this, SetHDWalletPassActivity.class);
-                intent.putExtra("importHdword", "importMnemonic");
-                intent.putExtra("recoverySeed", strNewseed);
-                intent.putExtra("walletName", editSetWalletName.getText().toString());
-                startActivity(intent);
-
+                isSeed(strNewseed);
+                break;
+            case R.id.img_test_paste:
+                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                if (clipboard != null) {
+                    ClipData data = clipboard.getPrimaryClip();
+                    if (data != null && data.getItemCount() > 0) {
+                        CharSequence text = data.getItemAt(0).getText();
+                        if (!TextUtils.isEmpty(text.toString())) {
+                            String[] wordsList = text.toString().split("\\s+");
+                            ArrayList<String> wordList = new ArrayList<>(Arrays.asList(wordsList));
+                            switch (wordList.size()) {
+                                case 12:
+                                    editTwelve.setText(wordList.get(11));
+                                case 11:
+                                    editEleven.setText(wordList.get(10));
+                                case 10:
+                                    editTen.setText(wordList.get(9));
+                                case 9:
+                                    editNine.setText(wordList.get(8));
+                                case 8:
+                                    editEight.setText(wordList.get(7));
+                                case 7:
+                                    editSeven.setText(wordList.get(6));
+                                case 6:
+                                    editSix.setText(wordList.get(5));
+                                case 5:
+                                    editFive.setText(wordList.get(4));
+                                case 4:
+                                    editFour.setText(wordList.get(3));
+                                case 3:
+                                    editThree.setText(wordList.get(2));
+                                case 2:
+                                    editTwo.setText(wordList.get(1));
+                                case 1:
+                                    editOne.setText(wordList.get(0));
+                                    break;
+                                default:
+                                    throw new IllegalStateException("Unexpected value: " + wordList.size());
+                            }
+                        }
+                    }
+                }
                 break;
         }
+    }
+
+    private void isSeed(String strNewseed) {
+        PyObject isSeeds = null;
+        try {
+            isSeeds = Daemon.commands.callAttr("is_seed", strNewseed);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Log.i("isSeedsisSeedsisSeeds", "isSeed: "+isSeeds.toBoolean());
+        Intent intent = new Intent(ImportMnemonicActivity.this, ImportWalletSetNameActivity.class);
+        intent.putExtra("importHdword", "importMnemonic");
+        intent.putExtra("recoverySeed", strNewseed);
+        startActivity(intent);
+
+
     }
 }

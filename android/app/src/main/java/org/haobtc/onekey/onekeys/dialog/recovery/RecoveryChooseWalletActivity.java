@@ -15,6 +15,7 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.adapter.RecoveryWalletAdapter;
 import org.haobtc.onekey.event.WalletAddressEvent;
+import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.HomeOnekeyActivity;
 import org.haobtc.onekey.utils.Daemon;
 import org.json.JSONArray;
@@ -105,7 +106,7 @@ public class RecoveryChooseWalletActivity extends BaseActivity {
                         e.printStackTrace();
                         return;
                     }
-                    edit.putBoolean("isHaveWallet", true);
+                    PyEnv.loadLocalWalletInfo(this);
                     edit.putString("loadWalletName", "BTC-1");
                     edit.apply();
                     mIntent(HomeOnekeyActivity.class);

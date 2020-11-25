@@ -68,12 +68,12 @@ public class DetailTransactionActivity extends BaseActivity {
     @Override
     public void initData() {
         String detailType = getIntent().getStringExtra("detailType");
-        if ("homeScanDetail".equals(detailType)){
+        if ("homeScanDetail".equals(detailType)) {
             String nowDatetime = mGetNowDatetime();
             textTxTime.setText(nowDatetime);
             String scanDetail = getIntent().getStringExtra("scanDetail");
             jsonDetailData(scanDetail);
-        }else{
+        } else {
             getTxDetail();
         }
     }
@@ -125,8 +125,14 @@ public class DetailTransactionActivity extends BaseActivity {
         String txid = listBean.getTxid();
         String fee = listBean.getFee();
         String description = listBean.getDescription();
-        String txAmount = amount.substring(0, amount.indexOf(" ("));
-        textTxAmount.setText(txAmount);
+        if (amount.contains(" (")) {
+            String txAmount = amount.substring(0, amount.indexOf(" ("));
+            textTxAmount.setText(txAmount);
+        } else {
+            textTxAmount.setText(amount);
+        }
+
+
         if (txStatus.contains("confirmations")) {
             String confirms = txStatus.substring(0, txStatus.indexOf(" "));
             textConfirmNum.setText(confirms);

@@ -23,6 +23,7 @@ public class WalletManageActivity extends BaseActivity {
     TextView textSafe;
     @BindView(R.id.rel_export_word)
     RelativeLayout relExportWord;
+    private int hdHum;
 
     @Override
     public int getLayoutId() {
@@ -37,7 +38,7 @@ public class WalletManageActivity extends BaseActivity {
 
     @Override
     public void initData() {
-        int hdHum = getIntent().getIntExtra("hd_num", 0);
+        hdHum = getIntent().getIntExtra("hd_num", 0);
         if (hdHum == 0) {
             textSafe.setVisibility(View.GONE);
             relExportWord.setVisibility(View.GONE);
@@ -57,8 +58,12 @@ public class WalletManageActivity extends BaseActivity {
                 startActivity(intent1);
                 break;
             case R.id.rel_delete_wallet:
-                Intent intent = new Intent(WalletManageActivity.this, DeleteWalletActivity.class);
-                startActivity(intent);
+                if (hdHum == 0) {
+                    mToast(getString(R.string.please_create_wallet));
+                } else {
+                    Intent intent = new Intent(WalletManageActivity.this, DeleteWalletActivity.class);
+                    startActivity(intent);
+                }
                 break;
         }
     }
@@ -74,10 +79,4 @@ public class WalletManageActivity extends BaseActivity {
         EventBus.getDefault().unregister(this);
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // TODO: add setContentView(...) invocation
-        ButterKnife.bind(this);
-    }
 }

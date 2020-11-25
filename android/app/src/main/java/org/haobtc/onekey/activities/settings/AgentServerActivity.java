@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -15,6 +16,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -36,6 +38,7 @@ import butterknife.OnClick;
 
 public class AgentServerActivity extends BaseActivity implements CompoundButton.OnCheckedChangeListener {
 
+    @SuppressLint("UseSwitchCompatOrMaterialCode")
     @BindView(R.id.switchAgent)
     Switch switchAgent;
     @BindView(R.id.btnConfirm)
@@ -50,6 +53,8 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
     EditText editPass;
     @BindView(R.id.testNodeType)
     TextView testNodeType;
+    @BindView(R.id.relNodeType)
+    RelativeLayout relNodeType;
     private ArrayList<AddressEvent> dataList;
     private String nodetype;
     private String strAgentIp;
@@ -92,6 +97,7 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
         if (set_proxy_status) {
             switchAgent.setChecked(true);
             proxy_switch = true;
+            relNodeType.setEnabled(true);
             if (!TextUtils.isEmpty(set_proxy)) {
                 String[] wordsList = set_proxy.split(" ");
                 switch (wordsList.length) {
@@ -105,11 +111,14 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
                         editPort.setText(wordsList[2]);
 
                 }
+                btnConfirm.setEnabled(true);
+                btnConfirm.setBackground(getDrawable(R.drawable.btn_checked));
             } else {
                 btnConfirm.setEnabled(false);
                 btnConfirm.setBackground(getDrawable(R.drawable.btn_no_check));
             }
         } else {
+            relNodeType.setEnabled(false);
             switchAgent.setChecked(false);
             proxy_switch = false;
             btnConfirm.setEnabled(true);
@@ -205,6 +214,7 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
             editPort.setEnabled(true);
             editUsername.setEnabled(true);
             editPass.setEnabled(true);
+            relNodeType.setEnabled(true);
             if (!TextUtils.isEmpty(set_proxy)) {
                 String[] wordsList = set_proxy.split(" ");
                 switch (wordsList.length) {
@@ -232,6 +242,7 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
             editPort.setEnabled(false);
             editUsername.setEnabled(false);
             editPass.setEnabled(false);
+            relNodeType.setEnabled(false);
         }
     }
 
@@ -243,7 +254,7 @@ public class AgentServerActivity extends BaseActivity implements CompoundButton.
             return;
         }
         edit.putBoolean("set_proxy_status", false).apply();
-        mToast(getString(R.string.set_fail));
+        mToast(getString(R.string.set_success));
         finish();
     }
 

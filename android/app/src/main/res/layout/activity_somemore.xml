@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/button_bk_ddake"
     android:clipToPadding="true"
     android:fitsSystemWindows="true"
-    android:background="@color/button_bk_ddake"
     android:orientation="vertical"
     tools:context=".activities.settings.HardwareDetailsActivity">
 
@@ -24,7 +24,7 @@
             android:src="@drawable/left_arrow" />
 
         <TextView
-            android:id="@+id/tetKeyname"
+            android:id="@+id/tet_keyName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
@@ -38,345 +38,409 @@
     </RelativeLayout>
 
     <androidx.core.widget.NestedScrollView
-        android:background="@color/bk_page"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingBottom="@dimen/dp_20">
+        android:background="@color/bk_page">
 
-        <RelativeLayout
-            android:background="@color/bk_page"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="@color/bk_page"
+            android:orientation="vertical">
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/CardView"
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/dp_10"
-                android:layout_marginTop="@dimen/dp_10"
-                android:layout_marginEnd="@dimen/dp_10"
-                android:layout_marginBottom="@dimen/dp_20"
-                android:outlineSpotShadowColor="@color/shadow_color"
-                app:cardCornerRadius="@dimen/dp_8"
-                app:cardElevation="@dimen/dp_8"
-                tools:ignore="UnusedAttribute">
+                android:layout_marginStart="@dimen/dp_20"
+                android:layout_marginTop="41dp"
+                android:lineSpacingExtra="@dimen/dp_10"
+                android:text="@string/public_use"
+                android:textColor="@color/text_six"
+                android:textSize="@dimen/sp_14" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="540dp"
-                    android:background="@drawable/white_tuo"
-                    android:orientation="vertical">
-
-                    <LinearLayout
-                        android:id="@+id/lin_OnckOne"
-                        android:layout_width="match_parent"
-                        android:layout_height="59.5dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:layout_marginStart="@dimen/dp_16"
-                            android:gravity="center_vertical"
-                            android:text="@string/bixinkey_message"
-                            android:textColor="@color/text_color"
-                            android:textSize="15sp" />
-
-                        <TextView
-                            android:id="@+id/tet_keyName"
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_marginStart="@dimen/dp_16"
-                            android:layout_weight="1"
-                            android:gravity="center_vertical|end"
-                            android:singleLine="true"
-                            android:text="@string/bixinkey"
-                            android:textColor="@color/graytext_color"
-                            android:textSize="@dimen/sp_13" />
-
-                        <ImageView
-                            android:layout_width="37dp"
-                            android:layout_height="match_parent"
-                            android:padding="15dp"
-                            android:src="@drawable/jiantou" />
-
-
-                    </LinearLayout>
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/line_hight"
-                        android:layout_marginStart="@dimen/dp_16"
-                        android:layout_marginEnd="@dimen/dp_16"
-                        android:background="@color/separation_line" />
-
-                    <TextView
-                        android:id="@+id/tetBuckup"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:drawableEnd="@drawable/jiantou"
-                        android:gravity="center_vertical"
-                        android:paddingStart="@dimen/dp_16"
-                        android:paddingEnd="@dimen/dp_16"
-                        android:text="@string/bixinkey_backups"
-                        android:textColor="@color/text"
-                        android:textSize="@dimen/text_size"
-                        android:visibility="visible" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/line_hight"
-                        android:layout_marginStart="@dimen/dp_16"
-                        android:layout_marginEnd="@dimen/dp_16"
-                        android:background="@color/separation_line" />
-
-                    <LinearLayout
-                        android:id="@+id/lin_OnckTwo"
-                        android:layout_width="match_parent"
-                        android:layout_height="59.5dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:layout_marginStart="@dimen/dp_16"
-                            android:gravity="center_vertical"
-                            android:text="@string/verson_update"
-                            android:textColor="@color/text_color"
-                            android:textSize="15sp" />
-
-                        <TextView
-                            android:id="@+id/tet_code"
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_marginStart="@dimen/dp_16"
-                            android:layout_weight="1"
-                            android:gravity="center_vertical|end"
-                            android:singleLine="true"
-                            android:textColor="@color/graytext_color"
-                            android:textSize="@dimen/sp_13" />
-
-                        <ImageView
-                            android:layout_width="37dp"
-                            android:layout_height="match_parent"
-                            android:padding="15dp"
-                            android:src="@drawable/jiantou" />
-
-
-                    </LinearLayout>
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/line_hight"
-                        android:layout_marginStart="@dimen/dp_16"
-                        android:layout_marginEnd="@dimen/dp_16"
-                        android:background="@color/separation_line" />
-
-                    <LinearLayout
-                        android:id="@+id/change_pin"
-                        android:layout_width="match_parent"
-                        android:layout_height="59.5dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:layout_marginStart="@dimen/dp_16"
-                            android:gravity="center_vertical"
-                            android:text="@string/fix_pin"
-                            android:textColor="@color/text_color"
-                            android:textSize="15sp" />
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_marginStart="@dimen/dp_16"
-                            android:layout_weight="1" />
-
-                        <ImageView
-                            android:layout_width="37dp"
-                            android:layout_height="match_parent"
-                            android:padding="15dp"
-                            android:src="@drawable/jiantou" />
-
-
-                    </LinearLayout>
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/line_hight"
-                        android:layout_marginStart="@dimen/dp_16"
-                        android:layout_marginEnd="@dimen/dp_16"
-                        android:background="@color/separation_line" />
-
-                    <LinearLayout
-                        android:id="@+id/lin_OnckFour"
-                        android:layout_width="match_parent"
-                        android:layout_height="59.5dp">
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_marginStart="@dimen/dp_16"
-                            android:layout_weight="1"
-                            android:gravity="center_vertical"
-                            android:text="@string/nopass_pay"
-                            android:textColor="@color/text_color"
-                            android:textSize="15sp" />
-
-                        <ImageView
-                            android:layout_width="37dp"
-                            android:layout_height="match_parent"
-                            android:padding="15dp"
-                            android:src="@drawable/jiantou" />
-
-                    </LinearLayout>
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/line_hight"
-                        android:layout_marginStart="@dimen/dp_16"
-                        android:layout_marginEnd="@dimen/dp_16"
-                        android:background="@color/separation_line" />
-
-                    <LinearLayout
-                        android:id="@+id/wipe_device"
-                        android:layout_width="match_parent"
-                        android:layout_height="59.5dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:layout_marginStart="@dimen/dp_16"
-                            android:gravity="center_vertical"
-                            android:text="@string/restore_factory"
-                            android:textColor="@color/text_color"
-                            android:textSize="15sp" />
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_marginStart="@dimen/dp_16"
-                            android:layout_weight="1" />
-
-                        <ImageView
-                            android:layout_width="37dp"
-                            android:layout_height="match_parent"
-                            android:padding="15dp"
-                            android:src="@drawable/jiantou" />
-
-
-                    </LinearLayout>
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/line_hight"
-                        android:layout_marginStart="@dimen/dp_16"
-                        android:layout_marginEnd="@dimen/dp_16"
-                        android:background="@color/separation_line" />
-
-                    <TextView
-                        android:id="@+id/tetBluetoothSet"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:clickable="true"
-                        android:drawableEnd="@drawable/jiantou"
-                        android:focusable="true"
-                        android:gravity="center_vertical"
-                        android:paddingStart="@dimen/text_margin"
-                        android:paddingEnd="@dimen/text_margin"
-                        android:text="@string/bluetooth_setting"
-                        android:textColor="@color/text"
-                        android:textSize="@dimen/text_size" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/line_hight"
-                        android:layout_marginStart="@dimen/dp_16"
-                        android:layout_marginEnd="@dimen/dp_16"
-                        android:background="@color/separation_line" />
-
-                    <TextView
-                        android:id="@+id/test_set_key_language"
-                        android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:clickable="true"
-                        android:drawableEnd="@drawable/jiantou"
-                        android:focusable="true"
-                        android:gravity="center_vertical"
-                        android:paddingStart="@dimen/text_margin"
-                        android:paddingEnd="@dimen/text_margin"
-                        android:text="@string/set_key_language"
-                        android:textColor="@color/text"
-                        android:textSize="@dimen/text_size" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="@dimen/line_hight"
-                        android:layout_marginStart="@dimen/sp_16"
-                        android:layout_marginEnd="@dimen/sp_16"
-                        android:background="@color/separation_line" />
-
-                    <LinearLayout
-                        android:id="@+id/linear_shutdown_time"
-                        android:layout_width="match_parent"
-                        android:layout_height="59.5dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:layout_marginStart="@dimen/dp_16"
-                            android:gravity="center_vertical"
-                            android:text="@string/set_shutdown_time"
-                            android:textColor="@color/text_color"
-                            android:textSize="15sp" />
-
-                        <TextView
-                            android:id="@+id/test_shutdown_time"
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_marginStart="@dimen/dp_10"
-                            android:layout_weight="1"
-                            android:gravity="center_vertical|end"
-                            android:maxLines="1"
-                            android:singleLine="true"
-                            android:textColor="@color/graytext_color"
-                            android:textSize="@dimen/sp_13"
-                            tools:text="20秒" />
-
-                        <ImageView
-                            android:layout_width="37dp"
-                            android:layout_height="match_parent"
-                            android:padding="15dp"
-                            android:src="@drawable/jiantou" />
-                    </LinearLayout>
-
-
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
+            <RelativeLayout
+                android:id="@+id/lin_OnckOne"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/CardView"
-                android:layout_marginStart="@dimen/dp_10"
-                android:layout_marginEnd="@dimen/dp_10"
-                android:layout_marginBottom="@dimen/dp_20"
-                android:outlineSpotShadowColor="@color/shadow_color"
-                app:cardCornerRadius="@dimen/dp_8"
-                app:cardElevation="@dimen/dp_8"
-                tools:ignore="UnusedAttribute">
+                android:layout_height="@dimen/dp_70"
+                android:layout_marginTop="@dimen/dp_5"
+                android:background="@color/button_bk_ddake">
 
-                <Button
-                    android:id="@+id/tet_deleteWallet"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:background="@color/t_white"
-                    android:text="@string/delete"
-                    android:textColor="@color/red_text"
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="@dimen/dp_24"
+                    android:layout_height="@dimen/dp_24"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="@dimen/dp_20"
+                    android:src="@drawable/device_msg" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/dp_10"
+                    android:layout_toEndOf="@+id/imageView"
+                    android:gravity="center_vertical"
+                    android:text="@string/bixinkey_message"
+                    android:textColor="@color/text_color"
                     android:textSize="15sp" />
 
-            </androidx.cardview.widget.CardView>
-        </RelativeLayout>
+                <ImageView
+                    android:layout_width="37dp"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentEnd="true"
+                    android:padding="15dp"
+                    android:src="@drawable/jiantou" />
+
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/line_hight"
+                android:layout_marginStart="@dimen/dp_16"
+                android:layout_marginEnd="@dimen/dp_16"
+                android:background="@color/separation_line" />
+
+            <TextView
+                android:id="@+id/test_set_key_language"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_70"
+                android:background="@color/button_bk_ddake"
+                android:clickable="true"
+                android:drawablePadding="@dimen/dp_10"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:paddingStart="20dp"
+                android:paddingEnd="@dimen/text_margin"
+                android:text="@string/language"
+                android:textColor="@color/text"
+                android:textSize="@dimen/text_size"
+                app:drawableEndCompat="@drawable/jiantou"
+                app:drawableStartCompat="@drawable/translation_2" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/line_hight"
+                android:layout_marginStart="@dimen/dp_16"
+                android:layout_marginEnd="@dimen/dp_16"
+                android:background="@color/separation_line" />
+
+            <LinearLayout
+                android:id="@+id/lin_OnckTwo"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_70"
+                android:background="@color/button_bk_ddake"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="@dimen/dp_24"
+                    android:layout_height="@dimen/dp_24"
+                    android:layout_marginStart="@dimen/dp_20"
+                    android:src="@drawable/hard_update" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/dp_16"
+                    android:gravity="center_vertical"
+                    android:text="@string/verson_update"
+                    android:textColor="@color/text_color"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/tet_code"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/dp_16"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical|end"
+                    android:singleLine="true"
+                    android:textColor="@color/graytext_color"
+                    android:textSize="@dimen/sp_13" />
+
+                <ImageView
+                    android:layout_width="37dp"
+                    android:layout_height="match_parent"
+                    android:padding="15dp"
+                    android:src="@drawable/jiantou" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/line_hight"
+                android:layout_marginStart="@dimen/sp_16"
+                android:layout_marginEnd="@dimen/sp_16"
+                android:background="@color/separation_line" />
+
+            <LinearLayout
+                android:id="@+id/linear_shutdown_time"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_70"
+                android:background="@color/button_bk_ddake"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="@dimen/dp_24"
+                    android:layout_height="@dimen/dp_24"
+                    android:layout_marginStart="@dimen/dp_20"
+                    android:src="@drawable/automatic_shutdown" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/dp_10"
+                    android:gravity="center_vertical"
+                    android:text="@string/set_shutdown_time"
+                    android:textColor="@color/text_color"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/test_shutdown_time"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/dp_10"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical|end"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:textColor="@color/graytext_color"
+                    android:textSize="@dimen/sp_13"
+                    tools:text="20秒" />
+
+                <ImageView
+                    android:layout_width="37dp"
+                    android:layout_height="match_parent"
+                    android:padding="15dp"
+                    android:src="@drawable/jiantou" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/line_hight"
+                android:layout_marginStart="@dimen/dp_16"
+                android:layout_marginEnd="@dimen/dp_16"
+                android:background="@color/separation_line" />
+
+            <TextView
+                android:id="@+id/tetVerification"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_70"
+                android:background="@color/button_bk_ddake"
+                android:clickable="true"
+                android:drawablePadding="@dimen/dp_10"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:paddingStart="@dimen/dp_20"
+                android:paddingEnd="@dimen/dp_15"
+                android:text="@string/verification_key"
+                android:textColor="@color/text"
+                android:textSize="@dimen/sp_15"
+                app:drawableEndCompat="@drawable/jiantou"
+                app:drawableStartCompat="@drawable/privacy_1" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_20"
+                android:layout_marginTop="41dp"
+                android:lineSpacingExtra="@dimen/dp_10"
+                android:text="@string/safe"
+                android:textColor="@color/text_six"
+                android:textSize="@dimen/sp_14" />
+
+            <LinearLayout
+                android:id="@+id/lin_OnckFour"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_70"
+                android:layout_marginTop="@dimen/dp_5"
+                android:background="@color/button_bk_ddake"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="@dimen/dp_24"
+                    android:layout_height="@dimen/dp_24"
+                    android:layout_marginStart="@dimen/dp_20"
+                    android:src="@drawable/automatic_shutdown" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/dp_10"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="@string/nopass_pay"
+                    android:textColor="@color/text_color"
+                    android:textSize="15sp" />
+
+                <ImageView
+                    android:layout_width="37dp"
+                    android:layout_height="match_parent"
+                    android:padding="15dp"
+                    android:src="@drawable/jiantou" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/line_hight"
+                android:layout_marginStart="@dimen/dp_16"
+                android:layout_marginEnd="@dimen/dp_16"
+                android:background="@color/separation_line" />
+
+            <LinearLayout
+                android:id="@+id/change_pin"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_70"
+                android:background="@color/button_bk_ddake"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="@dimen/dp_24"
+                    android:layout_height="@dimen/dp_24"
+                    android:layout_marginStart="@dimen/dp_20"
+                    android:src="@drawable/fix_pin" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/dp_10"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="@string/fix_pin"
+                    android:textColor="@color/text_color"
+                    android:textSize="15sp" />
+
+                <ImageView
+                    android:layout_width="37dp"
+                    android:layout_height="match_parent"
+                    android:padding="15dp"
+                    android:src="@drawable/jiantou" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/line_hight"
+                android:layout_marginStart="@dimen/dp_16"
+                android:layout_marginEnd="@dimen/dp_16"
+                android:background="@color/separation_line"
+                android:visibility="visible" />
+
+            <TextView
+                android:id="@+id/check_xpub"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_70"
+                android:background="@color/button_bk_ddake"
+                android:clickable="true"
+                android:drawablePadding="@dimen/dp_10"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:paddingStart="@dimen/dp_20"
+                android:paddingEnd="@dimen/dp_16"
+                android:text="@string/get_xpub"
+                android:textColor="@color/text"
+                app:drawableEndCompat="@drawable/jiantou"
+                app:drawableStartCompat="@drawable/check_pub" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_20"
+                android:layout_marginTop="41dp"
+                android:lineSpacingExtra="@dimen/dp_10"
+                android:text="@string/senior"
+                android:textColor="@color/text_six"
+                android:textSize="@dimen/sp_14" />
+
+            <TextView
+                android:id="@+id/text_hide_wallet"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_70"
+                android:background="@color/button_bk_ddake"
+                android:clickable="true"
+                android:drawablePadding="@dimen/dp_10"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:paddingStart="@dimen/dp_20"
+                android:paddingEnd="@dimen/dp_16"
+                android:text="@string/hide_wallet_msg"
+                android:textColor="@color/text"
+                app:drawableEndCompat="@drawable/jiantou"
+                app:drawableStartCompat="@drawable/hide_wallet_" />
+
+            <TextView
+                android:id="@+id/tetBuckup"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_70"
+                android:layout_marginTop="@dimen/dp_10"
+                android:background="@color/button_bk_ddake"
+                android:gravity="center_vertical"
+                android:paddingStart="@dimen/dp_16"
+                android:paddingEnd="@dimen/dp_16"
+                android:text="@string/bixinkey_backups"
+                android:textColor="@color/text"
+                android:textSize="@dimen/text_size"
+                android:visibility="gone"
+                app:drawableEndCompat="@drawable/jiantou" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_20"
+                android:layout_marginTop="41dp"
+                android:lineSpacingExtra="@dimen/dp_10"
+                android:text="@string/senior"
+                android:textColor="@color/text_six"
+                android:textSize="@dimen/sp_14" />
+
+            <LinearLayout
+                android:id="@+id/wipe_device"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_70"
+                android:layout_marginTop="@dimen/dp_5"
+                android:background="@color/button_bk_ddake">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/dp_20"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="@string/restore_factory"
+                    android:textColor="@color/text_ten"
+                    android:textSize="15sp" />
+
+
+                <ImageView
+                    android:layout_width="37dp"
+                    android:layout_height="match_parent"
+                    android:padding="15dp"
+                    android:src="@drawable/jiantou" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/line_hight"
+                android:layout_marginStart="@dimen/dp_16"
+                android:layout_marginEnd="@dimen/dp_16"
+                android:background="@color/separation_line" />
+
+            <TextView
+                android:id="@+id/tet_deleteWallet"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_70"
+                android:layout_marginBottom="@dimen/dp_100"
+                android:background="@color/button_bk_ddake"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:paddingStart="@dimen/dp_20"
+                android:paddingEnd="@dimen/text_margin"
+                android:text="@string/delete_device"
+                android:textColor="@color/text_ten"
+                android:textSize="@dimen/text_size"
+                app:drawableEndCompat="@drawable/jiantou" />
+
+        </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </LinearLayout>

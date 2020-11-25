@@ -75,25 +75,11 @@
                 android:paddingEnd="@dimen/dp_20"
                 android:textSize="@dimen/sp_14" />
 
-            <EditText
-                android:id="@+id/edit_wallet_name"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/dp_60"
-                android:layout_marginStart="34dp"
-                android:layout_marginTop="@dimen/dp_25"
-                android:layout_marginEnd="34dp"
-                android:layout_marginBottom="@dimen/dp_15"
-                android:background="@drawable/gray_broken"
-                android:hint="@string/set_wallet_name"
-                android:paddingStart="@dimen/dp_20"
-                android:paddingEnd="@dimen/dp_20"
-                android:textSize="@dimen/sp_16" />
-
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="34dp"
-                android:layout_marginTop="@dimen/dp_25"
+                android:layout_marginTop="@dimen/dp_30"
                 android:layout_marginEnd="34dp"
                 android:text="@string/watch_only_tip"
                 android:textColor="@color/text_two"

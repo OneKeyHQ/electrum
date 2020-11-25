@@ -172,9 +172,12 @@ public class ServerSettingActivity extends BaseActivity {
         } else if ("block_check".equals(msgVote)) {
             blockServerLine = preferences.getString("blockServerLine", "");
             testBlockcheck.setText(blockServerLine);
-        } else if (msgVote.equals("add_anysk_server")) {
+        } else if ("add_anysk_server".equals(msgVote)) {
             //get now server address
             getServerAddress();
+        } else if ("fixElectrumNode".equals(msgVote)) {
+            //get electrum list
+            getElectrumData();
         }
     }
 

@@ -29,6 +29,9 @@ public class ExportPrivateActivity extends BaseActivity {
     ImageView imaPrivateCode;
     @BindView(R.id.text_private_key)
     TextView textPrivateKey;
+    @BindView(R.id.text_show_code)
+    TextView textShowCode;
+    private boolean show = false;
 
     @Override
     public int getLayoutId() {
@@ -49,18 +52,33 @@ public class ExportPrivateActivity extends BaseActivity {
         imaPrivateCode.setImageBitmap(bitmap);
     }
 
-    @OnClick({R.id.img_back, R.id.btn_next})
+    @OnClick({R.id.img_back, R.id.btn_next, R.id.img_copy, R.id.text_show_code})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
                 finish();
                 break;
             case R.id.btn_next:
+                finish();
+                break;
+            case R.id.img_copy:
                 //copy text
                 ClipboardManager cm2 = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                 // The text is placed on the system clipboard.
                 Objects.requireNonNull(cm2, "ClipboardManager not available").setPrimaryClip(ClipData.newPlainText(null, textPrivateKey.getText()));
                 Toast.makeText(ExportPrivateActivity.this, R.string.copysuccess, Toast.LENGTH_LONG).show();
+                break;
+            case R.id.text_show_code:
+                if (!show) {
+                    imaPrivateCode.setVisibility(View.VISIBLE);
+                    textShowCode.setText(getString(R.string.hide_code));
+                    show = true;
+                } else {
+                    imaPrivateCode.setVisibility(View.GONE);
+                    textShowCode.setText(getString(R.string.show_code));
+                    show = false;
+                }
+
                 break;
         }
     }

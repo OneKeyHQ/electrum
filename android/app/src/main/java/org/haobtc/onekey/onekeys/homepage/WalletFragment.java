@@ -29,6 +29,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONArray;
 import com.chaquo.python.PyObject;
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.android.CaptureActivity;
@@ -41,6 +42,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.sign.SignActivity;
 import org.haobtc.onekey.bean.BalanceInfo;
+import org.haobtc.onekey.bean.LocalWalletInfo;
 import org.haobtc.onekey.bean.MainSweepcodeBean;
 import org.haobtc.onekey.data.prefs.PreferencesManager;
 import org.haobtc.onekey.event.BackupEvent;
@@ -56,7 +58,9 @@ import org.haobtc.onekey.onekeys.homepage.process.ReceiveHDActivity;
 import org.haobtc.onekey.onekeys.homepage.process.SendHdActivity;
 import org.haobtc.onekey.onekeys.homepage.process.TransactionDetailWalletActivity;
 import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
+
 import static org.haobtc.onekey.activities.service.CommunicationModeSelector.executorService;
+
 import org.haobtc.onekey.utils.Daemon;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -92,6 +96,9 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
     private static final int REQUEST_CODE = 0;
     private TextView textHard;
     private LinearLayout linearSign;
+    private ImageView imgType;
+    private TextView amountStars;
+    private TextView dollarStars;
 
     @SuppressLint("CommitPrefEdits")
     @Override
@@ -117,6 +124,7 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
         RelativeLayout relBiDetail = view.findViewById(R.id.rel_bi_detail);
         ImageView imgAdd = view.findViewById(R.id.img_add);
         CheckBox imgCheckMoney = view.findViewById(R.id.img_check_money);
+        imgType = view.findViewById(R.id.img_type);
         textStar = view.findViewById(R.id.text_amount_star);
         textBtcAmount = view.findViewById(R.id.text_btc_amount);
         textDollar = view.findViewById(R.id.text_dollar);
@@ -126,6 +134,8 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
         relNowBackUp = view.findViewById(R.id.rel_now_back_up);
         textHard = view.findViewById(R.id.text_hard);
         linearSign = view.findViewById(R.id.linear_sign);
+        amountStars = view.findViewById(R.id.text_btc_amount_stars);
+        dollarStars = view.findViewById(R.id.text_dollar_stars);
 
         imgBottom = view.findViewById(R.id.img_bottom);
         imgAdd.setOnClickListener(this);
@@ -146,7 +156,8 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
     }
 
     private void initdata() {
-        boolean isHaveWallet = PreferencesManager.getAll(getContext(), org.haobtc.onekey.constant.Constant.WALLETS).isEmpty();;
+        boolean isHaveWallet = PreferencesManager.getAll(getContext(), org.haobtc.onekey.constant.Constant.WALLETS).isEmpty();
+        Log.i("isHaveWalletjxmxj", "initdata: " + isHaveWallet);
         if (!isHaveWallet) {
             linearNoWallet.setVisibility(View.GONE);
             imgBottom.setVisibility(View.GONE);
@@ -159,13 +170,20 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
             //get wallet balance
             getWalletBalance();
         } else {
+            //set default unit
+            try {
+                Daemon.commands.callAttr("set_currency", "CNY");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            imgType.setImageDrawable(getActivity().getDrawable(R.drawable.loco_round));
             linearNoWallet.setVisibility(View.VISIBLE);
             imgBottom.setVisibility(View.VISIBLE);
             linearHaveWallet.setVisibility(View.GONE);
             linearWalletList.setVisibility(View.GONE);
         }
         //get wallet list save wallet type
-       // getHomeWalletList();
+        getHomeWalletList();
 
     }
 
@@ -203,56 +221,31 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
     }
 
     private void getHomeWalletList() {
-        loadWalletMsg = preferences.getString("loadWalletName", "BTC-1");//Get current wallet name
-        executorService.execute(new Runnable() {
-            private PyObject getWalletsListInfo;
-
-            @Override
-            public void run() {
-                //wallet list
-                try {
-                    getWalletsListInfo = Daemon.commands.callAttr("list_wallets");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return;
-                }
-                if (getWalletsListInfo.toString().length() > 2) {
-                    String toStrings = getWalletsListInfo.toString();
-                    if (toStrings.length() != 2) {
-                        JSONArray jsonDatas = com.alibaba.fastjson.JSONObject.parseArray(toStrings);
-                        for (int i = 0; i < jsonDatas.size(); i++) {
-                            Map jsonToMap = (Map) jsonDatas.get(i);
-                            Set keySets = jsonToMap.keySet();
-                            Iterator ki = keySets.iterator();
-                            while (ki.hasNext()) {
-                                try {
-                                    //get key
-                                    String key = (String) ki.next();
-                                    String value = jsonToMap.get(key).toString();
-                                    JSONObject jsonObject = new JSONObject(value);
-                                    String type = jsonObject.getString("type");
-                                    if (loadWalletMsg.equals(key)) {
-                                        edit.putString("showWalletType", type);
-                                        edit.apply();
-                                        if (type.contains("hw")) {
-                                            textHard.setVisibility(View.VISIBLE);
-                                            linearSign.setVisibility(View.VISIBLE);
-                                            String nowType = type.substring(type.indexOf("hw-") + 3);
-                                            textHard.setText(nowType);
-                                        } else {
-                                            linearSign.setVisibility(View.GONE);
-                                            textHard.setVisibility(View.GONE);
-                                        }
-                                    }
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-                    }
-                }
+        loadWalletMsg = preferences.getString("loadWalletName", "BTC-1"); //Get current wallet name
+        String walletInfo = PreferencesManager.get(getActivity(), org.haobtc.onekey.constant.Constant.WALLETS, loadWalletMsg, "").toString();
+        Log.i("walletInfowalletInfo", "getHomeWalletList: " + walletInfo);
+        if (!Strings.isNullOrEmpty(walletInfo)) {
+            LocalWalletInfo localWalletInfo = LocalWalletInfo.objectFromData(walletInfo);
+            String type = localWalletInfo.getType();
+            edit.putString("showWalletType", type);
+            edit.apply();
+            if (type.contains("btc")) {
+                imgType.setImageDrawable(getActivity().getDrawable(R.drawable.token_btc));
+            } else if (type.contains("eth")) {
+                imgType.setImageDrawable(getActivity().getDrawable(R.drawable.token_eth));
+            } else {
+                imgType.setImageDrawable(getActivity().getDrawable(R.drawable.loco_round));
             }
-        });
+            if (type.contains("hw")) {
+                textHard.setVisibility(View.VISIBLE);
+                linearSign.setVisibility(View.VISIBLE);
+                String nowType = type.substring(type.indexOf("hw-") + 3);
+                textHard.setText(nowType);
+            } else {
+                linearSign.setVisibility(View.GONE);
+                textHard.setVisibility(View.GONE);
+            }
+        }
     }
 
     private void getWalletBalance() {
@@ -267,9 +260,25 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
                 textWalletName.setText(name);
                 num = balance.substring(0, balance.indexOf(" "));
                 String strCny = balance.substring(balance.indexOf("(") + 1, balance.indexOf(")"));
-                tetAmount.setText(strCny);
+                int cnyUnit = preferences.getInt("cny_unit", 0);
+                if (!TextUtils.isEmpty(strCny)) {
+                    if (cnyUnit == 0) {
+                        tetAmount.setText(String.format("￥%s", strCny));
+                    } else if (cnyUnit == 1) {
+                        tetAmount.setText(String.format("$%s", strCny));
+                    }
+                } else {
+                    if (cnyUnit == 0) {
+                        tetAmount.setText(String.format("￥%s", getString(R.string.zero)));
+                    } else if (cnyUnit == 1) {
+                        tetAmount.setText(String.format("$%s", getString(R.string.zero)));
+                    }
+                }
+
                 textBtcAmount.setText(String.format("%s%s", num, preferences.getString("base_unit", "")));
-                getCny(num);
+                if (!"0".equals(num)) {
+                    getCny(num, cnyUnit);
+                }
                 //whether back up
                 whetherBackup();
             }
@@ -298,13 +307,21 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
 
     }
 
-    private void getCny(String changeBalance) {
+    private void getCny(String changeBalance, int cnyUnits) {
         try {
             PyObject money = Daemon.commands.callAttr("get_exchange_currency", "base", changeBalance);
             if (!TextUtils.isEmpty(money.toString())) {
-                tetAmount.setText(money.toString());
+                if (cnyUnits == 0) {
+                    tetAmount.setText(String.format("￥%s", money.toString()));
+                } else if (cnyUnits == 1) {
+                    tetAmount.setText(String.format("$%s", money.toString()));
+                }
             } else {
-                tetAmount.setText(getString(R.string.zero));
+                if (cnyUnits == 0) {
+                    tetAmount.setText(String.format("￥%s", getString(R.string.zero)));
+                } else if (cnyUnits == 1) {
+                    tetAmount.setText(String.format("$%s", getString(R.string.zero)));
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -438,13 +455,15 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
 
                 }
             } else {
-                edit.putBoolean("isHaveWallet", false);
+                edit.putBoolean("isBack_up", false);
                 edit.apply();
                 textWalletName.setText(getString(R.string.no_use_wallet));
                 linearNoWallet.setVisibility(View.VISIBLE);
                 imgBottom.setVisibility(View.VISIBLE);
                 linearHaveWallet.setVisibility(View.GONE);
                 linearWalletList.setVisibility(View.GONE);
+                imgType.setImageDrawable(getActivity().getDrawable(R.drawable.loco_round));
+                relNowBackUp.setVisibility(View.GONE);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -465,15 +484,17 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
                     if (fiat.contains("USD")) {
                         String usd = fiat.substring(0, fiat.indexOf(" "));
                         tetAmount.setText(String.format("$%s", usd));
-                        textDollar.setText(String.format("$%s", usd));
+                        textDollar.setText(String.format("≈ $ %s", usd));
                     } else if (fiat.contains("CNY")) {
                         String cny = fiat.substring(0, fiat.indexOf(" "));
                         tetAmount.setText(String.format("￥%s", cny));
-                        textDollar.setText(String.format("￥%s", cny));
+                        textDollar.setText(String.format("≈ ￥ %s", cny));
                     } else {
                         tetAmount.setText(String.format("%s", fiat));
-                        textDollar.setText(String.format("%s", fiat));
+                        textDollar.setText(String.format("≈ %s", fiat));
                     }
+                } else {
+                    textDollar.setText(String.format("≈ $ %s", getString(R.string.zero)));
                 }
             }
         } catch (JSONException e) {
@@ -548,9 +569,17 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
         if (isChecked) {
             tetAmount.setVisibility(View.VISIBLE);
             textStar.setVisibility(View.GONE);
+            textBtcAmount.setVisibility(View.VISIBLE);
+            textDollar.setVisibility(View.VISIBLE);
+            amountStars.setVisibility(View.GONE);
+            dollarStars.setVisibility(View.GONE);
         } else {
             tetAmount.setVisibility(View.GONE);
             textStar.setVisibility(View.VISIBLE);
+            textBtcAmount.setVisibility(View.GONE);
+            textDollar.setVisibility(View.GONE);
+            amountStars.setVisibility(View.VISIBLE);
+            dollarStars.setVisibility(View.VISIBLE);
         }
     }
 }

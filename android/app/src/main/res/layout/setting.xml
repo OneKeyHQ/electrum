@@ -108,15 +108,14 @@
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/dp_0"
                         android:layout_weight="1"
-
                         android:clickable="true"
-                        android:drawableEnd="@drawable/jiantou"
                         android:focusable="true"
                         android:gravity="center_vertical"
                         android:paddingStart="@dimen/dp_16"
                         android:paddingEnd="@dimen/dp_16"
                         android:text="@string/verification_key"
-                        android:textColor="@color/text" />
+                        android:textColor="@color/text"
+                        app:drawableEndCompat="@drawable/jiantou" />
 
                     <View
                         android:layout_width="match_parent"

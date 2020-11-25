@@ -27,6 +27,7 @@ import org.haobtc.onekey.event.InputPassSendEvent;
 import org.haobtc.onekey.event.LoadOtherWalletEvent;
 import org.haobtc.onekey.event.LoadWalletlistEvent;
 import org.haobtc.onekey.event.SecondEvent;
+import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.HomeOnekeyActivity;
 import org.haobtc.onekey.onekeys.dialog.recovery.RecoveryChooseWalletActivity;
 import org.haobtc.onekey.onekeys.homepage.mindmenu.HdRootMnemonicsActivity;
@@ -88,6 +89,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
             textContent();
         } else if ("fixHdPass".equals(importHdword)) {
             textPageTitle.setText(getString(R.string.fix_pass));
+            editPass.setHint(getString(R.string.input_your_former_pass));
             testSetPass.setText(getString(R.string.input_your_former_pass));
             textTip.setText(getString(R.string.fix_former_tip));
             textLong.setText(getString(R.string.long_pass_tip));
@@ -107,6 +109,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
         textTip.setText(getString(R.string.dont_tell));
         textLong.setText(getString(R.string.long_pass_tip));
         textChange.setText(getString(R.string.change_short_keyboard));
+        editPass.setHint(getString(R.string.input_password));
     }
 
     @OnClick({R.id.img_back, R.id.img_eye_yes, R.id.img_eye_no, R.id.btn_next, R.id.lin_short_pass})
@@ -161,6 +164,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
                         textLong.setText(getText(R.string.long_pass_tip));
                         btnNext.setEnabled(false);
                         btnNext.setBackground(getDrawable(R.drawable.btn_no_check));
+                        editPass.setHint(getString(R.string.input_you_pass));
                         editPass.setText("");
                         input = true;
                     } else {
@@ -182,7 +186,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
                             Log.i("createHdWallet", "onViewClicked:-- " + createHdWallet);
                             Intent intent = new Intent(SetLongPassActivity.this, HomeOnekeyActivity.class);
                             startActivity(intent);
-                            edit.putBoolean("isHaveWallet", true);
+                            PyEnv.loadLocalWalletInfo(this);
                             edit.putString("loadWalletName", "BTC-1");
                             edit.apply();
                             finish();
@@ -230,7 +234,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
             }
             return;
         }
-        edit.putBoolean("isHaveWallet", true);
+        PyEnv.loadLocalWalletInfo(this);
         edit.putString("loadWalletName", walletName);
         edit.apply();
         mIntent(HomeOnekeyActivity.class);
@@ -253,7 +257,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
             }
             return;
         }
-        edit.putBoolean("isHaveWallet", true);
+        PyEnv.loadLocalWalletInfo(this);
         edit.putString("loadWalletName", walletName);
         edit.apply();
         mIntent(HomeOnekeyActivity.class);
@@ -270,7 +274,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
             e.printStackTrace();
             return;
         }
-        edit.putBoolean("isHaveWallet", true);
+        PyEnv.loadLocalWalletInfo(this);
         edit.putString("loadWalletName", walletName);
         edit.apply();
         mIntent(HomeOnekeyActivity.class);
@@ -287,7 +291,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
             e.printStackTrace();
             return;
         }
-        edit.putBoolean("isHaveWallet", true);
+        PyEnv.loadLocalWalletInfo(this);
         edit.putString("loadWalletName", walletName);
         edit.apply();
         mIntent(HomeOnekeyActivity.class);
@@ -311,7 +315,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
                     return;
                 }
                 mToast(getString(R.string.not_recovery_wallet));
-                edit.putBoolean("isHaveWallet", true);
+                PyEnv.loadLocalWalletInfo(this);
                 edit.putString("loadWalletName", "BTC-1");
                 edit.apply();
                 mIntent(HomeOnekeyActivity.class);
@@ -332,7 +336,10 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
 //            Daemon.commands.callAttr("delete_wallet", pwdEdittext.getText().toString(), new Kwarg("name", "ETH-1"));
         } catch (Exception e) {
             e.printStackTrace();
-            mToast(e.getMessage());
+            if (e.getMessage().contains("Incorrect password")) {
+                mToast(getString(R.string.wrong_pass));
+            }
+            e.printStackTrace();
             return;
         }
         mToast(getString(R.string.delete_succse));
