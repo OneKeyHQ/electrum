@@ -246,10 +246,10 @@ static dispatch_once_t once;
         NSArray *nameList = parameter[@"name_list"];
         NSString * name_list = [nameList mj_JSONString];
         NSString * hw = [parameter safeStringForKey:@"hw"];
-        if (hw == nil) {
-            result = PyObject_CallMethod(self.pyInstance, [kInterfacerecovery_confirmed UTF8String], "(s,i)",[name_list UTF8String],[hw boolValue]);
-        }else{
+        if (hw == nil || hw.length == 0) {
             result = PyObject_CallMethod(self.pyInstance, [kInterfacerecovery_confirmed UTF8String], "(s)",[name_list UTF8String]);
+        }else{
+            result = PyObject_CallMethod(self.pyInstance, [kInterfacerecovery_confirmed UTF8String], "(s,i)",[name_list UTF8String],[hw boolValue]);
         }
         
     }else if([method isEqualToString:kInterfaceget_default_server]){

@@ -11,9 +11,9 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OKFindWalletTableViewCellModel : NSObject
-@property (nonatomic,copy) NSString* iconName;
-@property (nonatomic,copy) NSString* walletName;
-@property (nonatomic,copy) NSString* balanceName;
+@property (nonatomic,copy) NSString* balance;
+@property (nonatomic,copy) NSString* name;
+@property (nonatomic,assign)BOOL isSelected;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -65,6 +65,7 @@
 @end
 
 @implementation OKWalletListViewController
+
 + (instancetype)walletListViewController
 {
     return [[UIStoryboard storyboardWithName:@"WalletList" bundle:nil]instantiateViewControllerWithIdentifier:@"OKWalletListViewController"];

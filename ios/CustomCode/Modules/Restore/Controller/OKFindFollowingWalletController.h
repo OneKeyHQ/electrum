@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OKFindFollowingWalletController : BaseViewController
 @property (nonatomic,strong)NSArray *restoreHD;
+@property (nonatomic,copy)NSString *pwd;
 + (instancetype)findFollowingWalletController;
 
 @end

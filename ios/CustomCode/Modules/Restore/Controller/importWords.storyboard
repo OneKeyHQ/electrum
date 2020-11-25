@@ -893,21 +893,21 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bTw-IY-hJ4">
                                 <rect key="frame" x="19" y="142" width="376" height="510"/>
                                 <subviews>
-                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Kh7-XX-tGu">
-                                        <rect key="frame" x="0.0" y="0.0" width="376" height="510"/>
-                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Kh7-XX-tGu">
+                                        <rect key="frame" x="0.0" y="0.0" width="376" height="500"/>
+                                        <color key="backgroundColor" red="0.98038297890000003" green="0.98038595910000004" blue="0.98039251569999997" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                         <view key="tableHeaderView" contentMode="scaleToFill" id="cUz-87-2bV">
                                             <rect key="frame" x="0.0" y="0.0" width="376" height="68"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PDf-Pu-vYc">
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PDf-Pu-vYc">
                                                     <rect key="frame" x="20" y="20" width="336" height="17"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <color key="textColor" red="0.32941176470588235" green="0.38823529411764707" blue="0.4392156862745098" alpha="1" colorSpace="deviceRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                             </subviews>
-                                            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                            <color key="backgroundColor" red="0.98038297890000003" green="0.98038595910000004" blue="0.98039251569999997" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                             <constraints>
                                                 <constraint firstItem="PDf-Pu-vYc" firstAttribute="leading" secondItem="cUz-87-2bV" secondAttribute="leading" constant="20" id="Bsf-Jr-Mi4"/>
                                                 <constraint firstItem="PDf-Pu-vYc" firstAttribute="top" secondItem="cUz-87-2bV" secondAttribute="top" constant="20" id="QWs-z9-e8u"/>
@@ -944,28 +944,30 @@
                                                                     <color key="textColor" red="0.32941176470588235" green="0.38823529411764707" blue="0.4392156862745098" alpha="1" colorSpace="deviceRGB"/>
                                                                     <nil key="highlightedColor"/>
                                                                 </label>
-                                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="checked" translatesAutoresizingMaskIntoConstraints="NO" id="evR-aI-FKg">
-                                                                    <rect key="frame" x="317" y="19" width="24" height="24"/>
+                                                                <button opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Rkz-br-fsj">
+                                                                    <rect key="frame" x="318" y="19" width="24" height="24"/>
                                                                     <constraints>
-                                                                        <constraint firstAttribute="width" constant="24" id="Gvx-6i-kMK"/>
-                                                                        <constraint firstAttribute="height" constant="24" id="V64-h5-z9K"/>
+                                                                        <constraint firstAttribute="width" constant="24" id="4ni-GD-xOI"/>
+                                                                        <constraint firstAttribute="height" constant="24" id="cZM-dU-KSA"/>
                                                                     </constraints>
-                                                                </imageView>
+                                                                    <state key="normal" image="checked_Nomal"/>
+                                                                    <state key="selected" image="checked"/>
+                                                                </button>
                                                             </subviews>
                                                             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                             <constraints>
+                                                                <constraint firstItem="Rkz-br-fsj" firstAttribute="centerY" secondItem="SPA-bO-V7R" secondAttribute="centerY" id="6xm-oV-RfQ"/>
                                                                 <constraint firstItem="TIV-GQ-UNQ" firstAttribute="leading" secondItem="9e6-hp-rvR" secondAttribute="leading" id="9OF-sV-Yev"/>
                                                                 <constraint firstItem="9e6-hp-rvR" firstAttribute="leading" secondItem="SKV-28-cbV" secondAttribute="trailing" constant="20" id="Ekg-0R-LbL"/>
                                                                 <constraint firstItem="SKV-28-cbV" firstAttribute="centerY" secondItem="SPA-bO-V7R" secondAttribute="centerY" id="OxI-ch-Qws"/>
-                                                                <constraint firstAttribute="trailing" secondItem="evR-aI-FKg" secondAttribute="trailing" constant="21" id="QFc-tU-fIc"/>
-                                                                <constraint firstItem="evR-aI-FKg" firstAttribute="centerY" secondItem="SPA-bO-V7R" secondAttribute="centerY" id="Xuh-RS-UN6"/>
                                                                 <constraint firstItem="SKV-28-cbV" firstAttribute="leading" secondItem="SPA-bO-V7R" secondAttribute="leading" constant="16" id="c53-jT-7JG"/>
                                                                 <constraint firstItem="TIV-GQ-UNQ" firstAttribute="top" secondItem="9e6-hp-rvR" secondAttribute="bottom" constant="7" id="cVJ-Ph-Aru"/>
+                                                                <constraint firstAttribute="trailing" secondItem="Rkz-br-fsj" secondAttribute="trailing" constant="20" id="hdX-ql-eDm"/>
                                                                 <constraint firstItem="9e6-hp-rvR" firstAttribute="top" secondItem="SPA-bO-V7R" secondAttribute="top" constant="14" id="rS6-tg-xTO"/>
                                                             </constraints>
                                                         </view>
                                                     </subviews>
-                                                    <color key="backgroundColor" red="0.94901960784313721" green="0.94901960784313721" blue="0.94901960784313721" alpha="1" colorSpace="deviceRGB"/>
+                                                    <color key="backgroundColor" red="0.98038297890000003" green="0.98038595910000004" blue="0.98039251569999997" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                     <constraints>
                                                         <constraint firstAttribute="bottom" secondItem="SPA-bO-V7R" secondAttribute="bottom" id="AD0-Ui-b3o"/>
                                                         <constraint firstAttribute="trailing" secondItem="SPA-bO-V7R" secondAttribute="trailing" constant="7" id="DTm-VX-nO6"/>
@@ -975,7 +977,8 @@
                                                 </tableViewCellContentView>
                                                 <connections>
                                                     <outlet property="balanceLabel" destination="TIV-GQ-UNQ" id="YDJ-Oo-wFg"/>
-                                                    <outlet property="checkImageView" destination="evR-aI-FKg" id="ULf-MN-XM8"/>
+                                                    <outlet property="cellBgView" destination="SPA-bO-V7R" id="Tif-e8-ryj"/>
+                                                    <outlet property="checkBtn" destination="Rkz-br-fsj" id="5iU-us-ABS"/>
                                                     <outlet property="iconImageView" destination="SKV-28-cbV" id="jBM-kg-mvu"/>
                                                     <outlet property="walletNameLabel" destination="9e6-hp-rvR" id="iBR-Wa-7rb"/>
                                                 </connections>
@@ -990,7 +993,7 @@
                                 <color key="backgroundColor" red="0.98039215686274506" green="0.98039215686274506" blue="0.98039215686274506" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstItem="Kh7-XX-tGu" firstAttribute="top" secondItem="bTw-IY-hJ4" secondAttribute="top" id="IHs-VP-rEn"/>
-                                    <constraint firstAttribute="bottom" secondItem="Kh7-XX-tGu" secondAttribute="bottom" id="YDL-b3-Dei"/>
+                                    <constraint firstAttribute="bottom" secondItem="Kh7-XX-tGu" secondAttribute="bottom" constant="10" id="YDL-b3-Dei"/>
                                     <constraint firstAttribute="trailing" secondItem="Kh7-XX-tGu" secondAttribute="trailing" id="fcM-n3-WJA"/>
                                     <constraint firstItem="Kh7-XX-tGu" firstAttribute="leading" secondItem="bTw-IY-hJ4" secondAttribute="leading" id="fjm-uT-Oah"/>
                                 </constraints>
@@ -1036,6 +1039,7 @@
                         <outlet property="descLabel" destination="PDf-Pu-vYc" id="8yr-Xd-8bP"/>
                         <outlet property="headerView" destination="cUz-87-2bV" id="cnL-e0-j67"/>
                         <outlet property="restoreBtn" destination="16r-Tw-QtQ" id="Ki2-eq-bFA"/>
+                        <outlet property="tableView" destination="Kh7-XX-tGu" id="crE-8e-egE"/>
                         <outlet property="tableViewBgView" destination="bTw-IY-hJ4" id="9Se-Gm-H0g"/>
                         <outlet property="tbaleView" destination="Kh7-XX-tGu" id="IXk-9d-UYM"/>
                         <outlet property="titleLabel" destination="28b-ri-t8X" id="KaU-Kj-4fN"/>
@@ -1215,6 +1219,7 @@
         <image name="Error" width="40" height="56"/>
         <image name="Vectorright" width="15" height="10"/>
         <image name="checked" width="24" height="24"/>
+        <image name="checked_Nomal" width="24" height="24"/>
         <image name="close" width="24" height="24"/>
         <image name="hd_wallet-1" width="36" height="36"/>
         <image name="pen" width="248.5" height="204"/>

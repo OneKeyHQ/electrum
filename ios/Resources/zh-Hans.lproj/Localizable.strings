@@ -262,3 +262,6 @@
 "password" = "密码";
 "Set up the success" = "设置成功";
 "Select node type" = "选择节点类型";
+"Recover HD Wallet" = "恢复 HD 钱包";
+"Find the following wallet" = "找到以下钱包";
+"You have derived the following wallet using the HD mnemonic, select the one you want to recover. If you do not want to recover the wallet for a while, you can skip it and readd it later in the HD Wallet. Your assets will not be lost" = "您曾使用 HD 助记词派生过以下钱包， 选择您要恢复的。暂时不想恢复的钱包您可以跳过，并稍后在 HD 钱包中重新添加，您的资产不会丢失。";

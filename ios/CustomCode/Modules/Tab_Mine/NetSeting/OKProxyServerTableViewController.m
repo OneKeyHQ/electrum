@@ -30,7 +30,6 @@
 
 @property (nonatomic,strong)OKProxyServerModel *currentModel;
 @property (weak, nonatomic) IBOutlet UIButton *nodeTypeButton;
-
 @end
 
 @implementation OKProxyServerTableViewController

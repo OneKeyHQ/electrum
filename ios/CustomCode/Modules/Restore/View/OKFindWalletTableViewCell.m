@@ -13,7 +13,8 @@
 @property (weak, nonatomic) IBOutlet UIImageView *iconImageView;
 @property (weak, nonatomic) IBOutlet UILabel *walletNameLabel;
 @property (weak, nonatomic) IBOutlet UILabel *balanceLabel;
-@property (weak, nonatomic) IBOutlet UIImageView *checkImageView;
+@property (weak, nonatomic) IBOutlet UIButton *checkBtn;
+@property (weak, nonatomic) IBOutlet UIView *cellBgView;
 @end
 
 
@@ -27,9 +28,13 @@
 - (void)setModel:(OKFindWalletTableViewCellModel *)model
 {
     _model = model;
-    self.iconImageView.image = [UIImage imageNamed:model.iconName];
-    self.walletNameLabel.text = model.walletName;
-    self.balanceLabel.text = model.balanceName;
+    [self.cellBgView setLayerRadius:20];
+    NSArray *nameArray = [model.name componentsSeparatedByString:@"_"];
+    NSString *iconName =  [NSString stringWithFormat:@"token_%@",[nameArray firstObject]];
+    self.iconImageView.image = [UIImage imageNamed:iconName];
+    self.checkBtn.selected = model.isSelected;
+    self.walletNameLabel.text = model.name;
+    self.balanceLabel.text = model.balance;
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {

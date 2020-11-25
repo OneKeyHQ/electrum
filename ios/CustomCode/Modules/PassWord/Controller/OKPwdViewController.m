@@ -350,8 +350,8 @@ typedef enum {
             [self.navigationController pushViewController:biologicalVc animated:YES];
         }else{
             OKFindFollowingWalletController *findFollowingWalletVc = [OKFindFollowingWalletController findFollowingWalletController];
+            findFollowingWalletVc.pwd = pwd;
             findFollowingWalletVc.restoreHD = restoreHD;
-            NSLog(@"restoreHD == %@",restoreHD);
             [self.navigationController pushViewController:findFollowingWalletVc animated:YES];
         }
     }

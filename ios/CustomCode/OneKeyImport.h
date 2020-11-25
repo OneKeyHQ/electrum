@@ -53,5 +53,6 @@
 #import "NSData+StringToData.h"
 #import "OKUserSettingManager.h"
 #import "UIButton+OneKey.h"
+#import "UIViewController+Extension.h"
 
 #endif /* OneKeyImport_h */
