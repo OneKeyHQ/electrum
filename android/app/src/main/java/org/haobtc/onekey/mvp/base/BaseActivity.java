@@ -36,7 +36,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
         super.onCreate(savedInstanceState);
         setContentView(getContentViewId());
         ButterKnife.bind(this);
-        setActionBar();
+//        setActionBar();
         init();
         if (needEvents()) {
             EventBus.getDefault().register(this);

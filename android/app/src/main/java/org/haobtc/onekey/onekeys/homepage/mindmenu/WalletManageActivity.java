@@ -24,6 +24,7 @@ public class WalletManageActivity extends BaseActivity {
     @BindView(R.id.rel_export_word)
     RelativeLayout relExportWord;
     private int hdHum;
+    private String deleteHdWalletName;
 
     @Override
     public int getLayoutId() {
@@ -39,6 +40,7 @@ public class WalletManageActivity extends BaseActivity {
     @Override
     public void initData() {
         hdHum = getIntent().getIntExtra("hd_num", 0);
+        deleteHdWalletName = getIntent().getStringExtra("deleteHdWalletName");
         if (hdHum == 0) {
             textSafe.setVisibility(View.GONE);
             relExportWord.setVisibility(View.GONE);
@@ -55,6 +57,7 @@ public class WalletManageActivity extends BaseActivity {
             case R.id.rel_export_word:
                 Intent intent1 = new Intent(WalletManageActivity.this, SetHDWalletPassActivity.class);
                 intent1.putExtra("importHdword", "importHdword");
+                intent1.putExtra("deleteHdWalletName",deleteHdWalletName);
                 startActivity(intent1);
                 break;
             case R.id.rel_delete_wallet:

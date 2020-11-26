@@ -58,6 +58,7 @@ public class HDWalletActivity extends BaseActivity {
     RelativeLayout reclAddWallet;
     private ArrayList<AddressEvent> hdWalletList;
     private WalletListAdapter walletListAdapter;
+    private String deleteHdWalletName = "";
 
     @Override
     public int getLayoutId() {
@@ -89,6 +90,7 @@ public class HDWalletActivity extends BaseActivity {
             case R.id.text_manage:
                 Intent intent1 = new Intent(HDWalletActivity.this, WalletManageActivity.class);
                 intent1.putExtra("hd_num", hdWalletList.size());
+                intent1.putExtra("deleteHdWalletName",deleteHdWalletName);
                 startActivity(intent1);
                 break;
             case R.id.recl_add_wallet:
@@ -165,6 +167,9 @@ public class HDWalletActivity extends BaseActivity {
                             addressEvent.setType(type);
                             addressEvent.setAmount(addr);
                             hdWalletList.add(addressEvent);
+                        }
+                        if ("btc-hd-standard".equals(type)){
+                            deleteHdWalletName = key;
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();

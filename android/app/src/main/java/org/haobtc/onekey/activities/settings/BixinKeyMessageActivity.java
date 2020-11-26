@@ -61,13 +61,13 @@ public class BixinKeyMessageActivity extends BaseActivity {
     }
 
     @SingleClick
-    @OnClick({R.id.img_back, R.id.linear_fix_key})
+    @OnClick({R.id.img_back, R.id.tet_keyName})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
                 finish();
                 break;
-            case R.id.linear_fix_key:
+            case R.id.tet_keyName:
                 mIntent(FixBixinkeyNameActivity.class);
                 break;
             default:

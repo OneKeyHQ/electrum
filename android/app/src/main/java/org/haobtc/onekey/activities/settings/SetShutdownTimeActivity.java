@@ -119,10 +119,10 @@ public class SetShutdownTimeActivity extends BaseActivity implements TextWatcher
     public void afterTextChanged(Editable s) {
         if (!TextUtils.isEmpty(s)) {
             btnConfirm.setEnabled(true);
-            btnConfirm.setBackground(getDrawable(R.drawable.button_bk));
+            btnConfirm.setBackground(getDrawable(R.drawable.btn_checked));
         } else {
             btnConfirm.setEnabled(false);
-            btnConfirm.setBackground(getDrawable(R.drawable.button_bk_grey));
+            btnConfirm.setBackground(getDrawable(R.drawable.btn_no_check));
         }
     }
 }

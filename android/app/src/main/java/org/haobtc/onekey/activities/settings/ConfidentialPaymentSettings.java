@@ -39,8 +39,10 @@ public class ConfidentialPaymentSettings extends BaseActivity {
     public static final String TAG_EDIT_WHITE_LIST = "EditWhiteList";
     @BindView(R.id.img_back)
     ImageView imgBack;
+    @SuppressLint("UseSwitchCompatOrMaterialCode")
     @BindView(R.id.switch_noPin)
     Switch switchNoPin;
+    @SuppressLint("UseSwitchCompatOrMaterialCode")
     @BindView(R.id.switch_noHard)
     Switch switchNoHard;
     @BindView(R.id.unclassified_pay)
@@ -202,10 +204,10 @@ public class ConfidentialPaymentSettings extends BaseActivity {
         public void afterTextChanged(Editable editable) {
             if ((unclassifiedPay.length() > 0 && editTimes.length() > 0)) {
                 btnSetKey.setEnabled(true);
-                btnSetKey.setBackground(getDrawable(R.drawable.button_bk));
+                btnSetKey.setBackground(getDrawable(R.drawable.btn_checked));
             } else {
                 btnSetKey.setEnabled(false);
-                btnSetKey.setBackground(getDrawable(R.drawable.button_bk_grey));
+                btnSetKey.setBackground(getDrawable(R.drawable.btn_no_check));
             }
         }
     }

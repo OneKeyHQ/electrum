@@ -243,14 +243,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/line_hight"
                 android:background="@color/line_color"
-                android:visibility="visible" />
+                android:visibility="gone" />
 
             <RelativeLayout
                 android:id="@+id/face_id"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dp_70"
                 android:background="@color/button_bk_ddake"
-                android:visibility="visible">
+                android:visibility="gone">
 
                 <ImageView
                     android:id="@+id/discern"
@@ -284,14 +284,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/line_hight"
                 android:background="@color/line_color"
-                android:visibility="visible" />
+                android:visibility="gone" />
 
             <RelativeLayout
                 android:id="@+id/fingerprint"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dp_70"
                 android:background="@color/button_bk_ddake"
-                android:visibility="visible">
+                android:visibility="gone">
 
                 <ImageView
                     android:id="@+id/fingerprint_img"

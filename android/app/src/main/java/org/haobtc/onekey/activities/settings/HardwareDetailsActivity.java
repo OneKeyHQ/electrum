@@ -1,19 +1,31 @@
 package org.haobtc.onekey.activities.settings;
 
+import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.annotation.LayoutRes;
+
+import com.google.common.base.Strings;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
+import org.haobtc.onekey.activities.SettingActivity;
+import org.haobtc.onekey.activities.VerificationKEYActivity;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.activities.service.CommunicationModeSelector;
 import org.haobtc.onekey.activities.service.NfcNotifyHelper;
@@ -27,6 +39,8 @@ import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.event.FixBixinkeyNameEvent;
 import org.haobtc.onekey.event.HandlerEvent;
 import org.haobtc.onekey.event.SetShutdownTimeEvent;
+import org.haobtc.onekey.onekeys.dialog.recovery.ImprotSingleActivity;
+import org.haobtc.onekey.onekeys.homepage.process.CreateWalletChooseTypeActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -35,10 +49,12 @@ import cn.com.heaton.blelibrary.ble.Ble;
 
 import static org.haobtc.onekey.activities.service.CommunicationModeSelector.features;
 import static org.haobtc.onekey.activities.service.CommunicationModeSelector.isNFC;
+import static org.haobtc.onekey.activities.service.CommunicationModeSelector.xpub;
 
 public class HardwareDetailsActivity extends BaseActivity {
 
     public static final String TAG = "org.haobtc.onekey.activities.settings.HardwareDetailsActivity";
+    public static final String TAG_VERIFICATION = "VERIFICATION";
     @BindView(R.id.img_back)
     ImageView imgBack;
     @BindView(R.id.tet_keyName)
@@ -151,10 +167,7 @@ public class HardwareDetailsActivity extends BaseActivity {
                 startActivity(intent7);
                 break;
             case R.id.tet_deleteWallet:
-                devices.edit().remove(deviceId).apply();
-                EventBus.getDefault().post(new FixBixinkeyNameEvent(deviceId));
-                mToast(getString(R.string.delete_succse));
-                finish();
+                deleteHardware(HardwareDetailsActivity.this, R.layout.delete_device_dialog);
                 break;
             case R.id.test_set_key_language:
                 Intent intent3 = new Intent(HardwareDetailsActivity.this, FixHardwareLanguageActivity.class);
@@ -162,7 +175,12 @@ public class HardwareDetailsActivity extends BaseActivity {
                 startActivity(intent3);
                 break;
             case R.id.tetVerification:
-
+                CommunicationModeSelector.runnables.clear();
+                CommunicationModeSelector.runnables.add(runnable);
+                Intent intent6 = new Intent(this, CommunicationModeSelector.class);
+                intent6.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+                intent6.putExtra("tag", TAG_VERIFICATION);
+                startActivity(intent6);
                 break;
             case R.id.check_xpub:
 
@@ -172,6 +190,35 @@ public class HardwareDetailsActivity extends BaseActivity {
                 break;
             default:
         }
+    }
+
+    private void deleteHardware(Context context, @LayoutRes int resource) {
+        //set see view
+        View view = View.inflate(context, resource, null);
+        Dialog dialogBtoms = new Dialog(context, R.style.dialog);
+        view.findViewById(R.id.img_cancel).setOnClickListener(v -> {
+            dialogBtoms.dismiss();
+        });
+        view.findViewById(R.id.btn_confirm).setOnClickListener(v -> {
+            devices.edit().remove(deviceId).apply();
+            EventBus.getDefault().post(new FixBixinkeyNameEvent(deviceId));
+            mToast(getString(R.string.delete_succse));
+            dialogBtoms.dismiss();
+            finish();
+        });
+        view.findViewById(R.id.btn_cancel).setOnClickListener(v -> {
+            dialogBtoms.dismiss();
+        });
+        dialogBtoms.setContentView(view);
+        Window window = dialogBtoms.getWindow();
+        //set pop_up size
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        //set locate
+        window.setGravity(Gravity.BOTTOM);
+        //set animal
+        window.setWindowAnimations(R.style.AnimBottom);
+        dialogBtoms.setCanceledOnTouchOutside(true);
+        dialogBtoms.show();
     }
 
     private void getUpdateInfo() {
@@ -216,6 +263,16 @@ public class HardwareDetailsActivity extends BaseActivity {
             startActivity(intent);
         }
     }
+
+    private Runnable runnable = this::gotoConfirmVerification;
+
+    private void gotoConfirmVerification() {
+        Intent intentCon = new Intent(HardwareDetailsActivity.this, VerificationKEYActivity.class);
+        intentCon.putExtra("strVerification", xpub);
+        startActivity(intentCon);
+
+    }
+
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void showReading(FixBixinkeyNameEvent event) {

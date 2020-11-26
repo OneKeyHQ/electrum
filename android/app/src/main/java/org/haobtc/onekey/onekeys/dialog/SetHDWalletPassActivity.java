@@ -66,6 +66,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
     private String currencyType;
     private String privateKey;
     private String exportType;
+    private String deleteHdWalletName;
 
     @Override
     public int getLayoutId() {
@@ -83,6 +84,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
         currencyType = getIntent().getStringExtra("currencyType");
         seed = getIntent().getStringExtra("recoverySeed");
         privateKey = getIntent().getStringExtra("privateKey");
+        deleteHdWalletName = getIntent().getStringExtra("deleteHdWalletName");//删除所有hd钱包的名字
 
         if ("importHdword".equals(importHdword) || "exportPrivateKey".equals(importHdword) || "deleteAllWallet".equals(importHdword) || "derive".equals(importHdword) || "single".equals(importHdword) || "importMnemonic".equals(importHdword) || "importPrivateKey".equals(importHdword) || "deleteSingleWallet".equals(importHdword) || "send".equals(importHdword)) {
             exportType = getIntent().getStringExtra("exportType");
@@ -207,7 +209,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
             return;
         }
         mToast(getString(R.string.delete_succse));
-        PreferencesManager.remove(this,Constant.WALLETS,walletName);
+        PreferencesManager.remove(this, Constant.WALLETS, walletName);
         EventBus.getDefault().post(new LoadOtherWalletEvent());
         EventBus.getDefault().post(new SecondEvent("finish"));
         finish();
@@ -333,9 +335,9 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
     }
 
     private void deleteAllWallet() {
-        try {
-            Daemon.commands.callAttr("delete_wallet", pwdEdittext.getText().toString(), new Kwarg("name", "BTC-1"));
 
+        try {
+            Daemon.commands.callAttr("delete_wallet", pwdEdittext.getText().toString(), new Kwarg("name", deleteHdWalletName));
 //            Daemon.commands.callAttr("delete_wallet", pwdEdittext.getText().toString(), new Kwarg("name", "ETH-1"));
         } catch (Exception e) {
             e.printStackTrace();

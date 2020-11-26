@@ -36,6 +36,8 @@ public class LanguageSettingActivity extends BaseActivity {
     ImageView imgChinese;
     @BindView(R.id.img_english)
     ImageView imgEnglish;
+    @BindView(R.id.img_system)
+    ImageView imgSystem;
     private SharedPreferences.Editor edit;
     private String language;
 
@@ -62,16 +64,18 @@ public class LanguageSettingActivity extends BaseActivity {
             radioChineseasy.setTextColor(getColor(R.color.text_color1));
             imgChinese.setVisibility(View.GONE);
             imgEnglish.setVisibility(View.VISIBLE);
+            imgSystem.setVisibility(View.GONE);
         } else if ("Chinese".equals(language)) {
             radioSystem.setTextColor(getColor(R.color.text_color1));
             radioEnglish.setTextColor(getColor(R.color.text_color1));
             radioChineseasy.setTextColor(getColor(R.color.onekey));
             imgChinese.setVisibility(View.VISIBLE);
             imgEnglish.setVisibility(View.GONE);
+            imgSystem.setVisibility(View.GONE);
         } else {
-            radioSystem.setTextColor(getColor(R.color.onekey));
-            radioEnglish.setTextColor(getColor(R.color.text_color1));
-            radioChineseasy.setTextColor(getColor(R.color.text_color1));
+            imgChinese.setVisibility(View.GONE);
+            imgEnglish.setVisibility(View.GONE);
+            imgSystem.setVisibility(View.VISIBLE);
         }
 
     }
@@ -86,9 +90,9 @@ public class LanguageSettingActivity extends BaseActivity {
             case R.id.radio_system:
                 edit.putString("language", "");
                 edit.commit();
-                radioSystem.setTextColor(getColor(R.color.onekey));
-                radioEnglish.setTextColor(getColor(R.color.text_color1));
-                radioChineseasy.setTextColor(getColor(R.color.text_color1));
+                imgSystem.setVisibility(View.VISIBLE);
+                imgChinese.setVisibility(View.GONE);
+                imgEnglish.setVisibility(View.GONE);
                 Intent intent = new Intent(this, LunchActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
@@ -98,9 +102,8 @@ public class LanguageSettingActivity extends BaseActivity {
                 mTextChinese();
                 edit.putString("language", "Chinese");
                 edit.apply();
-                radioSystem.setTextColor(getColor(R.color.text_color1));
-                radioChineseasy.setTextColor(getColor(R.color.onekey));
-                radioEnglish.setTextColor(getColor(R.color.text_color1));
+                edit.apply();
+                imgSystem.setVisibility(View.GONE);
                 imgChinese.setVisibility(View.VISIBLE);
                 imgEnglish.setVisibility(View.GONE);
                 refreshSelf();
@@ -111,9 +114,7 @@ public class LanguageSettingActivity extends BaseActivity {
                 mTextEnglish();
                 edit.putString("language", "English");
                 edit.apply();
-                radioSystem.setTextColor(getColor(R.color.text_color1));
-                radioChineseasy.setTextColor(getColor(R.color.text_color1));
-                radioEnglish.setTextColor(getColor(R.color.onekey));
+                imgSystem.setVisibility(View.GONE);
                 imgChinese.setVisibility(View.GONE);
                 imgEnglish.setVisibility(View.VISIBLE);
                 refreshSelf();
@@ -132,4 +133,10 @@ public class LanguageSettingActivity extends BaseActivity {
         startActivity(intent);
     }
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // TODO: add setContentView(...) invocation
+        ButterKnife.bind(this);
+    }
 }

@@ -540,7 +540,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
             dealWithChangePin(isNFC);
         } else if (ResetDeviceActivity.TAG.equals(tag)) {
             dealWithWipeDevice(isNFC);
-        } else if (SettingActivity.TAG.equals(tag)) {
+        } else if (HardwareDetailsActivity.TAG_VERIFICATION.equals(tag)) {
             hardwareVerify(isNFC);
         } else {
             dealWithBusiness(isNFC);
@@ -684,7 +684,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
                     mToast(getString(R.string.recovery_unsupport));
                     finish();
                 }
-            } else if (SettingActivity.TAG.equals(tag)) {
+            } else if (HardwareDetailsActivity.TAG_VERIFICATION.equals(tag)) {
                 String strRandom = UUID.randomUUID().toString().replaceAll("-", "");
                 //Anti counterfeiting verification
                 new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.COUNTER_VERIFICATION, strRandom, isNFC ? COMMUNICATION_MODE_NFC : COMMUNICATION_MODE_BLE);
@@ -1261,7 +1261,7 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
                 intent.putExtra("tag", s);
                 startActivity(intent);
             }
-        } else if (ResetDeviceActivity.TAG.equals(tag) || HardwareDetailsActivity.TAG.equals(tag) || SettingActivity.TAG_CHANGE_PIN.equals(tag) || SettingActivity.TAG.equals(tag)) {
+        } else if (ResetDeviceActivity.TAG.equals(tag) || HardwareDetailsActivity.TAG.equals(tag) || SettingActivity.TAG_CHANGE_PIN.equals(tag) || HardwareDetailsActivity.TAG_VERIFICATION.equals(tag)) {
             EventBus.getDefault().postSticky(new ResultEvent(s));
         } else if (ConfidentialPaymentSettings.TAG.equals(tag)) {
             EventBus.getDefault().post(new FastPayEvent(s));

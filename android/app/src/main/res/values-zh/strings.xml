@@ -403,8 +403,6 @@
     <string name="upgradeed">已升级至最新版本</string>
     <string name="pin_change_success">PIN码修改成功</string>
     <string name="hours_24">允许次数</string>
-    <string name="no_need_PIN">不需要PIN码</string>
-    <string name="no_need_hardware">不需要在硬件按键确认</string>
     <string name="set_to_Bixinkey">设置到BixinKey</string>
     <string name="please_input_walletname">请输入钱包名称</string>
     <string name="Cancelled">已取消</string>
@@ -721,7 +719,6 @@
     <string name="fix_name">修改名称</string>
     <string name="wallet_msg">钱包信息</string>
     <string name="fix_success">修改成功</string>
-    <string name="fast_send_tips">开启快捷支付后，如单次发币小于设定限额，则无需验证PIN码和按键确认, 多次重复使用达到设定次数后, 系统自动关闭快捷支付(注意:在使用非安全芯片时, 如果设置了pin保护,第一次支付仍然会检查pin)</string>
     <string name="deletewallet_tips">软件钱包删除后，可通过备份恢复</string>
     <string name="updating_dialog">正在检查更新信息</string>
     <string name="send_shortcut_access">快捷支付设置</string>
@@ -836,7 +833,7 @@
     <string name="show_change_address">找零</string>
     <string name="broad_parent">请广播父交易！</string>
     <string name="canceled">已取消</string>
-    <string name="edit_whitelist">编辑白名单</string>
+    <string name="edit_whitelist">白名单</string>
     <string name="no_secret_white_list">免密白名单</string>
     <string name="add_white_list">添加免密白名单</string>
     <string name="prevent_dust">防止dust攻击</string>
@@ -1181,5 +1178,17 @@
     <string name="get_xpub">查看扩展公钥（xPub）</string>
     <string name="set_shutdown_time">自动关机</string>
     <string name="verification_key">防伪校验</string>
+    <string name="shutdown_tip">设置自动关机时间，到点自动关闭设备以节省电量</string>
+    <string name="ci">次</string>
+    <string name="fast_send_tips">开启快捷支付后，如单次发币小于设定限额，则无须验证硬件钱包 PIN 码和按键确认。多次重复使用达到设定次数后，系统会自动关闭快捷支付。</string>
+    <string name="btc_type">币种</string>
+    <string name="no_need_PIN">免PIN码</string>
+    <string name="no_need_hardware">免硬件钱包按键确认</string>
+    <string name="recovery_set_tip1">恢复出厂设置后：</string>
+    <string name="recovery_set_tip2">" 1. 您存储在这个硬件钱包中的 <b>私钥或助记词将被抹除；</b> "</string>
+    <string name="recovery_set_tip3">2. 您在 OneKey App 中用这个钱包创建的账户依然存在，<b>但因为缺少私钥，无法动用其上的资产</b>。除非您在此之前就备份了助记词或私钥，使用它们恢复硬件钱包，从而重新掌控相关账户。</string>
+    <string name="delete_device_tip">这个硬件钱包会在您的设备列表消失。您用这个硬件钱包创建的账户依然可以正常显示，下次您使用的时候会重新配对并恢复。</string>
+    <string name="exit">撤回</string>
+
 
 </resources>

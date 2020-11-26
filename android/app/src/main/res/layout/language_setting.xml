@@ -57,17 +57,32 @@
             android:layout_marginTop="@dimen/dp_10"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/radio_system"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:background="@color/button_bk_ddake"
-                android:gravity="center_vertical"
-                android:paddingStart="@dimen/text_margin"
-                android:paddingEnd="@dimen/text_margin"
-                android:text="@string/follow_system"
-                android:textColor="@color/text_color1"
-                android:visibility="visible" />
+                android:layout_height="@dimen/dp_70"
+                android:background="@color/button_bk_ddake">
+
+                <TextView
+                    android:id="@+id/radio_system"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:paddingStart="@dimen/dp_20"
+                    android:paddingEnd="@dimen/dp_20"
+                    android:text="@string/follow_system"
+                    android:textColor="@color/text_color1" />
+
+                <ImageView
+                    android:id="@+id/img_system"
+                    android:layout_width="@dimen/dp_24"
+                    android:layout_height="@dimen/dp_24"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="@dimen/dp_20"
+                    android:src="@drawable/checked"
+                    android:visibility="gone" />
+
+            </RelativeLayout>
 
             <View
                 android:layout_width="match_parent"

@@ -12,6 +12,7 @@ import org.haobtc.onekey.activities.ServerSettingActivity;
 import org.haobtc.onekey.activities.TransactionsSettingActivity;
 import org.haobtc.onekey.activities.settings.BixinKEYManageActivity;
 import org.haobtc.onekey.activities.settings.CurrencyActivity;
+import org.haobtc.onekey.activities.settings.HardwareDetailsActivity;
 import org.haobtc.onekey.activities.settings.SelectorActivity;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.data.prefs.PreferencesManager;

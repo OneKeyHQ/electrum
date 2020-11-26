@@ -4,11 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/button_bk_ddake"
     android:clipToPadding="true"
     android:fitsSystemWindows="true"
     android:orientation="vertical"
-    android:background="@color/button_bk_ddake"
     tools:context="org.haobtc.onekey.activities.settings.recovery_set.FixHardwareLanguageActivity">
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_50">
@@ -18,76 +19,98 @@
             android:layout_width="@dimen/dp_40"
             android:layout_height="@dimen/dp_40"
             android:layout_centerVertical="true"
+            android:layout_marginTop="@dimen/dp_10"
             android:padding="@dimen/dp_8"
-
-            android:src="@drawable/back" />
+            android:src="@drawable/left_arrow" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:fontFamily="sans-serif-medium"
             android:layout_centerVertical="true"
             android:layout_gravity="center"
+            android:fontFamily="sans-serif-medium"
             android:text="@string/language"
             android:textColor="@color/text"
             android:textSize="@dimen/text_size" />
 
     </RelativeLayout>
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/bk_page">
+        android:background="@color/bk_page"
+        android:orientation="vertical">
 
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/layout_margin"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="@dimen/layout_margin"
-            android:outlineSpotShadowColor="@color/shadow_color"
-            app:cardCornerRadius="@dimen/dp_8"
-            app:cardElevation="@dimen/dp_8"
-            tools:ignore="UnusedAttribute">
+            android:layout_marginStart="@dimen/dp_20"
+            android:layout_marginTop="41dp"
+            android:lineSpacingExtra="@dimen/dp_10"
+            android:text="@string/language_tip"
+            android:textColor="@color/text_six"
+            android:textSize="@dimen/sp_14" />
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_70"
+            android:background="@color/button_bk_ddake">
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/chinese_easy"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:paddingStart="@dimen/dp_20"
+                android:paddingEnd="@dimen/dp_20"
+                android:text="@string/zh_simple"
+                android:textColor="@color/text_two" />
 
-                <TextView
-                    android:id="@+id/chinese_easy"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:checked="true"
-                    android:gravity="center_vertical"
-                    android:paddingStart="@dimen/text_margin"
-                    android:paddingEnd="@dimen/text_margin"
-                    android:text="@string/zh_simple"
-                    android:textColor="@color/button_bk_disableok" />
+            <ImageView
+                android:id="@+id/img_chinese"
+                android:layout_width="@dimen/dp_24"
+                android:layout_height="@dimen/dp_24"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="@dimen/dp_20"
+                android:src="@drawable/checked" />
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/line_hight"
-                    android:layout_marginStart="@dimen/dp_16"
-                    android:layout_marginEnd="@dimen/dp_16"
-                    android:background="@color/separation_line" />
+        </RelativeLayout>
 
-                <TextView
-                    android:id="@+id/test_english"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:gravity="center_vertical"
-                    android:paddingStart="@dimen/text_margin"
-                    android:paddingEnd="@dimen/text_margin"
-                    android:text="@string/en"
-                    android:textColor="@color/text_color1" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/line_hight"
+            android:layout_marginStart="@dimen/dp_20"
+            android:layout_marginEnd="@dimen/dp_20"
+            android:background="@color/separation_line" />
 
-            </LinearLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_70"
+            android:background="@color/button_bk_ddake">
 
-        </androidx.cardview.widget.CardView>
+            <TextView
+                android:id="@+id/test_english"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:paddingStart="@dimen/dp_20"
+                android:paddingEnd="@dimen/dp_20"
+                android:text="@string/en"
+                android:textColor="@color/text_two" />
 
-    </RelativeLayout>
+            <ImageView
+                android:id="@+id/img_english"
+                android:layout_width="@dimen/dp_24"
+                android:layout_height="@dimen/dp_24"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="@dimen/dp_20"
+                android:src="@drawable/checked"
+                android:visibility="gone" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
 </LinearLayout>

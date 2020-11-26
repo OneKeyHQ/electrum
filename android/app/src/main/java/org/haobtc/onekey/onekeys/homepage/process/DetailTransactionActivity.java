@@ -140,8 +140,10 @@ public class DetailTransactionActivity extends BaseActivity {
             textConfirmNum.setText(txStatus);
         }
         textTxNum.setText(txid);
-        String txFee = fee.substring(0, fee.indexOf(" ("));
-        textFee.setText(txFee);
+        if (fee.contains(" (")){
+            String txFee = fee.substring(0, fee.indexOf(" ("));
+            textFee.setText(txFee);
+        }
         if (!TextUtils.isEmpty(description)) {
             textRemarks.setText(description);
         } else {

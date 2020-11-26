@@ -2,7 +2,9 @@ package org.haobtc.onekey.activities.settings.recovery_set;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.greenrobot.eventbus.EventBus;
@@ -26,6 +28,10 @@ public class FixHardwareLanguageActivity extends BaseActivity {
     TextView chineseEasy;
     @BindView(R.id.test_english)
     TextView testEnglish;
+    @BindView(R.id.img_chinese)
+    ImageView imgChinese;
+    @BindView(R.id.img_english)
+    ImageView imgEnglish;
     private String keyLanguage = "Chinese";
     private SharedPreferences preferences;
     private String bleName;
@@ -46,9 +52,9 @@ public class FixHardwareLanguageActivity extends BaseActivity {
     @Override
     public void initData() {
         bleName = getIntent().getStringExtra("ble_name");
-        if (preferences.getString("key_language", "").equals("English")) {
-            testEnglish.setTextColor(getColor(R.color.button_bk_disableok));
-            chineseEasy.setTextColor(getColor(R.color.text_color1));
+        if ("English".equals(preferences.getString("key_language", ""))) {
+            imgChinese.setVisibility(View.GONE);
+            imgEnglish.setVisibility(View.VISIBLE);
         }
     }
 
@@ -60,8 +66,8 @@ public class FixHardwareLanguageActivity extends BaseActivity {
                 break;
             case R.id.chinese_easy:
                 keyLanguage = "Chinese";
-                testEnglish.setTextColor(getColor(R.color.text_color1));
-                chineseEasy.setTextColor(getColor(R.color.button_bk_disableok));
+                imgChinese.setVisibility(View.VISIBLE);
+                imgEnglish.setVisibility(View.GONE);
                 if (Ble.getInstance().getConnetedDevices().size() != 0) {
                     if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(bleName)) {
                         EventBus.getDefault().postSticky(new HandlerEvent());
@@ -75,8 +81,8 @@ public class FixHardwareLanguageActivity extends BaseActivity {
                 break;
             case R.id.test_english:
                 keyLanguage = "English";
-                testEnglish.setTextColor(getColor(R.color.button_bk_disableok));
-                chineseEasy.setTextColor(getColor(R.color.text_color1));
+                imgChinese.setVisibility(View.GONE);
+                imgEnglish.setVisibility(View.VISIBLE);
                 if (Ble.getInstance().getConnetedDevices().size() != 0) {
                     if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(bleName)) {
                         EventBus.getDefault().postSticky(new HandlerEvent());
@@ -105,5 +111,12 @@ public class FixHardwareLanguageActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // TODO: add setContentView(...) invocation
+        ButterKnife.bind(this);
     }
 }
