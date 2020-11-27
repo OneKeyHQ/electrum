@@ -67,6 +67,7 @@ typedef enum {
 
 @property (nonatomic,assign)PwdType type;
 
+@property (nonatomic,assign)BOOL isSecret;
 
 @end
 
@@ -79,6 +80,7 @@ typedef enum {
 - (void)viewDidLoad {
     [super viewDidLoad];
     _type = PwdTypeShort;
+    _isSecret = YES;
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(switchPwdViewBtnClick)];
     [self.switchPwdViewBtn addGestureRecognizer:tap];
     [self stupUI];
@@ -124,6 +126,7 @@ typedef enum {
     self.navigationController.delegate = self;
     self.pwdInputViewFirst.delegate = self;
     self.pwdInputViewSecond.delegate = self;
+
     
     [self.pwdInputViewFirst becomeFirstResponder];
     // Do any additional setup after loading the view.
@@ -202,7 +205,6 @@ typedef enum {
 
 #pragma mark - 重置跳转
 - (void)resetViewWithAnimated:(BOOL)animated {
-    
     //短密码
     if (self.type == PwdTypeShort) {
         if (self.page == PageTypeFirst) { //第一页
@@ -337,7 +339,7 @@ typedef enum {
     if (words.count > 0) {
         [OKStorageManager saveToUserDefaults:@"BTC-1" key:kCurrentWalletName];
         //创建HD成功刷新首页的UI
-        [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletFirstCreateComplete object:@{@"pwd":pwd}];
+        [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":pwd}];
         OKBiologicalViewController *biologicalVc = [OKBiologicalViewController biologicalViewController];
         [self.navigationController pushViewController:biologicalVc animated:YES];
     }else{
@@ -345,7 +347,7 @@ typedef enum {
             [kPyCommandsManager callInterface:kInterfacerecovery_confirmed parameter:@{@"name_list":@[]}];
             [OKStorageManager saveToUserDefaults:@"BTC-1" key:kCurrentWalletName];
             //创建HD成功刷新首页的UI
-            [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletFirstCreateComplete object:@{@"pwd":pwd}];
+            [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":pwd}];
             OKBiologicalViewController *biologicalVc = [OKBiologicalViewController biologicalViewController];
             [self.navigationController pushViewController:biologicalVc animated:YES];
         }else{
@@ -362,5 +364,19 @@ typedef enum {
 - (void)pwdWrongTip
 {
     [kTools tipMessage:MyLocalizedString(@"The two passwords are different. Please re-enter them", nil)];
+}
+
+- (IBAction)eyesClick:(UIButton *)sender {
+    _isSecret = !_isSecret;
+    if (_isSecret) {
+        self.longPwdFirstTextField.secureTextEntry = YES;
+        self.longPwdSecondTextField.secureTextEntry = YES;
+    }else{
+        self.longPwdFirstTextField.secureTextEntry = NO;
+        self.longPwdSecondTextField.secureTextEntry = NO;
+    }
+    
+    
+    
 }
 @end

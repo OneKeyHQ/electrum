@@ -43,7 +43,6 @@
     [self setNavigationBarBackgroundColorWithClearColor];
     self.title = @"BTC";
     self.navigationItem.rightBarButtonItem = [UIBarButtonItem barButtonItemWithImage:[UIImage imageNamed:@"token_btc"] frame:CGRectMake(0, 0, 30, 30) target:self selector:@selector(rightBarButtonItemClick)];
-    // Do any additional setup after loading the view.
     [self segmentStyle];
     [self.sendCoinBtn setLayerRadius:15];
     [self.reciveCoinBtn setLayerRadius:15];
@@ -152,10 +151,9 @@
      */
     //_segHead.maxTitles = 5;
     CGFloat marginTableTop = 10;
-    _segScroll = [[MLMSegmentScroll alloc] initWithFrame:CGRectMake(0, CGRectGetMaxY(_segHead.frame) + marginTableTop, SCREEN_WIDTH,CGRectGetMinY(self.bottomBgView.frame)- CGRectGetMaxY(_segHead.frame) - marginTableTop) vcOrViews:[self vcArr:self.list.count]];
+    _segScroll = [[MLMSegmentScroll alloc] initWithFrame:CGRectMake(0, CGRectGetMaxY(_segHead.frame) + marginTableTop, SCREEN_WIDTH,CGRectGetMinY(self.bottomBgView.frame)- CGRectGetMaxY(_segHead.frame) - marginTableTop - 100) vcOrViews:[self vcArr:self.list.count]];
     _segScroll.loadAll = YES;
     _segScroll.showIndex = 0;
-    
     @weakify(self)
     [MLMSegmentManager associateHead:_segHead withScroll:_segScroll completion:^{
         @strongify(self)

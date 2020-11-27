@@ -144,6 +144,7 @@ typedef enum {
     self.currentFee_status = default_fee_statusNum;
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(refreshBalance:) name:kNotiUpdate_status object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textChange:) name:UITextFieldTextDidChangeNotification object:nil];
+    self.addressTextField.text = self.address;
 }
 
 - (void)dealloc
@@ -278,6 +279,12 @@ typedef enum {
         [kTools tipMessage:MyLocalizedString(@"Lack of balance", nil)];
         return NO;
     }
+    
+    if ([self.balanceLabel.text doubleValue] <= 0) {
+        [kTools tipMessage:MyLocalizedString(@"The transfer amount cannot be zero", nil)];
+        return NO;
+    }
+    
     return YES;
 }
 - (IBAction)sendBtnClick:(OKButton *)sender {

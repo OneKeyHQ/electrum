@@ -30,16 +30,13 @@
 
 - (void)stupUI
 {
+    self.title = MyLocalizedString(@"Backup the purse", nil);
     self.titleLabel.text = MyLocalizedString(@"You're done", nil);
     self.iconView.image = [UIImage imageNamed:@"success"];
     self.descLabel.text = MyLocalizedString(@"Everything seems to be in order! We have nothing to remind you of. In a word, remember to take care of the mnemonic, no one can help you get it back. I wish you play in the chain of blocks in the world happy", nil);
     [self.backToWallet setTitle:MyLocalizedString(@"Return the wallet", nil) forState:UIControlStateNormal];
     [self.backToWallet setLayerRadius:20];
 }
-
-
-
-
 
 - (IBAction)backToWalletClick:(UIButton *)sender {
     [self dismissViewControllerAnimated:YES completion:nil];

@@ -29,8 +29,7 @@
     self.title = MyLocalizedString(@"Legal tender units", nil);
     self.tableView.tableFooterView = [UIView new];
     
-    NSArray *allData = [kPyCommandsManager callInterface:kInterfaceGet_currencies parameter:@{}];
-    self.allData = allData;
+    self.allData = kWalletManager.supportFiatArray;
 }
 
 #pragma mark - UITableViewDataSource
@@ -63,6 +62,10 @@
     NSString *typeString = self.allData[indexPath.row];
     [kPyCommandsManager callInterface:kInterfaceSet_currency parameter:@{@"ccy":typeString}];
     [kWalletManager setCurrentFiat:typeString];
+    [kWalletManager setCurrentFiatSymbol:kWalletManager.supportFiatsSymbol[indexPath.row]];
+    if (indexPath.row < 3) {
+        [[NSNotificationCenter defaultCenter]postNotificationName:kNotiSelectFiatComplete object:nil];
+    }
     [self.tableView reloadData];
 }
 

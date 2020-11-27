@@ -87,42 +87,10 @@
     [self refreshUI];
 }
 
-/**
- {
-     amount = "100 mBTC";
-     "can_broadcast" = 0;
-     cosigner =     (
-         vpub5YAZjbw8qrbTnhYd3e1QUT4Wc6Fc9gcQWRii69VKiiXkf61fWJe2qmNP7y7Vx6jRyV4R3ysxjLp1izrNNsrYdYwKMpeXcgBSvMp2z8X597g
-     );
-     description = "";
-     fee = "unknown mBTC";
-     height = 3885;
-     "input_addr" =     (
-     );
-     "output_addr" =     (
-                 {
-             addr = bcrt1qzg78dz3hg0p7lytecsyv82g58htckx6zyfdtgc;
-             amount = "100 mBTC";
-             "is_change" = 0;
-         },
-                 {
-             addr = bcrt1q04l7vrcqy4qd62gjdunasw49jsthvpphdmyhm4;
-             amount = "10267.78392 mBTC";
-             "is_change" = 1;
-         }
-     );
-     "sign_status" =     (
-         1,
-         1
-     );
-     tx = 02000000000101f21b0d7ab6072c08190d061ba04f4ab6bf5232e08e2b12b89d36371cf0ec39590100000000feffffff028096980000000000160014123c768a3743c3ef9179c408c3a9143dd78b1b421865333d000000001600147d7fe60f002540dd29126f27d83aa594177604370247304402203a1e2385648c73814b33afa67393bae21c0e97e875afa4aef393fc0546cb11370220439863002e7d3e998fd40f0adcc0a6b95e5842b9d6cc1f78c8a2801a1b124d310121036425503cfb0baa6f2d9523469295d11ad2b1485c838781866bf495a4511c627400000000;
-     "tx_status" = "10 confirmations";
-     txid = d6764d84389e5015e1008e23469f81b9f5bb1446f02d4cb18351e9bbf45e019f;
- }
- */
 - (void)refreshUI
 {
-    self.amountLabel.text = [self.txInfo safeStringForKey:@"amount"];
+    NSString *amountStr = [[[self.txInfo safeStringForKey:@"amount"] componentsSeparatedByString:@" ("]firstObject];
+    self.amountLabel.text = amountStr;
     self.statusLabel.text = [self getStatusLabel:[self.txInfo safeStringForKey:@"tx_status"]];
     self.tx_hash = [self.txInfo safeStringForKey:@"txid"];
     NSArray *output_addr_array = self.txInfo[@"output_addr"];

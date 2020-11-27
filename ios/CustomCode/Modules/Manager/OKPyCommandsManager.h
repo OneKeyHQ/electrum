@@ -80,6 +80,10 @@
 
 #define kInterfaceset_proxy              @"set_proxy"  //设置代理服务器
 
+#define kInterfaceparse_pr               @"parse_pr" //扫描二维码
+
+#define kInterfaceis_watch_only          @"is_watch_only" //是否是观察钱包
+
 
 #define kPyCommandsManager (OKPyCommandsManager.sharedInstance)
 NS_ASSUME_NONNULL_BEGIN

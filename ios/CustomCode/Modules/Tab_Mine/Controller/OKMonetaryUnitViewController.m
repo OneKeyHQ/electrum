@@ -31,6 +31,7 @@
     // Do any additional setup after loading the view.
     self.title = MyLocalizedString(@"Monetary unit", nil);
     self.tableView.tableFooterView = [UIView new];
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notiSelectFiatComplete) name:kNotiSelectFiatComplete object:nil];
 }
 
 #pragma mark - UITableViewDataSource
@@ -119,6 +120,7 @@
     if (indexPath.section == 0) {
         [kPyCommandsManager callInterface:kInterfaceSet_currency parameter:@{@"ccy":typeString}];
         [kWalletManager setCurrentFiat:typeString];
+        [kWalletManager setCurrentFiatSymbol:kWalletManager.supportFiatsSymbol[indexPath.row]];
     }else if (indexPath.section == 1){
         [kPyCommandsManager callInterface:kInterfaceSet_base_uint parameter:@{@"base_unit":typeString}];
         [kWalletManager setCurrentBitcoinUnit:typeString];
@@ -138,24 +140,18 @@
 - (NSArray *)allData
 {
     if (!_allData) {
-        
         NSMutableArray *allDataM = [NSMutableArray array];
         
         NSMutableArray *moneyUnitGroup = [NSMutableArray array];
  
-        OKUnitTableViewCellModel *model1 = [[OKUnitTableViewCellModel alloc]init];
-        model1.titleStr = @"CNY";
-        model1.typeString = @"CNY";
-        model1.type = GroupTypeFait;
-        
-        OKUnitTableViewCellModel *model2 = [[OKUnitTableViewCellModel alloc]init];
-        model2.titleStr = @"USD";
-        model2.typeString = @"USD";
-        model2.type = GroupTypeFait;
-        
-        
-        [moneyUnitGroup addObject:model1];
-        [moneyUnitGroup addObject:model2];
+        for (int i = 0; i < 3; i++) {
+            NSString *type = kWalletManager.supportFiatArray[i];
+            OKUnitTableViewCellModel *model1 = [[OKUnitTableViewCellModel alloc]init];
+            model1.titleStr = type;
+            model1.typeString = type;
+            model1.type = GroupTypeFait;
+            [moneyUnitGroup addObject:model1];
+        }
         
         [allDataM addObject:moneyUnitGroup];
         
@@ -205,5 +201,8 @@
     return _allData;
 }
 
-
+- (void)notiSelectFiatComplete
+{
+    [self.tableView reloadData];
+}
 @end

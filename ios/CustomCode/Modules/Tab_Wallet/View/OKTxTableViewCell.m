@@ -15,7 +15,6 @@
 @property (weak, nonatomic) IBOutlet UILabel *timeLabel;
 @property (weak, nonatomic) IBOutlet UILabel *amountLabel;
 @property (weak, nonatomic) IBOutlet UILabel *statusLabel;
-
 @end
 
 @implementation OKTxTableViewCell
@@ -26,7 +25,8 @@
     self.statusImageView.image = [UIImage imageNamed:[model.is_mine boolValue] == YES ?@"txout":@"txin"];
     self.statusLabel.text = model.tx_status;
     self.timeLabel.text = model.date;
-    self.amountLabel.text = model.amount;
+    NSArray *amountArray = [model.amount componentsSeparatedByString:@"("];
+    self.amountLabel.text = [amountArray firstObject];
     self.addressLabel.text = model.tx_hash;
 }
 

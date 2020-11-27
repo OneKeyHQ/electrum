@@ -102,6 +102,7 @@
 "Privacy policies, usage protocols, and open source software" = "隐私政策、使用协议以及开源软件。";
 "address" = "地址";
 "The private key or mnemonic of the wallet is securely stored in the hardware device. If you need to export a mnemonic for a hardware wallet, go to Myhardware-All Devices to find the device you want to export." = "该钱包的私钥或助记词已经妥善的保管在硬件设备中。如果您需要导出硬件钱包的助记词，请前往「我的 ➡️ 全部硬件」查找您要导出的设备。";
+"All subwallets derived from the ROOT mnemonic of HD wallet can be recovered with the root mnemonic, so there is no need to export mnemonic words for a single wallet. If you want to get the HD purse the root word mnemonic, please go to my assets HD wallet" = "所有由 HD 钱包根助记词派生的子钱包，都可以通过根助记词一键恢复，因此没有必要导出单个钱包的助记词。如果您要获得 HD 钱包的根助记词，请前往我的 → HD钱包 → 管理 进行操作。";
 "Multiple signature" = "多重签名";
 "3-5 (Number of initial signatures - total)" = "3-5（起签名数-总数）";
 "To delete the wallet" = "删除钱包";
@@ -223,8 +224,8 @@
 "Confirm to delete the wallet" = "确认删除该钱包";
 "cancel" = "取消";
 "Export hints" = "导出提示";
-"To master the private data of the wallet is to master the assets of the wallet itself" = "掌握钱包的私密数据即等于掌握钱包资产本身，请 \n 1. 备好纸笔认真抄写，确认无误后并保管在安全处 \n 2. 请勿截屏！手机相册很容易被其他应用访问。。。 \n 3. OneKey不存储任何私钥，私钥一旦丢失无法找回";
-"I have known" = "我已知晓";
+"To master the private data of the wallet is to master the assets of the wallet itself" = "掌握钱包的私密数据即等于掌握钱包资产本身，请 \n 1. 备好纸笔认真抄写，确认无误后并保管在安全处 \n 2. 请勿截屏！手机相册很容易被其他应用访问。 \n 3. OneKey不存储任何私钥，私钥一旦丢失无法找回";
+"I have known" = "导出";
 "The only way to protect your assets is to back them up correctly" = "保护您资产的唯一方式，就是正确的做好备份。";
 "1. Carefully copy with pen and paper and keep it in a safe place after confirmation. 2. Mobile photo albums are easily accessible by other apps. 2. OneKey does not store any private key, which cannot be recovered once lost" = "1. 备好纸笔认真抄写，确认无误后并保管在安全处 \n2. 请勿截屏！手机相册很容易被其他应用访问。 \n3. OneKey不存储任何私钥，私钥一旦丢失无法找回";
 "copy" = "复制";
@@ -265,3 +266,9 @@
 "Recover HD Wallet" = "恢复 HD 钱包";
 "Find the following wallet" = "找到以下钱包";
 "You have derived the following wallet using the HD mnemonic, select the one you want to recover. If you do not want to recover the wallet for a while, you can skip it and readd it later in the HD Wallet. Your assets will not be lost" = "您曾使用 HD 助记词派生过以下钱包， 选择您要恢复的。暂时不想恢复的钱包您可以跳过，并稍后在 HD 钱包中重新添加，您的资产不会丢失。";
+"Payment code" = "收款码";
+"Open OneKey scan" = "打开 OneKey 扫一扫";
+"The wallet address" = "钱包地址";
+"The transfer amount cannot be zero" = "转账金额不能为零";
+"Enter the transfer amount" = "输入转出金额";
+"restore" = "恢复";

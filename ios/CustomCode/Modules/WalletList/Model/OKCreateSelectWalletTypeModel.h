@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,copy) NSString* iconName;
 @property (nonatomic,copy) NSString* createWalletType;
 @property (nonatomic,copy) NSString* tipsString;
+@property (nonatomic,assign)OKAddType addtype;
 @end
 
 NS_ASSUME_NONNULL_END

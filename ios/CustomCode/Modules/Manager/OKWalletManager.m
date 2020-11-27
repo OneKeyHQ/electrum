@@ -9,9 +9,7 @@
 #import "OKWalletManager.h"
 
 @interface OKWalletManager()
-
 @property (strong, nonatomic) NSArray *englishWords;
-
 @end
 
 
@@ -61,9 +59,14 @@ static dispatch_once_t once;
 }
 
 
-
-
-
+- (NSString *)currentFiatSymbol
+{
+    return [OKStorageManager loadFromUserDefaults:kCurrentFiatSymbol];
+}
+- (void)setCurrentFiatSymbol:(NSString *)currentFiatSymbol
+{
+    [OKStorageManager saveToUserDefaults:currentFiatSymbol key:kCurrentFiatSymbol];
+}
 - (NSString *)currentFiat
 {
     return [OKStorageManager loadFromUserDefaults:kCurrentFiat];
@@ -109,9 +112,6 @@ static dispatch_once_t once;
 {
     [OKStorageManager saveToUserDefaults:@(isOpenAuthBiological) key:kIsOpenAuthBiologicalKey];
 }
-
-
-
 
 
 /**
@@ -220,6 +220,20 @@ static dispatch_once_t once;
     }
     return _englishWords;
 }
+- (NSArray *)supportFiatArray
+{
+    if (!_supportFiatArray) {
+        _supportFiatArray = @[kCNY,kUSD,kJPY,kKRW,kGBP,kEUR,kHKD,kMYR,kAUD,kINR];
+    }
+    return _supportFiatArray;
+}
 
+- (NSArray *)supportFiatsSymbol
+{
+    if (!_supportFiatsSymbol) {
+        _supportFiatsSymbol = @[kCNYSymbol,kUSDSymbol,kJPYSymbol,kKRWSymbol,kGBPSymbol,kEURSymbol,kHKDSymbol,kMYRSymbol,kAUDSymbol,kINRSymbol];
+    }
+    return _supportFiatsSymbol;
+}
 
 @end

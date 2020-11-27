@@ -31,10 +31,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(userDidTakeScreenshot:)
-                                                     name:UIApplicationUserDidTakeScreenshotNotification object:nil];
     switch (_showType) {
         case WordsShowTypeRestore:
         {
@@ -67,6 +63,20 @@
     [self.wordInputView configureData:self.words];
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(userDidTakeScreenshot:)
+                                                     name:UIApplicationUserDidTakeScreenshotNotification object:nil];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    [[NSNotificationCenter defaultCenter]removeObserver:self];
+}
+
 
 - (IBAction)next:(id)sender {
     switch (_showType) {
@@ -78,6 +88,11 @@
         }
             break;
         case WordsShowTypeExport:
+        {
+            [self.OK_TopViewController dismissViewControllerAnimated:YES completion:nil];;
+        }
+            break;
+        case WordsShowTypeHDExport:
         {
             [self.OK_TopViewController dismissViewControllerAnimated:YES completion:nil];
         }

@@ -46,7 +46,12 @@
     [super viewDidLoad];
     [self setNavigationBarBackgroundColorWithClearColor];
     [self loadUI];
-    _walletType = [kWalletManager getWalletDetailType];
+    BOOL is_watch_only =  [[kPyCommandsManager callInterface:kInterfaceis_watch_only parameter:@{}] boolValue];
+    if (is_watch_only) {
+        _walletType = OKWalletTypeObserve;
+    }else{
+        _walletType = [kWalletManager getWalletDetailType];
+    }
     self.tableView.tableFooterView = [UIView new];
 }
 
@@ -214,10 +219,15 @@
             [oneGroup addObject:model4];
         }
         
-        if (_walletType == OKWalletTypeHardware || _walletType == OKWalletTypeHD){
+        if (_walletType == OKWalletTypeHardware || _walletType == OKWalletTypeHD || _walletType == OKWalletTypeObserve){
             OKWalletDetailModel *model3 = [OKWalletDetailModel new];
             model3.titleStr = @"";
-            model3.rightLabelStr = MyLocalizedString(@"The private key or mnemonic of the wallet is securely stored in the hardware device. If you need to export a mnemonic for a hardware wallet, go to Myhardware-All Devices to find the device you want to export.", nil);
+            if (_walletType == OKWalletTypeObserve) {
+                model3.rightLabelStr = MyLocalizedString(@"观察钱包文案观察钱包文案观察钱包文案观察钱包文案观察钱包文案观察钱包文案观察钱包文案观察钱包文案观察钱包文案观察钱包文案", nil);
+            }else{
+                model3.rightLabelStr = MyLocalizedString(@"All subwallets derived from the ROOT mnemonic of HD wallet can be recovered with the root mnemonic, so there is no need to export mnemonic words for a single wallet. If you want to get the HD purse the root word mnemonic, please go to my assets HD wallet", nil);
+            }
+            
             model3.isShowCopy = NO;
             model3.isShowSerialNumber = NO;
             model3.isShowArrow = NO;
@@ -305,6 +315,9 @@
             break;
         case OKWalletTypeMultipleSignature:
             return MyLocalizedString(@"Hardware wallet", nil);
+            break;
+        case OKWalletTypeObserve:
+            return MyLocalizedString(@"Observe the purse", nil);
             break;
         default:
             break;

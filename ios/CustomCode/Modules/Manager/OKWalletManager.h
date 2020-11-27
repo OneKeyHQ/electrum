@@ -12,10 +12,37 @@
 #define COIN_ETH             @"ETH"
 
 
+#define kCNY                 @"CNY"  //人民币
+#define kUSD                 @"USD"  //美元
+#define kJPY                 @"JPY"  //日元
+#define kKRW                 @"KRW"  //韩元
+#define kGBP                 @"GBP"  //英镑
+#define kEUR                 @"EUR"  //欧元
+#define kHKD                 @"HKD"  //马来西亚林吉特
+#define kMYR                 @"MYR"  //港币
+#define kAUD                 @"AUD"  //澳元
+#define kINR                 @"INR"  //卢布
+
+
+#define kCNYSymbol                 @"¥"  //人民币
+#define kUSDSymbol                 @"$"  //美元
+#define kJPYSymbol                 @"¥"  //日元
+#define kKRWSymbol                 @"₩"  //韩元
+#define kGBPSymbol                 @"£"  //英镑
+#define kEURSymbol                 @"€"  //欧元
+#define kHKDSymbol                 @"RM"  //马来西亚林吉特
+#define kMYRSymbol                 @"$"  //港币
+#define kAUDSymbol                 @"$"  //澳元
+#define kINRSymbol                 @"₽"  //卢布
+
+
+
+
 #define kCurrentWalletName              @"kCurrentWalletName"
 #define kCurrentWalletAddress           @"kCurrentWalletAddress"
 #define kCurrentWalletType              @"kCurrentWalletType"
 #define kCurrentFiat                    @"kCurrentFiat"
+#define kCurrentFiatSymbol              @"kCurrentFiatSymbol"
 #define kCurrentBitcoinUnit             @"kCurrentBitcoinUnit"
 
 #define kSelectedWalletListType         @"kSelectedWalletListType"
@@ -31,7 +58,8 @@ typedef enum {
     OKWalletTypeHD,                 //HD钱包
     OKWalletTypeIndependent,        //独立钱包
     OKWalletTypeHardware,           //硬件钱包
-    OKWalletTypeMultipleSignature   //多签钱包
+    OKWalletTypeMultipleSignature,  //多签钱包
+    OKWalletTypeObserve             //观察钱包
 }OKWalletType;
 
 
@@ -55,8 +83,11 @@ typedef enum {
 
 @property (nonatomic,copy)NSString *currentSelectCoinType;
 @property (nonatomic,copy)NSString *currentFiat;
+@property (nonatomic,copy)NSString *currentFiatSymbol;
 @property (nonatomic,copy)NSString *currentBitcoinUnit;
 @property (nonatomic,strong)NSArray *supportCoinArray;
+@property (nonatomic,strong) NSArray *supportFiatArray;
+@property (nonatomic,strong) NSArray *supportFiatsSymbol;
 @property (nonatomic,assign)BOOL showAsset;
 @property (nonatomic,assign)BOOL isOpenAuthBiological;
 - (BOOL)showAsset;

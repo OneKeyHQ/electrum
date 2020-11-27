@@ -37,9 +37,8 @@
 
 - (void)stupUI
 {
-    
     [self setNavigationBarBackgroundColorWithClearColor];
-    
+    [self hideBackBtn];
     self.title = MyLocalizedString(@"Create a new wallet", nil);
     self.setTitleLabel.text = MyLocalizedString(@"Set face recognition", nil);
     self.descTitleLabel.text = MyLocalizedString(@"You can more easily unlock your wallet without having to type in your password every time", nil);
@@ -50,7 +49,16 @@
     [self.startBtn setLayerRadius:20];
     [self.nextBtn setLayerBoarderColor:HexColor(0xDBDEE7) width:1 radius:20];
 }
-
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    if ([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]){
+        self.navigationController.interactivePopGestureRecognizer.enabled = NO;
+    }
+}
+- (void)viewDidDisappear:(BOOL)animated {
+  [super viewDidDisappear:animated];
+  self.navigationController.interactivePopGestureRecognizer.enabled = YES;
+}
 - (YZAuthID *)authIDControl {
     if (!_authIDControl) {
         _authIDControl = [[YZAuthID alloc] init];
@@ -77,4 +85,6 @@
 - (IBAction)nextBtnClick:(UIButton *)sender {
     [self.OK_TopViewController dismissViewControllerAnimated:YES completion:nil];
 }
+
+
 @end

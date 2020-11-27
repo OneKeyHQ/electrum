@@ -57,32 +57,38 @@
         [self.navigationController popToRootViewControllerAnimated:YES];
         return;
     }
-    
-    [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
+     
+    [OKValidationPwdController showValidationPwdPageOn:self isDis:NO complete:^(NSString * _Nonnull pwd) {
+        id result = nil;
         switch (weakself.addType) {
             case OKAddTypeCreateHDDerived:
             {
   
-                [kPyCommandsManager callInterface:kInterfaceCreate_derived_wallet parameter:@{@"name":self.walletNameTextfield.text,@"password":pwd,@"coin":[self.coinType lowercaseString]}];
+                result = [kPyCommandsManager callInterface:kInterfaceCreate_derived_wallet parameter:@{@"name":self.walletNameTextfield.text,@"password":pwd,@"coin":[self.coinType lowercaseString]}];
             }
                 break;
             case OKAddTypeCreateSolo:
             {
-                [kPyCommandsManager callInterface:kInterfaceCreate_create parameter:@{@"name":self.walletNameTextfield.text,@"password":pwd}];
+                result = [kPyCommandsManager callInterface:kInterfaceCreate_create parameter:@{@"name":self.walletNameTextfield.text,@"password":pwd}];
             }
                 break;
             case OKAddTypeImportPrivkeys:
             {
-                [kPyCommandsManager callInterface:kInterfaceImport_Privkeys parameter:@{@"name":self.walletNameTextfield.text,@"password":pwd,@"privkeys":self.privkeys}];
+                result = [kPyCommandsManager callInterface:kInterfaceImport_Privkeys parameter:@{@"name":self.walletNameTextfield.text,@"password":pwd,@"privkeys":self.privkeys}];
             }
                 break;
                 
             default:
                 break;
         }
-        
-        [[NSNotificationCenter defaultCenter]postNotification:[NSNotification notificationWithName:kNotiRefreshWalletList object:nil]];
-        [self.navigationController popToRootViewControllerAnimated:YES];
+        if (result != nil) {
+            [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:nil];
+            [[NSNotificationCenter defaultCenter]postNotificationName:kNotiRefreshWalletList object:nil];
+            [weakself.OK_TopViewController dismissToViewControllerWithClassName:@"OKSetWalletNameViewController" animated:NO];
+            [weakself.navigationController popToRootViewControllerAnimated:YES];
+        }else{
+            
+        }
     }];
 }
 @end

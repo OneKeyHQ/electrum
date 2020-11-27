@@ -15,6 +15,8 @@
 @property (weak, nonatomic) IBOutlet UIButton *nextBtn;
 @property (weak, nonatomic) IBOutlet OKWordImportView *wordInputView;
 @property (weak, nonatomic) IBOutlet UIScrollView *scrollView;
+@property (weak, nonatomic) IBOutlet UIView *leftBgView;
+@property (weak, nonatomic) IBOutlet UIView *fromBgView;
 
 @end
 
@@ -28,9 +30,13 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self setNavigationBarBackgroundColorWithClearColor];
+    self.navigationItem.leftBarButtonItem = [UIBarButtonItem backBarButtonItemWithTarget:self selector:@selector(backToPrevious)];
     [_wordInputView configureData:_wordsArr];
     [self checkButtonEnabled];
-    [self.nextBtn setTitle:MyLocalizedString(@"Next", nil) forState:UIControlStateNormal];
+    [self.nextBtn setTitle:MyLocalizedString(@"restore", nil) forState:UIControlStateNormal];
+    [self.leftBgView setLayerRadius:2];
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapFromClick)];
+    [self.fromBgView addGestureRecognizer:tap];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -87,5 +93,16 @@
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
     [self.view endEditing:YES];
+}
+
+#pragma mark - backToPrevious
+- (void)backToPrevious
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)tapFromClick
+{
+    NSLog(@"tapFromClick");
 }
 @end

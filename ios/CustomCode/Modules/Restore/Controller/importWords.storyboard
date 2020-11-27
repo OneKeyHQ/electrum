@@ -25,7 +25,7 @@
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="RKs-Zh-vdP">
-                                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="937.5"/>
                                         <subviews>
                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="hd_wallet-1" translatesAutoresizingMaskIntoConstraints="NO" id="yC8-Il-bVp">
                                                 <rect key="frame" x="189" y="50" width="36" height="36"/>
@@ -98,8 +98,14 @@
                                                     <outlet property="stackView" destination="ssK-lB-nbd" id="Icx-Wl-Gk4"/>
                                                 </connections>
                                             </view>
-                                            <button opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="E0W-O6-RM2">
-                                                <rect key="frame" x="43" y="715" width="328" height="60"/>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="助记词一旦导入，就会经过加密存储在您的本地设备中并妥当保管。OneKey 不存储任何私密数据，也无法帮您找回。" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Nsa-N6-hRP">
+                                                <rect key="frame" x="34" y="562" width="346" height="50.5"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <button opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="E0W-O6-RM2">
+                                                <rect key="frame" x="34" y="725" width="328" height="60"/>
                                                 <color key="backgroundColor" red="0.0010134851330000001" green="0.7278487682" blue="0.070087678730000005" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="60" id="GMb-th-Yu7"/>
@@ -117,19 +123,6 @@
                                                     <action selector="next:" destination="D2y-tl-wHA" eventType="touchUpInside" id="GmD-ZL-1aQ"/>
                                                 </connections>
                                             </button>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="助记词一旦导入，就会经过加密存储在您的本地设备中并妥当保管。OneKey 不存储任何私密数据，也无法帮您找回。" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Nsa-N6-hRP">
-                                                <rect key="frame" x="34" y="562" width="346" height="50.5"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                <nil key="textColor"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
-                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pqD-f9-DGK">
-                                                <rect key="frame" x="34" y="639.5" width="4" height="50.5"/>
-                                                <color key="backgroundColor" red="0.14818292860000001" green="0.81886440520000003" blue="0.0068531655710000004" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="width" constant="4" id="CA7-KR-5yo"/>
-                                                </constraints>
-                                            </view>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dxq-uG-Xx0">
                                                 <rect key="frame" x="44" y="639.5" width="327" height="50.5"/>
                                                 <string key="text">- 不要轻易卸载 OneKey App
@@ -139,14 +132,15 @@
                                                 <color key="textColor" red="0.3294117647" green="0.38823529410000002" blue="0.43921568630000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="HD 钱包仅支持助记词和硬件钱包恢复，如果您要导入单币种的普通钱包，请从通用入口导入。" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="37k-UQ-ElV">
-                                                <rect key="frame" x="43" y="805" width="328" height="33.5"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                <color key="textColor" red="0.078431372550000003" green="0.16078431369999999" blue="0.23137254900000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pqD-f9-DGK">
+                                                <rect key="frame" x="34" y="639.5" width="4" height="50.5"/>
+                                                <color key="backgroundColor" red="0.14818292860000001" green="0.81886440520000003" blue="0.0068531655710000004" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="4" id="CA7-KR-5yo"/>
+                                                </constraints>
+                                            </view>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="F6w-QU-OxV" userLabel="frombg">
-                                                <rect key="frame" x="142" y="868.5" width="130" height="35"/>
+                                                <rect key="frame" x="142" y="882.5" width="130" height="35"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="从硬件钱包恢复" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="p5f-H3-rgW">
                                                         <rect key="frame" x="0.0" y="0.0" width="100" height="35"/>
@@ -173,22 +167,29 @@
                                                     <constraint firstItem="Bld-fA-NRD" firstAttribute="centerY" secondItem="F6w-QU-OxV" secondAttribute="centerY" id="zMs-m2-x9q"/>
                                                 </constraints>
                                             </view>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="HD 钱包仅支持助记词和硬件钱包恢复，如果您要导入单币种的普通钱包，请从通用入口导入。" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="37k-UQ-ElV">
+                                                <rect key="frame" x="43" y="815" width="328" height="33.5"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <color key="textColor" red="0.078431372550000003" green="0.16078431369999999" blue="0.23137254900000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
                                         </subviews>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <constraints>
                                             <constraint firstAttribute="trailing" secondItem="37k-UQ-ElV" secondAttribute="trailing" constant="43" id="0QR-0m-2S5"/>
+                                            <constraint firstItem="F6w-QU-OxV" firstAttribute="top" secondItem="37k-UQ-ElV" secondAttribute="bottom" constant="34" id="1AJ-1k-TZt"/>
                                             <constraint firstItem="Nsa-N6-hRP" firstAttribute="leading" secondItem="RKs-Zh-vdP" secondAttribute="leading" constant="34" id="5Mo-UY-nbL"/>
                                             <constraint firstItem="dxq-uG-Xx0" firstAttribute="leading" secondItem="pqD-f9-DGK" secondAttribute="trailing" constant="6" id="7fi-mW-pML"/>
                                             <constraint firstItem="Yle-OW-nuz" firstAttribute="leading" secondItem="RKs-Zh-vdP" secondAttribute="leading" constant="25" id="FcV-pF-qvb"/>
                                             <constraint firstItem="F6w-QU-OxV" firstAttribute="centerX" secondItem="RKs-Zh-vdP" secondAttribute="centerX" id="Pec-fM-e8f"/>
-                                            <constraint firstItem="E0W-O6-RM2" firstAttribute="top" secondItem="pqD-f9-DGK" secondAttribute="bottom" constant="25" id="X8E-gw-xud"/>
                                             <constraint firstItem="dxq-uG-Xx0" firstAttribute="bottom" secondItem="pqD-f9-DGK" secondAttribute="bottom" id="aHy-5a-spf"/>
+                                            <constraint firstItem="E0W-O6-RM2" firstAttribute="top" secondItem="dxq-uG-Xx0" secondAttribute="bottom" constant="35" id="con-Jy-eb9"/>
                                             <constraint firstItem="dxq-uG-Xx0" firstAttribute="top" secondItem="Nsa-N6-hRP" secondAttribute="bottom" constant="27" id="dYZ-SL-1mH"/>
                                             <constraint firstItem="yC8-Il-bVp" firstAttribute="top" secondItem="RKs-Zh-vdP" secondAttribute="top" constant="50" id="etx-Qe-FVd"/>
                                             <constraint firstAttribute="trailing" secondItem="dxq-uG-Xx0" secondAttribute="trailing" constant="43" id="fDq-4B-cn3"/>
+                                            <constraint firstAttribute="bottom" secondItem="F6w-QU-OxV" secondAttribute="bottom" constant="20" id="hDI-a9-19e"/>
                                             <constraint firstAttribute="trailing" secondItem="E0W-O6-RM2" secondAttribute="trailing" constant="43" id="hRt-No-Jzd"/>
                                             <constraint firstItem="yC8-Il-bVp" firstAttribute="centerX" secondItem="RKs-Zh-vdP" secondAttribute="centerX" id="iqh-7H-iyk"/>
-                                            <constraint firstItem="F6w-QU-OxV" firstAttribute="top" secondItem="37k-UQ-ElV" secondAttribute="bottom" constant="30" id="k1P-Nv-aLf"/>
                                             <constraint firstItem="Nsa-N6-hRP" firstAttribute="top" secondItem="Yle-OW-nuz" secondAttribute="bottom" constant="36" id="mwO-kq-TUl"/>
                                             <constraint firstItem="pqD-f9-DGK" firstAttribute="leading" secondItem="RKs-Zh-vdP" secondAttribute="leading" constant="34" id="nBk-XL-Wb6"/>
                                             <constraint firstItem="E0W-O6-RM2" firstAttribute="leading" secondItem="RKs-Zh-vdP" secondAttribute="leading" constant="43" id="rAs-1l-evN"/>
@@ -202,8 +203,7 @@
                                     </view>
                                 </subviews>
                                 <constraints>
-                                    <constraint firstAttribute="bottom" secondItem="RKs-Zh-vdP" secondAttribute="bottom" constant="100" id="67i-tp-2jJ"/>
-                                    <constraint firstItem="RKs-Zh-vdP" firstAttribute="centerY" secondItem="Ubn-pf-VUi" secondAttribute="centerY" id="IeO-Al-BtT"/>
+                                    <constraint firstAttribute="bottom" secondItem="RKs-Zh-vdP" secondAttribute="bottom" id="Cul-qX-J0c"/>
                                     <constraint firstItem="RKs-Zh-vdP" firstAttribute="leading" secondItem="Ubn-pf-VUi" secondAttribute="leading" id="iFr-BA-sb5"/>
                                     <constraint firstItem="RKs-Zh-vdP" firstAttribute="top" secondItem="Ubn-pf-VUi" secondAttribute="top" id="oDV-us-azD"/>
                                     <constraint firstAttribute="trailing" secondItem="RKs-Zh-vdP" secondAttribute="trailing" id="vlZ-v7-cZL"/>
@@ -227,6 +227,8 @@
                     </view>
                     <navigationItem key="navigationItem" id="GbB-hJ-Pj8"/>
                     <connections>
+                        <outlet property="fromBgView" destination="F6w-QU-OxV" id="feQ-36-XEP"/>
+                        <outlet property="leftBgView" destination="pqD-f9-DGK" id="tjh-fM-T38"/>
                         <outlet property="nextBtn" destination="E0W-O6-RM2" id="57k-gF-D7x"/>
                         <outlet property="scrollView" destination="Ubn-pf-VUi" id="Iq2-nD-6fp"/>
                         <outlet property="wordInputView" destination="Yle-OW-nuz" id="gvu-ZD-i4a"/>

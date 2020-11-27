@@ -7,6 +7,7 @@
 //
 
 #import "OKReceiveCoinViewController.h"
+#import "OKShareView.h"
 
 @interface OKReceiveCoinViewController ()
 @property (weak, nonatomic) IBOutlet UIImageView *coinTypeImageView;
@@ -56,7 +57,7 @@
 - (void)stupUI
 {
     self.titleNavLabel.text = MyLocalizedString(@"ok collection", nil);
-    self.titleLabel.text = [NSString stringWithFormat:@"%@%@",MyLocalizedString(@"Scan goes to", nil),COIN_BTC];
+    self.titleLabel.text = [NSString stringWithFormat:@"%@%@",MyLocalizedString(@"Scan goes to", nil),self.coinType];
     self.walletAddressTitleLabel.text = MyLocalizedString(@"The wallet address", nil);
     [self.bgView setLayerDefaultRadius];
     [self setNavigationBarBackgroundColorWithClearColor];
@@ -76,7 +77,8 @@
 }
 
 - (IBAction)shareBtnClick:(UIButton *)sender {
-    [OKSystemShareView showSystemShareViewWithActivityItems:@[self.QRCodeImageView.image] parentVc:self cancelBlock:^{
+    OKShareView *shareView = [OKShareView initViewWithImage:self.QRCodeImageView.image coinType:self.coinType address:self.walletAddressLabel.text];
+    [OKSystemShareView showSystemShareViewWithActivityItems:@[[shareView convertImage2WithOptions]] parentVc:self cancelBlock:^{
         
     } shareCompletionBlock:^{
         

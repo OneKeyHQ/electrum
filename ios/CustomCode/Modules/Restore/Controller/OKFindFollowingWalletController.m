@@ -82,7 +82,7 @@
     [kPyCommandsManager callInterface:kInterfacerecovery_confirmed parameter:@{@"name_list":arrayM}];
     [OKStorageManager saveToUserDefaults:@"BTC-1" key:kCurrentWalletName];
     //创建HD成功刷新首页的UI
-    [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletFirstCreateComplete object:@{@"pwd":self.pwd}];
+    [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":self.pwd}];
     [self.OK_TopViewController dismissToViewControllerWithClassName:@"OKWalletViewController" animated:YES];
 }
 @end

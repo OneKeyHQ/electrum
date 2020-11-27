@@ -677,7 +677,7 @@
                                 <rect key="frame" x="0.0" y="141" width="414" height="755"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="OKSelectCoinTypeTableViewCell" rowHeight="74" id="ETC-dt-W51" customClass="OKSelectCoinTypeTableViewCell">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="OKSelectCoinTypeTableViewCell" rowHeight="74" id="ETC-dt-W51" customClass="OKSelectCoinTypeTableViewCell">
                                         <rect key="frame" x="0.0" y="28" width="414" height="74"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="ETC-dt-W51" id="F22-bh-Zlh">
@@ -1045,7 +1045,7 @@
         <image name="close" width="24" height="24"/>
         <image name="copy_white" width="16" height="16"/>
         <image name="iconwriteselect" width="16.5" height="12.5"/>
-        <image name="info" width="16" height="16"/>
+        <image name="info" width="24" height="24"/>
         <image name="match_device" width="24" height="24"/>
         <image name="right_arrow_small" width="24" height="24"/>
         <image name="token_btc" width="40" height="40"/>

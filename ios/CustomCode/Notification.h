@@ -10,7 +10,7 @@
 #define Notification_h
 
 //创建钱包完成
-#define kNotiWalletFirstCreateComplete          @"kNotiWalletFirstCreateComplete"
+#define kNotiWalletCreateComplete               @"kNotiWalletCreateComplete"
 //选择一个钱包
 #define kNotiSelectWalletComplete               @"kNotiSelectWalletComplete"
 //刷新钱包列表
@@ -23,11 +23,12 @@
 
 #define kNotiUpdate_status                      @"kNotiUpdate_status"
 
+#define kNotiSelectFiatComplete                 @"kNotiSelectFiatComplete"
+
 
 #define kUserSetingSysServerComplete            @"kUserSetingSysServerComplete"
 #define kUserSetingBtcBComplete                 @"kUserSetingBtcBComplete"
 #define kUserSetingMarketSource                 @"kUserSetingMarketSource"
 #define kUserSetingElectrumServer               @"kUserSetingElectrumServer"
-
 
 #endif /* Notification_h */

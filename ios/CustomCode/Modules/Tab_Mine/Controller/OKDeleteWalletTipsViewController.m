@@ -41,10 +41,10 @@
     
     [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
         [kPyCommandsManager callInterface:kInterfaceDelete_wallet parameter:@{@"name":self.walletName,@"password":pwd}];
-        if ([self.walletName isEqualToString:kWalletManager.currentWalletName]) {
+        if ([kWalletManager.currentWalletType containsString:@"hd"]||[kWalletManager.currentWalletType containsString:@"derived-standard"]) {
             [kWalletManager clearCurrentWalletInfo];
-            [[NSNotificationCenter defaultCenter]postNotificationName:kNotiDeleteWalletComplete object:nil];
         }
+        [[NSNotificationCenter defaultCenter]postNotificationName:kNotiDeleteWalletComplete object:nil];
         [kTools tipMessage:@"删除钱包成功"];
         [self.navigationController popToRootViewControllerAnimated:YES];
     }];

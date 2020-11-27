@@ -22,6 +22,7 @@
 #import "OKWalletListNoHDTableViewCell.h"
 #import "OKPwdViewController.h"
 #import "OKWordImportVC.h"
+#import "OKHDWalletViewController.h"
 
 
 #define kDefaultType  @"HD"
@@ -61,6 +62,8 @@
 @property (weak, nonatomic) IBOutlet UILabel *footerTitleLabel;
 @property (weak, nonatomic) IBOutlet UILabel *footerDescLabel;
 - (IBAction)addWalletClick:(UIButton *)sender;
+
+@property (nonatomic,assign)BOOL haveHD;
 
 @end
 
@@ -106,6 +109,7 @@
 - (void)refreshListData
 {
     NSArray *listDictArray =  [kPyCommandsManager callInterface:kInterfaceList_wallets parameter:@{}];
+    
     NSMutableArray *walletArray = [NSMutableArray arrayWithCapacity:listDictArray.count];
     for (int i = 0; i < listDictArray.count; i++) {
         NSDictionary *outerModelDict = listDictArray[i];
@@ -113,6 +117,9 @@
         model.walletName = [outerModelDict allKeys].firstObject;
         NSDictionary *innerDict = outerModelDict[model.walletName];
         model.walletType = [innerDict safeStringForKey:@"type"];
+        if ([model.walletType containsString:[kDefaultType lowercaseString]]) {
+            _haveHD = YES;
+        }
         model.walletTypeShowStr = [kWalletManager getWalletTypeShowStr:model.walletType];
         model.address = [innerDict safeStringForKey:@"addr"];
         model.backColor = [OKWalletListTableViewCellModel getBackColor:model.walletType];
@@ -124,8 +131,14 @@
     NSString *walletType =  [OKStorageManager loadFromUserDefaults:kSelectedWalletListType];
     if (walletType.length == 0 || walletType == nil) {
         [OKStorageManager saveToUserDefaults:kDefaultType key:kSelectedWalletListType];
+        walletType = kDefaultType;
     }
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"walletType contains %@",[walletType lowercaseString]];
+    NSPredicate *predicate  = nil;
+    if ([walletType isEqualToString:kDefaultType]) {
+        predicate = [NSPredicate predicateWithFormat:@"walletType contains %@ || walletType contains %@",[walletType lowercaseString],[@"derived-standard" lowercaseString]];
+    }else{
+        predicate = [NSPredicate predicateWithFormat:@"walletType contains %@",[walletType lowercaseString]];
+    }
     self.showList = [self.walletListArray filteredArrayUsingPredicate:predicate];
     
     self.countLabel.text = [NSString stringWithFormat:@"%zd",self.showList.count];
@@ -145,8 +158,6 @@
         self.detailLabel.hidden = YES;
         self.circlePlusBtn.hidden = NO;
     }
-    
-    
     [self.tableView reloadData];
 }
 
@@ -253,6 +264,7 @@
     [vc showOnWindowWithParentViewController:self block:^(BtnClickType type) {
         if (type == BtnClickTypeCreate) {
             OKCreateSelectWalletTypeController *createSelectWalletTypeVc = [OKCreateSelectWalletTypeController createSelectWalletTypeController];
+            createSelectWalletTypeVc.haveHD = weakself.haveHD;
             [weakself.navigationController pushViewController:createSelectWalletTypeVc animated:YES];
         }else if (type == BtnClickTypeImport){
             OKSelectCoinTypeViewController *selectVc = [OKSelectCoinTypeViewController selectCoinTypeViewController];
@@ -346,8 +358,6 @@
     return _NoHDArray;
 }
 
-
-
 #pragma mark - 点击问号提示
 - (IBAction)tipsBtnClick:(UIButton *)sender {
     OKTipsViewController *tipsVc = [OKTipsViewController tipsViewController];
@@ -357,6 +367,7 @@
 
 - (IBAction)circlePlusBtnClick:(UIButton *)sender {
     OKCreateSelectWalletTypeController *createSelectVc = [OKCreateSelectWalletTypeController createSelectWalletTypeController];
+    createSelectVc.haveHD = self.haveHD;
     [self.navigationController pushViewController:createSelectVc animated:YES];
 }
 #pragma mark - 点击详情
@@ -368,8 +379,8 @@
 }
 - (void)detailClick
 {
-    OKWalletDetailViewController *walletDetail = [OKWalletDetailViewController walletDetailViewController];
-    [self.navigationController pushViewController:walletDetail animated:YES];
+    OKHDWalletViewController *hdVc = [OKHDWalletViewController hdWalletViewController];
+    [self.navigationController pushViewController:hdVc animated:YES];
 }
 #pragma mark - 点击添加钱包
 - (IBAction)addWalletClick:(UIButton *)sender {

@@ -22,6 +22,7 @@
 #import "OKSendCoinViewController.h"
 #import "OKBiologicalViewController.h"
 #import "OKReadyToStartViewController.h"
+#import "OKTxDetailViewController.h"
 
 
 @interface OKWalletViewController ()<UITableViewDelegate,UITableViewDataSource,UINavigationControllerDelegate>
@@ -84,6 +85,7 @@
 @property (nonatomic,strong)NSArray *listWallets;
 
 @property (nonatomic,strong)OKAssetTableViewCellModel *model;
+
 @end
 
 @implementation OKWalletViewController
@@ -100,7 +102,7 @@
     
     [self stupUI];
     [self showFirstUse];
-    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notiWalletCreateComplete:) name:kNotiWalletFirstCreateComplete object:nil];
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notiWalletCreateComplete:) name:kNotiWalletCreateComplete object:nil];
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notiSelectWalletComplete) name:kNotiSelectWalletComplete object:nil];
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notiUpdate_status:) name:kNotiUpdate_status object:nil];
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notiDeleteWalletComplete) name:kNotiDeleteWalletComplete object:nil];
@@ -123,6 +125,7 @@
     //设置默认法币
     if (kWalletManager.currentFiat == nil || kWalletManager.currentFiat.length == 0) {
         [kWalletManager setCurrentFiat:@"CNY"];
+        [kWalletManager setCurrentFiatSymbol:kWalletManager.supportFiatsSymbol[0]];
         [kPyCommandsManager callInterface:kInterfaceSet_currency parameter:@{@"ccy":@"CNY"}];
     }else{
         [kPyCommandsManager callInterface:kInterfaceSet_currency parameter:@{@"ccy":kWalletManager.currentFiat}];
@@ -163,8 +166,6 @@
             [kUserSettingManager setElectrum_server:electrumNode];
         }
     }
-    
-    
 }
 
 
@@ -187,10 +188,10 @@
 
 - (void)updateStatus:(NSDictionary *)dict
 {
-//    NSLog(@"dict = %@",dict);
+    NSLog(@"dict = %@",dict);
     self.model.balance = [dict safeStringForKey:@"balance"];
-    self.model.coinType = @"BTC";
-    self.model.iconImage = @"token_btc";
+    self.model.coinType = COIN_BTC;
+    self.model.iconImage = [NSString stringWithFormat:@"token_%@",[COIN_BTC lowercaseString]];
     self.model.money = [dict safeStringForKey:@"fiat"];
     dispatch_async(dispatch_get_main_queue(), ^{
        // UI更新代码
@@ -198,8 +199,15 @@
         if (!kWalletManager.showAsset) {
             bStr = @"****";
         }
-        self.balance.text =  bStr;
+        NSArray *barray = [bStr componentsSeparatedByString:@" "];
+        self.balance.text = [NSString stringWithFormat:@"%@ %@",kWalletManager.currentFiatSymbol,[barray firstObject]];
         self.walletName.text = kWalletManager.currentWalletName.length > 0 ? kWalletManager.currentWalletName : MyLocalizedString(@"No purse", nil);
+        if (kWalletManager.currentWalletName.length > 0) {
+            [self.coinImage setImage:[UIImage imageNamed:self.model.iconImage] forState:UIControlStateNormal];
+        }else{
+            [self.coinImage setImage:[UIImage imageNamed:@"loco_round"] forState:UIControlStateNormal];
+        }
+       
         [self.assetTableView reloadData];
     });
 }
@@ -265,6 +273,7 @@
     }else{
         dispatch_async(dispatch_get_main_queue(), ^{
             self.walletName.text = MyLocalizedString(@"No purse", nil);
+            [self.coinImage setImage:[UIImage imageNamed:@"loco_round"] forState:UIControlStateNormal];
         });
     }
 }
@@ -347,11 +356,39 @@
 #pragma mark - 扫描二维码
 - (void)scanBtnClick
 {
+    OKWeakSelf(self)
     OKWalletScanVC *vc = [OKWalletScanVC initViewControllerWithStoryboardName:@"Scan"];
     vc.scanningType = ScanningTypeAddress;
     vc.scanningCompleteBlock = ^(id result) {
         if (result) {
-            [kTools tipMessage:result];
+            NSDictionary *typeDict = [kPyCommandsManager callInterface:kInterfaceparse_pr parameter:@{@"data":result}];
+            if (typeDict != nil) {
+                NSInteger type = [typeDict[@"type"] integerValue];
+                switch (type) {
+                    case 1:
+                    {
+                        NSDictionary *data = typeDict[@"data"];
+                        NSString *address = [data safeStringForKey:@"address"];
+                        OKSendCoinViewController *sendCoinVc = [OKSendCoinViewController sendCoinViewController];
+                        sendCoinVc.address = address;
+                        [weakself.navigationController pushViewController:sendCoinVc animated:YES];
+                    }
+                        break;
+                    case 2:
+                    {
+//                        NSDictionary *data = typeDict[@"data"];
+//                        OKTxDetailViewController *txDetail = [OKTxDetailViewController txDetailViewController];
+//                        txDetail.tx_hash = [data safeStringForKey:@"txid"];
+//                        [weakself.navigationController pushViewController:txDetail animated:YES];
+                    }
+                        break;
+                    default:
+                        [kTools tipMessage:result];
+                        break;
+                }
+            }else{
+                [kTools tipMessage:result];
+            }
         }
     };
     [vc authorizePushOn:self];
@@ -484,6 +521,7 @@
 #pragma mark - 收款
 - (IBAction)receiveBtnClick:(UIButton *)sender {
     OKReceiveCoinViewController *receiveCoinVc = [OKReceiveCoinViewController receiveCoinViewController];
+    receiveCoinVc.coinType = COIN_BTC;
     [self.navigationController pushViewController:receiveCoinVc animated:YES];
 }
 #pragma mark - 钱包详情

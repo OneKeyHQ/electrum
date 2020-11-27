@@ -147,6 +147,9 @@ static dispatch_once_t once;
     }else if([method isEqualToString:kInterfaceGet_default_fee_status]){
         result = PyObject_CallMethod(self.pyInstance, [kInterfaceGet_default_fee_status UTF8String], "");
     
+        
+    }else if([method isEqualToString:kInterfaceis_watch_only]){
+        result = PyObject_CallMethod(self.pyInstance, [kInterfaceis_watch_only UTF8String], "");
     
         
     }else if([method isEqualToString:kInterfaceGet_fee_by_feerate]){
@@ -301,6 +304,12 @@ static dispatch_once_t once;
         NSString *proxy_user = [parameter safeStringForKey:@"proxy_user"];
         NSString *proxy_password = [parameter safeStringForKey:@"proxy_password"];
         result = PyObject_CallMethod(self.pyInstance, [kInterfaceset_proxy UTF8String], "(s,s,s,s,s)",[proxy_mode UTF8String],[proxy_host UTF8String],[proxy_port UTF8String],[proxy_user UTF8String],[proxy_password UTF8String]);
+       
+        
+    }else if([method isEqualToString:kInterfaceparse_pr]){
+        NSString *data = [parameter safeStringForKey:@"data"];
+        result = PyObject_CallMethod(self.pyInstance, [kInterfaceparse_pr UTF8String], "(s)",[data UTF8String]);
+        
         
     }else if([method isEqualToString:kInterfaceBroadcast_tx]){
         NSString *tx = [parameter safeStringForKey:@"tx"];

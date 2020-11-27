@@ -40,7 +40,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(createWalletComplete) name:kNotiWalletFirstCreateComplete object:nil];
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(createWalletComplete) name:kNotiWalletCreateComplete object:nil];
     [self stupUI];
 }
 
@@ -103,9 +103,10 @@
         model.isCurrent = [kWalletManager.currentWalletName isEqualToString:model.walletName];
         [walletArray addObject:model];
     }
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"walletType contains %@",[@"HD" lowercaseString]];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"walletType contains %@ || walletType contains %@",[@"HD" lowercaseString],[@"derived-standard" lowercaseString]];
     self.showList = [walletArray filteredArrayUsingPredicate:predicate];
-    OKWalletListTableViewCellModel *hdModel = [self.showList firstObject];
+    NSPredicate *predicateHD = [NSPredicate predicateWithFormat:@"walletType contains %@",[@"HD" lowercaseString]];
+    OKWalletListTableViewCellModel *hdModel = [[walletArray filteredArrayUsingPredicate:predicateHD] firstObject];
     self.HDWalletName = hdModel.walletName;
     self.countLabel.text = [NSString stringWithFormat:@"%zd",self.showList.count];
     self.headerTitleLabel.text = MyLocalizedString(@"HD wallet", nil);

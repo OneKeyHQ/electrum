@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
  将矩形图片剪切成圆形图片 可设置边框
  */
 + (UIImage *)circleImageWithImage:(UIImage *)sourceImage borderWidth:(CGFloat)borderWidth borderColor:(UIColor *)borderColor;
+
 @end
 
 NS_ASSUME_NONNULL_END
