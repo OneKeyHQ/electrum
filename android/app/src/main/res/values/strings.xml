@@ -759,7 +759,7 @@
     <string name="communication_way">Connection method</string>
     <string name="ble">Bluetooth</string>
     <string name="check_key_name">BixinKey name:</string>
-    <string name="check_pub_key">BixinKey ePub:</string>
+    <string name="check_pub_key">BixinKey ePub</string>
     <string name="second">seconds</string>
     <string name="please_input_time">Please enter the shutdown time</string>
     <string name="little_time">The minimum time is 10 seconds</string>
@@ -1243,6 +1243,7 @@
     <string name="recovery_set_tip3">2. The account you created with this wallet in OneKey app still exists, but the assets on it cannot be used because of the lack of private key. Unless you have backed up mnemonics or private keys before, use them to restore your hardware wallet and regain control of your account.</string>
     <string name="delete_device_tip">The hardware wallet will disappear from your device list. The account you created with this hardware wallet can still be displayed normally, and it will be re paired and restored the next time you use it.</string>
     <string name="exit">withdraw</string>
-
+    <string name="change_pin">修改设备 PIN 码</string>
+    <string name="verify_pin_onkey">校验PIN码</string>
 
 </resources>

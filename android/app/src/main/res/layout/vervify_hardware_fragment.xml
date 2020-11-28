@@ -5,40 +5,30 @@
     android:layout_height="match_parent"
     android:background="@android:color/white"
     android:orientation="vertical">
-
-
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:paddingLeft="@dimen/dp_30"
-        android:paddingTop="@dimen/dp_20"
-        android:paddingRight="@dimen/dp_30"
-        android:paddingBottom="@dimen/dp_20"
-        android:text="@string/connecting_device"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginHorizontal="@dimen/dp_51"
+        android:text="正在连接设备"
         android:textColor="#142A3B"
         android:textSize="30sp" />
-
-
-    <Button
-        android:id="@+id/copy_to_other_device"
+    <TextView
+        android:id="@+id/label"
         android:layout_width="wrap_content"
-        android:layout_height="30dp"
-        android:background="@drawable/btn_copy_to_other"
-        android:text="wallet1"
-        android:textAllCaps="false"
-        android:layout_marginTop="@dimen/dp_10"
-        android:textColor="@color/onekey"
-        android:layout_gravity="center_horizontal"/>
+        android:layout_height="wrap_content"
+        android:text="K1731"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/btn_no_check"
+        android:paddingHorizontal="13dp"
+        android:layout_marginVertical="@dimen/dp_5"
+        android:layout_marginTop="12dp"/>
 
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:paddingLeft="@dimen/dp_30"
-        android:paddingTop="@dimen/dp_20"
-        android:paddingRight="@dimen/dp_30"
-        android:paddingBottom="@dimen/dp_20"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/dp_21"
         android:text="@string/get_info_by_cold_wallet_hide"
         android:textColor="#142A3B"
         android:textSize="@dimen/sp_14" />
@@ -85,26 +75,26 @@
             android:text="@string/recovery_process" />
 
         <org.haobtc.onekey.ui.custom.LoadingTextView
-            android:id="@+id/loading_conn_device"
+            android:id="@+id/connecting_device"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_30"
-            app:text="@string/conn_device" />
+            app:text="连接设备" />
 
 
         <org.haobtc.onekey.ui.custom.LoadingTextView
-            android:id="@+id/loading_et_auth_sign"
+            android:id="@+id/retrieve_verify_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:text="@string/get_auth_sign" />
+            app:text="获取防伪签名" />
 
 
         <org.haobtc.onekey.ui.custom.LoadingTextView
-            android:id="@+id/loading_push_auth_sign"
+            android:id="@+id/commit_verify_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/dp_20"
-            app:text="@string/push_auth_sign" />
+            app:text="提交防伪验证信息" />
 
 
     </LinearLayout>

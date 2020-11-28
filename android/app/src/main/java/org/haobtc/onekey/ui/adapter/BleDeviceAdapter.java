@@ -29,7 +29,6 @@ public class BleDeviceAdapter extends RecyclerView.Adapter<BleDeviceAdapter.View
     public static List<BleDevice> mValues = new ArrayList<>();
     private LayoutInflater mInflater;
     private OnItemBleDeviceClick mOnItemBleDeviceClick;
-    private static final String PATTERN = "^K\\d{4}";
 
 
     public BleDeviceAdapter(Context context) {

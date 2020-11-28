@@ -38,6 +38,7 @@ public abstract class BaseDialogFragment extends DialogFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(getContentViewId(), container, false);
         unbinder = ButterKnife.bind(this, view);
+        init();
         Window window = Objects.requireNonNull(getDialog()).getWindow();
         if (window != null) {
             window.setBackgroundDrawableResource(R.color.transparent);
@@ -50,7 +51,8 @@ public abstract class BaseDialogFragment extends DialogFragment {
         }
         return view;
     }
-
+    public void init() {
+    }
     @Override
     public void onDestroyView() {
         super.onDestroyView();

@@ -1,14 +1,11 @@
 package org.haobtc.onekey.onekeys.dialog.recovery;
 
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.chaquo.python.Kwarg;
-import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
 
 import org.haobtc.onekey.R;
@@ -16,7 +13,7 @@ import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.adapter.RecoveryWalletAdapter;
 import org.haobtc.onekey.event.WalletAddressEvent;
 import org.haobtc.onekey.manager.PyEnv;
-import org.haobtc.onekey.onekeys.HomeOnekeyActivity;
+import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
 import org.haobtc.onekey.utils.Daemon;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -109,7 +106,7 @@ public class RecoveryChooseWalletActivity extends BaseActivity {
                     PyEnv.loadLocalWalletInfo(this);
                     edit.putString("loadWalletName", "BTC-1");
                     edit.apply();
-                    mIntent(HomeOnekeyActivity.class);
+                    mIntent(HomeOneKeyActivity.class);
                 } else {
                     mToast(getString(R.string.choose_recovery_wallet));
                 }

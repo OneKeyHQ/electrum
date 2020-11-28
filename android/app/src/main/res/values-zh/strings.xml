@@ -726,7 +726,7 @@
     <string name="communication_way">连接硬件方式</string>
     <string name="ble">蓝牙</string>
     <string name="check_key_name">BixinKey 名称：</string>
-    <string name="check_pub_key">BixinKey 扩展公钥：</string>
+    <string name="check_pub_key">扩展公钥</string>
     <string name="second">秒</string>
     <string name="please_input_time">请输入关机时间</string>
     <string name="little_time">时间最短为10秒哦！</string>
@@ -1001,7 +1001,7 @@
     <string name="recovery_used_wallet_hide">如果您曾经在手机删除过由该设备创建的钱包，可以用此办法恢复。</string>
     <string name="clone_to_other">将其克隆至另一个新设备</string>
     <string name="clone_to_other_hide">如果您有多个硬件设备，可以通过这个办法达到多处备份的目的。</string>
-    <string name="has_hd_wallet">这是一台存储了HD 钱包助记词的特殊设备，您可以…</string>
+    <string name="has_hd_wallet">🔑 这是一台存储了 HD 钱包助记词的特殊设备，您可以...</string>
     <string name="recovery_phone_hd_wallet">恢复手机 HD 钱包.</string>
     <string name="recovery_phone_hd_wallet_hide">完整恢复您的 HD 钱包，任何由原 HD 助记词派生的钱包都将获得复原。</string>
     <string name="recovery_phone_hd_wallet_info"><b>备份了 HD 助记词的设备将仅被用来恢复您在 App 上创建的 HD 钱包，</b>如果您希望使用这台设备的更多功能，可以在妥善保管好 HD 钱包的助记词后（手动抄写），将这台设备恢复到出厂模式，然后重新配对并激活设备，将其作为普通硬件钱包使用。</string>
@@ -1189,6 +1189,7 @@
     <string name="recovery_set_tip3">2. 您在 OneKey App 中用这个钱包创建的账户依然存在，<b>但因为缺少私钥，无法动用其上的资产</b>。除非您在此之前就备份了助记词或私钥，使用它们恢复硬件钱包，从而重新掌控相关账户。</string>
     <string name="delete_device_tip">这个硬件钱包会在您的设备列表消失。您用这个硬件钱包创建的账户依然可以正常显示，下次您使用的时候会重新配对并恢复。</string>
     <string name="exit">撤回</string>
-
+    <string name="change_pin">修改设备 PIN 码</string>
+    <string name="verify_pin_onkey">校验PIN码</string>
 
 </resources>

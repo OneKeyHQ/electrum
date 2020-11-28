@@ -1,135 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:fitsSystemWindows="true"
     android:clipToPadding="true"
     android:layout_height="match_parent">
-
-    <RelativeLayout
-        android:id="@+id/relativeLayout2"
+    <include layout="@layout/title_layout"
+        android:id="@+id/title1"/>
+    <TextView
+        android:id="@+id/promote"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_50"
-        android:background="@color/button_bk_ddake"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/title1"
+        android:text="「扩展公钥」，也被称为XPUB。是比特币标准(BIP32)的一部分，不包含任何私钥。
 
-        <ImageView
-            android:id="@+id/img_back"
-            android:layout_width="@dimen/dp_40"
-            android:layout_height="@dimen/dp_40"
-            android:layout_centerVertical="true"
-
-            android:padding="@dimen/dp_8"
-            android:src="@drawable/back" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:layout_gravity="center"
-            android:fontFamily="sans-serif-medium"
-            android:text="@string/check_xpub"
-            android:textColor="@color/text"
-            android:textSize="@dimen/text_size" />
-
-    </RelativeLayout>
-
+您可以将其导入其他观察钱包（Watch-Only），全面查看特定钱包中的所有交易、地址和余额，但无法花费其中的币。"
+        android:layout_marginTop="@dimen/dp_30"
+        android:layout_marginHorizontal="@dimen/dp_20"
+        android:textSize="@dimen/sp_14"/>
+   <androidx.cardview.widget.CardView
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:layout_marginTop="@dimen/dp_25"
+       android:layout_marginHorizontal="@dimen/dp_20"
+       app:cardCornerRadius="@dimen/dp_20"
+       app:cardBackgroundColor="#FAFAFA"
+       app:layout_constraintTop_toBottomOf="@id/promote">
+       <TextView
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_marginStart="@dimen/dp_27"
+           android:layout_marginTop="@dimen/dp_10"
+           android:textSize="@dimen/sp_14"
+           android:textColor="#9FA6AD"
+           android:text="扩展公钥"/>
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/dp_10"
-        android:layout_marginTop="@dimen/dp_16"
-        android:layout_marginEnd="@dimen/dp_10"
-        android:outlineSpotShadowColor="@color/shadow_color"
-        app:cardCornerRadius="@dimen/dp_8"
-        app:cardElevation="@dimen/dp_8"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/relativeLayout2"
-        tools:ignore="UnusedAttribute">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
+        android:layout_marginTop="37dp"
+        android:layout_marginBottom="@dimen/dp_19"
+        app:cardCornerRadius="@dimen/dp_30"
+        android:layout_marginHorizontal="@dimen/dp_16">
+        <FrameLayout
+            android:id="@+id/copy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
             <TextView
-                android:id="@+id/name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/dp_16"
-                android:layout_marginTop="@dimen/dp_20"
-                android:text="@string/check_key_name"
-                android:textColor="@color/text"
-                android:textSize="@dimen/sp_15"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/dp_10"
-                android:layout_marginTop="@dimen/dp_20"
-                android:textColor="@color/text"
-                android:textSize="@dimen/sp_15"
-                app:layout_constraintStart_toEndOf="@id/name"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="BiXinKEY" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="0.5dp"
-                android:layout_marginTop="@dimen/dp_19"
-                android:background="@color/line_color"
-                app:layout_constraintTop_toBottomOf="@id/label" />
-
-            <TextView
-                android:id="@+id/textView22"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/dp_16"
-                android:layout_marginTop="@dimen/dp_39"
-                android:text="@string/check_pub_key"
-                android:textColor="@color/text"
-                android:textSize="@dimen/sp_15"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/name" />
-
-            <TextView
-                android:id="@+id/xpub"
+                android:id="@+id/xpub_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/dp_16"
-                android:layout_marginTop="@dimen/dp_12"
-                android:layout_marginEnd="@dimen/dp_16"
-                android:textColor="@color/text_0"
-                android:textSize="@dimen/sp_13"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView22"
-                tools:text="Vpub5gLTnhnQig7SLNhWCqE2AHqt8zhJGQwuwEAKQE67bndddSzUMAmab7DxZF9b9wynVyY2URM61SWY67QYaPV6oQrB41vMKQbeHveRvuThAmm" />
-
-            <TextView
-                android:id="@+id/copy_xpub"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_20"
-                android:layout_marginBottom="@dimen/dp_30"
-                android:text="@string/copy_xpub"
-                android:textColor="@color/button_bk"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/xpub" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
+                android:layout_marginHorizontal="@dimen/dp_15"
+                android:textSize="@dimen/sp_14"
+                android:textColor="#142A3B"
+                android:lineSpacingExtra="@dimen/dp_10"
+                android:layout_marginTop="@dimen/dp_21"
+                android:layout_marginBottom="@dimen/dp_15"
+                android:text="xpub67xpozcx8pe95XVuZLHXZeG6XWXHpGq6Qv5cmNfi7cS5mtjJ2tgypeQbBs2UAR6KECeeMVKZBPLrtJunSDMstweyLXhRgPxdp14sk9tJPW9"/>
+            <ImageView
+                android:layout_width="@dimen/dp_16"
+                android:layout_height="@dimen/dp_16"
+                android:layout_gravity="bottom|end"
+                android:layout_marginEnd="@dimen/dp_15"
+                android:layout_marginBottom="@dimen/dp_20"
+                android:src="@drawable/copy_medium" />
+        </FrameLayout>
     </androidx.cardview.widget.CardView>
+   </androidx.cardview.widget.CardView>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

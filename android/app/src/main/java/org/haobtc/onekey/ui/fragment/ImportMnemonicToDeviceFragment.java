@@ -77,7 +77,7 @@ public class ImportMnemonicToDeviceFragment extends BaseFragment implements Mnem
     @OnClick(R.id.btn_import)
     public void onViewClicked() {
         StringBuilder builder = new StringBuilder();
-        mMnemonicsList.forEach((s) -> builder.append(s.getMnemonic()));
-        EventBus.getDefault().post(new InitDeviceEvent(false, builder.toString()));
+        mMnemonicsList.forEach((s) -> builder.append(s.getMnemonic()).append(" "));
+        EventBus.getDefault().post(new InitDeviceEvent(false, builder.toString().trim()));
     }
 }

@@ -1,7 +1,6 @@
 package org.haobtc.onekey.activities.settings.recovery_set;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -23,7 +22,7 @@ import butterknife.OnClick;
 import cn.com.heaton.blelibrary.ble.Ble;
 
 import static org.haobtc.onekey.activities.service.CommunicationModeSelector.features;
-
+@Deprecated
 public class ResetDeviceActivity extends BaseActivity implements CompoundButton.OnCheckedChangeListener {
     @BindView(R.id.reset_device)
     Button rest_device;
@@ -59,7 +58,6 @@ public class ResetDeviceActivity extends BaseActivity implements CompoundButton.
             case R.id.img_back:
                 finish();
                 break;
-
             case R.id.reset_device:
                 if (Ble.getInstance().getConnetedDevices().size() != 0) {
                     if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(bleName)) {

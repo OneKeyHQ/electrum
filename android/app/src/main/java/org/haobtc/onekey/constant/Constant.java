@@ -45,6 +45,18 @@ public final class Constant {
     public static final String WALLETS = "wallets";
 
     /**
+     * 当前Pin
+     * */
+    public static final String PIN_ORIGIN = "pin_origin";
+    /**
+     * 新Pin
+     * */
+    public static final String PIN_NEW = "pin_new";
+    /**
+     * 配对过的蓝牙信息
+     * */
+    public static final String BLE_INFO = "ble_info";
+    /**
      * 蓝牙名称匹规则
      * */
     public static final String PATTERN = "(^(?i)BixinKey\\d{10})|(^K\\d{4})";
@@ -102,6 +114,6 @@ public final class Constant {
     public static final String COIN_TYPE_ETH = "ETH";
 
     public static final String COIN_TYPE_EOS = "EOS";
-
+    public static final String EXTEND_PUBLIC_KEY = "xpub";
 
 }

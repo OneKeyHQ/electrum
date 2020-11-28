@@ -1,6 +1,7 @@
 package org.haobtc.onekey.activities.settings;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
@@ -17,6 +18,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+/**
+ * @author xiaomin
+ */
 public class BixinKeyMessageActivity extends BaseActivity {
 
     @BindView(R.id.tet_keyName)
@@ -25,6 +29,10 @@ public class BixinKeyMessageActivity extends BaseActivity {
     TextView tetCode;
     @BindView(R.id.tet_Bluetoose)
     TextView tetBluetoose;
+    @BindView(R.id.text_systom_hardware)
+    TextView textSystomHardware;
+    @BindView(R.id.text_bluetooth_hardware)
+    TextView textBluetoothHardware;
     private String bleName;
     private Intent intent;
 
@@ -44,14 +52,13 @@ public class BixinKeyMessageActivity extends BaseActivity {
     private void inits() {
         String label = intent.getStringExtra("label");
         bleName = intent.getStringExtra("bleName");
-        String device_id = intent.getStringExtra("device_id");
-        if (!TextUtils.isEmpty(label)) {
-            tetKeyName.setText(label);
-        } else {
-            tetKeyName.setText(String.format("%s", "BixinKEY"));
-        }
-
-        tetCode.setText(device_id);
+        String deviceId = intent.getStringExtra("device_id");
+        String firmwareVersion = intent.getStringExtra("firmwareVersion");
+        String bleVersion = intent.getStringExtra("bleVersion");
+        textSystomHardware.setText(firmwareVersion);
+        textBluetoothHardware.setText(bleVersion);
+        tetKeyName.setText(label);
+        tetCode.setText(deviceId);
         tetBluetoose.setText(bleName);
     }
 

@@ -122,7 +122,7 @@ public class GuidanceActivity extends BaseActivity implements CompoundButton.OnC
                 if (isAgree) {
                     edit.putBoolean("is_first_run", true);
                     edit.apply();
-                    mIntent(HomeOnekeyActivity.class);
+                    mIntent(HomeOneKeyActivity.class);
                 } else {
                     mToast(getString(R.string.agree_user));
                 }

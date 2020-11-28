@@ -1,57 +1,70 @@
 package org.haobtc.onekey.activities.settings;
 
-import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.Gravity;
+import android.util.Log;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import androidx.annotation.LayoutRes;
 
 import com.google.common.base.Strings;
+import com.squareup.okhttp.Request;
+import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.callback.StringCallback;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
-import org.haobtc.onekey.activities.SettingActivity;
-import org.haobtc.onekey.activities.VerificationKEYActivity;
-import org.haobtc.onekey.activities.base.BaseActivity;
-import org.haobtc.onekey.activities.service.CommunicationModeSelector;
-import org.haobtc.onekey.activities.service.NfcNotifyHelper;
+import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.activities.settings.recovery_set.BackupRecoveryActivity;
 import org.haobtc.onekey.activities.settings.recovery_set.FixHardwareLanguageActivity;
-import org.haobtc.onekey.activities.settings.recovery_set.ResetDeviceActivity;
 import org.haobtc.onekey.aop.SingleClick;
+import org.haobtc.onekey.asynctask.BusinessAsyncTask;
 import org.haobtc.onekey.bean.UpdateInfo;
+import org.haobtc.onekey.constant.Constant;
+import org.haobtc.onekey.constant.PyConstant;
+import org.haobtc.onekey.data.prefs.PreferencesManager;
 import org.haobtc.onekey.event.ButtonRequestEvent;
+import org.haobtc.onekey.event.ChangePinEvent;
+import org.haobtc.onekey.event.ConnectedEvent;
 import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.event.FixBixinkeyNameEvent;
-import org.haobtc.onekey.event.HandlerEvent;
+import org.haobtc.onekey.event.GotVerifyInfoEvent;
+import org.haobtc.onekey.event.NotifySuccessfulEvent;
+import org.haobtc.onekey.event.PostVerifyInfoEvent;
 import org.haobtc.onekey.event.SetShutdownTimeEvent;
-import org.haobtc.onekey.onekeys.dialog.recovery.ImprotSingleActivity;
-import org.haobtc.onekey.onekeys.homepage.process.CreateWalletChooseTypeActivity;
+import org.haobtc.onekey.event.VerifyFailedEvent;
+import org.haobtc.onekey.event.VerifySuccessEvent;
+import org.haobtc.onekey.event.WipeEvent;
+import org.haobtc.onekey.manager.BleManager;
+import org.haobtc.onekey.manager.PyEnv;
+import org.haobtc.onekey.mvp.base.BaseActivity;
+import org.haobtc.onekey.ui.activity.CheckXpubActivity;
+import org.haobtc.onekey.ui.activity.ConfirmOnHardWareActivity;
+import org.haobtc.onekey.ui.activity.ResetDevicePromoteActivity;
+import org.haobtc.onekey.ui.activity.VerifyHardwareActivity;
+import org.haobtc.onekey.ui.activity.VerifyPinActivity;
+import org.haobtc.onekey.ui.dialog.DeleteLocalDeviceDialog;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Optional;
+import java.util.UUID;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.com.heaton.blelibrary.ble.Ble;
 
-import static org.haobtc.onekey.activities.service.CommunicationModeSelector.features;
-import static org.haobtc.onekey.activities.service.CommunicationModeSelector.isNFC;
-import static org.haobtc.onekey.activities.service.CommunicationModeSelector.xpub;
-
-public class HardwareDetailsActivity extends BaseActivity {
+/**
+ * @author liyan
+ */
+public class HardwareDetailsActivity extends BaseActivity implements BusinessAsyncTask.Helper{
 
     public static final String TAG = "org.haobtc.onekey.activities.settings.HardwareDetailsActivity";
     public static final String TAG_VERIFICATION = "VERIFICATION";
@@ -77,57 +90,25 @@ public class HardwareDetailsActivity extends BaseActivity {
     private String bleName;
     private String deviceId;
     private String label;
-    private boolean isWipe;
-    private SharedPreferences devices;
-
-    @Override
-    public int getLayoutId() {
-        return R.layout.activity_somemore;
-    }
-
-    @Override
-    public void initView() {
-        ButterKnife.bind(this);
-        EventBus.getDefault().register(this);
-        inits();
-    }
-
-    private void inits() {
-        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-        devices = getSharedPreferences("devices", MODE_PRIVATE);
-        Intent intent = getIntent();
-        bleName = intent.getStringExtra("bleName");
-//        String firmwareVersion = intent.getStringExtra("firmwareVersion");
-//        String bleVerson = intent.getStringExtra("bleVerson");
-        deviceId = intent.getStringExtra("device_id");
-        label = intent.getStringExtra("label");
-        if (!TextUtils.isEmpty(label)) {
-            tetKeyName.setText(label);
-        } else {
-            tetKeyName.setText(String.format("%s", "BixinKEY"));
-        }
-//        tetCode.setText(firmwareVersion);
-        String shutdownTime = preferences.getString(deviceId, "600");
-        testShutdownTime.setText(String.format("%s%s", shutdownTime, getString(R.string.second)));
-    }
-
-    @Override
-    public void initData() {
-    }
+    private String bleMac;
+    private String currentMethod;
 
     @SingleClick
     @OnClick({R.id.img_back, R.id.lin_OnckOne, R.id.lin_OnckTwo, R.id.change_pin, R.id.lin_OnckFour, R.id.wipe_device, R.id.linear_shutdown_time, R.id.tetBuckup, R.id.tet_deleteWallet, R.id.test_set_key_language, R.id.tetVerification, R.id.check_xpub, R.id.text_hide_wallet})
     public void onViewClicked(View view) {
-        isWipe = false;
         switch (view.getId()) {
             case R.id.img_back:
                 finish();
                 break;
             case R.id.lin_OnckOne:
+                String firmwareVersion = getIntent().getStringExtra("firmwareVersion");
+                String bleVersion = getIntent().getStringExtra("bleVerson");
                 Intent intent = new Intent(HardwareDetailsActivity.this, BixinKeyMessageActivity.class);
                 intent.putExtra("bleName", bleName);
                 intent.putExtra("label", label);
                 intent.putExtra("device_id", deviceId);
+                intent.putExtra("firmwareVersion", firmwareVersion);
+                intent.putExtra("bleVersion", bleVersion);
                 startActivity(intent);
                 break;
             case R.id.lin_OnckTwo:
@@ -136,13 +117,15 @@ public class HardwareDetailsActivity extends BaseActivity {
             case R.id.change_pin:
                 if (Ble.getInstance().getConnetedDevices().size() != 0) {
                     if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(bleName)) {
-                        EventBus.getDefault().postSticky(new HandlerEvent());
+                       changePin();
+                       return;
                     }
                 }
-                Intent intent1 = new Intent(this, CommunicationModeSelector.class);
-                intent1.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-                intent1.putExtra("tag", TAG);
-                startActivity(intent1);
+                if (Strings.isNullOrEmpty(bleMac)) {
+                        showToast("未知设备！！！");
+                }
+                currentMethod = BusinessAsyncTask.CHANGE_PIN;
+                initBle();
                 break;
             case R.id.lin_OnckFour:
                 Intent intent4 = new Intent(this, ConfidentialPaymentSettings.class);
@@ -150,10 +133,7 @@ public class HardwareDetailsActivity extends BaseActivity {
                 startActivity(intent4);
                 break;
             case R.id.wipe_device:
-                isWipe = true;
-                Intent intent5 = new Intent(this, ResetDeviceActivity.class);
-                intent5.putExtra("ble_name", bleName);
-                startActivity(intent5);
+                startActivity(new Intent(this, ResetDevicePromoteActivity.class));
                 break;
             case R.id.linear_shutdown_time:
                 Intent intent2 = new Intent(this, SetShutdownTimeActivity.class);
@@ -167,7 +147,7 @@ public class HardwareDetailsActivity extends BaseActivity {
                 startActivity(intent7);
                 break;
             case R.id.tet_deleteWallet:
-                deleteHardware(HardwareDetailsActivity.this, R.layout.delete_device_dialog);
+                new DeleteLocalDeviceDialog(this, deviceId).show(getSupportFragmentManager(), "");
                 break;
             case R.id.test_set_key_language:
                 Intent intent3 = new Intent(HardwareDetailsActivity.this, FixHardwareLanguageActivity.class);
@@ -175,50 +155,67 @@ public class HardwareDetailsActivity extends BaseActivity {
                 startActivity(intent3);
                 break;
             case R.id.tetVerification:
-                CommunicationModeSelector.runnables.clear();
-                CommunicationModeSelector.runnables.add(runnable);
-                Intent intent6 = new Intent(this, CommunicationModeSelector.class);
-                intent6.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-                intent6.putExtra("tag", TAG_VERIFICATION);
-                startActivity(intent6);
+                Intent intent1 = new Intent(this, VerifyHardwareActivity.class);
+                intent1.putExtra(Constant.BLE_INFO, Optional.of(label).orElse(bleName));
+                startActivity(intent1);
+                if (Ble.getInstance().getConnetedDevices().size() != 0) {
+                    if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(bleName)) {
+                        EventBus.getDefault().post(new ConnectedEvent());
+                        verifyHardware();
+                        return;
+                    }
+                }
+                if (Strings.isNullOrEmpty(bleMac)) {
+                    showToast("未知设备！！！");
+                }
+                currentMethod = BusinessAsyncTask.COUNTER_VERIFICATION;
+                initBle();
                 break;
             case R.id.check_xpub:
-
+                if (Ble.getInstance().getConnetedDevices().size() != 0) {
+                    if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(bleName)) {
+                        getXpub();
+                        return;
+                    }
+                }
+                if (Strings.isNullOrEmpty(bleMac)) {
+                    showToast("未知设备！！！");
+                }
+                currentMethod = BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY;
+                initBle();
                 break;
             case R.id.text_hide_wallet:
-
+                showToast("暂不支持，敬请期待！！");
                 break;
             default:
         }
     }
 
-    private void deleteHardware(Context context, @LayoutRes int resource) {
-        //set see view
-        View view = View.inflate(context, resource, null);
-        Dialog dialogBtoms = new Dialog(context, R.style.dialog);
-        view.findViewById(R.id.img_cancel).setOnClickListener(v -> {
-            dialogBtoms.dismiss();
-        });
-        view.findViewById(R.id.btn_confirm).setOnClickListener(v -> {
-            devices.edit().remove(deviceId).apply();
-            EventBus.getDefault().post(new FixBixinkeyNameEvent(deviceId));
-            mToast(getString(R.string.delete_succse));
-            dialogBtoms.dismiss();
-            finish();
-        });
-        view.findViewById(R.id.btn_cancel).setOnClickListener(v -> {
-            dialogBtoms.dismiss();
-        });
-        dialogBtoms.setContentView(view);
-        Window window = dialogBtoms.getWindow();
-        //set pop_up size
-        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-        //set locate
-        window.setGravity(Gravity.BOTTOM);
-        //set animal
-        window.setWindowAnimations(R.style.AnimBottom);
-        dialogBtoms.setCanceledOnTouchOutside(true);
-        dialogBtoms.show();
+    private void verifyHardware() {
+        String strRandom = UUID.randomUUID().toString().replaceAll("-", "");
+        new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.COUNTER_VERIFICATION,
+                strRandom,
+                MyApplication.getInstance().getDeviceWay());
+    }
+
+    private void initBle() {
+        BleManager bleManager = BleManager.getInstance(this);
+        bleManager.initBle();
+        bleManager.connDevByMac(bleMac);
+    }
+
+    private void changePin() {
+        new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.CHANGE_PIN,
+                MyApplication.getInstance().getDeviceWay());
+    }
+
+    private void wipeDevice() {
+        new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.WIPE_DEVICE,
+                MyApplication.getInstance().getDeviceWay());
+    }
+    private void getXpub() {
+        new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY,
+                MyApplication.getInstance().getDeviceWay());
     }
 
     private void getUpdateInfo() {
@@ -251,29 +248,112 @@ public class HardwareDetailsActivity extends BaseActivity {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onReadyBle(NotifySuccessfulEvent event) {
+       switch (currentMethod) {
+           case BusinessAsyncTask.CHANGE_PIN:
+               changePin();
+               break;
+           case BusinessAsyncTask.WIPE_DEVICE:
+               wipeDevice();
+               break;
+           case BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY:
+               getXpub();
+           case BusinessAsyncTask.COUNTER_VERIFICATION:
+               EventBus.getDefault().post(new ConnectedEvent());
+               verifyHardware();
+               break;
+           default:
+       }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onChangePin(ChangePinEvent event) {
+        // 回写PIN码
+        PyEnv.setPin(event.toString());
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onButtonRequest(ButtonRequestEvent event) {
-        if (isNFC) {
-            if (isWipe && !features.isPinProtection()) {
-                EventBus.getDefault().post(new ExitEvent());
-                return;
-            }
-            EventBus.getDefault().removeStickyEvent(event);
-            Intent intent = new Intent(this, NfcNotifyHelper.class);
-            intent.putExtra("is_button_request", true);
-            startActivity(intent);
+        switch (event.getType()) {
+            case PyConstant.PIN_CURRENT:
+                Intent intent = new Intent(this, VerifyPinActivity.class);
+                if (BusinessAsyncTask.CHANGE_PIN.equals(currentMethod)) {
+                    intent.setAction(BusinessAsyncTask.CHANGE_PIN);
+                }
+                startActivity(intent);
+                break;
+            case PyConstant.BUTTON_REQUEST_7:
+                if (hasWindowFocus()) {
+                    showToast("请在硬件上确认您的操作");
+                } else {
+                    switch (currentMethod) {
+                        case BusinessAsyncTask.CHANGE_PIN:
+                            PyEnv.cancelAll();
+                            startActivity(new Intent(this, ConfirmOnHardWareActivity.class));
+                            EventBus.getDefault().post(new ExitEvent());
+                            break;
+                        case BusinessAsyncTask.WIPE_DEVICE:
+                            PyEnv.cancelAll();
+                            Intent intent1 = new Intent(this, ConfirmOnHardWareActivity.class);
+                            intent1.setAction(BusinessAsyncTask.WIPE_DEVICE);
+                            startActivity(intent1);
+                            break;
+                        default:
+                    }
+
+                }
+                    break;
+                case PyConstant.BUTTON_REQUEST_6:
+                    startActivity(new Intent(this, ConfirmOnHardWareActivity.class));
+                    EventBus.getDefault().post(new ExitEvent());
+            default:
+
         }
     }
-
-    private Runnable runnable = this::gotoConfirmVerification;
-
-    private void gotoConfirmVerification() {
-        Intent intentCon = new Intent(HardwareDetailsActivity.this, VerificationKEYActivity.class);
-        intentCon.putExtra("strVerification", xpub);
-        startActivity(intentCon);
-
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onWipeDevice(WipeEvent event) {
+        if (Ble.getInstance().getConnetedDevices().size() != 0) {
+            if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(bleName)) {
+                wipeDevice();
+                return;
+            }
+        }
+        if (Strings.isNullOrEmpty(bleMac)) {
+            showToast("未知设备！！！");
+        }
+        currentMethod = BusinessAsyncTask.CHANGE_PIN;
+        initBle();
     }
+    private void verification(String result) {
+        HashMap<String, String> pramas = new HashMap<>();
+        try {
+            JSONObject jsonObject = new JSONObject(result);
+            pramas.put("data", jsonObject.getString("data"));
+            pramas.put("signature", jsonObject.getString("signature"));
+            pramas.put("cert", jsonObject.getString("cert"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        EventBus.getDefault().post(new PostVerifyInfoEvent());
+        OkHttpUtils.post().url("https://key.bixin.com/lengqian.bo/")
+                .params(pramas)
+                .build()
+                .connTimeOut(10000)
+                .execute(new StringCallback() {
+                    @Override
+                    public void onError(Request request, Exception e) {
+                        Log.i("strVerification", "onError: ---- " + e.getMessage());
+                        EventBus.getDefault().post(new VerifyFailedEvent());
+                    }
 
-
+                    @Override
+                    public void onResponse(String response) {
+                        Log.i("strVerification", "onResponse:------- " + response);
+                        if (response.contains("is_verified")) {
+                            EventBus.getDefault().post(new VerifySuccessEvent());
+                        }
+                    }
+                });
+    }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void showReading(FixBixinkeyNameEvent event) {
         tetKeyName.setText(event.getKeyName());
@@ -284,9 +364,93 @@ public class HardwareDetailsActivity extends BaseActivity {
         testShutdownTime.setText(String.format("%s%s", event.getTime(), getString(R.string.second)));
     }
 
+    /**
+     * init
+     */
+    @Override
+    public void init() {
+        Intent intent = getIntent();
+        bleName = intent.getStringExtra("bleName");
+        deviceId = intent.getStringExtra("device_id");
+        label = intent.getStringExtra("label");
+        if (!TextUtils.isEmpty(label)) {
+            tetKeyName.setText(label);
+        } else {
+            tetKeyName.setText(String.format("%s", "BixinKEY"));
+        }
+        testShutdownTime.setText(String.format("%s%s", "600", getString(R.string.second)));
+        bleMac = PreferencesManager.get(this, Constant.BLE_INFO, bleName, "").toString();
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
+    }
+
+    @Override
+    public void onPreExecute() {
+
+    }
+
+    @Override
+    public void onException(Exception e) {
+        switch (currentMethod) {
+            case BusinessAsyncTask.CHANGE_PIN:
+                break;
+            case BusinessAsyncTask.WIPE_DEVICE:
+                break;
+            case BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY:
+                break;
+            case BusinessAsyncTask.COUNTER_VERIFICATION:
+                EventBus.getDefault().post(new VerifyFailedEvent());
+                break;
+        }
+    }
+
+    @Override
+    public void onResult(String s) {
+        switch (currentMethod) {
+            case BusinessAsyncTask.CHANGE_PIN:
+                System.out.println("change pin success=========");
+                break;
+            case BusinessAsyncTask.WIPE_DEVICE:
+                break;
+            case BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY:
+                Intent intent = new Intent(this, CheckXpubActivity.class);
+                intent.putExtra(Constant.EXTEND_PUBLIC_KEY, s);
+                startActivity(intent);
+                EventBus.getDefault().post(new ExitEvent());
+                break;
+            case BusinessAsyncTask.COUNTER_VERIFICATION:
+                EventBus.getDefault().post(new GotVerifyInfoEvent());
+                verification(s);
+                break;
+            default:
+        }
+    }
+
+    @Override
+    public void onCancelled() {
+
+    }
+
+    @Override
+    public void currentMethod(String methodName) {
+        currentMethod = methodName;
+    }
+
+    /***
+     * init layout
+     * @return
+     */
+    @Override
+    public int getContentViewId() {
+        return R.layout.activity_somemore;
+    }
+
+    @Override
+    public boolean needEvents() {
+        return true;
     }
 }

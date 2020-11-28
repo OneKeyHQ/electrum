@@ -2,7 +2,6 @@ package org.haobtc.onekey.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -10,7 +9,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.azhon.appupdate.config.UpdateConfiguration;
-import com.azhon.appupdate.listener.OnButtonClickListener;
 import com.azhon.appupdate.listener.OnDownloadListener;
 import com.azhon.appupdate.manager.DownloadManager;
 import com.azhon.appupdate.utils.ApkUtil;
@@ -21,6 +19,7 @@ import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.activities.transaction.CheckChainDetailWebActivity;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.UpdateInfo;
+import org.haobtc.onekey.ui.dialog.AppUpdateDialog;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,7 +33,10 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class AboutActivity extends BaseActivity implements OnButtonClickListener, OnDownloadListener {
+/**
+ * @author liyan
+ */
+public class AboutActivity extends BaseActivity implements OnDownloadListener {
 
     @BindView(R.id.img_back)
     ImageView imgBack;
@@ -45,6 +47,7 @@ public class AboutActivity extends BaseActivity implements OnButtonClickListener
     @BindView(R.id.tet_s5)
     TextView tetS5;
     private DownloadManager manager;
+    private AppUpdateDialog updateDialog;
 
     @Override
     public int getLayoutId() {
@@ -119,12 +122,18 @@ public class AboutActivity extends BaseActivity implements OnButtonClickListener
                 int versionCode = updateInfo.getAPK().getVersionCode();
                 String size = updateInfo.getAPK().getSize().replace("M", "");
                 String description = "English".equals(locate) ? updateInfo.getAPK().getChangelogEn() : updateInfo.getAPK().getChangelogCn();
-                runOnUiThread(() -> attemptUpdate(url, versionName, versionCode, size, description));
+                runOnUiThread(() -> attemptUpdate(url, versionCode, versionName, size, description));
             }
         });
     }
 
-    private void attemptUpdate(String uri, String versionName, int versionCode, String size, String description) {
+    private void attemptUpdate(String uri,  int versionCode, String versionName, String size, String description) {
+        int versionCodeLocal  = ApkUtil.getVersionCode(AboutActivity.this);
+        if (versionCodeLocal >= versionCode) {
+            mToast("当前是最新版本");
+            return;
+        }
+
         String url;
         if (uri.startsWith("https")) {
             url = uri;
@@ -133,58 +142,44 @@ public class AboutActivity extends BaseActivity implements OnButtonClickListener
         }
         UpdateConfiguration configuration = new UpdateConfiguration()
                 .setEnableLog(true)
-                //.setHttpManager()
                 .setJumpInstallPage(true)
-                .setDialogButtonTextColor(Color.WHITE)
-                .setDialogButtonColor(getColor(R.color.button_bk))
-                .setDialogImage(R.drawable.update)
                 .setShowNotification(true)
                 .setShowBgdToast(true)
                 .setForcedUpgrade(false)
-                .setButtonClickListener(this)
                 .setOnDownloadListener(this);
 
         manager = DownloadManager.getInstance(this);
-        manager.setApkName("BixinKEY.apk")
+        manager.setApkName("oneKey.apk")
                 .setApkUrl(url)
-                .setSmallIcon(R.drawable.app_icon)
-                .setShowNewerToast(true)
+                .setSmallIcon(R.drawable.logo_square)
                 .setConfiguration(configuration)
-                .setApkVersionCode(versionCode)
-                .setApkVersionName(versionName)
-                .setApkSize(size)
-                .setApkDescription(description)
-//                .setApkMD5("DC501F04BBAA458C9DC33008EFED5E7F")
                 .download();
-    }
-
-    @Override
-    public void onButtonClick(int id) {
-
+        updateDialog = new AppUpdateDialog(manager, versionName, description);
+        updateDialog.show(getSupportFragmentManager(), "");
     }
 
     @Override
     public void start() {
-
+        updateDialog.progressBar.setIndeterminate(false);
     }
 
     @Override
     public void downloading(int max, int progress) {
-
+        updateDialog.progressBar.setProgress((int)((float)progress/max)*100);
     }
 
     @Override
     public void done(File apk) {
+        updateDialog.dismiss();
         manager.release();
     }
 
     @Override
     public void cancel() {
-
     }
 
     @Override
     public void error(Exception e) {
-
     }
+
 }

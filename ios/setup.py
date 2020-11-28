@@ -36,8 +36,8 @@ setup(
     version=version,
     description='A Cold Hardware Wallet',
     long_description=long_description,
-    author='Calin Culianu',
-    author_email='calin.culianu@gmail.com',
+    author='Onekey',
+    author_email='',
     license='MIT license',
     package_data={
         '': ["*.json", "*.po", "*.mo", "*.pot", "*.txt", "locale/*", "locale/*/*", "locale/*/*/*", "wordlist/*.txt",

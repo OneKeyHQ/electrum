@@ -8,7 +8,7 @@
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="110dp"
+        android:layout_height="@dimen/dp_50"
         android:background="@color/button_bk_ddake"
         android:gravity="center"
         android:text="@string/mind"

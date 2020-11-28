@@ -21,8 +21,8 @@ import butterknife.OnClick;
 
 public class ConfirmOnHardwareFragment extends BaseFragment {
 
-    @BindView(R.id.back_device)
-    Button backDevice;
+    @BindView(R.id.next)
+    Button next;
 
     @Override
     public void init(View view) {
@@ -34,13 +34,15 @@ public class ConfirmOnHardwareFragment extends BaseFragment {
         return R.layout.button_request_confirm_fragment;
     }
 
-    @OnClick(R.id.back_device)
+    @OnClick(R.id.next)
     public void onViewClicked() {
         EventBus.getDefault().post(new ExitEvent());
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onConfirm(ButtonRequestConfirmedEvent event) {
-        backDevice.setEnabled(true);
+        if (next != null) {
+            next.setEnabled(true);
+        }
     }
     @Override
     public boolean needEvents() {

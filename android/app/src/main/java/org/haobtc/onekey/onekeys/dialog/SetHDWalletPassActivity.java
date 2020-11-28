@@ -3,7 +3,6 @@ package org.haobtc.onekey.onekeys.dialog;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -26,16 +25,13 @@ import org.haobtc.onekey.event.InputPassSendEvent;
 import org.haobtc.onekey.event.LoadOtherWalletEvent;
 import org.haobtc.onekey.event.LoadWalletlistEvent;
 import org.haobtc.onekey.event.SecondEvent;
-import org.haobtc.onekey.event.WalletAddressEvent;
 import org.haobtc.onekey.manager.PyEnv;
-import org.haobtc.onekey.onekeys.HomeOnekeyActivity;
+import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
 import org.haobtc.onekey.onekeys.dialog.recovery.RecoveryChooseWalletActivity;
 import org.haobtc.onekey.onekeys.homepage.mindmenu.HdRootMnemonicsActivity;
 import org.haobtc.onekey.onekeys.homepage.process.ExportPrivateActivity;
 import org.haobtc.onekey.utils.Daemon;
 import org.haobtc.onekey.utils.PwdEditText;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -186,7 +182,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
                         }
                         if (createHdWallet != null) {
                             Log.i("createHdWallet", "onViewClicked:-- " + createHdWallet);
-                            Intent intent = new Intent(SetHDWalletPassActivity.this, HomeOnekeyActivity.class);
+                            Intent intent = new Intent(SetHDWalletPassActivity.this, HomeOneKeyActivity.class);
                             startActivity(intent);
                             PyEnv.loadLocalWalletInfo(this);
                             edit.putString("loadWalletName", "BTC-1");
@@ -238,7 +234,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
         PyEnv.loadLocalWalletInfo(this);
         edit.putString("loadWalletName", walletName);
         edit.apply();
-        mIntent(HomeOnekeyActivity.class);
+        mIntent(HomeOneKeyActivity.class);
     }
 
     private void importMnemonic() {
@@ -259,7 +255,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
         PyEnv.loadLocalWalletInfo(this);
         edit.putString("loadWalletName", walletName);
         edit.apply();
-        mIntent(HomeOnekeyActivity.class);
+        mIntent(HomeOneKeyActivity.class);
     }
 
     private void createDeriveWallet() {
@@ -277,7 +273,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
         PyEnv.loadLocalWalletInfo(this);
         edit.putString("loadWalletName", walletName);
         edit.apply();
-        mIntent(HomeOnekeyActivity.class);
+        mIntent(HomeOneKeyActivity.class);
         finish();
     }
 
@@ -296,7 +292,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
         PyEnv.loadLocalWalletInfo(this);
         edit.putString("loadWalletName", walletName);
         edit.apply();
-        mIntent(HomeOnekeyActivity.class);
+        mIntent(HomeOneKeyActivity.class);
         finish();
     }
 
@@ -321,7 +317,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
                 PyEnv.loadLocalWalletInfo(this);
                 edit.putString("loadWalletName", "BTC-1");
                 edit.apply();
-                mIntent(HomeOnekeyActivity.class);
+                mIntent(HomeOneKeyActivity.class);
                 finish();
             }
 

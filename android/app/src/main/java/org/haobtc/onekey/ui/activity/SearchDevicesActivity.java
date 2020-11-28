@@ -16,12 +16,16 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
+import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.HardwareFeatures;
 import org.haobtc.onekey.constant.Constant;
+import org.haobtc.onekey.data.prefs.PreferencesManager;
 import org.haobtc.onekey.event.BleScanStopEvent;
+import org.haobtc.onekey.event.GetXpubEvent;
 import org.haobtc.onekey.event.NotifySuccessfulEvent;
 import org.haobtc.onekey.manager.BleManager;
 import org.haobtc.onekey.manager.NfcManager;
@@ -84,17 +88,13 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_ENABLE_BT && resultCode == Activity.RESULT_CANCELED) {
+            showToast("您未授权蓝牙，无法使用！！");
             finish();
         } else if (requestCode == REQUEST_ENABLE_BT && resultCode == Activity.RESULT_OK) {
 
         }
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-    }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onBleScanDevice(BleDevice device) {
         if (mBleAdapter != null) {
@@ -184,6 +184,7 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
 
     @Override
     public void connectBle(BleDevice device) {
+        PreferencesManager.put(this, Constant.BLE_INFO, device.getBleName(), device.getBleAddress());
         bleManager.connDev(device);
     }
 
@@ -193,7 +194,14 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
     }
 
     private void toNextActivity() {
-
+        HardwareFeatures features;
+        try {
+           features  =  PyEnv.getFeature(this);
+        } catch (Exception e) {
+            showToast("获取硬件信息失败请重试");
+            e.printStackTrace();
+            return;
+        }
         switch (mSearchMode) {
             case Constant.SearchDeviceMode.MODE_RECOVERY_WALLET_BY_COLD:
                 toActivity(RecoveryWalletByColdWalletActivity.class);
@@ -203,11 +211,14 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
                 toActivity(BackupToColdWalletActivity.class);
                 break;
             case Constant.SearchDeviceMode.MODE_BIND_ADMIN_PERSON:
-
+                if (features.isInitialized()) {
+                    EventBus.getDefault().post(new GetXpubEvent(Constant.COIN_TYPE_BTC));
+                } else {
+                    showToast("目前只支持激活的钱包创建共管钱包，激活之后再来");
+                }
+                finish();
                 break;
             default:
-                try {
-                    HardwareFeatures features =  PyEnv.getFeature(this);
                     if (!features.isInitialized()) {
                         startActivity(new Intent(this, FindUnInitDeviceActivity.class));
                         finish();
@@ -218,15 +229,10 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
                         startActivity(new Intent(this, FindNormalDeviceActivity.class));
                         finish();
                     }
-                } catch (Exception e) {
-                    showToast("获取硬件信息失败请重试");
-                    e.printStackTrace();
-                }
-
                 break;
         }
     }
-
+    @SingleClick
     @OnClick({R.id.img_back, R.id.relode})
     public void onViewClicked(View view) {
         switch (view.getId()) {

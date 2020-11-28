@@ -18,6 +18,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author xiaomin
+ */
 public class RecoveryWalletAdapter extends RecyclerView.Adapter<RecoveryWalletAdapter.myViewHolder> {
     private Context context;
     private ArrayList<WalletAddressEvent> walletList;

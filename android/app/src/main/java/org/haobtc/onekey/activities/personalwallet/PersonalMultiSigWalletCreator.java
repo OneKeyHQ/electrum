@@ -34,8 +34,9 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.activities.service.CommunicationModeSelector;
-import org.haobtc.onekey.adapter.AddBixinKeyAdapter;
+import org.haobtc.onekey.adapter.AddedXpubAdapter;
 import org.haobtc.onekey.aop.SingleClick;
+import org.haobtc.onekey.bean.XpubItem;
 import org.haobtc.onekey.event.AddBixinKeyEvent;
 import org.haobtc.onekey.event.FirstEvent;
 import org.haobtc.onekey.event.PersonalMutiSigEvent;
@@ -67,7 +68,7 @@ public class PersonalMultiSigWalletCreator extends BaseActivity {
     public static final String TAG = PersonalMultiSigWalletCreator.class.getSimpleName();
     private String walletNames;
     private int walletNameNum;
-    private ArrayList<AddBixinKeyEvent> addEventsDatas;
+    private ArrayList<XpubItem> addedXpubList;
     private SharedPreferences.Editor edit;
     private MyDialog myDialog;
     @SuppressLint("HandlerLeak")
@@ -77,9 +78,9 @@ public class PersonalMultiSigWalletCreator extends BaseActivity {
             super.handleMessage(msg);
             if (msg.what == 1) {
                 ArrayList<String> pubList = new ArrayList<>();
-                for (int i = 0; i < addEventsDatas.size(); i++) {
-                    String keyaddress = addEventsDatas.get(i).getKeyaddress();
-                    String deviceId = addEventsDatas.get(i).getDeviceId();
+                for (int i = 0; i < addedXpubList.size(); i++) {
+                    String keyaddress = addedXpubList.get(i).getXpub();
+                    String deviceId = addedXpubList.get(i).getName();
                     pubList.add("[\"" + keyaddress + "\",\"" + deviceId + "\"]");
                 }
                 try {
@@ -104,7 +105,7 @@ public class PersonalMultiSigWalletCreator extends BaseActivity {
                 Intent intent = new Intent(PersonalMultiSigWalletCreator.this, CreatFinishPersonalActivity.class);
                 intent.putExtra("walletNames", walletNames);
                 intent.putExtra("flagTag", "onlyChoose");
-                intent.putExtra("strBixinlist", (Serializable) addEventsDatas);
+                intent.putExtra("strBixinlist", (Serializable) addedXpubList);
                 startActivity(intent);
             }
         }
@@ -138,7 +139,7 @@ public class PersonalMultiSigWalletCreator extends BaseActivity {
 
     @Override
     public void initData() {
-        addEventsDatas = new ArrayList<>();
+        addedXpubList = new ArrayList<>();
     }
 
     @SingleClick
@@ -186,9 +187,9 @@ public class PersonalMultiSigWalletCreator extends BaseActivity {
         //set see view
         View view = View.inflate(context, resource, null);
         Dialog dialogBtoms = new Dialog(context, R.style.dialog);
-        TextView editBixinName = view.findViewById(R.id.edit_keyName);
+        TextView editBixinName = view.findViewById(R.id.name);
         TextView tetNum = view.findViewById(R.id.txt_textNum);
-        TextView textView = view.findViewById(R.id.text_public_key_cosigner_popup);
+        TextView textView = view.findViewById(R.id.xpub_info);
         textView.setText(xpub);
         if (!TextUtils.isEmpty(label)){
             editBixinName.setText(label);
@@ -226,22 +227,18 @@ public class PersonalMultiSigWalletCreator extends BaseActivity {
                 mToast(getString(R.string.input_public_address));
                 return;
             }
-            AddBixinKeyEvent addBixinKeyEvent = new AddBixinKeyEvent();
-            addBixinKeyEvent.setKeyname(strBixinname);
-            addBixinKeyEvent.setKeyaddress(xpub);
-            addBixinKeyEvent.setDeviceId(deviceId);
-            addEventsDatas.add(addBixinKeyEvent);
+            addedXpubList.add(new XpubItem(strBixinname, xpub));
             //bixinKEY
-            AddBixinKeyAdapter addBixinKeyAdapter = new AddBixinKeyAdapter(addEventsDatas);
-            reclBinxinKey.setAdapter(addBixinKeyAdapter);
-            tetPersonalNum.setText(String.format(getString(R.string.creat_personal) + "(%d/%d)", addEventsDatas.size(), sigNum));
+            AddedXpubAdapter addedXpubAdapter = new AddedXpubAdapter(addedXpubList);
+            reclBinxinKey.setAdapter(addedXpubAdapter);
+            tetPersonalNum.setText(String.format(getString(R.string.creat_personal) + "(%d/%d)", addedXpubList.size(), sigNum));
 
-            if (addEventsDatas.size() == sigNum) {
+            if (addedXpubList.size() == sigNum) {
                 bnCompleteAddCosigner.setEnabled(true);
                 bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.little_radio_blue));
                 bnAddKey.setVisibility(View.GONE);
             }
-            addBixinKeyAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
+            addedXpubAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
                 @Override
                 public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
                     if (view.getId() == R.id.img_deleteKey) {
@@ -251,10 +248,10 @@ public class PersonalMultiSigWalletCreator extends BaseActivity {
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-                        addEventsDatas.remove(position);
-                        addBixinKeyAdapter.notifyDataSetChanged();
+                        addedXpubList.remove(position);
+                        addedXpubAdapter.notifyDataSetChanged();
                         bnAddKey.setVisibility(View.VISIBLE);
-                        tetPersonalNum.setText(String.format(getString(R.string.creat_personal) + "(%d/%d)", addEventsDatas.size(), sigNum));
+                        tetPersonalNum.setText(String.format(getString(R.string.creat_personal) + "(%d/%d)", addedXpubList.size(), sigNum));
                         bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.little_radio_qian));
                         bnCompleteAddCosigner.setEnabled(false);
                     }
@@ -264,7 +261,7 @@ public class PersonalMultiSigWalletCreator extends BaseActivity {
 
         });
         //cancel dialog
-        view.findViewById(R.id.img_cancle).setOnClickListener(v -> {
+        view.findViewById(R.id.img_cancel).setOnClickListener(v -> {
             dialogBtoms.cancel();
         });
         dialogBtoms.setContentView(view);

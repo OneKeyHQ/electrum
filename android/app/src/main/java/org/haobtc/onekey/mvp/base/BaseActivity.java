@@ -1,10 +1,11 @@
 package org.haobtc.onekey.mvp.base;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -28,6 +29,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
     public Fragment mCurrentFragment;
 
     @BindView(R.id.title)
+    @Nullable
     protected TextView mTitle;
 
     @Override
@@ -36,7 +38,8 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
         super.onCreate(savedInstanceState);
         setContentView(getContentViewId());
         ButterKnife.bind(this);
-//        setActionBar();
+        setActionBar();
+        immersionBar();
         init();
         if (needEvents()) {
             EventBus.getDefault().register(this);
@@ -86,7 +89,15 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
             mCurrentFragment = fragment;
         }
     }
-
+    /**
+     * Set transparent immersion bar : white backgrand black text
+     */
+    public void immersionBar() {
+        //other one write
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+        getWindow().setStatusBarColor(Color.TRANSPARENT);
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+    }
     @Override
     protected void onDestroy() {
         super.onDestroy();

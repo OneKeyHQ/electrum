@@ -7,6 +7,7 @@ import org.haobtc.onekey.ui.fragment.VerifyConnFragment;
 /**
  * @author liyan
  */
+@Deprecated
 public class AuthVerifyActivity extends BaseActivity {
 
 
@@ -14,8 +15,7 @@ public class AuthVerifyActivity extends BaseActivity {
 
     @Override
     public void init() {
-
-        startFragment(new VerifyConnFragment());
+//        startFragment(new VerifyConnFragment());
     }
 
     @Override

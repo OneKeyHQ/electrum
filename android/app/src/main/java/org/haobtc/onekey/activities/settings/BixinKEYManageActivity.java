@@ -20,11 +20,14 @@ import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.adapter.BixinkeyManagerAdapter;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.HardwareFeatures;
+import org.haobtc.onekey.constant.Constant;
+import org.haobtc.onekey.data.prefs.PreferencesManager;
 import org.haobtc.onekey.event.FixBixinkeyNameEvent;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -53,14 +56,18 @@ public class BixinKEYManageActivity extends BaseActivity {
 
     @Override
     public void initData() {
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         getKeylist();
     }
 
     private void getKeylist() {
         deviceValue = new ArrayList<>();
-        SharedPreferences devices = getSharedPreferences("devices", MODE_PRIVATE);
-        edit = devices.edit();
-        Map<String, ?> devicesAll = devices.getAll();
+        Map<String, ?> devicesAll = PreferencesManager.getAll(this, Constant.DEVICES);;
         //key
         for (Map.Entry<String, ?> entry : devicesAll.entrySet()) {
             String mapValue = (String) entry.getValue();
@@ -78,7 +85,7 @@ public class BixinKEYManageActivity extends BaseActivity {
                         case R.id.relativeLayout_bixinkey:
                             String firmwareVersion = "V" + deviceValue.get(position).getMajorVersion() + "." + deviceValue.get(position).getMinorVersion() + "." + deviceValue.get(position).getPatchVersion();
                             Intent intent = new Intent(BixinKEYManageActivity.this, HardwareDetailsActivity.class);
-                            intent.putExtra("label", deviceValue.get(position).getLabel());
+                            intent.putExtra("label", Optional.ofNullable(deviceValue.get(position).getLabel()).orElse(deviceValue.get(position).getBleName()));
                             intent.putExtra("bleName", deviceValue.get(position).getBleName());
                             intent.putExtra("firmwareVersion", firmwareVersion);
                             intent.putExtra("bleVerson", "V" + deviceValue.get(position).getMajorVersion() + "." + deviceValue.get(position).getPatchVersion());

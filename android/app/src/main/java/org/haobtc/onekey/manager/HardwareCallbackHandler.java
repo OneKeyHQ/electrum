@@ -10,6 +10,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.activities.service.CommunicationModeSelector;
 import org.haobtc.onekey.event.ButtonRequestEvent;
 
+import static org.haobtc.onekey.constant.PyConstant.BUTTON_REQUEST_6;
 import static org.haobtc.onekey.constant.PyConstant.BUTTON_REQUEST_7;
 import static org.haobtc.onekey.constant.PyConstant.BUTTON_REQUEST_9;
 import static org.haobtc.onekey.constant.PyConstant.PASS_NEW_PASSPHRASS;
@@ -67,7 +68,9 @@ public class HardwareCallbackHandler extends Handler {
             case BUTTON_REQUEST_7:
                 EventBus.getDefault().post(new ButtonRequestEvent(BUTTON_REQUEST_7));
                 break;
-            case PASS_NEW_PASSPHRASS:
+            case BUTTON_REQUEST_6:
+                EventBus.getDefault().post(new ButtonRequestEvent(BUTTON_REQUEST_6));
+//            case PASS_NEW_PASSPHRASS:
             case PASS_PASSPHRASS:
                 break;
             default:

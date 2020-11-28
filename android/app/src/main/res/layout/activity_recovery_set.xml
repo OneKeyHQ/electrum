@@ -1,133 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/button_bk_ddake"
-    android:clipToPadding="true"
-    android:fitsSystemWindows="true"
-    android:orientation="vertical"
-    tools:context=".activities.settings.recovery_set.ResetDeviceActivity">
-
-
+    android:background="@android:color/white"
+    android:orientation="vertical">
+    <include layout="@layout/title_layout"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:gravity="center_horizontal"
+        android:paddingLeft="@dimen/dp_30"
+        android:paddingTop="@dimen/dp_20"
+        android:paddingRight="@dimen/dp_30"
+        android:paddingBottom="@dimen/dp_20"
+        android:text="⚠ 风险提示"
+        android:textColor="#142A3B"
+        android:textSize="30sp"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:gravity="center_horizontal"
+        android:textColor="#142A3B"
+        android:padding="@dimen/dp_15"
+        android:text="\t\t恢复出厂设置后：\n\n
+1. 您存储在这个硬件钱包中的
+私钥或助记词将被抹除；\n\n
+2. 您在 OneKey App 中用这个钱包创建的账户依然存在，但因为缺少私钥，无法动用其上的资产。除非您在此之前就备份了助记词或私钥，使用它们恢复硬件钱包，从而重新掌控相关账户。 "
+        android:layout_marginHorizontal="34dp"
+        android:layout_marginTop="@dimen/dp_20"
+        android:textSize="@dimen/sp_14" />
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_50"
-        android:layout_marginTop="@dimen/dp_10"
-        android:background="@color/button_bk_ddake">
-
-        <ImageView
-            android:id="@+id/img_back"
-            android:layout_width="@dimen/dp_40"
-            android:layout_height="@dimen/dp_40"
-            android:layout_centerVertical="true"
-            android:padding="@dimen/dp_8"
-            android:src="@drawable/left_arrow" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="130dp"
+        android:gravity="center"
+        android:layout_gravity="center">
+        <CheckBox
+            android:id="@+id/checkbox"
+            android:layout_width="@dimen/dp_16"
+            android:layout_height="@dimen/dp_16"
+            android:background="@drawable/circle_checkbox"
+            android:button="@null"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:layout_gravity="center"
-            android:fontFamily="sans-serif-medium"
-            android:text="@string/restore_factory"
-            android:textColor="@color/text"
-            android:textSize="@dimen/text_size" />
-
+            android:layout_alignBaseline="@id/checkbox"
+            android:layout_marginStart="@dimen/dp_20"
+            android:singleLine="true"
+            android:text="我已知晓以上风险"
+            android:textColor="#546370"
+            android:textSize="@dimen/sp_15"/>
     </RelativeLayout>
 
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center_horizontal"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_30"
-                android:text="@string/risk_tip"
-                android:textColor="@color/text_two"
-                android:textSize="30sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_25"
-                android:text="@string/recovery_set_tip1"
-                android:textColor="@color/text_two"
-                android:textSize="@dimen/sp_14" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/dp_70"
-                android:layout_marginTop="35dp"
-                android:layout_marginEnd="@dimen/dp_70"
-                android:gravity="center_horizontal"
-                android:text="@string/recovery_set_tip2"
-                android:textColor="@color/text_two"
-                android:textSize="@dimen/sp_14" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="34dp"
-                android:layout_marginTop="35dp"
-                android:layout_marginEnd="34dp"
-                android:text="@string/recovery_set_tip3"
-                android:textColor="@color/text_two"
-                android:textSize="@dimen/sp_14" />
-
-            <LinearLayout
-                android:id="@+id/checkbox_Know"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_120"
-                android:layout_marginBottom="@dimen/dp_25"
-                android:clickable="true"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:paddingTop="@dimen/dp_5"
-                android:paddingBottom="@dimen/dp_5">
-
-                <CheckBox
-                    android:id="@+id/checkbox_ok"
-                    android:layout_width="@dimen/dp_20"
-                    android:layout_height="@dimen/dp_20"
-                    android:background="@drawable/circle_checkbox"
-                    android:button="@null" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/dp_7"
-                    android:text="@string/iknow_risk"
-                    android:textColor="#494949"
-                    android:textSize="13sp" />
-            </LinearLayout>
-
-            <Button
-                android:id="@+id/reset_device"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginStart="34dp"
-                android:layout_marginEnd="34dp"
-                android:layout_marginBottom="@dimen/dp_100"
-                android:background="@drawable/delete_wallet_no"
-                android:enabled="false"
-                android:text="@string/confirm_recovery"
-                android:textAllCaps="false"
-                android:textColor="@android:color/white" />
-
-
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
+    <Button
+        android:id="@+id/reset_device"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/dp_25"
+        android:background="@drawable/btn_enable_selector_red"
+        android:enabled="false"
+        android:text="恢复出厂设置"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/sp_14"/>
 </LinearLayout>

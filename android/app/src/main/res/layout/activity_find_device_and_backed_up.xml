@@ -6,8 +6,6 @@
     android:background="@android:color/white"
     android:orientation="vertical">
 
-    <include layout="@layout/title_layout" />
-
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -34,7 +32,6 @@
         android:textSize="@dimen/sp_16" />
 
     <TextView
-        android:id="@+id/recovery_hd_wallet_hide"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"

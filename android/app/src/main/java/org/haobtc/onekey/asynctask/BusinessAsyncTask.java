@@ -37,6 +37,7 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
     public static final String SHOW_ADDRESS = "show_address";
     public static final String EDIT_WHITE_LIST = "bx_inquire_whitelist";
     public static final String ADD_AND_DELETE_WHITE_LIST = "bx_add_or_delete_whitelist";
+    public static final String READ_MNEMONIC_FROM_HARDWARE = "bixin_backup_device";
     /**
      * 导入助记词
      * */
@@ -93,6 +94,7 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
             case CHANGE_PIN:
             case WIPE_DEVICE:
             case BACK_UP:
+            case READ_MNEMONIC_FROM_HARDWARE:
                 try {
                     result = Daemon.commands.callAttr(strings[0], strings[1]).toString();
                 } catch (Exception e) {

@@ -5,7 +5,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -31,14 +30,13 @@ import org.haobtc.onekey.adapter.WalletListAdapter;
 import org.haobtc.onekey.bean.AddressEvent;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.LoadWalletlistEvent;
-import org.haobtc.onekey.onekeys.HomeOnekeyActivity;
+import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
 import org.haobtc.onekey.onekeys.dialog.RecoverHdWalletActivity;
 import org.haobtc.onekey.onekeys.dialog.SetHDWalletPassActivity;
 import org.haobtc.onekey.onekeys.dialog.recovery.ImprotSingleActivity;
 import org.haobtc.onekey.onekeys.homepage.mindmenu.HDWalletActivity;
 import org.haobtc.onekey.onekeys.homepage.process.CreateDeriveChooseTypeActivity;
 import org.haobtc.onekey.onekeys.homepage.process.CreateWalletChooseTypeActivity;
-import org.haobtc.onekey.onekeys.homepage.process.SetDeriveWalletNameActivity;
 import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
 import org.haobtc.onekey.utils.Daemon;
 import org.json.JSONException;
@@ -52,8 +50,6 @@ import java.util.Set;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-
-import static org.haobtc.onekey.activities.service.CommunicationModeSelector.executorService;
 
 /**
  * @author jinxiaomin
@@ -164,7 +160,7 @@ public class WalletListActivity extends BaseActivity {
                             String name = hdWalletList.get(position).getName();
                             edit.putString("loadWalletName", name);
                             edit.apply();
-                            mIntent(HomeOnekeyActivity.class);
+                            mIntent(HomeOneKeyActivity.class);
                         }
                     });
                 }
@@ -198,7 +194,7 @@ public class WalletListActivity extends BaseActivity {
                             String name = btcList.get(position).getName();
                             edit.putString("loadWalletName", name);
                             edit.apply();
-                            mIntent(HomeOnekeyActivity.class);
+                            mIntent(HomeOneKeyActivity.class);
                         }
                     });
                 }
@@ -229,7 +225,7 @@ public class WalletListActivity extends BaseActivity {
                             String name = ethList.get(position).getName();
                             edit.putString("loadWalletName", name);
                             edit.apply();
-                            mIntent(HomeOnekeyActivity.class);
+                            mIntent(HomeOneKeyActivity.class);
                         }
                     });
                 }
@@ -348,7 +344,7 @@ public class WalletListActivity extends BaseActivity {
                         String name = hdWalletList.get(position).getName();
                         edit.putString("loadWalletName", name);
                         edit.apply();
-                        mIntent(HomeOnekeyActivity.class);
+                        mIntent(HomeOneKeyActivity.class);
                     }
                 });
             }

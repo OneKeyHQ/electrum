@@ -8,7 +8,7 @@ import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.data.prefs.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.GuidanceActivity;
-import org.haobtc.onekey.onekeys.HomeOnekeyActivity;
+import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
 import org.haobtc.onekey.utils.NfcUtils;
 
 import java.util.Optional;
@@ -42,7 +42,7 @@ public class LunchActivity extends BaseActivity {
 
         boolean firstRun = (boolean)PreferencesManager.get(this, "Preferences", Constant.FIRST_RUN, false);
         if (firstRun) {
-            Intent intent = new Intent(LunchActivity.this, HomeOnekeyActivity.class);
+            Intent intent = new Intent(LunchActivity.this, HomeOneKeyActivity.class);
             startActivity(intent);
             finish();
 
@@ -63,7 +63,6 @@ public class LunchActivity extends BaseActivity {
                 mTextChinese();
             }
         }
-
     }
 
     private void initGuide() {

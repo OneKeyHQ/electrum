@@ -2,7 +2,6 @@ package org.haobtc.onekey.onekeys.dialog.recovery.importmethod;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 
@@ -11,7 +10,7 @@ import com.chaquo.python.Kwarg;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.manager.PyEnv;
-import org.haobtc.onekey.onekeys.HomeOnekeyActivity;
+import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
 import org.haobtc.onekey.onekeys.dialog.SetHDWalletPassActivity;
 import org.haobtc.onekey.utils.ContainsEmojiEditText;
 import org.haobtc.onekey.utils.Daemon;
@@ -97,6 +96,6 @@ public class ImportWalletSetNameActivity extends BaseActivity {
         PyEnv.loadLocalWalletInfo(this);
         edit.putString("loadWalletName", editSetWalletName.getText().toString());
         edit.apply();
-        mIntent(HomeOnekeyActivity.class);
+        mIntent(HomeOneKeyActivity.class);
     }
 }

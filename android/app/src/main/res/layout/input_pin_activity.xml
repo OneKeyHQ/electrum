@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:orientation="vertical">
+<include layout="@layout/title_layout"/>
+    <TextView
+        android:id="@+id/promote"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:gravity="center_horizontal"
+        android:paddingLeft="@dimen/dp_30"
+        android:paddingTop="@dimen/dp_20"
+        android:paddingRight="@dimen/dp_30"
+        android:paddingBottom="@dimen/dp_20"
+        android:text="输入设备原 PIN 码\n
+以继续"
+        android:textColor="#142A3B"
+        android:textSize="30sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_20"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:src="@mipmap/device_pin" />
+
+        <org.haobtc.onekey.ui.custom.PwdInputView
+            android:id="@+id/pwd_edit_text"
+            android:layout_width="@dimen/dp_300"
+            android:layout_height="@dimen/dp_50"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/dp_40" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/dp_20"
+        android:layout_marginTop="@dimen/dp_20"
+        android:layout_marginRight="@dimen/dp_20"
+        android:text="@string/pin_input_warn"
+        android:textColor="#546370"
+        android:textSize="@dimen/sp_12" />
+
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout_key"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/dp_10"
+        android:background="@color/key_bk">
+
+        <android.inputmethodservice.KeyboardView
+            android:id="@+id/keyboard_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/key_bk"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:keyBackground="@drawable/keyboard_selector"
+            android:keyTextColor="@color/set_txt"
+            android:paddingTop="@dimen/dp_6"
+            android:paddingEnd="@dimen/dp_6"
+            android:shadowColor="@android:color/white"
+            android:shadowRadius="0.0"
+            tools:ignore="RtlSymmetry" />
+    </RelativeLayout>
+
+
+</LinearLayout>

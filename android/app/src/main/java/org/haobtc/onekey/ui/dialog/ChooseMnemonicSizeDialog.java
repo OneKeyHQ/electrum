@@ -6,6 +6,7 @@ import android.widget.TextView;
 
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
+import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.event.MnemonicSizeSelectedEvent;
 import org.haobtc.onekey.mvp.base.BaseDialogFragment;
 
@@ -16,7 +17,7 @@ import butterknife.OnClick;
  * @author liyan
  * @date 11/19/20
  */
-//
+
 public class ChooseMnemonicSizeDialog extends BaseDialogFragment {
 
     @BindView(R.id.size_12)
@@ -34,7 +35,7 @@ public class ChooseMnemonicSizeDialog extends BaseDialogFragment {
     public int getContentViewId() {
         return R.layout.dialog_mnemonic_size_selector;
     }
-
+    @SingleClick
     @OnClick({R.id.size_12, R.id.size_24,R.id.close})
     public void onViewClicked(View view) {
         switch (view.getId()) {

@@ -107,7 +107,7 @@
                         <CheckBox
                             android:id="@+id/checkBox_firmware"
                             android:layout_width="@dimen/dp_20"
-                            android:layout_height="@dimen/dp_20"
+                            android:layout_height="13dp"
                             android:background="@drawable/circle_checkbox"
                             android:button="@null"
                             android:checked="true" />

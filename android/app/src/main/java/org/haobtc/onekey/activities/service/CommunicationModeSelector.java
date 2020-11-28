@@ -65,7 +65,6 @@ import org.haobtc.onekey.activities.personalwallet.ImportHistoryWalletActivity;
 import org.haobtc.onekey.activities.personalwallet.PersonalMultiSigWalletCreator;
 import org.haobtc.onekey.activities.personalwallet.SingleSigWalletCreator;
 import org.haobtc.onekey.activities.personalwallet.hidewallet.HideWalletSetPassActivity;
-import org.haobtc.onekey.activities.settings.CheckXpubResultActivity;
 import org.haobtc.onekey.activities.settings.ConfidentialPaymentSettings;
 import org.haobtc.onekey.activities.settings.EditWhiteListActivity;
 import org.haobtc.onekey.activities.settings.FixBixinkeyNameActivity;
@@ -1207,10 +1206,10 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
             } else if (SingleSigWalletCreator.TAG.equals(tag)) {
                 EventBus.getDefault().post(new ReceiveXpub(xpub, features.getDeviceId(), features.isNeedsBackup(), showUI));
             } else if ("check_xpub".equals(tag)) {
-                Intent intent = new Intent(this, CheckXpubResultActivity.class);
-                intent.putExtra("label", Optional.ofNullable(features.getLabel()).orElse("BixinKEY"));
-                intent.putExtra("xpub", s);
-                startActivity(intent);
+//                Intent intent = new Intent(this, CheckXpubResultActivity.class);
+//                intent.putExtra("label", Optional.ofNullable(features.getLabel()).orElse("BixinKEY"));
+//                intent.putExtra("xpub", s);
+//                startActivity(intent);
             } else if (CheckHideWalletFragment.TAG.equals(tag)) {
                 EventBus.getDefault().post(new CheckHideWalletEvent(xpub, features.getDeviceId()));
             } else if (PersonalMultiSigWalletCreator.TAG.equals(tag)) {

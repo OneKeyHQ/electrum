@@ -18,7 +18,6 @@
         android:layout_height="40dp"
         android:gravity="center"
         android:layout_marginTop="@dimen/dp_5"
-        android:background="@drawable/white_bg"
-        android:paddingLeft="@dimen/dp_10" />
+        android:background="@drawable/white_bg"/>
 
 </LinearLayout>

@@ -51,6 +51,9 @@ public final class BleManager {
                 }
             }
         }
+        if (fragmentActivity != sInstance.fragmentActivity) {
+            sInstance.fragmentActivity = fragmentActivity;
+        }
         return sInstance;
     }
     /**
@@ -58,28 +61,31 @@ public final class BleManager {
      */
     public void initBle() {
         mBle = Ble.getInstance();
-        mBleScanCallBack = new BleScanCallback<BleDevice>() {
-            @Override
-            public void onLeScan(BleDevice device, int rssi, byte[] scanRecord) {
-                synchronized (mBle.getLocker()) {
-                    if (device != null) {
-                        EventBus.getDefault().post(device);
+        if (mBleScanCallBack == null) {
+            mBleScanCallBack = new BleScanCallback<BleDevice>() {
+                @Override
+                public void onLeScan(BleDevice device, int rssi, byte[] scanRecord) {
+                    synchronized (mBle.getLocker()) {
+                        if (device != null) {
+                            EventBus.getDefault().post(device);
+                        }
                     }
                 }
-            }
 
-            @Override
-            public void onStop() {
-                super.onStop();
-                EventBus.getDefault().post(new BleScanStopEvent());
-            }
+                @Override
+                public void onStop() {
+                    super.onStop();
+                    EventBus.getDefault().post(new BleScanStopEvent());
+                }
 
-            @Override
-            public void onScanFailed(int errorCode) {
-                super.onScanFailed(errorCode);
-                EventBus.getDefault().post(new BleScanStopEvent());
-            }
-        };
+                @Override
+                public void onScanFailed(int errorCode) {
+                    super.onScanFailed(errorCode);
+                    EventBus.getDefault().post(new BleScanStopEvent());
+                }
+            };
+        }
+
         final RxPermissions permissions = new RxPermissions(fragmentActivity);
         permissions.request(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION)
                 .subscribe(
@@ -120,7 +126,6 @@ public final class BleManager {
         } else {
            openBle();
         }
-
     }
     private final BleWriteCallback<BleDevice> mWriteCallBack = new BleWriteCallback<BleDevice>() {
 
@@ -149,6 +154,15 @@ public final class BleManager {
         Ble.getInstance().connect(mBleDevice, mConnectCallback);
     }
 
+    /**
+     * conn ble device by mac address
+     *
+     * @param device
+     */
+    public void connDevByMac(String device) {
+        PyEnv.cancelAll();
+        Ble.getInstance().connect(device, mConnectCallback);
+    }
 
     /**
      * ble call back

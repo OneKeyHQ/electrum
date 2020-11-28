@@ -763,7 +763,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         manager = DownloadManager.getInstance(this);
         manager.setApkName("BixinKEY.apk")
                 .setApkUrl(url)
-                .setSmallIcon(R.drawable.app_icon)
+                .setSmallIcon(R.drawable.logo_square)
                 .setShowNewerToast(false)
                 .setConfiguration(configuration)
                 .setApkVersionCode(versionCode)

@@ -175,7 +175,7 @@
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
         <activity
-            android:name=".onekeys.HomeOnekeyActivity"
+            android:name=".onekeys.HomeOneKeyActivity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
         <activity
@@ -551,10 +551,6 @@
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
         <activity
-            android:name=".activities.settings.CheckXpubResultActivity"
-            android:screenOrientation="portrait"
-            tools:ignore="LockedOrientationActivity" />
-        <activity
             android:name=".activities.settings.recovery_set.RecoveryResult"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
@@ -636,6 +632,13 @@
             android:theme="@style/dialog" />
         <activity android:name=".ui.activity.FindNormalDeviceActivity" />
         <activity android:name=".ui.activity.CreatePersonalWalletActivity" />
+        <activity android:name=".ui.activity.CreateMultiSigWalletActivity" />
+        <activity android:name=".ui.activity.VerifyPinActivity" />
+        <activity android:name=".ui.activity.PinNewActivity" />
+        <activity android:name=".ui.activity.ConfirmOnHardWareActivity" />
+        <activity android:name=".ui.activity.CheckXpubActivity" />
+        <activity android:name=".ui.activity.ResetDevicePromoteActivity" />
+        <activity android:name=".ui.activity.VerifyHardwareActivity" />
 
         <meta-data
             android:name="design_width_in_dp"

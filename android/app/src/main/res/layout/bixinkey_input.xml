@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/dp_10"
         android:layout_marginEnd="@dimen/dp_10"
-        android:layout_marginBottom="@dimen/layout_margin"
+        android:layout_marginBottom="@dimen/dp_30"
         app:cardCornerRadius="@dimen/corner_radius">
 
         <RelativeLayout
@@ -34,7 +34,7 @@
                 tools:layout_editor_absoluteX="0dp" />
 
             <ImageView
-                android:id="@+id/img_cancle"
+                android:id="@+id/img_cancel"
                 android:layout_width="@dimen/dp_40"
                 android:layout_height="47.5dp"
                 android:layout_alignParentEnd="true"
@@ -69,7 +69,7 @@
                 android:gravity="center_vertical">
 
                 <EditText
-                    android:id="@+id/edit_keyName"
+                    android:id="@+id/name_edit"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
@@ -78,7 +78,6 @@
                     android:maxLength="20"
                     android:paddingStart="@dimen/dp_16"
                     android:paddingEnd="@dimen/dp_10"
-                    android:text="@string/default_key"
                     android:textColor="#494949"
                     android:textSize="15sp" />
 
@@ -133,18 +132,17 @@
                 android:orientation="vertical">
 
                 <EditText
-                    android:id="@+id/edit_public_key_cosigner_popup"
+                    android:id="@+id/xpub_edit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/dp_10"
-                    android:background="@null"
-                    android:gravity="start"
                     android:hint="@string/input_pub_key"
                     android:inputType="textMultiLine"
                     android:paddingStart="13dp"
                     android:paddingTop="@dimen/dp_20"
                     android:paddingEnd="13dp"
                     android:paddingBottom="@dimen/dp_20"
+                    android:background="@null"
+                    android:layout_gravity="center"
                     android:textColor="@color/set_txt"
                     android:textSize="@dimen/text_size" />
 
@@ -154,6 +152,7 @@
                     android:layout_marginTop="@dimen/text_margin"
                     android:layout_marginEnd="@dimen/text_margin"
                     android:layout_marginBottom="@dimen/dp_16"
+                    android:visibility="gone"
                     android:orientation="horizontal">
 
                     <Button
@@ -194,7 +193,7 @@
 
 
             <LinearLayout
-                android:id="@+id/lin_ComfirmAll"
+                android:id="@+id/lin_Co"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_below="@+id/cardView2"
@@ -230,7 +229,7 @@
             </LinearLayout>
 
             <Button
-                android:id="@+id/btn_ConfirmAll"
+                android:id="@+id/add"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dp_60"
                 android:layout_below="@+id/cardView2"

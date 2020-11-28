@@ -6,6 +6,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.haobtc.onekey.R;
+import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.mvp.base.BaseActivity;
 
@@ -42,7 +43,7 @@ public class FindUnInitDeviceActivity extends BaseActivity {
         return R.layout.activity_find_new_device;
     }
 
-
+    @SingleClick
     @OnClick({R.id.img_back, R.id.init_as_new_wallet, R.id.init_as_new_wallet_hide, R.id.import_seed, R.id.import_seed_hide, R.id.recovery_device, R.id.recovery_device_hide})
     public void onViewClicked(View view) {
         switch (view.getId()) {

@@ -35,6 +35,7 @@ import org.haobtc.onekey.activities.settings.recovery_set.BackupRecoveryActivity
 import org.haobtc.onekey.adapter.PublicPersonAdapter;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.GetCodeAddressBean;
+import org.haobtc.onekey.bean.XpubItem;
 import org.haobtc.onekey.event.AddBixinKeyEvent;
 import org.haobtc.onekey.utils.Daemon;
 
@@ -61,7 +62,7 @@ public class CreatFinishPersonalActivity extends BaseActivity {
     private Bitmap bitmap;
     private String walletNames;
     private String flagTag;
-    private ArrayList<AddBixinKeyEvent> keyList;
+    private ArrayList<XpubItem> keyList;
     private Intent intent;
 
     @Override
@@ -124,9 +125,7 @@ public class CreatFinishPersonalActivity extends BaseActivity {
     private void checkAllBixinkey() {
         if ("personal".equals(flagTag)) {
             String strBixinname = intent.getStringExtra("strBixinname");
-            AddBixinKeyEvent addBixinKeyEvent = new AddBixinKeyEvent();
-            addBixinKeyEvent.setKeyname(strBixinname);
-            keyList.add(addBixinKeyEvent);
+            keyList.add(new XpubItem(strBixinname, ""));
             //public person
             PublicPersonAdapter publicPersonAdapter = new PublicPersonAdapter(keyList);
             reclKeyView.setAdapter(publicPersonAdapter);
@@ -134,9 +133,7 @@ public class CreatFinishPersonalActivity extends BaseActivity {
         } else {
             List bixinKeylist = (List) intent.getSerializableExtra("strBixinlist");
             for (int i = 0; i < bixinKeylist.size(); i++) {
-                AddBixinKeyEvent addBixinKeyEvent = new AddBixinKeyEvent();
-                addBixinKeyEvent.setKeyname(((AddBixinKeyEvent) bixinKeylist.get(i)).getKeyname());
-                keyList.add(addBixinKeyEvent);
+                keyList.add((XpubItem) bixinKeylist.get(i));
             }
             //public person
             PublicPersonAdapter publicPersonAdapter = new PublicPersonAdapter(keyList);

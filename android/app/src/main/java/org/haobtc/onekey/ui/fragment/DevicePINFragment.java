@@ -7,9 +7,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.constant.PyConstant;
 import org.haobtc.onekey.event.ChangePinEvent;
+import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.mvp.base.BaseFragment;
 import org.haobtc.onekey.ui.custom.PwdInputView;
 import org.haobtc.onekey.utils.NumKeyboardUtil;

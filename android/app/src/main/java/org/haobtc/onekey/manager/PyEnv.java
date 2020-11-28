@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 
 import com.chaquo.python.PyObject;
 import com.google.common.base.Strings;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
 
@@ -24,6 +25,7 @@ import org.haobtc.onekey.mvp.base.BaseActivity;
 import org.haobtc.onekey.utils.Daemon;
 import org.haobtc.onekey.utils.Global;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -155,7 +157,8 @@ public final class PyEnv {
     /**
      * 撤销正在执行的通信
      */
-    public void cancelAll() {
+    public static void cancelAll() {
+        sNotify();
         bleCancel();
         nfcCancel();
         usbCancel();
@@ -181,8 +184,7 @@ public final class PyEnv {
             return dealWithConnectedDevice(context, HardwareFeatures.objectFromData(feature));
         } catch (Exception e) {
             if (sBle != null) {
-                bleCancel();
-                sNotify();
+              cancelAll();
             }
             e.printStackTrace();
             throw e;
@@ -245,21 +247,20 @@ public final class PyEnv {
      * 加载本地钱包信息
      */
     public static void loadLocalWalletInfo(Context context) {
-        mexecutorService.execute(() -> {
-            try {
-                sCommands.callAttr(PyConstant.LOAD_ALL_WALLET);
-                String walletsInfo = sCommands.callAttr(PyConstant.GET_WALLETS_INFO).toString();
-                if (!Strings.isNullOrEmpty(walletsInfo)) {
-                    JsonArray wallets = JsonParser.parseString(walletsInfo).getAsJsonArray();
-                    wallets.forEach((wallet) -> {
-                        wallet.getAsJsonObject().keySet().forEach((walletName) -> PreferencesManager.put(context, Constant.WALLETS, walletName,
-                                wallet.getAsJsonObject().get(walletName)));
-                    });
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+
+        try {
+            sCommands.callAttr(PyConstant.LOAD_ALL_WALLET);
+            String walletsInfo = sCommands.callAttr(PyConstant.GET_WALLETS_INFO).toString();
+            if (!Strings.isNullOrEmpty(walletsInfo)) {
+                JsonArray wallets = JsonParser.parseString(walletsInfo).getAsJsonArray();
+                wallets.forEach((wallet) -> {
+                    wallet.getAsJsonObject().keySet().forEach((walletName) -> PreferencesManager.put(context, Constant.WALLETS, walletName,
+                            wallet.getAsJsonObject().get(walletName)));
+                });
             }
-        });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -281,6 +282,42 @@ public final class PyEnv {
     public static boolean hasBackup() {
         try {
             return sCommands.callAttr(PyConstant.HAS_BACKUP).toBoolean();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    /**
+     * 校验扩展公钥格式
+     * */
+    public static boolean validateXpub(String xpub) {
+        if (Global.guiConsole != null) {
+          return  Global.guiConsole.callAttr(PyConstant.VALIDATE_XPUB, xpub).toBoolean();
+        }
+        return false;
+    }
+    public static List<BalanceInfo> createLocalHd(String passwd, String mnemonics) {
+        List<BalanceInfo> infos = new ArrayList<>();
+        try {
+        String  walletsInfo  = sCommands.callAttr(PyConstant.CREATE_HD_WALLET, passwd, mnemonics).toString();
+            System.out.println("============" + walletsInfo);
+            if (!Strings.isNullOrEmpty(walletsInfo)) {
+                JsonArray wallets = JsonParser.parseString(walletsInfo).getAsJsonArray();
+                wallets.forEach((wallet) -> {
+                   infos.add(BalanceInfo.objectFromData(wallet.toString()));
+                });
+            }
+            return infos;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static boolean recoveryConfirm(List<String> nameList) {
+        try {
+            sCommands.callAttr(PyConstant.RECOVERY_CONFIRM, new Gson().toJson(nameList.toString()), true);
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
         }

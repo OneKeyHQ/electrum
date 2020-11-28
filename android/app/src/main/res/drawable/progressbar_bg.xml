@@ -6,7 +6,7 @@
 
     <item android:id="@android:id/progress">
         <scale
-            android:drawable="@drawable/button_bk"
+            android:drawable="@drawable/btn_checked"
             android:scaleWidth="100%" />
     </item>
 

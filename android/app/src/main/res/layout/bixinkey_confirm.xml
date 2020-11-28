@@ -11,7 +11,7 @@
         android:layout_marginStart="@dimen/dp_10"
         android:layout_marginEnd="@dimen/dp_10"
         android:layout_marginBottom="@dimen/layout_margin"
-        app:cardCornerRadius="@dimen/corner_radius">
+        app:cardCornerRadius="@dimen/dp_20">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -25,14 +25,14 @@
                 android:gravity="center"
                 android:paddingStart="32.4dp"
                 android:paddingEnd="16.2dp"
-                android:text="@string/confirm_pub"
+                android:text="核对信息"
                 android:textColor="@color/text_color1"
                 android:textSize="16sp"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:layout_editor_absoluteX="0dp" />
 
             <ImageView
-                android:id="@+id/img_cancle"
+                android:id="@+id/img_cancel"
                 android:layout_width="@dimen/dp_40"
                 android:layout_height="47.5dp"
                 android:layout_alignParentEnd="true"
@@ -56,7 +56,7 @@
                 android:layout_below="@+id/ln"
                 android:layout_marginStart="@dimen/text_margin"
                 android:layout_marginTop="9.5dp"
-                android:text="@string/name"
+                android:text="名称"
                 android:textColor="@color/graytext_color"
                 android:textSize="@dimen/smaller_text_size" />
 
@@ -73,14 +73,14 @@
                 android:background="@drawable/gray_tuo_6"
                 android:gravity="center_vertical">
 
-                <TextView
-                    android:id="@+id/edit_keyName"
+                <EditText
+                    android:id="@+id/name"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:background="@null"
                     android:gravity="center_vertical"
-                    tools:text="BixinKey"
+                    android:hint="请输入一个名字，方便记忆"
                     android:paddingStart="@dimen/dp_16"
                     android:paddingEnd="@dimen/dp_16"
                     android:textColor="#494949"
@@ -100,7 +100,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/text_margin"
-                    android:text="@string/public_address"
+                    android:text="公钥地址"
                     android:textColor="@color/graytext_color"
                     android:textSize="@dimen/smaller_text_size" />
 
@@ -135,7 +135,7 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/text_public_key_cosigner_popup"
+                        android:id="@+id/xpub_info"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_marginTop="@dimen/dp_10"
@@ -160,8 +160,8 @@
                 android:layout_marginStart="@dimen/dp_16"
                 android:layout_marginTop="@dimen/dp_18"
                 android:layout_marginEnd="@dimen/dp_16"
-                android:background="@drawable/button_bk"
-                android:text="@string/confirm"
+                android:background="@drawable/btn_checked"
+                android:text="添加"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"
                 android:textSize="@dimen/sp_14"

@@ -7,6 +7,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.haobtc.onekey.R;
+import org.haobtc.onekey.activities.jointwallet.MultiSigWalletCreator;
+import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.mvp.base.BaseActivity;
 
 import butterknife.BindView;
@@ -40,10 +42,12 @@ public class FindNormalDeviceActivity extends BaseActivity {
         return R.layout.activity_find_device_no_backup;
     }
 
+    @SingleClick
     @OnClick({R.id.img_back, R.id.add_new_wallet, R.id.recovery_used_wallet, R.id.multi_sig_wallet})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
+                finish();
                 break;
             case R.id.add_new_wallet:
                 startActivity(new Intent(this, CreatePersonalWalletActivity.class));
@@ -52,6 +56,8 @@ public class FindNormalDeviceActivity extends BaseActivity {
             case R.id.recovery_used_wallet:
                 break;
             case R.id.multi_sig_wallet:
+               startActivity(new Intent(this, CreateMultiSigWalletActivity.class));
+                finish();
                 break;
             default:
         }

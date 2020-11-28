@@ -10,6 +10,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.MyApplication;
+import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.asynctask.BusinessAsyncTask;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.PyConstant;
@@ -59,7 +60,7 @@ public class ActivateColdWalletActivity extends BaseActivity implements Business
         return R.layout.activity_title_container;
     }
 
-
+    @SingleClick
     @OnClick({R.id.img_back})
     public void onViewClicked(View view) {
         if (view.getId() == R.id.img_back) {
@@ -128,7 +129,7 @@ public class ActivateColdWalletActivity extends BaseActivity implements Business
            changePin();
         } else {
             // 回写PIN码
-            PyEnv.setPin(event.getPinNew());
+            PyEnv.setPin(event.toString());
         }
 
     }
@@ -165,11 +166,8 @@ public class ActivateColdWalletActivity extends BaseActivity implements Business
         int mode = getIntent().getIntExtra(Constant.ACTIVE_MODE, 0);
         switch (mode) {
             case Constant.ACTIVE_MODE_NEW:
-                finish();
-                break;
             case Constant.ACTIVE_MODE_IMPORT:
-                updateTitle(R.string.add_asset);
-                startFragment(new AddAssetFragment());
+                finish();
                 break;
             case Constant.ACTIVE_MODE_LOCAL_BACKUP:
                 showToast("暂不支持此方式");

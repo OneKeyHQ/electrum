@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/home_bg_onekey"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/white"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="读取公钥信息"
+            android:textColor="#142A3B"
+            android:textSize="@dimen/sp_30"/>
+        <RelativeLayout
+            android:id="@+id/load_device"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="@dimen/dp_20"
+            android:layout_marginVertical="@dimen/dp_28"
+            android:background="@drawable/dark_bg">
+            <ProgressBar
+                android:id="@+id/loading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:indeterminateBehavior="repeat"
+                android:indeterminateDrawable="@drawable/progressbar_drawable"
+                android:indeterminateOnly="true" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="请稍后..."
+                android:textColor="#546370"
+                android:textSize="@dimen/sp_14"
+                android:layout_below="@id/loading"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/dp_30"/>
+        </RelativeLayout>
+
+    </LinearLayout>
+
+
+</LinearLayout>

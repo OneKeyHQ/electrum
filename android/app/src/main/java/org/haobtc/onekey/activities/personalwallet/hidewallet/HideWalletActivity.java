@@ -99,9 +99,9 @@ public class HideWalletActivity extends BaseActivity {
         //set see view
         View view = View.inflate(context, resource, null);
         dialogBtoms = new Dialog(context, R.style.dialog);
-        editBixinName = view.findViewById(R.id.edit_keyName);
+        editBixinName = view.findViewById(R.id.name);
         TextView tetNum = view.findViewById(R.id.txt_textNum);
-        textView = view.findViewById(R.id.text_public_key_cosigner_popup);
+        textView = view.findViewById(R.id.xpub_info);
         textView.setText(xpub);
         defaultKeyNameNum = defaultKeyNum + 1;
         editBixinName.setText(String.format("pub%s", String.valueOf(defaultKeyNameNum)));
@@ -162,7 +162,7 @@ public class HideWalletActivity extends BaseActivity {
         });
 
         //cancel dialog
-        view.findViewById(R.id.img_cancle).setOnClickListener(v -> {
+        view.findViewById(R.id.img_cancel).setOnClickListener(v -> {
             dialogBtoms.cancel();
             // todo: 弹窗关闭
         });

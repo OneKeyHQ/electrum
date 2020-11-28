@@ -50,6 +50,11 @@ public final class PyConstant {
      * 按键确认
      */
     public static final int BUTTON_REQUEST_7 = 7;
+
+    /**
+     * 恢复出厂设置
+     */
+    public static final int BUTTON_REQUEST_6 = 6;
     /**
      * 验证当前PIN
      */
@@ -96,5 +101,20 @@ public final class PyConstant {
      * 查看当前钱包的备份状态
      * */
     public static final String HAS_BACKUP = "get_backup_info";
+
+    /**
+     * 校验扩展公钥合法性
+     * */
+    public static final String VALIDATE_XPUB = "is_valid_xpub";
+
+    /**
+     * 通过助记词创建HD钱包
+     * */
+    public static final String CREATE_HD_WALLET = "create_hd_wallet";
+
+    /**
+     * 通过助记词创建HD钱包
+     * */
+    public static final String RECOVERY_CONFIRM = "recovery_confirmed";
 
 }

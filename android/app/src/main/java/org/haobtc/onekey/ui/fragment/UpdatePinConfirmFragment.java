@@ -21,8 +21,8 @@ import butterknife.OnClick;
 public class UpdatePinConfirmFragment extends BaseFragment {
 
 
-    @BindView(R.id.back_device)
-    Button backDevice;
+    @BindView(R.id.next)
+    Button next;
 
     @Override
     public void init(View view) {
@@ -34,14 +34,14 @@ public class UpdatePinConfirmFragment extends BaseFragment {
         return R.layout.fragment_update_pin_confirm;
     }
 
-    @OnClick(R.id.back_device)
+    @OnClick(R.id.next)
     public void onViewClicked() {
         EventBus.getDefault().post(new NextFragmentEvent(R.layout.active_successful_fragment));
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onConfirm(ButtonRequestConfirmedEvent event) {
-        backDevice.setEnabled(true);
+        next.setEnabled(true);
     }
     @Override
     public boolean needEvents() {

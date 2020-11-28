@@ -1,66 +1,60 @@
 package org.haobtc.onekey.activities.jointwallet;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Dialog;
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.view.Gravity;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chaquo.python.PyObject;
-import com.google.gson.Gson;
 import com.tbruyelle.rxpermissions2.RxPermissions;
-import com.yzq.zxinglibrary.android.CaptureActivity;
-import com.yzq.zxinglibrary.bean.ZxingConfig;
-import com.yzq.zxinglibrary.common.Constant;
-import com.yzq.zxinglibrary.encode.CodeCreator;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.haobtc.onekey.MainActivity;
 import org.haobtc.onekey.R;
-import org.haobtc.onekey.activities.base.BaseActivity;
-import org.haobtc.onekey.activities.service.CommunicationModeSelector;
-import org.haobtc.onekey.adapter.AddBixinKeyAdapter;
+import org.haobtc.onekey.activities.base.MyApplication;
+import org.haobtc.onekey.adapter.AddedXpubAdapter;
 import org.haobtc.onekey.adapter.PublicAdapter;
 import org.haobtc.onekey.adapter.PublicPersonAdapter;
 import org.haobtc.onekey.adapter.SignNumAdapter;
 import org.haobtc.onekey.aop.SingleClick;
+import org.haobtc.onekey.asynctask.BusinessAsyncTask;
 import org.haobtc.onekey.bean.CNYBean;
-import org.haobtc.onekey.bean.GetCodeAddressBean;
+import org.haobtc.onekey.bean.XpubItem;
+import org.haobtc.onekey.constant.PyConstant;
 import org.haobtc.onekey.event.AddBixinKeyEvent;
+import org.haobtc.onekey.event.AddXpubEvent;
+import org.haobtc.onekey.event.ButtonRequestEvent;
+import org.haobtc.onekey.event.ChangePinEvent;
+import org.haobtc.onekey.event.CreateWalletEvent;
+import org.haobtc.onekey.event.DeviceSearchEvent;
 import org.haobtc.onekey.event.FirstEvent;
-import org.haobtc.onekey.event.MutiSigWalletEvent;
+import org.haobtc.onekey.event.GetXpubEvent;
+import org.haobtc.onekey.manager.PyEnv;
+import org.haobtc.onekey.mvp.base.BaseActivity;
+import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
+import org.haobtc.onekey.ui.dialog.ChooseAddXpubWayDialog;
+import org.haobtc.onekey.ui.dialog.ValidateXpubDialog;
+import org.haobtc.onekey.ui.fragment.DevicePINFragment;
 import org.haobtc.onekey.utils.Daemon;
 import org.haobtc.onekey.utils.MyDialog;
 
@@ -68,13 +62,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Locale;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
+/**
+ * @author liyan
+ */
+public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, BusinessAsyncTask.Helper {
 
     @BindView(R.id.img_back)
     ImageView imgBack;
@@ -124,7 +119,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
     private static final int REQUEST_CODE = 0;
     private EditText editScan;
     private TextView textView;
-    private ArrayList<AddBixinKeyEvent> addEventsDatas;
+    private ArrayList<XpubItem> addEventsDatas;
     private MyDialog myDialog;
     private PyObject walletAddressShowUi;
     private SharedPreferences.Editor edit;
@@ -138,34 +133,34 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
     private String signNum = "2";
     private SignNumAdapter signNumAdapter;
 
+    /**
+     * init
+     */
     @Override
-    public int getLayoutId() {
-        return R.layout.activity_many_wallet_together;
-    }
+    public void init() {
 
-    @SuppressLint("CommitPrefEdits")
-    @Override
-    public void initView() {
-        ButterKnife.bind(this);
-        EventBus.getDefault().register(this);
         preferences = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
         int defaultName = preferences.getInt("defaultName", 0);
         edit = preferences.edit();
-        rxPermissions = new RxPermissions(this);
-        myDialog = MyDialog.showDialog(MultiSigWalletCreator.this);
+//        rxPermissions = new RxPermissions(this);
+//        myDialog = MyDialog.showDialog(MultiSigWalletCreator.this);
         editWalletname.addTextChangedListener(this);
         walletNameNum = defaultName + 1;
         editWalletname.setText(String.format("钱包%s", String.valueOf(walletNameNum)));
         StaggeredGridLayoutManager manager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
         reclPublicPerson.setLayoutManager(manager);
         reclPublicPerson.setNestedScrollingEnabled(false);
-    }
-
-    @Override
-    public void initData() {
         addEventsDatas = new ArrayList<>();
         publicData();
         signNumData(3);
+    }
+    /***
+     * init layout
+     * @return
+     */
+    @Override
+    public int getContentViewId() {
+        return R.layout.activity_many_wallet_together;
     }
 
     private void publicData() {
@@ -262,8 +257,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
                 mCreatWalletNext();
                 break;
             case R.id.bn_add_key:
-                chooseAddMethod(MultiSigWalletCreator.this, R.layout.add_public_dialog);
-
+                new ChooseAddXpubWayDialog().show(getSupportFragmentManager(), "xpub");
                 break;
             case R.id.btn_Finish:
                 finish();
@@ -277,34 +271,6 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
         }
     }
 
-    private void chooseAddMethod(Context context, @LayoutRes int resource) {
-        View view = View.inflate(context, resource, null);
-        Dialog dialogBtoms = new Dialog(context, R.style.dialog);
-        //hardware
-        view.findViewById(R.id.rel_hardware_Add).setOnClickListener(v -> {
-            dialogBtoms.cancel();
-        });
-        //input
-        view.findViewById(R.id.rel_input_pub).setOnClickListener(v -> {
-            showInputDialogs(MultiSigWalletCreator.this, R.layout.bixinkey_input);
-            dialogBtoms.cancel();
-        });
-        //cancel dialog
-        view.findViewById(R.id.img_cancel).setOnClickListener(v -> {
-            dialogBtoms.cancel();
-        });
-
-        dialogBtoms.setContentView(view);
-        Window window = dialogBtoms.getWindow();
-        //set pop_up size
-        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-        //set locate
-        window.setGravity(Gravity.BOTTOM);
-        //set animal
-        window.setWindowAnimations(R.style.AnimBottom);
-        dialogBtoms.show();
-
-    }
 
     public boolean saveBitmap(Bitmap bitmap) {
         try {
@@ -346,94 +312,40 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
             bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.btn_no_check));
         }
     }
+    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
+    public void onSearchDeviceEvent(DeviceSearchEvent event) {
+       Intent intent = new Intent(this, SearchDevicesActivity.class);
+       intent.putExtra(org.haobtc.onekey.constant.Constant.SEARCH_DEVICE_MODE, org.haobtc.onekey.constant.Constant.SearchDeviceMode.MODE_BIND_ADMIN_PERSON);
+       startActivity(intent);
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onAddXpubEvent(AddXpubEvent event) {
+        addXpub(event.getName(), event.getXpub());
+    }
+    private void addXpub(String name, String xpub) {
 
-
-    private void showInputDialogs(Context context, @LayoutRes int resource) {
-        //set see view
-        View view = View.inflate(context, resource, null);
-        Dialog dialogBtoms = new Dialog(context, R.style.dialog);
-        EditText editBixinName = view.findViewById(R.id.edit_keyName);
-        editScan = view.findViewById(R.id.edit_public_key_cosigner_popup);
-        int defaultKeyNum = preferences.getInt("defaultKeyNum", 0);
-        defaultKeyNameNum = defaultKeyNum + 1;
-        editBixinName.setText(String.format("BixinKey%s", String.valueOf(defaultKeyNameNum)));
-
-        //sweep
-        view.findViewById(R.id.sweep_cosigner_popup).setOnClickListener(v -> {
-            rxPermissions
-                    .request(Manifest.permission.CAMERA)
-                    .subscribe(granted -> {
-                        if (granted) { // Always true pre-M
-                            //If you have already authorized it, you can directly jump to the QR code scanning interface
-                            Intent intent2 = new Intent(this, CaptureActivity.class);
-                            ZxingConfig config = new ZxingConfig();
-                            config.setPlayBeep(true);
-                            config.setShake(true);
-                            config.setDecodeBarCode(false);
-                            config.setFullScreenScan(true);
-                            config.setShowAlbum(false);
-                            config.setShowbottomLayout(false);
-                            intent2.putExtra(Constant.INTENT_ZXING_CONFIG, config);
-                            startActivityForResult(intent2, REQUEST_CODE);
-                        } else { // Oups permission denied
-                            Toast.makeText(this, R.string.photopersion, Toast.LENGTH_SHORT).show();
-                        }
-                    }).dispose();
-
-        });
-        //stick
-        view.findViewById(R.id.paste_cosigner_popup1).setOnClickListener(v -> {
-            //get Shear plate TODO：
-            ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-            if (clipboard != null) {
-                ClipData data = clipboard.getPrimaryClip();
-                if (data != null && data.getItemCount() > 0) {
-                    editScan.setText(data.getItemAt(0).getText());
-                }
-            }
-        });
-
-        view.findViewById(R.id.btn_ConfirmAll).setOnClickListener(v -> {
-            String strBixinname = editBixinName.getText().toString();
-            String strSweep = editScan.getText().toString();
-            if (TextUtils.isEmpty(strBixinname)) {
-                mToast(getString(R.string.input_name));
-                return;
-            }
-            if (TextUtils.isEmpty(strSweep)) {
-                mToast(getString(R.string.input_public_address));
-                return;
-            }
             AddBixinKeyEvent addBixinKeyEvent = new AddBixinKeyEvent();
             boolean exist = false;
-            if (addEventsDatas.size() != 0) {
-                for (int i = 0; i < addEventsDatas.size(); i++) {
-                    if (strSweep.equals(addEventsDatas.get(i).getKeyaddress())) {
-                        mToast(getString(R.string.please_change_xpub));
-                        exist = true;
-                        break;
-                    }
+        if (addEventsDatas.size() != 0) {
+            for (XpubItem item : addEventsDatas) {
+                if (xpub.equals(item.getXpub())) {
+                    showToast(getString(R.string.please_change_xpub));
+                    exist = true;
+                    break;
                 }
-                if (!exist) {
-                    addBixinKeyEvent = new AddBixinKeyEvent();
-                    addBixinKeyEvent.setKeyname(strBixinname);
-                    addBixinKeyEvent.setKeyaddress(strSweep);
-                    addBixinKeyEvent.setDeviceId("");
-                    addEventsDatas.add(addBixinKeyEvent);
-                    dialogBtoms.cancel();
-                }
-            } else {
-                addBixinKeyEvent.setKeyname(strBixinname);
-                addBixinKeyEvent.setKeyaddress(strSweep);
-                addEventsDatas.add(addBixinKeyEvent);
-                dialogBtoms.cancel();
             }
+            if (!exist) {
+                addEventsDatas.add(new XpubItem(name, xpub));
+            }
+        } else {
+            addEventsDatas.add(new XpubItem(name, xpub));
+        }
             //public person
             PublicPersonAdapter publicPersonAdapter = new PublicPersonAdapter(addEventsDatas);
             reclPublicPerson.setAdapter(publicPersonAdapter);
             //bixinKEY
-            AddBixinKeyAdapter addBixinKeyAdapter = new AddBixinKeyAdapter(addEventsDatas);
-            reclBinxinKey.setAdapter(addBixinKeyAdapter);
+            AddedXpubAdapter addedXpubAdapter = new AddedXpubAdapter(addEventsDatas);
+            reclBinxinKey.setAdapter(addedXpubAdapter);
             cosignerNum = Integer.parseInt(publicNum);
             textPubNum.setText(String.format("%s/%s", addEventsDatas.size() + "", cosignerNum));
 
@@ -444,176 +356,158 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
             }
             edit.putInt("defaultKeyNum", defaultKeyNameNum);
             edit.apply();
-            addBixinKeyAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
-                @Override
-                public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
-                    cosignerNum = Integer.parseInt(publicNum);
-                    switch (view.getId()) {
-                        case R.id.img_deleteKey:
-                            try {
-                                Daemon.commands.callAttr("delete_xpub", strSweep);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                if (e.getMessage().contains("the xpub to be delete not in keystore")) {
-                                    mToast(getString(R.string.no_delete_xpub));
-                                }
-                            }
-                            addEventsDatas.remove(position);
-                            addBixinKeyAdapter.notifyDataSetChanged();
-                            bnAddKey.setVisibility(View.VISIBLE);
-                            textPubNum.setText(String.format("%s/%s", addEventsDatas.size() + "", cosignerNum));
-                            if (addEventsDatas.size() == cosignerNum) {
-                                bnCompleteAddCosigner.setEnabled(true);
-                                bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.btn_checked));
-                                bnAddKey.setVisibility(View.GONE);
-                            } else {
-                                bnCompleteAddCosigner.setEnabled(false);
-                                bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.btn_no_check));
-                            }
-                            break;
-                        default:
-                            throw new IllegalStateException("Unexpected value: " + view.getId());
-                    }
-                }
-            });
-        });
-
-        //cancel dialog
-        view.findViewById(R.id.img_cancle).setOnClickListener(v -> {
-            dialogBtoms.cancel();
-        });
-
-        dialogBtoms.setContentView(view);
-        Window window = dialogBtoms.getWindow();
-        //set pop_up size
-        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-        //set locate
-        window.setGravity(Gravity.BOTTOM);
-        //set animal
-        window.setWindowAnimations(R.style.AnimBottom);
-        dialogBtoms.show();
-    }
-
-    private void showConfirmPubDialog(Context context, @LayoutRes int resource, String xpub, String device_id, String label) {
-        //set see view
-        View view = View.inflate(context, resource, null);
-        Dialog dialogBtoms = new Dialog(context, R.style.dialog);
-
-        TextView edit_bixinName = view.findViewById(R.id.edit_keyName);
-        textView = view.findViewById(R.id.text_public_key_cosigner_popup);
-        textView.setText(xpub);
-        if (!TextUtils.isEmpty(label)) {
-            edit_bixinName.setText(label);
-        } else {
-            edit_bixinName.setText(getString(R.string.BixinKey));
-        }
-        view.findViewById(R.id.btn_confirm).setOnClickListener(v -> {
-            String strBixinname = edit_bixinName.getText().toString();
-            String strSweep = textView.getText().toString();
-            if (TextUtils.isEmpty(strBixinname)) {
-                mToast(getString(R.string.input_name));
-                return;
-            }
-            if (TextUtils.isEmpty(strSweep)) {
-                mToast(getString(R.string.input_public_address));
-                return;
-            }
-            AddBixinKeyEvent addBixinKeyEvent = new AddBixinKeyEvent();
-            boolean exist = false;
-            if (addEventsDatas.size() != 0) {
-                for (int i = 0; i < addEventsDatas.size(); i++) {
-                    if (strSweep.equals(addEventsDatas.get(i).getKeyaddress())) {
-                        mToast(getString(R.string.please_change_xpub));
-                        exist = true;
-                        break;
-                    }
-                }
-                if (!exist) {
-                    addBixinKeyEvent = new AddBixinKeyEvent();
-                    addBixinKeyEvent.setKeyname(strBixinname);
-                    addBixinKeyEvent.setKeyaddress(strSweep);
-                    addBixinKeyEvent.setDeviceId(device_id);
-                    addEventsDatas.add(addBixinKeyEvent);
-                    dialogBtoms.cancel();
-                }
-            } else {
-                addBixinKeyEvent.setKeyname(strBixinname);
-                addBixinKeyEvent.setKeyaddress(strSweep);
-                addBixinKeyEvent.setDeviceId(device_id);
-                addEventsDatas.add(addBixinKeyEvent);
-                dialogBtoms.cancel();
-            }
-
-            //public person
-            PublicPersonAdapter publicPersonAdapter = new PublicPersonAdapter(addEventsDatas);
-            reclPublicPerson.setAdapter(publicPersonAdapter);
-            //bixinKEY
-            AddBixinKeyAdapter addBixinKeyAdapter = new AddBixinKeyAdapter(addEventsDatas);
-            reclBinxinKey.setAdapter(addBixinKeyAdapter);
-            cosignerNum = Integer.parseInt(publicNum);
-            textPubNum.setText(String.format("%s/%s", addEventsDatas.size() + "", cosignerNum));
-            if (addEventsDatas.size() == cosignerNum) {
-                bnCompleteAddCosigner.setEnabled(true);
-                bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.little_radio_blue));
-                bnAddKey.setVisibility(View.GONE);
-            }
-
-            addBixinKeyAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
+            addedXpubAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
                 @Override
                 public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
                     cosignerNum = Integer.parseInt(publicNum);
                     if (view.getId() == R.id.img_deleteKey) {
                         try {
-                            Daemon.commands.callAttr("delete_xpub", strSweep);
-
+                            Daemon.commands.callAttr("delete_xpub", xpub);
                         } catch (Exception e) {
                             e.printStackTrace();
+                            if (e.getMessage().contains("the xpub to be delete not in keystore")) {
+                                showToast(getString(R.string.no_delete_xpub));
+                            }
                         }
                         addEventsDatas.remove(position);
-                        addBixinKeyAdapter.notifyDataSetChanged();
-                        textPubNum.setText(String.format("%s/%s", addEventsDatas.size() + "", cosignerNum));
+                        addedXpubAdapter.notifyDataSetChanged();
                         bnAddKey.setVisibility(View.VISIBLE);
+                        textPubNum.setText(String.format("%s/%s", addEventsDatas.size() + "", cosignerNum));
                         if (addEventsDatas.size() == cosignerNum) {
                             bnCompleteAddCosigner.setEnabled(true);
-                            bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.little_radio_blue));
+                            bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.btn_checked));
                             bnAddKey.setVisibility(View.GONE);
                         } else {
                             bnCompleteAddCosigner.setEnabled(false);
-                            bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.little_radio_qian));
+                            bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.btn_no_check));
                         }
+                    } else {
+                        throw new IllegalStateException("Unexpected value: " + view.getId());
                     }
                 }
             });
-            dialogBtoms.cancel();
-        });
-
-        //cancel dialog
-        view.findViewById(R.id.img_cancle).setOnClickListener(v -> {
-            dialogBtoms.cancel();
-        });
-
-
-        dialogBtoms.setContentView(view);
-        Window window = dialogBtoms.getWindow();
-        //set pop_up size
-        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-        //set locate
-        window.setGravity(Gravity.BOTTOM);
-        //set animal
-        window.setWindowAnimations(R.style.AnimBottom);
-        dialogBtoms.show();
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 0 && resultCode == RESULT_OK) {
-            if (data != null) {
-                String content = data.getStringExtra(Constant.CODED_CONTENT);
-                editScan.setText(content);
-            }
-        }
-    }
+//    private void showConfirmPubDialog(Context context, @LayoutRes int resource, String xpub, String device_id, String label) {
+//        //set see view
+//        View view = View.inflate(context, resource, null);
+//        Dialog dialogBtoms = new Dialog(context, R.style.dialog);
+//
+//        TextView edit_bixinName = view.findViewById(R.id.edit_keyName);
+//        textView = view.findViewById(R.id.text_public_key_cosigner_popup);
+//        textView.setText(xpub);
+//        if (!TextUtils.isEmpty(label)) {
+//            edit_bixinName.setText(label);
+//        } else {
+//            edit_bixinName.setText(getString(R.string.BixinKey));
+//        }
+//        view.findViewById(R.id.btn_confirm).setOnClickListener(v -> {
+//            String strBixinname = edit_bixinName.getText().toString();
+//            String strSweep = textView.getText().toString();
+//            if (TextUtils.isEmpty(strBixinname)) {
+//                mToast(getString(R.string.input_name));
+//                return;
+//            }
+//            if (TextUtils.isEmpty(strSweep)) {
+//                mToast(getString(R.string.input_public_address));
+//                return;
+//            }
+//            AddBixinKeyEvent addBixinKeyEvent = new AddBixinKeyEvent();
+//            boolean exist = false;
+//            if (addEventsDatas.size() != 0) {
+//                for (int i = 0; i < addEventsDatas.size(); i++) {
+//                    if (strSweep.equals(addEventsDatas.get(i).getKeyaddress())) {
+//                        mToast(getString(R.string.please_change_xpub));
+//                        exist = true;
+//                        break;
+//                    }
+//                }
+//                if (!exist) {
+//                    addBixinKeyEvent = new AddBixinKeyEvent();
+//                    addBixinKeyEvent.setKeyname(strBixinname);
+//                    addBixinKeyEvent.setKeyaddress(strSweep);
+//                    addBixinKeyEvent.setDeviceId(device_id);
+//                    addEventsDatas.add(addBixinKeyEvent);
+//                    dialogBtoms.cancel();
+//                }
+//            } else {
+//                addBixinKeyEvent.setKeyname(strBixinname);
+//                addBixinKeyEvent.setKeyaddress(strSweep);
+//                addBixinKeyEvent.setDeviceId(device_id);
+//                addEventsDatas.add(addBixinKeyEvent);
+//                dialogBtoms.cancel();
+//            }
+//
+//            //public person
+//            PublicPersonAdapter publicPersonAdapter = new PublicPersonAdapter(addEventsDatas);
+//            reclPublicPerson.setAdapter(publicPersonAdapter);
+//            //bixinKEY
+//            AddBixinKeyAdapter addBixinKeyAdapter = new AddBixinKeyAdapter(addEventsDatas);
+//            reclBinxinKey.setAdapter(addBixinKeyAdapter);
+//            cosignerNum = Integer.parseInt(publicNum);
+//            textPubNum.setText(String.format("%s/%s", addEventsDatas.size() + "", cosignerNum));
+//            if (addEventsDatas.size() == cosignerNum) {
+//                bnCompleteAddCosigner.setEnabled(true);
+//                bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.little_radio_blue));
+//                bnAddKey.setVisibility(View.GONE);
+//            }
+//
+//            addBixinKeyAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
+//                @Override
+//                public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
+//                    cosignerNum = Integer.parseInt(publicNum);
+//                    if (view.getId() == R.id.img_deleteKey) {
+//                        try {
+//                            Daemon.commands.callAttr("delete_xpub", strSweep);
+//
+//                        } catch (Exception e) {
+//                            e.printStackTrace();
+//                        }
+//                        addEventsDatas.remove(position);
+//                        addBixinKeyAdapter.notifyDataSetChanged();
+//                        textPubNum.setText(String.format("%s/%s", addEventsDatas.size() + "", cosignerNum));
+//                        bnAddKey.setVisibility(View.VISIBLE);
+//                        if (addEventsDatas.size() == cosignerNum) {
+//                            bnCompleteAddCosigner.setEnabled(true);
+//                            bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.little_radio_blue));
+//                            bnAddKey.setVisibility(View.GONE);
+//                        } else {
+//                            bnCompleteAddCosigner.setEnabled(false);
+//                            bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.little_radio_qian));
+//                        }
+//                    }
+//                }
+//            });
+//            dialogBtoms.cancel();
+//        });
+//
+//        //cancel dialog
+//        view.findViewById(R.id.img_cancle).setOnClickListener(v -> {
+//            dialogBtoms.cancel();
+//        });
+//
+//
+//        dialogBtoms.setContentView(view);
+//        Window window = dialogBtoms.getWindow();
+//        //set pop_up size
+//        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+//        //set locate
+//        window.setGravity(Gravity.BOTTOM);
+//        //set animal
+//        window.setWindowAnimations(R.style.AnimBottom);
+//        dialogBtoms.show();
+//    }
+
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        if (requestCode == 0 && resultCode == RESULT_OK) {
+//            if (data != null) {
+//                String content = data.getStringExtra(Constant.CODED_CONTENT);
+//                editScan.setText(content);
+//            }
+//        }
+//    }
 
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -652,8 +546,8 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
                 ArrayList<String> pubList = new ArrayList<>();
                 String strWalletname = editWalletname.getText().toString();
                 for (int i = 0; i < addEventsDatas.size(); i++) {
-                    String keyaddress = addEventsDatas.get(i).getKeyaddress();
-                    String deviceId = addEventsDatas.get(i).getDeviceId();
+                    String keyaddress = addEventsDatas.get(i).getXpub();
+                    String deviceId = addEventsDatas.get(i).getName();
                     pubList.add("[\"" + keyaddress + "\",\"" + deviceId + "\"]");
                 }
 
@@ -664,14 +558,14 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
                     myDialog.dismiss();
                     String message = e.getMessage();
                     if ("BaseException: file already exists at path".equals(message)) {
-                        mToast(getString(R.string.changewalletname));
+                        showToast(getString(R.string.changewalletname));
                     } else if (message.contains("The same xpubs have create wallet")) {
                         String haveWalletName = message.substring(message.indexOf("name=") + 5);
-                        mToast(getString(R.string.xpub_have_wallet) + haveWalletName);
+                        showToast(getString(R.string.xpub_have_wallet) + haveWalletName);
                     } else if (message.contains("invaild type of xpub")) {
-                        mToast(getString(R.string.xpub_wrong));
+                        showToast(getString(R.string.xpub_wrong));
                     } else if (message.contains("Wrong key type p2wpkh")) {
-                        mToast(getString(R.string.wrong_key_type));
+                        showToast(getString(R.string.wrong_key_type));
                     }
                     return;
                 }
@@ -697,17 +591,70 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher {
         }
     };
 
+//    @Subscribe(threadMode = ThreadMode.MAIN)
+//    public void event(MutiSigWalletEvent event) {
+//        String xpub = event.getXpub();
+//        String deviceId = event.getDeviceId();
+//        String label = event.getLable();
+////        showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub, deviceId, label);
+//    }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void event(MutiSigWalletEvent event) {
-        String xpub = event.getXpub();
-        String deviceId = event.getDeviceId();
-        String label = event.getLable();
-        showConfirmPubDialog(this, R.layout.bixinkey_confirm, xpub, deviceId, label);
+    public void onGetXpub(GetXpubEvent event) {
+        getXpubP2wsh();
+    }
+    /**
+     * 获取用于个人钱包的扩展公钥
+     * */
+    private void getXpubP2wsh() {
+        new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY,
+                MyApplication.getInstance().getDeviceWay());
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onCreateWallet(CreateWalletEvent event) {
+
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onChangePin(ChangePinEvent event) {
+        // 回写PIN码
+        PyEnv.setPin(event.getPinNew());
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onButtonRequest(ButtonRequestEvent event) {
+        if (PyConstant.PIN_CURRENT == event.getType()) {
+            startFragment(new DevicePINFragment(PyConstant.PIN_CURRENT));
+        }
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        EventBus.getDefault().unregister(this);
+    public void onPreExecute() {
+
+    }
+
+    @Override
+    public void onException(Exception e) {
+
+    }
+
+    @Override
+    public void onResult(String s) {
+        startFragment(new ValidateXpubDialog(s));
+    }
+
+    @Override
+    public void onCancelled() {
+
+    }
+
+    @Override
+    public void currentMethod(String methodName) {
+
+    }
+
+
+    @Override
+    public boolean needEvents() {
+        return true;
     }
 }

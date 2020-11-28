@@ -8,7 +8,7 @@
         <!--状态栏颜色（页面最顶层显示时间的地方）-->
         <item name="colorPrimaryDark">@android:color/white</item>
         <!--全局的获取焦点后的光标颜色(控件主题颜色)-->
-        <item name="colorAccent">@color/button_bk</item>
+        <item name="colorAccent">@color/onekey</item>
         <!--Needed by MaterialAlertDialog-->
         <item name="colorSurface">@android:color/white</item>
     </style>

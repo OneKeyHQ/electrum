@@ -42,7 +42,7 @@
 
 
     <Button
-        android:id="@+id/back_device"
+        android:id="@+id/next"
         android:layout_width="300dp"
         android:layout_height="50dp"
         android:layout_gravity="center_horizontal"

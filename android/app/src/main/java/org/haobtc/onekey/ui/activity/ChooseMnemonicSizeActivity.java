@@ -19,6 +19,7 @@ import butterknife.OnClick;
 /**
  * 选择助记词强度页面（12、24）
  * */
+@Deprecated
 class ChooseMnemonicSizeActivity extends BaseActivity {
 
     @BindView(R.id.img_back)

@@ -3,6 +3,7 @@ package org.haobtc.onekey.ui.activity;
 import android.widget.ImageView;
 
 import org.haobtc.onekey.R;
+import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.mvp.base.BaseActivity;
 import org.haobtc.onekey.ui.fragment.DevicePINFragment;
 
@@ -27,8 +28,9 @@ public class RecoveryWalletByColdWalletActivity extends BaseActivity {
     public int getContentViewId() {
         return R.layout.activity_title_container;
     }
-
+    @SingleClick
     @OnClick(R.id.img_back)
     public void onViewClicked() {
+        finish();
     }
 }

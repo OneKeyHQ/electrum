@@ -7,8 +7,6 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.manager.PyEnv;
 
-import static org.haobtc.onekey.activities.service.CommunicationModeSelector.ble;
-
 /**
  * @author liyan
  */
@@ -33,11 +31,7 @@ public class ClickUtil {
         int viewId = v.getId();
         if (viewId == R.id.img_back || viewId == R.id.img_cancel) {
             EventBus.getDefault().post(new ExitEvent());
-            if (ble != null) {
-                PyEnv.bleCancel();
-                PyEnv.nfcCancel();
-                PyEnv.sNotify();
-            }
+            PyEnv.cancelAll();
             return false;
         }
         long time = System.currentTimeMillis();

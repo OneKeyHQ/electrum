@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:drawable="@drawable/btn_checked_red" android:state_enabled="true" />
+    <item android:drawable="@drawable/btn_no_check_red" android:state_enabled="false"/>
+
+
+</selector>

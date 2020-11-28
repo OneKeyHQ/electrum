@@ -1,26 +1,16 @@
 package org.haobtc.onekey.onekeys.dialog.recovery.importmethod;
 
 import android.Manifest;
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.Display;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
-import com.chaquo.python.Kwarg;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.bean.ZxingConfig;
@@ -28,9 +18,6 @@ import com.yzq.zxinglibrary.common.Constant;
 
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
-import org.haobtc.onekey.onekeys.HomeOnekeyActivity;
-import org.haobtc.onekey.onekeys.dialog.SetHDWalletPassActivity;
-import org.haobtc.onekey.utils.Daemon;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
