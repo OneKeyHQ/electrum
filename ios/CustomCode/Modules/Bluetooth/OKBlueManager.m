@@ -411,4 +411,7 @@ static dispatch_once_t once;
     [[NSUserDefaults standardUserDefaults]setObject:bleUUID forKey:kSavedUUIDForLastBlueTooth];
     [[NSUserDefaults standardUserDefaults]synchronize];
 }
+- (NSNotificationCenter *) getNotificationCenter {
+    return [NSNotificationCenter defaultCenter];
+}
 @end

@@ -60,9 +60,9 @@ if [ -d ${compact_name}/electrum ]; then
 	echo "Deleting old ${compact_name}/onekey..."
 	rm -fr ${compact_name}/electrum
 fi
-if [ -d ${compact_name}/api ]; then
-	echo "Deleting old ${compact_name}/api..."
-	rm -fr ${compact_name}/api
+if [ -d ${compact_name}/electrum_gui ]; then
+	echo "Deleting old ${compact_name}/electrum_gui..."
+	rm -fr ${compact_name}/electrum_gui
 fi
 if [ -d ${compact_name}/trezorlib ]; then
 	echo "Deleting old ${compact_name}/trezorlib..."
@@ -73,7 +73,7 @@ echo "Pulling 'onekey' libs into project from ../electrum ..."
 
 cp -fpR ../electrum ${compact_name}/electrum
 cp -fpR ../trezor/python-trezor/src/trezorlib ${compact_name}/trezorlib
-cp -fpR ../electrum_gui ${compact_name}/api
+cp -fpR ../electrum_gui ${compact_name}/electrum_gui
 echo "Removing electrum/tests..."
 rm -fr ${compact_name}/onekey/electrum/tests
 find ${compact_name} -name '*.pyc' -exec  rm -f {} \;
@@ -266,7 +266,7 @@ cp -fRa ../electrum/lnwire  iOS/app/${compact_name}/electrum
 
 rm -fr ${compact_name}/electrum/*
 rm -fr ${compact_name}/trezorlib/*
-rm -fr ${compact_name}/api/*
+rm -fr ${compact_name}/electrum_gui/*
 find iOS/app/${compact_name} -name '*.pyc' -exec  rm -f {} \;
 
 cd iOS && pod install

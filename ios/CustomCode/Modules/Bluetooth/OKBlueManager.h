@@ -152,6 +152,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)characteristicWrite:(NSString *)str;
 - (NSString *)characteristicRead;
+-(NSNotificationCenter *) getNotificationCenter;
 @end
 
 NS_ASSUME_NONNULL_END
