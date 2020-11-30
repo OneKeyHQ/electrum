@@ -113,7 +113,7 @@ class Abstract_Eth_Wallet(ABC):
         self.receive_requests      = db.get_dict('payment_requests')  # type: Dict[str, Invoice]
         self.invoices              = db.get_dict('invoices')  # type: Dict[str, Invoice]
         self._reserved_addresses   = set(db.get('reserved_addresses', []))
-
+        self.total_balance = {}
         self.calc_unused_change_addresses()
         # save wallet type the first time
         if self.db.get('wallet_type') is None:
@@ -157,7 +157,15 @@ class Abstract_Eth_Wallet(ABC):
     def pubkeys_to_address(self, public_key: str):
         return to_checksum_address(public_key_bytes_to_address(bytes.fromhex(public_key)))
 
+    def set_total_balance(self, balance):
+        self.total_balance = balance
+
+    def get_total_balance(self):
+        return self.total_balance
+
     def get_all_balance(self, wallet_address, from_coin):
+        # if len(self.total_balance) != 0:
+        #     return self.total_balance
         eth_info = {}
         last_price = PyWalib.get_coin_price(from_coin)
         eth, balance = PyWalib.get_balance(wallet_address)
@@ -172,6 +180,7 @@ class Abstract_Eth_Wallet(ABC):
             balance_info[symbol] = balance
             balance_info['fiat'] = balance * last_price
             eth_info[symbol] = balance_info
+        self.set_total_balance(eth_info)
         return eth_info
 
     def add_contract_token(self, contract_symbol, contract_address):

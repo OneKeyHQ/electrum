@@ -23,7 +23,13 @@
          {"trezor-testnet": "https://eth1.ropsten1.trezor.io/api/v2/"},
          {"trezor-testnet1": "https://eth2.ropsten1.trezor.io/api/v2/"}
       ],
-    "Market": "https://mkline.bixin.com/api/v1/ticker?symbol=",
+    "Market": [
+      {"coinbase": "https://api.coinbase.com/v2/exchange-rates?currency="},
+      {"bixin": "https://mkline.bixin.com/api/v1/ticker?symbol="},
+      {"binance": "https://api.binance.com/api/v1/ticker/24hr?symbol="},
+      {"ok": "https://mkline.bixin.com/api/v1/ticker?symbol="},
+      {"huobi": "https://api.huobi.pro/market/detail/merged?symbol="}
+    ],
     "GasServer": "https://www.gasnow.org/api/v3/gas/price?utm_source=onekey"
   }
 }

@@ -46,6 +46,6 @@ class DerivedInfo():
         self.clear_recovery_info()
 
     def update_list(self, account_id):
-        if self.derived_account_id.__contains__(account_id):
-            self.derived_account_id.remove(account_id)
+        if self.derived_account_id.__contains__(int(account_id)):
+            self.derived_account_id.remove(int(account_id))
             self.config.set_key('%s_derived_account_id_num' % self.coin, self.derived_account_id)

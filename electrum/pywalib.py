@@ -4,9 +4,10 @@ import http
 import math
 import os
 import json
+import time
 from enum import Enum
 from os.path import expanduser
-from electrum.util import Ticker
+from electrum.util import Ticker, make_aiohttp_session
 import requests
 # from eth_accounts.account_utils import AccountUtils
 from eth_keyfile import keyfile
@@ -14,6 +15,8 @@ from eth_utils import to_checksum_address
 from web3 import HTTPProvider, Web3
 from .eth_transaction import Eth_Transaction
 from decimal import Decimal
+import sqlite3
+from .network import Network
 from electrum.constants import read_json
 eth_servers = {}
 
@@ -21,7 +24,7 @@ ETHERSCAN_API_KEY = "R796P9T31MEA24P8FNDZBCA88UHW8YCNVW"
 INFURA_PROJECT_ID = "f001ce716b6e4a33a557f74df6fe8eff"
 ROUND_DIGITS = 3
 DEFAULT_GAS_PRICE_GWEI = 4
-DEFAULT_GAS_LIMIT = 25000
+DEFAULT_GAS_LIMIT = 21000
 GWEI_BASE = 1000000000
 DEFAULT_GAS_SPEED = 1
 KEYSTORE_DIR_PREFIX = expanduser("~")
@@ -112,7 +115,7 @@ def handle_etherscan_response_json(response_json):
             raise NoTransactionFoundException()
         else:
             raise UnknownEtherscanException(response_json)
-    assert message == "OK"
+    #assert message == "OK"
 
 
 def handle_etherscan_response_status(status_code):
@@ -129,7 +132,7 @@ def handle_etherscan_response(response):
 
 def requests_get(url):
     try:
-        return requests.get(url, timeout=5, verify=False)
+        return requests.get(url, timeout=2, verify=False)
     except BaseException as e:
         raise e
 
@@ -146,17 +149,25 @@ class PyWalib:
     config = None
     chain_type = None
     chain_id = None
-    def __init__(self, config, chain_type="mainnet"):
+    conn = None
+    cursor = None
+    def __init__(self, config, chain_type="mainnet", path=""):
         PyWalib.chain_type = chain_type
         PyWalib.config = config
+        PyWalib.conn = sqlite3.connect(path)
+        PyWalib.cursor = self.conn.cursor()
+        self.create_db()
         self.init_symbols()
+
+    def create_db(self):
+        PyWalib.cursor.execute("CREATE TABLE IF NOT EXISTS txlist (tx_hash TEXT PRIMARY KEY, address TEXT, time INTEGER, tx TEXT)")
 
     def init_symbols(self):
         symbol_list = self.config.get("symbol_list", {'ETH':'','EOS':''})
         for symbol in symbol_list:
-            PyWalib.symbols_price[symbol] = self.get_currency(symbol, 'BTC')
+            PyWalib.symbols_price[symbol] = PyWalib.get_currency(symbol, 'BTC')
         global symbol_ticker
-        symbol_ticker = Ticker(30*60, self.get_symbols_price)
+        symbol_ticker = Ticker(1*60, self.get_symbols_price)
         symbol_ticker.start()
 
     def get_symbols_price(self):
@@ -164,19 +175,63 @@ class PyWalib:
             for symbol, price in PyWalib.symbols_price.items():
                 PyWalib.symbols_price[symbol] = self.get_currency(symbol, 'BTC')
                 PyWalib.config.set_key("symbol_list", PyWalib.symbols_price)
+                time.sleep(1)
         except BaseException as e:
             raise e
 
-    @staticmethod
-    def get_currency(from_cur, to_cur):
+    @classmethod
+    def get_json(cls, url):
+        network = Network.get_instance()
+        proxy = network.proxy if network else None
+        with make_aiohttp_session(proxy) as session:
+            with session.get(url) as response:
+                response.raise_for_status()
+                # set content_type to None to disable checking MIME type
+                return response.json(content_type=None)
+
+    @classmethod
+    def get_currency(cls, from_cur, to_cur):
         try:
-            #url = eth_servers['Market']
-            if PyWalib.market_server is not None:
-                url = PyWalib.market_server
-                url += from_cur.upper()+'/'+to_cur.upper()
-                response = requests.get(url, timeout=2, verify=False)
-                obj = response.json()
-                return obj['data']['price']
+            out_price = {}
+            for server in PyWalib.market_server:
+                for name, url in server.items():
+                    if name == "coinbase":
+                        url += from_cur
+                        response = requests.get(url, timeout=5, verify=False)
+                        json = response.json()
+                        return [Decimal(rate) for (ccy, rate) in json["data"]["rates"].items() if ccy == to_cur][0]
+                    # if name == "binance":
+                    #     url += from_cur.upper()+to_cur.upper()
+                    #     try:
+                    #         response = requests.get(url, timeout=3, verify=False)
+                    #         obj = response.json()
+                    #         out_price[name] = obj['data']['lastprice']
+                    #     except BaseException as e:
+                    #         pass
+                    elif name == 'bixin':
+                        url += from_cur.upper() + '/' + to_cur.upper()
+                        try:
+                            response = requests.get(url, timeout=3, verify=False)
+                            obj = response.json()
+                            #out_price[name] = obj['data']['price']
+                            return obj['data']['price']
+                        except BaseException as e:
+                            pass
+                    # elif name == 'huobi':
+                    #     url += from_cur.lower() + to_cur.lower()
+                    #     try:
+                    #         response = requests.get(url, timeout=3, verify=False)
+                    #         obj = response.json()
+                    #         out_price[name] = (obj['data']['bid'][0] + obj['data']['ask'][0])/2.0
+                    #     except BaseException as e:
+                    #         pass
+                    # elif name == 'ok':
+                    #     print("TODO")
+
+            # return_price = 0.0
+            # for price in out_price.values():
+            #     return_price += float(price)
+            # return return_price/len(out_price)
         except BaseException as e:
             print(f"get symbol price error {e}")
             pass
@@ -188,7 +243,7 @@ class PyWalib:
     @staticmethod
     def set_server(info):
         PyWalib.market_server = info['Market']
-        PyWalib.tx_list_servers = info['TxliServer']
+        PyWalib.tx_list_server = info['TxliServer']
         PyWalib.gas_server = info['GasServer']
         for i in info['Provider']:
             if PyWalib.chain_type in i:
@@ -240,7 +295,7 @@ class PyWalib:
         gas = gas_price * DEFAULT_GAS_LIMIT
         return self.web3.fromWei(gas * GWEI_BASE, 'ether')
 
-    def get_transaction(self, from_address, to_address, value, contract=None, gasprice = DEFAULT_GAS_PRICE_GWEI * (10 ** 9)):
+    def get_transaction(self, from_address, to_address, value, contract=None, gasprice = DEFAULT_GAS_PRICE_GWEI):
         try:
             float(value)
         except ValueError:
@@ -255,7 +310,7 @@ class PyWalib:
                 gas_price=self.web3.toWei(gasprice, "gwei"),
                 # be careful about sending more transactions in row, nonce will be duplicated
                 nonce=self.web3.eth.getTransactionCount(self.web3.toChecksumAddress(from_address)),
-                chain_id=PyWalib.chain_id
+                chain_id=int(PyWalib.chain_id)
             )
         else:  # create ERC20 contract transaction dictionary
             erc20_decimals = contract.get_decimals()
@@ -283,7 +338,7 @@ class PyWalib:
                 gas_price=self.web3.toWei(gasprice, "gwei"),
                 # be careful about sending more transactions in row, nonce will be duplicated
                 nonce=self.web3.eth.getTransactionCount(self.web3.toChecksumAddress(from_address)),
-                chain_id=PyWalib.chain_id,
+                chain_id=int(PyWalib.chain_id),
                 data=data_for_contract
             )
 
@@ -305,8 +360,7 @@ class PyWalib:
         return tx_dict
 
     def sign_and_send_tx(self, account, tx_dict):
-        tx_hash = Eth_Transaction.send_transaction(tx_dict)
-
+        tx_hash = Eth_Transaction.send_transaction(account, self.web3, tx_dict)
         print('Pending', end='', flush=True)
         while True:
             tx_receipt = self.web3.eth.getTransactionReceipt(tx_hash)
@@ -328,7 +382,6 @@ class PyWalib:
             if tx_receipt is None:
                 print('.', end='', flush=True)
                 import time
-
                 time.sleep(1)
             else:
                 print('\nTransaction mined!')
@@ -354,22 +407,54 @@ class PyWalib:
     #     return balance_eth
 
     @staticmethod
-    def get_transaction_history(address):
-        """
-        Retrieves the transaction history from etherscan.io.
-        """
-        address = to_checksum_address(address)
-        #url = get_etherscan_prefix(PyWalib.chain_id)
-        url = PyWalib.tx_list_servers['etherscan']
+    def get_transaction_history(address, recovery=False):
+        tx_list = PyWalib.get_transaction_history_fun(address, recovery=recovery)
+        if len(tx_list) == 0 and not recovery:
+            PyWalib.cursor.execute("SELECT * FROM txlist WHERE address=? ORDER BY time DESC Limit 10", (address,))
+            result = PyWalib.cursor.fetchall()
+            for info in result:
+                tx_list.append(info)
+        return tx_list
+
+    @classmethod
+    def tx_list_ping(cls, recovery=False):
+        try:
+            speed_list = {}
+            for server in PyWalib.tx_list_server:
+                for key, value in server.items():
+                    try:
+                        ###TODO need update, too messy
+                        if -1 == key.find(PyWalib.chain_type):
+                            continue
+                        else:
+                            if recovery:
+                                if -1 == key.find("trezor"):
+                                    continue
+                        speed_list[key] = value
+                        return speed_list
+                    except BaseException as e:
+                        pass
+            return None
+        except BaseException as e:
+            raise e
+
+    def get_tx_from_etherscan(address, url):
         url += (
             '?module=account&action=txlist'
             '&sort=asc'
             f'&address={address}'
+            f'&apikey={ETHERSCAN_API_KEY}'
         )
-        response = requests_get(url)
-        handle_etherscan_response(response)
-        response_json = response.json()
+        try:
+            response = requests_get(url)
+            handle_etherscan_response(response)
+            response_json = response.json()
+        except BaseException as e:
+            print(f"error....when get_eth_history.....{e}")
+            pass
+            return []
         transactions = response_json['result']
+        out_tx_list = []
         for transaction in transactions:
             value_wei = int(transaction['value'])
             value_eth = value_wei / float(pow(10, 18))
@@ -383,28 +468,114 @@ class PyWalib:
             sent = from_address == address
             received = not sent
             extra_dict = {
+                'time': transaction['timeStamp'],
                 'value_eth': value_eth,
                 'sent': sent,
                 'received': received,
                 'from_address': from_address,
                 'to_address': to_address,
             }
-            transaction.update({'extra_dict': extra_dict})
-        # sort by timeStamp
-        transactions.sort(key=lambda x: x['timeStamp'])
-        return transactions
+            time = int(transaction['timeStamp'])
+            PyWalib.cursor.execute("INSERT OR IGNORE INTO txlist VALUES(?, ?,?,?)", (transaction['hash'], address, time, json.dumps(extra_dict)))
+            out_tx_list.append(extra_dict)
+        PyWalib.conn.commit()
+        out_tx_list.sort(key=lambda x: x['time'])
+        out_len = 10 if len(out_tx_list) >= 10 else len(out_tx_list)
+        return out_tx_list[:out_len]
 
-    @staticmethod
-    def get_out_transaction_history(address):
+    def get_recovery_flag_from_trezor(address, url):
+        try:
+            url += f'/address/{address}'
+            response = requests_get(url)
+            handle_etherscan_response(response)
+            response_json = response.json()
+            txids = response_json['txids']
+            return len(txids)
+        except BaseException as e:
+            print(f"get_tx_flag ...errr{e}")
+            pass
+
+    def get_tx_from_trezor(address, url):
+        url += f'/address/{address}'
+        try:
+            response = requests_get(url)
+            handle_etherscan_response(response)
+            response_json = response.json()
+            txids = response_json['txids']
+        except BaseException as e:
+            print(f"errror .....get address from trezor....{e}")
+            pass
+            return []
+        out_tx_list = []
+        for txid in txids:
+            url += f'/tx/{txid}'
+            try:
+                response = requests_get(url)
+                handle_etherscan_response(response)
+                response_json = response.json()
+            except BaseException as e:
+                print(f"errror .....get tx from trezor....{e}")
+                continue
+            value_wei = int(response_json['value'])
+            value_eth = value_wei / float(pow(10, 18))
+            value_eth = round(value_eth, ROUND_DIGITS)
+            from_address = to_checksum_address(response_json['vin'][0]['addresses'])
+            to_address = response_json['vout'][0]['addresses']
+            # on contract creation, "to" is replaced by the "contractAddress"
+            # if not to_address:
+            #     to_address = transaction['contractAddress']
+            to_address = to_checksum_address(to_address)
+            sent = from_address == address
+            received = not sent
+            extra_dict = {
+                    'time': response_json['blockTime'],
+                    'value_eth': value_eth,
+                    'sent': sent,
+                    'received': received,
+                    'from_address': from_address,
+                    'to_address': to_address,
+            }
+            time = int(response_json['blockTime'])
+            PyWalib.cursor.execute("INSERT OR IGNORE INTO txlist VALUES(?, ?,?,?)",
+                                   (response_json['txid'], address, time, json.dumps(extra_dict)))
+            out_tx_list.append(extra_dict)
+            PyWalib.conn.commit()
+            out_tx_list.sort(key=lambda x: x['time'])
+            out_len = 10 if len(out_tx_list) >= 10 else len(out_tx_list)
+            return out_tx_list[:out_len]
+
+    def get_transaction_history_fun(address, recovery=False):
         """
-        Retrieves the outbound transaction history from Etherscan.
+        Retrieves the transaction history from server list
         """
-        transactions = PyWalib.get_transaction_history(address, PyWalib.chain_id)
-        out_transactions = []
-        for transaction in transactions:
-            if transaction['extra_dict']['sent']:
-                out_transactions.append(transaction)
-        return out_transactions
+        address = to_checksum_address(address)
+        tx_list = []
+        speed_list = PyWalib.tx_list_ping(recovery=recovery)
+        for server_key, url in speed_list.items():
+            if -1 != server_key.find("trezor"):
+                if recovery:
+                    print(f"get_transaction history from trezor to recovery....{address, url}")
+                    tx_list = PyWalib.get_recovery_flag_from_trezor(address, url)
+                else:
+                    print(f"get_transaction history from trezor....{address, url}")
+                    tx_list = PyWalib.get_tx_from_trezor(address, url)
+            elif -1 != server_key.find("etherscan"):
+                print(f"get_transaction history from etherscan....{address, url}")
+                tx_list = PyWalib.get_tx_from_etherscan(address, url)
+            if len(tx_list) != 0:
+                return tx_list
+        return tx_list
+    # @staticmethod
+    # def get_out_transaction_history(address):
+    #     """
+    #     Retrieves the outbound transaction history from Etherscan.
+    #     """
+    #     transactions = PyWalib.get_transaction_history(address, PyWalib.chain_id)
+    #     out_transactions = []
+    #     for transaction in transactions:
+    #         if transaction['extra_dict']['sent']:
+    #             out_transactions.append(transaction)
+    #     return out_transactions
 
     # TODO: can be removed since the migration to web3
     @staticmethod

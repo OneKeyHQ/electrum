@@ -1016,7 +1016,9 @@ def is_bip32_key(x):
     return is_xprv(x) or is_xpub(x)
 
 
-def bip44_derivation(account_id, bip43_purpose=44, coin=constants.net.BIP44_COIN_TYPE):
+def bip44_derivation(account_id, bip43_purpose=44, coin=None):
+    if coin is None:
+        coin = constants.net.BIP44_COIN_TYPE
     coin = coin
     der = "m/%d'/%d'/%d'" % (bip43_purpose, coin, int(account_id))
     return normalize_bip32_derivation(der)
