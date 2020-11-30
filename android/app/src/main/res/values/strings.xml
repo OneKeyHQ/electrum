@@ -1060,7 +1060,7 @@
     <string name="export_word">Export root mnemonics of HD Wallet</string>
     <string name="danger">Dangerous operation</string>
     <string name="delete_hd_wallet">Delete HD Wallet</string>
-    <string name="risk_tip">Risk statement</string>
+    <string name="risk_tip">⚠️ Risk statement</string>
     <string name="risk_tip_1">Once deleted:</string>
     <string name="risk_tip_2">1. All HD wallets will be erased.</string>
     <string name="risk_tip_3">2. Please make sure that the root mnemonic of HD wallet has been copied and kept well before deleting it. You can use it to recover all HD wallets and recover assets.</string>
@@ -1245,5 +1245,13 @@
     <string name="exit">withdraw</string>
     <string name="change_pin">修改设备 PIN 码</string>
     <string name="verify_pin_onkey">校验PIN码</string>
+    <string name="rule_password">0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ`¬!"£$%^*()~=#{}[];':,./?/*-_+ " &#139; &#155; &#64; &#38;</string>
+    <string name="long_pass_8">Input at least 8 digits for long password</string>
+    <string name="wrong_private">Private key input error, please re-enter!</string>
+    <string name="have_private">The wallet created by the private key already exists!</string>
+    <string name="changemessage">Import information already exists, please replace</string>
+    <string name="support_backup">Stand alone wallets do not support backing up to hardware devices</string>
+    <string name="dont_sreenshot">No screenshots</string>
+    <string name="dont_screenshot_tip">Mnemonics are very sensitive and private content. Once acquired by others, your assets may be lost. Therefore, <b>do not take screen shots and pay attention to whether there are cameras around you.</b></string>
 
 </resources>

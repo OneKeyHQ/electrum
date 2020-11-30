@@ -2,6 +2,7 @@ package org.haobtc.onekey.onekeys.homepage.mindmenu;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -23,7 +24,6 @@ public class WalletManageActivity extends BaseActivity {
     TextView textSafe;
     @BindView(R.id.rel_export_word)
     RelativeLayout relExportWord;
-    private int hdHum;
     private String deleteHdWalletName;
 
     @Override
@@ -35,16 +35,11 @@ public class WalletManageActivity extends BaseActivity {
     public void initView() {
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
+        deleteHdWalletName = getIntent().getStringExtra("deleteHdWalletName");
     }
 
     @Override
     public void initData() {
-        hdHum = getIntent().getIntExtra("hd_num", 0);
-        deleteHdWalletName = getIntent().getStringExtra("deleteHdWalletName");
-        if (hdHum == 0) {
-            textSafe.setVisibility(View.GONE);
-            relExportWord.setVisibility(View.GONE);
-        }
 
     }
 
@@ -57,16 +52,12 @@ public class WalletManageActivity extends BaseActivity {
             case R.id.rel_export_word:
                 Intent intent1 = new Intent(WalletManageActivity.this, SetHDWalletPassActivity.class);
                 intent1.putExtra("importHdword", "importHdword");
-                intent1.putExtra("deleteHdWalletName",deleteHdWalletName);
                 startActivity(intent1);
                 break;
             case R.id.rel_delete_wallet:
-                if (hdHum == 0) {
-                    mToast(getString(R.string.please_create_wallet));
-                } else {
-                    Intent intent = new Intent(WalletManageActivity.this, DeleteWalletActivity.class);
-                    startActivity(intent);
-                }
+                Intent intent = new Intent(WalletManageActivity.this, DeleteWalletActivity.class);
+                intent.putExtra("deleteHdWalletName", deleteHdWalletName);
+                startActivity(intent);
                 break;
         }
     }

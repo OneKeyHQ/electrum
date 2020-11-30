@@ -10,10 +10,11 @@
         android:layout_width="wrap_content"
         android:layout_height="@dimen/dp_70"
         android:layout_marginStart="@dimen/dp_20"
-        android:layout_marginEnd="@dimen/dp_20"
+        android:layout_marginEnd="@dimen/dp_54"
         android:ellipsize="end"
         android:gravity="center_vertical"
         android:maxLines="1"
+        android:singleLine="true"
         android:textColor="@drawable/textcolor"
         android:textSize="15sp"
         tools:text="bixin.com" />

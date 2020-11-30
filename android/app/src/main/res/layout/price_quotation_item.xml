@@ -10,7 +10,10 @@
         android:layout_height="74dp"
         android:layout_centerVertical="true"
         android:layout_marginStart="@dimen/dp_20"
+        android:layout_marginEnd="@dimen/dp_54"
+        android:ellipsize="end"
         android:gravity="center_vertical"
+        android:singleLine="true"
         android:text="@string/btc_c"
         android:textColor="@color/text_color"
         android:textSize="15sp" />

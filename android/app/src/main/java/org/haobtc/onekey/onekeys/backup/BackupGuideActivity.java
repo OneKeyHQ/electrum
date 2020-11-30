@@ -1,21 +1,10 @@
 package org.haobtc.onekey.onekeys.backup;
 
-import android.app.AlertDialog;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.util.Log;
-import android.view.Display;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.EditText;
-
-import com.chaquo.python.PyObject;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -24,14 +13,19 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.event.FinishEvent;
 import org.haobtc.onekey.onekeys.dialog.SetHDWalletPassActivity;
-import org.haobtc.onekey.onekeys.dialog.recovery.importmethod.ImportPrivateKeyActivity;
-import org.haobtc.onekey.onekeys.homepage.mindmenu.HdRootMnemonicsActivity;
-import org.haobtc.onekey.utils.Daemon;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class BackupGuideActivity extends BaseActivity {
+
+    @BindView(R.id.backup_tip)
+    TextView backupTip;
+    @BindView(R.id.text_dont_copy)
+    TextView textDontCopy;
+    @BindView(R.id.lin_backup_hardware)
+    LinearLayout linBackupHardware;
 
     @Override
     public int getLayoutId() {
@@ -42,6 +36,13 @@ public class BackupGuideActivity extends BaseActivity {
     public void initView() {
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
+        String walletType = getIntent().getStringExtra("walletType");
+        if ("btc-standard".equals(walletType)) {
+            backupTip.setVisibility(View.GONE);
+            textDontCopy.setText(getString(R.string.support_backup));
+            linBackupHardware.setVisibility(View.GONE);
+        }
+
     }
 
     @Override
@@ -79,4 +80,10 @@ public class BackupGuideActivity extends BaseActivity {
     }
 
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // TODO: add setContentView(...) invocation
+        ButterKnife.bind(this);
+    }
 }

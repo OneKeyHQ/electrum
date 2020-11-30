@@ -21,6 +21,8 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.constant.Constant;
+import org.haobtc.onekey.data.prefs.PreferencesManager;
 import org.haobtc.onekey.event.FinishEvent;
 import org.haobtc.onekey.event.InputPassSendEvent;
 import org.haobtc.onekey.event.LoadOtherWalletEvent;
@@ -64,6 +66,8 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
     private String recoverySeed;
     private String walletName;
     private String privateKey;
+    private String deleteHdWalletName;
+    private String exportType;
 
     @Override
     public int getLayoutId() {
@@ -84,6 +88,9 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
         importHdword = getIntent().getStringExtra("importHdword");
         walletName = getIntent().getStringExtra("walletName");
         privateKey = getIntent().getStringExtra("privateKey");
+        exportType = getIntent().getStringExtra("exportType");
+        //删除所有hd钱包的名字
+        deleteHdWalletName = getIntent().getStringExtra("deleteHdWalletName");
         if ("importHdword".equals(importHdword) || "exportPrivateKey".equals(importHdword) || "deleteAllWallet".equals(importHdword) || "derive".equals(importHdword) || "single".equals(importHdword) || "importMnemonic".equals(importHdword) || "importPrivateKey".equals(importHdword) || "deleteSingleWallet".equals(importHdword) || "send".equals(importHdword)) {
             textContent();
         } else if ("fixHdPass".equals(importHdword)) {
@@ -130,6 +137,10 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
                 editPass.setSelection(editPass.getText().toString().length());
                 break;
             case R.id.btn_next:
+                if (editPass.getText().toString().length() < 8) {
+                    mToast(getString(R.string.long_pass_8));
+                    return;
+                }
                 if ("importHdword".equals(importHdword)) {
                     //export Mnemonic words
                     exportWord();
@@ -211,6 +222,8 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
             return;
         }
         mToast(getString(R.string.delete_succse));
+        PreferencesManager.remove(this, Constant.WALLETS, walletName);
+        PyEnv.loadLocalWalletInfo(this);
         EventBus.getDefault().post(new LoadOtherWalletEvent());
         EventBus.getDefault().post(new SecondEvent("finish"));
         finish();
@@ -228,8 +241,12 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
             } else if (e.getMessage().contains("The same seed have create wallet")) {
                 String haveWalletName = e.getMessage().substring(e.getMessage().indexOf("name=") + 5);
                 mToast(getString(R.string.same_seed_have) + haveWalletName);
+            } else if (e.getMessage().contains("'NoneType' object is not iterable")) {
+                mToast(getString(R.string.private_key_wrong));
             } else if (e.getMessage().contains("Incorrect password")) {
                 mToast(getString(R.string.wrong_pass));
+            }else if (e.getMessage().contains("The file already exists")){
+                mToast(getString(R.string.changemessage));
             }
             return;
         }
@@ -251,8 +268,12 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
             } else if (e.getMessage().contains("The same seed have create wallet")) {
                 String haveWalletName = e.getMessage().substring(e.getMessage().indexOf("name=") + 5);
                 mToast(getString(R.string.same_seed_have) + haveWalletName);
+            } else if (e.getMessage().contains("'NoneType' object is not iterable")) {
+                mToast(getString(R.string.private_key_wrong));
             } else if (e.getMessage().contains("Incorrect password")) {
                 mToast(getString(R.string.wrong_pass));
+            }else if (e.getMessage().contains("The file already exists")){
+                mToast(getString(R.string.changemessage));
             }
             return;
         }
@@ -331,7 +352,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
 
     private void deleteAllWallet() {
         try {
-            Daemon.commands.callAttr("delete_wallet", editPass.getText().toString(), new Kwarg("name", "BTC-1"));
+            Daemon.commands.callAttr("delete_wallet", editPass.getText().toString(), new Kwarg("name", deleteHdWalletName));
 //            Daemon.commands.callAttr("delete_wallet", pwdEdittext.getText().toString(), new Kwarg("name", "ETH-1"));
         } catch (Exception e) {
             e.printStackTrace();
@@ -342,9 +363,12 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
             return;
         }
         mToast(getString(R.string.delete_succse));
+        PreferencesManager.remove(this, Constant.WALLETS, deleteHdWalletName);
+        PyEnv.loadLocalWalletInfo(this);
         EventBus.getDefault().post(new LoadOtherWalletEvent());
         EventBus.getDefault().post(new LoadWalletlistEvent());
         EventBus.getDefault().post(new FinishEvent());
+        EventBus.getDefault().post(new SecondEvent("finish"));
         finish();
     }
 
@@ -403,6 +427,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
         Intent intent = new Intent(SetLongPassActivity.this, HdRootMnemonicsActivity.class);
         intent.putExtra("exportWord", createHdWallet.toString());
         intent.putExtra("importHdword", importHdword);
+        intent.putExtra("exportType", exportType);
         startActivity(intent);
         finish();
     }
@@ -437,7 +462,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void event(SecondEvent updataHint) {
         String msgVote = updataHint.getMsg();
-        if ("finish".equals(msgVote)) {
+        if ("finish".equals(msgVote) || "finishInputPass".equals(msgVote)) {
             finish();
         }
     }

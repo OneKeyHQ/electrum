@@ -70,7 +70,7 @@
                     android:paddingStart="@dimen/dp_20"
                     android:paddingEnd="@dimen/dp_20"
                     android:text="@string/follow_system"
-                    android:textColor="@color/text_color1" />
+                    android:textColor="@color/text_two" />
 
                 <ImageView
                     android:id="@+id/img_system"
@@ -104,7 +104,7 @@
                     android:paddingStart="@dimen/dp_20"
                     android:paddingEnd="@dimen/dp_20"
                     android:text="@string/zh_simple"
-                    android:textColor="@color/onekey" />
+                    android:textColor="@color/text_two" />
 
                 <ImageView
                     android:id="@+id/img_chinese"
@@ -154,7 +154,7 @@
                     android:paddingStart="@dimen/dp_20"
                     android:paddingEnd="@dimen/dp_20"
                     android:text="@string/en"
-                    android:textColor="@color/text_color1" />
+                    android:textColor="@color/text_two" />
 
                 <ImageView
                     android:id="@+id/img_english"

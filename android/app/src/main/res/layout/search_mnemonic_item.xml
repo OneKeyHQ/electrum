@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="@dimen/dp_50"
+    android:gravity="center_vertical"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/text_word"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/dp_26"
+        android:layout_marginStart="@dimen/dp_10"
+        android:background="@drawable/gray_tuo_broken"
+        android:gravity="center"
+        android:paddingStart="@dimen/dp_6"
+        android:paddingEnd="@dimen/dp_6"
+        android:textSize="@dimen/sp_12"
+        tools:text="apple" />
+
+</LinearLayout>

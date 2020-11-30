@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,7 +7,6 @@
     android:background="@color/button_bk_ddake"
     android:clipToPadding="true"
     android:fitsSystemWindows="true"
-    android:orientation="vertical"
     tools:context="org.haobtc.onekey.onekeys.dialog.recovery.importmethod.ImportMnemonicActivity">
 
     <RelativeLayout
@@ -38,7 +37,9 @@
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_below="@+id/RelativeLayout"
+        android:visibility="visible">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -567,12 +568,35 @@
                 android:layout_marginTop="@dimen/dp_25"
                 android:layout_marginEnd="34dp"
                 android:layout_marginBottom="@dimen/dp_80"
-                android:background="@drawable/btn_checked"
-                android:enabled="true"
+                android:background="@drawable/btn_no_check"
+                android:enabled="false"
                 android:text="@string/imports"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"
                 android:textSize="@dimen/sp_20" />
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
-</LinearLayout>
+
+    <View
+        android:id="@+id/view_show"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/line_hight"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="@dimen/dp_50"
+        android:background="@color/line_color"
+        android:visibility="gone" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recl_search_mnemonic"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_50"
+        android:layout_alignParentBottom="true"
+        android:background="@color/button_bk_ddake"
+        android:visibility="gone"
+        tools:itemCount="1"
+        tools:listitem="@layout/search_mnemonic_item">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+</RelativeLayout>
