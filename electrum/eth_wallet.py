@@ -158,14 +158,16 @@ class Abstract_Eth_Wallet(ABC):
         return to_checksum_address(public_key_bytes_to_address(bytes.fromhex(public_key)))
 
     def set_total_balance(self, balance):
-        self.total_balance = balance
+        self.total_balance['balance_info'] = balance
+        self.total_balance['time'] = time.time()
 
     def get_total_balance(self):
         return self.total_balance
 
     def get_all_balance(self, wallet_address, from_coin):
-        # if len(self.total_balance) != 0:
-        #     return self.total_balance
+        if len(self.total_balance) != 0:
+            if len(self.total_balance['balance_info']) != 0 and (time.time() - self.total_balance['time'] > 10):
+                return self.total_balance['balance_info']
         eth_info = {}
         last_price = PyWalib.get_coin_price(from_coin)
         eth, balance = PyWalib.get_balance(wallet_address)

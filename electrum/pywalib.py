@@ -199,7 +199,7 @@ class PyWalib:
                         url += from_cur
                         response = requests.get(url, timeout=5, verify=False)
                         json = response.json()
-                        return [Decimal(rate) for (ccy, rate) in json["data"]["rates"].items() if ccy == to_cur][0]
+                        return [str(Decimal(rate)) for (ccy, rate) in json["data"]["rates"].items() if ccy == to_cur][0]
                     # if name == "binance":
                     #     url += from_cur.upper()+to_cur.upper()
                     #     try:
@@ -423,7 +423,6 @@ class PyWalib:
             for server in PyWalib.tx_list_server:
                 for key, value in server.items():
                     try:
-                        ###TODO need update, too messy
                         if -1 == key.find(PyWalib.chain_type):
                             continue
                         else:
@@ -487,13 +486,14 @@ class PyWalib:
         try:
             url += f'/address/{address}'
             response = requests_get(url)
-            handle_etherscan_response(response)
+            #handle_etherscan_response(response)
             response_json = response.json()
-            txids = response_json['txids']
-            return len(txids)
+            txs = response_json['txs']
+            return response_json['txids'] if txs != 0 else []
         except BaseException as e:
             print(f"get_tx_flag ...errr{e}")
             pass
+            return []
 
     def get_tx_from_trezor(address, url):
         url += f'/address/{address}'

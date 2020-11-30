@@ -12,3 +12,6 @@ class Plugin(LabelsPlugin):
 
     def on_pulled(self, wallet):
         self.logger.info('labels pulled from server')
+
+    def ping_host(self):
+        self.ping_server()

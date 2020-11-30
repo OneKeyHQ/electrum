@@ -40,6 +40,16 @@ class LabelsPlugin(BasePlugin):
         self.create_wallets = {}
         self.get_wallet_loop = asyncio.get_event_loop()
 
+    def ping_server(self):
+        try:
+            import socket
+            info = self.target_host.split(":")
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.connect((info[0], int(info[1])))
+            s.shutdown(2)
+        except Exception as e:
+            raise ErrorConnectingServer(e) from e
+
     def set_host(self, ip, port):
         self.target_host = '%s:%s' %(ip, port)
 

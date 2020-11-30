@@ -573,7 +573,7 @@ class AndroidCommands(commands.Commands):
             if self.label_flag:
                 self.label_plugin.set_host(ip, port)
                 self.config.set_key('sync_server_host', '%s:%s' % (ip, port))
-                data = self.label_plugin.pull_tx(self.wallet)
+                data = self.label_plugin.ping_host()
         except BaseException as e:
             raise e
 
@@ -2015,7 +2015,7 @@ class AndroidCommands(commands.Commands):
             # self.check_pw_wallet = wallet
             wallet_type = 'eth-hd-standard-hw'
         self.update_local_wallet_info(name, wallet_type)
-
+    
     ####################################################
     ## app wallet
     def export_privkey(self, password):
@@ -2391,6 +2391,11 @@ class AndroidCommands(commands.Commands):
             wallet.update_password(old_pw=old_password, new_pw=new_password, str_pw=self.android_id)
 
     def check_password(self, password):
+        '''
+        Check wallet password
+        :param password: as string
+        :return: raise except if error
+        '''
         try:
             if self.check_pw_wallet is None:
                 self.check_pw_wallet = self.get_check_wallet()
@@ -2570,7 +2575,7 @@ class AndroidCommands(commands.Commands):
                         xpub = self.get_xpub_from_hw(_type='p2pkh', account_id=i, coin=coin)
                         self.recovery_import_create_hw_wallet(derived_info['name'], 1, 1, [xpub], coin=coin)
             if hw:
-                ##recovery from server
+                ##TODO recovery multi info from server, need test
                 info = self.get_wallet_info_from_server(hd_wallet.get_keystore().xpub)
                 info_list = json.loads(info)
                 for wallet_info in info_list:
@@ -2709,13 +2714,13 @@ class AndroidCommands(commands.Commands):
                 wallet_info['name'] = name
                 if self.coins.__contains__(wallet.wallet_type[0:3]):
                     checksum_from_address = self.pywalib.web3.toChecksumAddress(wallet.get_addresses()[0])
-                    all_balance = wallet.get_all_balance(checksum_from_address, self.coins[wallet.wallet_type[0:3]]['symbol'])
-                    for symbol, info in all_balance.items():
+                    balances_info = wallet.get_all_balance(checksum_from_address, self.coins[wallet.wallet_type[0:3]]['symbol'])
+                    for symbol, info in balances_info.items():
                         info['fiat'] = self.daemon.fx.format_amount_and_units(
                             self.get_amount(info['fiat'])) if self.daemon.fx else None
                         fiat = float(info['fiat'].split()[0].replace(',', ""))
                         all_balance += fiat
-                    wallet_info['wallets'] = all_balance
+                    wallet_info['wallets'] = balances_info
                     all_wallet_info.append(wallet_info)
                 else:
                     c, u, x = wallet.get_balance()
