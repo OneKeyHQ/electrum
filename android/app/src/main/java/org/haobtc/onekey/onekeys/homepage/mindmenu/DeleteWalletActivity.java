@@ -28,6 +28,7 @@ public class DeleteWalletActivity extends BaseActivity implements CompoundButton
     CheckBox checkboxOk;
     @BindView(R.id.btn_forward)
     Button btnForward;
+    private String deleteHdWalletName;
 
     @Override
     public int getLayoutId() {
@@ -39,6 +40,7 @@ public class DeleteWalletActivity extends BaseActivity implements CompoundButton
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
         checkboxOk.setOnCheckedChangeListener(this);
+        deleteHdWalletName = getIntent().getStringExtra("deleteHdWalletName");
     }
 
     @Override
@@ -55,6 +57,7 @@ public class DeleteWalletActivity extends BaseActivity implements CompoundButton
             case R.id.btn_forward:
                 Intent intent = new Intent(DeleteWalletActivity.this, SetHDWalletPassActivity.class);
                 intent.putExtra("importHdword", "deleteAllWallet");
+                intent.putExtra("deleteHdWalletName", deleteHdWalletName);
                 startActivity(intent);
                 break;
         }

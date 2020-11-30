@@ -71,7 +71,7 @@ public final class PyEnv {
         Daemon.initCommands();
         sCommands = Daemon.commands;
         // 加载钱包信息
-        loadLocalWalletInfo(context);
+//        loadLocalWalletInfo(context);
     }
 
     /**

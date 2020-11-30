@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,7 +8,6 @@
     android:clipToPadding="true"
     android:fitsSystemWindows="true"
     android:gravity="center_horizontal"
-    android:orientation="vertical"
     tools:context="org.haobtc.onekey.onekeys.dialog.RecoverHdWalletActivity">
 
     <RelativeLayout
@@ -39,7 +38,8 @@
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_below="@+id/RelativeLayout">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -93,6 +93,7 @@
                             android:layout_marginTop="3dp"
                             android:background="@drawable/white_clrcle"
                             android:gravity="center"
+                            android:nextFocusForward="@id/edit_two"
                             android:paddingStart="@dimen/dp_6"
                             android:paddingEnd="@dimen/dp_6"
                             android:singleLine="true"
@@ -125,6 +126,7 @@
                             android:layout_marginTop="3dp"
                             android:background="@drawable/white_clrcle"
                             android:gravity="center"
+                            android:nextFocusForward="@id/edit_three"
                             android:paddingStart="@dimen/dp_6"
                             android:paddingEnd="@dimen/dp_6"
                             android:singleLine="true"
@@ -157,6 +159,7 @@
                             android:layout_marginTop="3dp"
                             android:background="@drawable/white_clrcle"
                             android:gravity="center"
+                            android:nextFocusForward="@id/edit_four"
                             android:paddingStart="@dimen/dp_6"
                             android:paddingEnd="@dimen/dp_6"
                             android:singleLine="true"
@@ -197,6 +200,7 @@
                             android:layout_marginTop="3dp"
                             android:background="@drawable/white_clrcle"
                             android:gravity="center"
+                            android:nextFocusForward="@id/edit_five"
                             android:paddingStart="@dimen/dp_6"
                             android:paddingEnd="@dimen/dp_6"
                             android:singleLine="true"
@@ -229,6 +233,7 @@
                             android:layout_marginTop="3dp"
                             android:background="@drawable/white_clrcle"
                             android:gravity="center"
+                            android:nextFocusForward="@id/edit_six"
                             android:paddingStart="@dimen/dp_6"
                             android:paddingEnd="@dimen/dp_6"
                             android:singleLine="true"
@@ -261,6 +266,7 @@
                             android:layout_marginTop="3dp"
                             android:background="@drawable/white_clrcle"
                             android:gravity="center"
+                            android:nextFocusForward="@id/edit_seven"
                             android:paddingStart="@dimen/dp_6"
                             android:paddingEnd="@dimen/dp_6"
                             android:singleLine="true"
@@ -301,6 +307,7 @@
                             android:layout_marginTop="3dp"
                             android:background="@drawable/white_clrcle"
                             android:gravity="center"
+                            android:nextFocusForward="@id/edit_eight"
                             android:paddingStart="@dimen/dp_6"
                             android:paddingEnd="@dimen/dp_6"
                             android:singleLine="true"
@@ -333,6 +340,7 @@
                             android:layout_marginTop="3dp"
                             android:background="@drawable/white_clrcle"
                             android:gravity="center"
+                            android:nextFocusForward="@id/edit_nine"
                             android:paddingStart="@dimen/dp_6"
                             android:paddingEnd="@dimen/dp_6"
                             android:singleLine="true"
@@ -365,6 +373,7 @@
                             android:layout_marginTop="3dp"
                             android:background="@drawable/white_clrcle"
                             android:gravity="center"
+                            android:nextFocusForward="@id/edit_ten"
                             android:paddingStart="@dimen/dp_6"
                             android:paddingEnd="@dimen/dp_6"
                             android:singleLine="true"
@@ -406,6 +415,7 @@
                             android:layout_marginTop="3dp"
                             android:background="@drawable/white_clrcle"
                             android:gravity="center"
+                            android:nextFocusForward="@id/edit_eleven"
                             android:paddingStart="@dimen/dp_6"
                             android:paddingEnd="@dimen/dp_6"
                             android:singleLine="true"
@@ -438,6 +448,7 @@
                             android:layout_marginTop="3dp"
                             android:background="@drawable/white_clrcle"
                             android:gravity="center"
+                            android:nextFocusForward="@id/edit_twelve"
                             android:paddingStart="@dimen/dp_6"
                             android:paddingEnd="@dimen/dp_6"
                             android:singleLine="true"
@@ -620,4 +631,25 @@
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
-</LinearLayout>
+
+    <View
+        android:id="@+id/view_show"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/line_hight"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="@dimen/dp_50"
+        android:background="@color/line_color"
+        android:visibility="gone" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recl_search_mnemonic"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_50"
+        android:layout_alignParentBottom="true"
+        android:background="@color/button_bk_ddake"
+        android:visibility="gone"
+        tools:itemCount="1"
+        tools:listitem="@layout/search_mnemonic_item">
+
+    </androidx.recyclerview.widget.RecyclerView>
+</RelativeLayout>

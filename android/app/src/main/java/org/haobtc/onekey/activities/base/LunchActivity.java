@@ -9,6 +9,7 @@ import org.haobtc.onekey.data.prefs.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.GuidanceActivity;
 import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
+import org.haobtc.onekey.utils.Daemon;
 import org.haobtc.onekey.utils.NfcUtils;
 
 import java.util.Optional;
@@ -76,5 +77,13 @@ public class LunchActivity extends BaseActivity {
     public void initData() {
         PyEnv.init(this);
         init();
+        loadAllWallets();
+    }
+    private void loadAllWallets() {
+        try {
+            Daemon.commands.callAttr("load_all_wallet");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -89,7 +89,7 @@ public class ImportWalletSetNameActivity extends BaseActivity {
                 String haveWalletName = e.getMessage().substring(e.getMessage().indexOf("name=") + 5);
                 mToast(getString(R.string.same_seed_have) + haveWalletName);
             } else if (e.getMessage().contains("The file already exists")) {
-                mToast(getString(R.string.have_address));
+                mToast(getString(R.string.have_private));
             }
             return;
         }

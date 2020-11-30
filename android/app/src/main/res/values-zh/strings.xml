@@ -1026,7 +1026,7 @@
     <string name="export_word">导出 HD 钱包的根助记词</string>
     <string name="danger">危险操作</string>
     <string name="delete_hd_wallet">删除 HD 钱包</string>
-    <string name="risk_tip">风险提示</string>
+    <string name="risk_tip">⚠️ 风险提示</string>
     <string name="risk_tip_1">一旦删除：</string>
     <string name="risk_tip_2">1. 所有 HD 钱包都会被抹除。</string>
     <string name="risk_tip_3">2. 请您在删除前务必确认 HD 钱包的根助记词已经抄写并保管好，您可以使用它恢复所有 HD 钱包，从而找回资产。</string>
@@ -1191,5 +1191,12 @@
     <string name="exit">撤回</string>
     <string name="change_pin">修改设备 PIN 码</string>
     <string name="verify_pin_onkey">校验PIN码</string>
+    <string name="long_pass_8">长密码最少输入8位</string>
+    <string name="wrong_private">私钥输入错误，请重新输入！</string>
+    <string name="have_private">已存在该私钥创建的钱包！</string>
+    <string name="changemessage">导入信息已存在请更换</string>
+    <string name="support_backup">独立钱包不支持备份到硬件设备</string>
+    <string name="dont_sreenshot">不要截图</string>
+    <string name="dont_screenshot_tip">助记词是非常敏感和隐私的内容，一旦被其他人获取，您的资产有可能全部丢失， <b>因此不要截屏，并注意您的周边有无摄像头。</b></string>
 
 </resources>

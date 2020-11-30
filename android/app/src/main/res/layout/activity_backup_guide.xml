@@ -59,6 +59,7 @@
                 android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/backup_tip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -94,7 +95,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dp_60"
                 android:layout_marginStart="34dp"
-                android:layout_marginTop="@dimen/dp_30"
+                android:layout_marginTop="@dimen/dp_50"
                 android:layout_marginEnd="34dp"
                 android:background="@drawable/btn_checked"
                 android:enabled="true"
@@ -104,6 +105,7 @@
                 android:textSize="@dimen/sp_20" />
 
             <TextView
+                android:id="@+id/text_dont_copy"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -114,7 +116,7 @@
                 android:text="@string/dont_write"
                 android:textColor="@color/text_three"
                 android:textSize="@dimen/sp_14"
-                android:visibility="gone" />
+                android:visibility="visible" />
 
             <LinearLayout
                 android:id="@+id/lin_backup_hardware"
@@ -125,7 +127,7 @@
                 android:layout_marginBottom="@dimen/dp_70"
                 android:background="@drawable/green_bacj"
                 android:gravity="center_vertical"
-                android:visibility="gone">
+                android:visibility="visible">
 
                 <TextView
                     android:id="@+id/text_confirm"

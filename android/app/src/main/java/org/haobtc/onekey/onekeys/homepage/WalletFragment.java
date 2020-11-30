@@ -99,6 +99,7 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
     private ImageView imgType;
     private TextView amountStars;
     private TextView dollarStars;
+    private String nowType;
 
     @SuppressLint("CommitPrefEdits")
     @Override
@@ -163,10 +164,6 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
             imgBottom.setVisibility(View.GONE);
             linearHaveWallet.setVisibility(View.VISIBLE);
             linearWalletList.setVisibility(View.VISIBLE);
-            //whether to backup
-            if (!preferences.getBoolean("isBack_up", false)) {
-                isBackup(getActivity(), R.layout.backup_wallet);
-            }
             //get wallet balance
             getWalletBalance();
         } else {
@@ -199,7 +196,9 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
         view.findViewById(R.id.btn_now_backup).setOnClickListener(v -> {
             edit.putBoolean("isBack_up", true);
             edit.apply();
-            startActivity(new Intent(getActivity(), BackupGuideActivity.class));
+            Intent intent = new Intent(getActivity(), BackupGuideActivity.class);
+            intent.putExtra("walletType",nowType);
+            startActivity(intent);
             //Next time
             dialogBtoms.dismiss();
         });
@@ -226,21 +225,21 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
         Log.i("walletInfowalletInfo", "getHomeWalletList: " + walletInfo);
         if (!Strings.isNullOrEmpty(walletInfo)) {
             LocalWalletInfo localWalletInfo = LocalWalletInfo.objectFromData(walletInfo);
-            String type = localWalletInfo.getType();
-            edit.putString("showWalletType", type);
+            nowType = localWalletInfo.getType();
+            edit.putString("showWalletType", nowType);
             edit.apply();
-            if (type.contains("btc")) {
+            if (nowType.contains("btc")) {
                 imgType.setImageDrawable(getActivity().getDrawable(R.drawable.token_btc));
-            } else if (type.contains("eth")) {
+            } else if (nowType.contains("eth")) {
                 imgType.setImageDrawable(getActivity().getDrawable(R.drawable.token_eth));
             } else {
                 imgType.setImageDrawable(getActivity().getDrawable(R.drawable.loco_round));
             }
-            if (type.contains("hw")) {
+            if (nowType.contains("hw")) {
                 textHard.setVisibility(View.VISIBLE);
                 linearSign.setVisibility(View.VISIBLE);
-                String nowType = type.substring(type.indexOf("hw-") + 3);
-                textHard.setText(nowType);
+                String thisType = nowType.substring(nowType.indexOf("hw-") + 3);
+                textHard.setText(thisType);
             } else {
                 linearSign.setVisibility(View.GONE);
                 textHard.setVisibility(View.GONE);
@@ -297,6 +296,10 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
             if ("False".equals(isBackup.toString())) {
                 //no back up
                 relNowBackUp.setVisibility(View.VISIBLE);
+                //whether to backup
+                if (!preferences.getBoolean("isBack_up", false)) {
+                    isBackup(getActivity(), R.layout.backup_wallet);
+                }
             } else {
                 relNowBackUp.setVisibility(View.GONE);
             }
@@ -403,6 +406,7 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
                 break;
             case R.id.rel_now_back_up:
                 Intent intent6 = new Intent(getActivity(), BackupGuideActivity.class);
+                intent6.putExtra("walletType",nowType);
                 startActivity(intent6);
                 break;
             case R.id.linear_sign:

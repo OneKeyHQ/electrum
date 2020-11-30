@@ -45,6 +45,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_20"
+            android:gravity="center_vertical"
             android:text="@string/risk_tip"
             android:textColor="@color/text_two"
             android:textSize="30sp"

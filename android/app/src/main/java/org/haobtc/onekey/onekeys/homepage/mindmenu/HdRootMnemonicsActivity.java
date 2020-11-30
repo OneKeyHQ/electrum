@@ -57,6 +57,7 @@ public class HdRootMnemonicsActivity extends BaseActivity {
     TextView tetTitleName;
     private String status = "";
     private String exportWord;
+    private String exportType;
 
     @Override
     public int getLayoutId() {
@@ -68,7 +69,7 @@ public class HdRootMnemonicsActivity extends BaseActivity {
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);//禁止截屏
-        String exportType = getIntent().getStringExtra("exportType");
+        exportType = getIntent().getStringExtra("exportType");
         String importHdword = getIntent().getStringExtra("importHdword");
         exportWord = getIntent().getStringExtra("exportWord");
         if ("importHdword".equals(importHdword)) {
@@ -128,7 +129,11 @@ public class HdRootMnemonicsActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.btn_copy_it:
-                backupInfo();
+                if ("backup".equals(exportType)) {
+                    backupInfo();
+                } else {
+                    finish();
+                }
                 break;
         }
     }

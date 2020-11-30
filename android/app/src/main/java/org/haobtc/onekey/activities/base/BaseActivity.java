@@ -7,6 +7,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -119,6 +120,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
 
     }
+
     //toast short
     public void mToast(String str) {
         Toast.makeText(this, str, Toast.LENGTH_SHORT).show();

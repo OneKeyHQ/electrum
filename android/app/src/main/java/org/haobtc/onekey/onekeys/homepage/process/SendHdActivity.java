@@ -185,8 +185,8 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
                     mToast(getString(R.string.input_number));
                     return;
                 }
-//                tetamount.setText(sendNum);
-                max = true;
+                tetamount.setText(sendNum);
+//                max = true;
                 //getFeerate
                 getFeeamont();
                 //button to gray or blue
@@ -405,11 +405,12 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
     }
 
     private void getFeeamont() {
-        if (!TextUtils.isEmpty(editInputAddress.getText().toString()) && !TextUtils.isEmpty(tetamount.getText().toString())) {
+        if (max) {
             PyObject getDefaultFeeStatus = null;
             try {
                 getDefaultFeeStatus = Daemon.commands.callAttr("get_default_fee_status");
             } catch (Exception e) {
+                Log.e("TAGgetFastFeerate", "getFastFeerate: " + e.getMessage());
                 e.printStackTrace();
                 return;
             }
@@ -425,7 +426,33 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
                     getFastFeerate(feeMax + "");
                 }
             }
+
+        } else {
+            if (!TextUtils.isEmpty(editInputAddress.getText().toString()) && !TextUtils.isEmpty(tetamount.getText().toString())) {
+                PyObject getDefaultFeeStatus = null;
+                try {
+                    getDefaultFeeStatus = Daemon.commands.callAttr("get_default_fee_status");
+                } catch (Exception e) {
+                    Log.e("TAGgetFastFeerate", "getFastFeerate: " + e.getMessage());
+                    e.printStackTrace();
+                    return;
+                }
+                String strFee = getDefaultFeeStatus.toString();
+                Log.e("TAGgetFastFeerate", "getFastFeerate:----- " + strFee);
+                if (!TextUtils.isEmpty(strFee)) {
+                    if (strFee.contains("sat/byte")) {
+                        String strFeeamont = strFee.substring(0, strFee.indexOf("sat/byte"));
+                        String strMaxTemp = strFeeamont.replaceAll(" ", "");
+                        strGive = strMaxTemp.split("\\.", 2)[0];
+                        int feeMax = (Integer.parseInt(strGive)) * 2;
+                        getFeerate(strGive);
+                        getSlowFeerate("1");
+                        getFastFeerate(feeMax + "");
+                    }
+                }
+            }
         }
+
     }
 
     //get fast fee
@@ -440,6 +467,7 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
         arrayList.add(pramas);
         String strPramas = new Gson().toJson(arrayList);
         float strRecommend = Float.parseFloat(fastFee);
+        Log.i("strPramasjxm", "getFastFeerate: "+strPramas);
         PyObject getFeeByFeeRate = null;
         try {
             getFeeByFeeRate = Daemon.commands.callAttr("get_fee_by_feerate", strPramas, "", strRecommend);
@@ -637,7 +665,11 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
                     }
                     ArrayList<Map<String, String>> arrayList = new ArrayList<>();
                     Map<String, String> pramas = new HashMap<>();
-                    pramas.put(editInputAddress.getText().toString(), tetamount.getText().toString());
+//                    if (max) {
+//                        pramas.put(editInputAddress.getText().toString(), "!");
+//                    } else {
+                        pramas.put(editInputAddress.getText().toString(), tetamount.getText().toString());
+//                    }
                     arrayList.add(pramas);
                     String strPramas = new Gson().toJson(arrayList);
                     float strRecommend = Float.parseFloat(s.toString());

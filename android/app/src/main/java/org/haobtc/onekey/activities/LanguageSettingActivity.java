@@ -59,16 +59,10 @@ public class LanguageSettingActivity extends BaseActivity {
     @Override
     public void initData() {
         if ("English".equals(language)) {
-            radioSystem.setTextColor(getColor(R.color.text_color1));
-            radioEnglish.setTextColor(getColor(R.color.onekey));
-            radioChineseasy.setTextColor(getColor(R.color.text_color1));
             imgChinese.setVisibility(View.GONE);
             imgEnglish.setVisibility(View.VISIBLE);
             imgSystem.setVisibility(View.GONE);
         } else if ("Chinese".equals(language)) {
-            radioSystem.setTextColor(getColor(R.color.text_color1));
-            radioEnglish.setTextColor(getColor(R.color.text_color1));
-            radioChineseasy.setTextColor(getColor(R.color.onekey));
             imgChinese.setVisibility(View.VISIBLE);
             imgEnglish.setVisibility(View.GONE);
             imgSystem.setVisibility(View.GONE);
@@ -133,10 +127,4 @@ public class LanguageSettingActivity extends BaseActivity {
         startActivity(intent);
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // TODO: add setContentView(...) invocation
-        ButterKnife.bind(this);
-    }
 }

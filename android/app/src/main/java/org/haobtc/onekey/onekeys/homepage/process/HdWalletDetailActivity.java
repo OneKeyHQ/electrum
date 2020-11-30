@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -91,12 +92,30 @@ public class HdWalletDetailActivity extends BaseActivity {
             textSign.setText(String.format("%s %s", type, getString(R.string.sign_num)));
 
         } else if ("btc-standard".equals(showWalletType)) {
-            textHdWallet.setText(getString(R.string.single_wallet));
             //Independent Wallet
             linHdWalletShow.setVisibility(View.GONE);
             linSingleShow.setVisibility(View.VISIBLE);
+            //watch wallet or single wallet
+            isWhatWallet();
+
         }
 
+    }
+
+    //判断是独立钱包还是观察钱包
+    private void isWhatWallet() {
+        try {
+            PyObject isWatchOnly = Daemon.commands.callAttr("is_watch_only");
+            if (isWatchOnly.toBoolean()) {
+                textHdWallet.setText(getString(R.string.watch_wallet));
+            }else{
+                textHdWallet.setText(getString(R.string.single_wallet));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
     }
 
     @Override

@@ -29,7 +29,6 @@ import org.haobtc.onekey.bean.AddressEvent;
 import org.haobtc.onekey.event.LoadWalletlistEvent;
 import org.haobtc.onekey.onekeys.dialog.RecoverHdWalletActivity;
 import org.haobtc.onekey.onekeys.dialog.SetHDWalletPassActivity;
-import org.haobtc.onekey.onekeys.homepage.WalletListActivity;
 import org.haobtc.onekey.onekeys.homepage.process.CreateDeriveChooseTypeActivity;
 import org.haobtc.onekey.utils.Daemon;
 import org.json.JSONException;
@@ -56,6 +55,8 @@ public class HDWalletActivity extends BaseActivity {
     LinearLayout linNotWallet;
     @BindView(R.id.recl_add_wallet)
     RelativeLayout reclAddWallet;
+    @BindView(R.id.text_manage)
+    TextView textManage;
     private ArrayList<AddressEvent> hdWalletList;
     private WalletListAdapter walletListAdapter;
     private String deleteHdWalletName = "";
@@ -90,7 +91,7 @@ public class HDWalletActivity extends BaseActivity {
             case R.id.text_manage:
                 Intent intent1 = new Intent(HDWalletActivity.this, WalletManageActivity.class);
                 intent1.putExtra("hd_num", hdWalletList.size());
-                intent1.putExtra("deleteHdWalletName",deleteHdWalletName);
+                intent1.putExtra("deleteHdWalletName", deleteHdWalletName);
                 startActivity(intent1);
                 break;
             case R.id.recl_add_wallet:
@@ -168,7 +169,7 @@ public class HDWalletActivity extends BaseActivity {
                             addressEvent.setAmount(addr);
                             hdWalletList.add(addressEvent);
                         }
-                        if ("btc-hd-standard".equals(type)){
+                        if ("btc-hd-standard".equals(type)) {
                             deleteHdWalletName = key;
                         }
                     } catch (JSONException e) {
@@ -182,11 +183,13 @@ public class HDWalletActivity extends BaseActivity {
             } else {
                 reclAddWallet.setVisibility(View.GONE);
                 linNotWallet.setVisibility(View.VISIBLE);
+                textManage.setVisibility(View.GONE);
             }
         } else {
             textWalletNum.setText(String.valueOf(hdWalletList.size()));
             reclAddWallet.setVisibility(View.GONE);
             linNotWallet.setVisibility(View.VISIBLE);
+            textManage.setVisibility(View.GONE);
         }
     }
 
