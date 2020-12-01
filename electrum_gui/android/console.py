@@ -2156,27 +2156,33 @@ class AndroidCommands(commands.Commands):
         except BaseException as e:
             raise e
 
-    def get_backup_info(self):
+    def get_wallet_by_name(self, name):
+        self._assert_wallet_isvalid()
+        return self.wallet if name is None else self.daemon._wallets[self._wallet_path(name)]
+
+    def get_backup_info(self, name=None):
         '''
         Get backup status
         :return: True/False as bool
         '''
         backup_flag = True
         try:
-            if self.wallet.has_seed():
-                if self.backup_info.__contains__(self.wallet.keystore.seed):
+            wallet = self.get_wallet_by_name(name)
+            if wallet.has_seed():
+                if self.backup_info.__contains__(wallet.keystore.seed):
                     backup_flag = False
         except BaseException as e:
             raise e
         return backup_flag
 
-    def delete_backup_info(self):
+    def delete_backup_info(self, name=None):
         '''
         Delete one backup status in the config
         :return:
         '''
         try:
-            seed = self.wallet.keystore.seed
+            wallet = self.get_wallet_by_name(name)
+            seed = wallet.keystore.seed
             if self.backup_info.__contains__(seed):
                 del self.backup_info[seed]
                 self.config.set_key("backupinfo", self.backup_info)
