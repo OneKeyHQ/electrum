@@ -2248,12 +2248,153 @@ class AndroidCommands(commands.Commands):
             create by seed
                 create(name, password, seed='pottery curtain belt canal cart include raise receive sponsor vote embody offer')
         '''
+        print("CREATE in....name = %s" % name)
+        try:
+            if addresses is None:
+                self.check_password(password)
+        except BaseException as e:
+            raise e
+
+        if name == "":
+            name = ''.join(random.sample(string.ascii_letters + string.digits, 8)) + '.tmp.file'
+        new_seed = ""
+        wallet_type = "%s-standard" %coin
+        path = self._wallet_path(name)
+        if exists(path):
+            raise BaseException("path is exist")
+        storage = WalletStorage(path)
+        db = WalletDB('', manual_upgrades=False)
+        if addresses is not None:
+            if coin == "btc":
+                wallet = Imported_Wallet(db, storage, config=self.config)
+                addresses = addresses.split()
+                if not bitcoin.is_address(addresses[0]):
+                    try:
+                        pubkey = ecc.ECPubkey(bfh(addresses[0])).get_public_key_hex()
+                        addresses = [bitcoin.pubkey_to_address("p2wpkh", pubkey)]
+                    except BaseException as e:
+                        raise BaseException("Please enter the correct address or pubkey")
+            elif coin == "eth" or coin == "bsc":
+                wallet = Imported_Eth_Wallet(db, storage, config=self.config)
+                wallet.wallet_type = '%s_imported' % coin
+                try:
+                    from eth_keys import keys
+                    from hexbytes import HexBytes
+                    pubkey = keys.PublicKey(HexBytes(addresses))
+                    addresses = pubkey.to_address()
+                except BaseException as e:
+                    addresses = addresses.split()
+            else:
+                raise BaseException("Only support BTC/ETH/BSC")
+            good_inputs, bad_inputs = wallet.import_addresses(addresses, write_to_disk=False)
+            # FIXME tell user about bad_inputs
+            if not good_inputs:
+                raise BaseException("None of the given address can be imported")
+            wallet_type = "%s-watch-standard" % coin
+        elif privkeys is not None or keystores is not None:
+            if coin == "btc":
+                ks = keystore.Imported_KeyStore({})
+                db.put('keystore', ks.dump())
+                wallet = Imported_Wallet(db, storage, config=self.config)
+                try:
+                    # TODO:need script(p2pkh/p2wpkh/p2wpkh-p2sh)
+                    ecc.ECPrivkey(bfh(privkeys))
+                    keys = [privkeys]
+                except BaseException as e:
+                    keys = keystore.get_private_keys(privkeys, allow_spaces_inside_key=False)
+                    if keys is None:
+                        raise BaseException("Invalid private")
+            elif coin == "eth" or coin == "bsc":
+                if keystores is not None:
+                    try:
+                        from eth_account import Account
+                        privkeys = Account.decrypt(keystores, password).hex()
+                    except ValueError:
+                        raise InvalidPasswordException()
+                k = keystore.Imported_KeyStore({})
+                db.put('keystore', k.dump())
+                wallet = Imported_Eth_Wallet(db, storage, config=self.config)
+                wallet.wallet_type = '%s_imported' % coin
+                keys = keystore.get_eth_private_key(privkeys, allow_spaces_inside_key=False)
+            good_inputs, bad_inputs = wallet.import_private_keys(keys, None, write_to_disk=False)
+            # FIXME tell user about bad_inputs
+            if not good_inputs:
+                raise BaseException("None of the given privkeys can be imported")
+            wallet_type = "%s-private-standard" %coin
+        else:
+            if bip39_derivation is not None:
+                if keystore.is_seed(seed):
+                    ks = keystore.from_seed(seed, passphrase, False)
+                else:
+                    is_checksum, is_wordlist = keystore.bip39_is_checksum_valid(seed)
+                    if not is_checksum:
+                        raise BaseException("bip39 seed invalid")
+                    ks = keystore.from_bip39_seed(seed, passphrase, bip39_derivation)
+                if coin == "btc":
+                    derived_obj = self.btc_derived_info
+                elif self.coins.__contains__(coin):
+                    derived_obj = self.coins[coin]['derivedInfoObj']
+                if int(bip39_derivation.split('/')[ACCOUNT_POS].split('\'')[0]) != 0:
+                    wallet_type = '%s-derived-standard' % coin
+                    self.update_devired_wallet_info(bip39_derivation,
+                                                    derived_obj.get_hd_wallet().get_keystore().xpub, name)
+            elif master is not None:
+                ks = keystore.from_master_key(master)
+            else:
+                if seed is None:
+                    seed = Mnemonic("english").generate(strength=strength)
+                    # seed = mnemonic.Mnemonic('en').make_seed(seed_type=seed_type)
+                    new_seed = seed
+                    print("Your wallet generation seed is:\n\"%s\"" % seed)
+                    print("seed type = %s" % type(seed))
+                if keystore.is_seed(seed):
+                    ks = keystore.from_seed(seed, passphrase, False)
+                else:
+                    is_checksum, is_wordlist = keystore.bip39_is_checksum_valid(seed)
+                    if not is_checksum:
+                        raise BaseException("bip39 seed invalid")
+                    if coin == "btc":
+                        derivation = bip44_derivation(0, purpose)
+                    elif self.coins.__contains__(coin):
+                        derivation = bip44_derivation(0, self.coins[coin]['addressType'], coin=self.coins[coin]['coinId'])
+                    ks, bip32_seed = keystore.from_bip39_seed(seed, passphrase, derivation=derivation)
+            db.put('keystore', ks.dump())
+            if coin == "btc":
+                wallet = Standard_Wallet(db, storage, config=self.config)
+            elif self.coins.__contains__(coin):
+                wallet = Standard_Eth_Wallet(db, storage, config=self.config)
+        if hd and seed is not None:
+            wallet.status_flag = "hd"
+            if coin == "btc":
+                self.btc_derived_info.set_hd_wallet(wallet)
+                self.check_pw_wallet = wallet
+            elif self.coins.__contains__(coin):
+                self.coins[coin]['derivedInfoObj'].set_hd_wallet(wallet)
+            wallet_type = '%s-hd-standard' %coin
+        addr = wallet.get_addresses()[0]
+        print(f"addre........{addr, bip39_derivation}")
+        self.check_exist_file(addr)
+        wallet.update_password(old_pw=None, new_pw=password, str_pw=self.android_id, encrypt_storage=True)
         if coin == "btc":
-            self.create_btc(name, password=password, seed_type=seed_type, seed=seed, passphrase=passphrase, bip39_derivation=bip39_derivation,
-               master=master, addresses=addresses, privkeys=privkeys, hd=hd, purpose=purpose, strength=strength)
-        elif coin == 'eth' or coin == 'bsc':
-            self.create_eth(name, password=password, seed=seed, passphrase=passphrase, addresses=addresses, privkeys=privkeys, keystores=keystores,
-                   bip39_derivation=bip39_derivation, hd=hd, coin=coin, strength=strength)
+            wallet.start_network(self.daemon.network)
+        wallet.save_db()
+        self.daemon.add_wallet(wallet)
+        self.update_file_name(name, wallet.get_addresses()[0])
+        keyinfo = wallet.get_keystore().xpub if -1 == wallet.wallet_type.find("import") else None
+        self.update_local_wallet_info(name, wallet_type, keystores=keyinfo)
+        # if self.label_flag:
+        #     self.label_plugin.load_wallet(self.wallet, None)
+        if new_seed != '':
+            encrypt_seed = wallet.keystore.seed
+            self.update_backup_info(encrypt_seed)
+        return new_seed
+
+        # if coin == "btc":
+        #     self.create_btc(name, password=password, seed_type=seed_type, seed=seed, passphrase=passphrase, bip39_derivation=bip39_derivation,
+        #        master=master, addresses=addresses, privkeys=privkeys, hd=hd, purpose=purpose, strength=strength)
+        # elif coin == 'eth' or coin == 'bsc':
+        #     self.create_eth(name, password=password, seed=seed, passphrase=passphrase, addresses=addresses, privkeys=privkeys, keystores=keystores,
+        #            bip39_derivation=bip39_derivation, hd=hd, coin=coin, strength=strength)
 
     def create_eth(self, name, password=None, seed=None, passphrase="", addresses=None, privkeys=None, keystores=None,
                    bip39_derivation=None, hd=False, coin='eth', strength=128):
@@ -2289,6 +2430,7 @@ class AndroidCommands(commands.Commands):
             # FIXME tell user about bad_inputs
             if not good_inputs:
                 raise BaseException("None of the given address can be imported")
+            wallet_type = "%s-watch-standard" %coin
         elif privkeys is not None or keystores is not None:
             if keystores is not None:
                 try:
@@ -2306,6 +2448,7 @@ class AndroidCommands(commands.Commands):
             # FIXME tell user about bad_inputs
             if not good_inputs:
                 raise BaseException("None of the given privkeys can be imported")
+            wallet_type = "%s-private-standard" % coin
         else:
             if bip39_derivation is not None:
                 ks = keystore.from_bip39_seed(seed, passphrase, bip39_derivation)
@@ -2778,6 +2921,7 @@ class AndroidCommands(commands.Commands):
             # FIXME tell user about bad_inputs
             if not good_inputs:
                 raise BaseException("None of the given address can be imported")
+            wallet_type = "btc-watch-standard"
         elif privkeys is not None:
             ks = keystore.Imported_KeyStore({})
             db.put('keystore', ks.dump())
@@ -2794,6 +2938,7 @@ class AndroidCommands(commands.Commands):
             # FIXME tell user about bad_inputs
             if not good_inputs:
                 raise BaseException("None of the given privkeys can be imported")
+            wallet_type = "btc-private-standard"
         else:
             if bip39_derivation is not None:
                 if keystore.is_seed(seed):
