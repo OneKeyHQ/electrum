@@ -63,8 +63,8 @@ public class HdWalletDetailActivity extends BaseActivity {
     LinearLayout linHardware;
     private String type;
     private boolean isBackup;
-    private PyObject isWatchOnly;
     private SharedPreferences preferences;
+    private String showWalletType;
 
     @Override
     public int getLayoutId() {
@@ -80,7 +80,7 @@ public class HdWalletDetailActivity extends BaseActivity {
 
     private void inits() {
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-        String showWalletType = preferences.getString("showWalletType", "");
+        showWalletType = preferences.getString("showWalletType", "");
         String hdWalletName = getIntent().getStringExtra("hdWalletName");
         isBackup = getIntent().getBooleanExtra("isBackup", false);
         textWalletName.setText(hdWalletName);
@@ -97,33 +97,16 @@ public class HdWalletDetailActivity extends BaseActivity {
             type = showWalletType.substring(showWalletType.indexOf("hw-") + 3);
             textSign.setText(String.format("%s %s", type, getString(R.string.sign_num)));
 
+        } else if (showWalletType.contains("watch")) {
+            textHdWallet.setText(getString(R.string.watch_wallet));
+            linSingle.setVisibility(View.GONE);
         } else if ("btc-standard".equals(showWalletType)) {
             //Independent Wallet
             linHdWalletShow.setVisibility(View.GONE);
             linSingleShow.setVisibility(View.VISIBLE);
-            //watch wallet or single wallet
-            isWhatWallet();
-
+            textHdWallet.setText(getString(R.string.single_wallet));
         }
 
-    }
-
-    //判断是独立钱包还是观察钱包
-    private void isWhatWallet() {
-        try {
-            isWatchOnly = Daemon.commands.callAttr("is_watch_only");
-            if (isWatchOnly.toBoolean()) {
-                textHdWallet.setText(getString(R.string.watch_wallet));
-                linSingle.setVisibility(View.GONE);
-
-            } else {
-                textHdWallet.setText(getString(R.string.single_wallet));
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
     }
 
     @Override
@@ -183,7 +166,7 @@ public class HdWalletDetailActivity extends BaseActivity {
                 intent.putExtra("importHdword", "deleteSingleWallet");
                 intent.putExtra("walletName", textWalletName.getText().toString());
                 intent.putExtra("isBackup", isBackup);
-                intent.putExtra("delete_wallet_type", isWatchOnly.toBoolean());
+                intent.putExtra("delete_wallet_type", showWalletType);
                 startActivity(intent);
                 break;
             case R.id.text_sign:

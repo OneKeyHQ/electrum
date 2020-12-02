@@ -397,7 +397,7 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
                 break;
             case R.id.rel_bi_detail:
                 Intent intent5 = new Intent(getActivity(), TransactionDetailWalletActivity.class);
-                intent5.putExtra("walletBalance", textBtcAmount.getText().toString());
+                intent5.putExtra("walletBalance", changeBalance);
                 intent5.putExtra("walletDollar", textDollar.getText().toString());
                 intent5.putExtra("hdWalletName", textWalletName.getText().toString());
                 startActivity(intent5);

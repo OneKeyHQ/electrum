@@ -128,12 +128,16 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
     float feeForChild;
     private String baseUnit;
     private String cnyUnit;
-    private String detailDontUnit;
     private String errorMessage = "";
     private String amountUnit;
     private float amountUnitSat;
     private boolean flag = true;
     private boolean max;
+    private BigDecimal bigRecommendFee;
+    private float fastFeeForChild;
+    private float slowFeeForChild;
+    private float customFeeForChild;
+    private String showWalletType;
 
     @Override
     public int getLayoutId() {
@@ -147,22 +151,18 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
         hdWalletName = getIntent().getStringExtra("hdWalletName");
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         sendNum = getIntent().getStringExtra("sendNum");
-
+        showWalletType = preferences.getString("showWalletType", "");
         textSlowTime.setText(String.format("%s0%s", getString(R.string.about_), getString(R.string.minute)));
         textRecommendTime.setText(String.format("%s0%s", getString(R.string.about_), getString(R.string.minute)));
         textFastTime.setText(String.format("%s0%s", getString(R.string.about_), getString(R.string.minute)));
         baseUnit = preferences.getString("base_unit", "");
         cnyUnit = preferences.getString("cny_strunit", "CNY");
-        detailDontUnit = getIntent().getStringExtra("detailDontUnit");//from transactionActivity don't unit
         String addressScan = getIntent().getStringExtra("addressScan");
         if (!TextUtils.isEmpty(addressScan)) {
             editInputAddress.setText(addressScan);
         }
-        if ("detailDontUnit".equals(detailDontUnit)) {
-            textNum.setText(sendNum);
-        } else {
-            textNum.setText(String.format("%s%s", sendNum, preferences.getString("base_unit", "")));
-        }
+        textNum.setText(String.format("%s%s", sendNum, preferences.getString("base_unit", "")));
+
     }
 
     @Override
@@ -182,10 +182,10 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
 //                startActivity(intent);
                 break;
             case R.id.text_max:
-                if (TextUtils.isEmpty(editInputAddress.getText().toString())) {
-                    mToast(getString(R.string.input_number));
-                    return;
-                }
+//                if (TextUtils.isEmpty(editInputAddress.getText().toString())) {
+//                    mToast(getString(R.string.input_number));
+//                    return;
+//                }
                 tetamount.setText(sendNum);
 //                max = true;
                 //getFeerate
@@ -224,6 +224,10 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
                 checkboxRecommend.setVisibility(View.GONE);
                 checkboxFast.setVisibility(View.GONE);
                 useTx = slowTx;
+//                if (max) {
+//                    //慢速下 可发送的最大值
+//                    textFeeForChild(slowFeeForChild);
+//                }
                 break;
             case R.id.lin_recommend:
                 if (TextUtils.isEmpty(editInputAddress.getText().toString())) {
@@ -241,6 +245,10 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
                 checkboxRecommend.setVisibility(View.VISIBLE);
                 checkboxFast.setVisibility(View.GONE);
                 useTx = recommendTx;
+//                if (max) {
+//                    //推速度下 可发送的最大值
+//                    textFeeForChild(feeForChild);
+//                }
                 break;
             case R.id.lin_fast:
                 if (TextUtils.isEmpty(editInputAddress.getText().toString())) {
@@ -258,6 +266,9 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
                 checkboxRecommend.setVisibility(View.GONE);
                 checkboxFast.setVisibility(View.VISIBLE);
                 useTx = fastTx;
+//                if (max) {
+//                    textFeeForChild(fastFeeForChild);
+//                }
                 break;
             case R.id.btn_next:
                 if (!TextUtils.isEmpty(errorMessage)) {
@@ -303,8 +314,20 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
                 checkboxSlow.setVisibility(View.GONE);
                 checkboxRecommend.setVisibility(View.VISIBLE);
                 checkboxFast.setVisibility(View.GONE);
+//                if (max) {
+//                    //自定义下 可发送的最大值
+//                    textFeeForChild(feeForChild);
+//                }
                 break;
         }
+    }
+
+    private void textFeeForChild(float fastFeeForChild) {
+        //快下 可发送的最大值
+        BigDecimal bigDecimalFee2 = new BigDecimal(fastFeeForChild);
+        BigDecimal bigDecimalSum2 = new BigDecimal(sendNum);
+        bigRecommendFee = bigDecimalSum2.subtract(bigDecimalFee2);//推荐的最大费
+        tetamount.setText(String.valueOf(bigRecommendFee));
     }
 
     private void sendCurrency(String pass) {
@@ -363,6 +386,10 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
         //set see view
         View view = View.inflate(context, resource, null);
         Dialog dialogBtoms = new Dialog(context, R.style.dialog);
+        Button confirmBtn = view.findViewById(R.id.btn_confirm_pay);
+        if (showWalletType.contains("watch")) {
+            confirmBtn.setText(getString(R.string.confirm));
+        }
         TextView txAmount = view.findViewById(R.id.text_tx_amount);
         txAmount.setText(String.format("%s%s", tetamount.getText().toString(), preferences.getString("base_unit", "")));
         TextView sendAddress = view.findViewById(R.id.text_send_address);
@@ -380,20 +407,23 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
         TextView txFee = view.findViewById(R.id.text_tx_fee);
         txFee.setText(fromJson.getFee());
 
-        view.findViewById(R.id.btn_confirm_pay).setOnClickListener(v -> {
-            //sign trsaction
-            if ("short".equals(preferences.getString("shortOrLongPass", "short"))) {
-                Intent intent = new Intent(this, SetHDWalletPassActivity.class);
-                intent.putExtra("importHdword", "send");
-                intent.putExtra("useTx", useTx);
-                startActivity(intent);
+        confirmBtn.setOnClickListener(v -> {
+            if (showWalletType.contains("watch")) {
+                dialogBtoms.dismiss();
             } else {
-                Intent intent = new Intent(this, SetLongPassActivity.class);
-                intent.putExtra("importHdword", "send");
-                intent.putExtra("useTx", useTx);
-                startActivity(intent);
+                //sign trsaction
+                if ("short".equals(preferences.getString("shortOrLongPass", "short"))) {
+                    Intent intent = new Intent(this, SetHDWalletPassActivity.class);
+                    intent.putExtra("importHdword", "send");
+                    intent.putExtra("useTx", useTx);
+                    startActivity(intent);
+                } else {
+                    Intent intent = new Intent(this, SetLongPassActivity.class);
+                    intent.putExtra("importHdword", "send");
+                    intent.putExtra("useTx", useTx);
+                    startActivity(intent);
+                }
             }
-
         });
         view.findViewById(R.id.img_cancel).setOnClickListener(v -> {
             dialogBtoms.dismiss();
@@ -413,54 +443,36 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
     }
 
     private void getFeeamont() {
-        if (max) {
-            PyObject getDefaultFeeStatus = null;
-            try {
-                getDefaultFeeStatus = Daemon.commands.callAttr("get_default_fee_status");
-            } catch (Exception e) {
-                Log.e("TAGgetFastFeerate", "getFastFeerate: " + e.getMessage());
-                e.printStackTrace();
-                return;
-            }
-            String strFee = getDefaultFeeStatus.toString();
-            if (!TextUtils.isEmpty(strFee)) {
-                if (strFee.contains("sat/byte")) {
-                    String strFeeamont = strFee.substring(0, strFee.indexOf("sat/byte"));
-                    String strMaxTemp = strFeeamont.replaceAll(" ", "");
-                    strGive = strMaxTemp.split("\\.", 2)[0];
-                    int feeMax = (Integer.parseInt(strGive)) * 2;
-                    getFeerate(strGive);
-                    getSlowFeerate("1");
-                    getFastFeerate(feeMax + "");
-                }
-            }
+//        if (max) {
+//            getDefaultFeeStatus();
+//        } else {
+        if (!TextUtils.isEmpty(editInputAddress.getText().toString()) && !TextUtils.isEmpty(tetamount.getText().toString())) {
+            getDefaultFeeStatus();
+        }
+//        }
+    }
 
-        } else {
-            if (!TextUtils.isEmpty(editInputAddress.getText().toString()) && !TextUtils.isEmpty(tetamount.getText().toString())) {
-                PyObject getDefaultFeeStatus = null;
-                try {
-                    getDefaultFeeStatus = Daemon.commands.callAttr("get_default_fee_status");
-                } catch (Exception e) {
-                    Log.e("TAGgetFastFeerate", "getFastFeerate: " + e.getMessage());
-                    e.printStackTrace();
-                    return;
-                }
-                String strFee = getDefaultFeeStatus.toString();
-                Log.e("TAGgetFastFeerate", "getFastFeerate:----- " + strFee);
-                if (!TextUtils.isEmpty(strFee)) {
-                    if (strFee.contains("sat/byte")) {
-                        String strFeeamont = strFee.substring(0, strFee.indexOf("sat/byte"));
-                        String strMaxTemp = strFeeamont.replaceAll(" ", "");
-                        strGive = strMaxTemp.split("\\.", 2)[0];
-                        int feeMax = (Integer.parseInt(strGive)) * 2;
-                        getFeerate(strGive);
-                        getSlowFeerate("1");
-                        getFastFeerate(feeMax + "");
-                    }
-                }
+    private void getDefaultFeeStatus() {
+        PyObject getDefaultFeeStatus = null;
+        try {
+            getDefaultFeeStatus = Daemon.commands.callAttr("get_default_fee_status");
+        } catch (Exception e) {
+            Log.e("TAGgetFastFeerate", "getFastFeerate: " + e.getMessage());
+            e.printStackTrace();
+            return;
+        }
+        String strFee = getDefaultFeeStatus.toString();
+        if (!TextUtils.isEmpty(strFee)) {
+            if (strFee.contains("sat/byte")) {
+                String strFeeamont = strFee.substring(0, strFee.indexOf("sat/byte"));
+                String strMaxTemp = strFeeamont.replaceAll(" ", "");
+                strGive = strMaxTemp.split("\\.", 2)[0];
+                int feeMax = (Integer.parseInt(strGive)) * 2;
+                getFeerate(strGive);
+                getSlowFeerate("1");
+                getFastFeerate(feeMax + "");
             }
         }
-
     }
 
     //get fast fee
@@ -495,14 +507,14 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
             textFastTime.setText(String.format("%s%s%s", getString(R.string.about_), time + "", getString(R.string.minute)));
             textFee10.setText(String.format("%s sat", feeNum));
             if ("BTC".equals(baseUnit)) {
-                feeForChild = Float.parseFloat(feeNum) / 100000000;
+                fastFeeForChild = Float.parseFloat(feeNum) / 100000000;
             } else if ("mBTC".equals(baseUnit)) {
-                feeForChild = Float.parseFloat(feeNum) / 100000;
+                fastFeeForChild = Float.parseFloat(feeNum) / 100000;
             } else if ("bits".equals(baseUnit)) {
-                feeForChild = Float.parseFloat(feeNum) / 100;
+                fastFeeForChild = Float.parseFloat(feeNum) / 100;
             }
             try {
-                PyObject money = Daemon.commands.callAttr("get_exchange_currency", "base", String.valueOf(feeForChild));
+                PyObject money = Daemon.commands.callAttr("get_exchange_currency", "base", String.valueOf(fastFeeForChild));
                 if ("CNY".equals(cnyUnit)) {
                     textDollar10.setText(String.format("￥ %s", money.toString()));
                 } else if ("USD".equals(cnyUnit)) {
@@ -559,6 +571,11 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
             } else if ("bits".equals(baseUnit)) {
                 feeForChild = Float.parseFloat(feeNum) / 100;
             }
+//            if (max) {
+//                //推荐矿工费下 可发送的最大值
+//                textFeeForChild(feeForChild);
+//            }
+
             try {
                 PyObject money = Daemon.commands.callAttr("get_exchange_currency", "base", String.valueOf(feeForChild));
                 if ("CNY".equals(cnyUnit)) {
@@ -573,7 +590,6 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
                 return;
             }
         }
-
     }
 
     //get slow fee
@@ -607,14 +623,14 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
             textSlowTime.setText(String.format("%s%s%s", getString(R.string.about_), time + "", getString(R.string.minute)));
             textFee50.setText(String.format("%s sat", feeNum));
             if ("BTC".equals(baseUnit)) {
-                feeForChild = Float.parseFloat(feeNum) / 100000000;
+                slowFeeForChild = Float.parseFloat(feeNum) / 100000000;
             } else if ("mBTC".equals(baseUnit)) {
-                feeForChild = Float.parseFloat(feeNum) / 100000;
+                slowFeeForChild = Float.parseFloat(feeNum) / 100000;
             } else if ("bits".equals(baseUnit)) {
-                feeForChild = Float.parseFloat(feeNum) / 100;
+                slowFeeForChild = Float.parseFloat(feeNum) / 100;
             }
             try {
-                PyObject money = Daemon.commands.callAttr("get_exchange_currency", "base", String.valueOf(feeForChild));
+                PyObject money = Daemon.commands.callAttr("get_exchange_currency", "base", String.valueOf(slowFeeForChild));
                 if ("CNY".equals(cnyUnit)) {
                     textDollar50.setText(String.format("￥ %s", money.toString()));
                 } else if ("USD".equals(cnyUnit)) {
@@ -651,6 +667,7 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
         Button btnConfirm = view.findViewById(R.id.btn_next);
         TextView textDollar = view.findViewById(R.id.text_dollar);
         editFeeByte.addTextChangedListener(new TextWatcher() {
+
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
@@ -702,14 +719,14 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
                         textBtc.setText(String.format("%ssat", customFee));
 
                         if ("BTC".equals(baseUnit)) {
-                            feeForChild = Float.parseFloat(customFee.toString()) / 100000000;
+                            customFeeForChild = Float.parseFloat(customFee.toString()) / 100000000;
                         } else if ("mBTC".equals(baseUnit)) {
-                            feeForChild = Float.parseFloat(customFee.toString()) / 100000;
+                            customFeeForChild = Float.parseFloat(customFee.toString()) / 100000;
                         } else if ("bits".equals(baseUnit)) {
-                            feeForChild = Float.parseFloat(customFee.toString()) / 100;
+                            customFeeForChild = Float.parseFloat(customFee.toString()) / 100;
                         }
                         try {
-                            PyObject money = Daemon.commands.callAttr("get_exchange_currency", "base", String.valueOf(feeForChild));
+                            PyObject money = Daemon.commands.callAttr("get_exchange_currency", "base", String.valueOf(customFeeForChild));
                             if ("CNY".equals(cnyUnit)) {
                                 textDollar.setText(String.format("≈ ￥ %s", money.toString()));
                             } else if ("USD".equals(cnyUnit)) {
@@ -746,6 +763,10 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
                 viewFast.setVisibility(View.GONE);
                 textFeeCustom.setText(String.format("%s", customFee + ""));
                 textCustomTime.setText(String.format("%s%s%s", getString(R.string.about_), customTime + "", getString(R.string.minute)));
+//                if (max) {
+//                    //自定义下 可发送的最大值
+//                    textFeeForChild(customFeeForChild);
+//                }
                 if (customFee == null) {
                     return;
                 }
@@ -852,7 +873,7 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
         if (!TextUtils.isEmpty(strAmount)) {
             if (flag) {
                 flag = false;
-                max = false;
+//                max = false;
             } else {
                 flag = true;
             }

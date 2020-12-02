@@ -86,13 +86,13 @@
                     android:id="@+id/img_paste"
                     android:layout_width="wrap_content"
                     android:layout_height="26dp"
-                    android:gravity="center"
-                    android:textColor="@color/onekey"
                     android:layout_alignParentEnd="true"
-                    android:text="@string/paste"
                     android:layout_alignParentBottom="true"
                     android:layout_marginEnd="@dimen/dp_20"
-                    android:layout_marginBottom="23dp"/>
+                    android:layout_marginBottom="23dp"
+                    android:gravity="center"
+                    android:text="@string/paste"
+                    android:textColor="@color/onekey" />
 
             </RelativeLayout>
 
@@ -157,7 +157,8 @@
                     android:paddingEnd="@dimen/dp_10"
                     android:text="@string/max"
                     android:textColor="@color/onekey"
-                    android:textSize="@dimen/sp_14" />
+                    android:textSize="@dimen/sp_14"
+                    android:visibility="gone" />
 
                 <View
                     android:layout_width="match_parent"

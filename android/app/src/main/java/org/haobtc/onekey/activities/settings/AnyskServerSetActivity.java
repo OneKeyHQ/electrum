@@ -154,6 +154,9 @@ public class AnyskServerSetActivity extends BaseActivity {
         try {
             Daemon.commands.callAttr("set_sync_server_host", ip, port);
         } catch (Exception e) {
+            if (e.getMessage().contains("No address associated with hostname")){
+                mToast(getString(R.string.invalid_address));
+            }
             e.printStackTrace();
             return;
         }

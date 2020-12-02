@@ -1191,7 +1191,7 @@
     <string name="exit">撤回</string>
     <string name="change_pin">修改设备 PIN 码</string>
     <string name="verify_pin_onkey">校验PIN码</string>
-    <string name="long_pass_8">长密码最少输入8位</string>
+    <string name="long_pass_32">密码长度不应大于 32 位字符，请重新填写。</string>
     <string name="wrong_private">私钥输入错误，请重新输入！</string>
     <string name="have_private">已存在该私钥创建的钱包！</string>
     <string name="changemessage">导入信息已存在请更换</string>
@@ -1209,5 +1209,10 @@
     <string name="just_now_screen">您刚才似乎截图了</string>
     <string name="just_now_screen_tip">手机相册非常不安全，任何应用都可以访问。<b>立刻前往手机相册，将刚才的屏幕截图永久删除。</b>将来的您会感谢现在自己的决定。</string>
     <string name="recommended">推荐使用</string>
+    <string name="watch">观察</string>
+    <string name="padd_lenth_wrong">密码长度有误</string>
+    <string name="pass_lenth_tip">密码长度不应小于 8 位字符，建议使用大小写字母、数字、特殊字符混用的高复杂度密码。</string>
+    <string name="input_again">重新填写</string>
+    <string name="invalid_address">输入地址不可用，请重新输入</string>
 
 </resources>

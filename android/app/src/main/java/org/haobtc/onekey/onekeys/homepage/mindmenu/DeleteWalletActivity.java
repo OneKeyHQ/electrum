@@ -66,9 +66,9 @@ public class DeleteWalletActivity extends BaseActivity implements CompoundButton
         importHdword = getIntent().getStringExtra("importHdword");
         walletName = getIntent().getStringExtra("walletName");
         isBackup = getIntent().getBooleanExtra("isBackup", false);
-        boolean deleteWalletType = getIntent().getBooleanExtra("delete_wallet_type", false);
+        String deleteWalletType = getIntent().getStringExtra("delete_wallet_type");
         if ("deleteSingleWallet".equals(importHdword)) {
-            if (deleteWalletType) {
+            if (deleteWalletType.contains("watch")) {
                 textTitle.setText(getString(R.string.delete_watch_wallet));
             } else {
                 textTitle.setText(getString(R.string.delete_single_wallet));

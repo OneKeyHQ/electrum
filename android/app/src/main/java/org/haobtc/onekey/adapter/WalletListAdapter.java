@@ -48,6 +48,9 @@ public class WalletListAdapter extends BaseQuickAdapter<AddressEvent, BaseViewHo
         } else if (item.getType().contains("hw")) {
             String type = item.getType().substring(item.getType().indexOf("hw-") + 3);
             helper.setText(R.id.text_type, mContext.getString(R.string.hardwares) + " " + type);
+        } else if (item.getType().contains("watch")) {
+            helper.getView(R.id.text_type).setVisibility(View.VISIBLE);
+            helper.setText(R.id.text_type, mContext.getString(R.string.watch));
         } else {
             helper.getView(R.id.text_type).setVisibility(View.INVISIBLE);
         }

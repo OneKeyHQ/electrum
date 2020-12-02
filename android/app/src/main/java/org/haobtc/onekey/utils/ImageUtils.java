@@ -50,30 +50,6 @@ public class ImageUtils {
     //保存在本地并一键分享
     private static String sharePic(Bitmap cachebmp, String child) {
         final File qrImage = new File(Environment.getExternalStorageDirectory(), child + ".jpg");
-        if (qrImage.exists()) {
-            qrImage.delete();
-        }
-        try {
-            qrImage.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        FileOutputStream fOut = null;
-        try {
-            fOut = new FileOutputStream(qrImage);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        if (cachebmp == null) {
-            return "";
-        }
-        cachebmp.compress(Bitmap.CompressFormat.JPEG, 100, fOut);
-        try {
-            fOut.flush();
-            fOut.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         return qrImage.getPath();
     }
 

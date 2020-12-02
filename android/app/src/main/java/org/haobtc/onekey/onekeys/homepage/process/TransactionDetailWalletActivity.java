@@ -2,6 +2,7 @@ package org.haobtc.onekey.onekeys.homepage.process;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -46,6 +47,7 @@ public class TransactionDetailWalletActivity extends BaseActivity {
     private ArrayList<MaintrsactionlistEvent> listBeans;
     private OnekeyTxListAdapter onekeyTxListAdapter;
     private String hdWalletName;
+    private String walletBalance;
 
     @Override
     public int getLayoutId() {
@@ -55,10 +57,11 @@ public class TransactionDetailWalletActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
-        String walletBalance = getIntent().getStringExtra("walletBalance");
+        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        walletBalance = getIntent().getStringExtra("walletBalance");
         String walletDollar = getIntent().getStringExtra("walletDollar");
         hdWalletName = getIntent().getStringExtra("hdWalletName");
-        textWalletAmount.setText(walletBalance);
+        textWalletAmount.setText(String.format("%s%s", walletBalance, preferences.getString("base_unit", "")));
         textWalletDollar.setText(walletDollar);
 
     }
@@ -175,9 +178,8 @@ public class TransactionDetailWalletActivity extends BaseActivity {
                 break;
             case R.id.btn_forward:
                 Intent intent2 = new Intent(TransactionDetailWalletActivity.this, SendHdActivity.class);
-                intent2.putExtra("sendNum", textWalletAmount.getText().toString());
+                intent2.putExtra("sendNum", walletBalance);
                 intent2.putExtra("hdWalletName", hdWalletName);
-                intent2.putExtra("detailDontUnit", "detailDontUnit");
                 startActivity(intent2);
                 break;
             case R.id.btn_collect:

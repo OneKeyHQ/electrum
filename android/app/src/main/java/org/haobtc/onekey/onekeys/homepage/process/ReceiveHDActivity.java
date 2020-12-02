@@ -134,28 +134,32 @@ public class ReceiveHDActivity extends AppCompatActivity {
                 Toast.makeText(ReceiveHDActivity.this, R.string.copysuccess, Toast.LENGTH_LONG).show();
                 break;
             case R.id.linear_share:
-                String shareImg = ImageUtils.viewSaveToImage(linScreen, "images");
-                rxPermissions
-                        .request(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        .subscribe(granted -> {
-                            if (granted) { // Always true pre-M
-                                if (!TextUtils.isEmpty(shareImg)) {
-                                    Intent shareIntent = new Intent(Intent.ACTION_SEND);
-                                    shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(shareImg));
-                                    shareIntent.setType("image/*");
-                                    shareIntent.putExtra(Intent.EXTRA_TEXT, textReceiveAddress.getText().toString());
-                                    shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                    shareIntent = Intent.createChooser(shareIntent, "Here is the title of Select box");
-                                    startActivity(shareIntent);
+                try {
+                    rxPermissions
+                            .request(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                            .subscribe(granted -> {
+                                if (granted) { // Always true pre-M
+                                    String shareImg = ImageUtils.viewSaveToImage(linScreen, "images");
+                                    if (!TextUtils.isEmpty(shareImg)) {
+                                        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                                        shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(shareImg));
+                                        shareIntent.setType("image/*");
+                                        shareIntent.putExtra(Intent.EXTRA_TEXT, textReceiveAddress.getText().toString());
+                                        shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        shareIntent = Intent.createChooser(shareIntent, "Here is the title of Select box");
+                                        startActivity(shareIntent);
 
-                                } else {
-                                    Toast.makeText(this, getString(R.string.pictrue_fail), Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Toast.makeText(this, getString(R.string.pictrue_fail), Toast.LENGTH_SHORT).show();
+                                    }
+
+                                } else { // Oups permission denied
+                                    Toast.makeText(this, R.string.reservatpion_photo, Toast.LENGTH_SHORT).show();
                                 }
-
-                            } else { // Oups permission denied
-                                Toast.makeText(this, R.string.reservatpion_photo, Toast.LENGTH_SHORT).show();
-                            }
-                        }).dispose();
+                            }).dispose();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 break;
         }
     }

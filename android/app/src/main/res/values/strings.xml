@@ -1246,7 +1246,7 @@
     <string name="change_pin">修改设备 PIN 码</string>
     <string name="verify_pin_onkey">校验PIN码</string>
     <string name="rule_password">0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ`¬!"£$%^*()~=#{}[];':,./?/*-_+ " &#139; &#155; &#64; &#38;</string>
-    <string name="long_pass_8">Input at least 8 digits for long password</string>
+    <string name="long_pass_32">Password length should not be greater than 32 characters, please fill in again.</string>
     <string name="wrong_private">Private key input error, please re-enter!</string>
     <string name="have_private">The wallet created by the private key already exists!</string>
     <string name="changemessage">Import information already exists, please replace</string>
@@ -1264,5 +1264,10 @@
     <string name="just_now_screen">You seem to have taken a screenshot just now</string>
     <string name="just_now_screen_tip">Mobile photo albums are very insecure and can be accessed by any app. <b>Go to the mobile photo album immediately and permanently delete the screenshot. </b>In the future, you will appreciate your decision now.</string>
     <string name="recommended">Recommended</string>
+    <string name="watch">Watch</string>
+    <string name="padd_lenth_wrong">Wrong password length</string>
+    <string name="pass_lenth_tip">The length of the password should not be less than 8 characters. It is recommended to use a high complexity password with mixed upper and lower case letters, numbers and special characters.</string>
+    <string name="input_again">Fill in again</string>
+    <string name="invalid_address">The input address is not available, please re-enter</string>
 
 </resources>

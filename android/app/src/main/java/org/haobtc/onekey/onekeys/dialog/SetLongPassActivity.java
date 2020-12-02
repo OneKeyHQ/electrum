@@ -1,5 +1,7 @@
 package org.haobtc.onekey.onekeys.dialog;
 
+import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.text.Editable;
@@ -7,11 +9,16 @@ import android.text.TextWatcher;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.LayoutRes;
 
 import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
@@ -147,7 +154,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
                 break;
             case R.id.btn_next:
                 if (editPass.getText().toString().length() < 8) {
-                    mToast(getString(R.string.long_pass_8));
+                    inputTip(this, R.layout.longpass_imput_tip, "little");
                     return;
                 }
                 if (isHaveWallet) {
@@ -481,13 +488,13 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
             return;
         }
         EventBus.getDefault().post(new SecondEvent("finish"));
-        if ("exportHdword".equals(type)){
+        if ("exportHdword".equals(type)) {
             Intent intent = new Intent(this, BackupGuideActivity.class);
             intent.putExtra("exportWord", createHdWallet.toString());
             intent.putExtra("importHdword", importHdword);
             startActivity(intent);
             finish();
-        }else{
+        } else {
             Intent intent = new Intent(this, HdRootMnemonicsActivity.class);
             intent.putExtra("exportWord", createHdWallet.toString());
             intent.putExtra("importHdword", importHdword);
@@ -508,6 +515,9 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
 
     @Override
     public void afterTextChanged(Editable s) {
+        if (s.length() > 32) {
+            inputTip(this, R.layout.longpass_imput_tip, "big");
+        }
         if ((editPass.length() > 0)) {
             btnNext.setEnabled(true);
             btnNext.setBackground(getDrawable(R.drawable.btn_checked));
@@ -515,6 +525,33 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
             btnNext.setEnabled(false);
             btnNext.setBackground(getDrawable(R.drawable.btn_no_check));
         }
+    }
+
+    private void inputTip(Context context, @LayoutRes int resource, String type) {
+        //set see view
+        View view = View.inflate(context, resource, null);
+        Dialog dialogBtoms = new Dialog(context, R.style.dialog);
+        TextView passTip = view.findViewById(R.id.pass_tip);
+        if ("big".equals(type)) {
+            passTip.setText(getString(R.string.long_pass_32));
+        }
+        view.findViewById(R.id.img_cancel).setOnClickListener(v -> {
+            dialogBtoms.dismiss();
+        });
+        view.findViewById(R.id.btn_input_again).setOnClickListener(v -> {
+            dialogBtoms.dismiss();
+        });
+        dialogBtoms.setContentView(view);
+        Window window = dialogBtoms.getWindow();
+        //set pop_up size
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        //set locate
+        window.setGravity(Gravity.BOTTOM);
+        //set animal
+        window.setWindowAnimations(R.style.AnimBottom);
+        dialogBtoms.setCanceledOnTouchOutside(true);
+        dialogBtoms.show();
+
     }
 
     @Override
