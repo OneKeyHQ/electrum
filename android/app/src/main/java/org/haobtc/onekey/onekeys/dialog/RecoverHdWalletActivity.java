@@ -4,6 +4,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.text.Editable;
@@ -76,6 +77,8 @@ public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocu
     private int screenHeight;
     private boolean mIsSoftKeyboardShowing;
     private ViewTreeObserver.OnGlobalLayoutListener mLayoutChangeListener;
+    private SharedPreferences preferences;
+    private Intent intent;
 
     @Override
     public int getLayoutId() {
@@ -85,6 +88,7 @@ public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocu
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         inits();
         TextWatcher1 textWatcher1 = new TextWatcher1();
         editOne.addTextChangedListener(textWatcher1);
@@ -243,7 +247,11 @@ public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocu
     }
 
     private void isSeed(String strNewseed) {
-        Intent intent = new Intent(RecoverHdWalletActivity.this, SetHDWalletPassActivity.class);
+        if ("short".equals(preferences.getString("shortOrLongPass","short"))){
+            intent = new Intent(this, SetHDWalletPassActivity.class);
+        }else{
+            intent = new Intent(this, SetLongPassActivity.class);
+        }
         intent.putExtra("importHdword", "recoveryHdWallet");
         intent.putExtra("recoverySeed", strNewseed);
         startActivity(intent);

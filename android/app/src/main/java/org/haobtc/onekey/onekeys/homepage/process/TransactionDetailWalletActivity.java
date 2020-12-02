@@ -85,7 +85,7 @@ public class TransactionDetailWalletActivity extends BaseActivity {
 
         } catch (Exception e) {
             e.printStackTrace();
-            mToast(getString(R.string.switch_server));
+            mToast(e.getMessage());
             reclTransactionList.setVisibility(View.GONE);
             tetNone.setVisibility(View.VISIBLE);
             return;
@@ -177,7 +177,7 @@ public class TransactionDetailWalletActivity extends BaseActivity {
                 Intent intent2 = new Intent(TransactionDetailWalletActivity.this, SendHdActivity.class);
                 intent2.putExtra("sendNum", textWalletAmount.getText().toString());
                 intent2.putExtra("hdWalletName", hdWalletName);
-                intent2.putExtra("detailDontUnit","detailDontUnit");
+                intent2.putExtra("detailDontUnit", "detailDontUnit");
                 startActivity(intent2);
                 break;
             case R.id.btn_collect:

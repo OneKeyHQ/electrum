@@ -51,7 +51,7 @@ public class LanguageSettingActivity extends BaseActivity {
     public void initView() {
         ButterKnife.bind(this);
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-        language = preferences.getString("language", "");
+        language = preferences.getString("language", "Chinese");
         edit = preferences.edit();
 
     }
@@ -82,7 +82,7 @@ public class LanguageSettingActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.radio_system:
-                edit.putString("language", "");
+                edit.putString("language", "System");
                 edit.commit();
                 imgSystem.setVisibility(View.VISIBLE);
                 imgChinese.setVisibility(View.GONE);

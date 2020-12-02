@@ -31,6 +31,7 @@ import org.haobtc.onekey.event.LoadWalletlistEvent;
 import org.haobtc.onekey.event.SecondEvent;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
+import org.haobtc.onekey.onekeys.backup.BackupGuideActivity;
 import org.haobtc.onekey.onekeys.dialog.recovery.RecoveryChooseWalletActivity;
 import org.haobtc.onekey.onekeys.homepage.mindmenu.HdRootMnemonicsActivity;
 import org.haobtc.onekey.onekeys.homepage.process.ExportPrivateActivity;
@@ -70,9 +71,9 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
     private String walletName;
     private String currencyType;
     private String privateKey;
-    private String exportType;
     private String deleteHdWalletName;
     private boolean isHaveWallet;
+    private SharedPreferences preferences;
 
     @Override
     public int getLayoutId() {
@@ -83,7 +84,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
     public void initView() {
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
-        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         edit = preferences.edit();
         importHdword = getIntent().getStringExtra("importHdword");
         walletName = getIntent().getStringExtra("walletName");
@@ -92,11 +93,10 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
         privateKey = getIntent().getStringExtra("privateKey");
         deleteHdWalletName = getIntent().getStringExtra("deleteHdWalletName");//删除所有hd钱包的名字
         isHaveWallet = PreferencesManager.getAll(this, Constant.WALLETS).isEmpty();
-        exportType = getIntent().getStringExtra("exportType");
         if (isHaveWallet) {
             textPageTitle.setText(getString(R.string.create_new_walt));
         } else {
-            if ("importHdword".equals(importHdword) || "exportPrivateKey".equals(importHdword) || "deleteAllWallet".equals(importHdword) || "derive".equals(importHdword) || "single".equals(importHdword) || "importMnemonic".equals(importHdword) || "importPrivateKey".equals(importHdword) || "deleteSingleWallet".equals(importHdword) || "send".equals(importHdword) || "recoveryHdWallet".equals(importHdword)) {
+            if ("exportHdword".equals(importHdword) || "backupMnemonic".equals(importHdword) || "exportPrivateKey".equals(importHdword) || "deleteAllWallet".equals(importHdword) || "derive".equals(importHdword) || "single".equals(importHdword) || "importMnemonic".equals(importHdword) || "importPrivateKey".equals(importHdword) || "deleteSingleWallet".equals(importHdword) || "send".equals(importHdword) || "recoveryHdWallet".equals(importHdword)) {
                 checkPassTip();
             } else if ("fixHdPass".equals(importHdword)) {
                 textPageTitle.setText(getString(R.string.fix_pass));
@@ -129,20 +129,23 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
                 finish();
                 break;
             case R.id.lin_short_pass:
-                pwdEdittext.clearText();
-                Intent intent1 = new Intent(SetHDWalletPassActivity.this, SetLongPassActivity.class);
-                intent1.putExtra("importHdword", importHdword);
-                intent1.putExtra("walletName", walletName);
-                intent1.putExtra("recoverySeed", seed);
-                intent1.putExtra("privateKey", privateKey);
-                intent1.putExtra("exportType", exportType);
-                intent1.putExtra("deleteHdWalletName", deleteHdWalletName);
-                if ("derive".equals(importHdword)) {
-                    intent1.putExtra("currencyType", currencyType);
-                } else if ("importPrivateKey".equals(importHdword)) {
+                if ("short".equals(preferences.getString("shortOrLongPass", "short"))) {
+                    pwdEdittext.clearText();
+                    Intent intent1 = new Intent(SetHDWalletPassActivity.this, SetLongPassActivity.class);
+                    intent1.putExtra("importHdword", importHdword);
+                    intent1.putExtra("walletName", walletName);
+                    intent1.putExtra("recoverySeed", seed);
                     intent1.putExtra("privateKey", privateKey);
+                    intent1.putExtra("deleteHdWalletName", deleteHdWalletName);
+                    if ("derive".equals(importHdword)) {
+                        intent1.putExtra("currencyType", currencyType);
+                    } else if ("importPrivateKey".equals(importHdword)) {
+                        intent1.putExtra("privateKey", privateKey);
+                    }
+                    startActivity(intent1);
+                } else {
+                    finish();
                 }
-                startActivity(intent1);
                 break;
             case R.id.btn_next:
                 if (isHaveWallet) {
@@ -154,6 +157,8 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
                         textLong.setText(getString(R.string.test_long_tip));
                         input = true;
                     } else {
+                        edit.putString("shortOrLongPass", "short");
+                        edit.apply();
                         if (!sixPass.equals(pwdEdittext.getText().toString())) {
                             mToast(getString(R.string.two_different_pass));
                             return;
@@ -170,9 +175,9 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
 
     //如果没有钱包创建需要设置密码，否则验证密码即可
     private void walletStatus() {
-        if ("importHdword".equals(importHdword)) {
+        if ("exportHdword".equals(importHdword) || "backupMnemonic".equals(importHdword) ) {
             //export Mnemonic words
-            exportWord();
+            exportWord(importHdword);
         } else if ("fixHdPass".equals(importHdword)) {
             //fix pass
             fixHdPass();
@@ -225,8 +230,17 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
             Daemon.commands.callAttr("delete_wallet", pwdEdittext.getText().toString(), new Kwarg("name", walletName));
         } catch (Exception e) {
             e.printStackTrace();
-            if (e.getMessage().contains("Incorrect password")) {
+            if (e.getMessage().contains("path is exist")) {
+                mToast(getString(R.string.changewalletname));
+            } else if (e.getMessage().contains("The same seed have create wallet")) {
+                String haveWalletName = e.getMessage().substring(e.getMessage().indexOf("name=") + 5);
+                mToast(getString(R.string.same_seed_have) + haveWalletName);
+            } else if (e.getMessage().contains("'NoneType' object is not iterable")) {
+                mToast(getString(R.string.private_key_wrong));
+            } else if (e.getMessage().contains("Incorrect password")) {
                 mToast(getString(R.string.wrong_pass));
+            } else if (e.getMessage().contains("The file already exists")) {
+                mToast(getString(R.string.changemessage));
             }
             return;
         }
@@ -254,7 +268,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
                 mToast(getString(R.string.private_key_wrong));
             } else if (e.getMessage().contains("Incorrect password")) {
                 mToast(getString(R.string.wrong_pass));
-            }else if (e.getMessage().contains("The file already exists")){
+            } else if (e.getMessage().contains("The file already exists")) {
                 mToast(getString(R.string.changemessage));
             }
             return;
@@ -277,9 +291,9 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
                 mToast(getString(R.string.same_seed_have) + haveWalletName);
             } else if (e.getMessage().contains("Incorrect password")) {
                 mToast(getString(R.string.wrong_pass));
-            }else if (e.getMessage().contains("Invalid private")){
+            } else if (e.getMessage().contains("Invalid private")) {
                 mToast(getString(R.string.wrong_private));
-            }else if (e.getMessage().contains("The file already exist")){
+            } else if (e.getMessage().contains("The file already exist")) {
                 mToast(getString(R.string.have_private));
             }
             finish();
@@ -445,7 +459,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
     }
 
     //export Mnemonic words
-    private void exportWord() {
+    private void exportWord(String type) {
         PyObject exportSeed = null;
         try {
             exportSeed = Daemon.commands.callAttr("export_seed", pwdEdittext.getText().toString(), walletName);
@@ -456,12 +470,19 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
             e.printStackTrace();
             return;
         }
-        Intent intent = new Intent(SetHDWalletPassActivity.this, HdRootMnemonicsActivity.class);
-        intent.putExtra("exportWord", exportSeed.toString());
-        intent.putExtra("importHdword", importHdword);
-        intent.putExtra("exportType", exportType);
-        startActivity(intent);
-        finish();
+        if ("exportHdword".equals(type)){
+            Intent intent = new Intent(SetHDWalletPassActivity.this, BackupGuideActivity.class);
+            intent.putExtra("exportWord", exportSeed.toString());
+            intent.putExtra("importHdword", importHdword);
+            startActivity(intent);
+            finish();
+        }else{
+            Intent intent = new Intent(SetHDWalletPassActivity.this, HdRootMnemonicsActivity.class);
+            intent.putExtra("exportWord", exportSeed.toString());
+            intent.putExtra("importHdword", importHdword);
+            startActivity(intent);
+            finish();
+        }
     }
 
     @Override

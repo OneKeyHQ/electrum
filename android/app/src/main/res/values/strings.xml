@@ -370,7 +370,7 @@
     <string name="setwallet_pass">Set wallet password</string>
     <string name="input_pass_format1">At least 8 digits, only numerals, upper case letters, lower cases letters, and standard symbols are allowed</string>
     <string name="intput_pass_format2">Device does not keep any wallet key info for the user. There is no way to retrieve password. Please keep password in a safe and proper manner yourself</string>
-    <string name="helpword_wrong">Wrong mnemonic phrases. Please try again</string>
+    <string name="helpword_wrong">Wrong mnemonic phrases, Please check and revise</string>
     <string name="one_one">1–1</string>
     <string name="_1_0_0">1.0.0</string>
     <string name="lnbcdfd4fdsk">aksdhkjdakjldkajsliieihdihsdkjsjda</string>
@@ -1253,5 +1253,16 @@
     <string name="support_backup">Stand alone wallets do not support backing up to hardware devices</string>
     <string name="dont_sreenshot">No screenshots</string>
     <string name="dont_screenshot_tip">Mnemonics are very sensitive and private content. Once acquired by others, your assets may be lost. Therefore, <b>do not take screen shots and pay attention to whether there are cameras around you.</b></string>
+    <string name="name_lenth">The name can be up to 15 characters~</string>
+    <string name="unbackup_dont_delete">Please backup your wallet before deleting it</string>
+    <string name="delete_single_wallet">Delete separate Wallet</string>
+    <string name="delele_tip1">1. The wallet will be erased from the app.</string>
+    <string name="delete_tip2">2. Please make sure that the mnemonic words of the independent wallet have been copied and kept well before deleting. You can use it to restore the wallet and recover the assets.</string>
+    <string name="delete_watch_wallet">Delete watch Wallet</string>
+    <string name="delete_wallet_tip">This operation will delete all data of the wallet. In order to avoid your property loss, please backup your wallet first.</string>
+    <string name="scan_send">Scan and transfer</string>
+    <string name="just_now_screen">You seem to have taken a screenshot just now</string>
+    <string name="just_now_screen_tip">Mobile photo albums are very insecure and can be accessed by any app. <b>Go to the mobile photo album immediately and permanently delete the screenshot. </b>In the future, you will appreciate your decision now.</string>
+    <string name="recommended">Recommended</string>
 
 </resources>

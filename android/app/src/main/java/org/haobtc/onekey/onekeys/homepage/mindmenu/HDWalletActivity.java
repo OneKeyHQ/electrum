@@ -3,6 +3,7 @@ package org.haobtc.onekey.onekeys.homepage.mindmenu;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -29,6 +30,7 @@ import org.haobtc.onekey.bean.AddressEvent;
 import org.haobtc.onekey.event.LoadWalletlistEvent;
 import org.haobtc.onekey.onekeys.dialog.RecoverHdWalletActivity;
 import org.haobtc.onekey.onekeys.dialog.SetHDWalletPassActivity;
+import org.haobtc.onekey.onekeys.dialog.SetLongPassActivity;
 import org.haobtc.onekey.onekeys.homepage.process.CreateDeriveChooseTypeActivity;
 import org.haobtc.onekey.utils.Daemon;
 import org.json.JSONException;
@@ -60,6 +62,7 @@ public class HDWalletActivity extends BaseActivity {
     private ArrayList<AddressEvent> hdWalletList;
     private WalletListAdapter walletListAdapter;
     private String deleteHdWalletName = "";
+    private SharedPreferences preferences;
 
     @Override
     public int getLayoutId() {
@@ -70,6 +73,7 @@ public class HDWalletActivity extends BaseActivity {
     public void initView() {
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
+        preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
     }
 
     @Override
@@ -100,8 +104,13 @@ public class HDWalletActivity extends BaseActivity {
                 startActivity(intent);
                 break;
             case R.id.recl_add_hd_wallet:
-                Intent intent0 = new Intent(HDWalletActivity.this, SetHDWalletPassActivity.class);
-                startActivity(intent0);
+                if ("short".equals(preferences.getString("shortOrLongPass", "short"))) {
+                    Intent intent0 = new Intent(this, SetHDWalletPassActivity.class);
+                    startActivity(intent0);
+                } else {
+                    Intent intent0 = new Intent(this, SetLongPassActivity.class);
+                    startActivity(intent0);
+                }
                 break;
             case R.id.recl_recovery_wallet:
                 Intent intent2 = new Intent(HDWalletActivity.this, RecoverHdWalletActivity.class);

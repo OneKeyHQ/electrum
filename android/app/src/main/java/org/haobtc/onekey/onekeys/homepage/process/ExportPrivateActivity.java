@@ -1,15 +1,20 @@
 package org.haobtc.onekey.onekeys.homepage.process;
 
+import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.LayoutRes;
 
 import com.yzq.zxinglibrary.encode.CodeCreator;
 
@@ -17,6 +22,8 @@ import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.event.SecondEvent;
+import org.haobtc.onekey.onekeys.homepage.mindmenu.HdRootMnemonicsActivity;
+import org.haobtc.onekey.utils.ScreenShotListenManager;
 
 import java.util.Objects;
 
@@ -33,6 +40,7 @@ public class ExportPrivateActivity extends BaseActivity {
     @BindView(R.id.text_show_code)
     TextView textShowCode;
     private boolean show = false;
+    private ScreenShotListenManager screenShotListenManager;
 
     @Override
     public int getLayoutId() {
@@ -42,8 +50,9 @@ public class ExportPrivateActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);//禁止截屏
         EventBus.getDefault().post(new SecondEvent("finishInputPass"));
+        screenShotListenManager = new ScreenShotListenManager(this);
+        startScreenShotListen();
     }
 
     @Override
@@ -83,5 +92,40 @@ public class ExportPrivateActivity extends BaseActivity {
 
                 break;
         }
+    }
+
+    //禁止截屏监听
+    private void startScreenShotListen() {
+        if (screenShotListenManager != null) {
+            screenShotListenManager.setListener(new ScreenShotListenManager.OnScreenShotListener() {
+                @Override
+                public void onShot(String imagePath) {
+                    screenTipDialog(ExportPrivateActivity.this, R.layout.screened);
+                    screenShotListenManager.stopListen();
+                    startScreenShotListen();
+                }
+            });
+            screenShotListenManager.startListen();
+        }
+    }
+
+    private void screenTipDialog(Context context, @LayoutRes int resource) {
+        //set see view
+        View view = View.inflate(context, resource, null);
+        Dialog dialogBtoms = new Dialog(context, R.style.dialog);
+        view.findViewById(R.id.img_cancel).setOnClickListener(v -> {
+            dialogBtoms.dismiss();
+        });
+        dialogBtoms.setContentView(view);
+        Window window = dialogBtoms.getWindow();
+        //set pop_up size
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        //set locate
+        window.setGravity(Gravity.BOTTOM);
+        //set animal
+        window.setWindowAnimations(R.style.AnimBottom);
+        dialogBtoms.setCanceledOnTouchOutside(true);
+        dialogBtoms.show();
+
     }
 }

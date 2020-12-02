@@ -51,6 +51,11 @@
             android:text="@string/lnbcdfd4fdsk"
             android:textColor="@color/button_bk_ddake"
             android:textSize="@dimen/sp_12" />
+        <TextView
+            android:id="@+id/text_addr"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
 
         <ImageView
             android:id="@+id/img_copy_addr"

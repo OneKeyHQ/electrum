@@ -51,8 +51,12 @@ public class WalletListAdapter extends BaseQuickAdapter<AddressEvent, BaseViewHo
         } else {
             helper.getView(R.id.text_type).setVisibility(View.INVISIBLE);
         }
-        TextView textAddr = helper.getView(R.id.text_address);
-        textAddr.setText(item.getAmount());
+        TextView textAddr = helper.getView(R.id.text_addr);
+        String address = item.getAmount();
+        String front6 = address.substring(0, 6);
+        String after6 = address.substring(address.length() - 6);
+        textAddr.setText(address);
+        helper.setText(R.id.text_address, String.format("%s…%s", front6, after6));
         ImageView copyAddr = helper.getView(R.id.img_copy_addr);
 
         SharedPreferences preferences = mContext.getSharedPreferences("Preferences", Context.MODE_PRIVATE);

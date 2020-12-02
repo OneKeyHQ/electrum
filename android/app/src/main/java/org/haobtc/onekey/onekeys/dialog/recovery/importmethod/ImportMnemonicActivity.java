@@ -274,13 +274,17 @@ public class ImportMnemonicActivity extends BaseActivity implements View.OnFocus
             isSeeds = Daemon.commands.callAttr("is_seed", strNewseed);
         } catch (Exception e) {
             e.printStackTrace();
+            return;
         }
         Log.i("isSeedsisSeedsisSeeds", "isSeed: " + isSeeds.toBoolean());
-        Intent intent = new Intent(ImportMnemonicActivity.this, ImportWalletSetNameActivity.class);
-        intent.putExtra("importHdword", "importMnemonic");
-        intent.putExtra("recoverySeed", strNewseed);
-        startActivity(intent);
-
+        if (isSeeds.toBoolean()) {
+            Intent intent = new Intent(ImportMnemonicActivity.this, ImportWalletSetNameActivity.class);
+            intent.putExtra("importHdword", "importMnemonic");
+            intent.putExtra("recoverySeed", strNewseed);
+            startActivity(intent);
+        }else{
+            mToast(getString(R.string.helpword_wrong));
+        }
     }
 
     @Override

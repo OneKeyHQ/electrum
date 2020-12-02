@@ -69,7 +69,7 @@ public class RecoveryChooseWalletActivity extends BaseActivity {
                 WalletAddressEvent walletAddressEvent = new WalletAddressEvent();
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 String name = jsonObject.getString("name");
-                String balance = jsonObject.getString("balance");
+                String balance = jsonObject.getString("blance");
                 walletAddressEvent.setAddress(name);
                 walletAddressEvent.setBalance(balance);
                 walletList.add(walletAddressEvent);

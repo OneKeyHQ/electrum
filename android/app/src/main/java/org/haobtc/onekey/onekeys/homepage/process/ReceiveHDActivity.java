@@ -1,15 +1,16 @@
 package org.haobtc.onekey.onekeys.homepage.process;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -18,7 +19,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.chaquo.python.PyObject;
@@ -27,13 +27,10 @@ import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.encode.CodeCreator;
 
 import org.haobtc.onekey.R;
-import org.haobtc.onekey.activities.ReceivedPageActivity;
 import org.haobtc.onekey.bean.GetCodeAddressBean;
 import org.haobtc.onekey.utils.Daemon;
+import org.haobtc.onekey.utils.ImageUtils;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Objects;
 
 import butterknife.BindView;
@@ -48,15 +45,38 @@ public class ReceiveHDActivity extends AppCompatActivity {
     TextView textReceiveAddress;
     @BindView(R.id.linear_check)
     LinearLayout linearCheck;
+    @BindView(R.id.img_type)
+    ImageView imgType;
+    @BindView(R.id.text_send_type)
+    TextView textSendType;
+    @BindView(R.id.img_share_orcode)
+    ImageView imgShareOrcode;
+    @BindView(R.id.text_wallet_address_text)
+    TextView textWalletAddressText;
+    @BindView(R.id.text_wallet_address)
+    TextView textWalletAddress;
+    @BindView(R.id.lin_screen)
+    LinearLayout linScreen;
     private RxPermissions rxPermissions;
     private Bitmap bitmap;
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_receive_h_d);
         ButterKnife.bind(this);
+        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        String showWalletType = preferences.getString("showWalletType", "");
         rxPermissions = new RxPermissions(this);
+        if (showWalletType.contains("eth")) {
+            imgType.setImageDrawable(getDrawable(R.drawable.token_eth));
+            textSendType.setText(String.format("%s ETH", getString(R.string.scan_send)));
+            textWalletAddressText.setText(String.format("ETH %s", getString(R.string.wallet_address)));
+        } else {
+            textSendType.setText(String.format("%s BTC", getString(R.string.scan_send)));
+            textWalletAddressText.setText(String.format("BTC %s", getString(R.string.wallet_address)));
+        }
         mInitState();
         initData();
 
@@ -90,8 +110,10 @@ public class ReceiveHDActivity extends AppCompatActivity {
             String addr = getCodeAddressBean.getAddr();
             Log.i("strCode", "mGenerate--: " + strCode);
             textReceiveAddress.setText(addr);
+            textWalletAddress.setText(addr);
             bitmap = CodeCreator.createQRCode(qrData, 250, 250, null);
             imgOrcode.setImageBitmap(bitmap);
+            imgShareOrcode.setImageBitmap(bitmap);
         }
 
     }
@@ -112,14 +134,14 @@ public class ReceiveHDActivity extends AppCompatActivity {
                 Toast.makeText(ReceiveHDActivity.this, R.string.copysuccess, Toast.LENGTH_LONG).show();
                 break;
             case R.id.linear_share:
+                String shareImg = ImageUtils.viewSaveToImage(linScreen, "images");
                 rxPermissions
                         .request(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                         .subscribe(granted -> {
                             if (granted) { // Always true pre-M
-                                String uri = saveImageToGallery(this, bitmap);
-                                if (uri != null) {
+                                if (!TextUtils.isEmpty(shareImg)) {
                                     Intent shareIntent = new Intent(Intent.ACTION_SEND);
-                                    shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(uri));
+                                    shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(shareImg));
                                     shareIntent.setType("image/*");
                                     shareIntent.putExtra(Intent.EXTRA_TEXT, textReceiveAddress.getText().toString());
                                     shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -136,44 +158,5 @@ public class ReceiveHDActivity extends AppCompatActivity {
                         }).dispose();
                 break;
         }
-    }
-
-    private String saveImageToGallery(Context context, @NonNull Bitmap bmp) {
-        // Save picture
-        String storePath = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES) + File.separator;
-        File appDir = new File(storePath);
-        if (!appDir.exists()) {
-            appDir.mkdir();
-        }
-        String fileName = System.currentTimeMillis() + ".png";
-        File file = new File(appDir, fileName);
-        FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(file);
-            //Compress and save pictures by IO stream
-            boolean isSuccess;
-            isSuccess = bmp.compress(Bitmap.CompressFormat.PNG, 60, fos);
-            fos.flush();
-            //Insert file into system library
-            if (!isSuccess) {
-                Toast.makeText(context, getString(R.string.fail), Toast.LENGTH_SHORT).show();
-                return null;
-            }
-            String uri = MediaStore.Images.Media.insertImage(context.getContentResolver(), file.getAbsolutePath(), fileName, null);
-            //Send broadcast notice to update database after saving picture
-            context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse(uri)));
-            return uri;
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (fos != null) {
-                    fos.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return null;
     }
 }

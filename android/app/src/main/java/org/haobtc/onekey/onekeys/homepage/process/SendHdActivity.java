@@ -46,6 +46,7 @@ import org.haobtc.onekey.event.FinishEvent;
 import org.haobtc.onekey.event.InputPassSendEvent;
 import org.haobtc.onekey.event.SecondEvent;
 import org.haobtc.onekey.onekeys.dialog.SetHDWalletPassActivity;
+import org.haobtc.onekey.onekeys.dialog.SetLongPassActivity;
 import org.haobtc.onekey.onekeys.dialog.recovery.importmethod.ImportPrivateKeyActivity;
 import org.haobtc.onekey.utils.Daemon;
 
@@ -381,10 +382,17 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
 
         view.findViewById(R.id.btn_confirm_pay).setOnClickListener(v -> {
             //sign trsaction
-            Intent intent = new Intent(SendHdActivity.this, SetHDWalletPassActivity.class);
-            intent.putExtra("importHdword", "send");
-            intent.putExtra("useTx", useTx);
-            startActivity(intent);
+            if ("short".equals(preferences.getString("shortOrLongPass", "short"))) {
+                Intent intent = new Intent(this, SetHDWalletPassActivity.class);
+                intent.putExtra("importHdword", "send");
+                intent.putExtra("useTx", useTx);
+                startActivity(intent);
+            } else {
+                Intent intent = new Intent(this, SetLongPassActivity.class);
+                intent.putExtra("importHdword", "send");
+                intent.putExtra("useTx", useTx);
+                startActivity(intent);
+            }
 
         });
         view.findViewById(R.id.img_cancel).setOnClickListener(v -> {
@@ -467,7 +475,7 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
         arrayList.add(pramas);
         String strPramas = new Gson().toJson(arrayList);
         float strRecommend = Float.parseFloat(fastFee);
-        Log.i("strPramasjxm", "getFastFeerate: "+strPramas);
+        Log.i("strPramasjxm", "getFastFeerate: " + strPramas);
         PyObject getFeeByFeeRate = null;
         try {
             getFeeByFeeRate = Daemon.commands.callAttr("get_fee_by_feerate", strPramas, "", strRecommend);
@@ -575,7 +583,7 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
 //        if (max) {
 //            pramas.put(editInputAddress.getText().toString(), "!");
 //        } else {
-            pramas.put(editInputAddress.getText().toString(), tetamount.getText().toString());
+        pramas.put(editInputAddress.getText().toString(), tetamount.getText().toString());
 //        }
         arrayList.add(pramas);
         String strPramas = new Gson().toJson(arrayList);
@@ -668,7 +676,7 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
 //                    if (max) {
 //                        pramas.put(editInputAddress.getText().toString(), "!");
 //                    } else {
-                        pramas.put(editInputAddress.getText().toString(), tetamount.getText().toString());
+                    pramas.put(editInputAddress.getText().toString(), tetamount.getText().toString());
 //                    }
                     arrayList.add(pramas);
                     String strPramas = new Gson().toJson(arrayList);

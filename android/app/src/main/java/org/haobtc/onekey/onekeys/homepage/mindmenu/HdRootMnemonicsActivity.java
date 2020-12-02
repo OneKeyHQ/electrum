@@ -1,11 +1,17 @@
 package org.haobtc.onekey.onekeys.homepage.mindmenu;
 
+import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
+
+import androidx.annotation.LayoutRes;
 
 import com.chaquo.python.PyObject;
 
@@ -16,7 +22,10 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.event.FinishEvent;
 import org.haobtc.onekey.onekeys.backup.CheckMnemonicActivity;
+import org.haobtc.onekey.onekeys.dialog.recovery.ImprotSingleActivity;
+import org.haobtc.onekey.onekeys.homepage.process.CreateWalletChooseTypeActivity;
 import org.haobtc.onekey.utils.Daemon;
+import org.haobtc.onekey.utils.ScreenShotListenManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,7 +66,8 @@ public class HdRootMnemonicsActivity extends BaseActivity {
     TextView tetTitleName;
     private String status = "";
     private String exportWord;
-    private String exportType;
+    private String importHdword;
+    private ScreenShotListenManager screenShotListenManager;
 
     @Override
     public int getLayoutId() {
@@ -68,15 +78,14 @@ public class HdRootMnemonicsActivity extends BaseActivity {
     public void initView() {
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);//禁止截屏
-        exportType = getIntent().getStringExtra("exportType");
-        String importHdword = getIntent().getStringExtra("importHdword");
+        screenShotListenManager = new ScreenShotListenManager(this);
+        startScreenShotListen();
+        importHdword = getIntent().getStringExtra("importHdword");
         exportWord = getIntent().getStringExtra("exportWord");
-        if ("importHdword".equals(importHdword)) {
+        if ("exportHdword".equals(importHdword)) {
             textTitle.setVisibility(View.GONE);
             tetTitleName.setText(getString(R.string.export_mnemonic));
-        }
-        if ("backup".equals(exportType)) {
+        } else {
             textTitle.setText(getString(R.string.this_mnemonic));
         }
     }
@@ -85,6 +94,41 @@ public class HdRootMnemonicsActivity extends BaseActivity {
     public void initData() {
         //get mnemonic
         writeMnemonicWord();
+    }
+
+    //禁止截屏监听
+    private void startScreenShotListen() {
+        if (screenShotListenManager != null) {
+            screenShotListenManager.setListener(new ScreenShotListenManager.OnScreenShotListener() {
+                @Override
+                public void onShot(String imagePath) {
+                    screenTipDialog(HdRootMnemonicsActivity.this, R.layout.screened);
+                    screenShotListenManager.stopListen();
+                    startScreenShotListen();
+                }
+            });
+            screenShotListenManager.startListen();
+        }
+    }
+
+    private void screenTipDialog(Context context, @LayoutRes int resource) {
+        //set see view
+        View view = View.inflate(context, resource, null);
+        Dialog dialogBtoms = new Dialog(context, R.style.dialog);
+        view.findViewById(R.id.img_cancel).setOnClickListener(v -> {
+            dialogBtoms.dismiss();
+        });
+        dialogBtoms.setContentView(view);
+        Window window = dialogBtoms.getWindow();
+        //set pop_up size
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        //set locate
+        window.setGravity(Gravity.BOTTOM);
+        //set animal
+        window.setWindowAnimations(R.style.AnimBottom);
+        dialogBtoms.setCanceledOnTouchOutside(true);
+        dialogBtoms.show();
+
     }
 
     private void writeMnemonicWord() {
@@ -129,10 +173,10 @@ public class HdRootMnemonicsActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.btn_copy_it:
-                if ("backup".equals(exportType)) {
-                    backupInfo();
-                } else {
+                if ("exportHdword".equals(importHdword)) {
                     finish();
+                } else {
+                    backupInfo();
                 }
                 break;
         }

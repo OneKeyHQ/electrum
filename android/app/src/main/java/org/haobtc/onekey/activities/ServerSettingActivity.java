@@ -30,6 +30,7 @@ import org.haobtc.onekey.bean.DefaultNodeBean;
 import org.haobtc.onekey.event.FirstEvent;
 import org.haobtc.onekey.utils.Daemon;
 
+import java.util.Arrays;
 import java.util.List;
 
 import butterknife.BindView;
@@ -129,8 +130,11 @@ public class ServerSettingActivity extends BaseActivity {
         }
         if (getExchanges != null) {
             Log.i("get_exchanges", "getExchangelist: " + getExchanges);
-            List<PyObject> pyObjects = getExchanges.asList();
-            String defalutServer = pyObjects.get(0).toString();
+            String content = getExchanges.toString();
+            String unit = content.replaceAll("\"", "");
+            String[] pathArr = (unit.substring(1, unit.length() - 1)).split(",");
+            List<String> pathList = Arrays.asList(pathArr);
+            String defalutServer = pathList.get(0);
             tetDefaultServer.setText(defalutServer);
         }
     }

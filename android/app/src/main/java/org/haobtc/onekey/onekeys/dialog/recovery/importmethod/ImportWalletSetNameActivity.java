@@ -2,7 +2,9 @@ package org.haobtc.onekey.onekeys.dialog.recovery.importmethod;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.View;
 
 import com.chaquo.python.Kwarg;
@@ -12,22 +14,25 @@ import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
 import org.haobtc.onekey.onekeys.dialog.SetHDWalletPassActivity;
-import org.haobtc.onekey.utils.ContainsEmojiEditText;
+import org.haobtc.onekey.onekeys.dialog.SetLongPassActivity;
 import org.haobtc.onekey.utils.Daemon;
+import org.haobtc.onekey.utils.EmojiEditText;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class ImportWalletSetNameActivity extends BaseActivity {
+public class ImportWalletSetNameActivity extends BaseActivity implements TextWatcher {
 
     @BindView(R.id.edit_set_wallet_name)
-    ContainsEmojiEditText editSetWalletName;
+    EmojiEditText editSetWalletName;
     private String importHdword;
     private String privateKey;
     private String recoverySeed;
     private String watchAddress;
     private SharedPreferences.Editor edit;
+    private SharedPreferences preferences;
+    private Intent intent;
 
     @Override
     public int getLayoutId() {
@@ -37,7 +42,7 @@ public class ImportWalletSetNameActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
-        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         edit = preferences.edit();
         watchAddress = getIntent().getStringExtra("watchAddress");
         importHdword = getIntent().getStringExtra("importHdword");
@@ -48,7 +53,7 @@ public class ImportWalletSetNameActivity extends BaseActivity {
 
     @Override
     public void initData() {
-
+        editSetWalletName.addTextChangedListener(this);
     }
 
     @OnClick({R.id.img_back, R.id.btn_import})
@@ -66,7 +71,11 @@ public class ImportWalletSetNameActivity extends BaseActivity {
                         mToast(getString(R.string.input_private_key));
                         return;
                     }
-                    Intent intent = new Intent(ImportWalletSetNameActivity.this, SetHDWalletPassActivity.class);
+                    if ("short".equals(preferences.getString("shortOrLongPass","short"))){
+                        intent = new Intent(this, SetHDWalletPassActivity.class);
+                    }else{
+                        intent = new Intent(this, SetLongPassActivity.class);
+                    }
                     intent.putExtra("importHdword", importHdword);
                     intent.putExtra("privateKey", privateKey);
                     intent.putExtra("recoverySeed", recoverySeed);
@@ -97,5 +106,24 @@ public class ImportWalletSetNameActivity extends BaseActivity {
         edit.putString("loadWalletName", editSetWalletName.getText().toString());
         edit.apply();
         mIntent(HomeOneKeyActivity.class);
+    }
+
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+        if (!TextUtils.isEmpty(s.toString())) {
+            if (s.length() > 14) {
+                mToast(getString(R.string.name_lenth));
+            }
+        }
     }
 }

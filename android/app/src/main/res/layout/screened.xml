@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_10"
+        android:layout_marginEnd="@dimen/dp_10"
+        android:layout_marginBottom="@dimen/dp_30"
+        android:background="@drawable/white_back_tuo">
+
+        <ImageView
+            android:id="@+id/img_cancel"
+            android:layout_width="@dimen/dp_40"
+            android:layout_height="@dimen/dp_40"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="@dimen/dp_7"
+            android:padding="@dimen/dp_14"
+            android:src="@drawable/close_dark_small" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/dp_30"
+            android:text="@string/just_now_screen"
+            android:textColor="@color/text_two"
+            android:textSize="@dimen/sp_18"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textView"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center"
+            android:layout_marginStart="23dp"
+            android:layout_marginTop="@dimen/dp_20"
+            android:layout_marginEnd="23dp"
+            android:layout_marginBottom="@dimen/dp_30"
+            android:lineSpacingExtra="@dimen/sp_12"
+            android:text="@string/just_now_screen_tip"
+            android:textColor="@color/text_two"
+            android:textSize="@dimen/sp_14" />
+
+    </RelativeLayout>
+
+</LinearLayout>

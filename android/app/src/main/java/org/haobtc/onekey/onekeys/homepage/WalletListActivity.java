@@ -31,8 +31,10 @@ import org.haobtc.onekey.bean.AddressEvent;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.LoadWalletlistEvent;
 import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
+import org.haobtc.onekey.onekeys.backup.BackupGuideActivity;
 import org.haobtc.onekey.onekeys.dialog.RecoverHdWalletActivity;
 import org.haobtc.onekey.onekeys.dialog.SetHDWalletPassActivity;
+import org.haobtc.onekey.onekeys.dialog.SetLongPassActivity;
 import org.haobtc.onekey.onekeys.dialog.recovery.ImprotSingleActivity;
 import org.haobtc.onekey.onekeys.homepage.mindmenu.HDWalletActivity;
 import org.haobtc.onekey.onekeys.homepage.process.CreateDeriveChooseTypeActivity;
@@ -84,6 +86,7 @@ public class WalletListActivity extends BaseActivity {
     private ArrayList<AddressEvent> btcList;
     private ArrayList<AddressEvent> ethList;
     private SharedPreferences.Editor edit;
+    private SharedPreferences preferences;
 
     @Override
     public int getLayoutId() {
@@ -94,7 +97,7 @@ public class WalletListActivity extends BaseActivity {
     public void initView() {
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
-        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         edit = preferences.edit();
 
     }
@@ -242,8 +245,13 @@ public class WalletListActivity extends BaseActivity {
                 whatIsHd(WalletListActivity.this, R.layout.what_is_hd);
                 break;
             case R.id.recl_add_hd_wallet:
-                Intent intent0 = new Intent(WalletListActivity.this, SetHDWalletPassActivity.class);
-                startActivity(intent0);
+                if ("short".equals(preferences.getString("shortOrLongPass", "short"))) {
+                    Intent intent0 = new Intent(this, SetHDWalletPassActivity.class);
+                    startActivity(intent0);
+                } else {
+                    Intent intent0 = new Intent(this, SetLongPassActivity.class);
+                    startActivity(intent0);
+                }
                 break;
             case R.id.recl_recovery_wallet:
                 Intent intent2 = new Intent(WalletListActivity.this, RecoverHdWalletActivity.class);

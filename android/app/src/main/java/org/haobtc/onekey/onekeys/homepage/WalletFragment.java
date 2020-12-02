@@ -52,6 +52,7 @@ import org.haobtc.onekey.event.SecondEvent;
 import org.haobtc.onekey.onekeys.backup.BackupGuideActivity;
 import org.haobtc.onekey.onekeys.dialog.RecoverHdWalletActivity;
 import org.haobtc.onekey.onekeys.dialog.SetHDWalletPassActivity;
+import org.haobtc.onekey.onekeys.dialog.SetLongPassActivity;
 import org.haobtc.onekey.onekeys.homepage.process.DetailTransactionActivity;
 import org.haobtc.onekey.onekeys.homepage.process.HdWalletDetailActivity;
 import org.haobtc.onekey.onekeys.homepage.process.ReceiveHDActivity;
@@ -100,6 +101,7 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
     private TextView amountStars;
     private TextView dollarStars;
     private String nowType;
+    private boolean isBackup;
 
     @SuppressLint("CommitPrefEdits")
     @Override
@@ -197,7 +199,7 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
             edit.putBoolean("isBack_up", true);
             edit.apply();
             Intent intent = new Intent(getActivity(), BackupGuideActivity.class);
-            intent.putExtra("walletType",nowType);
+            intent.putExtra("walletType", nowType);
             startActivity(intent);
             //Next time
             dialogBtoms.dismiss();
@@ -291,9 +293,10 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
 
     private void whetherBackup() {
         try {
-            PyObject isBackup = Daemon.commands.callAttr("get_backup_info");
-            Log.i("isBackupisBackup", "whetherBackup: " + isBackup.toString());
-            if ("False".equals(isBackup.toString())) {
+            PyObject data = Daemon.commands.callAttr("get_backup_info");
+
+            isBackup = data.toBoolean();
+            if (!isBackup) {
                 //no back up
                 relNowBackUp.setVisibility(View.VISIBLE);
                 //whether to backup
@@ -339,14 +342,6 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
                 startActivity(intent1);
                 break;
             case R.id.img_scan:
-                //create public
-//                Intent intent7 = new Intent(getActivity(), MultiSigWalletCreator.class);
-//                startActivity(intent7);
-
-                //check mnemonic
-//                Intent intent7 = new Intent(getActivity(), CheckMnemonicActivity.class);
-//                startActivity(intent7);
-
                 rxPermissions
                         .request(Manifest.permission.CAMERA)
                         .subscribe(granted -> {
@@ -368,8 +363,13 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
                         }).dispose();
                 break;
             case R.id.rel_create_hd:
-                Intent intent0 = new Intent(getActivity(), SetHDWalletPassActivity.class);
-                startActivity(intent0);
+                if ("short".equals(preferences.getString("shortOrLongPass","short"))){
+                    Intent intent0 = new Intent(getActivity(), SetHDWalletPassActivity.class);
+                    startActivity(intent0);
+                }else{
+                    Intent intent0 = new Intent(getActivity(), SetLongPassActivity.class);
+                    startActivity(intent0);
+                }
                 break;
             case R.id.rel_recovery_hd:
                 Intent intent = new Intent(getActivity(), RecoverHdWalletActivity.class);
@@ -392,6 +392,7 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
             case R.id.rel_wallet_detail:
                 Intent intent4 = new Intent(getActivity(), HdWalletDetailActivity.class);
                 intent4.putExtra("hdWalletName", textWalletName.getText().toString());
+                intent4.putExtra("isBackup", isBackup);
                 startActivity(intent4);
                 break;
             case R.id.rel_bi_detail:
@@ -406,7 +407,7 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
                 break;
             case R.id.rel_now_back_up:
                 Intent intent6 = new Intent(getActivity(), BackupGuideActivity.class);
-                intent6.putExtra("walletType",nowType);
+                intent6.putExtra("walletType", nowType);
                 startActivity(intent6);
                 break;
             case R.id.linear_sign:
@@ -459,6 +460,7 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
 
                 }
             } else {
+                edit.putString("shortOrLongPass","short");
                 edit.putBoolean("isBack_up", false);
                 edit.apply();
                 textWalletName.setText(getString(R.string.no_use_wallet));
@@ -467,6 +469,7 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
                 linearHaveWallet.setVisibility(View.GONE);
                 linearWalletList.setVisibility(View.GONE);
                 imgType.setImageDrawable(getActivity().getDrawable(R.drawable.loco_round));
+                isBackup = true;
                 relNowBackUp.setVisibility(View.GONE);
             }
         } catch (Exception e) {

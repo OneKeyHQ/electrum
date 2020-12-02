@@ -135,7 +135,7 @@ public class HomeOneKeyActivity extends BaseActivity implements RadioGroup.OnChe
         OkHttpClient okHttpClient = new OkHttpClient();
         Request request = new Request.Builder().url(url).build();
         Call call = okHttpClient.newCall(request);
-        Toast.makeText(this, getString(R.string.updating_dialog), Toast.LENGTH_LONG).show();
+//        Toast.makeText(this, getString(R.string.updating_dialog), Toast.LENGTH_LONG).show();
         call.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -163,7 +163,7 @@ public class HomeOneKeyActivity extends BaseActivity implements RadioGroup.OnChe
     private void attemptUpdate(String uri,  int versionCode, String versionName, String size, String description) {
         int versionCodeLocal  = ApkUtil.getVersionCode(this);
         if (versionCodeLocal >= versionCode) {
-            showToast("当前是最新版本");
+//            showToast("当前是最新版本");
             return;
         }
 

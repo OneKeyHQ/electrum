@@ -368,7 +368,7 @@
     <string name="setwallet_pass">设置钱包密码</string>
     <string name="input_pass_format1">密码至少8位，只能且必须包含大写字母、小写字母、数字和标准符号</string>
     <string name="intput_pass_format2">本钱包不保留钱包的任何信息，密码没有找回途径，请务必牢记钱包密码</string>
-    <string name="helpword_wrong">助记词输入有误，请重新输入</string>
+    <string name="helpword_wrong">助记词输入有误，请检查后修改</string>
     <string name="sign_failed">签名失败</string>
     <string name="passtype_wrong">密码格式输入错误</string>
     <string name="verify_pin">验证PIN码成功</string>
@@ -1198,5 +1198,16 @@
     <string name="support_backup">独立钱包不支持备份到硬件设备</string>
     <string name="dont_sreenshot">不要截图</string>
     <string name="dont_screenshot_tip">助记词是非常敏感和隐私的内容，一旦被其他人获取，您的资产有可能全部丢失， <b>因此不要截屏，并注意您的周边有无摄像头。</b></string>
+    <string name="name_lenth">名字最多为15个字符哦~</string>
+    <string name="unbackup_dont_delete">删除钱包前请先备份</string>
+    <string name="delete_single_wallet">删除独立钱包</string>
+    <string name="delele_tip1">" 1. 该钱包将会从 App 中被抹除。"</string>
+    <string name="delete_tip2">" 2. 请您在删除前务必确认该独立钱包的助记词已经抄写并保管好，您可以使用它对钱包进行恢复，从而找回资产。"</string>
+    <string name="delete_watch_wallet">删除观察钱包</string>
+    <string name="delete_wallet_tip">此操作将会删除该钱包的所有数据。为了避免您的财产损失，请先完成钱包的备份。</string>
+    <string name="scan_send">扫一扫 转帐</string>
+    <string name="just_now_screen">您刚才似乎截图了</string>
+    <string name="just_now_screen_tip">手机相册非常不安全，任何应用都可以访问。<b>立刻前往手机相册，将刚才的屏幕截图永久删除。</b>将来的您会感谢现在自己的决定。</string>
+    <string name="recommended">推荐使用</string>
 
 </resources>

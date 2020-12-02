@@ -16,7 +16,7 @@
 
         <RelativeLayout
             android:id="@+id/rel_check_wallet"
-            android:layout_width="wrap_content"
+            android:layout_width="210dp"
             android:layout_height="wrap_content">
 
             <LinearLayout
@@ -33,6 +33,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/dp_18"
                     android:layout_marginStart="@dimen/dp_30"
+                    android:ellipsize="end"
+                    android:singleLine="true"
                     android:text="@string/no_use_wallet" />
 
                 <ImageView
@@ -132,9 +134,9 @@
                         android:layout_marginStart="@dimen/dp_24"
                         android:layout_marginTop="@dimen/dp_19"
                         android:layout_marginEnd="@dimen/dp_52"
+                        android:layout_marginBottom="@dimen/dp_20"
                         android:text="@string/home_tip"
                         android:textColor="@color/button_bk_ddake"
-                        android:layout_marginBottom="@dimen/dp_20"
                         android:textSize="@dimen/sp_14" />
 
                     <ImageView
@@ -262,10 +264,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginStart="@dimen/dp_20"
+                android:scaleType="fitXY"
                 android:layout_marginTop="35dp"
                 android:layout_marginEnd="@dimen/dp_20"
-                android:background="@drawable/home_bg_up"
-                android:visibility="gone" />
+                android:src="@drawable/first_use"
+                android:visibility="visible" />
 
 
             <LinearLayout
@@ -276,7 +279,7 @@
                 android:layout_marginTop="23dp"
                 android:layout_marginEnd="@dimen/dp_20"
                 android:orientation="vertical"
-                android:visibility="visible">
+                android:visibility="gone">
 
                 <RelativeLayout
                     android:id="@+id/rel_wallet_detail"

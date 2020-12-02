@@ -30,6 +30,7 @@
                 android:src="@drawable/left_arrow" />
 
             <TextView
+                android:id="@+id/text_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
@@ -60,6 +61,7 @@
             android:textSize="@dimen/sp_14" />
 
         <TextView
+            android:id="@+id/delete_wallet_tip1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="35dp"
@@ -68,6 +70,7 @@
             android:textSize="@dimen/sp_14" />
 
         <TextView
+            android:id="@+id/delete_wallet_tip2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="34dp"
