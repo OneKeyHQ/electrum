@@ -23,6 +23,7 @@
 #import "OKBiologicalViewController.h"
 #import "OKReadyToStartViewController.h"
 #import "OKTxDetailViewController.h"
+#import "OKFindFollowingWalletController.h"
 
 
 @interface OKWalletViewController ()<UITableViewDelegate,UITableViewDataSource,UINavigationControllerDelegate>
@@ -318,9 +319,13 @@
 {
      OKWeakSelf(self)
      [OKValidationPwdController showValidationPwdPageOn:self isDis:NO complete:^(NSString * _Nonnull pwd) {
-        OKReadyToStartViewController *readyToStart = [OKReadyToStartViewController readyToStartViewController];
-        readyToStart.pwd = pwd;
-        [weakself.OK_TopViewController.navigationController pushViewController:readyToStart animated:YES];
+         NSString *words = [kPyCommandsManager callInterface:kInterfaceexport_seed parameter:@{@"password":pwd,@"name":kWalletManager.currentWalletName}];
+         if (words != nil) {
+             OKReadyToStartViewController *readyToStart = [OKReadyToStartViewController readyToStartViewController];
+             readyToStart.words = words;
+            readyToStart.pwd = pwd;
+            [weakself.OK_TopViewController.navigationController pushViewController:readyToStart animated:YES];
+         }
     }];
 }
 #pragma mark - tapEyeClick
@@ -448,10 +453,17 @@
         OKWeakSelf(self)
         OKSelectCellModel *model = self.allData[indexPath.row];
         if (model.type == OKSelectCellTypeCreateHD) { //创建
-            OKPwdViewController *pwdVc = [OKPwdViewController pwdViewController];
-            pwdVc.pwdUseType = OKPwdUseTypeInitPassword;
-            BaseNavigationController *baseVc = [[BaseNavigationController alloc]initWithRootViewController:pwdVc];
-            [weakself.OK_TopViewController presentViewController:baseVc animated:YES completion:nil];
+            if ([kWalletManager checkIsHavePwd]) {
+                [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
+                    [weakself createWallet:pwd];
+                }];
+            }else{
+                OKPwdViewController *pwdVc = [OKPwdViewController setPwdViewControllerPwdUseType:OKPwdUseTypeInitPassword setPwd:^(NSString * _Nonnull pwd) {
+                    [weakself createWallet:pwd];
+                }];
+                BaseNavigationController *baseVc = [[BaseNavigationController alloc]initWithRootViewController:pwdVc];
+                [weakself.OK_TopViewController presentViewController:baseVc animated:YES completion:nil];
+            }
         }else if (model.type == OKSelectCellTypeRestoreHD){ //恢复
             OKWordImportVC *wordImport = [OKWordImportVC initViewController];
             BaseNavigationController *baseVc = [[BaseNavigationController alloc]initWithRootViewController:wordImport];
@@ -466,7 +478,22 @@
     [self.navigationController pushViewController:txListVc animated:YES];
 }
 
-
+- (void)createWallet:(NSString *)pwd
+{
+    NSString *seed = @"";
+    NSString *createHD = @"";
+    NSArray *words = [NSArray array];
+    createHD =  [kPyCommandsManager callInterface:kInterfaceCreate_hd_wallet parameter:@{@"password":pwd,@"seed":seed}];
+    words = [createHD componentsSeparatedByString:@" "];
+    if (words.count > 0) {
+        [OKStorageManager saveToUserDefaults:@"BTC-1" key:kCurrentWalletName];
+        OKBiologicalViewController *biologicalVc = [OKBiologicalViewController biologicalViewController:@"OKWalletViewController" biologicalViewBlock:^{
+            //创建HD成功刷新首页的UI
+            [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":pwd,@"backupshow":@"1"}];
+        }];
+        [self.OK_TopViewController.navigationController pushViewController:biologicalVc animated:YES];
+    }
+}
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
     if (scrollView == self.assetTableView) {
@@ -539,15 +566,23 @@
 {
     [self checkWalletResetUI];
     NSDictionary *dict = noti.object;
+    BOOL show = [[dict safeStringForKey:@"backupshow"] boolValue];
+    if (!show) {
+        return;
+    }
     NSString *pwd = [dict safeStringForKey:@"pwd"];
     OKWeakSelf(self)
     OKBackUpTipsViewController *backUpTips = [OKBackUpTipsViewController backUpTipsViewController:^(BackUpBtnClickType type) {
             if (type == BackUpBtnClickTypeClose) {
                 //下次再说  关闭窗口
             }else if (type == BackUpBtnClickTypeBackUp){
-                OKReadyToStartViewController *readyToStart = [OKReadyToStartViewController readyToStartViewController];
-                readyToStart.pwd = pwd;
-                [weakself.OK_TopViewController.navigationController pushViewController:readyToStart animated:YES];
+                NSString *words = [kPyCommandsManager callInterface:kInterfaceexport_seed parameter:@{@"password":pwd,@"name":kWalletManager.currentWalletName}];
+                if (words != nil) {
+                    OKReadyToStartViewController *readyToStart = [OKReadyToStartViewController readyToStartViewController];
+                    readyToStart.pwd = pwd;
+                    readyToStart.words = words;
+                    [weakself.OK_TopViewController.navigationController pushViewController:readyToStart animated:YES];
+                }
             }
     }];
     

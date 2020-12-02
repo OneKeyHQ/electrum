@@ -35,6 +35,11 @@ typedef enum {
 @property (weak, nonatomic) IBOutlet UILabel *switchPwdLabel;
 @property (weak, nonatomic) IBOutlet UILabel *switchPwdViewTips;
 
+- (IBAction)eyeBtnClick:(UIButton *)sender;
+
+
+
+
 @property (nonatomic,assign)PwdType type;
 @property (nonatomic,assign)BOOL isDis;
 @end
@@ -66,7 +71,6 @@ typedef enum {
 }
 - (void)stupUI
 {
-
     self.navTitleFirstLabel.text = MyLocalizedString(@"Check the password", nil);
     self.titleLabelFirst.text  = MyLocalizedString(@"Enter your password", nil);
     self.titleDescLabelFirst.text = MyLocalizedString(@"Don't reveal your password to anyone else", nil);
@@ -74,7 +78,7 @@ typedef enum {
     self.switchPwdViewBtn.layer.masksToBounds = YES;
     [self.longPwdViewFirst setLayerBoarderColor:HexColor(0xDBDEE7) width:1 radius:20];
     [self.nextBtnFirst setLayerRadius:20];
-
+    self.eyeBtnFirst.selected = NO;
     self.navigationController.delegate = self;
     self.pwdInputViewFirst.delegate = self;
     [self.pwdInputViewFirst becomeFirstResponder];
@@ -91,6 +95,11 @@ typedef enum {
 - (void)switchPwdViewBtnClick
 {
     _type = !_type;
+    if (_type == PwdTypeShort) {
+        [self.pwdInputViewFirst becomeFirstResponder];
+    }else if (_type == PwdTypeLong){
+        [self.longPwdFirstTextField becomeFirstResponder];
+    }
     [self changePwdView];
 }
 
@@ -157,16 +166,35 @@ typedef enum {
         [kTools tipMessage:MyLocalizedString(@"The password cannot be empty", nil)];
         return;
     }
+
+    if(self.longPwdFirstTextField.text.length < 8 || self.longPwdFirstTextField.text.length > 34) {
+        [kTools tipMessage:MyLocalizedString(@"The password length is between 8 and 34 digits", nil)];
+        return;
+    }
+    if ([self.longPwdFirstTextField.text containsChinese]) {
+        [kTools tipMessage:MyLocalizedString(@"The password cannot contain Chinese", nil)];
+        return;
+    }
     [self validationPwd:self.longPwdFirstTextField.text];
 }
 
 - (void)validationPwd:(NSString *)pwd
 {
-    if (self.block) {
-        self.block(pwd);
-        if (_isDis == YES) {
-            [self dismissViewControllerAnimated:YES completion:nil];
+    id result = [kPyCommandsManager callInterface:kInterfacecheck_password parameter:@{@"password":pwd}];
+    if (result != nil) {
+        if (self.block) {
+            self.block(pwd);
+            if (_isDis == YES) {
+                [self dismissViewControllerAnimated:YES completion:nil];
+            }
         }
     }
 }
+
+
+- (IBAction)eyeBtnClick:(UIButton *)sender {
+    self.eyeBtnFirst.selected = !self.eyeBtnFirst.selected;
+    self.longPwdFirstTextField.secureTextEntry = !self.eyeBtnFirst.selected;
+}
+
 @end

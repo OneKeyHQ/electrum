@@ -17,6 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OKTools : NSObject
 @property (copy, nonatomic) NSString *immutableUUID;
 + (OKTools *)sharedInstance;
+- (void)showIndicatorView;
+- (void)hideIndicatorView;
 - (void)pasteboardCopyString:(NSString *)string msg:(NSString *)msg;
 - (void)tipMessage:(NSString *)msg;
 - (BOOL)okJumpOpenURL:(NSString *)urlStr;

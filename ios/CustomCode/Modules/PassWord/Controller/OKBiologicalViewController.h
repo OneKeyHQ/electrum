@@ -9,10 +9,10 @@
 #import "BaseViewController.h"
 
 NS_ASSUME_NONNULL_BEGIN
-
+typedef void(^BiologicalViewBlock)(void);
 @interface OKBiologicalViewController : BaseViewController
 
-+ (instancetype)biologicalViewController;
++ (instancetype)biologicalViewController:(NSString *)vcName biologicalViewBlock:(BiologicalViewBlock)block;
 
 
 @end

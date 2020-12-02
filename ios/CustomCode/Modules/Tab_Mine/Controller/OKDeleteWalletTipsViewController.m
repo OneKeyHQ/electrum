@@ -27,6 +27,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    self.title = MyLocalizedString(@"Delete HD Wallet", nil);
     self.descLabel.text = MyLocalizedString(@"Once deleted: 1. All HD wallets will be erased. 2. Please make sure that the root mnemonic of HD Wallet has been copied and kept before deletion. You can use it to recover all HD Wallets and retrieve assets.", nil);
     [self.titleLabel setTitle:MyLocalizedString(@"⚠️ risk warning", nil) forState:UIControlStateNormal];
     [self.deleteBtn setTitle:MyLocalizedString(@"Delete HD Wallet", nil) forState:UIControlStateNormal];
@@ -38,17 +39,13 @@
 }
 
 - (IBAction)deleteBtnClick:(UIButton *)sender {
-    
     [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
         [kPyCommandsManager callInterface:kInterfaceDelete_wallet parameter:@{@"name":self.walletName,@"password":pwd}];
-        if ([kWalletManager.currentWalletType containsString:@"hd"]||[kWalletManager.currentWalletType containsString:@"derived-standard"]) {
-            [kWalletManager clearCurrentWalletInfo];
-        }
+        [kWalletManager clearCurrentWalletInfo];
         [[NSNotificationCenter defaultCenter]postNotificationName:kNotiDeleteWalletComplete object:nil];
-        [kTools tipMessage:@"删除钱包成功"];
+        [kTools tipMessage:MyLocalizedString(@"Wallet deleted successfully", nil)];
         [self.navigationController popToRootViewControllerAnimated:YES];
     }];
-    
 }
 
 - (IBAction)iAgreeClick:(UIButton *)sender {

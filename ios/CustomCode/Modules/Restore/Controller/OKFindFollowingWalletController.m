@@ -39,17 +39,28 @@
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [self hideBackBtn];
     self.tableView.tableFooterView = [UIView new];
     self.title = MyLocalizedString(@"Recover HD Wallet", nil);
     self.titleLabel.text = MyLocalizedString(@"Find the following wallet", nil);
     self.descLabel.text = MyLocalizedString(@"You have derived the following wallet using the HD mnemonic, select the one you want to recover. If you do not want to recover the wallet for a while, you can skip it and readd it later in the HD Wallet. Your assets will not be lost", nil);
     [self.tableViewBgView setLayerRadius:20];
 }
-
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    if ([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]){
+        self.navigationController.interactivePopGestureRecognizer.enabled = NO;
+    }
+}
+- (void)viewDidDisappear:(BOOL)animated {
+  [super viewDidDisappear:animated];
+  self.navigationController.interactivePopGestureRecognizer.enabled = YES;
+}
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     return self.walletList.count;
 }
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *ID = @"OKFindWalletTableViewCell";
@@ -60,6 +71,7 @@
     cell.model = self.walletList[indexPath.row];
     return  cell;
 }
+
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     return 90;
@@ -81,8 +93,10 @@
     }
     [kPyCommandsManager callInterface:kInterfacerecovery_confirmed parameter:@{@"name_list":arrayM}];
     [OKStorageManager saveToUserDefaults:@"BTC-1" key:kCurrentWalletName];
-    //创建HD成功刷新首页的UI
-    [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":self.pwd}];
-    [self.OK_TopViewController dismissToViewControllerWithClassName:@"OKWalletViewController" animated:YES];
+    [self.OK_TopViewController dismissToViewControllerWithClassName:@"OKWalletViewController" animated:YES complete:^{
+        //创建HD成功刷新首页的UI
+        [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":self.pwd,@"backupshow":@"0"}];
+    }];
 }
+
 @end

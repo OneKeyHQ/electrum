@@ -9,6 +9,11 @@
 #import "OKTools.h"
 #import "KeyChainSaveUUID.h"
 
+@interface  OKTools()
+@property (nonatomic, strong) UIActivityIndicatorView *indicatorView;;
+@end
+
+
 @implementation OKTools
 + (OKTools *)sharedInstance {
     static OKTools *_sharedInstance = nil;
@@ -18,6 +23,38 @@
     });
     return _sharedInstance;
 }
+- (UIActivityIndicatorView *)indicatorView {
+    if (_indicatorView == nil) {
+        _indicatorView = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)];
+        _indicatorView.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhiteLarge;
+        _indicatorView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.6];
+    }
+    return _indicatorView;
+}
+- (void)showIndicatorView {
+    [self showLoadingViewEnabled:NO alpha:0.6];
+}
+
+- (void)hideIndicatorView {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        OKKeyWindow.subviews.firstObject.userInteractionEnabled = YES;
+        [self.indicatorView stopAnimating];
+        [self.indicatorView removeFromSuperview];
+    });
+}
+
+- (void)showLoadingViewEnabled:(BOOL)userInteractionEnabled alpha:(CGFloat)alpha {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        OKKeyWindow.subviews.firstObject.userInteractionEnabled = userInteractionEnabled;
+        self.indicatorView.frame = CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+        self.indicatorView.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhiteLarge;
+        [self.indicatorView startAnimating];
+        [OKKeyWindow addSubview:self.indicatorView];
+        self.indicatorView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:alpha];
+    });
+}
+
+
 
 - (void)pasteboardCopyString:(NSString *)string msg:(NSString *)msg {
     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];

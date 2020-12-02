@@ -53,6 +53,9 @@
     [attri appendAttributedString:string];
     self.bottomtipsLabel.attributedText = attri;
     self.bottomtipsLabel.alpha = 0.6;
+    
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notiUpdatePassWordComplete) name:kNotiUpdatePassWordComplete object:nil];;
+    
 }
 
 #pragma mark - TableView
@@ -297,5 +300,11 @@
 - (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
     BOOL isShowMine = [viewController isKindOfClass:[self class]];
     [self.navigationController setNavigationBarHidden:isShowMine animated:YES];
+}
+
+#pragma mark - notiUpdatePassWordComplete
+- (void)notiUpdatePassWordComplete
+{
+    [self.tableView reloadData];
 }
 @end

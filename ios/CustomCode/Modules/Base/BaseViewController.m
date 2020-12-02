@@ -35,15 +35,12 @@
     if ([self.navigationController.viewControllers count] > 1) {
         self.navigationItem.leftBarButtonItem = [UIBarButtonItem backBarButtonItemWithTarget:self selector:@selector(backToPrevious)];
     };
-    
     if (_isNavigationBarTranslucent) {
         _navigationBarBackgroundImage = [self.navigationController.navigationBar backgroundImageForBarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
         _isNavigationBarTranslucent = self.navigationController.navigationBar.isTranslucent;
         _navigationBarTitleTextAttributes = self.navigationController.navigationBar.titleTextAttributes;
     }
     _interactivePopEnable = self.navigationController.interactivePopGestureRecognizer.isEnabled;
-    
-    
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -103,7 +100,6 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-
 - (void)backToPrevious {
     if (self.isRoot == YES) {
         [[self.navigationController.viewControllers firstObject] setHidesBottomBarWhenPushed:NO];
@@ -115,7 +111,6 @@
         [self.navigationController popViewControllerAnimated:YES];
     }
 }
-
 - (void)setNavigationBarBackgroundColorWithClearColor {
     self.navigationController.navigationBar.translucent = YES;
     UIColor *color = [UIColor clearColor];

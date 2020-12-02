@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,copy)NSString *coinType;
 @property (nonatomic,copy)NSString *privkeys;
 @property (nonatomic,copy)NSString *address;
+@property (nonatomic,copy)NSString *seed;
 + (instancetype)setWalletNameViewController;
 @end
 

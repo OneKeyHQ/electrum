@@ -14,11 +14,9 @@ typedef enum {
 
 NS_ASSUME_NONNULL_BEGIN
 
-
+typedef void(^SetPwdBlock)(NSString *pwd);
 @interface OKPwdViewController : BaseViewController
-@property (nonatomic,assign)OKPwdUseType pwdUseType;
-@property (nonatomic,copy)NSString *words;
-+ (instancetype)pwdViewController;
++ (instancetype)setPwdViewControllerPwdUseType:(OKPwdUseType)useType setPwd:(SetPwdBlock)setPwd;
 @end
 
 NS_ASSUME_NONNULL_END

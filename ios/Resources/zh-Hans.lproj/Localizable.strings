@@ -123,6 +123,7 @@
 "Your face, fingerprints and other biological data are stored on this machine, encrypted by the operating system of your phone manufacturer, and we can neither access nor save these data" = "您的面容、指纹等生物数据都留存在本机， 由您手机厂商的操作系统加密保存， 我们既无法接触，也不会保存这些数据。";
 "Turn on Face recognition" = "开启面容识别";
 "Turn on fingerprint identification" = "开启指纹识别";
+"Turn on fingerprint identification" = "开启指纹识别";
 "The next time again say" = "下次再说";
 
 "Following system language" = "跟随系统语言";
@@ -180,7 +181,7 @@
 "Incorrect phrase" = "助记词错误";
 "HD Wallet root mnemonic" = "HD 钱包根助记词";
 "Mnemonics are used to recover assets in other apps or wallets, transcribe them in the correct order, and place them in a safe place known only to you" = "助记词用来在其他 App 或钱包中恢复资产，将它们按照正确的顺序抄写，并放置在只有您知道的安全地方";
-"- Do not uninstall OneKey App easily - do not disclose mnemonics or private keys to anyone - do not take screenshots, send sensitive information via chat tools, etc" = "- 不要轻易卸载 OneKey App - 不要将助记词、私钥泄露给任何人 - 不要截屏、通过聊天工具等传送以上敏感信息";
+"- Do not uninstall OneKey App easily - do not disclose mnemonics or private keys to anyone - do not take screenshots, send sensitive information via chat tools, etc" = "1.不要轻易卸载 OneKey App \n2. 不要将助记词、私钥泄露给任何人 \n3. 不要截屏、通过聊天工具等传送以上敏感信息";
 "Mnemonics are very sensitive and private content, once someone else gets it, your assets may be lost, so do not take screenshots, and pay attention to your surrounding cameras" = "助记词是非常敏感和隐私的内容，一旦被其他人获取，您的资产有可能全部丢失，因此不要截屏，并注意您的周边有无摄像头。";
 "Don't a screenshot" = "不要截图";
 "The next step" = "下一步";
@@ -267,8 +268,17 @@
 "Find the following wallet" = "找到以下钱包";
 "You have derived the following wallet using the HD mnemonic, select the one you want to recover. If you do not want to recover the wallet for a while, you can skip it and readd it later in the HD Wallet. Your assets will not be lost" = "您曾使用 HD 助记词派生过以下钱包， 选择您要恢复的。暂时不想恢复的钱包您可以跳过，并稍后在 HD 钱包中重新添加，您的资产不会丢失。";
 "Payment code" = "收款码";
-"Open OneKey scan" = "打开 OneKey 扫一扫";
+"Scan transfer" = "扫一扫 转账";
 "The wallet address" = "钱包地址";
 "The transfer amount cannot be zero" = "转账金额不能为零";
 "Enter the transfer amount" = "输入转出金额";
 "restore" = "恢复";
+"Wallet names cannot exceed 15 characters" = "钱包名称不能超过15个字符";
+"The password length is between 8 and 34 digits" = "密码长度在8到34位之间";
+"The password cannot contain Chinese" = "密码不能包含中文";
+"Set fingerprint identification" = "设置指纹识别";
+"Creating successful" = "创建成功";
+"I copied" = "我抄好了";
+"Display qr code" = "显示二维码";
+"Hide QR code" = "隐藏二维码";
+"It is recommended to use" = "推荐使用";

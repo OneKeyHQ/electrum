@@ -18,6 +18,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *descLabel;
 @property (weak, nonatomic) IBOutlet UILabel *bottomDescLabel;
 @property (weak, nonatomic) IBOutlet UILabel *titleLabel;
+@property (weak, nonatomic) IBOutlet UIView *greenLeftBgView;
 
 @end
 
@@ -31,6 +32,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [self.greenLeftBgView setLayerRadius:2];
     switch (_showType) {
         case WordsShowTypeRestore:
         {
@@ -43,7 +45,7 @@
         case WordsShowTypeExport:
         {
             self.title = MyLocalizedString(@"Mnemonic derivation", nil);
-            self.titleLabel.text = MyLocalizedString(@"HD Wallet root mnemonic", nil);
+            self.titleLabel.hidden = YES;
             self.descLabel.text = MyLocalizedString(@"Mnemonics are used to recover assets in other apps or wallets, transcribe them in the correct order, and place them in a safe place known only to you", nil);
             self.bottomDescLabel.text = MyLocalizedString(@"- Do not uninstall OneKey App easily - do not disclose mnemonics or private keys to anyone - do not take screenshots, send sensitive information via chat tools, etc", nil);
         }

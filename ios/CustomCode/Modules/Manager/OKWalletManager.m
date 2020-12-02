@@ -236,4 +236,22 @@ static dispatch_once_t once;
     return _supportFiatsSymbol;
 }
 
+- (BOOL)checkWalletName:(NSString *)name
+{
+    if (name == nil || name.length == 0 || name.length > 15) {
+        return  NO;
+    }
+    return YES;
+}
+
+- (BOOL)checkIsHavePwd
+{
+    NSArray *listDictArray =  [kPyCommandsManager callInterface:kInterfaceList_wallets parameter:@{}];
+    if (listDictArray.count == 0) {
+        return NO;
+    }else{
+        return YES;
+    }
+}
+
 @end

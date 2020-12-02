@@ -18,6 +18,15 @@
 - (IBAction)btnCopyClick:(UIButton *)sender;
 @property (weak, nonatomic) IBOutlet UIView *greenView;
 
+@property (weak, nonatomic) IBOutlet UIView *showQRImageBgView;
+@property (weak, nonatomic) IBOutlet UIView *QRBgView;
+@property (weak, nonatomic) IBOutlet UILabel *topLabel;
+@property (weak, nonatomic) IBOutlet UILabel *showQrLabel;
+
+@property (nonatomic,assign)BOOL showQr;
+
+
+
 @end
 
 @implementation OKPrivateKeyExportViewController
@@ -35,21 +44,45 @@
 
 - (void)stupUI
 {
+    _showQr = NO;
+    self.iconImageView.hidden = !_showQr;
     self.bottomTipsLabel.text = MyLocalizedString(@"1. Carefully copy with pen and paper and keep it in a safe place after confirmation. 2. Mobile photo albums are easily accessible by other apps. 2. OneKey does not store any private key, which cannot be recovered once lost", nil);
-    [self.btnCopy setTitle:MyLocalizedString(@"copy", nil) forState:UIControlStateNormal];
+    [self.btnCopy setTitle:MyLocalizedString(@"I copied", nil) forState:UIControlStateNormal];
     [self.privateKeyBgView setLayerBoarderColor:HexColor(0xDBDEE7) width:1 radius:20];
-    
     self.privateKeyLabel.text = self.privateKey;
     self.iconImageView.image = [QRCodeGenerator qrImageForString:self.privateKey imageSize:200];
     [self.btnCopy setLayerRadius:20];
     self.title = MyLocalizedString(@"The private key export", nil);
     [self.greenView setLayerRadius:2];
+    [self.QRBgView setLayerRadius:20];
+    [self.showQRImageBgView setLayerRadius:14];
+    
+    UITapGestureRecognizer *tapp = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(privateKeyBgViewClick)];
+    [self.privateKeyBgView addGestureRecognizer:tapp];
+    
+    UITapGestureRecognizer *tapshowQr = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapshowQrClick)];
+    [self.showQRImageBgView addGestureRecognizer:tapshowQr];
+    self.showQrLabel.text = MyLocalizedString(@"Display qr code", nil);
 }
 
 - (IBAction)btnCopyClick:(UIButton *)sender {
-    
-    [kTools pasteboardCopyString:self.privateKeyLabel.text msg:MyLocalizedString(@"Copied", nil)];
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
 
+- (void)tapshowQrClick
+{
+    _showQr = !_showQr;
+    self.iconImageView.hidden = !_showQr;
+    if (self.iconImageView.hidden) {
+        self.showQrLabel.text = MyLocalizedString(@"Display qr code", nil);
+    }else{
+        self.showQrLabel.text = MyLocalizedString(@"Hide QR code", nil);
+    }
+}
+
+- (void)privateKeyBgViewClick
+{
+    [kTools pasteboardCopyString:self.privateKeyLabel.text msg:MyLocalizedString(@"Copied", nil)];
 }
 
 @end

@@ -16,6 +16,7 @@
 #import "OKWalletListNoHDTableViewCell.h"
 #import "OKPwdViewController.h"
 #import "OKWordImportVC.h"
+#import "OKBiologicalViewController.h"
 
 @interface OKHDWalletViewController ()<UITableViewDelegate,UITableViewDataSource>
 @property (strong, nonatomic) IBOutlet UITableView *tableView;
@@ -164,10 +165,20 @@
             case 0:
             {
                 OKWeakSelf(self)
-                OKPwdViewController *pwdVc = [OKPwdViewController pwdViewController];
-                pwdVc.pwdUseType = OKPwdUseTypeInitPassword;
-                BaseNavigationController *baseVc = [[BaseNavigationController alloc]initWithRootViewController:pwdVc];
-                [weakself.OK_TopViewController presentViewController:baseVc animated:YES completion:nil];
+                [weakself.OK_TopViewController dismissViewControllerAnimated:NO completion:^{
+                    if ([kWalletManager checkIsHavePwd]) {
+                        [OKValidationPwdController showValidationPwdPageOn:weakself isDis:NO complete:^(NSString * _Nonnull pwd) {
+                            [weakself createWallet:pwd];
+                        }];
+                    }else{
+                        OKPwdViewController *pwdVc = [OKPwdViewController setPwdViewControllerPwdUseType:OKPwdUseTypeInitPassword setPwd:^(NSString * _Nonnull pwd) {
+                            [weakself createWallet:pwd];
+                        }];
+                        BaseNavigationController *baseVc = [[BaseNavigationController alloc]initWithRootViewController:pwdVc];
+                        [weakself.OK_TopViewController presentViewController:baseVc animated:YES completion:nil];
+                        
+                    }
+                }];
             }
                 break;
             case 1:
@@ -180,6 +191,31 @@
                 break;
         }
         return;
+    }
+}
+
+- (void)createWallet:(NSString *)pwd
+{
+    NSString *seed = @"";
+    NSString *createHD = @"";
+    NSArray *words = [NSArray array];
+    createHD =  [kPyCommandsManager callInterface:kInterfaceCreate_hd_wallet parameter:@{@"password":pwd,@"seed":seed}];
+    words = [createHD componentsSeparatedByString:@" "];
+    if (words.count > 0) {
+        if (!kWalletManager.isOpenAuthBiological) {
+            [OKStorageManager saveToUserDefaults:@"BTC-1" key:kCurrentWalletName];
+            OKBiologicalViewController *biologicalVc = [OKBiologicalViewController biologicalViewController:@"OKWalletViewController" biologicalViewBlock:^{
+                //创建HD成功刷新首页的UI
+                [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":pwd,@"backupshow":@"1"}];
+            }];
+            [self.OK_TopViewController.navigationController pushViewController:biologicalVc animated:YES];
+        }else{
+            [OKStorageManager saveToUserDefaults:@"BTC-1" key:kCurrentWalletName];
+            [self.OK_TopViewController dismissToViewControllerWithClassName:@"OKHDWalletViewController" animated:YES complete:^{
+                //创建HD成功刷新首页的UI
+                [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":pwd,@"backupshow":@"1"}];
+            }];
+        }
     }
 }
 

@@ -1,0 +1,105 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"><title></title><link href="font.css"><style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+        html, body {
+            width: 100%;
+            height: 100%;
+        }
+        html {
+            font-size: 16px;
+        }
+        .no-network-container .logo {
+            padding-top: 42%;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        .no-network-container .logo img {
+            width: 32.8%;
+        }
+        .no-network-container .notice {
+            width: 92%;
+            margin: 0 auto;
+            text-align: center;
+            font-family: PingFangSC-Regular;
+            font-size: 0.875rem;
+            font-weight: 400;
+            color: #9A9A9A;
+            line-height: 1.25rem;
+        }
+        .no-network-container .retry {
+            width: 26.67%;
+            text-align: center;
+            margin: 1.6875rem auto 0;
+            height: 2.5rem;
+            line-height: 2.5rem;
+            border: 1px solid rgba(217, 180, 122, 1);
+            border-radius: 1.40625rem;
+            color: #1EA1F2;
+            font-size: 0.875rem;
+            font-weight: 500;
+            font-family: 'DIN-Medium';
+        }
+</style></head><body><div class="no-network-container"><div class="logo"><img src="no_network.png" alt=""></div><p class="notice" id="notice"></p><p class="retry" id="retry"></p></div></body><script>
+    (function () {
+        var urlParams = parseUrl(window.location.href);
+        var notice = document.getElementById('notice');
+        var retryId = document.getElementById('retry');
+        var lang = initLang(urlParams);
+        var code = urlParams.code;
+         if (lang === 'en'){
+             retryId.innerText = "Retry";
+         }else{
+             retryId.innerText = "刷新重试";
+         }
+        if (code === '1002'){
+         if (lang == 'zh-Hans') {
+         notice.innerText = "链接错误";
+         document.title = 'unsupported URL';
+         } else if (lang == 'zh-Hant') {
+         notice.innerText = "鏈接錯誤";
+         document.title = 'unsupported URL';
+         } else {
+         notice.innerText = "unsupported URL";
+         document.title = 'unsupported URL';
+         }
+        }else if (code === '1009'){
+         if (lang == 'zh-Hans') {
+         notice.innerText = "当前无网络，请检查后重试";
+         document.title = '无网络';
+         } else if (lang == 'zh-Hant') {
+         notice.innerText = "當前無網絡，請檢查後重試";
+         document.title = '無網絡';
+         } else {
+         notice.innerText = "Network connection unavailable. Please check and retry.";
+         document.title = 'no network';
+         }
+        }
+
+        retryId.addEventListener('click', function () {
+             dsBridge.call('worker.reload',{'url':urlParams.url});
+        });
+    })();
+    function parseUrl(url) {
+        if(url) {
+            url = url.substr(url.indexOf("?") + 1);
+        }
+        var result = {},
+            queryString = url || location.search.substring(1),
+            re = /([^&=]+)=([^&]*)/g,
+            m;
+        while (m = re.exec(queryString)) {
+            result[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+        }
+        return result;
+    }
+    function initLang(urlParams) {
+        if (typeof urlParams.locale === 'undefined') {
+            return 'zh-Hans';
+        } else {
+            return urlParams.locale;
+        }
+    }
+</script>
+</html>

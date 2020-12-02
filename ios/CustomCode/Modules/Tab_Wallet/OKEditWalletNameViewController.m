@@ -50,10 +50,18 @@
         [kTools tipMessage:MyLocalizedString(@"The wallet name cannot be empty", nil)];
         return;
     }
+    
     if ([self.textField.text isEqualToString:kWalletManager.currentWalletName]) {
         [self closeBtnClick:nil];
         return;
     }
+    
+    if (![kWalletManager checkWalletName:self.textField.text]) {
+        [kTools tipMessage:MyLocalizedString(@"Wallet names cannot exceed 15 characters", nil)];
+        return;
+    }
+    
+    
     NSString *msg =  [kPyCommandsManager callInterface:kInterfacerename_wallet parameter:@{@"old_name": kWalletManager.currentWalletName,@"new_name" : self.textField.text}];
     if (msg != nil) {
         [kTools tipMessage:MyLocalizedString(@"Name modification successful", nil)];

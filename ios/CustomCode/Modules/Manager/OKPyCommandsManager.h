@@ -85,6 +85,9 @@
 #define kInterfaceis_watch_only          @"is_watch_only" //是否是观察钱包
 
 
+#define kInterfacecheck_password         @"check_password" //检查密码
+
+
 #define kPyCommandsManager (OKPyCommandsManager.sharedInstance)
 NS_ASSUME_NONNULL_BEGIN
 @interface OKPyCommandsManager : NSObject

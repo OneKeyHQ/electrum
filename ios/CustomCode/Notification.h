@@ -15,6 +15,8 @@
 #define kNotiSelectWalletComplete               @"kNotiSelectWalletComplete"
 //刷新钱包列表
 #define kNotiRefreshWalletList                  @"kNotiRefreshWalletList"
+//更新密码完成
+#define kNotiUpdatePassWordComplete             @"kNotiUpdatePassWordComplete"
 
 //删除钱包
 #define kNotiDeleteWalletComplete               @"kNotiDeleteWalletComplete"
@@ -30,5 +32,9 @@
 #define kUserSetingBtcBComplete                 @"kUserSetingBtcBComplete"
 #define kUserSetingMarketSource                 @"kUserSetingMarketSource"
 #define kUserSetingElectrumServer               @"kUserSetingElectrumServer"
+
+
+
+
 
 #endif /* Notification_h */

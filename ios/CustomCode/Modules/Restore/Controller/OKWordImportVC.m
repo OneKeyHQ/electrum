@@ -9,6 +9,7 @@
 #import "OKWordImportView.h"
 #import "OKBiologicalViewController.h"
 #import "OKPwdViewController.h"
+#import "OKFindFollowingWalletController.h"
 
 @interface OKWordImportVC ()<UIScrollViewDelegate>
 
@@ -78,16 +79,59 @@
 }
 
 - (IBAction)next:(id)sender {
+    OKWeakSelf(self)
     if (_wordInputView.wordsArr.count == 12 || _wordInputView.wordsArr.count == 24) {
-        NSString *mnemonicStr = [_wordInputView.wordsArr componentsJoinedByString:@" "];
-        OKPwdViewController *pwdVc = [OKPwdViewController pwdViewController];
-        pwdVc.pwdUseType = OKPwdUseTypeInitPassword;
-        pwdVc.words = mnemonicStr;
-        [self.navigationController pushViewController:pwdVc animated:YES];
+        __block NSString *mnemonicStr = [_wordInputView.wordsArr componentsJoinedByString:@" "];
+        if ([kWalletManager checkIsHavePwd]) {
+            [OKValidationPwdController showValidationPwdPageOn:self isDis:NO complete:^(NSString * _Nonnull pwd) {
+                [weakself createWallet:pwd mnemonicStr:mnemonicStr];
+            }];
+        }else{
+            OKPwdViewController *pwdVc = [OKPwdViewController setPwdViewControllerPwdUseType:OKPwdUseTypeInitPassword setPwd:^(NSString * _Nonnull pwd) {
+                [weakself createWallet:pwd mnemonicStr:mnemonicStr];
+            }];
+            [self.navigationController pushViewController:pwdVc animated:YES];
+        }
     }else{
         [kTools tipMessage:MyLocalizedString(@"Incorrect phrase", nil)];
     }
 }
+
+- (void)createWallet:(NSString *)pwd mnemonicStr:(NSString *)mnemonicStr
+{
+    NSString *seed = mnemonicStr;
+    __block NSArray *restoreHD = [NSArray array];
+    [kTools showIndicatorView];
+    OKWeakSelf(self)
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        restoreHD =  [kPyCommandsManager callInterface:kInterfaceCreate_hd_wallet parameter:@{@"password":pwd,@"seed":seed}];
+        if (restoreHD != nil) {
+            dispatch_sync(dispatch_get_main_queue(), ^{
+                if (restoreHD.count == 0) {
+                    [kPyCommandsManager callInterface:kInterfacerecovery_confirmed parameter:@{@"name_list":@[]}];
+                    [OKStorageManager saveToUserDefaults:@"BTC-1" key:kCurrentWalletName];
+                    OKBiologicalViewController *biologicalVc = [OKBiologicalViewController biologicalViewController:@"OKWalletViewController" biologicalViewBlock:^{
+                        //创建HD成功刷新首页的UI
+                        [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":pwd,@"backupshow":@"1"}];;
+                    }];
+                    [kTools hideIndicatorView];
+                    [weakself.OK_TopViewController.navigationController pushViewController:biologicalVc animated:YES];
+                    
+                }else{
+                    OKFindFollowingWalletController *findFollowingWalletVc = [OKFindFollowingWalletController findFollowingWalletController];
+                    findFollowingWalletVc.pwd = pwd;
+                    findFollowingWalletVc.restoreHD = restoreHD;
+                    [kTools hideIndicatorView];
+                    [weakself.OK_TopViewController.navigationController pushViewController:findFollowingWalletVc animated:YES];
+                }
+            });
+        }else{
+            [kTools hideIndicatorView];
+        }
+    });
+}
+
+
 
 #pragma mark - scrollView
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView

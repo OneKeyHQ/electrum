@@ -8,9 +8,7 @@
 
 #import "OKPyCommandsManager.h"
 @interface OKPyCommandsManager()
-
 @property (nonatomic,assign)PyObject *pyClass;
-
 @end
 
 @implementation OKPyCommandsManager
@@ -310,6 +308,9 @@ static dispatch_once_t once;
         NSString *data = [parameter safeStringForKey:@"data"];
         result = PyObject_CallMethod(self.pyInstance, [kInterfaceparse_pr UTF8String], "(s)",[data UTF8String]);
         
+    }else if([method isEqualToString:kInterfacecheck_password]){
+        NSString *password = [parameter safeStringForKey:@"password"];
+        result = PyObject_CallMethod(self.pyInstance, [kInterfacecheck_password UTF8String], "(s)",[password UTF8String]);
         
     }else if([method isEqualToString:kInterfaceBroadcast_tx]){
         NSString *tx = [parameter safeStringForKey:@"tx"];

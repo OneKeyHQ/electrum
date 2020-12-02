@@ -7,6 +7,7 @@
 //
 
 #import "OKSetWalletNameViewController.h"
+#import "OKPwdViewController.h"
 
 
 @interface OKSetWalletNameViewController ()
@@ -42,13 +43,18 @@
 }
 
 - (IBAction)createBtnClick:(UIButton *)sender {
-    
     if (self.walletNameTextfield.text.length == 0) {
         [kTools tipMessage:MyLocalizedString(@"The wallet name cannot be empty", nil)];
         return;
     }
+    
+    if (![kWalletManager checkWalletName:self.walletNameTextfield.text]) {
+        [kTools tipMessage:MyLocalizedString(@"Wallet names cannot exceed 15 characters", nil)];
+        return;
+    }
+    
     OKWeakSelf(self)
-    if (weakself.addType == OKAddTypeImportAddresses) {
+    if (self.addType == OKAddTypeImportAddresses) {
         NSString *result =  [kPyCommandsManager callInterface:kInterfaceImport_Address parameter:@{@"name":self.walletNameTextfield.text,@"address":self.address}];
         if (result != nil) {
             [kTools tipMessage:MyLocalizedString(@"Import success", nil)];
@@ -57,38 +63,66 @@
         [self.navigationController popToRootViewControllerAnimated:YES];
         return;
     }
-     
-    [OKValidationPwdController showValidationPwdPageOn:self isDis:NO complete:^(NSString * _Nonnull pwd) {
-        id result = nil;
+    if ([kWalletManager checkIsHavePwd]) {
+        [OKValidationPwdController showValidationPwdPageOn:self isDis:NO complete:^(NSString * _Nonnull pwd) {
+            [weakself importWallet:pwd];
+        }];
+    }else{
+        OKPwdViewController *pwdVc = [OKPwdViewController setPwdViewControllerPwdUseType:OKPwdUseTypeInitPassword setPwd:^(NSString * _Nonnull pwd) {
+            [weakself importWallet:pwd];
+        }];
+        BaseNavigationController *baseVc = [[BaseNavigationController alloc]initWithRootViewController:pwdVc];
+        [weakself.OK_TopViewController presentViewController:baseVc animated:YES completion:nil];
+    }
+}
+- (void)importWallet:(NSString *)pwd
+{
+    OKWeakSelf(self)
+    id result = nil;
+    switch (weakself.addType) {
+        case OKAddTypeCreateHDDerived:
+        {
+            result = [kPyCommandsManager callInterface:kInterfaceCreate_derived_wallet parameter:@{@"name":self.walletNameTextfield.text,@"password":pwd,@"coin":[self.coinType lowercaseString]}];
+        }
+            break;
+        case OKAddTypeCreateSolo:
+        {
+            result = [kPyCommandsManager callInterface:kInterfaceCreate_create parameter:@{@"name":self.walletNameTextfield.text,@"password":pwd}];
+        }
+            break;
+        case OKAddTypeImportPrivkeys:
+        {
+            result = [kPyCommandsManager callInterface:kInterfaceImport_Privkeys parameter:@{@"name":self.walletNameTextfield.text,@"password":pwd,@"privkeys":self.privkeys}];
+        }
+            break;
+        case OKAddTypeImportSeed:
+        {
+            result =  [kPyCommandsManager callInterface:kInterfaceImport_Seed parameter:@{@"name":self.walletNameTextfield.text,@"password":pwd,@"seed":self.seed}];
+        }
+            break;
+            
+        default:
+            break;
+    }
+    if (result != nil) {
+        [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:nil];
+        [[NSNotificationCenter defaultCenter]postNotificationName:kNotiRefreshWalletList object:nil];
         switch (weakself.addType) {
             case OKAddTypeCreateHDDerived:
-            {
-  
-                result = [kPyCommandsManager callInterface:kInterfaceCreate_derived_wallet parameter:@{@"name":self.walletNameTextfield.text,@"password":pwd,@"coin":[self.coinType lowercaseString]}];
-            }
-                break;
             case OKAddTypeCreateSolo:
-            {
-                result = [kPyCommandsManager callInterface:kInterfaceCreate_create parameter:@{@"name":self.walletNameTextfield.text,@"password":pwd}];
-            }
+                [kTools tipMessage:MyLocalizedString(@"Creating successful", nil)];
                 break;
             case OKAddTypeImportPrivkeys:
-            {
-                result = [kPyCommandsManager callInterface:kInterfaceImport_Privkeys parameter:@{@"name":self.walletNameTextfield.text,@"password":pwd,@"privkeys":self.privkeys}];
-            }
+            case OKAddTypeImportSeed:
+                [kTools tipMessage:MyLocalizedString(@"Import success", nil)];
                 break;
-                
             default:
                 break;
         }
-        if (result != nil) {
-            [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:nil];
-            [[NSNotificationCenter defaultCenter]postNotificationName:kNotiRefreshWalletList object:nil];
-            [weakself.OK_TopViewController dismissToViewControllerWithClassName:@"OKSetWalletNameViewController" animated:NO];
-            [weakself.navigationController popToRootViewControllerAnimated:YES];
-        }else{
+        [weakself.OK_TopViewController dismissToViewControllerWithClassName:@"OKSetWalletNameViewController" animated:NO complete:^{
             
-        }
-    }];
+        }];
+        [weakself.navigationController popToRootViewControllerAnimated:YES];
+    }
 }
 @end

@@ -66,21 +66,27 @@ typedef enum {
 
 
 @property (nonatomic,assign)PwdType type;
-
+@property (nonatomic,assign)OKPwdUseType pwdUseType;
 @property (nonatomic,assign)BOOL isSecret;
 
+@property (nonatomic,copy)SetPwdBlock block;
 @end
 
 @implementation OKPwdViewController
 
-+ (instancetype)pwdViewController
++ (instancetype)setPwdViewControllerPwdUseType:(OKPwdUseType)useType setPwd:(SetPwdBlock)setPwd;
 {
-    return [[UIStoryboard storyboardWithName:@"OKPwd" bundle:nil]instantiateViewControllerWithIdentifier:@"OKPwdViewController"];
+    OKPwdViewController *pwdVc = [[UIStoryboard storyboardWithName:@"OKPwd" bundle:nil]instantiateViewControllerWithIdentifier:@"OKPwdViewController"];
+    pwdVc.block = setPwd;
+    pwdVc.pwdUseType = useType;
+    return pwdVc;
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
     _type = PwdTypeShort;
     _isSecret = YES;
+    self.eyeBtnFirst.selected = !_isSecret;
+    self.eyeBtnSecond.selected = !_isSecret;
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(switchPwdViewBtnClick)];
     [self.switchPwdViewBtn addGestureRecognizer:tap];
     [self stupUI];
@@ -250,8 +256,12 @@ typedef enum {
                 [kTools tipMessage:MyLocalizedString(@"The new password cannot be the same as the old one", nil)];
                 return;
             }
-            [kPyCommandsManager callInterface:kInterfaceUpdate_password parameter:@{@"old_password":old_password,@"new_password":new_password}];
-            [kTools tipMessage:MyLocalizedString(@"Password changed successfully", nil)];
+            NSString *result = [kPyCommandsManager callInterface:kInterfaceUpdate_password parameter:@{@"old_password":old_password,@"new_password":new_password}];
+            if (result != nil) {
+                [[NSNotificationCenter defaultCenter]postNotificationName:kNotiUpdatePassWordComplete object:nil];
+                kWalletManager.isOpenAuthBiological = NO;
+                [kTools tipMessage:MyLocalizedString(@"Password changed successfully", nil)];
+            }
             [self dismissViewControllerAnimated:YES completion:nil];
         }
     }
@@ -286,6 +296,20 @@ typedef enum {
     [self resetPwdViewTips];
 }
 - (IBAction)nextBtnFirstClick:(UIButton *)sender {
+    if (self.pwdUseType == OKPwdUseTypeInitPassword && _type == PwdTypeLong) {
+        if(self.longPwdFirstTextField.text.length < 8 || self.longPwdFirstTextField.text.length > 34) {
+            [kTools tipMessage:MyLocalizedString(@"The password length is between 8 and 34 digits", nil)];
+            return;
+        }
+        if ([self.longPwdFirstTextField.text containsChinese]) {
+            [kTools tipMessage:MyLocalizedString(@"The password cannot contain Chinese", nil)];
+            return;
+        }
+        self.page = PageTypeSecond;
+        [self resetViewWithAnimated:YES];
+        [self resetPwdViewTips];
+        return;
+    }
     self.page = PageTypeSecond;
     [self resetViewWithAnimated:YES];
     [self resetPwdViewTips];
@@ -294,6 +318,7 @@ typedef enum {
     switch (self.pwdUseType) {
         case OKPwdUseTypeInitPassword:
         {
+            
             if ([self.longPwdFirstTextField.text isEqualToString:self.longPwdSecondTextField.text]&&self.longPwdFirstTextField.text.length > 0) { //密码一致
                 [self passwordIsCorrect:self.longPwdSecondTextField.text];
             }else{
@@ -311,6 +336,8 @@ typedef enum {
             }
             NSString *result = [kPyCommandsManager callInterface:kInterfaceUpdate_password parameter:@{@"old_password":old_password,@"new_password":new_password}];
             if (result != nil) {
+                kWalletManager.isOpenAuthBiological = NO;
+                [[NSNotificationCenter defaultCenter]postNotificationName:kNotiUpdatePassWordComplete object:nil];
                 [kTools tipMessage:MyLocalizedString(@"Password changed successfully", nil)];
             }
             [self dismissViewControllerAnimated:YES completion:nil];
@@ -323,42 +350,14 @@ typedef enum {
 #pragma mark -  两次输入密码相同
 - (void)passwordIsCorrect:(NSString *)pwd
 {
-    NSString *seed = @"";
-    NSString *createHD = @"";
-    NSArray *restoreHD = [NSArray array];
-    NSArray *words = [NSArray array];
-    if (self.words.length > 0) {
-        seed = self.words;
-        restoreHD =  [kPyCommandsManager callInterface:kInterfaceCreate_hd_wallet parameter:@{@"password":pwd,@"seed":seed}];
-        
-    }else{
-        createHD =  [kPyCommandsManager callInterface:kInterfaceCreate_hd_wallet parameter:@{@"password":pwd,@"seed":seed}];
-        words = [createHD componentsSeparatedByString:@" "];
-    }
-    
-    if (words.count > 0) {
-        [OKStorageManager saveToUserDefaults:@"BTC-1" key:kCurrentWalletName];
-        //创建HD成功刷新首页的UI
-        [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":pwd}];
-        OKBiologicalViewController *biologicalVc = [OKBiologicalViewController biologicalViewController];
-        [self.navigationController pushViewController:biologicalVc animated:YES];
-    }else{
-        if (restoreHD.count == 0) {
-            [kPyCommandsManager callInterface:kInterfacerecovery_confirmed parameter:@{@"name_list":@[]}];
-            [OKStorageManager saveToUserDefaults:@"BTC-1" key:kCurrentWalletName];
-            //创建HD成功刷新首页的UI
-            [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":pwd}];
-            OKBiologicalViewController *biologicalVc = [OKBiologicalViewController biologicalViewController];
-            [self.navigationController pushViewController:biologicalVc animated:YES];
-        }else{
-            OKFindFollowingWalletController *findFollowingWalletVc = [OKFindFollowingWalletController findFollowingWalletController];
-            findFollowingWalletVc.pwd = pwd;
-            findFollowingWalletVc.restoreHD = restoreHD;
-            [self.navigationController pushViewController:findFollowingWalletVc animated:YES];
-        }
+    if (self.block) {
+        [self.longPwdViewFirst resignFirstResponder];
+        [self.pwdInputViewFirst resignFirstResponder];
+        [self.pwdInputViewSecond resignFirstResponder];
+        [self.longPwdViewSecond resignFirstResponder];
+        self.block(pwd);
     }
 }
-
 
 #pragma mark - 输入错误的提示信息
 - (void)pwdWrongTip
@@ -368,6 +367,8 @@ typedef enum {
 
 - (IBAction)eyesClick:(UIButton *)sender {
     _isSecret = !_isSecret;
+    self.eyeBtnFirst.selected = !_isSecret;
+    self.eyeBtnSecond.selected = !_isSecret;
     if (_isSecret) {
         self.longPwdFirstTextField.secureTextEntry = YES;
         self.longPwdSecondTextField.secureTextEntry = YES;
@@ -375,8 +376,5 @@ typedef enum {
         self.longPwdFirstTextField.secureTextEntry = NO;
         self.longPwdSecondTextField.secureTextEntry = NO;
     }
-    
-    
-    
 }
 @end

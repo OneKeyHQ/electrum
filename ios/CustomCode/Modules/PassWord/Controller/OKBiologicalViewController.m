@@ -10,6 +10,7 @@
 #import "YZAuthID.h"
 
 @interface OKBiologicalViewController ()
+
 @property (weak, nonatomic) IBOutlet UILabel *setTitleLabel;
 @property (weak, nonatomic) IBOutlet UILabel *descTitleLabel;
 @property (weak, nonatomic) IBOutlet UIImageView *iconImageView;
@@ -18,16 +19,19 @@
 - (IBAction)startBtnClick:(UIButton *)sender;
 @property (weak, nonatomic) IBOutlet UIButton *nextBtn;
 - (IBAction)nextBtnClick:(UIButton *)sender;
-
 @property (strong, nonatomic) YZAuthID *authIDControl;
-
+@property (nonatomic,copy)NSString *fVcName;
+@property (nonatomic,copy)BiologicalViewBlock block;
 @end
 
 @implementation OKBiologicalViewController
 
-+ (instancetype)biologicalViewController
++ (instancetype)biologicalViewController:(NSString *)vcName biologicalViewBlock:(BiologicalViewBlock)block
 {
-    return [[UIStoryboard storyboardWithName:@"OKPwd" bundle:nil]instantiateViewControllerWithIdentifier:@"OKBiologicalViewController"];
+    OKBiologicalViewController *bioVc = [[UIStoryboard storyboardWithName:@"OKPwd" bundle:nil]instantiateViewControllerWithIdentifier:@"OKBiologicalViewController"];
+    bioVc.fVcName = vcName;
+    bioVc.block = block;
+    return bioVc;
 }
 
 - (void)viewDidLoad {
@@ -40,14 +44,34 @@
     [self setNavigationBarBackgroundColorWithClearColor];
     [self hideBackBtn];
     self.title = MyLocalizedString(@"Create a new wallet", nil);
-    self.setTitleLabel.text = MyLocalizedString(@"Set face recognition", nil);
+    
     self.descTitleLabel.text = MyLocalizedString(@"You can more easily unlock your wallet without having to type in your password every time", nil);
     self.descDetailLabel.text = MyLocalizedString(@"Your face, fingerprints and other biological data are stored on this machine, encrypted by the operating system of your phone manufacturer, and we can neither access nor save these data", nil);
-    [self.startBtn setTitle:MyLocalizedString(@"Turn on Face recognition", nil) forState:UIControlStateNormal];
     [self.nextBtn setTitle:MyLocalizedString(@"The next time again say", nil) forState:UIControlStateNormal];
-    self.iconImageView.image = [UIImage imageNamed:@"face_id"];
     [self.startBtn setLayerRadius:20];
     [self.nextBtn setLayerBoarderColor:HexColor(0xDBDEE7) width:1 radius:20];
+   
+    
+    [YZAuthID biologicalRecognitionResult:^(YZAuthenticationType type) {
+        switch (type) {
+            case YZAuthenticationFace:
+            {
+                self.setTitleLabel.text = MyLocalizedString(@"Set face recognition", nil);
+                self.iconImageView.image = [UIImage imageNamed:@"face_id"];
+                [self.startBtn setTitle:MyLocalizedString(@"Turn on Face recognition", nil) forState:UIControlStateNormal];
+            }
+                break;
+            case YZAuthenticationTouch:
+            {
+                self.setTitleLabel.text = MyLocalizedString(@"Set fingerprint identification", nil);
+                self.iconImageView.image = [UIImage imageNamed:@"touch_id"];
+                [self.startBtn setTitle:MyLocalizedString(@"Turn on fingerprint identification", nil) forState:UIControlStateNormal];
+            }
+                break;
+            default:
+                break;
+        }
+    }];
 }
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
@@ -77,14 +101,20 @@
             
         } else if (state == YZAuthIDStateSuccess) { // TouchID/FaceID验证成功
             kWalletManager.isOpenAuthBiological = YES;
-            [self.OK_TopViewController dismissViewControllerAnimated:NO completion:nil];
+            [self disCurrentVc];
         }
         
     }];
 }
 - (IBAction)nextBtnClick:(UIButton *)sender {
-    [self.OK_TopViewController dismissViewControllerAnimated:YES completion:nil];
+    [self disCurrentVc];
 }
-
-
+- (void)disCurrentVc
+{
+    [self dismissToViewControllerWithClassName:self.fVcName animated:YES complete:^{
+        if (self.block) {
+            self.block();
+        }
+    }];
+}
 @end

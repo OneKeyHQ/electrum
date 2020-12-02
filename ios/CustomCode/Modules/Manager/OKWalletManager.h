@@ -100,6 +100,8 @@ typedef enum {
 - (void)clearCurrentWalletInfo;
 - (BOOL)checkEveryWordInPlist:(NSArray *)wordsArr;
 - (NSString *)getFeeBaseWithSat:(NSString *)sat;
+- (BOOL)checkWalletName:(NSString *)name;
+- (BOOL)checkIsHavePwd;
 @end
 
 NS_ASSUME_NONNULL_END

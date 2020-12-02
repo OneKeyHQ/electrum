@@ -13,6 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OKReadyToStartViewController : BaseViewController
 + (instancetype)readyToStartViewController;
 @property (nonatomic,copy)NSString *pwd;
+@property (nonatomic,assign)OKWalletType type;
+@property (nonatomic,copy)NSString *words;
 @end
 
 NS_ASSUME_NONNULL_END

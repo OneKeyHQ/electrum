@@ -30,8 +30,9 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    OKPwdViewController *pwdVc = [OKPwdViewController pwdViewController];
-    pwdVc.pwdUseType = OKPwdUseTypeUpdatePassword;
+    OKPwdViewController *pwdVc = [OKPwdViewController setPwdViewControllerPwdUseType:OKPwdUseTypeUpdatePassword setPwd:^(NSString * _Nonnull pwd) {
+        
+    }];
     BaseNavigationController *baseVc = [[BaseNavigationController alloc]initWithRootViewController:pwdVc];
     [self.view.window.rootViewController presentViewController:baseVc animated:YES completion:nil];
 

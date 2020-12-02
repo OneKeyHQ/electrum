@@ -180,7 +180,7 @@
         
         OKUnitTableViewCellModel *model7 = [[OKUnitTableViewCellModel alloc]init];
         model7.titleStr = @"sat";
-        model7.descStr = @"0.00000001 BTC";
+        model7.descStr = @"=0.00000001 BTC";
         model7.type = GroupTypeBitcoinUnit;
         model7.typeString = model7.titleStr;
         [btcUnitGroup addObject:model7];

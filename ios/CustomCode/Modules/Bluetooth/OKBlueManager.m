@@ -381,6 +381,7 @@ static dispatch_once_t once;
 - (void)characteristicWrite:(NSString *)str
 {
     if (self.writeCharacteristic) {
+        self.currentReadDataStr = nil;
         NSData *data = [NSData dataForHexString:str];
         if (data == nil) {
             return;

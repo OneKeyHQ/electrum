@@ -39,18 +39,10 @@
         [kTools tipMessage:MyLocalizedString(@"Please fill in the mnemonic", nil)];
         return;
     }
-    if (self.walletNameTextField.text.length == 0) {
-        [kTools tipMessage:MyLocalizedString(@"Please enter the name of the wallet", nil)];
-        return;
-    }
-    OKWeakSelf(self)
-    [OKValidationPwdController showValidationPwdPageOn:self isDis:NO complete:^(NSString * _Nonnull pwd) {
-        NSString *result =  [kPyCommandsManager callInterface:kInterfaceImport_Seed parameter:@{@"name":self.walletNameTextField.text,@"password":pwd,@"seed":[self.wordInputView.wordsArr componentsJoinedByString:@" "]}];
-        if (result != nil) {
-            [kTools tipMessage:MyLocalizedString(@"Mnemonic import successful", nil)];
-        }
-        [weakself.navigationController popToRootViewControllerAnimated:YES];
-    }];
+  
+    OKSetWalletNameViewController *setNameVc = [OKSetWalletNameViewController setWalletNameViewController];
+    setNameVc.addType = OKAddTypeImportSeed;
+    setNameVc.seed = [self.wordInputView.wordsArr componentsJoinedByString:@" "];
+    [self.navigationController pushViewController:setNameVc animated:YES];
 }
-
 @end
