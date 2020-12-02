@@ -3034,7 +3034,6 @@ class AndroidCommands(commands.Commands):
             if old_name is None or new_name is None:
                 raise BaseException("wallet_name can't be none")
             else:
-                self.daemon.delete_wallet(old_name)
                 os.rename(self._wallet_path(old_name), self._wallet_path(new_name))
                 temp_local_wallet_info = {}
                 for key, value in self.local_wallet_info.items():
