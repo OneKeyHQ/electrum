@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OKWordCheckViewController : BaseViewController
 @property (nonatomic,strong)NSArray *words;
+@property (nonatomic,copy)NSString *walletName;
 + (instancetype)wordCheckViewController;
 @end
 

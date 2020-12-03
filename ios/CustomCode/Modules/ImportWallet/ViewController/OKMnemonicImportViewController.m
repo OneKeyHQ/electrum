@@ -42,6 +42,7 @@
   
     OKSetWalletNameViewController *setNameVc = [OKSetWalletNameViewController setWalletNameViewController];
     setNameVc.addType = OKAddTypeImportSeed;
+    setNameVc.where = OKWhereToSelectTypeWalletList;
     setNameVc.seed = [self.wordInputView.wordsArr componentsJoinedByString:@" "];
     [self.navigationController pushViewController:setNameVc animated:YES];
 }

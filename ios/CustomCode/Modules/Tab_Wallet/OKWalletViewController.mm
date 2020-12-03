@@ -98,9 +98,7 @@
 }
 
 - (void)viewDidLoad {
-    
     [super viewDidLoad];
-    
     [self stupUI];
     [self showFirstUse];
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notiWalletCreateComplete:) name:kNotiWalletCreateComplete object:nil];
@@ -110,7 +108,7 @@
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notiBackUPWalletComplete) name:kNotiBackUPWalletComplete object:nil];
     
     [OKPyCommandsManager sharedInstance];
-
+    
     [kPyCommandsManager callInterface:kInterfaceLoad_all_wallet parameter:@{}];
 
     [self loadWalletList];
@@ -167,8 +165,8 @@
             [kUserSettingManager setElectrum_server:electrumNode];
         }
     }
+    
 }
-
 
 - (void)selectWallet
 {
@@ -196,12 +194,12 @@
     self.model.money = [dict safeStringForKey:@"fiat"];
     dispatch_async(dispatch_get_main_queue(), ^{
        // UI更新代码
-        NSString *bStr = self.model.money;
-        if (!kWalletManager.showAsset) {
+        NSArray *barray = [self.model.money componentsSeparatedByString:@" "];
+        NSString *bStr = [NSString stringWithFormat:@"%@ %@",kWalletManager.currentFiatSymbol,[barray firstObject]];
+        if (kWalletManager.showAsset) {
             bStr = @"****";
         }
-        NSArray *barray = [bStr componentsSeparatedByString:@" "];
-        self.balance.text = [NSString stringWithFormat:@"%@ %@",kWalletManager.currentFiatSymbol,[barray firstObject]];
+        self.balance.text = bStr;
         self.walletName.text = kWalletManager.currentWalletName.length > 0 ? kWalletManager.currentWalletName : MyLocalizedString(@"No purse", nil);
         if (kWalletManager.currentWalletName.length > 0) {
             [self.coinImage setImage:[UIImage imageNamed:self.model.iconImage] forState:UIControlStateNormal];
@@ -226,8 +224,6 @@
     self.navigationController.delegate = self;
     
     [self.coinImage addTarget:self action:@selector(tapGestureClick) forControlEvents:UIControlEventTouchUpInside];
-    
-    
     
     //asset界面
     [self.walletTopBgView setCornerWith:20 side:OKCornerPathTopLeft|OKCornerPathTopRight withSize:CGSizeMake(SCREEN_WIDTH - 40, 168)];
@@ -262,16 +258,9 @@
     self.listWallets = [kPyCommandsManager callInterface:kInterfaceList_wallets parameter:@{}];
     if (self.listWallets.count > 0) {
         [self selectWallet];
-        //等于1 的时候要保存一下地址
-        if (self.listWallets.count == 1) {
-            NSDictionary *dict = self.listWallets.firstObject;
-            NSString *name = [dict allKeys].firstObject;
-            NSDictionary *dataDict = dict[name];
-            [OKStorageManager saveToUserDefaults:name key:kCurrentWalletName];
-            [OKStorageManager saveToUserDefaults:[dataDict safeStringForKey:@"addr"] key:kCurrentWalletAddress];
-            [OKStorageManager saveToUserDefaults:[dataDict safeStringForKey:@"type"] key:kCurrentWalletType];
-        }
+        self.scanBtn.hidden = NO;
     }else{
+        self.scanBtn.hidden = YES;
         dispatch_async(dispatch_get_main_queue(), ^{
             self.walletName.text = MyLocalizedString(@"No purse", nil);
             [self.coinImage setImage:[UIImage imageNamed:@"loco_round"] forState:UIControlStateNormal];
@@ -285,7 +274,7 @@
     if (self.listWallets.count > 0) { //创建过
         self.createBgView.hidden = YES;
         self.walletHomeBgView.hidden = NO;
-        isBackUp = [[kPyCommandsManager callInterface:kInterfaceget_backup_info parameter:@{}] boolValue];
+        isBackUp = [[kPyCommandsManager callInterface:kInterfaceget_backup_info parameter:@{@"name":kWalletManager.currentWalletName}] boolValue];
     }else{
         self.walletName.text = MyLocalizedString(@"No purse", nil);
         self.createBgView.hidden = NO;
@@ -324,6 +313,7 @@
              OKReadyToStartViewController *readyToStart = [OKReadyToStartViewController readyToStartViewController];
              readyToStart.words = words;
             readyToStart.pwd = pwd;
+            readyToStart.walletName = kWalletManager.currentWalletName;
             [weakself.OK_TopViewController.navigationController pushViewController:readyToStart animated:YES];
          }
     }];
@@ -333,9 +323,10 @@
 {
     BOOL isShowAsset = !kWalletManager.showAsset;
     [kWalletManager setShowAsset:isShowAsset];
-    if (isShowAsset) {
+    if (!isShowAsset) {
         self.eyeBtn.image = [UIImage imageNamed:@"eyehome"];
-        self.balance.text = self.model.money;
+        NSString *money =  [[self.model.money componentsSeparatedByString:@" "] firstObject];
+        self.balance.text = [NSString stringWithFormat:@"%@ %@",kWalletManager.currentFiatSymbol,money];
     }else{
         self.eyeBtn.image = [UIImage imageNamed:@"hide_on"];
         self.balance.text = @"****";
@@ -344,7 +335,7 @@
 }
 - (void)changeEye
 {
-    if (kWalletManager.showAsset) {
+    if (!kWalletManager.showAsset) {
         self.eyeBtn.image = [UIImage imageNamed:@"eyehome"];
     }else{
         self.eyeBtn.image = [UIImage imageNamed:@"hide_on"];
@@ -474,7 +465,7 @@
         return;
     }
     OKTxListViewController *txListVc = [OKTxListViewController initViewControllerWithStoryboardName:@"Tab_Wallet"];
-    txListVc.model = self.model;;
+    txListVc.model = self.model;
     [self.navigationController pushViewController:txListVc animated:YES];
 }
 
@@ -486,7 +477,11 @@
     createHD =  [kPyCommandsManager callInterface:kInterfaceCreate_hd_wallet parameter:@{@"password":pwd,@"seed":seed}];
     words = [createHD componentsSeparatedByString:@" "];
     if (words.count > 0) {
-        [OKStorageManager saveToUserDefaults:@"BTC-1" key:kCurrentWalletName];
+        NSString *defaultName = @"BTC-1";
+        [OKStorageManager saveToUserDefaults:defaultName key:kCurrentWalletName];
+        NSString *cuurentWalletAddress = [kWalletManager getCurrentWalletAddress:defaultName];
+        [OKStorageManager saveToUserDefaults:cuurentWalletAddress key:kCurrentWalletAddress];
+        [OKStorageManager saveToUserDefaults:@"btc-hd-standard" key:kCurrentWalletType];
         OKBiologicalViewController *biologicalVc = [OKBiologicalViewController biologicalViewController:@"OKWalletViewController" biologicalViewBlock:^{
             //创建HD成功刷新首页的UI
             [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":pwd,@"backupshow":@"1"}];
@@ -581,6 +576,7 @@
                     OKReadyToStartViewController *readyToStart = [OKReadyToStartViewController readyToStartViewController];
                     readyToStart.pwd = pwd;
                     readyToStart.words = words;
+                    readyToStart.walletName = kWalletManager.currentWalletName;
                     [weakself.OK_TopViewController.navigationController pushViewController:readyToStart animated:YES];
                 }
             }

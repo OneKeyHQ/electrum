@@ -59,6 +59,7 @@
 {
     OKSetWalletNameViewController *setNameVc = [OKSetWalletNameViewController setWalletNameViewController];
     setNameVc.addType = self.importType;
+    setNameVc.where = OKWhereToSelectTypeWalletList;
     [self.navigationController pushViewController:setNameVc animated:YES];
 }
 #pragma mark - 扫描

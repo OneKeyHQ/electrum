@@ -23,7 +23,7 @@
     _model = model;
     self.iconImageView.image = [UIImage imageNamed:model.iconImage == nil ? @"token_btc" :model.iconImage];
     self.coinTypeLabel.text = model.coinType;
-    if (kWalletManager.showAsset) {
+    if (!kWalletManager.showAsset) {
         self.balanceLabel.text = [NSString stringWithFormat:@"%@ %@",model.balance,kWalletManager.currentBitcoinUnit];
         self.moneyLabel.text = model.money;
     }else{

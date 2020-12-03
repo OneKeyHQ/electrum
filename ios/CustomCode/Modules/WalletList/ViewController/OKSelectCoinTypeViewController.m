@@ -75,6 +75,7 @@
         OKSetWalletNameViewController *setWalletNameVc = [OKSetWalletNameViewController setWalletNameViewController];
         setWalletNameVc.addType = _addType;
         setWalletNameVc.coinType = coinType;
+        setWalletNameVc.where = _where;
         [self.navigationController pushViewController:setWalletNameVc animated:YES];
     }else if (_addType == OKAddTypeImport){
         OKSelectImportTypeViewController *selectImportTypeVc = [OKSelectImportTypeViewController selectImportTypeViewController];

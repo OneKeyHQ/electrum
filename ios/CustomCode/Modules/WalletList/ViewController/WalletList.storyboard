@@ -224,6 +224,7 @@
                                                             <rect key="frame" x="20" y="8" width="47.5" height="32"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="height" constant="32" id="CM8-LZ-Z8g"/>
+                                                                <constraint firstAttribute="width" relation="lessThanOrEqual" constant="160" id="StX-UZ-eGz"/>
                                                             </constraints>
                                                             <fontDescription key="fontDescription" type="system" weight="medium" pointSize="19"/>
                                                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -971,7 +972,7 @@
                                     </label>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Nfd-np-4FZ">
                                         <rect key="frame" x="25" y="157.5" width="344" height="60"/>
-                                        <color key="backgroundColor" red="0.0010134851330000001" green="0.7278487682" blue="0.070087678730000005" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                        <color key="backgroundColor" red="0.0039215686274509803" green="0.72941176470588232" blue="0.070588235294117646" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="60" id="31a-fN-6Zi"/>
                                         </constraints>

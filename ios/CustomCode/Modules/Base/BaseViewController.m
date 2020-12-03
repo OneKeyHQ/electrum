@@ -31,6 +31,9 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    if (@available(iOS 13.0, *)) {
+            self.modalInPresentation = YES;
+    }
     // 替换返回按钮
     if ([self.navigationController.viewControllers count] > 1) {
         self.navigationItem.leftBarButtonItem = [UIBarButtonItem backBarButtonItemWithTarget:self selector:@selector(backToPrevious)];
@@ -45,7 +48,6 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-
     if (self.navigationbarTranslucent) {
         [self.navigationController.navigationBar setTranslucent:YES];
         [self.navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];

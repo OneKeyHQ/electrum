@@ -7,6 +7,7 @@
 //
 
 #import "OKDeleteWalletTipsViewController.h"
+#import "OKDeleteBackUpTipsController.h"
 
 @interface OKDeleteWalletTipsViewController ()
 
@@ -39,13 +40,23 @@
 }
 
 - (IBAction)deleteBtnClick:(UIButton *)sender {
-    [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
-        [kPyCommandsManager callInterface:kInterfaceDelete_wallet parameter:@{@"name":self.walletName,@"password":pwd}];
-        [kWalletManager clearCurrentWalletInfo];
-        [[NSNotificationCenter defaultCenter]postNotificationName:kNotiDeleteWalletComplete object:nil];
-        [kTools tipMessage:MyLocalizedString(@"Wallet deleted successfully", nil)];
-        [self.navigationController popToRootViewControllerAnimated:YES];
-    }];
+    BOOL isBackUp = [[kPyCommandsManager callInterface:kInterfaceget_backup_info parameter:@{@"name":self.walletName}] boolValue];
+    if (isBackUp) {
+        [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
+            [kPyCommandsManager callInterface:kInterfaceDelete_wallet parameter:@{@"name":self.walletName,@"password":pwd}];
+            [kWalletManager clearCurrentWalletInfo];
+            [[NSNotificationCenter defaultCenter]postNotificationName:kNotiDeleteWalletComplete object:nil];
+            [kTools tipMessage:MyLocalizedString(@"Wallet deleted successfully", nil)];
+            [self.navigationController popToRootViewControllerAnimated:YES];
+        }];
+    }else{
+        OKWeakSelf(self)
+        OKDeleteBackUpTipsController *tipsVc = [OKDeleteBackUpTipsController deleteBackUpTipsController:^{
+            [weakself.navigationController popViewControllerAnimated:YES];
+        }];
+        tipsVc.modalPresentationStyle = UIModalPresentationOverFullScreen;
+        [self presentViewController:tipsVc animated:NO completion:nil];
+    }
 }
 
 - (IBAction)iAgreeClick:(UIButton *)sender {

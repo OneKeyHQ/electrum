@@ -15,6 +15,7 @@
 #import "OKDontScreenshotTipsViewController.h"
 #import "OKBackUpViewController.h"
 #import "OKPrivateKeyExportViewController.h"
+#import "OKDeleteBackUpTipsController.h"
 
 @interface OKWalletDetailViewController ()<UITableViewDelegate,UITableViewDataSource>
 
@@ -118,14 +119,10 @@
                 [OKValidationPwdController showValidationPwdPageOn:self isDis:NO complete:^(NSString * _Nonnull pwd) {
                     NSString *result = [kPyCommandsManager callInterface:kInterfaceexport_seed parameter:@{@"password":pwd,@"name":kWalletManager.currentWalletName}];
                     if (result != nil) {
-                        OKDontScreenshotTipsViewController *dontScreenshotTipsVc = [OKDontScreenshotTipsViewController dontScreenshotTipsViewController:^{
-                            OKBackUpViewController *backUpVc = [OKBackUpViewController backUpViewController];
-                            backUpVc.words = [result componentsSeparatedByString:@" "];
-                            backUpVc.showType = WordsShowTypeExport;
-                            [weakself.OK_TopViewController.navigationController pushViewController:backUpVc animated:YES];
-                        }];
-                        dontScreenshotTipsVc.modalPresentationStyle = UIModalPresentationOverCurrentContext;
-                        [weakself.OK_TopViewController presentViewController:dontScreenshotTipsVc animated:NO completion:nil];
+                        OKBackUpViewController *backUpVc = [OKBackUpViewController backUpViewController];
+                        backUpVc.words = [result componentsSeparatedByString:@" "];
+                        backUpVc.showType = WordsShowTypeExport;
+                        [weakself.OK_TopViewController.navigationController pushViewController:backUpVc animated:YES];
                     }
                 }];
             }];
@@ -161,17 +158,26 @@
         case OKClickTypeDeleteWallet:
         {
             OKWeakSelf(self)
-            OKDeleteWalletConfirmController *deleteVc = [OKDeleteWalletConfirmController deleteWalletConfirmController:^{
-                    [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
-                        [kPyCommandsManager callInterface:kInterfaceDelete_wallet parameter:@{@"name":kWalletManager.currentWalletName,@"password":pwd}];
-                        [kWalletManager clearCurrentWalletInfo];
-                        [kTools tipMessage:MyLocalizedString(@"Wallet deleted successfully", nil)];
-                        [[NSNotificationCenter defaultCenter]postNotificationName:kNotiDeleteWalletComplete object:nil];
-                        [weakself.navigationController popViewControllerAnimated:YES];
-                   }];
-            }];
-            deleteVc.modalPresentationStyle = UIModalPresentationOverFullScreen;
-            [self.OK_TopViewController presentViewController:deleteVc animated:NO completion:nil];
+            BOOL isBackUp = [[kPyCommandsManager callInterface:kInterfaceget_backup_info parameter:@{@"name":kWalletManager.currentWalletName}] boolValue];
+            if (isBackUp) {
+                OKDeleteWalletConfirmController *deleteVc = [OKDeleteWalletConfirmController deleteWalletConfirmController:^{
+                        [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
+                            [kPyCommandsManager callInterface:kInterfaceDelete_wallet parameter:@{@"name":kWalletManager.currentWalletName,@"password":pwd}];
+                            [kWalletManager clearCurrentWalletInfo];
+                            [kTools tipMessage:MyLocalizedString(@"Wallet deleted successfully", nil)];
+                            [[NSNotificationCenter defaultCenter]postNotificationName:kNotiDeleteWalletComplete object:nil];
+                            [weakself.navigationController popViewControllerAnimated:YES];
+                    }];
+                }];
+                deleteVc.modalPresentationStyle = UIModalPresentationOverFullScreen;
+                [self.OK_TopViewController presentViewController:deleteVc animated:NO completion:nil];
+            }else{
+                OKDeleteBackUpTipsController *tipsVc = [OKDeleteBackUpTipsController deleteBackUpTipsController:^{
+                    
+                }];
+                tipsVc.modalPresentationStyle = UIModalPresentationOverFullScreen;
+                [self presentViewController:tipsVc animated:NO completion:nil];
+            }
         }
             break;
         default:

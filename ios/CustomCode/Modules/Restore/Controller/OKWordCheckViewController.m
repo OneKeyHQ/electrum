@@ -85,10 +85,9 @@
     return cWords;
 }
 
-
 - (IBAction)checkBtnClick:(UIButton *)sender {
     if ([self.userTop isEqualToString:self.words[self.indexTop]] && [self.userMid isEqualToString:self.words[self.indexMid]] && [self.userBottom isEqualToString:self.words[self.indexBottom]]) {
-        [kPyCommandsManager callInterface:kInterfacedelete_backup_info parameter:@{}];
+        [kPyCommandsManager callInterface:kInterfacedelete_backup_info parameter:@{@"name":self.walletName}];
         [[NSNotificationCenter defaultCenter]postNotificationName:kNotiBackUPWalletComplete object:nil];
         OKYouareDoneViewController *youareVc = [OKYouareDoneViewController youareDoneViewController];
         [self.navigationController pushViewController:youareVc animated:YES];

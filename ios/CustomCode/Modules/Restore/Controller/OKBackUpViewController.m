@@ -37,7 +37,14 @@
         case WordsShowTypeRestore:
         {
             self.title = MyLocalizedString(@"Backup the purse", nil);
-            self.titleLabel.text = MyLocalizedString(@"HD Wallet root mnemonic", nil);
+            if ([kWalletManager getWalletDetailType] == OKWalletTypeHD) {
+                self.titleLabel.text = MyLocalizedString(@"HD Wallet root mnemonic", nil);
+            }else if([kWalletManager getWalletDetailType] == OKWalletTypeIndependent){
+                self.titleLabel.text = MyLocalizedString(@"Independent wallet mnemonic", nil);
+            }else{
+                self.titleLabel.text = @"";
+            }
+            
             self.descLabel.text = MyLocalizedString(@"Mnemonics are used to recover assets in other apps or wallets, transcribe them in the correct order, and place them in a safe place known only to you", nil);
             self.bottomDescLabel.text = MyLocalizedString(@"- Do not uninstall OneKey App easily - do not disclose mnemonics or private keys to anyone - do not take screenshots, send sensitive information via chat tools, etc", nil);
         }
@@ -86,6 +93,7 @@
         {
             OKWordCheckViewController *wordVc = [OKWordCheckViewController wordCheckViewController];
             wordVc.words = self.words;
+            wordVc.walletName = self.walletName;
             [self.navigationController pushViewController:wordVc animated:YES];
         }
             break;

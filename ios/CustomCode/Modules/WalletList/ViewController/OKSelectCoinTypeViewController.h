@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)selectCoinTypeViewController;
 //添加类型
 @property (nonatomic,assign)OKAddType addType;
-
+@property (nonatomic,assign)OKWhereToSelectType where;
 @end
 
 NS_ASSUME_NONNULL_END

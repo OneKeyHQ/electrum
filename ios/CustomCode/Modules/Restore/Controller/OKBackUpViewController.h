@@ -18,6 +18,7 @@ typedef enum {
 @interface OKBackUpViewController : BaseViewController
 @property (nonatomic,strong)NSArray *words;
 @property (nonatomic,assign)WordsShowType showType;
+@property (nonatomic,copy)NSString *walletName;
 + (instancetype)backUpViewController;
 @end
 

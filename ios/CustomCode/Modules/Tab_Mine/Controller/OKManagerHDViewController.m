@@ -10,6 +10,7 @@
 #import "OKBackUpViewController.h"
 #import "OKDontScreenshotTipsViewController.h"
 #import "OKDeleteWalletTipsViewController.h"
+#import "OKReadyToStartViewController.h"
 
 @interface OKManagerHDViewController () <UITableViewDelegate,UITableViewDataSource>
 
@@ -24,7 +25,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
     self.title = MyLocalizedString(@"management", nil);
     self.tableView.tableFooterView = [UIView new];
 }
@@ -39,14 +39,11 @@
             [OKValidationPwdController showValidationPwdPageOn:self isDis:NO complete:^(NSString * _Nonnull pwd) {
                 NSString *result = [kPyCommandsManager callInterface:kInterfaceexport_seed parameter:@{@"password":pwd,@"name":self.walletName}];
                 if (result != nil) {
-                    OKDontScreenshotTipsViewController *dontScreenshotTipsVc = [OKDontScreenshotTipsViewController dontScreenshotTipsViewController:^{
-                        OKBackUpViewController *backUpVc = [OKBackUpViewController backUpViewController];
-                        backUpVc.words = [result componentsSeparatedByString:@" "];
-                        backUpVc.showType = WordsShowTypeHDExport;
-                        [weakself.OK_TopViewController.navigationController pushViewController:backUpVc animated:YES];
-                    }];
-                    dontScreenshotTipsVc.modalPresentationStyle = UIModalPresentationOverCurrentContext;
-                    [weakself.OK_TopViewController presentViewController:dontScreenshotTipsVc animated:NO completion:nil];
+                    
+                    OKReadyToStartViewController *readyToVc = [OKReadyToStartViewController readyToStartViewController];
+                    readyToVc.words = result;
+                    readyToVc.isExport = YES;
+                    [weakself.OK_TopViewController.navigationController pushViewController:readyToVc animated:YES];
                 }
             }];
         }

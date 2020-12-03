@@ -8,6 +8,7 @@
 
 #import "OKReadyToStartViewController.h"
 #import "OKBackUpViewController.h"
+#import "OKDontScreenshotTipsViewController.h"
 
 @interface OKReadyToStartViewController ()
 @property (weak, nonatomic) IBOutlet UILabel *tips1Label;
@@ -43,16 +44,23 @@
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(backUpToHardwareClick)];
     [self.bottomBtnBgView addGestureRecognizer:tap];
     
-    if (_type == OKWalletTypeIndependent) {
+    if (self.isExport) {
         self.dontwanttocopyLabel.hidden = YES;
         self.bottomBtnBgView.hidden = YES;
         self.onekeyTipsLabel.hidden = YES;
-        self.tips3Label.hidden = NO;
-    }else{
-        self.dontwanttocopyLabel.hidden = NO;
-        self.bottomBtnBgView.hidden = NO;
-        self.onekeyTipsLabel.hidden = NO;
         self.tips3Label.hidden = YES;
+    }else{
+        if (_type == OKWalletTypeIndependent) {
+            self.dontwanttocopyLabel.hidden = YES;
+            self.bottomBtnBgView.hidden = YES;
+            self.onekeyTipsLabel.hidden = YES;
+            self.tips3Label.hidden = NO;
+        }else{
+            self.dontwanttocopyLabel.hidden = NO;
+            self.bottomBtnBgView.hidden = NO;
+            self.onekeyTipsLabel.hidden = NO;
+            self.tips3Label.hidden = YES;
+        }
     }
 }
 
@@ -62,10 +70,23 @@
 }
 
 - (IBAction)startBtnClick:(UIButton *)sender {
-    OKBackUpViewController *backUpVc = [OKBackUpViewController backUpViewController];
-    backUpVc.words = [self.words componentsSeparatedByString:@" "];
-    backUpVc.showType = WordsShowTypeRestore;
-    [self.navigationController pushViewController:backUpVc animated:YES];
+    OKWeakSelf(self)
+    if (self.isExport) {
+        OKDontScreenshotTipsViewController *dontScreenshotTipsVc = [OKDontScreenshotTipsViewController dontScreenshotTipsViewController:^{
+            OKBackUpViewController *backUpVc = [OKBackUpViewController backUpViewController];
+            backUpVc.words = [self.words componentsSeparatedByString:@" "];
+            backUpVc.showType = WordsShowTypeHDExport;
+            [weakself.OK_TopViewController.navigationController pushViewController:backUpVc animated:YES];
+        }];
+        dontScreenshotTipsVc.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+        [weakself.OK_TopViewController presentViewController:dontScreenshotTipsVc animated:NO completion:nil];
+    }else{
+        OKBackUpViewController *backUpVc = [OKBackUpViewController backUpViewController];
+        backUpVc.words = [self.words componentsSeparatedByString:@" "];
+        backUpVc.showType = WordsShowTypeRestore;
+        backUpVc.walletName = self.walletName;
+        [self.navigationController pushViewController:backUpVc animated:YES];
+    }
 }
 
 - (void)backUpToHardwareClick

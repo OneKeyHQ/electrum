@@ -203,7 +203,11 @@
     words = [createHD componentsSeparatedByString:@" "];
     if (words.count > 0) {
         if (!kWalletManager.isOpenAuthBiological) {
-            [OKStorageManager saveToUserDefaults:@"BTC-1" key:kCurrentWalletName];
+            NSString *defaultName = @"BTC-1";
+            [OKStorageManager saveToUserDefaults:defaultName key:kCurrentWalletName];
+            NSString *cuurentWalletAddress = [kWalletManager getCurrentWalletAddress:defaultName];
+            [OKStorageManager saveToUserDefaults:cuurentWalletAddress key:kCurrentWalletAddress];
+            [OKStorageManager saveToUserDefaults:@"btc-hd-standard" key:kCurrentWalletType];
             OKBiologicalViewController *biologicalVc = [OKBiologicalViewController biologicalViewController:@"OKWalletViewController" biologicalViewBlock:^{
                 //创建HD成功刷新首页的UI
                 [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":pwd,@"backupshow":@"1"}];
@@ -236,6 +240,7 @@
 - (IBAction)bottomBtnClick:(UIButton *)sender {
     OKSelectCoinTypeViewController *selectVc = [OKSelectCoinTypeViewController selectCoinTypeViewController];
     selectVc.addType = OKAddTypeCreateHDDerived;
+    selectVc.where = OKWhereToSelectTypeHDMag;
     [self.navigationController pushViewController:selectVc animated:YES];
 }
 

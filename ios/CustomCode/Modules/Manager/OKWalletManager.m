@@ -135,6 +135,10 @@ static dispatch_once_t once;
         return OKWalletTypeHardware;
     }else if([type isEqualToString:@"btc-hw-derived-m-n"]){
         return OKWalletTypeHardware;
+    }else if([type isEqualToString:@"btc-watch-standard"]){
+        return OKWalletTypeObserve;
+    }else if([type isEqualToString:@"btc-private-standard"]){
+        return OKWalletTypeIndependent;
     }else{
         return OKWalletTypeHD;
     }
@@ -179,6 +183,8 @@ static dispatch_once_t once;
         return @"硬件恢复的HD钱包";
     }else if([type isEqualToString:@"btc-hw-derived-m-n"]){
         return @"硬件派生";
+    }else if ([type isEqualToString:@"btc-watch-standard"]){
+        return @"";
     }else{
         return @"";
     }
@@ -254,4 +260,21 @@ static dispatch_once_t once;
     }
 }
 
+- (NSString *)getCurrentWalletAddress:(NSString *)wallletName
+{
+    NSArray *listDictArray =  [kPyCommandsManager callInterface:kInterfaceList_wallets parameter:@{}];
+    for (int i = 0;i < listDictArray.count; i++) {
+        NSDictionary *dict = listDictArray[i];
+        NSString *key = [dict.allKeys firstObject];
+        if ([key isEqualToString:wallletName]) {
+            NSDictionary *subDict = dict[key];
+            if (subDict != nil) {
+                return [subDict safeStringForKey:@"addr"];
+            }else{
+                return @"";
+            }
+        }
+    }
+    return @"";
+}
 @end

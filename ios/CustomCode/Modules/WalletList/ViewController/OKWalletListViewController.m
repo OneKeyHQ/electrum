@@ -271,13 +271,21 @@
     words = [createHD componentsSeparatedByString:@" "];
     if (words.count > 0) {
         if (!kWalletManager.isOpenAuthBiological) {
-            [OKStorageManager saveToUserDefaults:@"BTC-1" key:kCurrentWalletName];
+            NSString *defaultName = @"BTC-1";
+            [OKStorageManager saveToUserDefaults:defaultName key:kCurrentWalletName];
+            NSString *cuurentWalletAddress = [kWalletManager getCurrentWalletAddress:defaultName];
+            [OKStorageManager saveToUserDefaults:cuurentWalletAddress key:kCurrentWalletAddress];
+            [OKStorageManager saveToUserDefaults:@"btc-hd-standard" key:kCurrentWalletType];
             OKBiologicalViewController *biologicalVc = [OKBiologicalViewController biologicalViewController:@"OKWalletViewController" biologicalViewBlock:^{
                 [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":pwd,@"backupshow":@"1"}];
             }];
             [self.OK_TopViewController.navigationController pushViewController:biologicalVc animated:YES];
         }else{
-            [OKStorageManager saveToUserDefaults:@"BTC-1" key:kCurrentWalletName];
+            NSString *defaultName = @"BTC-1";
+            [OKStorageManager saveToUserDefaults:defaultName key:kCurrentWalletName];
+            NSString *cuurentWalletAddress = [kWalletManager getCurrentWalletAddress:defaultName];
+            [OKStorageManager saveToUserDefaults:cuurentWalletAddress key:kCurrentWalletAddress];
+            [OKStorageManager saveToUserDefaults:@"btc-hd-standard" key:kCurrentWalletType];
             [self.OK_TopViewController dismissToViewControllerWithClassName:@"OKWalletViewController" animated:YES complete:^{
                 [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":pwd,@"backupshow":@"1"}];
             }];
@@ -301,6 +309,7 @@
         }else if (type == BtnClickTypeImport){
             OKSelectCoinTypeViewController *selectVc = [OKSelectCoinTypeViewController selectCoinTypeViewController];
             selectVc.addType = OKAddTypeImport;
+            selectVc.where = OKWhereToSelectTypeWalletList;
             [weakself.navigationController pushViewController:selectVc animated:YES];
         }
     }];
@@ -418,6 +427,7 @@
 - (IBAction)addWalletClick:(UIButton *)sender {
     OKSelectCoinTypeViewController *selectVc = [OKSelectCoinTypeViewController selectCoinTypeViewController];
     selectVc.addType = OKAddTypeCreateHDDerived;
+    selectVc.where = OKWhereToSelectTypeWalletList;
     [self.navigationController pushViewController:selectVc animated:YES];
 }
 @end

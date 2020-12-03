@@ -210,11 +210,21 @@ static dispatch_once_t once;
         
         
     }else if([method isEqualToString:kInterfaceget_backup_info]){
-        result = PyObject_CallMethod(self.pyInstance, [kInterfaceget_backup_info UTF8String], "()");
+        NSString *name = [parameter safeStringForKey:@"name"];
+        if (name.length == 0 || name == nil) {
+            result = PyObject_CallMethod(self.pyInstance, [kInterfaceget_backup_info UTF8String], "()");
+        }else{
+            result = PyObject_CallMethod(self.pyInstance, [kInterfaceget_backup_info UTF8String], "(s)",[name UTF8String]);
+        }
         
 
     }else if([method isEqualToString:kInterfacedelete_backup_info]){
-        result = PyObject_CallMethod(self.pyInstance, [kInterfacedelete_backup_info UTF8String], "()");
+        NSString *name = [parameter safeStringForKey:@"name"];
+        if (name == nil || name.length == 0) {
+            result = PyObject_CallMethod(self.pyInstance, [kInterfacedelete_backup_info UTF8String], "()");
+        }else{
+            result = PyObject_CallMethod(self.pyInstance, [kInterfacedelete_backup_info UTF8String], "(s)",[name UTF8String]);
+        }
         
         
     }else if([method isEqualToString:kInterfaceexport_seed]){

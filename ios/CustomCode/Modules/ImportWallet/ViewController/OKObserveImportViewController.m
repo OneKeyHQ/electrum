@@ -48,12 +48,23 @@
     OKSetWalletNameViewController *setNameVc = [OKSetWalletNameViewController setWalletNameViewController];
     setNameVc.addType = self.importType;
     setNameVc.address = self.textView.text;
+    setNameVc.where = OKWhereToSelectTypeWalletList;
     [self.navigationController pushViewController:setNameVc animated:YES];
 }
 #pragma mark - 扫描
 - (void)scanBtnClick
 {
-    NSLog(@"scanBtnClick");
+    OKWeakSelf(self)
+    OKWalletScanVC *vc = [OKWalletScanVC initViewControllerWithStoryboardName:@"Scan"];
+    vc.scanningType = ScanningTypeAddress;
+    vc.scanningCompleteBlock = ^(NSString* result) {
+        if (result && result.length > 0) {
+            weakself.textView.text = result;
+            weakself.textPlacehoderLabel.hidden = YES;
+            [weakself textChange];
+        }
+    };
+    [vc authorizePushOn:self];;
 }
 #pragma mark - TextView
 - (void)textViewDidChange:(UITextView *)textView

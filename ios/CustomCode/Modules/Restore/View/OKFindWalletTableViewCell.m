@@ -34,7 +34,7 @@
     self.iconImageView.image = [UIImage imageNamed:iconName];
     self.checkBtn.selected = model.isSelected;
     self.walletNameLabel.text = model.name;
-    self.balanceLabel.text = model.balance;
+    self.balanceLabel.text = model.blance;
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {

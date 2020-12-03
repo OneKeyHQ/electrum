@@ -53,13 +53,24 @@
     OKSetWalletNameViewController *setNameVc = [OKSetWalletNameViewController setWalletNameViewController];
     setNameVc.addType = self.importType;
     setNameVc.privkeys = self.textView.text;
+    setNameVc.where = OKWhereToSelectTypeWalletList;
     [self.navigationController pushViewController:setNameVc animated:YES];
 }
 
 #pragma mark - 扫描二维码
 - (void)scanBtnClick
 {
-    NSLog(@"");
+    OKWeakSelf(self)
+    OKWalletScanVC *vc = [OKWalletScanVC initViewControllerWithStoryboardName:@"Scan"];
+    vc.scanningType = ScanningTypeAddress;
+    vc.scanningCompleteBlock = ^(NSString* result) {
+        if (result && result.length > 0) {
+            weakself.textView.text = result;
+            weakself.textPlacehoderLabel.hidden = YES;
+            [weakself textChange];
+        }
+    };
+    [vc authorizePushOn:self];
 }
 
 
@@ -72,8 +83,7 @@
 - (void)textChange{
     if (self.textView.text.length > 10) {
         [self.importBtn status:OKButtonStatusEnabled];
-    }
-    else{
+    }else{
         [self.importBtn status:OKButtonStatusDisabled];
     }
 }

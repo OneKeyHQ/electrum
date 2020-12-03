@@ -382,16 +382,17 @@
                                             <rect key="frame" x="20" y="10" width="374" height="70"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wbn-Md-JSp">
-                                                    <rect key="frame" x="19.999999999999996" y="8" width="47.666666666666657" height="32"/>
+                                                    <rect key="frame" x="20.000000000000004" y="8" width="47.333333333333343" height="32"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="32" id="HNb-ER-gwv"/>
+                                                        <constraint firstAttribute="width" relation="lessThanOrEqual" constant="160" id="Hpj-8R-YDy"/>
                                                     </constraints>
                                                     <fontDescription key="fontDescription" type="system" weight="medium" pointSize="19"/>
                                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="U6L-q2-CGP">
-                                                    <rect key="frame" x="72.666666666666671" y="14" width="56.000000000000014" height="20"/>
+                                                    <rect key="frame" x="72.333333333333329" y="14" width="55.999999999999986" height="20"/>
                                                     <subviews>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="f6Y-Aq-o9x">
                                                             <rect key="frame" x="7" y="0.0" width="42" height="20"/>
@@ -1630,6 +1631,98 @@
             </objects>
             <point key="canvasLocation" x="4474" y="11"/>
         </scene>
+        <!--Delete Back Up Tips Controller-->
+        <scene sceneID="17w-fP-qRF">
+            <objects>
+                <viewController storyboardIdentifier="OKDeleteBackUpTipsController" id="j2o-6G-cfm" customClass="OKDeleteBackUpTipsController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="1Am-n7-OpS"/>
+                        <viewControllerLayoutGuide type="bottom" id="ixk-d9-l43"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="2nW-91-muk">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="c0S-Ue-cC8">
+                                <rect key="frame" x="10" y="635.33333333333337" width="394" height="230.66666666666663"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="删除钱包前请先备份" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="KeM-sx-u2h">
+                                        <rect key="frame" x="50" y="30" width="294" height="25"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="25" id="EcY-FH-Z0i"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="18"/>
+                                        <color key="textColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NtA-dU-cXc">
+                                        <rect key="frame" x="25" y="140.66666666666663" width="344" height="60"/>
+                                        <color key="backgroundColor" red="0.0010134851330000001" green="0.7278487682" blue="0.070087678730000005" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="60" id="JhO-Lm-Gbw"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="16"/>
+                                        <state key="normal" title="返回">
+                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="iKnowBtnClick:" destination="j2o-6G-cfm" eventType="touchUpInside" id="SXo-h2-fol"/>
+                                        </connections>
+                                    </button>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="此操作将会删除该钱包的所有数据。为了避免您的财产损失，请先完成钱包的备份。" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VOe-hd-DId">
+                                        <rect key="frame" x="20" y="75" width="354" height="33.666666666666657"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <color key="textColor" red="0.078431372550000003" green="0.1647058824" blue="0.23137254900000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <button hidden="YES" opaque="NO" contentMode="center" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="amd-dI-DUA">
+                                        <rect key="frame" x="341" y="10" width="40" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="40" id="k7k-au-5Sq"/>
+                                            <constraint firstAttribute="width" constant="40" id="rIg-5L-MsQ"/>
+                                        </constraints>
+                                        <state key="normal" image="close"/>
+                                        <connections>
+                                            <action selector="closeBtnClick:" destination="j2o-6G-cfm" eventType="touchUpInside" id="guR-hM-Qga"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="amd-dI-DUA" secondAttribute="trailing" constant="13" id="Aey-Aa-uQp"/>
+                                    <constraint firstAttribute="trailing" secondItem="VOe-hd-DId" secondAttribute="trailing" constant="20" id="AwV-ip-JUz"/>
+                                    <constraint firstItem="KeM-sx-u2h" firstAttribute="top" secondItem="c0S-Ue-cC8" secondAttribute="top" constant="30" id="EFp-c1-wTE"/>
+                                    <constraint firstItem="VOe-hd-DId" firstAttribute="leading" secondItem="c0S-Ue-cC8" secondAttribute="leading" constant="20" id="Ggp-y6-PUb"/>
+                                    <constraint firstItem="VOe-hd-DId" firstAttribute="top" secondItem="KeM-sx-u2h" secondAttribute="bottom" constant="20" id="M2Y-Qm-RA1"/>
+                                    <constraint firstItem="NtA-dU-cXc" firstAttribute="top" secondItem="VOe-hd-DId" secondAttribute="bottom" constant="32" id="OdX-VO-HaL"/>
+                                    <constraint firstItem="KeM-sx-u2h" firstAttribute="centerX" secondItem="c0S-Ue-cC8" secondAttribute="centerX" id="T57-Cy-3fw"/>
+                                    <constraint firstItem="KeM-sx-u2h" firstAttribute="top" secondItem="amd-dI-DUA" secondAttribute="bottom" constant="-20" id="XAZ-h9-RXJ"/>
+                                    <constraint firstItem="NtA-dU-cXc" firstAttribute="leading" secondItem="c0S-Ue-cC8" secondAttribute="leading" constant="25" id="a6P-bs-xgt"/>
+                                    <constraint firstAttribute="trailing" secondItem="NtA-dU-cXc" secondAttribute="trailing" constant="25" id="fng-1D-LU4"/>
+                                    <constraint firstAttribute="trailing" secondItem="KeM-sx-u2h" secondAttribute="trailing" priority="750" constant="50" id="jCY-kW-Be8"/>
+                                    <constraint firstAttribute="bottom" secondItem="NtA-dU-cXc" secondAttribute="bottom" constant="30" id="toB-Ub-CFZ"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="kv0-hf-bME"/>
+                        <color key="backgroundColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="0.1953392551" colorSpace="custom" customColorSpace="displayP3"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="c0S-Ue-cC8" secondAttribute="trailing" constant="10" id="0PL-bx-f0U"/>
+                            <constraint firstItem="c0S-Ue-cC8" firstAttribute="leading" secondItem="2nW-91-muk" secondAttribute="leading" constant="10" id="Q4q-UV-UzR"/>
+                            <constraint firstAttribute="bottom" secondItem="c0S-Ue-cC8" secondAttribute="bottom" constant="30" id="vEH-pI-fU0"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="contentView" destination="c0S-Ue-cC8" id="nso-Dq-M8W"/>
+                        <outlet property="detailLabel" destination="VOe-hd-DId" id="f4P-j2-NXG"/>
+                        <outlet property="iKnowBtn" destination="NtA-dU-cXc" id="Hjj-q2-aaf"/>
+                        <outlet property="titleLabel" destination="KeM-sx-u2h" id="6ld-ME-AdO"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ILw-Tw-nVm" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="4474" y="669"/>
+        </scene>
     </scenes>
     <resources>
         <image name="The_camera" width="36" height="31.666666030883789"/>
@@ -1638,7 +1731,7 @@
         <image name="close" width="24" height="24"/>
         <image name="copy_white" width="16" height="16"/>
         <image name="iconwriteselect" width="16.666666030883789" height="12.333333015441895"/>
-        <image name="info" width="16" height="16"/>
+        <image name="info" width="24" height="24"/>
         <image name="isselected" width="16" height="16"/>
         <image name="logo" width="38" height="73.333335876464844"/>
         <image name="logo_text" width="87.333335876464844" height="27.333333969116211"/>

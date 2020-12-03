@@ -8,6 +8,7 @@
 
 #import "OKSetWalletNameViewController.h"
 #import "OKPwdViewController.h"
+#import "OKHDWalletViewController.h"
 
 
 @interface OKSetWalletNameViewController ()
@@ -58,9 +59,21 @@
         NSString *result =  [kPyCommandsManager callInterface:kInterfaceImport_Address parameter:@{@"name":self.walletNameTextfield.text,@"address":self.address}];
         if (result != nil) {
             [kTools tipMessage:MyLocalizedString(@"Import success", nil)];
+            NSString *cuurentWalletAddress = [kWalletManager getCurrentWalletAddress:self.walletNameTextfield.text];
+            [OKStorageManager saveToUserDefaults:cuurentWalletAddress key:kCurrentWalletAddress];
+            
+            [OKStorageManager saveToUserDefaults:self.walletNameTextfield.text key:kCurrentWalletName];
+            [OKStorageManager saveToUserDefaults:@"btc-waltch-standard" key:kCurrentWalletType];
+            
+            [[NSNotificationCenter defaultCenter]postNotificationName:kNotiRefreshWalletList object:nil];
+            [[NSNotificationCenter defaultCenter]postNotification:[NSNotification notificationWithName:kNotiRefreshWalletList object:nil]];
+            [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:nil];
+
+            [weakself.OK_TopViewController dismissToViewControllerWithClassName:@"OKSetWalletNameViewController" animated:NO complete:^{
+                
+            }];
+            [weakself.navigationController popToRootViewControllerAnimated:YES];
         }
-        [[NSNotificationCenter defaultCenter]postNotification:[NSNotification notificationWithName:kNotiRefreshWalletList object:nil]];
-        [self.navigationController popToRootViewControllerAnimated:YES];
         return;
     }
     if ([kWalletManager checkIsHavePwd]) {
@@ -100,29 +113,79 @@
             result =  [kPyCommandsManager callInterface:kInterfaceImport_Seed parameter:@{@"name":self.walletNameTextfield.text,@"password":pwd,@"seed":self.seed}];
         }
             break;
-            
         default:
             break;
     }
     if (result != nil) {
-        [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:nil];
-        [[NSNotificationCenter defaultCenter]postNotificationName:kNotiRefreshWalletList object:nil];
-        switch (weakself.addType) {
-            case OKAddTypeCreateHDDerived:
-            case OKAddTypeCreateSolo:
-                [kTools tipMessage:MyLocalizedString(@"Creating successful", nil)];
-                break;
-            case OKAddTypeImportPrivkeys:
-            case OKAddTypeImportSeed:
-                [kTools tipMessage:MyLocalizedString(@"Import success", nil)];
-                break;
-            default:
-                break;
-        }
-        [weakself.OK_TopViewController dismissToViewControllerWithClassName:@"OKSetWalletNameViewController" animated:NO complete:^{
+        if (weakself.addType == OKAddTypeCreateSolo) {
+            [kTools tipMessage:MyLocalizedString(@"Creating successful", nil)];
+            [OKStorageManager saveToUserDefaults:self.walletNameTextfield.text key:kCurrentWalletName];
+            [OKStorageManager saveToUserDefaults:@"btc-standard" key:kCurrentWalletType];
+            NSString *cuurentWalletAddress = [kWalletManager getCurrentWalletAddress:self.walletNameTextfield.text];
+            [OKStorageManager saveToUserDefaults:cuurentWalletAddress key:kCurrentWalletAddress];
+            [[NSNotificationCenter defaultCenter]postNotificationName:kNotiRefreshWalletList object:nil];
+            [weakself.OK_TopViewController dismissToViewControllerWithClassName:@"OKSetWalletNameViewController" animated:NO complete:^{
+                [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":pwd,@"backupshow":@"1"}];
+            }];
+            [weakself.navigationController popToRootViewControllerAnimated:YES];
+        }else{
+            [OKStorageManager saveToUserDefaults:self.walletNameTextfield.text key:kCurrentWalletName];
+            NSString *cuurentWalletAddress = [kWalletManager getCurrentWalletAddress:self.walletNameTextfield.text];
+            [OKStorageManager saveToUserDefaults:cuurentWalletAddress key:kCurrentWalletAddress];
+            switch (weakself.addType) {
+                case OKAddTypeCreateHDDerived:
+                {
+                    [kTools tipMessage:MyLocalizedString(@"Creating successful", nil)];
+                    [OKStorageManager saveToUserDefaults:@"btc-derived-standard" key:kCurrentWalletType];
+                }
+                    break;
+                case OKAddTypeCreateSolo:
+                {
+                    [kTools tipMessage:MyLocalizedString(@"Creating successful", nil)];
+                    [OKStorageManager saveToUserDefaults:@"btc-standard" key:kCurrentWalletType];
+                }
+                    break;
+                case OKAddTypeImportPrivkeys:
+                {
+                    [kTools tipMessage:MyLocalizedString(@"Import success", nil)];
+                    [OKStorageManager saveToUserDefaults:@"btc-private-standard" key:kCurrentWalletType];
+                }
+                    break;
+                case OKAddTypeImportSeed:
+                {
+                    [kTools tipMessage:MyLocalizedString(@"Import success", nil)];
+                    [OKStorageManager saveToUserDefaults:@"btc-standard" key:kCurrentWalletType];
+                }
+                    break;
+                case OKAddTypeImportAddresses:
+                {
+                    [kTools tipMessage:MyLocalizedString(@"Import success", nil)];
+                    [OKStorageManager saveToUserDefaults:@"btc-watch-standard" key:kCurrentWalletType];
+                }
+                    break;
+                default:
+                    break;
+            }
+            [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:nil];
+            [[NSNotificationCenter defaultCenter]postNotificationName:kNotiRefreshWalletList object:nil];
             
-        }];
-        [weakself.navigationController popToRootViewControllerAnimated:YES];
+            if (self.where == OKWhereToSelectTypeHDMag) {
+                [weakself.OK_TopViewController dismissToViewControllerWithClassName:@"OKSetWalletNameViewController" animated:NO complete:^{
+                    for (int i = 0; i < weakself.OK_TopViewController.navigationController.viewControllers.count; i++) {
+                        UIViewController *vc = weakself.OK_TopViewController.navigationController.viewControllers[i];
+                        if ([vc isKindOfClass:[OKHDWalletViewController class]]) {
+                            [weakself.OK_TopViewController.navigationController popToViewController:vc animated:YES];
+                        }
+                    }
+                }];
+            }else{
+                [weakself.OK_TopViewController dismissToViewControllerWithClassName:@"OKWalletViewController" animated:NO complete:^{
+                    
+                }];
+            }
+        }
     }
 }
+
+
 @end

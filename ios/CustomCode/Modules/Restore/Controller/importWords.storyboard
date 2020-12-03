@@ -546,12 +546,6 @@
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZPH-Yd-KCW">
                                         <rect key="frame" x="0.0" y="0.0" width="414" height="773"/>
                                         <subviews>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="助记词用来在其他 App 或钱包中恢复资产，将它们按照正确的顺序抄写，并放置在只有您知道的安全地方。" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="q11-f1-cG2">
-                                                <rect key="frame" x="43" y="120" width="328" height="50.5"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                <color key="textColor" red="0.078431372549019607" green="0.16470588235294117" blue="0.23137254901960785" alpha="1" colorSpace="calibratedRGB"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
                                             <view userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ee1-BG-ydR" customClass="OKWordImportView">
                                                 <rect key="frame" x="25" y="197.5" width="364" height="390"/>
                                                 <subviews>
@@ -651,34 +645,42 @@
                                                 <color key="textColor" red="0.3294117647" green="0.38823529410000002" blue="0.43921568630000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="这是您的恢复助记词" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hqD-jf-Itj">
-                                                <rect key="frame" x="43" y="64" width="328" height="36"/>
-                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="30"/>
-                                                <color key="textColor" red="0.078431372549019607" green="0.16470588235294117" blue="0.23137254901960785" alpha="1" colorSpace="calibratedRGB"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
+                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="fwe-2F-Drj">
+                                                <rect key="frame" x="43" y="64" width="328" height="106.5"/>
+                                                <subviews>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="这是您的恢复助记词" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hqD-jf-Itj">
+                                                        <rect key="frame" x="0.0" y="0.0" width="328" height="36"/>
+                                                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="30"/>
+                                                        <color key="textColor" red="0.078431372549019607" green="0.16470588235294117" blue="0.23137254901960785" alpha="1" colorSpace="calibratedRGB"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="助记词用来在其他 App 或钱包中恢复资产，将它们按照正确的顺序抄写，并放置在只有您知道的安全地方。" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="q11-f1-cG2">
+                                                        <rect key="frame" x="0.0" y="56" width="328" height="50.5"/>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                        <color key="textColor" red="0.078431372549019607" green="0.16470588235294117" blue="0.23137254901960785" alpha="1" colorSpace="calibratedRGB"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                </subviews>
+                                            </stackView>
                                         </subviews>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <constraints>
                                             <constraint firstItem="Ee1-BG-ydR" firstAttribute="leading" secondItem="ZPH-Yd-KCW" secondAttribute="leading" constant="25" id="10C-zT-3nE"/>
-                                            <constraint firstItem="hqD-jf-Itj" firstAttribute="leading" secondItem="ZPH-Yd-KCW" secondAttribute="leading" constant="43" id="2b1-j8-4fz"/>
                                             <constraint firstItem="Y8k-fq-A7F" firstAttribute="leading" secondItem="vr2-jD-9Xz" secondAttribute="trailing" constant="6" id="6P8-Sk-5SW"/>
                                             <constraint firstItem="K0g-N6-8wh" firstAttribute="leading" secondItem="ZPH-Yd-KCW" secondAttribute="leading" constant="43" id="AFe-6n-OAH"/>
-                                            <constraint firstAttribute="trailing" secondItem="q11-f1-cG2" secondAttribute="trailing" constant="43" id="Aky-2c-Mnz"/>
                                             <constraint firstItem="Y8k-fq-A7F" firstAttribute="bottom" secondItem="vr2-jD-9Xz" secondAttribute="bottom" id="DWR-Bd-MaR"/>
                                             <constraint firstAttribute="trailing" secondItem="Ee1-BG-ydR" secondAttribute="trailing" constant="25" id="ELg-kn-fqD"/>
-                                            <constraint firstItem="q11-f1-cG2" firstAttribute="top" secondItem="hqD-jf-Itj" secondAttribute="bottom" constant="20" id="GIj-I8-OqG"/>
                                             <constraint firstItem="K0g-N6-8wh" firstAttribute="top" secondItem="vr2-jD-9Xz" secondAttribute="bottom" constant="25" id="KSh-gR-ZlM"/>
                                             <constraint firstAttribute="trailing" secondItem="K0g-N6-8wh" secondAttribute="trailing" constant="43" id="OaE-yA-x1F"/>
-                                            <constraint firstItem="hqD-jf-Itj" firstAttribute="top" secondItem="ZPH-Yd-KCW" secondAttribute="top" constant="64" id="QkX-DJ-VXy"/>
+                                            <constraint firstItem="fwe-2F-Drj" firstAttribute="top" secondItem="ZPH-Yd-KCW" secondAttribute="top" constant="64" id="Qgc-Zs-Wze"/>
+                                            <constraint firstItem="fwe-2F-Drj" firstAttribute="leading" secondItem="ZPH-Yd-KCW" secondAttribute="leading" constant="43" id="S0F-tS-JFi"/>
                                             <constraint firstItem="Y8k-fq-A7F" firstAttribute="top" secondItem="Ee1-BG-ydR" secondAttribute="bottom" constant="20" id="bw4-uQ-pxP"/>
                                             <constraint firstItem="vr2-jD-9Xz" firstAttribute="leading" secondItem="ZPH-Yd-KCW" secondAttribute="leading" constant="34" id="dk2-29-Dgz"/>
-                                            <constraint firstItem="q11-f1-cG2" firstAttribute="leading" secondItem="ZPH-Yd-KCW" secondAttribute="leading" constant="43" id="eAI-uO-7Y4"/>
-                                            <constraint firstItem="Ee1-BG-ydR" firstAttribute="top" secondItem="q11-f1-cG2" secondAttribute="bottom" constant="27" id="l6f-Wt-y2l"/>
+                                            <constraint firstAttribute="trailing" secondItem="fwe-2F-Drj" secondAttribute="trailing" constant="43" id="k93-Vp-xwj"/>
+                                            <constraint firstItem="Ee1-BG-ydR" firstAttribute="top" secondItem="fwe-2F-Drj" secondAttribute="bottom" constant="27" id="mRK-Ic-pK8"/>
                                             <constraint firstAttribute="trailing" secondItem="Y8k-fq-A7F" secondAttribute="trailing" constant="43" id="nG6-rG-lDV"/>
                                             <constraint firstAttribute="bottom" secondItem="K0g-N6-8wh" secondAttribute="bottom" constant="30" id="slx-SQ-u9S"/>
                                             <constraint firstItem="Y8k-fq-A7F" firstAttribute="top" secondItem="vr2-jD-9Xz" secondAttribute="top" id="t2c-ZI-Usd"/>
-                                            <constraint firstAttribute="trailing" secondItem="hqD-jf-Itj" secondAttribute="trailing" constant="43" id="wYl-1f-bA0"/>
                                         </constraints>
                                     </view>
                                 </subviews>

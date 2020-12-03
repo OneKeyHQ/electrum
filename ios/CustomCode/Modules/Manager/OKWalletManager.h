@@ -63,6 +63,7 @@ typedef enum {
 }OKWalletType;
 
 
+
 //创建和导入的钱包类型
 typedef enum {
     OKAddTypeCreateHDDerived,
@@ -74,6 +75,13 @@ typedef enum {
     OKAddTypeImportXpub,
     OKAddTypeImport
 }OKAddType;
+
+//创建钱包跳转类型
+typedef enum {
+    OKWhereToSelectTypeWalletList,
+    OKWhereToSelectTypeHDMag
+}OKWhereToSelectType;
+
 
 
 @interface OKWalletManager : NSObject
@@ -102,6 +110,7 @@ typedef enum {
 - (NSString *)getFeeBaseWithSat:(NSString *)sat;
 - (BOOL)checkWalletName:(NSString *)name;
 - (BOOL)checkIsHavePwd;
+- (NSString *)getCurrentWalletAddress:(NSString *)wallletName;
 @end
 
 NS_ASSUME_NONNULL_END

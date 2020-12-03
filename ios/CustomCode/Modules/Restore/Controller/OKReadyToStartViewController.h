@@ -15,6 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,copy)NSString *pwd;
 @property (nonatomic,assign)OKWalletType type;
 @property (nonatomic,copy)NSString *words;
+@property (nonatomic,assign)BOOL isExport;
+@property (nonatomic,copy)NSString *walletName;
 @end
 
 NS_ASSUME_NONNULL_END

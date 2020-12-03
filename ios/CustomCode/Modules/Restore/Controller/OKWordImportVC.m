@@ -109,7 +109,11 @@
             dispatch_sync(dispatch_get_main_queue(), ^{
                 if (restoreHD.count == 0) {
                     [kPyCommandsManager callInterface:kInterfacerecovery_confirmed parameter:@{@"name_list":@[]}];
-                    [OKStorageManager saveToUserDefaults:@"BTC-1" key:kCurrentWalletName];
+                    NSString *defaultName = @"BTC-1";
+                    [OKStorageManager saveToUserDefaults:defaultName key:kCurrentWalletName];
+                    NSString *cuurentWalletAddress = [kWalletManager getCurrentWalletAddress:defaultName];
+                    [OKStorageManager saveToUserDefaults:cuurentWalletAddress key:kCurrentWalletAddress];
+                    [OKStorageManager saveToUserDefaults:@"btc-hd-standard" key:kCurrentWalletType];
                     OKBiologicalViewController *biologicalVc = [OKBiologicalViewController biologicalViewController:@"OKWalletViewController" biologicalViewBlock:^{
                         //创建HD成功刷新首页的UI
                         [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":pwd,@"backupshow":@"1"}];;
