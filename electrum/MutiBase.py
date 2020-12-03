@@ -207,17 +207,12 @@ class MutiBase(Logger):
 
         self.pw_args = path, password, encrypt_storage, storage_enc_version
 
-        print("self.path=%s path=%s=====__-----------" %(self.path, path))
-        if self.path != path:
-            raise Exception("create_storage path is wrong!!!")
-        if os.path.exists(self.path):
-            raise Exception('file already exists at path')
         if len(self.keystores) == 0:
             raise Exception('keystores is empty')
         if not self.pw_args:
             raise Exception("args wrong")
 
-        storage = WalletStorage(self.path)
+        storage = WalletStorage(path)
         if encrypt_storage:
             storage.set_password(password, enc_version=storage_enc_version)
         db = WalletDB('', manual_upgrades=False)

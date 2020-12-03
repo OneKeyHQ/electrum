@@ -283,8 +283,16 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
         self._coin_price_cache = {}
         # lightning
         ln_xprv = self.db.get('lightning_privkey2')
+        self.name = self.db.get("name")
         self.lnworker = LNWallet(self, ln_xprv) if ln_xprv else None
         self.lnbackups = LNBackups(self)
+
+    def set_name(self, name):
+        self.name = name
+        self.db.put("name", self.name)
+
+    def get_name(self):
+        return self.name if self.name != "" else '%s...%s' % (self.get_addresses()[0][0:6], self.get_addresses()[0][-6:])
 
     def save_db(self):
         if self.storage and not self.hide_type:

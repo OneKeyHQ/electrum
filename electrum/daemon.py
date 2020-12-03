@@ -507,6 +507,10 @@ class Daemon(Logger):
             return True
         return False
 
+    def pop_wallet(self, path):
+        path = standardize_path(path)
+        wallet = self._wallets.pop(path, None)
+
     def stop_wallet(self, path: str) -> bool:
         """Returns True iff a wallet was found."""
         path = standardize_path(path)

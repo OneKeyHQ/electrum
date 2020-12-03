@@ -97,6 +97,7 @@ class Abstract_Eth_Wallet(ABC):
         self.config = config
         assert self.config is not None, "config must not be None"
         self.db = db
+        self.name = None
         self.hide_type=False
         self.storage = storage
         self.storage_pw = None
@@ -118,9 +119,17 @@ class Abstract_Eth_Wallet(ABC):
         # save wallet type the first time
         if self.db.get('wallet_type') is None:
             self.db.put('wallet_type', self.wallet_type)
+        self.name = self.db.get("name")
         self.contacts = dict()
         self._coin_price_cache = {}
 
+    def set_name(self, name):
+        self.name = name
+        self.db.put("name", self.name)
+
+    def get_name(self):
+        return self.name if self.name != "" else '%s...%s' % (
+        self.get_addresses()[0][0:6], self.get_addresses()[0][-6:])
 
     def save_db(self):
         if self.storage and not self.hide_type:

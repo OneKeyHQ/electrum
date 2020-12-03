@@ -61,6 +61,7 @@ class WalletStorage(Logger):
         self._file_exists = bool(self.path and os.path.exists(self.path))
         self.logger.info(f"wallet path {self.path}")
         self.pubkey = None
+        self.name = ""
         self.decrypted = ''
         self.lock = threading.RLock()
         self._test_read_write_permissions(self.path)
