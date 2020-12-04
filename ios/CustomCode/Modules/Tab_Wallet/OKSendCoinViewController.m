@@ -204,24 +204,40 @@ typedef enum {
 {
     if (_custom) {
         self.customTitleLabel.text = MyLocalizedString(@"The custom", nil);
-        self.customCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",[self.customFeeDict safeStringForKey:@"fee"],kWalletManager.currentBitcoinUnit];
-        self.customTimeLabel.text = [NSString stringWithFormat:@"约%@分钟",[self.customFeeDict safeStringForKey:@"time"]];
+        NSString *fee = [self.customFeeDict safeStringForKey:@"fee"];
+        if (fee == nil) {
+            fee = @"0";
+        }
+        self.customCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",fee,kWalletManager.currentBitcoinUnit];
+        self.customTimeLabel.text = [NSString stringWithFormat:@"约%@分钟",[self.customFeeDict safeStringForKey:@"time"]==nil?@"--":[self.customFeeDict safeStringForKey:@"time"]];
         self.customMoneyAmountLabel.text = self.fiatCustom;
     }else{
         self.slowTitleLabel.text = MyLocalizedString(@"slow", nil);
-        self.slowCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",[self.lowFeeDict safeStringForKey:@"fee"],kWalletManager.currentBitcoinUnit];
-        self.slowTimeLabel.text = [NSString stringWithFormat:@"约%@分钟",[self.lowFeeDict safeStringForKey:@"time"]];
+        NSString *feeslow = [self.lowFeeDict safeStringForKey:@"fee"];
+        if (feeslow == nil) {
+            feeslow = @"-";
+        }
+        self.slowCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",feeslow,kWalletManager.currentBitcoinUnit];
+        self.slowTimeLabel.text = [NSString stringWithFormat:@"约%@分钟",[self.lowFeeDict safeStringForKey:@"time"]==nil?@"--":[self.lowFeeDict safeStringForKey:@"time"]];
         self.slowMoneyAmountLabel.text = self.fiatLow;
         
         
         self.recommendTitleLabel.text = MyLocalizedString(@"recommended", nil);
-        self.recommendCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",[self.recommendFeeDict safeStringForKey:@"fee"],kWalletManager.currentBitcoinUnit];
-        self.recommendTimeLabel.text = [NSString stringWithFormat:@"约%@分钟",[self.recommendFeeDict safeStringForKey:@"time"]];
+        NSString *feerecommend = [self.recommendFeeDict safeStringForKey:@"fee"];
+        if (feerecommend == nil) {
+            feerecommend = @"-";
+        }
+        self.recommendCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",feerecommend,kWalletManager.currentBitcoinUnit];
+        self.recommendTimeLabel.text = [NSString stringWithFormat:@"约%@分钟",[self.recommendFeeDict safeStringForKey:@"time"]==nil?@"--":[self.recommendFeeDict safeStringForKey:@"time"]];
         self.recommendMoneyAmountLabel.text = self.fiatRecommend;
         
         self.fastTitleLabel.text = MyLocalizedString(@"fast", nil);
-        self.fastCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",[self.fastFeeDict safeStringForKey:@"fee"],kWalletManager.currentBitcoinUnit];
-        self.fastTimeLabel.text = [NSString stringWithFormat:@"约%@分钟",[self.fastFeeDict safeStringForKey:@"time"]];
+        NSString *feefast = [self.fastFeeDict safeStringForKey:@"fee"];
+        if (feefast == nil) {
+            feefast = @"-";
+        }
+        self.fastCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",feefast,kWalletManager.currentBitcoinUnit];
+        self.fastTimeLabel.text = [NSString stringWithFormat:@"约%@分钟",[self.fastFeeDict safeStringForKey:@"time"] == nil ? @"--":[self.fastFeeDict safeStringForKey:@"time"]];
         self.fastMoneyAmountLabel.text = self.fiatFast;
     }
     [self changUIForCustom];
@@ -235,8 +251,6 @@ typedef enum {
     self.recommendedBg.hidden = _custom;
     self.restoreDefaultBgView.hidden = !_custom;
 }
-
-
 
 - (IBAction)addressbookBtnClick:(UIButton *)sender {
     

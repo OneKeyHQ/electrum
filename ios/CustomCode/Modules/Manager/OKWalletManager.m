@@ -146,6 +146,10 @@ static dispatch_once_t once;
 
 - (NSString *)getFeeBaseWithSat:(NSString *)sat
 {
+    if (sat.length == 0 || sat == nil) {
+        return @"";
+    }
+    
     NSString *cuUnit = kWalletManager.currentBitcoinUnit;
     NSDecimalNumber *num = [NSDecimalNumber decimalNumberWithString:sat];
     if ([cuUnit isEqualToString:@"sat"]) {
@@ -180,11 +184,11 @@ static dispatch_once_t once;
     }else if ([type isEqualToString:@"btc-hw-m-n"]){
         return @"";
     }else if ([type isEqualToString:@"btc-hd-hw-1-1"]){
-        return @"硬件恢复的HD钱包";
+        return MyLocalizedString(@"Hardware recovery for HD Wallet", nil);
     }else if([type isEqualToString:@"btc-hw-derived-m-n"]){
-        return @"硬件派生";
+        return MyLocalizedString(@"Hardware derived", nil);
     }else if ([type isEqualToString:@"btc-watch-standard"]){
-        return @"";
+        return MyLocalizedString(@"To observe the", nil);
     }else{
         return @"";
     }
@@ -253,7 +257,18 @@ static dispatch_once_t once;
 - (BOOL)checkIsHavePwd
 {
     NSArray *listDictArray =  [kPyCommandsManager callInterface:kInterfaceList_wallets parameter:@{}];
-    if (listDictArray.count == 0) {
+    NSInteger count = 0;
+    for (int i = 0;i < listDictArray.count; i++) {
+        NSDictionary *dict = listDictArray[i];
+        NSString *key = [dict.allKeys firstObject];
+        NSDictionary *subDict = dict[key];
+        NSString *type = [subDict safeStringForKey:@"type"];
+        if ([type containsString:@"watch"]) {
+            continue;
+        }
+        count ++;
+    }
+    if (count == 0) {
         return NO;
     }else{
         return YES;

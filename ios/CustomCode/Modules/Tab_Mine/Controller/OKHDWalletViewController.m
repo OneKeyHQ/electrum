@@ -209,14 +209,12 @@
             [OKStorageManager saveToUserDefaults:cuurentWalletAddress key:kCurrentWalletAddress];
             [OKStorageManager saveToUserDefaults:@"btc-hd-standard" key:kCurrentWalletType];
             OKBiologicalViewController *biologicalVc = [OKBiologicalViewController biologicalViewController:@"OKWalletViewController" biologicalViewBlock:^{
-                //创建HD成功刷新首页的UI
                 [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":pwd,@"backupshow":@"1"}];
             }];
             [self.OK_TopViewController.navigationController pushViewController:biologicalVc animated:YES];
         }else{
             [OKStorageManager saveToUserDefaults:@"BTC-1" key:kCurrentWalletName];
             [self.OK_TopViewController dismissToViewControllerWithClassName:@"OKHDWalletViewController" animated:YES complete:^{
-                //创建HD成功刷新首页的UI
                 [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":pwd,@"backupshow":@"1"}];
             }];
         }

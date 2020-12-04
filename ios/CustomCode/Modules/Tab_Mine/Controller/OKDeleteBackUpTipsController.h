@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
-typedef void(^DeleteBackUpTipBlock)();
+typedef void(^DeleteBackUpTipBlock)(void);
 @interface OKDeleteBackUpTipsController : UIViewController
 + (instancetype)deleteBackUpTipsController:(DeleteBackUpTipBlock)block;
 @end

@@ -286,3 +286,8 @@
 "return" = "返回";
 "This action deletes all data for the wallet. In order to avoid loss of your property, please complete the backup of your wallet first." = "此操作将会删除该钱包的所有数据。为了避免您的财产损失，请先完成钱包的备份。";
 "Independent wallet mnemonic" = "独立钱包助记词";
+"Hardware recovery for HD Wallet" = "硬件恢复的HD钱包";
+"Hardware derived" = "硬件派生";
+"To observe the" = "观察";
+"Delete a separate wallet" = "删除独立钱包";
+"Once deleted: 1. The wallet will be erased from the App. 2. Please make sure that the mnemonic of the independent wallet has been copied and kept before deletion. You can use it to recover the wallet, so as to recover the assets." = "一旦删除： \n\n\n\n1. 该钱包将会从 App 中被抹除。 \n\n\n\n2. 请您在删除前务必确认该独立钱包的助记词已经抄写并保管好，您可以使用它对钱包进行恢复，从而找回资产。";

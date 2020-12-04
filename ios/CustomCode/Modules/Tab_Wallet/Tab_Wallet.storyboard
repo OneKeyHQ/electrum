@@ -829,15 +829,23 @@
                                     <constraint firstItem="PyU-Jc-rog" firstAttribute="height" secondItem="AAK-6S-ND3" secondAttribute="height" id="yUK-O3-pTu"/>
                                 </constraints>
                             </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4c5-WK-Ghr">
+                                <rect key="frame" x="20" y="188" width="374" height="566"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="jSk-3v-NaK"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstItem="Wz6-en-ono" firstAttribute="top" secondItem="4c5-WK-Ghr" secondAttribute="bottom" constant="8" id="8EP-hu-hFR"/>
+                            <constraint firstItem="jSk-3v-NaK" firstAttribute="trailing" secondItem="4c5-WK-Ghr" secondAttribute="trailing" constant="20" id="EOZ-UV-1Xw"/>
                             <constraint firstItem="Wz6-en-ono" firstAttribute="trailing" secondItem="jSk-3v-NaK" secondAttribute="trailing" id="Lap-yQ-s7b"/>
+                            <constraint firstItem="4c5-WK-Ghr" firstAttribute="leading" secondItem="jSk-3v-NaK" secondAttribute="leading" constant="20" id="RjT-zZ-45L"/>
                             <constraint firstItem="Wz6-en-ono" firstAttribute="leading" secondItem="jSk-3v-NaK" secondAttribute="leading" id="RuX-Ak-a4t"/>
                             <constraint firstItem="89Y-w8-3ic" firstAttribute="centerX" secondItem="Vyx-Ty-anF" secondAttribute="centerX" id="Two-EJ-Iuv"/>
                             <constraint firstItem="5km-in-EeI" firstAttribute="centerX" secondItem="Vyx-Ty-anF" secondAttribute="centerX" id="Urd-sS-5SQ"/>
                             <constraint firstItem="89Y-w8-3ic" firstAttribute="top" secondItem="5km-in-EeI" secondAttribute="bottom" constant="10" id="WtL-Vr-ghP"/>
+                            <constraint firstItem="4c5-WK-Ghr" firstAttribute="top" secondItem="89Y-w8-3ic" secondAttribute="bottom" constant="34" id="dG0-Ko-xYE"/>
                             <constraint firstItem="5km-in-EeI" firstAttribute="top" secondItem="jSk-3v-NaK" secondAttribute="top" constant="47" id="qMD-j0-uRt"/>
                             <constraint firstItem="Wz6-en-ono" firstAttribute="bottom" secondItem="jSk-3v-NaK" secondAttribute="bottom" id="zpa-ua-rQw"/>
                         </constraints>
@@ -848,11 +856,12 @@
                         <outlet property="sendCoinBtn" destination="AAK-6S-ND3" id="wRo-lY-VlF"/>
                         <outlet property="textBalanceLabel" destination="5km-in-EeI" id="HCH-i1-I3R"/>
                         <outlet property="textMoneyLabel" destination="89Y-w8-3ic" id="NyT-3k-clK"/>
+                        <outlet property="topBgView" destination="4c5-WK-Ghr" id="qlt-wb-0t2"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Arg-eA-jhL" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="793" y="25"/>
+            <point key="canvasLocation" x="792.75362318840587" y="24.776785714285712"/>
         </scene>
         <!--Tx View Controller-->
         <scene sceneID="6ZD-ch-hNs">
@@ -1402,6 +1411,9 @@
                                                         </constraints>
                                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                         <textInputTraits key="textInputTraits"/>
+                                                        <connections>
+                                                            <outlet property="delegate" destination="PTE-MU-2WW" id="DBh-8o-Z5z"/>
+                                                        </connections>
                                                     </textField>
                                                     <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4fJ-DU-cde">
                                                         <rect key="frame" x="358" y="60" width="36" height="36"/>
@@ -1461,8 +1473,11 @@
                                                         </constraints>
                                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                         <textInputTraits key="textInputTraits" keyboardType="decimalPad"/>
+                                                        <connections>
+                                                            <outlet property="delegate" destination="PTE-MU-2WW" id="ghR-Xs-net"/>
+                                                        </connections>
                                                     </textField>
-                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aPt-LU-eyh">
+                                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aPt-LU-eyh">
                                                         <rect key="frame" x="358" y="72" width="36" height="24"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="36" id="rv7-MP-buQ"/>
@@ -2142,7 +2157,7 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="-665.21739130434787" y="1050.6696428571429"/>
+            <point key="canvasLocation" x="-697" y="1051"/>
         </scene>
         <!--Tx Detail View Controller-->
         <scene sceneID="RGe-Vc-lht">

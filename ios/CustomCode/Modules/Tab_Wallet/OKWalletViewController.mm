@@ -26,7 +26,7 @@
 #import "OKFindFollowingWalletController.h"
 
 
-@interface OKWalletViewController ()<UITableViewDelegate,UITableViewDataSource,UINavigationControllerDelegate>
+@interface OKWalletViewController ()<UITableViewDelegate,UITableViewDataSource,UINavigationControllerDelegate,UIGestureRecognizerDelegate>
 
 //顶部切换钱包视图
 
@@ -87,6 +87,7 @@
 
 @property (nonatomic,strong)OKAssetTableViewCellModel *model;
 
+@property (nonatomic,assign)BOOL isCanSideBack;
 @end
 
 @implementation OKWalletViewController
@@ -182,7 +183,11 @@
         [kWalletManager setCurrentWalletType:type];
     }
     NSDictionary *dict =  [kPyCommandsManager callInterface:kInterfaceSelect_wallet parameter:@{@"name":kWalletManager.currentWalletName}];
-    [self updateStatus:dict];
+    NSString *b = [dict safeStringForKey:@"balance"];
+    NSString *balance = [[b componentsSeparatedByString:@" "]firstObject];
+    
+    NSString *fiatS =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":balance}];
+    [self updateStatus:@{@"balance":balance,@"fiat":fiatS}];
 }
 
 - (void)updateStatus:(NSDictionary *)dict
@@ -196,6 +201,9 @@
        // UI更新代码
         NSArray *barray = [self.model.money componentsSeparatedByString:@" "];
         NSString *bStr = [NSString stringWithFormat:@"%@ %@",kWalletManager.currentFiatSymbol,[barray firstObject]];
+        if (self.model.money.length == 0) {
+            bStr = @"--";
+        }
         if (kWalletManager.showAsset) {
             bStr = @"****";
         }
@@ -206,7 +214,7 @@
         }else{
             [self.coinImage setImage:[UIImage imageNamed:@"loco_round"] forState:UIControlStateNormal];
         }
-       
+
         [self.assetTableView reloadData];
     });
 }
@@ -240,6 +248,13 @@
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(backUpBgClick)];
     [self.backupBgView addGestureRecognizer:tap];
     self.assetTableView.tableFooterView = [UIView new];
+    
+    
+    UITapGestureRecognizer *tapWalletTopBgView = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapWalletTopBgViewClick)];
+    
+    [self.walletTopBgView addGestureRecognizer:tapWalletTopBgView];
+    
+    
     
     
     UITapGestureRecognizer *tapeye = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapEyeClick)];
@@ -326,7 +341,11 @@
     if (!isShowAsset) {
         self.eyeBtn.image = [UIImage imageNamed:@"eyehome"];
         NSString *money =  [[self.model.money componentsSeparatedByString:@" "] firstObject];
-        self.balance.text = [NSString stringWithFormat:@"%@ %@",kWalletManager.currentFiatSymbol,money];
+        NSString *bStr = [NSString stringWithFormat:@"%@ %@",kWalletManager.currentFiatSymbol,money];
+        if (self.model.money.length == 0) {
+            bStr = @"--";
+        }
+        self.balance.text = bStr;
     }else{
         self.eyeBtn.image = [UIImage imageNamed:@"hide_on"];
         self.balance.text = @"****";
@@ -551,6 +570,10 @@
     OKWalletDetailViewController *walletDetailVc = [OKWalletDetailViewController walletDetailViewController];
     [self.navigationController pushViewController:walletDetailVc animated:YES];
 }
+- (void)tapWalletTopBgViewClick
+{
+    [self assetListBtnClick:nil];
+}
 #pragma mark - 添加资产
 - (IBAction)tableViewHeaderAddBtnClick:(UIButton *)sender {
     NSLog(@"添加资产");
@@ -604,5 +627,31 @@
 - (void)notiBackUPWalletComplete
 {
     [self checkWalletResetUI];
+}
+
+
+-(void)viewDidAppear:(BOOL)animated {
+    
+    [super viewDidAppear:animated];
+    
+    self.isCanSideBack = NO; //关闭ios右滑返回
+    if([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
+        self.navigationController.interactivePopGestureRecognizer.delegate = self;
+    }
+    
+}
+- (void)viewDidDisappear:(BOOL)animated {
+    
+    [super viewDidDisappear:animated];
+    
+    self.isCanSideBack=YES; //开启ios右滑返回
+    if([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
+        self.navigationController.interactivePopGestureRecognizer.delegate = nil;
+    }
+}
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer
+{
+    return self.isCanSideBack;
 }
 @end

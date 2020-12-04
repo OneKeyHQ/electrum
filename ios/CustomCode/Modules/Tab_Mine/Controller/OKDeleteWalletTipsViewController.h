@@ -10,8 +10,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+
 @interface OKDeleteWalletTipsViewController : BaseViewController
 @property (nonatomic,copy)NSString *walletName;
+@property (nonatomic,assign)OKWhereToDeleteType deleteType;
 + (instancetype)deleteWalletTipsViewController;
 @end
 

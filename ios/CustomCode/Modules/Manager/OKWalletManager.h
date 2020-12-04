@@ -83,6 +83,15 @@ typedef enum {
 }OKWhereToSelectType;
 
 
+//删除钱包的跳转类型
+typedef enum {
+    OKWhereToDeleteTypeDetail,
+    OKWhereToDeleteTypeMine
+}OKWhereToDeleteType;
+
+
+
+
 
 @interface OKWalletManager : NSObject
 @property (nonatomic,copy)NSString *currentWalletName;

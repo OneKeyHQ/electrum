@@ -16,6 +16,7 @@
 #import "OKBackUpViewController.h"
 #import "OKPrivateKeyExportViewController.h"
 #import "OKDeleteBackUpTipsController.h"
+#import "OKDeleteWalletTipsViewController.h"
 
 @interface OKWalletDetailViewController ()<UITableViewDelegate,UITableViewDataSource>
 
@@ -160,17 +161,25 @@
             OKWeakSelf(self)
             BOOL isBackUp = [[kPyCommandsManager callInterface:kInterfaceget_backup_info parameter:@{@"name":kWalletManager.currentWalletName}] boolValue];
             if (isBackUp) {
-                OKDeleteWalletConfirmController *deleteVc = [OKDeleteWalletConfirmController deleteWalletConfirmController:^{
-                        [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
-                            [kPyCommandsManager callInterface:kInterfaceDelete_wallet parameter:@{@"name":kWalletManager.currentWalletName,@"password":pwd}];
-                            [kWalletManager clearCurrentWalletInfo];
-                            [kTools tipMessage:MyLocalizedString(@"Wallet deleted successfully", nil)];
-                            [[NSNotificationCenter defaultCenter]postNotificationName:kNotiDeleteWalletComplete object:nil];
-                            [weakself.navigationController popViewControllerAnimated:YES];
+                if (self.walletType == OKWalletTypeIndependent) {
+                    OKDeleteWalletTipsViewController *deleteVc = [OKDeleteWalletTipsViewController deleteWalletTipsViewController];
+                    deleteVc.deleteType = OKWhereToDeleteTypeDetail;
+                    deleteVc.walletName = kWalletManager.currentWalletName;
+                    [weakself.navigationController pushViewController:deleteVc animated:YES];
+                    
+                }else{
+                    OKDeleteWalletConfirmController *deleteVc = [OKDeleteWalletConfirmController deleteWalletConfirmController:^{
+                        if (weakself.walletType == OKWalletTypeObserve) {
+                            [weakself deleteWalletPwd:@""];
+                        }else{
+                            [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
+                                [weakself deleteWalletPwd:pwd];
+                        }];
+                        }
                     }];
-                }];
-                deleteVc.modalPresentationStyle = UIModalPresentationOverFullScreen;
-                [self.OK_TopViewController presentViewController:deleteVc animated:NO completion:nil];
+                    deleteVc.modalPresentationStyle = UIModalPresentationOverFullScreen;
+                    [self.OK_TopViewController presentViewController:deleteVc animated:NO completion:nil];
+                }
             }else{
                 OKDeleteBackUpTipsController *tipsVc = [OKDeleteBackUpTipsController deleteBackUpTipsController:^{
                     
@@ -183,6 +192,14 @@
         default:
             break;
     }
+}
+- (void)deleteWalletPwd:(NSString *)pwd
+{
+    [kPyCommandsManager callInterface:kInterfaceDelete_wallet parameter:@{@"name":kWalletManager.currentWalletName,@"password":pwd}];
+    [kWalletManager clearCurrentWalletInfo];
+    [kTools tipMessage:MyLocalizedString(@"Wallet deleted successfully", nil)];
+    [[NSNotificationCenter defaultCenter]postNotificationName:kNotiDeleteWalletComplete object:nil];
+    [self.navigationController popViewControllerAnimated:YES];
 }
 - (NSArray *)allData
 {
@@ -225,15 +242,10 @@
             [oneGroup addObject:model4];
         }
         
-        if (_walletType == OKWalletTypeHardware || _walletType == OKWalletTypeHD || _walletType == OKWalletTypeObserve){
+        if (_walletType == OKWalletTypeHardware || _walletType == OKWalletTypeHD){
             OKWalletDetailModel *model3 = [OKWalletDetailModel new];
             model3.titleStr = @"";
-            if (_walletType == OKWalletTypeObserve) {
-                model3.rightLabelStr = MyLocalizedString(@"观察钱包文案观察钱包文案观察钱包文案观察钱包文案观察钱包文案观察钱包文案观察钱包文案观察钱包文案观察钱包文案观察钱包文案", nil);
-            }else{
-                model3.rightLabelStr = MyLocalizedString(@"All subwallets derived from the ROOT mnemonic of HD wallet can be recovered with the root mnemonic, so there is no need to export mnemonic words for a single wallet. If you want to get the HD purse the root word mnemonic, please go to my assets HD wallet", nil);
-            }
-            
+            model3.rightLabelStr = MyLocalizedString(@"All subwallets derived from the ROOT mnemonic of HD wallet can be recovered with the root mnemonic, so there is no need to export mnemonic words for a single wallet. If you want to get the HD purse the root word mnemonic, please go to my assets HD wallet", nil);
             model3.isShowCopy = NO;
             model3.isShowSerialNumber = NO;
             model3.isShowArrow = NO;
@@ -287,7 +299,7 @@
             [allDataM addObject:securityGroup];
         }
         
-        if (_walletType == OKWalletTypeIndependent || _walletType == OKWalletTypeHardware || _walletType == OKWalletTypeMultipleSignature) {
+        if (_walletType == OKWalletTypeIndependent || _walletType == OKWalletTypeHardware || _walletType == OKWalletTypeMultipleSignature  || _walletType == OKWalletTypeObserve) {
             NSMutableArray *twoGroup = [NSMutableArray array];
             OKWalletDetailModel *modelDel = [OKWalletDetailModel new];
             modelDel.titleStr = MyLocalizedString(@"To delete the wallet", nil);

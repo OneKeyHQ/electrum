@@ -115,11 +115,9 @@
 
 #pragma mark - addvc
 - (void)addVC:(UIViewController *)vc atIndex:(NSInteger)index {
-//    NSLog(@"--------------index---------- - %@",@(index));
     if (![self.viewsCache objectForKey:@(index)]) {
         [self.viewsCache setObject:vc forKey:@(index)];
     }
-    
     vc.view.frame = CGRectMake(index*self.width, 0, self.width, self.height);
     [self.viewController addChildViewController:vc];
     [self addSubview:vc.view];
@@ -178,15 +176,12 @@
     }
 }
 
-
-
 #pragma mark - NSCacheDelegate
 -(void)cache:(NSCache *)cache willEvictObject:(id)obj {
     //进入后台不清理
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
         return;
     }
-    NSLog(@"remove - %@",NSStringFromClass([obj class]));
     if ([obj isKindOfClass:[UIViewController class]]) {
         UIViewController *vc = obj;
         [vc.view removeFromSuperview];
@@ -198,7 +193,26 @@
         vw = nil;
     }
 }
-
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
+        if ([self panBack:gestureRecognizer]) {
+            return NO;
+        }
+        return YES;
+}
+- (BOOL)panBack:(UIGestureRecognizer *)gestureRecognizer {
+   if (gestureRecognizer == self.panGestureRecognizer) {
+    UIPanGestureRecognizer *pan = (UIPanGestureRecognizer *)gestureRecognizer;
+    CGPoint point = [pan translationInView:self];
+    UIGestureRecognizerState state = gestureRecognizer.state;
+    if (UIGestureRecognizerStateBegan == state || UIGestureRecognizerStatePossible == state) {
+            CGPoint location = [gestureRecognizer locationInView:self];
+        if (point.x > 0 && location.x < 90 && self.contentOffset.x <= 0) {
+                 return YES;
+             }
+           }
+         }
+  return NO;
+}
 #pragma mark - dealloc
 - (void)dealloc {
     self.delegate = nil;

@@ -27,13 +27,15 @@
 - (IBAction)reciveCoinBtnClick:(UIButton *)sender;
 @property (weak, nonatomic) IBOutlet UILabel *textBalanceLabel;
 @property (weak, nonatomic) IBOutlet UILabel *textMoneyLabel;
-
+@property (weak, nonatomic) IBOutlet UIView *topBgView;
+@property (nonatomic,assign)NSInteger count;
 @end
 
 @implementation OKTxListViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    _count = 0;
     [self stupUI];
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(refreshUI:) name:kNotiUpdate_status object:nil];
 }
@@ -43,9 +45,18 @@
     [self setNavigationBarBackgroundColorWithClearColor];
     self.title = @"BTC";
     self.navigationItem.rightBarButtonItem = [UIBarButtonItem barButtonItemWithImage:[UIImage imageNamed:@"token_btc"] frame:CGRectMake(0, 0, 30, 30) target:self selector:@selector(rightBarButtonItemClick)];
-    [self segmentStyle];
+    
     [self.sendCoinBtn setLayerRadius:15];
     [self.reciveCoinBtn setLayerRadius:15];
+}
+
+- (void)viewDidLayoutSubviews
+{
+    [super viewDidLayoutSubviews];
+    if (_count == 0) {
+        [self segmentStyle];
+        _count ++;
+    }
 }
 
 - (void)refreshUI:(NSNotification *)noti
@@ -100,8 +111,8 @@
                   MyLocalizedString(@"Tx In", nil),
                    MyLocalizedString(@"Tx Out", nil)
                   ];
-    CGFloat margin = 3;
-    _segHead = [[MLMSegmentHead alloc] initWithFrame:CGRectMake(margin, 250, SCREEN_WIDTH - margin * 2, (36)) titles:self.list headStyle:SegmentHeadStyleSlide layoutStyle:MLMSegmentLayoutDefault];
+    CGFloat headerH = 36;
+    _segHead = [[MLMSegmentHead alloc] initWithFrame:CGRectMake(0,0, self.topBgView.width, (headerH)) titles:self.list headStyle:SegmentHeadStyleSlide layoutStyle:MLMSegmentLayoutDefault];
     _segHead.slideCorner = 7;
     
 //    _segHead.fontScale = 1.05;
@@ -149,16 +160,14 @@
     /**
      *  设置当前屏幕最多显示的按钮数,只有在默认布局样式 - MLMSegmentLayoutDefault 下使用
      */
-    //_segHead.maxTitles = 5;
-    CGFloat marginTableTop = 10;
-    _segScroll = [[MLMSegmentScroll alloc] initWithFrame:CGRectMake(0, CGRectGetMaxY(_segHead.frame) + marginTableTop, SCREEN_WIDTH,CGRectGetMinY(self.bottomBgView.frame)- CGRectGetMaxY(_segHead.frame) - marginTableTop - 100) vcOrViews:[self vcArr:self.list.count]];
+    _segScroll = [[MLMSegmentScroll alloc] initWithFrame:CGRectMake(0, headerH, self.topBgView.width,self.topBgView.height - headerH) vcOrViews:[self vcArr:self.list.count]];
     _segScroll.loadAll = YES;
     _segScroll.showIndex = 0;
     @weakify(self)
     [MLMSegmentManager associateHead:_segHead withScroll:_segScroll completion:^{
         @strongify(self)
-        [self.view addSubview:self.segHead];
-        [self.view addSubview:self.segScroll];
+        [self.topBgView addSubview:self.segHead];
+        [self.topBgView addSubview:self.segScroll];
     } selectEnd:^(NSInteger index) {
         if (index == 2) {
             
@@ -182,5 +191,6 @@
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter]removeObserver:self];
+    _count = 0;
 }
 @end

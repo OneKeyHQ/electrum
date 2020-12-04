@@ -13,11 +13,11 @@
 - (void)status:(OKButtonStatusType)type{
     if (type == OKButtonStatusEnabled) {
         self.enabled = true;
-        self.backgroundColor = HexColor(RGB_THEME_GREEN);
+        [self setBackgroundColor:HexColor(0x01BA12)];
     }
     else if (type == OKButtonStatusDisabled) {
         self.enabled = false;
-        self.backgroundColor = UIColorFromRGBALPHA(RGB_THEME_GREEN, 0.3);
+        self.backgroundColor = UIColorFromRGBALPHA(0x01BA12, 0.3);
     }
 }
 

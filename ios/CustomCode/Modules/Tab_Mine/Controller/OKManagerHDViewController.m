@@ -52,6 +52,7 @@
         {
             OKDeleteWalletTipsViewController *deleteWalletVc = [OKDeleteWalletTipsViewController deleteWalletTipsViewController];
             deleteWalletVc.walletName = self.walletName;
+            deleteWalletVc.deleteType = OKWhereToDeleteTypeMine;
             [self.navigationController pushViewController:deleteWalletVc animated:YES];
         }
             break;
