@@ -80,11 +80,18 @@
                     android:textSize="@dimen/sp_16" />
 
                 <TextView
+                    android:id="@+id/text_addr"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone" />
+
+                <TextView
                     android:id="@+id/text_address"
-                    android:layout_width="150dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
+                    android:gravity="end"
                     android:layout_marginStart="@dimen/dp_20"
                     android:layout_marginEnd="@dimen/dp_50"
                     android:ellipsize="middle"

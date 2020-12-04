@@ -80,7 +80,7 @@
                 android:digits="@string/rule_password"
                 android:hint="@string/input_new_pass"
                 android:inputType="textPassword"
-                android:maxLength="33"
+                android:maxLength="35"
                 android:paddingStart="@dimen/dp_15"
                 android:singleLine="true"
                 android:textColor="@color/text_two"

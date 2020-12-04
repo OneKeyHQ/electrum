@@ -93,12 +93,12 @@ public class BixinKEYManageActivity extends BaseActivity {
                             startActivity(intent);
                             break;
                         case R.id.linear_delete:
-                            String deviceId = deviceValue.get(position).getDeviceId();
-                            edit.remove(deviceId).apply();
-                            deviceValue.remove(position);
-                            bixinkeyManagerAdapter.notifyItemChanged(position);
-                            bixinkeyManagerAdapter.notifyDataSetChanged();
-                            mToast(getString(R.string.delete_succse));
+//                            String deviceId = deviceValue.get(position).getDeviceId();
+//                            edit.remove(deviceId).apply();
+//                            deviceValue.remove(position);
+//                            bixinkeyManagerAdapter.notifyItemChanged(position);
+//                            bixinkeyManagerAdapter.notifyDataSetChanged();
+//                            mToast(getString(R.string.delete_succse));
 
                             break;
                         default:

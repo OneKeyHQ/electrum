@@ -15,11 +15,7 @@ public class PreferencesManager {
      * @param editor
      */
     private static void commit(SharedPreferences.Editor editor){
-        try {
-            editor.apply();
-        } catch (Exception e) {
             editor.commit();
-        }
     }
 
 

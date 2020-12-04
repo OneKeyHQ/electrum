@@ -2,7 +2,9 @@ package org.haobtc.onekey.onekeys.dialog.recovery;
 
 import android.content.SharedPreferences;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -81,12 +83,9 @@ public class RecoveryChooseWalletActivity extends BaseActivity {
         }
     }
 
-    @OnClick({R.id.img_back, R.id.btn_recovery})
+    @OnClick({R.id.btn_recovery})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-            case R.id.img_back:
-                finish();
-                break;
             case R.id.btn_recovery:
                 listDates.clear();
                 Map<Integer, Boolean> map = recoveryWalletAdapter.getMap();
@@ -112,5 +111,13 @@ public class RecoveryChooseWalletActivity extends BaseActivity {
                 }
                 break;
         }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }

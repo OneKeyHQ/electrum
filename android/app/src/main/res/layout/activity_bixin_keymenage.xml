@@ -45,9 +45,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_20"
-            android:layout_marginTop="41dp"
+            android:layout_marginTop="@dimen/dp_40"
             android:lineSpacingExtra="@dimen/dp_10"
-            android:text="@string/language_tip"
+            android:text="@string/device"
             android:textColor="@color/text_six"
             android:textSize="@dimen/sp_14" />
 
@@ -55,7 +55,7 @@
             android:id="@+id/recl_bixinKey_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_5"
+            android:layout_marginTop="@dimen/dp_10"
             android:background="@color/button_bk_ddake"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:itemCount="6"

@@ -74,6 +74,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
     private String deleteHdWalletName;
     private boolean isHaveWallet;
     private SharedPreferences preferences;
+    private ArrayList<String> typeList;
 
     @Override
     public int getLayoutId() {
@@ -93,7 +94,26 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
         privateKey = getIntent().getStringExtra("privateKey");
         deleteHdWalletName = getIntent().getStringExtra("deleteHdWalletName");//删除所有hd钱包的名字
         isHaveWallet = PreferencesManager.getAll(this, Constant.WALLETS).isEmpty();
-        if (isHaveWallet) {
+        inits();
+
+    }
+
+    private void inits() {
+        typeList = new ArrayList<>();
+        Map<String, ?> jsonToMap = PreferencesManager.getAll(this, Constant.WALLETS);
+        Set keySets = jsonToMap.keySet();
+        Iterator ki = keySets.iterator();
+        while (ki.hasNext()) {
+            //get key
+            String key = (String) ki.next();
+            String type = jsonToMap.get(key).toString();
+            if (!type.contains("hw") && !"btc-watch-standard".equals(type)) {
+                typeList.add(key);
+            }
+        }
+        Log.i("typeListjxmjxm", "inits======: " + isHaveWallet);
+        Log.i("typeListjxmjxm", "inits------: " + typeList);
+        if (typeList == null || typeList.size() == 0) {
             textPageTitle.setText(getString(R.string.create_new_walt));
         } else {
             if ("exportHdword".equals(importHdword) || "backupMnemonic".equals(importHdword) || "exportPrivateKey".equals(importHdword) || "deleteAllWallet".equals(importHdword) || "derive".equals(importHdword) || "single".equals(importHdword) || "importMnemonic".equals(importHdword) || "importPrivateKey".equals(importHdword) || "deleteSingleWallet".equals(importHdword) || "send".equals(importHdword) || "recoveryHdWallet".equals(importHdword)) {
@@ -106,7 +126,6 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
                 textConfirm.setText(getString(R.string.change_keyboard));
             }
         }
-
     }
 
     //check password tip
@@ -148,7 +167,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
                 }
                 break;
             case R.id.btn_next:
-                if (isHaveWallet) {
+                if (typeList == null || typeList.size() == 0) {
                     if (!input) {
                         sixPass = pwdEdittext.getText().toString();
                         testSetPass.setText(getString(R.string.input_pass));
@@ -175,7 +194,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
 
     //如果没有钱包创建需要设置密码，否则验证密码即可
     private void walletStatus() {
-        if ("exportHdword".equals(importHdword) || "backupMnemonic".equals(importHdword) ) {
+        if ("exportHdword".equals(importHdword) || "backupMnemonic".equals(importHdword)) {
             //export Mnemonic words
             exportWord(importHdword);
         } else if ("fixHdPass".equals(importHdword)) {
@@ -232,9 +251,6 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
             e.printStackTrace();
             if (e.getMessage().contains("path is exist")) {
                 mToast(getString(R.string.changewalletname));
-            } else if (e.getMessage().contains("The same seed have create wallet")) {
-                String haveWalletName = e.getMessage().substring(e.getMessage().indexOf("name=") + 5);
-                mToast(getString(R.string.same_seed_have) + haveWalletName);
             } else if (e.getMessage().contains("'NoneType' object is not iterable")) {
                 mToast(getString(R.string.private_key_wrong));
             } else if (e.getMessage().contains("Incorrect password")) {
@@ -270,6 +286,8 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
                 mToast(getString(R.string.wrong_pass));
             } else if (e.getMessage().contains("The file already exists")) {
                 mToast(getString(R.string.changemessage));
+            } else if (e.getMessage().contains("Invalid private")) {
+                mToast(getString(R.string.private_invalid));
             }
             return;
         }
@@ -470,13 +488,13 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
             e.printStackTrace();
             return;
         }
-        if ("exportHdword".equals(type)){
+        if ("exportHdword".equals(type)) {
             Intent intent = new Intent(SetHDWalletPassActivity.this, BackupGuideActivity.class);
             intent.putExtra("exportWord", exportSeed.toString());
             intent.putExtra("importHdword", importHdword);
             startActivity(intent);
             finish();
-        }else{
+        } else {
             Intent intent = new Intent(SetHDWalletPassActivity.this, HdRootMnemonicsActivity.class);
             intent.putExtra("exportWord", exportSeed.toString());
             intent.putExtra("importHdword", importHdword);

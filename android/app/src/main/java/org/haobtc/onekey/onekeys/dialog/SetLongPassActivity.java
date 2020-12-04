@@ -83,6 +83,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
     private boolean isHaveWallet;
     private SharedPreferences preferences;
     private String currencyType;
+    private ArrayList<String> typeList;
 
     @Override
     public int getLayoutId() {
@@ -105,25 +106,38 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
         importHdword = getIntent().getStringExtra("importHdword");
         walletName = getIntent().getStringExtra("walletName");
         privateKey = getIntent().getStringExtra("privateKey");
+        recoverySeed = getIntent().getStringExtra("recoverySeed");
         //删除所有hd钱包的名字
         deleteHdWalletName = getIntent().getStringExtra("deleteHdWalletName");
-        if ("exportHdword".equals(importHdword) || "backupMnemonic".equals(importHdword) || "exportPrivateKey".equals(importHdword) || "deleteAllWallet".equals(importHdword) || "derive".equals(importHdword) || "single".equals(importHdword) || "importMnemonic".equals(importHdword) || "importPrivateKey".equals(importHdword) || "deleteSingleWallet".equals(importHdword) || "send".equals(importHdword)) {
-            textContent();
-        } else if ("fixHdPass".equals(importHdword)) {
-            textPageTitle.setText(getString(R.string.fix_pass));
-            editPass.setHint(getString(R.string.input_your_former_pass));
-            testSetPass.setText(getString(R.string.input_your_former_pass));
-            textTip.setText(getString(R.string.fix_former_tip));
-            textLong.setText(getString(R.string.long_pass_tip));
-        } else if ("exportKeystore".equals(importHdword)) {
-            textContent();
-        } else if ("recoveryHdWallet".equals(importHdword)) {
-            recoverySeed = getIntent().getStringExtra("recoverySeed");
-            textContent();
-        } else {
-            textPageTitle.setText(getString(R.string.create_new_walt));
-        }
+        inits();
+    }
 
+    private void inits() {
+        typeList = new ArrayList<>();
+        Map<String, ?> jsonToMap = PreferencesManager.getAll(this, Constant.WALLETS);
+        Set keySets = jsonToMap.keySet();
+        Iterator ki = keySets.iterator();
+        while (ki.hasNext()) {
+            //get key
+            String key = (String) ki.next();
+            String type = jsonToMap.get(key).toString();
+            if (!type.contains("hw") && !"btc-watch-standard".equals(type)) {
+                typeList.add(key);
+            }
+        }
+        if (typeList == null || typeList.size() == 0) {
+            textPageTitle.setText(getString(R.string.create_new_walt));
+        } else {
+            if ("exportHdword".equals(importHdword) || "backupMnemonic".equals(importHdword) || "exportPrivateKey".equals(importHdword) || "deleteAllWallet".equals(importHdword) || "derive".equals(importHdword) || "single".equals(importHdword) || "importMnemonic".equals(importHdword) || "importPrivateKey".equals(importHdword) || "deleteSingleWallet".equals(importHdword) || "send".equals(importHdword) || "exportKeystore".equals(importHdword) || "recoveryHdWallet".equals(importHdword)) {
+                textContent();
+            } else if ("fixHdPass".equals(importHdword)) {
+                textPageTitle.setText(getString(R.string.fix_pass));
+                editPass.setHint(getString(R.string.input_your_former_pass));
+                testSetPass.setText(getString(R.string.input_your_former_pass));
+                textTip.setText(getString(R.string.fix_former_tip));
+                textLong.setText(getString(R.string.long_pass_tip));
+            }
+        }
     }
 
     public void textContent() {
@@ -157,7 +171,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
                     inputTip(this, R.layout.longpass_imput_tip, "little");
                     return;
                 }
-                if (isHaveWallet) {
+                if (typeList == null || typeList.size() == 0) {
                     if (!input) {
                         firstPass = editPass.getText().toString();
                         testSetPass.setText(getText(R.string.input_you_pass));
@@ -296,6 +310,8 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
                 mToast(getString(R.string.wrong_pass));
             } else if (e.getMessage().contains("The file already exists")) {
                 mToast(getString(R.string.changemessage));
+            } else if (e.getMessage().contains("Invalid private")) {
+                mToast(getString(R.string.private_invalid));
             }
             return;
         }
@@ -515,7 +531,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
 
     @Override
     public void afterTextChanged(Editable s) {
-        if (s.length() > 32) {
+        if (s.length() > 34) {
             inputTip(this, R.layout.longpass_imput_tip, "big");
         }
         if ((editPass.length() > 0)) {
@@ -533,7 +549,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
         Dialog dialogBtoms = new Dialog(context, R.style.dialog);
         TextView passTip = view.findViewById(R.id.pass_tip);
         if ("big".equals(type)) {
-            passTip.setText(getString(R.string.long_pass_32));
+            passTip.setText(getString(R.string.long_pass_34));
         }
         view.findViewById(R.id.img_cancel).setOnClickListener(v -> {
             dialogBtoms.dismiss();

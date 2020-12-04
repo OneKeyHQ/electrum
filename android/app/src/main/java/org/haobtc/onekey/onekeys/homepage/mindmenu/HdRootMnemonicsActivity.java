@@ -77,9 +77,10 @@ public class HdRootMnemonicsActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);//禁止截屏
         EventBus.getDefault().register(this);
         screenShotListenManager = new ScreenShotListenManager(this);
-        startScreenShotListen();
+//        startScreenShotListen();
         importHdword = getIntent().getStringExtra("importHdword");
         exportWord = getIntent().getStringExtra("exportWord");
         if ("exportHdword".equals(importHdword)) {
@@ -103,7 +104,6 @@ public class HdRootMnemonicsActivity extends BaseActivity {
                 @Override
                 public void onShot(String imagePath) {
                     screenTipDialog(HdRootMnemonicsActivity.this, R.layout.screened);
-                    screenShotListenManager.stopListen();
                     startScreenShotListen();
                 }
             });

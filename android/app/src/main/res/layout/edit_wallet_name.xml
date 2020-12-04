@@ -60,6 +60,7 @@
             android:layout_marginEnd="@dimen/dp_21"
             android:background="@drawable/gray_broken"
             android:hint="@string/please_input_walletname"
+            android:maxLength="15"
             android:paddingStart="@dimen/dp_16"
             android:paddingEnd="@dimen/dp_16"
             android:singleLine="true"

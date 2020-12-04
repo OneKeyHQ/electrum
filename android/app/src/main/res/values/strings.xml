@@ -927,7 +927,7 @@
     <string name="input_new_pass">Enter new password</string>
     <string name="use_short_pass">Use short password</string>
     <string name="short_pass_tip">Complex password security is relatively high, after setting, you should remember that it is best not to set the same password as your other websites.</string>
-    <string name="set_you_pass">Set your password</string>
+    <string name="set_you_pass">Set master password</string>
     <string name="input_you_pass">Enter your password again</string>
     <string name="long_pass_tip">We don\'t store any of your information, so once you forget your password, we can\'t help you retrieve it.</string>
     <string name="my_amount">My assets</string>
@@ -1005,7 +1005,7 @@
     <string name="collect">Collection</string>
     <string name="_0_00_btc">0.00 BTC</string>
     <string name="_0_dollar">$0</string>
-    <string name="wallet_detail_tip">All subwallets derived from the root mnemonic of HD wallet can be recovered by one key of root mnemonics, so it is not necessary to export mnemonics of a single wallet. If you want to get the root mnemonic of HD wallet, please go to my ➡ assets ➡ HD wallet.</string>
+    <string name="wallet_detail_tip">All subwallets derived from the root mnemonic of HD wallet can be recovered by one key of root mnemonics, so it is not necessary to export mnemonics of a single wallet. If you want to get the root mnemonic of HD wallet, please go to my → assets → HD wallet.</string>
     <string name="type">type</string>
     <string name="wallet_detail">Wallet details</string>
     <string name="change_into">to change into</string>
@@ -1246,7 +1246,7 @@
     <string name="change_pin">修改设备 PIN 码</string>
     <string name="verify_pin_onkey">校验PIN码</string>
     <string name="rule_password">0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ`¬!"£$%^*()~=#{}[];':,./?/*-_+ " &#139; &#155; &#64; &#38;</string>
-    <string name="long_pass_32">Password length should not be greater than 32 characters, please fill in again.</string>
+    <string name="long_pass_34">Password length should not be greater than 34 characters, please fill in again.</string>
     <string name="wrong_private">Private key input error, please re-enter!</string>
     <string name="have_private">The wallet created by the private key already exists!</string>
     <string name="changemessage">Import information already exists, please replace</string>
@@ -1269,5 +1269,10 @@
     <string name="pass_lenth_tip">The length of the password should not be less than 8 characters. It is recommended to use a high complexity password with mixed upper and lower case letters, numbers and special characters.</string>
     <string name="input_again">Fill in again</string>
     <string name="invalid_address">The input address is not available, please re-enter</string>
+    <string name="what_is_hd_">What is an HD wallet?</string>
+    <string name="private_invalid">Please enter the correct address or public key!</string>
+    <string name="easy_to_identy">Easy to identify</string>
+    <string name="input_you_like_name">Enter a name you like</string>
+    <string name="device">Device</string>
 
 </resources>

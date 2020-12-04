@@ -137,7 +137,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/dp_14"
+                    android:layout_marginStart="@dimen/dp_10"
                     android:orientation="vertical">
 
                     <TextView
@@ -145,7 +145,6 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/dp_10"
                         android:layout_marginTop="@dimen/dp_5"
-                        android:singleLine="true"
                         android:text="@string/export_tip2"
                         android:textColor="@color/text_three"
                         android:textSize="@dimen/sp_13" />
@@ -154,7 +153,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/dp_10"
-                        android:singleLine="true"
                         android:text="@string/export_tip3"
                         android:textColor="@color/text_three"
                         android:textSize="@dimen/sp_13" />

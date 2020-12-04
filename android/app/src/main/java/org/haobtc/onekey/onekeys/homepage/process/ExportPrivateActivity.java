@@ -6,6 +6,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -50,9 +51,10 @@ public class ExportPrivateActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);//禁止截屏
         EventBus.getDefault().post(new SecondEvent("finishInputPass"));
         screenShotListenManager = new ScreenShotListenManager(this);
-        startScreenShotListen();
+//        startScreenShotListen();
     }
 
     @Override
@@ -101,7 +103,6 @@ public class ExportPrivateActivity extends BaseActivity {
                 @Override
                 public void onShot(String imagePath) {
                     screenTipDialog(ExportPrivateActivity.this, R.layout.screened);
-                    screenShotListenManager.stopListen();
                     startScreenShotListen();
                 }
             });

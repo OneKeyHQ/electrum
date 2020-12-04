@@ -7,8 +7,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
-import android.util.Log;
+import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 
 import androidx.annotation.LayoutRes;
 
+import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
 
@@ -30,8 +32,12 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.activities.sign.SignActivity;
 import org.haobtc.onekey.bean.GetCodeAddressBean;
+import org.haobtc.onekey.constant.Constant;
+import org.haobtc.onekey.data.prefs.PreferencesManager;
 import org.haobtc.onekey.event.FixWalletNameEvent;
+import org.haobtc.onekey.event.LoadOtherWalletEvent;
 import org.haobtc.onekey.event.SecondEvent;
+import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.dialog.SetHDWalletPassActivity;
 import org.haobtc.onekey.onekeys.dialog.SetLongPassActivity;
 import org.haobtc.onekey.onekeys.homepage.mindmenu.DeleteWalletActivity;
@@ -61,6 +67,8 @@ public class HdWalletDetailActivity extends BaseActivity {
     TextView textSign;
     @BindView(R.id.lin_hardware)
     LinearLayout linHardware;
+    @BindView(R.id.text_addr)
+    TextView textAddr;
     private String type;
     private boolean isBackup;
     private SharedPreferences preferences;
@@ -84,7 +92,7 @@ public class HdWalletDetailActivity extends BaseActivity {
         String hdWalletName = getIntent().getStringExtra("hdWalletName");
         isBackup = getIntent().getBooleanExtra("isBackup", false);
         textWalletName.setText(hdWalletName);
-        if (showWalletType.contains("hd") || showWalletType.contains("derived")) {
+        if ("btc-hd-standard".equals(showWalletType) || "btc-derived-standard".equals(showWalletType)) {
             textHdWallet.setText(getString(R.string.hd_wallet));
             //HD wallet detail and derive wallet
             linHdWalletShow.setVisibility(View.VISIBLE);
@@ -100,7 +108,7 @@ public class HdWalletDetailActivity extends BaseActivity {
         } else if (showWalletType.contains("watch")) {
             textHdWallet.setText(getString(R.string.watch_wallet));
             linSingle.setVisibility(View.GONE);
-        } else if ("btc-standard".equals(showWalletType)) {
+        } else if ("btc-standard".equals(showWalletType) || "btc-private-standard".equals(showWalletType)) {
             //Independent Wallet
             linHdWalletShow.setVisibility(View.GONE);
             linSingleShow.setVisibility(View.VISIBLE);
@@ -125,12 +133,14 @@ public class HdWalletDetailActivity extends BaseActivity {
             return;
         }
         if (walletAddressShowUi != null) {
-
             String strCode = walletAddressShowUi.toString();
             Gson gson = new Gson();
             GetCodeAddressBean getCodeAddressBean = gson.fromJson(strCode, GetCodeAddressBean.class);
             String addr = getCodeAddressBean.getAddr();
-            textAddress.setText(addr);
+            String front6 = addr.substring(0, 6);
+            String after6 = addr.substring(addr.length() - 6);
+            textAddr.setText(addr);
+            textAddress.setText(String.format("%s…%s", front6, after6));
         }
 
     }
@@ -145,7 +155,7 @@ public class HdWalletDetailActivity extends BaseActivity {
                 //copy text
                 ClipboardManager cm2 = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                 // The text is placed on the system clipboard.
-                Objects.requireNonNull(cm2, "ClipboardManager not available").setPrimaryClip(ClipData.newPlainText(null, textAddress.getText()));
+                Objects.requireNonNull(cm2, "ClipboardManager not available").setPrimaryClip(ClipData.newPlainText(null, textAddr.getText()));
                 Toast.makeText(HdWalletDetailActivity.this, R.string.copysuccess, Toast.LENGTH_LONG).show();
                 break;
             case R.id.text_wallet_name:
@@ -219,6 +229,26 @@ public class HdWalletDetailActivity extends BaseActivity {
         Dialog dialogBtoms = new Dialog(context, R.style.dialog);
         EditText walletName = view.findViewById(R.id.edit_wallet_name);
         walletName.setText(textWalletName.getText().toString());
+        walletName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (!TextUtils.isEmpty(s.toString())) {
+                    if (s.length() > 14) {
+                        mToast(getString(R.string.name_lenth));
+                    }
+                }
+            }
+        });
         view.findViewById(R.id.btn_import).setOnClickListener(v -> {
             if (TextUtils.isEmpty(walletName.getText().toString())) {
                 mToast(getString(R.string.please_input_walletname));
@@ -232,6 +262,10 @@ public class HdWalletDetailActivity extends BaseActivity {
                 return;
             }
             mToast(getString(R.string.fix_success));
+            SharedPreferences.Editor edit = preferences.edit();
+            edit.putString("loadWalletName", walletName.getText().toString());
+            edit.apply();
+            PyEnv.loadLocalWalletInfo(this);
             textWalletName.setText(walletName.getText().toString());
             EventBus.getDefault().post(new FixWalletNameEvent(walletName.getText().toString()));
             dialogBtoms.dismiss();

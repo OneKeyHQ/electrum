@@ -63,17 +63,21 @@ public class ImportWalletSetNameActivity extends BaseActivity implements TextWat
                 finish();
                 break;
             case R.id.btn_import:
+                if (TextUtils.isEmpty(editSetWalletName.getText().toString())) {
+                    mToast(getString(R.string.please_input_walletname));
+                    return;
+                }
                 if (!TextUtils.isEmpty(watchAddress)) {
                     importWallet();
 
                 } else {
                     if (TextUtils.isEmpty(editSetWalletName.getText().toString())) {
-                        mToast(getString(R.string.input_private_key));
+                        mToast(getString(R.string.please_input_walletname));
                         return;
                     }
-                    if ("short".equals(preferences.getString("shortOrLongPass","short"))){
+                    if ("short".equals(preferences.getString("shortOrLongPass", "short"))) {
                         intent = new Intent(this, SetHDWalletPassActivity.class);
-                    }else{
+                    } else {
                         intent = new Intent(this, SetLongPassActivity.class);
                     }
                     intent.putExtra("importHdword", importHdword);
@@ -99,6 +103,8 @@ public class ImportWalletSetNameActivity extends BaseActivity implements TextWat
                 mToast(getString(R.string.same_seed_have) + haveWalletName);
             } else if (e.getMessage().contains("The file already exists")) {
                 mToast(getString(R.string.have_private));
+            } else if (e.getMessage().contains("Please enter the correct address or pubkey")) {
+                mToast(getString(R.string.private_invalid));
             }
             return;
         }

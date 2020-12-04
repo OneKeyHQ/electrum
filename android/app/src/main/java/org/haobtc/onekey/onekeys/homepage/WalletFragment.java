@@ -28,6 +28,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONArray;
+import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
@@ -90,7 +91,7 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
     private String changeBalance;
     private TextView textStar;
     private String name;
-    private String loadWalletMsg = "";
+    private String loadWalletName = "";
     private SharedPreferences.Editor edit;
     private RelativeLayout relNowBackUp;
     private RxPermissions rxPermissions;
@@ -102,6 +103,7 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
     private TextView dollarStars;
     private String nowType;
     private boolean isBackup;
+    private ImageView imgScan;
 
     @SuppressLint("CommitPrefEdits")
     @Override
@@ -119,7 +121,7 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
         RelativeLayout relRecovery = view.findViewById(R.id.rel_recovery_hd);
         RelativeLayout relCreateHd = view.findViewById(R.id.rel_create_hd);
         RelativeLayout relCheckWallet = view.findViewById(R.id.rel_check_wallet);
-        ImageView imgScan = view.findViewById(R.id.img_scan);
+        imgScan = view.findViewById(R.id.img_scan);
         RelativeLayout relPairHard = view.findViewById(R.id.rel_pair_hard);
         LinearLayout linearSend = view.findViewById(R.id.linear_send);
         LinearLayout linearReceive = view.findViewById(R.id.linear_receive);
@@ -161,15 +163,8 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
     private void initdata() {
         boolean isHaveWallet = PreferencesManager.getAll(getContext(), org.haobtc.onekey.constant.Constant.WALLETS).isEmpty();
         Log.i("isHaveWalletjxmxj", "initdata: " + isHaveWallet);
-        if (!isHaveWallet) {
-            linearNoWallet.setVisibility(View.GONE);
-            imgBottom.setVisibility(View.GONE);
-            linearHaveWallet.setVisibility(View.VISIBLE);
-            linearWalletList.setVisibility(View.VISIBLE);
-            //get wallet balance
-            getWalletBalance();
-        } else {
-            //set default unit
+        if (isHaveWallet) {
+            //no wallet
             try {
                 Daemon.commands.callAttr("set_currency", "CNY");
             } catch (Exception e) {
@@ -180,6 +175,16 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
             imgBottom.setVisibility(View.VISIBLE);
             linearHaveWallet.setVisibility(View.GONE);
             linearWalletList.setVisibility(View.GONE);
+            imgScan.setVisibility(View.GONE);
+            relNowBackUp.setVisibility(View.GONE);
+        } else {
+            //have wallet
+            linearNoWallet.setVisibility(View.GONE);
+            imgBottom.setVisibility(View.GONE);
+            linearHaveWallet.setVisibility(View.VISIBLE);
+            linearWalletList.setVisibility(View.VISIBLE);
+            //get wallet balance
+            getWalletBalance();
         }
         //get wallet list save wallet type
         getHomeWalletList();
@@ -222,8 +227,8 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
     }
 
     private void getHomeWalletList() {
-        loadWalletMsg = preferences.getString("loadWalletName", "BTC-1"); //Get current wallet name
-        String walletInfo = PreferencesManager.get(getActivity(), org.haobtc.onekey.constant.Constant.WALLETS, loadWalletMsg, "").toString();
+        loadWalletName = preferences.getString("loadWalletName", "BTC-1"); //Get current wallet name
+        String walletInfo = PreferencesManager.get(getActivity(), org.haobtc.onekey.constant.Constant.WALLETS, loadWalletName, "").toString();
         Log.i("walletInfowalletInfo", "getHomeWalletList: " + walletInfo);
         if (!Strings.isNullOrEmpty(walletInfo)) {
             LocalWalletInfo localWalletInfo = LocalWalletInfo.objectFromData(walletInfo);
@@ -250,9 +255,9 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
     }
 
     private void getWalletBalance() {
-        loadWalletMsg = preferences.getString("loadWalletName", "BTC-1");//Get current wallet name
+        loadWalletName = preferences.getString("loadWalletName", "BTC-1");//Get current wallet name
         try {
-            PyObject selectWallet = Daemon.commands.callAttr("select_wallet", loadWalletMsg);
+            PyObject selectWallet = Daemon.commands.callAttr("select_wallet", loadWalletName);
             Log.i("iiiigetWalletBalance", "getWalletBalance:--- " + selectWallet);
             if (!TextUtils.isEmpty(selectWallet.toString())) {
                 BalanceInfo balanceInfo = new Gson().fromJson(selectWallet.toString(), BalanceInfo.class);
@@ -294,8 +299,8 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
     private void whetherBackup() {
         try {
             PyObject data = Daemon.commands.callAttr("get_backup_info");
-
             isBackup = data.toBoolean();
+            Log.i("isBackupjxmxjm", "whetherBackup: "+isBackup+"----"+loadWalletName);
             if (!isBackup) {
                 //no back up
                 relNowBackUp.setVisibility(View.VISIBLE);
@@ -363,10 +368,10 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
                         }).dispose();
                 break;
             case R.id.rel_create_hd:
-                if ("short".equals(preferences.getString("shortOrLongPass","short"))){
+                if ("short".equals(preferences.getString("shortOrLongPass", "short"))) {
                     Intent intent0 = new Intent(getActivity(), SetHDWalletPassActivity.class);
                     startActivity(intent0);
-                }else{
+                } else {
                     Intent intent0 = new Intent(getActivity(), SetLongPassActivity.class);
                     startActivity(intent0);
                 }
@@ -460,7 +465,7 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
 
                 }
             } else {
-                edit.putString("shortOrLongPass","short");
+                edit.putString("shortOrLongPass", "short");
                 edit.putBoolean("isBack_up", false);
                 edit.apply();
                 textWalletName.setText(getString(R.string.no_use_wallet));

@@ -77,7 +77,7 @@ public class LunchActivity extends BaseActivity {
     public void initData() {
         PyEnv.init(this);
         init();
-        loadAllWallets();
+      //  loadAllWallets();
     }
     private void loadAllWallets() {
         try {

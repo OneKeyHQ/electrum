@@ -53,6 +53,7 @@
         <LinearLayout
             android:id="@+id/linear_delete"
             android:layout_width="50dp"
+            android:visibility="gone"
             android:layout_height="match_parent"
             android:orientation="horizontal">
 

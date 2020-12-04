@@ -3,6 +3,7 @@ package org.haobtc.onekey.onekeys.backup;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -16,6 +17,8 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import androidx.annotation.LayoutRes;
+
+import com.chaquo.python.Kwarg;
 
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
@@ -76,6 +79,7 @@ public class CheckMnemonicActivity extends BaseActivity {
     private String word3 = "";
     private List listPos;
     private ArrayList<String> chooseWord;
+    private String loadWalletName;
 
     @Override
     public int getLayoutId() {
@@ -85,6 +89,9 @@ public class CheckMnemonicActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        SharedPreferences preferences = getSharedPreferences("", MODE_PRIVATE);
+        //Get current wallet name
+        loadWalletName = preferences.getString("loadWalletName", "BTC-1");
         String mnemonic = getIntent().getStringExtra("mnemonic");
         array = mnemonic.split("\\s+");
 

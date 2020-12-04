@@ -17,16 +17,23 @@ import android.widget.TextView;
 
 import androidx.annotation.LayoutRes;
 
+import com.chaquo.python.Kwarg;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.constant.Constant;
+import org.haobtc.onekey.data.prefs.PreferencesManager;
 import org.haobtc.onekey.event.FinishEvent;
+import org.haobtc.onekey.event.LoadOtherWalletEvent;
 import org.haobtc.onekey.event.SecondEvent;
+import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.dialog.SetHDWalletPassActivity;
 import org.haobtc.onekey.onekeys.dialog.SetLongPassActivity;
 import org.haobtc.onekey.onekeys.homepage.process.HdWalletDetailActivity;
+import org.haobtc.onekey.utils.Daemon;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -50,6 +57,7 @@ public class DeleteWalletActivity extends BaseActivity implements CompoundButton
     private boolean isBackup;
     private SharedPreferences preferences;
     private Intent intent;
+    private String deleteWalletType;
 
     @Override
     public int getLayoutId() {
@@ -66,7 +74,7 @@ public class DeleteWalletActivity extends BaseActivity implements CompoundButton
         importHdword = getIntent().getStringExtra("importHdword");
         walletName = getIntent().getStringExtra("walletName");
         isBackup = getIntent().getBooleanExtra("isBackup", false);
-        String deleteWalletType = getIntent().getStringExtra("delete_wallet_type");
+        deleteWalletType = getIntent().getStringExtra("delete_wallet_type");
         if ("deleteSingleWallet".equals(importHdword)) {
             if (deleteWalletType.contains("watch")) {
                 textTitle.setText(getString(R.string.delete_watch_wallet));
@@ -90,28 +98,53 @@ public class DeleteWalletActivity extends BaseActivity implements CompoundButton
                 finish();
                 break;
             case R.id.btn_forward:
-                if ("short".equals(preferences.getString("shortOrLongPass", "short"))) {
-                    intent = new Intent(this, SetHDWalletPassActivity.class);
+                if (deleteWalletType.contains("watch") || deleteWalletType.contains("hw")) {
+                    deleteWatchWallet();
                 } else {
-                    intent = new Intent(this, SetLongPassActivity.class);
-                }
-                if ("deleteSingleWallet".equals(importHdword)) {
-                    if (isBackup) {
-                        intent.putExtra("importHdword", "deleteSingleWallet");
-                        intent.putExtra("walletName", walletName);
-                        startActivity(intent);
+                    if ("short".equals(preferences.getString("shortOrLongPass", "short"))) {
+                        intent = new Intent(this, SetHDWalletPassActivity.class);
                     } else {
-                        //没备份提示备份
-                        dontBackup(this, R.layout.confrim_delete_hdwallet);
+                        intent = new Intent(this, SetLongPassActivity.class);
                     }
-                } else {
-                    intent.putExtra("importHdword", "deleteAllWallet");
-                    intent.putExtra("deleteHdWalletName", deleteHdWalletName);
-                    startActivity(intent);
+                    if ("deleteSingleWallet".equals(importHdword)) {
+                        if (isBackup) {
+                            intent.putExtra("importHdword", "deleteSingleWallet");
+                            intent.putExtra("walletName", walletName);
+                            startActivity(intent);
+                        } else {
+                            //没备份提示备份
+                            dontBackup(this, R.layout.confrim_delete_hdwallet);
+                        }
+                    } else {
+                        intent.putExtra("importHdword", "deleteAllWallet");
+                        intent.putExtra("deleteHdWalletName", deleteHdWalletName);
+                        startActivity(intent);
+                    }
                 }
+
 
                 break;
         }
+    }
+
+    private void deleteWatchWallet() {
+        try {
+            Daemon.commands.callAttr("delete_wallet", "111111", new Kwarg("name", walletName));
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (e.getMessage().contains("path is exist")) {
+                mToast(getString(R.string.changewalletname));
+            } else if (e.getMessage().contains("'NoneType' object is not iterable")) {
+                mToast(getString(R.string.private_key_wrong));
+            }
+            return;
+        }
+        mToast(getString(R.string.delete_succse));
+        PreferencesManager.remove(this, Constant.WALLETS, walletName);
+        PyEnv.loadLocalWalletInfo(this);
+        EventBus.getDefault().post(new LoadOtherWalletEvent());
+        EventBus.getDefault().post(new SecondEvent("finish"));
+        finish();
     }
 
     private void dontBackup(Context context, @LayoutRes int resource) {

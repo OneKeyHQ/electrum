@@ -149,13 +149,17 @@ public class HomeOneKeyActivity extends BaseActivity implements RadioGroup.OnChe
                 String locate = preferences.getString("language", "");
 
                 String info = response.body().string();
-                UpdateInfo updateInfo = UpdateInfo.objectFromData(info);
-                String url = updateInfo.getAPK().getUrl();
-                String versionName = updateInfo.getAPK().getVersionName();
-                int versionCode = updateInfo.getAPK().getVersionCode();
-                String size = updateInfo.getAPK().getSize().replace("M", "");
-                String description = "English".equals(locate) ? updateInfo.getAPK().getChangelogEn() : updateInfo.getAPK().getChangelogCn();
-                runOnUiThread(() -> attemptUpdate(url, versionCode, versionName, size, description));
+                try {
+                    UpdateInfo updateInfo = UpdateInfo.objectFromData(info);
+                    String url = updateInfo.getAPK().getUrl();
+                    String versionName = updateInfo.getAPK().getVersionName();
+                    int versionCode = updateInfo.getAPK().getVersionCode();
+                    String size = updateInfo.getAPK().getSize().replace("M", "");
+                    String description = "English".equals(locate) ? updateInfo.getAPK().getChangelogEn() : updateInfo.getAPK().getChangelogCn();
+                    runOnUiThread(() -> attemptUpdate(url, versionCode, versionName, size, description));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
     }

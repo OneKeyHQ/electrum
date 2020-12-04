@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     android:background="@android:color/white"
     android:orientation="vertical">
 
@@ -15,35 +15,39 @@
         android:paddingTop="@dimen/dp_20"
         android:paddingRight="@dimen/dp_30"
         android:paddingBottom="@dimen/dp_20"
-        android:text="设置钱包名称"
+        android:text="@string/set_wallet_name"
         android:textColor="#142A3B"
         android:textSize="30sp" />
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:textSize="@dimen/sp_14"
+        android:text="@string/easy_to_identy"
         android:textColor="#142A3B"
-        android:text="方便您轻松识别"/>
+        android:textSize="@dimen/sp_14" />
 
     <EditText
         android:id="@+id/device_name"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_50"
+        android:layout_height="@dimen/dp_60"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/dp_26"
         android:layout_marginHorizontal="34dp"
-        android:background="@drawable/edit_text_bg"
-        android:hint="输入一个你喜欢的名称"
-        android:paddingLeft="@dimen/dp_10"/>
+        android:layout_marginTop="@dimen/dp_26"
+        android:background="@drawable/gray_broken"
+        android:hint="@string/input_you_like_name"
+        android:paddingStart="@dimen/dp_20"
+        android:paddingEnd="@dimen/dp_20" />
 
 
     <Button
         android:id="@+id/btn_next"
-        android:layout_width="300dp"
-        android:layout_height="50dp"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_60"
         android:layout_gravity="center_horizontal"
+        android:layout_marginStart="34dp"
         android:layout_marginTop="@dimen/dp_25"
+        android:layout_marginEnd="34dp"
         android:background="@drawable/btn_enable_selector"
         android:enabled="false"
         android:text="@string/next"

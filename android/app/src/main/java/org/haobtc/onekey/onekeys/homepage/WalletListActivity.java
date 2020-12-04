@@ -234,7 +234,9 @@ public class WalletListActivity extends BaseActivity {
                 }
                 break;
             case R.id.img_add:
-                createWalletChooseDialog(WalletListActivity.this, R.layout.add_wallet);
+                Intent intent00 = new Intent(this, CreateWalletChooseTypeActivity.class);
+                intent00.putExtra("ifHaveHd", hdWalletList.size());
+                startActivity(intent00);
                 break;
             case R.id.recl_add_wallet:
                 Intent intent1 = new Intent(WalletListActivity.this, CreateDeriveChooseTypeActivity.class);

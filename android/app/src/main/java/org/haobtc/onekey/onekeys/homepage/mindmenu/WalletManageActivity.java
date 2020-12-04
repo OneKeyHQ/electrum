@@ -1,12 +1,22 @@
 package org.haobtc.onekey.onekeys.homepage.mindmenu;
 
+import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import androidx.annotation.LayoutRes;
+
+import com.chaquo.python.Kwarg;
+import com.chaquo.python.PyObject;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -15,6 +25,7 @@ import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.event.FinishEvent;
 import org.haobtc.onekey.onekeys.dialog.SetHDWalletPassActivity;
 import org.haobtc.onekey.onekeys.dialog.SetLongPassActivity;
+import org.haobtc.onekey.utils.Daemon;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -64,11 +75,45 @@ public class WalletManageActivity extends BaseActivity {
                 startActivity(intent1);
                 break;
             case R.id.rel_delete_wallet:
+                hdWalletIsBackup();
+                break;
+        }
+    }
+
+    private void hdWalletIsBackup() {
+        try {
+            PyObject data = Daemon.commands.callAttr("get_backup_info", new Kwarg("name", deleteHdWalletName));
+            boolean isBackup = data.toBoolean();
+            if (isBackup) {
                 Intent intent = new Intent(WalletManageActivity.this, DeleteWalletActivity.class);
                 intent.putExtra("deleteHdWalletName", deleteHdWalletName);
                 startActivity(intent);
-                break;
+            } else {
+                //没备份提示备份
+                dontBackup(this, R.layout.confrim_delete_hdwallet);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+    }
+
+    private void dontBackup(Context context, @LayoutRes int resource) {
+        //set see view
+        View view = View.inflate(context, resource, null);
+        Dialog dialogBtoms = new Dialog(context, R.style.dialog);
+        view.findViewById(R.id.btn_back).setOnClickListener(v -> {
+            finish();
+        });
+        dialogBtoms.setContentView(view);
+        Window window = dialogBtoms.getWindow();
+        //set pop_up size
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        //set locate
+        window.setGravity(Gravity.BOTTOM);
+        //set animal
+        window.setWindowAnimations(R.style.AnimBottom);
+        dialogBtoms.setCanceledOnTouchOutside(true);
+        dialogBtoms.show();
     }
 
     @Subscribe

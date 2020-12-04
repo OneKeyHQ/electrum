@@ -44,6 +44,8 @@ public final class Constant {
 
     public static final String WALLETS = "wallets";
 
+    public static final String SELECTED_WALLET = "loadWalletName";
+
     /**
      * 当前Pin
      * */

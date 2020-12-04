@@ -40,7 +40,7 @@
     <string name="pin_setting_first">请为您的币信Key设置安全密码</string>
     <string name="confirm_pin">请再次输入您设置的安全密码</string>
     <string name="touch_again">请保持与硬件贴合</string>
-    <string name="connect">连接硬件成功</string>ƒ
+    <string name="connect">连接硬件成功</string>
     <string name="set_pin_processinfo">设置PIN码成功</string>
     <string name="activing_processinfo">激活设备中</string>
     <string name="back">返回</string>
@@ -884,7 +884,7 @@
     <string name="input_new_pass">输入新密码</string>
     <string name="use_short_pass">使用简短密码</string>
     <string name="short_pass_tip">复杂的密码安全性相对更高，设置完后要牢记，最好次不要设置的跟您其他网站的密码一样。</string>
-    <string name="set_you_pass">设置您的密码</string>
+    <string name="set_you_pass">设置主密码</string>
     <string name="input_you_pass">再输一次您的密码</string>
     <string name="long_pass_tip">我们不存储任何您的信息，因此一旦您忘记自己的密码，我们也无法帮您找回。</string>
     <string name="my_amount">我的资产</string>
@@ -950,10 +950,9 @@
     <string name="send_">发送</string>
     <string name="input_number">请输入收款账号</string>
     <string name="input_out_number">请输入转出金额</string>
-
     <string name="forword">转账</string>
     <string name="collect">收款</string>
-    <string name="wallet_detail_tip">所有由 HD 钱包根助记词派生的子钱包，都可以通过根助记词一键恢复，因此没有必要导出单个钱包的助记词。如果您要获得 HD 钱包的根助记词，请前往我的 ➡ 资产 ➡ HD 钱包进行操作。</string>
+    <string name="wallet_detail_tip">所有由 HD 钱包根助记词派生的子钱包，都可以通过根助记词一键恢复，因此没有必要导出单个钱包的助记词。如果您要获得 HD 钱包的根助记词，请前往我的 → 资产 → HD 钱包进行操作。</string>
     <string name="type">类型</string>
     <string name="wallet_detail">钱包详情</string>
     <string name="change_into">转入</string>
@@ -962,8 +961,6 @@
     <string name="support_device">目前支持 OneKey（含币信限量版）</string>
     <string name="open_cold_wallet">开启您的硬件钱包，并且靠近手机。</string>
     <string name="recovery_hd_wallet">恢复 HD 钱包</string>
-
-
     <string name="ready_active_wallet">准备一个已激活的新硬件钱包</string>
     <string name="ready_unactive_wallet">准备一个未激活的新硬件钱包</string>
     <string name="find_device">寻找设备中…</string>
@@ -1021,7 +1018,6 @@
     <string name="coin_btc">比特币</string>
     <string name="coin_eth">以太坊</string>
     <string name="coin_eos">柚子</string>
-
     <string name="manage">管理</string>
     <string name="export_word">导出 HD 钱包的根助记词</string>
     <string name="danger">危险操作</string>
@@ -1191,7 +1187,7 @@
     <string name="exit">撤回</string>
     <string name="change_pin">修改设备 PIN 码</string>
     <string name="verify_pin_onkey">校验PIN码</string>
-    <string name="long_pass_32">密码长度不应大于 32 位字符，请重新填写。</string>
+    <string name="long_pass_34">密码长度不应大于 34 位字符，请重新填写。</string>
     <string name="wrong_private">私钥输入错误，请重新输入！</string>
     <string name="have_private">已存在该私钥创建的钱包！</string>
     <string name="changemessage">导入信息已存在请更换</string>
@@ -1214,5 +1210,10 @@
     <string name="pass_lenth_tip">密码长度不应小于 8 位字符，建议使用大小写字母、数字、特殊字符混用的高复杂度密码。</string>
     <string name="input_again">重新填写</string>
     <string name="invalid_address">输入地址不可用，请重新输入</string>
+    <string name="what_is_hd_">什么是HD钱包？</string>
+    <string name="private_invalid">请输入正确的地址或公钥！</string>
+    <string name="easy_to_identy">方便您轻松识别</string>
+    <string name="input_you_like_name">输入一个你喜欢的名称</string>
+    <string name="device">设备</string>
 
 </resources>

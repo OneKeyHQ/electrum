@@ -18,7 +18,7 @@
             android:layout_centerHorizontal="true"
             android:layout_gravity="center"
             android:layout_marginTop="@dimen/dp_30"
-            android:text="@string/wallet_list"
+            android:text="@string/add_wallet_"
             android:textColor="@color/text_two"
             android:textSize="@dimen/sp_18" />
 

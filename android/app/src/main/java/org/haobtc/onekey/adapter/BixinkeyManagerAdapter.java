@@ -26,6 +26,6 @@ public class BixinkeyManagerAdapter extends BaseQuickAdapter<HardwareFeatures, B
         }
 
         helper.addOnClickListener(R.id.relativeLayout_bixinkey);
-        helper.addOnClickListener(R.id.linear_delete);
+//        helper.addOnClickListener(R.id.linear_delete);
     }
 }

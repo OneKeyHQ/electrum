@@ -71,7 +71,8 @@ public final class PyEnv {
         Daemon.initCommands();
         sCommands = Daemon.commands;
         // 加载钱包信息
-//        loadLocalWalletInfo(context);
+        sCommands.callAttr(PyConstant.LOAD_ALL_WALLET);
+        loadLocalWalletInfo(context);
     }
 
     /**
@@ -225,6 +226,8 @@ public final class PyEnv {
         mexecutorService.execute(() -> {
             try {
                 sCommands.callAttr(PyConstant.CREATE_WALLET_BY_XPUB, walletName, m, n, xPubs);
+                PreferencesManager.put(activity, "Preferences", Constant.SELECTED_WALLET, walletName);
+                loadLocalWalletInfo(activity);
                 EventBus.getDefault().post(new CreateSuccessEvent());
             } catch (Exception e) {
                 e.printStackTrace();
@@ -247,9 +250,7 @@ public final class PyEnv {
      * 加载本地钱包信息
      */
     public static void loadLocalWalletInfo(Context context) {
-
         try {
-            sCommands.callAttr(PyConstant.LOAD_ALL_WALLET);
             String walletsInfo = sCommands.callAttr(PyConstant.GET_WALLETS_INFO).toString();
             if (!Strings.isNullOrEmpty(walletsInfo)) {
                 JsonArray wallets = JsonParser.parseString(walletsInfo).getAsJsonArray();

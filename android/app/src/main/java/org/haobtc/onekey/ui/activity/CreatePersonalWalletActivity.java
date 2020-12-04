@@ -1,5 +1,6 @@
 package org.haobtc.onekey.ui.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ImageView;
 
@@ -18,6 +19,7 @@ import org.haobtc.onekey.event.CreateWalletEvent;
 import org.haobtc.onekey.event.GetXpubEvent;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.mvp.base.BaseActivity;
+import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
 import org.haobtc.onekey.ui.fragment.AddAssetFragment;
 import org.haobtc.onekey.ui.fragment.DevicePINFragment;
 import org.haobtc.onekey.ui.fragment.SetWalletNameFragment;
@@ -112,7 +114,7 @@ public class CreatePersonalWalletActivity extends BaseActivity implements Busine
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onCreateWalletSuccess(CreateSuccessEvent event) {
-        PyEnv.loadLocalWalletInfo(this);
+        startActivity(new Intent(this, HomeOneKeyActivity.class));
         finish();
     }
 
@@ -146,6 +148,7 @@ public class CreatePersonalWalletActivity extends BaseActivity implements Busine
     public void currentMethod(String methodName) {
 
     }
+
     @SingleClick
     @OnClick(R.id.img_back)
     public void onViewClicked() {
