@@ -292,7 +292,7 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
         self.db.put("name", self.name)
 
     def get_name(self):
-        return self.name if self.name != "" else '%s...%s' % (self.get_addresses()[0][0:6], self.get_addresses()[0][-6:])
+        return self.name if self.name != "" or self.name != None else '%s...%s' % (self.get_addresses()[0][0:6], self.get_addresses()[0][-6:])
 
     def save_db(self):
         if self.storage and not self.hide_type:
@@ -1231,9 +1231,9 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
 
         # Timelock tx to current height.
         tx.locktime = get_locktime_for_new_transaction(self.network)
-        for txin in tx.inputs():
-            if txin.block_height == TX_HEIGHT_LOCAL:
-                raise BaseException("Please broadcast the parent tx!!")
+        # for txin in tx.inputs():
+        #     if txin.block_height == TX_HEIGHT_LOCAL:
+        #         raise BaseException("Please broadcast the parent tx!!")
         tx.add_info_from_wallet(self)
         run_hook('make_unsigned_transaction', self, tx)
         return tx
