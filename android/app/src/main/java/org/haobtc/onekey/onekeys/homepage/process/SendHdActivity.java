@@ -33,21 +33,33 @@ import androidx.annotation.LayoutRes;
 
 import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.activities.base.MyApplication;
+import org.haobtc.onekey.asynctask.BusinessAsyncTask;
 import org.haobtc.onekey.bean.GetAddressBean;
 import org.haobtc.onekey.bean.GetnewcreatTrsactionListBean;
 import org.haobtc.onekey.bean.GetsendFeenumBean;
+import org.haobtc.onekey.constant.Constant;
+import org.haobtc.onekey.constant.PyConstant;
+import org.haobtc.onekey.event.ButtonRequestEvent;
+import org.haobtc.onekey.event.ChangePinEvent;
+import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.event.FinishEvent;
 import org.haobtc.onekey.event.InputPassSendEvent;
 import org.haobtc.onekey.event.SecondEvent;
+import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.dialog.SetHDWalletPassActivity;
 import org.haobtc.onekey.onekeys.dialog.SetLongPassActivity;
 import org.haobtc.onekey.onekeys.dialog.recovery.importmethod.ImportPrivateKeyActivity;
+import org.haobtc.onekey.ui.activity.ConfirmOnHardWareActivity;
+import org.haobtc.onekey.ui.activity.VerifyPinActivity;
 import org.haobtc.onekey.utils.Daemon;
 
 import java.math.BigDecimal;
@@ -60,7 +72,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class SendHdActivity extends BaseActivity implements TextWatcher {
+public class SendHdActivity extends BaseActivity implements TextWatcher, BusinessAsyncTask.Helper {
 
     @BindView(R.id.edit_input_address)
     EditText editInputAddress;
@@ -138,6 +150,9 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
     private float slowFeeForChild;
     private float customFeeForChild;
     private String showWalletType;
+    private String  infoFromRaw;
+    private String signedTx;
+
 
     @Override
     public int getLayoutId() {
@@ -280,15 +295,18 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
                         return;
                     }
                 }
-                PyObject infoFromRaw = null;
                 try {
-                    infoFromRaw = Daemon.commands.callAttr("get_tx_info_from_raw", useTx);
+                    infoFromRaw = Daemon.commands.callAttr("get_tx_info_from_raw", useTx).toString();
                 } catch (Exception e) {
                     e.printStackTrace();
                     return;
                 }
-                if (!TextUtils.isEmpty(infoFromRaw.toString())) {
-                    sendConfirmDialog(SendHdActivity.this, R.layout.send_confirm_dialog, infoFromRaw.toString());
+                if (Constant.WALLET_TYPE_HARDWARE.equals(showWalletType)) {
+                    sendCurrency("");
+                    return;
+                }
+                if (!TextUtils.isEmpty(infoFromRaw)) {
+                    sendConfirmDialog(SendHdActivity.this, R.layout.send_confirm_dialog, infoFromRaw);
                 }
                 break;
             case R.id.img_paste:
@@ -329,7 +347,7 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
         bigRecommendFee = bigDecimalSum2.subtract(bigDecimalFee2);//推荐的最大费
         tetamount.setText(String.valueOf(bigRecommendFee));
     }
-
+    private String rawTx;
     private void sendCurrency(String pass) {
         PyObject mktx;
         try {
@@ -348,9 +366,13 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
             String jsonObj = mktx.toString();
             Gson gson = new Gson();
             GetAddressBean getAddressBean = gson.fromJson(jsonObj, GetAddressBean.class);
-            String rowtx = getAddressBean.getTx();
+            rawTx = getAddressBean.getTx();
             //sign
-            signTx(rowtx, pass);
+            if (Constant.WALLET_TYPE_HARDWARE.equals(showWalletType)) {
+                hardwareSign(rawTx);
+            } else {
+                signTx(rawTx, pass);
+            }
 
         }
 
@@ -359,16 +381,9 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
     //sign
     private void signTx(String rowtx, String password) {
         try {
-            PyObject signContent = Daemon.commands.callAttr("sign_tx", rowtx, "", new Kwarg("password", password));
-            if (!TextUtils.isEmpty(signContent.toString())) {
-                Gson gson = new Gson();
-                GetnewcreatTrsactionListBean trsactionListBean = gson.fromJson(signContent.toString(), GetnewcreatTrsactionListBean.class);
-                Daemon.commands.callAttr("broadcast_tx", trsactionListBean.getTx());
-                Intent intent = new Intent(SendHdActivity.this, DetailTransactionActivity.class);
-                intent.putExtra("txDetail", rowtx);
-                startActivity(intent);
-                EventBus.getDefault().post(new SecondEvent("finish"));
-                finish();
+            String signContent = Daemon.commands.callAttr("sign_tx", rowtx, "", new Kwarg("password", password)).toString();
+            if (!Strings.isNullOrEmpty(signContent)) {
+                broacastTx(rowtx, signContent);
             }
         } catch (Exception e) {
             if (e.getMessage().contains("Incorrect password")) {
@@ -379,6 +394,17 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
 
     }
 
+    private void broacastTx(String rowtx, String signContent) {
+        Gson gson = new Gson();
+        GetnewcreatTrsactionListBean trsactionListBean = gson.fromJson(signContent.toString(), GetnewcreatTrsactionListBean.class);
+        Daemon.commands.callAttr("broadcast_tx", trsactionListBean.getTx());
+        Intent intent = new Intent(SendHdActivity.this, DetailTransactionActivity.class);
+        intent.putExtra("txDetail", rowtx);
+        startActivity(intent);
+        EventBus.getDefault().post(new SecondEvent("finish"));
+        finish();
+    }
+    private Button confirmBtn;
     private void sendConfirmDialog(Context context, @LayoutRes int resource, String detail) {
         Gson gson = new Gson();
         GetnewcreatTrsactionListBean fromJson = gson.fromJson(detail, GetnewcreatTrsactionListBean.class);
@@ -386,9 +412,12 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
         //set see view
         View view = View.inflate(context, resource, null);
         Dialog dialogBtoms = new Dialog(context, R.style.dialog);
-        Button confirmBtn = view.findViewById(R.id.btn_confirm_pay);
+        confirmBtn = view.findViewById(R.id.btn_confirm_pay);
         if (showWalletType.contains("watch")) {
             confirmBtn.setText(getString(R.string.confirm));
+        } else if(Constant.WALLET_TYPE_HARDWARE.equals(showWalletType)) {
+            confirmBtn.setText("在设备进行确认");
+            confirmBtn.setEnabled(false);
         }
         TextView txAmount = view.findViewById(R.id.text_tx_amount);
         txAmount.setText(String.format("%s%s", tetamount.getText().toString(), preferences.getString("base_unit", "")));
@@ -410,6 +439,8 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
         confirmBtn.setOnClickListener(v -> {
             if (showWalletType.contains("watch")) {
                 dialogBtoms.dismiss();
+            } else if(Constant.WALLET_TYPE_HARDWARE.equals(showWalletType)) {
+                broacastTx(rawTx, signedTx);
             } else {
                 //sign trsaction
                 if ("short".equals(preferences.getString("shortOrLongPass", "short"))) {
@@ -896,5 +927,70 @@ public class SendHdActivity extends BaseActivity implements TextWatcher {
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
+    }
+    /**
+     * 硬件签名方法
+     * */
+    private void hardwareSign(String rawTx) {
+        new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.SIGN_TX,
+                rawTx,
+                MyApplication.getInstance().getDeviceWay());
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onChangePin(ChangePinEvent event) {
+        // 回写PIN码
+        PyEnv.setPin(event.toString());
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onButtonRequest(ButtonRequestEvent event) {
+        switch (event.getType()) {
+            case PyConstant.PIN_CURRENT:
+                Intent intent = new Intent(this, VerifyPinActivity.class);
+                startActivity(intent);
+                break;
+            case PyConstant.BUTTON_REQUEST_7:
+                        break;
+            case PyConstant.BUTTON_REQUEST_8:
+                EventBus.getDefault().post(new ExitEvent());
+                sendConfirmDialog(SendHdActivity.this, R.layout.send_confirm_dialog, infoFromRaw);
+                    break;
+            default:
+
+        }
+    }
+    @Override
+    public void onPreExecute() {
+
+    }
+
+    @Override
+    public void onException(Exception e) {
+        mlToast(e.getMessage());
+    }
+
+    @Override
+    public void onResult(String s) {
+        if (!Strings.isNullOrEmpty(s)) {
+            signedTx = s;
+            confirmBtn.setEnabled(true);
+        } else {
+            finish();
+        }
+    }
+
+    @Override
+    public void onCancelled() {
+
+    }
+
+    @Override
+    public void currentMethod(String methodName) {
+
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        System.out.println("fuck you in send page!!!!!!!!!");
     }
 }

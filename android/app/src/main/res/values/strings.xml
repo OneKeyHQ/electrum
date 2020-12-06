@@ -944,7 +944,7 @@
     <string name="internet">network</string>
     <string name="transaction_set">Tx settings (Advanced)</string>
     <string name="mind_tip">Privacy policies, usage protocols, and open source software.</string>
-    <string name="_0">$0</string>
+    <string name="_0">$ 0</string>
     <string name="_00">≈ $ 0</string>
     <string name="_1">1</string>
     <string name="recovery_hd__tip"><b>Once the mnemonics are imported, they will be encrypted and stored in your local device and properly kept.</b>OneKey does not store any private data and cannot help you retrieve it.</string>
@@ -1275,4 +1275,20 @@
     <string name="input_you_like_name">Enter a name you like</string>
     <string name="device">Device</string>
 
+    <string name="import_success_description">您的助记词已经成功备份到这台设备， 我们也没什么可提醒您的了。 总之，切记保管好它， 搞丢了没有任何人可以帮您找回来。 祝您在区块链的世界玩儿开心❤️。</string>
+    <string name="success_1">大功告成</string>
+    <string name="change_pin_promote">干的好，继续根据设备\n 上的 PIN 码位置\n 设置您的新6位 PIN 码</string>
+    <string name="input_pin_promote">请输入PIN码</string>
+    <string name="set_pin_promote">根据设备显示的\n PIN 码位置对照表\n 输入您曾设置的6位密码</string>
+    <string name="mnemonic_word_12_crete_promote">创建 12 位助记词钱包↑</string>
+    <string name="mnemonic_word_24_crete_promote">创建 24 位助记词钱包↑</string>
+    <string name="mnemonic_word_12_generate_promote">硬件钱包将为你生成 12 位助记词</string>
+    <string name="mnemonic_word_24_generate_promote">硬件钱包将为你生成 24 位助记词</string>
+    <string name="recovery_wallet_select_promote">请至少选择一个你要恢复的钱包</string>
+    <string name="name_empty">名称不能为空</string>
+    <string name="write_mnemonic_24">请抄写你的 24 位助记词</string>
+    <string name="upgrading_hardware">正在升级固件</string>
+    <string name="uploading_hardware_and_wait">固件下载中，请耐心等待</string>
+    <string name="verify_failed_network">连接Onekey\n\n认证服务器失败\n\n请查看你的网络</string>
+    <string name="verify_failed_hide_hardware">未能从你的硬件设备中获取签名信息</string>
 </resources>

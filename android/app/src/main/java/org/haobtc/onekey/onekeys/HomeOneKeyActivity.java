@@ -1,6 +1,7 @@
 package org.haobtc.onekey.onekeys;
 
-import android.content.SharedPreferences;
+import android.content.Intent;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.FrameLayout;
 import android.widget.RadioButton;
@@ -11,20 +12,23 @@ import com.azhon.appupdate.config.UpdateConfiguration;
 import com.azhon.appupdate.listener.OnDownloadListener;
 import com.azhon.appupdate.manager.DownloadManager;
 import com.azhon.appupdate.utils.ApkUtil;
+import com.google.common.base.Strings;
+import com.google.gson.JsonSyntaxException;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.BuildConfig;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.bean.UpdateInfo;
+import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.CreateSuccessEvent;
-import org.haobtc.onekey.manager.BleManager;
 import org.haobtc.onekey.manager.HardwareCallbackHandler;
+import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
-import org.haobtc.onekey.mvp.base.BaseActivity;
 import org.haobtc.onekey.onekeys.homepage.DiscoverFragment;
 import org.haobtc.onekey.onekeys.homepage.MindFragment;
 import org.haobtc.onekey.onekeys.homepage.WalletFragment;
+import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.ui.dialog.AppUpdateDialog;
 
 import java.io.File;
@@ -36,6 +40,8 @@ import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+
+import static java.net.HttpURLConnection.HTTP_OK;
 
 /**
  * @author liyan
@@ -50,6 +56,24 @@ public class HomeOneKeyActivity extends BaseActivity implements RadioGroup.OnChe
     private DownloadManager manager;
     private AppUpdateDialog updateDialog;
 
+    /***
+     * init layout
+     * @return
+     */
+    @Override
+    public int getContentViewId() {
+        return R.layout.activity_home_onekey;
+    }
+
+    @Override
+    public boolean needEvents() {
+        return true;
+    }
+
+    @Override
+    public boolean requireSecure() {
+        return true;
+    }
 
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -63,13 +87,13 @@ public class HomeOneKeyActivity extends BaseActivity implements RadioGroup.OnChe
             case R.id.radio_three:
                 startFragment(new MindFragment());
                 break;
-
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onCreateWalletSuccess(CreateSuccessEvent event) {
         PyEnv.loadLocalWalletInfo(this);
+        PreferencesManager.put(this, "Preferences", Constant.CURRENT_SELECTED_WALLET, event.getName());
     }
 
     /**
@@ -79,8 +103,12 @@ public class HomeOneKeyActivity extends BaseActivity implements RadioGroup.OnChe
     public void init() {
         HardwareCallbackHandler callbackHandler = HardwareCallbackHandler.getInstance(this);
         PyEnv.setHandle(callbackHandler);
-        BleManager.getInstance(this);
+//        BleManager.getInstance(this);
         getUpdateInfo();
+        refreshView();
+    }
+
+    private void refreshView() {
         // 默认让主页被选中
         startFragment(new WalletFragment());
         // radiobutton长度
@@ -107,19 +135,6 @@ public class HomeOneKeyActivity extends BaseActivity implements RadioGroup.OnChe
         return super.onKeyDown(keyCode, event);
     }
 
-    /***
-     * init layout
-     * @return
-     */
-    @Override
-    public int getContentViewId() {
-        return R.layout.activity_home_onekey;
-    }
-
-    @Override
-    public boolean needEvents() {
-        return true;
-    }
     private void getUpdateInfo() {
         // version_testnet.json version_regtest.json
         String appId = BuildConfig.APPLICATION_ID;
@@ -139,27 +154,46 @@ public class HomeOneKeyActivity extends BaseActivity implements RadioGroup.OnChe
         call.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
                 System.out.println("获取更新信息失败");
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 assert response.body() != null;
-                SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-                String locate = preferences.getString("language", "");
-
+                if (response.code() !=  HTTP_OK) {
+                    Log.e("Main", "获取更新信息失败==="+ response.body().string());
+                    return;
+                }
+                String locate = PreferencesManager.get(HomeOneKeyActivity.this, "Preferences", Constant.LANGUAGE, "").toString();
                 String info = response.body().string();
+                UpdateInfo updateInfo = null;
                 try {
-                    UpdateInfo updateInfo = UpdateInfo.objectFromData(info);
-                    String url = updateInfo.getAPK().getUrl();
-                    String versionName = updateInfo.getAPK().getVersionName();
-                    int versionCode = updateInfo.getAPK().getVersionCode();
-                    String size = updateInfo.getAPK().getSize().replace("M", "");
-                    String description = "English".equals(locate) ? updateInfo.getAPK().getChangelogEn() : updateInfo.getAPK().getChangelogCn();
-                    runOnUiThread(() -> attemptUpdate(url, versionCode, versionName, size, description));
+                    updateInfo = UpdateInfo.objectFromData(info);
                 } catch (Exception e) {
                     e.printStackTrace();
+                    if (e instanceof JsonSyntaxException) {
+                        Log.e("Main", "获取到的更新信息格式错误");
+                    }
+                    return;
                 }
+                String oldInfo = PreferencesManager.get(HomeOneKeyActivity.this, "Preferences", Constant.UPGRADE_INFO, "").toString();
+                if (!Strings.isNullOrEmpty(oldInfo)) {
+                    UpdateInfo old = UpdateInfo.objectFromData(oldInfo);
+                    if (!old.getStm32().getUrl().equals(updateInfo.getStm32().getUrl())) {
+                        updateInfo.getStm32().setNeedUpload(true);
+                    }
+                    if (!old.getNrf().getUrl().equals(updateInfo.getNrf().getUrl())) {
+                        updateInfo.getNrf().setNeedUpload(true);
+                    }
+                }
+                PreferencesManager.put(HomeOneKeyActivity.this, "Preferences", Constant.UPGRADE_INFO, updateInfo.toString());
+                String url = updateInfo.getAPK().getUrl();
+                String versionName = updateInfo.getAPK().getVersionName();
+                int versionCode = updateInfo.getAPK().getVersionCode();
+                String size = updateInfo.getAPK().getSize().replace("M", "");
+                String description = "English".equals(locate) ? updateInfo.getAPK().getChangelogEn() : updateInfo.getAPK().getChangelogCn();
+                runOnUiThread(() -> attemptUpdate(url, versionCode, versionName, size, description));
             }
         });
     }
@@ -167,7 +201,6 @@ public class HomeOneKeyActivity extends BaseActivity implements RadioGroup.OnChe
     private void attemptUpdate(String uri,  int versionCode, String versionName, String size, String description) {
         int versionCodeLocal  = ApkUtil.getVersionCode(this);
         if (versionCodeLocal >= versionCode) {
-//            showToast("当前是最新版本");
             return;
         }
 
@@ -181,7 +214,6 @@ public class HomeOneKeyActivity extends BaseActivity implements RadioGroup.OnChe
                 .setEnableLog(true)
                 .setJumpInstallPage(true)
                 .setShowNotification(true)
-                .setShowBgdToast(true)
                 .setForcedUpgrade(false)
                 .setOnDownloadListener(this);
 
@@ -189,8 +221,7 @@ public class HomeOneKeyActivity extends BaseActivity implements RadioGroup.OnChe
         manager.setApkName("oneKey.apk")
                 .setApkUrl(url)
                 .setSmallIcon(R.drawable.logo_square)
-                .setConfiguration(configuration)
-                .download();
+                .setConfiguration(configuration);
         updateDialog = new AppUpdateDialog(manager, versionName, description);
         updateDialog.show(getSupportFragmentManager(), "");
     }
@@ -202,7 +233,7 @@ public class HomeOneKeyActivity extends BaseActivity implements RadioGroup.OnChe
 
     @Override
     public void downloading(int max, int progress) {
-        updateDialog.progressBar.setProgress((int)((float)progress/max)*100);
+        updateDialog.progressBar.setProgress((int)(((float)progress/max)*100));
     }
 
     @Override
@@ -217,5 +248,12 @@ public class HomeOneKeyActivity extends BaseActivity implements RadioGroup.OnChe
 
     @Override
     public void error(Exception e) {
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        System.out.println("fuck you in home page!!!!!!!!!");
+        refreshView();
     }
 }

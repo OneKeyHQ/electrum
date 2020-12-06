@@ -184,9 +184,9 @@ public class WalletDetailsActivity extends BaseActivity {
                         String firmwareVersion = "V" + addEventsDatas.get(position).getMajorVersion() + "." + addEventsDatas.get(position).getMinorVersion() + "." + addEventsDatas.get(position).getPatchVersion();
                         Intent intent = new Intent(WalletDetailsActivity.this, HardwareDetailsActivity.class);
                         intent.putExtra("label", addEventsDatas.get(position).getLabel());
-                        intent.putExtra("bleName", addEventsDatas.get(position).getBleName());
-                        intent.putExtra("firmwareVersion", firmwareVersion);
-                        intent.putExtra("bleVerson", "V" + addEventsDatas.get(position).getMajorVersion() + "." + addEventsDatas.get(position).getPatchVersion());
+                        intent.putExtra("ble_name", addEventsDatas.get(position).getBleName());
+                        intent.putExtra("firmware_version", firmwareVersion);
+                        intent.putExtra("ble_version", "V" + addEventsDatas.get(position).getMajorVersion() + "." + addEventsDatas.get(position).getPatchVersion());
                         intent.putExtra("device_id", addEventsDatas.get(position).getDeviceId());
                         startActivity(intent);
                     }

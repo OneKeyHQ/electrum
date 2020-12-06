@@ -1,12 +1,26 @@
 package org.haobtc.onekey.manager;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.content.Intent;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Bundle;
+import android.provider.Settings;
+import android.view.Display;
+import android.view.Gravity;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentActivity;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import org.greenrobot.eventbus.EventBus;
@@ -15,8 +29,9 @@ import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.PyConstant;
 import org.haobtc.onekey.event.BleScanStopEvent;
 import org.haobtc.onekey.event.NotifySuccessfulEvent;
-import org.haobtc.onekey.mvp.base.IBaseView;
 import org.haobtc.onekey.utils.CommonUtils;
+
+import java.util.Objects;
 
 import cn.com.heaton.blelibrary.ble.Ble;
 import cn.com.heaton.blelibrary.ble.callback.BleConnectCallback;
@@ -26,6 +41,8 @@ import cn.com.heaton.blelibrary.ble.callback.BleScanCallback;
 import cn.com.heaton.blelibrary.ble.callback.BleWriteCallback;
 import cn.com.heaton.blelibrary.ble.model.BleDevice;
 
+import static android.content.Context.LOCATION_SERVICE;
+
 /**
  * ble
  * @author liyan
@@ -33,7 +50,6 @@ import cn.com.heaton.blelibrary.ble.model.BleDevice;
 public final class BleManager {
 
     private Ble<BleDevice> mBle;
-    private BleDevice mBleDevice;
     private BleScanCallback<BleDevice> mBleScanCallBack;
     private static volatile BleManager sInstance;
     private FragmentActivity fragmentActivity;
@@ -60,7 +76,9 @@ public final class BleManager {
      * init ble
      */
     public void initBle() {
-        mBle = Ble.getInstance();
+        if (mBle == null) {
+            mBle = Ble.getInstance();
+        }
         if (mBleScanCallBack == null) {
             mBleScanCallBack = new BleScanCallback<BleDevice>() {
                 @Override
@@ -86,21 +104,23 @@ public final class BleManager {
             };
         }
 
-        final RxPermissions permissions = new RxPermissions(fragmentActivity);
-        permissions.request(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION)
+        RxPermissions permissions = new RxPermissions(fragmentActivity);
+        // 收不到回调，要手动监听
+        permissions.requestEach(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
                 .subscribe(
-                        granted -> {
-                            if (granted) {
-                                if (mBle.isBleEnable()) {
+                        permission -> {
+                            if (permission.granted) {
                                     refreshBleDeviceList();
-                                    return;
-                                }
-                                openBle();
-                            } else {
-                                if (fragmentActivity != null) {
-                                    ((IBaseView)fragmentActivity).showToast(R.string.no_permission);
-                                }
                             }
+//                            else if (permission.shouldShowRequestPermissionRationale) {
+//                                // 用户拒绝了该权限，没有选中『不再询问』（Never ask again）,那么下次再次启动时，还会提示请求权限的对话框
+//                                if (fragmentActivity != null) {
+//                                    ((IBaseView)fragmentActivity).showToast(R.string.blurtooth_need_permission);
+//                                }
+//                            } else {
+//                                //todo: 用户拒绝了该权限，并且选中『不再询问』，提醒用户手动打开权限
+//
+//                            }
                         }
                 ).dispose();
     }
@@ -122,7 +142,9 @@ public final class BleManager {
             return;
         }
         if (mBle.isBleEnable()) {
-            mBle.startScan(mBleScanCallBack);
+            if (checkGpsEnable()) {
+                mBle.startScan(mBleScanCallBack);
+            }
         } else {
            openBle();
         }
@@ -144,24 +166,31 @@ public final class BleManager {
      */
     public void connDev(BleDevice device) {
         if (device.isConnected()) {
+            System.out.println("notify 11111");
             EventBus.getDefault().post(new NotifySuccessfulEvent());
             return;
         }
-        mBleDevice = device;
-        BluetoothDevice mBluetoothDevice = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(mBleDevice.getBleAddress());
-        Ble.getInstance().getConnetedDevices().stream().filter(bleDevice -> !bleDevice.getBleAddress()
-                .equals(mBleDevice.getBleAddress())).forEach(bleDevice -> Ble.getInstance().disconnect(bleDevice));
-        Ble.getInstance().connect(mBleDevice, mConnectCallback);
+        disconnectAllOther(device.getBleAddress());
+        Ble.getInstance().connect(device, mConnectCallback);
     }
 
+    public void disconnectAllOther(String mac) {
+        Ble.getInstance().getConnetedDevices().stream().filter(bleDevice -> !bleDevice.getBleAddress()
+                .equals(mac)).forEach(bleDevice -> Ble.getInstance().disconnect(bleDevice));
+    }
     /**
      * conn ble device by mac address
      *
      * @param device
      */
     public void connDevByMac(String device) {
-        PyEnv.cancelAll();
-        Ble.getInstance().connect(device, mConnectCallback);
+        disconnectAllOther(device);
+        System.out.println("========111111" + Ble.getInstance().getConnetedDevices().size());
+        if (Ble.getInstance().getConnetedDevices().isEmpty()) {
+            Ble.getInstance().connect(device, mConnectCallback);
+        } else {
+            EventBus.getDefault().postSticky(new NotifySuccessfulEvent());
+        }
     }
 
     /**
@@ -215,6 +244,7 @@ public final class BleManager {
                     public void onMtuChanged(BleDevice device, int mtu, int status) {
                         super.onMtuChanged(device, mtu, status);
                         PyEnv.bleEnable(device, mWriteCallBack);
+                        System.out.println("notify 2222222");
                         EventBus.getDefault().post(new NotifySuccessfulEvent());
                     }
 
@@ -244,5 +274,79 @@ public final class BleManager {
             buffer.delete(0, buffer.length());
         }
     }
+    /**
+     * 定位功能监控
+     * */
+    private final LocationListener locationListener = new LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
 
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+            if (LocationManager.GPS_PROVIDER.equals(provider)) {
+                isGpsStatusChange = true;
+            }
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+
+        }
+    };
+    private LocationManager locationManager;
+    private AlertDialog alertDialog;
+    private boolean isGpsStatusChange;
+
+    public boolean isGpsStatusChange() {
+        return isGpsStatusChange;
+    }
+
+    public void setGpsStatusChange(boolean gpsStatusChange) {
+        isGpsStatusChange = gpsStatusChange;
+    }
+
+    public AlertDialog getAlertDialog() {
+        return alertDialog;
+    }
+    @SuppressLint("MissingPermission")
+    private boolean checkGpsEnable() {
+        if (locationManager == null) {
+            locationManager = (LocationManager) Objects.requireNonNull(fragmentActivity.getSystemService(LOCATION_SERVICE));
+        }
+        boolean ok = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        if (!ok) {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, (float) 0, locationListener);
+            alertDialog = new MaterialAlertDialogBuilder(fragmentActivity)
+                    .setTitle(R.string.open_location_service)
+                    .setMessage(R.string.promote_ble)
+                    .setNegativeButton(R.string.cancel, (dialog, which) -> {
+                        Toast.makeText(fragmentActivity, fragmentActivity.getString(R.string.dont_use_bluetooth), Toast.LENGTH_SHORT).show();
+                        locationManager.removeUpdates(locationListener);
+                        dialog.dismiss();
+                    })
+                    .setPositiveButton(R.string.confirm, (dialog, which) -> {
+                        Intent intent = new Intent();
+                        intent.setAction(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        fragmentActivity.startActivity(intent);
+                    })
+                    .create();
+            alertDialog.show();
+            //show center
+            Window dialogWindow = alertDialog.getWindow();
+            WindowManager m = fragmentActivity.getWindowManager();
+            Display d = m.getDefaultDisplay();
+            WindowManager.LayoutParams p = dialogWindow.getAttributes();
+            p.width = (int) (d.getWidth() * 0.95);
+            p.gravity = Gravity.CENTER;
+            dialogWindow.setAttributes(p);
+        }
+        return ok;
+    }
 }

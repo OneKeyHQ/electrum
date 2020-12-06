@@ -1,6 +1,5 @@
 package org.haobtc.onekey.ui.dialog;
 
-import android.view.SearchEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -9,7 +8,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.event.DeviceSearchEvent;
-import org.haobtc.onekey.mvp.base.BaseDialogFragment;
+import org.haobtc.onekey.ui.base.BaseDialogFragment;
 
 import butterknife.BindView;
 import butterknife.OnClick;

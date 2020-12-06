@@ -103,7 +103,7 @@ public class RecoveryChooseWalletActivity extends BaseActivity {
                         return;
                     }
                     PyEnv.loadLocalWalletInfo(this);
-                    edit.putString("loadWalletName", "BTC-1");
+                    edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET, "BTC-1");
                     edit.apply();
                     mIntent(HomeOneKeyActivity.class);
                 } else {

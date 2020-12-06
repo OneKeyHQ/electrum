@@ -66,21 +66,6 @@ public class SetShutdownTimeActivity extends BaseActivity implements TextWatcher
                     mToast(getString(R.string.please_input_time));
                     return;
                 }
-                int shutdownTime = Integer.parseInt(time);
-                if (shutdownTime < 10) {
-                    mToast(getString(R.string.little_time));
-                    return;
-                }
-                if (Ble.getInstance().getConnetedDevices().size() != 0) {
-                    if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(bleName)) {
-                        EventBus.getDefault().postSticky(new HandlerEvent());
-                    }
-                }
-                CommunicationModeSelector.runnables.clear();
-                Intent intent = new Intent(this, CommunicationModeSelector.class);
-                intent.putExtra("tag", TAG);
-                intent.putExtra("shutdown_time", time);
-                startActivity(intent);
                 break;
             default:
         }

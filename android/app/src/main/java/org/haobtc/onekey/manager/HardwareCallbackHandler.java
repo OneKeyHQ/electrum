@@ -12,8 +12,8 @@ import org.haobtc.onekey.event.ButtonRequestEvent;
 
 import static org.haobtc.onekey.constant.PyConstant.BUTTON_REQUEST_6;
 import static org.haobtc.onekey.constant.PyConstant.BUTTON_REQUEST_7;
+import static org.haobtc.onekey.constant.PyConstant.BUTTON_REQUEST_8;
 import static org.haobtc.onekey.constant.PyConstant.BUTTON_REQUEST_9;
-import static org.haobtc.onekey.constant.PyConstant.PASS_NEW_PASSPHRASS;
 import static org.haobtc.onekey.constant.PyConstant.PASS_PASSPHRASS;
 import static org.haobtc.onekey.constant.PyConstant.PIN_CURRENT;
 import static org.haobtc.onekey.constant.PyConstant.PIN_NEW_FIRST;
@@ -70,6 +70,8 @@ public class HardwareCallbackHandler extends Handler {
                 break;
             case BUTTON_REQUEST_6:
                 EventBus.getDefault().post(new ButtonRequestEvent(BUTTON_REQUEST_6));
+            case BUTTON_REQUEST_8:
+                EventBus.getDefault().post(new ButtonRequestEvent(BUTTON_REQUEST_8));
 //            case PASS_NEW_PASSPHRASS:
             case PASS_PASSPHRASS:
                 break;

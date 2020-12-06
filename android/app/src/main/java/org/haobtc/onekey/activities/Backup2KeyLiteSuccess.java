@@ -5,6 +5,7 @@ import android.widget.ImageView;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.event.FinishEvent;
 
 import butterknife.BindView;
@@ -35,7 +36,7 @@ public class Backup2KeyLiteSuccess extends BaseActivity {
     public void initData() {
 
     }
-
+    @SingleClick
     @OnClick(R.id.img_back)
     public void onViewClicked() {
         EventBus.getDefault().post(new FinishEvent());

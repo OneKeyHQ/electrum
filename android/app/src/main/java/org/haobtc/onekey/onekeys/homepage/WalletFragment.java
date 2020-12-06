@@ -28,7 +28,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONArray;
-import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
@@ -42,14 +41,18 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.sign.SignActivity;
-import org.haobtc.onekey.bean.BalanceInfo;
+import org.haobtc.onekey.aop.SingleClick;
+import org.haobtc.onekey.bean.HardwareFeatures;
 import org.haobtc.onekey.bean.LocalWalletInfo;
 import org.haobtc.onekey.bean.MainSweepcodeBean;
-import org.haobtc.onekey.data.prefs.PreferencesManager;
 import org.haobtc.onekey.event.BackupEvent;
+import org.haobtc.onekey.event.BleConnectedEvent;
 import org.haobtc.onekey.event.FixWalletNameEvent;
 import org.haobtc.onekey.event.LoadOtherWalletEvent;
 import org.haobtc.onekey.event.SecondEvent;
+import org.haobtc.onekey.manager.BleManager;
+import org.haobtc.onekey.manager.PreferencesManager;
+import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.backup.BackupGuideActivity;
 import org.haobtc.onekey.onekeys.dialog.RecoverHdWalletActivity;
 import org.haobtc.onekey.onekeys.dialog.SetHDWalletPassActivity;
@@ -60,15 +63,13 @@ import org.haobtc.onekey.onekeys.homepage.process.ReceiveHDActivity;
 import org.haobtc.onekey.onekeys.homepage.process.SendHdActivity;
 import org.haobtc.onekey.onekeys.homepage.process.TransactionDetailWalletActivity;
 import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
-
-import static org.haobtc.onekey.activities.service.CommunicationModeSelector.executorService;
-
 import org.haobtc.onekey.utils.Daemon;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import static android.app.Activity.RESULT_OK;
@@ -227,7 +228,8 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
     }
 
     private void getHomeWalletList() {
-        loadWalletName = preferences.getString("loadWalletName", "BTC-1"); //Get current wallet name
+        // Get current wallet name
+        loadWalletName = preferences.getString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET, "");
         String walletInfo = PreferencesManager.get(getActivity(), org.haobtc.onekey.constant.Constant.WALLETS, loadWalletName, "").toString();
         Log.i("walletInfowalletInfo", "getHomeWalletList: " + walletInfo);
         if (!Strings.isNullOrEmpty(walletInfo)) {
@@ -246,7 +248,8 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
                 textHard.setVisibility(View.VISIBLE);
                 linearSign.setVisibility(View.VISIBLE);
                 String thisType = nowType.substring(nowType.indexOf("hw-") + 3);
-                textHard.setText(thisType);
+                String deviceId = localWalletInfo.getDeviceId();
+                textHard.setText(deviceId.substring(1, deviceId.length()-1));
             } else {
                 linearSign.setVisibility(View.GONE);
                 textHard.setVisibility(View.GONE);
@@ -255,52 +258,42 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
     }
 
     private void getWalletBalance() {
-        loadWalletName = preferences.getString("loadWalletName", "BTC-1");//Get current wallet name
+        //Get current wallet name
+        loadWalletName = preferences.getString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET, "");
         try {
-            PyObject selectWallet = Daemon.commands.callAttr("select_wallet", loadWalletName);
-            Log.i("iiiigetWalletBalance", "getWalletBalance:--- " + selectWallet);
-            if (!TextUtils.isEmpty(selectWallet.toString())) {
-                BalanceInfo balanceInfo = new Gson().fromJson(selectWallet.toString(), BalanceInfo.class);
+            Optional.ofNullable(PyEnv.selectWallet(loadWalletName)).ifPresent((balanceInfo -> {
                 String balance = balanceInfo.getBalance();
                 name = balanceInfo.getName();
-                textWalletName.setText(name);
+                String str = PreferencesManager.get(getContext(), org.haobtc.onekey.constant.Constant.WALLETS, name, "").toString();
+                if (!Strings.isNullOrEmpty(str)) {
+                    textWalletName.setText(LocalWalletInfo.objectFromData(str).getLabel());
+                }
                 num = balance.substring(0, balance.indexOf(" "));
                 String strCny = balance.substring(balance.indexOf("(") + 1, balance.indexOf(")"));
                 int cnyUnit = preferences.getInt("cny_unit", 0);
-                if (!TextUtils.isEmpty(strCny)) {
-                    if (cnyUnit == 0) {
-                        tetAmount.setText(String.format("￥%s", strCny));
-                    } else if (cnyUnit == 1) {
-                        tetAmount.setText(String.format("$%s", strCny));
-                    }
-                } else {
-                    if (cnyUnit == 0) {
-                        tetAmount.setText(String.format("￥%s", getString(R.string.zero)));
-                    } else if (cnyUnit == 1) {
-                        tetAmount.setText(String.format("$%s", getString(R.string.zero)));
-                    }
+                switch (cnyUnit) {
+                    case 0:
+                        tetAmount.setText(String.format("￥%s", (Strings.isNullOrEmpty(strCny)) ? R.string.zero: strCny));
+                        break;
+                    case 1:
+                        tetAmount.setText(String.format("$%s", (Strings.isNullOrEmpty(strCny)) ? R.string.zero: strCny));
                 }
-
                 textBtcAmount.setText(String.format("%s%s", num, preferences.getString("base_unit", "")));
                 if (!"0".equals(num)) {
                     getCny(num, cnyUnit);
                 }
-                //whether back up
                 whetherBackup();
-            }
+            }));
 
         } catch (Exception e) {
             e.printStackTrace();
-            return;
         }
 
     }
 
     private void whetherBackup() {
         try {
-            PyObject data = Daemon.commands.callAttr("get_backup_info");
-            isBackup = data.toBoolean();
-            Log.i("isBackupjxmxjm", "whetherBackup: "+isBackup+"----"+loadWalletName);
+            boolean isBackup = PyEnv.hasBackup();
             if (!isBackup) {
                 //no back up
                 relNowBackUp.setVisibility(View.VISIBLE);
@@ -338,7 +331,7 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
             e.printStackTrace();
         }
     }
-
+    @SingleClick
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -385,10 +378,15 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
                 startActivity(pair);
                 break;
             case R.id.linear_send:
-                Intent intent2 = new Intent(getActivity(), SendHdActivity.class);
-                intent2.putExtra("sendNum", changeBalance);
-                intent2.putExtra("hdWalletName", name);
+                Intent intent2 = new Intent(getActivity(), SearchDevicesActivity.class);
+                intent2.putExtra(org.haobtc.onekey.constant.Constant.SEARCH_DEVICE_MODE, org.haobtc.onekey.constant.Constant.SearchDeviceMode.MODE_SIGN_TX);
                 startActivity(intent2);
+                String mac = getMacByDeviceId("1111");
+                if (Strings.isNullOrEmpty(mac)) {
+                    Toast.makeText(getContext(), "未发现设备信息", Toast.LENGTH_SHORT).show();
+                } else {
+                    BleManager.getInstance(getActivity()).connDevByMac(mac);
+                }
                 break;
             case R.id.linear_receive:
                 Intent intent3 = new Intent(getActivity(), ReceiveHDActivity.class);
@@ -437,6 +435,21 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
         whetherBackup();
     }
 
+    private String getMacByDeviceId(String deviceId) {
+        String deviceInfo = PreferencesManager.get(getContext(), org.haobtc.onekey.constant.Constant.DEVICES, deviceId, "").toString();
+        if (!Strings.isNullOrEmpty(deviceInfo)) {
+            String bleName = HardwareFeatures.objectFromData(deviceInfo).getBleName();
+            return PreferencesManager.get(getContext(), org.haobtc.onekey.constant.Constant.BLE_INFO, bleName, "").toString();
+        }
+        return "F7:75:90:70:C0:94";
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onConnected(BleConnectedEvent event) {
+            Intent intent2 = new Intent(getActivity(), SendHdActivity.class);
+            intent2.putExtra("sendNum", changeBalance);
+            intent2.putExtra("hdWalletName", name);
+            startActivity(intent2);
+    }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void fixName(FixWalletNameEvent event) {
         textWalletName.setText(event.getNewName());
@@ -457,7 +470,7 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
                     String value = jsonToMap.get(key).toString();
                     JSONObject jsonObject = new JSONObject(value);
                     String type = jsonObject.getString("type");
-                    edit.putString("loadWalletName", key);
+                    edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET, key);
                     edit.putString("showWalletType", type);
                     edit.apply();
                     //get wallet balance
@@ -479,7 +492,6 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return;
         }
 
     }
@@ -571,8 +583,8 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onDestroyView() {
+        super.onDestroyView();
         EventBus.getDefault().unregister(this);
     }
 

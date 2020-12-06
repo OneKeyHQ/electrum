@@ -45,6 +45,11 @@ public class ImportKeystoreActivity extends BaseActivity {
 
     }
 
+    @Override
+    public boolean requireSecure() {
+        return true;
+    }
+
     @OnClick({R.id.img_back, R.id.img_scan, R.id.img_eye_yes, R.id.img_eye_no, R.id.btn_import})
     public void onViewClicked(View view) {
         switch (view.getId()) {

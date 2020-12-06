@@ -1,18 +1,17 @@
 package org.haobtc.onekey.ui.activity;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.haobtc.onekey.R;
-import org.haobtc.onekey.activities.jointwallet.MultiSigWalletCreator;
 import org.haobtc.onekey.aop.SingleClick;
-import org.haobtc.onekey.mvp.base.BaseActivity;
+import org.haobtc.onekey.constant.Constant;
+import org.haobtc.onekey.manager.PyEnv;
+import org.haobtc.onekey.ui.base.BaseActivity;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**
@@ -31,10 +30,11 @@ public class FindNormalDeviceActivity extends BaseActivity {
     TextView recoveryUsedWallet;
     @BindView(R.id.multi_sig_wallet)
     TextView multiSigWallet;
-
+    public static String deviceId;
     @Override
     public void init() {
         updateTitle(R.string.pair);
+        deviceId = getIntent().getStringExtra(Constant.DEVICE_ID);
     }
 
     @Override
@@ -47,17 +47,17 @@ public class FindNormalDeviceActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
+                PyEnv.cancelPinInput();
                 finish();
                 break;
             case R.id.add_new_wallet:
                 startActivity(new Intent(this, CreatePersonalWalletActivity.class));
-                finish();
                 break;
             case R.id.recovery_used_wallet:
+                startActivity(new Intent(this, RecoveryHardwareOnceWallet.class));
                 break;
             case R.id.multi_sig_wallet:
                startActivity(new Intent(this, CreateMultiSigWalletActivity.class));
-                finish();
                 break;
             default:
         }

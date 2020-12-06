@@ -373,4 +373,9 @@ public class ImportMnemonicActivity extends BaseActivity implements View.OnFocus
 
         }
     }
+
+    @Override
+    public boolean requireSecure() {
+        return true;
+    }
 }

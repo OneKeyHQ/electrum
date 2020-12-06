@@ -11,7 +11,7 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.event.InitDeviceEvent;
 import org.haobtc.onekey.event.MnemonicSizeSelectedEvent;
-import org.haobtc.onekey.mvp.base.BaseFragment;
+import org.haobtc.onekey.ui.base.BaseFragment;
 import org.haobtc.onekey.ui.dialog.ChooseMnemonicSizeDialog;
 
 import butterknife.BindView;
@@ -35,7 +35,6 @@ public class PickMnemonicSizeFragment extends BaseFragment {
 
     @Override
     public void init(View view) {
-        EventBus.getDefault().register(this);
     }
 
     public PickMnemonicSizeFragment() {
@@ -63,11 +62,11 @@ public class PickMnemonicSizeFragment extends BaseFragment {
     public void onMnemonicSizeSelected(MnemonicSizeSelectedEvent event) {
         isNormal = event.getNormal();
         if (isNormal) {
-            chooseText.setText("创建 12 位助记词钱包↑");
-            promoteText.setText("硬件钱包将为你生成 12 位助记词");
+            chooseText.setText(R.string.mnemonic_word_12_crete_promote);
+            promoteText.setText(R.string.mnemonic_word_12_generate_promote);
         } else {
-            chooseText.setText("创建 24 位助记词钱包↑");
-            promoteText.setText("硬件钱包将为你生成 24 位助记词");
+            chooseText.setText(R.string.mnemonic_word_24_crete_promote);
+            promoteText.setText(R.string.mnemonic_word_24_generate_promote);
         }
 
     }
@@ -77,8 +76,7 @@ public class PickMnemonicSizeFragment extends BaseFragment {
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        EventBus.getDefault().unregister(this);
+    public boolean needEvents() {
+        return true;
     }
 }

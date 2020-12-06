@@ -16,6 +16,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.LayoutRes;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONArray;
@@ -27,9 +28,12 @@ import org.greenrobot.eventbus.Subscribe;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.adapter.WalletListAdapter;
+import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.AddressEvent;
+import org.haobtc.onekey.bean.LocalWalletInfo;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.LoadWalletlistEvent;
+import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
 import org.haobtc.onekey.onekeys.backup.BackupGuideActivity;
 import org.haobtc.onekey.onekeys.dialog.RecoverHdWalletActivity;
@@ -82,9 +86,9 @@ public class WalletListActivity extends BaseActivity {
     RelativeLayout reclRecoveryWallet;
     @BindView(R.id.text_wallet_type)
     TextView textWalletType;
-    private ArrayList<AddressEvent> hdWalletList;
-    private ArrayList<AddressEvent> btcList;
-    private ArrayList<AddressEvent> ethList;
+    private ArrayList<LocalWalletInfo> hdWalletList;
+    private ArrayList<LocalWalletInfo> btcList;
+    private ArrayList<LocalWalletInfo> ethList;
     private SharedPreferences.Editor edit;
     private SharedPreferences preferences;
 
@@ -161,7 +165,7 @@ public class WalletListActivity extends BaseActivity {
                         @Override
                         public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                             String name = hdWalletList.get(position).getName();
-                            edit.putString("loadWalletName", name);
+                            edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET, name);
                             edit.apply();
                             mIntent(HomeOneKeyActivity.class);
                         }
@@ -195,7 +199,7 @@ public class WalletListActivity extends BaseActivity {
                         @Override
                         public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                             String name = btcList.get(position).getName();
-                            edit.putString("loadWalletName", name);
+                            edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET, name);
                             edit.apply();
                             mIntent(HomeOneKeyActivity.class);
                         }
@@ -226,7 +230,7 @@ public class WalletListActivity extends BaseActivity {
                         @Override
                         public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                             String name = ethList.get(position).getName();
-                            edit.putString("loadWalletName", name);
+                            edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET, name);
                             edit.apply();
                             mIntent(HomeOneKeyActivity.class);
                         }
@@ -288,56 +292,31 @@ public class WalletListActivity extends BaseActivity {
         hdWalletList.clear();
         btcList.clear();
         ethList.clear();
-        PyObject getWalletsListInfo;
-        //wallet list
-        try {
-            getWalletsListInfo = Daemon.commands.callAttr("list_wallets");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
-        if (getWalletsListInfo.toString().length() > 2) {
-            String toStrings = getWalletsListInfo.toString();
-            Log.i("mWheelplanting", "toStrings: " + toStrings);
-            JSONArray jsonDatas = com.alibaba.fastjson.JSONObject.parseArray(toStrings);
-            for (int i = 0; i < jsonDatas.size(); i++) {
-                Map jsonToMap = (Map) jsonDatas.get(i);
-                Set keySets = jsonToMap.keySet();
-                Iterator ki = keySets.iterator();
-                AddressEvent addressEvent = new AddressEvent();
-                AddressEvent btcEvent = new AddressEvent();
-                AddressEvent ethEvent = new AddressEvent();
-
-                while (ki.hasNext()) {
-                    try {
-                        //get key
-                        String key = (String) ki.next();
-                        String value = jsonToMap.get(key).toString();
-                        JSONObject jsonObject = new JSONObject(value);
-                        String addr = jsonObject.getString("addr");
-                        String type = jsonObject.getString("type");
-                        if (type.contains("hd") || type.contains("derived")) {
-                            addressEvent.setName(key);
-                            addressEvent.setType(type);
-                            addressEvent.setAmount(addr);
-                            hdWalletList.add(addressEvent);
-                        }
-                        if (type.contains("btc")) {
-                            btcEvent.setName(key);
-                            btcEvent.setType(type);
-                            btcEvent.setAmount(addr);
-                            btcList.add(btcEvent);
-                        } else if (type.contains("eth")) {
-                            ethEvent.setName(key);
-                            ethEvent.setType(type);
-                            ethEvent.setAmount(addr);
-                            ethList.add(ethEvent);
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+//        PyObject getWalletsListInfo;
+//        wallet list
+        Map<String, ?> wallets = PreferencesManager.getAll(this, Constant.WALLETS);
+        if (wallets.isEmpty()) {
+            reclWalletDetail.setVisibility(View.GONE);
+            reclAddWallet.setVisibility(View.GONE);
+            reclAddHdWallet.setVisibility(View.VISIBLE);
+            reclRecoveryWallet.setVisibility(View.VISIBLE);
+        } else {
+            wallets.entrySet().forEach(stringEntry -> {
+                LocalWalletInfo info = LocalWalletInfo.objectFromData(stringEntry.getValue().toString());
+                String addr = info.getAddr();
+                String type = info.getType();
+                String label = info.getLabel();
+                String name = info.getName();
+                String deviceId = info.getDeviceId();
+                if (type.contains("hd") || type.contains("derived")) {
+                    hdWalletList.add(info);
                 }
-            }
+                if (type.contains("btc")) {
+                    btcList.add(info);
+                } else if (type.contains("eth")) {
+                    ethList.add(info);
+                }
+            });
             textWalletNum.setText(String.valueOf(hdWalletList.size()));
             if (hdWalletList == null || hdWalletList.size() == 0) {
                 reclWalletDetail.setVisibility(View.GONE);
@@ -349,22 +328,91 @@ public class WalletListActivity extends BaseActivity {
                 WalletListAdapter walletListAdapter = new WalletListAdapter(hdWalletList);
                 reclWalletList.setAdapter(walletListAdapter);
                 walletListAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+                    @SingleClick
                     @Override
                     public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                         String name = hdWalletList.get(position).getName();
-                        edit.putString("loadWalletName", name);
+                        edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET, name);
                         edit.apply();
                         mIntent(HomeOneKeyActivity.class);
                     }
                 });
             }
-        } else {
-            reclWalletDetail.setVisibility(View.GONE);
-            reclAddWallet.setVisibility(View.GONE);
-            reclAddHdWallet.setVisibility(View.VISIBLE);
-            reclRecoveryWallet.setVisibility(View.VISIBLE);
         }
-
+//        try {
+//            getWalletsListInfo = Daemon.commands.callAttr("list_wallets");
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return;
+//        }
+ //       if (getWalletsListInfo.toString().length() > 2) {
+//            String toStrings = getWalletsListInfo.toString();
+//            Log.i("mWheelplanting", "toStrings: " + toStrings);
+//            JSONArray jsonDatas = com.alibaba.fastjson.JSONObject.parseArray(toStrings);
+//            for (int i = 0; i < jsonDatas.size(); i++) {
+//                Map jsonToMap = (Map) jsonDatas.get(i);
+//                Set keySets = jsonToMap.keySet();
+//                Iterator ki = keySets.iterator();
+//                AddressEvent addressEvent = new AddressEvent();
+//                AddressEvent btcEvent = new AddressEvent();
+//                AddressEvent ethEvent = new AddressEvent();
+//
+//                while (ki.hasNext()) {
+//                    try {
+//                        //get key
+//                        String key = (String) ki.next();
+//                        String value = jsonToMap.get(key).toString();
+//                        JSONObject jsonObject = new JSONObject(value);
+//                        String addr = jsonObject.getString("addr");
+//                        String type = jsonObject.getString("type");
+//                        if (type.contains("hd") || type.contains("derived")) {
+//                            addressEvent.setName(key);
+//                            addressEvent.setType(type);
+//                            addressEvent.setAmount(addr);
+//                            hdWalletList.add(addressEvent);
+//                        }
+//                        if (type.contains("btc")) {
+//                            btcEvent.setName(key);
+//                            btcEvent.setType(type);
+//                            btcEvent.setAmount(addr);
+//                            btcList.add(btcEvent);
+//                        } else if (type.contains("eth")) {
+//                            ethEvent.setName(key);
+//                            ethEvent.setType(type);
+//                            ethEvent.setAmount(addr);
+//                            ethList.add(ethEvent);
+//                        }
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//            textWalletNum.setText(String.valueOf(hdWalletList.size()));
+//            if (hdWalletList == null || hdWalletList.size() == 0) {
+//                reclWalletDetail.setVisibility(View.GONE);
+//                reclAddWallet.setVisibility(View.GONE);
+//                reclAddHdWallet.setVisibility(View.VISIBLE);
+//                reclRecoveryWallet.setVisibility(View.VISIBLE);
+//            } else {
+//                reclAddWallet.setVisibility(View.VISIBLE);
+//                WalletListAdapter walletListAdapter = new WalletListAdapter(hdWalletList);
+//                reclWalletList.setAdapter(walletListAdapter);
+//                walletListAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+//                    @Override
+//                    public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+//                        String name = hdWalletList.get(position).getName();
+//                        edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET, name);
+//                        edit.apply();
+//                        mIntent(HomeOneKeyActivity.class);
+//                    }
+//                });
+//            }
+//        } else {
+//            reclWalletDetail.setVisibility(View.GONE);
+//            reclAddWallet.setVisibility(View.GONE);
+//            reclAddHdWallet.setVisibility(View.VISIBLE);
+//            reclRecoveryWallet.setVisibility(View.VISIBLE);
+//        }
     }
 
     private void createWalletChooseDialog(Context context, @LayoutRes int resource) {

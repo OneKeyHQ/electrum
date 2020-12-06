@@ -11,7 +11,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.event.BackupFinishEvent;
 import org.haobtc.onekey.event.ChangePinEvent;
-import org.haobtc.onekey.mvp.base.BaseFragment;
+import org.haobtc.onekey.ui.base.BaseFragment;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -20,7 +20,7 @@ import butterknife.OnClick;
  * @author liyan
  * @date 11/20/20
  */
-//
+
 public class WriteMnemonicOnPaper extends BaseFragment {
 
     @BindView(R.id.promote)
@@ -40,7 +40,7 @@ public class WriteMnemonicOnPaper extends BaseFragment {
     @Override
     public void init(View view) {
         if (!isNormal) {
-            promote.setText("请抄写你的 24 位助记词");
+            promote.setText(R.string.write_mnemonic_24);
         }
     }
 
@@ -57,7 +57,7 @@ public class WriteMnemonicOnPaper extends BaseFragment {
         readyGo.setEnabled(true);
     }
     @OnClick(R.id.ready_go)
-    public void onViewClicked() {
+    public void onViewClicked(View view) {
         EventBus.getDefault().post(new ChangePinEvent("", ""));
     }
 

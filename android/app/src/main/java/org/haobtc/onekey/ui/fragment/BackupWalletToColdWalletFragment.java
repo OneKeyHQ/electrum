@@ -5,15 +5,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.haobtc.onekey.R;
-import org.haobtc.onekey.mvp.base.BaseFragment;
+import org.haobtc.onekey.ui.base.BaseFragment;
 import org.haobtc.onekey.ui.custom.LoadingTextView;
-import org.haobtc.onekey.ui.listener.IBackupWalletToColdWalletListener;
 
 import butterknife.BindView;
 
 /**
  * @author liyan
  */
+@Deprecated
 public class BackupWalletToColdWalletFragment extends BaseFragment {
 
     @BindView(R.id.way_img)

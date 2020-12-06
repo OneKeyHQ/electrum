@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <TextView
+        android:id="@+id/promote"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/upgrading_hardware"
+        android:textColor="#142A3B"
+        android:textSize="@dimen/sp_30"
+        android:gravity="center_horizontal"
+        app:layout_constraintTop_toTopOf="parent"/>
+    <ImageView
+        android:id="@+id/image"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/device_upgrading"
+        android:layout_marginTop="@dimen/dp_55"
+        app:layout_constraintTop_toBottomOf="@id/promote"
+        android:contentDescription="@string/update" />
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_10"
+        android:layout_marginTop="@dimen/dp_80"
+        android:layout_marginHorizontal="35dp"
+        android:max="100"
+        android:progress="0"
+        android:progressDrawable="@drawable/progressbar_bg"
+        style="?android:attr/progressBarStyleHorizontal"        app:layout_constraintTop_toBottomOf="@id/image"
+        />
+    <TextView
+        android:id="@+id/progress_promote"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/uploading_hardware_and_wait"
+        android:layout_marginTop="@dimen/dp_20"
+        app:layout_constraintTop_toBottomOf="@id/progressBar"/>
+    <Button
+        android:id="@+id/complete"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_60"
+        android:background="@drawable/btn_no_check"
+        android:text="@string/finish"
+        android:textSize="@dimen/sp_20"
+        android:textColor="@android:color/white"
+        android:layout_marginHorizontal="34dp"
+        android:layout_marginBottom="@dimen/dp_120"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

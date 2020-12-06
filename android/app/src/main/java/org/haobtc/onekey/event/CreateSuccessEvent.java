@@ -6,5 +6,12 @@ package org.haobtc.onekey.event;
  */
 
 public class CreateSuccessEvent {
+    private String name;
+    public CreateSuccessEvent(String name) {
+        this.name = name;
+    }
 
+    public String getName() {
+        return name;
+    }
 }

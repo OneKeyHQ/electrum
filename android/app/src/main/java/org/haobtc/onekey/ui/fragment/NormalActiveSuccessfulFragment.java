@@ -4,10 +4,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.StringRes;
+
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.event.ExitEvent;
-import org.haobtc.onekey.mvp.base.BaseFragment;
+import org.haobtc.onekey.ui.base.BaseFragment;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -18,14 +20,25 @@ import butterknife.OnClick;
  */
 
 public class NormalActiveSuccessfulFragment extends BaseFragment {
+
     @BindView(R.id.back_wallet)
     Button backWallet;
     @BindView(R.id.name)
     TextView nameTextView;
+    @BindView(R.id.description)
+    TextView description;
+    @BindView(R.id.tips)
+    TextView tips;
     private String name;
-    public NormalActiveSuccessfulFragment(String name) {
+    private int descriptionId;
+    private int tipsId;
+
+    public NormalActiveSuccessfulFragment(String name, @StringRes int descriptionId, @StringRes int tipsId) {
         this.name = name;
+        this.descriptionId = descriptionId;
+        this.tipsId = tipsId;
     }
+
     /**
      * init views
      *
@@ -34,6 +47,12 @@ public class NormalActiveSuccessfulFragment extends BaseFragment {
     @Override
     public void init(View view) {
         nameTextView.setText(name);
+        if (descriptionId != 0) {
+            description.setText(descriptionId);
+        }
+        if (tipsId != 0) {
+            tips.setText(tipsId);
+        }
     }
 
     /***
@@ -46,8 +65,7 @@ public class NormalActiveSuccessfulFragment extends BaseFragment {
     }
 
     @OnClick(R.id.back_wallet)
-    public void onViewClicked() {
+    public void onViewClicked(View view) {
         EventBus.getDefault().post(new ExitEvent());
-
     }
 }

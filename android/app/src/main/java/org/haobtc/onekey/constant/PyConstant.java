@@ -42,7 +42,16 @@ public final class PyConstant {
     public static final String IS_CANCEL = "IS_CANCEL";
     public static final String SET_TEST_NETWORK = "set_testnet";
     public static final String SET_REG_TEST_NETWORK = "set_regtest";
-
+    public static final String PROCESS_REPORTER = "PROCESS_REPORTER";
+    public static final String FIRMWARE_UPDATE = "firmware_update";
+    /**
+     * 断点续传标记
+     * */
+    public static final String HTTP = "HTTP";
+    /**
+     * 断点续传偏移量
+     * */
+   public static final String OFFSET = "OFFSET";
     public static final String TAG = "BLE";
 
     public static final int BUTTON_REQUEST_9 = 9;
@@ -50,7 +59,10 @@ public final class PyConstant {
      * 按键确认
      */
     public static final int BUTTON_REQUEST_7 = 7;
-
+    /**
+     * 发币确认
+     */
+    public static final int BUTTON_REQUEST_8 = 8;
     /**
      * 恢复出厂设置
      */
@@ -73,6 +85,7 @@ public final class PyConstant {
      * xpub 类型
      * */
     public static final String XPUB_P2WPKH = "p2wpkh";
+
 // ============================= Python api name======================
 
     /**

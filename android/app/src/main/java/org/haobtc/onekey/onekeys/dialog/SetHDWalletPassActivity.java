@@ -12,29 +12,27 @@ import android.widget.TextView;
 
 import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
-import com.google.common.base.Strings;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
-import org.haobtc.onekey.bean.AddressEvent;
-import org.haobtc.onekey.bean.LocalWalletInfo;
 import org.haobtc.onekey.constant.Constant;
-import org.haobtc.onekey.data.prefs.PreferencesManager;
 import org.haobtc.onekey.event.FinishEvent;
-import org.haobtc.onekey.event.FirstEvent;
+import org.haobtc.onekey.event.GotPassEvent;
 import org.haobtc.onekey.event.InputPassSendEvent;
 import org.haobtc.onekey.event.LoadOtherWalletEvent;
 import org.haobtc.onekey.event.LoadWalletlistEvent;
 import org.haobtc.onekey.event.SecondEvent;
+import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
 import org.haobtc.onekey.onekeys.backup.BackupGuideActivity;
 import org.haobtc.onekey.onekeys.dialog.recovery.RecoveryChooseWalletActivity;
 import org.haobtc.onekey.onekeys.homepage.mindmenu.HdRootMnemonicsActivity;
 import org.haobtc.onekey.onekeys.homepage.process.ExportPrivateActivity;
+import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
 import org.haobtc.onekey.utils.Daemon;
 import org.haobtc.onekey.utils.PwdEditText;
 
@@ -71,6 +69,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
     private String walletName;
     private String currencyType;
     private String privateKey;
+    private String operateType;
     private String deleteHdWalletName;
     private boolean isHaveWallet;
     private SharedPreferences preferences;
@@ -92,6 +91,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
         currencyType = getIntent().getStringExtra("currencyType");
         seed = getIntent().getStringExtra("recoverySeed");
         privateKey = getIntent().getStringExtra("privateKey");
+        operateType = getIntent().getStringExtra(Constant.OPERATE_TYPE);
         deleteHdWalletName = getIntent().getStringExtra("deleteHdWalletName");//删除所有hd钱包的名字
         isHaveWallet = PreferencesManager.getAll(this, Constant.WALLETS).isEmpty();
         inits();
@@ -206,6 +206,11 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
         } else if ("deleteAllWallet".equals(importHdword)) {
             deleteAllWallet();
         } else if ("recoveryHdWallet".equals(importHdword)) {
+            if (Constant.RECOVERY_TYPE.equals(operateType)) {
+                EventBus.getDefault().post(new GotPassEvent(pwdEdittext.getText().toString()));
+                finish();
+                return;
+            }
             recoveryHdWallet();
         } else if ("derive".equals(importHdword)) {
             createDeriveWallet();
@@ -239,7 +244,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
             Intent intent = new Intent(SetHDWalletPassActivity.this, HomeOneKeyActivity.class);
             startActivity(intent);
             PyEnv.loadLocalWalletInfo(this);
-            edit.putString("loadWalletName", "BTC-1");
+//            edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET, "BTC-1");
             edit.apply();
         }
     }
@@ -292,7 +297,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
             return;
         }
         PyEnv.loadLocalWalletInfo(this);
-        edit.putString("loadWalletName", walletName);
+        edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET, walletName);
         edit.apply();
         mIntent(HomeOneKeyActivity.class);
     }
@@ -318,7 +323,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
             return;
         }
         PyEnv.loadLocalWalletInfo(this);
-        edit.putString("loadWalletName", walletName);
+        edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET, walletName);
         edit.apply();
         mIntent(HomeOneKeyActivity.class);
     }
@@ -336,7 +341,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
             return;
         }
         PyEnv.loadLocalWalletInfo(this);
-        edit.putString("loadWalletName", walletName);
+        edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET, walletName);
         edit.apply();
         mIntent(HomeOneKeyActivity.class);
         finish();
@@ -355,7 +360,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
             return;
         }
         PyEnv.loadLocalWalletInfo(this);
-        edit.putString("loadWalletName", walletName);
+        edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET, walletName);
         edit.apply();
         mIntent(HomeOneKeyActivity.class);
         finish();
@@ -380,7 +385,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
                 }
                 mToast(getString(R.string.not_recovery_wallet));
                 PyEnv.loadLocalWalletInfo(this);
-                edit.putString("loadWalletName", "BTC-1");
+                edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET, "BTC-1");
                 edit.apply();
                 mIntent(HomeOneKeyActivity.class);
                 finish();
@@ -476,11 +481,19 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
         }
     }
 
-    //export Mnemonic words
+    // export Mnemonic words
     private void exportWord(String type) {
         PyObject exportSeed = null;
         try {
             exportSeed = Daemon.commands.callAttr("export_seed", pwdEdittext.getText().toString(), walletName);
+            if (Constant.EXPORT_DESTINATIONS.equals(operateType)) {
+                Intent intent = new Intent(this, SearchDevicesActivity.class);
+                intent.putExtra(Constant.SEARCH_DEVICE_MODE, Constant.SearchDeviceMode.MODE_BACKUP_HD_WALLET_TO_DEVICE);
+                intent.putExtra(Constant.MNEMONICS, exportSeed.toString());
+                startActivity(intent);
+                finish();
+                return;
+            }
         } catch (Exception e) {
             if (e.getMessage().contains("Incorrect password")) {
                 mToast(getString(R.string.wrong_pass));

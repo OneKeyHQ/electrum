@@ -6,7 +6,7 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="340dp"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginHorizontal="@dimen/dp_10"
         app:cardCornerRadius="@dimen/dp_20">
         <RelativeLayout
@@ -57,6 +57,7 @@
                 android:layout_marginTop="@dimen/dp_20"
                 android:textSize="@dimen/sp_14"
                 android:textColor="#546370"
+                android:scrollIndicators="end"
                 android:layout_marginHorizontal="29dp"
                 android:text="- 修复了一些微小的 Bug\n
 - 支持 ETH 资产"/>
@@ -70,7 +71,7 @@
                 android:textColor="@android:color/white"
                 android:background="@drawable/btn_checked"
                 android:layout_marginTop="@dimen/dp_20"
-                android:visibility="gone"/>
+                android:visibility="visible"/>
             <LinearLayout
                 android:id="@+id/progressBarLayout"
                 android:layout_width="match_parent"
@@ -78,13 +79,13 @@
                 android:layout_marginHorizontal="@dimen/dp_25"
                 android:orientation="vertical"
                 android:layout_below="@id/update_description"
-                android:visibility="visible">
+                android:visibility="gone">
                 <ProgressBar
                     android:id="@+id/progressBar"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/dp_10"
                     android:max="100"
-                    android:progress="30"
+                    android:progress="0"
                     android:progressDrawable="@drawable/progressbar_bg"
                     style="?android:attr/progressBarStyleHorizontal"
                     android:layout_marginTop="38dp"/>

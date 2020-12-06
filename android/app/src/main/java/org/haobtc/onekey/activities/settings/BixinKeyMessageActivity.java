@@ -1,8 +1,5 @@
 package org.haobtc.onekey.activities.settings;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
@@ -12,6 +9,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.aop.SingleClick;
+import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.FixBixinkeyNameEvent;
 
 import butterknife.BindView;
@@ -28,13 +26,11 @@ public class BixinKeyMessageActivity extends BaseActivity {
     @BindView(R.id.tet_code)
     TextView tetCode;
     @BindView(R.id.tet_Bluetoose)
-    TextView tetBluetoose;
+    TextView tetBluetooth;
     @BindView(R.id.text_systom_hardware)
     TextView textSystomHardware;
     @BindView(R.id.text_bluetooth_hardware)
     TextView textBluetoothHardware;
-    private String bleName;
-    private Intent intent;
 
     @Override
     public int getLayoutId() {
@@ -45,21 +41,20 @@ public class BixinKeyMessageActivity extends BaseActivity {
     public void initView() {
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
-        intent = getIntent();
         inits();
     }
 
     private void inits() {
-        String label = intent.getStringExtra("label");
-        bleName = intent.getStringExtra("bleName");
-        String deviceId = intent.getStringExtra("device_id");
-        String firmwareVersion = intent.getStringExtra("firmwareVersion");
-        String bleVersion = intent.getStringExtra("bleVersion");
+        String label = getIntent().getStringExtra(Constant.TAG_LABEL);
+        String bleName = getIntent().getStringExtra(Constant.TAG_BLE_NAME);
+        String deviceId = getIntent().getStringExtra(Constant.DEVICE_ID);
+        String firmwareVersion = getIntent().getStringExtra(Constant.TAG_FIRMWARE_VERSION);
+        String nrfVersion = getIntent().getStringExtra(Constant.TAG_NRF_VERSION);
         textSystomHardware.setText(firmwareVersion);
-        textBluetoothHardware.setText(bleVersion);
+        textBluetoothHardware.setText(nrfVersion);
         tetKeyName.setText(label);
         tetCode.setText(deviceId);
-        tetBluetoose.setText(bleName);
+        tetBluetooth.setText(bleName);
     }
 
     @Override
@@ -75,7 +70,7 @@ public class BixinKeyMessageActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.tet_keyName:
-                mIntent(FixBixinkeyNameActivity.class);
+//                mIntent(FixBixinkeyNameActivity.class);
                 break;
             default:
         }

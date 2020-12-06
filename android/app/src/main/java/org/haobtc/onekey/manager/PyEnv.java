@@ -1,9 +1,11 @@
 package org.haobtc.onekey.manager;
 
 import android.content.Context;
+import android.os.AsyncTask;
 
 import androidx.annotation.NonNull;
 
+import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
@@ -16,12 +18,12 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.bean.BalanceInfo;
 import org.haobtc.onekey.bean.HardwareFeatures;
+import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.PyConstant;
-import org.haobtc.onekey.data.prefs.PreferencesManager;
 import org.haobtc.onekey.event.CreateSuccessEvent;
 import org.haobtc.onekey.exception.HardWareExceptions;
-import org.haobtc.onekey.mvp.base.BaseActivity;
+import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.utils.Daemon;
 import org.haobtc.onekey.utils.Global;
 
@@ -35,6 +37,9 @@ import java.util.concurrent.TimeUnit;
 import cn.com.heaton.blelibrary.ble.Ble;
 import cn.com.heaton.blelibrary.ble.callback.BleWriteCallback;
 import cn.com.heaton.blelibrary.ble.model.BleDevice;
+
+import static org.haobtc.onekey.activities.service.CommunicationModeSelector.executorService;
+import static org.haobtc.onekey.activities.service.CommunicationModeSelector.protocol;
 
 /**
  * @author liyan
@@ -74,7 +79,10 @@ public final class PyEnv {
         sCommands.callAttr(PyConstant.LOAD_ALL_WALLET);
         loadLocalWalletInfo(context);
     }
+    public static void cancelPinInput() {
 
+        sCustomerUI.put(PyConstant.USER_CANCEL, 1);
+    }
     /**
      * 设置硬件回调句柄
      */
@@ -159,10 +167,10 @@ public final class PyEnv {
      * 撤销正在执行的通信
      */
     public static void cancelAll() {
-        sNotify();
         bleCancel();
         nfcCancel();
         usbCancel();
+        sNotify();
     }
 
     /**
@@ -182,6 +190,9 @@ public final class PyEnv {
             futureTask = new FutureTask<>(() -> Daemon.commands.callAttr(PyConstant.GET_FEATURE, MyApplication.getInstance().getDeviceWay()));
             mexecutorService.submit(futureTask);
             feature = futureTask.get(5, TimeUnit.SECONDS).toString();
+            if (!futureTask.isDone()) {
+                futureTask.cancel(true);
+            }
             return dealWithConnectedDevice(context, HardwareFeatures.objectFromData(feature));
         } catch (Exception e) {
             if (sBle != null) {
@@ -209,26 +220,20 @@ public final class PyEnv {
             if (!Strings.isNullOrEmpty(backupMessage)) {
                 features.setBackupMessage(backupMessage);
             }
+            PreferencesManager.put(context, Constant.DEVICES, features.getDeviceId(), features.toString());
         }
-//        else {
-//            // modify this value manual to support unfinished combined init
-//            features.setNeedsBackup(true);
-//        }
-        PreferencesManager.put(context, Constant.DEVICES, features.getDeviceId(), features.toString());
         return features;
     }
 
     /**
      * 通过xpub创建钱包
      */
-    public static void createWallet(BaseActivity activity, String walletName, int m, int n, String xPubs) {
-
-        mexecutorService.execute(() -> {
+    public static String createWallet(BaseActivity activity, String walletName, int m, int n, String xPubs) {
+            String name = null;
             try {
-                sCommands.callAttr(PyConstant.CREATE_WALLET_BY_XPUB, walletName, m, n, xPubs);
-                PreferencesManager.put(activity, "Preferences", Constant.SELECTED_WALLET, walletName);
-                loadLocalWalletInfo(activity);
-                EventBus.getDefault().post(new CreateSuccessEvent());
+                name = sCommands.callAttr(PyConstant.CREATE_WALLET_BY_XPUB, walletName, m, n, xPubs).toString();
+                EventBus.getDefault().post(new CreateSuccessEvent(name));
+                return name;
             } catch (Exception e) {
                 e.printStackTrace();
                 String message = e.getMessage();
@@ -243,7 +248,28 @@ public final class PyEnv {
                 }
                 activity.finish();
             }
-        });
+            return null;
+    }
+
+    /**
+     * 通过xpub恢复钱包
+     */
+    public static List<BalanceInfo> recoveryWallet(BaseActivity activity, String xPubs, boolean hd) {
+        List<BalanceInfo> infos = new ArrayList<>();
+            try {
+                String walletsInfo = sCommands.callAttr(PyConstant.CREATE_WALLET_BY_XPUB, "BTC-1", 1, 1, xPubs, new Kwarg("hd", hd)).toString();
+                if (!Strings.isNullOrEmpty(walletsInfo)) {
+                    JsonArray wallets = JsonParser.parseString(walletsInfo).getAsJsonArray();
+                    wallets.forEach((wallet) -> {
+                        infos.add(BalanceInfo.objectFromData(wallet.toString()));
+                    });
+                }
+                return infos;
+            } catch (Exception e) {
+                activity.showToast(e.getMessage());
+                e.printStackTrace();
+            }
+        return null;
     }
 
     /**
@@ -301,7 +327,6 @@ public final class PyEnv {
         List<BalanceInfo> infos = new ArrayList<>();
         try {
         String  walletsInfo  = sCommands.callAttr(PyConstant.CREATE_HD_WALLET, passwd, mnemonics).toString();
-            System.out.println("============" + walletsInfo);
             if (!Strings.isNullOrEmpty(walletsInfo)) {
                 JsonArray wallets = JsonParser.parseString(walletsInfo).getAsJsonArray();
                 wallets.forEach((wallet) -> {
@@ -323,6 +348,27 @@ public final class PyEnv {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public static void setProgressReporter(AsyncTask<String, Object, Void> task) {
+        sProtocol.put(PyConstant.PROCESS_REPORTER, task);
+    }
+
+    public static void clearUpdateStatus() {
+        protocol.put(PyConstant.HTTP, false);
+        protocol.put(PyConstant.OFFSET, 0);
+        protocol.put(PyConstant.PROCESS_REPORTER, null);
+    }
+    public static PyResponse<Void> firmwareUpdate(String path) {
+        PyResponse<Void> response = new PyResponse<>();
+        try {
+            sCommands.callAttr(PyConstant.FIRMWARE_UPDATE, path, MyApplication.getInstance().getDeviceWay());
+        } catch (Exception e) {
+            e.printStackTrace();
+            MyApplication.getInstance().toastErr(e);
+            response.setErrors(e.getMessage());
+        }
+        return response;
     }
 
 }

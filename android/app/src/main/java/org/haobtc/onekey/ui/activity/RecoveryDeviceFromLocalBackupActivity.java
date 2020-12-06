@@ -1,10 +1,11 @@
 package org.haobtc.onekey.ui.activity;
 
+import android.view.View;
 import android.widget.ImageView;
 
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.aop.SingleClick;
-import org.haobtc.onekey.mvp.base.BaseActivity;
+import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.ui.fragment.FindBackupFromPhoneFragment;
 
 import butterknife.BindView;
@@ -32,7 +33,7 @@ public class RecoveryDeviceFromLocalBackupActivity extends BaseActivity {
 
     @SingleClick
     @OnClick(R.id.img_back)
-    public void onViewClicked() {
+    public void onViewClicked(View view) {
         finish();
     }
 }

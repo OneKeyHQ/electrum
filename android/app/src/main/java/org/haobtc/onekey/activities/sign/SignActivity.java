@@ -130,10 +130,10 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
         String showWalletType = preferences.getString("showWalletType", "");
         //get sign address
         mGeneratecode();
-        if (showWalletType.contains("hw")) {
-            radioSignMsg.setVisibility(View.GONE);
-            textCheckSign.setVisibility(View.GONE);
-        }
+//        if (showWalletType.contains("hw")) {
+//            radioSignMsg.setVisibility(View.VISIBLE);
+//            textCheckSign.setVisibility(View.GONE);
+//        }
         if (!TextUtils.isEmpty(personceType)) {
             if (!"1-1".equals(personceType) && !personceType.contains("standard")) {
                 radioSignMsg.setVisibility(View.GONE);

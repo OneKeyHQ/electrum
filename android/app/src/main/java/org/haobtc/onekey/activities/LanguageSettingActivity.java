@@ -123,7 +123,6 @@ public class LanguageSettingActivity extends BaseActivity {
 
     public void refreshSelf() {
         Intent intent = new Intent(this, HomeOneKeyActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
 

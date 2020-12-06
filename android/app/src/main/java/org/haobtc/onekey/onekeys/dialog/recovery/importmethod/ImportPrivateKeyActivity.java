@@ -51,6 +51,11 @@ public class ImportPrivateKeyActivity extends BaseActivity {
 
     }
 
+    @Override
+    public boolean requireSecure() {
+        return true;
+    }
+
     @OnClick({R.id.img_back, R.id.img_scan, R.id.btn_import})
     public void onViewClicked(View view) {
         switch (view.getId()) {

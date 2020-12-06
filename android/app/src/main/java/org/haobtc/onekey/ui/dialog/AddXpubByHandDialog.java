@@ -15,7 +15,7 @@ import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.event.AddXpubEvent;
 import org.haobtc.onekey.manager.PyEnv;
-import org.haobtc.onekey.mvp.base.BaseDialogFragment;
+import org.haobtc.onekey.ui.base.BaseDialogFragment;
 
 import butterknife.BindView;
 import butterknife.OnClick;

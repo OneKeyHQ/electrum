@@ -538,7 +538,7 @@ class AndroidCommands(commands.Commands):
         :return:
         '''
         try:
-            self._assert_wallet_isvalid()
+            # self._assert_wallet_isvalid()
             device_info = wallet_info.get_device_info()
             return json.dumps(device_info)
         except BaseException as e:
@@ -599,7 +599,7 @@ class AndroidCommands(commands.Commands):
             raise BaseException(e)
         return self.wizard.get_cosigner_num()
 
-    def create_multi_wallet(self, name, hd=False, hide_type=False):
+    def create_multi_wallet(self, name, hd=False, hide_type=False) -> str:
         try:
             self._assert_daemon_running()
             self._assert_wizard_isvalid()
@@ -624,9 +624,11 @@ class AndroidCommands(commands.Commands):
             wallet.status_flag = ("btc-hw-%s-%s" % (self.m, self.n))
             wallet.hide_type = hide_type
             wallet.set_name(name)
-            wallet.start_network(self.daemon.network)
+            wallet.save_db()
             self.daemon.add_wallet(wallet)
             self.update_wallet_name(temp_path, self.get_unique_path(wallet))
+            wallet = self.get_wallet_by_name(self.get_unique_path(wallet))
+            wallet.start_network(self.daemon.network)
             if hd:
                 wallet_type = "btc-hd-hw-%s-%s" % (self.m, self.n)
             else:
@@ -646,6 +648,7 @@ class AndroidCommands(commands.Commands):
                     wallet_name = "共管钱包"
                 self.label_plugin.create_wallet(self.wallet, wallet_type, wallet_name)
         self.wizard = None
+        return self.wallet_name
 
     def pull_tx_infos(self):
         '''
@@ -692,7 +695,7 @@ class AndroidCommands(commands.Commands):
                 create_failed_into[name] = str(e)
         return json.dumps(create_failed_into)
 
-    def import_create_hw_wallet(self, name, m, n, xpubs, hide_type=False, hd=False):
+    def import_create_hw_wallet(self, name, m, n, xpubs, hide_type=False, hd=False, path='bluetooth'):
         '''
         Create a wallet
         :param name: wallet name as str
@@ -705,6 +708,8 @@ class AndroidCommands(commands.Commands):
         :return: the wallet info recovered
         '''
         try:
+            if hd:
+                return self.recovery_hd_derived_wallet(hw=True, path=path)
             print(f"xpubs=========={m, n, xpubs}")
             self.set_multi_wallet_info(name, m, n)
             xpubs_list = json.loads(xpubs)
@@ -713,9 +718,7 @@ class AndroidCommands(commands.Commands):
                     self.add_xpub(xpub_info[0], xpub_info[1])
                 else:
                     self.add_xpub(xpub_info)
-            if hd:
-                return self.recovery_hd_derived_wallet(hw=True)
-            self.create_multi_wallet(name, hd=hd, hide_type=hide_type)
+            return self.create_multi_wallet(name, hd=hd, hide_type=hide_type)
         except BaseException as e:
             raise e
 
@@ -1796,10 +1799,11 @@ class AndroidCommands(commands.Commands):
                 return 0
             else:
                 raise BaseException(e)
-        if resp == "PIN changed":
-            return 1
-        else:
-            return 0
+        return 1
+        # if resp == "PIN changed":
+        #     return 1
+        # else:
+        #     return -1
 
     def show_address(self, address, path='android_usb'):
         '''
@@ -1904,13 +1908,14 @@ class AndroidCommands(commands.Commands):
         except BaseException as e:
             raise e
 
-    def create_hw_derived_wallet(self, xpub, path='android_usb', _type='p2pkh', is_creating=True, coin='btc'):
+    def create_hw_derived_wallet(self, path='android_usb', _type='p2wpkh', is_creating=True, coin='btc'):
         '''
         Create derived wallet by hardware
         :param path: NFC/android_usb/bluetooth as str, used by hardware
         :param _type: p2wsh/p2wsh/p2pkh/p2pkh-p2sh as str
         :return: xpub as str
         '''
+        xpub = self.get_xpub_from_hw(path=path, _type=_type, account_id=0)
         list_info = self.get_derived_list(xpub)
         if len(list_info) == 0:
             raise BaseException("Support up to 20 derived wallets")
@@ -2656,7 +2661,7 @@ class AndroidCommands(commands.Commands):
         except Exception as e:
             raise BaseException(e)
 
-    def recovery_wallet(self, coin_derived_info, seed, password, passphrase, hw=False):
+    def recovery_wallet(self, coin_derived_info, seed, password, passphrase, hw=False, path='bluetooth'):
         hd_wallet = coin_derived_info.get_hd_wallet()
         coin = coin_derived_info.get_coin()
         coin_derived_info.init_recovery_num()
@@ -2671,7 +2676,7 @@ class AndroidCommands(commands.Commands):
                                                  bip39_derivation=bip39_derivation,
                                                  passphrase=passphrase, coin=coin)
                         else:
-                            xpub = self.get_xpub_from_hw(_type='p2pkh', account_id=derived_info['account_id'], coin=coin)
+                            xpub = self.get_xpub_from_hw(path=path, _type='p2pkh', account_id=derived_info['account_id'], coin=coin)
                             self.recovery_import_create_hw_wallet(derived_info['account_id'], derived_info['name'], 1, 1, [xpub])
                         coin_derived_info.update_recovery_info(derived_info['account_id'])
                         #coin_derived_info.update_list(derived_info['account_id'])
@@ -2686,19 +2691,19 @@ class AndroidCommands(commands.Commands):
                         self.recovery_create("%s_derived_%s" % (coin, i), seed, password=password,
                                      bip39_derivation=bip39_derivation, passphrase=passphrase, coin=coin)
                     else:
-                        xpub = self.get_xpub_from_hw(_type='p2pkh', account_id=i, coin=coin)
-                        self.recovery_import_create_hw_wallet(i, derived_info['name'], 1, 1, [xpub], coin=coin)
-            if hw:
-                ##TODO recovery multi info from server, need test
-                info = self.get_wallet_info_from_server(hd_wallet.get_keystore().xpub)
-                info_list = json.loads(info)
-                # for wallet_info in info_list:
-                #     if wallet_info['walletType'] != '1-1':
-                #         self.recovery_import_create_hw_wallet(wallet_info['walletName'], 1, 1, wallet_info['xpubs'], coin=coin)
+                        xpub = self.get_xpub_from_hw(path=path, _type='p2pkh', account_id=i, coin=coin)
+                        self.recovery_import_create_hw_wallet(i,derived_info['name'], 1, 1, [xpub], coin=coin)
+            # if hw:
+            #     ##TODO recovery multi info from server, need test
+            #     info = self.get_wallet_info_from_server(hd_wallet.get_keystore().xpub)
+            #     info_list = json.loads(info)
+            #     for wallet_info in info_list:
+            #         if wallet_info['walletType'] != '1-1':
+            #             self.recovery_import_create_hw_wallet(wallet_info['walletName'], 1, 1, wallet_info['xpubs'], coin=coin)
 
 
-    def recovery_hd_derived_wallet(self, password=None, seed=None, passphrase='', hw=False):
-        self.recovery_wallet(self.btc_derived_info, seed, password, passphrase, hw=hw)
+    def recovery_hd_derived_wallet(self, password=None, seed=None, passphrase='', hw=False, path='bluetooth'):
+        self.recovery_wallet(self.btc_derived_info, seed, password, passphrase, hw=hw, path=path)
         # for symbol, info in self.coins.items():
         #     PyWalib.set_server(info)
         #     self.recovery_wallet(info['derivedInfoObj'], seed, password, passphrase, hw=hw)

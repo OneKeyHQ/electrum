@@ -4,6 +4,7 @@ import android.nfc.Tag;
 
 /**
  * nfc
+ * @author liyan
  */
 public final class NfcManager {
 
@@ -25,9 +26,7 @@ public final class NfcManager {
     }
 
     public void initNfc(Tag tag) {
-        PyEnv.sUsbTransport.put("ENABLED", false);
-        PyEnv.sBleTransport.put("ENABLED", false);
-        PyEnv.sNfcTransport.put("ENABLED", true);
+        PyEnv.nfcEnable();
         PyEnv.sNfcHandler.put("device", tag);
     }
 

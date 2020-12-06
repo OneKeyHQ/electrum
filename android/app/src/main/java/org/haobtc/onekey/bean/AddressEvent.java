@@ -4,6 +4,8 @@ public class AddressEvent {
     private String name;
     private String type;
     private String amount;
+    private String label;
+    private String deviceId;
 
     public AddressEvent() {
     }

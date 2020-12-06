@@ -1,7 +1,7 @@
 package org.haobtc.onekey.activities;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -12,6 +12,8 @@ import com.azhon.appupdate.config.UpdateConfiguration;
 import com.azhon.appupdate.listener.OnDownloadListener;
 import com.azhon.appupdate.manager.DownloadManager;
 import com.azhon.appupdate.utils.ApkUtil;
+import com.google.common.base.Strings;
+import com.google.gson.JsonSyntaxException;
 
 import org.haobtc.onekey.BuildConfig;
 import org.haobtc.onekey.R;
@@ -19,6 +21,8 @@ import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.activities.transaction.CheckChainDetailWebActivity;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.UpdateInfo;
+import org.haobtc.onekey.constant.Constant;
+import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.ui.dialog.AppUpdateDialog;
 
 import java.io.File;
@@ -32,6 +36,8 @@ import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+
+import static java.net.HttpURLConnection.HTTP_OK;
 
 /**
  * @author liyan
@@ -90,7 +96,7 @@ public class AboutActivity extends BaseActivity implements OnDownloadListener {
     private void getUpdateInfo() {
         // version_testnet.json version_regtest.json
         String appId = BuildConfig.APPLICATION_ID;
-        String urlPrefix = "https://key.bixin.com/";
+        String urlPrefix = "https://onekey.so/";
         String url = "";
         if (appId.endsWith("mainnet")) {
             url = urlPrefix + "version.json";
@@ -112,11 +118,33 @@ public class AboutActivity extends BaseActivity implements OnDownloadListener {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 assert response.body() != null;
-                SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-                String locate = preferences.getString("language", "");
-
+                if (response.code() !=  HTTP_OK) {
+                    Log.e("Main", "获取更新信息失败");
+                    return;
+                }
+                String locate = PreferencesManager.get(AboutActivity.this, "Preferences", Constant.LANGUAGE, "").toString();
                 String info = response.body().string();
-                UpdateInfo updateInfo = UpdateInfo.objectFromData(info);
+                UpdateInfo updateInfo = null;
+                try {
+                    updateInfo = UpdateInfo.objectFromData(info);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    if (e instanceof JsonSyntaxException) {
+                        Log.e("Main", "获取到的更新信息格式错误");
+                    }
+                    return;
+                }
+                String oldInfo = PreferencesManager.get(AboutActivity.this, "Preferences", Constant.UPGRADE_INFO, "").toString();
+                if (!Strings.isNullOrEmpty(oldInfo)) {
+                    UpdateInfo old = UpdateInfo.objectFromData(oldInfo);
+                    if (!old.getStm32().getUrl().equals(updateInfo.getStm32().getUrl())) {
+                        updateInfo.getStm32().setNeedUpload(true);
+                    }
+                    if (!old.getNrf().getUrl().equals(updateInfo.getNrf().getUrl())) {
+                        updateInfo.getNrf().setNeedUpload(true);
+                    }
+                }
+                PreferencesManager.put(AboutActivity.this, "Preferences", Constant.UPGRADE_INFO, updateInfo.toString());
                 String url = updateInfo.getAPK().getUrl();
                 String versionName = updateInfo.getAPK().getVersionName();
                 int versionCode = updateInfo.getAPK().getVersionCode();
@@ -128,7 +156,7 @@ public class AboutActivity extends BaseActivity implements OnDownloadListener {
     }
 
     private void attemptUpdate(String uri,  int versionCode, String versionName, String size, String description) {
-        int versionCodeLocal  = ApkUtil.getVersionCode(AboutActivity.this);
+        int versionCodeLocal  = ApkUtil.getVersionCode(this);
         if (versionCodeLocal >= versionCode) {
             mToast("当前是最新版本");
             return;
@@ -144,7 +172,6 @@ public class AboutActivity extends BaseActivity implements OnDownloadListener {
                 .setEnableLog(true)
                 .setJumpInstallPage(true)
                 .setShowNotification(true)
-                .setShowBgdToast(true)
                 .setForcedUpgrade(false)
                 .setOnDownloadListener(this);
 
@@ -152,8 +179,7 @@ public class AboutActivity extends BaseActivity implements OnDownloadListener {
         manager.setApkName("oneKey.apk")
                 .setApkUrl(url)
                 .setSmallIcon(R.drawable.logo_square)
-                .setConfiguration(configuration)
-                .download();
+                .setConfiguration(configuration);
         updateDialog = new AppUpdateDialog(manager, versionName, description);
         updateDialog.show(getSupportFragmentManager(), "");
     }
@@ -165,7 +191,7 @@ public class AboutActivity extends BaseActivity implements OnDownloadListener {
 
     @Override
     public void downloading(int max, int progress) {
-        updateDialog.progressBar.setProgress((int)((float)progress/max)*100);
+        updateDialog.progressBar.setProgress((int)(((float)progress/max)*100));
     }
 
     @Override
@@ -181,5 +207,4 @@ public class AboutActivity extends BaseActivity implements OnDownloadListener {
     @Override
     public void error(Exception e) {
     }
-
 }

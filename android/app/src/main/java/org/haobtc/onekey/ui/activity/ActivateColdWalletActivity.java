@@ -14,7 +14,7 @@ import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.asynctask.BusinessAsyncTask;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.PyConstant;
-import org.haobtc.onekey.data.prefs.PreferencesManager;
+import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.event.BackupFinishEvent;
 import org.haobtc.onekey.event.ButtonRequestConfirmedEvent;
 import org.haobtc.onekey.event.ButtonRequestEvent;
@@ -24,12 +24,10 @@ import org.haobtc.onekey.event.InitDeviceEvent;
 import org.haobtc.onekey.event.NameSettedEvent;
 import org.haobtc.onekey.event.NextFragmentEvent;
 import org.haobtc.onekey.manager.PyEnv;
-import org.haobtc.onekey.mvp.base.BaseActivity;
-import org.haobtc.onekey.ui.fragment.AddAssetFragment;
+import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.ui.fragment.ConfirmOnHardwareFragment;
 import org.haobtc.onekey.ui.fragment.DeviceNameSettingFragment;
 import org.haobtc.onekey.ui.fragment.DevicePINFragment;
-import org.haobtc.onekey.ui.fragment.ImportMnemonicToDeviceFragment;
 import org.haobtc.onekey.ui.fragment.NormalActiveSuccessfulFragment;
 import org.haobtc.onekey.ui.fragment.PickMnemonicSizeFragment;
 import org.haobtc.onekey.ui.fragment.UpdatePinConfirmFragment;
@@ -48,9 +46,10 @@ public class ActivateColdWalletActivity extends BaseActivity implements Business
     ImageView imgBack;
     private String name;
     private String currentMethodName;
-
+    private int mode;
     @Override
     public void init() {
+        mode = getIntent().getIntExtra(Constant.ACTIVE_MODE, 0);
         updateTitle(R.string.active_hardware);
         startFragment(new DeviceNameSettingFragment());
     }
@@ -73,13 +72,13 @@ public class ActivateColdWalletActivity extends BaseActivity implements Business
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onNameSetted(NameSettedEvent event) {
         name = event.getName();
-        int mode = getIntent().getIntExtra(Constant.ACTIVE_MODE, 0);
         switch (mode) {
             case Constant.ACTIVE_MODE_NEW:
                 startFragment(new PickMnemonicSizeFragment());
                 break;
             case Constant.ACTIVE_MODE_IMPORT:
-                startFragment(new ImportMnemonicToDeviceFragment());
+                activeByImportMnemonic();
+//                startFragment(new ChooseMnemonicSizeFragment());
                 break;
             case Constant.ACTIVE_MODE_LOCAL_BACKUP:
                 showToast("暂不支持此方式");
@@ -93,18 +92,30 @@ public class ActivateColdWalletActivity extends BaseActivity implements Business
         if (Strings.isNullOrEmpty(event.getMnemonics())) {
             boolean isNormal = event.getIsNormal();
             activeByNormal(isNormal);
-        } else {
-            activeByImportMnemonic(event.getMnemonics());
         }
+//        else {
+//            activeByImportMnemonic();
+//        }
+    }
+    /**
+     * 通过助记词恢复硬件
+     * */
+    private void activeByRecovery(boolean isNormal) {
+        String language = PreferencesManager.get(this, "Preferences", Constant.LANGUAGE, "").toString();
+        new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.RECOVER,
+                MyApplication.getInstance().getDeviceWay(),
+                name,
+                language,
+                isNormal ? null: "1");
     }
     /**
      * 导入助记词作为备份(没有任何功能)
      * */
-    private void activeByImportMnemonic(String mnemonics) {
-        String language = PreferencesManager.get(this, "Preferences", "language", "").toString();
+    private void activeByImportMnemonic() {
+        String language = PreferencesManager.get(this, "Preferences", Constant.LANGUAGE, "").toString();
         new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.IMPORT_MNEMONIC,
                 MyApplication.getInstance().getDeviceWay(),
-                mnemonics,
+                getIntent().getStringExtra(Constant.MNEMONICS),
                 language,
                 name);
     }
@@ -163,21 +174,20 @@ public class ActivateColdWalletActivity extends BaseActivity implements Business
     * */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onFinish(ExitEvent exitEvent) {
-        int mode = getIntent().getIntExtra(Constant.ACTIVE_MODE, 0);
-        switch (mode) {
-            case Constant.ACTIVE_MODE_NEW:
-            case Constant.ACTIVE_MODE_IMPORT:
-                finish();
-                break;
-            case Constant.ACTIVE_MODE_LOCAL_BACKUP:
-                showToast("暂不支持此方式");
-        }
+        finish();
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onNext(NextFragmentEvent event) {
         switch (event.getLayoutId()) {
             case R.layout.active_successful_fragment:
-                startFragment(new NormalActiveSuccessfulFragment(name));
+                switch (mode) {
+                    case Constant.ACTIVE_MODE_IMPORT:
+                        updateTitle(R.string.backups_wallet);
+                        startFragment(new NormalActiveSuccessfulFragment(name, R.string.import_success_description, R.string.success_1));
+                        break;
+                    default:
+                        startFragment(new NormalActiveSuccessfulFragment(name, 0, 0));
+                }
                 break;
             default:
 
@@ -195,7 +205,8 @@ public class ActivateColdWalletActivity extends BaseActivity implements Business
 
     @Override
     public void onException(Exception e) {
-
+        showToast(e.getMessage());
+        finish();
     }
 
     @Override

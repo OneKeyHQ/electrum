@@ -5,8 +5,6 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -23,7 +21,6 @@ import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.event.SecondEvent;
-import org.haobtc.onekey.onekeys.homepage.mindmenu.HdRootMnemonicsActivity;
 import org.haobtc.onekey.utils.ScreenShotListenManager;
 
 import java.util.Objects;
@@ -127,6 +124,5 @@ public class ExportPrivateActivity extends BaseActivity {
         window.setWindowAnimations(R.style.AnimBottom);
         dialogBtoms.setCanceledOnTouchOutside(true);
         dialogBtoms.show();
-
     }
 }

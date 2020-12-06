@@ -7,13 +7,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.constant.PyConstant;
 import org.haobtc.onekey.event.ChangePinEvent;
-import org.haobtc.onekey.event.ExitEvent;
-import org.haobtc.onekey.mvp.base.BaseFragment;
+import org.haobtc.onekey.ui.base.BaseFragment;
 import org.haobtc.onekey.ui.custom.PwdInputView;
 import org.haobtc.onekey.utils.NumKeyboardUtil;
 
@@ -43,9 +40,7 @@ public class DevicePINFragment extends BaseFragment implements NumKeyboardUtil.C
     public void init(View view) {
         switch (type) {
             case PyConstant.PIN_CURRENT:
-                promote.setText("根据设备显示的\n" +
-                        "PIN 码位置对照表\n" +
-                        "输入您曾设置的6位密码");
+                promote.setText(R.string.set_pin_promote);
             default:
 
 

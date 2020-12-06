@@ -19,6 +19,7 @@ import androidx.annotation.LayoutRes;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONArray;
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chaquo.python.PyObject;
 
 import org.greenrobot.eventbus.EventBus;
@@ -26,8 +27,13 @@ import org.greenrobot.eventbus.Subscribe;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.adapter.WalletListAdapter;
+import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.AddressEvent;
+import org.haobtc.onekey.bean.LocalWalletInfo;
+import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.LoadWalletlistEvent;
+import org.haobtc.onekey.manager.PreferencesManager;
+import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
 import org.haobtc.onekey.onekeys.dialog.RecoverHdWalletActivity;
 import org.haobtc.onekey.onekeys.dialog.SetHDWalletPassActivity;
 import org.haobtc.onekey.onekeys.dialog.SetLongPassActivity;
@@ -59,7 +65,7 @@ public class HDWalletActivity extends BaseActivity {
     RelativeLayout reclAddWallet;
     @BindView(R.id.text_manage)
     TextView textManage;
-    private ArrayList<AddressEvent> hdWalletList;
+    private ArrayList<LocalWalletInfo> hdWalletList;
     private WalletListAdapter walletListAdapter;
     private String deleteHdWalletName = "";
     private SharedPreferences preferences;
@@ -146,46 +152,28 @@ public class HDWalletActivity extends BaseActivity {
 
     private void getHomeWalletList() {
         hdWalletList.clear();
-        PyObject getWalletsListInfo;
-        //wallet list
-        try {
-            getWalletsListInfo = Daemon.commands.callAttr("list_wallets");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
-        String toStrings = getWalletsListInfo.toString();
-        Log.i("mWheelplanting", "toStrings: " + toStrings);
-        if (getWalletsListInfo.toString().length() > 2) {
-            JSONArray jsonDatas = com.alibaba.fastjson.JSONObject.parseArray(toStrings);
-            for (int i = 0; i < jsonDatas.size(); i++) {
-                Map jsonToMap = (Map) jsonDatas.get(i);
-                Set keySets = jsonToMap.keySet();
-                Iterator ki = keySets.iterator();
-                AddressEvent addressEvent = new AddressEvent();
-
-                while (ki.hasNext()) {
-                    try {
-                        //get key
-                        String key = (String) ki.next();
-                        String value = jsonToMap.get(key).toString();
-                        JSONObject jsonObject = new JSONObject(value);
-                        String addr = jsonObject.getString("addr");
-                        String type = jsonObject.getString("type");
-                        if (type.contains("hd") || type.contains("derived")) {
-                            addressEvent.setName(key);
-                            addressEvent.setType(type);
-                            addressEvent.setAmount(addr);
-                            hdWalletList.add(addressEvent);
-                        }
-                        if ("btc-hd-standard".equals(type)) {
-                            deleteHdWalletName = key;
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+        Map<String, ?> wallets = PreferencesManager.getAll(this, Constant.WALLETS);
+        if (wallets.isEmpty()) {
+            textWalletNum.setText(String.valueOf(hdWalletList.size()));
+            reclAddWallet.setVisibility(View.GONE);
+            linNotWallet.setVisibility(View.VISIBLE);
+            textManage.setVisibility(View.GONE);
+        } else {
+            wallets.entrySet().forEach(stringEntry -> {
+                LocalWalletInfo info = LocalWalletInfo.objectFromData(stringEntry.getValue().toString());
+                String addr = info.getAddr();
+                String type = info.getType();
+                String label = info.getLabel();
+                String name = info.getName();
+                String deviceId = info.getDeviceId();
+                if (type.contains("hd") || type.contains("derived")) {
+                    hdWalletList.add(info);
                 }
-            }
+                        if ("btc-hd-standard".equals(type)) {
+                         deleteHdWalletName = name;
+                        }
+
+            });
             textWalletNum.setText(String.valueOf(hdWalletList.size()));
             if (hdWalletList != null && hdWalletList.size() > 0) {
                 walletListAdapter.notifyDataSetChanged();
@@ -194,12 +182,61 @@ public class HDWalletActivity extends BaseActivity {
                 linNotWallet.setVisibility(View.VISIBLE);
                 textManage.setVisibility(View.GONE);
             }
-        } else {
-            textWalletNum.setText(String.valueOf(hdWalletList.size()));
-            reclAddWallet.setVisibility(View.GONE);
-            linNotWallet.setVisibility(View.VISIBLE);
-            textManage.setVisibility(View.GONE);
         }
+//        PyObject getWalletsListInfo;
+//        //wallet list
+//        try {
+//            getWalletsListInfo = Daemon.commands.callAttr("list_wallets");
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return;
+//        }
+//        String toStrings = getWalletsListInfo.toString();
+//        Log.i("mWheelplanting", "toStrings: " + toStrings);
+//        if (getWalletsListInfo.toString().length() > 2) {
+//            JSONArray jsonDatas = com.alibaba.fastjson.JSONObject.parseArray(toStrings);
+//            for (int i = 0; i < jsonDatas.size(); i++) {
+//                Map jsonToMap = (Map) jsonDatas.get(i);
+//                Set keySets = jsonToMap.keySet();
+//                Iterator ki = keySets.iterator();
+//                AddressEvent addressEvent = new AddressEvent();
+//
+//                while (ki.hasNext()) {
+//                    try {
+//                        //get key
+//                        String key = (String) ki.next();
+//                        String value = jsonToMap.get(key).toString();
+//                        JSONObject jsonObject = new JSONObject(value);
+//                        String addr = jsonObject.getString("addr");
+//                        String type = jsonObject.getString("type");
+//                        if (type.contains("hd") || type.contains("derived")) {
+//                            addressEvent.setName(key);
+//                            addressEvent.setType(type);
+//                            addressEvent.setAmount(addr);
+//                            hdWalletList.add(addressEvent);
+//                        }
+//                        if ("btc-hd-standard".equals(type)) {
+//                            deleteHdWalletName = key;
+//                        }
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//            textWalletNum.setText(String.valueOf(hdWalletList.size()));
+//            if (hdWalletList != null && hdWalletList.size() > 0) {
+//                walletListAdapter.notifyDataSetChanged();
+//            } else {
+//                reclAddWallet.setVisibility(View.GONE);
+//                linNotWallet.setVisibility(View.VISIBLE);
+//                textManage.setVisibility(View.GONE);
+//            }
+//        } else {
+//            textWalletNum.setText(String.valueOf(hdWalletList.size()));
+//            reclAddWallet.setVisibility(View.GONE);
+//            linNotWallet.setVisibility(View.VISIBLE);
+//            textManage.setVisibility(View.GONE);
+//        }
     }
 
     @Subscribe

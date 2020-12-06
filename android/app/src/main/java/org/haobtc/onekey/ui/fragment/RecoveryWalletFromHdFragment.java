@@ -8,14 +8,15 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.bean.BalanceInfo;
 import org.haobtc.onekey.bean.FindOnceWalletEvent;
+import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.event.SelectedEvent;
-import org.haobtc.onekey.mvp.base.BaseFragment;
+import org.haobtc.onekey.ui.base.BaseFragment;
 import org.haobtc.onekey.ui.adapter.OnceWalletAdapter;
 
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ import butterknife.OnClick;
  */
 
 public class RecoveryWalletFromHdFragment extends BaseFragment {
+
     @BindView(R.id.loaded_wallet)
     RelativeLayout loadedWallet;
     @BindView(R.id.wallet_rec)
@@ -50,15 +52,19 @@ public class RecoveryWalletFromHdFragment extends BaseFragment {
     public void init(View view) {
         nameList = new ArrayList<>();
     }
-    @Subscribe
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onFind(FindOnceWalletEvent<BalanceInfo> event) {
-        adapter = new OnceWalletAdapter(getContext(), event.getWallets());
-        walletRec.setAdapter(adapter);
-        walletRec.setLayoutManager(new LinearLayoutManager(getContext()));
-        loadedWallet.setVisibility(View.GONE);
         walletCard.setVisibility(View.VISIBLE);
         recovery.setVisibility(View.VISIBLE);
-        adapter.notifyDataSetChanged();
+        loadedWallet.setVisibility(View.GONE);
+        if (event.getWallets().isEmpty()) {
+           recovery.setText(R.string.back);
+        } else {
+            adapter = new OnceWalletAdapter(getContext(), event.getWallets());
+            walletRec.setAdapter(adapter);
+            walletRec.setLayoutManager(new LinearLayoutManager(getContext()));
+            adapter.notifyDataSetChanged();
+        }
     }
     /***
      * init layout
@@ -70,16 +76,20 @@ public class RecoveryWalletFromHdFragment extends BaseFragment {
     }
 
     @OnClick(R.id.recovery)
-    public void onViewClicked() {
-        adapter.getSelectMap().entrySet().forEach((entry) -> {
-            if (entry.getValue().isChecked()) {
-                nameList.add(entry.getKey());
-            }
-        });
-        if (nameList.isEmpty()) {
-            showToast("请至少选择一个你要恢复的钱包");
+    public void onViewClicked(View view) {
+        if (recovery.getText().equals(getString(R.string.back))) {
+            EventBus.getDefault().post(new ExitEvent());
         } else {
-            EventBus.getDefault().post(new SelectedEvent(nameList));
+            adapter.getSelectMap().entrySet().forEach((entry) -> {
+                if (entry.getValue().isChecked()) {
+                    nameList.add(entry.getKey());
+                }
+            });
+            if (nameList.isEmpty()) {
+                showToast(R.string.recovery_wallet_select_promote);
+            } else {
+                EventBus.getDefault().post(new SelectedEvent(nameList));
+            }
         }
     }
 

@@ -1076,10 +1076,10 @@
     <string name="get_auth_sign">获取防伪签名</string>
     <string name="push_auth_sign">提交防伪验证信息</string>
     <string name="verify_success">验证通过</string>
-    <string name="verify_success_hide">这是 OneKey 官方出品内置官方固件请放心使用</string>
+    <string name="verify_success_hide">这是 OneKey 官方出品\n\n内置官方固件\n\n请放心使用</string>
     <string name="verify_failed">验证失败</string>
     <string name="back_device">返回设备</string>
-    <string name="verify_failed_hide">这台设备并未运行官方固件可能被篡改如果这不是您自己的行为请联系销售方处理</string>
+    <string name="verify_failed_hide">这台设备并未运行官方固件\n\n可能被篡\n\n改如果这不是您自己的行为\n\n请联系销售方处理</string>
     <string name="update_pin_last_confirm">最终确认</string>
     <string name="update_pin_last_confirm_hide">在您的设备上确认新的 PIN 码，这是最后一步。</string>
     <string name="now_backup_tip">安全提醒，你还没有备份这个钱包的助记词。为了您的资产安全，在完成备份前，请不要往这个钱包转币。</string>
@@ -1215,5 +1215,21 @@
     <string name="easy_to_identy">方便您轻松识别</string>
     <string name="input_you_like_name">输入一个你喜欢的名称</string>
     <string name="device">设备</string>
+    <string name="import_success_description">您的助记词已经成功备份到这台设备，\n 我们也没什么可提醒您的了。\n 总之，切记保管好它，\n 搞丢了没有任何人可以帮您找回来。\n祝您在区块链的世界玩儿开心❤️。</string>
+    <string name="success_1">大功告成</string>
+    <string name="change_pin_promote">干的好，继续根据设备\n 上的 PIN 码位置\n 设置您的新6位 PIN 码</string>
+    <string name="input_pin_promote">请输入PIN码</string>
+    <string name="set_pin_promote">根据设备显示的\n PIN 码位置对照表\n 输入您曾设置的6位密码</string>
+    <string name="mnemonic_word_12_crete_promote">创建 12 位助记词钱包↑</string>
+    <string name="mnemonic_word_24_crete_promote">创建 24 位助记词钱包↑</string>
+    <string name="mnemonic_word_12_generate_promote">硬件钱包将为你生成 12 位助记词</string>
+    <string name="mnemonic_word_24_generate_promote">硬件钱包将为你生成 24 位助记词</string>
+    <string name="recovery_wallet_select_promote">请至少选择一个你要恢复的钱包</string>
+    <string name="name_empty">名称不能为空</string>
+    <string name="write_mnemonic_24">请抄写你的 24 位助记词</string>
+    <string name="upgrading_hardware">正在升级固件</string>
+    <string name="uploading_hardware_and_wait">固件下载中，请耐心等待</string>
+    <string name="verify_failed_network">连接Onekey\n\n认证服务器失败\n\n请查看你的网络</string>
+    <string name="verify_failed_hide_hardware">未能从你的硬件设备中获取签名信息</string>
 
 </resources>

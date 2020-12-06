@@ -2,6 +2,7 @@ package org.haobtc.onekey.ui.activity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.view.LayoutInflater;
@@ -10,9 +11,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -23,14 +26,15 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.HardwareFeatures;
 import org.haobtc.onekey.constant.Constant;
-import org.haobtc.onekey.data.prefs.PreferencesManager;
+import org.haobtc.onekey.event.BleConnectedEvent;
+import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.event.BleScanStopEvent;
 import org.haobtc.onekey.event.GetXpubEvent;
 import org.haobtc.onekey.event.NotifySuccessfulEvent;
 import org.haobtc.onekey.manager.BleManager;
 import org.haobtc.onekey.manager.NfcManager;
 import org.haobtc.onekey.manager.PyEnv;
-import org.haobtc.onekey.mvp.base.BaseActivity;
+import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.ui.adapter.BleDeviceAdapter;
 import org.haobtc.onekey.utils.ValueAnimatorUtil;
 
@@ -38,6 +42,7 @@ import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import cn.com.heaton.blelibrary.ble.Ble;
 import cn.com.heaton.blelibrary.ble.model.BleDevice;
 
 import static cn.com.heaton.blelibrary.ble.Ble.REQUEST_ENABLE_BT;
@@ -69,13 +74,16 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
     private BleDeviceAdapter mBleAdapter;
     private int mSearchMode;
     private BleManager bleManager;
+    public static final int REQUEST_ID = 65578;
 
     @Override
     public void init() {
         mSearchMode = getIntent().getIntExtra(Constant.SEARCH_DEVICE_MODE, Constant.SearchDeviceMode.MODE_PAIR_WALLET_TO_COLD);
         addBleView();
         bleManager = BleManager.getInstance(this);
-        bleManager.initBle();
+        if (mSearchMode != Constant.SearchDeviceMode.MODE_SIGN_TX) {
+            bleManager.initBle();
+        }
     }
 
     @Override
@@ -84,17 +92,6 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
     }
 
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_ENABLE_BT && resultCode == Activity.RESULT_CANCELED) {
-            showToast("您未授权蓝牙，无法使用！！");
-            finish();
-        } else if (requestCode == REQUEST_ENABLE_BT && resultCode == Activity.RESULT_OK) {
-
-        }
-    }
-
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onBleScanDevice(BleDevice device) {
         if (mBleAdapter != null) {
@@ -102,8 +99,12 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
             mBleAdapter.add(device);
         }
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onBleScanStop(BleScanStopEvent event) {
+        if (mSearchMode == Constant.SearchDeviceMode.MODE_SIGN_TX) {
+            return;
+        }
         if (mLoadingLayout.getVisibility() != View.GONE) {
             mLoadingLayout.setVisibility(View.GONE);
         }
@@ -112,7 +113,10 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
         }
         if (mOpenWalletHide.getVisibility() != View.VISIBLE) {
             mOpenWalletHide.postDelayed(() -> mOpenWalletHide.setVisibility(View.VISIBLE), 400);
-
+        }
+        // 加入当前已连接的设备
+        if (!Ble.getInstance().getConnetedDevices().isEmpty()) {
+            Ble.getInstance().getConnetedDevices().forEach(mBleAdapter::add);
         }
         mBleAdapter.notifyDataSetChanged();
         if (mLayoutView.getHeight() > 0) {
@@ -139,9 +143,9 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
                     action.setVisibility(View.VISIBLE);
                 }
                 break;
-            case Constant.SearchDeviceMode.MODE_BACKUP_WALLET_TO_COLD:
+            case Constant.SearchDeviceMode.MODE_BACKUP_HD_WALLET_TO_DEVICE:
                 mTitle.setText(R.string.backup_wallet);
-                next.setText(R.string.ready_wallet);
+                next.setText(R.string.ready_unactive_wallet);
                 hide.setText(R.string.support_device);
                 action.setText(R.string.open_cold_wallet);
                 if (action.getVisibility() == View.GONE) {
@@ -181,34 +185,41 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
         mRecyclerView.setAdapter(mBleAdapter);
     }
 
-
     @Override
     public void connectBle(BleDevice device) {
         PreferencesManager.put(this, Constant.BLE_INFO, device.getBleName(), device.getBleAddress());
         bleManager.connDev(device);
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void onReadyBle(NotifySuccessfulEvent event) {
+        EventBus.getDefault().removeStickyEvent(event);
+        System.out.println("notify success!!!!!");
         toNextActivity();
     }
 
     private void toNextActivity() {
         HardwareFeatures features;
         try {
-           features  =  PyEnv.getFeature(this);
+            features = PyEnv.getFeature(this);
         } catch (Exception e) {
             showToast("获取硬件信息失败请重试");
             e.printStackTrace();
+            finish();
             return;
         }
         switch (mSearchMode) {
-            case Constant.SearchDeviceMode.MODE_RECOVERY_WALLET_BY_COLD:
-                toActivity(RecoveryWalletByColdWalletActivity.class);
-                break;
-            case Constant.SearchDeviceMode.MODE_CLONE_TO_OTHER_COLD:
-            case Constant.SearchDeviceMode.MODE_BACKUP_WALLET_TO_COLD:
-                toActivity(BackupToColdWalletActivity.class);
+            // 通过备份提示过来
+            case Constant.SearchDeviceMode.MODE_BACKUP_HD_WALLET_TO_DEVICE:
+                if (features.isInitialized()) {
+                    showToast("仅支持未激活的硬件钱包执行该操作");
+                } else {
+                    Intent intent = new Intent(this, ActivateColdWalletActivity.class);
+                    intent.putExtra(Constant.ACTIVE_MODE, Constant.ACTIVE_MODE_IMPORT);
+                    intent.putExtra(Constant.MNEMONICS, getIntent().getStringExtra(Constant.MNEMONICS));
+                    startActivity(intent);
+                    finish();
+                }
                 break;
             case Constant.SearchDeviceMode.MODE_BIND_ADMIN_PERSON:
                 if (features.isInitialized()) {
@@ -218,20 +229,28 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
                 }
                 finish();
                 break;
+            case Constant.SearchDeviceMode.MODE_SIGN_TX:
+                EventBus.getDefault().post(new BleConnectedEvent());
+                finish();
+                break;
             default:
-                    if (!features.isInitialized()) {
-                        startActivity(new Intent(this, FindUnInitDeviceActivity.class));
-                        finish();
-                    } else if (features.isBackupOnly()) {
-                        startActivity(new Intent(this, FindBackupOnlyDeviceActivity.class));
-                        finish();
-                    } else {
-                        startActivity(new Intent(this, FindNormalDeviceActivity.class));
-                        finish();
-                    }
+                // 配对过来的逻辑
+                if (!features.isInitialized()) {
+                    startActivity(new Intent(this, FindUnInitDeviceActivity.class));
+                    finish();
+                } else if (features.isBackupOnly()) {
+                    startActivity(new Intent(this, FindBackupOnlyDeviceActivity.class));
+                    finish();
+                } else {
+                    Intent intent = new Intent(this, FindNormalDeviceActivity.class);
+                    intent.putExtra(Constant.DEVICE_ID, features.getDeviceId());
+                    startActivity(intent);
+                    finish();
+                }
                 break;
         }
     }
+
     @SingleClick
     @OnClick({R.id.img_back, R.id.relode})
     public void onViewClicked(View view) {
@@ -250,6 +269,7 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
                 break;
         }
     }
+
     /**
      * 响应NFC贴合
      * */
@@ -270,5 +290,43 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
     @Override
     public boolean needEvents() {
         return true;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_ENABLE_BT && resultCode == Activity.RESULT_CANCELED) {
+            Toast.makeText(this, getString(R.string.open_bluetooth), Toast.LENGTH_LONG).show();
+        } else if (requestCode == REQUEST_ENABLE_BT && resultCode == Activity.RESULT_OK) {
+            bleManager.initBle();
+        }
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_ID) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                bleManager.initBle();
+            } else {
+                showToast(R.string.blurtooth_need_permission);
+            }
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (bleManager != null) {
+            if (bleManager.isGpsStatusChange()) {
+                AlertDialog dialog = bleManager.getAlertDialog();
+                if (dialog != null) {
+                    dialog.dismiss();
+                }
+                bleManager.setGpsStatusChange(false);
+                bleManager.initBle();
+            }
+        }
     }
 }

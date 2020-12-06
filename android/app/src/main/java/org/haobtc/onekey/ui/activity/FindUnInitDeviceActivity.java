@@ -8,7 +8,7 @@ import android.widget.TextView;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.constant.Constant;
-import org.haobtc.onekey.mvp.base.BaseActivity;
+import org.haobtc.onekey.ui.base.BaseActivity;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -54,17 +54,7 @@ public class FindUnInitDeviceActivity extends BaseActivity {
                 toNext(Constant.ACTIVE_MODE_NEW);
                 finish();
                 break;
-            case R.id.init_as_new_wallet_hide:
-                break;
-            case R.id.import_seed:
-                toNext(Constant.ACTIVE_MODE_IMPORT);
-                finish();
-                break;
-            case R.id.import_seed_hide:
-                break;
             case R.id.recovery_device:
-                break;
-            case R.id.recovery_device_hide:
                 break;
         }
     }

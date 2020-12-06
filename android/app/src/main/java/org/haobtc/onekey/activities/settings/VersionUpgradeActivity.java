@@ -51,6 +51,9 @@ import no.nordicsemi.android.dfu.DfuServiceListenerHelper;
 
 import static org.haobtc.onekey.activities.service.CommunicationModeSelector.isDfu;
 
+/**
+ * @author liyan
+ */
 public class VersionUpgradeActivity extends BaseActivity {
 
     @BindView(R.id.btn_toUpgrade)
@@ -95,20 +98,20 @@ public class VersionUpgradeActivity extends BaseActivity {
         ButterKnife.bind(this);
         rxPermissions = new RxPermissions(this);
         Intent intent = getIntent();
-        String firmwareVersion = intent.getStringExtra("firmwareVersion");
-        String bleVerson = intent.getStringExtra("bleVerson");
+        String firmwareVersion = intent.getStringExtra("firmware_version");
+        String ble_version = intent.getStringExtra("ble_version");
         bundle = intent.getExtras();
         if (bundle != null) {
             firmwareVersion = bundle.getString("stm32_version");
-            bleVerson = bundle.getString("nrf_version");
+            ble_version = bundle.getString("nrf_version");
             stm32VersionTip.setText(String.format("V%s " + getString(R.string.verson_updates), firmwareVersion));
-            nrfVersionTip.setText(String.format("V%s " + getString(R.string.verson_updates), bleVerson));
+            nrfVersionTip.setText(String.format("V%s " + getString(R.string.verson_updates), ble_version));
             stm32VersionDetail.setText(bundle.getString("stm32_description"));
             nrfVersionDetail.setText(bundle.getString("nrf_description"));
             bleName = bundle.getString("ble_name", "");
         }
         tetFirmware.setText(String.format("v%s", firmwareVersion));
-        tetBluetooth.setText(String.format("v%s", bleVerson));
+        tetBluetooth.setText(String.format("v%s", ble_version));
         if (!TextUtils.isEmpty(filePath)){
             testFileLoad.setText(filePath);
             testFileLoad.setVisibility(View.VISIBLE);

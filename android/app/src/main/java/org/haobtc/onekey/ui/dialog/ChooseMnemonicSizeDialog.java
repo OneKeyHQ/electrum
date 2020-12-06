@@ -8,7 +8,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.event.MnemonicSizeSelectedEvent;
-import org.haobtc.onekey.mvp.base.BaseDialogFragment;
+import org.haobtc.onekey.ui.base.BaseDialogFragment;
 
 import butterknife.BindView;
 import butterknife.OnClick;

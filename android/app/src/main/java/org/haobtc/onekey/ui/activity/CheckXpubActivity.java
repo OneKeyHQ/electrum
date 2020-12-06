@@ -8,7 +8,7 @@ import android.widget.TextView;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.constant.Constant;
-import org.haobtc.onekey.mvp.base.BaseActivity;
+import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.utils.ClipboardUtils;
 
 import butterknife.BindView;

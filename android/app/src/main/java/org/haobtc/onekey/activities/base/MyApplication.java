@@ -16,13 +16,16 @@ import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.MyEventBusIndex;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.SpConstant;
-import org.haobtc.onekey.data.prefs.PreferencesManager;
+import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.utils.Global;
 
 import java.util.UUID;
 
 import cn.com.heaton.blelibrary.ble.Ble;
 
+/**
+ * @author liyan
+ */
 public class MyApplication extends Application {
 
     private static volatile MyApplication mInstance;
@@ -30,7 +33,7 @@ public class MyApplication extends Application {
     private static final String PRIMARY_SERVICE = "00000001-0000-1000-8000-00805f9b34fb";
     private static final String WRITE_CHARACTERISTIC = "00000002-0000-1000-8000-00805f9b34fb";
     private static final String READ_CHARACTERISTIC = "00000003-0000-1000-8000-00805f9b34fb";
-    private static final Handler sHandler = new Handler(Looper.myLooper());
+    private static final Handler S_HANDLER = new Handler(Looper.myLooper());
 
     @Override
     public void onCreate() {
@@ -104,7 +107,7 @@ public class MyApplication extends Application {
         if(TextUtils.isEmpty(info)){
             return;
         }
-        sHandler.post(() -> Toast.makeText(MyApplication.this,info,Toast.LENGTH_SHORT).show());
+        S_HANDLER.post(() -> Toast.makeText(MyApplication.this,info,Toast.LENGTH_SHORT).show());
     }
 
 }

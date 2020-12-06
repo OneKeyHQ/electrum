@@ -77,7 +77,8 @@
         android:padding="@dimen/dp_20"
         android:text="@string/import_seed"
         android:textColor="#142A3B"
-        android:textSize="@dimen/sp_16" />
+        android:textSize="@dimen/sp_16"
+        android:visibility="gone"/>
 
     <TextView
         android:id="@+id/import_seed_hide"
@@ -89,7 +90,8 @@
         android:paddingBottom="@dimen/dp_20"
         android:text="@string/import_seed_hide"
         android:textColor="#9FA6AD"
-        android:textSize="@dimen/sp_12" />
+        android:textSize="@dimen/sp_12"
+        android:visibility="gone"/>
 
 
     <LinearLayout
@@ -125,7 +127,8 @@
         android:padding="@dimen/dp_20"
         android:text="@string/recovery_device"
         android:textColor="#142A3B"
-        android:textSize="@dimen/sp_16" />
+        android:textSize="@dimen/sp_16"
+        android:visibility="gone"/>
 
     <TextView
         android:id="@+id/recovery_device_hide"
@@ -137,7 +140,8 @@
         android:paddingBottom="@dimen/dp_20"
         android:text="@string/recovery_device_hide"
         android:textColor="#9FA6AD"
-        android:textSize="@dimen/sp_12" />
+        android:textSize="@dimen/sp_12"
+        android:visibility="gone"/>
 
 
     <LinearLayout

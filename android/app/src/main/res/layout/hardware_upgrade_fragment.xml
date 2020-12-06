@@ -2,15 +2,16 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#F5F6F7">
     <LinearLayout
         android:id="@+id/promote"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
         android:orientation="vertical"
-        android:layout_marginHorizontal="@dimen/dp_20"
-        android:layout_marginTop="@dimen/dp_40">
+        android:layout_marginTop="@dimen/dp_30"
+        android:layout_marginHorizontal="@dimen/dp_20">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -18,14 +19,30 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="当前版本"/>
+                android:text="当前固件版本"/>
             <TextView
-                android:id="@+id/current_version_code"
+                android:id="@+id/current_stm32_version_code"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_6"
                 android:text="v1.8.7"/>
         </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="当前蓝牙版本"/>
+            <TextView
+                android:id="@+id/current_nrf_version_code"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_6"
+                android:text="v1.8.7"/>
+        </LinearLayout>
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -41,54 +58,145 @@
         app:cardCornerRadius="@dimen/dp_20"
         android:layout_marginHorizontal="@dimen/dp_10">
         <LinearLayout
-            android:id="@+id/newer_version_layout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/dp_19"
-            android:paddingHorizontal="11dp"
-            android:paddingVertical="5dp"
-            android:background="@drawable/btn_no_check"
-            android:orientation="horizontal">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="新固件可用"
-                android:textColor="#00B812"
-                android:textSize="@dimen/sp_15"/>
-            <TextView
-                android:id="@+id/newer_version_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="#00B812"
-                android:textSize="@dimen/sp_15"
-                android:text="v1.9.7"
-                android:layout_marginStart="5dp"/>
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/update_description"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_240"
-            android:layout_marginTop="@dimen/dp_66"
-            android:layout_marginBottom="@dimen/dp_30"
-            android:scrollIndicators="end"
-            android:layout_marginHorizontal="@dimen/dp_10"
-            android:text="- 完全去中心化，不依赖任何中心化服务器\n- 开源更彻底，不只是代码和硬件设计，外壳3D设计，UI设计图\n
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <LinearLayout
+                android:id="@+id/stm32"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_20"
+                    android:layout_marginStart="@dimen/dp_20">
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:paddingHorizontal="11dp"
+                        android:paddingVertical="5dp"
+                        android:background="@drawable/btn_no_check"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="新系统固件可用"
+                            android:textColor="#00B812"
+                            android:textSize="@dimen/sp_15"/>
+                        <TextView
+                            android:id="@+id/newer_stm32_version_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="#00B812"
+                            android:textSize="@dimen/sp_15"
+                            android:text="v1.9.7"
+                            android:layout_marginStart="5dp"/>
+                    </LinearLayout>
+                    <Button
+                        android:id="@+id/stm32_update"
+                        android:layout_width="@dimen/dp_76"
+                        android:layout_height="@dimen/dp_30"
+                        android:text="@string/update"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginEnd="@dimen/dp_20"
+                        android:textColor="@android:color/white"
+                        android:textSize="@dimen/sp_13"
+                        android:background="@drawable/btn_checked"/>
+                </RelativeLayout>
+                <TextView
+                    android:id="@+id/stm32_update_description"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp_200"
+                    android:layout_marginTop="@dimen/dp_8"
+                    android:scrollIndicators="end"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginHorizontal="@dimen/dp_10"
+                    android:textSize="@dimen/sp_14"
+                    android:textColor="#546370"
+                    android:text="- 完全去中心化，不依赖任何中心化服务器\n- 开源更彻底，不只是代码和硬件设计，外壳3D设计，UI设计图\n
 - 安全芯片非安全芯片都支持，选择你喜欢的\n
 - 多客户端，流行钱包全支持，Electrum，Wasabi，Trezor，Bitcoin core\n
 - 多OS支持，Android/Windows/Linux/macOS\n
 - 多种连接硬件钱包方式，BLE/NFC/USB"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ble"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_20"
+                    android:layout_marginStart="@dimen/dp_20">
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:paddingHorizontal="11dp"
+                        android:paddingVertical="5dp"
+                        android:background="@drawable/btn_no_check"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="新蓝牙固件可用"
+                            android:textColor="#00B812"
+                            android:textSize="@dimen/sp_15"/>
+                        <TextView
+                            android:id="@+id/newer_nrf_version_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="#00B812"
+                            android:textSize="@dimen/sp_15"
+                            android:text="v1.9.7"
+                            android:layout_marginStart="5dp"/>
+                    </LinearLayout>
+                    <Button
+                        android:id="@+id/nrf_update"
+                        android:layout_width="@dimen/dp_76"
+                        android:layout_height="@dimen/dp_30"
+                        android:text="@string/update"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginEnd="@dimen/dp_20"
+                        android:textColor="@android:color/white"
+                        android:textSize="@dimen/sp_13"
+                        android:background="@drawable/btn_checked"/>
+                </RelativeLayout>
+
+
+                <TextView
+                    android:id="@+id/nrf_update_description"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp_200"
+                    android:layout_marginTop="@dimen/dp_8"
+                    android:scrollIndicators="end"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginHorizontal="@dimen/dp_10"
+                    android:textSize="@dimen/sp_14"
+                    android:textColor="#546370"
+                    android:text="- 完全去中心化，不依赖任何中心化服务器\n- 开源更彻底，不只是代码和硬件设计，外壳3D设计，UI设计图\n
+- 安全芯片非安全芯片都支持，选择你喜欢的\n
+- 多客户端，流行钱包全支持，Electrum，Wasabi，Trezor，Bitcoin core\n
+- 多OS支持，Android/Windows/Linux/macOS\n
+- 多种连接硬件钱包方式，BLE/NFC/USB"/>
+            </LinearLayout>
+            <TextView
+                android:id="@+id/no_update_promote"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="设备固件已经是最新版本。"
+                android:visibility="gone"/>
+        </LinearLayout>
+
+
+
     </androidx.cardview.widget.CardView>
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_60"
-        android:layout_marginBottom="124dp"
-        android:layout_marginHorizontal="34dp"
-        android:text="@string/update"
-        android:textSize="@dimen/sp_20"
-        android:textColor="@android:color/white"
-        android:background="@drawable/btn_checked"
-        app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

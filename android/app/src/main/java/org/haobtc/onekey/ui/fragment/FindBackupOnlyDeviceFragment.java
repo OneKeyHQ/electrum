@@ -6,7 +6,7 @@ import android.widget.TextView;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.event.RecoveryLocalHDEvent;
-import org.haobtc.onekey.mvp.base.BaseFragment;
+import org.haobtc.onekey.ui.base.BaseFragment;
 
 import butterknife.BindView;
 import butterknife.OnClick;

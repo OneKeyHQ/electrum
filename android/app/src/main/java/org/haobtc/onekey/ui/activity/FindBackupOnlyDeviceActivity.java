@@ -1,5 +1,6 @@
 package org.haobtc.onekey.ui.activity;
 
+import android.content.Intent;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -12,13 +13,17 @@ import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.asynctask.BusinessAsyncTask;
 import org.haobtc.onekey.bean.BalanceInfo;
 import org.haobtc.onekey.bean.FindOnceWalletEvent;
+import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.PyConstant;
 import org.haobtc.onekey.event.ButtonRequestEvent;
 import org.haobtc.onekey.event.ChangePinEvent;
+import org.haobtc.onekey.event.ExitEvent;
+import org.haobtc.onekey.event.GotPassEvent;
 import org.haobtc.onekey.event.RecoveryLocalHDEvent;
 import org.haobtc.onekey.event.SelectedEvent;
 import org.haobtc.onekey.manager.PyEnv;
-import org.haobtc.onekey.mvp.base.BaseActivity;
+import org.haobtc.onekey.ui.base.BaseActivity;
+import org.haobtc.onekey.onekeys.dialog.SetHDWalletPassActivity;
 import org.haobtc.onekey.ui.fragment.DevicePINFragment;
 import org.haobtc.onekey.ui.fragment.FindBackupOnlyDeviceFragment;
 import org.haobtc.onekey.ui.fragment.RecoveryWalletFromHdFragment;
@@ -38,6 +43,7 @@ public class FindBackupOnlyDeviceActivity extends BaseActivity implements Busine
     @BindView(R.id.img_back)
     ImageView imgBack;
     private RecoveryWalletFromHdFragment fromHdFragment;
+    private String mnemonics;
     @Override
     public void init() {
         updateTitle(R.string.pair);
@@ -53,6 +59,7 @@ public class FindBackupOnlyDeviceActivity extends BaseActivity implements Busine
     @SingleClick
     @OnClick({R.id.img_back})
     public void onViewClicked(View view) {
+        PyEnv.cancelPinInput();
         finish();
     }
 
@@ -65,6 +72,20 @@ public class FindBackupOnlyDeviceActivity extends BaseActivity implements Busine
        updateTitle(R.string.recovery_wallet);
        readXpubFromHardWare();
        startFragment(fromHdFragment);
+    }
+    @Subscribe
+    public void onGotPassEvent(GotPassEvent event) {
+        List<BalanceInfo> infos = PyEnv.createLocalHd(event.getPassword(), mnemonics);
+        if (infos != null) {
+            EventBus.getDefault().post(new FindOnceWalletEvent<>(infos));
+        } else {
+            showToast("未发现可用钱包");
+            finish();
+        }
+    }
+    @Subscribe
+    public void onFinish(ExitEvent exitEvent) {
+        finish();
     }
     @Override
     public void onPreExecute() {
@@ -79,14 +100,11 @@ public class FindBackupOnlyDeviceActivity extends BaseActivity implements Busine
 
     @Override
     public void onResult(String s) {
-
-        List<BalanceInfo> infos = PyEnv.createLocalHd("123456", s);
-        if (infos != null) {
-            EventBus.getDefault().post(new FindOnceWalletEvent<>(infos));
-        } else {
-            showToast("未发现可用钱包");
-            finish();
-        }
+        mnemonics = s;
+        Intent intent = new Intent(this, SetHDWalletPassActivity.class);
+        intent.putExtra("importHdword", "recoveryHdWallet");
+        intent.putExtra(Constant.OPERATE_TYPE, Constant.RECOVERY_TYPE);
+        startActivity(intent);
     }
 
     @Override

@@ -12,7 +12,7 @@ import org.haobtc.onekey.event.ConnectedEvent;
 import org.haobtc.onekey.event.GotVerifyInfoEvent;
 import org.haobtc.onekey.event.PostVerifyInfoEvent;
 import org.haobtc.onekey.event.VerifySuccessEvent;
-import org.haobtc.onekey.mvp.base.BaseFragment;
+import org.haobtc.onekey.ui.base.BaseFragment;
 import org.haobtc.onekey.ui.custom.LoadingTextView;
 
 import butterknife.BindView;
@@ -51,17 +51,23 @@ public class VerifyConnFragment extends BaseFragment {
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onConnected(ConnectedEvent event) {
-        connectingDevice.completeLoading();
+        if (connectingDevice != null) {
+            connectingDevice.completeLoading();
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGotVerifyInfo(GotVerifyInfoEvent event) {
-        retrieveVerifyInfo.completeLoading();
+        if (retrieveVerifyInfo != null) {
+            retrieveVerifyInfo.completeLoading();
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPostVerifyInfo(PostVerifyInfoEvent event) {
-        commitVerifyInfo.completeLoading();
-        EventBus.getDefault().post(new VerifySuccessEvent());
+        if (commitVerifyInfo != null) {
+            commitVerifyInfo.completeLoading();
+            EventBus.getDefault().post(new VerifySuccessEvent());
+        }
     }
 }

@@ -17,7 +17,8 @@ import org.haobtc.onekey.asynctask.BusinessAsyncTask;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.ChangePinEvent;
 import org.haobtc.onekey.event.ExitEvent;
-import org.haobtc.onekey.mvp.base.BaseActivity;
+import org.haobtc.onekey.manager.PyEnv;
+import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.ui.custom.PwdInputView;
 import org.haobtc.onekey.utils.NumKeyboardUtil;
 
@@ -49,7 +50,7 @@ public class VerifyPinActivity extends BaseActivity implements NumKeyboardUtil.C
             updateTitle(R.string.change_pin);
         } else {
             updateTitle(R.string.verify_pin_onkey);
-            promote.setText("请输入PIN码");
+            promote.setText(R.string.input_pin_promote);
         }
         mKeyboardUtil = new NumKeyboardUtil(mRelativeLayoutKey, this, mPwdInputView, R.xml.number, this);
     }
@@ -94,7 +95,8 @@ public class VerifyPinActivity extends BaseActivity implements NumKeyboardUtil.C
     }
     @SingleClick
     @OnClick(R.id.img_back)
-    public void onViewClicked() {
+    public void onViewClicked(View view) {
+        PyEnv.cancelPinInput();
         finish();
     }
     @Subscribe(threadMode = ThreadMode.MAIN)

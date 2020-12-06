@@ -1,16 +1,12 @@
 package org.haobtc.onekey.adapter;
 
 import android.annotation.SuppressLint;
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
@@ -18,21 +14,20 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 
 import org.haobtc.onekey.R;
-import org.haobtc.onekey.bean.AddressEvent;
-import org.haobtc.onekey.onekeys.homepage.process.DetailTransactionActivity;
+import org.haobtc.onekey.bean.LocalWalletInfo;
+import org.haobtc.onekey.utils.ClipboardUtils;
 
 import java.util.List;
-import java.util.Objects;
 
-public class WalletListAdapter extends BaseQuickAdapter<AddressEvent, BaseViewHolder> {
-    public WalletListAdapter(@Nullable List<AddressEvent> data) {
+public class WalletListAdapter extends BaseQuickAdapter<LocalWalletInfo, BaseViewHolder> {
+    public WalletListAdapter(@Nullable List<LocalWalletInfo> data) {
         super(R.layout.hd_wallet_item, data);
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
     @Override
-    protected void convert(BaseViewHolder helper, AddressEvent item) {
-        helper.setText(R.id.text_name, item.getName());
+    protected void convert(BaseViewHolder helper, LocalWalletInfo item) {
+        helper.setText(R.id.text_name, item.getLabel());
         RelativeLayout view = helper.getView(R.id.rel_background);
         ImageView imgType = helper.getView(R.id.img_type);
         if (item.getType().contains("btc")) {
@@ -55,7 +50,7 @@ public class WalletListAdapter extends BaseQuickAdapter<AddressEvent, BaseViewHo
             helper.getView(R.id.text_type).setVisibility(View.INVISIBLE);
         }
         TextView textAddr = helper.getView(R.id.text_addr);
-        String address = item.getAmount();
+        String address = item.getAddr();
         String front6 = address.substring(0, 6);
         String after6 = address.substring(address.length() - 6);
         textAddr.setText(address);
@@ -63,21 +58,19 @@ public class WalletListAdapter extends BaseQuickAdapter<AddressEvent, BaseViewHo
         ImageView copyAddr = helper.getView(R.id.img_copy_addr);
 
         SharedPreferences preferences = mContext.getSharedPreferences("Preferences", Context.MODE_PRIVATE);
-        String loadWalletName = preferences.getString("loadWalletName", "");
+        String loadWalletName = preferences.getString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET, "");
         ImageView chooseView = helper.getView(R.id.img_choose);
         if (loadWalletName.equals(item.getName())) {
             chooseView.setVisibility(View.VISIBLE);
         }
 
-        copyAddr.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //copy text
-                ClipboardManager cm2 = (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
-                // The text is placed on the system clipboard.
-                Objects.requireNonNull(cm2, "ClipboardManager not available").setPrimaryClip(ClipData.newPlainText(null, textAddr.getText()));
-                Toast.makeText(mContext, R.string.copysuccess, Toast.LENGTH_LONG).show();
-            }
+        copyAddr.setOnClickListener(v -> {
+            //copy text
+            ClipboardUtils.copyText(mContext, textAddr.getText().toString());
+//                ClipboardManager cm2 = (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
+//                // The text is placed on the system clipboard.
+//                Objects.requireNonNull(cm2, "ClipboardManager not available").setPrimaryClip(ClipData.newPlainText(null, textAddr.getText()));
+//                Toast.makeText(mContext, R.string.copysuccess, Toast.LENGTH_LONG).show();
         });
     }
 }

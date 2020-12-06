@@ -50,7 +50,7 @@ import org.haobtc.onekey.event.DeviceSearchEvent;
 import org.haobtc.onekey.event.FirstEvent;
 import org.haobtc.onekey.event.GetXpubEvent;
 import org.haobtc.onekey.manager.PyEnv;
-import org.haobtc.onekey.mvp.base.BaseActivity;
+import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
 import org.haobtc.onekey.ui.dialog.ChooseAddXpubWayDialog;
 import org.haobtc.onekey.ui.dialog.ValidateXpubDialog;

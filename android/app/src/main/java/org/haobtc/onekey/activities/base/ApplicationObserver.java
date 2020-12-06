@@ -10,6 +10,9 @@ import java.util.Optional;
 
 import cn.com.heaton.blelibrary.ble.Ble;
 
+/**
+ * @author liyan
+ */
 public class ApplicationObserver implements LifecycleObserver {
     private final String TAG = this.getClass().getName();
     public static boolean tryUpdate;

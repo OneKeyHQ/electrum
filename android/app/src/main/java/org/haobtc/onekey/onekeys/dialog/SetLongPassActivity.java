@@ -29,7 +29,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.constant.Constant;
-import org.haobtc.onekey.data.prefs.PreferencesManager;
+import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.event.FinishEvent;
 import org.haobtc.onekey.event.InputPassSendEvent;
 import org.haobtc.onekey.event.LoadOtherWalletEvent;
@@ -267,7 +267,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
             Intent intent = new Intent(SetLongPassActivity.this, HomeOneKeyActivity.class);
             startActivity(intent);
             PyEnv.loadLocalWalletInfo(this);
-            edit.putString("loadWalletName", "BTC-1");
+            edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET, "BTC-1");
             edit.apply();
             finish();
 
@@ -316,7 +316,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
             return;
         }
         PyEnv.loadLocalWalletInfo(this);
-        edit.putString("loadWalletName", walletName);
+        edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET, walletName);
         edit.apply();
         mIntent(HomeOneKeyActivity.class);
     }
@@ -343,7 +343,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
             return;
         }
         PyEnv.loadLocalWalletInfo(this);
-        edit.putString("loadWalletName", walletName);
+        edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET, walletName);
         edit.apply();
         mIntent(HomeOneKeyActivity.class);
     }
@@ -359,7 +359,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
             return;
         }
         PyEnv.loadLocalWalletInfo(this);
-        edit.putString("loadWalletName", walletName);
+        edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET, walletName);
         edit.apply();
         mIntent(HomeOneKeyActivity.class);
         finish();
@@ -376,7 +376,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
             return;
         }
         PyEnv.loadLocalWalletInfo(this);
-        edit.putString("loadWalletName", walletName);
+        edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET, walletName);
         edit.apply();
         mIntent(HomeOneKeyActivity.class);
         finish();
@@ -400,7 +400,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
                 }
                 mToast(getString(R.string.not_recovery_wallet));
                 PyEnv.loadLocalWalletInfo(this);
-                edit.putString("loadWalletName", "BTC-1");
+                edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET, "BTC-1");
                 edit.apply();
                 mIntent(HomeOneKeyActivity.class);
                 finish();

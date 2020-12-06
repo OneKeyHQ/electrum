@@ -15,7 +15,7 @@ import org.haobtc.onekey.adapter.PublicAdapter;
 import org.haobtc.onekey.adapter.SignNumAdapter;
 import org.haobtc.onekey.bean.CNYBean;
 import org.haobtc.onekey.event.NextFragmentEvent;
-import org.haobtc.onekey.mvp.base.BaseFragment;
+import org.haobtc.onekey.ui.base.BaseFragment;
 
 import java.util.ArrayList;
 
@@ -104,7 +104,7 @@ public class CreateMultiSigWalletFragment extends BaseFragment {
 
 
     @OnClick(R.id.next)
-    public void onViewClicked() {
+    public void onViewClicked(View view) {
         EventBus.getDefault().post(new NextFragmentEvent(R.layout.create_multi_sig_fragment_2, Integer.parseInt(coSignerNum), Integer.parseInt(sigNum),name));
     }
     @OnTextChanged(R.id.name_edit)

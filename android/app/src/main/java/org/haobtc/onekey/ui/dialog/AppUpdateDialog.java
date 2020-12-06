@@ -11,7 +11,7 @@ import com.azhon.appupdate.manager.DownloadManager;
 
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.aop.SingleClick;
-import org.haobtc.onekey.mvp.base.BaseDialogFragment;
+import org.haobtc.onekey.ui.base.BaseDialogFragment;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -75,8 +75,13 @@ public class AppUpdateDialog extends BaseDialogFragment {
                 break;
             case R.id.close:
                 dismiss();
+                manager.cancel();
                 break;
         }
+    }
 
+    @Override
+    public boolean requireGravityCenter() {
+        return true;
     }
 }

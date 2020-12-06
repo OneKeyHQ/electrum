@@ -6,6 +6,9 @@ import org.haobtc.onekey.dfu.NotificationActivity;
 
 import no.nordicsemi.android.dfu.DfuBaseService;
 
+/**
+ * @author liyan
+ */
 public class DfuService extends DfuBaseService {
 
 	@Override

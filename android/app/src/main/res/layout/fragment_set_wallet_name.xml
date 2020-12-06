@@ -31,13 +31,13 @@
 
     <EditText
         android:id="@+id/device_name"
-        android:layout_width="300dp"
-        android:layout_height="@dimen/dp_50"
+        android:layout_width="@dimen/dp_300"
+        android:layout_height="@dimen/dp_60"
         android:layout_gravity="center_horizontal"
-        android:layout_margin="@dimen/dp_20"
+        android:layout_marginTop="34dp"
         android:background="@drawable/edit_text_bg"
         android:hint="@string/input_device_name_hide"
-        android:paddingLeft="@dimen/dp_10" />
+        android:paddingHorizontal="@dimen/dp_24"/>
 
 
     <Button
@@ -45,7 +45,7 @@
         android:layout_width="300dp"
         android:layout_height="50dp"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/dp_20"
+        android:layout_marginTop="@dimen/dp_25"
         android:layout_marginBottom="@dimen/dp_30"
         android:background="@drawable/btn_enable_selector"
         android:text="@string/create_"

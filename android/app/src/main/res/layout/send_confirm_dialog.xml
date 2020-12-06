@@ -168,7 +168,7 @@
                 android:layout_height="@dimen/dp_60"
                 android:layout_marginTop="@dimen/dp_50"
                 android:layout_marginBottom="@dimen/dp_36"
-                android:background="@drawable/btn_checked"
+                android:background="@drawable/btn_enable_selector"
                 android:text="@string/confirm_pay"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"

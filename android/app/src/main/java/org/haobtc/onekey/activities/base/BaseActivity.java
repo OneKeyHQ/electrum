@@ -3,11 +3,9 @@ package org.haobtc.onekey.activities.base;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -25,7 +23,6 @@ import com.google.common.base.Strings;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.service.CommunicationModeSelector;
 import org.haobtc.onekey.constant.Constant;
-import org.haobtc.onekey.ui.adapter.MnemonicsAdapter;
 import org.haobtc.onekey.utils.NfcUtils;
 
 import java.io.UnsupportedEncodingException;
@@ -50,15 +47,33 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getLayoutId() != R.layout.activity_lunch) {
+        if (!isSplash()) {
             setContentView(getLayoutId());
+        }
+        if (requireSecure()) {
+            requestSecure();
         }
         mBinitState();
         initView();
         initData();
 
     }
-
+    /**
+     * 禁止录屏和截图
+     * add by li
+     * */
+    private void requestSecure() {
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
+    }
+    /**
+     * 禁止录屏和截图的钩子
+     * */
+    public boolean requireSecure() {
+        return false;
+    }
+    public boolean isSplash() {
+        return false;
+    }
     /**
      * @return the view's layout file id
      */

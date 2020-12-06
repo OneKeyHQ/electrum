@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
+import java.math.BigInteger;
 import java.util.List;
 
 /**
@@ -41,6 +42,7 @@ public class HardwareFeatures {
      * ble_enable: true
      * se_enable: false
      * se_version: ""
+     * auto_lock_delay_ms: 600000
      * backup_only: false
      * backup_message: ""
      */
@@ -105,6 +107,8 @@ public class HardwareFeatures {
     private boolean backupOnly;
     @SerializedName("backup_message")
     private String backupMessage;
+    @SerializedName("auto_lock_delay_ms")
+    private BigInteger autoLock;
 
     public static HardwareFeatures objectFromData(String str) {
 
@@ -308,7 +312,7 @@ public class HardwareFeatures {
         return bootloaderMode;
     }
 
-    public void setBootloader_mode(boolean bootloaderMode) {
+    public void setBootloaderMode(boolean bootloaderMode) {
         this.bootloaderMode = bootloaderMode;
     }
     public void setBleEnable(boolean bleEnable) {
@@ -333,6 +337,9 @@ public class HardwareFeatures {
         return seVersion;
     }
 
+    public BigInteger getAutoLock() {
+        return autoLock;
+    }
     public boolean isBackupOnly() {
         return backupOnly;
     }

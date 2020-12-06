@@ -8,7 +8,7 @@ import android.widget.TextView;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.asynctask.BusinessAsyncTask;
-import org.haobtc.onekey.mvp.base.BaseActivity;
+import org.haobtc.onekey.ui.base.BaseActivity;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -17,7 +17,7 @@ import butterknife.OnClick;
  * @author liyan
  * @date 11/26/20
  */
-//
+
 public class ConfirmOnHardWareActivity extends BaseActivity {
     @BindView(R.id.img_back)
     ImageView imgBack;

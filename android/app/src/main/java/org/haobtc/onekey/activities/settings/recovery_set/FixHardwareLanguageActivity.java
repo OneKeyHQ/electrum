@@ -68,31 +68,11 @@ public class FixHardwareLanguageActivity extends BaseActivity {
                 keyLanguage = "Chinese";
                 imgChinese.setVisibility(View.VISIBLE);
                 imgEnglish.setVisibility(View.GONE);
-                if (Ble.getInstance().getConnetedDevices().size() != 0) {
-                    if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(bleName)) {
-                        EventBus.getDefault().postSticky(new HandlerEvent());
-                    }
-                }
-                CommunicationModeSelector.runnables.clear();
-                Intent intent = new Intent(this, CommunicationModeSelector.class);
-                intent.putExtra("tag", TAG);
-                intent.putExtra("set_key_language", "chinese");
-                startActivity(intent);
                 break;
             case R.id.test_english:
                 keyLanguage = "English";
                 imgChinese.setVisibility(View.GONE);
                 imgEnglish.setVisibility(View.VISIBLE);
-                if (Ble.getInstance().getConnetedDevices().size() != 0) {
-                    if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(bleName)) {
-                        EventBus.getDefault().postSticky(new HandlerEvent());
-                    }
-                }
-                CommunicationModeSelector.runnables.clear();
-                Intent intent1 = new Intent(this, CommunicationModeSelector.class);
-                intent1.putExtra("tag", TAG);
-                intent1.putExtra("set_key_language", "english");
-                startActivity(intent1);
                 break;
             default:
         }
@@ -111,12 +91,5 @@ public class FixHardwareLanguageActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // TODO: add setContentView(...) invocation
-        ButterKnife.bind(this);
     }
 }

@@ -11,7 +11,10 @@ import org.haobtc.onekey.event.CheckReceiveAddress;
 import org.haobtc.onekey.event.OperationTimeoutEvent;
 import org.haobtc.onekey.event.WhiteListEnum;
 import org.haobtc.onekey.exception.HardWareExceptions;
+import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.utils.Daemon;
+
+import no.nordicsemi.android.dfu.DfuServiceInitiator;
 
 import static org.haobtc.onekey.activities.service.CommunicationModeSelector.ble;
 import static org.haobtc.onekey.activities.service.CommunicationModeSelector.nfc;
@@ -24,6 +27,10 @@ import static org.haobtc.onekey.activities.service.CommunicationModeSelector.pro
 public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
 
     public final static String GET_EXTEND_PUBLIC_KEY = "get_xpub_from_hw";
+    /**
+     * @Deprecated Use {@link BusinessAsyncTask#GET_EXTEND_PUBLIC_KEY_PERSONAL} instead.
+     * */
+    @Deprecated
     public final static String GET_EXTEND_PUBLIC_KEY_SINGLE = "get_xpub_from_hw_single";
     public final static String SIGN_TX = "sign_tx";
     public static final String BACK_UP = "backup_wallet";
@@ -38,6 +45,8 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
     public static final String EDIT_WHITE_LIST = "bx_inquire_whitelist";
     public static final String ADD_AND_DELETE_WHITE_LIST = "bx_add_or_delete_whitelist";
     public static final String READ_MNEMONIC_FROM_HARDWARE = "bixin_backup_device";
+    public static final String HARDWARE_RECOVERY = "recovery";
+    public static final String GET_EXTEND_PUBLIC_KEY_PERSONAL = "create_hw_derived_wallet";
     /**
      * 导入助记词
      * */
@@ -95,6 +104,7 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
             case WIPE_DEVICE:
             case BACK_UP:
             case READ_MNEMONIC_FROM_HARDWARE:
+            case GET_EXTEND_PUBLIC_KEY_PERSONAL:
                 try {
                     result = Daemon.commands.callAttr(strings[0], strings[1]).toString();
                 } catch (Exception e) {
@@ -176,9 +186,7 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
             helper.onException(e);
         }
         if (ble != null) {
-            ble.put("IS_CANCEL", true);
-            nfc.put("IS_CANCEL", true);
-            protocol.callAttr("notify");
+            PyEnv.cancelAll();
         }
     }
 

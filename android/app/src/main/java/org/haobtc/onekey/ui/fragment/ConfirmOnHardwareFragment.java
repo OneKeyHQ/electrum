@@ -8,8 +8,8 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.event.ButtonRequestConfirmedEvent;
-import org.haobtc.onekey.event.ExitEvent;
-import org.haobtc.onekey.mvp.base.BaseFragment;
+import org.haobtc.onekey.event.NextFragmentEvent;
+import org.haobtc.onekey.ui.base.BaseFragment;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -35,8 +35,8 @@ public class ConfirmOnHardwareFragment extends BaseFragment {
     }
 
     @OnClick(R.id.next)
-    public void onViewClicked() {
-        EventBus.getDefault().post(new ExitEvent());
+    public void onViewClicked(View view) {
+        EventBus.getDefault().post(new NextFragmentEvent(R.layout.active_successful_fragment));
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onConfirm(ButtonRequestConfirmedEvent event) {

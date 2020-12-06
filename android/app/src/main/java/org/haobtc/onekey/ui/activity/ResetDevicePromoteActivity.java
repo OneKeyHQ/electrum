@@ -12,7 +12,7 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.event.WipeEvent;
-import org.haobtc.onekey.mvp.base.BaseActivity;
+import org.haobtc.onekey.ui.base.BaseActivity;
 
 import butterknife.BindView;
 import butterknife.OnCheckedChanged;

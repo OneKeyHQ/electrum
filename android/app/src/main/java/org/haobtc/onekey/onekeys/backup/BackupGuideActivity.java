@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -19,17 +18,20 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.constant.Constant;
+import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.event.FinishEvent;
 import org.haobtc.onekey.onekeys.dialog.SetHDWalletPassActivity;
 import org.haobtc.onekey.onekeys.dialog.SetLongPassActivity;
-import org.haobtc.onekey.onekeys.dialog.recovery.ImprotSingleActivity;
 import org.haobtc.onekey.onekeys.homepage.mindmenu.HdRootMnemonicsActivity;
-import org.haobtc.onekey.onekeys.homepage.process.CreateWalletChooseTypeActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+/**
+ * @author xiaoming
+ */
 public class BackupGuideActivity extends BaseActivity {
 
     @BindView(R.id.backup_tip)
@@ -95,10 +97,12 @@ public class BackupGuideActivity extends BaseActivity {
                     intent.putExtra("importHdword", "backupMnemonic");
                     startActivity(intent);
                 }
-
                 break;
             case R.id.lin_backup_hardware:
-
+                Intent intent = new Intent(BackupGuideActivity.this, SetHDWalletPassActivity.class);
+                intent.putExtra("importHdword", "backupMnemonic");
+                intent.putExtra(Constant.OPERATE_TYPE, Constant.EXPORT_DESTINATIONS);
+                startActivity(intent);
                 break;
         }
     }
@@ -135,11 +139,13 @@ public class BackupGuideActivity extends BaseActivity {
     public void onFinish(FinishEvent event) {
         finish();
     }
-
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onFinish(ExitEvent event) {
+        finish();
+    }
     @Override
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
     }
-
 }

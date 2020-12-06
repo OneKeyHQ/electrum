@@ -1,15 +1,15 @@
 package org.haobtc.onekey.activities.settings;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 
 import com.google.common.base.Strings;
 import com.squareup.okhttp.Request;
@@ -28,7 +28,6 @@ import org.haobtc.onekey.asynctask.BusinessAsyncTask;
 import org.haobtc.onekey.bean.UpdateInfo;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.PyConstant;
-import org.haobtc.onekey.data.prefs.PreferencesManager;
 import org.haobtc.onekey.event.ButtonRequestEvent;
 import org.haobtc.onekey.event.ChangePinEvent;
 import org.haobtc.onekey.event.ConnectedEvent;
@@ -41,14 +40,17 @@ import org.haobtc.onekey.event.SetShutdownTimeEvent;
 import org.haobtc.onekey.event.VerifyFailedEvent;
 import org.haobtc.onekey.event.VerifySuccessEvent;
 import org.haobtc.onekey.event.WipeEvent;
+import org.haobtc.onekey.exception.HardWareExceptions;
 import org.haobtc.onekey.manager.BleManager;
+import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
-import org.haobtc.onekey.mvp.base.BaseActivity;
 import org.haobtc.onekey.ui.activity.CheckXpubActivity;
 import org.haobtc.onekey.ui.activity.ConfirmOnHardWareActivity;
+import org.haobtc.onekey.ui.activity.HardwareUpgradeActivity;
 import org.haobtc.onekey.ui.activity.ResetDevicePromoteActivity;
 import org.haobtc.onekey.ui.activity.VerifyHardwareActivity;
 import org.haobtc.onekey.ui.activity.VerifyPinActivity;
+import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.ui.dialog.DeleteLocalDeviceDialog;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -91,6 +93,8 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
     private String deviceId;
     private String label;
     private String bleMac;
+    private String firmwareVersion;
+    private String nrfVersion;
     private String currentMethod;
 
     @SingleClick
@@ -98,17 +102,16 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
+                PyEnv.cancelPinInput();
                 finish();
                 break;
             case R.id.lin_OnckOne:
-                String firmwareVersion = getIntent().getStringExtra("firmwareVersion");
-                String bleVersion = getIntent().getStringExtra("bleVerson");
                 Intent intent = new Intent(HardwareDetailsActivity.this, BixinKeyMessageActivity.class);
-                intent.putExtra("bleName", bleName);
-                intent.putExtra("label", label);
-                intent.putExtra("device_id", deviceId);
-                intent.putExtra("firmwareVersion", firmwareVersion);
-                intent.putExtra("bleVersion", bleVersion);
+                intent.putExtra(Constant.TAG_BLE_NAME, bleName);
+                intent.putExtra(Constant.TAG_LABEL, label);
+                intent.putExtra(Constant.DEVICE_ID, deviceId);
+                intent.putExtra(Constant.TAG_FIRMWARE_VERSION, firmwareVersion);
+                intent.putExtra(Constant.TAG_NRF_VERSION, nrfVersion);
                 startActivity(intent);
                 break;
             case R.id.lin_OnckTwo:
@@ -133,7 +136,17 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
                 startActivity(intent4);
                 break;
             case R.id.wipe_device:
-                startActivity(new Intent(this, ResetDevicePromoteActivity.class));
+                if (Ble.getInstance().getConnetedDevices().size() != 0) {
+                    if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(bleName)) {
+                        startActivity(new Intent(this, ResetDevicePromoteActivity.class));
+                        return;
+                    }
+                }
+                if (Strings.isNullOrEmpty(bleMac)) {
+                    showToast("未知设备！！！");
+                }
+                currentMethod = BusinessAsyncTask.WIPE_DEVICE;
+                initBle();
                 break;
             case R.id.linear_shutdown_time:
                 Intent intent2 = new Intent(this, SetShutdownTimeActivity.class);
@@ -219,10 +232,23 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
     }
 
     private void getUpdateInfo() {
-        String urlPrefix = "https://key.bixin.com/";
-        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-        String locate = preferences.getString("language", "");
-        String info = preferences.getString("upgrade_info", "");
+        String urlPrefix = "https://onekey.so/";
+        String locate = PreferencesManager.get(this, "Preferences", Constant.LANGUAGE, "").toString();
+        String info = PreferencesManager.get(this, "Preferences", Constant.UPGRADE_INFO, "").toString();
+        if (Strings.isNullOrEmpty(info)) {
+            showToast("无法获取更新信息");
+            return;
+        }
+        Bundle bundle = getBundle(urlPrefix, locate, info);
+        //bundle.putString("ble_name", bleName);
+        Intent intentVersion = new Intent(this, HardwareUpgradeActivity.class);
+        intentVersion.putExtras(bundle);
+        startActivity(intentVersion);
+    }
+
+    @NonNull
+    private Bundle getBundle(String urlPrefix, String locate, String info) {
+
         UpdateInfo updateInfo = UpdateInfo.objectFromData(info);
         String urlNrf = updateInfo.getNrf().getUrl();
         String urlStm32 = updateInfo.getStm32().getUrl();
@@ -231,20 +257,25 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
         versionStm32 = versionStm32.substring(1, versionStm32.length() - 1).replaceAll("\\s+", "");
         String descriptionNrf = "English".equals(locate) ? updateInfo.getNrf().getChangelogEn() : updateInfo.getNrf().getChangelogCn();
         String descriptionStm32 = "English".equals(locate) ? updateInfo.getStm32().getChangelogEn() : updateInfo.getStm32().getChangelogCn();
-        Bundle bundle = new Bundle();
         if (urlNrf.startsWith("https") || urlStm32.startsWith("https")) {
             urlPrefix = "";
         }
-        bundle.putString("nrf_url", urlPrefix + urlNrf);
-        bundle.putString("stm32_url", urlPrefix + urlStm32);
-        bundle.putString("nrf_version", versionNrf);
-        bundle.putString("stm32_version", versionStm32);
-        bundle.putString("nrf_description", descriptionNrf);
-        bundle.putString("stm32_description", descriptionStm32);
-        bundle.putString("ble_name", bleName);
-        Intent intentVersion = new Intent(this, VersionUpgradeActivity.class);
-        intentVersion.putExtras(bundle);
-        startActivity(intentVersion);
+        Bundle bundle = new Bundle();
+        if (versionStm32.compareTo(firmwareVersion) > 0) {
+            bundle.putString(Constant.TAG_FIRMWARE_DOWNLOAD_URL, urlPrefix + urlStm32);
+            bundle.putString(Constant.TAG_FIRMWARE_VERSION_NEW, versionStm32);
+            bundle.putString(Constant.TAG_FIRMWARE_UPDATE_DES, descriptionStm32);
+        } else if (versionNrf.compareTo(nrfVersion) > 0) {
+            bundle.putString(Constant.TAG_NRF_DOWNLOAD_URL, urlPrefix + urlNrf);
+            bundle.putString(Constant.TAG_NRF_VERSION_NEW, versionNrf);
+            bundle.putString(Constant.TAG_NRF_UPDATE_DES, descriptionNrf);
+        }
+        bundle.putString(Constant.TAG_BLE_NAME, bleName);
+        bundle.putString(Constant.TAG_FIRMWARE_VERSION, firmwareVersion);
+        bundle.putString(Constant.TAG_NRF_VERSION, nrfVersion);
+        bundle.putString(Constant.BLE_MAC, bleMac);
+        bundle.putString(Constant.TAG_LABEL, label);
+        return bundle;
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -254,10 +285,11 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
                changePin();
                break;
            case BusinessAsyncTask.WIPE_DEVICE:
-               wipeDevice();
+               startActivity(new Intent(this, ResetDevicePromoteActivity.class));
                break;
            case BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY:
                getXpub();
+               break;
            case BusinessAsyncTask.COUNTER_VERIFICATION:
                EventBus.getDefault().post(new ConnectedEvent());
                verifyHardware();
@@ -311,17 +343,7 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onWipeDevice(WipeEvent event) {
-        if (Ble.getInstance().getConnetedDevices().size() != 0) {
-            if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(bleName)) {
-                wipeDevice();
-                return;
-            }
-        }
-        if (Strings.isNullOrEmpty(bleMac)) {
-            showToast("未知设备！！！");
-        }
-        currentMethod = BusinessAsyncTask.CHANGE_PIN;
-        initBle();
+       wipeDevice();
     }
     private void verification(String result) {
         HashMap<String, String> pramas = new HashMap<>();
@@ -341,15 +363,16 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
                 .execute(new StringCallback() {
                     @Override
                     public void onError(Request request, Exception e) {
-                        Log.i("strVerification", "onError: ---- " + e.getMessage());
-                        EventBus.getDefault().post(new VerifyFailedEvent());
+                        EventBus.getDefault().post(new VerifyFailedEvent(VerifyFailedEvent.FailedReason.NETWORK_ERROR));
                     }
-
                     @Override
                     public void onResponse(String response) {
                         Log.i("strVerification", "onResponse:------- " + response);
+                        //TODO： 这个逻辑不对，需要修改
                         if (response.contains("is_verified")) {
                             EventBus.getDefault().post(new VerifySuccessEvent());
+                        } else {
+                            EventBus.getDefault().post(new VerifyFailedEvent(VerifyFailedEvent.FailedReason.VERIFY_FAILED));
                         }
                     }
                 });
@@ -370,15 +393,13 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
     @Override
     public void init() {
         Intent intent = getIntent();
-        bleName = intent.getStringExtra("bleName");
-        deviceId = intent.getStringExtra("device_id");
-        label = intent.getStringExtra("label");
-        if (!TextUtils.isEmpty(label)) {
-            tetKeyName.setText(label);
-        } else {
-            tetKeyName.setText(String.format("%s", "BixinKEY"));
-        }
-        testShutdownTime.setText(String.format("%s%s", "600", getString(R.string.second)));
+        bleName = intent.getStringExtra(Constant.TAG_BLE_NAME);
+        deviceId = intent.getStringExtra(Constant.DEVICE_ID);
+        label = intent.getStringExtra(Constant.TAG_LABEL);
+        firmwareVersion = getIntent().getStringExtra(Constant.TAG_FIRMWARE_VERSION);
+        nrfVersion = getIntent().getStringExtra(Constant.TAG_NRF_VERSION);
+        tetKeyName.setText(label);
+        testShutdownTime.setText(String.format("%s%s", intent.getStringExtra(Constant.AUTO_SHUT_DOWN_TIME), getString(R.string.second)));
         bleMac = PreferencesManager.get(this, Constant.BLE_INFO, bleName, "").toString();
     }
 
@@ -397,13 +418,17 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
     public void onException(Exception e) {
         switch (currentMethod) {
             case BusinessAsyncTask.CHANGE_PIN:
-                break;
             case BusinessAsyncTask.WIPE_DEVICE:
-                break;
             case BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY:
+                if (HardWareExceptions.PIN_INVALID.getMessage().equals(e.getMessage())) {
+                    showToast(R.string.pin_wrong);
+                } else {
+                    showToast(e.getMessage());
+                }
+                EventBus.getDefault().post(new ExitEvent());
                 break;
             case BusinessAsyncTask.COUNTER_VERIFICATION:
-                EventBus.getDefault().post(new VerifyFailedEvent());
+                EventBus.getDefault().post(new VerifyFailedEvent(VerifyFailedEvent.FailedReason.GOT_CERT_FAILED));
                 break;
         }
     }
@@ -412,9 +437,11 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
     public void onResult(String s) {
         switch (currentMethod) {
             case BusinessAsyncTask.CHANGE_PIN:
-                System.out.println("change pin success=========");
-                break;
             case BusinessAsyncTask.WIPE_DEVICE:
+                if ("0".equals(s)) {
+                    showToast(R.string.pin_wrong);
+                    EventBus.getDefault().post(new ExitEvent());
+                }
                 break;
             case BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY:
                 Intent intent = new Intent(this, CheckXpubActivity.class);

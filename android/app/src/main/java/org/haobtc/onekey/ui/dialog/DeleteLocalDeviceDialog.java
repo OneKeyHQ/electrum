@@ -1,19 +1,16 @@
 package org.haobtc.onekey.ui.dialog;
 
-import android.content.Context;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.constant.Constant;
-import org.haobtc.onekey.data.prefs.PreferencesManager;
-import org.haobtc.onekey.event.FixBixinkeyNameEvent;
-import org.haobtc.onekey.mvp.base.BaseDialogFragment;
+import org.haobtc.onekey.manager.PreferencesManager;
+import org.haobtc.onekey.ui.base.BaseDialogFragment;
 
 import butterknife.BindView;
 import butterknife.OnClick;

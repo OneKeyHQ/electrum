@@ -114,9 +114,11 @@ public final class BleRequestImpl<T extends BleDevice> {
                 BleLog.e(TAG, "onConnectionStateChange----: " + "Connection status is abnormal:" + status);
                 close(device.getAddress());
                 if (connectWrapperCallback != null){
-                    connectWrapperCallback.onConnectException(bleDevice);
-                    bleDevice.setConnectionState(BleStates.BleStatus.DISCONNECT);
-                    connectWrapperCallback.onConnectionChanged(bleDevice);
+                    if (bleDevice != null) {
+                        connectWrapperCallback.onConnectException(bleDevice);
+                        bleDevice.setConnectionState(BleStates.BleStatus.DISCONNECT);
+                        connectWrapperCallback.onConnectionChanged(bleDevice);
+                    }
                 }
             }
 

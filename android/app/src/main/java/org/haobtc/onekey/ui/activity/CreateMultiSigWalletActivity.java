@@ -1,7 +1,10 @@
 package org.haobtc.onekey.ui.activity;
 
 import android.content.Intent;
+import android.view.View;
 import android.widget.ImageView;
+
+import com.google.common.base.Strings;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -21,7 +24,7 @@ import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.event.GetXpubEvent;
 import org.haobtc.onekey.event.NextFragmentEvent;
 import org.haobtc.onekey.manager.PyEnv;
-import org.haobtc.onekey.mvp.base.BaseActivity;
+import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.ui.dialog.ValidateXpubDialog;
 import org.haobtc.onekey.ui.fragment.CreateMultiSigWalletFragment;
 import org.haobtc.onekey.ui.fragment.CreateMultiSigWalletFragment2;
@@ -79,7 +82,8 @@ public class CreateMultiSigWalletActivity extends BaseActivity implements Busine
 
     @Override
     public void onException(Exception e) {
-
+        showToast(e.getMessage());
+        finish();
     }
 
     @Override
@@ -149,17 +153,14 @@ public class CreateMultiSigWalletActivity extends BaseActivity implements Busine
         StringBuilder builder = new StringBuilder();
         builder.append("[");
         for (XpubItem item : xpubList) {
-            builder.append("[\"").append(item.getXpub()).append("\", \"").append(item.getName()).append("\"],");
+            builder.append("[\"").append(item.getXpub()).append("\", \"").append(FindNormalDeviceActivity.deviceId).append("\"],");
         }
         builder.deleteCharAt(builder.length()-1);
         builder.append("]");
-        PyEnv.createWallet(this, walletName, sigNum, coSignerNum, builder.toString());
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onCreateWalletSuccess(CreateSuccessEvent event) {
-        PyEnv.loadLocalWalletInfo(this);
-        startFragment(new CreateMultiSigWalletFragment3());
+        String name = PyEnv.createWallet(this, walletName, sigNum, coSignerNum, builder.toString());
+        if (!Strings.isNullOrEmpty(name)) {
+            startFragment(new CreateMultiSigWalletFragment3());
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -179,7 +180,7 @@ public class CreateMultiSigWalletActivity extends BaseActivity implements Busine
 
     @SingleClick
     @OnClick(R.id.img_back)
-    public void onViewClicked() {
+    public void onViewClicked(View view) {
         finish();
     }
 

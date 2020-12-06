@@ -5,6 +5,7 @@ import android.widget.ImageView;
 
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.aop.SingleClick;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -29,7 +30,7 @@ public class UserAgreementActivity extends BaseActivity {
     public void initData() {
 
     }
-
+    @SingleClick
     @OnClick(R.id.img_back)
     public void onViewClicked(View view) {
         if (view.getId() == R.id.img_back){

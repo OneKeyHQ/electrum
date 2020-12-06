@@ -11,7 +11,7 @@ import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.event.VerifyFailedEvent;
 import org.haobtc.onekey.event.VerifySuccessEvent;
-import org.haobtc.onekey.mvp.base.BaseActivity;
+import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.ui.fragment.VerifyConnFragment;
 import org.haobtc.onekey.ui.fragment.VerifyResultFragment;
 
@@ -43,14 +43,14 @@ public class VerifyHardwareActivity extends BaseActivity {
      * */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onVerifySuccess(VerifySuccessEvent event) {
-        startFragment(new VerifyResultFragment(label, true));
+        startFragment(new VerifyResultFragment(label, true,null));
     }
     /**
      * 防伪认证失败事件响应
      * */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onVerifyFailed(VerifyFailedEvent event) {
-        startFragment(new VerifyResultFragment(label, false));
+        startFragment(new VerifyResultFragment(label, false, event.getFailedReason()));
     }
 
     /**

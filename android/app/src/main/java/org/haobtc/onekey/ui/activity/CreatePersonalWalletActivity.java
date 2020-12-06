@@ -1,8 +1,10 @@
 package org.haobtc.onekey.ui.activity;
 
 import android.content.Intent;
-import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageView;
+
+import com.google.common.base.Strings;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -18,14 +20,13 @@ import org.haobtc.onekey.event.CreateSuccessEvent;
 import org.haobtc.onekey.event.CreateWalletEvent;
 import org.haobtc.onekey.event.GetXpubEvent;
 import org.haobtc.onekey.manager.PyEnv;
-import org.haobtc.onekey.mvp.base.BaseActivity;
 import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
+import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.ui.fragment.AddAssetFragment;
 import org.haobtc.onekey.ui.fragment.DevicePINFragment;
 import org.haobtc.onekey.ui.fragment.SetWalletNameFragment;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**
@@ -76,10 +77,8 @@ public class CreatePersonalWalletActivity extends BaseActivity implements Busine
      */
     private void getXpubP2wpkh() {
 
-        new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY_SINGLE,
-                MyApplication.getInstance().getDeviceWay(),
-                PyConstant.XPUB_P2WPKH
-        );
+        new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY_PERSONAL,
+                MyApplication.getInstance().getDeviceWay());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -87,8 +86,12 @@ public class CreatePersonalWalletActivity extends BaseActivity implements Busine
         switch (coinType) {
             case Constant.COIN_TYPE_BTC:
                 String walletName = event.getName();
-                String xpubs = "[[\"" + xpub + "\", \"btc\"]]";
-                PyEnv.createWallet(this, walletName, 1, 1, xpubs);
+                String xpubs = "[[\"" + xpub + "\", \"" + FindNormalDeviceActivity.deviceId + "\"]]";
+                String name = PyEnv.createWallet(this, walletName, 1, 1, xpubs);
+                if (!Strings.isNullOrEmpty(name)) {
+                    startActivity(new Intent(this, HomeOneKeyActivity.class));
+                }
+                finish();
                 break;
             case Constant.COIN_TYPE_ETH:
                 break;
@@ -130,7 +133,8 @@ public class CreatePersonalWalletActivity extends BaseActivity implements Busine
 
     @Override
     public void onException(Exception e) {
-
+        showToast(e.getMessage());
+        finish();
     }
 
     @Override
@@ -151,7 +155,8 @@ public class CreatePersonalWalletActivity extends BaseActivity implements Busine
 
     @SingleClick
     @OnClick(R.id.img_back)
-    public void onViewClicked() {
+    public void onViewClicked(View view) {
+        PyEnv.cancelPinInput();
         finish();
     }
 }

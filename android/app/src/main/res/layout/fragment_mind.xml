@@ -12,6 +12,7 @@
         android:background="@color/button_bk_ddake"
         android:gravity="center"
         android:text="@string/mind"
+        android:layout_marginTop="@dimen/dp_40"
         android:textColor="@color/text_color_one"
         android:textSize="17sp" />
 

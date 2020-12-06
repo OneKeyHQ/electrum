@@ -92,6 +92,9 @@ public class BleDeviceAdapter extends RecyclerView.Adapter<BleDeviceAdapter.View
     }
 
     public interface OnItemBleDeviceClick {
+        /**
+         * @param device 连接的目标设备
+         * */
         void connectBle(BleDevice device);
     }
 }

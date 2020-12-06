@@ -9,7 +9,7 @@ import android.widget.EditText;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.event.NameSettedEvent;
-import org.haobtc.onekey.mvp.base.BaseFragment;
+import org.haobtc.onekey.ui.base.BaseFragment;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -41,7 +41,7 @@ public class DeviceNameSettingFragment extends BaseFragment {
     }
 
     @OnClick(R.id.btn_next)
-    public void onViewClicked() {
+    public void onViewClicked(View view) {
         EventBus.getDefault().post(new NameSettedEvent(mDeviceNameEditText.getText().toString()));
     }
 }
