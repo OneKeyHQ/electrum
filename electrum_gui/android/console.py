@@ -2262,26 +2262,28 @@ class AndroidCommands(commands.Commands):
             print("Your wallet generation seed is:\n\"%s\"" % seed)
             print("seed type = %s" % type(seed))
 
-        out_data = []
+        wallet_data = []
         ##create BTC-1
         wallet_info = self.create("BTC-1", password, seed=seed, passphrase=passphrase, bip39_derivation=bip44_derivation(0, purpose, coin=constants.net.BIP44_COIN_TYPE),
                     hd=True)
-        out_data.append(json.loads(wallet_info))
+        wallet_data.append(json.loads(wallet_info))
 
         for coin, info in self.coins.items():
             name = "%s-1" % coin.upper()
             bip39_derivation = bip44_derivation(0, info['addressType'], info['coinId'])
             #wallet_info = self.create(name, password, seed=seed, passphrase=passphrase, bip39_derivation=bip39_derivation, hd=True, coin=coin)
-            #out_data.append(json.loads(wallet_info))
+            #wallet_data.append(json.loads(wallet_info))
         if new_seed is None:
             return self.recovery_hd_derived_wallet(password, seed, passphrase)
         else:
-            #wallet = self.daemon._wallets[self._wallet_path(self.get_hd_wallet().__str__())]
             key = self.get_hd_wallet_encode_seed()
             self.update_backup_info(key)
-
-        for info in out_data:
-            info['seed'] = new_seed
+        out_data = {}
+        out_data['seed'] = new_seed
+        out_info = []
+        for info in wallet_data:
+            out_info.append(info["wallet_info"][0])
+        out_data['wallet_info'] = out_info
         return json.dumps(out_data)
 
     def get_wallet_num(self):
@@ -2496,10 +2498,11 @@ class AndroidCommands(commands.Commands):
         if new_seed != '':
             key = wallet.keystore.seed
             self.update_backup_info(key)
-        wallet_info = {}
-        wallet_info['name'] = wallet.__str__()
-        wallet_info['seed'] = new_seed
-        return json.dumps(wallet_info)
+        out = {}
+        wallet_info = [{"coin_type": coin, "address": wallet.__str__()}]
+        out['seed'] = new_seed
+        out['wallet_info'] = wallet_info
+        return json.dumps(out)
 
     def is_watch_only(self):
         '''
