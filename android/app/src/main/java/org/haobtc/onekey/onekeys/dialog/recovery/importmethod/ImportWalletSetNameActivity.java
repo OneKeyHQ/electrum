@@ -109,7 +109,7 @@ public class ImportWalletSetNameActivity extends BaseActivity implements TextWat
             return;
         }
         PyEnv.loadLocalWalletInfo(this);
-        edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET, editSetWalletName.getText().toString());
+        edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME, editSetWalletName.getText().toString());
         edit.apply();
         mIntent(HomeOneKeyActivity.class);
     }

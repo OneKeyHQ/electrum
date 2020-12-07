@@ -28,6 +28,7 @@ import com.yzq.zxinglibrary.encode.CodeCreator;
 
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.bean.GetCodeAddressBean;
+import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.utils.Daemon;
 import org.haobtc.onekey.utils.ImageUtils;
 
@@ -67,7 +68,7 @@ public class ReceiveHDActivity extends AppCompatActivity {
         setContentView(R.layout.activity_receive_h_d);
         ButterKnife.bind(this);
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-        String showWalletType = preferences.getString("showWalletType", "");
+        String showWalletType = preferences.getString(Constant.CURRENT_SELECTED_WALLET_TYPE, "");
         rxPermissions = new RxPermissions(this);
         if (showWalletType.contains("eth")) {
             imgType.setImageDrawable(getDrawable(R.drawable.token_eth));

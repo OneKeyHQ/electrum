@@ -127,7 +127,7 @@ public class SignActivity extends BaseActivity implements TextWatcher, RadioGrou
     @Override
     public void initData() {
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-        String showWalletType = preferences.getString("showWalletType", "");
+        String showWalletType = preferences.getString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE, "");
         //get sign address
         mGeneratecode();
 //        if (showWalletType.contains("hw")) {

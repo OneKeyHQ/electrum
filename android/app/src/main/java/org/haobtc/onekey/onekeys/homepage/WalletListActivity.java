@@ -165,7 +165,7 @@ public class WalletListActivity extends BaseActivity {
                         @Override
                         public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                             String name = hdWalletList.get(position).getName();
-                            edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET, name);
+                            edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME, name);
                             edit.apply();
                             mIntent(HomeOneKeyActivity.class);
                         }
@@ -199,7 +199,7 @@ public class WalletListActivity extends BaseActivity {
                         @Override
                         public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                             String name = btcList.get(position).getName();
-                            edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET, name);
+                            edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME, name);
                             edit.apply();
                             mIntent(HomeOneKeyActivity.class);
                         }
@@ -230,7 +230,7 @@ public class WalletListActivity extends BaseActivity {
                         @Override
                         public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                             String name = ethList.get(position).getName();
-                            edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET, name);
+                            edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME, name);
                             edit.apply();
                             mIntent(HomeOneKeyActivity.class);
                         }
@@ -332,7 +332,7 @@ public class WalletListActivity extends BaseActivity {
                     @Override
                     public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                         String name = hdWalletList.get(position).getName();
-                        edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET, name);
+                        edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME, name);
                         edit.apply();
                         mIntent(HomeOneKeyActivity.class);
                     }
@@ -401,7 +401,7 @@ public class WalletListActivity extends BaseActivity {
 //                    @Override
 //                    public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
 //                        String name = hdWalletList.get(position).getName();
-//                        edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET, name);
+//                        edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME, name);
 //                        edit.apply();
 //                        mIntent(HomeOneKeyActivity.class);
 //                    }

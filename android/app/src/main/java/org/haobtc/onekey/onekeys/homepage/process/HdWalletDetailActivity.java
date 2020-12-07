@@ -44,6 +44,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
+
 public class HdWalletDetailActivity extends BaseActivity {
 
     @BindView(R.id.text_wallet_name)
@@ -83,7 +85,7 @@ public class HdWalletDetailActivity extends BaseActivity {
 
     private void inits() {
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-        showWalletType = preferences.getString("showWalletType", "");
+        showWalletType = preferences.getString(CURRENT_SELECTED_WALLET_TYPE, "");
         String hdWalletName = getIntent().getStringExtra("hdWalletName");
         isBackup = getIntent().getBooleanExtra("isBackup", false);
         textWalletName.setText(hdWalletName);

@@ -70,10 +70,6 @@ public class HomeOneKeyActivity extends BaseActivity implements RadioGroup.OnChe
         return true;
     }
 
-    @Override
-    public boolean requireSecure() {
-        return true;
-    }
 
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -93,7 +89,7 @@ public class HomeOneKeyActivity extends BaseActivity implements RadioGroup.OnChe
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onCreateWalletSuccess(CreateSuccessEvent event) {
         PyEnv.loadLocalWalletInfo(this);
-        PreferencesManager.put(this, "Preferences", Constant.CURRENT_SELECTED_WALLET, event.getName());
+        PreferencesManager.put(this, "Preferences", Constant.CURRENT_SELECTED_WALLET_NAME, event.getName());
     }
 
     /**

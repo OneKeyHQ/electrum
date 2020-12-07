@@ -27,7 +27,6 @@ import androidx.annotation.LayoutRes;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.alibaba.fastjson.JSONArray;
 import com.chaquo.python.PyObject;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
@@ -67,10 +66,8 @@ import org.haobtc.onekey.utils.Daemon;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -105,6 +102,8 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
     private String nowType;
     private boolean isBackup;
     private ImageView imgScan;
+    private String deviceId;
+    private String bleMac;
 
     @SuppressLint("CommitPrefEdits")
     @Override
@@ -162,9 +161,17 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
     }
 
     private void initdata() {
-        boolean isHaveWallet = PreferencesManager.getAll(getContext(), org.haobtc.onekey.constant.Constant.WALLETS).isEmpty();
-        Log.i("isHaveWalletjxmxj", "initdata: " + isHaveWallet);
-        if (isHaveWallet) {
+        if (PreferencesManager.hasWallet(getContext())) {
+            //have wallet
+            linearNoWallet.setVisibility(View.GONE);
+            imgBottom.setVisibility(View.GONE);
+            linearHaveWallet.setVisibility(View.VISIBLE);
+            linearWalletList.setVisibility(View.VISIBLE);
+            //get wallet balance
+            getWalletBalance();
+            // get wallet list save wallet type
+
+        } else {
             //no wallet
             try {
                 Daemon.commands.callAttr("set_currency", "CNY");
@@ -178,18 +185,7 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
             linearWalletList.setVisibility(View.GONE);
             imgScan.setVisibility(View.GONE);
             relNowBackUp.setVisibility(View.GONE);
-        } else {
-            //have wallet
-            linearNoWallet.setVisibility(View.GONE);
-            imgBottom.setVisibility(View.GONE);
-            linearHaveWallet.setVisibility(View.VISIBLE);
-            linearWalletList.setVisibility(View.VISIBLE);
-            //get wallet balance
-            getWalletBalance();
         }
-        //get wallet list save wallet type
-        getHomeWalletList();
-
     }
 
     private void isBackup(Context context, @LayoutRes int resource) {
@@ -227,46 +223,19 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
         dialogBtoms.show();
     }
 
-    private void getHomeWalletList() {
-        // Get current wallet name
-        loadWalletName = preferences.getString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET, "");
-        String walletInfo = PreferencesManager.get(getActivity(), org.haobtc.onekey.constant.Constant.WALLETS, loadWalletName, "").toString();
-        Log.i("walletInfowalletInfo", "getHomeWalletList: " + walletInfo);
-        if (!Strings.isNullOrEmpty(walletInfo)) {
-            LocalWalletInfo localWalletInfo = LocalWalletInfo.objectFromData(walletInfo);
-            nowType = localWalletInfo.getType();
-            edit.putString("showWalletType", nowType);
-            edit.apply();
-            if (nowType.contains("btc")) {
-                imgType.setImageDrawable(getActivity().getDrawable(R.drawable.token_btc));
-            } else if (nowType.contains("eth")) {
-                imgType.setImageDrawable(getActivity().getDrawable(R.drawable.token_eth));
-            } else {
-                imgType.setImageDrawable(getActivity().getDrawable(R.drawable.loco_round));
-            }
-            if (nowType.contains("hw")) {
-                textHard.setVisibility(View.VISIBLE);
-                linearSign.setVisibility(View.VISIBLE);
-                String thisType = nowType.substring(nowType.indexOf("hw-") + 3);
-                String deviceId = localWalletInfo.getDeviceId();
-                textHard.setText(deviceId.substring(1, deviceId.length()-1));
-            } else {
-                linearSign.setVisibility(View.GONE);
-                textHard.setVisibility(View.GONE);
-            }
-        }
-    }
-
     private void getWalletBalance() {
         //Get current wallet name
-        loadWalletName = preferences.getString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET, "");
+        loadWalletName = preferences.getString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME, "");
         try {
             Optional.ofNullable(PyEnv.selectWallet(loadWalletName)).ifPresent((balanceInfo -> {
                 String balance = balanceInfo.getBalance();
                 name = balanceInfo.getName();
+                LocalWalletInfo localWalletInfo;
                 String str = PreferencesManager.get(getContext(), org.haobtc.onekey.constant.Constant.WALLETS, name, "").toString();
                 if (!Strings.isNullOrEmpty(str)) {
-                    textWalletName.setText(LocalWalletInfo.objectFromData(str).getLabel());
+                    localWalletInfo = LocalWalletInfo.objectFromData(str);
+                    textWalletName.setText(localWalletInfo.getLabel());
+                    showTypeInfo(localWalletInfo);
                 }
                 num = balance.substring(0, balance.indexOf(" "));
                 String strCny = balance.substring(balance.indexOf("(") + 1, balance.indexOf(")"));
@@ -289,6 +258,40 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
             e.printStackTrace();
         }
 
+    }
+
+    private void showTypeInfo(LocalWalletInfo localWalletInfo) {
+        nowType = localWalletInfo.getType();
+        edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE, nowType);
+        edit.apply();
+        if (nowType.contains("btc")) {
+            imgType.setImageDrawable(getActivity().getDrawable(R.drawable.token_btc));
+        } else if (nowType.contains("eth")) {
+            imgType.setImageDrawable(getActivity().getDrawable(R.drawable.token_eth));
+        } else {
+            imgType.setImageDrawable(getActivity().getDrawable(R.drawable.loco_round));
+        }
+        if (nowType.contains("hw")) {
+            textHard.setVisibility(View.VISIBLE);
+            linearSign.setVisibility(View.VISIBLE);
+            String thisType = nowType.substring(nowType.indexOf("hw-") + 3);
+            deviceId = localWalletInfo.getDeviceId();
+            // 去除deviceId上的双引号
+            deviceId = deviceId.substring(1, deviceId.length()-1);
+            String deviceInfo = PreferencesManager.get(getContext(), org.haobtc.onekey.constant.Constant.DEVICES, deviceId, "").toString();
+            if (!Strings.isNullOrEmpty(deviceInfo)) {
+                HardwareFeatures info = HardwareFeatures.objectFromData(deviceInfo);
+                String bleName = info.getBleName();
+                String label = info.getLabel();
+                bleMac = PreferencesManager.get(getContext(), org.haobtc.onekey.constant.Constant.BLE_INFO, bleName, "").toString();
+                textHard.setText(Strings.isNullOrEmpty(label)? bleName: label);
+            } else {
+                textHard.setText(deviceId);
+            }
+        } else {
+            linearSign.setVisibility(View.GONE);
+            textHard.setVisibility(View.GONE);
+        }
     }
 
     private void whetherBackup() {
@@ -378,14 +381,13 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
                 startActivity(pair);
                 break;
             case R.id.linear_send:
-                Intent intent2 = new Intent(getActivity(), SearchDevicesActivity.class);
-                intent2.putExtra(org.haobtc.onekey.constant.Constant.SEARCH_DEVICE_MODE, org.haobtc.onekey.constant.Constant.SearchDeviceMode.MODE_SIGN_TX);
-                startActivity(intent2);
-                String mac = getMacByDeviceId("1111");
-                if (Strings.isNullOrEmpty(mac)) {
+                if (Strings.isNullOrEmpty(bleMac)) {
                     Toast.makeText(getContext(), "未发现设备信息", Toast.LENGTH_SHORT).show();
                 } else {
-                    BleManager.getInstance(getActivity()).connDevByMac(mac);
+                    Intent intent2 = new Intent(getActivity(), SearchDevicesActivity.class);
+                    intent2.putExtra(org.haobtc.onekey.constant.Constant.SEARCH_DEVICE_MODE, org.haobtc.onekey.constant.Constant.SearchDeviceMode.MODE_SIGN_TX);
+                    startActivity(intent2);
+                    BleManager.getInstance(getActivity()).connDevByMac(bleMac);
                 }
                 break;
             case R.id.linear_receive:
@@ -435,14 +437,6 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
         whetherBackup();
     }
 
-    private String getMacByDeviceId(String deviceId) {
-        String deviceInfo = PreferencesManager.get(getContext(), org.haobtc.onekey.constant.Constant.DEVICES, deviceId, "").toString();
-        if (!Strings.isNullOrEmpty(deviceInfo)) {
-            String bleName = HardwareFeatures.objectFromData(deviceInfo).getBleName();
-            return PreferencesManager.get(getContext(), org.haobtc.onekey.constant.Constant.BLE_INFO, bleName, "").toString();
-        }
-        return "F7:75:90:70:C0:94";
-    }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onConnected(BleConnectedEvent event) {
             Intent intent2 = new Intent(getActivity(), SendHdActivity.class);
@@ -454,48 +448,34 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
     public void fixName(FixWalletNameEvent event) {
         textWalletName.setText(event.getNewName());
     }
-
+    /**
+     * 删除钱包后选择其他钱包
+     * */
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     public void event(LoadOtherWalletEvent event) {
         //load other wallet
-        try {
-            PyObject listWallets = Daemon.commands.callAttr("list_wallets");
-            if (listWallets.toString().length() > 2) {
-                JSONArray jsonDatas = com.alibaba.fastjson.JSONObject.parseArray(listWallets.toString());
-                if (jsonDatas != null) {
-                    Map jsonToMap = (Map) jsonDatas.get(0);
-                    Set keySets = jsonToMap.keySet();
-                    Iterator ki = keySets.iterator();
-                    String key = (String) ki.next();
-                    String value = jsonToMap.get(key).toString();
-                    JSONObject jsonObject = new JSONObject(value);
-                    String type = jsonObject.getString("type");
-                    edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET, key);
-                    edit.putString("showWalletType", type);
-                    edit.apply();
-                    //get wallet balance
-                    getWalletBalance();
-
-                }
-            } else {
-                edit.putString("shortOrLongPass", "short");
-                edit.putBoolean("isBack_up", false);
-                edit.apply();
-                textWalletName.setText(getString(R.string.no_use_wallet));
-                linearNoWallet.setVisibility(View.VISIBLE);
-                imgBottom.setVisibility(View.VISIBLE);
-                linearHaveWallet.setVisibility(View.GONE);
-                linearWalletList.setVisibility(View.GONE);
-                imgType.setImageDrawable(getActivity().getDrawable(R.drawable.loco_round));
-                isBackup = true;
-                relNowBackUp.setVisibility(View.GONE);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (PreferencesManager.hasWallet(getContext())) {
+            Optional<? extends Map.Entry<String, ?>> entry = PreferencesManager.getAll(getContext(), org.haobtc.onekey.constant.Constant.WALLETS).entrySet().stream().findFirst();
+            LocalWalletInfo info = LocalWalletInfo.objectFromData(entry.get().getValue().toString());
+            edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME, info.getName());
+            edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE, info.getType());
+            edit.apply();
+            //get wallet balance
+            getWalletBalance();
+        } else {
+            edit.putString("shortOrLongPass", "short");
+            edit.putBoolean("isBack_up", false);
+            edit.apply();
+            textWalletName.setText(getString(R.string.no_use_wallet));
+            linearNoWallet.setVisibility(View.VISIBLE);
+            imgBottom.setVisibility(View.VISIBLE);
+            linearHaveWallet.setVisibility(View.GONE);
+            linearWalletList.setVisibility(View.GONE);
+            imgType.setImageDrawable(getActivity().getDrawable(R.drawable.loco_round));
+            isBackup = true;
+            relNowBackUp.setVisibility(View.GONE);
         }
-
     }
-
 
     public void setValue(String msgVote) {
         try {

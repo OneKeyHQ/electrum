@@ -213,6 +213,13 @@ public final class Constant {
     public static final String COIN_TYPE_EOS = "EOS";
     public static final String EXTEND_PUBLIC_KEY = "xpub";
     public static final String UPGRADE_INFO = "upgrade_info";
-    public static final String CURRENT_SELECTED_WALLET = "current_selected_wallet";
+    /**
+     * 当前选择钱包名称
+     * */
+    public static final String CURRENT_SELECTED_WALLET_NAME = "current_selected_wallet_name";
+    /**
+     * 当前选择钱包类型
+     * */
+    public static final String CURRENT_SELECTED_WALLET_TYPE = "current_selected_wallet_type";
 
 }

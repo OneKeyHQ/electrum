@@ -127,5 +127,11 @@ public class PreferencesManager {
         SharedPreferences sp = getSharedPreferences(context,name);
         return sp.getAll();
     }
-
+    /**
+     * @param context
+     * @return true if has wallet
+     * */
+    public static boolean hasWallet(Context context) {
+        return !PreferencesManager.getAll(context, org.haobtc.onekey.constant.Constant.WALLETS).isEmpty();
+    }
 }

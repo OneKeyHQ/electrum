@@ -58,7 +58,7 @@ public class WalletListAdapter extends BaseQuickAdapter<LocalWalletInfo, BaseVie
         ImageView copyAddr = helper.getView(R.id.img_copy_addr);
 
         SharedPreferences preferences = mContext.getSharedPreferences("Preferences", Context.MODE_PRIVATE);
-        String loadWalletName = preferences.getString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET, "");
+        String loadWalletName = preferences.getString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME, "");
         ImageView chooseView = helper.getView(R.id.img_choose);
         if (loadWalletName.equals(item.getName())) {
             chooseView.setVisibility(View.VISIBLE);

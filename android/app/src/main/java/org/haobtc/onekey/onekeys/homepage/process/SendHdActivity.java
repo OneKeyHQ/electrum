@@ -72,6 +72,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
+
 public class SendHdActivity extends BaseActivity implements TextWatcher, BusinessAsyncTask.Helper {
 
     @BindView(R.id.edit_input_address)
@@ -166,7 +168,7 @@ public class SendHdActivity extends BaseActivity implements TextWatcher, Busines
         hdWalletName = getIntent().getStringExtra("hdWalletName");
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         sendNum = getIntent().getStringExtra("sendNum");
-        showWalletType = preferences.getString("showWalletType", "");
+        showWalletType = preferences.getString(CURRENT_SELECTED_WALLET_TYPE, "");
         textSlowTime.setText(String.format("%s0%s", getString(R.string.about_), getString(R.string.minute)));
         textRecommendTime.setText(String.format("%s0%s", getString(R.string.about_), getString(R.string.minute)));
         textFastTime.setText(String.format("%s0%s", getString(R.string.about_), getString(R.string.minute)));
