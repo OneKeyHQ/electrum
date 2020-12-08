@@ -65,7 +65,7 @@
         [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
             NSString *name = self.walletName;
             if (name == nil || name.length == 0) {
-                name = kWalletManager.currentWalletName;
+                name = kWalletManager.currentWalletInfo.name;
             }
             [kPyCommandsManager callInterface:kInterfaceDelete_wallet parameter:@{@"name":name,@"password":pwd}];
             [kWalletManager clearCurrentWalletInfo];

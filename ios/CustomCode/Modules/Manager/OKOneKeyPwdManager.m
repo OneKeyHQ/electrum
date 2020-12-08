@@ -1,0 +1,36 @@
+//
+//  OKOneKeyPwdManager.m
+//  OneKey
+//
+//  Created by xiaoliang on 2020/12/7.
+//  Copyright © 2020 OneKey. All rights reserved.
+//
+
+#import "OKOneKeyPwdManager.h"
+#import "KeyChainSaveUUID.h"
+
+#define kSaveOneKeyPassword         @"kSaveOneKeyPassword"
+
+
+@implementation OKOneKeyPwdManager
+
+static dispatch_once_t once;
+
++ (OKOneKeyPwdManager *)sharedInstance {
+    static OKOneKeyPwdManager *_sharedInstance = nil;
+    dispatch_once(&once, ^{
+        _sharedInstance = [[OKOneKeyPwdManager alloc] init];
+    });
+    return _sharedInstance;
+}
+
+- (void)saveOneKeyPassWord:(NSString *)pwd
+{
+    [KeyChainSaveUUID save:kSaveOneKeyPassword data:pwd];
+}
+
+- (NSString *)getOneKeyPassWord
+{
+    return [KeyChainSaveUUID load:kSaveOneKeyPassword];
+}
+@end

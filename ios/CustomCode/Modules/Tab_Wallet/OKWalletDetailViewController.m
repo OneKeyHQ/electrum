@@ -60,7 +60,7 @@
 - (void)loadUI
 {
     self.title = MyLocalizedString(@"Wallet Detail", nil);
-    self.nameLabel.text = kWalletManager.currentWalletName;
+    self.nameLabel.text = kWalletManager.currentWalletInfo.label;
 }
 
 #pragma mark - TableView
@@ -118,7 +118,7 @@
         {
             OKExportTipsViewController *exportTipsVc = [OKExportTipsViewController exportTipsViewController:^{
                 [OKValidationPwdController showValidationPwdPageOn:self isDis:NO complete:^(NSString * _Nonnull pwd) {
-                    NSString *result = [kPyCommandsManager callInterface:kInterfaceexport_seed parameter:@{@"password":pwd,@"name":kWalletManager.currentWalletName}];
+                    NSString *result = [kPyCommandsManager callInterface:kInterfaceexport_seed parameter:@{@"password":pwd,@"name":kWalletManager.currentWalletInfo.name}];
                     if (result != nil) {
                         OKBackUpViewController *backUpVc = [OKBackUpViewController backUpViewController];
                         backUpVc.words = [result componentsSeparatedByString:@" "];
@@ -159,12 +159,12 @@
         case OKClickTypeDeleteWallet:
         {
             OKWeakSelf(self)
-            BOOL isBackUp = [[kPyCommandsManager callInterface:kInterfaceget_backup_info parameter:@{@"name":kWalletManager.currentWalletName}] boolValue];
+            BOOL isBackUp = [[kPyCommandsManager callInterface:kInterfaceget_backup_info parameter:@{@"name":kWalletManager.currentWalletInfo.name}] boolValue];
             if (isBackUp) {
                 if (self.walletType == OKWalletTypeIndependent) {
                     OKDeleteWalletTipsViewController *deleteVc = [OKDeleteWalletTipsViewController deleteWalletTipsViewController];
                     deleteVc.deleteType = OKWhereToDeleteTypeDetail;
-                    deleteVc.walletName = kWalletManager.currentWalletName;
+                    deleteVc.walletName = kWalletManager.currentWalletInfo.name;
                     [weakself.navigationController pushViewController:deleteVc animated:YES];
                     
                 }else{
@@ -195,7 +195,7 @@
 }
 - (void)deleteWalletPwd:(NSString *)pwd
 {
-    [kPyCommandsManager callInterface:kInterfaceDelete_wallet parameter:@{@"name":kWalletManager.currentWalletName,@"password":pwd}];
+    [kPyCommandsManager callInterface:kInterfaceDelete_wallet parameter:@{@"name":kWalletManager.currentWalletInfo.name,@"password":pwd}];
     [kWalletManager clearCurrentWalletInfo];
     [kTools tipMessage:MyLocalizedString(@"Wallet deleted successfully", nil)];
     [[NSNotificationCenter defaultCenter]postNotificationName:kNotiDeleteWalletComplete object:nil];
@@ -207,7 +207,7 @@
         NSMutableArray *allDataM = [NSMutableArray array];
         OKWalletDetailModel *model1 = [OKWalletDetailModel new];
         model1.titleStr = MyLocalizedString(@"address", nil);
-        model1.rightLabelStr = kWalletManager.currentWalletAddress;
+        model1.rightLabelStr = kWalletManager.currentWalletInfo.addr;
         model1.isShowCopy = YES;
         model1.isShowSerialNumber = NO;
         model1.isShowArrow = NO;
@@ -293,7 +293,7 @@
             modelS3.rightLabelColor = HexColor(0x00B812);
             [securityGroup addObject:modelS1];
             [securityGroup addObject:modelS2];
-            if ([kWalletManager.currentSelectCoinType isEqualToString:COIN_ETH]) {
+            if ([kWalletManager.currentWalletInfo.coinType isEqualToString:COIN_ETH]) {
                 [securityGroup addObject:modelS3];
             }
             [allDataM addObject:securityGroup];

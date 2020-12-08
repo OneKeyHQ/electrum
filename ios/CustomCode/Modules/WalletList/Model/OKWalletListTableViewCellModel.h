@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,copy) NSString* address;
 @property (nonatomic,copy) NSString* iconName;
 @property (nonatomic,copy) UIColor* backColor;
+@property (nonatomic,copy) NSString *label;
 @property (nonatomic,assign)BOOL isCurrent;
 + (UIColor *)getBackColor:(NSString *)type;
 + (NSString *)getBgImageName:(NSString *)type;

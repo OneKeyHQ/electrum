@@ -24,6 +24,8 @@
 #import "OKReadyToStartViewController.h"
 #import "OKTxDetailViewController.h"
 #import "OKFindFollowingWalletController.h"
+#import "OKCreateResultModel.h"
+#import "OKCreateResultWalletInfoModel.h"
 
 
 @interface OKWalletViewController ()<UITableViewDelegate,UITableViewDataSource,UINavigationControllerDelegate,UIGestureRecognizerDelegate>
@@ -171,18 +173,14 @@
 
 - (void)selectWallet
 {
-    NSString *name = kWalletManager.currentWalletName;
+    NSString *name = kWalletManager.currentWalletInfo.name;
     if ((name == nil || name.length == 0) && self.listWallets.count > 0 ) {
         NSDictionary *dict = [self.listWallets lastObject];
         name = [[dict allKeys] firstObject];
         NSDictionary *value = dict[name];
-        NSString *type = [value safeStringForKey:@"type"];
-        NSString *addr = [value safeStringForKey:@"addr"];
-        [kWalletManager setCurrentWalletAddress:addr];
-        [kWalletManager setCurrentWalletName:name];
-        [kWalletManager setCurrentWalletType:type];
+        [kWalletManager setCurrentWalletInfo:[OKWalletInfoModel mj_objectWithKeyValues:value]];
     }
-    NSDictionary *dict =  [kPyCommandsManager callInterface:kInterfaceSelect_wallet parameter:@{@"name":kWalletManager.currentWalletName}];
+    NSDictionary *dict =  [kPyCommandsManager callInterface:kInterfaceSelect_wallet parameter:@{@"name":kWalletManager.currentWalletInfo.name}];
     NSString *b = [dict safeStringForKey:@"balance"];
     NSString *balance = [[b componentsSeparatedByString:@" "]firstObject];
     
@@ -194,8 +192,8 @@
 {
     NSLog(@"dict = %@",dict);
     self.model.balance = [dict safeStringForKey:@"balance"];
-    self.model.coinType = COIN_BTC;
-    self.model.iconImage = [NSString stringWithFormat:@"token_%@",[COIN_BTC lowercaseString]];
+    self.model.coinType = kWalletManager.currentWalletInfo.coinType;
+    self.model.iconImage = [NSString stringWithFormat:@"token_%@",[kWalletManager.currentWalletInfo.coinType lowercaseString]];
     self.model.money = [dict safeStringForKey:@"fiat"];
     dispatch_async(dispatch_get_main_queue(), ^{
        // UI更新代码
@@ -208,8 +206,8 @@
             bStr = @"****";
         }
         self.balance.text = bStr;
-        self.walletName.text = kWalletManager.currentWalletName.length > 0 ? kWalletManager.currentWalletName : MyLocalizedString(@"No purse", nil);
-        if (kWalletManager.currentWalletName.length > 0) {
+        self.walletName.text = kWalletManager.currentWalletInfo.label.length > 0 ? kWalletManager.currentWalletInfo.label : MyLocalizedString(@"No purse", nil);
+        if (kWalletManager.currentWalletInfo.label.length > 0) {
             [self.coinImage setImage:[UIImage imageNamed:self.model.iconImage] forState:UIControlStateNormal];
         }else{
             [self.coinImage setImage:[UIImage imageNamed:@"loco_round"] forState:UIControlStateNormal];
@@ -254,9 +252,6 @@
     
     [self.walletTopBgView addGestureRecognizer:tapWalletTopBgView];
     
-    
-    
-    
     UITapGestureRecognizer *tapeye = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapEyeClick)];
     self.eyeBtn.userInteractionEnabled = YES;
     [self.eyebgView addGestureRecognizer:tapeye];
@@ -289,7 +284,7 @@
     if (self.listWallets.count > 0) { //创建过
         self.createBgView.hidden = YES;
         self.walletHomeBgView.hidden = NO;
-        isBackUp = [[kPyCommandsManager callInterface:kInterfaceget_backup_info parameter:@{@"name":kWalletManager.currentWalletName}] boolValue];
+        isBackUp = [[kPyCommandsManager callInterface:kInterfaceget_backup_info parameter:@{@"name":kWalletManager.currentWalletInfo.name}] boolValue];
     }else{
         self.walletName.text = MyLocalizedString(@"No purse", nil);
         self.createBgView.hidden = NO;
@@ -323,12 +318,12 @@
 {
      OKWeakSelf(self)
      [OKValidationPwdController showValidationPwdPageOn:self isDis:NO complete:^(NSString * _Nonnull pwd) {
-         NSString *words = [kPyCommandsManager callInterface:kInterfaceexport_seed parameter:@{@"password":pwd,@"name":kWalletManager.currentWalletName}];
+         NSString *words = [kPyCommandsManager callInterface:kInterfaceexport_seed parameter:@{@"password":pwd,@"name":kWalletManager.currentWalletInfo.name}];
          if (words != nil) {
              OKReadyToStartViewController *readyToStart = [OKReadyToStartViewController readyToStartViewController];
              readyToStart.words = words;
             readyToStart.pwd = pwd;
-            readyToStart.walletName = kWalletManager.currentWalletName;
+            readyToStart.walletName = kWalletManager.currentWalletInfo.name;
             [weakself.OK_TopViewController.navigationController pushViewController:readyToStart animated:YES];
          }
     }];
@@ -491,16 +486,14 @@
 - (void)createWallet:(NSString *)pwd
 {
     NSString *seed = @"";
-    NSString *createHD = @"";
     NSArray *words = [NSArray array];
-    createHD =  [kPyCommandsManager callInterface:kInterfaceCreate_hd_wallet parameter:@{@"password":pwd,@"seed":seed}];
-    words = [createHD componentsSeparatedByString:@" "];
+    NSDictionary *create =  [kPyCommandsManager callInterface:kInterfaceCreate_hd_wallet parameter:@{@"password":pwd,@"seed":seed}];
+    OKCreateResultModel *createResultModel = [OKCreateResultModel mj_objectWithKeyValues:create];
+    words = [createResultModel.seed componentsSeparatedByString:@" "];
     if (words.count > 0) {
-        NSString *defaultName = @"BTC-1";
-        [OKStorageManager saveToUserDefaults:defaultName key:kCurrentWalletName];
-        NSString *cuurentWalletAddress = [kWalletManager getCurrentWalletAddress:defaultName];
-        [OKStorageManager saveToUserDefaults:cuurentWalletAddress key:kCurrentWalletAddress];
-        [OKStorageManager saveToUserDefaults:@"btc-hd-standard" key:kCurrentWalletType];
+        OKCreateResultWalletInfoModel *model =  createResultModel.wallet_info.firstObject;
+        OKWalletInfoModel *walletInfoModel = [kWalletManager getCurrentWalletAddress:model.name];
+        [kWalletManager setCurrentWalletInfo:walletInfoModel];
         OKBiologicalViewController *biologicalVc = [OKBiologicalViewController biologicalViewController:@"OKWalletViewController" biologicalViewBlock:^{
             //创建HD成功刷新首页的UI
             [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":pwd,@"backupshow":@"1"}];
@@ -594,12 +587,12 @@
             if (type == BackUpBtnClickTypeClose) {
                 //下次再说  关闭窗口
             }else if (type == BackUpBtnClickTypeBackUp){
-                NSString *words = [kPyCommandsManager callInterface:kInterfaceexport_seed parameter:@{@"password":pwd,@"name":kWalletManager.currentWalletName}];
+                NSString *words = [kPyCommandsManager callInterface:kInterfaceexport_seed parameter:@{@"password":pwd,@"name":kWalletManager.currentWalletInfo.name}];
                 if (words != nil) {
                     OKReadyToStartViewController *readyToStart = [OKReadyToStartViewController readyToStartViewController];
                     readyToStart.pwd = pwd;
                     readyToStart.words = words;
-                    readyToStart.walletName = kWalletManager.currentWalletName;
+                    readyToStart.walletName = kWalletManager.currentWalletInfo.name;
                     [weakself.OK_TopViewController.navigationController pushViewController:readyToStart animated:YES];
                 }
             }

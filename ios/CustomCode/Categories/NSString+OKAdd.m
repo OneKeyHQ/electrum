@@ -7,8 +7,20 @@
 //
 
 #import "NSString+OKAdd.h"
+#import <CommonCrypto/CommonDigest.h>
 
 @implementation NSString (OKAdd)
+- (NSString *)SHA256
+{
+    const char *s = [self cStringUsingEncoding:NSASCIIStringEncoding];
+    NSData *keyData = [NSData dataWithBytes:s length:strlen(s)];
+
+    uint8_t digest[CC_SHA256_DIGEST_LENGTH] = {0};
+    CC_SHA256(keyData.bytes, (CC_LONG)keyData.length, digest);
+    NSData *out = [NSData dataWithBytes:digest length:CC_SHA256_DIGEST_LENGTH];
+    NSString *hash = [NSData hexStringForData:out];
+    return hash;
+}
 +(const char *)ok_stringToChar:(NSString *)string
 {
     return [string UTF8String];

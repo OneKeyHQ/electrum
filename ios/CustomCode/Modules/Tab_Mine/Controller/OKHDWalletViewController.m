@@ -17,6 +17,8 @@
 #import "OKPwdViewController.h"
 #import "OKWordImportVC.h"
 #import "OKBiologicalViewController.h"
+#import "OKCreateResultModel.h"
+#import "OKCreateResultWalletInfoModel.h"
 
 @interface OKHDWalletViewController ()<UITableViewDelegate,UITableViewDataSource>
 @property (strong, nonatomic) IBOutlet UITableView *tableView;
@@ -99,9 +101,10 @@
         model.walletType = [innerDict safeStringForKey:@"type"];
         model.walletTypeShowStr = [kWalletManager getWalletTypeShowStr:model.walletType];
         model.address = [innerDict safeStringForKey:@"addr"];
+        model.label = [innerDict safeStringForKey:@"label"];
         model.backColor = [OKWalletListTableViewCellModel getBackColor:model.walletType];
         model.iconName = [OKWalletListTableViewCellModel getBgImageName:model.walletType];
-        model.isCurrent = [kWalletManager.currentWalletName isEqualToString:model.walletName];
+        model.isCurrent = [kWalletManager.currentWalletInfo.name isEqualToString:model.walletName];
         [walletArray addObject:model];
     }
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"walletType contains %@ || walletType contains %@",[@"HD" lowercaseString],[@"derived-standard" lowercaseString]];
@@ -197,23 +200,20 @@
 - (void)createWallet:(NSString *)pwd
 {
     NSString *seed = @"";
-    NSString *createHD = @"";
     NSArray *words = [NSArray array];
-    createHD =  [kPyCommandsManager callInterface:kInterfaceCreate_hd_wallet parameter:@{@"password":pwd,@"seed":seed}];
-    words = [createHD componentsSeparatedByString:@" "];
+    NSDictionary *create =  [kPyCommandsManager callInterface:kInterfaceCreate_hd_wallet parameter:@{@"password":pwd,@"seed":seed}];
+    OKCreateResultModel *createResultModel = [OKCreateResultModel mj_objectWithKeyValues:create];
+    words = [createResultModel.seed componentsSeparatedByString:@" "];
     if (words.count > 0) {
+        OKCreateResultWalletInfoModel *model =  createResultModel.wallet_info.firstObject;
+        OKWalletInfoModel *curentWalletModel= [kWalletManager getCurrentWalletAddress:model.name];
+        [kWalletManager setCurrentWalletInfo:curentWalletModel];
         if (!kWalletManager.isOpenAuthBiological) {
-            NSString *defaultName = @"BTC-1";
-            [OKStorageManager saveToUserDefaults:defaultName key:kCurrentWalletName];
-            NSString *cuurentWalletAddress = [kWalletManager getCurrentWalletAddress:defaultName];
-            [OKStorageManager saveToUserDefaults:cuurentWalletAddress key:kCurrentWalletAddress];
-            [OKStorageManager saveToUserDefaults:@"btc-hd-standard" key:kCurrentWalletType];
             OKBiologicalViewController *biologicalVc = [OKBiologicalViewController biologicalViewController:@"OKWalletViewController" biologicalViewBlock:^{
                 [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":pwd,@"backupshow":@"1"}];
             }];
             [self.OK_TopViewController.navigationController pushViewController:biologicalVc animated:YES];
         }else{
-            [OKStorageManager saveToUserDefaults:@"BTC-1" key:kCurrentWalletName];
             [self.OK_TopViewController dismissToViewControllerWithClassName:@"OKHDWalletViewController" animated:YES complete:^{
                 [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":pwd,@"backupshow":@"1"}];
             }];

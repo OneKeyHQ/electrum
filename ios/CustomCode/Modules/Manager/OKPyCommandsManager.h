@@ -88,6 +88,9 @@
 #define kInterfacecheck_password         @"check_password" //检查密码
 
 
+#define kInterfaceverify_legality        @"verify_legality"  //验证格式
+
+
 #define kPyCommandsManager (OKPyCommandsManager.sharedInstance)
 NS_ASSUME_NONNULL_BEGIN
 @interface OKPyCommandsManager : NSObject

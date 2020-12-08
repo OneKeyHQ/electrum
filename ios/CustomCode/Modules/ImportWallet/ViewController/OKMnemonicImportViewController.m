@@ -40,10 +40,13 @@
         return;
     }
   
-    OKSetWalletNameViewController *setNameVc = [OKSetWalletNameViewController setWalletNameViewController];
-    setNameVc.addType = OKAddTypeImportSeed;
-    setNameVc.where = OKWhereToSelectTypeWalletList;
-    setNameVc.seed = [self.wordInputView.wordsArr componentsJoinedByString:@" "];
-    [self.navigationController pushViewController:setNameVc animated:YES];
+    id result =  [kPyCommandsManager callInterface:kInterfaceverify_legality parameter:@{@"data":[self.wordInputView.wordsArr componentsJoinedByString:@" "],@"flag":@"seed"}];
+    if (result != nil) {
+        OKSetWalletNameViewController *setNameVc = [OKSetWalletNameViewController setWalletNameViewController];
+        setNameVc.addType = OKAddTypeImportSeed;
+        setNameVc.where = OKWhereToSelectTypeWalletList;
+        setNameVc.seed = [self.wordInputView.wordsArr componentsJoinedByString:@" "];
+        [self.navigationController pushViewController:setNameVc animated:YES];
+    }
 }
 @end

@@ -95,7 +95,7 @@
     self.tx_hash = [self.txInfo safeStringForKey:@"txid"];
     NSArray *output_addr_array = self.txInfo[@"output_addr"];
     NSDictionary *output_addr_dict = [output_addr_array firstObject];
-    self.fromAddressLabel.text = kWalletManager.currentWalletAddress;
+    self.fromAddressLabel.text = @"-------------";
     self.toAddressLabel.text  = [output_addr_dict safeStringForKey:@"addr"];
     self.blockNumLabel.text = [self.txInfo safeStringForKey:@"height"];
     self.feeLabel.text = [self.txInfo safeStringForKey:@"fee"];

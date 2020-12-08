@@ -55,7 +55,11 @@
     return _authIDControl;
 }
 - (IBAction)switchClick:(UISwitch *)sender {
-    [self.authIDControl yz_showAuthIDWithDescribe:@"aaa" BlockState:^(YZAuthIDState state, NSError *error) {
+    
+    if ([self.delegate respondsToSelector:@selector(mineTableViewCellModelDelegateSwitch:)]) {
+        [self.delegate mineTableViewCellModelDelegateSwitch:sender];
+    }
+    [self.authIDControl yz_showAuthIDWithDescribe:MyLocalizedString(@"OenKey request enabled", nil) BlockState:^(YZAuthIDState state, NSError *error) {
         if (state == YZAuthIDStateNotSupport
             || state == YZAuthIDStatePasswordNotSet || state == YZAuthIDStateTouchIDNotSet) { // 不支持TouchID/FaceID
             [kTools tipMessage:MyLocalizedString(@"Does not support FaceID", nil)];

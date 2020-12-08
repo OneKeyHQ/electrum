@@ -10,9 +10,9 @@
 #import "OKDiscoverViewController.h"
 #import "OKMineViewController.h"
 
-#define ItemSelectedColor   UIColorFromRGB(RGB_THEME_GREEN)
-#define ItemUnSelectedColor    UIColorFromRGB(0x14293B)
-#define ItemTitleFont    [UIFont boldSystemFontOfSize:10]
+#define ItemSelectedColor        UIColorFromRGB(RGB_THEME_GREEN)
+#define ItemUnSelectedColor      UIColorFromRGB(0x14293B)
+#define ItemTitleFont            [UIFont boldSystemFontOfSize:10]
 
 @interface MainViewController ()<UITabBarControllerDelegate>
 

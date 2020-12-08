@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "OKWalletInfoModel.h"
 
 #define COIN_BTC             @"BTC"
 #define COIN_ETH             @"ETH"
@@ -38,9 +39,8 @@
 
 
 
-#define kCurrentWalletName              @"kCurrentWalletName"
-#define kCurrentWalletAddress           @"kCurrentWalletAddress"
-#define kCurrentWalletType              @"kCurrentWalletType"
+#define kCurrentWalletInfo              @"kCurrentWalletInfo"
+
 #define kCurrentFiat                    @"kCurrentFiat"
 #define kCurrentFiatSymbol              @"kCurrentFiatSymbol"
 #define kCurrentBitcoinUnit             @"kCurrentBitcoinUnit"
@@ -94,11 +94,10 @@ typedef enum {
 
 
 @interface OKWalletManager : NSObject
-@property (nonatomic,copy)NSString *currentWalletName;
-@property (nonatomic,copy)NSString *currentWalletAddress;
-@property (nonatomic,copy)NSString *currentWalletType;
 
 @property (nonatomic,copy)NSString *currentSelectCoinType;
+@property (nonatomic,strong)OKWalletInfoModel *currentWalletInfo;
+
 @property (nonatomic,copy)NSString *currentFiat;
 @property (nonatomic,copy)NSString *currentFiatSymbol;
 @property (nonatomic,copy)NSString *currentBitcoinUnit;
@@ -119,7 +118,7 @@ typedef enum {
 - (NSString *)getFeeBaseWithSat:(NSString *)sat;
 - (BOOL)checkWalletName:(NSString *)name;
 - (BOOL)checkIsHavePwd;
-- (NSString *)getCurrentWalletAddress:(NSString *)wallletName;
+- (OKWalletInfoModel *)getCurrentWalletAddress:(NSString *)wallletName;
 @end
 
 NS_ASSUME_NONNULL_END

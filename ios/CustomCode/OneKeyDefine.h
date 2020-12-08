@@ -14,6 +14,4 @@
 
 #define kSavedUUIDForLastBlueTooth  @"kSavedUUIDForLastBlueTooth"
 
-
-
 #endif /* OneKeyDefine_h */

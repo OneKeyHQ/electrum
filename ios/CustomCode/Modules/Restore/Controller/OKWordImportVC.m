@@ -10,6 +10,8 @@
 #import "OKBiologicalViewController.h"
 #import "OKPwdViewController.h"
 #import "OKFindFollowingWalletController.h"
+#import "OKCreateResultModel.h"
+#import "OKCreateResultWalletInfoModel.h"
 
 @interface OKWordImportVC ()<UIScrollViewDelegate>
 
@@ -100,23 +102,21 @@
 - (void)createWallet:(NSString *)pwd mnemonicStr:(NSString *)mnemonicStr
 {
     NSString *seed = mnemonicStr;
-    __block NSArray *restoreHD = [NSArray array];
     [kTools showIndicatorView];
     OKWeakSelf(self)
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        restoreHD =  [kPyCommandsManager callInterface:kInterfaceCreate_hd_wallet parameter:@{@"password":pwd,@"seed":seed}];
-        if (restoreHD != nil) {
+        NSDictionary *create =  [kPyCommandsManager callInterface:kInterfaceCreate_hd_wallet parameter:@{@"password":pwd,@"seed":seed}];
+        OKCreateResultModel *createResultModel = [OKCreateResultModel mj_objectWithKeyValues:create];
+        if (createResultModel != nil) {
             dispatch_sync(dispatch_get_main_queue(), ^{
-                if (restoreHD.count == 0) {
+                if (createResultModel.derived_info.count == 0) {
                     [kPyCommandsManager callInterface:kInterfacerecovery_confirmed parameter:@{@"name_list":@[]}];
-                    NSString *defaultName = @"BTC-1";
-                    [OKStorageManager saveToUserDefaults:defaultName key:kCurrentWalletName];
-                    NSString *cuurentWalletAddress = [kWalletManager getCurrentWalletAddress:defaultName];
-                    [OKStorageManager saveToUserDefaults:cuurentWalletAddress key:kCurrentWalletAddress];
-                    [OKStorageManager saveToUserDefaults:@"btc-hd-standard" key:kCurrentWalletType];
+                    OKCreateResultWalletInfoModel *model = [createResultModel.wallet_info firstObject];
+                    OKWalletInfoModel *walletInfoModel = [kWalletManager getCurrentWalletAddress:model.name];
+                    [kWalletManager setCurrentWalletInfo:walletInfoModel];
                     OKBiologicalViewController *biologicalVc = [OKBiologicalViewController biologicalViewController:@"OKWalletViewController" biologicalViewBlock:^{
                         //创建HD成功刷新首页的UI
-                        [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":pwd,@"backupshow":@"1"}];;
+                        [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":pwd,@"backupshow":@"1"}];
                     }];
                     [kTools hideIndicatorView];
                     [weakself.OK_TopViewController.navigationController pushViewController:biologicalVc animated:YES];
@@ -124,7 +124,7 @@
                 }else{
                     OKFindFollowingWalletController *findFollowingWalletVc = [OKFindFollowingWalletController findFollowingWalletController];
                     findFollowingWalletVc.pwd = pwd;
-                    findFollowingWalletVc.restoreHD = restoreHD;
+                    findFollowingWalletVc.createResultModel = createResultModel;
                     [kTools hideIndicatorView];
                     [weakself.OK_TopViewController.navigationController pushViewController:findFollowingWalletVc animated:YES];
                 }

@@ -321,6 +321,26 @@ static dispatch_once_t once;
     }else if([method isEqualToString:kInterfacecheck_password]){
         NSString *password = [parameter safeStringForKey:@"password"];
         result = PyObject_CallMethod(self.pyInstance, [kInterfacecheck_password UTF8String], "(s)",[password UTF8String]);
+       
+        
+    }else if([method isEqualToString:kInterfaceverify_legality]){
+        NSString *password = [parameter safeStringForKey:@"password"];
+        if (password.length == 0 || password == nil) {
+            NSString *data = [parameter safeStringForKey:@"data"];
+            NSString *flag = [parameter safeStringForKey:@"flag"];
+            result = PyObject_CallMethod(self.pyInstance, [kInterfaceverify_legality UTF8String], "(s,s)",[data UTF8String],[flag UTF8String]);
+            
+        }else{
+            NSString *data = [parameter safeStringForKey:@"data"];
+            NSString *flag = [parameter safeStringForKey:@"flag"];
+            PyObject *args =  Py_BuildValue("(s)", [data UTF8String]);
+            PyObject *kwargs;
+            kwargs = Py_BuildValue("{s:s,s:s}", "flag", [flag UTF8String],"password",password);
+            PyObject *myobject_method = PyObject_GetAttrString(self.pyInstance, [kInterfaceverify_legality UTF8String]);
+            result = PyObject_Call(myobject_method, args, kwargs);
+        }
+        
+        
         
     }else if([method isEqualToString:kInterfaceBroadcast_tx]){
         NSString *tx = [parameter safeStringForKey:@"tx"];

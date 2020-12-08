@@ -57,10 +57,18 @@
 #pragma mark - 导入
 - (IBAction)importBtnClick:(UIButton *)sender
 {
-    OKSetWalletNameViewController *setNameVc = [OKSetWalletNameViewController setWalletNameViewController];
-    setNameVc.addType = self.importType;
-    setNameVc.where = OKWhereToSelectTypeWalletList;
-    [self.navigationController pushViewController:setNameVc animated:YES];
+    if (self.textView.text.length == 0) {
+        [kTools tipMessage:MyLocalizedString(@"KeyStore cannot be empty", nil)];
+        return;
+    }
+    
+    id result = [kPyCommandsManager callInterface:kInterfaceverify_legality parameter:@{@"data":self.textView.text,@"flag":@"keystore"}];
+    if (result != nil) {
+        OKSetWalletNameViewController *setNameVc = [OKSetWalletNameViewController setWalletNameViewController];
+        setNameVc.addType = self.importType;
+        setNameVc.where = OKWhereToSelectTypeWalletList;
+        [self.navigationController pushViewController:setNameVc animated:YES];
+    }
 }
 #pragma mark - 扫描
 - (void)scanBtnClick
@@ -76,8 +84,7 @@
 - (void)textChange{
     if (self.textView.text.length > 10) {
         [self.importBtn status:OKButtonStatusEnabled];
-    }
-    else{
+    }else{
         [self.importBtn status:OKButtonStatusDisabled];
     }
 }

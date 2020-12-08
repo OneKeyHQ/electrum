@@ -45,11 +45,14 @@
         return;
     }
     
-    OKSetWalletNameViewController *setNameVc = [OKSetWalletNameViewController setWalletNameViewController];
-    setNameVc.addType = self.importType;
-    setNameVc.address = self.textView.text;
-    setNameVc.where = OKWhereToSelectTypeWalletList;
-    [self.navigationController pushViewController:setNameVc animated:YES];
+    id result =  [kPyCommandsManager callInterface:kInterfaceverify_legality parameter:@{@"data":self.textView.text,@"flag":@"address"}];
+    if (result != nil) {
+        OKSetWalletNameViewController *setNameVc = [OKSetWalletNameViewController setWalletNameViewController];
+        setNameVc.addType = self.importType;
+        setNameVc.address = self.textView.text;
+        setNameVc.where = OKWhereToSelectTypeWalletList;
+        [self.navigationController pushViewController:setNameVc animated:YES];
+    }
 }
 #pragma mark - 扫描
 - (void)scanBtnClick

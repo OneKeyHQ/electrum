@@ -24,6 +24,8 @@
 #import "OKWordImportVC.h"
 #import "OKHDWalletViewController.h"
 #import "OKBiologicalViewController.h"
+#import "OKCreateResultModel.h"
+#import "OKCreateResultWalletInfoModel.h"
 
 
 #define kDefaultType  @"HD"
@@ -44,20 +46,17 @@
 
 @property (nonatomic,strong)NSArray *NoHDArray;
 
-
 //tableViewHeaderView
 @property (weak, nonatomic) IBOutlet UILabel *headerWalletTypeLabel;
 @property (weak, nonatomic) IBOutlet UIButton *tipsBtn;
 @property (weak, nonatomic) IBOutlet UIButton *circlePlusBtn;
 - (IBAction)circlePlusBtnClick:(UIButton *)sender;
-
 - (IBAction)tipsBtnClick:(UIButton *)sender;
 @property (weak, nonatomic) IBOutlet UIView *countBgView;
 @property (weak, nonatomic) IBOutlet UILabel *countLabel;
 @property (weak, nonatomic) IBOutlet UIButton *detailBtn;
 - (IBAction)detailBtnClick:(UIButton *)sender;
 @property (weak, nonatomic) IBOutlet UILabel *detailLabel;
-
 //tableViewFooterView
 @property (weak, nonatomic) IBOutlet UIView *footBgView;
 @property (weak, nonatomic) IBOutlet UILabel *footerTitleLabel;
@@ -74,15 +73,18 @@
 {
     return [[UIStoryboard storyboardWithName:@"WalletList" bundle:nil]instantiateViewControllerWithIdentifier:@"OKWalletListViewController"];
 }
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self stupUI];
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notiRefreshWalletList) name:kNotiRefreshWalletList object:nil];
 }
+
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter]removeObserver:self];
 }
+
 - (void)stupUI
 {
     self.title = MyLocalizedString(@"The wallet list", nil);
@@ -123,9 +125,10 @@
         }
         model.walletTypeShowStr = [kWalletManager getWalletTypeShowStr:model.walletType];
         model.address = [innerDict safeStringForKey:@"addr"];
+        model.label = [innerDict safeStringForKey:@"label"];
         model.backColor = [OKWalletListTableViewCellModel getBackColor:model.walletType];
         model.iconName = [OKWalletListTableViewCellModel getBgImageName:model.walletType];
-        model.isCurrent = [kWalletManager.currentWalletName isEqualToString:model.walletName];
+        model.isCurrent = [kWalletManager.currentWalletInfo.name isEqualToString:model.walletName];
         [walletArray addObject:model];
     }
     self.walletListArray = walletArray;
@@ -144,7 +147,7 @@
     
     self.countLabel.text = [NSString stringWithFormat:@"%zd",self.showList.count];
     self.headerWalletTypeLabel.text = [self headerWalletType:walletType];
-    if([kWalletManager.currentSelectCoinType isEqualToString:kDefaultType]){
+    if([kWalletManager.currentWalletInfo.coinType isEqualToString:kDefaultType]){
         self.footBgView.hidden = self.showList.count == 0 ? YES : NO;
     }else{
         self.footBgView.hidden = YES;
@@ -185,7 +188,7 @@
 #pragma mark - UITableViewDelegate | UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    if([kWalletManager.currentSelectCoinType isEqualToString:kDefaultType] && self.showList.count == 0){
+    if([kWalletManager.currentWalletInfo.coinType isEqualToString:kDefaultType] && self.showList.count == 0){
         return self.NoHDArray.count;
     }
     return self.showList.count;
@@ -196,7 +199,7 @@
 }
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if([kWalletManager.currentSelectCoinType isEqualToString:kDefaultType] && self.showList.count == 0){
+    if([kWalletManager.currentWalletInfo.coinType isEqualToString:kDefaultType] && self.showList.count == 0){
         static NSString *ID = @"OKWalletListNoHDTableViewCell";
         OKWalletListNoHDTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:ID];
         if (cell == nil) {
@@ -217,7 +220,7 @@
 }
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if([kWalletManager.currentSelectCoinType isEqualToString:kDefaultType] && self.showList.count == 0){
+    if([kWalletManager.currentWalletInfo.coinType isEqualToString:kDefaultType] && self.showList.count == 0){
         switch (indexPath.row) {
             case 0:
             {
@@ -233,7 +236,6 @@
                         }];
                         BaseNavigationController *baseVc = [[BaseNavigationController alloc]initWithRootViewController:pwdVc];
                         [weakself.OK_TopViewController presentViewController:baseVc animated:YES completion:nil];
-                        
                     }
                 }];
 
@@ -251,12 +253,10 @@
         }
         return;
     }
-    
     OKWalletListTableViewCellModel *model = self.showList[indexPath.row];
-    [OKStorageManager saveToUserDefaults:model.walletName key:kCurrentWalletName];
-    [OKStorageManager saveToUserDefaults:model.address key:kCurrentWalletAddress];
-    [OKStorageManager saveToUserDefaults:model.walletType key:kCurrentWalletType];
-    [kPyCommandsManager callInterface:kInterfaceSelect_wallet parameter:@{@"name":kWalletManager.currentWalletName}];
+    OKWalletInfoModel *curentWalletModel= [kWalletManager getCurrentWalletAddress:model.walletName];
+    [kWalletManager setCurrentWalletInfo:curentWalletModel];
+    [kPyCommandsManager callInterface:kInterfaceSelect_wallet parameter:@{@"name":kWalletManager.currentWalletInfo.name}];
     [[NSNotificationCenter defaultCenter]postNotificationName:kNotiSelectWalletComplete object:nil];
     [self refreshListData];
     [self dismissViewControllerAnimated:YES completion:nil];
@@ -267,25 +267,19 @@
     NSString *seed = @"";
     NSString *createHD = @"";
     NSArray *words = [NSArray array];
-    createHD =  [kPyCommandsManager callInterface:kInterfaceCreate_hd_wallet parameter:@{@"password":pwd,@"seed":seed}];
+    NSDictionary *create =  [kPyCommandsManager callInterface:kInterfaceCreate_hd_wallet parameter:@{@"password":pwd,@"seed":seed}];
+    OKCreateResultModel *createResultModel = [OKCreateResultModel mj_objectWithKeyValues:create];
     words = [createHD componentsSeparatedByString:@" "];
     if (words.count > 0) {
+        OKCreateResultWalletInfoModel *createResultWalletInfoModel = [createResultModel.wallet_info firstObject];
+        OKWalletInfoModel *infoModel = [kWalletManager getCurrentWalletAddress:createResultWalletInfoModel.name];
+        [kWalletManager setCurrentWalletInfo:infoModel];
         if (!kWalletManager.isOpenAuthBiological) {
-            NSString *defaultName = @"BTC-1";
-            [OKStorageManager saveToUserDefaults:defaultName key:kCurrentWalletName];
-            NSString *cuurentWalletAddress = [kWalletManager getCurrentWalletAddress:defaultName];
-            [OKStorageManager saveToUserDefaults:cuurentWalletAddress key:kCurrentWalletAddress];
-            [OKStorageManager saveToUserDefaults:@"btc-hd-standard" key:kCurrentWalletType];
             OKBiologicalViewController *biologicalVc = [OKBiologicalViewController biologicalViewController:@"OKWalletViewController" biologicalViewBlock:^{
                 [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":pwd,@"backupshow":@"1"}];
             }];
             [self.OK_TopViewController.navigationController pushViewController:biologicalVc animated:YES];
         }else{
-            NSString *defaultName = @"BTC-1";
-            [OKStorageManager saveToUserDefaults:defaultName key:kCurrentWalletName];
-            NSString *cuurentWalletAddress = [kWalletManager getCurrentWalletAddress:defaultName];
-            [OKStorageManager saveToUserDefaults:cuurentWalletAddress key:kCurrentWalletAddress];
-            [OKStorageManager saveToUserDefaults:@"btc-hd-standard" key:kCurrentWalletType];
             [self.OK_TopViewController dismissToViewControllerWithClassName:@"OKWalletViewController" animated:YES complete:^{
                 [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":pwd,@"backupshow":@"1"}];
             }];

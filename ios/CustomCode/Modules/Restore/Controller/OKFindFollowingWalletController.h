@@ -7,11 +7,13 @@
 //
 
 #import "BaseViewController.h"
+#import "OKCreateResultModel.h"
+#import "OKCreateResultWalletInfoModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OKFindFollowingWalletController : BaseViewController
-@property (nonatomic,strong)NSArray *restoreHD;
+@property (nonatomic,strong)OKCreateResultModel *createResultModel;
 @property (nonatomic,copy)NSString *pwd;
 + (instancetype)findFollowingWalletController;
 

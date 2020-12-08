@@ -10,5 +10,6 @@
 #import <Security/Security.h>
 @interface KeyChainSaveUUID : NSObject
 + (NSString *)getDeviceIDInKeychain;
++ (void)save:(NSString *)service data:(id)data;
 + (id)load:(NSString *)service;
 @end

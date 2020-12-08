@@ -54,5 +54,6 @@
 #import "OKUserSettingManager.h"
 #import "UIButton+OneKey.h"
 #import "UIViewController+Extension.h"
+#import "Sha256.h"
 
 #endif /* OneKeyImport_h */

@@ -31,12 +31,13 @@
 {
     return [[UIStoryboard storyboardWithName:@"importWords" bundle:nil]instantiateViewControllerWithIdentifier:@"OKFindFollowingWalletController"];
 }
-- (void)setRestoreHD:(NSArray *)restoreHD
+- (void)setCreateResultModel:(OKCreateResultModel *)createResultModel
 {
-    _restoreHD = restoreHD;
-    self.walletList = [OKFindWalletTableViewCellModel mj_objectArrayWithKeyValuesArray:restoreHD];
+    _createResultModel = createResultModel;
+    self.walletList = self.createResultModel.derived_info;
     [self.tableView reloadData];
 }
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self hideBackBtn];
@@ -92,13 +93,10 @@
         }
     }
     [kPyCommandsManager callInterface:kInterfacerecovery_confirmed parameter:@{@"name_list":arrayM}];
-    NSString *defaultName = @"BTC-1";
-    [OKStorageManager saveToUserDefaults:defaultName key:kCurrentWalletName];
-    NSString *cuurentWalletAddress = [kWalletManager getCurrentWalletAddress:defaultName];
-    [OKStorageManager saveToUserDefaults:cuurentWalletAddress key:kCurrentWalletAddress];
-    [OKStorageManager saveToUserDefaults:@"btc-hd-standard" key:kCurrentWalletType];
+    OKCreateResultWalletInfoModel *createResultWalletInfoModel = [self.createResultModel.wallet_info firstObject];
+    OKWalletInfoModel *infoModel = [kWalletManager getCurrentWalletAddress:createResultWalletInfoModel.name];
+    [kWalletManager setCurrentWalletInfo:infoModel];
     [self.OK_TopViewController dismissToViewControllerWithClassName:@"OKWalletViewController" animated:YES complete:^{
-        //创建HD成功刷新首页的UI
         [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":self.pwd,@"backupshow":@"0"}];
     }];
 }

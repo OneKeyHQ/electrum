@@ -42,7 +42,7 @@
     self.titleLabel.text = MyLocalizedString(@"Edit the name", nil);
     self.descLabel.text = MyLocalizedString(@"The name of the", nil);
     [self.confirmBtn setTitle:MyLocalizedString(@"determine", nil) forState:UIControlStateNormal];
-    self.textField.text = kWalletManager.currentWalletName;
+    self.textField.text = kWalletManager.currentWalletInfo.label;
 }
 
 - (IBAction)confirmBtnClick:(UIButton *)sender {
@@ -51,7 +51,7 @@
         return;
     }
     
-    if ([self.textField.text isEqualToString:kWalletManager.currentWalletName]) {
+    if ([self.textField.text isEqualToString:kWalletManager.currentWalletInfo.label]) {
         [self closeBtnClick:nil];
         return;
     }
@@ -62,10 +62,12 @@
     }
     
     
-    NSString *msg =  [kPyCommandsManager callInterface:kInterfacerename_wallet parameter:@{@"old_name": kWalletManager.currentWalletName,@"new_name" : self.textField.text}];
+    NSString *msg =  [kPyCommandsManager callInterface:kInterfacerename_wallet parameter:@{@"old_name": kWalletManager.currentWalletInfo.name,@"new_name" : self.textField.text}];
     if (msg != nil) {
         [kTools tipMessage:MyLocalizedString(@"Name modification successful", nil)];
-        kWalletManager.currentWalletName = self.textField.text;
+        OKWalletInfoModel *model = kWalletManager.currentWalletInfo;
+        model.label = self.textField.text;
+        [kWalletManager setCurrentWalletInfo:model];
         [self closeBtnClick:nil];
         if (self.block) {
             self.block();

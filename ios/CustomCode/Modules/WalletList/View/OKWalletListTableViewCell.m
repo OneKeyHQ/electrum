@@ -37,7 +37,7 @@
 - (void)setModel:(OKWalletListTableViewCellModel *)model
 {
     _model = model;
-    self.walletNameLabel.text = model.walletName;
+    self.walletNameLabel.text = model.label;
     self.walletTypeBgView.backgroundColor = model.backColor;
     self.addressLabel.text = model.address;
     self.rightCoinTypeBgImageView.image = [UIImage imageNamed:model.iconName];

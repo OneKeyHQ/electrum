@@ -318,7 +318,6 @@ typedef enum {
     switch (self.pwdUseType) {
         case OKPwdUseTypeInitPassword:
         {
-            
             if ([self.longPwdFirstTextField.text isEqualToString:self.longPwdSecondTextField.text]&&self.longPwdFirstTextField.text.length > 0) { //密码一致
                 [self passwordIsCorrect:self.longPwdSecondTextField.text];
             }else{

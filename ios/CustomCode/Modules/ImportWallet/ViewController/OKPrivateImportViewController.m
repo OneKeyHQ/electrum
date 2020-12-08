@@ -50,11 +50,14 @@
         return;
     }
     
-    OKSetWalletNameViewController *setNameVc = [OKSetWalletNameViewController setWalletNameViewController];
-    setNameVc.addType = self.importType;
-    setNameVc.privkeys = self.textView.text;
-    setNameVc.where = OKWhereToSelectTypeWalletList;
-    [self.navigationController pushViewController:setNameVc animated:YES];
+    id reult =  [kPyCommandsManager callInterface:kInterfaceverify_legality parameter:@{@"data":self.textView.text,@"flag":@"private"}];
+    if (reult != nil) {
+        OKSetWalletNameViewController *setNameVc = [OKSetWalletNameViewController setWalletNameViewController];
+        setNameVc.addType = self.importType;
+        setNameVc.privkeys = self.textView.text;
+        setNameVc.where = OKWhereToSelectTypeWalletList;
+        [self.navigationController pushViewController:setNameVc animated:YES];
+    }
 }
 
 #pragma mark - 扫描二维码

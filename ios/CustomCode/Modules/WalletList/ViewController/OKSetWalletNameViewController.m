@@ -9,6 +9,8 @@
 #import "OKSetWalletNameViewController.h"
 #import "OKPwdViewController.h"
 #import "OKHDWalletViewController.h"
+#import "OKCreateResultModel.h"
+#import "OKCreateResultWalletInfoModel.h"
 
 
 @interface OKSetWalletNameViewController ()
@@ -56,14 +58,13 @@
     
     OKWeakSelf(self)
     if (self.addType == OKAddTypeImportAddresses) {
-        NSString *result =  [kPyCommandsManager callInterface:kInterfaceImport_Address parameter:@{@"name":self.walletNameTextfield.text,@"address":self.address}];
-        if (result != nil) {
+        NSDictionary *create =  [kPyCommandsManager callInterface:kInterfaceImport_Address parameter:@{@"name":self.walletNameTextfield.text,@"address":self.address}];
+        OKCreateResultModel *createResultModel = [OKCreateResultModel mj_objectWithKeyValues:create];
+        if (createResultModel != nil) {
             [kTools tipMessage:MyLocalizedString(@"Import success", nil)];
-            NSString *cuurentWalletAddress = [kWalletManager getCurrentWalletAddress:self.walletNameTextfield.text];
-            [OKStorageManager saveToUserDefaults:cuurentWalletAddress key:kCurrentWalletAddress];
-            
-            [OKStorageManager saveToUserDefaults:self.walletNameTextfield.text key:kCurrentWalletName];
-            [OKStorageManager saveToUserDefaults:@"btc-waltch-standard" key:kCurrentWalletType];
+            OKCreateResultWalletInfoModel *walletInfoModel = [createResultModel.wallet_info firstObject];
+            OKWalletInfoModel *model = [kWalletManager getCurrentWalletAddress:walletInfoModel.name];
+            [kWalletManager setCurrentWalletInfo:model];
             
             [[NSNotificationCenter defaultCenter]postNotificationName:kNotiRefreshWalletList object:nil];
             [[NSNotificationCenter defaultCenter]postNotification:[NSNotification notificationWithName:kNotiRefreshWalletList object:nil]];
@@ -91,76 +92,68 @@
 - (void)importWallet:(NSString *)pwd
 {
     OKWeakSelf(self)
-    id result = nil;
+    NSDictionary* create = nil;
     switch (weakself.addType) {
         case OKAddTypeCreateHDDerived:
         {
-            result = [kPyCommandsManager callInterface:kInterfaceCreate_derived_wallet parameter:@{@"name":self.walletNameTextfield.text,@"password":pwd,@"coin":[self.coinType lowercaseString]}];
+            create = [kPyCommandsManager callInterface:kInterfaceCreate_derived_wallet parameter:@{@"name":self.walletNameTextfield.text,@"password":pwd,@"coin":[self.coinType lowercaseString]}];
         }
             break;
         case OKAddTypeCreateSolo:
         {
-            result = [kPyCommandsManager callInterface:kInterfaceCreate_create parameter:@{@"name":self.walletNameTextfield.text,@"password":pwd}];
+            create = [kPyCommandsManager callInterface:kInterfaceCreate_create parameter:@{@"name":self.walletNameTextfield.text,@"password":pwd}];
         }
             break;
         case OKAddTypeImportPrivkeys:
         {
-            result = [kPyCommandsManager callInterface:kInterfaceImport_Privkeys parameter:@{@"name":self.walletNameTextfield.text,@"password":pwd,@"privkeys":self.privkeys}];
+            create = [kPyCommandsManager callInterface:kInterfaceImport_Privkeys parameter:@{@"name":self.walletNameTextfield.text,@"password":pwd,@"privkeys":self.privkeys}];
         }
             break;
         case OKAddTypeImportSeed:
         {
-            result =  [kPyCommandsManager callInterface:kInterfaceImport_Seed parameter:@{@"name":self.walletNameTextfield.text,@"password":pwd,@"seed":self.seed}];
+            create =  [kPyCommandsManager callInterface:kInterfaceImport_Seed parameter:@{@"name":self.walletNameTextfield.text,@"password":pwd,@"seed":self.seed}];
         }
             break;
         default:
             break;
     }
-    if (result != nil) {
+    if (create != nil) {
+        OKCreateResultModel *createResultModel = [OKCreateResultModel mj_objectWithKeyValues:create];
+        OKCreateResultWalletInfoModel *walletInfoModel = [createResultModel.wallet_info firstObject];
+        OKWalletInfoModel *model = [kWalletManager getCurrentWalletAddress:walletInfoModel.name];
+        [kWalletManager setCurrentWalletInfo:model];
         if (weakself.addType == OKAddTypeCreateSolo) {
             [kTools tipMessage:MyLocalizedString(@"Creating successful", nil)];
-            [OKStorageManager saveToUserDefaults:self.walletNameTextfield.text key:kCurrentWalletName];
-            [OKStorageManager saveToUserDefaults:@"btc-standard" key:kCurrentWalletType];
-            NSString *cuurentWalletAddress = [kWalletManager getCurrentWalletAddress:self.walletNameTextfield.text];
-            [OKStorageManager saveToUserDefaults:cuurentWalletAddress key:kCurrentWalletAddress];
             [[NSNotificationCenter defaultCenter]postNotificationName:kNotiRefreshWalletList object:nil];
             [weakself.OK_TopViewController dismissToViewControllerWithClassName:@"OKSetWalletNameViewController" animated:NO complete:^{
                 [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":pwd,@"backupshow":@"1"}];
             }];
             [weakself.navigationController popToRootViewControllerAnimated:YES];
         }else{
-            [OKStorageManager saveToUserDefaults:self.walletNameTextfield.text key:kCurrentWalletName];
-            NSString *cuurentWalletAddress = [kWalletManager getCurrentWalletAddress:self.walletNameTextfield.text];
-            [OKStorageManager saveToUserDefaults:cuurentWalletAddress key:kCurrentWalletAddress];
             switch (weakself.addType) {
                 case OKAddTypeCreateHDDerived:
                 {
                     [kTools tipMessage:MyLocalizedString(@"Creating successful", nil)];
-                    [OKStorageManager saveToUserDefaults:@"btc-derived-standard" key:kCurrentWalletType];
                 }
                     break;
                 case OKAddTypeCreateSolo:
                 {
                     [kTools tipMessage:MyLocalizedString(@"Creating successful", nil)];
-                    [OKStorageManager saveToUserDefaults:@"btc-standard" key:kCurrentWalletType];
                 }
                     break;
                 case OKAddTypeImportPrivkeys:
                 {
                     [kTools tipMessage:MyLocalizedString(@"Import success", nil)];
-                    [OKStorageManager saveToUserDefaults:@"btc-private-standard" key:kCurrentWalletType];
                 }
                     break;
                 case OKAddTypeImportSeed:
                 {
                     [kTools tipMessage:MyLocalizedString(@"Import success", nil)];
-                    [OKStorageManager saveToUserDefaults:@"btc-standard" key:kCurrentWalletType];
                 }
                     break;
                 case OKAddTypeImportAddresses:
                 {
                     [kTools tipMessage:MyLocalizedString(@"Import success", nil)];
-                    [OKStorageManager saveToUserDefaults:@"btc-watch-standard" key:kCurrentWalletType];
                 }
                     break;
                 default:

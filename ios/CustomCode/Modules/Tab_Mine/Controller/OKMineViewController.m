@@ -20,7 +20,7 @@
 #import "YZAuthID.h"
 #import "OKBluetoothViewController.h"
 
-@interface OKMineViewController ()<UINavigationControllerDelegate,UITableViewDelegate,UITableViewDataSource>
+@interface OKMineViewController ()<UINavigationControllerDelegate,UITableViewDelegate,UITableViewDataSource,OKMineTableViewCellDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
@@ -76,6 +76,7 @@
         cell = [[OKMineTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ID];
     }
     cell.model = self.allMenuData[indexPath.section][indexPath.row];
+    cell.delegate = self;
     return cell;
 }
 
@@ -306,5 +307,12 @@
 - (void)notiUpdatePassWordComplete
 {
     [self.tableView reloadData];
+}
+
+
+#pragma mark -mineTableViewCellModelDelegate
+- (void)mineTableViewCellModelDelegateSwitch:(UISwitch *)s
+{
+ 
 }
 @end

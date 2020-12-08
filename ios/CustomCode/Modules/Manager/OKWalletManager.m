@@ -24,40 +24,29 @@ static dispatch_once_t once;
     return _sharedInstance;
 }
 
-- (NSString *)currentWalletName
+- (void)setCurrentWalletInfo:(OKWalletInfoModel *)currentWalletInfo
 {
-    return [OKStorageManager loadFromUserDefaults:kCurrentWalletName];
+    NSArray *typeArray = [currentWalletInfo.type componentsSeparatedByString:@"-"];
+    currentWalletInfo.coinType = [typeArray firstObject];
+    [OKStorageManager saveToUserDefaults:[currentWalletInfo mj_JSONObject] key:kCurrentWalletInfo];
 }
-- (void)setCurrentWalletName:(NSString *)currentWalletName
+- (OKWalletInfoModel *)currentWalletInfo
 {
-    [OKStorageManager saveToUserDefaults:currentWalletName key:kCurrentWalletName];
+    NSDictionary *dict = [OKStorageManager loadFromUserDefaults:kCurrentWalletInfo];
+    if (dict != nil) {
+        return [OKWalletInfoModel mj_objectWithKeyValues:dict];
+    }
+    return nil;
 }
-
-- (NSString *)currentWalletAddress
-{
-    return [OKStorageManager loadFromUserDefaults:kCurrentWalletAddress];
-}
-- (void)setCurrentWalletAddress:(NSString *)currentWalletAddress
-{
-    [OKStorageManager saveToUserDefaults:currentWalletAddress key:kCurrentWalletAddress];
-}
-
-//设置当前钱包类型
-- (NSString *)currentWalletType
-{
-    return [OKStorageManager loadFromUserDefaults:kCurrentWalletType];
-}
-- (void)setCurrentWalletType:(NSString *)currentWalletType
-{
-    [OKStorageManager saveToUserDefaults:currentWalletType key:kCurrentWalletType];
-}
-
 
 - (NSString *)currentSelectCoinType
 {
     return [OKStorageManager loadFromUserDefaults:kSelectedWalletListType];
 }
-
+- (void)setCurrentSelectCoinType:(NSString *)currentSelectCoinType
+{
+    [OKStorageManager saveToUserDefaults:currentSelectCoinType key:kSelectedWalletListType];
+}
 
 - (NSString *)currentFiatSymbol
 {
@@ -122,12 +111,13 @@ static dispatch_once_t once;
  */
 - (OKWalletType)getWalletDetailType
 {
-    NSString *type = self.currentWalletType;
-    if ([type isEqualToString:@"btc-hd-standard"]) {
+    NSString *type = self.currentWalletInfo.type;
+    NSString *coinType = self.currentWalletInfo.coinType;
+    if ([type isEqualToString:[NSString stringWithFormat:@"%@-hd-standard",coinType]]) {
         return OKWalletTypeHD;
-    }else if ([type isEqualToString:@"btc-standard"]){
+    }else if ([type isEqualToString:[NSString stringWithFormat:@"%@-standard",coinType]]){
         return OKWalletTypeIndependent;
-    }else if ([type isEqualToString:@"btc-derived-standard"]){
+    }else if ([type isEqualToString:[NSString stringWithFormat:@"%@-derived-standard",coinType]]){
         return OKWalletTypeHD;
     }else if ([type isEqualToString:@"btc-hw-m-n"]){
         return OKWalletTypeMultipleSignature;
@@ -135,9 +125,9 @@ static dispatch_once_t once;
         return OKWalletTypeHardware;
     }else if([type isEqualToString:@"btc-hw-derived-m-n"]){
         return OKWalletTypeHardware;
-    }else if([type isEqualToString:@"btc-watch-standard"]){
+    }else if([type isEqualToString:[NSString stringWithFormat:@"%@-watch-standard",coinType]]){
         return OKWalletTypeObserve;
-    }else if([type isEqualToString:@"btc-private-standard"]){
+    }else if([type isEqualToString:[NSString stringWithFormat:@"%@-private-standard",coinType]]){
         return OKWalletTypeIndependent;
     }else{
         return OKWalletTypeHD;
@@ -196,9 +186,8 @@ static dispatch_once_t once;
 
 - (void)clearCurrentWalletInfo
 {
-    [self setCurrentWalletType:@""];
-    [self setCurrentWalletName:@""];
-    [self setCurrentWalletAddress:@""];
+    OKWalletInfoModel *model = [OKWalletInfoModel new];
+    [self setCurrentWalletInfo:model];
 }
 
 
@@ -275,7 +264,7 @@ static dispatch_once_t once;
     }
 }
 
-- (NSString *)getCurrentWalletAddress:(NSString *)wallletName
+- (OKWalletInfoModel *)getCurrentWalletAddress:(NSString *)wallletName
 {
     NSArray *listDictArray =  [kPyCommandsManager callInterface:kInterfaceList_wallets parameter:@{}];
     for (int i = 0;i < listDictArray.count; i++) {
@@ -284,12 +273,13 @@ static dispatch_once_t once;
         if ([key isEqualToString:wallletName]) {
             NSDictionary *subDict = dict[key];
             if (subDict != nil) {
-                return [subDict safeStringForKey:@"addr"];
+                return [OKWalletInfoModel mj_objectWithKeyValues:subDict];
             }else{
-                return @"";
+                return nil;
             }
         }
     }
-    return @"";
+    return nil;
 }
+
 @end
