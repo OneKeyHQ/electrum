@@ -147,8 +147,14 @@
             switch (indexPath.row) {
                 case 0: //密码
                 {
-                    OKChangePwdViewController *changePwd = [OKChangePwdViewController changePwdViewController];
-                    [self.navigationController pushViewController:changePwd animated:YES];
+                    NSArray *listDictArray =  [kPyCommandsManager callInterface:kInterfaceList_wallets parameter:@{}];
+                    if (listDictArray.count > 0) {
+                        OKChangePwdViewController *changePwd = [OKChangePwdViewController changePwdViewController];
+                        [self.navigationController pushViewController:changePwd animated:YES];
+                    }else{
+                        [kTools tipMessage:MyLocalizedString(@"Please go to create a wallet first", nil)];
+                    }
+                   
                 }
                     break;
                 case 1: //auth识别
