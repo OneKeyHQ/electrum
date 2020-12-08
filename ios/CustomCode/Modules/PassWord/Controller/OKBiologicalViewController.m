@@ -8,6 +8,7 @@
 
 #import "OKBiologicalViewController.h"
 #import "YZAuthID.h"
+#import "OKOneKeyPwdManager.h"
 
 @interface OKBiologicalViewController ()
 
@@ -22,15 +23,17 @@
 @property (strong, nonatomic) YZAuthID *authIDControl;
 @property (nonatomic,copy)NSString *fVcName;
 @property (nonatomic,copy)BiologicalViewBlock block;
+@property (nonatomic,copy)NSString *pwd;
 @end
 
 @implementation OKBiologicalViewController
 
-+ (instancetype)biologicalViewController:(NSString *)vcName biologicalViewBlock:(BiologicalViewBlock)block
++ (instancetype)biologicalViewController:(NSString *)vcName pwd:(NSString *)pwd biologicalViewBlock:(BiologicalViewBlock)block
 {
     OKBiologicalViewController *bioVc = [[UIStoryboard storyboardWithName:@"OKPwd" bundle:nil]instantiateViewControllerWithIdentifier:@"OKBiologicalViewController"];
     bioVc.fVcName = vcName;
     bioVc.block = block;
+    bioVc.pwd = pwd;
     return bioVc;
 }
 
@@ -94,16 +97,15 @@
     [self.authIDControl yz_showAuthIDWithDescribe:@"OneKey" BlockState:^(YZAuthIDState state, NSError *error) {
         if (state == YZAuthIDStateNotSupport
             || state == YZAuthIDStatePasswordNotSet || state == YZAuthIDStateTouchIDNotSet) { // 不支持TouchID/FaceID
-            
         } else if(state == YZAuthIDStateFail) { // 认证失败
             
         } else if(state == YZAuthIDStateTouchIDLockout) {   // 多次错误，已被锁定
             
         } else if (state == YZAuthIDStateSuccess) { // TouchID/FaceID验证成功
             kWalletManager.isOpenAuthBiological = YES;
+            [kOneKeyPwdManager saveOneKeyPassWord:self.pwd];
             [self disCurrentVc];
         }
-        
     }];
 }
 - (IBAction)nextBtnClick:(UIButton *)sender {

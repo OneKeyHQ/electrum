@@ -188,7 +188,7 @@
 #pragma mark - UITableViewDelegate | UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    if([kWalletManager.currentWalletInfo.coinType isEqualToString:kDefaultType] && self.showList.count == 0){
+    if([kWalletManager.currentSelectCoinType isEqualToString:kDefaultType] && self.showList.count == 0){
         return self.NoHDArray.count;
     }
     return self.showList.count;
@@ -199,7 +199,7 @@
 }
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if([kWalletManager.currentWalletInfo.coinType isEqualToString:kDefaultType] && self.showList.count == 0){
+    if([kWalletManager.currentSelectCoinType isEqualToString:kDefaultType] && self.showList.count == 0){
         static NSString *ID = @"OKWalletListNoHDTableViewCell";
         OKWalletListNoHDTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:ID];
         if (cell == nil) {
@@ -220,7 +220,7 @@
 }
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if([kWalletManager.currentWalletInfo.coinType isEqualToString:kDefaultType] && self.showList.count == 0){
+    if([kWalletManager.currentSelectCoinType isEqualToString:kDefaultType] && self.showList.count == 0){
         switch (indexPath.row) {
             case 0:
             {
@@ -275,7 +275,7 @@
         OKWalletInfoModel *infoModel = [kWalletManager getCurrentWalletAddress:createResultWalletInfoModel.name];
         [kWalletManager setCurrentWalletInfo:infoModel];
         if (!kWalletManager.isOpenAuthBiological) {
-            OKBiologicalViewController *biologicalVc = [OKBiologicalViewController biologicalViewController:@"OKWalletViewController" biologicalViewBlock:^{
+            OKBiologicalViewController *biologicalVc = [OKBiologicalViewController biologicalViewController:@"OKWalletViewController" pwd:pwd biologicalViewBlock:^{
                 [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":pwd,@"backupshow":@"1"}];
             }];
             [self.OK_TopViewController.navigationController pushViewController:biologicalVc animated:YES];
@@ -292,7 +292,6 @@
 }
 
 - (IBAction)addWalletBtnClick:(OKWalletListBottomBtn *)sender {
-    
     OKWeakSelf(self);
     OKAddBottomViewController *vc = [OKAddBottomViewController initViewControllerWithStoryboardName:@"WalletList"];
     [vc showOnWindowWithParentViewController:self block:^(BtnClickType type) {

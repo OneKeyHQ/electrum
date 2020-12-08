@@ -187,7 +187,8 @@
             case 1:
             {
                 OKWordImportVC *wordImport = [OKWordImportVC initViewController];
-                [self.OK_TopViewController presentViewController:wordImport animated:YES completion:nil];
+                BaseNavigationController *baseVc = [[BaseNavigationController alloc]initWithRootViewController:wordImport];
+                [self.OK_TopViewController presentViewController:baseVc animated:YES completion:nil];
             }
                 break;
             default:
@@ -209,7 +210,7 @@
         OKWalletInfoModel *curentWalletModel= [kWalletManager getCurrentWalletAddress:model.name];
         [kWalletManager setCurrentWalletInfo:curentWalletModel];
         if (!kWalletManager.isOpenAuthBiological) {
-            OKBiologicalViewController *biologicalVc = [OKBiologicalViewController biologicalViewController:@"OKWalletViewController" biologicalViewBlock:^{
+            OKBiologicalViewController *biologicalVc = [OKBiologicalViewController biologicalViewController:@"OKWalletViewController" pwd:pwd biologicalViewBlock:^{
                 [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":pwd,@"backupshow":@"1"}];
             }];
             [self.OK_TopViewController.navigationController pushViewController:biologicalVc animated:YES];

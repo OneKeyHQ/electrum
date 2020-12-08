@@ -11,10 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 typedef void(^BiologicalViewBlock)(void);
 @interface OKBiologicalViewController : BaseViewController
-
-+ (instancetype)biologicalViewController:(NSString *)vcName biologicalViewBlock:(BiologicalViewBlock)block;
-
-
++ (instancetype)biologicalViewController:(NSString *)vcName pwd:(NSString *)pwd biologicalViewBlock:(BiologicalViewBlock)block;
 @end
 
 NS_ASSUME_NONNULL_END

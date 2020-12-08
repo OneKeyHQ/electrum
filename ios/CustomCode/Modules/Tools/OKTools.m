@@ -126,7 +126,10 @@
     return [[NSBundle mainBundle] bundleIdentifier];
 }
 
-
+- (NSDecimalNumber *)decimalNumberHandlerWithValue:(NSDecimalNumber *)value roundingMode:(NSRoundingMode)mode scale:(NSInteger)scale {
+    NSDecimalNumberHandler *handler = [NSDecimalNumberHandler decimalNumberHandlerWithRoundingMode:mode scale:scale raiseOnExactness:NO raiseOnOverflow:NO raiseOnUnderflow:NO raiseOnDivideByZero:NO];
+    return [value decimalNumberByRoundingAccordingToBehavior:handler];
+}
 
 - (int)findNumFromStr:(NSString *)string
 {

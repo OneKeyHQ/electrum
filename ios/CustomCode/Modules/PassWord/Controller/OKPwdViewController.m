@@ -239,6 +239,12 @@ typedef enum {
 - (void)passwordInputViewCompleteInput:(CLPasswordInputView *)passwordInputView {
     //NSLog(@"输入完毕");
     if (passwordInputView == self.pwdInputViewFirst) {//第一页输入结束
+        if (_pwdUseType == OKPwdUseTypeUpdatePassword) {
+            id result = [kPyCommandsManager callInterface:kInterfacecheck_password parameter:@{@"password":self.pwdInputViewFirst.text}];
+            if (result == nil) {
+                return;
+            }
+        }
         self.page = 1;
         [self resetViewWithAnimated:YES];
         [self resetPwdViewTips];
@@ -296,7 +302,7 @@ typedef enum {
     [self resetPwdViewTips];
 }
 - (IBAction)nextBtnFirstClick:(UIButton *)sender {
-    if (self.pwdUseType == OKPwdUseTypeInitPassword && _type == PwdTypeLong) {
+    if (_type == PwdTypeLong) {
         if(self.longPwdFirstTextField.text.length < 8 || self.longPwdFirstTextField.text.length > 34) {
             [kTools tipMessage:MyLocalizedString(@"The password length is between 8 and 34 digits", nil)];
             return;
@@ -305,6 +311,14 @@ typedef enum {
             [kTools tipMessage:MyLocalizedString(@"The password cannot contain Chinese", nil)];
             return;
         }
+        
+        if (_pwdUseType == OKPwdUseTypeUpdatePassword) {
+            id result = [kPyCommandsManager callInterface:kInterfacecheck_password parameter:@{@"password":self.longPwdFirstTextField.text}];
+            if (result == nil) {
+                return;
+            }
+        }
+        
         self.page = PageTypeSecond;
         [self resetViewWithAnimated:YES];
         [self resetPwdViewTips];

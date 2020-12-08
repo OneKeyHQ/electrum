@@ -12,7 +12,7 @@
 
 + (instancetype)defaultConfig {
     CLPasswordInputViewConfigure *configure = [[CLPasswordInputViewConfigure alloc] init];
-    configure.squareWidth = 50;
+    configure.squareWidth = SCREEN_WIDTH <= 375 ? 40 : 50;
     configure.passwordNum = 6;
     configure.pointRadius = 18 * 0.5;
     configure.spaceMultiple = 5;

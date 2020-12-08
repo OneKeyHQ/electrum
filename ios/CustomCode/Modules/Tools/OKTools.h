@@ -28,6 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (int)findNumFromStr:(NSString *)string;
 - (BOOL)isJailBreak;
 - (BOOL)isNotchScreen;
+- (NSDecimalNumber *)decimalNumberHandlerWithValue:(NSDecimalNumber *)value roundingMode:(NSRoundingMode)mode scale:(NSInteger)scale;
 @end
 
 NS_ASSUME_NONNULL_END

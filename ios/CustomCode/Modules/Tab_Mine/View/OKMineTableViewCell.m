@@ -16,7 +16,6 @@
 @property (weak, nonatomic) IBOutlet UIImageView *rightArrow;
 @property (weak, nonatomic) IBOutlet UISwitch *rightSwitch;
 - (IBAction)switchClick:(UISwitch *)sender;
-@property (nonatomic,strong)YZAuthID *authIDControl;
 @end
 
 @implementation OKMineTableViewCell
@@ -48,31 +47,10 @@
 
     // Configure the view for the selected state
 }
-- (YZAuthID *)authIDControl {
-    if (!_authIDControl) {
-        _authIDControl = [[YZAuthID alloc] init];
-    }
-    return _authIDControl;
-}
+
 - (IBAction)switchClick:(UISwitch *)sender {
-    
     if ([self.delegate respondsToSelector:@selector(mineTableViewCellModelDelegateSwitch:)]) {
         [self.delegate mineTableViewCellModelDelegateSwitch:sender];
     }
-    [self.authIDControl yz_showAuthIDWithDescribe:MyLocalizedString(@"OenKey request enabled", nil) BlockState:^(YZAuthIDState state, NSError *error) {
-        if (state == YZAuthIDStateNotSupport
-            || state == YZAuthIDStatePasswordNotSet || state == YZAuthIDStateTouchIDNotSet) { // 不支持TouchID/FaceID
-            [kTools tipMessage:MyLocalizedString(@"Does not support FaceID", nil)];
-            [self.rightSwitch setOn:NO];
-        } else if(state == YZAuthIDStateFail) { // 认证失败
-            self.rightSwitch.on = !sender.isOn;
-        } else if(state == YZAuthIDStateTouchIDLockout) {   // 多次错误，已被锁定
-            self.rightSwitch.on = !sender.isOn;
-        } else if (state == YZAuthIDStateSuccess) { // TouchID/FaceID验证成功
-            kWalletManager.isOpenAuthBiological = self.rightSwitch.on;
-        }else{
-            self.rightSwitch.on = !sender.isOn;
-        }
-    }];
 }
 @end

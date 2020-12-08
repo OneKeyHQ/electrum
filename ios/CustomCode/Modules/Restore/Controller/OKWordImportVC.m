@@ -114,7 +114,7 @@
                     OKCreateResultWalletInfoModel *model = [createResultModel.wallet_info firstObject];
                     OKWalletInfoModel *walletInfoModel = [kWalletManager getCurrentWalletAddress:model.name];
                     [kWalletManager setCurrentWalletInfo:walletInfoModel];
-                    OKBiologicalViewController *biologicalVc = [OKBiologicalViewController biologicalViewController:@"OKWalletViewController" biologicalViewBlock:^{
+                    OKBiologicalViewController *biologicalVc = [OKBiologicalViewController biologicalViewController:@"OKWalletViewController" pwd:pwd biologicalViewBlock:^{
                         //创建HD成功刷新首页的UI
                         [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":pwd,@"backupshow":@"1"}];
                     }];
