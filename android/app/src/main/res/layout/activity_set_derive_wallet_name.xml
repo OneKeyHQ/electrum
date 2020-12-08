@@ -53,7 +53,7 @@
         android:textColor="@color/text_two"
         android:textSize="@dimen/sp_14" />
 
-    <org.haobtc.onekey.utils.EmojiEditText
+    <EditText
         android:id="@+id/edit_set_wallet_name"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_60"

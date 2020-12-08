@@ -1,17 +1,19 @@
 package org.haobtc.onekey.onekeys.homepage.process;
 
 import android.Manifest;
-import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.text.TextUtils;
+import android.os.Bundle;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,6 +44,7 @@ import org.haobtc.onekey.utils.ImageUtils;
 import java.io.File;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**
@@ -81,7 +84,9 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
     @BindView(R.id.need_verify_layout)
     LinearLayout needVerifyLayout;
     @BindView(R.id.receive_payment_layout)
-    android.widget.RelativeLayout receivePaymentLayout;
+    RelativeLayout receivePaymentLayout;
+    @BindView(R.id.verify_d)
+    LinearLayout verifyD;
     private RxPermissions rxPermissions;
     private Bitmap bitmap;
     private int walletType;
@@ -128,6 +133,7 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
         }
         if (walletAddressShowUi != null) {
             String strCode = walletAddressShowUi.toString();
+            Log.i("strcode", "mGeneratecode: " + strCode);
             Gson gson = new Gson();
             GetCodeAddressBean getCodeAddressBean = gson.fromJson(strCode, GetCodeAddressBean.class);
             String qrData = getCodeAddressBean.getQrData();
@@ -139,6 +145,8 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
                 case Constant.WALLET_TYPE_SOFTWARE:
                     needVerifyLayout.setVisibility(View.GONE);
                     receivePaymentLayout.setVisibility(View.VISIBLE);
+                    verifyD.setVisibility(View.GONE);
+                    normalLayout.setVisibility(View.VISIBLE);
                     imgOrcode.setImageBitmap(bitmap);
                     imgShareQrcode.setImageBitmap(bitmap);
                     break;
@@ -174,7 +182,7 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
                                         e.printStackTrace();
                                     }
                                     if (shareImg.exists()) {
-                                        Uri uri = Uri.parse(android.provider.MediaStore.Images.Media.insertImage(getContentResolver(),
+                                        Uri uri = Uri.parse(MediaStore.Images.Media.insertImage(getContentResolver(),
                                                 shareImg.getAbsolutePath(), "", null));
                                         Intent shareIntent = new Intent(Intent.ACTION_SEND);
                                         shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
@@ -212,6 +220,7 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
                 address,
                 MyApplication.getInstance().getDeviceWay());
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onChangePin(ChangePinEvent event) {
         // 回写PIN码
@@ -225,19 +234,20 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
                 Intent intent = new Intent(this, VerifyPinActivity.class);
                 startActivity(intent);
                 break;
-                case PyConstant.VERIFY_ADDRESS_CONFIRM:
-                    EventBus.getDefault().post(new ExitEvent());
-                    imgOrcode.setImageBitmap(bitmap);
-                    imgShareQrcode.setImageBitmap(bitmap);
-                    textReceiveAddress.setEms(100);
-                    verifyStart.setVisibility(View.GONE);
-                    verifyPromote.setGravity(Gravity.CENTER);
-                    verifyPromote.setText(R.string.verifying);
+            case PyConstant.VERIFY_ADDRESS_CONFIRM:
+                EventBus.getDefault().post(new ExitEvent());
+                imgOrcode.setImageBitmap(bitmap);
+                imgShareQrcode.setImageBitmap(bitmap);
+                textReceiveAddress.setEms(100);
+                verifyStart.setVisibility(View.GONE);
+                verifyPromote.setGravity(Gravity.CENTER);
+                verifyPromote.setText(R.string.verifying);
 
             default:
         }
     }
-        @Override
+
+    @Override
     public void onPreExecute() {
 
     }
@@ -262,5 +272,12 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
     @Override
     public void currentMethod(String methodName) {
 
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // TODO: add setContentView(...) invocation
+        ButterKnife.bind(this);
     }
 }

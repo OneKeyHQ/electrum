@@ -6,17 +6,22 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.EditText;
 
 import com.chaquo.python.Kwarg;
+import com.chaquo.python.PyObject;
+import com.google.gson.Gson;
 
+import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.bean.CreateWalletBean;
+import org.haobtc.onekey.event.CreateSuccessEvent;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
 import org.haobtc.onekey.onekeys.dialog.SetHDWalletPassActivity;
 import org.haobtc.onekey.onekeys.dialog.SetLongPassActivity;
 import org.haobtc.onekey.utils.Daemon;
-import org.haobtc.onekey.utils.EmojiEditText;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -25,7 +30,7 @@ import butterknife.OnClick;
 public class ImportWalletSetNameActivity extends BaseActivity implements TextWatcher {
 
     @BindView(R.id.edit_set_wallet_name)
-    EmojiEditText editSetWalletName;
+    EditText editSetWalletName;
     private String importHdword;
     private String privateKey;
     private String recoverySeed;
@@ -92,7 +97,10 @@ public class ImportWalletSetNameActivity extends BaseActivity implements TextWat
 
     private void importWallet() {
         try {
-            Daemon.commands.callAttr("create", editSetWalletName.getText().toString(), new Kwarg("addresses", watchAddress));
+            PyObject pyObject = Daemon.commands.callAttr("create", editSetWalletName.getText().toString(), new Kwarg("addresses", watchAddress));
+            CreateWalletBean createWalletBean = new Gson().fromJson(pyObject.toString(), CreateWalletBean.class);
+            EventBus.getDefault().post(new CreateSuccessEvent(createWalletBean.getWalletInfo().get(0).getName()));
+            mIntent(HomeOneKeyActivity.class);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -106,12 +114,7 @@ public class ImportWalletSetNameActivity extends BaseActivity implements TextWat
             } else if (e.getMessage().contains("Please enter the correct address or pubkey")) {
                 mToast(getString(R.string.private_invalid));
             }
-            return;
         }
-        PyEnv.loadLocalWalletInfo(this);
-        edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME, editSetWalletName.getText().toString());
-        edit.apply();
-        mIntent(HomeOneKeyActivity.class);
     }
 
     @Override

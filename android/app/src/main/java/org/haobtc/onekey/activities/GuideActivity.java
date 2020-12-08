@@ -90,8 +90,8 @@ public class GuideActivity extends BaseActivity implements ViewPager.OnPageChang
         edit.apply();
         try {
             Daemon.commands.callAttr("set_currency", "CNY");
-            Daemon.commands.callAttr("set_base_uint", "mBTC");
-            edit.putString("base_unit", "mBTC");
+            Daemon.commands.callAttr("set_base_uint", "BTC");
+            edit.putString("base_unit", "BTC");
             edit.apply();
         } catch (Exception e) {
             e.printStackTrace();

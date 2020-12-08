@@ -295,6 +295,7 @@ public class WalletListActivity extends BaseActivity {
 //        PyObject getWalletsListInfo;
 //        wallet list
         Map<String, ?> wallets = PreferencesManager.getAll(this, Constant.WALLETS);
+        Log.i("walletslist", "getHomeWalletList: "+wallets);
         if (wallets.isEmpty()) {
             reclWalletDetail.setVisibility(View.GONE);
             reclAddWallet.setVisibility(View.GONE);

@@ -30,8 +30,10 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.activities.sign.SignActivity;
 import org.haobtc.onekey.bean.GetCodeAddressBean;
+import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.FixWalletNameEvent;
 import org.haobtc.onekey.event.SecondEvent;
+import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.dialog.SetHDWalletPassActivity;
 import org.haobtc.onekey.onekeys.dialog.SetLongPassActivity;
@@ -252,7 +254,8 @@ public class HdWalletDetailActivity extends BaseActivity {
                 return;
             }
             try {
-                Daemon.commands.callAttr("rename_wallet", textWalletName.getText().toString(), walletName.getText().toString());
+                String keyName = PreferencesManager.get(this, "Preferences", Constant.CURRENT_SELECTED_WALLET_NAME, "").toString();
+                Daemon.commands.callAttr("rename_wallet", keyName, walletName.getText().toString());
             } catch (Exception e) {
                 e.printStackTrace();
                 mToast(e.getMessage());

@@ -2491,7 +2491,7 @@ class AndroidCommands(commands.Commands):
             key = wallet.keystore.seed
             self.update_backup_info(key)
         out = {}
-        wallet_info = [{"coin_type": coin, "address": wallet.__str__()}]
+        wallet_info = [{"coin_type": coin, "name": wallet.__str__()}]
         out['seed'] = new_seed
         out['wallet_info'] = wallet_info
         return json.dumps(out)
@@ -2791,7 +2791,7 @@ class AndroidCommands(commands.Commands):
                     hd_flag = False
 
         derivat_path = bip44_derivation(account_id, purpose, coin=coin_type)
-        self.create(name, password, seed=seed, bip39_derivation=derivat_path, strength=strength, hd=hd_flag, coin=coin)
+        return self.create(name, password, seed=seed, bip39_derivation=derivat_path, strength=strength, hd=hd_flag, coin=coin)
         #derived_info.update_list(account_id)
 
     def recovery_create(self, name, seed, password, bip39_derivation, passphrase='', coin="btc"):

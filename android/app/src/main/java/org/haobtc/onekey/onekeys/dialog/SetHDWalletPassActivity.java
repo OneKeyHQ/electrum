@@ -1,24 +1,29 @@
 package org.haobtc.onekey.onekeys.dialog;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
+import com.google.gson.Gson;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.bean.CreateWalletBean;
 import org.haobtc.onekey.constant.Constant;
+import org.haobtc.onekey.event.CreateSuccessEvent;
 import org.haobtc.onekey.event.FinishEvent;
 import org.haobtc.onekey.event.GotPassEvent;
 import org.haobtc.onekey.event.InputPassSendEvent;
@@ -40,6 +45,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -95,7 +102,23 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
         deleteHdWalletName = getIntent().getStringExtra("deleteHdWalletName");//删除所有hd钱包的名字
         isHaveWallet = PreferencesManager.getAll(this, Constant.WALLETS).isEmpty();
         inits();
+        keyBroad();
+    }
 
+    private void keyBroad() {
+        pwdEdittext.setFocusable(true);
+        pwdEdittext.setFocusableInTouchMode(true);
+        pwdEdittext.requestFocus();
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+                           @Override
+                           public void run() {
+                               InputMethodManager inputManager =
+                                       (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                               inputManager.showSoftInput(pwdEdittext, 0);
+                           }
+                       },
+                200);
     }
 
     private void inits() {
@@ -111,10 +134,8 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
                 typeList.add(key);
             }
         }
-        Log.i("typeListjxmjxm", "inits======: " + isHaveWallet);
-        Log.i("typeListjxmjxm", "inits------: " + typeList);
         if (typeList == null || typeList.size() == 0) {
-            textPageTitle.setText(getString(R.string.create_new_walt));
+            textPageTitle.setText(getString(R.string.set_you_pass));
         } else {
             if ("exportHdword".equals(importHdword) || "backupMnemonic".equals(importHdword) || "exportPrivateKey".equals(importHdword) || "deleteAllWallet".equals(importHdword) || "derive".equals(importHdword) || "single".equals(importHdword) || "importMnemonic".equals(importHdword) || "importPrivateKey".equals(importHdword) || "deleteSingleWallet".equals(importHdword) || "send".equals(importHdword) || "recoveryHdWallet".equals(importHdword)) {
                 checkPassTip();
@@ -230,28 +251,25 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
     }
 
     private void createNewHdWallet() {
-        PyObject createHdWallet = null;
         try {
-            createHdWallet = Daemon.commands.callAttr("create_hd_wallet", pwdEdittext.getText().toString());
+            PyObject createHdWallet = Daemon.commands.callAttr("create_hd_wallet", pwdEdittext.getText().toString());
+            if (createHdWallet != null) {
+                CreateWalletBean createWalletBean = new Gson().fromJson(createHdWallet.toString(), CreateWalletBean.class);
+                EventBus.getDefault().post(new CreateSuccessEvent(createWalletBean.getWalletInfo().get(0).getName()));
+                mIntent(HomeOneKeyActivity.class);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             if (e.getMessage().contains("Incorrect password")) {
                 mToast(getString(R.string.wrong_pass));
             }
-            return;
-        }
-        if (createHdWallet != null) {
-            Intent intent = new Intent(SetHDWalletPassActivity.this, HomeOneKeyActivity.class);
-            startActivity(intent);
-            PyEnv.loadLocalWalletInfo(this);
-//            edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME, "BTC-1");
-            edit.apply();
         }
     }
 
     private void deleteSingleWallet() {
+        String keyName = PreferencesManager.get(this, "Preferences", Constant.CURRENT_SELECTED_WALLET_NAME, "").toString();
         try {
-            Daemon.commands.callAttr("delete_wallet", pwdEdittext.getText().toString(), new Kwarg("name", walletName));
+            Daemon.commands.callAttr("delete_wallet", pwdEdittext.getText().toString(), new Kwarg("name", keyName));
         } catch (Exception e) {
             e.printStackTrace();
             if (e.getMessage().contains("path is exist")) {
@@ -266,7 +284,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
             return;
         }
         mToast(getString(R.string.delete_succse));
-        PreferencesManager.remove(this, Constant.WALLETS, walletName);
+        PreferencesManager.remove(this, Constant.WALLETS, keyName);
         PyEnv.loadLocalWalletInfo(this);
         EventBus.getDefault().post(new LoadOtherWalletEvent());
         EventBus.getDefault().post(new SecondEvent("finish"));
@@ -276,8 +294,10 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
     private void importPrivateKey() {
         //import private key wallet
         try {
-            Daemon.commands.callAttr("create", walletName, pwdEdittext.getText().toString(), new Kwarg("privkeys", privateKey));
-
+            PyObject pyObject = Daemon.commands.callAttr("create", walletName, pwdEdittext.getText().toString(), new Kwarg("privkeys", privateKey));
+            CreateWalletBean createWalletBean = new Gson().fromJson(pyObject.toString(), CreateWalletBean.class);
+            EventBus.getDefault().post(new CreateSuccessEvent(createWalletBean.getWalletInfo().get(0).getName()));
+            mIntent(HomeOneKeyActivity.class);
         } catch (Exception e) {
             e.printStackTrace();
             if (e.getMessage().contains("path is exist")) {
@@ -294,17 +314,15 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
             } else if (e.getMessage().contains("Invalid private")) {
                 mToast(getString(R.string.private_invalid));
             }
-            return;
         }
-        PyEnv.loadLocalWalletInfo(this);
-        edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME, walletName);
-        edit.apply();
-        mIntent(HomeOneKeyActivity.class);
     }
 
     private void importMnemonic() {
         try {
-            Daemon.commands.callAttr("create", walletName, pwdEdittext.getText().toString(), new Kwarg("seed", seed));
+            PyObject pyObject = Daemon.commands.callAttr("create", walletName, pwdEdittext.getText().toString(), new Kwarg("seed", seed));
+            CreateWalletBean createWalletBean = new Gson().fromJson(pyObject.toString(), CreateWalletBean.class);
+            EventBus.getDefault().post(new CreateSuccessEvent(createWalletBean.getWalletInfo().get(0).getName()));
+            mIntent(HomeOneKeyActivity.class);
         } catch (Exception e) {
             e.printStackTrace();
             if (e.getMessage().contains("path is exist")) {
@@ -320,17 +338,16 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
                 mToast(getString(R.string.have_private));
             }
             finish();
-            return;
         }
-        PyEnv.loadLocalWalletInfo(this);
-        edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME, walletName);
-        edit.apply();
-        mIntent(HomeOneKeyActivity.class);
     }
 
     private void createDeriveWallet() {
         try {
-            Daemon.commands.callAttr("create_derived_wallet", walletName, pwdEdittext.getText().toString(), currencyType);
+            PyObject pyObject = Daemon.commands.callAttr("create_derived_wallet", walletName, pwdEdittext.getText().toString(), currencyType);
+            CreateWalletBean createWalletBean = new Gson().fromJson(pyObject.toString(), CreateWalletBean.class);
+            EventBus.getDefault().post(new CreateSuccessEvent(createWalletBean.getWalletInfo().get(0).getName()));
+            mIntent(HomeOneKeyActivity.class);
+            finish();
         } catch (Exception e) {
             if (e.getMessage().contains("Incorrect password")) {
                 mToast(getString(R.string.wrong_pass));
@@ -338,18 +355,16 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
                 mToast(getString(R.string.changemessage));
             }
             e.printStackTrace();
-            return;
         }
-        PyEnv.loadLocalWalletInfo(this);
-        edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME, walletName);
-        edit.apply();
-        mIntent(HomeOneKeyActivity.class);
-        finish();
     }
 
     private void createSingleWallet() {
         try {
-            Daemon.commands.callAttr("create", walletName, pwdEdittext.getText().toString());
+            PyObject pyObject = Daemon.commands.callAttr("create", walletName, pwdEdittext.getText().toString());
+            CreateWalletBean createWalletBean = new Gson().fromJson(pyObject.toString(), CreateWalletBean.class);
+            EventBus.getDefault().post(new CreateSuccessEvent(createWalletBean.getWalletInfo().get(0).getName()));
+            mIntent(HomeOneKeyActivity.class);
+            finish();
         } catch (Exception e) {
             if (e.getMessage().contains("Incorrect password")) {
                 mToast(getString(R.string.wrong_pass));
@@ -357,13 +372,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
                 mToast(getString(R.string.changewalletname));
             }
             e.printStackTrace();
-            return;
         }
-        PyEnv.loadLocalWalletInfo(this);
-        edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME, walletName);
-        edit.apply();
-        mIntent(HomeOneKeyActivity.class);
-        finish();
     }
 
     //recovery Hd Wallet
@@ -384,9 +393,8 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
                     return;
                 }
                 mToast(getString(R.string.not_recovery_wallet));
-                PyEnv.loadLocalWalletInfo(this);
-                edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME, "BTC-1");
-                edit.apply();
+                CreateWalletBean createWalletBean = new Gson().fromJson(pyObject.toString(), CreateWalletBean.class);
+                EventBus.getDefault().post(new CreateSuccessEvent(createWalletBean.getWalletInfo().get(0).getName()));
                 mIntent(HomeOneKeyActivity.class);
                 finish();
             }
@@ -455,6 +463,17 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
     //fix pass
     private void fixHdPass() {
         if (!input) {
+            //原密码是否输入正确
+            try {
+                Daemon.commands.callAttr("check_password", pwdEdittext.getText().toString());
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.i("fixHdPassfixHdPass", "fixHdPass: " + e.getMessage());
+                if (e.getMessage().contains("Incorrect password")) {
+                    mToast(getString(R.string.wrong_pass_next_input));
+                }
+                return;
+            }
             sixPass = pwdEdittext.getText().toString();
             testSetPass.setText(getString(R.string.set_new_pass));
             btnNext.setEnabled(false);

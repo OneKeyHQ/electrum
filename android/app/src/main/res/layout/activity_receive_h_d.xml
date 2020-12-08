@@ -207,6 +207,7 @@
                 android:background="@drawable/laft_gray_tuo"
                 android:visibility="gone">
                 <LinearLayout
+                    android:id="@+id/verify_d"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"

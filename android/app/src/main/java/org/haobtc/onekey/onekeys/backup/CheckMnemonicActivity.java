@@ -23,8 +23,10 @@ import com.chaquo.python.Kwarg;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.BackupEvent;
 import org.haobtc.onekey.event.FinishEvent;
+import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.onekeys.dialog.recovery.ImprotSingleActivity;
 import org.haobtc.onekey.onekeys.homepage.WalletListActivity;
 import org.haobtc.onekey.onekeys.homepage.process.CreateWalletChooseTypeActivity;
@@ -276,9 +278,10 @@ public class CheckMnemonicActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.btn_check:
+                String keyName = PreferencesManager.get(this, "Preferences", Constant.CURRENT_SELECTED_WALLET_NAME, "").toString();
                 if (chooseWord.toString().contains(word1) && chooseWord.toString().contains(word2) && chooseWord.toString().contains(word3)) {
                     try {
-                        Daemon.commands.callAttr("delete_backup_info");
+                        Daemon.commands.callAttr("delete_backup_info", keyName);
                     } catch (Exception e) {
                         e.printStackTrace();
                         return;

@@ -245,10 +245,10 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
                 int cnyUnit = preferences.getInt("cny_unit", 0);
                 switch (cnyUnit) {
                     case 0:
-                        tetAmount.setText(String.format("￥%s", (Strings.isNullOrEmpty(strCny)) ? R.string.zero: strCny));
+                        tetAmount.setText(String.format("￥%s", (Strings.isNullOrEmpty(strCny)) ? R.string.zero : strCny));
                         break;
                     case 1:
-                        tetAmount.setText(String.format("$%s", (Strings.isNullOrEmpty(strCny)) ? R.string.zero: strCny));
+                        tetAmount.setText(String.format("$%s", (Strings.isNullOrEmpty(strCny)) ? R.string.zero : strCny));
                 }
                 textBtcAmount.setText(String.format("%s%s", num, preferences.getString("base_unit", "")));
                 if (!"0".equals(num)) {
@@ -280,14 +280,14 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
             String thisType = nowType.substring(nowType.indexOf("hw-") + 3);
             deviceId = localWalletInfo.getDeviceId();
             // 去除deviceId上的双引号
-            deviceId = deviceId.substring(1, deviceId.length()-1);
+            deviceId = deviceId.substring(1, deviceId.length() - 1);
             String deviceInfo = PreferencesManager.get(getContext(), org.haobtc.onekey.constant.Constant.DEVICES, deviceId, "").toString();
             if (!Strings.isNullOrEmpty(deviceInfo)) {
                 HardwareFeatures info = HardwareFeatures.objectFromData(deviceInfo);
                 String bleName = info.getBleName();
                 String label = info.getLabel();
                 bleMac = PreferencesManager.get(getContext(), org.haobtc.onekey.constant.Constant.BLE_INFO, bleName, "").toString();
-                textHard.setText(Strings.isNullOrEmpty(label)? bleName: label);
+                textHard.setText(Strings.isNullOrEmpty(label) ? bleName : label);
             } else {
                 textHard.setText(deviceId);
             }
@@ -299,7 +299,7 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
 
     private void whetherBackup() {
         try {
-            boolean isBackup = PyEnv.hasBackup(loadWalletName);
+            isBackup = PyEnv.hasBackup(getActivity());
             if (!isBackup) {
                 //no back up
                 relNowBackUp.setVisibility(View.VISIBLE);
@@ -337,6 +337,7 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
             e.printStackTrace();
         }
     }
+
     @SingleClick
     @Override
     public void onClick(View v) {
@@ -472,11 +473,12 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
         if (connectionEx == BleConnectionEx.BLE_CONNECTION_EX_TIMEOUT) {
             Toast.makeText(getContext(), "连接蓝牙设备超时，请确认你的设备是否已开启蓝牙，并在你的旁边", Toast.LENGTH_SHORT).show();
         }
+
     }
 
     /**
      * 删除钱包后选择其他钱包
-     * */
+     */
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     public void event(LoadOtherWalletEvent event) {
         //load other wallet

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
@@ -22,13 +23,16 @@ import androidx.annotation.LayoutRes;
 
 import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
+import com.google.gson.Gson;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.bean.CreateWalletBean;
 import org.haobtc.onekey.constant.Constant;
+import org.haobtc.onekey.event.CreateSuccessEvent;
 import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.event.FinishEvent;
 import org.haobtc.onekey.event.InputPassSendEvent;
@@ -126,7 +130,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
             }
         }
         if (typeList == null || typeList.size() == 0) {
-            textPageTitle.setText(getString(R.string.create_new_walt));
+            textPageTitle.setText(getString(R.string.set_you_pass));
         } else {
             if ("exportHdword".equals(importHdword) || "backupMnemonic".equals(importHdword) || "exportPrivateKey".equals(importHdword) || "deleteAllWallet".equals(importHdword) || "derive".equals(importHdword) || "single".equals(importHdword) || "importMnemonic".equals(importHdword) || "importPrivateKey".equals(importHdword) || "deleteSingleWallet".equals(importHdword) || "send".equals(importHdword) || "exportKeystore".equals(importHdword) || "recoveryHdWallet".equals(importHdword)) {
                 textContent();
@@ -255,28 +259,24 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
         PyObject createHdWallet = null;
         try {
             createHdWallet = Daemon.commands.callAttr("create_hd_wallet", editPass.getText().toString());
+            if (!TextUtils.isEmpty(createHdWallet.toString())) {
+                CreateWalletBean createWalletBean = new Gson().fromJson(createHdWallet.toString(), CreateWalletBean.class);
+                EventBus.getDefault().post(new CreateSuccessEvent(createWalletBean.getWalletInfo().get(0).getName()));
+                mIntent(HomeOneKeyActivity.class);
+                finish();
+            }
         } catch (Exception e) {
             e.printStackTrace();
             if (e.getMessage().contains("Incorrect password")) {
                 mToast(getString(R.string.wrong_pass));
             }
-            return;
-        }
-        if (createHdWallet != null) {
-            Log.i("createHdWallet", "onViewClicked:-- " + createHdWallet);
-            Intent intent = new Intent(SetLongPassActivity.this, HomeOneKeyActivity.class);
-            startActivity(intent);
-            PyEnv.loadLocalWalletInfo(this);
-            edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME, "BTC-1");
-            edit.apply();
-            finish();
-
         }
     }
 
     private void deleteSingleWallet() {
+        String keyName = PreferencesManager.get(this, "Preferences", Constant.CURRENT_SELECTED_WALLET_NAME, "").toString();
         try {
-            Daemon.commands.callAttr("delete_wallet", editPass.getText().toString(), new Kwarg("name", walletName));
+            Daemon.commands.callAttr("delete_wallet", editPass.getText().toString(), new Kwarg("name", keyName));
         } catch (Exception e) {
             e.printStackTrace();
             if (e.getMessage().contains("Incorrect password")) {
@@ -285,7 +285,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
             return;
         }
         mToast(getString(R.string.delete_succse));
-        PreferencesManager.remove(this, Constant.WALLETS, walletName);
+        PreferencesManager.remove(this, Constant.WALLETS, keyName);
         PyEnv.loadLocalWalletInfo(this);
         EventBus.getDefault().post(new LoadOtherWalletEvent());
         EventBus.getDefault().post(new SecondEvent("finish"));
@@ -295,7 +295,10 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
     private void importPrivateKey() {
         //import private key wallet
         try {
-            Daemon.commands.callAttr("create", walletName, editPass.getText().toString(), new Kwarg("privkeys", privateKey));
+            PyObject pyObject = Daemon.commands.callAttr("create", walletName, editPass.getText().toString(), new Kwarg("privkeys", privateKey));
+            CreateWalletBean createWalletBean = new Gson().fromJson(pyObject.toString(), CreateWalletBean.class);
+            EventBus.getDefault().post(new CreateSuccessEvent(createWalletBean.getWalletInfo().get(0).getName()));
+            mIntent(HomeOneKeyActivity.class);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -315,16 +318,15 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
             }
             return;
         }
-        PyEnv.loadLocalWalletInfo(this);
-        edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME, walletName);
-        edit.apply();
-        mIntent(HomeOneKeyActivity.class);
     }
 
     private void importMnemonic() {
         String seed = getIntent().getStringExtra("strNewseed");
         try {
-            Daemon.commands.callAttr("create", walletName, editPass.getText().toString(), new Kwarg("seed", seed));
+            PyObject pyObject = Daemon.commands.callAttr("create", walletName, editPass.getText().toString(), new Kwarg("seed", seed));
+            CreateWalletBean createWalletBean = new Gson().fromJson(pyObject.toString(), CreateWalletBean.class);
+            EventBus.getDefault().post(new CreateSuccessEvent(createWalletBean.getWalletInfo().get(0).getName()));
+            mIntent(HomeOneKeyActivity.class);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -342,15 +344,15 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
             }
             return;
         }
-        PyEnv.loadLocalWalletInfo(this);
-        edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME, walletName);
-        edit.apply();
-        mIntent(HomeOneKeyActivity.class);
     }
 
     private void createDeriveWallet() {
         try {
-            Daemon.commands.callAttr("create_derived_wallet", walletName, editPass.getText().toString(), currencyType);
+            PyObject pyObject = Daemon.commands.callAttr("create_derived_wallet", walletName, editPass.getText().toString(), currencyType);
+            CreateWalletBean createWalletBean = new Gson().fromJson(pyObject.toString(), CreateWalletBean.class);
+            EventBus.getDefault().post(new CreateSuccessEvent(createWalletBean.getWalletInfo().get(0).getName()));
+            mIntent(HomeOneKeyActivity.class);
+            finish();
         } catch (Exception e) {
             if (e.getMessage().contains("Incorrect password")) {
                 mToast(getString(R.string.wrong_pass));
@@ -358,16 +360,15 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
             e.printStackTrace();
             return;
         }
-        PyEnv.loadLocalWalletInfo(this);
-        edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME, walletName);
-        edit.apply();
-        mIntent(HomeOneKeyActivity.class);
-        finish();
     }
 
     private void createSingleWallet() {
         try {
-            Daemon.commands.callAttr("create", walletName, editPass.getText().toString());
+            PyObject pyObject = Daemon.commands.callAttr("create", walletName, editPass.getText().toString());
+            CreateWalletBean createWalletBean = new Gson().fromJson(pyObject.toString(), CreateWalletBean.class);
+            EventBus.getDefault().post(new CreateSuccessEvent(createWalletBean.getWalletInfo().get(0).getName()));
+            mIntent(HomeOneKeyActivity.class);
+            finish();
         } catch (Exception e) {
             if (e.getMessage().contains("Incorrect password")) {
                 mToast(getString(R.string.wrong_pass));
@@ -375,11 +376,6 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
             e.printStackTrace();
             return;
         }
-        PyEnv.loadLocalWalletInfo(this);
-        edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME, walletName);
-        edit.apply();
-        mIntent(HomeOneKeyActivity.class);
-        finish();
     }
 
     private void recoveryHdWallet() {
@@ -399,9 +395,8 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
                     return;
                 }
                 mToast(getString(R.string.not_recovery_wallet));
-                PyEnv.loadLocalWalletInfo(this);
-                edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME, "BTC-1");
-                edit.apply();
+                CreateWalletBean createWalletBean = new Gson().fromJson(pyObject.toString(), CreateWalletBean.class);
+                EventBus.getDefault().post(new CreateSuccessEvent(createWalletBean.getWalletInfo().get(0).getName()));
                 mIntent(HomeOneKeyActivity.class);
                 finish();
             }
@@ -470,6 +465,17 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
 
     private void fixHdPass() {
         if (!input) {
+            //原密码是否输入正确
+            try {
+                Daemon.commands.callAttr("check_password", editPass.getText().toString());
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.i("fixHdPassfixHdPass", "fixHdPass: " + e.getMessage());
+                if (e.getMessage().contains("Incorrect password")) {
+                    mToast(getString(R.string.wrong_pass_next_input));
+                }
+                return;
+            }
             firstPass = editPass.getText().toString();
             testSetPass.setText(getString(R.string.set_new_pass));
             btnNext.setEnabled(false);

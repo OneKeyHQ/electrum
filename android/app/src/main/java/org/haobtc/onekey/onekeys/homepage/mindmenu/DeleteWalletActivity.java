@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -75,6 +77,7 @@ public class DeleteWalletActivity extends BaseActivity implements CompoundButton
         walletName = getIntent().getStringExtra("walletName");
         isBackup = getIntent().getBooleanExtra("isBackup", false);
         deleteWalletType = getIntent().getStringExtra("delete_wallet_type");
+        Log.i("deleteWalletType", "initView: " + deleteWalletType);
         if ("deleteSingleWallet".equals(importHdword)) {
             if (deleteWalletType.contains("watch")) {
                 textTitle.setText(getString(R.string.delete_watch_wallet));
@@ -98,38 +101,48 @@ public class DeleteWalletActivity extends BaseActivity implements CompoundButton
                 finish();
                 break;
             case R.id.btn_forward:
-                if (deleteWalletType.contains("watch") || deleteWalletType.contains("hw")) {
-                    deleteWatchWallet();
+                if (!TextUtils.isEmpty(deleteWalletType)) {
+                    if (deleteWalletType.contains("watch") || deleteWalletType.contains("hw")) {
+                        //删除观察钱包
+                        deleteWatchWallet();
+                    } else {
+                        //删除除观察钱包以外的钱包
+                        deleteOtherWallet();
+                    }
                 } else {
-                    if ("short".equals(preferences.getString("shortOrLongPass", "short"))) {
-                        intent = new Intent(this, SetHDWalletPassActivity.class);
-                    } else {
-                        intent = new Intent(this, SetLongPassActivity.class);
-                    }
-                    if ("deleteSingleWallet".equals(importHdword)) {
-                        if (isBackup) {
-                            intent.putExtra("importHdword", "deleteSingleWallet");
-                            intent.putExtra("walletName", walletName);
-                            startActivity(intent);
-                        } else {
-                            //没备份提示备份
-                            dontBackup(this, R.layout.confrim_delete_hdwallet);
-                        }
-                    } else {
-                        intent.putExtra("importHdword", "deleteAllWallet");
-                        intent.putExtra("deleteHdWalletName", deleteHdWalletName);
-                        startActivity(intent);
-                    }
+                    //删除除观察钱包以外的钱包
+                    deleteOtherWallet();
                 }
-
-
                 break;
         }
     }
 
+    private void deleteOtherWallet() {
+        if ("short".equals(preferences.getString("shortOrLongPass", "short"))) {
+            intent = new Intent(this, SetHDWalletPassActivity.class);
+        } else {
+            intent = new Intent(this, SetLongPassActivity.class);
+        }
+        if ("deleteSingleWallet".equals(importHdword)) {
+            if (isBackup) {
+                intent.putExtra("importHdword", "deleteSingleWallet");
+                intent.putExtra("walletName", walletName);
+                startActivity(intent);
+            } else {
+                //没备份提示备份
+                dontBackup(this, R.layout.confrim_delete_hdwallet);
+            }
+        } else {
+            intent.putExtra("importHdword", "deleteAllWallet");
+            intent.putExtra("deleteHdWalletName", deleteHdWalletName);
+            startActivity(intent);
+        }
+    }
+
     private void deleteWatchWallet() {
+        String keyName = PreferencesManager.get(this, "Preferences", Constant.CURRENT_SELECTED_WALLET_NAME, "").toString();
         try {
-            Daemon.commands.callAttr("delete_wallet", "111111", new Kwarg("name", walletName));
+            Daemon.commands.callAttr("delete_wallet", "111111", new Kwarg("name", keyName));
         } catch (Exception e) {
             e.printStackTrace();
             if (e.getMessage().contains("path is exist")) {

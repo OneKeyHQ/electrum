@@ -79,10 +79,12 @@ public final class PyEnv {
         sCommands.callAttr(PyConstant.LOAD_ALL_WALLET);
         loadLocalWalletInfo(context);
     }
+
     public static void cancelPinInput() {
 
         sCustomerUI.put(PyConstant.USER_CANCEL, 1);
     }
+
     /**
      * 设置硬件回调句柄
      */
@@ -196,7 +198,7 @@ public final class PyEnv {
             return dealWithConnectedDevice(context, HardwareFeatures.objectFromData(feature));
         } catch (Exception e) {
             if (sBle != null) {
-              cancelAll();
+                cancelAll();
             }
             e.printStackTrace();
             throw e;
@@ -229,26 +231,26 @@ public final class PyEnv {
      * 通过xpub创建钱包
      */
     public static String createWallet(BaseActivity activity, String walletName, int m, int n, String xPubs) {
-            String name = null;
-            try {
-                name = sCommands.callAttr(PyConstant.CREATE_WALLET_BY_XPUB, walletName, m, n, xPubs).toString();
-                EventBus.getDefault().post(new CreateSuccessEvent(name));
-                return name;
-            } catch (Exception e) {
-                e.printStackTrace();
-                String message = e.getMessage();
-                assert message != null;
-                if (HardWareExceptions.WALLET_ALREADY_EXIST.getMessage().equals(message)) {
-                    activity.showToast(R.string.changewalletname);
-                } else {
-                    if (message.contains(HardWareExceptions.WALLET_ALREADY_EXIST_1.getMessage())) {
-                        String haveWalletName = message.substring(message.indexOf("name=") + 5);
-                        activity.showToast(activity.getString(R.string.xpub_have_wallet) + haveWalletName);
-                    }
+        String name = null;
+        try {
+            name = sCommands.callAttr(PyConstant.CREATE_WALLET_BY_XPUB, walletName, m, n, xPubs).toString();
+            EventBus.getDefault().post(new CreateSuccessEvent(name));
+            return name;
+        } catch (Exception e) {
+            e.printStackTrace();
+            String message = e.getMessage();
+            assert message != null;
+            if (HardWareExceptions.WALLET_ALREADY_EXIST.getMessage().equals(message)) {
+                activity.showToast(R.string.changewalletname);
+            } else {
+                if (message.contains(HardWareExceptions.WALLET_ALREADY_EXIST_1.getMessage())) {
+                    String haveWalletName = message.substring(message.indexOf("name=") + 5);
+                    activity.showToast(activity.getString(R.string.xpub_have_wallet) + haveWalletName);
                 }
-                activity.finish();
             }
-            return null;
+            activity.finish();
+        }
+        return null;
     }
 
     /**
@@ -256,19 +258,19 @@ public final class PyEnv {
      */
     public static List<BalanceInfo> recoveryWallet(BaseActivity activity, String xPubs, boolean hd) {
         List<BalanceInfo> infos = new ArrayList<>();
-            try {
-                String walletsInfo = sCommands.callAttr(PyConstant.CREATE_WALLET_BY_XPUB, "BTC-1", 1, 1, xPubs, new Kwarg("hd", hd)).toString();
-                if (!Strings.isNullOrEmpty(walletsInfo)) {
-                    JsonArray wallets = JsonParser.parseString(walletsInfo).getAsJsonArray();
-                    wallets.forEach((wallet) -> {
-                        infos.add(BalanceInfo.objectFromData(wallet.toString()));
-                    });
-                }
-                return infos;
-            } catch (Exception e) {
-                activity.showToast(e.getMessage());
-                e.printStackTrace();
+        try {
+            String walletsInfo = sCommands.callAttr(PyConstant.CREATE_WALLET_BY_XPUB, "BTC-1", 1, 1, xPubs, new Kwarg("hd", hd)).toString();
+            if (!Strings.isNullOrEmpty(walletsInfo)) {
+                JsonArray wallets = JsonParser.parseString(walletsInfo).getAsJsonArray();
+                wallets.forEach((wallet) -> {
+                    infos.add(BalanceInfo.objectFromData(wallet.toString()));
+                });
             }
+            return infos;
+        } catch (Exception e) {
+            activity.showToast(e.getMessage());
+            e.printStackTrace();
+        }
         return null;
     }
 
@@ -306,31 +308,35 @@ public final class PyEnv {
     /**
      * 查看当前钱包的备份状态
      */
-    public static boolean hasBackup(String name) {
+
+    public static boolean hasBackup(Context context) {
+        String keyName = PreferencesManager.get(context, "Preferences", Constant.CURRENT_SELECTED_WALLET_NAME, "").toString();
         try {
-            return sCommands.callAttr(PyConstant.HAS_BACKUP, name).toBoolean();
+            return sCommands.callAttr(PyConstant.HAS_BACKUP, keyName).toBoolean();
         } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
     }
+
     /**
      * 校验扩展公钥格式
-     * */
+     */
     public static boolean validateXpub(String xpub) {
         if (Global.guiConsole != null) {
-          return  Global.guiConsole.callAttr(PyConstant.VALIDATE_XPUB, xpub).toBoolean();
+            return Global.guiConsole.callAttr(PyConstant.VALIDATE_XPUB, xpub).toBoolean();
         }
         return false;
     }
+
     public static List<BalanceInfo> createLocalHd(String passwd, String mnemonics) {
         List<BalanceInfo> infos = new ArrayList<>();
         try {
-        String  walletsInfo  = sCommands.callAttr(PyConstant.CREATE_HD_WALLET, passwd, mnemonics).toString();
+            String walletsInfo = sCommands.callAttr(PyConstant.CREATE_HD_WALLET, passwd, mnemonics).toString();
             if (!Strings.isNullOrEmpty(walletsInfo)) {
                 JsonArray wallets = JsonParser.parseString(walletsInfo).getAsJsonArray();
                 wallets.forEach((wallet) -> {
-                   infos.add(BalanceInfo.objectFromData(wallet.toString()));
+                    infos.add(BalanceInfo.objectFromData(wallet.toString()));
                 });
             }
             return infos;
@@ -359,6 +365,7 @@ public final class PyEnv {
         protocol.put(PyConstant.OFFSET, 0);
         protocol.put(PyConstant.PROCESS_REPORTER, null);
     }
+
     public static PyResponse<Void> firmwareUpdate(String path) {
         PyResponse<Void> response = new PyResponse<>();
         try {

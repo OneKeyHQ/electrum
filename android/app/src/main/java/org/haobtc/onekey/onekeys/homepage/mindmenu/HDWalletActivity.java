@@ -169,9 +169,9 @@ public class HDWalletActivity extends BaseActivity {
                 if (type.contains("hd") || type.contains("derived")) {
                     hdWalletList.add(info);
                 }
-                        if ("btc-hd-standard".equals(type)) {
-                         deleteHdWalletName = name;
-                        }
+                if ("btc-hd-standard".equals(type)) {
+                    deleteHdWalletName = name;
+                }
 
             });
             textWalletNum.setText(String.valueOf(hdWalletList.size()));

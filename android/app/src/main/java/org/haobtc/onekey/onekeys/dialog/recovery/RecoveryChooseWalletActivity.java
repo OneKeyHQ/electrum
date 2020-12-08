@@ -10,9 +10,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.Gson;
 
+import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.adapter.RecoveryWalletAdapter;
+import org.haobtc.onekey.bean.CreateWalletBean;
+import org.haobtc.onekey.event.CreateSuccessEvent;
 import org.haobtc.onekey.event.WalletAddressEvent;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
@@ -102,9 +105,9 @@ public class RecoveryChooseWalletActivity extends BaseActivity {
                         e.printStackTrace();
                         return;
                     }
-                    PyEnv.loadLocalWalletInfo(this);
-                    edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME, "BTC-1");
-                    edit.apply();
+
+                    EventBus.getDefault().post(new CreateSuccessEvent("BTC-1"));
+                    mIntent(HomeOneKeyActivity.class);
                     mIntent(HomeOneKeyActivity.class);
                 } else {
                     mToast(getString(R.string.choose_recovery_wallet));
