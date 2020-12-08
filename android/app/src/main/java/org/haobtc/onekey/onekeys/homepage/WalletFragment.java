@@ -23,6 +23,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
@@ -46,6 +47,7 @@ import org.haobtc.onekey.bean.LocalWalletInfo;
 import org.haobtc.onekey.bean.MainSweepcodeBean;
 import org.haobtc.onekey.event.BackupEvent;
 import org.haobtc.onekey.event.BleConnectedEvent;
+import org.haobtc.onekey.event.BleConnectionEx;
 import org.haobtc.onekey.event.FixWalletNameEvent;
 import org.haobtc.onekey.event.LoadOtherWalletEvent;
 import org.haobtc.onekey.event.SecondEvent;
@@ -104,6 +106,7 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
     private ImageView imgScan;
     private String deviceId;
     private String bleMac;
+    private static int currentAction;
 
     @SuppressLint("CommitPrefEdits")
     @Override
@@ -296,7 +299,7 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
 
     private void whetherBackup() {
         try {
-            boolean isBackup = PyEnv.hasBackup();
+            boolean isBackup = PyEnv.hasBackup(loadWalletName);
             if (!isBackup) {
                 //no back up
                 relNowBackUp.setVisibility(View.VISIBLE);
@@ -381,19 +384,9 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
                 startActivity(pair);
                 break;
             case R.id.linear_send:
-                if (Strings.isNullOrEmpty(bleMac)) {
-                    Toast.makeText(getContext(), "未发现设备信息", Toast.LENGTH_SHORT).show();
-                } else {
-                    Intent intent2 = new Intent(getActivity(), SearchDevicesActivity.class);
-                    intent2.putExtra(org.haobtc.onekey.constant.Constant.SEARCH_DEVICE_MODE, org.haobtc.onekey.constant.Constant.SearchDeviceMode.MODE_SIGN_TX);
-                    startActivity(intent2);
-                    BleManager.getInstance(getActivity()).connDevByMac(bleMac);
-                }
-                break;
             case R.id.linear_receive:
-                Intent intent3 = new Intent(getActivity(), ReceiveHDActivity.class);
-                startActivity(intent3);
-                break;
+               deal(v.getId());
+               break;
             case R.id.rel_wallet_detail:
                 Intent intent4 = new Intent(getActivity(), HdWalletDetailActivity.class);
                 intent4.putExtra("hdWalletName", textWalletName.getText().toString());
@@ -422,7 +415,40 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
 
         }
     }
+    private void deal(@IdRes int id) {
+        if (org.haobtc.onekey.constant.Constant.WALLET_TYPE_HARDWARE.equals(nowType)) {
+            currentAction = id;
+            if (Strings.isNullOrEmpty(bleMac)) {
+                Toast.makeText(getContext(), "未发现设备信息", Toast.LENGTH_SHORT).show();
+            } else {
+                Intent intent2 = new Intent(getActivity(), SearchDevicesActivity.class);
+                intent2.putExtra(org.haobtc.onekey.constant.Constant.SEARCH_DEVICE_MODE, org.haobtc.onekey.constant.Constant.SearchDeviceMode.MODE_PREPARE);
+                startActivity(intent2);
+                BleManager.getInstance(getActivity()).connDevByMac(bleMac);
+            }
+            return;
+        }
+        toNext(id);
 
+    }
+    private void toNext(int id) {
+        switch (id) {
+            case R.id.linear_send:
+                Intent intent2 = new Intent(getActivity(), SendHdActivity.class);
+                intent2.putExtra("sendNum", changeBalance);
+                intent2.putExtra("hdWalletName", name);
+                startActivity(intent2);
+                break;
+            case R.id.linear_receive:
+                Intent intent3 = new Intent(getActivity(), ReceiveHDActivity.class);
+                if (org.haobtc.onekey.constant.Constant.WALLET_TYPE_HARDWARE.equals(nowType)) {
+                    intent3.putExtra(org.haobtc.onekey.constant.Constant.WALLET_TYPE, org.haobtc.onekey.constant.Constant.WALLET_TYPE_HARDWARE_);
+                }
+                startActivity(intent3);
+                break;
+            default:
+        }
+    }
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     public void event(SecondEvent updataHint) {
         String msgVote = updataHint.getMsg();
@@ -439,15 +465,15 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onConnected(BleConnectedEvent event) {
-            Intent intent2 = new Intent(getActivity(), SendHdActivity.class);
-            intent2.putExtra("sendNum", changeBalance);
-            intent2.putExtra("hdWalletName", name);
-            startActivity(intent2);
+        toNext(currentAction);
     }
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void fixName(FixWalletNameEvent event) {
-        textWalletName.setText(event.getNewName());
+    @Subscribe
+    public void onConnectionTimeout(BleConnectionEx connectionEx) {
+        if (connectionEx == BleConnectionEx.BLE_CONNECTION_EX_TIMEOUT) {
+            Toast.makeText(getContext(), "连接蓝牙设备超时，请确认你的设备是否已开启蓝牙，并在你的旁边", Toast.LENGTH_SHORT).show();
+        }
     }
+
     /**
      * 删除钱包后选择其他钱包
      * */
@@ -477,6 +503,10 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void fixName(FixWalletNameEvent event) {
+        textWalletName.setText(event.getNewName());
+    }
     public void setValue(String msgVote) {
         try {
             JSONObject jsonObject = new JSONObject(msgVote);

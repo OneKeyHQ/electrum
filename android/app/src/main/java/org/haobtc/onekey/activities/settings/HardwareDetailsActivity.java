@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -28,6 +29,7 @@ import org.haobtc.onekey.asynctask.BusinessAsyncTask;
 import org.haobtc.onekey.bean.UpdateInfo;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.PyConstant;
+import org.haobtc.onekey.event.BleConnectionEx;
 import org.haobtc.onekey.event.ButtonRequestEvent;
 import org.haobtc.onekey.event.ChangePinEvent;
 import org.haobtc.onekey.event.ConnectedEvent;
@@ -47,6 +49,7 @@ import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.ui.activity.CheckXpubActivity;
 import org.haobtc.onekey.ui.activity.ConfirmOnHardWareActivity;
 import org.haobtc.onekey.ui.activity.HardwareUpgradeActivity;
+import org.haobtc.onekey.ui.activity.PinNewActivity;
 import org.haobtc.onekey.ui.activity.ResetDevicePromoteActivity;
 import org.haobtc.onekey.ui.activity.VerifyHardwareActivity;
 import org.haobtc.onekey.ui.activity.VerifyPinActivity;
@@ -297,7 +300,12 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
            default:
        }
     }
-
+    @Subscribe
+    public void onConnectionTimeout(BleConnectionEx connectionEx) {
+        if (connectionEx == BleConnectionEx.BLE_CONNECTION_EX_TIMEOUT) {
+            Toast.makeText(this, "连接蓝牙设备超时，请确认你的设备是否已开启蓝牙，并在你的旁边", Toast.LENGTH_SHORT).show();
+        }
+    }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onChangePin(ChangePinEvent event) {
         // 回写PIN码
@@ -334,11 +342,13 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
 
                 }
                     break;
-                case PyConstant.BUTTON_REQUEST_6:
-                    startActivity(new Intent(this, ConfirmOnHardWareActivity.class));
-                    EventBus.getDefault().post(new ExitEvent());
+            case PyConstant.BUTTON_REQUEST_6:
+                startActivity(new Intent(this, ConfirmOnHardWareActivity.class));
+                EventBus.getDefault().post(new ExitEvent());
+                break;
+            case PyConstant.PIN_NEW_FIRST:
+                startActivity(new Intent(this, PinNewActivity.class));
             default:
-
         }
     }
     @Subscribe(threadMode = ThreadMode.MAIN)

@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.os.Environment;
 import android.view.View;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -25,10 +26,9 @@ public class ImageUtils {
         v.layout(0, 0, v.getMeasuredWidth(), v.getMeasuredHeight());
     }
 
-    public static String viewSaveToImage(View view, String child) {
+    public static File viewSaveToImage(View view, String child) {
         // 把一个View转换成图片
         Bitmap cachebmp = loadBitmapFromView(view);
-
         view.destroyDrawingCache();
         return sharePic(cachebmp, child);
     }
@@ -48,9 +48,16 @@ public class ImageUtils {
     }
 
     //保存在本地并一键分享
-    private static String sharePic(Bitmap cachebmp, String child) {
+    private static File sharePic(Bitmap cachebmp, String child) {
         final File qrImage = new File(Environment.getExternalStorageDirectory(), child + ".jpg");
-        return qrImage.getPath();
+        if (qrImage.exists()) {
+            return qrImage;
+        }
+        try (FileOutputStream outputStream = new FileOutputStream(qrImage)) {
+            cachebmp.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return qrImage;
     }
-
 }

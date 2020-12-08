@@ -81,7 +81,7 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
         mSearchMode = getIntent().getIntExtra(Constant.SEARCH_DEVICE_MODE, Constant.SearchDeviceMode.MODE_PAIR_WALLET_TO_COLD);
         addBleView();
         bleManager = BleManager.getInstance(this);
-        if (mSearchMode != Constant.SearchDeviceMode.MODE_SIGN_TX) {
+        if (mSearchMode != Constant.SearchDeviceMode.MODE_PREPARE) {
             bleManager.initBle();
         }
     }
@@ -102,7 +102,7 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onBleScanStop(BleScanStopEvent event) {
-        if (mSearchMode == Constant.SearchDeviceMode.MODE_SIGN_TX) {
+        if (mSearchMode == Constant.SearchDeviceMode.MODE_PREPARE) {
             return;
         }
         if (mLoadingLayout.getVisibility() != View.GONE) {
@@ -229,7 +229,7 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
                 }
                 finish();
                 break;
-            case Constant.SearchDeviceMode.MODE_SIGN_TX:
+            case Constant.SearchDeviceMode.MODE_PREPARE:
                 EventBus.getDefault().post(new BleConnectedEvent());
                 finish();
                 break;

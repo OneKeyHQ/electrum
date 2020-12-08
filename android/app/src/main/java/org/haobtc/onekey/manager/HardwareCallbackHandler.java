@@ -17,6 +17,7 @@ import static org.haobtc.onekey.constant.PyConstant.BUTTON_REQUEST_9;
 import static org.haobtc.onekey.constant.PyConstant.PASS_PASSPHRASS;
 import static org.haobtc.onekey.constant.PyConstant.PIN_CURRENT;
 import static org.haobtc.onekey.constant.PyConstant.PIN_NEW_FIRST;
+import static org.haobtc.onekey.constant.PyConstant.VERIFY_ADDRESS_CONFIRM;
 
 /**
  * @author liyan
@@ -72,8 +73,12 @@ public class HardwareCallbackHandler extends Handler {
                 EventBus.getDefault().post(new ButtonRequestEvent(BUTTON_REQUEST_6));
             case BUTTON_REQUEST_8:
                 EventBus.getDefault().post(new ButtonRequestEvent(BUTTON_REQUEST_8));
+                break;
 //            case PASS_NEW_PASSPHRASS:
             case PASS_PASSPHRASS:
+                break;
+            case VERIFY_ADDRESS_CONFIRM:
+                EventBus.getDefault().post(new ButtonRequestEvent(VERIFY_ADDRESS_CONFIRM));
                 break;
             default:
         }

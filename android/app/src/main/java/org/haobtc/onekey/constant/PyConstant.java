@@ -76,11 +76,18 @@ public final class PyConstant {
      */
     public static final int PIN_NEW_FIRST = 2;
     /**
-     * 输入passphrass
+     * 设置passphrass
      */
     public static final int PASS_NEW_PASSPHRASS = 6;
-
+    /**
+     * 验证passphrass
+     */
     public static final int PASS_PASSPHRASS = 3;
+
+    /**
+     * 校验地址确认
+     */
+    public static final int VERIFY_ADDRESS_CONFIRM = 10;
     /**
      * xpub 类型
      * */

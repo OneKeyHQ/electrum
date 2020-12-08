@@ -612,15 +612,6 @@ class AndroidCommands(commands.Commands):
             path = self._wallet_path(temp_path)
             wallet_type = "btc-hw-%s-%s" % (self.m, self.n)
             keystores = self.get_keystores_info()
-            print(f"keystores---------------{keystores}")
-            if not hide_type:
-                for key, value in self.local_wallet_info.items():
-                    num = 0
-                    for xpub in keystores:
-                        if value['xpubs'].__contains__(xpub):
-                            num += 1
-                    if num == len(keystores) and value['type'] == wallet_type:
-                        raise BaseException(f"The same xpubs have create wallet, name={key}")
             storage, db = self.wizard.create_storage(path=path, password='', hide_type=hide_type)
         except Exception as e:
             raise BaseException(e)
@@ -641,7 +632,7 @@ class AndroidCommands(commands.Commands):
                 wallet_type = "btc-hw-derived-%s-%s" % (self.m, self.n)
 
             if not hide_type:
-                self.update_local_wallet_info(self.get_unique_path(wallet), wallet_type, keystores)
+                self.update_local_wallet_info(self.get_unique_path(wallet), wallet_type)
             self.wallet = wallet
             self.wallet_name = wallet.basename()
             print("console:create_multi_wallet:wallet_name = %s---------" % self.wallet_name)
@@ -1832,7 +1823,7 @@ class AndroidCommands(commands.Commands):
         # else:
         #     return -1
 
-    def show_address(self, address, path='android_usb'):
+    def show_address(self, address, path='android_usb') -> str:
         '''
         Verify address on hardware
         :param address: address as str
@@ -1842,6 +1833,7 @@ class AndroidCommands(commands.Commands):
         try:
             plugin = self.plugin.get_plugin("trezor")
             plugin.show_address(path=path, ui=CustomerUI(), wallet=self.wallet, address=address)
+            return "1"
         except Exception as e:
             raise BaseException(e)
 
@@ -2214,7 +2206,7 @@ class AndroidCommands(commands.Commands):
         else:
             return self.get_wallet_by_name(name)
 
-    def get_backup_info(self, name=None):
+    def get_backup_info(self, name):
         '''
         Get backup status
         :return: True/False as bool

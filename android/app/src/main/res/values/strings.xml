@@ -1291,4 +1291,8 @@
     <string name="uploading_hardware_and_wait">固件下载中，请耐心等待</string>
     <string name="verify_failed_network">连接Onekey\n\n认证服务器失败\n\n请查看你的网络</string>
     <string name="verify_failed_hide_hardware">未能从你的硬件设备中获取签名信息</string>
+    <string name="verify">已核对</string>
+    <string name="verify_address_begin">开始核对</string>
+    <string name="verify_promote">准备好硬件钱包以核对地址</string>
+    <string name="verifying">"硬件钱包核对中 "</string>
 </resources>

@@ -46,7 +46,6 @@ public class GuidanceActivity extends BaseActivity implements CompoundButton.OnC
 
     @Override
     public void initData() {
-//        loadAllWallets();
         set();
 
     }
@@ -95,13 +94,6 @@ public class GuidanceActivity extends BaseActivity implements CompoundButton.OnC
         edit.apply();
     }
 
-    private void loadAllWallets() {
-        try {
-            Daemon.commands.callAttr("load_all_wallet");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     @OnClick({R.id.text_user1, R.id.btn_begin, R.id.text_user2})
     public void onViewClicked(View view) {
@@ -123,6 +115,7 @@ public class GuidanceActivity extends BaseActivity implements CompoundButton.OnC
                     edit.putBoolean("is_first_run", true);
                     edit.apply();
                     mIntent(HomeOneKeyActivity.class);
+                    finish();
                 } else {
                     mToast(getString(R.string.agree_user));
                 }

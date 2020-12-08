@@ -25,9 +25,12 @@ import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
+import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.PyConstant;
+import org.haobtc.onekey.event.BleConnectionEx;
 import org.haobtc.onekey.event.BleScanStopEvent;
+import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.event.NotifySuccessfulEvent;
 import org.haobtc.onekey.utils.CommonUtils;
 
@@ -185,7 +188,6 @@ public final class BleManager {
      */
     public void connDevByMac(String device) {
         disconnectAllOther(device);
-        System.out.println("========111111" + Ble.getInstance().getConnetedDevices().size());
         if (Ble.getInstance().getConnetedDevices().isEmpty()) {
             Ble.getInstance().connect(device, mConnectCallback);
         } else {
@@ -211,13 +213,16 @@ public final class BleManager {
         @Override
         public void onConnectException(BleDevice device, int errorCode) {
             super.onConnectException(device, errorCode);
-
+            Toast.makeText(MyApplication.getInstance(), "蓝牙链接异常",Toast.LENGTH_SHORT).show();
+            EventBus.getDefault().post(BleConnectionEx.BLE_CONNECTION_EX_OTHERS);
+            EventBus.getDefault().post(new ExitEvent());
+            PyEnv.cancelAll();
         }
 
         @Override
         public void onConnectTimeOut(BleDevice device) {
             super.onConnectTimeOut(device);
-
+            EventBus.getDefault().post(BleConnectionEx.BLE_CONNECTION_EX_TIMEOUT);
         }
     };
 

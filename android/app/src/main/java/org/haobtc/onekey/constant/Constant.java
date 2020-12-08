@@ -152,6 +152,11 @@ public final class Constant {
      * 升级文件名称
      * */
     public static final String UPDATE_FILE_NAME = "onekey-";
+    /**
+     * 钱包类型TAG
+     * */
+    public static final String WALLET_TYPE = "wallet_type";
+
     public static class SearchDeviceMode{
         /**
          * 通过硬件恢复 HD 钱包
@@ -176,7 +181,7 @@ public final class Constant {
         /**
          * 个人签名
          * */
-        public static final int MODE_SIGN_TX = 6;
+        public static final int MODE_PREPARE = 6;
     }
     public static final String OPERATE_TYPE = "operate_type";
 
@@ -221,5 +226,12 @@ public final class Constant {
      * 当前选择钱包类型
      * */
     public static final String CURRENT_SELECTED_WALLET_TYPE = "current_selected_wallet_type";
-
+    /**
+     * 由软件创建
+     * */
+    public static final int WALLET_TYPE_SOFTWARE = 0;
+    /**
+     * 由OneKey创建
+     * */
+    public static final int WALLET_TYPE_HARDWARE_ = 1;
 }

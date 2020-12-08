@@ -19,7 +19,7 @@
         android:text="输入设备原 PIN 码\n
 以继续"
         android:textColor="#142A3B"
-        android:textSize="30sp" />
+        android:textSize="20sp" />
 
     <LinearLayout
         android:layout_width="match_parent"

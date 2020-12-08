@@ -306,9 +306,9 @@ public final class PyEnv {
     /**
      * 查看当前钱包的备份状态
      */
-    public static boolean hasBackup() {
+    public static boolean hasBackup(String name) {
         try {
-            return sCommands.callAttr(PyConstant.HAS_BACKUP).toBoolean();
+            return sCommands.callAttr(PyConstant.HAS_BACKUP, name).toBoolean();
         } catch (Exception e) {
             e.printStackTrace();
         }
