@@ -1216,9 +1216,9 @@ class WalletDB(JsonDB):
             self._write(storage)
 
     def _write(self, storage: 'WalletStorage'):
-        if threading.currentThread().isDaemon():
-            self.logger.warning('daemon thread cannot write db')
-            return
+        # if threading.currentThread().isDaemon():
+        #     self.logger.warning('daemon thread cannot write db')
+        #     return
         if not self.modified():
             return
         storage.write(self.dump())

@@ -132,7 +132,7 @@ class MutiBase(Logger):
             except Exception as e:
                 raise e
         else:
-            raise Exception("invaild type of xpub")
+            raise BaseException(_("Unavailable xpub"))
 
     def on_restore_seed(self, seed, is_bip39, is_ext):
         self.seed_type = 'bip39' if is_bip39 else mnemonic.seed_type(seed)
