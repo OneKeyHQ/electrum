@@ -41,14 +41,21 @@ jobs:
       script:
         # Output something every minute or Travis kills the job
         - while sleep 60; do echo "=====[ $SECONDS seconds still running ]====="; done &
-        - sudo docker run --rm -it --name electrum-android-native-builder-cont -v $PWD:/data 
-          --workdir=/data/android lightningcn/electrum_env:latest /bin/bash -c 
-          'cp debug.keystore ~/.android/debug.keystore && /data/android/gradlew app:assembleDebug'
+        - if [ $TRAVIS_PULL_REQUEST == false ]; then
+            openssl aes-256-cbc -K $encrypted_0712df971a99_key -iv $encrypted_0712df971a99_iv
+             -in android/local.properties.enc -out android/local.properties -d;
+            sudo docker run --rm -it --name electrum-android-native-builder-cont -v $PWD:/data 
+            --workdir=/data/android lightningcn/electrum_env:latest /bin/bash -c 
+            'cp debug.keystore ~/.android/debug.keystore && /data/android/gradlew app:assembleDebug';
+          else
+            sudo docker run --rm -it --name electrum-android-native-builder-cont -v $PWD:/data 
+            --workdir=/data/android lightningcn/electrum_env:latest /bin/bash -c 
+            'cp ~/android/local.properties local.properties && cp debug.keystore ~/.android/debug.keystore && /data/android/gradlew app:assembleDebug';
+          fi
         # kill background sleep loop
         - kill %1
         - ls -la android/app/build/outputs/apk/RegTest/debug
         - if [ $(ls android/app/build/outputs/apk/RegTest/debug/ | grep -c bixin-*) -eq 0 ]; then exit 1; fi
-      after_success: true 
 
 branches:
   except:
@@ -95,6 +102,6 @@ after_deploy:
 notifications:
   slack:
     rooms:
-      secure: "nrnITD4YjeHjYQmE4BM+543Mt9eBZEuUT8Tn+IiQ/YoW5VDvmVq5Ry98cvWeXKlxn/4U07HP9RniyT01uARoE6VS1xTyVtmohXY8I1egZVD2xssrsQuOvvv3tN1Bz4W5GU+JOnltw6WkT7599xkdzOavBEK8Js72PXThheaDqS72yYjZlKtmssaW2ETjDKKXfyd36CmgCH0YtLbAT+i0/V1dx9Qh3+uVs8A19CU8XW8HuW19mkZ7ViXhSw8/UGfJi/fihQeyDYAulWS5z1pjZyfR8u0ePBI832uElvKDWevGBc/ARlWkD6YB1D90ocsBGLb3YP4UO0V2jmP5fCWaQXsu7hdYmYdN3cjzAADGKDAMiR3vnm3Q766DL8GH82ClbrDETcATEj/5K9UfmyoHgodbOmQvn1VDrNrhr1Fa481PN6psBM+WrXlsmuBxZV+lfchd8pkKBL3W4L6DMoAmgR2W1gDjeWj/CKzryTUF/COVtXTtSJa83bjRKo6HiKcdPqNTOTRlyXOtvuc011yRopAvZNBLE0mFhm835TGuCrEK7DcJKTMUMNl+EucbrSPvRLzStENxAsuQ27DtRwXklFx7GHbtqYH6wc8+hWRU4T9UpfC1UNatUXRBC6YBmBTarJ9h8clxn7TerkLLgLj9SCXpTW8MH0kqr+udp3VWJng="
+      secure: PwqMTo28uqUK3IW4IIY9pO+qpwSKX1XePU4ZODx8zDTxfzsMCw7DcLF8ydWRo+DxU+rGALmQSzcDAdVGyIg4MTch6W/1eLbWrd1xIljUbqoSV0DNFTeYZmu2u+hV93FgI4FPQqvUU6vVRGaF9KqqKhRom5C1+sRcNpyanMeh7KR0nWMJr0NW8DTAlnbZLSDhx8kVnrOTLnZG/9bQ3TCfvJK3vDWBq1M1yJe09thnJp3oWPXWKkhYNoJAbgft2X+QAsSuZlAF43wB5WjvD2/MLn1JvXNsRHfEWAlvmsj1Sym1jrfc4Qlqdocx2tV2uuoyvTDnjYTr2+tK6NopuSTqk7jOg9M7SfXBeqyilaoRe2iyaZBkEUb4J/Tb3igo1hIiDSEXLE3WofiapeZ/aCKYoI7685PG8XSM0SK/iYFruJdR6xShJmIhbEgMba8XlGVH9xKuaOHXuhVWpfnHgzHHd5eulPdsXXZAOtX0saFKwKJvHjo7hEUUmfBakaKpuGzLQhb7u071Z34vwymTVoJkl19wnv61Bcm881rdaZyqdqNolF1XItv3sWmTBQbgEiDmiTQN3XHfIHhS1oEmzxLVU1qRyyYKNZhtwkgqqU+bo3WwlBYDXO5/ejekjsBstEpbd9mQgGzsWh95B+g5xaYynGgk1z4DqANpOrleIWFi5hU=
   on_success: change  # change: send a notification when the build status changes.
   on_failure: always  # always: always send a notification.
