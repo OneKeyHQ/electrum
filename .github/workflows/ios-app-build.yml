@@ -20,7 +20,7 @@ jobs:
       PROJECT_SCHEME: OneKey
       PROJECT_CONFIGURATION: Debug
       CODE_SIGN_IDENTITY: "iPhone Developer"
-      UUID_PROVISION: 9ec95d41-5005-4176-aed0-ace1746b9b6c
+      UUID_PROVISION: 594dc461-e2b4-411a-ae51-6a5faba4462d
       CODE_SIGN_STYLE: Manual
       DEVELOPMENT_TEAM: 6M2QF4T7XG
       PUBLISH_IPA: false
