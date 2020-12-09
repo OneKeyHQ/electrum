@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
@@ -98,6 +99,7 @@ public class ImportWalletSetNameActivity extends BaseActivity implements TextWat
     private void importWallet() {
         try {
             PyObject pyObject = Daemon.commands.callAttr("create", editSetWalletName.getText().toString(), new Kwarg("addresses", watchAddress));
+            Log.i("pyObjectpyObjectpyObject", "importWallet: "+pyObject);
             CreateWalletBean createWalletBean = new Gson().fromJson(pyObject.toString(), CreateWalletBean.class);
             EventBus.getDefault().post(new CreateSuccessEvent(createWalletBean.getWalletInfo().get(0).getName()));
             mIntent(HomeOneKeyActivity.class);

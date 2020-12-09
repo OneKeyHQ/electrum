@@ -1,24 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/dp_86"
+    android:layout_height="@dimen/dp_96"
     android:background="@drawable/home_bg_onekey">
 
     <RelativeLayout
         android:id="@+id/RelativeLayout"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_50"
+        android:layout_height="@dimen/dp_60"
         android:layout_marginTop="@dimen/dp_36"
         android:background="@drawable/white_title_bg">
 
         <ImageView
             android:id="@+id/img_back"
-            android:layout_width="@dimen/dp_40"
-            android:layout_height="@dimen/dp_40"
+            android:layout_width="@dimen/dp_44"
+            android:layout_height="@dimen/dp_44"
             android:layout_centerVertical="true"
-            android:padding="@dimen/dp_8"
-            android:src="@drawable/left_arrow"
-            android:layout_marginLeft="@dimen/dp_20"/>
+            android:layout_marginStart="@dimen/dp_10"
+            android:src="@drawable/left_arrow" />
 
         <TextView
             android:id="@+id/title"

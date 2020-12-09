@@ -153,7 +153,7 @@ public class DeleteWalletActivity extends BaseActivity implements CompoundButton
             return;
         }
         mToast(getString(R.string.delete_succse));
-        PreferencesManager.remove(this, Constant.WALLETS, walletName);
+        PreferencesManager.remove(this, Constant.WALLETS, keyName);
         PyEnv.loadLocalWalletInfo(this);
         EventBus.getDefault().post(new LoadOtherWalletEvent());
         EventBus.getDefault().post(new SecondEvent("finish"));

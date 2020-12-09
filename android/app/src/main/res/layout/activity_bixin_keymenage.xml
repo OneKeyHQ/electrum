@@ -17,15 +17,15 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_50"
+            android:layout_height="@dimen/dp_70"
             android:background="@color/button_bk_ddake">
 
             <ImageView
                 android:id="@+id/img_back"
-                android:layout_width="@dimen/dp_40"
-                android:layout_height="@dimen/dp_40"
-                android:layout_centerVertical="true"
-                android:padding="@dimen/dp_8"
+                android:layout_width="@dimen/dp_44"
+                android:layout_marginTop="@dimen/dp_15"
+                android:layout_height="@dimen/dp_44"
+                android:layout_marginStart="@dimen/dp_10"
                 android:src="@drawable/left_arrow" />
 
             <TextView
@@ -33,7 +33,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
-                android:layout_gravity="center"
+                android:layout_gravity="center_horizontal"
                 android:fontFamily="sans-serif-medium"
                 android:text="@string/all_device"
                 android:textColor="@color/text"

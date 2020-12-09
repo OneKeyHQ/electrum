@@ -11,15 +11,15 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_50"
-        android:layout_marginTop="@dimen/dp_20">
+        android:layout_height="@dimen/dp_60"
+        android:layout_marginTop="@dimen/dp_10">
 
         <ImageView
             android:id="@+id/img_back"
-            android:layout_width="@dimen/dp_40"
-            android:layout_height="@dimen/dp_40"
+            android:layout_width="@dimen/dp_44"
+            android:layout_height="@dimen/dp_44"
             android:layout_centerVertical="true"
-            android:padding="@dimen/dp_8"
+            android:layout_marginStart="@dimen/dp_10"
             android:src="@drawable/left_arrow" />
 
         <TextView
@@ -77,11 +77,11 @@
                 android:layout_width="@dimen/dp_20"
                 android:layout_height="@dimen/dp_20"
                 android:layout_alignParentEnd="true"
-                android:enabled="false"
                 android:layout_centerVertical="true"
                 android:background="@drawable/circle_checkbox"
                 android:button="@null"
-                android:checked="true" />
+                android:checked="true"
+                android:enabled="false" />
         </RelativeLayout>
 
         <View
@@ -116,10 +116,10 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:layout_gravity="center_vertical|end"
-                android:enabled="false"
                 android:background="@drawable/circle_checkbox"
                 android:button="@null"
-                android:checked="false" />
+                android:checked="false"
+                android:enabled="false" />
         </RelativeLayout>
 
         <View
@@ -152,13 +152,13 @@
                 android:id="@+id/usb"
                 android:layout_width="@dimen/dp_20"
                 android:layout_height="@dimen/dp_20"
-                android:enabled="false"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:layout_gravity="center_vertical|end"
                 android:background="@drawable/circle_checkbox"
                 android:button="@null"
-                android:checked="false" />
+                android:checked="false"
+                android:enabled="false" />
         </RelativeLayout>
 
     </LinearLayout>

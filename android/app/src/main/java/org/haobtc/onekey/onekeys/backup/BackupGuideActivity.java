@@ -101,10 +101,15 @@ public class BackupGuideActivity extends BaseActivity {
                 }
                 break;
             case R.id.lin_backup_hardware:
-                Intent intent = new Intent(BackupGuideActivity.this, SetHDWalletPassActivity.class);
-                intent.putExtra("importHdword", "backupMnemonic");
-                intent.putExtra(Constant.OPERATE_TYPE, Constant.EXPORT_DESTINATIONS);
-                startActivity(intent);
+                Intent intent1;
+                if ("short".equals(preferences.getString("shortOrLongPass", "short"))) {
+                    intent1 = new Intent(BackupGuideActivity.this, SetHDWalletPassActivity.class);
+                } else {
+                    intent1 = new Intent(BackupGuideActivity.this, SetLongPassActivity.class);
+                }
+                intent1.putExtra("importHdword", "backupMnemonic");
+                intent1.putExtra(Constant.OPERATE_TYPE, Constant.EXPORT_DESTINATIONS);
+                startActivity(intent1);
                 break;
         }
     }
@@ -141,10 +146,12 @@ public class BackupGuideActivity extends BaseActivity {
     public void onFinish(FinishEvent event) {
         finish();
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onFinish(ExitEvent event) {
         finish();
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();

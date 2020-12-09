@@ -3,7 +3,9 @@ package org.haobtc.onekey.onekeys;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
@@ -23,8 +25,9 @@ public class GuidanceActivity extends BaseActivity implements CompoundButton.OnC
 
     @BindView(R.id.checkbox_ok)
     CheckBox checkboxOk;
+    @BindView(R.id.btn_begin)
+    Button btnBegin;
     private SharedPreferences.Editor edit;
-    private boolean isAgree = false;
 
     @Override
     public int getLayoutId() {
@@ -111,14 +114,10 @@ public class GuidanceActivity extends BaseActivity implements CompoundButton.OnC
                 startActivity(intent1);
                 break;
             case R.id.btn_begin:
-                if (isAgree) {
-                    edit.putBoolean("is_first_run", true);
-                    edit.apply();
-                    mIntent(HomeOneKeyActivity.class);
-                    finish();
-                } else {
-                    mToast(getString(R.string.agree_user));
-                }
+                edit.putBoolean("is_first_run", true);
+                edit.apply();
+                mIntent(HomeOneKeyActivity.class);
+                finish();
                 break;
             default:
         }
@@ -127,9 +126,11 @@ public class GuidanceActivity extends BaseActivity implements CompoundButton.OnC
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         if (isChecked) {
-            isAgree = true;
+            btnBegin.setBackground(getDrawable(R.drawable.btn_checked));
+            btnBegin.setEnabled(true);
         } else {
-            isAgree = false;
+            btnBegin.setBackground(getDrawable(R.drawable.btn_no_check));
+            btnBegin.setEnabled(false);
         }
     }
 }

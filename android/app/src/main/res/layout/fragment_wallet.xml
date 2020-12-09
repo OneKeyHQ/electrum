@@ -82,7 +82,7 @@
                 android:layout_marginTop="23dp"
                 android:layout_marginEnd="@dimen/dp_20"
                 android:orientation="vertical"
-                android:visibility="gone">
+                android:visibility="visible">
 
                 <RelativeLayout
                     android:id="@+id/rel_create_hd"
@@ -96,7 +96,7 @@
                         android:layout_height="@dimen/dp_40"
                         android:layout_marginStart="@dimen/dp_24"
                         android:layout_marginTop="32dp"
-                        android:src="@drawable/add_white" />
+                        android:src="@drawable/add_hd_wallet" />
 
                     <TextView
                         android:id="@+id/textView1"
@@ -204,7 +204,7 @@
                         android:layout_height="@dimen/line_hight"
                         android:layout_marginStart="27dp"
                         android:layout_marginEnd="@dimen/dp_24"
-                        android:background="@color/button_bk_ddake" />
+                        android:background="#33FFFFFF" />
 
                     <RelativeLayout
                         android:id="@+id/rel_pair_hard"
@@ -301,9 +301,9 @@
                     <RelativeLayout
                         android:id="@+id/RelativeLayout11"
                         android:layout_width="wrap_content"
-                        android:layout_marginEnd="@dimen/dp_46"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/dp_60">
+                        android:layout_marginTop="@dimen/dp_60"
+                        android:layout_marginEnd="@dimen/dp_46">
 
                         <TextView
                             android:id="@+id/text_amount"
@@ -415,12 +415,12 @@
                     <LinearLayout
                         android:id="@+id/linear_sign"
                         android:layout_width="0dp"
-                        android:visibility="gone"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:clickable="true"
                         android:gravity="center"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:visibility="gone">
 
                         <TextView
                             android:layout_width="wrap_content"

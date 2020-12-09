@@ -157,13 +157,14 @@
             <Button
                 android:id="@+id/btn_begin"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/dp_50"
+                android:layout_height="@dimen/dp_60"
                 android:layout_below="@+id/relatilayout3"
                 android:layout_marginStart="34dp"
                 android:layout_marginTop="@dimen/dp_24"
+                android:enabled="false"
                 android:layout_marginEnd="34dp"
                 android:layout_marginBottom="@dimen/dp_50"
-                android:background="@drawable/green_tuo"
+                android:background="@drawable/btn_no_check"
                 android:text="@string/begin_use"
                 android:textColor="@color/button_bk_ddake"
                 android:textSize="@dimen/sp_20" />

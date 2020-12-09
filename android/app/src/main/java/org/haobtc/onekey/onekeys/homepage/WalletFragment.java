@@ -353,7 +353,7 @@ public class WalletFragment extends BaseFragment implements CompoundButton.OnChe
             case R.id.linear_send:
                 Intent intent2 = new Intent(getActivity(), SendHdActivity.class);
                 intent2.putExtra("sendNum", changeBalance);
-                intent2.putExtra("hdWalletName", name);
+                intent2.putExtra("hdWalletName", textWalletName.getText().toString());
                 startActivity(intent2);
                 break;
             case R.id.linear_receive:
@@ -361,6 +361,7 @@ public class WalletFragment extends BaseFragment implements CompoundButton.OnChe
                 if (org.haobtc.onekey.constant.Constant.WALLET_TYPE_HARDWARE.equals(nowType)) {
                     intent3.putExtra(org.haobtc.onekey.constant.Constant.WALLET_TYPE, org.haobtc.onekey.constant.Constant.WALLET_TYPE_HARDWARE_);
                 }
+                Log.i("nowTypejxm", "toNext: " + nowType);
                 startActivity(intent3);
                 break;
             case R.id.linear_sign:
@@ -574,7 +575,6 @@ public class WalletFragment extends BaseFragment implements CompoundButton.OnChe
                         }).dispose();
                 break;
             case R.id.img_Add:
-                break;
             case R.id.rel_create_hd:
                 if ("short".equals(preferences.getString("shortOrLongPass", "short"))) {
                     Intent intent0 = new Intent(getActivity(), SetHDWalletPassActivity.class);

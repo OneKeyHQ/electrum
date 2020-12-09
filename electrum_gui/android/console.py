@@ -649,8 +649,8 @@ class AndroidCommands(commands.Commands):
                 self.label_plugin.create_wallet(self.wallet, wallet_type, wallet_name)
         self.wizard = None
         wallet_info = CreateWalletInfo.create_wallet_info(coin_type=coin, name=self.wallet_name)
-        self.get_create_info_by_json(wallet_info)
-        return self.wallet_name
+        out = self.get_create_info_by_json(wallet_info)
+        return json.dumps(out)
 
     def pull_tx_infos(self):
         '''
@@ -2513,7 +2513,7 @@ class AndroidCommands(commands.Commands):
         if new_seed != '':
             key = wallet.keystore.xpub
             self.update_backup_info(key)
-        wallet_info = CreateWalletInfo.create_wallet_info(coin_type=coin, name=name)
+        wallet_info = CreateWalletInfo.create_wallet_info(coin_type=coin, name=wallet.__str__())
         out = self.get_create_info_by_json(new_seed, wallet_info)
         return json.dumps(out)
 

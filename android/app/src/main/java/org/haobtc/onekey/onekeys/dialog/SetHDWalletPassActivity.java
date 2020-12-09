@@ -22,6 +22,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.bean.CreateWalletBean;
+import org.haobtc.onekey.bean.LocalWalletInfo;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.CreateSuccessEvent;
 import org.haobtc.onekey.event.FinishEvent;
@@ -78,7 +79,6 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
     private String privateKey;
     private String operateType;
     private String deleteHdWalletName;
-    private boolean isHaveWallet;
     private SharedPreferences preferences;
     private ArrayList<String> typeList;
 
@@ -100,7 +100,6 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
         privateKey = getIntent().getStringExtra("privateKey");
         operateType = getIntent().getStringExtra(Constant.OPERATE_TYPE);
         deleteHdWalletName = getIntent().getStringExtra("deleteHdWalletName");//删除所有hd钱包的名字
-        isHaveWallet = PreferencesManager.getAll(this, Constant.WALLETS).isEmpty();
         inits();
         keyBroad();
     }
@@ -124,16 +123,15 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
     private void inits() {
         typeList = new ArrayList<>();
         Map<String, ?> jsonToMap = PreferencesManager.getAll(this, Constant.WALLETS);
-        Set keySets = jsonToMap.keySet();
-        Iterator ki = keySets.iterator();
-        while (ki.hasNext()) {
-            //get key
-            String key = (String) ki.next();
-            String type = jsonToMap.get(key).toString();
+        jsonToMap.entrySet().forEach(stringEntry -> {
+            LocalWalletInfo info = LocalWalletInfo.objectFromData(stringEntry.getValue().toString());
+            String type = info.getType();
+            String label = info.getLabel();
             if (!type.contains("hw") && !"btc-watch-standard".equals(type)) {
-                typeList.add(key);
+                typeList.add(label);
             }
-        }
+        });
+
         if (typeList == null || typeList.size() == 0) {
             textPageTitle.setText(getString(R.string.set_you_pass));
         } else {
@@ -361,6 +359,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
     private void createSingleWallet() {
         try {
             PyObject pyObject = Daemon.commands.callAttr("create", walletName, pwdEdittext.getText().toString());
+            Log.i("pyObjectpyObjectpyObject", "importWallet--: "+pyObject);
             CreateWalletBean createWalletBean = new Gson().fromJson(pyObject.toString(), CreateWalletBean.class);
             EventBus.getDefault().post(new CreateSuccessEvent(createWalletBean.getWalletInfo().get(0).getName()));
             mIntent(HomeOneKeyActivity.class);

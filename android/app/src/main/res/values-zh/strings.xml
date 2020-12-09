@@ -871,8 +871,6 @@
     <string name="recovery_hd">恢复 HD 钱包</string>
     <string name="word_recovery">通过助记词恢复</string>
     <string name="pair_hard">配对硬件钱包</string>
-    <string name="support_bixinkey">支持 BixinKey</string>
-    <string name="agree_user">请同意用户协议及隐私政策！</string>
     <string name="encryption">端到端加密</string>
     <string name="encryption_tip">我们采用业内先进的加密技术将信息储存在本地。只有您能解密信息，我们不会也无法查看、使用或出售任何您的数据。</string>
     <string name="only_you">只有您可以解锁自己的钱包</string>
@@ -1235,5 +1233,9 @@
     <string name="verify_address_begin">开始核对</string>
     <string name="verify_promote">准备好硬件钱包以核对地址</string>
     <string name="verifying">"硬件钱包核对中 "</string>
+    <string name="set_device_name">设置设备名称</string>
+    <string name="support_bixinkey">支持 OneKey（含币信限量版）</string>
+    <string name="hardware_import_tip">\t\t恢复出厂设置后：\n\n 1. 您存储在这个硬件钱包中的 私钥或助记词将被抹除；\n\n 2. 您在 OneKey App 中用这个钱包创建的账户依然存在，但因为缺少私钥，无法动用其上的资产。除非您在此之前就备份了助记词或私钥，使用它们恢复硬件钱包，从而重新掌控相关账户。</string>
+    <string name="pin_input_wrong">PIN码输入错误</string>
 
 </resources>

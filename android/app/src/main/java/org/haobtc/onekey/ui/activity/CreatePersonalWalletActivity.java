@@ -1,6 +1,7 @@
 package org.haobtc.onekey.ui.activity;
 
 import android.content.Intent;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -133,6 +134,9 @@ public class CreatePersonalWalletActivity extends BaseActivity implements Busine
 
     @Override
     public void onException(Exception e) {
+        if (e.getMessage().contains("PIN invalid")){
+            showToast(getString(R.string.pin_input_wrong));
+        }
         showToast(e.getMessage());
         finish();
     }

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -57,22 +58,35 @@ public abstract class BaseActivity extends AppCompatActivity {
         initData();
 
     }
+
     /**
      * 禁止录屏和截图
      * add by li
-     * */
+     */
     private void requestSecure() {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
     }
+
+    @Override
+    public Resources getResources() {
+        Resources res = super.getResources();
+        Configuration config = new Configuration();
+        config.setToDefaults();
+        res.updateConfiguration(config, res.getDisplayMetrics());
+        return res;
+    }
+
     /**
      * 禁止录屏和截图的钩子
-     * */
+     */
     public boolean requireSecure() {
         return false;
     }
+
     public boolean isSplash() {
         return false;
     }
+
     /**
      * @return the view's layout file id
      */

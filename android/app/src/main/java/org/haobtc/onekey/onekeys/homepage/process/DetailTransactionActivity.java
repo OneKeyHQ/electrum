@@ -16,6 +16,7 @@ import com.google.gson.Gson;
 
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.activities.transaction.CheckChainDetailWebActivity;
 import org.haobtc.onekey.bean.GetnewcreatTrsactionListBean;
 import org.haobtc.onekey.utils.Daemon;
 
@@ -140,7 +141,7 @@ public class DetailTransactionActivity extends BaseActivity {
             textConfirmNum.setText(txStatus);
         }
         textTxNum.setText(txid);
-        if (fee.contains(" (")){
+        if (fee.contains(" (")) {
             String txFee = fee.substring(0, fee.indexOf(" ("));
             textFee.setText(txFee);
         }
@@ -174,18 +175,10 @@ public class DetailTransactionActivity extends BaseActivity {
                 Toast.makeText(DetailTransactionActivity.this, R.string.copysuccess, Toast.LENGTH_LONG).show();
                 break;
             case R.id.text_block_high:
-                //copy text
-                ClipboardManager cm3 = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                // The text is placed on the system clipboard.
-                Objects.requireNonNull(cm3, "ClipboardManager not available").setPrimaryClip(ClipData.newPlainText(null, textBlockHigh.getText()));
-                Toast.makeText(DetailTransactionActivity.this, R.string.copysuccess, Toast.LENGTH_LONG).show();
+                mIntent(CheckChainDetailWebActivity.class);
                 break;
             case R.id.text_tx_num:
-                //copy text
-                ClipboardManager cm4 = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                // The text is placed on the system clipboard.
-                Objects.requireNonNull(cm4, "ClipboardManager not available").setPrimaryClip(ClipData.newPlainText(null, textTxNum.getText()));
-                Toast.makeText(DetailTransactionActivity.this, R.string.copysuccess, Toast.LENGTH_LONG).show();
+                mIntent(CheckChainDetailWebActivity.class);
                 break;
         }
     }
