@@ -174,6 +174,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
                     intent1.putExtra("walletName", walletName);
                     intent1.putExtra("recoverySeed", seed);
                     intent1.putExtra("privateKey", privateKey);
+                    intent1.putExtra(Constant.OPERATE_TYPE, operateType);
                     intent1.putExtra("deleteHdWalletName", deleteHdWalletName);
                     if ("derive".equals(importHdword)) {
                         intent1.putExtra("currencyType", currencyType);
@@ -308,7 +309,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
             } else if (e.getMessage().contains("The file already exists")) {
                 mToast(getString(R.string.changemessage));
             } else if (e.getMessage().contains("Invalid private")) {
-                mToast(getString(R.string.private_invalid));
+                mToast(getString(R.string.invalid_private));
             }
         }
     }
@@ -357,7 +358,6 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
     private void createSingleWallet() {
         try {
             PyObject pyObject = Daemon.commands.callAttr("create", walletName, pwdEdittext.getText().toString());
-            Log.i("pyObjectpyObjectpyObject", "importWallet--: "+pyObject);
             CreateWalletBean createWalletBean = CreateWalletBean.objectFromData(pyObject.toString());
             EventBus.getDefault().post(new CreateSuccessEvent(createWalletBean.getWalletInfo().get(0).getName()));
             mIntent(HomeOneKeyActivity.class);

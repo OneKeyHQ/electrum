@@ -34,6 +34,7 @@ import org.haobtc.onekey.bean.CreateWalletBean;
 import org.haobtc.onekey.bean.LocalWalletInfo;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.CreateSuccessEvent;
+import org.haobtc.onekey.event.GotPassEvent;
 import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.event.FinishEvent;
 import org.haobtc.onekey.event.InputPassSendEvent;
@@ -46,6 +47,7 @@ import org.haobtc.onekey.onekeys.backup.BackupGuideActivity;
 import org.haobtc.onekey.onekeys.dialog.recovery.RecoveryChooseWalletActivity;
 import org.haobtc.onekey.onekeys.homepage.mindmenu.HdRootMnemonicsActivity;
 import org.haobtc.onekey.onekeys.homepage.process.ExportPrivateActivity;
+import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
 import org.haobtc.onekey.utils.Daemon;
 
 import java.util.ArrayList;
@@ -89,6 +91,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
     private SharedPreferences preferences;
     private String currencyType;
     private ArrayList<String> typeList;
+    private String operateType;
 
     @Override
     public int getLayoutId() {
@@ -112,6 +115,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
         walletName = getIntent().getStringExtra("walletName");
         privateKey = getIntent().getStringExtra("privateKey");
         recoverySeed = getIntent().getStringExtra("recoverySeed");
+        operateType = getIntent().getStringExtra(Constant.OPERATE_TYPE);
         //删除所有hd钱包的名字
         deleteHdWalletName = getIntent().getStringExtra("deleteHdWalletName");
         inits();
@@ -237,6 +241,11 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
         } else if ("deleteAllWallet".equals(importHdword)) {
             deleteAllWallet();
         } else if ("recoveryHdWallet".equals(importHdword)) {
+            if (Constant.RECOVERY_TYPE.equals(operateType)) {
+                EventBus.getDefault().post(new GotPassEvent(editPass.getText().toString()));
+                finish();
+                return;
+            }
             recoveryHdWallet();
         } else if ("derive".equals(importHdword)) {
             createDeriveWallet();
@@ -502,6 +511,14 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
         PyObject createHdWallet = null;
         try {
             createHdWallet = Daemon.commands.callAttr("export_seed", editPass.getText().toString(), walletName);
+            if (Constant.EXPORT_DESTINATIONS.equals(operateType)) {
+                Intent intent = new Intent(this, SearchDevicesActivity.class);
+                intent.putExtra(Constant.SEARCH_DEVICE_MODE, Constant.SearchDeviceMode.MODE_BACKUP_HD_WALLET_TO_DEVICE);
+                intent.putExtra(Constant.MNEMONICS, createHdWallet.toString());
+                startActivity(intent);
+                finish();
+                return;
+            }
         } catch (Exception e) {
             if (e.getMessage().contains("Incorrect password")) {
                 mToast(getString(R.string.wrong_pass));

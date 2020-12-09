@@ -1,22 +1,13 @@
 package org.haobtc.onekey.onekeys.homepage;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -24,7 +15,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.IdRes;
-import androidx.annotation.LayoutRes;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.chaquo.python.PyObject;
@@ -35,7 +25,6 @@ import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.bean.ZxingConfig;
 import com.yzq.zxinglibrary.common.Constant;
 
-import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
@@ -183,9 +172,10 @@ public class WalletFragment extends BaseFragment {
         super.onResume();
         initdata();
     }
+
     /**
      * 填充页面信息
-     * */
+     */
     private void initdata() {
         if (PreferencesManager.hasWallet(getContext())) {
             //have wallet
@@ -284,9 +274,10 @@ public class WalletFragment extends BaseFragment {
             textHard.setVisibility(View.GONE);
         }
     }
+
     /**
      * 判断当前钱包是否需要备份
-     * */
+     */
     private void whetherBackup() {
         try {
             isBackup = PyEnv.hasBackup(getActivity());
@@ -327,9 +318,10 @@ public class WalletFragment extends BaseFragment {
             e.printStackTrace();
         }
     }
+
     /**
      * 统一处理硬件连接
-     * */
+     */
     private void deal(@IdRes int id) {
         if (org.haobtc.onekey.constant.Constant.WALLET_TYPE_HARDWARE.equals(nowType)) {
             currentAction = id;
@@ -346,9 +338,10 @@ public class WalletFragment extends BaseFragment {
         toNext(id);
 
     }
+
     /**
      * 处理具体业务
-     * */
+     */
     private void toNext(int id) {
         switch (id) {
             case R.id.linear_send:
@@ -385,22 +378,25 @@ public class WalletFragment extends BaseFragment {
         //whether back up
         whetherBackup();
     }
+
     /**
      * 备份钱包响应
-     * */
+     */
     @Subscribe
     public void onBack(BackupEvent event) {
         Intent intent = new Intent(getActivity(), BackupGuideActivity.class);
         intent.putExtra(CURRENT_SELECTED_WALLET_TYPE, nowType);
         startActivity(intent);
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onConnected(BleConnectedEvent event) {
         toNext(currentAction);
     }
+
     /**
      * 连接硬件超时响应
-     * */
+     */
     @Subscribe
     public void onConnectionTimeout(BleConnectionEx connectionEx) {
         if (connectionEx == BleConnectionEx.BLE_CONNECTION_EX_TIMEOUT) {
@@ -525,8 +521,9 @@ public class WalletFragment extends BaseFragment {
         }
 
     }
-   @OnCheckedChanged(R.id.img_check_money)
-   public void onCheckedChange(boolean checked) {
+
+    @OnCheckedChanged(R.id.img_check_money)
+    public void onCheckedChange(boolean checked) {
         if (checked) {
             tetAmount.setVisibility(View.VISIBLE);
             textStar.setVisibility(View.GONE);
@@ -545,7 +542,7 @@ public class WalletFragment extends BaseFragment {
     }
 
     @SingleClick
-    @OnClick({R.id.rel_check_wallet, R.id.img_scan, R.id.img_Add, R.id.rel_create_hd, R.id.rel_recovery_hd, R.id.rel_pair_hard, R.id.img_check_money, R.id.rel_wallet_detail, R.id.linear_send, R.id.linear_receive, R.id.linear_sign, R.id.rel_now_back_up, R.id.rel_bi_detail})
+    @OnClick({R.id.rel_check_wallet, R.id.img_scan, R.id.img_Add, R.id.rel_create_hd, R.id.rel_recovery_hd, R.id.rel_pair_hard, R.id.rel_wallet_detail, R.id.linear_send, R.id.linear_receive, R.id.linear_sign, R.id.rel_now_back_up, R.id.rel_bi_detail})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.rel_check_wallet:
@@ -616,9 +613,10 @@ public class WalletFragment extends BaseFragment {
                 break;
         }
     }
+
     /**
      * 注册EventBus
-     * */
+     */
     @Override
     public boolean needEvents() {
         return true;

@@ -1296,8 +1296,9 @@
     <string name="support_bixinkey">Support OneKey (including coin Credit Limited Edition)</string>
     <string name="hardware_import_tip">\t\t After restoring the factory settings: \n\n 1. Your private key or mnemonics stored in this hardware wallet will be erased;\n\n 2. The account you created with this wallet in OneKey app still exists, but the assets on it cannot be used because of the lack of private key. Unless you have backed up mnemonics or private keys before, use them to restore your hardware wallet and regain control of your account.</string>
     <string name="pin_input_wrong">Pin code input error</string>
-    <string name="updating">固件安装中</string>
-    <string name="updated">固件升级完成</string>
-    <string name="firmware_stm32">正在升级系统固件</string>
-    <string name="firmware_nrf">正在升级蓝牙固件</string>
+    <string name="updating">Firmware installation in progress</string>
+    <string name="updated">Firmware Upgrade Complete</string>
+    <string name="firmware_stm32">Upgrading system firmware</string>
+    <string name="firmware_nrf">Upgrading Bluetooth firmware</string>
+    <string name="invalid_private">Please enter the correct private key</string>
 </resources>

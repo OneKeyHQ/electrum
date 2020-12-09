@@ -11,13 +11,21 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import com.chaquo.python.Kwarg;
+import com.chaquo.python.PyObject;
+import com.google.gson.Gson;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.bean.ZxingConfig;
 import com.yzq.zxinglibrary.common.Constant;
 
+import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.bean.CreateWalletBean;
+import org.haobtc.onekey.event.CreateSuccessEvent;
+import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
+import org.haobtc.onekey.utils.Daemon;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -88,12 +96,22 @@ public class ImportPrivateKeyActivity extends BaseActivity {
                     mToast(getString(R.string.input_private_key));
                     return;
                 }
-                Intent intent = new Intent(ImportPrivateKeyActivity.this, ImportWalletSetNameActivity.class);
-                intent.putExtra("importHdword", "importPrivateKey");
-                intent.putExtra("privateKey", editInputPrivate.getText().toString());
-                startActivity(intent);
+                isRightPrivate();
                 break;
         }
+    }
+
+    private void isRightPrivate() {
+//        try {
+//            Daemon.commands.callAttr("verify_legality", editInputPrivate.getText().toString(), new Kwarg("flag", "private"));
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return;
+//        }
+        Intent intent = new Intent(ImportPrivateKeyActivity.this, ImportWalletSetNameActivity.class);
+        intent.putExtra("importHdword", "importPrivateKey");
+        intent.putExtra("privateKey", editInputPrivate.getText().toString());
+        startActivity(intent);
     }
 
     @Override

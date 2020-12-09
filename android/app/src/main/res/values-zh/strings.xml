@@ -1241,5 +1241,6 @@
     <string name="updated">固件升级完成</string>
     <string name="firmware_stm32">正在升级系统固件</string>
     <string name="firmware_nrf">正在升级蓝牙固件</string>
+    <string name="invalid_private">请输入正确的私钥</string>
 
 </resources>
