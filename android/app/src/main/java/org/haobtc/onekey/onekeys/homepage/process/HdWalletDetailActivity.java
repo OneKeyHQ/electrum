@@ -46,6 +46,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME;
 import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
 
 public class HdWalletDetailActivity extends BaseActivity {
@@ -254,7 +255,7 @@ public class HdWalletDetailActivity extends BaseActivity {
                 return;
             }
             try {
-                String keyName = PreferencesManager.get(this, "Preferences", Constant.CURRENT_SELECTED_WALLET_NAME, "").toString();
+                String keyName = PreferencesManager.get(this, "Preferences", CURRENT_SELECTED_WALLET_NAME, "").toString();
                 Daemon.commands.callAttr("rename_wallet", keyName, walletName.getText().toString());
             } catch (Exception e) {
                 e.printStackTrace();
@@ -262,9 +263,6 @@ public class HdWalletDetailActivity extends BaseActivity {
                 return;
             }
             mToast(getString(R.string.fix_success));
-            SharedPreferences.Editor edit = preferences.edit();
-            edit.putString("loadWalletName", walletName.getText().toString());
-            edit.apply();
             PyEnv.loadLocalWalletInfo(this);
             textWalletName.setText(walletName.getText().toString());
             EventBus.getDefault().post(new FixWalletNameEvent(walletName.getText().toString()));

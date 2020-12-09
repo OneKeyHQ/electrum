@@ -52,6 +52,7 @@ public abstract class BaseDialogFragment extends DialogFragment {
             wlp.width = WindowManager.LayoutParams.MATCH_PARENT;
             wlp.height = WindowManager.LayoutParams.WRAP_CONTENT;
             window.setAttributes(wlp);
+            window.setWindowAnimations(R.style.AnimBottom);
         }
         return view;
     }

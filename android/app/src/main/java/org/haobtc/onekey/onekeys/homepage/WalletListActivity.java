@@ -57,6 +57,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
+
 /**
  * @author jinxiaomin
  */
@@ -244,7 +246,7 @@ public class WalletListActivity extends BaseActivity {
                 break;
             case R.id.recl_add_wallet:
                 Intent intent1 = new Intent(WalletListActivity.this, CreateDeriveChooseTypeActivity.class);
-                intent1.putExtra("walletType", "derive");
+                intent1.putExtra(CURRENT_SELECTED_WALLET_TYPE, "derive");
                 startActivity(intent1);
                 break;
             case R.id.img_w:

@@ -20,7 +20,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.common.base.Strings;
 
-import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.service.CommunicationModeSelector;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.utils.NfcUtils;

@@ -41,7 +41,6 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
         if (requireSecure()) {
             requestSecure();
         }
-        setActionBar();
         immersionBar();
         init();
         if (needEvents()) {
@@ -92,15 +91,17 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
             mCurrentFragment = fragment;
         }
     }
+
     /**
      * Set transparent immersion bar : white backgrand black text
      */
     public void immersionBar() {
         //other one write
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         getWindow().setStatusBarColor(Color.TRANSPARENT);
-        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE| View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -108,28 +109,34 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
             EventBus.getDefault().unregister(this);
         }
     }
+
     /**
      * 修改标题
-     * */
+     */
     public void updateTitle(int title) {
         runOnUiThread(() -> {
-            if(mTitle != null){
+            if (mTitle != null) {
                 mTitle.setText(title);
             }
         });
     }
+
     /**
      * 禁止录屏和截图
-     * */
+     */
     private void requestSecure() {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
     }
+    /**
+     * 获取页面隐私属性的钩子
+     * */
     public boolean requireSecure() {
         return false;
     }
+
     /**
      * 是否注册eventBus的钩子函数
-     * */
+     */
     public boolean needEvents() {
         return false;
     }

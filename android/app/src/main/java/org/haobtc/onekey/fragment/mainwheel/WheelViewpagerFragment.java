@@ -50,6 +50,8 @@ import org.json.JSONObject;
 
 import java.util.Objects;
 
+import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -282,7 +284,7 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
                     unBackupKeyDialog();
                 } else {
                     Intent intent2 = new Intent(getActivity(), ReceivedPageActivity.class);
-                    intent2.putExtra("walletType", personce);
+                    intent2.putExtra(CURRENT_SELECTED_WALLET_TYPE, personce);
                     intent2.putExtra("hideWalletReceive", "");
                     startActivity(intent2);
                 }

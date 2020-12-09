@@ -20,9 +20,8 @@ import org.haobtc.onekey.activities.settings.HardwareDetailsActivity;
 import org.haobtc.onekey.activities.settings.fixpin.ChangePinProcessingActivity;
 import org.haobtc.onekey.activities.settings.recovery_set.ResetDeviceActivity;
 import org.haobtc.onekey.activities.settings.recovery_set.ResetDeviceProcessing;
-import org.haobtc.onekey.activities.transaction.PinNewActivity;
+import org.haobtc.onekey.activities.transaction.PinNewActivity_1;
 import org.haobtc.onekey.aop.SingleClick;
-import org.haobtc.onekey.event.CheckReceiveAddress;
 import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.event.FinishEvent;
 import org.haobtc.onekey.event.OperationTimeoutEvent;
@@ -136,7 +135,7 @@ public class PinSettingActivity extends BaseActivity {
                                 startActivity(intent);
                             } else {
                                 shouldFinish = false;
-                                Intent intent1 = new Intent(this, PinNewActivity.class);
+                                Intent intent1 = new Intent(this, PinNewActivity_1.class);
                                 intent1.putExtra("pin_origin", pin);
                                 startActivity(intent1);
                             }

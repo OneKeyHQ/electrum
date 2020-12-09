@@ -25,8 +25,8 @@ import org.haobtc.onekey.utils.PasswordInputView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-
-public class PinNewActivity extends BaseActivity {
+@Deprecated
+public class PinNewActivity_1 extends BaseActivity {
     @BindView(R.id.trader_pwd_set_pwd_edittext)
     PasswordInputView edtPwd;
     @BindView(R.id.img_back_pin)
@@ -38,7 +38,7 @@ public class PinNewActivity extends BaseActivity {
     @BindView(R.id.relativeLayout_key)
     RelativeLayout relativeLayoutKey;
     private NumKeyboardUtil keyboardUtil;
-    public static final String TAG = PinNewActivity.class.getSimpleName();
+    public static final String TAG = PinNewActivity_1.class.getSimpleName();
     private String originPin;
 
     @Override

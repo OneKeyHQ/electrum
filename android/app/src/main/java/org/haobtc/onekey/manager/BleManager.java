@@ -56,6 +56,7 @@ public final class BleManager {
     private BleScanCallback<BleDevice> mBleScanCallBack;
     private static volatile BleManager sInstance;
     private FragmentActivity fragmentActivity;
+    private static boolean connecting;
 
 
     private BleManager(FragmentActivity fragmentActivity) {
@@ -156,7 +157,6 @@ public final class BleManager {
 
         @Override
         public void onWriteSuccess(BleDevice device, BluetoothGattCharacteristic characteristic) {
-            // Log.d(TAG, "send successful:" + CommonUtils.bytes2hex(characteristic.getValue()));
             PyEnv.sBle.put(PyConstant.WRITE_SUCCESS, true);
         }
     };
@@ -168,13 +168,19 @@ public final class BleManager {
      * @param device
      */
     public void connDev(BleDevice device) {
-        if (device.isConnected()) {
-            System.out.println("notify 11111");
-            EventBus.getDefault().post(new NotifySuccessfulEvent());
+        if (connecting) {
             return;
         }
-        disconnectAllOther(device.getBleAddress());
-        Ble.getInstance().connect(device, mConnectCallback);
+        synchronized (BleManager.class) {
+           connecting = true;
+            if (device.isConnected()) {
+                connecting = false;
+                EventBus.getDefault().post(new NotifySuccessfulEvent());
+                return;
+            }
+            disconnectAllOther(device.getBleAddress());
+            Ble.getInstance().connect(device, mConnectCallback);
+        }
     }
 
     public void disconnectAllOther(String mac) {
@@ -213,6 +219,7 @@ public final class BleManager {
         @Override
         public void onConnectException(BleDevice device, int errorCode) {
             super.onConnectException(device, errorCode);
+            connecting = false;
             Toast.makeText(MyApplication.getInstance(), "蓝牙链接异常",Toast.LENGTH_SHORT).show();
             EventBus.getDefault().post(BleConnectionEx.BLE_CONNECTION_EX_OTHERS);
             EventBus.getDefault().post(new ExitEvent());
@@ -222,6 +229,7 @@ public final class BleManager {
         @Override
         public void onConnectTimeOut(BleDevice device) {
             super.onConnectTimeOut(device);
+            connecting = false;
             EventBus.getDefault().post(BleConnectionEx.BLE_CONNECTION_EX_TIMEOUT);
         }
     };
@@ -244,24 +252,22 @@ public final class BleManager {
             @Override
             public void onNotifySuccess(BleDevice device) {
                 super.onNotifySuccess(device);
+                connecting = false;
                 Ble.getInstance().setMTU(device.getBleAddress(), 512, new BleMtuCallback<BleDevice>() {
                     @Override
                     public void onMtuChanged(BleDevice device, int mtu, int status) {
                         super.onMtuChanged(device, mtu, status);
                         PyEnv.bleEnable(device, mWriteCallBack);
-                        System.out.println("notify 2222222");
                         EventBus.getDefault().post(new NotifySuccessfulEvent());
                     }
 
                 });
-
             }
 
 
             @Override
             public void onNotifyCanceled(BleDevice device) {
                 super.onNotifyCanceled(device);
-
             }
         });
     }
@@ -340,8 +346,7 @@ public final class BleManager {
                         Intent intent = new Intent();
                         intent.setAction(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                         fragmentActivity.startActivity(intent);
-                    })
-                    .create();
+                    }).create();
             alertDialog.show();
             //show center
             Window dialogWindow = alertDialog.getWindow();

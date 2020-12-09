@@ -58,6 +58,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
+
 public class ReceivedPageActivity extends BaseActivity {
 
     public static final String TAG = ReceivedPageActivity.class.getSimpleName();
@@ -92,7 +94,7 @@ public class ReceivedPageActivity extends BaseActivity {
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
         rxPermissions = new RxPermissions(this);
-        String walletType = getIntent().getStringExtra("walletType");
+        String walletType = getIntent().getStringExtra(CURRENT_SELECTED_WALLET_TYPE);
         hideWalletReceive = getIntent().getStringExtra("hideWalletReceive");
 
         if ("standard".equals(walletType)) {

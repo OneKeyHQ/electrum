@@ -42,7 +42,6 @@ public abstract class BaseFragment extends Fragment implements IBaseView{
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(getContentViewId(), container, false);
-//        setActionBar();
         unbinder = ButterKnife.bind(this, view);
         if (needEvents()) {
             EventBus.getDefault().register(this);
@@ -53,7 +52,7 @@ public abstract class BaseFragment extends Fragment implements IBaseView{
 
     /**
      * init views
-     *
+     * it's needless
      * @param view
      */
     public abstract void init(View view);

@@ -29,6 +29,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
+
 /**
  * @author xiaoming
  */
@@ -57,7 +59,7 @@ public class BackupGuideActivity extends BaseActivity {
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-        String walletType = getIntent().getStringExtra("walletType");
+        String walletType = getIntent().getStringExtra(CURRENT_SELECTED_WALLET_TYPE);
         exportWord = getIntent().getStringExtra("exportWord");
         importHdword = getIntent().getStringExtra("importHdword");
         if ("exportHdword".equals(importHdword)) {

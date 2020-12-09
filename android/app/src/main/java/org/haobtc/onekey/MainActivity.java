@@ -107,6 +107,10 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import static org.haobtc.onekey.activities.service.CommunicationModeSelector.executorService;
+import static org.haobtc.onekey.constant.Constant.BITCOIN_NETWORK_TYPE_0;
+import static org.haobtc.onekey.constant.Constant.BITCOIN_NETWORK_TYPE_1;
+import static org.haobtc.onekey.constant.Constant.BITCOIN_NETWORK_TYPE_2;
+import static org.haobtc.onekey.constant.Constant.ONE_KEY_WEBSITE;
 
 
 public class MainActivity extends BaseActivity implements View.OnClickListener, OnRefreshListener, OnButtonClickListener, OnDownloadListener {
@@ -617,7 +621,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 break;
             case R.id.card_buy_key:
                 Intent intent = new Intent(MainActivity.this, CheckChainDetailWebActivity.class);
-                intent.putExtra("key_link", "https://key.bixin.com/");
+                intent.putExtra("key_link", ONE_KEY_WEBSITE);
                 startActivity(intent);
                 break;
             default:
@@ -681,13 +685,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private void getUpdateInfo() {
         // version_testnet.json version_regtest.json
         String appId = org.haobtc.onekey.BuildConfig.APPLICATION_ID;
-        String urlPrefix = "https://key.bixin.com/";
+        String urlPrefix = ONE_KEY_WEBSITE;
         String url = "";
-        if (appId.endsWith("mainnet")) {
+        if (appId.endsWith(BITCOIN_NETWORK_TYPE_0)) {
             url = urlPrefix + "version.json";
-        } else if (appId.endsWith("testnet")) {
+        } else if (appId.endsWith(BITCOIN_NETWORK_TYPE_2)) {
             url = urlPrefix + "version_testnet.json";
-        } else if (appId.endsWith("regnet")) {
+        } else if (appId.endsWith(BITCOIN_NETWORK_TYPE_1)) {
             url = urlPrefix + "version_regtest.json";
         }
         OkHttpClient okHttpClient = new OkHttpClient();
@@ -745,7 +749,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         if (uri.startsWith("https")) {
             url = uri;
         } else {
-            url = "https://key.bixin.com/" + uri;
+            url = ONE_KEY_WEBSITE + uri;
         }
         UpdateConfiguration configuration = new UpdateConfiguration()
                 .setEnableLog(true)

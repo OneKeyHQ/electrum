@@ -42,7 +42,6 @@ public class BixinKEYManageActivity extends BaseActivity {
     @BindView(R.id.recl_bixinKey_list)
     RecyclerView reclBixinKeyList;
     private List<HardwareFeatures> deviceValue;
-    private SharedPreferences.Editor edit;
 
     @Override
     public int getLayoutId() {
@@ -96,6 +95,7 @@ public class BixinKEYManageActivity extends BaseActivity {
                             intent.putExtra(Constant.TAG_NRF_VERSION, nrfVersion);
                             intent.putExtra(Constant.DEVICE_ID, deviceValue.get(position).getDeviceId());
                             intent.putExtra(Constant.AUTO_SHUT_DOWN_TIME, deviceValue.get(position).getAutoLock().divide(new BigInteger(String.valueOf(1000))).toString());
+                            intent.putExtra(Constant.TAG_HARDWARE_VERIFY, deviceValue.get(position).isVerify());
                             startActivity(intent);
                             break;
                         case R.id.linear_delete:

@@ -1,7 +1,7 @@
 package org.haobtc.onekey.constant;
 
 /**
- * local storage key and others
+ * local storage key、intent tags and others
  * @author liyan
  */
 public final class Constant {
@@ -47,8 +47,6 @@ public final class Constant {
      * */
     public static final String WALLETS = "wallets";
 
-    public static final String SELECTED_WALLET = "loadWalletName";
-
     /**
      * 硬件label
      * */
@@ -79,12 +77,14 @@ public final class Constant {
      * */
     public static final String TAG_FIRMWARE_UPDATE_DES = "firmware_changelog";
 
-
     /**
      * 当前蓝牙固件版本
      * */
     public static final String TAG_NRF_VERSION = "nrf_version";
-
+    /**
+     * 设备验证
+     * */
+    public static final String TAG_HARDWARE_VERIFY = "is_verify";
     /**
      * 最新蓝牙固件版本
      * */
@@ -189,18 +189,20 @@ public final class Constant {
 
     public static final String RECOVERY_TYPE = "recovery_from_hardware";
     /**
-     * 激活方式
+     * 激活方式tag
      * */
     public static final String ACTIVE_MODE = "mode";
     /**
-     * 由硬件生成种子
+     * 由硬件生成种子激活
      * */
     public static final int ACTIVE_MODE_NEW = 0;
     /**
-     * 导入种子到设备
+     * 导入种子到设备激活
      * */
     public static final int ACTIVE_MODE_IMPORT = 1;
-
+    /**
+     * 通过本地备份激活
+     * */
     public static final int ACTIVE_MODE_LOCAL_BACKUP = 2;
     /**
      * 助记词个数
@@ -217,6 +219,9 @@ public final class Constant {
 
     public static final String COIN_TYPE_EOS = "EOS";
     public static final String EXTEND_PUBLIC_KEY = "xpub";
+    /**
+     * 版本更新信息key
+     * */
     public static final String UPGRADE_INFO = "upgrade_info";
     /**
      * 当前选择钱包名称
@@ -234,4 +239,23 @@ public final class Constant {
      * 由OneKey创建
      * */
     public static final int WALLET_TYPE_HARDWARE_ = 1;
+    /**
+     * 主网
+     * */
+    public static final String BITCOIN_NETWORK_TYPE_0 = "mainnet";
+    /**
+     * 回归测试网(私链)
+     * */
+    public static final String BITCOIN_NETWORK_TYPE_1 = "regnet";
+    /**
+     * 公共测试网
+     * */
+    public static final String BITCOIN_NETWORK_TYPE_2 = "testnet";
+    /**
+     * onekey官网
+     * https://onekey.so/
+     * */
+    public static final String ONE_KEY_WEBSITE = "https://key.bixin.com/";
+
+    public static final String NEED_POP_BACKUP_DIALOG = "pop_backup_dialog";
 }

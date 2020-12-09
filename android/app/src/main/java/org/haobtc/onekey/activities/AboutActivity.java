@@ -38,6 +38,10 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import static java.net.HttpURLConnection.HTTP_OK;
+import static org.haobtc.onekey.constant.Constant.BITCOIN_NETWORK_TYPE_0;
+import static org.haobtc.onekey.constant.Constant.BITCOIN_NETWORK_TYPE_1;
+import static org.haobtc.onekey.constant.Constant.BITCOIN_NETWORK_TYPE_2;
+import static org.haobtc.onekey.constant.Constant.ONE_KEY_WEBSITE;
 
 /**
  * @author liyan
@@ -98,11 +102,11 @@ public class AboutActivity extends BaseActivity implements OnDownloadListener {
         String appId = BuildConfig.APPLICATION_ID;
         String urlPrefix = "https://onekey.so/";
         String url = "";
-        if (appId.endsWith("mainnet")) {
+        if (appId.endsWith(BITCOIN_NETWORK_TYPE_0)) {
             url = urlPrefix + "version.json";
-        } else if (appId.endsWith("testnet")) {
+        } else if (appId.endsWith(BITCOIN_NETWORK_TYPE_2)) {
             url = urlPrefix + "version_testnet.json";
-        } else if (appId.endsWith("regnet")) {
+        } else if (appId.endsWith(BITCOIN_NETWORK_TYPE_1)) {
             url = urlPrefix + "version_regtest.json";
         }
         OkHttpClient okHttpClient = new OkHttpClient();
@@ -166,7 +170,7 @@ public class AboutActivity extends BaseActivity implements OnDownloadListener {
         if (uri.startsWith("https")) {
             url = uri;
         } else {
-            url = "https://key.bixin.com/" + uri;
+            url = ONE_KEY_WEBSITE + uri;
         }
         UpdateConfiguration configuration = new UpdateConfiguration()
                 .setEnableLog(true)

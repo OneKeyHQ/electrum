@@ -51,12 +51,14 @@
     </LinearLayout>
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/details"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/promote"
         android:layout_marginTop="7dp"
+        app:cardBackgroundColor="#FAFAFA"
         app:cardCornerRadius="@dimen/dp_20"
-        android:layout_marginHorizontal="@dimen/dp_10">
+        android:layout_marginHorizontal="@dimen/dp_20">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -65,8 +67,7 @@
                 android:id="@+id/stm32"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone">
+                android:orientation="vertical">
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -128,7 +129,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:visibility="gone">
+                android:visibility="visible">
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -197,6 +198,28 @@
 
 
 
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        app:cardBackgroundColor="#FFF5D6"
+        app:cardCornerRadius="@dimen/dp_15"
+        android:layout_marginHorizontal="@dimen/dp_18"
+        app:layout_constraintTop_toBottomOf="@id/details"
+        android:layout_marginTop="@dimen/dp_16"
+
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="升级固件前请务必备份好钱包，否则可能造成资产损失。"
+            android:drawableStart="@drawable/warning"
+            android:textSize="@dimen/sp_12"
+            android:textColor="#FFB000"
+            android:paddingStart="@dimen/dp_25"
+            android:paddingEnd="17dp"
+            android:paddingVertical="@dimen/dp_10"
+            android:drawablePadding="@dimen/dp_15"/>
     </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

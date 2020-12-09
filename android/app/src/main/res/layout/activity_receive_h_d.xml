@@ -298,7 +298,7 @@
                    android:drawableEnd="@drawable/right_white"
                    android:paddingEnd="@dimen/dp_25"
                    android:paddingStart="@dimen/dp_1"
-                   android:layout_marginEnd="@dimen/dp_20"
+                   android:layout_marginEnd="@dimen/dp_10"
                    android:background="@drawable/btn_enable_selector"/>
             </LinearLayout>
 

@@ -1,4 +1,3 @@
-
 package org.haobtc.onekey.bean;
 
 import androidx.annotation.NonNull;
@@ -45,6 +44,7 @@ public class HardwareFeatures {
      * auto_lock_delay_ms: 600000
      * backup_only: false
      * backup_message: ""
+     * is_verify: false
      */
 
     @SerializedName("vendor")
@@ -109,6 +109,8 @@ public class HardwareFeatures {
     private String backupMessage;
     @SerializedName("auto_lock_delay_ms")
     private BigInteger autoLock;
+    @SerializedName("is_verify")
+    private boolean isVerify;
 
     public static HardwareFeatures objectFromData(String str) {
 
@@ -315,37 +317,53 @@ public class HardwareFeatures {
     public void setBootloaderMode(boolean bootloaderMode) {
         this.bootloaderMode = bootloaderMode;
     }
-    public void setBleEnable(boolean bleEnable) {
-        this.bleEnable = bleEnable;
-    }
+
     public boolean isSeEnable() {
         return seEnable;
     }
-    public boolean isBleEnable() {
-        return bleEnable;
-    }
+
     public void setSeEnable(boolean seEnable) {
         this.seEnable = seEnable;
     }
-    public void setBackupMessage(String backupMessage) {
-        this.backupMessage = backupMessage;
+
+    public boolean isBleEnable() {
+        return bleEnable;
     }
+
+    public void setBleEnable(boolean bleEnable) {
+        this.bleEnable = bleEnable;
+    }
+
     public String getBackupMessage() {
         return backupMessage;
     }
+
+    public void setBackupMessage(String backupMessage) {
+        this.backupMessage = backupMessage;
+    }
+
     public String getSeVersion() {
         return seVersion;
+    }
+
+    public void setSeVersion(String seVersion) {
+        this.seVersion = seVersion;
     }
 
     public BigInteger getAutoLock() {
         return autoLock;
     }
+
     public boolean isBackupOnly() {
         return backupOnly;
     }
 
-    public void setSeVersion(String seVersion) {
-        this.seVersion = seVersion;
+    public boolean isVerify() {
+        return isVerify;
+    }
+
+    public void setVerify(boolean verify) {
+        isVerify = verify;
     }
 
     @NonNull

@@ -6,7 +6,9 @@ package org.haobtc.onekey.constant;
  * @author liyan
  */
 public final class PyConstant {
-
+    /**
+     * python modules and attributes
+     * */
     public static final String ELECTRUM_CONSTANTS_MODULE = "electrum.constants";
     public static final String TREZORLIB_TRANSPORT_NFC = "trezorlib.transport.nfc";
     public static final String TREZORLIB_TRANSPORT_BLUETOOTH = "trezorlib.transport.bluetooth";
@@ -43,15 +45,14 @@ public final class PyConstant {
     public static final String SET_TEST_NETWORK = "set_testnet";
     public static final String SET_REG_TEST_NETWORK = "set_regtest";
     public static final String PROCESS_REPORTER = "PROCESS_REPORTER";
-    public static final String FIRMWARE_UPDATE = "firmware_update";
     /**
      * 断点续传标记
-     * */
+     */
     public static final String HTTP = "HTTP";
     /**
      * 断点续传偏移量
-     * */
-   public static final String OFFSET = "OFFSET";
+     */
+    public static final String OFFSET = "OFFSET";
     public static final String TAG = "BLE";
 
     public static final int BUTTON_REQUEST_9 = 9;
@@ -90,14 +91,14 @@ public final class PyConstant {
     public static final int VERIFY_ADDRESS_CONFIRM = 10;
     /**
      * xpub 类型
-     * */
+     */
     public static final String XPUB_P2WPKH = "p2wpkh";
 
 // ============================= Python api name======================
 
     /**
      * 加载所有创建的钱包
-     * */
+     */
     public static final String LOAD_ALL_WALLET = "load_all_wallet";
     /**
      * 通过xpub创建钱包接口 import_create_hw_wallet(self, name, m, n, xpubs, hide_type=False, hd=False, derived=False)
@@ -105,36 +106,40 @@ public final class PyConstant {
     public static final String CREATE_WALLET_BY_XPUB = "import_create_hw_wallet";
     /**
      * 获取硬件钱包信息接口
-     * */
+     */
     public static final String GET_FEATURE = "get_feature";
     /**
      * 加载本地钱包详情
-     * */
+     */
     public static final String GET_WALLETS_INFO = "list_wallets";
 
     /**
      * 查看钱包余额
-     * */
+     */
     public static final String GET_BALANCE = "select_wallet";
 
     /**
      * 查看当前钱包的备份状态
-     * */
+     */
     public static final String HAS_BACKUP = "get_backup_info";
 
     /**
      * 校验扩展公钥合法性
-     * */
+     */
     public static final String VALIDATE_XPUB = "is_valid_xpub";
 
     /**
      * 通过助记词创建HD钱包
-     * */
+     */
     public static final String CREATE_HD_WALLET = "create_hd_wallet";
 
     /**
      * 通过助记词创建HD钱包
-     * */
+     */
     public static final String RECOVERY_CONFIRM = "recovery_confirmed";
+    /**
+     * 固件升级
+     * */
+    public static final String FIRMWARE_UPDATE = "firmware_update";
 
 }

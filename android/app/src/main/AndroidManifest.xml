@@ -495,6 +495,7 @@
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
         <activity
+            android:launchMode="singleTask"
             android:name=".activities.sign.SignActivity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
@@ -542,7 +543,7 @@
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
         <activity
-            android:name=".activities.transaction.PinNewActivity"
+            android:name=".activities.transaction.PinNewActivity_1"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
         <activity

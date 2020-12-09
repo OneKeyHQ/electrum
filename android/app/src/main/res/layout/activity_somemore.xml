@@ -220,23 +220,40 @@
                 android:layout_marginStart="@dimen/dp_16"
                 android:layout_marginEnd="@dimen/dp_16"
                 android:background="@color/separation_line" />
-
-            <TextView
-                android:id="@+id/tetVerification"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/dp_70"
-                android:background="@color/button_bk_ddake"
-                android:clickable="true"
-                android:drawablePadding="@dimen/dp_10"
-                android:focusable="true"
-                android:gravity="center_vertical"
-                android:paddingStart="@dimen/dp_20"
-                android:paddingEnd="@dimen/dp_15"
-                android:text="@string/verification_key"
-                android:textColor="@color/text"
-                android:textSize="@dimen/sp_15"
-                app:drawableEndCompat="@drawable/jiantou"
-                app:drawableStartCompat="@drawable/privacy_1" />
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/tetVerification"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp_70"
+                    android:background="@color/button_bk_ddake"
+                    android:clickable="true"
+                    android:drawablePadding="@dimen/dp_10"
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:paddingStart="@dimen/dp_20"
+                    android:paddingEnd="@dimen/dp_15"
+                    android:text="@string/verification_key"
+                    android:textColor="@color/text"
+                    android:textSize="@dimen/sp_15"
+                    app:drawableEndCompat="@drawable/jiantou"
+                    app:drawableStartCompat="@drawable/privacy_1" />
+                <TextView
+                    android:id="@+id/verified"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/dp_30"
+                    android:text="@string/verify_success"
+                    android:textSize="@dimen/sp_14"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/btn_no_check"
+                    android:textColor="#00B812"
+                    android:gravity="center"
+                    android:paddingHorizontal="@dimen/dp_10"
+                    android:layout_marginEnd="@dimen/dp_45"
+                    android:layout_alignParentEnd="true"/>
+            </RelativeLayout>
+
 
             <TextView
                 android:layout_width="wrap_content"

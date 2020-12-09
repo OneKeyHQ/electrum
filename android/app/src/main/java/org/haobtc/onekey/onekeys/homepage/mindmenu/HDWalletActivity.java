@@ -51,6 +51,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
+
 public class HDWalletActivity extends BaseActivity {
 
     @BindView(R.id.img_back)
@@ -106,7 +108,7 @@ public class HDWalletActivity extends BaseActivity {
                 break;
             case R.id.recl_add_wallet:
                 Intent intent = new Intent(HDWalletActivity.this, CreateDeriveChooseTypeActivity.class);
-                intent.putExtra("walletType", "derive");
+                intent.putExtra(CURRENT_SELECTED_WALLET_TYPE, "derive");
                 startActivity(intent);
                 break;
             case R.id.recl_add_hd_wallet:

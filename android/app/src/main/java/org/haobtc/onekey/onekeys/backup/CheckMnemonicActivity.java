@@ -41,6 +41,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME;
+
 public class CheckMnemonicActivity extends BaseActivity {
 
     @BindView(R.id.text_word_one)
@@ -93,7 +95,7 @@ public class CheckMnemonicActivity extends BaseActivity {
         ButterKnife.bind(this);
         SharedPreferences preferences = getSharedPreferences("", MODE_PRIVATE);
         //Get current wallet name
-        loadWalletName = preferences.getString("loadWalletName", "BTC-1");
+        loadWalletName = preferences.getString(CURRENT_SELECTED_WALLET_NAME, "");
         String mnemonic = getIntent().getStringExtra("mnemonic");
         array = mnemonic.split("\\s+");
 
@@ -278,7 +280,7 @@ public class CheckMnemonicActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.btn_check:
-                String keyName = PreferencesManager.get(this, "Preferences", Constant.CURRENT_SELECTED_WALLET_NAME, "").toString();
+                String keyName = PreferencesManager.get(this, "Preferences", CURRENT_SELECTED_WALLET_NAME, "").toString();
                 if (chooseWord.toString().contains(word1) && chooseWord.toString().contains(word2) && chooseWord.toString().contains(word3)) {
                     try {
                         Daemon.commands.callAttr("delete_backup_info", keyName);

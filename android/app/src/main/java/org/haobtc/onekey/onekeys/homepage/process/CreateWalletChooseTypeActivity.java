@@ -12,6 +12,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
+
 public class CreateWalletChooseTypeActivity extends BaseActivity {
 
     @BindView(R.id.rel_derive_hd)
@@ -44,21 +46,14 @@ public class CreateWalletChooseTypeActivity extends BaseActivity {
                 break;
             case R.id.rel_derive_hd:
                 Intent intent = new Intent(CreateWalletChooseTypeActivity.this, CreateDeriveChooseTypeActivity.class);
-                intent.putExtra("walletType", "derive");
+                intent.putExtra(CURRENT_SELECTED_WALLET_TYPE, "derive");
                 startActivity(intent);
                 break;
             case R.id.rel_single_wallet:
                 Intent intent1 = new Intent(CreateWalletChooseTypeActivity.this, CreateDeriveChooseTypeActivity.class);
-                intent1.putExtra("walletType", "single");
+                intent1.putExtra(CURRENT_SELECTED_WALLET_TYPE, "single");
                 startActivity(intent1);
                 break;
         }
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // TODO: add setContentView(...) invocation
-        ButterKnife.bind(this);
     }
 }

@@ -35,6 +35,7 @@ import butterknife.OnClick;
 
 import static org.haobtc.onekey.activities.service.CommunicationModeSelector.isNFC;
 import static org.haobtc.onekey.activities.service.CommunicationModeSelector.xpub;
+import static org.haobtc.onekey.constant.Constant.ONE_KEY_WEBSITE;
 
 public class SettingActivity extends BaseActivity {
 
@@ -152,7 +153,7 @@ public class SettingActivity extends BaseActivity {
     }
 
     private void getUpdateInfo() {
-        String urlPrefix = "https://key.bixin.com/";
+        String urlPrefix = ONE_KEY_WEBSITE;
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         String locate = preferences.getString("language", "");
         String info = preferences.getString("upgrade_info", "");

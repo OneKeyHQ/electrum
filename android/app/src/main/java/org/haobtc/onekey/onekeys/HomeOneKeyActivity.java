@@ -42,6 +42,10 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import static java.net.HttpURLConnection.HTTP_OK;
+import static org.haobtc.onekey.constant.Constant.BITCOIN_NETWORK_TYPE_0;
+import static org.haobtc.onekey.constant.Constant.BITCOIN_NETWORK_TYPE_1;
+import static org.haobtc.onekey.constant.Constant.BITCOIN_NETWORK_TYPE_2;
+import static org.haobtc.onekey.constant.Constant.ONE_KEY_WEBSITE;
 
 /**
  * @author liyan
@@ -55,6 +59,9 @@ public class HomeOneKeyActivity extends BaseActivity implements RadioGroup.OnChe
     private long firstTime = 0;
     private DownloadManager manager;
     private AppUpdateDialog updateDialog;
+    private WalletFragment walletFragment;
+    private MindFragment mindFragment;
+    private DiscoverFragment discoverFragment;
 
     /***
      * init layout
@@ -75,13 +82,13 @@ public class HomeOneKeyActivity extends BaseActivity implements RadioGroup.OnChe
     public void onCheckedChanged(RadioGroup group, int checkedId) {
         switch (checkedId) {
             case R.id.radio_one:
-                startFragment(new WalletFragment());
+                startFragment(walletFragment);
                 break;
             case R.id.radio_two:
-                startFragment(new DiscoverFragment());
+                startFragment(discoverFragment);
                 break;
             case R.id.radio_three:
-                startFragment(new MindFragment());
+                startFragment(mindFragment);
                 break;
         }
     }
@@ -99,14 +106,16 @@ public class HomeOneKeyActivity extends BaseActivity implements RadioGroup.OnChe
     public void init() {
         HardwareCallbackHandler callbackHandler = HardwareCallbackHandler.getInstance(this);
         PyEnv.setHandle(callbackHandler);
-//        BleManager.getInstance(this);
+        // init as singleInstance to avoid some baffling issue
+        walletFragment = new WalletFragment();
+        mindFragment = new MindFragment();
         getUpdateInfo();
         refreshView();
     }
 
     private void refreshView() {
         // 默认让主页被选中
-        startFragment(new WalletFragment());
+        startFragment(walletFragment);
         // radiobutton长度
         RadioButton[] radioButton = new RadioButton[sjRadiogroup.getChildCount()];
         for (int i = 0; i < radioButton.length; i++) {
@@ -134,13 +143,13 @@ public class HomeOneKeyActivity extends BaseActivity implements RadioGroup.OnChe
     private void getUpdateInfo() {
         // version_testnet.json version_regtest.json
         String appId = BuildConfig.APPLICATION_ID;
-        String urlPrefix = "https://key.bixin.com/";
+        String urlPrefix = ONE_KEY_WEBSITE;
         String url = "";
-        if (appId.endsWith("mainnet")) {
+        if (appId.endsWith(BITCOIN_NETWORK_TYPE_0)) {
             url = urlPrefix + "version.json";
-        } else if (appId.endsWith("testnet")) {
+        } else if (appId.endsWith(BITCOIN_NETWORK_TYPE_2)) {
             url = urlPrefix + "version_testnet.json";
-        } else if (appId.endsWith("regnet")) {
+        } else if (appId.endsWith(BITCOIN_NETWORK_TYPE_1)) {
             url = urlPrefix + "version_regtest.json";
         }
         OkHttpClient okHttpClient = new OkHttpClient();
@@ -157,8 +166,8 @@ public class HomeOneKeyActivity extends BaseActivity implements RadioGroup.OnChe
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 assert response.body() != null;
-                if (response.code() !=  HTTP_OK) {
-                    Log.e("Main", "获取更新信息失败==="+ response.body().string());
+                if (response.code() != HTTP_OK) {
+                    Log.e("Main", "获取更新信息失败===" + response.body().string());
                     return;
                 }
                 String locate = PreferencesManager.get(HomeOneKeyActivity.this, "Preferences", Constant.LANGUAGE, "").toString();
@@ -194,8 +203,8 @@ public class HomeOneKeyActivity extends BaseActivity implements RadioGroup.OnChe
         });
     }
 
-    private void attemptUpdate(String uri,  int versionCode, String versionName, String size, String description) {
-        int versionCodeLocal  = ApkUtil.getVersionCode(this);
+    private void attemptUpdate(String uri, int versionCode, String versionName, String size, String description) {
+        int versionCodeLocal = ApkUtil.getVersionCode(this);
         if (versionCodeLocal >= versionCode) {
             return;
         }
@@ -204,7 +213,7 @@ public class HomeOneKeyActivity extends BaseActivity implements RadioGroup.OnChe
         if (uri.startsWith("https")) {
             url = uri;
         } else {
-            url = "https://key.bixin.com/" + uri;
+            url = ONE_KEY_WEBSITE + uri;
         }
         UpdateConfiguration configuration = new UpdateConfiguration()
                 .setEnableLog(true)
@@ -229,7 +238,7 @@ public class HomeOneKeyActivity extends BaseActivity implements RadioGroup.OnChe
 
     @Override
     public void downloading(int max, int progress) {
-        updateDialog.progressBar.setProgress((int)(((float)progress/max)*100));
+        updateDialog.progressBar.setProgress((int) (((float) progress / max) * 100));
     }
 
     @Override

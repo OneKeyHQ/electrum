@@ -2,7 +2,6 @@ package org.haobtc.onekey.activities.settings;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -26,6 +25,8 @@ import org.haobtc.onekey.activities.settings.recovery_set.BackupRecoveryActivity
 import org.haobtc.onekey.activities.settings.recovery_set.FixHardwareLanguageActivity;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.asynctask.BusinessAsyncTask;
+import org.haobtc.onekey.bean.HardwareFeatures;
+import org.haobtc.onekey.bean.HardwareVerifyResponse;
 import org.haobtc.onekey.bean.UpdateInfo;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.PyConstant;
@@ -63,13 +64,14 @@ import java.util.Optional;
 import java.util.UUID;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.com.heaton.blelibrary.ble.Ble;
 
 /**
  * @author liyan
  */
-public class HardwareDetailsActivity extends BaseActivity implements BusinessAsyncTask.Helper{
+public class HardwareDetailsActivity extends BaseActivity implements BusinessAsyncTask.Helper {
 
     public static final String TAG = "org.haobtc.onekey.activities.settings.HardwareDetailsActivity";
     public static final String TAG_VERIFICATION = "VERIFICATION";
@@ -92,6 +94,8 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
     public static boolean dismiss;
     @BindView(R.id.test_shutdown_time)
     TextView testShutdownTime;
+    @BindView(R.id.verified)
+    TextView verified;
     private String bleName;
     private String deviceId;
     private String label;
@@ -99,7 +103,7 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
     private String firmwareVersion;
     private String nrfVersion;
     private String currentMethod;
-
+    private boolean isVerified;
     @SingleClick
     @OnClick({R.id.img_back, R.id.lin_OnckOne, R.id.lin_OnckTwo, R.id.change_pin, R.id.lin_OnckFour, R.id.wipe_device, R.id.linear_shutdown_time, R.id.tetBuckup, R.id.tet_deleteWallet, R.id.test_set_key_language, R.id.tetVerification, R.id.check_xpub, R.id.text_hide_wallet})
     public void onViewClicked(View view) {
@@ -123,12 +127,12 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
             case R.id.change_pin:
                 if (Ble.getInstance().getConnetedDevices().size() != 0) {
                     if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(bleName)) {
-                       changePin();
-                       return;
+                        changePin();
+                        return;
                     }
                 }
                 if (Strings.isNullOrEmpty(bleMac)) {
-                        showToast("未知设备！！！");
+                    showToast("未知设备！！！");
                 }
                 currentMethod = BusinessAsyncTask.CHANGE_PIN;
                 initBle();
@@ -229,6 +233,7 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
         new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.WIPE_DEVICE,
                 MyApplication.getInstance().getDeviceWay());
     }
+
     private void getXpub() {
         new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY,
                 MyApplication.getInstance().getDeviceWay());
@@ -283,34 +288,37 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onReadyBle(NotifySuccessfulEvent event) {
-       switch (currentMethod) {
-           case BusinessAsyncTask.CHANGE_PIN:
-               changePin();
-               break;
-           case BusinessAsyncTask.WIPE_DEVICE:
-               startActivity(new Intent(this, ResetDevicePromoteActivity.class));
-               break;
-           case BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY:
-               getXpub();
-               break;
-           case BusinessAsyncTask.COUNTER_VERIFICATION:
-               EventBus.getDefault().post(new ConnectedEvent());
-               verifyHardware();
-               break;
-           default:
-       }
+        switch (currentMethod) {
+            case BusinessAsyncTask.CHANGE_PIN:
+                changePin();
+                break;
+            case BusinessAsyncTask.WIPE_DEVICE:
+                startActivity(new Intent(this, ResetDevicePromoteActivity.class));
+                break;
+            case BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY:
+                getXpub();
+                break;
+            case BusinessAsyncTask.COUNTER_VERIFICATION:
+                EventBus.getDefault().post(new ConnectedEvent());
+                verifyHardware();
+                break;
+            default:
+        }
     }
+
     @Subscribe
     public void onConnectionTimeout(BleConnectionEx connectionEx) {
         if (connectionEx == BleConnectionEx.BLE_CONNECTION_EX_TIMEOUT) {
             Toast.makeText(this, "连接蓝牙设备超时，请确认你的设备是否已开启蓝牙，并在你的旁边", Toast.LENGTH_SHORT).show();
         }
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onChangePin(ChangePinEvent event) {
         // 回写PIN码
         PyEnv.setPin(event.toString());
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onButtonRequest(ButtonRequestEvent event) {
         switch (event.getType()) {
@@ -341,7 +349,7 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
                     }
 
                 }
-                    break;
+                break;
             case PyConstant.BUTTON_REQUEST_6:
                 startActivity(new Intent(this, ConfirmOnHardWareActivity.class));
                 EventBus.getDefault().post(new ExitEvent());
@@ -351,10 +359,12 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
             default:
         }
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onWipeDevice(WipeEvent event) {
-       wipeDevice();
+        wipeDevice();
     }
+
     private void verification(String result) {
         HashMap<String, String> pramas = new HashMap<>();
         try {
@@ -375,18 +385,30 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
                     public void onError(Request request, Exception e) {
                         EventBus.getDefault().post(new VerifyFailedEvent(VerifyFailedEvent.FailedReason.NETWORK_ERROR));
                     }
+
                     @Override
                     public void onResponse(String response) {
-                        Log.i("strVerification", "onResponse:------- " + response);
-                        //TODO： 这个逻辑不对，需要修改
-                        if (response.contains("is_verified")) {
-                            EventBus.getDefault().post(new VerifySuccessEvent());
-                        } else {
-                            EventBus.getDefault().post(new VerifyFailedEvent(VerifyFailedEvent.FailedReason.VERIFY_FAILED));
+                        try {
+                            HardwareVerifyResponse verifyResponse = HardwareVerifyResponse.objectFromData(response);
+                            if (verifyResponse.isIsVerified()) {
+                                verified.setVisibility(View.VISIBLE);
+                                EventBus.getDefault().post(new VerifySuccessEvent());
+                                // 修改本地设备信息
+                                String str = PreferencesManager.get(HardwareDetailsActivity.this, Constant.DEVICES, deviceId, "").toString();
+                                HardwareFeatures features = HardwareFeatures.objectFromData(str);
+                                features.setVerify(true);
+                                PreferencesManager.put(HardwareDetailsActivity.this, Constant.DEVICES, deviceId, features.toString());
+                            } else {
+                                EventBus.getDefault().post(new VerifyFailedEvent(VerifyFailedEvent.FailedReason.VERIFY_FAILED));
+                            }
+                        } catch (Exception e) {
+                            EventBus.getDefault().post(new VerifyFailedEvent(VerifyFailedEvent.FailedReason.NETWORK_ERROR));
+                            e.printStackTrace();
                         }
                     }
                 });
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void showReading(FixBixinkeyNameEvent event) {
         tetKeyName.setText(event.getKeyName());
@@ -410,6 +432,8 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
         nrfVersion = getIntent().getStringExtra(Constant.TAG_NRF_VERSION);
         tetKeyName.setText(label);
         testShutdownTime.setText(String.format("%s%s", intent.getStringExtra(Constant.AUTO_SHUT_DOWN_TIME), getString(R.string.second)));
+        isVerified = intent.getBooleanExtra(Constant.TAG_HARDWARE_VERIFY, false);
+        verified.setVisibility(isVerified ? View.VISIBLE: View.GONE);
         bleMac = PreferencesManager.get(this, Constant.BLE_INFO, bleName, "").toString();
     }
 

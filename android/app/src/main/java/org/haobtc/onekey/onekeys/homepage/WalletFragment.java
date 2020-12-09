@@ -25,7 +25,6 @@ import android.widget.Toast;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.chaquo.python.PyObject;
@@ -64,6 +63,8 @@ import org.haobtc.onekey.onekeys.homepage.process.ReceiveHDActivity;
 import org.haobtc.onekey.onekeys.homepage.process.SendHdActivity;
 import org.haobtc.onekey.onekeys.homepage.process.TransactionDetailWalletActivity;
 import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
+import org.haobtc.onekey.ui.base.BaseFragment;
+import org.haobtc.onekey.ui.dialog.BackupDialog;
 import org.haobtc.onekey.utils.Daemon;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -71,98 +72,119 @@ import org.json.JSONObject;
 import java.util.Map;
 import java.util.Optional;
 
+import butterknife.BindView;
+import butterknife.OnClick;
+
 import static android.app.Activity.RESULT_OK;
+import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
+import static org.haobtc.onekey.constant.Constant.NEED_POP_BACKUP_DIALOG;
 
 /**
  * @author jinxiaomin
  */
-public class WalletFragment extends Fragment implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
+public class WalletFragment extends BaseFragment implements CompoundButton.OnCheckedChangeListener {
+
+    @BindView(R.id.text_wallet_name)
     TextView textWalletName;
-    private RecyclerView recyclerview;
+    @BindView(R.id.img_type)
+    ImageView imgType;
+    @BindView(R.id.rel_check_wallet)
+    RelativeLayout relCheckWallet;
+    @BindView(R.id.img_scan)
+    ImageView imgScan;
+    @BindView(R.id.img_Add)
+    ImageView imgAdd;
+    @BindView(R.id.text)
+    TextView text;
+    @BindView(R.id.rel_create_hd)
+    RelativeLayout relCreateHd;
+    @BindView(R.id.rel_recovery_hd)
+    RelativeLayout relRecoveryHd;
+    @BindView(R.id.rel_pair_hard)
+    RelativeLayout relPairHard;
+    @BindView(R.id.lin_no_wallet)
+    LinearLayout linearNoWallet;
+    @BindView(R.id.img_bottom)
+    ImageView imgBottom;
+    @BindView(R.id.text_hard)
+    TextView textHard;
+    @BindView(R.id.text_amount)
+    TextView tetAmount;
+    @BindView(R.id.text_amount_star)
+    TextView textStar;
+    @BindView(R.id.img_check_money)
+    CheckBox imgCheckMoney;
+    @BindView(R.id.rel_wallet_detail)
+    RelativeLayout relWalletDetail;
+    @BindView(R.id.linear_send)
+    LinearLayout linearSend;
+    @BindView(R.id.linear_receive)
+    LinearLayout linearReceive;
+    @BindView(R.id.linear_sign)
+    LinearLayout linearSign;
+    @BindView(R.id.lin_have_wallet)
+    LinearLayout linearHaveWallet;
+    @BindView(R.id.money)
+    ImageView money;
+    @BindView(R.id.rel_now_back_up)
+    android.widget.RelativeLayout relNowBackUp;
+    @BindView(R.id.text_btc_amount)
+    TextView textBtcAmount;
+    @BindView(R.id.text_btc_amount_stars)
+    TextView amountStars;
+    @BindView(R.id.text_dollar)
+    TextView textDollar;
+    @BindView(R.id.text_dollar_stars)
+    TextView dollarStars;
+    @BindView(R.id.rel_bi_detail)
+    android.widget.RelativeLayout relBiDetail;
+    @BindView(R.id.recl_hd_list)
+    RecyclerView reclHdList;
+    @BindView(R.id.lin_wallet_list)
+    LinearLayout linearWalletList;
     private SharedPreferences preferences;
-    private LinearLayout linearNoWallet;
-    private ImageView imgBottom;
-    private LinearLayout linearHaveWallet;
-    private LinearLayout linearWalletList;
-    private TextView tetAmount;
     private String num;
-    private TextView textDollar;
-    private TextView textBtcAmount;
     private String changeBalance;
-    private TextView textStar;
     private String name;
-    private String loadWalletName = "";
+    private String loadWalletName;
     private SharedPreferences.Editor edit;
-    private RelativeLayout relNowBackUp;
     private RxPermissions rxPermissions;
     private static final int REQUEST_CODE = 0;
-    private TextView textHard;
-    private LinearLayout linearSign;
-    private ImageView imgType;
-    private TextView amountStars;
-    private TextView dollarStars;
     private String nowType;
     private boolean isBackup;
-    private ImageView imgScan;
     private String deviceId;
     private String bleMac;
     private static int currentAction;
 
-    @SuppressLint("CommitPrefEdits")
+    /**
+     * init views
+     *
+     * @param view
+     */
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_wallet, container, false);
-        EventBus.getDefault().register(this);
+    public void init(View view) {
         rxPermissions = new RxPermissions(this);
         preferences = requireActivity().getSharedPreferences("Preferences", Context.MODE_PRIVATE);
         edit = preferences.edit();
-        textWalletName = view.findViewById(R.id.text_wallet_name);
-        tetAmount = view.findViewById(R.id.text_amount);
-        recyclerview = view.findViewById(R.id.recl_hd_list);
-        RelativeLayout relRecovery = view.findViewById(R.id.rel_recovery_hd);
-        RelativeLayout relCreateHd = view.findViewById(R.id.rel_create_hd);
-        RelativeLayout relCheckWallet = view.findViewById(R.id.rel_check_wallet);
-        imgScan = view.findViewById(R.id.img_scan);
-        RelativeLayout relPairHard = view.findViewById(R.id.rel_pair_hard);
-        LinearLayout linearSend = view.findViewById(R.id.linear_send);
-        LinearLayout linearReceive = view.findViewById(R.id.linear_receive);
-        RelativeLayout relWalletDetail = view.findViewById(R.id.rel_wallet_detail);
-        RelativeLayout relBiDetail = view.findViewById(R.id.rel_bi_detail);
-        ImageView imgAdd = view.findViewById(R.id.img_add);
-        CheckBox imgCheckMoney = view.findViewById(R.id.img_check_money);
-        imgType = view.findViewById(R.id.img_type);
-        textStar = view.findViewById(R.id.text_amount_star);
-        textBtcAmount = view.findViewById(R.id.text_btc_amount);
-        textDollar = view.findViewById(R.id.text_dollar);
-        linearNoWallet = view.findViewById(R.id.lin_no_wallet);
-        linearHaveWallet = view.findViewById(R.id.lin_have_wallet);
-        linearWalletList = view.findViewById(R.id.lin_wallet_list);
-        relNowBackUp = view.findViewById(R.id.rel_now_back_up);
-        textHard = view.findViewById(R.id.text_hard);
-        linearSign = view.findViewById(R.id.linear_sign);
-        amountStars = view.findViewById(R.id.text_btc_amount_stars);
-        dollarStars = view.findViewById(R.id.text_dollar_stars);
-
-        imgBottom = view.findViewById(R.id.img_bottom);
-        imgAdd.setOnClickListener(this);
-        relCreateHd.setOnClickListener(this);
-        relRecovery.setOnClickListener(this);
-        relCheckWallet.setOnClickListener(this);
-        imgScan.setOnClickListener(this);
-        relPairHard.setOnClickListener(this);
-        linearSend.setOnClickListener(this);
-        linearReceive.setOnClickListener(this);
-        relWalletDetail.setOnClickListener(this);
-        relBiDetail.setOnClickListener(this);
-        imgCheckMoney.setOnCheckedChangeListener(this);
-        relNowBackUp.setOnClickListener(this);
-        linearSign.setOnClickListener(this);
-        initdata();
-        return view;
     }
 
+    /***
+     * init layout
+     * @return
+     */
+    @Override
+    public int getContentViewId() {
+        return R.layout.fragment_wallet;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        initdata();
+    }
+    /**
+     * 填充页面信息
+     * */
     private void initdata() {
         if (PreferencesManager.hasWallet(getContext())) {
             //have wallet
@@ -191,40 +213,6 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
         }
     }
 
-    private void isBackup(Context context, @LayoutRes int resource) {
-        //set see view
-        View view = View.inflate(context, resource, null);
-        Dialog dialogBtoms = new Dialog(context, R.style.dialog);
-        view.findViewById(R.id.btn_next_backup).setOnClickListener(v -> {
-            edit.putBoolean("isBack_up", true);
-            edit.apply();
-            dialogBtoms.dismiss();
-        });
-        view.findViewById(R.id.btn_now_backup).setOnClickListener(v -> {
-            edit.putBoolean("isBack_up", true);
-            edit.apply();
-            Intent intent = new Intent(getActivity(), BackupGuideActivity.class);
-            intent.putExtra("walletType", nowType);
-            startActivity(intent);
-            //Next time
-            dialogBtoms.dismiss();
-        });
-        view.findViewById(R.id.img_close).setOnClickListener(v -> {
-            edit.putBoolean("isBack_up", true);
-            edit.apply();
-            dialogBtoms.dismiss();
-        });
-        dialogBtoms.setContentView(view);
-        Window window = dialogBtoms.getWindow();
-        //set pop_up size
-        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-        //set locate
-        window.setGravity(Gravity.BOTTOM);
-        //set animal
-        window.setWindowAnimations(R.style.AnimBottom);
-        dialogBtoms.setCanceledOnTouchOutside(true);
-        dialogBtoms.show();
-    }
 
     private void getWalletBalance() {
         //Get current wallet name
@@ -245,10 +233,10 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
                 int cnyUnit = preferences.getInt("cny_unit", 0);
                 switch (cnyUnit) {
                     case 0:
-                        tetAmount.setText(String.format("￥%s", (Strings.isNullOrEmpty(strCny)) ? R.string.zero : strCny));
+                        tetAmount.setText(String.format("￥%s", (Strings.isNullOrEmpty(strCny)) ? getString(R.string.zero) : strCny));
                         break;
                     case 1:
-                        tetAmount.setText(String.format("$%s", (Strings.isNullOrEmpty(strCny)) ? R.string.zero : strCny));
+                        tetAmount.setText(String.format("$%s", (Strings.isNullOrEmpty(strCny)) ? getString(R.string.zero) : strCny));
                 }
                 textBtcAmount.setText(String.format("%s%s", num, preferences.getString("base_unit", "")));
                 if (!"0".equals(num)) {
@@ -265,7 +253,7 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
 
     private void showTypeInfo(LocalWalletInfo localWalletInfo) {
         nowType = localWalletInfo.getType();
-        edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE, nowType);
+        edit.putString(CURRENT_SELECTED_WALLET_TYPE, nowType);
         edit.apply();
         if (nowType.contains("btc")) {
             imgType.setImageDrawable(getActivity().getDrawable(R.drawable.token_btc));
@@ -277,7 +265,6 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
         if (nowType.contains("hw")) {
             textHard.setVisibility(View.VISIBLE);
             linearSign.setVisibility(View.VISIBLE);
-            String thisType = nowType.substring(nowType.indexOf("hw-") + 3);
             deviceId = localWalletInfo.getDeviceId();
             // 去除deviceId上的双引号
             deviceId = deviceId.substring(1, deviceId.length() - 1);
@@ -296,19 +283,21 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
             textHard.setVisibility(View.GONE);
         }
     }
-
+    /**
+     * 判断当前钱包是否需要备份
+     * */
     private void whetherBackup() {
         try {
             isBackup = PyEnv.hasBackup(getActivity());
-            if (!isBackup) {
+            if (isBackup) {
+                relNowBackUp.setVisibility(View.GONE);
+            } else {
                 //no back up
                 relNowBackUp.setVisibility(View.VISIBLE);
-                //whether to backup
-                if (!preferences.getBoolean("isBack_up", false)) {
-                    isBackup(getActivity(), R.layout.backup_wallet);
+                //whether to pop backup dialog
+                if (preferences.getBoolean(NEED_POP_BACKUP_DIALOG, true)) {
+                    new BackupDialog().show(getChildFragmentManager(), "backup");
                 }
-            } else {
-                relNowBackUp.setVisibility(View.GONE);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -337,85 +326,9 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
             e.printStackTrace();
         }
     }
-
-    @SingleClick
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.rel_check_wallet:
-                Intent intent1 = new Intent(getActivity(), WalletListActivity.class);
-                startActivity(intent1);
-                break;
-            case R.id.img_scan:
-                rxPermissions
-                        .request(Manifest.permission.CAMERA)
-                        .subscribe(granted -> {
-                            if (granted) { // Always true pre-M
-                                //If you have already authorized it, you can directly jump to the QR code scanning interface
-                                Intent intent2 = new Intent(getActivity(), CaptureActivity.class);
-                                ZxingConfig config = new ZxingConfig();
-                                config.setPlayBeep(true);
-                                config.setShake(true);
-                                config.setDecodeBarCode(false);
-                                config.setFullScreenScan(true);
-                                config.setShowAlbum(false);
-                                config.setShowbottomLayout(false);
-                                intent2.putExtra(Constant.INTENT_ZXING_CONFIG, config);
-                                startActivityForResult(intent2, REQUEST_CODE);
-                            } else { // Oups permission denied
-                                Toast.makeText(getActivity(), R.string.photopersion, Toast.LENGTH_SHORT).show();
-                            }
-                        }).dispose();
-                break;
-            case R.id.rel_create_hd:
-                if ("short".equals(preferences.getString("shortOrLongPass", "short"))) {
-                    Intent intent0 = new Intent(getActivity(), SetHDWalletPassActivity.class);
-                    startActivity(intent0);
-                } else {
-                    Intent intent0 = new Intent(getActivity(), SetLongPassActivity.class);
-                    startActivity(intent0);
-                }
-                break;
-            case R.id.rel_recovery_hd:
-                Intent intent = new Intent(getActivity(), RecoverHdWalletActivity.class);
-                startActivity(intent);
-                break;
-            case R.id.rel_pair_hard:
-                Intent pair = new Intent(getActivity(), SearchDevicesActivity.class);
-                startActivity(pair);
-                break;
-            case R.id.linear_send:
-            case R.id.linear_receive:
-               deal(v.getId());
-               break;
-            case R.id.rel_wallet_detail:
-                Intent intent4 = new Intent(getActivity(), HdWalletDetailActivity.class);
-                intent4.putExtra("hdWalletName", textWalletName.getText().toString());
-                intent4.putExtra("isBackup", isBackup);
-                startActivity(intent4);
-                break;
-            case R.id.rel_bi_detail:
-                Intent intent5 = new Intent(getActivity(), TransactionDetailWalletActivity.class);
-                intent5.putExtra("walletBalance", changeBalance);
-                intent5.putExtra("walletDollar", textDollar.getText().toString());
-                intent5.putExtra("hdWalletName", textWalletName.getText().toString());
-                startActivity(intent5);
-                break;
-            case R.id.img_add:
-
-                break;
-            case R.id.rel_now_back_up:
-                Intent intent6 = new Intent(getActivity(), BackupGuideActivity.class);
-                intent6.putExtra("walletType", nowType);
-                startActivity(intent6);
-                break;
-            case R.id.linear_sign:
-                Intent intent8 = new Intent(getActivity(), SignActivity.class);
-                startActivity(intent8);
-                break;
-
-        }
-    }
+    /**
+     * 统一处理硬件连接
+     * */
     private void deal(@IdRes int id) {
         if (org.haobtc.onekey.constant.Constant.WALLET_TYPE_HARDWARE.equals(nowType)) {
             currentAction = id;
@@ -432,6 +345,9 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
         toNext(id);
 
     }
+    /**
+     * 处理具体业务
+     * */
     private void toNext(int id) {
         switch (id) {
             case R.id.linear_send:
@@ -447,9 +363,13 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
                 }
                 startActivity(intent3);
                 break;
+            case R.id.linear_sign:
+                Intent intent8 = new Intent(getActivity(), SignActivity.class);
+                startActivity(intent8);
             default:
         }
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     public void event(SecondEvent updataHint) {
         String msgVote = updataHint.getMsg();
@@ -463,11 +383,22 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
         //whether back up
         whetherBackup();
     }
-
+    /**
+     * 备份钱包响应
+     * */
+    @Subscribe
+    public void onBack(BackupEvent event) {
+        Intent intent = new Intent(getActivity(), BackupGuideActivity.class);
+        intent.putExtra(CURRENT_SELECTED_WALLET_TYPE, nowType);
+        startActivity(intent);
+    }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onConnected(BleConnectedEvent event) {
         toNext(currentAction);
     }
+    /**
+     * 连接硬件超时响应
+     * */
     @Subscribe
     public void onConnectionTimeout(BleConnectionEx connectionEx) {
         if (connectionEx == BleConnectionEx.BLE_CONNECTION_EX_TIMEOUT) {
@@ -486,13 +417,13 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
             Optional<? extends Map.Entry<String, ?>> entry = PreferencesManager.getAll(getContext(), org.haobtc.onekey.constant.Constant.WALLETS).entrySet().stream().findFirst();
             LocalWalletInfo info = LocalWalletInfo.objectFromData(entry.get().getValue().toString());
             edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME, info.getName());
-            edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE, info.getType());
+            edit.putString(CURRENT_SELECTED_WALLET_TYPE, info.getType());
             edit.apply();
             //get wallet balance
             getWalletBalance();
         } else {
             edit.putString("shortOrLongPass", "short");
-            edit.putBoolean("isBack_up", false);
+            edit.putBoolean(NEED_POP_BACKUP_DIALOG, false);
             edit.apply();
             textWalletName.setText(getString(R.string.no_use_wallet));
             linearNoWallet.setVisibility(View.VISIBLE);
@@ -509,6 +440,7 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
     public void fixName(FixWalletNameEvent event) {
         textWalletName.setText(event.getNewName());
     }
+
     public void setValue(String msgVote) {
         try {
             JSONObject jsonObject = new JSONObject(msgVote);
@@ -595,12 +527,6 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        EventBus.getDefault().unregister(this);
-    }
-
-    @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         if (isChecked) {
             tetAmount.setVisibility(View.VISIBLE);
@@ -617,5 +543,87 @@ public class WalletFragment extends Fragment implements View.OnClickListener, Co
             amountStars.setVisibility(View.VISIBLE);
             dollarStars.setVisibility(View.VISIBLE);
         }
+    }
+    @SingleClick
+    @OnClick({R.id.rel_check_wallet, R.id.img_scan, R.id.img_Add, R.id.rel_create_hd, R.id.rel_recovery_hd, R.id.rel_pair_hard, R.id.img_check_money, R.id.rel_wallet_detail, R.id.linear_send, R.id.linear_receive, R.id.linear_sign, R.id.rel_now_back_up, R.id.rel_bi_detail})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.rel_check_wallet:
+                Intent intent1 = new Intent(getActivity(), WalletListActivity.class);
+                startActivity(intent1);
+                break;
+            case R.id.img_scan:
+                rxPermissions
+                        .request(Manifest.permission.CAMERA)
+                        .subscribe(granted -> {
+                            if (granted) { // Always true pre-M
+                                //If you have already authorized it, you can directly jump to the QR code scanning interface
+                                Intent intent2 = new Intent(getActivity(), CaptureActivity.class);
+                                ZxingConfig config = new ZxingConfig();
+                                config.setPlayBeep(true);
+                                config.setShake(true);
+                                config.setDecodeBarCode(false);
+                                config.setFullScreenScan(true);
+                                config.setShowAlbum(false);
+                                config.setShowbottomLayout(false);
+                                intent2.putExtra(Constant.INTENT_ZXING_CONFIG, config);
+                                startActivityForResult(intent2, REQUEST_CODE);
+                            } else { // Oups permission denied
+                                Toast.makeText(getActivity(), R.string.photopersion, Toast.LENGTH_SHORT).show();
+                            }
+                        }).dispose();
+                break;
+            case R.id.img_Add:
+                break;
+            case R.id.rel_create_hd:
+                if ("short".equals(preferences.getString("shortOrLongPass", "short"))) {
+                    Intent intent0 = new Intent(getActivity(), SetHDWalletPassActivity.class);
+                    startActivity(intent0);
+                } else {
+                    Intent intent0 = new Intent(getActivity(), SetLongPassActivity.class);
+                    startActivity(intent0);
+                }
+                break;
+            case R.id.rel_recovery_hd:
+                Intent intent = new Intent(getActivity(), RecoverHdWalletActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.rel_pair_hard:
+                Intent pair = new Intent(getActivity(), SearchDevicesActivity.class);
+                startActivity(pair);
+                break;
+            case R.id.img_check_money:
+                break;
+            case R.id.rel_wallet_detail:
+                Intent intent4 = new Intent(getActivity(), HdWalletDetailActivity.class);
+                intent4.putExtra("hdWalletName", textWalletName.getText().toString());
+                intent4.putExtra("isBackup", isBackup);
+                startActivity(intent4);
+                break;
+            case R.id.linear_send:
+            case R.id.linear_receive:
+            case R.id.linear_sign:
+                deal(view.getId());
+                break;
+            case R.id.rel_now_back_up:
+                Intent intent6 = new Intent(getActivity(), BackupGuideActivity.class);
+                intent6.putExtra(CURRENT_SELECTED_WALLET_TYPE, nowType);
+                startActivity(intent6);
+                break;
+            case R.id.rel_bi_detail:
+                Intent intent5 = new Intent(getActivity(), TransactionDetailWalletActivity.class);
+                intent5.putExtra("walletBalance", changeBalance);
+                intent5.putExtra("walletDollar", textDollar.getText().toString());
+                intent5.putExtra("hdWalletName", textWalletName.getText().toString());
+                startActivity(intent5);
+                break;
+        }
+    }
+    /**
+     * 注册EventBus
+     * */
+    @Override
+    public boolean needEvents() {
+        return true;
     }
 }

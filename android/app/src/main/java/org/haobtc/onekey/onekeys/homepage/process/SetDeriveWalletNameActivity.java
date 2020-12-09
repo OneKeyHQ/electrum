@@ -18,6 +18,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
+
 public class SetDeriveWalletNameActivity extends BaseActivity implements TextWatcher {
 
     @BindView(R.id.edit_set_wallet_name)
@@ -40,7 +42,7 @@ public class SetDeriveWalletNameActivity extends BaseActivity implements TextWat
         ButterKnife.bind(this);
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         edit = preferences.edit();
-        walletType = getIntent().getStringExtra("walletType");
+        walletType = getIntent().getStringExtra(CURRENT_SELECTED_WALLET_TYPE);
         currencyType = getIntent().getStringExtra("currencyType");
 
     }
