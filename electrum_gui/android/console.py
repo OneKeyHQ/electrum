@@ -13,6 +13,18 @@ import unittest
 import threading
 import random
 import string
+from electrum.util import (
+    FailedGetTx,
+    FileAlreadyExist,
+    DerivedWalletLimit,
+    UnavailablePrivateKey,
+    UnavailablePublicKey,
+    UnavailableEthAddr,
+    UnavailableBtcAddr,
+    NotSupportExportSeed,
+    InvalidBip39Seed,
+    InvalidPassword,
+ )
 from electrum.i18n import _, set_language
 from electrum.bitcoin import base_decode, is_address
 from electrum.keystore import bip44_derivation, purpose48_derivation, Imported_KeyStore
@@ -152,7 +164,7 @@ class AndroidCommands(commands.Commands):
             self.user_dir = user_dir
         fd = daemon.get_file_descriptor(self.config)
         if not fd:
-            raise BaseException(_("Daemon already running, Don't start the wallet repeatedly"))
+            raise BaseException(("Daemon already running, Don't start the wallet repeatedly"))
         set_language(self.config.get('language', 'zh_CN'))
 
         # Initialize here rather than in start() so the DaemonModel has a chance to register
@@ -461,8 +473,8 @@ class AndroidCommands(commands.Commands):
         if not wallet:
             storage = WalletStorage(path)
             if not storage.file_exists():
-                (_("Your {} were successfully imported").format(title))
-                raise BaseException(_("Not find file {}".format(path)))
+                #(_("Your {} were successfully imported").format(title))
+                raise BaseException(_("Failed to load file {}".format(path)))
             if storage.is_encrypted():
                 if not password:
                     raise BaseException(util.InvalidPassword())
@@ -648,7 +660,7 @@ class AndroidCommands(commands.Commands):
                     wallet_name = "共管钱包"
                 self.label_plugin.create_wallet(self.wallet, wallet_type, wallet_name)
         self.wizard = None
-        wallet_info = CreateWalletInfo.create_wallet_info(coin_type=coin, name=self.wallet_name)
+        wallet_info = CreateWalletInfo.create_wallet_info(coin_type="btc", name=self.wallet_name)
         out = self.get_create_info_by_json(wallet_info)
         return json.dumps(out)
 
@@ -814,28 +826,17 @@ class AndroidCommands(commands.Commands):
     def get_default_fee_info(self):
         try:
             my_change_addr_size = Transaction.estimated_output_size(self.wallet.get_addresses()[0])
-
-            out_size_p2pkh = 34
-            out_size_p2wpkh_p2sh = 32
-            out_size_p2wpkh = 31
+            out_size_p2pkh = 34 + my_change_addr_size
+            fee_info = self.config.get_block_fee_info()
             out_info = []
-            feeinfo = self.get_default_fee_status()
-            feerate = feeinfo.split(" ")[0]
-            fee_info_list = []
-            fee_info_list.append({"rate":int(feerate)/2, "size":my_change_addr_size+out_size_p2wpkh, "time":2})
-            fee_info_list.append({"rate":feerate, "size":my_change_addr_size + out_size_p2wpkh_p2sh, "time":1})
-            fee_info_list.append({"rate":int(feerate)*2, "size":my_change_addr_size + out_size_p2pkh, "time":0.5})
-            block_num = feeinfo.split(" ")[-2]
-            fait_rate = self.daemon.fx.exchange_rate() if self.daemon.fx else Decimal('NaN')
-            for info in fee_info_list:
-                fee = int(info['rate']) * info['size']
-                default_time = BTC_BLOCK_INTERVAL_TIME if block_num == 'next' else int(block_num) * BTC_BLOCK_INTERVAL_TIME
-                time = default_time * info['time']
+            for block, feerate in fee_info.items():
+                fee = float(feerate / 1000) * out_size_p2pkh
                 ret_data = {
-                    'size': info['size'],
-                    'fee': fee,
-                    'time': time,
-                    'fiat': self.daemon.fx.ccy_amount_str(fee * Decimal(fait_rate) / COIN, False)
+                    'fee': self.format_amount(fee),
+                    'feerate': feerate / 1000,
+                    'time': block * BTC_BLOCK_INTERVAL_TIME,
+                    'fiat': self.daemon.fx.format_amount_and_units(fee) if self.daemon.fx else None,
+                    'size': out_size_p2pkh
                 }
                 out_info.append(ret_data)
             return json.dumps(out_info)
@@ -861,7 +862,7 @@ class AndroidCommands(commands.Commands):
             print(f"coins=========={coins}")
             c, u, x = self.wallet.get_balance()
             if not coins and self.config.get('confirmed_only', False):
-                raise BaseException(_("Please use unconfirmed coins"))
+                raise BaseException(_("Please use unconfirmed utxo"))
             fee_per_kb = 1000 * Decimal(feerate)
             from functools import partial
             fee_estimator = partial(self.config.estimate_fee_for_feerate, fee_per_kb)
@@ -1188,7 +1189,7 @@ class AndroidCommands(commands.Commands):
 
         amount_str = ""
         if tx_details.amount is None:
-            amount_str = _("Transaction unrelated to your wallet")
+            amount_str = _("Transaction not related to the current wallet")
         else:
             amount_str = self.format_amount_and_units(tx_details.amount)
 
@@ -1227,7 +1228,7 @@ class AndroidCommands(commands.Commands):
     def do_save(self, tx):
         try:
             if not self.wallet.add_transaction(tx):
-                raise BaseException(_(("Transaction could not be saved.") + "\n" + ("It conflicts with current history. tx=") + tx.txid()))
+                raise BaseException(_(("Transaction cannot be saved.") + "\n" + ("It conflicts with current history. tx=") + tx.txid()))
         except BaseException as e:
             raise BaseException(e)
         else:
@@ -1307,7 +1308,7 @@ class AndroidCommands(commands.Commands):
             raise BaseException(e)
         tx = self.wallet.db.get_transaction(tx_hash)
         if not tx:
-            raise BaseException(_('Get transaction info failed'))
+            raise BaseException(_('Failed to get transaction details'))
         # tx = PartialTransaction.from_tx(tx)
         label = self.wallet.get_label(tx_hash) or None
         tx = copy.deepcopy(tx)
@@ -1325,7 +1326,7 @@ class AndroidCommands(commands.Commands):
         except Exception as e:
             raise BaseException(e)
         status, status_str = self.wallet.get_tx_status(tx_hash, tx_mined_status)
-        label = self.wallet.get_label(tx_hash) if tx_hash else _('Pruned transaction outputs')
+        label = self.wallet.get_label(tx_hash) if tx_hash else ""
         ri = {}
         ri['tx_hash'] = tx_hash
         ri['date'] = status_str
@@ -1415,7 +1416,7 @@ class AndroidCommands(commands.Commands):
         '''
         try:
             if tx is None:
-                raise BaseException("tx is empty")
+                raise BaseException("The tx cannot be empty")
             tx = tx_from_any(tx)
             if isinstance(tx, PartialTransaction):
                 tx.finalize_psbt()
@@ -1442,7 +1443,7 @@ class AndroidCommands(commands.Commands):
             with open(path, "rb") as f:
                 file_content = f.read()
         except (ValueError, IOError, os.error) as reason:
-            raise BaseException(_("Open file failed"))
+            raise BaseException(_("Failed to open file"))
         tx = tx_from_any(file_content)
         return tx
 
@@ -1526,7 +1527,7 @@ class AndroidCommands(commands.Commands):
             else:
                 print("--------broadcast ok............")
                 return "success"
-                status, msg = True, tx.txid()
+                #status, msg = True, tx.txid()
         #          self.callbackIntent.onCallback(Status.broadcast, msg)
         else:
             raise BaseException(_(('Cannot broadcast transaction') + ':\n' + ('Not connected')))
@@ -1561,14 +1562,14 @@ class AndroidCommands(commands.Commands):
             address = address.strip()
             message = message.strip()
             if not bitcoin.is_address(address):
-                raise BaseException(_('Invalid Bitcoin address.'))
+                raise UnavailableBtcAddr()
             if self.wallet.is_watching_only():
                 raise BaseException(_('This is a watching-only wallet.'))
             if not self.wallet.is_mine(address):
-                raise BaseException(_('Address not in wallet.'))
+                raise BaseException(_('The address is not in the current wallet.'))
             txin_type = self.wallet.get_txin_type(address)
             if txin_type not in ['p2pkh', 'p2wpkh', 'p2wpkh-p2sh']:
-                raise BaseException(_('Cannot sign messages with this type of address:{}'.format(txin_type)))
+                raise BaseException(_('Current wallet does not support signature message:{}'.format(txin_type)))
             sig = self.wallet.sign_message(address, message, password)
             import base64
             return base64.b64encode(sig).decode('ascii')
@@ -1586,7 +1587,7 @@ class AndroidCommands(commands.Commands):
         address = address.strip()
         message = message.strip().encode('utf-8')
         if not bitcoin.is_address(address):
-            raise BaseException(_('Invalid Bitcoin address.'))
+            raise UnavailableBtcAddr()
         try:
             # This can throw on invalid base64
             import base64
@@ -1961,7 +1962,7 @@ class AndroidCommands(commands.Commands):
             self.hw_info = {"xpub": xpub, "account_id": 0}
             return xpub
         if len(list_info) == 0:
-            raise BaseException(_("Maximum support to create 20 HD wallet"))
+            raise DerivedWalletLimit()
         dervied_xpub = self.get_xpub_from_hw(path=path, _type=_type, account_id=list_info[0])
         self.hw_info = {"xpub":xpub, "account_id":list_info[0]}
         return dervied_xpub
@@ -1988,11 +1989,11 @@ class AndroidCommands(commands.Commands):
         if not features.bootloader_mode:
             resp = client.client.call(messages.BixinReboot())
             if not dry_run and not isinstance(resp, messages.Success):
-                raise RuntimeError("Device turn into bootloader failed")
+                raise RuntimeError("Failed turn into bootloader")
             time.sleep(2)
             client.client.init_device()
         if not dry_run and not client.features.bootloader_mode:
-            raise BaseException(_("Please switch your device to bootloader mode."))
+            raise BaseException(_("Switch the device to bootloader mode."))
 
         bootloader_onev2 = features.major_version == 1 and features.minor_version >= 8
 
@@ -2006,7 +2007,7 @@ class AndroidCommands(commands.Commands):
             except Exception as e:
                 raise BaseException(e)
         else:
-            raise BaseException(_("Please give the file name"))
+            raise BaseException(("Please give the file name"))
 
         if not raw and not skip_check:
             try:
@@ -2020,14 +2021,14 @@ class AndroidCommands(commands.Commands):
                     and version == firmware.FirmwareFormat.TREZOR_ONE
                     and not fw.embedded_onev2
             ):
-                raise BaseException(_("Firmware is too old for your device. Aborting."))
+                raise BaseException(_("Your device's firmware version is too low. Aborting."))
             elif not bootloader_onev2 and version == firmware.FirmwareFormat.TREZOR_ONE_V2:
-                raise BaseException(_("You need to upgrade to bootloader 1.8.0 first."))
+                raise BaseException(_("You need to upgrade the bootloader immediately."))
 
             if features.major_version not in trezorctl.ALLOWED_FIRMWARE_FORMATS:
-                raise BaseException(_("Trezorctl doesn't know your device version. Aborting."))
+                raise BaseException(("Trezorctl doesn't know your device version. Aborting."))
             elif version not in trezorctl.ALLOWED_FIRMWARE_FORMATS[features.major_version]:
-                raise BaseException(_("Firmware does not match your device, aborting."))
+                raise BaseException(_("Firmware not compatible with your equipment, Aborting."))
 
         if not raw:
             # special handling for embedded-OneV2 format:
@@ -2069,7 +2070,7 @@ class AndroidCommands(commands.Commands):
         good_inputs, bad_inputs = wallet.import_addresses(address, write_to_disk=False)
         # FIXME tell user about bad_inputs
         if not good_inputs:
-            raise BaseException(_("None of the given address can be imported"))
+            raise UnavailablePublicKey()
         self.check_exist_file(wallet.get_addresses()[0])
         wallet.update_password(old_pw=None, new_pw=password, str_pw=self.android_id, encrypt_storage=True)
         wallet.set_name(name)
@@ -2083,7 +2084,6 @@ class AndroidCommands(commands.Commands):
             # self.check_pw_wallet = wallet
             wallet_type = 'eth-hd-standard-hw'
         self.update_local_wallet_info(self.get_unique_path(wallet), wallet_type)
-    
 
     ####################################################
     ## app wallet
@@ -2115,7 +2115,7 @@ class AndroidCommands(commands.Commands):
         try:
             wallet = self.daemon._wallets[self._wallet_path(name)]
             if not wallet.has_seed():
-                raise BaseException(_('This wallet has no seed'))
+                raise NotSupportExportSeed()
             keystore = wallet.get_keystore()
 
             seed = keystore.get_seed(password)
@@ -2130,7 +2130,7 @@ class AndroidCommands(commands.Commands):
         :return: True/False as bool
         '''
         if not self.wallet.has_seed():
-            raise BaseException(_('This wallet has no seed'))
+            raise NotSupportExportSeed()
         return self.wallet.has_seed()
 
     # def check_seed(self, check_seed, password):
@@ -2318,7 +2318,7 @@ class AndroidCommands(commands.Commands):
         if flag == "seed":
             is_checksum, is_wordlist = keystore.bip39_is_checksum_valid(data)
             if not keystore.is_seed(data) and not is_checksum:
-                raise BaseException(_("Invaild seed"))
+                raise BaseException(_("Incorrect mnemonic format"))
         if coin == "btc":
             if flag == "private":
                 try:
@@ -2326,35 +2326,35 @@ class AndroidCommands(commands.Commands):
                 except:
                     keys = keystore.get_private_keys(privkeys, allow_spaces_inside_key=False)
                     if keys is None:
-                        raise BaseException(_("Invaild btc private"))
+                        raise UnavailablePrivateKey()
             elif flag == "public":
                 try:
                     ecc.ECPubkey(bfh(data))
                 except:
-                    raise BaseException(_("Invaild btc public"))
+                    raise UnavailablePublicKey()
             elif flag == "address":
                 if not bitcoin.is_address(data):
-                    raise BaseException(_("Invaild btc address"))
+                    raise UnavailableBtcAddr()
         elif self.coins.__contains__(coin):
             if flag == "private":
                 try:
                     keys.PrivateKey(HexBytes(data))
                 except:
-                    raise BaseException(_("Invaild eth private"))
+                    raise UnavailablePrivateKey()
             elif flag == "keystore":
                 try:
                     Account.decrypt(data, password).hex()
                 except BaseException as e:
-                    raise BaseException(_("Invaild eth keystore"))
+                    raise BaseException(_("Incorrect eth keystore"))
             elif flag == "public":
                 try:
                     uncom_key = get_uncompressed_key(data)
                     keys.PublicKey(HexBytes(uncom_key[2:]))
                 except:
-                    raise BaseException(_("Invaild eth public"))
+                    raise UnavailablePublicKey()
             elif flag == "address":
                 if not self.pywalib.web3.isChecksumAddress(self.pywalib.web3.toChecksumAddress(data)):
-                    raise BaseException(_("Invaild eth address"))
+                    raise UnavailableEthAddr()
 
     def create(self, name, password=None, seed_type="segwit", seed=None, passphrase="", bip39_derivation=None,
                master=None, addresses=None, privkeys=None, hd=False, purpose=84, coin="btc", keystores=None, strength=128):
@@ -2389,7 +2389,7 @@ class AndroidCommands(commands.Commands):
         temp_path = self.get_temp_file()
         path = self._wallet_path(temp_path)
         if exists(path):
-            raise BaseException(_("The file already exists"))
+            raise BaseException(_("File already exists"))
         storage = WalletStorage(path)
         db = WalletDB('', manual_upgrades=False)
         if addresses is not None:
@@ -2401,7 +2401,7 @@ class AndroidCommands(commands.Commands):
                         pubkey = ecc.ECPubkey(bfh(addresses[0])).get_public_key_hex()
                         addresses = [bitcoin.pubkey_to_address("p2wpkh", pubkey)]
                     except BaseException as e:
-                        raise BaseException(_("Please enter the correct address or pubkey"))
+                        raise BaseException(_("Incorrect address or pubkey"))
             elif coin == "eth" or coin == "bsc":
                 wallet = Imported_Eth_Wallet(db, storage, config=self.config)
                 wallet.wallet_type = '%s_imported' % coin
@@ -2417,7 +2417,7 @@ class AndroidCommands(commands.Commands):
             good_inputs, bad_inputs = wallet.import_addresses(addresses, write_to_disk=False)
             # FIXME tell user about bad_inputs
             if not good_inputs:
-                raise BaseException(_("None of the given address can be imported"))
+                raise BaseException(_("No address available"))
             wallet_type = "%s-watch-standard" % coin
         elif privkeys is not None or keystores is not None:
             if coin == "btc":
@@ -2433,7 +2433,7 @@ class AndroidCommands(commands.Commands):
                 except BaseException as e:
                     keys = keystore.get_private_keys(privkeys, allow_spaces_inside_key=False)
                     if keys is None:
-                        raise BaseException("Invalid private")
+                        raise UnavailablePrivateKey()
             elif coin == "eth" or coin == "bsc":
                 if keystores is not None:
                     try:
@@ -2449,7 +2449,7 @@ class AndroidCommands(commands.Commands):
             good_inputs, bad_inputs = wallet.import_private_keys(keys, None, write_to_disk=False)
             # FIXME tell user about bad_inputs
             if not good_inputs:
-                raise BaseException(_("None of the given privkeys can be imported"))
+                raise BaseException(_("No private key available"))
             wallet_type = "%s-private-standard" %coin
         else:
             if bip39_derivation is not None:
@@ -2458,7 +2458,7 @@ class AndroidCommands(commands.Commands):
                 else:
                     is_checksum, is_wordlist = keystore.bip39_is_checksum_valid(seed)
                     if not is_checksum:
-                        raise BaseException(_("Bip39 seed invalid"))
+                        raise InvalidBip39Seed()
                     ks = keystore.from_bip39_seed(seed, passphrase, bip39_derivation)
                 if int(bip39_derivation.split('/')[ACCOUNT_POS].split('\'')[0]) != 0:
                     wallet_type = '%s-derived-standard' % coin
@@ -2478,7 +2478,7 @@ class AndroidCommands(commands.Commands):
                 else:
                     is_checksum, is_wordlist = keystore.bip39_is_checksum_valid(seed)
                     if not is_checksum:
-                        raise BaseException(_("Bip39 seed invalid"))
+                        raise InvalidBip39Seed()
                     if coin == "btc":
                         derivation = bip44_derivation(0, purpose)
                     elif self.coins.__contains__(coin):
@@ -2752,9 +2752,9 @@ class AndroidCommands(commands.Commands):
     def get_hd_wallet_encode_seed(self, coin=''):
         return self.get_hd_wallet().get_keystore().xpub + coin
 
-    def recovery_hd_derived_wallet(self, password=None, seed=None, passphrase='', xpub=None, hw=False, wallet_data=None):
+    def recovery_hd_derived_wallet(self, password=None, seed=None, passphrase='', xpub=None, hw=False, wallet_data=None, path='bluetooth'):
         if hw:
-            self.recovery_wallet(xpub=xpub, hw=hw)
+            self.recovery_wallet(xpub=xpub, hw=hw, path=path)
         else:
             #hd_wallet = self.btc_derived_info.get_hd_wallet()
             xpub = self.get_hd_wallet_encode_seed('btc')
@@ -2805,9 +2805,11 @@ class AndroidCommands(commands.Commands):
         encode_seed = self.get_hd_wallet_encode_seed(coin)
         list_info = self.get_derived_list(encode_seed)
         #list_info = derived_info.get_list()
+
         if list_info is not None:
             if len(list_info) == 0:
-                raise BaseException(_("Maximum support to create 20 wallet"))
+                from electrum.i18n import _
+                raise DerivedWalletLimit()
             account_id = list_info[0]
         else:
             account_id = 0
@@ -2831,7 +2833,7 @@ class AndroidCommands(commands.Commands):
         temp_path = self.get_temp_file()
         path = self._wallet_path(temp_path)
         if exists(path):
-            raise BaseException(_("The file already exists"))
+            raise FileAlreadyExist()
         storage = WalletStorage(path)
         db = WalletDB('', manual_upgrades=False)
         ks = keystore.from_bip39_seed(seed, passphrase, bip39_derivation)
@@ -2919,7 +2921,7 @@ class AndroidCommands(commands.Commands):
     def check_exist_file(self, addr):
         for _, exist_wallet in self.daemon._wallets.items():
             if addr in exist_wallet.get_addresses()[0]:
-                raise BaseException(_("The file already exists"))
+                raise FileAlreadyExist()
 
     #####
     # rbf api
@@ -2960,12 +2962,12 @@ class AndroidCommands(commands.Commands):
     def get_rbf_fee_info(self, tx_hash):
         tx = self.wallet.db.get_transaction(tx_hash)
         if not tx:
-            raise BaseException(_("Get transaction failed"))
+            raise FailedGetTx()
         txid = tx.txid()
         assert txid
         fee = self.wallet.get_tx_fee(txid)
         if fee is None:
-            raise BaseException(_("Can't bump fee: unknown fee for original transaction."))
+            raise BaseException(_("RBF(Replace-By-Fee) fails because it does not get the fee intormation of the original transaction."))
         tx_size = tx.estimated_size()
         old_fee_rate = fee / tx_size  # sat/vbyte
         new_rate = Decimal(max(old_fee_rate * 1.5, old_fee_rate + 1)).quantize(Decimal('0.0'))
@@ -3042,7 +3044,7 @@ class AndroidCommands(commands.Commands):
             self._assert_wallet_isvalid()
             parent_tx = self.wallet.db.get_transaction(tx_hash)
             if not parent_tx:
-                raise BaseException(_("Get transaction failed"))
+                raise FailedGetTx()
             info = {}
             child_tx = self.wallet.cpfp(parent_tx, 0)
             if child_tx:
@@ -3051,7 +3053,7 @@ class AndroidCommands(commands.Commands):
                 assert parent_txid
                 parent_fee = self.wallet.get_tx_fee(parent_txid)
                 if parent_fee is None:
-                    raise BaseException(_("Can't cpfp: unknown fee for parent transaction."))
+                    raise BaseException(_("CPFP(Child Pays For Parent) fails because it does not get the fee intormation of the original transaction."))
                 info['total_size'] = '(%s) bytes' % total_size
                 max_fee = child_tx.output_value()
                 info['input_amount'] = self.format_amount(max_fee) + ' ' + self.base_unit
@@ -3067,7 +3069,7 @@ class AndroidCommands(commands.Commands):
                 else:
                     suggested_feerate = suggested_feerate * 1000
                 if suggested_feerate is None:
-                    raise BaseException(f'''{_("can't cpfp'")}: {_('dynamic fee estimates not available')}''')
+                    raise BaseException(f'''{_("Failed CPFP(Child Pays For Parent)'")}: {_('dynamic fee estimates not available')}''')
 
                 parent_feerate = parent_fee / parent_tx.estimated_size() * 1000
                 info['parent_feerate'] = self.format_fee_rate(parent_feerate) if parent_feerate else ''
@@ -3087,9 +3089,9 @@ class AndroidCommands(commands.Commands):
                 info['total_feerate'] = comb_feerate_str
 
                 if fee_for_child is None:
-                    raise BaseException(_("Fee for chaild is none"))  # fee left empty, treat is as "cancel"
+                    raise BaseException(_("Sub-transaction fee error"))  # fee left empty, treat is as "cancel"
                 if fee_for_child > max_fee:
-                    raise BaseException(_('max fee exceeded'))
+                    raise BaseException(_('Exceeding the Maximum fee limit'))
             return json.dumps(info)
         except BaseException as e:
             raise e
@@ -3099,7 +3101,7 @@ class AndroidCommands(commands.Commands):
             self._assert_wallet_isvalid()
             parent_tx = self.wallet.db.get_transaction(tx_hash)
             if not parent_tx:
-                raise BaseException(_("Get transaction failed"))
+                raise FailedGetTx()
             new_tx = self.wallet.cpfp(parent_tx, self.get_amount(fee_for_child))
             new_tx.set_rbf(self.rbf)
             out = {
@@ -3181,7 +3183,7 @@ class AndroidCommands(commands.Commands):
         try:
             self._assert_daemon_running()
             if old_name is None or new_name is None:
-                raise BaseException(_("Please enter the correct file name"))
+                raise BaseException(("Please enter the correct file name"))
             else:
                 wallet = self.daemon._wallets[self._wallet_path(old_name)]
                 wallet.set_name(new_name)
@@ -3194,7 +3196,7 @@ class AndroidCommands(commands.Commands):
         try:
             self._assert_daemon_running()
             if old_name is None or new_name is None:
-                raise BaseException("wallet_name can't be none")
+                raise BaseException("Please enter the correct file name")
             else:
                 os.rename(self._wallet_path(old_name), self._wallet_path(new_name))
                 self.daemon.pop_wallet(self._wallet_path(old_name))
@@ -3288,7 +3290,7 @@ class AndroidCommands(commands.Commands):
                 if -1 != wallet_type.find("-hd-") and -1 == wallet_type.find("-hw-"):
                     self.delete_derived_wallet()
                 elif -1 != wallet_type.find('-derived-') and -1 == wallet_type.find("-hw-"):
-                    raise BaseException(_("HD derivted wallet can't be delete"))
+                    raise BaseException(("HD derivted wallet can't be delete"))
                 else:
                     self.delete_wallet_from_deamon(self._wallet_path(name))
                     self.local_wallet_info.pop(name)
@@ -3299,7 +3301,7 @@ class AndroidCommands(commands.Commands):
 
     def _assert_daemon_running(self):
         if not self.daemon_running:
-            raise BaseException(_("Daemon not running, please restart app"))
+            raise BaseException(_("The background process does not start and it is recommended to restart the application."))
             # Same wording as in electrum script.
 
     def _assert_wizard_isvalid(self):
@@ -3309,12 +3311,12 @@ class AndroidCommands(commands.Commands):
 
     def _assert_wallet_isvalid(self):
         if self.wallet is None:
-            raise BaseException(_("Wallet is none, please select wallet"))
+            raise BaseException(_("You haven't chosen a wallet yes."))
             # Log callbacks on stderr so they'll appear in the console activity.
 
     def _assert_hd_wallet_isvalid(self):
         if self.hd_wallet is None:
-            raise BaseException(_("HD wallet is none, please create hd wallet"))
+            raise BaseException(_("Please create HD wallet first."))
 
     def _assert_coin_isvalid(self, coin):
         if coin != "btc" and coin != "eth":

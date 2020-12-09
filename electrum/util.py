@@ -118,7 +118,43 @@ class MultipleSpendMaxTxOutputs(Exception):
 
 class InvalidPassword(Exception):
     def __str__(self):
-        return _("Incorrect password")
+        return _("Incorrect password.")
+
+class InvalidBip39Seed(Exception):
+    def __str__(self):
+        return _("Incorrect Bip39 mnemonic format.")
+
+class NotSupportExportSeed(Exception):
+    def __str__(self):
+        return _("Current wallet does not support exporting Mnemonic.")
+
+class UnavailableBtcAddr(Exception):
+    def __str__(self):
+        return _("Incorrect bitcoin address.")
+
+class UnavailableEthAddr(Exception):
+    def __str__(self):
+        return _("Incorrect eth address.")
+
+class UnavailablePublicKey(Exception):
+    def __str__(self):
+        return _("Incorrect public key.")
+
+class UnavailablePrivateKey(Exception):
+    def __str__(self):
+        return _("Incorrect private key.")
+
+class DerivedWalletLimit(Exception):
+    def __str__(self):
+        return _("The number of wallets created is limited, currently up to 20 HD wallets can be created.")
+
+class FileAlreadyExist(Exception):
+    def __str__(self):
+        return _("File already exists.")
+
+class FailedGetTx(Exception):
+    def __str__(self):
+        return _("Failed to get transaction.")
 
 
 class FileImportFailed(Exception):

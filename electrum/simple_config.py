@@ -343,6 +343,9 @@ class SimpleConfig(Logger):
             fee = self.fee_estimates.get(num_blocks)
         return fee
 
+    def get_block_fee_info(self):
+        return self.fee_estimates
+
     def fee_to_depth(self, target_fee: Real) -> int:
         """For a given sat/vbyte fee, returns an estimate of how deep
         it would be in the current mempool in vbytes.
