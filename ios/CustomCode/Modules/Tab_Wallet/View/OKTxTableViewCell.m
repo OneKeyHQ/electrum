@@ -26,7 +26,8 @@
     self.statusLabel.text = model.tx_status;
     self.timeLabel.text = model.date;
     NSArray *amountArray = [model.amount componentsSeparatedByString:@"("];
-    self.amountLabel.text = [amountArray firstObject];
+    NSString *bStr = [NSString stringWithFormat:@"%@%@",[model.is_mine boolValue] == NO ? @"+":@"-" ,[amountArray firstObject]];
+    self.amountLabel.text = bStr;
     self.addressLabel.text = model.tx_hash;
 }
 

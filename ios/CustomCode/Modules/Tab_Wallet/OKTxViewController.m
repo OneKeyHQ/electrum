@@ -31,6 +31,7 @@
 - (void)stupUI
 {
     self.tableView.tableFooterView = [UIView new];
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notiSendTxComplete) name:kNotiSendTxComplete object:nil];
     [self loadList];
 }
 
@@ -38,6 +39,7 @@
 {
     NSArray *resultArray = [kPyCommandsManager callInterface:kInterfaceGet_all_tx_list parameter:@{@"search_type":self.searchType}];
     self.txListArray = [OKTxTableViewCellModel mj_objectArrayWithKeyValuesArray:resultArray];
+    [self.tableView reloadData];
 }
 
 
@@ -55,17 +57,6 @@
 {
     return 68;
 }
-- ( UISwipeActionsConfiguration *)tableView:(UITableView *)tableView trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath {
-    //删除
-    UIContextualAction *deleteRowAction = [UIContextualAction contextualActionWithStyle:UIContextualActionStyleDestructive title:MyLocalizedString(@"delete", nil) handler:^(UIContextualAction * _Nonnull action, __kindof UIView * _Nonnull sourceView, void (^ _Nonnull completionHandler)(BOOL)) {
-        OKTxTableViewCellModel *model = self.txListArray[indexPath.row];
-        [kPyCommandsManager callInterface:kInterfaceRemove_local_tx parameter:@{@"delete_tx":model.tx_hash}];
-        completionHandler (YES);
-        [self.tableView reloadData];
-    }];
-    UISwipeActionsConfiguration *config = [UISwipeActionsConfiguration configurationWithActions:@[deleteRowAction]];
-    return config;
-}
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *ID = @"OKTxTableViewCell";
@@ -79,12 +70,16 @@
 }
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-//    OKTxTableViewCellModel *model = self.txListArray[indexPath.row];
-//    [kPyCommandsManager callInterface:kInterfaceRemove_local_tx parameter:@{@"delete_tx":model.tx_hash}];
     OKTxTableViewCellModel *model = self.txListArray[indexPath.row];
     OKTxDetailViewController *txDetailVc = [OKTxDetailViewController txDetailViewController];
     txDetailVc.tx_hash = model.tx_hash;
     txDetailVc.txDate = model.date;
     [self.navigationController pushViewController:txDetailVc animated:YES];
+}
+
+#pragma mark - notiSendTxComplete
+- (void)notiSendTxComplete
+{
+    [self loadList];
 }
 @end

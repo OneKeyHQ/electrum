@@ -18,6 +18,9 @@
 //更新密码完成
 #define kNotiUpdatePassWordComplete             @"kNotiUpdatePassWordComplete"
 
+//发送交易完成
+#define kNotiSendTxComplete                     @"kNotiSendTxComplete"
+
 //删除钱包
 #define kNotiDeleteWalletComplete               @"kNotiDeleteWalletComplete"
 //备份钱包完成

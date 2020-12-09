@@ -204,24 +204,25 @@ typedef enum {
 
 - (void)refreshFeeSelect
 {
+    NSString *fiatS = kWalletManager.currentFiatSymbol;
     if (_custom) {
         self.customTitleLabel.text = MyLocalizedString(@"The custom", nil);
         NSString *fee = [self.customFeeDict safeStringForKey:@"fee"];
         if (fee == nil) {
             fee = @"0";
         }
-        self.customCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",fee,kWalletManager.currentBitcoinUnit];
+        self.customCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",[kWalletManager getFeeBaseWithSat:fee],kWalletManager.currentBitcoinUnit];
         self.customTimeLabel.text = [NSString stringWithFormat:@"约%@分钟",[self.customFeeDict safeStringForKey:@"time"]==nil?@"--":[self.customFeeDict safeStringForKey:@"time"]];
-        self.customMoneyAmountLabel.text = self.fiatCustom;
+        self.customMoneyAmountLabel.text = [NSString stringWithFormat:@"%@%@",fiatS,self.fiatCustom];
     }else{
         self.slowTitleLabel.text = MyLocalizedString(@"slow", nil);
         NSString *feeslow = [self.lowFeeDict safeStringForKey:@"fee"];
         if (feeslow == nil) {
             feeslow = @"-";
         }
-        self.slowCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",feeslow,kWalletManager.currentBitcoinUnit];
+        self.slowCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",[kWalletManager getFeeBaseWithSat:feeslow],kWalletManager.currentBitcoinUnit];
         self.slowTimeLabel.text = [NSString stringWithFormat:@"约%@分钟",[self.lowFeeDict safeStringForKey:@"time"]==nil?@"--":[self.lowFeeDict safeStringForKey:@"time"]];
-        self.slowMoneyAmountLabel.text = self.fiatLow;
+        self.slowMoneyAmountLabel.text = [NSString stringWithFormat:@"%@%@",fiatS,self.fiatLow];
         
         
         self.recommendTitleLabel.text = MyLocalizedString(@"recommended", nil);
@@ -229,18 +230,18 @@ typedef enum {
         if (feerecommend == nil) {
             feerecommend = @"-";
         }
-        self.recommendCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",feerecommend,kWalletManager.currentBitcoinUnit];
+        self.recommendCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",[kWalletManager getFeeBaseWithSat:feerecommend],kWalletManager.currentBitcoinUnit];
         self.recommendTimeLabel.text = [NSString stringWithFormat:@"约%@分钟",[self.recommendFeeDict safeStringForKey:@"time"]==nil?@"--":[self.recommendFeeDict safeStringForKey:@"time"]];
-        self.recommendMoneyAmountLabel.text = self.fiatRecommend;
+        self.recommendMoneyAmountLabel.text = [NSString stringWithFormat:@"%@%@",fiatS,self.fiatRecommend];
         
         self.fastTitleLabel.text = MyLocalizedString(@"fast", nil);
         NSString *feefast = [self.fastFeeDict safeStringForKey:@"fee"];
         if (feefast == nil) {
             feefast = @"-";
         }
-        self.fastCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",feefast,kWalletManager.currentBitcoinUnit];
+        self.fastCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",[kWalletManager getFeeBaseWithSat:feefast],kWalletManager.currentBitcoinUnit];
         self.fastTimeLabel.text = [NSString stringWithFormat:@"约%@分钟",[self.fastFeeDict safeStringForKey:@"time"] == nil ? @"--":[self.fastFeeDict safeStringForKey:@"time"]];
-        self.fastMoneyAmountLabel.text = self.fiatFast;
+        self.fastMoneyAmountLabel.text = [NSString stringWithFormat:@"%@%@",fiatS,self.fiatFast];
     }
     [self changUIForCustom];
 }
@@ -339,7 +340,7 @@ typedef enum {
     model.sendAddress = kWalletManager.currentWalletInfo.addr;
     model.rAddress = self.addressTextField.text;
     model.txType = @"";
-    model.fee = [dict safeStringForKey:@"fee"];
+    model.fee = [NSString stringWithFormat:@"%@ %@",[kWalletManager getFeeBaseWithSat:[dict safeStringForKey:@"fee"]],[kWalletManager currentBitcoinUnit]];
     sendVc.info = model;
     [sendVc showOnWindowWithParentViewController:self block:^(NSString * _Nonnull str) {
         [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
@@ -352,6 +353,7 @@ typedef enum {
             NSString *signTx = [signTxDict safeStringForKey:@"tx"];
             [kPyCommandsManager callInterface:kInterfaceBroadcast_tx parameter:@{@"tx":signTx}];
             [kTools tipMessage:MyLocalizedString(@"Send a success", nil)];
+            [[NSNotificationCenter defaultCenter]postNotificationName:kNotiSendTxComplete object:nil];
             [weakself.navigationController popViewControllerAnimated:YES];
         }];
     }];
@@ -401,7 +403,7 @@ typedef enum {
     NSArray *outputsArray = @[outputsDict];
     NSString *outputs = [outputsArray mj_JSONString];
     NSString *memo = @"";
-    NSDictionary *dict =  [kPyCommandsManager callInterface:kInterfaceGet_fee_by_feerate parameter:@{@"outputs":outputs,@"message":memo,@"feerate":@"0"}];
+    NSDictionary *dict =  [kPyCommandsManager callInterface:kInterfaceGet_fee_by_feerate parameter:@{@"outputs":outputs,@"message":memo,@"feerate":@"1"}];
     self.lowFeeDict = dict;
     
     NSString *feesat = [dict safeStringForKey:@"fee"];
