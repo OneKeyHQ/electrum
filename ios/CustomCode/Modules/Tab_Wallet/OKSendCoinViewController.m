@@ -15,6 +15,8 @@ typedef enum {
 
 #import "OKSendCoinViewController.h"
 #import "OKWalletInputFeeView.h"
+#import "OKSendTxPreInfoViewController.h"
+#import "OKSendTxPreModel.h"
 
 
 @interface OKSendCoinViewController ()<UITextFieldDelegate>
@@ -298,50 +300,60 @@ typedef enum {
         [kTools tipMessage:MyLocalizedString(@"The transfer amount cannot be zero", nil)];
         return NO;
     }
-    
     return YES;
 }
 - (IBAction)sendBtnClick:(OKButton *)sender {
     if (![self checkTextField]) {
         return;
     }
-    NSDictionary *dict = [NSDictionary dictionary];
-    if (_custom) {
+    OKWeakSelf(self)
+    __block  NSDictionary *dict = [NSDictionary dictionary];
+    if (weakself.custom) {
         dict = self.customFeeDict;
     }else{
-        switch (_currentFeeType) {
+        switch (weakself.currentFeeType) {
             case OKFeeTypeSlow:
             {
-                dict = self.lowFeeDict;
+                dict = weakself.lowFeeDict;
             }
                 break;
             case OKFeeTypeRecommend:
             {
-                dict = self.recommendFeeDict;
+                dict = weakself.recommendFeeDict;
             }
                 break;
             case OKFeeTypeFast:
             {
-                dict = self.fastFeeDict;
+                dict = weakself.fastFeeDict;
             }
                 break;
             default:
                 break;
         }
     }
-
-    OKWeakSelf(self)
-    [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
-        NSString *feerateTx = [dict safeStringForKey:@"tx"];
-        NSDictionary *dict1 =  [kPyCommandsManager callInterface:kInterfaceMktx parameter:@{@"tx":feerateTx}];
-        NSString *unSignStr = [dict1 safeStringForKey:@"tx"];
-        NSString *tx = unSignStr;
-        NSString *password = pwd;
-        NSDictionary *signTxDict =  [kPyCommandsManager callInterface:kInterfaceSign_tx parameter:@{@"tx":tx,@"password":password}];
-        NSString *signTx = [signTxDict safeStringForKey:@"tx"];
-        [kPyCommandsManager callInterface:kInterfaceBroadcast_tx parameter:@{@"tx":signTx}];
-        [kTools tipMessage:MyLocalizedString(@"Send a success", nil)];
-        [weakself.navigationController popViewControllerAnimated:YES];
+    OKSendTxPreInfoViewController *sendVc = [OKSendTxPreInfoViewController initViewControllerWithStoryboardName:@"Tab_Wallet"];
+    OKSendTxPreModel *model = [OKSendTxPreModel new];
+    model.amount = self.amountTextField.text;
+    model.coinType = self.coinTypeLabel.text;
+    model.walletName = kWalletManager.currentWalletInfo.label;
+    model.sendAddress = kWalletManager.currentWalletInfo.addr;
+    model.rAddress = self.addressTextField.text;
+    model.txType = @"";
+    model.fee = [dict safeStringForKey:@"fee"];
+    sendVc.info = model;
+    [sendVc showOnWindowWithParentViewController:self block:^(NSString * _Nonnull str) {
+        [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
+            NSString *feerateTx = [dict safeStringForKey:@"tx"];
+            NSDictionary *dict1 =  [kPyCommandsManager callInterface:kInterfaceMktx parameter:@{@"tx":feerateTx}];
+            NSString *unSignStr = [dict1 safeStringForKey:@"tx"];
+            NSString *tx = unSignStr;
+            NSString *password = pwd;
+            NSDictionary *signTxDict =  [kPyCommandsManager callInterface:kInterfaceSign_tx parameter:@{@"tx":tx,@"password":password}];
+            NSString *signTx = [signTxDict safeStringForKey:@"tx"];
+            [kPyCommandsManager callInterface:kInterfaceBroadcast_tx parameter:@{@"tx":signTx}];
+            [kTools tipMessage:MyLocalizedString(@"Send a success", nil)];
+            [weakself.navigationController popViewControllerAnimated:YES];
+        }];
     }];
 }
 
@@ -381,6 +393,7 @@ typedef enum {
     NSString *feesat = [dict safeStringForKey:@"fee"];
     self.fiatRecommend =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":[kWalletManager getFeeBaseWithSat:feesat]}];
 }
+
 - (void)loadZeroFee
 {
     //输入地址和转账额度 获取fee

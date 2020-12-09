@@ -294,3 +294,8 @@
 "OenKey request enabled" = "OneKey请求开启";
 "KeyStore cannot be empty" = "KeyStore不能为空";
 "Please go to create a wallet first" = "请先去创建钱包";
+"Transaction details" = "交易详情";
+"Confirm the payment" = "确认支付";
+"The sender" = "发送方";
+"The receiving party" = "接收方";
+"Transaction fee" = "交易费";

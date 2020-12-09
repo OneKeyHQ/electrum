@@ -34,7 +34,7 @@
     [super viewDidLoad];
     [self setNavigationBarBackgroundColorWithClearColor];
     self.navigationItem.leftBarButtonItem = [UIBarButtonItem backBarButtonItemWithTarget:self selector:@selector(backToPrevious)];
-    [_wordInputView configureData:_wordsArr];
+//    [_wordInputView configureData:_wordsArr];
     [self checkButtonEnabled];
     [self.nextBtn setTitle:MyLocalizedString(@"restore", nil) forState:UIControlStateNormal];
     [self.leftBgView setLayerRadius:2];
