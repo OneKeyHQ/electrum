@@ -89,7 +89,7 @@ typedef void (^StateBlock)(YZAuthIDState state,NSError *error);
  @param desc TouchID/FaceID显示的描述
  @param block 回调状态的block
  */
-
++ (instancetype)sharedInstance;
 - (void)yz_showAuthIDWithDescribe:(NSString *)desc BlockState:(StateBlock)block;
 
 + (void)biologicalRecognitionResult:(void (^)(YZAuthenticationType type))result;

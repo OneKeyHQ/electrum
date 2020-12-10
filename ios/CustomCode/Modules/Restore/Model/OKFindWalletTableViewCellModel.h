@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,copy) NSString* blance;
 @property (nonatomic,copy) NSString* name;
 @property (nonatomic,copy) NSString* label;
+@property (nonatomic,copy) NSString* coin;
 @property (nonatomic,assign)BOOL isSelected;
 @end
 

@@ -43,7 +43,7 @@
 - (void)stupUI
 {
     [self setNavigationBarBackgroundColorWithClearColor];
-    self.title = @"BTC";
+    self.title = self.coinType;
     self.navigationItem.rightBarButtonItem = [UIBarButtonItem barButtonItemWithImage:[UIImage imageNamed:@"token_btc"] frame:CGRectMake(0, 0, 30, 30) target:self selector:@selector(rightBarButtonItemClick)];
     
     [self.sendCoinBtn setLayerRadius:15];
@@ -184,6 +184,7 @@
 - (IBAction)reciveCoinBtnClick:(UIButton *)sender {
     
     OKReceiveCoinViewController *receiveCoinVc = [OKReceiveCoinViewController receiveCoinViewController];
+    receiveCoinVc.coinType = self.coinType;
     [self.navigationController pushViewController:receiveCoinVc animated:YES];
 }
 

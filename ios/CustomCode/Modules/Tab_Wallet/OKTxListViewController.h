@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class  OKAssetTableViewCellModel;
 @interface OKTxListViewController : BaseViewController
 @property (nonatomic,strong)OKAssetTableViewCellModel *model;
+@property (nonatomic,copy)NSString *coinType;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -297,7 +297,7 @@ typedef enum {
         return NO;
     }
     
-    if ([self.balanceLabel.text doubleValue] <= 0) {
+    if ([self.amountTextField.text doubleValue] <= 0) {
         [kTools tipMessage:MyLocalizedString(@"The transfer amount cannot be zero", nil)];
         return NO;
     }
@@ -343,20 +343,39 @@ typedef enum {
     model.fee = [NSString stringWithFormat:@"%@ %@",[kWalletManager getFeeBaseWithSat:[dict safeStringForKey:@"fee"]],[kWalletManager currentBitcoinUnit]];
     sendVc.info = model;
     [sendVc showOnWindowWithParentViewController:self block:^(NSString * _Nonnull str) {
-        [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
-            NSString *feerateTx = [dict safeStringForKey:@"tx"];
-            NSDictionary *dict1 =  [kPyCommandsManager callInterface:kInterfaceMktx parameter:@{@"tx":feerateTx}];
-            NSString *unSignStr = [dict1 safeStringForKey:@"tx"];
-            NSString *tx = unSignStr;
-            NSString *password = pwd;
-            NSDictionary *signTxDict =  [kPyCommandsManager callInterface:kInterfaceSign_tx parameter:@{@"tx":tx,@"password":password}];
-            NSString *signTx = [signTxDict safeStringForKey:@"tx"];
-            [kPyCommandsManager callInterface:kInterfaceBroadcast_tx parameter:@{@"tx":signTx}];
-            [kTools tipMessage:MyLocalizedString(@"Send a success", nil)];
-            [[NSNotificationCenter defaultCenter]postNotificationName:kNotiSendTxComplete object:nil];
-            [weakself.navigationController popViewControllerAnimated:YES];
-        }];
+        if (kWalletManager.isOpenAuthBiological) {
+            [[YZAuthID sharedInstance]yz_showAuthIDWithDescribe:MyLocalizedString(@"OenKey request enabled", nil) BlockState:^(YZAuthIDState state, NSError *error) {
+                if (state == YZAuthIDStateNotSupport
+                    || state == YZAuthIDStatePasswordNotSet || state == YZAuthIDStateTouchIDNotSet) { // 不支持TouchID/FaceID
+                    [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
+                        [weakself sendTxPwd:pwd dict:dict];
+                    }];
+                } else if (state == YZAuthIDStateSuccess) {
+                    NSString *pwd = [kOneKeyPwdManager getOneKeyPassWord];
+                    [weakself sendTxPwd:pwd dict:dict];
+                }
+            }];
+        }else{
+            [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
+                [weakself sendTxPwd:pwd dict:dict];
+            }];
+            
+        }
     }];
+}
+- (void)sendTxPwd:(NSString *)pwd dict:(NSDictionary *)dict
+{
+    NSString *feerateTx = [dict safeStringForKey:@"tx"];
+    NSDictionary *dict1 =  [kPyCommandsManager callInterface:kInterfaceMktx parameter:@{@"tx":feerateTx}];
+    NSString *unSignStr = [dict1 safeStringForKey:@"tx"];
+    NSString *tx = unSignStr;
+    NSString *password = pwd;
+    NSDictionary *signTxDict =  [kPyCommandsManager callInterface:kInterfaceSign_tx parameter:@{@"tx":tx,@"password":password}];
+    NSString *signTx = [signTxDict safeStringForKey:@"tx"];
+    [kPyCommandsManager callInterface:kInterfaceBroadcast_tx parameter:@{@"tx":signTx}];
+    [kTools tipMessage:MyLocalizedString(@"Send a success", nil)];
+    [[NSNotificationCenter defaultCenter]postNotificationName:kNotiSendTxComplete object:nil];
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 

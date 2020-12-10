@@ -39,6 +39,10 @@
 }
 
 - (IBAction)backToWalletClick:(UIButton *)sender {
-    [self dismissViewControllerAnimated:YES completion:nil];
+    if (kWalletManager.isOpenAuthBiological) {
+        [self.OK_TopViewController.navigationController popToRootViewControllerAnimated:YES];
+    }else{
+        [self dismissViewControllerAnimated:YES completion:nil];
+    }
 }
 @end

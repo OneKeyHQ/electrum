@@ -84,15 +84,32 @@
     OKWeakSelf(self)
     if (_wordInputView.wordsArr.count == 12 || _wordInputView.wordsArr.count == 24) {
         __block NSString *mnemonicStr = [_wordInputView.wordsArr componentsJoinedByString:@" "];
-        if ([kWalletManager checkIsHavePwd]) {
-            [OKValidationPwdController showValidationPwdPageOn:self isDis:NO complete:^(NSString * _Nonnull pwd) {
-                [weakself createWallet:pwd mnemonicStr:mnemonicStr];
-            }];
-        }else{
-            OKPwdViewController *pwdVc = [OKPwdViewController setPwdViewControllerPwdUseType:OKPwdUseTypeInitPassword setPwd:^(NSString * _Nonnull pwd) {
-                [weakself createWallet:pwd mnemonicStr:mnemonicStr];
-            }];
-            [self.navigationController pushViewController:pwdVc animated:YES];
+        id result =  [kPyCommandsManager callInterface:kInterfaceverify_legality parameter:@{@"data":mnemonicStr,@"flag":@"seed"}];
+        if (result != nil) {
+            if ([kWalletManager checkIsHavePwd]) {
+                if (kWalletManager.isOpenAuthBiological) {
+                   [[YZAuthID sharedInstance]yz_showAuthIDWithDescribe:MyLocalizedString(@"OenKey request enabled", nil) BlockState:^(YZAuthIDState state, NSError *error) {
+                       if (state == YZAuthIDStateNotSupport
+                           || state == YZAuthIDStatePasswordNotSet || state == YZAuthIDStateTouchIDNotSet) { // 不支持TouchID/FaceID
+                           [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
+                               [weakself createWallet:pwd mnemonicStr:mnemonicStr];
+                           }];
+                       } else if (state == YZAuthIDStateSuccess) {
+                           NSString *pwd = [kOneKeyPwdManager getOneKeyPassWord];
+                           [weakself createWallet:pwd mnemonicStr:mnemonicStr];;
+                       }
+                   }];
+               }else{
+                   [OKValidationPwdController showValidationPwdPageOn:self isDis:NO complete:^(NSString * _Nonnull pwd) {
+                        [weakself createWallet:pwd mnemonicStr:mnemonicStr];
+                   }];
+               }
+            }else{
+                OKPwdViewController *pwdVc = [OKPwdViewController setPwdViewControllerPwdUseType:OKPwdUseTypeInitPassword setPwd:^(NSString * _Nonnull pwd) {
+                    [weakself createWallet:pwd mnemonicStr:mnemonicStr];
+                }];
+                [self.navigationController pushViewController:pwdVc animated:YES];
+            }
         }
     }else{
         [kTools tipMessage:MyLocalizedString(@"Incorrect phrase", nil)];

@@ -10,6 +10,8 @@
 #import "OKWordImportView.h"
 #import "OKWordCheckViewController.h"
 #import "OKScreenshotsTipsController.h"
+#import "OKHDWalletViewController.h"
+#import "OKWalletDetailViewController.h"
 
 @interface OKBackUpViewController ()
 
@@ -88,6 +90,8 @@
 
 
 - (IBAction)next:(id)sender {
+    
+    OKWeakSelf(self)
     switch (_showType) {
         case WordsShowTypeRestore:
         {
@@ -99,12 +103,30 @@
             break;
         case WordsShowTypeExport:
         {
-            [self.OK_TopViewController dismissViewControllerAnimated:YES completion:nil];;
+            if (kWalletManager.isOpenAuthBiological) {
+                for (int i = 0; i < weakself.OK_TopViewController.navigationController.viewControllers.count; i++) {
+                    UIViewController *vc = weakself.OK_TopViewController.navigationController.viewControllers[i];
+                    if ([vc isKindOfClass:[OKWalletDetailViewController class]]) {
+                        [weakself.OK_TopViewController.navigationController popToViewController:vc animated:YES];
+                    }
+                }
+            }else{
+                [self.OK_TopViewController dismissViewControllerAnimated:YES completion:nil];
+            }
         }
             break;
         case WordsShowTypeHDExport:
         {
-            [self.OK_TopViewController dismissViewControllerAnimated:YES completion:nil];
+            if (kWalletManager.isOpenAuthBiological) {
+                for (int i = 0; i < weakself.OK_TopViewController.navigationController.viewControllers.count; i++) {
+                    UIViewController *vc = weakself.OK_TopViewController.navigationController.viewControllers[i];
+                    if ([vc isKindOfClass:[OKHDWalletViewController class]]) {
+                        [weakself.OK_TopViewController.navigationController popToViewController:vc animated:YES];
+                    }
+                }
+            }else{
+                [self.OK_TopViewController dismissViewControllerAnimated:YES completion:nil];
+            }
         }
             break;
         default:

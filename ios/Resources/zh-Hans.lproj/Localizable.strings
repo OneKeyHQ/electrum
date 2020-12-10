@@ -26,7 +26,7 @@
 "Only you can unlock your wallet" = "只有您可以解锁自己的钱包";
 "Use longer passwords that are more complex and more secure" = "使用更复杂，同时也更安全的长密码";
 "It is used to encrypt your wallet, is simple and easy to remember, and is suitable for most people" = "它被用来加密您的钱包，简单好记，适用于大多数人。";
-"We do not store any of your information, so if you forget your password, we will not be able to retrieve it for you" = "我们不存储任何您的信息，因此一旦您忘记自己的密码，我们也无法帮您找回。";
+"We do not store any of your information, so if you forget your password, we will not be able to retrieve it for you" = "我们不在服务器存储您的私密信息(面部识别和指纹等生物数据亦储存在本地设备中），因此一旦您忘记自己的密码，我们也无法帮您找回";
 "Enter your password again" = "再一次输入您的密码";
 "Don't reveal your password to anyone else" = "不要将密码透露给其它人";
 "Complex passwords are relatively more secure, so keep in mind that it's best not to set them the same as your passwords for other sites" = "复杂的密码安全性相对更高，设置完后要牢记，最好次不要设置的跟您其他网站的密码一样。";

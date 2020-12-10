@@ -62,26 +62,23 @@
     BOOL isBackUp = [[kPyCommandsManager callInterface:kInterfaceget_backup_info parameter:@{@"name":self.walletName}] boolValue];
     OKWeakSelf(self)
     if (isBackUp) {
-        [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
-            NSString *name = self.walletName;
-            if (name == nil || name.length == 0) {
-                name = kWalletManager.currentWalletInfo.name;
-            }
-            [kPyCommandsManager callInterface:kInterfaceDelete_wallet parameter:@{@"name":name,@"password":pwd}];
-            [kWalletManager clearCurrentWalletInfo];
-            [[NSNotificationCenter defaultCenter]postNotificationName:kNotiDeleteWalletComplete object:nil];
-            [kTools tipMessage:MyLocalizedString(@"Wallet deleted successfully", nil)];
-            if (weakself.deleteType == OKWhereToDeleteTypeMine) {
-                for (int i = 0; i < weakself.navigationController.viewControllers.count; i++) {
-                    UIViewController *vc = weakself.navigationController.viewControllers[i];
-                    if ([vc isKindOfClass:[OKHDWalletViewController class]]) {
-                        [weakself.navigationController popToViewController:vc animated:YES];
-                    }
+        if (kWalletManager.isOpenAuthBiological) {
+            [[YZAuthID sharedInstance]yz_showAuthIDWithDescribe:MyLocalizedString(@"OenKey request enabled", nil) BlockState:^(YZAuthIDState state, NSError *error) {
+                if (state == YZAuthIDStateNotSupport
+                    || state == YZAuthIDStatePasswordNotSet || state == YZAuthIDStateTouchIDNotSet) { // 不支持TouchID/FaceID
+                    [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
+                        [weakself deleteWallet:pwd];
+                    }];
+                } else if (state == YZAuthIDStateSuccess) {
+                    NSString *pwd = [kOneKeyPwdManager getOneKeyPassWord];
+                    [weakself deleteWallet:pwd];
                 }
-            }else{
-                [weakself.navigationController popToRootViewControllerAnimated:YES];
-            }
-        }];
+            }];
+        }else{
+            [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
+                [weakself deleteWallet:pwd];
+            }];
+        }
     }else{
         OKWeakSelf(self)
         OKDeleteBackUpTipsController *tipsVc = [OKDeleteBackUpTipsController deleteBackUpTipsController:^{
@@ -89,6 +86,28 @@
         }];
         tipsVc.modalPresentationStyle = UIModalPresentationOverFullScreen;
         [self presentViewController:tipsVc animated:NO completion:nil];
+    }
+}
+- (void)deleteWallet:(NSString *)pwd
+{
+    OKWeakSelf(self)
+    NSString *name = self.walletName;
+    if (name == nil || name.length == 0) {
+        name = kWalletManager.currentWalletInfo.name;
+    }
+    [kPyCommandsManager callInterface:kInterfaceDelete_wallet parameter:@{@"name":name,@"password":pwd}];
+    [kWalletManager clearCurrentWalletInfo];
+    [[NSNotificationCenter defaultCenter]postNotificationName:kNotiDeleteWalletComplete object:nil];
+    [kTools tipMessage:MyLocalizedString(@"Wallet deleted successfully", nil)];
+    if (weakself.deleteType == OKWhereToDeleteTypeMine) {
+        for (int i = 0; i < weakself.navigationController.viewControllers.count; i++) {
+            UIViewController *vc = weakself.navigationController.viewControllers[i];
+            if ([vc isKindOfClass:[OKHDWalletViewController class]]) {
+                [weakself.navigationController popToViewController:vc animated:YES];
+            }
+        }
+    }else{
+        [weakself.navigationController popToRootViewControllerAnimated:YES];
     }
 }
 

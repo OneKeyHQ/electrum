@@ -36,16 +36,23 @@
         case 1:
         {
             OKWeakSelf(self)
-            [OKValidationPwdController showValidationPwdPageOn:self isDis:NO complete:^(NSString * _Nonnull pwd) {
-                NSString *result = [kPyCommandsManager callInterface:kInterfaceexport_seed parameter:@{@"password":pwd,@"name":self.walletName}];
-                if (result != nil) {
-                    
-                    OKReadyToStartViewController *readyToVc = [OKReadyToStartViewController readyToStartViewController];
-                    readyToVc.words = result;
-                    readyToVc.isExport = YES;
-                    [weakself.OK_TopViewController.navigationController pushViewController:readyToVc animated:YES];
-                }
-            }];
+            if (kWalletManager.isOpenAuthBiological) {
+                [[YZAuthID sharedInstance]yz_showAuthIDWithDescribe:MyLocalizedString(@"OenKey request enabled", nil) BlockState:^(YZAuthIDState state, NSError *error) {
+                    if (state == YZAuthIDStateNotSupport
+                        || state == YZAuthIDStatePasswordNotSet || state == YZAuthIDStateTouchIDNotSet) { // 不支持TouchID/FaceID
+                        [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
+                            [weakself importSeedPwd:pwd];
+                        }];
+                    } else if (state == YZAuthIDStateSuccess) {
+                        NSString *pwd = [kOneKeyPwdManager getOneKeyPassWord];
+                        [weakself importSeedPwd:pwd];
+                    }
+                }];
+            }else {
+                [OKValidationPwdController showValidationPwdPageOn:self isDis:NO complete:^(NSString * _Nonnull pwd) {
+                    [weakself importSeedPwd:pwd];
+                }];
+            }
         }
             break;
         case 3:
@@ -59,5 +66,17 @@
         default:
             break;
     };
+}
+
+- (void)importSeedPwd:(NSString *)pwd
+{
+    OKWeakSelf(self)
+    NSString *result = [kPyCommandsManager callInterface:kInterfaceexport_seed parameter:@{@"password":pwd,@"name":self.walletName}];
+    if (result != nil) {
+        OKReadyToStartViewController *readyToVc = [OKReadyToStartViewController readyToStartViewController];
+        readyToVc.words = result;
+        readyToVc.isExport = YES;
+        [weakself.OK_TopViewController.navigationController pushViewController:readyToVc animated:YES];
+    }
 }
 @end

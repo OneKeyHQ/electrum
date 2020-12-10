@@ -170,9 +170,23 @@
                 OKWeakSelf(self)
                 [weakself.OK_TopViewController dismissViewControllerAnimated:NO completion:^{
                     if ([kWalletManager checkIsHavePwd]) {
-                        [OKValidationPwdController showValidationPwdPageOn:weakself isDis:NO complete:^(NSString * _Nonnull pwd) {
-                            [weakself createWallet:pwd];
-                        }];
+                        if (kWalletManager.isOpenAuthBiological) {
+                            [[YZAuthID sharedInstance]yz_showAuthIDWithDescribe:MyLocalizedString(@"OenKey request enabled", nil) BlockState:^(YZAuthIDState state, NSError *error) {
+                                if (state == YZAuthIDStateNotSupport
+                                    || state == YZAuthIDStatePasswordNotSet || state == YZAuthIDStateTouchIDNotSet) { // 不支持TouchID/FaceID
+                                    [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
+                                        [weakself createWallet:pwd];
+                                    }];
+                                } else if (state == YZAuthIDStateSuccess) {
+                                    NSString *pwd = [kOneKeyPwdManager getOneKeyPassWord];
+                                    [weakself createWallet:pwd];
+                                }
+                            }];
+                        }else{
+                            [OKValidationPwdController showValidationPwdPageOn:weakself isDis:NO complete:^(NSString * _Nonnull pwd) {
+                                [weakself createWallet:pwd];
+                            }];
+                        }
                     }else{
                         OKPwdViewController *pwdVc = [OKPwdViewController setPwdViewControllerPwdUseType:OKPwdUseTypeInitPassword setPwd:^(NSString * _Nonnull pwd) {
                             [weakself createWallet:pwd];

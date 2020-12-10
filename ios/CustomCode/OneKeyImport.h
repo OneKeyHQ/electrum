@@ -55,5 +55,6 @@
 #import "UIButton+OneKey.h"
 #import "UIViewController+Extension.h"
 #import "Sha256.h"
+#import "OKOneKeyPwdManager.h"
 
 #endif /* OneKeyImport_h */

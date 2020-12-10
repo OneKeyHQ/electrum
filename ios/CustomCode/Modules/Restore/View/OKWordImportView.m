@@ -147,17 +147,17 @@
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
-    for (NSInteger i = _tfs.count - 1; i >= 0; --i) {
-        if (_tfs[i].mark == NO) {
-            [_tfs[i] becomeFirstResponder];
-            break;
-        }
-        if (i == 0) {
-            OKDeleteTextField *textF = _tfs[0];
-            textF.mark = NO;
-            [textF becomeFirstResponder];
-        }
-    }
+//    for (NSInteger i = _tfs.count - 1; i >= 0; --i) {
+//        if (_tfs[i].mark == NO) {
+//            [_tfs[i] becomeFirstResponder];
+//            break;
+//        }
+//        if (i == 0) {
+//            OKDeleteTextField *textF = _tfs[0];
+//            textF.mark = NO;
+//            [textF becomeFirstResponder];
+//        }
+//    }
 }
 
 - (void)deleteBackward {

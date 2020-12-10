@@ -29,8 +29,7 @@
 {
     _model = model;
     [self.cellBgView setLayerRadius:20];
-    NSArray *nameArray = [model.label componentsSeparatedByString:@"_"];
-    NSString *iconName =  [NSString stringWithFormat:@"token_%@",[nameArray firstObject]];
+    NSString *iconName =  [NSString stringWithFormat:@"token_%@",[model.coin lowercaseString]];
     self.iconImageView.image = [UIImage imageNamed:iconName];
     self.checkBtn.selected = model.isSelected;
     self.walletNameLabel.text = model.label;

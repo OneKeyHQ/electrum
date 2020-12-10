@@ -117,15 +117,23 @@
         case OKClickTypeExportMnemonic:
         {
             OKExportTipsViewController *exportTipsVc = [OKExportTipsViewController exportTipsViewController:^{
-                [OKValidationPwdController showValidationPwdPageOn:self isDis:NO complete:^(NSString * _Nonnull pwd) {
-                    NSString *result = [kPyCommandsManager callInterface:kInterfaceexport_seed parameter:@{@"password":pwd,@"name":kWalletManager.currentWalletInfo.name}];
-                    if (result != nil) {
-                        OKBackUpViewController *backUpVc = [OKBackUpViewController backUpViewController];
-                        backUpVc.words = [result componentsSeparatedByString:@" "];
-                        backUpVc.showType = WordsShowTypeExport;
-                        [weakself.OK_TopViewController.navigationController pushViewController:backUpVc animated:YES];
-                    }
-                }];
+                if (kWalletManager.isOpenAuthBiological) {
+                    [[YZAuthID sharedInstance]yz_showAuthIDWithDescribe:MyLocalizedString(@"OenKey request enabled", nil) BlockState:^(YZAuthIDState state, NSError *error) {
+                        if (state == YZAuthIDStateNotSupport
+                            || state == YZAuthIDStatePasswordNotSet || state == YZAuthIDStateTouchIDNotSet) { // 不支持TouchID/FaceID
+                            [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
+                                [weakself importSeedPwd:pwd];
+                            }];
+                        } else if (state == YZAuthIDStateSuccess) {
+                            NSString *pwd = [kOneKeyPwdManager getOneKeyPassWord];
+                            [weakself importSeedPwd:pwd];;
+                        }
+                    }];
+                }else{
+                    [OKValidationPwdController showValidationPwdPageOn:self isDis:NO complete:^(NSString * _Nonnull pwd) {
+                        [weakself importSeedPwd:pwd];
+                    }];
+                }
             }];
             exportTipsVc.modalPresentationStyle = UIModalPresentationOverFullScreen;
             [self.OK_TopViewController presentViewController:exportTipsVc animated:NO completion:nil];
@@ -134,14 +142,23 @@
         case OKClickTypeExportPrivatekey:
         {
             OKExportTipsViewController *exportTipsVc = [OKExportTipsViewController exportTipsViewController:^{
-                [OKValidationPwdController showValidationPwdPageOn:self isDis:NO complete:^(NSString * _Nonnull pwd) {
-                    NSString *result =  [kPyCommandsManager callInterface:kInterfaceexport_privkey parameter:@{@"password":pwd}];
-                     if (result != nil) {
-                         OKPrivateKeyExportViewController *privateKeyExportVc = [OKPrivateKeyExportViewController privateKeyExportViewController];
-                         privateKeyExportVc.privateKey = result;
-                         [weakself.OK_TopViewController.navigationController pushViewController:privateKeyExportVc animated:YES];
-                     }
-                }];
+                if (kWalletManager.isOpenAuthBiological) {
+                    [[YZAuthID sharedInstance]yz_showAuthIDWithDescribe:MyLocalizedString(@"OenKey request enabled", nil) BlockState:^(YZAuthIDState state, NSError *error) {
+                        if (state == YZAuthIDStateNotSupport
+                            || state == YZAuthIDStatePasswordNotSet || state == YZAuthIDStateTouchIDNotSet) { // 不支持TouchID/FaceID
+                            [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
+                                [weakself exportPrivatePwd:pwd];
+                            }];
+                        } else if (state == YZAuthIDStateSuccess) {
+                            NSString *pwd = [kOneKeyPwdManager getOneKeyPassWord];
+                            [weakself exportPrivatePwd:pwd];
+                        }
+                    }];
+                }else{
+                    [OKValidationPwdController showValidationPwdPageOn:self isDis:NO complete:^(NSString * _Nonnull pwd) {
+                        [weakself exportPrivatePwd:pwd];
+                    }];
+                }
             }];
             exportTipsVc.modalPresentationStyle = UIModalPresentationOverFullScreen;
             [self.OK_TopViewController presentViewController:exportTipsVc animated:NO completion:nil];
@@ -172,9 +189,23 @@
                         if (weakself.walletType == OKWalletTypeObserve) {
                             [weakself deleteWalletPwd:@""];
                         }else{
-                            [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
-                                [weakself deleteWalletPwd:pwd];
-                        }];
+                            if (kWalletManager.isOpenAuthBiological) {
+                                [[YZAuthID sharedInstance]yz_showAuthIDWithDescribe:MyLocalizedString(@"OenKey request enabled", nil) BlockState:^(YZAuthIDState state, NSError *error) {
+                                    if (state == YZAuthIDStateNotSupport
+                                        || state == YZAuthIDStatePasswordNotSet || state == YZAuthIDStateTouchIDNotSet) { // 不支持TouchID/FaceID
+                                        [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
+                                            [weakself deleteWalletPwd:pwd];
+                                        }];
+                                    } else if (state == YZAuthIDStateSuccess) {
+                                        NSString *pwd = [kOneKeyPwdManager getOneKeyPassWord];
+                                        [weakself deleteWalletPwd:pwd];;
+                                    }
+                                }];
+                            }else{
+                                [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
+                                    [weakself deleteWalletPwd:pwd];
+                                }];
+                            }
                         }
                     }];
                     deleteVc.modalPresentationStyle = UIModalPresentationOverFullScreen;
@@ -193,6 +224,30 @@
             break;
     }
 }
+
+- (void)importSeedPwd:(NSString *)pwd
+{
+    OKWeakSelf(self)
+    NSString *result = [kPyCommandsManager callInterface:kInterfaceexport_seed parameter:@{@"password":pwd,@"name":kWalletManager.currentWalletInfo.name}];
+    if (result != nil) {
+        OKBackUpViewController *backUpVc = [OKBackUpViewController backUpViewController];
+        backUpVc.words = [result componentsSeparatedByString:@" "];
+        backUpVc.showType = WordsShowTypeExport;
+        [weakself.OK_TopViewController.navigationController pushViewController:backUpVc animated:YES];
+    }
+}
+
+- (void)exportPrivatePwd:(NSString *)pwd
+{
+    OKWeakSelf(self)
+    NSString *result =  [kPyCommandsManager callInterface:kInterfaceexport_privkey parameter:@{@"password":pwd}];
+     if (result != nil) {
+         OKPrivateKeyExportViewController *privateKeyExportVc = [OKPrivateKeyExportViewController privateKeyExportViewController];
+         privateKeyExportVc.privateKey = result;
+         [weakself.OK_TopViewController.navigationController pushViewController:privateKeyExportVc animated:YES];
+    }
+}
+
 - (void)deleteWalletPwd:(NSString *)pwd
 {
     [kPyCommandsManager callInterface:kInterfaceDelete_wallet parameter:@{@"name":kWalletManager.currentWalletInfo.name,@"password":pwd}];

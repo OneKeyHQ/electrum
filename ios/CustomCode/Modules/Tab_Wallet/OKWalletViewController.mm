@@ -317,16 +317,35 @@
 - (void)backUpBgClick
 {
      OKWeakSelf(self)
+     if (kWalletManager.isOpenAuthBiological) {
+        [[YZAuthID sharedInstance]yz_showAuthIDWithDescribe:MyLocalizedString(@"OenKey request enabled", nil) BlockState:^(YZAuthIDState state, NSError *error) {
+            if (state == YZAuthIDStateNotSupport
+                || state == YZAuthIDStatePasswordNotSet || state == YZAuthIDStateTouchIDNotSet) { // 不支持TouchID/FaceID
+                [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
+                    [weakself backUpPwd:pwd];
+                }];
+            } else if (state == YZAuthIDStateSuccess) {
+                NSString *pwd = [kOneKeyPwdManager getOneKeyPassWord];
+                [weakself backUpPwd:pwd];;
+            }
+        }];
+    }else{
      [OKValidationPwdController showValidationPwdPageOn:self isDis:NO complete:^(NSString * _Nonnull pwd) {
-         NSString *words = [kPyCommandsManager callInterface:kInterfaceexport_seed parameter:@{@"password":pwd,@"name":kWalletManager.currentWalletInfo.name}];
-         if (words != nil) {
-             OKReadyToStartViewController *readyToStart = [OKReadyToStartViewController readyToStartViewController];
-             readyToStart.words = words;
-            readyToStart.pwd = pwd;
-            readyToStart.walletName = kWalletManager.currentWalletInfo.name;
-            [weakself.OK_TopViewController.navigationController pushViewController:readyToStart animated:YES];
-         }
-    }];
+         [weakself backUpPwd:pwd];
+     }];
+    }
+}
+- (void)backUpPwd:(NSString *)pwd
+{
+    OKWeakSelf(self)
+    NSString *words = [kPyCommandsManager callInterface:kInterfaceexport_seed parameter:@{@"password":pwd,@"name":kWalletManager.currentWalletInfo.name}];
+    if (words != nil) {
+        OKReadyToStartViewController *readyToStart = [OKReadyToStartViewController readyToStartViewController];
+        readyToStart.words = words;
+       readyToStart.pwd = pwd;
+       readyToStart.walletName = kWalletManager.currentWalletInfo.name;
+       [weakself.OK_TopViewController.navigationController pushViewController:readyToStart animated:YES];
+    }
 }
 #pragma mark - tapEyeClick
 - (void)tapEyeClick
@@ -459,9 +478,23 @@
         OKSelectCellModel *model = self.allData[indexPath.row];
         if (model.type == OKSelectCellTypeCreateHD) { //创建
             if ([kWalletManager checkIsHavePwd]) {
-                [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
-                    [weakself createWallet:pwd];
-                }];
+                if (kWalletManager.isOpenAuthBiological) {
+                   [[YZAuthID sharedInstance]yz_showAuthIDWithDescribe:MyLocalizedString(@"OenKey request enabled", nil) BlockState:^(YZAuthIDState state, NSError *error) {
+                       if (state == YZAuthIDStateNotSupport
+                           || state == YZAuthIDStatePasswordNotSet || state == YZAuthIDStateTouchIDNotSet) { // 不支持TouchID/FaceID
+                           [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
+                               [weakself createWallet:pwd];
+                           }];
+                       } else if (state == YZAuthIDStateSuccess) {
+                           NSString *pwd = [kOneKeyPwdManager getOneKeyPassWord];
+                           [weakself createWallet:pwd];
+                       }
+                   }];
+               }else{
+                   [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
+                        [weakself createWallet:pwd];
+                    }];
+               }
             }else{
                 OKPwdViewController *pwdVc = [OKPwdViewController setPwdViewControllerPwdUseType:OKPwdUseTypeInitPassword setPwd:^(NSString * _Nonnull pwd) {
                     [weakself createWallet:pwd];
@@ -480,6 +513,7 @@
     }
     OKTxListViewController *txListVc = [OKTxListViewController initViewControllerWithStoryboardName:@"Tab_Wallet"];
     txListVc.model = self.model;
+    txListVc.coinType = [kWalletManager.currentWalletInfo.coinType uppercaseString];
     [self.navigationController pushViewController:txListVc animated:YES];
 }
 
