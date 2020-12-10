@@ -106,7 +106,7 @@ class MutiBase(Logger):
         else:
             raise Exception("invaild type of xpub")
 
-    def restore_from_xpub(self, xpub, device_id):
+    def restore_from_xpub(self, xpub, device_id, account_id=0):
         from .keystore import hardware_keystore
         print("restore_from_xpub in....")
         is_valid = keystore.is_bip32_key(xpub)
@@ -118,7 +118,7 @@ class MutiBase(Logger):
                     derivation = purpose48_derivation(0, xtype='p2wsh')
                     #derivation = bip44_derivation(0, bip43_purpose=48)
                 else:
-                    derivation = bip44_derivation(0, bip43_purpose=84)
+                    derivation = bip44_derivation(account_id, bip43_purpose=84)
                 d = {
                     'type': 'hardware',
                     'hw_type': 'trezor',

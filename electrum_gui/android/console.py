@@ -547,14 +547,14 @@ class AndroidCommands(commands.Commands):
         self.m = m
         self.n = n
 
-    def add_xpub(self, xpub, device_id=None):
+    def add_xpub(self, xpub, device_id=None, account_id=0):
         try:
             print(f"add_xpub........{xpub, device_id}")
             self._assert_daemon_running()
             self._assert_wizard_isvalid()
             if BIP32Node.from_xkey(xpub).xtype != 'p2wsh' and self.n >= 2:
                 xpub = BIP32Node.get_p2wsh_from_other(xpub)
-            self.wizard.restore_from_xpub(xpub, device_id)
+            self.wizard.restore_from_xpub(xpub, device_id, account_id)
         except Exception as e:
             raise BaseException(e)
 
@@ -734,9 +734,9 @@ class AndroidCommands(commands.Commands):
             xpubs_list = json.loads(xpubs)
             for xpub_info in xpubs_list:
                 if len(xpub_info) == 2:
-                    self.add_xpub(xpub_info[0], xpub_info[1])
+                    self.add_xpub(xpub_info[0], xpub_info[1], account_id=self.hw_info['account_id'])
                 else:
-                    self.add_xpub(xpub_info)
+                    self.add_xpub(xpub_info, account_id=self.hw_info['account_id'])
             wallet_name = self.create_multi_wallet(name, hd=hd, hide_type=hide_type)
             if len(self.hw_info) != 0:
                 bip39_path = self.get_coin_derived_path(self.hw_info['account_id'])
@@ -1935,7 +1935,7 @@ class AndroidCommands(commands.Commands):
                 derivation = bip44_derivation(account_id, bip43_purpose=84)
             elif _type == 'p2pkh':
                 derivation = bip44_derivation(account_id, bip43_purpose=44)
-            elif _type == 'p2pkh-p2sh':
+            elif _type == 'p2wpkh-p2sh':
                 derivation = bip44_derivation(account_id, bip43_purpose=49)
             try:
                 xpub = client.get_xpub(derivation, _type, creating=is_creating)
@@ -2722,7 +2722,7 @@ class AndroidCommands(commands.Commands):
                                              bip39_derivation=bip39_derivation,
                                              passphrase=passphrase, coin=coin)
                     else:
-                        xpub = self.get_xpub_from_hw(path=path, _type='p2pkh', account_id=derived_info['account_id'], coin=coin)
+                        xpub = self.get_xpub_from_hw(path=path, _type='p2wpkh', account_id=derived_info['account_id'], coin=coin)
                         self.recovery_import_create_hw_wallet(derived_info['account_id'], derived_info['name'], 1, 1, [xpub])
                     derived.update_recovery_info(derived_info['account_id'])
 
@@ -2736,7 +2736,7 @@ class AndroidCommands(commands.Commands):
                     self.recovery_create("%s_derived_%s" % (coin, i), seed, password=password,
                                  bip39_derivation=bip39_derivation, passphrase=passphrase, coin=coin)
                 else:
-                    xpub = self.get_xpub_from_hw(path, _type='p2pkh', account_id=i, coin=coin)
+                    xpub = self.get_xpub_from_hw(path, _type='p2wpkh', account_id=i, coin=coin)
                     self.recovery_import_create_hw_wallet(i, derived_info['name'], 1, 1, [xpub], coin=coin)
         # if hw:
         #     ##TODO recovery multi info from server, need test
