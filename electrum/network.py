@@ -891,7 +891,8 @@ class Network(Logger, NetworkRetryManager[ServerAddr]):
             r"scriptsig-not-pushonly": None,
             r"scriptpubkey": None,
             r"bare-multisig": None,
-            r"dust": _("Transaction could not be broadcast due to dust outputs."),
+            #r"dust": _("Transaction could not be broadcast due to dust outputs."),
+            r"dust": _("Transaction could not be broadcasted because the transaction amount is too small."),
             r"multi-op-return": _("The transaction was rejected because it contains multiple OP_RETURN outputs."),
         }
         for substring in policy_error_messages:

@@ -118,43 +118,47 @@ class MultipleSpendMaxTxOutputs(Exception):
 
 class InvalidPassword(Exception):
     def __str__(self):
-        return BaseException(_("Incorrect password."))
+        return _("Incorrect password.")
 
 class InvalidBip39Seed(Exception):
     def __str__(self):
-        return BaseException(_("Incorrect Bip39 mnemonic format."))
+        return _("Incorrect Bip39 mnemonic format.")
 
 class NotSupportExportSeed(Exception):
     def __str__(self):
-        return BaseException(_("Current wallet does not support exporting Mnemonic."))
+        return _("Current wallet does not support exporting Mnemonic.")
 
 class UnavailableBtcAddr(Exception):
     def __str__(self):
-        return BaseException(_("Incorrect bitcoin address."))
+        return _("Incorrect bitcoin address.")
 
 class UnavailableEthAddr(Exception):
     def __str__(self):
-        return BaseException(_("Incorrect eth address."))
+        return _("Incorrect eth address.")
+
+class UnavaiableHdWallet(Exception):
+    def __str__(self):
+        return _("Please create HD wallet first.")
 
 class UnavailablePublicKey(Exception):
     def __str__(self):
-        return BaseException(_("Incorrect public key."))
+        return _("Incorrect public key.")
 
 class UnavailablePrivateKey(Exception):
     def __str__(self):
-        return BaseException(_("Incorrect private key."))
+        return _("Incorrect private key.")
 
 class DerivedWalletLimit(Exception):
     def __str__(self):
-        return BaseException(_("The number of wallets created is limited, currently up to 20 HD wallets can be created."))
+        return _("The number of wallets created is limited, currently up to 20 HD wallets can be created.")
 
 class FileAlreadyExist(Exception):
     def __str__(self):
-        return BaseException(_("File already exists."))
+        return _("File already exists.")
 
 class FailedGetTx(Exception):
     def __str__(self):
-        return BaseException(_("Failed to get transaction."))
+        return _("Failed to get transaction.")
 
 
 class FileImportFailed(Exception):
