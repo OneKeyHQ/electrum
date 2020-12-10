@@ -103,58 +103,58 @@ def base_unit_name_to_decimal_point(unit_name: str) -> int:
 
 class NotEnoughFunds(Exception):
     def __str__(self):
-        return _("Insufficient funds")
+        return BaseException(_("Insufficient funds"))
 
 
 class NoDynamicFeeEstimates(Exception):
     def __str__(self):
-        return _('Dynamic fee estimates not available')
+        return BaseException(_('Dynamic fee estimates not available'))
 
 
 class MultipleSpendMaxTxOutputs(Exception):
     def __str__(self):
-        return _('At most one output can be set to spend max')
+        return BaseException(_('At most one output can be set to spend max'))
 
 
 class InvalidPassword(Exception):
     def __str__(self):
-        return _("Incorrect password.")
+        return BaseException(_("Incorrect password."))
 
 class InvalidBip39Seed(Exception):
     def __str__(self):
-        return _("Incorrect Bip39 mnemonic format.")
+        return BaseException(_("Incorrect Bip39 mnemonic format."))
 
 class NotSupportExportSeed(Exception):
     def __str__(self):
-        return _("Current wallet does not support exporting Mnemonic.")
+        return BaseException(_("Current wallet does not support exporting Mnemonic."))
 
 class UnavailableBtcAddr(Exception):
     def __str__(self):
-        return _("Incorrect bitcoin address.")
+        return BaseException(_("Incorrect bitcoin address."))
 
 class UnavailableEthAddr(Exception):
     def __str__(self):
-        return _("Incorrect eth address.")
+        return BaseException(_("Incorrect eth address."))
 
 class UnavailablePublicKey(Exception):
     def __str__(self):
-        return _("Incorrect public key.")
+        return BaseException(_("Incorrect public key."))
 
 class UnavailablePrivateKey(Exception):
     def __str__(self):
-        return _("Incorrect private key.")
+        return BaseException(_("Incorrect private key."))
 
 class DerivedWalletLimit(Exception):
     def __str__(self):
-        return _("The number of wallets created is limited, currently up to 20 HD wallets can be created.")
+        return BaseException(_("The number of wallets created is limited, currently up to 20 HD wallets can be created."))
 
 class FileAlreadyExist(Exception):
     def __str__(self):
-        return _("File already exists.")
+        return BaseException(_("File already exists."))
 
 class FailedGetTx(Exception):
     def __str__(self):
-        return _("Failed to get transaction.")
+        return BaseException(_("Failed to get transaction."))
 
 
 class FileImportFailed(Exception):
@@ -162,7 +162,7 @@ class FileImportFailed(Exception):
         self.message = str(message)
 
     def __str__(self):
-        return _("Failed to import from file.") + "\n" + self.message
+        return BaseException(_("Failed to import from file.").format(self.message))
 
 
 class FileExportFailed(Exception):

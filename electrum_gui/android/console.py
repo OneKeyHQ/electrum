@@ -661,7 +661,7 @@ class AndroidCommands(commands.Commands):
                 self.label_plugin.create_wallet(self.wallet, wallet_type, wallet_name)
         self.wizard = None
         wallet_info = CreateWalletInfo.create_wallet_info(coin_type="btc", name=self.wallet_name)
-        out = self.get_create_info_by_json(wallet_info)
+        out = self.get_create_info_by_json(wallet_info=wallet_info)
         return json.dumps(out)
 
     def pull_tx_infos(self):
@@ -1228,7 +1228,7 @@ class AndroidCommands(commands.Commands):
     def do_save(self, tx):
         try:
             if not self.wallet.add_transaction(tx):
-                raise BaseException(_(("Transaction cannot be saved.") + "\n" + ("It conflicts with current history. tx=") + tx.txid()))
+                raise BaseException(_(("Transaction cannot be saved. It conflicts with current history. tx=").format(tx.txid())))
         except BaseException as e:
             raise BaseException(e)
         else:
@@ -1530,7 +1530,7 @@ class AndroidCommands(commands.Commands):
                 #status, msg = True, tx.txid()
         #          self.callbackIntent.onCallback(Status.broadcast, msg)
         else:
-            raise BaseException(_(('Cannot broadcast transaction') + ':\n' + ('Not connected')))
+            raise BaseException(_(('Cannot broadcast transaction Not connected')))
 
     def set_use_change(self, status_change):
         '''
