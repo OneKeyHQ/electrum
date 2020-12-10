@@ -15,6 +15,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.adapter.MnemonicAddrAdapter;
+import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.event.FirstEvent;
 import org.haobtc.onekey.event.FromSeedEvent;
 import org.haobtc.onekey.event.MnemonicAddrEvent;
@@ -54,7 +55,7 @@ public class ImportMnemonicWalletActivity extends BaseActivity {
     public void initData() {
         myDialog.show();
     }
-
+    @SingleClick
     @OnClick({R.id.img_back})
     public void onViewClicked(View view) {
         if (view.getId() == R.id.img_back) {

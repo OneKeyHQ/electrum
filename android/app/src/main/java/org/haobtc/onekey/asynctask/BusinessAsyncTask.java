@@ -144,7 +144,7 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
                 break;
             case SHOW_ADDRESS:
                 try {
-                    Daemon.commands.callAttr(strings[0], strings[1], strings[2]);
+                   result = Daemon.commands.callAttr(strings[0], strings[1], strings[2]).toString();
                 } catch (Exception e) {
                     onException(e);
                 }

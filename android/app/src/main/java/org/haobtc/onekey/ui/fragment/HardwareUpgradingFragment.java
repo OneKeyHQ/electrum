@@ -5,10 +5,14 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
+import org.haobtc.onekey.bean.UpdateSuccessEvent;
+import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.ExitEvent;
+import org.haobtc.onekey.event.UpdatingEvent;
 import org.haobtc.onekey.ui.base.BaseFragment;
 
 import butterknife.BindView;
@@ -36,6 +40,7 @@ public class HardwareUpgradingFragment extends BaseFragment {
      */
     @Override
     public void init(View view) {
+        promote.setText(getArguments().getInt(Constant.TAG_HARDWARE_TYPE_PROMOTE_ID));
         progressBar.setIndeterminate(true);
     }
 
@@ -55,5 +60,19 @@ public class HardwareUpgradingFragment extends BaseFragment {
     public ProgressBar getProgressBar() {
         return progressBar;
     }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onUpdatedSuccess(UpdateSuccessEvent event) {
+        progressPromote.setText(R.string.updated);
+        complete.setEnabled(true);
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    public void onUpdating(UpdatingEvent event) {
+        EventBus.getDefault().removeStickyEvent(event);
+        progressPromote.setText(R.string.updating);
+    }
 
+    @Override
+    public boolean needEvents() {
+        return true;
+    }
 }

@@ -81,6 +81,7 @@ public class VerifyPinActivity extends BaseActivity implements NumKeyboardUtil.C
                 startActivity(intent);
             } else {
                 EventBus.getDefault().post(new ChangePinEvent(pin, ""));
+                finish();
             }
         }
     }

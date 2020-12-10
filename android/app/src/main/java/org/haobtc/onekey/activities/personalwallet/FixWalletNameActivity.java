@@ -13,6 +13,7 @@ import android.widget.TextView;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.event.FixWalletNameEvent;
 import org.haobtc.onekey.utils.Daemon;
 
@@ -78,7 +79,7 @@ public class FixWalletNameActivity extends BaseActivity {
             }
         });
     }
-
+    @SingleClick
     @OnClick({R.id.img_back, R.id.btn_next})
     public void onViewClicked(View view) {
         switch (view.getId()) {

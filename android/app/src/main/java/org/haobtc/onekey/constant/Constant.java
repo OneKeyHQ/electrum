@@ -51,7 +51,10 @@ public final class Constant {
      * 硬件label
      * */
     public static final String  TAG_LABEL = "label";
-
+    /**
+     * 是否是特殊设备
+     * */
+    public static final String TAG_IS_BACKUP_ONLY = "backup_only";
     /**
      * 蓝牙名称
      * */
@@ -156,6 +159,8 @@ public final class Constant {
      * 钱包类型TAG
      * */
     public static final String WALLET_TYPE = "wallet_type";
+
+    public static final String TAG_HARDWARE_TYPE_PROMOTE_ID = "update_promote_id";
 
     public static class SearchDeviceMode{
         /**

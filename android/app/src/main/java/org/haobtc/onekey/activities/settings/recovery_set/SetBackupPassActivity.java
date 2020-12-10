@@ -9,6 +9,7 @@ import android.widget.EditText;
 
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.aop.SingleClick;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -59,7 +60,7 @@ public class SetBackupPassActivity extends BaseActivity {
             }
         });
     }
-
+    @SingleClick
     @OnClick({R.id.img_back, R.id.btn_next})
     public void onViewClicked(View view) {
         switch (view.getId()) {

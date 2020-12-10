@@ -73,6 +73,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import butterknife.BindView;
+import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
 
 import static android.app.Activity.RESULT_OK;
@@ -82,7 +83,7 @@ import static org.haobtc.onekey.constant.Constant.NEED_POP_BACKUP_DIALOG;
 /**
  * @author jinxiaomin
  */
-public class WalletFragment extends BaseFragment implements CompoundButton.OnCheckedChangeListener {
+public class WalletFragment extends BaseFragment {
 
     @BindView(R.id.text_wallet_name)
     TextView textWalletName;
@@ -489,10 +490,8 @@ public class WalletFragment extends BaseFragment implements CompoundButton.OnChe
                     }
                     if (parseQr.toString().length() > 2) {
                         String strParse = parseQr.toString();
-                        Log.i("PyObjectjxm", "parse_qr:  " + strParse);
                         String substring = strParse.substring(20);
                         String detailScan = substring.substring(0, substring.length() - 1);
-                        Log.i("PyObjectjxm", "parse_qr:---------  " + detailScan);
                         try {
                             JSONObject jsonObject = new JSONObject(strParse);
                             int type = jsonObject.getInt("type");
@@ -526,10 +525,9 @@ public class WalletFragment extends BaseFragment implements CompoundButton.OnChe
         }
 
     }
-
-    @Override
-    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        if (isChecked) {
+   @OnCheckedChanged(R.id.img_check_money)
+   public void onCheckedChange(boolean checked) {
+        if (checked) {
             tetAmount.setVisibility(View.VISIBLE);
             textStar.setVisibility(View.GONE);
             textBtcAmount.setVisibility(View.VISIBLE);
@@ -545,6 +543,7 @@ public class WalletFragment extends BaseFragment implements CompoundButton.OnChe
             dollarStars.setVisibility(View.VISIBLE);
         }
     }
+
     @SingleClick
     @OnClick({R.id.rel_check_wallet, R.id.img_scan, R.id.img_Add, R.id.rel_create_hd, R.id.rel_recovery_hd, R.id.rel_pair_hard, R.id.img_check_money, R.id.rel_wallet_detail, R.id.linear_send, R.id.linear_receive, R.id.linear_sign, R.id.rel_now_back_up, R.id.rel_bi_detail})
     public void onViewClicked(View view) {
@@ -591,8 +590,6 @@ public class WalletFragment extends BaseFragment implements CompoundButton.OnChe
             case R.id.rel_pair_hard:
                 Intent pair = new Intent(getActivity(), SearchDevicesActivity.class);
                 startActivity(pair);
-                break;
-            case R.id.img_check_money:
                 break;
             case R.id.rel_wallet_detail:
                 Intent intent4 = new Intent(getActivity(), HdWalletDetailActivity.class);

@@ -184,7 +184,7 @@ public class CheckSignActivity extends BaseActivity {
         }
     }
 
-    //judge button status
+    // judge button status
     private void buttonColorStatus() {
         String strinputAddress = editInputAddress.getText().toString();
         String strInputPublicKey = editInputPublicKey.getText().toString();

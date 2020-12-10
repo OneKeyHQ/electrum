@@ -57,17 +57,21 @@ public class HardwareUpgradeFragment extends BaseFragment {
     public void init(View view) {
         currentStm32VersionCode.setText(HardwareUpgradeActivity.currentFirmwareVersion);
         currentNrfVersionCode.setText(HardwareUpgradeActivity.currentNrfVersion);
-        if (!Strings.isNullOrEmpty(HardwareUpgradeActivity.newFirmwareVersion)) {
-            stm32.setVisibility(View.VISIBLE);
-            newerStm32VersionName.setText(HardwareUpgradeActivity.newFirmwareVersion);
-            stm32UpdateDescription.setText(HardwareUpgradeActivity.firmwareChangelog);
-        }else if (!Strings.isNullOrEmpty(HardwareUpgradeActivity.newNrfVersion)) {
-            ble.setVisibility(View.VISIBLE);
-            newerNrfVersionName.setText(HardwareUpgradeActivity.newNrfVersion);
-            nrfUpdateDescription.setText(HardwareUpgradeActivity.nrfChangelog);
-        } else {
+        if (Strings.isNullOrEmpty(HardwareUpgradeActivity.newFirmwareVersion) && Strings.isNullOrEmpty(HardwareUpgradeActivity.newNrfVersion)) {
             noUpdatePromote.setVisibility(View.VISIBLE);
+        } else {
+            if (!Strings.isNullOrEmpty(HardwareUpgradeActivity.newFirmwareVersion)) {
+                stm32.setVisibility(View.VISIBLE);
+                newerStm32VersionName.setText(HardwareUpgradeActivity.newFirmwareVersion);
+                stm32UpdateDescription.setText(HardwareUpgradeActivity.firmwareChangelog);
+            }
+            if (!Strings.isNullOrEmpty(HardwareUpgradeActivity.newNrfVersion)) {
+                ble.setVisibility(View.VISIBLE);
+                newerNrfVersionName.setText(HardwareUpgradeActivity.newNrfVersion);
+                nrfUpdateDescription.setText(HardwareUpgradeActivity.nrfChangelog);
+            }
         }
+
     }
 
     /***

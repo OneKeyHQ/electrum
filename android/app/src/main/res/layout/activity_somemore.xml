@@ -7,8 +7,7 @@
     android:background="@color/button_bk_ddake"
     android:clipToPadding="true"
     android:fitsSystemWindows="true"
-    android:orientation="vertical"
-    tools:context=".activities.settings.HardwareDetailsActivity">
+    android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -99,29 +98,29 @@
                 android:layout_marginEnd="@dimen/dp_16"
                 android:background="@color/separation_line" />
 
-            <TextView
-                android:id="@+id/test_set_key_language"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/dp_70"
-                android:background="@color/button_bk_ddake"
-                android:clickable="true"
-                android:drawablePadding="@dimen/dp_10"
-                android:focusable="true"
-                android:gravity="center_vertical"
-                android:paddingStart="20dp"
-                android:paddingEnd="@dimen/text_margin"
-                android:text="@string/language"
-                android:textColor="@color/text"
-                android:textSize="@dimen/text_size"
-                app:drawableEndCompat="@drawable/jiantou"
-                app:drawableStartCompat="@drawable/translation_2" />
+<!--            <TextView-->
+<!--                android:id="@+id/test_set_key_language"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="@dimen/dp_70"-->
+<!--                android:background="@color/button_bk_ddake"-->
+<!--                android:clickable="true"-->
+<!--                android:drawablePadding="@dimen/dp_10"-->
+<!--                android:focusable="true"-->
+<!--                android:gravity="center_vertical"-->
+<!--                android:paddingStart="20dp"-->
+<!--                android:paddingEnd="@dimen/text_margin"-->
+<!--                android:text="@string/language"-->
+<!--                android:textColor="@color/text"-->
+<!--                android:textSize="@dimen/text_size"-->
+<!--                app:drawableEndCompat="@drawable/jiantou"-->
+<!--                app:drawableStartCompat="@drawable/translation_2" />-->
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/line_hight"
-                android:layout_marginStart="@dimen/dp_16"
-                android:layout_marginEnd="@dimen/dp_16"
-                android:background="@color/separation_line" />
+<!--            <View-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="@dimen/line_hight"-->
+<!--                android:layout_marginStart="@dimen/dp_16"-->
+<!--                android:layout_marginEnd="@dimen/dp_16"-->
+<!--                android:background="@color/separation_line" />-->
 
             <LinearLayout
                 android:id="@+id/lin_OnckTwo"
@@ -171,54 +170,54 @@
                 android:layout_marginEnd="@dimen/sp_16"
                 android:background="@color/separation_line" />
 
-            <LinearLayout
-                android:id="@+id/linear_shutdown_time"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/dp_70"
-                android:background="@color/button_bk_ddake"
-                android:gravity="center_vertical">
+<!--            <LinearLayout-->
+<!--                android:id="@+id/linear_shutdown_time"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="@dimen/dp_70"-->
+<!--                android:background="@color/button_bk_ddake"-->
+<!--                android:gravity="center_vertical">-->
 
-                <ImageView
-                    android:layout_width="@dimen/dp_24"
-                    android:layout_height="@dimen/dp_24"
-                    android:layout_marginStart="@dimen/dp_20"
-                    android:src="@drawable/automatic_shutdown" />
+<!--                <ImageView-->
+<!--                    android:layout_width="@dimen/dp_24"-->
+<!--                    android:layout_height="@dimen/dp_24"-->
+<!--                    android:layout_marginStart="@dimen/dp_20"-->
+<!--                    android:src="@drawable/automatic_shutdown" />-->
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="@dimen/dp_10"
-                    android:gravity="center_vertical"
-                    android:text="@string/set_shutdown_time"
-                    android:textColor="@color/text_color"
-                    android:textSize="15sp" />
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:layout_marginStart="@dimen/dp_10"-->
+<!--                    android:gravity="center_vertical"-->
+<!--                    android:text="@string/set_shutdown_time"-->
+<!--                    android:textColor="@color/text_color"-->
+<!--                    android:textSize="15sp" />-->
 
-                <TextView
-                    android:id="@+id/test_shutdown_time"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="@dimen/dp_10"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical|end"
-                    android:maxLines="1"
-                    android:singleLine="true"
-                    android:textColor="@color/graytext_color"
-                    android:textSize="@dimen/sp_13"
-                    tools:text="20秒" />
+<!--                <TextView-->
+<!--                    android:id="@+id/test_shutdown_time"-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:layout_marginStart="@dimen/dp_10"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:gravity="center_vertical|end"-->
+<!--                    android:maxLines="1"-->
+<!--                    android:singleLine="true"-->
+<!--                    android:textColor="@color/graytext_color"-->
+<!--                    android:textSize="@dimen/sp_13"-->
+<!--                    tools:text="20秒" />-->
 
-                <ImageView
-                    android:layout_width="37dp"
-                    android:layout_height="match_parent"
-                    android:padding="15dp"
-                    android:src="@drawable/jiantou" />
-            </LinearLayout>
+<!--                <ImageView-->
+<!--                    android:layout_width="37dp"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:padding="15dp"-->
+<!--                    android:src="@drawable/jiantou" />-->
+<!--            </LinearLayout>-->
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/line_hight"
-                android:layout_marginStart="@dimen/dp_16"
-                android:layout_marginEnd="@dimen/dp_16"
-                android:background="@color/separation_line" />
+<!--            <View-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="@dimen/line_hight"-->
+<!--                android:layout_marginStart="@dimen/dp_16"-->
+<!--                android:layout_marginEnd="@dimen/dp_16"-->
+<!--                android:background="@color/separation_line" />-->
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -264,44 +263,44 @@
                 android:textColor="@color/text_six"
                 android:textSize="@dimen/sp_14" />
 
-            <LinearLayout
-                android:id="@+id/lin_OnckFour"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/dp_70"
-                android:layout_marginTop="@dimen/dp_5"
-                android:background="@color/button_bk_ddake"
-                android:gravity="center_vertical">
+<!--            <LinearLayout-->
+<!--                android:id="@+id/lin_OnckFour"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="@dimen/dp_70"-->
+<!--                android:layout_marginTop="@dimen/dp_5"-->
+<!--                android:background="@color/button_bk_ddake"-->
+<!--                android:gravity="center_vertical">-->
 
-                <ImageView
-                    android:layout_width="@dimen/dp_24"
-                    android:layout_height="@dimen/dp_24"
-                    android:layout_marginStart="@dimen/dp_20"
-                    android:src="@drawable/automatic_shutdown" />
+<!--                <ImageView-->
+<!--                    android:layout_width="@dimen/dp_24"-->
+<!--                    android:layout_height="@dimen/dp_24"-->
+<!--                    android:layout_marginStart="@dimen/dp_20"-->
+<!--                    android:src="@drawable/automatic_shutdown" />-->
 
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="@dimen/dp_10"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:text="@string/nopass_pay"
-                    android:textColor="@color/text_color"
-                    android:textSize="15sp" />
+<!--                <TextView-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:layout_marginStart="@dimen/dp_10"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:gravity="center_vertical"-->
+<!--                    android:text="@string/nopass_pay"-->
+<!--                    android:textColor="@color/text_color"-->
+<!--                    android:textSize="15sp" />-->
 
-                <ImageView
-                    android:layout_width="37dp"
-                    android:layout_height="match_parent"
-                    android:padding="15dp"
-                    android:src="@drawable/jiantou" />
+<!--                <ImageView-->
+<!--                    android:layout_width="37dp"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:padding="15dp"-->
+<!--                    android:src="@drawable/jiantou" />-->
 
-            </LinearLayout>
+<!--            </LinearLayout>-->
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/line_hight"
-                android:layout_marginStart="@dimen/dp_16"
-                android:layout_marginEnd="@dimen/dp_16"
-                android:background="@color/separation_line" />
+<!--            <View-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="@dimen/line_hight"-->
+<!--                android:layout_marginStart="@dimen/dp_16"-->
+<!--                android:layout_marginEnd="@dimen/dp_16"-->
+<!--                android:background="@color/separation_line" />-->
 
             <LinearLayout
                 android:id="@+id/change_pin"
@@ -357,32 +356,37 @@
                 android:textColor="@color/text"
                 app:drawableEndCompat="@drawable/jiantou"
                 app:drawableStartCompat="@drawable/check_pub" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/dp_20"
-                android:layout_marginTop="41dp"
-                android:lineSpacingExtra="@dimen/dp_10"
-                android:text="@string/senior"
-                android:textColor="@color/text_six"
-                android:textSize="@dimen/sp_14" />
-
-            <TextView
-                android:id="@+id/text_hide_wallet"
+            <LinearLayout
+                android:id="@+id/hide_wallet"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/dp_70"
-                android:background="@color/button_bk_ddake"
-                android:clickable="true"
-                android:drawablePadding="@dimen/dp_10"
-                android:focusable="true"
-                android:gravity="center_vertical"
-                android:paddingStart="@dimen/dp_20"
-                android:paddingEnd="@dimen/dp_16"
-                android:text="@string/hide_wallet_msg"
-                android:textColor="@color/text"
-                app:drawableEndCompat="@drawable/jiantou"
-                app:drawableStartCompat="@drawable/hide_wallet_" />
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dp_20"
+                    android:layout_marginTop="41dp"
+                    android:lineSpacingExtra="@dimen/dp_10"
+                    android:text="@string/senior"
+                    android:textColor="@color/text_six"
+                    android:textSize="@dimen/sp_14" />
+
+                <TextView
+                    android:id="@+id/text_hide_wallet"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dp_70"
+                    android:background="@color/button_bk_ddake"
+                    android:clickable="true"
+                    android:drawablePadding="@dimen/dp_10"
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:paddingStart="@dimen/dp_20"
+                    android:paddingEnd="@dimen/dp_16"
+                    android:text="@string/hide_wallet_msg"
+                    android:textColor="@color/text"
+                    app:drawableEndCompat="@drawable/jiantou"
+                    app:drawableStartCompat="@drawable/hide_wallet_" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/tetBuckup"
@@ -405,7 +409,7 @@
                 android:layout_marginStart="@dimen/dp_20"
                 android:layout_marginTop="41dp"
                 android:lineSpacingExtra="@dimen/dp_10"
-                android:text="@string/senior"
+                android:text="危险操作"
                 android:textColor="@color/text_six"
                 android:textSize="@dimen/sp_14" />
 

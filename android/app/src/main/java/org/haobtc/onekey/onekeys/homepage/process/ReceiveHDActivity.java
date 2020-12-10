@@ -5,9 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -18,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chaquo.python.PyObject;
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.encode.CodeCreator;
@@ -27,6 +26,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.MyApplication;
+import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.asynctask.BusinessAsyncTask;
 import org.haobtc.onekey.bean.GetCodeAddressBean;
 import org.haobtc.onekey.constant.Constant;
@@ -44,7 +44,6 @@ import org.haobtc.onekey.utils.ImageUtils;
 import java.io.File;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**
@@ -133,7 +132,6 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
         }
         if (walletAddressShowUi != null) {
             String strCode = walletAddressShowUi.toString();
-            Log.i("strcode", "mGeneratecode: " + strCode);
             Gson gson = new Gson();
             GetCodeAddressBean getCodeAddressBean = gson.fromJson(strCode, GetCodeAddressBean.class);
             String qrData = getCodeAddressBean.getQrData();
@@ -158,7 +156,7 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
         }
 
     }
-
+    @SingleClick
     @OnClick({R.id.img_back, R.id.linear_copy, R.id.linear_share, R.id.verify_start})
     public void onViewClicked(View view) {
         switch (view.getId()) {
@@ -177,7 +175,8 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
                                 if (granted) { // Always true pre-M
                                     File shareImg = null;
                                     try {
-                                        shareImg = ImageUtils.viewSaveToImage(shareLayout, address.substring(0, 6));
+                                        // 以地址作为文件名称
+                                        shareImg = ImageUtils.viewSaveToImage(shareLayout, address);
                                     } catch (Exception e) {
                                         e.printStackTrace();
                                     }
@@ -260,8 +259,10 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
 
     @Override
     public void onResult(String s) {
-        needVerifyLayout.setVisibility(View.GONE);
-        normalLayout.setVisibility(View.VISIBLE);
+        if (!Strings.isNullOrEmpty(s)) {
+            needVerifyLayout.setVisibility(View.GONE);
+            normalLayout.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -272,12 +273,5 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
     @Override
     public void currentMethod(String methodName) {
 
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // TODO: add setContentView(...) invocation
-        ButterKnife.bind(this);
     }
 }

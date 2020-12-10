@@ -280,7 +280,6 @@
                 android:layout_height="68dp"
                 android:background="@drawable/laft_green_tuo"
                 android:orientation="horizontal">
-
                 <TextView
                     android:id="@id/verify_promote"
                     android:layout_width="0dp"

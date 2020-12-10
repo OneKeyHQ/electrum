@@ -35,7 +35,7 @@ public class NfcUtils {
     public static NfcAdapter nfcCheck(Activity activity, boolean promote) {
         NfcAdapter mNfcAdapter = NfcAdapter.getDefaultAdapter(activity);
         if (mNfcAdapter == null) {
-            Toast.makeText(activity, activity.getString(R.string.dont_use_nfc), Toast.LENGTH_SHORT).show();
+//            Toast.makeText(activity, activity.getString(R.string.dont_use_nfc), Toast.LENGTH_SHORT).show();
             return null;
         } else {
             if (!mNfcAdapter.isEnabled() && promote) {

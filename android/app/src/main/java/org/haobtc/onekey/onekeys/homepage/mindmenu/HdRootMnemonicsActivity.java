@@ -77,7 +77,6 @@ public class HdRootMnemonicsActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);//禁止截屏
         EventBus.getDefault().register(this);
         screenShotListenManager = new ScreenShotListenManager(this);
 //        startScreenShotListen();
@@ -193,6 +192,10 @@ public class HdRootMnemonicsActivity extends BaseActivity {
         finish();
     }
 
+    @Override
+    public boolean requireSecure() {
+        return true;
+    }
     @Override
     protected void onDestroy() {
         super.onDestroy();

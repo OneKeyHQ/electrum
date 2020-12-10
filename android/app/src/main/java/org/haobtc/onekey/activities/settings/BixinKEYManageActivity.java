@@ -84,8 +84,8 @@ public class BixinKEYManageActivity extends BaseActivity {
                 public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
                     switch (view.getId()) {
                         case R.id.relativeLayout_bixinkey:
-                            String firmwareVersion = "v" + deviceValue.get(position).getMajorVersion() + "." + deviceValue.get(position).getMinorVersion() + "." + deviceValue.get(position).getPatchVersion();
-                            String nrfVersion = "v" + deviceValue.get(position).getBleVer();
+                            String firmwareVersion = deviceValue.get(position).getMajorVersion() + "." + deviceValue.get(position).getMinorVersion() + "." + deviceValue.get(position).getPatchVersion();
+                            String nrfVersion = deviceValue.get(position).getBleVer();
                             String label = Strings.isNullOrEmpty(deviceValue.get(position).getLabel()) ?
                                     deviceValue.get(position).getBleName(): deviceValue.get(position).getLabel();
                             Intent intent = new Intent(BixinKEYManageActivity.this, HardwareDetailsActivity.class);
@@ -94,8 +94,9 @@ public class BixinKEYManageActivity extends BaseActivity {
                             intent.putExtra(Constant.TAG_FIRMWARE_VERSION, firmwareVersion);
                             intent.putExtra(Constant.TAG_NRF_VERSION, nrfVersion);
                             intent.putExtra(Constant.DEVICE_ID, deviceValue.get(position).getDeviceId());
-                            intent.putExtra(Constant.AUTO_SHUT_DOWN_TIME, deviceValue.get(position).getAutoLock().divide(new BigInteger(String.valueOf(1000))).toString());
+//                            intent.putExtra(Constant.AUTO_SHUT_DOWN_TIME, deviceValue.get(position).getAutoLock().divide(new BigInteger(String.valueOf(1000))).toString());
                             intent.putExtra(Constant.TAG_HARDWARE_VERIFY, deviceValue.get(position).isVerify());
+                            intent.putExtra(Constant.TAG_IS_BACKUP_ONLY, deviceValue.get(position).isBackupOnly());
                             startActivity(intent);
                             break;
                         case R.id.linear_delete:

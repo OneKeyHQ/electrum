@@ -250,12 +250,10 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
 
     private void createNewHdWallet() {
         try {
-            PyObject createHdWallet = Daemon.commands.callAttr("create_hd_wallet", pwdEdittext.getText().toString());
-            if (createHdWallet != null) {
-                CreateWalletBean createWalletBean = new Gson().fromJson(createHdWallet.toString(), CreateWalletBean.class);
-                EventBus.getDefault().post(new CreateSuccessEvent(createWalletBean.getWalletInfo().get(0).getName()));
-                mIntent(HomeOneKeyActivity.class);
-            }
+            String createHdWallet = Daemon.commands.callAttr("create_hd_wallet", pwdEdittext.getText().toString()).toString();
+            CreateWalletBean createWalletBean = CreateWalletBean.objectFromData(createHdWallet);
+            EventBus.getDefault().post(new CreateSuccessEvent(createWalletBean.getWalletInfo().get(0).getName()));
+            mIntent(HomeOneKeyActivity.class);
         } catch (Exception e) {
             e.printStackTrace();
             if (e.getMessage().contains("Incorrect password")) {
@@ -292,8 +290,8 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
     private void importPrivateKey() {
         //import private key wallet
         try {
-            PyObject pyObject = Daemon.commands.callAttr("create", walletName, pwdEdittext.getText().toString(), new Kwarg("privkeys", privateKey));
-            CreateWalletBean createWalletBean = new Gson().fromJson(pyObject.toString(), CreateWalletBean.class);
+            String str = Daemon.commands.callAttr("create", walletName, pwdEdittext.getText().toString(), new Kwarg("privkeys", privateKey)).toString();
+            CreateWalletBean createWalletBean = CreateWalletBean.objectFromData(str);
             EventBus.getDefault().post(new CreateSuccessEvent(createWalletBean.getWalletInfo().get(0).getName()));
             mIntent(HomeOneKeyActivity.class);
         } catch (Exception e) {
@@ -317,8 +315,8 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
 
     private void importMnemonic() {
         try {
-            PyObject pyObject = Daemon.commands.callAttr("create", walletName, pwdEdittext.getText().toString(), new Kwarg("seed", seed));
-            CreateWalletBean createWalletBean = new Gson().fromJson(pyObject.toString(), CreateWalletBean.class);
+            String str = Daemon.commands.callAttr("create", walletName, pwdEdittext.getText().toString(), new Kwarg("seed", seed)).toString();
+            CreateWalletBean createWalletBean = CreateWalletBean.objectFromData(str);
             EventBus.getDefault().post(new CreateSuccessEvent(createWalletBean.getWalletInfo().get(0).getName()));
             mIntent(HomeOneKeyActivity.class);
         } catch (Exception e) {
@@ -342,7 +340,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
     private void createDeriveWallet() {
         try {
             PyObject pyObject = Daemon.commands.callAttr("create_derived_wallet", walletName, pwdEdittext.getText().toString(), currencyType);
-            CreateWalletBean createWalletBean = new Gson().fromJson(pyObject.toString(), CreateWalletBean.class);
+            CreateWalletBean createWalletBean = CreateWalletBean.objectFromData(pyObject.toString());
             EventBus.getDefault().post(new CreateSuccessEvent(createWalletBean.getWalletInfo().get(0).getName()));
             mIntent(HomeOneKeyActivity.class);
             finish();
@@ -360,7 +358,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
         try {
             PyObject pyObject = Daemon.commands.callAttr("create", walletName, pwdEdittext.getText().toString());
             Log.i("pyObjectpyObjectpyObject", "importWallet--: "+pyObject);
-            CreateWalletBean createWalletBean = new Gson().fromJson(pyObject.toString(), CreateWalletBean.class);
+            CreateWalletBean createWalletBean = CreateWalletBean.objectFromData(pyObject.toString());
             EventBus.getDefault().post(new CreateSuccessEvent(createWalletBean.getWalletInfo().get(0).getName()));
             mIntent(HomeOneKeyActivity.class);
             finish();
@@ -392,7 +390,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
                     return;
                 }
                 mToast(getString(R.string.not_recovery_wallet));
-                CreateWalletBean createWalletBean = new Gson().fromJson(pyObject.toString(), CreateWalletBean.class);
+                CreateWalletBean createWalletBean = CreateWalletBean.objectFromData(pyObject.toString());
                 EventBus.getDefault().post(new CreateSuccessEvent(createWalletBean.getWalletInfo().get(0).getName()));
                 mIntent(HomeOneKeyActivity.class);
                 finish();

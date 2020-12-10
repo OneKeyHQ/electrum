@@ -87,15 +87,15 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
     LinearLayout linOnckTwo;
     @BindView(R.id.change_pin)
     LinearLayout changePin;
-    @BindView(R.id.lin_OnckFour)
-    LinearLayout linOnckFour;
     @BindView(R.id.wipe_device)
     LinearLayout wipeDevice;
-    public static boolean dismiss;
-    @BindView(R.id.test_shutdown_time)
-    TextView testShutdownTime;
     @BindView(R.id.verified)
     TextView verified;
+    @BindView(R.id.check_xpub)
+    TextView checkXpub;
+    @BindView(R.id.hide_wallet)
+    LinearLayout hideWalletLayout;
+    public static boolean dismiss;
     private String bleName;
     private String deviceId;
     private String label;
@@ -103,9 +103,9 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
     private String firmwareVersion;
     private String nrfVersion;
     private String currentMethod;
-    private boolean isVerified;
+
     @SingleClick
-    @OnClick({R.id.img_back, R.id.lin_OnckOne, R.id.lin_OnckTwo, R.id.change_pin, R.id.lin_OnckFour, R.id.wipe_device, R.id.linear_shutdown_time, R.id.tetBuckup, R.id.tet_deleteWallet, R.id.test_set_key_language, R.id.tetVerification, R.id.check_xpub, R.id.text_hide_wallet})
+    @OnClick({R.id.img_back, R.id.lin_OnckOne, R.id.lin_OnckTwo, R.id.change_pin, R.id.wipe_device, R.id.tetBuckup, R.id.tet_deleteWallet, R.id.tetVerification, R.id.check_xpub, R.id.text_hide_wallet})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
@@ -137,11 +137,11 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
                 currentMethod = BusinessAsyncTask.CHANGE_PIN;
                 initBle();
                 break;
-            case R.id.lin_OnckFour:
-                Intent intent4 = new Intent(this, ConfidentialPaymentSettings.class);
-                intent4.putExtra("ble_name", bleName);
-                startActivity(intent4);
-                break;
+//            case R.id.lin_OnckFour:
+//                Intent intent4 = new Intent(this, ConfidentialPaymentSettings.class);
+//                intent4.putExtra("ble_name", bleName);
+//                startActivity(intent4);
+//                break;
             case R.id.wipe_device:
                 if (Ble.getInstance().getConnetedDevices().size() != 0) {
                     if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(bleName)) {
@@ -155,12 +155,12 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
                 currentMethod = BusinessAsyncTask.WIPE_DEVICE;
                 initBle();
                 break;
-            case R.id.linear_shutdown_time:
-                Intent intent2 = new Intent(this, SetShutdownTimeActivity.class);
-                intent2.putExtra("device_id", deviceId);
-                intent2.putExtra("ble_name", bleName);
-                startActivity(intent2);
-                break;
+//            case R.id.linear_shutdown_time:
+//                Intent intent2 = new Intent(this, SetShutdownTimeActivity.class);
+//                intent2.putExtra("device_id", deviceId);
+//                intent2.putExtra("ble_name", bleName);
+//                startActivity(intent2);
+//                break;
             case R.id.tetBuckup:
                 Intent intent7 = new Intent(this, BackupRecoveryActivity.class);
                 intent7.putExtra("ble_name", bleName);
@@ -169,11 +169,11 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
             case R.id.tet_deleteWallet:
                 new DeleteLocalDeviceDialog(this, deviceId).show(getSupportFragmentManager(), "");
                 break;
-            case R.id.test_set_key_language:
-                Intent intent3 = new Intent(HardwareDetailsActivity.this, FixHardwareLanguageActivity.class);
-                intent3.putExtra("ble_name", bleName);
-                startActivity(intent3);
-                break;
+//            case R.id.test_set_key_language:
+//                Intent intent3 = new Intent(HardwareDetailsActivity.this, FixHardwareLanguageActivity.class);
+//                intent3.putExtra("ble_name", bleName);
+//                startActivity(intent3);
+//                break;
             case R.id.tetVerification:
                 Intent intent1 = new Intent(this, VerifyHardwareActivity.class);
                 intent1.putExtra(Constant.BLE_INFO, Optional.of(label).orElse(bleName));
@@ -240,6 +240,7 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
     }
 
     private void getUpdateInfo() {
+        currentMethod = PyConstant.FIRMWARE_UPDATE;
         String urlPrefix = "https://onekey.so/";
         String locate = PreferencesManager.get(this, "Preferences", Constant.LANGUAGE, "").toString();
         String info = PreferencesManager.get(this, "Preferences", Constant.UPGRADE_INFO, "").toString();
@@ -273,7 +274,8 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
             bundle.putString(Constant.TAG_FIRMWARE_DOWNLOAD_URL, urlPrefix + urlStm32);
             bundle.putString(Constant.TAG_FIRMWARE_VERSION_NEW, versionStm32);
             bundle.putString(Constant.TAG_FIRMWARE_UPDATE_DES, descriptionStm32);
-        } else if (versionNrf.compareTo(nrfVersion) > 0) {
+        }
+        if (versionNrf.compareTo(nrfVersion) > 0) {
             bundle.putString(Constant.TAG_NRF_DOWNLOAD_URL, urlPrefix + urlNrf);
             bundle.putString(Constant.TAG_NRF_VERSION_NEW, versionNrf);
             bundle.putString(Constant.TAG_NRF_UPDATE_DES, descriptionNrf);
@@ -301,6 +303,9 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
             case BusinessAsyncTask.COUNTER_VERIFICATION:
                 EventBus.getDefault().post(new ConnectedEvent());
                 verifyHardware();
+                break;
+            case PyConstant.FIRMWARE_UPDATE:
+                // ignore
                 break;
             default:
         }
@@ -414,10 +419,6 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
         tetKeyName.setText(event.getKeyName());
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void showtime(SetShutdownTimeEvent event) {
-        testShutdownTime.setText(String.format("%s%s", event.getTime(), getString(R.string.second)));
-    }
 
     /**
      * init
@@ -425,14 +426,19 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
     @Override
     public void init() {
         Intent intent = getIntent();
+        boolean isBackupOnly = intent.getBooleanExtra(Constant.TAG_IS_BACKUP_ONLY, false);
+        if (isBackupOnly) {
+            checkXpub.setVisibility(View.GONE);
+            hideWalletLayout.setVisibility(View.GONE);
+        }
         bleName = intent.getStringExtra(Constant.TAG_BLE_NAME);
         deviceId = intent.getStringExtra(Constant.DEVICE_ID);
         label = intent.getStringExtra(Constant.TAG_LABEL);
         firmwareVersion = getIntent().getStringExtra(Constant.TAG_FIRMWARE_VERSION);
         nrfVersion = getIntent().getStringExtra(Constant.TAG_NRF_VERSION);
         tetKeyName.setText(label);
-        testShutdownTime.setText(String.format("%s%s", intent.getStringExtra(Constant.AUTO_SHUT_DOWN_TIME), getString(R.string.second)));
-        isVerified = intent.getBooleanExtra(Constant.TAG_HARDWARE_VERIFY, false);
+//        testShutdownTime.setText(String.format("%s%s", intent.getStringExtra(Constant.AUTO_SHUT_DOWN_TIME), getString(R.string.second)));
+        boolean isVerified = intent.getBooleanExtra(Constant.TAG_HARDWARE_VERIFY, false);
         verified.setVisibility(isVerified ? View.VISIBLE: View.GONE);
         bleMac = PreferencesManager.get(this, Constant.BLE_INFO, bleName, "").toString();
     }

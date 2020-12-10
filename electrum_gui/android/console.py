@@ -1850,7 +1850,7 @@ class AndroidCommands(commands.Commands):
             if isinstance(e, exceptions.PinException):
                 return 0
             else:
-                raise BaseException(e)
+                raise BaseException("user cancel")
         return 1
         # if resp == "PIN changed":
         #     return 1

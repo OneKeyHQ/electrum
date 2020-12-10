@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@android:color/white"
     android:orientation="vertical">
 
 
 
     <TextView
+        android:id="@+id/promote_1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
         android:background="@android:color/white"
         android:gravity="center_horizontal"
         android:paddingLeft="@dimen/dp_30"
@@ -23,14 +26,19 @@
         android:id="@+id/promote"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/promote_1"
         android:layout_marginTop="@dimen/dp_24"
         android:gravity="center"
         android:text="请抄写你的 12 位助记词"
         android:textSize="@dimen/sp_14"
         android:textColor="#142A3B" />
     <ImageView
+        android:id="@+id/image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/promote"
         android:src="@drawable/word"
         android:layout_gravity="center"
         android:layout_marginTop="@dimen/dp_69"/>
@@ -38,13 +46,14 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="183dp"
+        app:layout_constraintBottom_toTopOf="@id/ready_go"
         android:text="1. 备好纸笔认真抄写，再次确认无误后请妥善保管。\n
 2. OneKey 不会为您存储私密数据，助记词一旦丢失将无法找回。"
         android:drawableStart="@drawable/md_style_quote"
         android:textSize="@dimen/sp_14"
         android:textColor="#546370"
         android:drawablePadding="6dp"
+        android:layout_marginBottom="@dimen/dp_24"
         android:layout_marginStart="@dimen/dp_25"
         android:layout_marginEnd="@dimen/dp_15"
         />
@@ -53,13 +62,16 @@
         android:id="@+id/ready_go"
         android:layout_width="300dp"
         android:layout_height="50dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         android:background="@drawable/btn_enable_selector"
         android:text="我抄好了"
         android:enabled="false"
         android:textAllCaps="false"
-        android:layout_marginTop="@dimen/dp_24"
+        android:layout_marginBottom="@dimen/dp_42"
         android:textColor="@android:color/white"
         android:textSize="@dimen/sp_20"
         android:layout_gravity="center_horizontal"/>
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

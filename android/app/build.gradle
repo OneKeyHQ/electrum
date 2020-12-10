@@ -85,17 +85,17 @@ android {
         MainNet {
             buildConfigField "String", "net_type", "\"MainNet\""
             applicationId "com.bixin.wallet.mainnet"
-            manifestPlaceholders = [app_name: "@string/app_name", allow_backup: false]
+            manifestPlaceholders = [app_name: "@string/app_name", allow_backup: false,  app_icon: "@drawable/logo_app"]
         }
         TestNet {
             buildConfigField "String", "net_type", "\"TestNet\""
             applicationId "com.bixin.wallet.testnet"
-            manifestPlaceholders = [app_name: "@string/testnet", allow_backup: true]
+            manifestPlaceholders = [app_name: "@string/testnet", allow_backup: true,  app_icon: "@drawable/onekey_testnet_icon"]
         }
         RegTest {
             buildConfigField "String", "net_type", "\"RegTest\""
             applicationId "com.bixin.wallet.regnet"
-            manifestPlaceholders = [app_name: "@string/regnet", allow_backup: true]
+            manifestPlaceholders = [app_name: "@string/regnet", allow_backup: true, app_icon: "@drawable/onekey_testnet_icon"]
         }
     }
     lintOptions {

@@ -17,6 +17,7 @@ import org.haobtc.onekey.BuildConfig;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.bean.BalanceInfo;
+import org.haobtc.onekey.bean.CreateWalletBean;
 import org.haobtc.onekey.bean.HardwareFeatures;
 import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.constant.Constant;
@@ -231,9 +232,10 @@ public final class PyEnv {
      * 通过xpub创建钱包
      */
     public static String createWallet(BaseActivity activity, String walletName, int m, int n, String xPubs) {
-        String name = null;
+        String walletInfo = null;
         try {
-            name = sCommands.callAttr(PyConstant.CREATE_WALLET_BY_XPUB, walletName, m, n, xPubs).toString();
+            walletInfo = sCommands.callAttr(PyConstant.CREATE_WALLET_BY_XPUB, walletName, m, n, xPubs).toString();
+            String name = CreateWalletBean.objectFromData(walletInfo).getWalletInfo().get(0).getName();
             EventBus.getDefault().post(new CreateSuccessEvent(name));
             return name;
         } catch (Exception e) {
@@ -259,7 +261,7 @@ public final class PyEnv {
     public static List<BalanceInfo> recoveryWallet(BaseActivity activity, String xPubs, boolean hd) {
         List<BalanceInfo> infos = new ArrayList<>();
         try {
-            String walletsInfo = sCommands.callAttr(PyConstant.CREATE_WALLET_BY_XPUB, "BTC-1", 1, 1, xPubs, new Kwarg("hd", hd)).toString();
+            String walletsInfo = sCommands.callAttr(PyConstant.CREATE_WALLET_BY_XPUB, "", 1, 1, xPubs, new Kwarg("hd", hd)).toString();
             if (!Strings.isNullOrEmpty(walletsInfo)) {
                 JsonArray wallets = JsonParser.parseString(walletsInfo).getAsJsonArray();
                 wallets.forEach((wallet) -> {
@@ -333,12 +335,12 @@ public final class PyEnv {
         List<BalanceInfo> infos = new ArrayList<>();
         try {
             String walletsInfo = sCommands.callAttr(PyConstant.CREATE_HD_WALLET, passwd, mnemonics).toString();
-            if (!Strings.isNullOrEmpty(walletsInfo)) {
-                JsonArray wallets = JsonParser.parseString(walletsInfo).getAsJsonArray();
-                wallets.forEach((wallet) -> {
-                    infos.add(BalanceInfo.objectFromData(wallet.toString()));
-                });
-            }
+            CreateWalletBean.objectFromData(walletsInfo).getDerivedInfo().forEach(derivedInfoBean -> {
+                BalanceInfo info = new BalanceInfo();
+                info.setBalance(derivedInfoBean.getBlance());
+                info.setName(derivedInfoBean.getName());
+               infos.add(info);
+            });
             return infos;
         } catch (Exception e) {
             e.printStackTrace();
