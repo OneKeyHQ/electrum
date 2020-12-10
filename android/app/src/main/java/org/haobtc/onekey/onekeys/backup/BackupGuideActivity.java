@@ -110,6 +110,7 @@ public class BackupGuideActivity extends BaseActivity {
                 intent1.putExtra("importHdword", "backupMnemonic");
                 intent1.putExtra(Constant.OPERATE_TYPE, Constant.EXPORT_DESTINATIONS);
                 startActivity(intent1);
+                finish();
                 break;
         }
     }

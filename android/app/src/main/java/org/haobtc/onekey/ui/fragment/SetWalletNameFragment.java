@@ -43,6 +43,7 @@ public class SetWalletNameFragment extends BaseFragment {
     public void onViewClicked(View view) {
         if (Strings.isNullOrEmpty(mDeviceNameEditText.getText().toString())) {
             showToast(R.string.name_empty);
+            return;
         }
         EventBus.getDefault().post(new CreateWalletEvent(mDeviceNameEditText.getText().toString()));
     }

@@ -15,6 +15,7 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.adapter.RecoveryWalletAdapter;
 import org.haobtc.onekey.bean.CreateWalletBean;
+import org.haobtc.onekey.bean.RecoveryWalletBean;
 import org.haobtc.onekey.event.CreateSuccessEvent;
 import org.haobtc.onekey.event.WalletAddressEvent;
 import org.haobtc.onekey.manager.PyEnv;
@@ -24,6 +25,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -69,14 +71,12 @@ public class RecoveryChooseWalletActivity extends BaseActivity {
 
     private void getRecoveryWallet() {
         try {
-            JSONArray jsonArray = new JSONArray(recoveryData);
-            for (int i = 0; i < jsonArray.length(); i++) {
+            RecoveryWalletBean recoveryWalletBean = new Gson().fromJson(recoveryData, RecoveryWalletBean.class);
+            List<RecoveryWalletBean.DerivedInfoBean> derivedInfo = recoveryWalletBean.getDerivedInfo();
+            for (int i = 0; i < derivedInfo.size(); i++) {
                 WalletAddressEvent walletAddressEvent = new WalletAddressEvent();
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                String name = jsonObject.getString("name");
-                String balance = jsonObject.getString("blance");
-                walletAddressEvent.setAddress(name);
-                walletAddressEvent.setBalance(balance);
+                walletAddressEvent.setAddress(derivedInfo.get(i).getName());
+                walletAddressEvent.setBalance(derivedInfo.get(i).getBlance());
                 walletList.add(walletAddressEvent);
             }
             recoveryWalletAdapter.notifyDataSetChanged();

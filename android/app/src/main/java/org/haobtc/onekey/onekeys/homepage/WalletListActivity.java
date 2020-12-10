@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -16,12 +17,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.LayoutRes;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.alibaba.fastjson.JSONArray;
 import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.chaquo.python.PyObject;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -29,13 +27,11 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.adapter.WalletListAdapter;
 import org.haobtc.onekey.aop.SingleClick;
-import org.haobtc.onekey.bean.AddressEvent;
 import org.haobtc.onekey.bean.LocalWalletInfo;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.LoadWalletlistEvent;
 import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
-import org.haobtc.onekey.onekeys.backup.BackupGuideActivity;
 import org.haobtc.onekey.onekeys.dialog.RecoverHdWalletActivity;
 import org.haobtc.onekey.onekeys.dialog.SetHDWalletPassActivity;
 import org.haobtc.onekey.onekeys.dialog.SetLongPassActivity;
@@ -44,14 +40,9 @@ import org.haobtc.onekey.onekeys.homepage.mindmenu.HDWalletActivity;
 import org.haobtc.onekey.onekeys.homepage.process.CreateDeriveChooseTypeActivity;
 import org.haobtc.onekey.onekeys.homepage.process.CreateWalletChooseTypeActivity;
 import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
-import org.haobtc.onekey.utils.Daemon;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -88,6 +79,8 @@ public class WalletListActivity extends BaseActivity {
     RelativeLayout reclRecoveryWallet;
     @BindView(R.id.text_wallet_type)
     TextView textWalletType;
+    @BindView(R.id.img_w)
+    ImageView imgW;
     private ArrayList<LocalWalletInfo> hdWalletList;
     private ArrayList<LocalWalletInfo> btcList;
     private ArrayList<LocalWalletInfo> ethList;
@@ -148,6 +141,7 @@ public class WalletListActivity extends BaseActivity {
                 textWalletNum.setText(String.valueOf(hdWalletList.size()));
                 reclWalletDetail.setVisibility(View.VISIBLE);
                 imgAdd.setVisibility(View.GONE);
+                imgW.setVisibility(View.VISIBLE);
                 if (hdWalletList == null || hdWalletList.size() == 0) {
                     reclWalletList.setVisibility(View.GONE);
                     tetNone.setVisibility(View.GONE);
@@ -167,7 +161,7 @@ public class WalletListActivity extends BaseActivity {
                         @Override
                         public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                             String name = hdWalletList.get(position).getName();
-                            edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME, name);
+                            edit.putString(Constant.CURRENT_SELECTED_WALLET_NAME, name);
                             edit.apply();
                             mIntent(HomeOneKeyActivity.class);
                         }
@@ -184,6 +178,7 @@ public class WalletListActivity extends BaseActivity {
                 textWalletNum.setText(String.valueOf(btcList.size()));
                 reclAddWallet.setVisibility(View.GONE);
                 reclWalletDetail.setVisibility(View.GONE);
+                imgW.setVisibility(View.GONE);
                 if (hdWalletList == null || hdWalletList.size() == 0) {
                     imgAdd.setVisibility(View.GONE);
                 } else {
@@ -201,7 +196,7 @@ public class WalletListActivity extends BaseActivity {
                         @Override
                         public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                             String name = btcList.get(position).getName();
-                            edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME, name);
+                            edit.putString(Constant.CURRENT_SELECTED_WALLET_NAME, name);
                             edit.apply();
                             mIntent(HomeOneKeyActivity.class);
                         }
@@ -220,6 +215,7 @@ public class WalletListActivity extends BaseActivity {
                 reclAddWallet.setVisibility(View.GONE);
                 reclWalletDetail.setVisibility(View.GONE);
                 imgAdd.setVisibility(View.VISIBLE);
+                imgW.setVisibility(View.GONE);
                 if (ethList == null || ethList.size() == 0) {
                     reclWalletList.setVisibility(View.GONE);
                     tetNone.setVisibility(View.VISIBLE);
@@ -232,7 +228,7 @@ public class WalletListActivity extends BaseActivity {
                         @Override
                         public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                             String name = ethList.get(position).getName();
-                            edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME, name);
+                            edit.putString(Constant.CURRENT_SELECTED_WALLET_NAME, name);
                             edit.apply();
                             mIntent(HomeOneKeyActivity.class);
                         }
@@ -297,7 +293,7 @@ public class WalletListActivity extends BaseActivity {
 //        PyObject getWalletsListInfo;
 //        wallet list
         Map<String, ?> wallets = PreferencesManager.getAll(this, Constant.WALLETS);
-        Log.i("walletslist", "getHomeWalletList: "+wallets);
+        Log.i("walletslist", "getHomeWalletList: " + wallets);
         if (wallets.isEmpty()) {
             reclWalletDetail.setVisibility(View.GONE);
             reclAddWallet.setVisibility(View.GONE);
@@ -306,12 +302,9 @@ public class WalletListActivity extends BaseActivity {
         } else {
             wallets.entrySet().forEach(stringEntry -> {
                 LocalWalletInfo info = LocalWalletInfo.objectFromData(stringEntry.getValue().toString());
-                String addr = info.getAddr();
                 String type = info.getType();
-                String label = info.getLabel();
-                String name = info.getName();
-                String deviceId = info.getDeviceId();
-                if (type.contains("hd") || type.contains("derived")) {
+
+                if ("btc-hd-standard".equals(type) || "btc-derived-standard".equals(type)) {
                     hdWalletList.add(info);
                 }
                 if (type.contains("btc")) {
@@ -335,7 +328,7 @@ public class WalletListActivity extends BaseActivity {
                     @Override
                     public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                         String name = hdWalletList.get(position).getName();
-                        edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME, name);
+                        edit.putString(Constant.CURRENT_SELECTED_WALLET_NAME, name);
                         edit.apply();
                         mIntent(HomeOneKeyActivity.class);
                     }
@@ -348,7 +341,7 @@ public class WalletListActivity extends BaseActivity {
 //            e.printStackTrace();
 //            return;
 //        }
- //       if (getWalletsListInfo.toString().length() > 2) {
+        //       if (getWalletsListInfo.toString().length() > 2) {
 //            String toStrings = getWalletsListInfo.toString();
 //            Log.i("mWheelplanting", "toStrings: " + toStrings);
 //            JSONArray jsonDatas = com.alibaba.fastjson.JSONObject.parseArray(toStrings);
@@ -458,5 +451,12 @@ public class WalletListActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // TODO: add setContentView(...) invocation
+        ButterKnife.bind(this);
     }
 }

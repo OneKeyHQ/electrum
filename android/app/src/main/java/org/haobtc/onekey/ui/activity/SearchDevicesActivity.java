@@ -203,7 +203,7 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
         try {
             features = PyEnv.getFeature(this);
         } catch (Exception e) {
-            showToast("获取硬件信息失败请重试");
+            showToast(getString(R.string.get_hard_msg_error));
             e.printStackTrace();
             finish();
             return;
@@ -212,7 +212,7 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
             // 通过备份提示过来
             case Constant.SearchDeviceMode.MODE_BACKUP_HD_WALLET_TO_DEVICE:
                 if (features.isInitialized()) {
-                    showToast("仅支持未激活的硬件钱包执行该操作");
+                    showToast(getString(R.string.hard_tip2));
                 } else {
                     Intent intent = new Intent(this, ActivateColdWalletActivity.class);
                     intent.putExtra(Constant.ACTIVE_MODE, Constant.ACTIVE_MODE_IMPORT);
@@ -225,7 +225,7 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
                 if (features.isInitialized()) {
                     EventBus.getDefault().post(new GetXpubEvent(Constant.COIN_TYPE_BTC));
                 } else {
-                    showToast("目前只支持激活的钱包创建共管钱包，激活之后再来");
+                    showToast(getString(R.string.hard_tip1));
                 }
                 finish();
                 break;

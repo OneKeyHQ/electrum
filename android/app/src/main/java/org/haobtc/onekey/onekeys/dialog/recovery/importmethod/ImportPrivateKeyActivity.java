@@ -102,12 +102,15 @@ public class ImportPrivateKeyActivity extends BaseActivity {
     }
 
     private void isRightPrivate() {
-//        try {
-//            Daemon.commands.callAttr("verify_legality", editInputPrivate.getText().toString(), new Kwarg("flag", "private"));
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return;
-//        }
+        try {
+            Daemon.commands.callAttr("verify_legality", editInputPrivate.getText().toString(), new Kwarg("flag", "private"));
+        } catch (Exception e) {
+            if (e.getMessage().contains("Incorrect private key")) {
+                mToast(getString(R.string.invalid_private));
+            }
+            e.printStackTrace();
+            return;
+        }
         Intent intent = new Intent(ImportPrivateKeyActivity.this, ImportWalletSetNameActivity.class);
         intent.putExtra("importHdword", "importPrivateKey");
         intent.putExtra("privateKey", editInputPrivate.getText().toString());

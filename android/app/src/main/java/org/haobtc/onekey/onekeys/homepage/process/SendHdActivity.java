@@ -143,7 +143,7 @@ public class SendHdActivity extends BaseActivity implements TextWatcher, Busines
     private float slowFeeForChild;
     private float customFeeForChild;
     private String showWalletType;
-    private String  infoFromRaw;
+    private String infoFromRaw;
     private String signedTx;
 
 
@@ -340,7 +340,9 @@ public class SendHdActivity extends BaseActivity implements TextWatcher, Busines
         bigRecommendFee = bigDecimalSum2.subtract(bigDecimalFee2);//推荐的最大费
         tetamount.setText(String.valueOf(bigRecommendFee));
     }
+
     private String rawTx;
+
     private void sendCurrency(String pass) {
         PyObject mktx;
         try {
@@ -371,7 +373,7 @@ public class SendHdActivity extends BaseActivity implements TextWatcher, Busines
 
     }
 
-    //sign
+    //soft sign
     private void signTx(String rowtx, String password) {
         try {
             String signContent = Daemon.commands.callAttr("sign_tx", rowtx, "", new Kwarg("password", password)).toString();
@@ -397,7 +399,9 @@ public class SendHdActivity extends BaseActivity implements TextWatcher, Busines
         EventBus.getDefault().post(new SecondEvent("finish"));
         finish();
     }
+
     private Button confirmBtn;
+
     private void sendConfirmDialog(Context context, @LayoutRes int resource, String detail) {
         Gson gson = new Gson();
         GetnewcreatTrsactionListBean fromJson = gson.fromJson(detail, GetnewcreatTrsactionListBean.class);
@@ -408,7 +412,7 @@ public class SendHdActivity extends BaseActivity implements TextWatcher, Busines
         confirmBtn = view.findViewById(R.id.btn_confirm_pay);
         if (showWalletType.contains("watch")) {
             confirmBtn.setText(getString(R.string.confirm));
-        } else if(Constant.WALLET_TYPE_HARDWARE.equals(showWalletType)) {
+        } else if (Constant.WALLET_TYPE_HARDWARE.equals(showWalletType)) {
             confirmBtn.setText("在设备进行确认");
             confirmBtn.setEnabled(false);
         }
@@ -432,7 +436,7 @@ public class SendHdActivity extends BaseActivity implements TextWatcher, Busines
         confirmBtn.setOnClickListener(v -> {
             if (showWalletType.contains("watch")) {
                 dialogBtoms.dismiss();
-            } else if(Constant.WALLET_TYPE_HARDWARE.equals(showWalletType)) {
+            } else if (Constant.WALLET_TYPE_HARDWARE.equals(showWalletType)) {
                 broacastTx(rawTx, signedTx);
             } else {
                 //sign trsaction
@@ -529,7 +533,6 @@ public class SendHdActivity extends BaseActivity implements TextWatcher, Busines
             String feeNum = String.valueOf(fee);
             fastTx = getsendFeenumBean.getTx();
             textFastTime.setText(String.format("%s%s%s", getString(R.string.about_), time + "", getString(R.string.minute)));
-            textFee10.setText(String.format("%s sat", feeNum));
             if ("BTC".equals(baseUnit)) {
                 fastFeeForChild = Float.parseFloat(feeNum) / 100000000;
             } else if ("mBTC".equals(baseUnit)) {
@@ -537,6 +540,7 @@ public class SendHdActivity extends BaseActivity implements TextWatcher, Busines
             } else if ("bits".equals(baseUnit)) {
                 fastFeeForChild = Float.parseFloat(feeNum) / 100;
             }
+            textFee10.setText(String.format("%s %s", fastFeeForChild, baseUnit));
             try {
                 PyObject money = Daemon.commands.callAttr("get_exchange_currency", "base", String.valueOf(fastFeeForChild));
                 if ("CNY".equals(cnyUnit)) {
@@ -587,7 +591,6 @@ public class SendHdActivity extends BaseActivity implements TextWatcher, Busines
             recommendTx = getsendFeenumBean.getTx();
             useTx = recommendTx;
             textRecommendTime.setText(String.format("%s%s%s", getString(R.string.about_), time + "", getString(R.string.minute)));
-            textFee20.setText(String.format("%s sat", feeNum));
             if ("BTC".equals(baseUnit)) {
                 feeForChild = Float.parseFloat(feeNum) / 100000000;
             } else if ("mBTC".equals(baseUnit)) {
@@ -595,6 +598,7 @@ public class SendHdActivity extends BaseActivity implements TextWatcher, Busines
             } else if ("bits".equals(baseUnit)) {
                 feeForChild = Float.parseFloat(feeNum) / 100;
             }
+            textFee20.setText(String.format("%s %s", feeForChild, baseUnit));
 //            if (max) {
 //                //推荐矿工费下 可发送的最大值
 //                textFeeForChild(feeForChild);
@@ -645,7 +649,6 @@ public class SendHdActivity extends BaseActivity implements TextWatcher, Busines
             String feeNum = String.valueOf(fee);
             slowTx = getsendFeenumBean.getTx();
             textSlowTime.setText(String.format("%s%s%s", getString(R.string.about_), time + "", getString(R.string.minute)));
-            textFee50.setText(String.format("%s sat", feeNum));
             if ("BTC".equals(baseUnit)) {
                 slowFeeForChild = Float.parseFloat(feeNum) / 100000000;
             } else if ("mBTC".equals(baseUnit)) {
@@ -653,6 +656,7 @@ public class SendHdActivity extends BaseActivity implements TextWatcher, Busines
             } else if ("bits".equals(baseUnit)) {
                 slowFeeForChild = Float.parseFloat(feeNum) / 100;
             }
+            textFee50.setText(String.format("%s %s", slowFeeForChild, baseUnit));
             try {
                 PyObject money = Daemon.commands.callAttr("get_exchange_currency", "base", String.valueOf(slowFeeForChild));
                 if ("CNY".equals(cnyUnit)) {
@@ -921,19 +925,22 @@ public class SendHdActivity extends BaseActivity implements TextWatcher, Busines
         super.onDestroy();
         EventBus.getDefault().unregister(this);
     }
+
     /**
      * 硬件签名方法
-     * */
+     */
     private void hardwareSign(String rawTx) {
         new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.SIGN_TX,
                 rawTx,
                 MyApplication.getInstance().getDeviceWay());
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onChangePin(ChangePinEvent event) {
         // 回写PIN码
         PyEnv.setPin(event.toString());
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onButtonRequest(ButtonRequestEvent event) {
         switch (event.getType()) {
@@ -942,15 +949,16 @@ public class SendHdActivity extends BaseActivity implements TextWatcher, Busines
                 startActivity(intent);
                 break;
             case PyConstant.BUTTON_REQUEST_7:
-                        break;
+                break;
             case PyConstant.BUTTON_REQUEST_8:
                 EventBus.getDefault().post(new ExitEvent());
                 sendConfirmDialog(SendHdActivity.this, R.layout.send_confirm_dialog, infoFromRaw);
-                    break;
+                break;
             default:
 
         }
     }
+
     @Override
     public void onPreExecute() {
 

@@ -123,7 +123,6 @@ public class TransactionDetailWalletActivity extends BaseActivity {
                         listBeans.add(maintrsactionlistEvent);
                     }
                 }
-                Log.i("jxmgetHistoryTx", "-------------: " + listBeans.toString());
                 onekeyTxListAdapter.notifyDataSetChanged();
                 onekeyTxListAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
                     @Override

@@ -163,12 +163,9 @@ public class HDWalletActivity extends BaseActivity {
         } else {
             wallets.entrySet().forEach(stringEntry -> {
                 LocalWalletInfo info = LocalWalletInfo.objectFromData(stringEntry.getValue().toString());
-                String addr = info.getAddr();
                 String type = info.getType();
-                String label = info.getLabel();
                 String name = info.getName();
-                String deviceId = info.getDeviceId();
-                if (type.contains("hd") || type.contains("derived")) {
+                if ("btc-hd-standard".equals(type) || "btc-derived-standard".equals(type)) {
                     hdWalletList.add(info);
                 }
                 if ("btc-hd-standard".equals(type)) {

@@ -1000,7 +1000,6 @@
     <string name="recovery_phone_hd_wallet">恢复手机 HD 钱包.</string>
     <string name="recovery_phone_hd_wallet_hide">完整恢复您的 HD 钱包，任何由原 HD 助记词派生的钱包都将获得复原。</string>
     <string name="recovery_phone_hd_wallet_info"><b>备份了 HD 助记词的设备将仅被用来恢复您在 App 上创建的 HD 钱包，</b>如果您希望使用这台设备的更多功能，可以在妥善保管好 HD 钱包的助记词后（手动抄写），将这台设备恢复到出厂模式，然后重新配对并激活设备，将其作为普通硬件钱包使用。</string>
-    <string name="set_wallet_name_hide">方便您轻松识别</string>
     <string name="sender">发送方</string>
     <string name="receiver">接收方</string>
     <string name="confirm_pay">确认支付</string>
@@ -1030,7 +1029,6 @@
     <string name="hd_derive_tip">带有 HD 标识，从钱包根助记词（您初次创建钱包时抄录的那个助记词）派生而来，一个助记词可以创建无数钱包，支持多个币种。也可以用它恢复所有派生出的钱包，省时省力且安全，是比特币核心协议 BIP44 的实现。</string>
     <string name="single_wallet">独立钱包</string>
     <string name="single_wallet_tip">独立的钱包，由本地加密算法生成独立私钥。需要重新抄写助记词，一切都不与 HD 钱包共享。</string>
-    <string name="easy_see">方便您轻松识别</string>
     <string name="please_input_addr_or_xpub">请输入地址或公钥</string>
     <string name="input_your_pass">输入您的密码</string>
     <string name="hd_root">HD 钱包根助记词</string>
@@ -1145,7 +1143,7 @@
     <string name="use_behind">人授权才能完成</string>
     <string name="some_sign">多重签名</string>
     <string name="sign_num">（起签名数-总数）</string>
-    <string name="sign_num_tip">该钱包的私钥或助记词已经妥善的保管在硬件设备中。如果您需要导出硬件钱包的助记词，请前往「我的 ➡️ 全部硬件」查找您要导出的设备。</string>
+    <string name="sign_num_tip">该钱包的私钥或助记词已经妥善的保管在硬件设备中。如果您需要导出硬件钱包的助记词，请前往「我的 →️ 全部硬件」查找您要导出的设备。</string>
     <string name="transaction">交易</string>
     <string name="message">消息</string>
     <string name="input_msg">输入原始消息</string>
@@ -1242,5 +1240,9 @@
     <string name="firmware_stm32">正在升级系统固件</string>
     <string name="firmware_nrf">正在升级蓝牙固件</string>
     <string name="invalid_private">请输入正确的私钥</string>
+    <string name="pay_to_miner">支付给矿工</string>
+    <string name="hard_tip1">目前只支持激活的钱包创建共管钱包，激活之后再来</string>
+    <string name="hard_tip2">仅支持未激活的硬件钱包执行该操作</string>
+    <string name="get_hard_msg_error">获取硬件信息失败请重试</string>
 
 </resources>

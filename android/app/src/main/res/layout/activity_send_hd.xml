@@ -23,6 +23,7 @@
             android:layout_centerVertical="true"
             android:layout_marginStart="@dimen/dp_10"
             android:src="@drawable/left_arrow" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -30,7 +31,7 @@
             android:layout_centerVertical="true"
             android:layout_gravity="center"
             android:fontFamily="sans-serif-medium"
-            android:text="@string/send"
+            android:text="@string/forword"
             android:textColor="@color/text"
             android:textSize="@dimen/text_size" />
 
@@ -199,6 +200,7 @@
                 android:background="@color/button_bk_ddake">
 
                 <TextView
+                    android:id="@+id/textView"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/dp_24"
                     android:layout_marginStart="@dimen/dp_20"
@@ -210,6 +212,17 @@
                     android:text="@string/transaction_fee"
                     android:textColor="@color/text_two"
                     android:textSize="@dimen/sp_14" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/dp_16"
+                    android:layout_marginStart="@dimen/dp_10"
+                    android:layout_marginTop="@dimen/dp_18"
+                    android:layout_toEndOf="@+id/textView"
+                    android:gravity="center"
+                    android:text="@string/pay_to_miner"
+                    android:textColor="@color/text_six"
+                    android:textSize="@dimen/sp_12" />
 
                 <TextView
                     android:id="@+id/tet_custom_fee"

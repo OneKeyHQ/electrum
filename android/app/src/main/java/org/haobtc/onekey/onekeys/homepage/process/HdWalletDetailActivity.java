@@ -6,6 +6,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -30,7 +31,6 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.activities.sign.SignActivity;
 import org.haobtc.onekey.bean.GetCodeAddressBean;
-import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.FixWalletNameEvent;
 import org.haobtc.onekey.event.SecondEvent;
 import org.haobtc.onekey.manager.PreferencesManager;
@@ -69,6 +69,8 @@ public class HdWalletDetailActivity extends BaseActivity {
     LinearLayout linHardware;
     @BindView(R.id.text_addr)
     TextView textAddr;
+    @BindView(R.id.text_content_type)
+    TextView textContentType;
     private String type;
     private boolean isBackup;
     private SharedPreferences preferences;
@@ -104,6 +106,7 @@ public class HdWalletDetailActivity extends BaseActivity {
             linHardware.setVisibility(View.VISIBLE);
             type = showWalletType.substring(showWalletType.indexOf("hw-") + 3);
             textSign.setText(String.format("%s %s", type, getString(R.string.sign_num)));
+            textContentType.setText(getString(R.string.sign_num_tip));
 
         } else if (showWalletType.contains("watch")) {
             textHdWallet.setText(getString(R.string.watch_wallet));

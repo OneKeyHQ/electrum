@@ -49,7 +49,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_15"
-        android:text="@string/easy_see"
+        android:text="@string/easy_to_identy"
         android:textColor="@color/text_two"
         android:textSize="@dimen/sp_14" />
 

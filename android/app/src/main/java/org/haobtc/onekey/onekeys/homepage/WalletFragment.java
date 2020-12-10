@@ -183,6 +183,7 @@ public class WalletFragment extends BaseFragment {
             imgBottom.setVisibility(View.GONE);
             linearHaveWallet.setVisibility(View.VISIBLE);
             linearWalletList.setVisibility(View.VISIBLE);
+            imgScan.setVisibility(View.VISIBLE);
             //get wallet balance
             getWalletBalance();
             // get wallet list save wallet type
@@ -421,7 +422,7 @@ public class WalletFragment extends BaseFragment {
             getWalletBalance();
         } else {
             edit.putString("shortOrLongPass", "short");
-            edit.putBoolean(NEED_POP_BACKUP_DIALOG, false);
+            edit.putBoolean(NEED_POP_BACKUP_DIALOG, true);
             edit.apply();
             textWalletName.setText(getString(R.string.no_use_wallet));
             linearNoWallet.setVisibility(View.VISIBLE);

@@ -408,16 +408,14 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
     private void deleteAllWallet() {
         ArrayList<String> hd = new ArrayList<>();
         Map<String, ?> jsonToMap = PreferencesManager.getAll(this, Constant.WALLETS);
-        Set keySets = jsonToMap.keySet();
-        Iterator ki = keySets.iterator();
-        while (ki.hasNext()) {
-            //get key
-            String key = (String) ki.next();
-            String type = jsonToMap.get(key).toString();
-            if (type.contains("hd") || type.contains("derived")) {
-                hd.add(key);
+        jsonToMap.entrySet().forEach(stringEntry -> {
+            LocalWalletInfo info = LocalWalletInfo.objectFromData(stringEntry.getValue().toString());
+            String type = info.getType();
+            String name = info.getName();
+            if ("btc-hd-standard".equals(type) || "btc-derived-standard".equals(type)) {
+                hd.add(name);
             }
-        }
+        });
 
         try {
             Daemon.commands.callAttr("delete_wallet", pwdEdittext.getText().toString(), new Kwarg("name", deleteHdWalletName));
@@ -524,6 +522,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
             startActivity(intent);
             finish();
         } else {
+            EventBus.getDefault().post(new FinishEvent());
             Intent intent = new Intent(SetHDWalletPassActivity.this, HdRootMnemonicsActivity.class);
             intent.putExtra("exportWord", exportSeed.toString());
             intent.putExtra("importHdword", importHdword);

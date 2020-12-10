@@ -25,7 +25,7 @@
         android:layout_height="wrap_content"
         android:background="@android:color/white"
         android:gravity="center_horizontal"
-        android:text="@string/set_wallet_name_hide"
+        android:text="@string/easy_to_identy"
         android:textColor="#142A3B"
         android:textSize="14sp" />
 

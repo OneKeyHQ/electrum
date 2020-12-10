@@ -1,7 +1,6 @@
 package org.haobtc.onekey.adapter;
 
 import android.annotation.SuppressLint;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -31,8 +30,16 @@ public class OnekeyTxListAdapter extends BaseQuickAdapter<MaintrsactionlistEvent
         } else {
             amount = item.getAmount();
         }
+        String date = item.getDate();
+        if (date.contains("-")) {
+            String str = date.substring(5);
+            String strs = str.substring(0, str.length() - 3);
+            String time = strs.replace("-", "/");
+            helper.setText(R.id.text_address, item.getTxHash()).setText(R.id.text_time, time);
+        } else {
+            helper.setText(R.id.text_address, item.getTxHash()).setText(R.id.text_time, date);
+        }
 
-        helper.setText(R.id.text_address, item.getTxHash()).setText(R.id.text_time, item.getDate());
         TextView tetAmount = helper.getView(R.id.text_send_amount);
         ImageView imgStatus = helper.getView(R.id.imageView);
         if (item.isMine()) {
