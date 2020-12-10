@@ -862,7 +862,7 @@ class AndroidCommands(commands.Commands):
             print(f"coins=========={coins}")
             c, u, x = self.wallet.get_balance()
             if not coins and self.config.get('confirmed_only', False):
-                raise BaseException(_("Please use unconfirmed utxo"))
+                raise BaseException(_("Please use unconfirmed utxo."))
             fee_per_kb = 1000 * Decimal(feerate)
             from functools import partial
             fee_estimator = partial(self.config.estimate_fee_for_feerate, fee_per_kb)
@@ -1189,7 +1189,7 @@ class AndroidCommands(commands.Commands):
 
         amount_str = ""
         if tx_details.amount is None:
-            amount_str = _("Transaction not related to the current wallet")
+            amount_str = _("Transaction not related to the current wallet.")
         else:
             amount_str = self.format_amount_and_units(tx_details.amount)
 
@@ -1308,7 +1308,7 @@ class AndroidCommands(commands.Commands):
             raise BaseException(e)
         tx = self.wallet.db.get_transaction(tx_hash)
         if not tx:
-            raise BaseException(_('Failed to get transaction details'))
+            raise BaseException(_('Failed to get transaction details.'))
         # tx = PartialTransaction.from_tx(tx)
         label = self.wallet.get_label(tx_hash) or None
         tx = copy.deepcopy(tx)
@@ -1443,7 +1443,7 @@ class AndroidCommands(commands.Commands):
             with open(path, "rb") as f:
                 file_content = f.read()
         except (ValueError, IOError, os.error) as reason:
-            raise BaseException(_("Failed to open file"))
+            raise BaseException(_("Failed to open file."))
         tx = tx_from_any(file_content)
         return tx
 
@@ -2318,13 +2318,13 @@ class AndroidCommands(commands.Commands):
         if flag == "seed":
             is_checksum, is_wordlist = keystore.bip39_is_checksum_valid(data)
             if not keystore.is_seed(data) and not is_checksum:
-                raise BaseException(_("Incorrect mnemonic format"))
+                raise BaseException(_("Incorrect mnemonic format."))
         if coin == "btc":
             if flag == "private":
                 try:
                     ecc.ECPrivkey(bfh(data))
                 except:
-                    keys = keystore.get_private_keys(privkeys, allow_spaces_inside_key=False)
+                    keys = keystore.get_private_keys(data, allow_spaces_inside_key=False)
                     if keys is None:
                         raise UnavailablePrivateKey()
             elif flag == "public":
@@ -2345,7 +2345,7 @@ class AndroidCommands(commands.Commands):
                 try:
                     Account.decrypt(data, password).hex()
                 except BaseException as e:
-                    raise BaseException(_("Incorrect eth keystore"))
+                    raise BaseException(_("Incorrect eth keystore."))
             elif flag == "public":
                 try:
                     uncom_key = get_uncompressed_key(data)
@@ -2389,7 +2389,7 @@ class AndroidCommands(commands.Commands):
         temp_path = self.get_temp_file()
         path = self._wallet_path(temp_path)
         if exists(path):
-            raise BaseException(_("File already exists"))
+            raise FileAlreadyExist()
         storage = WalletStorage(path)
         db = WalletDB('', manual_upgrades=False)
         if addresses is not None:
@@ -2401,7 +2401,7 @@ class AndroidCommands(commands.Commands):
                         pubkey = ecc.ECPubkey(bfh(addresses[0])).get_public_key_hex()
                         addresses = [bitcoin.pubkey_to_address("p2wpkh", pubkey)]
                     except BaseException as e:
-                        raise BaseException(_("Incorrect address or pubkey"))
+                        raise BaseException(_("Incorrect address or pubkey."))
             elif coin == "eth" or coin == "bsc":
                 wallet = Imported_Eth_Wallet(db, storage, config=self.config)
                 wallet.wallet_type = '%s_imported' % coin
@@ -2417,7 +2417,7 @@ class AndroidCommands(commands.Commands):
             good_inputs, bad_inputs = wallet.import_addresses(addresses, write_to_disk=False)
             # FIXME tell user about bad_inputs
             if not good_inputs:
-                raise BaseException(_("No address available"))
+                raise BaseException(_("No address available."))
             wallet_type = "%s-watch-standard" % coin
         elif privkeys is not None or keystores is not None:
             if coin == "btc":
@@ -2449,7 +2449,7 @@ class AndroidCommands(commands.Commands):
             good_inputs, bad_inputs = wallet.import_private_keys(keys, None, write_to_disk=False)
             # FIXME tell user about bad_inputs
             if not good_inputs:
-                raise BaseException(_("No private key available"))
+                raise BaseException(_("No private key available."))
             wallet_type = "%s-private-standard" %coin
         else:
             if bip39_derivation is not None:
@@ -2655,7 +2655,7 @@ class AndroidCommands(commands.Commands):
                     history = reversed(wallet.get_history())
                     for item in history:
                         c, _, _ = wallet.get_balance()
-                        self.update_recover_list(recovery_list, self.format_amount_and_units(c), str(wallet), wallet.get_name(), coin)
+                        self.update_recover_list(recovery_list, self.format_amount_and_units(c), str(wallet), wallet.get_name(), "btc")
                         break
             except BaseException as e:
                 raise e
@@ -3089,9 +3089,9 @@ class AndroidCommands(commands.Commands):
                 info['total_feerate'] = comb_feerate_str
 
                 if fee_for_child is None:
-                    raise BaseException(_("Sub-transaction fee error"))  # fee left empty, treat is as "cancel"
+                    raise BaseException(_("Sub-transaction fee error."))  # fee left empty, treat is as "cancel"
                 if fee_for_child > max_fee:
-                    raise BaseException(_('Exceeding the Maximum fee limit'))
+                    raise BaseException(_('Exceeding the Maximum fee limit.'))
             return json.dumps(info)
         except BaseException as e:
             raise e
@@ -3183,7 +3183,7 @@ class AndroidCommands(commands.Commands):
         try:
             self._assert_daemon_running()
             if old_name is None or new_name is None:
-                raise BaseException(("Please enter the correct file name"))
+                raise BaseException(("Please enter the correct file name."))
             else:
                 wallet = self.daemon._wallets[self._wallet_path(old_name)]
                 wallet.set_name(new_name)
@@ -3311,7 +3311,7 @@ class AndroidCommands(commands.Commands):
 
     def _assert_wallet_isvalid(self):
         if self.wallet is None:
-            raise BaseException(_("You haven't chosen a wallet yes."))
+            raise BaseException(_("You haven't chosen a wallet yet."))
             # Log callbacks on stderr so they'll appear in the console activity.
 
     def _assert_hd_wallet_isvalid(self):
