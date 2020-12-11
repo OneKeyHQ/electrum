@@ -107,12 +107,12 @@
 
     <ImageView
         android:id="@+id/img_cancel"
-        android:layout_width="@dimen/dp_40"
-        android:layout_marginTop="@dimen/dp_5"
-        android:layout_height="@dimen/dp_40"
+        android:layout_width="@dimen/dp_50"
+        android:layout_height="@dimen/dp_50"
         android:layout_alignParentEnd="true"
+        android:layout_marginTop="@dimen/dp_5"
         android:layout_marginEnd="@dimen/dp_15"
-        android:padding="@dimen/dp_14"
+        android:padding="@dimen/dp_10"
         android:src="@drawable/close_dark_small" />
 
 </RelativeLayout>

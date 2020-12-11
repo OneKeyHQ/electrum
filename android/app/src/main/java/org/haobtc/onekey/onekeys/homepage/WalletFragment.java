@@ -1,6 +1,7 @@
 package org.haobtc.onekey.onekeys.homepage;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -243,6 +244,7 @@ public class WalletFragment extends BaseFragment {
 
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     private void showTypeInfo(LocalWalletInfo localWalletInfo) {
         nowType = localWalletInfo.getType();
         edit.putString(CURRENT_SELECTED_WALLET_TYPE, nowType);
@@ -346,6 +348,7 @@ public class WalletFragment extends BaseFragment {
     private void toNext(int id) {
         switch (id) {
             case R.id.linear_send:
+                System.out.println("===============4444");
                 Intent intent2 = new Intent(getActivity(), SendHdActivity.class);
                 intent2.putExtra("sendNum", changeBalance);
                 intent2.putExtra("hdWalletName", textWalletName.getText().toString());
@@ -598,6 +601,7 @@ public class WalletFragment extends BaseFragment {
             case R.id.linear_send:
             case R.id.linear_receive:
             case R.id.linear_sign:
+                System.out.println("==============2222");
                 deal(view.getId());
                 break;
             case R.id.rel_now_back_up:

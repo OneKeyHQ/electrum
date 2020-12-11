@@ -400,7 +400,7 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
             }
             PyObject signMessage = null;
             try {
-                signMessage = Daemon.commands.callAttr("sign_tx", strTest, "", new Kwarg("password", strPassword));
+                signMessage = Daemon.commands.callAttr("sign_tx", strTest, new Kwarg("password", strPassword));
             } catch (Exception e) {
                 if (e.getMessage().contains("Incorrect password")) {
                     showToast(getString(R.string.wrong_pass));

@@ -13,6 +13,7 @@ import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.activities.base.LunchActivity;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
+import org.haobtc.onekey.utils.Daemon;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -94,7 +95,8 @@ public class LanguageSettingActivity extends BaseActivity {
                 break;
             case R.id.radio_chineseasy:
                 mTextChinese();
-                edit.putString("language", "Chinese");
+                setLanguage("Chinese");
+                edit.putString("language", "zh_CN");
                 edit.apply();
                 edit.apply();
                 imgSystem.setVisibility(View.GONE);
@@ -106,7 +108,8 @@ public class LanguageSettingActivity extends BaseActivity {
                 break;
             case R.id.radio_english:
                 mTextEnglish();
-                edit.putString("language", "English");
+                setLanguage("English");
+                edit.putString("language", "en_UK");
                 edit.apply();
                 imgSystem.setVisibility(View.GONE);
                 imgChinese.setVisibility(View.GONE);
@@ -118,6 +121,15 @@ public class LanguageSettingActivity extends BaseActivity {
             case R.id.radio_Japanese:
                 break;
             default:
+        }
+    }
+
+    private void setLanguage(String language) {
+        try {
+            Daemon.commands.callAttr("set_language",language);
+        } catch (Exception e) {
+            e.printStackTrace();
+            mToast(e.getMessage());
         }
     }
 

@@ -32,7 +32,7 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_marginStart="@dimen/dp_7"
-            android:padding="@dimen/dp_19"
+            android:padding="@dimen/dp_10"
             android:src="@drawable/close_dark_small" />
 
     </RelativeLayout>

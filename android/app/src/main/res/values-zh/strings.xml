@@ -1244,5 +1244,8 @@
     <string name="hard_tip1">目前只支持激活的钱包创建共管钱包，激活之后再来</string>
     <string name="hard_tip2">仅支持未激活的硬件钱包执行该操作</string>
     <string name="get_hard_msg_error">获取硬件信息失败请重试</string>
+    <string name="choose_word_num">选择助记词位数</string>
+    <string name="pos_12">12位</string>
+    <string name="pos_24">24位</string>
 
 </resources>

@@ -237,8 +237,7 @@ public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocu
                 startActivity(recovery);
                 break;
             case R.id.lin_import:
-                Intent intent2 = new Intent(RecoverHdWalletActivity.this, ImprotSingleActivity.class);
-                startActivity(intent2);
+
                 break;
             case R.id.img_copy_test:
                 pasteSeed();

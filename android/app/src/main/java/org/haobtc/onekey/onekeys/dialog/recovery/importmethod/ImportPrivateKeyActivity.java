@@ -3,7 +3,10 @@ package org.haobtc.onekey.onekeys.dialog.recovery.importmethod;
 import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -31,7 +34,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class ImportPrivateKeyActivity extends BaseActivity {
+public class ImportPrivateKeyActivity extends BaseActivity implements TextWatcher {
 
     @BindView(R.id.edit_input_private)
     EditText editInputPrivate;
@@ -52,6 +55,7 @@ public class ImportPrivateKeyActivity extends BaseActivity {
         rxPermissions = new RxPermissions(this);
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         edit = preferences.edit();
+        editInputPrivate.addTextChangedListener(this);
     }
 
     @Override
@@ -128,4 +132,27 @@ public class ImportPrivateKeyActivity extends BaseActivity {
         }
     }
 
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+        // 禁止EditText输入空格
+        if (s.toString().contains(" ")) {
+            String[] str = s.toString().split(" ");
+            StringBuffer sb = new StringBuffer();
+            for (int i = 0; i < str.length; i++) {
+                sb.append(str[i]);
+            }
+            editInputPrivate.setText(sb.toString());
+            editInputPrivate.setSelection(start);
+        }
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+
+    }
 }

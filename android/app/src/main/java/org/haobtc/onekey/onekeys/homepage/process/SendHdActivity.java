@@ -145,6 +145,7 @@ public class SendHdActivity extends BaseActivity implements TextWatcher, Busines
     private String showWalletType;
     private String infoFromRaw;
     private String signedTx;
+    private Dialog dialogBtoms;
 
 
     @Override
@@ -376,9 +377,9 @@ public class SendHdActivity extends BaseActivity implements TextWatcher, Busines
     //soft sign
     private void signTx(String rowtx, String password) {
         try {
-            String signContent = Daemon.commands.callAttr("sign_tx", rowtx, "", new Kwarg("password", password)).toString();
+            String signContent = Daemon.commands.callAttr("sign_tx", rowtx, new Kwarg("password", password)).toString();
             if (!Strings.isNullOrEmpty(signContent)) {
-                broacastTx(rowtx, signContent);
+                broacastTx(signContent);
             }
         } catch (Exception e) {
             if (e.getMessage().contains("Incorrect password")) {
@@ -386,15 +387,18 @@ public class SendHdActivity extends BaseActivity implements TextWatcher, Busines
             }
             e.printStackTrace();
         }
-
     }
 
-    private void broacastTx(String rowtx, String signContent) {
+    private void broacastTx(String signContent) {
         Gson gson = new Gson();
-        GetnewcreatTrsactionListBean trsactionListBean = gson.fromJson(signContent.toString(), GetnewcreatTrsactionListBean.class);
-        Daemon.commands.callAttr("broadcast_tx", trsactionListBean.getTx());
+        GetnewcreatTrsactionListBean trsactionListBean = gson.fromJson(signContent, GetnewcreatTrsactionListBean.class);
+        try {
+            Daemon.commands.callAttr("broadcast_tx", trsactionListBean.getTx());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         Intent intent = new Intent(SendHdActivity.this, DetailTransactionActivity.class);
-        intent.putExtra("txDetail", rowtx);
+        intent.putExtra("txDetail", trsactionListBean.getTx());
         startActivity(intent);
         EventBus.getDefault().post(new SecondEvent("finish"));
         finish();
@@ -408,12 +412,12 @@ public class SendHdActivity extends BaseActivity implements TextWatcher, Busines
         Log.i("Tjindetail", "sendConfirmDialog:--=====  " + detail);
         //set see view
         View view = View.inflate(context, resource, null);
-        Dialog dialogBtoms = new Dialog(context, R.style.dialog);
+        dialogBtoms = new Dialog(context, R.style.dialog);
         confirmBtn = view.findViewById(R.id.btn_confirm_pay);
         if (showWalletType.contains("watch")) {
             confirmBtn.setText(getString(R.string.confirm));
         } else if (Constant.WALLET_TYPE_HARDWARE.equals(showWalletType)) {
-            confirmBtn.setText("在设备进行确认");
+            confirmBtn.setText(getString(R.string.cold_device_confirm));
             confirmBtn.setEnabled(false);
         }
         TextView txAmount = view.findViewById(R.id.text_tx_amount);
@@ -437,7 +441,7 @@ public class SendHdActivity extends BaseActivity implements TextWatcher, Busines
             if (showWalletType.contains("watch")) {
                 dialogBtoms.dismiss();
             } else if (Constant.WALLET_TYPE_HARDWARE.equals(showWalletType)) {
-                broacastTx(rawTx, signedTx);
+                broacastTx(signedTx);
             } else {
                 //sign trsaction
                 if ("short".equals(preferences.getString("shortOrLongPass", "short"))) {

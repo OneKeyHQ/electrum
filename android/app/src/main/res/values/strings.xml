@@ -1303,4 +1303,7 @@
     <string name="hard_tip1">At present, only activated wallets are supported to create co managed wallets. Please come back after activation</string>
     <string name="hard_tip2">Only inactive hardware wallets are supported to perform this operation</string>
     <string name="get_hard_msg_error">Failed to get hardware information. Please try again</string>
+    <string name="choose_word_num">Choose the number of mnemonics</string>
+    <string name="pos_12">12位</string>
+    <string name="pos_24">24位</string>
 </resources>

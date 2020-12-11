@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -132,6 +133,7 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
         }
         if (walletAddressShowUi != null) {
             String strCode = walletAddressShowUi.toString();
+            Log.i("strCode", "mGeneratecode: " + strCode);
             Gson gson = new Gson();
             GetCodeAddressBean getCodeAddressBean = gson.fromJson(strCode, GetCodeAddressBean.class);
             String qrData = getCodeAddressBean.getQrData();
@@ -156,6 +158,7 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
         }
 
     }
+
     @SingleClick
     @OnClick({R.id.img_back, R.id.linear_copy, R.id.linear_share, R.id.verify_start})
     public void onViewClicked(View view) {

@@ -2,11 +2,8 @@ package org.haobtc.onekey.onekeys.backup;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -18,18 +15,12 @@ import android.widget.TextView;
 
 import androidx.annotation.LayoutRes;
 
-import com.chaquo.python.Kwarg;
-
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
-import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.BackupEvent;
 import org.haobtc.onekey.event.FinishEvent;
 import org.haobtc.onekey.manager.PreferencesManager;
-import org.haobtc.onekey.onekeys.dialog.recovery.ImprotSingleActivity;
-import org.haobtc.onekey.onekeys.homepage.WalletListActivity;
-import org.haobtc.onekey.onekeys.homepage.process.CreateWalletChooseTypeActivity;
 import org.haobtc.onekey.utils.Daemon;
 
 import java.util.ArrayList;

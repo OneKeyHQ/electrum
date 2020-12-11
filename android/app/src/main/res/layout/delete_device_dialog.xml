@@ -14,11 +14,11 @@
 
         <ImageView
             android:id="@+id/img_cancel"
-            android:layout_width="@dimen/dp_40"
-            android:layout_height="@dimen/dp_40"
+            android:layout_width="@dimen/dp_50"
+            android:layout_height="@dimen/dp_50"
             android:layout_gravity="end"
             android:layout_marginStart="@dimen/dp_7"
-            android:padding="@dimen/dp_14"
+            android:padding="@dimen/dp_10"
             android:src="@drawable/close_dark_small" />
 
         <TextView

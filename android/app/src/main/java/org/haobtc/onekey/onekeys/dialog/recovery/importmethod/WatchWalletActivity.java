@@ -3,7 +3,9 @@ package org.haobtc.onekey.onekeys.dialog.recovery.importmethod;
 import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -22,7 +24,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class WatchWalletActivity extends BaseActivity {
+public class WatchWalletActivity extends BaseActivity implements TextWatcher {
 
     @BindView(R.id.edit_address)
     EditText editAddress;
@@ -41,6 +43,7 @@ public class WatchWalletActivity extends BaseActivity {
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         edit = preferences.edit();
         rxPermissions = new RxPermissions(this);
+        editAddress.addTextChangedListener(this);
     }
 
     @Override
@@ -96,5 +99,29 @@ public class WatchWalletActivity extends BaseActivity {
                 editAddress.setText(content);
             }
         }
+    }
+
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+        // 禁止EditText输入空格
+        if (s.toString().contains(" ")) {
+            String[] str = s.toString().split(" ");
+            StringBuffer sb = new StringBuffer();
+            for (int i = 0; i < str.length; i++) {
+                sb.append(str[i]);
+            }
+            editAddress.setText(sb.toString());
+            editAddress.setSelection(start);
+        }
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+
     }
 }

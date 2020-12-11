@@ -35,7 +35,7 @@ public class ConfirmOnHardWareActivity extends BaseActivity {
         switch (action) {
             case BusinessAsyncTask.WIPE_DEVICE:
                 updateTitle(R.string.restore_factory);
-                promote.setText("请在设备上确认，以完成操作");
+                promote.setText(getString(R.string.cold_device_confirm));
             default:
                 updateTitle(R.string.change_pin);
         }

@@ -1017,7 +1017,7 @@ public class TransactionDetailsActivity extends BaseActivity {
                 return;
             }
             try {
-                PyObject signTx = Daemon.commands.callAttr("sign_tx", rawtx, "", new Kwarg("password", strPassword));
+                PyObject signTx = Daemon.commands.callAttr("sign_tx", rawtx, new Kwarg("password", strPassword));
                 if (signTx != null) {
                     jsonDetailData(signTx.toString());
                     alertDialog.dismiss();

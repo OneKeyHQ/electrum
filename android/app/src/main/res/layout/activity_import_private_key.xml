@@ -66,16 +66,16 @@
             <EditText
                 android:id="@+id/edit_input_private"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="92dp"
                 android:layout_marginStart="34dp"
                 android:layout_marginTop="@dimen/dp_50"
                 android:layout_marginEnd="34dp"
                 android:background="@drawable/gray_broken"
                 android:hint="@string/imput_private_tip"
                 android:paddingStart="@dimen/dp_20"
-                android:paddingTop="@dimen/dp_40"
+                android:paddingTop="@dimen/dp_10"
                 android:paddingEnd="@dimen/dp_20"
-                android:paddingBottom="@dimen/dp_40"
+                android:paddingBottom="@dimen/dp_10"
                 android:textSize="@dimen/sp_14" />
 
             <TextView

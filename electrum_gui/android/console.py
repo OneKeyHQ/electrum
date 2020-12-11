@@ -890,13 +890,12 @@ class AndroidCommands(commands.Commands):
             pos = self.config.get_depth_level() if mempool else self.config.get_fee_level()
             fee_rate = feerate * 1000 if feerate is None else self.config.fee_per_kb()
             target, tooltip = self.config.get_fee_text(pos, dyn, mempool, fee_rate)
-            block = target.split()[-2]
+            #block = target.split()[-2]
             ret_data = {
                 'amount': self.format_amount(tx_details.amount),
                 'size': size,
                 'fee': self.format_amount(tx_details.fee),
-                'time': BTC_BLOCK_INTERVAL_TIME if target.split()[-2] == 'next' else int(
-                    target.split()[-2]) * BTC_BLOCK_INTERVAL_TIME,
+                'time': 20,
                 'tx': str(self.tx)
             }
             return json.dumps(ret_data)

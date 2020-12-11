@@ -14,7 +14,7 @@
         android:paddingTop="@dimen/dp_20"
         android:paddingRight="@dimen/dp_30"
         android:paddingBottom="@dimen/dp_20"
-        android:text="在设备上进行确认"
+        android:text="@string/cold_device_confirm"
         android:textColor="#142A3B"
         android:textSize="30sp" />
 

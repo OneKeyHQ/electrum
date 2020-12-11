@@ -19,7 +19,7 @@
         android:paddingTop="@dimen/dp_20"
         android:paddingRight="@dimen/dp_30"
         android:paddingBottom="@dimen/dp_20"
-        android:text="在硬件设备上完成抄写"
+        android:text="@string/complete_hand_write"
         android:textColor="#142A3B"
         android:textSize="30sp" />
     <TextView
