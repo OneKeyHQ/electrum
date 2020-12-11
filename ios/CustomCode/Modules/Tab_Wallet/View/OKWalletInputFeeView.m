@@ -26,6 +26,8 @@
 
 @property (nonatomic,copy)NSString *address;
 @property (nonatomic,copy)NSString *amount;
+@property (nonatomic,copy)NSString *dsize;
+
 @property (nonatomic,strong)NSDictionary *customFeeDict;
 @property (nonatomic,copy)NSString *fiatCustom;
 
@@ -37,12 +39,16 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-+ (void)showWalletCustomFeeAddress:(NSString *)address amount:(NSString *)amount sure:(SureBlock)sureBlock Cancel:(CancelBlock)cancelBlock{
++ (void)showWalletCustomFeeAddress:(NSString *)address amount:(NSString *)amount dsize:(NSString *)dsize sure:(SureBlock)sureBlock  Cancel:(CancelBlock)cancelBlock{
     OKWalletInputFeeView *inputView = [[[NSBundle mainBundle] loadNibNamed:@"OKWalletInputFeeView" owner:self options:nil] firstObject];
     inputView.cancelBlock = cancelBlock;
     inputView.sureBlock = sureBlock;
     inputView.address = address;
     inputView.amount = amount;
+    inputView.dsize = dsize;
+    if (dsize.length != 0 && dsize != nil) {
+        inputView.sizeTF.text = dsize;
+    }
     [[NSNotificationCenter defaultCenter] addObserver:inputView selector:@selector(textChange:) name:UITextFieldTextDidChangeNotification object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:inputView
@@ -110,15 +116,21 @@
 {
     if (self.address > 0 && self.amount.length > 0) {
         [self loadCustomFee];
-        [self refreshFeeUI];
     }
+    [self refreshFeeUI];
 }
 
 - (void)refreshFeeUI
 {
-    self.sizeTF.text = [self.customFeeDict safeStringForKey:@"size"];
-    self.equaltoLabel.text = [NSString stringWithFormat:@"%@ %@",[self.customFeeDict safeStringForKey:@"fee"],@"sat"];
-    self.timeStrLabel.text = [NSString stringWithFormat:@"预计时间：约%@分钟",[self.customFeeDict safeStringForKey:@"time"]];
+    if (self.customFeeDict == nil) {
+        self.sizeTF.text = [self.customFeeDict safeStringForKey:@"size"];
+        self.equaltoLabel.text = [NSString stringWithFormat:@"%@ %@",[self.customFeeDict safeStringForKey:@"fee"],@"sat"];
+        self.timeStrLabel.text = [NSString stringWithFormat:@"预计时间：约%@分钟",[self.customFeeDict safeStringForKey:@"time"]];
+    }else{
+        self.sizeTF.text = [self.customFeeDict safeStringForKey:@"size"];
+        self.equaltoLabel.text = [NSString stringWithFormat:@"%@ %@",[self.customFeeDict safeStringForKey:@"fee"],@"sat"];
+        self.timeStrLabel.text = [NSString stringWithFormat:@"预计时间：约%@分钟",[self.customFeeDict safeStringForKey:@"time"]];
+    }
 }
 
 - (void)loadCustomFee

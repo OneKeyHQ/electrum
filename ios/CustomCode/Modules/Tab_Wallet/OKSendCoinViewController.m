@@ -17,6 +17,8 @@ typedef enum {
 #import "OKWalletInputFeeView.h"
 #import "OKSendTxPreInfoViewController.h"
 #import "OKSendTxPreModel.h"
+#import "OKDefaultFeeInfoModel.h"
+#import "OKDefaultFeeInfoSubModel.h"
 
 
 @interface OKSendCoinViewController ()<UITextFieldDelegate>
@@ -44,17 +46,11 @@ typedef enum {
 @property (weak, nonatomic) IBOutlet UILabel *feeTipsLabel;
 @property (weak, nonatomic) IBOutlet UIButton *customBtn;
 - (IBAction)customBtnClick:(UIButton *)sender;
-
-
 @property (weak, nonatomic) IBOutlet UIView *feeTypeBgView;
-
 @property (weak, nonatomic) IBOutlet UIView *slowBg;
 @property (weak, nonatomic) IBOutlet UIView *recommendedBg;
 @property (weak, nonatomic) IBOutlet UIView *fastBg;
 @property (weak, nonatomic) IBOutlet UIView *custom_BGView;
-
-
-
 @property (weak, nonatomic) IBOutlet OKButton *sendBtn;
 - (IBAction)sendBtnClick:(OKButton *)sender;
 
@@ -62,10 +58,6 @@ typedef enum {
 @property (weak, nonatomic) IBOutlet UIView *recommendBottomLabelBg;
 @property (weak, nonatomic) IBOutlet UIView *fastBottomLabelBg;
 @property (weak, nonatomic) IBOutlet UIView *customBottomLabelBg;
-
-
-
-
 //手势
 - (IBAction)tapSlowBgClick:(UITapGestureRecognizer *)sender;
 - (IBAction)tapRecommendBgClick:(UITapGestureRecognizer *)sender;
@@ -124,6 +116,8 @@ typedef enum {
 
 @property (nonatomic,assign)BOOL custom;
 
+@property (nonatomic,strong)OKDefaultFeeInfoModel *defaultFeeInfoModel;
+
 @end
 
 @implementation OKSendCoinViewController
@@ -140,10 +134,18 @@ typedef enum {
     _custom = NO;
     [self stupUI];
     [self changeFeeType:OKFeeTypeRecommend];
-    NSString *default_fee_status =  [kPyCommandsManager callInterface:kInterfaceGet_default_fee_status parameter:@{}];
-    NSArray *default_fee_statusArray = [default_fee_status componentsSeparatedByString:@" "];
-    NSString* default_fee_statusNum = [default_fee_statusArray firstObject];
-    self.currentFee_status = default_fee_statusNum;
+    
+    
+//    NSString *default_fee_status =  [kPyCommandsManager callInterface:kInterfaceGet_default_fee_status parameter:@{}];
+//    NSArray *default_fee_statusArray = [default_fee_status componentsSeparatedByString:@" "];
+//    NSString* default_fee_statusNum = [default_fee_statusArray firstObject];
+//    self.currentFee_status = default_fee_statusNum;
+    
+    NSDictionary *dict = [kPyCommandsManager callInterface:kInterfaceget_default_fee_info parameter:@{}];
+    self.defaultFeeInfoModel = [OKDefaultFeeInfoModel mj_objectWithKeyValues:dict];
+    [self setDefaultFee];
+    
+    
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(refreshBalance:) name:kNotiUpdate_status object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textChange:) name:UITextFieldTextDidChangeNotification object:nil];
     self.addressTextField.text = self.address;
@@ -202,6 +204,19 @@ typedef enum {
     });
 }
 
+- (void)setDefaultFee
+{
+    self.lowFeeDict = self.defaultFeeInfoModel.slow;
+    self.recommendFeeDict = self.defaultFeeInfoModel.normal;
+    self.fastFeeDict = self.defaultFeeInfoModel.fast;
+    
+    self.fiatFast =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":[self.fastFeeDict safeStringForKey:@"fee"]}];
+    self.fiatLow =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":[self.lowFeeDict safeStringForKey:@"fee"]}];
+    self.fiatRecommend =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":[self.recommendFeeDict safeStringForKey:@"fee"]}];
+    [self refreshFeeSelect];
+}
+
+
 - (void)refreshFeeSelect
 {
     NSString *fiatS = kWalletManager.currentFiatSymbol;
@@ -211,7 +226,7 @@ typedef enum {
         if (fee == nil) {
             fee = @"0";
         }
-        self.customCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",[kWalletManager getFeeBaseWithSat:fee],kWalletManager.currentBitcoinUnit];
+        self.customCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",fee,kWalletManager.currentBitcoinUnit];
         self.customTimeLabel.text = [NSString stringWithFormat:@"约%@分钟",[self.customFeeDict safeStringForKey:@"time"]==nil?@"--":[self.customFeeDict safeStringForKey:@"time"]];
         self.customMoneyAmountLabel.text = [NSString stringWithFormat:@"%@%@",fiatS,self.fiatCustom];
     }else{
@@ -220,7 +235,7 @@ typedef enum {
         if (feeslow == nil) {
             feeslow = @"-";
         }
-        self.slowCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",[kWalletManager getFeeBaseWithSat:feeslow],kWalletManager.currentBitcoinUnit];
+        self.slowCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",feeslow,kWalletManager.currentBitcoinUnit];
         self.slowTimeLabel.text = [NSString stringWithFormat:@"约%@分钟",[self.lowFeeDict safeStringForKey:@"time"]==nil?@"--":[self.lowFeeDict safeStringForKey:@"time"]];
         self.slowMoneyAmountLabel.text = [NSString stringWithFormat:@"%@%@",fiatS,self.fiatLow];
         
@@ -230,7 +245,7 @@ typedef enum {
         if (feerecommend == nil) {
             feerecommend = @"-";
         }
-        self.recommendCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",[kWalletManager getFeeBaseWithSat:feerecommend],kWalletManager.currentBitcoinUnit];
+        self.recommendCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",feerecommend,kWalletManager.currentBitcoinUnit];
         self.recommendTimeLabel.text = [NSString stringWithFormat:@"约%@分钟",[self.recommendFeeDict safeStringForKey:@"time"]==nil?@"--":[self.recommendFeeDict safeStringForKey:@"time"]];
         self.recommendMoneyAmountLabel.text = [NSString stringWithFormat:@"%@%@",fiatS,self.fiatRecommend];
         
@@ -239,7 +254,7 @@ typedef enum {
         if (feefast == nil) {
             feefast = @"-";
         }
-        self.fastCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",[kWalletManager getFeeBaseWithSat:feefast],kWalletManager.currentBitcoinUnit];
+        self.fastCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",feefast,kWalletManager.currentBitcoinUnit];
         self.fastTimeLabel.text = [NSString stringWithFormat:@"约%@分钟",[self.fastFeeDict safeStringForKey:@"time"] == nil ? @"--":[self.fastFeeDict safeStringForKey:@"time"]];
         self.fastMoneyAmountLabel.text = [NSString stringWithFormat:@"%@%@",fiatS,self.fiatFast];
     }
@@ -267,12 +282,12 @@ typedef enum {
     
 }
 - (IBAction)customBtnClick:(UIButton *)sender {
-    
-    if (![self checkTextField]) {
-        return;
+    NSString *dsize = @"";
+    if (self.addressTextField.text.length == 0 || self.amountLabel.text.length == 0 ||[self.balanceLabel.text doubleValue] < [self.amountTextField.text doubleValue]||[self.amountTextField.text doubleValue] <= 0) {
+        dsize = [self.defaultFeeInfoModel.normal safeStringForKey:@"size"];
     }
     OKWeakSelf(self)
-    [OKWalletInputFeeView showWalletCustomFeeAddress:self.addressTextField.text amount:self.amountTextField.text sure:^(NSDictionary *customFeeDict, NSString *fiat) {
+    [OKWalletInputFeeView showWalletCustomFeeAddress:self.addressTextField.text amount:self.amountTextField.text dsize:dsize sure:^(NSDictionary *customFeeDict, NSString *fiat) {
         weakself.customFeeDict = customFeeDict;
         weakself.fiatCustom = fiat;
         weakself.custom = YES;
@@ -388,7 +403,7 @@ typedef enum {
 }
 - (void)loadFastFee
 {
-    NSString *status = [NSString stringWithFormat:@"%zd",[self.currentFee_status integerValue] * 2];
+    NSString *status = [NSString stringWithFormat:@"%zd",[[self.defaultFeeInfoModel.fast safeStringForKey:@"feerate"] integerValue] * 2];
     //输入地址和转账额度 获取fee
     NSDictionary *outputsDict = @{self.addressTextField.text:self.amountTextField.text};
     NSArray *outputsArray = @[outputsDict];
@@ -398,7 +413,7 @@ typedef enum {
     self.fastFeeDict = dict;
     
     NSString *feesat = [dict safeStringForKey:@"fee"];
-    self.fiatFast =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":[kWalletManager getFeeBaseWithSat:feesat]}];
+    self.fiatFast =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":feesat}];
 }
 
 - (void)loadReRecommendFee
@@ -408,11 +423,11 @@ typedef enum {
     NSArray *outputsArray = @[outputsDict];
     NSString *outputs = [outputsArray mj_JSONString];
     NSString *memo = @"";
-    NSDictionary *dict =  [kPyCommandsManager callInterface:kInterfaceGet_fee_by_feerate parameter:@{@"outputs":outputs,@"message":memo,@"feerate":self.currentFee_status}];
+    NSDictionary *dict =  [kPyCommandsManager callInterface:kInterfaceGet_fee_by_feerate parameter:@{@"outputs":outputs,@"message":memo,@"feerate":[self.defaultFeeInfoModel.normal safeStringForKey:@"feerate"]}];
     self.recommendFeeDict = dict;
     
     NSString *feesat = [dict safeStringForKey:@"fee"];
-    self.fiatRecommend =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":[kWalletManager getFeeBaseWithSat:feesat]}];
+    self.fiatRecommend =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":feesat}];
 }
 
 - (void)loadZeroFee
@@ -422,11 +437,11 @@ typedef enum {
     NSArray *outputsArray = @[outputsDict];
     NSString *outputs = [outputsArray mj_JSONString];
     NSString *memo = @"";
-    NSDictionary *dict =  [kPyCommandsManager callInterface:kInterfaceGet_fee_by_feerate parameter:@{@"outputs":outputs,@"message":memo,@"feerate":@"1"}];
+    NSDictionary *dict =  [kPyCommandsManager callInterface:kInterfaceGet_fee_by_feerate parameter:@{@"outputs":outputs,@"message":memo,@"feerate":[self.defaultFeeInfoModel.slow safeStringForKey:@"feerate"]}];
     self.lowFeeDict = dict;
     
     NSString *feesat = [dict safeStringForKey:@"fee"];
-    self.fiatLow =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":[kWalletManager getFeeBaseWithSat:feesat]}];
+    self.fiatLow =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":feesat}];
 }
 
 

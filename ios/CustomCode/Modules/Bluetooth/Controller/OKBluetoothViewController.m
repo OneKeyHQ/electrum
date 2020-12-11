@@ -6,11 +6,6 @@
 //  Copyright © 2020 OneKey. All rights reserved.
 //
 
-#define kPRIMARY_SERVICE        @"0001"
-#define kWRITE_CHARACTERISTIC   @"0002"
-#define kREAD_CHARACTERISTIC    @"0003"
-
-
 #import "OKBluetoothViewController.h"
 #import "OKBluetoothViewCell.h"
 #import "OKBluetoothViewCellModel.h"
@@ -19,15 +14,11 @@
 #import "BabyBluetooth.h"
 
 @interface  OKBluetoothViewController()<UITableViewDelegate,UITableViewDataSource,OKBabyBluetoothManageDelegate>
-
 @property (weak, nonatomic) IBOutlet UILabel *titleLabel;
 @property (weak, nonatomic) IBOutlet UILabel *tipsLabel;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet UIView *bgView;
 @property (weak, nonatomic) IBOutlet UIButton *refreshBtn;
-
-@property (nonatomic, strong) NSMutableArray *dataSource;;
-
 - (IBAction)writeBtnClick:(UIButton *)sender;
 - (IBAction)readBtnClick:(UIButton *)sender;
 
@@ -50,7 +41,6 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     [self setupUI];
-   
     kOKBlueManager.delegate = self;
 }
 
@@ -94,8 +84,6 @@
     OKPeripheralInfo *peripheralInfo = self.dataSource[indexPath.row];
     [kOKBlueManager connectPeripheral:peripheralInfo.peripheral];
 }
-
-
 - (void)refreshBtnClick
 {
     [kOKBlueManager startScanPeripheral];

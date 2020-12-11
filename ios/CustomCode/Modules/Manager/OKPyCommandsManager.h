@@ -32,6 +32,7 @@
 #define kInterfaceGet_all_tx_list        @"get_all_tx_list" //获取交易记录
 #define kInterfaceGet_default_fee_status @"get_default_fee_status" //获取默认费率
 #define kInterfaceGet_fee_by_feerate     @"get_fee_by_feerate"  //输入地址和转账额度获取fee
+#define kInterfaceget_default_fee_info   @"get_default_fee_info" //获取默认速度和费率
 #define kInterfaceMktx                   @"mktx" //创建交易
 #define kInterfaceSign_tx                @"sign_tx" //签名交易
 #define kInterfaceBroadcast_tx           @"broadcast_tx" //广播交易

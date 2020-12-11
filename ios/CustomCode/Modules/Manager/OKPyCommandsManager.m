@@ -172,7 +172,7 @@ static dispatch_once_t once;
         NSString *password = [parameter safeStringForKey:@"password"];
         PyObject *args =  Py_BuildValue("(s)", [tx UTF8String]);
         PyObject *kwargs;
-        kwargs = Py_BuildValue("{s:s,s:s}", "password", [password UTF8String],"path","");
+        kwargs = Py_BuildValue("{s:s}", "password", [password UTF8String]);
         PyObject *myobject_method = PyObject_GetAttrString(self.pyInstance, [kInterfaceSign_tx UTF8String]);
         result = PyObject_Call(myobject_method, args, kwargs);
         
@@ -235,7 +235,8 @@ static dispatch_once_t once;
     }else if([method isEqualToString:kInterfaceget_all_wallet_balance]){
         result = PyObject_CallMethod(self.pyInstance, [kInterfaceget_all_wallet_balance UTF8String], "()",NULL);
         
-        
+    }else if([method isEqualToString:kInterfaceget_default_fee_info]){
+        result = PyObject_CallMethod(self.pyInstance, [kInterfaceget_default_fee_info UTF8String], "()",NULL);
         
     }else if([method isEqualToString:kInterfacerename_wallet]){
         NSString * old_name = [parameter safeStringForKey:@"old_name"];

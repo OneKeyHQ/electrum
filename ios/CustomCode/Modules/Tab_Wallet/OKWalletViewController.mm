@@ -26,6 +26,7 @@
 #import "OKFindFollowingWalletController.h"
 #import "OKCreateResultModel.h"
 #import "OKCreateResultWalletInfoModel.h"
+#import "OKMatchingInCirclesViewController.h"
 
 
 @interface OKWalletViewController ()<UITableViewDelegate,UITableViewDataSource,UINavigationControllerDelegate,UIGestureRecognizerDelegate>
@@ -79,9 +80,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *tableViewHeaderAddBtn;
 - (IBAction)tableViewHeaderAddBtnClick:(UIButton *)sender;
 
-
 - (IBAction)assetListBtnClick:(UIButton *)sender;
-
 
 @property (weak, nonatomic) IBOutlet UIView *tableViewHeaderView;
 
@@ -90,6 +89,7 @@
 @property (nonatomic,strong)OKAssetTableViewCellModel *model;
 
 @property (nonatomic,assign)BOOL isCanSideBack;
+
 @end
 
 @implementation OKWalletViewController
@@ -507,7 +507,8 @@
             BaseNavigationController *baseVc = [[BaseNavigationController alloc]initWithRootViewController:wordImport];
             [weakself.OK_TopViewController presentViewController:baseVc animated:YES completion:nil];
         }else if (model.type == OKSelectCellTypeMatchHD){ //匹配硬件
-            
+            OKMatchingInCirclesViewController *matchVc = [OKMatchingInCirclesViewController matchingInCirclesViewController];
+            [self.navigationController pushViewController:matchVc animated:YES];
         }
         return;
     }

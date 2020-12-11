@@ -42,8 +42,6 @@
 
 - (IBAction)blockNumBtnClick:(UIButton *)sender;
 - (IBAction)txHashBtnClick:(UIButton *)sender;
-
-
 @property (nonatomic,strong)NSDictionary *txInfo;
 
 
@@ -82,7 +80,6 @@
 - (void)loadList
 {
     NSDictionary *txInfo =  [kPyCommandsManager callInterface:kInterfaceGet_tx_info parameter:@{@"tx_hash":self.tx_hash}];
-    NSLog(@"txInfo == %@",txInfo);
     self.txInfo = txInfo;
     [self refreshUI];
 }
@@ -92,7 +89,7 @@
     NSString *amountStr = [[[self.txInfo safeStringForKey:@"amount"] componentsSeparatedByString:@" ("]firstObject];
     self.amountLabel.text = amountStr;
     self.statusLabel.text = [self getStatusLabel:[self.txInfo safeStringForKey:@"tx_status"]];
-    self.tx_hash = [self.txInfo safeStringForKey:@"txid"];
+    self.txNumLabel.text = [self.txInfo safeStringForKey:@"txid"];
     NSArray *output_addr_array = self.txInfo[@"output_addr"];
     NSDictionary *output_addr_dict = [output_addr_array firstObject];
     self.fromAddressLabel.text = @"-------------";
@@ -129,10 +126,16 @@
 
 
 - (IBAction)txHashBtnClick:(UIButton *)sender {
-    
+    [self urlToWeb];
 }
-
 - (IBAction)blockNumBtnClick:(UIButton *)sender {
-    
+    [self urlToWeb];
+}
+- (void)urlToWeb
+{
+    NSString *txId = [self.txInfo safeStringForKey:@"txid"];
+    NSString *url = [NSString stringWithFormat:@"%@%@",kUserSettingManager.currentBtcBrowser,txId];
+    WebViewVC *vc = [WebViewVC loadWebViewControllerWithTitle:nil url:url];
+    [self.navigationController pushViewController:vc animated:YES];
 }
 @end

@@ -26,6 +26,7 @@
 #import "OKBiologicalViewController.h"
 #import "OKCreateResultModel.h"
 #import "OKCreateResultWalletInfoModel.h"
+#import "OKMatchingInCirclesViewController.h"
 
 
 #define kDefaultType  @"HD"
@@ -301,7 +302,8 @@
 }
 
 - (IBAction)macthWalletBtnClick:(OKWalletListBottomBtn *)sender {
-    NSLog(@"macthWalletBtnClick");
+    OKMatchingInCirclesViewController *matchVc = [OKMatchingInCirclesViewController matchingInCirclesViewController];
+    [self.navigationController pushViewController:matchVc animated:YES];
 }
 
 - (IBAction)addWalletBtnClick:(OKWalletListBottomBtn *)sender {
