@@ -2094,7 +2094,7 @@ class AndroidCommands(commands.Commands):
             # self.check_pw_wallet = wallet
             wallet_type = 'eth-hd-standard-hw'
         self.update_local_wallet_info(self.get_unique_path(wallet), wallet_type)
-    
+
     ####################################################
     ## app wallet
     def export_privkey(self, password):
@@ -2597,9 +2597,9 @@ class AndroidCommands(commands.Commands):
                     wallet = recovery_info['wallet']
                     self.daemon.add_wallet(wallet)
                     wallet.hide_type = False
-                    wallet.set_name(recovery_info['name'])
+                   # wallet.set_name(recovery_info['name'])
                     wallet.save_db()
-                    self.update_wallet_name(wallet.__str__(), self.get_unique_path(wallet))
+                    #self.update_wallet_name(wallet.__str__(), self.get_unique_path(wallet))
                     coin = wallet.wallet_type[0:3]
                     if self.coins.__contains__(coin):
                         # if not hw:
@@ -2609,14 +2609,14 @@ class AndroidCommands(commands.Commands):
                         self.update_devired_wallet_info(
                             bip44_derivation(recovery_info['account_id'], bip43_purpose=self.coins[coin]['addressType'],
                                              coin=self.coins[coin]['coinId']),
-                            recovery_info['key'], recovery_info['name'])
+                            recovery_info['key'], wallet.get_name())
                     else:
                         # if not hw:
                         #     self.btc_derived_info.update_recovery_info(recovery_info['account_id'])
                         wallet_type = 'btc-hw-derived-%s-%s' % (wallet.m, wallet.n) if hw else (
                                 'btc-derived-standard')
                         self.update_devired_wallet_info(bip44_derivation(recovery_info['account_id'], bip43_purpose=84, coin=constants.net.BIP44_COIN_TYPE),
-                                                        recovery_info['key'], recovery_info['name'])
+                                                        recovery_info['key'], wallet.get_name())
                     self.update_local_wallet_info(self.get_unique_path(wallet), wallet_type)
         self.recovery_wallets.clear()
 
@@ -2625,7 +2625,7 @@ class AndroidCommands(commands.Commands):
         for wallet_info in wallet:
             for key, info in wallet_info.items():
                 try:
-                    if -1 != info['type'].find('-hd-') or -1 != info['type'].find('-derived-'):
+                    if (-1 != info['type'].find('-hd-') or -1 != info['type'].find('-derived-')) and -1 == info['type'].find('-hw-'):
                         self.delete_wallet_from_deamon(self._wallet_path(key))
                         if self.local_wallet_info.__contains__(key):
                             self.local_wallet_info.pop(key)
@@ -2711,8 +2711,10 @@ class AndroidCommands(commands.Commands):
                     # wallet.status_flag = ("btc-hw-%s-%s" % (m, n))
                     wallet.set_name(name)
                     wallet.hide_type = True
+                    new_name = self.get_unique_path(wallet)
+                    wallet.storage.set_path(self._wallet_path(new_name))
                     wallet.start_network(self.daemon.network)
-                    self.recovery_wallets[temp_path] = self.update_recovery_wallet(xpubs[0], wallet, self.get_coin_derived_path(i, coin), name)
+                    self.recovery_wallets[new_name] = self.update_recovery_wallet(xpubs[0], wallet, self.get_coin_derived_path(i, coin), name)
                     self.wizard = None
             else:
                 print("TODO recovery create from hw")
@@ -2746,7 +2748,7 @@ class AndroidCommands(commands.Commands):
                                  bip39_derivation=bip39_derivation, passphrase=passphrase, coin=coin)
                 else:
                     xpub = self.get_xpub_from_hw(path, _type='p2wpkh', account_id=i, coin=coin)
-                    self.recovery_import_create_hw_wallet(i, derived_info['name'], 1, 1, [xpub], coin=coin)
+                    self.recovery_import_create_hw_wallet(i, "%s_hd_derived_%s" % (coin, i), 1, 1, [xpub], coin=coin)
         # if hw:
         #     ##TODO recovery multi info from server, need test
         #     info = self.get_wallet_info_from_server(hd_wallet.get_keystore().xpub)
@@ -2856,8 +2858,10 @@ class AndroidCommands(commands.Commands):
         else:
             wallet = Standard_Wallet(db, storage, config=self.config)
         wallet.hide_type = True
-        self.recovery_wallets[temp_path] = self.update_recovery_wallet(self.get_hd_wallet_encode_seed(coin), wallet, bip39_derivation, name)
         wallet.set_name(name)
+        new_name = self.get_unique_path(wallet)
+        wallet.storage.set_path(self._wallet_path(new_name))
+        self.recovery_wallets[new_name] = self.update_recovery_wallet(self.get_hd_wallet_encode_seed(coin), wallet, bip39_derivation, name)
         wallet.update_password(old_pw=None, new_pw=password, str_pw=self.android_id, encrypt_storage=True)
         if coin == 'btc':
             wallet.start_network(self.daemon.network)

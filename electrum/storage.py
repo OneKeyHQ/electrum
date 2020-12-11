@@ -228,3 +228,5 @@ class WalletStorage(Logger):
     def basename(self) -> str:
         return os.path.basename(self.path)
 
+    def set_path(self, path):
+        self.path = path
