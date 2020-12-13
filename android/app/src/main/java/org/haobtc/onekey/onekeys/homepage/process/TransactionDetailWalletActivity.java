@@ -7,16 +7,27 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.IdRes;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chaquo.python.PyObject;
+import com.google.common.base.Strings;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.activities.sign.SignActivity;
 import org.haobtc.onekey.adapter.OnekeyTxListAdapter;
 import org.haobtc.onekey.bean.MaintrsactionlistEvent;
+import org.haobtc.onekey.constant.Constant;
+import org.haobtc.onekey.event.BleConnectedEvent;
+import org.haobtc.onekey.manager.BleManager;
+import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
 import org.haobtc.onekey.utils.Daemon;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,6 +38,8 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
+import static org.haobtc.onekey.constant.Constant.WALLET_BALANCE;
 
 public class TransactionDetailWalletActivity extends BaseActivity {
 
@@ -48,6 +61,8 @@ public class TransactionDetailWalletActivity extends BaseActivity {
     private OnekeyTxListAdapter onekeyTxListAdapter;
     private String hdWalletName;
     private String walletBalance;
+    private String bleMac;
+    private int currentAction;
 
     @Override
     public int getLayoutId() {
@@ -57,12 +72,14 @@ public class TransactionDetailWalletActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        EventBus.getDefault().register(this);
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         walletBalance = getIntent().getStringExtra("walletBalance");
         String walletDollar = getIntent().getStringExtra("walletDollar");
         hdWalletName = getIntent().getStringExtra("hdWalletName");
         textWalletAmount.setText(String.format("%s%s", walletBalance, preferences.getString("base_unit", "")));
         textWalletDollar.setText(walletDollar);
+        bleMac = getIntent().getStringExtra(Constant.BLE_MAC);
 
     }
 
@@ -176,15 +193,59 @@ public class TransactionDetailWalletActivity extends BaseActivity {
                 getTxList("send");
                 break;
             case R.id.btn_forward:
-                Intent intent2 = new Intent(TransactionDetailWalletActivity.this, SendHdActivity.class);
-                intent2.putExtra("sendNum", walletBalance);
+            case R.id.btn_collect:
+                deal(view.getId());
+                break;
+        }
+    }
+    /**
+     * 统一处理硬件连接
+     */
+    private void deal(@IdRes int id) {
+        if (!Strings.isNullOrEmpty(bleMac)) {
+            currentAction = id;
+            if (Strings.isNullOrEmpty(bleMac)) {
+                Toast.makeText(this, "未发现设备信息", Toast.LENGTH_SHORT).show();
+            } else {
+                Intent intent2 = new Intent(this, SearchDevicesActivity.class);
+                intent2.putExtra(org.haobtc.onekey.constant.Constant.SEARCH_DEVICE_MODE, org.haobtc.onekey.constant.Constant.SearchDeviceMode.MODE_PREPARE);
+                startActivity(intent2);
+                BleManager.getInstance(this).connDevByMac(bleMac);
+            }
+            return;
+        }
+        toNext(id);
+
+    }
+    /**
+     * 处理具体业务
+     */
+    private void toNext(int id) {
+        switch (id) {
+            case R.id.btn_forward:
+                Intent intent2 = new Intent(this, SendHdActivity.class);
+                intent2.putExtra(WALLET_BALANCE, walletBalance);
                 intent2.putExtra("hdWalletName", hdWalletName);
                 startActivity(intent2);
                 break;
             case R.id.btn_collect:
-                mIntent(ReceiveHDActivity.class);
+                Intent intent3 = new Intent(this, ReceiveHDActivity.class);
+                if (!Strings.isNullOrEmpty(bleMac)) {
+                    intent3.putExtra(org.haobtc.onekey.constant.Constant.WALLET_TYPE, org.haobtc.onekey.constant.Constant.WALLET_TYPE_HARDWARE_PERSONAL);
+                }
+                startActivity(intent3);
                 break;
+            default:
         }
     }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onConnected(BleConnectedEvent event) {
+        toNext(currentAction);
+    }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
 }

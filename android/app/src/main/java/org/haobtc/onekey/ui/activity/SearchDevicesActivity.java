@@ -3,8 +3,7 @@ package org.haobtc.onekey.ui.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.nfc.NfcAdapter;
-import android.nfc.Tag;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -19,26 +18,26 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.common.base.Strings;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.HardwareFeatures;
+import org.haobtc.onekey.bean.UpdateInfo;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.BleConnectedEvent;
-import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.event.BleScanStopEvent;
 import org.haobtc.onekey.event.GetXpubEvent;
 import org.haobtc.onekey.event.NotifySuccessfulEvent;
 import org.haobtc.onekey.manager.BleManager;
-import org.haobtc.onekey.manager.NfcManager;
+import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
-import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.ui.adapter.BleDeviceAdapter;
+import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.utils.ValueAnimatorUtil;
-
-import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -52,7 +51,11 @@ import static cn.com.heaton.blelibrary.ble.Ble.REQUEST_ENABLE_BT;
  */
 public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdapter.OnItemBleDeviceClick {
 
+    public static final String MIN_SUPPORT_VERSION = "1.9.7";
+    public static final int REQUEST_ID = 65578;
+    @BindView(R.id.open_wallet_hide)
 
+    protected TextView mOpenWalletHide;
     @BindView(R.id.device_list)
     RecyclerView mRecyclerView;
     @BindView(R.id.device_list_layout)
@@ -67,14 +70,10 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
     RelativeLayout mLoadingLayout;
     @BindView(R.id.title)
     TextView mTitle;
-    @BindView(R.id.open_wallet_hide)
-
-    protected TextView mOpenWalletHide;
     private LinearLayout mLayoutView;
     private BleDeviceAdapter mBleAdapter;
     private int mSearchMode;
     private BleManager bleManager;
-    public static final int REQUEST_ID = 65578;
 
     @Override
     public void init() {
@@ -194,7 +193,6 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void onReadyBle(NotifySuccessfulEvent event) {
         EventBus.getDefault().removeStickyEvent(event);
-        System.out.println("notify success!!!!!");
         toNextActivity();
     }
 
@@ -202,6 +200,12 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
         HardwareFeatures features;
         try {
             features = PyEnv.getFeature(this);
+            String firmwareVersion = features.getMajorVersion() + "." + features.getMinorVersion() + "." + features.getPatchVersion();
+            if (firmwareVersion.compareTo(MIN_SUPPORT_VERSION) <= 0 ) {
+                update(features);
+                finish();
+                return;
+            }
         } catch (Exception e) {
             showToast(getString(R.string.get_hard_msg_error));
             e.printStackTrace();
@@ -221,16 +225,35 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
                     finish();
                 }
                 break;
+                // 共管钱包
             case Constant.SearchDeviceMode.MODE_BIND_ADMIN_PERSON:
-                if (features.isInitialized()) {
+                if (features.isInitialized() && !features.isBackupOnly()) {
                     EventBus.getDefault().post(new GetXpubEvent(Constant.COIN_TYPE_BTC));
                 } else {
                     showToast(getString(R.string.hard_tip1));
                 }
                 finish();
                 break;
+                // 仅连接蓝牙
             case Constant.SearchDeviceMode.MODE_PREPARE:
-                EventBus.getDefault().post(new BleConnectedEvent());
+                if (features.isInitialized() && !features.isBackupOnly()) {
+                    EventBus.getDefault().post(new BleConnectedEvent());
+                } else {
+                    showToast(getString(R.string.hard_tip3));
+                }
+                finish();
+                break;
+                // 恢复 HD
+            case Constant.SearchDeviceMode.MODE_RECOVERY_WALLET_BY_COLD:
+                if (features.isInitialized()) {
+                    if (features.isBackupOnly()) {
+                        startActivity(new Intent(this, FindBackupOnlyDeviceActivity.class));
+                    } else {
+                        showToast(R.string.only_backup_only_device);
+                    }
+                } else {
+                    showToast(getString(R.string.hard_tip4));
+                }
                 finish();
                 break;
             default:
@@ -270,22 +293,6 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
         }
     }
 
-    /**
-     * 响应NFC贴合
-     * */
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        // get the action of the coming intent
-        String action = intent.getAction();
-        // NDEF type
-        if (Objects.equals(action, NfcAdapter.ACTION_NDEF_DISCOVERED)
-                || Objects.equals(action, NfcAdapter.ACTION_TECH_DISCOVERED)
-                || Objects.requireNonNull(action).equals(NfcAdapter.ACTION_TAG_DISCOVERED)) {
-            Tag tags = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            NfcManager.getInstance().initNfc(tags);
-        }
-    }
 
     @Override
     public boolean needEvents() {
@@ -329,4 +336,55 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
             }
         }
     }
+    private void update(HardwareFeatures features) {
+        String urlPrefix = "https://onekey.so/";
+        String locate = PreferencesManager.get(this, "Preferences", Constant.LANGUAGE, "").toString();
+        String info = PreferencesManager.get(this, "Preferences", Constant.UPGRADE_INFO, "").toString();
+        if (Strings.isNullOrEmpty(info)) {
+            showToast(R.string.get_update_info_failed);
+            return;
+        }
+        String firmwareVersion = features.getMajorVersion() + "." + features.getMinorVersion() + "." + features.getPatchVersion();
+        String nrfVersion = features.getBleVer();
+        String bleName = features.getBleName();
+        String label = features.getLabel();
+        String deviceId = features.getDeviceId();
+        String bleMac = PreferencesManager.get(this, org.haobtc.onekey.constant.Constant.BLE_INFO, bleName, "").toString();
+        Bundle bundle = getBundle(urlPrefix, locate, info);
+        bundle.putString(Constant.TAG_FIRMWARE_VERSION, firmwareVersion);
+        bundle.putString(Constant.TAG_NRF_VERSION, nrfVersion);
+        bundle.putString(Constant.TAG_BLE_NAME, bleName);
+        bundle.putString(Constant.BLE_MAC, bleMac);
+        bundle.putString(Constant.TAG_LABEL, label);
+        bundle.putString(Constant.DEVICE_ID, deviceId);
+        bundle.putBoolean(Constant.FORCE_UPDATE, true);
+        Intent intent = new Intent(this, HardwareUpgradeActivity.class);
+        intent.putExtras(bundle);
+        startActivity(intent);
+    }
+
+    @NonNull
+    private Bundle getBundle(String urlPrefix, String locate, String info) {
+
+        UpdateInfo updateInfo = UpdateInfo.objectFromData(info);
+        String urlNrf = updateInfo.getNrf().getUrl();
+        String urlStm32 = updateInfo.getStm32().getUrl();
+        String versionNrf = updateInfo.getNrf().getVersion();
+        String versionStm32 = updateInfo.getStm32().getVersion().toString().replace(",", ".");
+        versionStm32 = versionStm32.substring(1, versionStm32.length() - 1).replaceAll("\\s+", "");
+        String descriptionNrf = "English".equals(locate) ? updateInfo.getNrf().getChangelogEn() : updateInfo.getNrf().getChangelogCn();
+        String descriptionStm32 = "English".equals(locate) ? updateInfo.getStm32().getChangelogEn() : updateInfo.getStm32().getChangelogCn();
+        if (urlNrf.startsWith("https") || urlStm32.startsWith("https")) {
+            urlPrefix = "";
+        }
+        Bundle bundle = new Bundle();
+        bundle.putString(Constant.TAG_FIRMWARE_DOWNLOAD_URL, urlPrefix + urlStm32);
+        bundle.putString(Constant.TAG_FIRMWARE_VERSION_NEW, versionStm32);
+        bundle.putString(Constant.TAG_FIRMWARE_UPDATE_DES, descriptionStm32);
+        bundle.putString(Constant.TAG_NRF_DOWNLOAD_URL, urlPrefix + urlNrf);
+        bundle.putString(Constant.TAG_NRF_VERSION_NEW, versionNrf);
+        bundle.putString(Constant.TAG_NRF_UPDATE_DES, descriptionNrf);
+        return bundle;
+    }
+
 }

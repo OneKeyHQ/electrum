@@ -88,8 +88,7 @@
                     android:layout_marginStart="@dimen/dp_20"
                     android:layout_marginTop="@dimen/dp_20"
                     android:textColor="#546370"
-                    android:textSize="@dimen/sp_18"
-                    tools:text="您已成功创建 2 of 3 共管钱包" />
+                    android:textSize="@dimen/sp_18"/>
 
                 <TextView
                     android:id="@+id/tet_many_key"
@@ -100,7 +99,7 @@
                     android:layout_marginTop="@dimen/dp_5"
                     android:textColor="@color/text_six"
                     android:textSize="@dimen/sp_12"
-                    tools:text="每次动用该钱包内的资金，都需要3人中的至少2人授权才能完成。" />
+                    tools:text="@string/multisig_use_promote"/>
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/co_signer_info"

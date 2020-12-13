@@ -38,11 +38,10 @@ import org.haobtc.onekey.activities.transaction.CheckChainDetailWebActivity;
 import org.haobtc.onekey.activities.transaction.DeatilMoreAddressActivity;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.AddspeedNewtrsactionBean;
-import org.haobtc.onekey.bean.GetnewcreatTrsactionListBean;
+import org.haobtc.onekey.bean.TransactionInfoBean;
 import org.haobtc.onekey.bean.HardwareFeatures;
 import org.haobtc.onekey.bean.ScanCheckDetailBean;
 import org.haobtc.onekey.event.CheckReceiveAddress;
-import org.haobtc.onekey.event.FinishEvent;
 import org.haobtc.onekey.event.FirstEvent;
 import org.haobtc.onekey.event.HandlerEvent;
 import org.haobtc.onekey.event.SecondEvent;
@@ -144,11 +143,11 @@ public class TransactionDetailsActivity extends BaseActivity {
     private String newFeerate;
     private AlertDialog alertDialog;
     private String fee;
-    ArrayList<GetnewcreatTrsactionListBean.OutputAddrBean> outputAddr;
+    ArrayList<TransactionInfoBean.OutputAddrBean> outputAddr;
     public static String signedRawTx;
     private String signTransction;
     private boolean setRbf;
-    private List<GetnewcreatTrsactionListBean.InputAddrBean> inputAddr;
+    private List<TransactionInfoBean.InputAddrBean> inputAddr;
     private List<ScanCheckDetailBean.DataBean.OutputAddrBean> outputAddrScan;
     private List<ScanCheckDetailBean.DataBean.InputAddrBean> inputAddrScan;
     private String unConfirmStatus;
@@ -318,25 +317,25 @@ public class TransactionDetailsActivity extends BaseActivity {
     //intent ->histry or create
     @SuppressLint("DefaultLocale")
     private void jsonDetailData(String detail) {
-        GetnewcreatTrsactionListBean getnewcreatTrsactionListBean;
+        TransactionInfoBean transactionInfoBean;
         try {
             Gson gson = new Gson();
-            getnewcreatTrsactionListBean = gson.fromJson(detail, GetnewcreatTrsactionListBean.class);
+            transactionInfoBean = gson.fromJson(detail, TransactionInfoBean.class);
         } catch (JsonSyntaxException e) {
             e.printStackTrace();
             return;
         }
-        String amount = getnewcreatTrsactionListBean.getAmount();
-        fee = getnewcreatTrsactionListBean.getFee();
-        String description = getnewcreatTrsactionListBean.getDescription();
-        txStatus = getnewcreatTrsactionListBean.getTxStatus();
-        outputAddr = getnewcreatTrsactionListBean.getOutputAddr();
-        List<Integer> signStatus = getnewcreatTrsactionListBean.getSignStatus();
-        inputAddr = getnewcreatTrsactionListBean.getInputAddr();
-        txid = getnewcreatTrsactionListBean.getTxid();
+        String amount = transactionInfoBean.getAmount();
+        fee = transactionInfoBean.getFee();
+        String description = transactionInfoBean.getDescription();
+        txStatus = transactionInfoBean.getTxStatus();
+        outputAddr = transactionInfoBean.getOutputAddr();
+        List<Integer> signStatus = transactionInfoBean.getSignStatus();
+        inputAddr = transactionInfoBean.getInputAddr();
+        txid = transactionInfoBean.getTxid();
         txHash = txid;
-        rawtx = getnewcreatTrsactionListBean.getTx();
-        canBroadcast = getnewcreatTrsactionListBean.isCanBroadcast();
+        rawtx = transactionInfoBean.getTx();
+        canBroadcast = transactionInfoBean.isCanBroadcast();
         edit.putString("signedRowTransaction", rawtx);
         edit.apply();
         if (inputAddr.size() != 0) {

@@ -18,8 +18,12 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.bean.BalanceInfo;
 import org.haobtc.onekey.bean.CreateWalletBean;
+import org.haobtc.onekey.bean.CurrentAddressDetail;
 import org.haobtc.onekey.bean.HardwareFeatures;
+import org.haobtc.onekey.bean.MakeTxResponseBean;
 import org.haobtc.onekey.bean.PyResponse;
+import org.haobtc.onekey.bean.TemporaryTxInfo;
+import org.haobtc.onekey.bean.TransactionInfoBean;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.PyConstant;
 import org.haobtc.onekey.event.CreateSuccessEvent;
@@ -29,7 +33,10 @@ import org.haobtc.onekey.utils.Daemon;
 import org.haobtc.onekey.utils.Global;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
@@ -39,7 +46,6 @@ import cn.com.heaton.blelibrary.ble.Ble;
 import cn.com.heaton.blelibrary.ble.callback.BleWriteCallback;
 import cn.com.heaton.blelibrary.ble.model.BleDevice;
 
-import static org.haobtc.onekey.activities.service.CommunicationModeSelector.executorService;
 import static org.haobtc.onekey.activities.service.CommunicationModeSelector.protocol;
 
 /**
@@ -223,8 +229,12 @@ public final class PyEnv {
             if (!Strings.isNullOrEmpty(backupMessage)) {
                 features.setBackupMessage(backupMessage);
             }
-            PreferencesManager.put(context, Constant.DEVICES, features.getDeviceId(), features.toString());
         }
+        // 测试强制升级代码
+        /*features.setMajorVersion(1);
+        features.setMinorVersion(9);
+        features.setPatchVersion(6);*/
+        PreferencesManager.put(context, Constant.DEVICES, features.getDeviceId(), features.toString());
         return features;
     }
 
@@ -262,12 +272,12 @@ public final class PyEnv {
         List<BalanceInfo> infos = new ArrayList<>();
         try {
             String walletsInfo = sCommands.callAttr(PyConstant.CREATE_WALLET_BY_XPUB, "", 1, 1, xPubs, new Kwarg("hd", hd)).toString();
-            if (!Strings.isNullOrEmpty(walletsInfo)) {
-                JsonArray wallets = JsonParser.parseString(walletsInfo).getAsJsonArray();
-                wallets.forEach((wallet) -> {
-                    infos.add(BalanceInfo.objectFromData(wallet.toString()));
-                });
-            }
+            CreateWalletBean.objectFromData(walletsInfo).getDerivedInfo().forEach(derivedInfoBean -> {
+                BalanceInfo info = new BalanceInfo();
+                info.setBalance(derivedInfoBean.getBlance());
+                info.setName(derivedInfoBean.getName());
+                infos.add(info);
+            });
             return infos;
         } catch (Exception e) {
             activity.showToast(e.getMessage());
@@ -330,24 +340,47 @@ public final class PyEnv {
         }
         return false;
     }
-
+    /**
+     * 校验地址格式
+     * */
+    public static boolean verifyAddress(String address) {
+        if (Global.guiConsole != null) {
+            return Global.guiConsole.callAttr(PyConstant.VERIFY_ADDRESS, address).toBoolean();
+        }
+        return false;
+    }
+    /**
+     * 创建HD钱包
+     * */
     public static List<BalanceInfo> createLocalHd(String passwd, String mnemonics) {
         List<BalanceInfo> infos = new ArrayList<>();
         try {
             String walletsInfo = sCommands.callAttr(PyConstant.CREATE_HD_WALLET, passwd, mnemonics).toString();
-            CreateWalletBean.objectFromData(walletsInfo).getDerivedInfo().forEach(derivedInfoBean -> {
+            CreateWalletBean walletBean = CreateWalletBean.objectFromData(walletsInfo);
+            walletBean.getDerivedInfo().forEach(derivedInfoBean -> {
                 BalanceInfo info = new BalanceInfo();
                 info.setBalance(derivedInfoBean.getBlance());
                 info.setName(derivedInfoBean.getName());
                infos.add(info);
             });
+            Optional.ofNullable(walletBean.getWalletInfo()).ifPresent((walletInfos -> {
+                walletInfos.forEach((walletInfo -> {
+                   String name = walletInfo.getName();
+                   BalanceInfo info = PyEnv.selectWallet(name);
+                   EventBus.getDefault().post(new CreateSuccessEvent(name));
+                   info.setName("BTC-1");
+                   infos.add(info);
+                }));
+            }));
             return infos;
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
-
+    /**
+     * 确认恢复
+     * */
     public static boolean recoveryConfirm(List<String> nameList) {
         try {
             sCommands.callAttr(PyConstant.RECOVERY_CONFIRM, new Gson().toJson(nameList.toString()), true);
@@ -357,27 +390,174 @@ public final class PyEnv {
         }
         return false;
     }
-
+    /**
+     * 设置固件升级进度的推送句柄
+     * */
     public static void setProgressReporter(AsyncTask<String, Object, Void> task) {
         sProtocol.put(PyConstant.PROCESS_REPORTER, task);
     }
-
+    /**
+     * 重置固件断点续传的状态
+     * */
     public static void clearUpdateStatus() {
         protocol.put(PyConstant.HTTP, false);
         protocol.put(PyConstant.OFFSET, 0);
         protocol.put(PyConstant.PROCESS_REPORTER, null);
     }
-
+    /**
+     * 固件升级接口
+     * */
     public static PyResponse<Void> firmwareUpdate(String path) {
         PyResponse<Void> response = new PyResponse<>();
         try {
             sCommands.callAttr(PyConstant.FIRMWARE_UPDATE, path, MyApplication.getInstance().getDeviceWay());
         } catch (Exception e) {
             e.printStackTrace();
-            MyApplication.getInstance().toastErr(e);
             response.setErrors(e.getMessage());
         }
         return response;
     }
+    /**
+     * 获取交易详情
+     * @param rawTx
+     * */
+    public static PyResponse<String> analysisRawTx(String rawTx) {
+        PyResponse<String> response = new PyResponse<>();
+        try {
+            String txData = sCommands.callAttr(PyConstant.ANALYZE_TX, rawTx).toString();
+            response.setResult(txData);
+        } catch (Exception e) {
+            response.setErrors(e.getMessage());
+            e.printStackTrace();
+        }
+        return response;
+    }
+    /**
+     * 获取费率详情
+     * */
+    public static PyResponse<String> getFeeInfo() {
+        PyResponse<String> response = new PyResponse<>();
+        try {
+            String info = sCommands.callAttr(PyConstant.GET_DEFAULT_FEE_DETAILS).toString();
+            response.setResult(info);
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.setErrors(e.getMessage());
+        }
+        return response;
+    }
+    /**
+     * 获取交易费
+     * @param receiver 发送方
+     * @param amount 发送金额
+     * @param feeRate 当前费率
+     * @return 临时交易
+     * */
+    public static PyResponse<TemporaryTxInfo> getFeeByFeeRate(@NonNull String receiver, @NonNull String amount, @NonNull String feeRate) {
+        PyResponse<TemporaryTxInfo> response = new PyResponse<>();
+        ArrayList<Map<String, String>> arrayList = new ArrayList<>();
+        Map<String, String> params = new HashMap<>(1);
+        params.put(receiver, amount);
+        arrayList.add(params);
+        try {
+            String result = Daemon.commands.callAttr(PyConstant.CALCULATE_FEE, new Gson().toJson(arrayList), "stool", feeRate).toString();
+            TemporaryTxInfo temporaryTxInfo = TemporaryTxInfo.objectFromData(result);
+            response.setResult(temporaryTxInfo);
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.setErrors(e.getMessage());
+        }
+        return response;
+    }
+    /**
+     * 构建交易
+     * @param tempTx 临时交易
+     * @return rawTx 待签名的交易
+     * */
+    public static PyResponse<String> makeTx(String tempTx) {
+        PyResponse<String> response = new PyResponse<>();
+        try {
+            String result = sCommands.callAttr(PyConstant.MAKE_TX, tempTx).toString();
+            String rawTx = MakeTxResponseBean.objectFromData(result).getTx();
+            response.setResult(rawTx);
+        } catch (Exception e) {
+            response.setErrors(e.getMessage());
+            e.printStackTrace();
+        }
+        return response;
+    }
 
+    /**
+     * 汇率转换
+     * @param value value in btc
+     * @return  string value in cash
+     * */
+    public static PyResponse<String> exchange(String value) {
+        PyResponse<String> response = new PyResponse<>();
+        try {
+           String result = sCommands.callAttr(PyConstant.EXCHANGE_RATE_CONVERSION, "base", value).toString();
+           response.setResult(result);
+        } catch (Exception e) {
+            response.setErrors(e.getMessage());
+            e.printStackTrace();
+        }
+        return response;
+    }
+    /**
+     * @param signedTx 已签名交易
+     * */
+    public static PyResponse<Void> broadcast(String signedTx) {
+        PyResponse<Void> response = new PyResponse<>();
+        try {
+            sCommands.callAttr(PyConstant.BROADCAST_TX, signedTx);
+        } catch (Exception e) {
+            response.setErrors(e.getMessage());
+            e.printStackTrace();
+        }
+        return response;
+    }
+    /**
+     * @param rawTx 未签名的交易
+     * @return 签名后的交易详情
+     * */
+    public static PyResponse<TransactionInfoBean> signTx(String rawTx, String password) {
+        PyResponse<TransactionInfoBean> response = new PyResponse<>();
+        try {
+            String result = sCommands.callAttr(PyConstant.SIGN_TX, rawTx, new Kwarg("password", password)).toString();
+            TransactionInfoBean txInfo = TransactionInfoBean.objectFromData(result);
+            response.setResult(txInfo);
+        } catch (Exception e) {
+            response.setErrors(e.getMessage());
+            e.printStackTrace();
+        }
+        return response;
+    }
+
+    public static PyResponse<CurrentAddressDetail> getCurrentAddressInfo() {
+        PyResponse<CurrentAddressDetail> response = new PyResponse<>();
+        try {
+            String result = sCommands.callAttr(PyConstant.ADDRESS_INFO).toString();
+            CurrentAddressDetail txInfo = CurrentAddressDetail.objectFromData(result);
+            response.setResult(txInfo);
+        } catch (Exception e) {
+            response.setErrors(e.getMessage());
+            e.printStackTrace();
+        }
+        return response;
+
+    }
+    /**
+     * 校验签名
+     * */
+    public static PyResponse<Boolean> verifySignature(String address, String message, String signature) {
+        PyResponse<Boolean> response = new PyResponse<>();
+        try {
+            boolean verified = sCommands.callAttr(PyConstant.VERIFY_MESSAGE_SIGNATURE, address, message, signature).toBoolean();
+            response.setResult(verified);
+        } catch (Exception e) {
+            response.setErrors(e.getMessage());
+            e.printStackTrace();
+        }
+        return response;
+    }
 }

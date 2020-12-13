@@ -52,6 +52,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
+import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE;
+import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE_SHORT;
 
 public class HDWalletActivity extends BaseActivity {
 
@@ -112,7 +114,7 @@ public class HDWalletActivity extends BaseActivity {
                 startActivity(intent);
                 break;
             case R.id.recl_add_hd_wallet:
-                if ("short".equals(preferences.getString("shortOrLongPass", "short"))) {
+                if (SOFT_HD_PASS_TYPE_SHORT.equals(preferences.getString(SOFT_HD_PASS_TYPE, SOFT_HD_PASS_TYPE_SHORT))) {
                     Intent intent0 = new Intent(this, SetHDWalletPassActivity.class);
                     startActivity(intent0);
                 } else {

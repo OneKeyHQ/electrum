@@ -27,7 +27,6 @@ from electrum.util import (
     UnavaiableHdWallet,
  )
 from electrum.i18n import _, set_language
-from electrum.bitcoin import base_decode, is_address
 from electrum.keystore import bip44_derivation, purpose48_derivation, Imported_KeyStore
 from electrum.plugin import Plugins
 from electrum.plugins.trezor.clientbase import TrezorClientBase
@@ -42,7 +41,7 @@ from .create_wallet_info import CreateWalletInfo
 from electrum.storage import WalletStorage
 from electrum.eth_wallet import (Imported_Eth_Wallet, Standard_Eth_Wallet, Eth_Wallet)
 from electrum.wallet import (Imported_Wallet, Standard_Wallet, Wallet, Deterministic_Wallet)
-from electrum.bitcoin import is_address, hash_160, COIN, TYPE_ADDRESS
+from electrum.bitcoin import is_address, hash_160, COIN, TYPE_ADDRESS, base_decode
 from electrum.interface import ServerAddr
 from electrum import mnemonic
 from electrum.mnemonic import Wordlist
@@ -148,6 +147,8 @@ class Help:
                 cmd = all_commands[name_or_wrapper]
             return f"{cmd}\n{cmd.description}"
 
+def verify_address(address) -> bool:
+    return is_address(address, net=constants.net)
 
 # Adds additional commands which aren't available over JSON RPC.
 class AndroidCommands(commands.Commands):

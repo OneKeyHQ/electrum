@@ -15,7 +15,6 @@ import com.tencent.bugly.crashreport.CrashReport;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.MyEventBusIndex;
 import org.haobtc.onekey.constant.Constant;
-import org.haobtc.onekey.constant.SpConstant;
 import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.utils.Global;
 
@@ -94,8 +93,8 @@ public class MyApplication extends Application {
     }
 
     public String getDeviceWay() {
-        return (String) PreferencesManager.get(getInstance(), SpConstant.SP_NAME_PREFERENCES
-                , SpConstant.Preferences.WAY, Constant.WAY_MODE_BLE);
+        return (String) PreferencesManager.get(getInstance(), "Preferences"
+                , Constant.WAY, Constant.WAY_MODE_BLE);
     }
 
 

@@ -12,6 +12,9 @@ import org.haobtc.onekey.onekeys.dialog.SetLongPassActivity;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE;
+import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE_SHORT;
+
 public class FixHdPassActivity extends BaseActivity {
     private SharedPreferences preferences;
 
@@ -39,7 +42,7 @@ public class FixHdPassActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.rel_fix_pass:
-                if ("short".equals(preferences.getString("shortOrLongPass", "short"))) {
+                if (SOFT_HD_PASS_TYPE_SHORT.equals(preferences.getString(SOFT_HD_PASS_TYPE, SOFT_HD_PASS_TYPE_SHORT))) {
                     intent = new Intent(this, SetHDWalletPassActivity.class);
                 } else {
                     intent = new Intent(this, SetLongPassActivity.class);

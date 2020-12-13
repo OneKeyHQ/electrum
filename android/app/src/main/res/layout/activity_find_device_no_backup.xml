@@ -169,7 +169,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="您需提前确认所有想要添加共管钱包的硬件设备都已经激活，未激活的设备无法添加为共管人。"
+        android:text="@string/create_multisig_warning"
         android:drawableStart="@drawable/warning"
         android:textSize="@dimen/sp_12"
         android:textColor="#FFB000"

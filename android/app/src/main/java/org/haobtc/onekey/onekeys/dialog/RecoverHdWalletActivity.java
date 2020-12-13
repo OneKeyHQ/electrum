@@ -26,6 +26,7 @@ import com.chaquo.python.PyObject;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.adapter.SearchMnemonicAdapter;
+import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.onekeys.dialog.recovery.ImprotSingleActivity;
 import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
 import org.haobtc.onekey.utils.Daemon;
@@ -37,6 +38,10 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
+import static org.haobtc.onekey.constant.Constant.SEARCH_DEVICE_MODE;
+import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE;
+import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE_SHORT;
 
 public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocusChangeListener {
 
@@ -232,12 +237,12 @@ public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocu
                 isSeed(strNewseed);
                 break;
             case R.id.lin_hard_recovery:
-                Intent recovery = new Intent(RecoverHdWalletActivity.this, SearchDevicesActivity.class);
-//                recovery.putExtra(Constant.SEARCH_DEVICE_MODE, Constant.SearchDeviceMode.MODE_RECOVERY_WALLET_BY_COLD);
-                startActivity(recovery);
                 break;
             case R.id.lin_import:
-
+                Intent intent = new Intent(this, SearchDevicesActivity.class);
+                intent.putExtra(SEARCH_DEVICE_MODE, Constant.SearchDeviceMode.MODE_RECOVERY_WALLET_BY_COLD);
+                startActivity(intent);
+                finish();
                 break;
             case R.id.img_copy_test:
                 pasteSeed();
@@ -246,7 +251,7 @@ public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocu
     }
 
     private void isSeed(String strNewseed) {
-        if ("short".equals(preferences.getString("shortOrLongPass","short"))){
+        if (SOFT_HD_PASS_TYPE_SHORT.equals(preferences.getString(SOFT_HD_PASS_TYPE,SOFT_HD_PASS_TYPE_SHORT))){
             intent = new Intent(this, SetHDWalletPassActivity.class);
         }else{
             intent = new Intent(this, SetLongPassActivity.class);

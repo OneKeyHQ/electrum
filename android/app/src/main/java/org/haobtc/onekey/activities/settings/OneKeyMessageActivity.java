@@ -19,7 +19,7 @@ import butterknife.OnClick;
 /**
  * @author xiaomin
  */
-public class BixinKeyMessageActivity extends BaseActivity {
+public class OneKeyMessageActivity extends BaseActivity {
 
     @BindView(R.id.tet_keyName)
     TextView tetKeyName;
@@ -70,7 +70,7 @@ public class BixinKeyMessageActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.tet_keyName:
-//                mIntent(FixBixinkeyNameActivity.class);
+                mlToast(getString(R.string.support_less_promote));
                 break;
             default:
         }

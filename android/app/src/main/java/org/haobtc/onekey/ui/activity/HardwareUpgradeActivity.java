@@ -22,11 +22,15 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.aop.SingleClick;
+import org.haobtc.onekey.asynctask.BusinessAsyncTask;
 import org.haobtc.onekey.bean.HardwareFeatures;
 import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.bean.UpdateSuccessEvent;
 import org.haobtc.onekey.constant.Constant;
+import org.haobtc.onekey.constant.PyConstant;
 import org.haobtc.onekey.dfu.service.DfuService;
+import org.haobtc.onekey.event.ButtonRequestEvent;
+import org.haobtc.onekey.event.ChangePinEvent;
 import org.haobtc.onekey.event.ExceptionEvent;
 import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.event.NotifySuccessfulEvent;
@@ -80,7 +84,8 @@ public class HardwareUpgradeActivity extends BaseActivity {
     private String nrfUrl;
     private String mac;
     private String label;
-    private String bleName;
+    private String deviceId;
+    private boolean isForceUpdate;
     private HardwareUpgradeFragment hardwareUpgradeFragment;
     protected HardwareUpgradingFragment hardwareUpgradingFragment;
     private String cacheDir;
@@ -96,12 +101,11 @@ public class HardwareUpgradeActivity extends BaseActivity {
             EventBus.getDefault().post(new UpdateSuccessEvent());
             cancelDfu();
             // 更新本地信息
-                String features = devices.getString(bleName, "");
+                String features = devices.getString(deviceId, "");
                 if (!Strings.isNullOrEmpty(features)) {
                     HardwareFeatures features1 = HardwareFeatures.objectFromData(features);
                     features1.setBleVer(newNrfVersion);
-                    newNrfVersion = "";
-                    devices.edit().putString(bleName, features1.toString()).apply();
+                    devices.edit().putString(deviceId, features1.toString()).apply();
                 }
         }
 
@@ -128,14 +132,14 @@ public class HardwareUpgradeActivity extends BaseActivity {
             if (hardwareUpgradingFragment.getProgressBar().isIndeterminate()) {
                 hardwareUpgradingFragment.getProgressBar().setIndeterminate(false);
             }
+            // 推送更新进度
             hardwareUpgradingFragment.getProgressBar().setProgress(percent);
         }
 
         @Override
         public void onError(@NonNull String deviceAddress, int error, int errorType, String message) {
             super.onError(deviceAddress, error, errorType, message);
-//            Ble.getInstance().disconnectAll();
-            if ("DFU DEVICE NOT BONDED".equals(message)) {
+            if (Constant.DEVICE_NOT_BOND.equals(message)) {
                 BluetoothAdapter.getDefaultAdapter().getRemoteDevice(deviceAddress).createBond();
             } else {
                 EventBus.getDefault().post(new ExceptionEvent(message));
@@ -162,7 +166,9 @@ public class HardwareUpgradeActivity extends BaseActivity {
         pauseAction.putExtra(DfuBaseService.EXTRA_ACTION, DfuBaseService.ACTION_ABORT);
         LocalBroadcastManager.getInstance(this).sendBroadcast(pauseAction);
     }
-
+    /**
+     * 下载最新固件
+     * */
     static boolean updateFiles(String path, String url) {
         OkHttpClient okHttpClient = new OkHttpClient.Builder().build();
         Request request = new Request.Builder().url(url).build();
@@ -193,7 +199,6 @@ public class HardwareUpgradeActivity extends BaseActivity {
         updateTitle(R.string.verson_update);
         dealBundle(Objects.requireNonNull(getIntent().getExtras()));
         hardwareUpgradeFragment = new HardwareUpgradeFragment();
-        hardwareUpgradingFragment = new HardwareUpgradingFragment();
         devices = getSharedPreferences("devices", Context.MODE_PRIVATE);
         startFragment(hardwareUpgradeFragment);
     }
@@ -209,8 +214,9 @@ public class HardwareUpgradeActivity extends BaseActivity {
         nrfUrl = bundle.getString(Constant.TAG_NRF_DOWNLOAD_URL);
         mac = bundle.getString(Constant.BLE_MAC);
         label = bundle.getString(Constant.TAG_LABEL);
-        bleName = bundle.getString(Constant.TAG_BLE_NAME);
+        deviceId = bundle.getString(Constant.DEVICE_ID);
         cacheDir = getExternalCacheDir().getPath();
+        isForceUpdate = bundle.getBoolean(Constant.FORCE_UPDATE, false);
     }
 
     /***
@@ -239,17 +245,31 @@ public class HardwareUpgradeActivity extends BaseActivity {
      * */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onReadyBle(NotifySuccessfulEvent event) {
-        String path = String.format("%s%s%s%s", cacheDir, Constant.UPDATE_FILE_NAME, newNrfVersion, Constant.FIRMWARE_UPDATE_FILE_SUFFIX);
-        new MyTask(this::onSuccess, hardwareUpgradingFragment).execute(path, firmwareUrl);
+        String path = String.format("%s/%s%s%s", cacheDir, Constant.UPDATE_FILE_NAME, newFirmwareVersion, Constant.FIRMWARE_UPDATE_FILE_SUFFIX);
         toNext(R.string.firmware_stm32);
-    }
+        new MyTask(new MyTask.CallBack() {
+            @Override
+            public void onSuccess() {
+                HardwareUpgradeActivity.this.onSuccess();
+            }
 
+            @Override
+            public void onCancel() {
+                HardwareUpgradeActivity.this.onCancel();
+            }
+        }, hardwareUpgradingFragment).execute(path, firmwareUrl);
+    }
+    /**
+     * 蓝牙初始化
+     * */
     private void initBle() {
         BleManager bleManager = BleManager.getInstance(this);
         bleManager.initBle();
         bleManager.connDevByMac(mac);
     }
-
+    /**
+     * 更新监听
+     * */
     @Subscribe(threadMode = ThreadMode.BACKGROUND)
     public void onUpdateEvent(UpdateEvent event) {
         switch (event.getType()) {
@@ -257,7 +277,7 @@ public class HardwareUpgradeActivity extends BaseActivity {
                 runOnUiThread(this::initBle);
                 break;
             case UpdateEvent.BLE:
-                String path = String.format("%s%s%s%s", cacheDir, Constant.UPDATE_FILE_NAME, newFirmwareVersion, Constant.NRF_UPDATE_FILE_SUFFIX);
+                String path = String.format("%s/%s%s%s", cacheDir, Constant.UPDATE_FILE_NAME, newNrfVersion, Constant.NRF_UPDATE_FILE_SUFFIX);
                 dfu(path, nrfUrl);
                 break;
             default:
@@ -290,9 +310,13 @@ public class HardwareUpgradeActivity extends BaseActivity {
     private void toNext(@StringRes int id) {
         Bundle bundle = new Bundle();
         bundle.putInt(Constant.TAG_HARDWARE_TYPE_PROMOTE_ID, id);
+        hardwareUpgradingFragment = new HardwareUpgradingFragment();
         hardwareUpgradingFragment.setArguments(bundle);
         startFragment(hardwareUpgradingFragment);
     }
+    /**
+     * dfu 升级蓝牙固件
+     * */
     private void beginDfu(String path) {
         Ble.getInstance().disconnectAll();
         EventBus.getDefault().post(new UpdatingEvent());
@@ -322,19 +346,29 @@ public class HardwareUpgradeActivity extends BaseActivity {
     }
 
     /**
-     * 升级完成回调
+     * stm32固件升级成功回调
      */
     public void onSuccess() {
         // 更新本地信息
-        String features = devices.getString(bleName, "");
+        String features = devices.getString(deviceId, "");
         if (!Strings.isNullOrEmpty(features)) {
             HardwareFeatures features1 = HardwareFeatures.objectFromData(features);
-            features1.setBleVer(newFirmwareVersion);
-            newFirmwareVersion = "";
-            devices.edit().putString(bleName, features1.toString()).apply();
+            features1.setMajorVersion(newFirmwareVersion.charAt(0)-48);
+            features1.setMinorVersion(newFirmwareVersion.charAt(2)-48);
+            features1.setPatchVersion(newFirmwareVersion.charAt(4)-48);
+            devices.edit().putString(deviceId, features1.toString()).apply();
         }
     }
-
+    /**
+     * stm32固件升级失败回调
+     */
+    public void onCancel() {
+        showPromptMessage(R.string.update_failed);
+        finish();
+    }
+    /**
+     * 固件升级的异步任务
+     * */
     public static class MyTask extends AsyncTask<String, Object, Void> {
         private CallBack callBack;
         private HardwareUpgradingFragment fragment;
@@ -357,6 +391,8 @@ public class HardwareUpgradeActivity extends BaseActivity {
                 boolean uploadSuccessful = updateFiles(path, url);
                 if (uploadSuccessful) {
                     doUpdate(path);
+                } else {
+                    cancel(true);
                 }
             }
             return null;
@@ -379,8 +415,9 @@ public class HardwareUpgradeActivity extends BaseActivity {
         @Override
         protected void onCancelled() {
             PyEnv.cancelAll();
+            callBack.onCancel();
         }
-        // 升级stm32固件
+
         private void doUpdate(String path) {
             EventBus.getDefault().postSticky(new UpdatingEvent());
             File file = new File(path);
@@ -389,9 +426,9 @@ public class HardwareUpgradeActivity extends BaseActivity {
             if (!Strings.isNullOrEmpty(response.getErrors())) {
                 if (HardWareExceptions.FILE_FORMAT_ERROR.getMessage().equals(response.getErrors())) {
                     Optional.ofNullable(file).ifPresent(File::delete);
+                    // clear state
+                    PyEnv.clearUpdateStatus();
                 }
-                // clear state
-                PyEnv.clearUpdateStatus();
                 cancel(true);
             }
         }
@@ -400,8 +437,37 @@ public class HardwareUpgradeActivity extends BaseActivity {
              * 升级完成回调
              * */
             void onSuccess();
+            /**
+             * 失败回调
+             * */
+            void onCancel();
         }
     }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onChangePin(ChangePinEvent event) {
+        // 回写PIN码
+        if (isForceUpdate) {
+            PyEnv.setPin(event.toString());
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onButtonRequest(ButtonRequestEvent event) {
+        if (isForceUpdate) {
+            if (event.getType() == PyConstant.PIN_CURRENT) {
+                Intent intent = new Intent(this, VerifyPinActivity.class);
+                startActivity(intent);
+            }
+        }
+    }
+
+    @Override
+    public boolean keepScreenOn() {
+        return true;
+    }
+    /**
+     * 切换页面
+     * */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onExit(ExitEvent exitEvent) {
         startFragment(hardwareUpgradeFragment);

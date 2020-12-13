@@ -3,7 +3,6 @@ package org.haobtc.onekey.onekeys.homepage.process;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -17,7 +16,7 @@ import com.google.gson.Gson;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.activities.transaction.CheckChainDetailWebActivity;
-import org.haobtc.onekey.bean.GetnewcreatTrsactionListBean;
+import org.haobtc.onekey.bean.TransactionInfoBean;
 import org.haobtc.onekey.utils.Daemon;
 
 import java.util.Objects;
@@ -110,7 +109,7 @@ public class DetailTransactionActivity extends BaseActivity {
     private void jsonDetailData(String detailMsg) {
         Log.i("detailMsg====", "jsonDetailData--: " + detailMsg);
         Gson gson = new Gson();
-        GetnewcreatTrsactionListBean listBean = gson.fromJson(detailMsg, GetnewcreatTrsactionListBean.class);
+        TransactionInfoBean listBean = gson.fromJson(detailMsg, TransactionInfoBean.class);
         String amount = listBean.getAmount();
         if (listBean.getInputAddr() != null && listBean.getInputAddr().size() != 0) {
             String inputAddr = listBean.getInputAddr().get(0).getAddr();

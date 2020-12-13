@@ -25,7 +25,7 @@
                 android:gravity="center"
                 android:paddingStart="32.4dp"
                 android:paddingEnd="16.2dp"
-                android:text="核对信息"
+                android:text="@string/check_message"
                 android:textColor="@color/text_color1"
                 android:textSize="16sp"
                 app:layout_constraintTop_toTopOf="parent"
@@ -56,7 +56,7 @@
                 android:layout_below="@+id/ln"
                 android:layout_marginStart="@dimen/text_margin"
                 android:layout_marginTop="9.5dp"
-                android:text="名称"
+                android:text="@string/name"
                 android:textColor="@color/graytext_color"
                 android:textSize="@dimen/smaller_text_size" />
 
@@ -80,7 +80,7 @@
                     android:layout_weight="1"
                     android:background="@null"
                     android:gravity="center_vertical"
-                    android:hint="请输入一个名字，方便记忆"
+                    android:hint="@string/set_name_hint"
                     android:paddingStart="@dimen/dp_16"
                     android:paddingEnd="@dimen/dp_16"
                     android:textColor="#494949"
@@ -100,7 +100,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/text_margin"
-                    android:text="公钥地址"
+                    android:text="@string/plublic_key"
                     android:textColor="@color/graytext_color"
                     android:textSize="@dimen/smaller_text_size" />
 
@@ -161,7 +161,7 @@
                 android:layout_marginTop="@dimen/dp_18"
                 android:layout_marginEnd="@dimen/dp_16"
                 android:background="@drawable/btn_checked"
-                android:text="添加"
+                android:text="@string/add"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"
                 android:textSize="@dimen/sp_14"

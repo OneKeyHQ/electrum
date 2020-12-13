@@ -22,7 +22,6 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.activities.settings.recovery_set.BackupRecoveryActivity;
-import org.haobtc.onekey.activities.settings.recovery_set.FixHardwareLanguageActivity;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.asynctask.BusinessAsyncTask;
 import org.haobtc.onekey.bean.HardwareFeatures;
@@ -39,7 +38,6 @@ import org.haobtc.onekey.event.FixBixinkeyNameEvent;
 import org.haobtc.onekey.event.GotVerifyInfoEvent;
 import org.haobtc.onekey.event.NotifySuccessfulEvent;
 import org.haobtc.onekey.event.PostVerifyInfoEvent;
-import org.haobtc.onekey.event.SetShutdownTimeEvent;
 import org.haobtc.onekey.event.VerifyFailedEvent;
 import org.haobtc.onekey.event.VerifySuccessEvent;
 import org.haobtc.onekey.event.WipeEvent;
@@ -64,7 +62,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.com.heaton.blelibrary.ble.Ble;
 
@@ -113,7 +110,7 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
                 finish();
                 break;
             case R.id.lin_OnckOne:
-                Intent intent = new Intent(HardwareDetailsActivity.this, BixinKeyMessageActivity.class);
+                Intent intent = new Intent(HardwareDetailsActivity.this, OneKeyMessageActivity.class);
                 intent.putExtra(Constant.TAG_BLE_NAME, bleName);
                 intent.putExtra(Constant.TAG_LABEL, label);
                 intent.putExtra(Constant.DEVICE_ID, deviceId);
@@ -132,16 +129,11 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
                     }
                 }
                 if (Strings.isNullOrEmpty(bleMac)) {
-                    showToast("未知设备！！！");
+                    showToast(R.string.unkonw_device);
                 }
                 currentMethod = BusinessAsyncTask.CHANGE_PIN;
                 initBle();
                 break;
-//            case R.id.lin_OnckFour:
-//                Intent intent4 = new Intent(this, ConfidentialPaymentSettings.class);
-//                intent4.putExtra("ble_name", bleName);
-//                startActivity(intent4);
-//                break;
             case R.id.wipe_device:
                 if (Ble.getInstance().getConnetedDevices().size() != 0) {
                     if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(bleName)) {
@@ -150,17 +142,11 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
                     }
                 }
                 if (Strings.isNullOrEmpty(bleMac)) {
-                    showToast("未知设备！！！");
+                    showToast(R.string.unkonw_device);
                 }
                 currentMethod = BusinessAsyncTask.WIPE_DEVICE;
                 initBle();
                 break;
-//            case R.id.linear_shutdown_time:
-//                Intent intent2 = new Intent(this, SetShutdownTimeActivity.class);
-//                intent2.putExtra("device_id", deviceId);
-//                intent2.putExtra("ble_name", bleName);
-//                startActivity(intent2);
-//                break;
             case R.id.tetBuckup:
                 Intent intent7 = new Intent(this, BackupRecoveryActivity.class);
                 intent7.putExtra("ble_name", bleName);
@@ -169,11 +155,6 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
             case R.id.tet_deleteWallet:
                 new DeleteLocalDeviceDialog(this, deviceId).show(getSupportFragmentManager(), "");
                 break;
-//            case R.id.test_set_key_language:
-//                Intent intent3 = new Intent(HardwareDetailsActivity.this, FixHardwareLanguageActivity.class);
-//                intent3.putExtra("ble_name", bleName);
-//                startActivity(intent3);
-//                break;
             case R.id.tetVerification:
                 Intent intent1 = new Intent(this, VerifyHardwareActivity.class);
                 intent1.putExtra(Constant.BLE_INFO, Optional.of(label).orElse(bleName));
@@ -186,7 +167,7 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
                     }
                 }
                 if (Strings.isNullOrEmpty(bleMac)) {
-                    showToast("未知设备！！！");
+                    showToast(R.string.unkonw_device);
                 }
                 currentMethod = BusinessAsyncTask.COUNTER_VERIFICATION;
                 initBle();
@@ -199,13 +180,13 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
                     }
                 }
                 if (Strings.isNullOrEmpty(bleMac)) {
-                    showToast("未知设备！！！");
+                    showToast(R.string.unkonw_device);
                 }
                 currentMethod = BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY;
                 initBle();
                 break;
             case R.id.text_hide_wallet:
-                showToast("暂不支持，敬请期待！！");
+                showToast(R.string.support_less_promote);
                 break;
             default:
         }
@@ -245,11 +226,10 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
         String locate = PreferencesManager.get(this, "Preferences", Constant.LANGUAGE, "").toString();
         String info = PreferencesManager.get(this, "Preferences", Constant.UPGRADE_INFO, "").toString();
         if (Strings.isNullOrEmpty(info)) {
-            showToast("无法获取更新信息");
+            showToast(R.string.get_update_info_failed);
             return;
         }
         Bundle bundle = getBundle(urlPrefix, locate, info);
-        //bundle.putString("ble_name", bleName);
         Intent intentVersion = new Intent(this, HardwareUpgradeActivity.class);
         intentVersion.putExtras(bundle);
         startActivity(intentVersion);
@@ -285,6 +265,7 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
         bundle.putString(Constant.TAG_NRF_VERSION, nrfVersion);
         bundle.putString(Constant.BLE_MAC, bleMac);
         bundle.putString(Constant.TAG_LABEL, label);
+        bundle.putString(Constant.DEVICE_ID, deviceId);
         return bundle;
     }
 
@@ -314,7 +295,7 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
     @Subscribe
     public void onConnectionTimeout(BleConnectionEx connectionEx) {
         if (connectionEx == BleConnectionEx.BLE_CONNECTION_EX_TIMEOUT) {
-            Toast.makeText(this, "连接蓝牙设备超时，请确认你的设备是否已开启蓝牙，并在你的旁边", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.ble_connect_timeout, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -336,7 +317,7 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
                 break;
             case PyConstant.BUTTON_REQUEST_7:
                 if (hasWindowFocus()) {
-                    showToast("请在硬件上确认您的操作");
+                    showToast(R.string.confirm_hardware_msg);
                 } else {
                     switch (currentMethod) {
                         case BusinessAsyncTask.CHANGE_PIN:
@@ -371,7 +352,7 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
     }
 
     private void verification(String result) {
-        HashMap<String, String> pramas = new HashMap<>();
+        HashMap<String, String> pramas = new HashMap<>(5);
         try {
             JSONObject jsonObject = new JSONObject(result);
             pramas.put("data", jsonObject.getString("data"));
@@ -437,7 +418,6 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
         firmwareVersion = getIntent().getStringExtra(Constant.TAG_FIRMWARE_VERSION);
         nrfVersion = getIntent().getStringExtra(Constant.TAG_NRF_VERSION);
         tetKeyName.setText(label);
-//        testShutdownTime.setText(String.format("%s%s", intent.getStringExtra(Constant.AUTO_SHUT_DOWN_TIME), getString(R.string.second)));
         boolean isVerified = intent.getBooleanExtra(Constant.TAG_HARDWARE_VERIFY, false);
         verified.setVisibility(isVerified ? View.VISIBLE: View.GONE);
         bleMac = PreferencesManager.get(this, Constant.BLE_INFO, bleName, "").toString();
@@ -463,7 +443,7 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
                 if (HardWareExceptions.PIN_INVALID.getMessage().equals(e.getMessage())) {
                     showToast(R.string.pin_wrong);
                 } else {
-                    showToast(e.getMessage());
+                    showToast(R.string.fail);
                 }
                 EventBus.getDefault().post(new ExitEvent());
                 break;

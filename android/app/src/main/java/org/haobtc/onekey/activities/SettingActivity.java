@@ -20,7 +20,7 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.activities.service.CommunicationModeSelector;
 import org.haobtc.onekey.activities.service.NfcNotifyHelper;
-import org.haobtc.onekey.activities.settings.BixinKEYManageActivity;
+import org.haobtc.onekey.activities.settings.OneKeyManageActivity;
 import org.haobtc.onekey.activities.settings.CurrencyActivity;
 import org.haobtc.onekey.activities.settings.SelectorActivity;
 import org.haobtc.onekey.activities.settings.VersionUpgradeActivity;
@@ -97,7 +97,7 @@ public class SettingActivity extends BaseActivity {
         isChangePin = false;
         switch (view.getId()) {
             case R.id.tet_bixinKey:
-                mIntent(BixinKEYManageActivity.class);
+                mIntent(OneKeyManageActivity.class);
                 break;
             case R.id.backup:
                 mIntent(BackupRecoveryActivity.class);

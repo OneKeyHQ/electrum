@@ -25,7 +25,7 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.activities.service.NfcNotifyHelper;
 import org.haobtc.onekey.adapter.HardwareAdapter;
-import org.haobtc.onekey.bean.GetnewcreatTrsactionListBean;
+import org.haobtc.onekey.bean.TransactionInfoBean;
 import org.haobtc.onekey.event.ButtonRequestEvent;
 import org.haobtc.onekey.event.FinishEvent;
 import org.haobtc.onekey.event.FirstEvent;
@@ -94,9 +94,9 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
         if (bundle != null) {
             String payAddress = bundle.getString("pay_address");
             String fee = bundle.getString("fee");
-            ArrayList<GetnewcreatTrsactionListBean.OutputAddrBean> outputs = (ArrayList<GetnewcreatTrsactionListBean.OutputAddrBean>) bundle.getSerializable("output");
+            ArrayList<TransactionInfoBean.OutputAddrBean> outputs = (ArrayList<TransactionInfoBean.OutputAddrBean>) bundle.getSerializable("output");
             if (outputs != null) {
-                for (GetnewcreatTrsactionListBean.OutputAddrBean output : outputs) {
+                for (TransactionInfoBean.OutputAddrBean output : outputs) {
                     SendMoreAddressEvent sendMoreAddressEvent = new SendMoreAddressEvent();
                     String addr = output.getAddr();
                     String amount = output.getAmount();
@@ -155,9 +155,9 @@ public class ConfirmOnHardware extends BaseActivity implements View.OnClickListe
         if (!TextUtils.isEmpty(signedTx)) {
             try {
                 Gson gson = new Gson();
-                GetnewcreatTrsactionListBean getnewcreatTrsactionListBean = gson.fromJson(signedTx, GetnewcreatTrsactionListBean.class);
-                String tx = getnewcreatTrsactionListBean.getTx();
-                txHash = getnewcreatTrsactionListBean.getTxid();
+                TransactionInfoBean transactionInfoBean = gson.fromJson(signedTx, TransactionInfoBean.class);
+                String tx = transactionInfoBean.getTx();
+                txHash = transactionInfoBean.getTxid();
                 //  Log.i("onSignSuccessful", "onSignSuccessful:++ " + tx);
                 Daemon.commands.callAttr("broadcast_tx", tx);
             } catch (Exception e) {

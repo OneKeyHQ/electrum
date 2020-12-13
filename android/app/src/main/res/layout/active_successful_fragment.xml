@@ -16,7 +16,7 @@
         android:paddingTop="@dimen/dp_20"
         android:paddingRight="@dimen/dp_30"
         android:paddingBottom="@dimen/dp_20"
-        android:text="钱包激活成功"
+        android:text="@string/wallet_active_successful"
         android:textColor="#142A3B"
         android:textSize="30sp" />
 
@@ -49,11 +49,7 @@
         android:layout_height="150dp"
         android:layout_marginTop="49dp"
         android:gravity="center"
-        android:text="您的硬件钱包激活成功，\n
-我们也没什么可提醒您的了。\n
-总之，切记保管好它，\n
-搞丢了没有任何人可以帮您找回来。\n
-祝您在区块链的世界玩儿开心❤️。"
+        android:text="@string/wallet_active_success_promote"
         android:lineSpacingExtra="10dp"
         android:textColor="#546370"
         android:textSize="@dimen/sp_14" />

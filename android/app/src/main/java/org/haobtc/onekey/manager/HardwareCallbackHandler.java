@@ -58,6 +58,7 @@ public class HardwareCallbackHandler extends Handler {
         super.handleMessage(msg);
         switch (msg.what) {
             case PIN_CURRENT:
+                System.out.println("============" + msg.what);
                 EventBus.getDefault().post(new ButtonRequestEvent(PIN_CURRENT));
                 break;
             case PIN_NEW_FIRST:

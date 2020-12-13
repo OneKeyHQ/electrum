@@ -112,6 +112,7 @@ public class CreatePersonalWalletActivity extends BaseActivity implements Busine
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onButtonRequest(ButtonRequestEvent event) {
         if (PyConstant.PIN_CURRENT == event.getType()) {
+
             startFragment(new DevicePINFragment(PyConstant.PIN_CURRENT));
         }
     }

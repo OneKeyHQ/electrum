@@ -39,13 +39,12 @@
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
+        android:layout_height="match_parent"
+        android:background="#F5F6F7">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#F5F6F7"
             android:orientation="vertical">
 
             <RelativeLayout
@@ -68,7 +67,7 @@
                     android:textSize="@dimen/sp_14" />
 
                 <EditText
-                    android:id="@+id/edit_input_address"
+                    android:id="@+id/edit_receiver_address"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/dp_40"
                     android:layout_alignParentBottom="true"
@@ -83,7 +82,7 @@
                     android:textSize="@dimen/sp_14" />
 
                 <TextView
-                    android:id="@+id/img_paste"
+                    android:id="@+id/paste_address"
                     android:layout_width="wrap_content"
                     android:layout_height="26dp"
                     android:layout_alignParentEnd="true"
@@ -100,6 +99,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="162dp"
                 android:layout_marginTop="@dimen/dp_20"
+                android:focusable="true"
                 android:background="@color/button_bk_ddake">
 
                 <TextView
@@ -116,7 +116,7 @@
                     android:textSize="@dimen/sp_14" />
 
                 <TextView
-                    android:id="@+id/tet_choose_type"
+                    android:id="@+id/switch_coin_type"
                     android:layout_width="@dimen/dp_120"
                     android:layout_height="@dimen/dp_40"
                     android:layout_alignParentEnd="true"
@@ -124,7 +124,6 @@
                     android:layout_marginEnd="@dimen/dp_12"
                     android:drawableEnd="@drawable/right_arrow_small"
                     android:drawablePadding="@dimen/dp_5"
-                    android:focusable="true"
                     android:gravity="center_vertical|end"
                     android:text="@string/btc_c"
                     android:textColor="@color/graytext_color"
@@ -144,7 +143,7 @@
                     android:textSize="@dimen/sp_18" />
 
                 <TextView
-                    android:id="@+id/text_max"
+                    android:id="@+id/text_max_amount"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/dp_24"
                     android:layout_alignParentEnd="true"
@@ -158,7 +157,7 @@
                     android:text="@string/max"
                     android:textColor="@color/onekey"
                     android:textSize="@dimen/sp_14"
-                    android:visibility="gone" />
+                    android:visibility="visible" />
 
                 <View
                     android:layout_width="match_parent"
@@ -180,7 +179,7 @@
                     android:textSize="@dimen/sp_14" />
 
                 <TextView
-                    android:id="@+id/text_num"
+                    android:id="@+id/text_balance"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
@@ -197,6 +196,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="254dp"
                 android:layout_marginTop="@dimen/dp_20"
+                android:focusable="true"
                 android:background="@color/button_bk_ddake">
 
                 <TextView
@@ -214,18 +214,7 @@
                     android:textSize="@dimen/sp_14" />
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="@dimen/dp_16"
-                    android:layout_marginStart="@dimen/dp_10"
-                    android:layout_marginTop="@dimen/dp_18"
-                    android:layout_toEndOf="@+id/textView"
-                    android:gravity="center"
-                    android:text="@string/pay_to_miner"
-                    android:textColor="@color/text_six"
-                    android:textSize="@dimen/sp_12" />
-
-                <TextView
-                    android:id="@+id/tet_custom_fee"
+                    android:id="@+id/text_customize_fee_rate"
                     android:layout_width="@dimen/dp_120"
                     android:layout_height="@dimen/dp_40"
                     android:layout_alignParentEnd="true"
@@ -233,14 +222,13 @@
                     android:layout_marginEnd="@dimen/dp_12"
                     android:drawableEnd="@drawable/right_arrow_small"
                     android:drawablePadding="@dimen/dp_5"
-                    android:focusable="true"
                     android:gravity="center_vertical|end"
                     android:text="@string/custom"
                     android:textColor="@color/graytext_color"
                     tools:ignore="UseCompatTextViewDrawableXml" />
 
                 <LinearLayout
-                    android:id="@+id/lin_choose_fee"
+                    android:id="@+id/linear_rate_selector"
                     android:layout_width="match_parent"
                     android:layout_height="140dp"
                     android:layout_marginStart="@dimen/dp_20"
@@ -250,7 +238,7 @@
                     android:visibility="visible">
 
                     <RelativeLayout
-                        android:id="@+id/lin_slow"
+                        android:id="@+id/linear_slow"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_marginStart="@dimen/dp_10"
@@ -260,11 +248,12 @@
                         android:layout_weight="1"
                         android:background="@drawable/white_back_"
                         android:clickable="true"
+                        android:focusable="true"
                         android:gravity="center_horizontal"
                         android:orientation="vertical">
 
                         <TextView
-                            android:id="@+id/textView1"
+                            android:id="@+id/textView1_"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerHorizontal="true"
@@ -286,10 +275,10 @@
                             android:visibility="gone" />
 
                         <TextView
-                            android:id="@+id/text_fee_50"
+                            android:id="@+id/text_fee_in_btc_0"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_below="@+id/textView1"
+                            android:layout_below="@id/textView1_"
                             android:layout_centerHorizontal="true"
                             android:layout_marginTop="@dimen/dp_6"
                             android:text="@string/_0_00_btc"
@@ -297,10 +286,10 @@
                             android:textSize="@dimen/sp_10" />
 
                         <TextView
-                            android:id="@+id/text_dollar_50"
+                            android:id="@+id/text_fee_in_cash_0"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_below="@+id/text_fee_50"
+                            android:layout_below="@+id/text_fee_in_btc_0"
                             android:layout_centerHorizontal="true"
                             android:layout_marginTop="@dimen/dp_6"
                             android:gravity="center_vertical"
@@ -310,7 +299,7 @@
                             tools:ignore="NestedWeights" />
 
                         <TextView
-                            android:id="@+id/text_slow_time"
+                            android:id="@+id/text_spend_time_0"
                             android:layout_width="match_parent"
                             android:layout_height="37dp"
                             android:layout_alignParentBottom="true"
@@ -332,7 +321,7 @@
                     </RelativeLayout>
 
                     <RelativeLayout
-                        android:id="@+id/lin_recommend"
+                        android:id="@+id/linear_recommend"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_marginStart="@dimen/dp_5"
@@ -346,7 +335,7 @@
                         android:orientation="vertical">
 
                         <TextView
-                            android:id="@+id/textView2"
+                            android:id="@+id/textView2_"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerHorizontal="true"
@@ -368,10 +357,10 @@
                             android:visibility="visible" />
 
                         <TextView
-                            android:id="@+id/text_fee_20"
+                            android:id="@+id/text_fee_in_btc_1"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_below="@+id/textView2"
+                            android:layout_below="@+id/textView2_"
                             android:layout_centerHorizontal="true"
                             android:layout_marginTop="@dimen/dp_6"
                             android:text="@string/_0_00_btc"
@@ -379,10 +368,10 @@
                             android:textSize="@dimen/sp_10" />
 
                         <TextView
-                            android:id="@+id/text_dollar_20"
+                            android:id="@+id/text_fee_in_cash_1"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_below="@+id/text_fee_20"
+                            android:layout_below="@+id/text_fee_in_btc_1"
                             android:layout_centerHorizontal="true"
                             android:layout_marginTop="@dimen/dp_6"
                             android:gravity="center_vertical"
@@ -392,7 +381,7 @@
                             tools:ignore="NestedWeights" />
 
                         <TextView
-                            android:id="@+id/text_recommend_time"
+                            android:id="@+id/text_spend_time_1"
                             android:layout_width="match_parent"
                             android:layout_height="37dp"
                             android:layout_alignParentBottom="true"
@@ -412,7 +401,7 @@
                     </RelativeLayout>
 
                     <RelativeLayout
-                        android:id="@+id/lin_fast"
+                        android:id="@+id/linear_fast"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_marginStart="@dimen/dp_5"
@@ -422,11 +411,12 @@
                         android:layout_weight="1"
                         android:background="@drawable/white_back_"
                         android:clickable="true"
+                        android:focusable="true"
                         android:gravity="center_horizontal"
                         android:orientation="vertical">
 
                         <TextView
-                            android:id="@+id/textView3"
+                            android:id="@+id/textView3_"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerHorizontal="true"
@@ -448,10 +438,10 @@
                             android:visibility="gone" />
 
                         <TextView
-                            android:id="@+id/text_fee_10"
+                            android:id="@+id/text_fee_in_btc_2"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_below="@+id/textView3"
+                            android:layout_below="@+id/textView3_"
                             android:layout_centerHorizontal="true"
                             android:layout_marginTop="@dimen/dp_6"
                             android:text="@string/_0_00_btc"
@@ -459,10 +449,10 @@
                             android:textSize="@dimen/sp_10" />
 
                         <TextView
-                            android:id="@+id/text_dollar_10"
+                            android:id="@+id/text_fee_in_cash_2"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_below="@+id/text_fee_10"
+                            android:layout_below="@+id/text_fee_in_btc_2"
                             android:layout_centerHorizontal="true"
                             android:layout_marginTop="@dimen/dp_6"
                             android:gravity="center_vertical"
@@ -472,7 +462,7 @@
                             tools:ignore="NestedWeights" />
 
                         <TextView
-                            android:id="@+id/text_fast_time"
+                            android:id="@+id/text_spend_time_2"
                             android:layout_width="match_parent"
                             android:layout_height="37dp"
                             android:layout_alignParentBottom="true"
@@ -494,12 +484,13 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/lin_custom"
+                    android:id="@+id/linear_customize"
                     android:layout_width="match_parent"
                     android:layout_height="140dp"
                     android:layout_marginStart="@dimen/dp_20"
                     android:layout_marginTop="@dimen/dp_66"
                     android:layout_marginEnd="@dimen/dp_20"
+                    android:focusable="true"
                     android:background="@drawable/big_gray_tuo"
                     android:orientation="horizontal"
                     android:visibility="gone">
@@ -537,7 +528,7 @@
                             android:checked="true" />
 
                         <TextView
-                            android:id="@+id/text_fee_custom"
+                            android:id="@+id/text_fee_customize_in_btc"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_below="@+id/textView6"
@@ -548,10 +539,10 @@
                             android:textSize="@dimen/sp_10" />
 
                         <TextView
-                            android:id="@+id/text_dollar_custom"
+                            android:id="@+id/text_fee_customize_in_cash"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_below="@+id/text_fee_custom"
+                            android:layout_below="@+id/text_fee_customize_in_btc"
                             android:layout_centerHorizontal="true"
                             android:layout_marginTop="@dimen/dp_6"
                             android:gravity="center_vertical"
@@ -561,7 +552,7 @@
                             tools:ignore="NestedWeights" />
 
                         <TextView
-                            android:id="@+id/text_custom_time"
+                            android:id="@+id/text_customize_spend_time"
                             android:layout_width="match_parent"
                             android:layout_height="37dp"
                             android:layout_alignParentBottom="true"
@@ -579,7 +570,7 @@
                     </RelativeLayout>
 
                     <TextView
-                        android:id="@+id/text_recovery_default"
+                        android:id="@+id/text_rollback"
                         android:layout_width="wrap_content"
                         android:layout_height="@dimen/dp_40"
                         android:layout_gravity="center_vertical"
@@ -603,7 +594,7 @@
                 android:layout_marginTop="35dp"
                 android:layout_marginEnd="34dp"
                 android:layout_marginBottom="@dimen/dp_36"
-                android:background="@drawable/btn_no_check"
+                android:background="@drawable/btn_enable_selector"
                 android:enabled="false"
                 android:text="@string/send_"
                 android:textAllCaps="false"

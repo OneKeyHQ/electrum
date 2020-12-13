@@ -12,6 +12,7 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.bean.UpdateSuccessEvent;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.ExitEvent;
+import org.haobtc.onekey.event.RefreshViewEvent;
 import org.haobtc.onekey.event.UpdatingEvent;
 import org.haobtc.onekey.ui.base.BaseFragment;
 
@@ -24,6 +25,7 @@ import butterknife.OnClick;
  */
 
 public class HardwareUpgradingFragment extends BaseFragment {
+
     @BindView(R.id.promote)
     TextView promote;
     @BindView(R.id.progressBar)
@@ -32,6 +34,7 @@ public class HardwareUpgradingFragment extends BaseFragment {
     TextView progressPromote;
     @BindView(R.id.complete)
     Button complete;
+    private int promoteId;
 
     /**
      * init views
@@ -40,7 +43,8 @@ public class HardwareUpgradingFragment extends BaseFragment {
      */
     @Override
     public void init(View view) {
-        promote.setText(getArguments().getInt(Constant.TAG_HARDWARE_TYPE_PROMOTE_ID));
+        promoteId = getArguments().getInt(Constant.TAG_HARDWARE_TYPE_PROMOTE_ID);
+        promote.setText(promoteId);
         progressBar.setIndeterminate(true);
     }
 
@@ -62,13 +66,16 @@ public class HardwareUpgradingFragment extends BaseFragment {
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onUpdatedSuccess(UpdateSuccessEvent event) {
+        EventBus.getDefault().post(new RefreshViewEvent(promoteId));
         progressPromote.setText(R.string.updated);
         complete.setEnabled(true);
     }
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void onUpdating(UpdatingEvent event) {
         EventBus.getDefault().removeStickyEvent(event);
-        progressPromote.setText(R.string.updating);
+        if (progressPromote != null) {
+            progressPromote.setText(R.string.updating);
+        }
     }
 
     @Override

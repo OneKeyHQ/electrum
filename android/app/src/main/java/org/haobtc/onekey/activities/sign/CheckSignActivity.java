@@ -1,94 +1,101 @@
 package org.haobtc.onekey.activities.sign;
 
 import android.Manifest;
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.Context;
 import android.content.Intent;
-import android.text.Editable;
-import android.text.TextUtils;
-import android.text.TextWatcher;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.chaquo.python.PyObject;
-import com.google.gson.Gson;
+import com.google.common.base.Strings;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.bean.ZxingConfig;
 import com.yzq.zxinglibrary.common.Constant;
 
 import org.haobtc.onekey.R;
-import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.aop.SingleClick;
-import org.haobtc.onekey.bean.GetCodeAddressBean;
-import org.haobtc.onekey.utils.Daemon;
+import org.haobtc.onekey.bean.CurrentAddressDetail;
+import org.haobtc.onekey.bean.PyResponse;
+import org.haobtc.onekey.manager.PyEnv;
+import org.haobtc.onekey.ui.base.BaseActivity;
+import org.haobtc.onekey.utils.ClipboardUtils;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnTextChanged;
 
+/**
+ * @author xiaomin
+ */
 public class CheckSignActivity extends BaseActivity {
 
-    @BindView(R.id.editInputAddress)
-    EditText editInputAddress;
-    @BindView(R.id.editInputPublicKey)
-    EditText editInputPublicKey;
-    @BindView(R.id.editInputSignedMsg)
-    EditText editInputSignedMsg;
+    @BindView(R.id.edit_message)
+    EditText editRawMessage;
+    @BindView(R.id.edit_address)
+    EditText editAddress;
+    @BindView(R.id.edit_signature)
+    EditText editSignature;
     @BindView(R.id.btnConfirm)
     Button btnConfirm;
     private RxPermissions rxPermissions;
     private static final int REQUEST_CODE = 0;
-
+    /**
+     * init
+     */
     @Override
-    public int getLayoutId() {
+    public void init() {
+        rxPermissions = new RxPermissions(this);
+        getCurrentAddress();
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
+            editRawMessage.setText(bundle.getString(org.haobtc.onekey.constant.Constant.RAW_MESSAGE));
+            editSignature.setText(bundle.getString(org.haobtc.onekey.constant.Constant.SIGNATURE));
+        }
+    }
+
+    /***
+     * init layout
+     * @return
+     */
+    @Override
+    public int getContentViewId() {
         return R.layout.activity_check_sign;
     }
 
-    @Override
-    public void initView() {
-        ButterKnife.bind(this);
-        rxPermissions = new RxPermissions(this);
-        TextChange textChange = new TextChange();
-        editInputAddress.addTextChangedListener(textChange);
-        editInputPublicKey.addTextChangedListener(textChange);
-        editInputSignedMsg.addTextChangedListener(textChange);
-    }
-
-    @Override
-    public void initData() {
-        mGeneratecode();
-    }
-
-    //get sign address
-    private void mGeneratecode() {
-        PyObject walletAddressShowUi = null;
-        try {
-            walletAddressShowUi = Daemon.commands.callAttr("get_wallet_address_show_UI");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
-        }
-        if (walletAddressShowUi != null) {
-            String strCode = walletAddressShowUi.toString();
-            Gson gson = new Gson();
-            GetCodeAddressBean getCodeAddressBean = gson.fromJson(strCode, GetCodeAddressBean.class);
-            String strinputAddress = getCodeAddressBean.getAddr();
-            editInputPublicKey.setText(strinputAddress);
+    /**
+     * 获取当前钱包的地址
+     * */
+    private void getCurrentAddress() {
+        PyResponse<CurrentAddressDetail> response = PyEnv.getCurrentAddressInfo();
+        String errors = response.getErrors();
+        if (Strings.isNullOrEmpty(errors)) {
+            editAddress.setText(response.getResult().getAddr());
+        } else {
+            showToast(errors);
         }
     }
-
+    @OnTextChanged(R.id.edit_address)
+    public void onTextChangedAddress(CharSequence sequence) {
+        btnConfirm.setEnabled(Strings.isNullOrEmpty(sequence.toString()));
+    }
+    @OnTextChanged(R.id.edit_signature)
+    public void onTextChangedSignature(CharSequence sequence) {
+        btnConfirm.setEnabled(Strings.isNullOrEmpty(sequence.toString()));
+    }
+    @OnTextChanged(R.id.edit_message)
+    public void onTextChangedMessage(CharSequence sequence) {
+        btnConfirm.setEnabled(Strings.isNullOrEmpty(sequence.toString()));
+    }
     @SingleClick
-    @OnClick({R.id.img_back, R.id.sweepAddress, R.id.pasteAddress, R.id.pastePublicKey, R.id.pasteSignedMsg, R.id.btnConfirm})
+    @OnClick({R.id.img_back, R.id.scan, R.id.paste_message, R.id.paste_address, R.id.paste_signature, R.id.btnConfirm})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
                 finish();
                 break;
-            case R.id.sweepAddress:
+            case R.id.scan:
                 rxPermissions
                         .request(Manifest.permission.CAMERA)
                         .subscribe(granted -> {
@@ -109,40 +116,34 @@ public class CheckSignActivity extends BaseActivity {
                             }
                         }).dispose();
                 break;
-            case R.id.pasteAddress:
-                pasteMessage(editInputAddress);
+            case R.id.paste_message:
+                editRawMessage.setText(ClipboardUtils.pasteText(this));
                 break;
-            case R.id.pastePublicKey:
-                pasteMessage(editInputPublicKey);
+            case R.id.paste_address:
+                editAddress.setText(ClipboardUtils.pasteText(this));
                 break;
-            case R.id.pasteSignedMsg:
-                pasteMessage(editInputSignedMsg);
+            case R.id.paste_signature:
+                editSignature.setText(ClipboardUtils.pasteText(this));
                 break;
             case R.id.btnConfirm:
-                checkSigned();
+                verify();
                 break;
             default:
         }
     }
 
-    private void checkSigned() {
-        String strMsg = editInputAddress.getText().toString();
-        String strAddress = editInputPublicKey.getText().toString();
-        String strSigned = editInputSignedMsg.getText().toString();
-        PyObject verify_message = null;
-        try {
-            verify_message = Daemon.commands.callAttr("verify_message", strAddress, strMsg, strSigned);
-        } catch (Exception e) {
-            e.printStackTrace();
-            if (e.getMessage().contains("Invalid Bitcoin address")) {
-                mToast(getString(R.string.changeaddress));
-            }
-        }
-        if (verify_message != null) {
-            boolean verify = verify_message.toBoolean();
+    private void verify() {
+        String message = editRawMessage.getText().toString();
+        String address = editAddress.getText().toString();
+        String signature = editSignature.getText().toString();
+        PyResponse<Boolean> response = PyEnv.verifySignature(address, message, signature);
+        String errors = response.getErrors();
+        if (Strings.isNullOrEmpty(errors)) {
             Intent intent = new Intent(CheckSignActivity.this, CheckSignResultActivity.class);
-            intent.putExtra("verify", verify);
+            intent.putExtra("verify", response.getResult());
             startActivity(intent);
+        } else {
+            showToast(errors);
         }
     }
 
@@ -153,49 +154,9 @@ public class CheckSignActivity extends BaseActivity {
         if (requestCode == 0 && resultCode == RESULT_OK) {
             if (data != null) {
                 String content = data.getStringExtra(Constant.CODED_CONTENT);
-                editInputAddress.setText(content);
+                editRawMessage.setText(content);
             }
         }
     }
 
-    public void pasteMessage(EditText editString) {
-        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-        if (clipboard != null) {
-            ClipData data = clipboard.getPrimaryClip();
-            if (data != null && data.getItemCount() > 0) {
-                editString.setText(data.getItemAt(0).getText());
-            }
-        }
-    }
-
-    class TextChange implements TextWatcher {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-            //judge button status
-            buttonColorStatus();
-        }
-    }
-
-    // judge button status
-    private void buttonColorStatus() {
-        String strinputAddress = editInputAddress.getText().toString();
-        String strInputPublicKey = editInputPublicKey.getText().toString();
-        String strInputSignedMsg = editInputSignedMsg.getText().toString();
-        if (TextUtils.isEmpty(strinputAddress) || TextUtils.isEmpty(strInputPublicKey) || TextUtils.isEmpty(strInputSignedMsg)) {
-            btnConfirm.setEnabled(false);
-            btnConfirm.setBackground(getDrawable(R.drawable.btn_no_check));
-        } else {
-            btnConfirm.setEnabled(true);
-            btnConfirm.setBackground(getDrawable(R.drawable.btn_checked));
-        }
-
-    }
 }

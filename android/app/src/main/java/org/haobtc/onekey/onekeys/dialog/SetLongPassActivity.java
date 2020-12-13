@@ -34,13 +34,13 @@ import org.haobtc.onekey.bean.CreateWalletBean;
 import org.haobtc.onekey.bean.LocalWalletInfo;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.CreateSuccessEvent;
-import org.haobtc.onekey.event.GotPassEvent;
-import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.event.FinishEvent;
+import org.haobtc.onekey.event.GotPassEvent;
 import org.haobtc.onekey.event.InputPassSendEvent;
 import org.haobtc.onekey.event.LoadOtherWalletEvent;
 import org.haobtc.onekey.event.LoadWalletlistEvent;
 import org.haobtc.onekey.event.SecondEvent;
+import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
 import org.haobtc.onekey.onekeys.backup.BackupGuideActivity;
@@ -51,13 +51,15 @@ import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
 import org.haobtc.onekey.utils.Daemon;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
+import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE;
+import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE_LONG;
+import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE_SHORT;
 
 public class SetLongPassActivity extends BaseActivity implements TextWatcher {
 
@@ -191,7 +193,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
                         editPass.setText("");
                         input = true;
                     } else {
-                        edit.putString("shortOrLongPass", "long");
+                        edit.putString(SOFT_HD_PASS_TYPE, SOFT_HD_PASS_TYPE_LONG);
                         edit.apply();
                         if (!firstPass.equals(editPass.getText().toString())) {
                             mToast(getString(R.string.two_different_pass));
@@ -206,7 +208,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
 
                 break;
             case R.id.lin_short_pass:
-                if ("long".equals(preferences.getString("shortOrLongPass", "short"))) {
+                if (SOFT_HD_PASS_TYPE_LONG.equals(preferences.getString(SOFT_HD_PASS_TYPE, SOFT_HD_PASS_TYPE_SHORT))) {
                     editPass.setText("");
                     Intent intent1 = new Intent(this, SetHDWalletPassActivity.class);
                     intent1.putExtra("importHdword", importHdword);
@@ -259,6 +261,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
             deleteSingleWallet();
         } else if ("send".equals(importHdword)) {
             EventBus.getDefault().post(new InputPassSendEvent(editPass.getText().toString()));
+            finish();
         } else {
             createNewHdWallet();
         }

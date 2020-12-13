@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginHorizontal="@dimen/dp_51"
-        android:text="正在连接设备"
+        android:text="@string/connecting_device"
         android:textColor="#142A3B"
         android:textSize="30sp" />
     <TextView
@@ -79,14 +79,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_30"
-            app:text="连接设备" />
+            app:text="@string/connectting" />
 
 
         <org.haobtc.onekey.ui.custom.LoadingTextView
             android:id="@+id/retrieve_verify_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:text="获取防伪签名" />
+            app:text="@string/get_signature" />
 
 
         <org.haobtc.onekey.ui.custom.LoadingTextView
@@ -94,7 +94,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/dp_20"
-            app:text="提交防伪验证信息" />
+            app:text="@string/post_verify_message" />
 
 
     </LinearLayout>

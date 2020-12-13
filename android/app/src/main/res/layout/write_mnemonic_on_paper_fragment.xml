@@ -29,7 +29,7 @@
         app:layout_constraintTop_toBottomOf="@id/promote_1"
         android:layout_marginTop="@dimen/dp_24"
         android:gravity="center"
-        android:text="请抄写你的 12 位助记词"
+        android:text="@string/copy_mnemonic_12"
         android:textSize="@dimen/sp_14"
         android:textColor="#142A3B" />
     <ImageView
@@ -47,8 +47,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toTopOf="@id/ready_go"
-        android:text="1. 备好纸笔认真抄写，再次确认无误后请妥善保管。\n
-2. OneKey 不会为您存储私密数据，助记词一旦丢失将无法找回。"
+        android:text="@string/copy_mnemonic_promote"
         android:drawableStart="@drawable/md_style_quote"
         android:textSize="@dimen/sp_14"
         android:textColor="#546370"
@@ -66,7 +65,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:background="@drawable/btn_enable_selector"
-        android:text="我抄好了"
+        android:text="@string/copy_done"
         android:enabled="false"
         android:textAllCaps="false"
         android:layout_marginBottom="@dimen/dp_42"

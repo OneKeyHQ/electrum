@@ -32,6 +32,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static org.haobtc.onekey.constant.Constant.WALLET_BALANCE;
+
 public class ChooseUtxoActivity extends BaseActivity {
 
     @BindView(R.id.text_all_num)
@@ -62,7 +64,7 @@ public class ChooseUtxoActivity extends BaseActivity {
     public void initView() {
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
-        sendNum = getIntent().getStringExtra("sendNum");//total num
+        sendNum = getIntent().getStringExtra(WALLET_BALANCE);//total num
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         mBtcUnit = preferences.getString("base_unit", "mBtc");
         textUnit.setText(mBtcUnit);

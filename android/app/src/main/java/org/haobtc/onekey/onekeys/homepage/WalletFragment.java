@@ -1,12 +1,10 @@
 package org.haobtc.onekey.onekeys.homepage;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageView;
@@ -69,6 +67,9 @@ import butterknife.OnClick;
 import static android.app.Activity.RESULT_OK;
 import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
 import static org.haobtc.onekey.constant.Constant.NEED_POP_BACKUP_DIALOG;
+import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE;
+import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE_SHORT;
+import static org.haobtc.onekey.constant.Constant.WALLET_BALANCE;
 
 /**
  * @author jinxiaomin
@@ -137,13 +138,11 @@ public class WalletFragment extends BaseFragment {
     private String num;
     private String changeBalance;
     private String name;
-    private String loadWalletName;
     private SharedPreferences.Editor edit;
     private RxPermissions rxPermissions;
     private static final int REQUEST_CODE = 0;
     private String nowType;
     private boolean isBackup;
-    private String deviceId;
     private String bleMac;
     private static int currentAction;
 
@@ -209,7 +208,7 @@ public class WalletFragment extends BaseFragment {
 
     private void getWalletBalance() {
         //Get current wallet name
-        loadWalletName = preferences.getString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME, "");
+        String loadWalletName = preferences.getString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME, "");
         try {
             Optional.ofNullable(PyEnv.selectWallet(loadWalletName)).ifPresent((balanceInfo -> {
                 String balance = balanceInfo.getBalance();
@@ -244,7 +243,6 @@ public class WalletFragment extends BaseFragment {
 
     }
 
-    @SuppressLint("UseCompatLoadingForDrawables")
     private void showTypeInfo(LocalWalletInfo localWalletInfo) {
         nowType = localWalletInfo.getType();
         edit.putString(CURRENT_SELECTED_WALLET_TYPE, nowType);
@@ -259,7 +257,7 @@ public class WalletFragment extends BaseFragment {
         if (nowType.contains("hw")) {
             textHard.setVisibility(View.VISIBLE);
             linearSign.setVisibility(View.VISIBLE);
-            deviceId = localWalletInfo.getDeviceId();
+            String deviceId = localWalletInfo.getDeviceId();
             // 去除deviceId上的双引号
             deviceId = deviceId.substring(1, deviceId.length() - 1);
             String deviceInfo = PreferencesManager.get(getContext(), org.haobtc.onekey.constant.Constant.DEVICES, deviceId, "").toString();
@@ -348,23 +346,26 @@ public class WalletFragment extends BaseFragment {
     private void toNext(int id) {
         switch (id) {
             case R.id.linear_send:
-                System.out.println("===============4444");
                 Intent intent2 = new Intent(getActivity(), SendHdActivity.class);
-                intent2.putExtra("sendNum", changeBalance);
+                intent2.putExtra(WALLET_BALANCE, changeBalance);
                 intent2.putExtra("hdWalletName", textWalletName.getText().toString());
                 startActivity(intent2);
                 break;
             case R.id.linear_receive:
                 Intent intent3 = new Intent(getActivity(), ReceiveHDActivity.class);
                 if (org.haobtc.onekey.constant.Constant.WALLET_TYPE_HARDWARE.equals(nowType)) {
-                    intent3.putExtra(org.haobtc.onekey.constant.Constant.WALLET_TYPE, org.haobtc.onekey.constant.Constant.WALLET_TYPE_HARDWARE_);
+                    intent3.putExtra(org.haobtc.onekey.constant.Constant.WALLET_TYPE, org.haobtc.onekey.constant.Constant.WALLET_TYPE_HARDWARE_PERSONAL);
                 }
-                Log.i("nowTypejxm", "toNext: " + nowType);
                 startActivity(intent3);
                 break;
             case R.id.linear_sign:
                 Intent intent8 = new Intent(getActivity(), SignActivity.class);
+                intent8.putExtra(org.haobtc.onekey.constant.Constant.WALLET_LABEL, textWalletName.getText().toString());
+                if (org.haobtc.onekey.constant.Constant.WALLET_TYPE_HARDWARE.equals(nowType)) {
+                    intent8.putExtra(org.haobtc.onekey.constant.Constant.WALLET_TYPE, org.haobtc.onekey.constant.Constant.WALLET_TYPE_HARDWARE_PERSONAL);
+                }
                 startActivity(intent8);
+                break;
             default:
         }
     }
@@ -395,7 +396,8 @@ public class WalletFragment extends BaseFragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onConnected(BleConnectedEvent event) {
-        toNext(currentAction);
+            toNext(currentAction);
+            currentAction = 0;
     }
 
     /**
@@ -404,7 +406,7 @@ public class WalletFragment extends BaseFragment {
     @Subscribe
     public void onConnectionTimeout(BleConnectionEx connectionEx) {
         if (connectionEx == BleConnectionEx.BLE_CONNECTION_EX_TIMEOUT) {
-            Toast.makeText(getContext(), "连接蓝牙设备超时，请确认你的设备是否已开启蓝牙，并在你的旁边", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), R.string.ble_connect_timeout, Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -424,7 +426,7 @@ public class WalletFragment extends BaseFragment {
             //get wallet balance
             getWalletBalance();
         } else {
-            edit.putString("shortOrLongPass", "short");
+            edit.putString(SOFT_HD_PASS_TYPE, SOFT_HD_PASS_TYPE_SHORT);
             edit.putBoolean(NEED_POP_BACKUP_DIALOG, true);
             edit.apply();
             textWalletName.setText(getString(R.string.no_use_wallet));
@@ -501,7 +503,7 @@ public class WalletFragment extends BaseFragment {
                                 MainSweepcodeBean.DataBean listData = mainSweepcodeBean.getData();
                                 String address = listData.getAddress();
                                 Intent intent2 = new Intent(getActivity(), SendHdActivity.class);
-                                intent2.putExtra("sendNum", changeBalance);
+                                intent2.putExtra(WALLET_BALANCE, changeBalance);
                                 intent2.putExtra("hdWalletName", name);
                                 intent2.putExtra("addressScan", address);
                                 startActivity(intent2);
@@ -576,7 +578,7 @@ public class WalletFragment extends BaseFragment {
                 break;
             case R.id.img_Add:
             case R.id.rel_create_hd:
-                if ("short".equals(preferences.getString("shortOrLongPass", "short"))) {
+                if (SOFT_HD_PASS_TYPE_SHORT.equals(preferences.getString(SOFT_HD_PASS_TYPE, SOFT_HD_PASS_TYPE_SHORT))) {
                     Intent intent0 = new Intent(getActivity(), SetHDWalletPassActivity.class);
                     startActivity(intent0);
                 } else {
@@ -601,7 +603,6 @@ public class WalletFragment extends BaseFragment {
             case R.id.linear_send:
             case R.id.linear_receive:
             case R.id.linear_sign:
-                System.out.println("==============2222");
                 deal(view.getId());
                 break;
             case R.id.rel_now_back_up:
@@ -611,6 +612,9 @@ public class WalletFragment extends BaseFragment {
                 break;
             case R.id.rel_bi_detail:
                 Intent intent5 = new Intent(getActivity(), TransactionDetailWalletActivity.class);
+                if (nowType.contains("hw")) {
+                   intent5.putExtra(org.haobtc.onekey.constant.Constant.BLE_MAC, bleMac);
+                }
                 intent5.putExtra("walletBalance", changeBalance);
                 intent5.putExtra("walletDollar", textDollar.getText().toString());
                 intent5.putExtra("hdWalletName", textWalletName.getText().toString());

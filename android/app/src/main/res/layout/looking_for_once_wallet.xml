@@ -8,7 +8,7 @@
         android:id="@+id/promote"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="找到以下钱包"
+        android:text="@string/find_device_promote"
         android:gravity="center"
         android:textColor="#142A3B"
         android:textSize="@dimen/sp_30"
@@ -56,7 +56,7 @@
             android:gravity="center"
             android:layout_marginTop="17dp"
             android:textColor="#546370"
-            android:text="您曾此 App 创建这些钱包，选择您要恢复的。"/>
+            android:text="@string/recovery_promote"/>
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/wallet_rec"
             android:layout_width="match_parent"
@@ -72,7 +72,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_60"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:text="恢复"
+        android:text="@string/recovery"
         android:textColor="@android:color/white"
         android:background="@drawable/btn_checked"
         android:layout_marginHorizontal="@dimen/dp_36"

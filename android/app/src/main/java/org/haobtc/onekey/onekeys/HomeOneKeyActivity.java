@@ -258,7 +258,6 @@ public class HomeOneKeyActivity extends BaseActivity implements RadioGroup.OnChe
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        System.out.println("fuck you in home page!!!!!!!!!");
         refreshView();
     }
 }

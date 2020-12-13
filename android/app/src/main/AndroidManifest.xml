@@ -346,7 +346,7 @@
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
         <activity
-            android:name=".activities.settings.BixinKeyMessageActivity"
+            android:name=".activities.settings.OneKeyMessageActivity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
         <activity
@@ -358,7 +358,7 @@
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
         <activity
-            android:name=".activities.settings.BixinKEYManageActivity"
+            android:name=".activities.settings.OneKeyManageActivity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
         <activity

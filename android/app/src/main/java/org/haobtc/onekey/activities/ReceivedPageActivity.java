@@ -6,33 +6,21 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.ImageSpan;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 
 import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.MultiFormatWriter;
-import com.google.zxing.WriterException;
-import com.google.zxing.common.BitMatrix;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.encode.CodeCreator;
 
@@ -43,7 +31,7 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.activities.service.CommunicationModeSelector;
 import org.haobtc.onekey.aop.SingleClick;
-import org.haobtc.onekey.bean.GetCodeAddressBean;
+import org.haobtc.onekey.bean.CurrentAddressDetail;
 import org.haobtc.onekey.event.ButtonRequestEvent;
 import org.haobtc.onekey.event.CheckReceiveAddress;
 import org.haobtc.onekey.event.ExitEvent;
@@ -201,9 +189,9 @@ public class ReceivedPageActivity extends BaseActivity {
         if (walletAddressShowUi != null) {
             String strCode = walletAddressShowUi.toString();
             Gson gson = new Gson();
-            GetCodeAddressBean getCodeAddressBean = gson.fromJson(strCode, GetCodeAddressBean.class);
-            String qrData = getCodeAddressBean.getQrData();
-            String addr = getCodeAddressBean.getAddr();
+            CurrentAddressDetail currentAddressDetail = gson.fromJson(strCode, CurrentAddressDetail.class);
+            String qrData = currentAddressDetail.getQrData();
+            String addr = currentAddressDetail.getAddr();
             textView5.setText(addr);
             bitmap = CodeCreator.createQRCode(qrData, 250, 250, null);
             imageView2.setImageBitmap(bitmap);

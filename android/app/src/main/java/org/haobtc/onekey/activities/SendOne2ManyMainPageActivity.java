@@ -45,10 +45,10 @@ import org.haobtc.onekey.activities.transaction.DeatilMoreAddressActivity;
 import org.haobtc.onekey.adapter.ChoosePayAddressAdapter;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.AddressEvent;
-import org.haobtc.onekey.bean.GetAddressBean;
-import org.haobtc.onekey.bean.GetCodeAddressBean;
-import org.haobtc.onekey.bean.GetnewcreatTrsactionListBean;
-import org.haobtc.onekey.bean.GetsendFeenumBean;
+import org.haobtc.onekey.bean.MakeTxResponseBean;
+import org.haobtc.onekey.bean.CurrentAddressDetail;
+import org.haobtc.onekey.bean.TransactionInfoBean;
+import org.haobtc.onekey.bean.TemporaryTxInfo;
 import org.haobtc.onekey.bean.HardwareFeatures;
 import org.haobtc.onekey.event.FirstEvent;
 import org.haobtc.onekey.event.HandlerEvent;
@@ -58,7 +58,6 @@ import org.haobtc.onekey.utils.Daemon;
 import org.haobtc.onekey.utils.IndicatorSeekBar;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -113,7 +112,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
     private float intmaxFee;
     private String walletType;
     private String walletTypeToSign;
-    private ArrayList<GetnewcreatTrsactionListBean.OutputAddrBean> outputAddr;
+    private ArrayList<TransactionInfoBean.OutputAddrBean> outputAddr;
     private String payAddress;
     private boolean showSeek = true;
     private String onclickName;
@@ -190,8 +189,8 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
         if (walletAddressShowUi != null) {
             String strCode = walletAddressShowUi.toString();
             Gson gson = new Gson();
-            GetCodeAddressBean getCodeAddressBean = gson.fromJson(strCode, GetCodeAddressBean.class);
-            payAddress = getCodeAddressBean.getAddr();
+            CurrentAddressDetail currentAddressDetail = gson.fromJson(strCode, CurrentAddressDetail.class);
+            payAddress = currentAddressDetail.getAddr();
         }
     }
 
@@ -330,16 +329,16 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
                 if (mktx != null) {
                     String jsonObj = mktx.toString();
                     Gson gson = new Gson();
-                    GetAddressBean getAddressBean = gson.fromJson(jsonObj, GetAddressBean.class);
-                    String rowtx = getAddressBean.getTx();
+                    MakeTxResponseBean makeTxResponseBean = gson.fromJson(jsonObj, MakeTxResponseBean.class);
+                    String rowtx = makeTxResponseBean.getTx();
                     if (!TextUtils.isEmpty(rowtx)) {
                         if (walletTypeToSign.contains("1-")) {
                             try {
                                 PyObject txInfoFromRaw = Daemon.commands.callAttr("get_tx_info_from_raw", rowtx);
                                 gson = new Gson();
-                                GetnewcreatTrsactionListBean getnewcreatTrsactionListBean = gson.fromJson(txInfoFromRaw.toString(), GetnewcreatTrsactionListBean.class);
-                                outputAddr = getnewcreatTrsactionListBean.getOutputAddr();
-                                fee = getnewcreatTrsactionListBean.getFee();
+                                TransactionInfoBean transactionInfoBean = gson.fromJson(txInfoFromRaw.toString(), TransactionInfoBean.class);
+                                outputAddr = transactionInfoBean.getOutputAddr();
+                                fee = transactionInfoBean.getFee();
                             } catch (Exception e) {
                                 e.printStackTrace();
                                 return;
@@ -543,8 +542,8 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
             Log.i("get_fee_by_feerate", "getFeerate: " + getFeeByFeeRate);
             String strnewFee = getFeeByFeeRate.toString();
             Gson gson = new Gson();
-            GetsendFeenumBean getsendFeenumBean = gson.fromJson(strnewFee, GetsendFeenumBean.class);
-            BigInteger fee = getsendFeenumBean.getFee();
+            TemporaryTxInfo temporaryTxInfo = gson.fromJson(strnewFee, TemporaryTxInfo.class);
+            double fee = temporaryTxInfo.getFee();
             feeNum = String.valueOf(fee);
             tvFee.setText(String.format("%ssat", feeNum));
         }

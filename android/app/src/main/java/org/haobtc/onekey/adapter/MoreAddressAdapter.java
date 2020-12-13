@@ -9,20 +9,20 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 
 import org.haobtc.onekey.R;
-import org.haobtc.onekey.bean.GetnewcreatTrsactionListBean;
+import org.haobtc.onekey.bean.TransactionInfoBean;
 
 import java.util.List;
 
-public class MoreAddressAdapter extends BaseQuickAdapter<GetnewcreatTrsactionListBean.OutputAddrBean, BaseViewHolder> {
+public class MoreAddressAdapter extends BaseQuickAdapter<TransactionInfoBean.OutputAddrBean, BaseViewHolder> {
     private String plusNums;
 
-    public MoreAddressAdapter(@Nullable List<GetnewcreatTrsactionListBean.OutputAddrBean> data, String plusNum) {
+    public MoreAddressAdapter(@Nullable List<TransactionInfoBean.OutputAddrBean> data, String plusNum) {
         super(R.layout.moreaddress_item, data);
         plusNums = plusNum;
     }
 
     @Override
-    protected void convert(BaseViewHolder helper, GetnewcreatTrsactionListBean.OutputAddrBean item) {
+    protected void convert(BaseViewHolder helper, TransactionInfoBean.OutputAddrBean item) {
         helper.setText(R.id.tet_moreaddress, item.getAddr());
         String amount = item.getAmount();
         if (plusNums.contains("-")) {

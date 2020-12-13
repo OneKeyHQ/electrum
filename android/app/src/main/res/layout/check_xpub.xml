@@ -11,9 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/title1"
-        android:text="「扩展公钥」，也被称为XPUB。是比特币标准(BIP32)的一部分，不包含任何私钥。
-
-您可以将其导入其他观察钱包（Watch-Only），全面查看特定钱包中的所有交易、地址和余额，但无法花费其中的币。"
+        android:text="@string/xpub_promote"
         android:layout_marginTop="@dimen/dp_30"
         android:layout_marginHorizontal="@dimen/dp_20"
         android:textSize="@dimen/sp_14"/>
@@ -32,7 +30,7 @@
            android:layout_marginTop="@dimen/dp_10"
            android:textSize="@dimen/sp_14"
            android:textColor="#9FA6AD"
-           android:text="扩展公钥"/>
+           android:text="@string/xpub"/>
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

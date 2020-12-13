@@ -62,7 +62,7 @@
                     android:textSize="@dimen/sp_14" />
 
                 <ImageView
-                    android:id="@+id/sweepAddress"
+                    android:id="@+id/scan"
                     android:layout_width="@dimen/dp_30"
                     android:layout_height="@dimen/dp_30"
                     android:layout_alignParentEnd="true"
@@ -79,7 +79,7 @@
                 android:background="@drawable/gray_broken">
 
                 <EditText
-                    android:id="@+id/editInputAddress"
+                    android:id="@+id/edit_message"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@null"
@@ -89,10 +89,10 @@
                     android:textSize="@dimen/text_size" />
 
                 <TextView
-                    android:id="@+id/pasteAddress"
+                    android:id="@+id/paste_message"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/dp_30"
-                    android:layout_below="@+id/editInputAddress"
+                    android:layout_below="@id/edit_message"
                     android:layout_alignParentEnd="true"
                     android:layout_marginEnd="@dimen/dp_18"
                     android:layout_marginBottom="@dimen/dp_8"
@@ -122,7 +122,7 @@
                 android:background="@drawable/gray_broken">
 
                 <EditText
-                    android:id="@+id/editInputPublicKey"
+                    android:id="@+id/edit_address"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@null"
@@ -133,10 +133,10 @@
                     android:textSize="@dimen/sp_15" />
 
                 <TextView
-                    android:id="@+id/pastePublicKey"
+                    android:id="@+id/paste_address"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/dp_30"
-                    android:layout_below="@+id/editInputPublicKey"
+                    android:layout_below="@id/edit_address"
                     android:layout_alignParentEnd="true"
                     android:layout_marginEnd="@dimen/dp_18"
                     android:layout_marginBottom="@dimen/dp_8"
@@ -166,7 +166,7 @@
                 android:background="@drawable/gray_broken">
 
                 <EditText
-                    android:id="@+id/editInputSignedMsg"
+                    android:id="@+id/edit_signature"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@null"
@@ -177,10 +177,10 @@
                     android:textSize="@dimen/sp_15" />
 
                 <TextView
-                    android:id="@+id/pasteSignedMsg"
+                    android:id="@+id/paste_signature"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/dp_30"
-                    android:layout_below="@+id/editInputSignedMsg"
+                    android:layout_below="@id/edit_signature"
                     android:layout_alignParentEnd="true"
                     android:layout_marginEnd="@dimen/dp_18"
                     android:layout_marginBottom="@dimen/dp_8"

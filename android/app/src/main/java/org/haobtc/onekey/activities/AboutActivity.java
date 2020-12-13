@@ -162,7 +162,7 @@ public class AboutActivity extends BaseActivity implements OnDownloadListener {
     private void attemptUpdate(String uri,  int versionCode, String versionName, String size, String description) {
         int versionCodeLocal  = ApkUtil.getVersionCode(this);
         if (versionCodeLocal >= versionCode) {
-            mToast("当前是最新版本");
+            mToast(getString(R.string.newest_app));
             return;
         }
 

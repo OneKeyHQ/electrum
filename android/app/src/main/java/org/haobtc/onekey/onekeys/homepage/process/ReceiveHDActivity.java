@@ -29,7 +29,7 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.asynctask.BusinessAsyncTask;
-import org.haobtc.onekey.bean.GetCodeAddressBean;
+import org.haobtc.onekey.bean.CurrentAddressDetail;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.PyConstant;
 import org.haobtc.onekey.event.ButtonRequestEvent;
@@ -135,9 +135,9 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
             String strCode = walletAddressShowUi.toString();
             Log.i("strCode", "mGeneratecode: " + strCode);
             Gson gson = new Gson();
-            GetCodeAddressBean getCodeAddressBean = gson.fromJson(strCode, GetCodeAddressBean.class);
-            String qrData = getCodeAddressBean.getQrData();
-            address = getCodeAddressBean.getAddr();
+            CurrentAddressDetail currentAddressDetail = gson.fromJson(strCode, CurrentAddressDetail.class);
+            String qrData = currentAddressDetail.getQrData();
+            address = currentAddressDetail.getAddr();
             textReceiveAddress.setText(address);
             textWalletAddress.setText(address);
             bitmap = CodeCreator.createQRCode(qrData, 250, 250, null);
@@ -150,7 +150,7 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
                     imgOrcode.setImageBitmap(bitmap);
                     imgShareQrcode.setImageBitmap(bitmap);
                     break;
-                case Constant.WALLET_TYPE_HARDWARE_:
+                case Constant.WALLET_TYPE_HARDWARE_PERSONAL:
                     textReceiveAddress.setEms(6);
                     imgOrcode.setImageResource(R.drawable.qrcode_shade);
                     break;

@@ -6,7 +6,6 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -30,7 +29,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.activities.sign.SignActivity;
-import org.haobtc.onekey.bean.GetCodeAddressBean;
+import org.haobtc.onekey.bean.CurrentAddressDetail;
 import org.haobtc.onekey.event.FixWalletNameEvent;
 import org.haobtc.onekey.event.SecondEvent;
 import org.haobtc.onekey.manager.PreferencesManager;
@@ -48,6 +47,8 @@ import butterknife.OnClick;
 
 import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME;
 import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
+import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE;
+import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE_SHORT;
 
 public class HdWalletDetailActivity extends BaseActivity {
 
@@ -138,8 +139,8 @@ public class HdWalletDetailActivity extends BaseActivity {
         if (walletAddressShowUi != null) {
             String strCode = walletAddressShowUi.toString();
             Gson gson = new Gson();
-            GetCodeAddressBean getCodeAddressBean = gson.fromJson(strCode, GetCodeAddressBean.class);
-            String addr = getCodeAddressBean.getAddr();
+            CurrentAddressDetail currentAddressDetail = gson.fromJson(strCode, CurrentAddressDetail.class);
+            String addr = currentAddressDetail.getAddr();
             String front6 = addr.substring(0, 6);
             String after6 = addr.substring(addr.length() - 6);
             textAddr.setText(addr);
@@ -196,7 +197,7 @@ public class HdWalletDetailActivity extends BaseActivity {
         View view = View.inflate(context, resource, null);
         Dialog dialogBtoms = new Dialog(context, R.style.dialog);
         view.findViewById(R.id.btn_i_know).setOnClickListener(v -> {
-            if ("short".equals(preferences.getString("shortOrLongPass", "short"))) {
+            if (SOFT_HD_PASS_TYPE_SHORT.equals(preferences.getString(SOFT_HD_PASS_TYPE, SOFT_HD_PASS_TYPE_SHORT))) {
                 Intent intent1 = new Intent(this, SetHDWalletPassActivity.class);
                 intent1.putExtra("importHdword", export);
                 startActivity(intent1);

@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
 
@@ -41,7 +42,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
         if (requireSecure()) {
             requestSecure();
         }
-        immersionBar();
+        diyWindow();
         init();
         if (needEvents()) {
             EventBus.getDefault().register(this);
@@ -95,10 +96,14 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
     /**
      * Set transparent immersion bar : white backgrand black text
      */
-    public void immersionBar() {
+    public void diyWindow() {
         //other one write
-        getWindow().setStatusBarColor(Color.TRANSPARENT);
-        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+        Window window = getWindow();
+        if (keepScreenOn()) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
+        window.setStatusBarColor(Color.TRANSPARENT);
+        window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_LAYOUT_STABLE| View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
     }
 
@@ -138,6 +143,12 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
      * 是否注册eventBus的钩子函数
      */
     public boolean needEvents() {
+        return false;
+    }
+    /**
+     * 是否保持屏幕常亮的钩子
+     * */
+    public boolean keepScreenOn() {
         return false;
     }
 }

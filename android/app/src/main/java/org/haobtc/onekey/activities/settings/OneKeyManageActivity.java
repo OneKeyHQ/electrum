@@ -2,8 +2,6 @@ package org.haobtc.onekey.activities.settings;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.icu.math.BigDecimal;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -25,17 +23,18 @@ import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.event.FixBixinkeyNameEvent;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class BixinKEYManageActivity extends BaseActivity {
+/**
+ * @author liyan
+ */
+public class OneKeyManageActivity extends BaseActivity {
 
     @BindView(R.id.img_back)
     ImageView imgBack;
@@ -63,10 +62,10 @@ public class BixinKEYManageActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        getKeylist();
+        getKeyList();
     }
 
-    private void getKeylist() {
+    private void getKeyList() {
         deviceValue = new ArrayList<>();
         Map<String, ?> devicesAll = PreferencesManager.getAll(this, Constant.DEVICES);;
         //key
@@ -82,32 +81,20 @@ public class BixinKEYManageActivity extends BaseActivity {
                 @SingleClick
                 @Override
                 public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
-                    switch (view.getId()) {
-                        case R.id.relativeLayout_bixinkey:
-                            String firmwareVersion = deviceValue.get(position).getMajorVersion() + "." + deviceValue.get(position).getMinorVersion() + "." + deviceValue.get(position).getPatchVersion();
-                            String nrfVersion = deviceValue.get(position).getBleVer();
-                            String label = Strings.isNullOrEmpty(deviceValue.get(position).getLabel()) ?
-                                    deviceValue.get(position).getBleName(): deviceValue.get(position).getLabel();
-                            Intent intent = new Intent(BixinKEYManageActivity.this, HardwareDetailsActivity.class);
-                            intent.putExtra(Constant.TAG_LABEL, label);
-                            intent.putExtra(Constant.TAG_BLE_NAME, deviceValue.get(position).getBleName());
-                            intent.putExtra(Constant.TAG_FIRMWARE_VERSION, firmwareVersion);
-                            intent.putExtra(Constant.TAG_NRF_VERSION, nrfVersion);
-                            intent.putExtra(Constant.DEVICE_ID, deviceValue.get(position).getDeviceId());
-//                            intent.putExtra(Constant.AUTO_SHUT_DOWN_TIME, deviceValue.get(position).getAutoLock().divide(new BigInteger(String.valueOf(1000))).toString());
-                            intent.putExtra(Constant.TAG_HARDWARE_VERIFY, deviceValue.get(position).isVerify());
-                            intent.putExtra(Constant.TAG_IS_BACKUP_ONLY, deviceValue.get(position).isBackupOnly());
-                            startActivity(intent);
-                            break;
-                        case R.id.linear_delete:
-//                            String deviceId = deviceValue.get(position).getDeviceId();
-//                            edit.remove(deviceId).apply();
-//                            deviceValue.remove(position);
-//                            bixinkeyManagerAdapter.notifyItemChanged(position);
-//                            bixinkeyManagerAdapter.notifyDataSetChanged();
-//                            mToast(getString(R.string.delete_succse));
-                            break;
-                        default:
+                    if (view.getId() == R.id.relativeLayout_bixinkey) {
+                        String firmwareVersion = deviceValue.get(position).getMajorVersion() + "." + deviceValue.get(position).getMinorVersion() + "." + deviceValue.get(position).getPatchVersion();
+                        String nrfVersion = deviceValue.get(position).getBleVer();
+                        String label = Strings.isNullOrEmpty(deviceValue.get(position).getLabel()) ?
+                                deviceValue.get(position).getBleName() : deviceValue.get(position).getLabel();
+                        Intent intent = new Intent(OneKeyManageActivity.this, HardwareDetailsActivity.class);
+                        intent.putExtra(Constant.TAG_LABEL, label);
+                        intent.putExtra(Constant.TAG_BLE_NAME, deviceValue.get(position).getBleName());
+                        intent.putExtra(Constant.TAG_FIRMWARE_VERSION, firmwareVersion);
+                        intent.putExtra(Constant.TAG_NRF_VERSION, nrfVersion);
+                        intent.putExtra(Constant.DEVICE_ID, deviceValue.get(position).getDeviceId());
+                        intent.putExtra(Constant.TAG_HARDWARE_VERIFY, deviceValue.get(position).isVerify());
+                        intent.putExtra(Constant.TAG_IS_BACKUP_ONLY, deviceValue.get(position).isBackupOnly());
+                        startActivity(intent);
                     }
                 }
             });
@@ -124,7 +111,7 @@ public class BixinKEYManageActivity extends BaseActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void showReading(FixBixinkeyNameEvent event) {
-        getKeylist();
+        getKeyList();
     }
 
     @Override

@@ -55,10 +55,10 @@ import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.activities.service.CommunicationModeSelector;
 import org.haobtc.onekey.adapter.ChoosePayAddressAdapter;
 import org.haobtc.onekey.bean.AddressEvent;
-import org.haobtc.onekey.bean.GetAddressBean;
-import org.haobtc.onekey.bean.GetCodeAddressBean;
-import org.haobtc.onekey.bean.GetnewcreatTrsactionListBean;
-import org.haobtc.onekey.bean.GetsendFeenumBean;
+import org.haobtc.onekey.bean.MakeTxResponseBean;
+import org.haobtc.onekey.bean.CurrentAddressDetail;
+import org.haobtc.onekey.bean.TransactionInfoBean;
+import org.haobtc.onekey.bean.TemporaryTxInfo;
 import org.haobtc.onekey.bean.HardwareFeatures;
 import org.haobtc.onekey.bean.MainNewWalletBean;
 import org.haobtc.onekey.bean.MainSweepcodeBean;
@@ -71,7 +71,6 @@ import org.haobtc.onekey.utils.IndicatorSeekBar;
 import org.json.JSONException;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -83,6 +82,8 @@ import java.util.Set;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.com.heaton.blelibrary.ble.Ble;
+
+import static org.haobtc.onekey.constant.Constant.WALLET_BALANCE;
 
 public class SendOne2OneMainPageActivity extends BaseActivity implements View.OnClickListener, TextWatcher {
     public static final String TAG = SendOne2OneMainPageActivity.class.getSimpleName();
@@ -143,7 +144,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     private String hideRefresh = "";
     private String wallet_type_to_sign;
     private String payAddress;
-    private ArrayList<GetnewcreatTrsactionListBean.OutputAddrBean> outputAddr;
+    private ArrayList<TransactionInfoBean.OutputAddrBean> outputAddr;
     private boolean showSeek = true;
     private String onlickName;
     private boolean flag = true;
@@ -626,7 +627,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             case R.id.lin_choose_utxo:
                 if (!TextUtils.isEmpty(tetamount.getText().toString())) {
                     Intent intent1 = new Intent(SendOne2OneMainPageActivity.this, ChooseUtxoActivity.class);
-                    intent1.putExtra("sendNum", tetamount.getText().toString());
+                    intent1.putExtra(WALLET_BALANCE, tetamount.getText().toString());
                     intent1.putStringArrayListExtra("utxoPositionData",utxoPosData);
                     intent1.putExtra("sumUtxoTotal",sumUtxo);
                     startActivityForResult(intent1, 1);
@@ -665,16 +666,16 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         if (mktx != null) {
             String jsonObj = mktx.toString();
             Gson gson = new Gson();
-            GetAddressBean getAddressBean = gson.fromJson(jsonObj, GetAddressBean.class);
-            String rowtx = getAddressBean.getTx();
+            MakeTxResponseBean makeTxResponseBean = gson.fromJson(jsonObj, MakeTxResponseBean.class);
+            String rowtx = makeTxResponseBean.getTx();
             if (!TextUtils.isEmpty(rowtx)) {
                 if (wallet_type_to_sign.contains("1-") && TextUtils.isEmpty(hideRefresh)) {
                     try {
                         PyObject txInfoFromRaw = Daemon.commands.callAttr("get_tx_info_from_raw", rowtx);
                         gson = new Gson();
-                        GetnewcreatTrsactionListBean getnewcreatTrsactionListBean = gson.fromJson(txInfoFromRaw.toString(), GetnewcreatTrsactionListBean.class);
-                        outputAddr = getnewcreatTrsactionListBean.getOutputAddr();
-                        fee = getnewcreatTrsactionListBean.getFee();
+                        TransactionInfoBean transactionInfoBean = gson.fromJson(txInfoFromRaw.toString(), TransactionInfoBean.class);
+                        outputAddr = transactionInfoBean.getOutputAddr();
+                        fee = transactionInfoBean.getFee();
                     } catch (Exception e) {
                         e.printStackTrace();
                         return;
@@ -738,8 +739,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         if (walletAddressShowUi != null) {
             String strCode = walletAddressShowUi.toString();
             Gson gson = new Gson();
-            GetCodeAddressBean getCodeAddressBean = gson.fromJson(strCode, GetCodeAddressBean.class);
-            payAddress = getCodeAddressBean.getAddr();
+            CurrentAddressDetail currentAddressDetail = gson.fromJson(strCode, CurrentAddressDetail.class);
+            payAddress = currentAddressDetail.getAddr();
         }
     }
 
@@ -920,8 +921,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             if (getFeeByFeeRate != null) {
                 String strnewFee = getFeeByFeeRate.toString();
                 Gson gson = new Gson();
-                GetsendFeenumBean getsendFeenumBean = gson.fromJson(strnewFee, GetsendFeenumBean.class);
-                BigInteger fee = getsendFeenumBean.getFee();
+                TemporaryTxInfo temporaryTxInfo = gson.fromJson(strnewFee, TemporaryTxInfo.class);
+                double fee = temporaryTxInfo.getFee();
                 feeNum = String.valueOf(fee);
                 tetMoneye.setText(String.format("%s sat", feeNum));
 

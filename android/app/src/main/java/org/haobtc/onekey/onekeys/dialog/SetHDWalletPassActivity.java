@@ -53,6 +53,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE;
+import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE_SHORT;
+
 public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher {
 
     @BindView(R.id.test_set_pass)
@@ -167,7 +170,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
                 finish();
                 break;
             case R.id.lin_short_pass:
-                if ("short".equals(preferences.getString("shortOrLongPass", "short"))) {
+                if (SOFT_HD_PASS_TYPE_SHORT.equals(preferences.getString(SOFT_HD_PASS_TYPE, SOFT_HD_PASS_TYPE_SHORT))) {
                     pwdEdittext.clearText();
                     Intent intent1 = new Intent(SetHDWalletPassActivity.this, SetLongPassActivity.class);
                     intent1.putExtra("importHdword", importHdword);
@@ -196,7 +199,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
                         textLong.setText(getString(R.string.test_long_tip));
                         input = true;
                     } else {
-                        edit.putString("shortOrLongPass", "short");
+                        edit.putString(SOFT_HD_PASS_TYPE, SOFT_HD_PASS_TYPE_SHORT);
                         edit.apply();
                         if (!sixPass.equals(pwdEdittext.getText().toString())) {
                             mToast(getString(R.string.two_different_pass));
@@ -212,7 +215,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
         }
     }
 
-    //如果没有钱包创建需要设置密码，否则验证密码即可
+    // 如果没有钱包创建需要设置密码，否则验证密码即可
     private void walletStatus() {
         if ("exportHdword".equals(importHdword) || "backupMnemonic".equals(importHdword)) {
             //export Mnemonic words
@@ -244,6 +247,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
             deleteSingleWallet();
         } else if ("send".equals(importHdword)) {
             EventBus.getDefault().post(new InputPassSendEvent(pwdEdittext.getText().toString()));
+            finish();
         } else {
             createNewHdWallet();
         }

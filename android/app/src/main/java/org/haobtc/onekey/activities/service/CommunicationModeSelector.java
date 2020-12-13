@@ -81,7 +81,7 @@ import org.haobtc.onekey.activities.settings.recovery_set.ResetDeviceActivity;
 import org.haobtc.onekey.activities.sign.SignActivity;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.asynctask.BusinessAsyncTask;
-import org.haobtc.onekey.bean.GetnewcreatTrsactionListBean;
+import org.haobtc.onekey.bean.TransactionInfoBean;
 import org.haobtc.onekey.bean.HardwareFeatures;
 import org.haobtc.onekey.event.BackupEvent;
 import org.haobtc.onekey.event.BackupFinishEvent;
@@ -109,7 +109,6 @@ import org.haobtc.onekey.event.ResultEvent;
 import org.haobtc.onekey.event.SecondEvent;
 import org.haobtc.onekey.event.SendSignBroadcastEvent;
 import org.haobtc.onekey.event.SendXpubToSigwallet;
-import org.haobtc.onekey.event.SetBluetoothEvent;
 import org.haobtc.onekey.event.SetKeyLanguageEvent;
 import org.haobtc.onekey.event.ShutdownTimeEvent;
 import org.haobtc.onekey.event.SignMessageEvent;
@@ -992,9 +991,9 @@ public class CommunicationModeSelector extends BaseActivity implements View.OnCl
         if (!TextUtils.isEmpty(signedTx)) {
             try {
                 Gson gson = new Gson();
-                GetnewcreatTrsactionListBean getnewcreatTrsactionListBean = gson.fromJson(signedTx, GetnewcreatTrsactionListBean.class);
-                String tx = getnewcreatTrsactionListBean.getTx();
-                txHash = getnewcreatTrsactionListBean.getTxid();
+                TransactionInfoBean transactionInfoBean = gson.fromJson(signedTx, TransactionInfoBean.class);
+                String tx = transactionInfoBean.getTx();
+                txHash = transactionInfoBean.getTxid();
                 Daemon.commands.callAttr("broadcast_tx", tx);
             } catch (Exception e) {
                 e.printStackTrace();

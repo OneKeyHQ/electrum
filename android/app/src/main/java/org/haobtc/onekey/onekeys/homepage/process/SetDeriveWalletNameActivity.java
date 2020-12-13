@@ -19,6 +19,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
+import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE;
+import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE_SHORT;
 
 public class SetDeriveWalletNameActivity extends BaseActivity implements TextWatcher {
 
@@ -63,7 +65,7 @@ public class SetDeriveWalletNameActivity extends BaseActivity implements TextWat
                     mToast(getString(R.string.please_input_walletname));
                     return;
                 }
-                if ("short".equals(preferences.getString("shortOrLongPass", "short"))) {
+                if (SOFT_HD_PASS_TYPE_SHORT.equals(preferences.getString(SOFT_HD_PASS_TYPE, SOFT_HD_PASS_TYPE_SHORT))) {
                     intent = new Intent(this, SetHDWalletPassActivity.class);
                 } else {
                     intent = new Intent(this, SetLongPassActivity.class);

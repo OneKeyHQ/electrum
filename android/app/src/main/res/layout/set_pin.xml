@@ -16,7 +16,7 @@
         android:paddingTop="@dimen/dp_20"
         android:paddingRight="@dimen/dp_30"
         android:paddingBottom="@dimen/dp_20"
-        android:text="设置PIN码"
+        android:text="@string/set_pin"
         android:textColor="#142A3B"
         android:textSize="30sp" />
 
@@ -34,7 +34,7 @@
         android:layout_width="300dp"
         android:layout_height="50dp"
         android:background="@drawable/btn_enable_selector"
-        android:text="下一步"
+        android:text="@string/next"
         android:textAllCaps="false"
         android:layout_marginTop="@dimen/dp_228"
         android:textColor="@android:color/white"

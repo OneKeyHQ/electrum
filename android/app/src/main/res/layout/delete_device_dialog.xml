@@ -67,7 +67,7 @@
                 android:layout_marginStart="@dimen/dp_15"
                 android:layout_weight="1"
                 android:background="@drawable/btn_enable_selector_red"
-                android:text="删除设备"
+                android:text="@string/delete_device"
                 android:textAllCaps="false"
                 android:textColor="@color/button_bk_ddake"
                 android:textSize="@dimen/sp_16" />

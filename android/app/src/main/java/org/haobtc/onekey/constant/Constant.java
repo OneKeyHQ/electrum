@@ -5,6 +5,8 @@ package org.haobtc.onekey.constant;
  * @author liyan
  */
 public final class Constant {
+
+    //=======================sp constant===============
     /**
      * 是否是第一次启动
      * */
@@ -48,6 +50,50 @@ public final class Constant {
     public static final String WALLETS = "wallets";
 
     /**
+     * 设备验证
+     * */
+    public static final String TAG_HARDWARE_VERIFY = "is_verify";
+
+    /**
+     * 配对过的蓝牙信息
+     * */
+    public static final String BLE_INFO = "ble_info";
+
+    /**
+     * 版本更新信息key
+     * */
+    public static final String UPGRADE_INFO = "upgrade_info";
+
+    /**
+     * 当前选择钱包名称
+     * */
+    public static final String CURRENT_SELECTED_WALLET_NAME = "current_selected_wallet_name";
+    /**
+     * 当前选择钱包类型
+     * */
+    public static final String CURRENT_SELECTED_WALLET_TYPE = "current_selected_wallet_type";
+    /**
+     * appHD钱包使用的密码类型
+     * */
+    public static final String SOFT_HD_PASS_TYPE = "shortOrLongPass";
+    /**
+     * 是否需要弹出备份提醒
+     * */
+    public static final String NEED_POP_BACKUP_DIALOG = "pop_backup_dialog";
+    /**
+     * 长密码
+     * */
+    public static final String SOFT_HD_PASS_TYPE_LONG = "long";
+    /**
+     * 短密码
+     * */
+    public static final String SOFT_HD_PASS_TYPE_SHORT = "short";
+
+
+    // ======================= Intent Tag ===================
+
+
+    /**
      * 硬件label
      * */
     public static final String  TAG_LABEL = "label";
@@ -84,10 +130,7 @@ public final class Constant {
      * 当前蓝牙固件版本
      * */
     public static final String TAG_NRF_VERSION = "nrf_version";
-    /**
-     * 设备验证
-     * */
-    public static final String TAG_HARDWARE_VERIFY = "is_verify";
+
     /**
      * 最新蓝牙固件版本
      * */
@@ -110,14 +153,23 @@ public final class Constant {
      * 新Pin
      * */
     public static final String PIN_NEW = "pin_new";
+
     /**
-     * 配对过的蓝牙信息
+     * 蓝牙名称匹规则(?i 忽略大小写)
      * */
-    public static final String BLE_INFO = "ble_info";
+    public static final String PATTERN = "(^(?i)BixinKey\\d{10}$)|(^K\\d{4}$)";
     /**
-     * 蓝牙名称匹规则
+     * 交易体积
      * */
-    public static final String PATTERN = "(^(?i)BixinKey\\d{10})|(^K\\d{4})";
+    public static final String TAG_TX_SIZE = "tx_size";
+    /**
+     * 自定义费率的最小值
+     * */
+    public static final String CUSTOMIZE_FEE_RATE_MIN = "min_fee_rate";
+    /**
+     * 自定义费率的最大值
+     * */
+    public static final String CUSTOMIZE_FEE_RATE_MAX = "max_fee_rate";
     /**
      * 助记词
      * */
@@ -161,6 +213,29 @@ public final class Constant {
     public static final String WALLET_TYPE = "wallet_type";
 
     public static final String TAG_HARDWARE_TYPE_PROMOTE_ID = "update_promote_id";
+
+    public static final String DEVICE_NOT_BOND = "DFU DEVICE NOT BONDED";
+    /**
+     * 交易发送方
+     * */
+    public static final String TRANSACTION_SENDER = "tx_sender";
+    /**
+     * 交易接收方
+     * */
+    public static final String TRANSACTION_RECEIVER = "tx_receiver";
+    /**
+     * 交易手续费
+     * */
+    public static final String TRANSACTION_FEE = "tx_fee";
+    /**
+     *
+     * 交易额
+     */
+    public static final String TRANSACTION_AMOUNT = "tx_amount";
+
+    public static final String RAW_MESSAGE = "raw_message";
+    public static final String SIGNATURE = "message_signature";
+    public static final String FORCE_UPDATE = "force_update";
 
     public static class SearchDeviceMode{
         /**
@@ -224,26 +299,20 @@ public final class Constant {
 
     public static final String COIN_TYPE_EOS = "EOS";
     public static final String EXTEND_PUBLIC_KEY = "xpub";
-    /**
-     * 版本更新信息key
-     * */
-    public static final String UPGRADE_INFO = "upgrade_info";
-    /**
-     * 当前选择钱包名称
-     * */
-    public static final String CURRENT_SELECTED_WALLET_NAME = "current_selected_wallet_name";
-    /**
-     * 当前选择钱包类型
-     * */
-    public static final String CURRENT_SELECTED_WALLET_TYPE = "current_selected_wallet_type";
+
     /**
      * 由软件创建
      * */
     public static final int WALLET_TYPE_SOFTWARE = 0;
     /**
-     * 由OneKey创建
+     * 由OneKey创建单签
      * */
-    public static final int WALLET_TYPE_HARDWARE_ = 1;
+    public static final int WALLET_TYPE_HARDWARE_PERSONAL = 1;
+    /**
+     * 由OneKey创建多签
+     * */
+    public static final int WALLET_TYPE_HARDWARE_MULTI = 2;
+
     /**
      * 主网
      * */
@@ -262,5 +331,27 @@ public final class Constant {
      * */
     public static final String ONE_KEY_WEBSITE = "https://key.bixin.com/";
 
-    public static final String NEED_POP_BACKUP_DIALOG = "pop_backup_dialog";
+    /**
+     * 钱包可见名字
+     * */
+    public static final String WALLET_LABEL = "wallet_label";
+    /**
+     * 钱包余额
+     * */
+    public static final String WALLET_BALANCE = "balance";
+
+    /**
+     * 比特币计量单位BTC
+     * */
+    public static final String BTC_UNIT_BTC = "BTC";
+    /**
+     * 比特币计量单位1 BTC = 1000 mBTC
+     * */
+    public static final String BTC_UNIT_M_BTC = "mBTC";
+    /**
+     * 比特币计量单位 1 BTC = 10^6 bits
+     * */
+    public static final String BTC_UNIT_M_BITS = "bits";
+
+    public static final String VERIFY_DETAIL = "verify_detail";
 }

@@ -31,6 +31,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE;
+import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE_SHORT;
+
 public class WalletManageActivity extends BaseActivity {
 
     @BindView(R.id.text_safe)
@@ -66,7 +69,7 @@ public class WalletManageActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.rel_export_word:
-                if ("short".equals(preferences.getString("shortOrLongPass", "short"))) {
+                if (SOFT_HD_PASS_TYPE_SHORT.equals(preferences.getString(SOFT_HD_PASS_TYPE, SOFT_HD_PASS_TYPE_SHORT))) {
                     intent1 = new Intent(this, SetHDWalletPassActivity.class);
                 } else {
                     intent1 = new Intent(this, SetLongPassActivity.class);

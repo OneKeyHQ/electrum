@@ -261,8 +261,7 @@
                         android:layout_marginStart="@dimen/dp_20"
                         android:layout_marginTop="@dimen/dp_20"
                         android:textColor="@color/text_three"
-                        android:textSize="@dimen/big_text_size"
-                        tools:text="小米的钱包" />
+                        android:textSize="@dimen/big_text_size"/>
 
                     <TextView
                         android:id="@+id/tet_many_key"
@@ -273,7 +272,7 @@
                         android:layout_marginTop="@dimen/corner_radius"
                         android:textColor="@color/text_six"
                         android:textSize="@dimen/sp_12"
-                        tools:text="每次动用该钱包内的资金，都需要3人中的至少2人授权才能完成。" />
+                        tools:text="@string/multisig_use_promote" />
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/recl_publicPerson"

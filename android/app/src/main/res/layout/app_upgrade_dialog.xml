@@ -25,7 +25,7 @@
                 android:id="@+id/promote"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="版本更新"
+                android:text="@string/version_updates"
                 android:textSize="@dimen/sp_18"
                 android:textColor="#142A3B"
                 android:textStyle="bold"

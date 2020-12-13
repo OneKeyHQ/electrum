@@ -14,6 +14,7 @@ from trezorlib.exceptions import TrezorFailure, Cancelled, OutdatedFirmwareError
 from trezorlib.messages import WordRequestType, FailureType, RecoveryDeviceType, ButtonRequestType
 import trezorlib.btc
 import trezorlib.device
+from trezorlib.customer_ui import CustomerUI
 
 MESSAGES = {
     ButtonRequestType.ConfirmOutput:
@@ -304,12 +305,21 @@ class TrezorClientBase(HardwareClientBase, Logger):
     def get_pin(self, code=None):
         show_strength = True
         if code == 2:
-            msg = _("Enter a new PIN for your {}:")
+            if isinstance(self.handler, CustomerUI):
+                msg = "2"
+            else:
+                msg = _("Enter a new PIN for your {}:")
         elif code == 3:
-            msg = (_("Re-enter the new PIN for your {}.\n\n"
+            if isinstance(self.handler, CustomerUI):
+                msg = "3"
+            else:
+                msg = (_("Re-enter the new PIN for your {}.\n\n"
                      "NOTE: the positions of the numbers have changed!"))
         else:
-            msg = _("Enter your current {} PIN:")
+            if isinstance(self.handler, CustomerUI):
+                msg = "1"
+            else:
+                msg = _("Enter your current {} PIN:")
             show_strength = False
         pin = self.handler.get_pin(msg.format(self.device), show_strength=show_strength)
         if not pin:
@@ -321,12 +331,18 @@ class TrezorClientBase(HardwareClientBase, Logger):
 
     def get_passphrase(self, available_on_device):
         if self.creating_wallet:
-            msg = _("Enter a passphrase to generate this wallet.  Each time "
+            if isinstance(self.handler, CustomerUI):
+                msg = "6"
+            else:
+                msg = _("Enter a passphrase to generate this wallet.  Each time "
                     "you use this wallet your {} will prompt you for the "
                     "passphrase.  If you forget the passphrase you cannot "
                     "access the bitcoins in the wallet.").format(self.device)
         else:
-            msg = _("Enter the passphrase to unlock this wallet:")
+            if isinstance(self.handler, CustomerUI):
+                msg = "3"
+            else:
+                msg = _("Enter the passphrase to unlock this wallet:")
 
         self.handler.passphrase_on_device = available_on_device
         passphrase = self.handler.get_passphrase(msg, self.creating_wallet)

@@ -63,14 +63,14 @@ public class FindBackupOnlyDeviceActivity extends BaseActivity implements Busine
         finish();
     }
 
-    private void readXpubFromHardWare() {
+    private void readMnemonicFromHardWare() {
         new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.READ_MNEMONIC_FROM_HARDWARE,
                 MyApplication.getInstance().getDeviceWay());
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onRecoveryLocalHd(RecoveryLocalHDEvent event) {
        updateTitle(R.string.recovery_wallet);
-       readXpubFromHardWare();
+        readMnemonicFromHardWare();
        startFragment(fromHdFragment);
     }
     @Subscribe

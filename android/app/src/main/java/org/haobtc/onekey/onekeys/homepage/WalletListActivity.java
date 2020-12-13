@@ -49,6 +49,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
+import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE;
+import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE_SHORT;
 
 /**
  * @author jinxiaomin
@@ -129,6 +131,7 @@ public class WalletListActivity extends BaseActivity {
                 Intent intent = new Intent(this, SearchDevicesActivity.class);
                 intent.putExtra(Constant.SEARCH_DEVICE_MODE, Constant.SearchDeviceMode.MODE_PAIR_WALLET_TO_COLD);
                 startActivity(intent);
+                finish();
                 break;
             case R.id.lin_add_wallet:
                 createWalletChooseDialog(WalletListActivity.this, R.layout.add_wallet);
@@ -249,7 +252,7 @@ public class WalletListActivity extends BaseActivity {
                 whatIsHd(WalletListActivity.this, R.layout.what_is_hd);
                 break;
             case R.id.recl_add_hd_wallet:
-                if ("short".equals(preferences.getString("shortOrLongPass", "short"))) {
+                if (SOFT_HD_PASS_TYPE_SHORT.equals(preferences.getString(SOFT_HD_PASS_TYPE, SOFT_HD_PASS_TYPE_SHORT))) {
                     Intent intent0 = new Intent(this, SetHDWalletPassActivity.class);
                     startActivity(intent0);
                 } else {
@@ -451,12 +454,5 @@ public class WalletListActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // TODO: add setContentView(...) invocation
-        ButterKnife.bind(this);
     }
 }

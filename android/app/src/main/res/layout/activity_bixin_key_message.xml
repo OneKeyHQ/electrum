@@ -8,7 +8,7 @@
     android:clipToPadding="true"
     android:fitsSystemWindows="true"
     android:orientation="vertical"
-    tools:context=".activities.settings.BixinKeyMessageActivity">
+    tools:context=".activities.settings.OneKeyMessageActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"

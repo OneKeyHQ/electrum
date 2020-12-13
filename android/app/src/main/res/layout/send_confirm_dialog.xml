@@ -50,6 +50,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/text_tx_amount"
+            android:layout_centerHorizontal="true"
             android:layout_marginTop="@dimen/dp_22"
             android:orientation="vertical">
 
@@ -61,6 +62,7 @@
                     android:id="@+id/textView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/dp_10"
                     android:text="@string/sender"
                     android:textColor="@color/text_six"
                     android:textSize="@dimen/sp_14" />
@@ -112,6 +114,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/receiver"
+                    android:layout_marginStart="@dimen/dp_10"
                     android:textColor="@color/text_six"
                     android:textSize="@dimen/sp_14" />
 
@@ -146,6 +149,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/transaction_fee"
+                    android:layout_marginStart="@dimen/dp_10"
                     android:textColor="@color/text_six"
                     android:textSize="@dimen/sp_14" />
 
@@ -168,8 +172,10 @@
                 android:layout_height="@dimen/dp_60"
                 android:layout_marginTop="@dimen/dp_50"
                 android:layout_marginBottom="@dimen/dp_36"
+                android:layout_marginHorizontal="@dimen/dp_10"
                 android:background="@drawable/btn_enable_selector"
                 android:text="@string/confirm_pay"
+                android:enabled="false"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"
                 android:textSize="@dimen/sp_20" />

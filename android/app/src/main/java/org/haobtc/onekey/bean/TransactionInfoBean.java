@@ -1,12 +1,16 @@
 package org.haobtc.onekey.bean;
 
+import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GetnewcreatTrsactionListBean implements Serializable{
+/**
+ * @author liyan
+ */
+public class TransactionInfoBean implements Serializable{
 
     /**
      * txid : 54437025414b07c746596656f37d411be705d93a2faa467d2edf489eec3d6731
@@ -22,7 +26,9 @@ public class GetnewcreatTrsactionListBean implements Serializable{
      * cosigner : ["vpub5ZnTu9psVLf4zPYfWQT9GGfmuNZEYNNGc4gRLUNYGU6STjtfzR89Dcck6De3y6yr2VPHTqezHZ4av8oHEQmiGksdodbHzv64q6zToR8Gvfq"]
      * tx : cHNidP8BAHECAAAAAVSrjEy1PY/rUd0HloZxnl0IhwgazJdpO+tOOdf8zqv6AAAAAAD9////AqCGAQAAAAAAFgAUXDfKizuuCJ1BwxEyfsK4N+iZftcQiREAAAAAABYAFFw3yos7rgidQcMRMn7CuDfomX7XAAAAAAABAP1yAQIAAAAAAQL3prCALdewsZNDVVoddwYqWt1j0ZiKaxgDcP0e8mfmiwEAAAAA/v///ywdfMjf3m/1HjxKUH/4/v/rXMi+5Jxe3Ac+SGZaQqz4AAAAAAD+////AiDWEwAAAAAAFgAUXDfKizuuCJ1BwxEyfsK4N+iZfteo5w8AAAAAABYAFLBc+/JfJHNu+0KGFlOhySxp8NXdAkcwRAIgNXgfEotUae+Cl+z8FDQ6IKI96ZUxSKxSP9HkETg7l+ICIDt+EZc7L8EijO/HVf+pJp3/lZTL/O3zbF3fZnSh3WdbASEDg6QHEBqU0ATHY9ExnSpVDt9g988wMCQn5o5elmGhmj0CRzBEAiB2GDvwObU/eZFKn5CXa5OrXwJ/V3UYImPEB9aWGWq6iQIgKKxc1txQqNQWxgeq/jh8YMsJU/2FnADaOFPAaS3+MXoBIQLBVV5LuZqkS6o3OSzcsnLAngM576IfK3Z1LFM1vBkXNQAAAAAiBgJRgWa5SzIDGfJjd8+xdX4R+DE4vz2hzCQ9Z+4/vclehwwQqA1BAAAAAAAAAAAAIgICUYFmuUsyAxnyY3fPsXV+EfgxOL89ocwkPWfuP73JXocMEKgNQQAAAAAAAAAAACICAlGBZrlLMgMZ8mN3z7F1fhH4MTi/PaHMJD1n7j+9yV6HDBCoDUEAAAAAAAAAAAA=
      */
-
+    public static TransactionInfoBean objectFromData(String s) {
+        return new Gson().fromJson(s, TransactionInfoBean.class);
+    }
     @SerializedName("txid")
     private String txid;
     @SerializedName("can_broadcast")

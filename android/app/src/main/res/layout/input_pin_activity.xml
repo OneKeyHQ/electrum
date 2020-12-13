@@ -16,8 +16,7 @@
         android:paddingTop="@dimen/dp_20"
         android:paddingRight="@dimen/dp_30"
         android:paddingBottom="@dimen/dp_20"
-        android:text="输入设备原 PIN 码\n
-以继续"
+        android:text="@string/pin_origin"
         android:textColor="#142A3B"
         android:textSize="20sp" />
 

@@ -8,7 +8,10 @@ import android.widget.TextView;
 import com.google.common.base.Strings;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
+import org.haobtc.onekey.event.RefreshViewEvent;
 import org.haobtc.onekey.event.UpdateEvent;
 import org.haobtc.onekey.ui.activity.HardwareUpgradeActivity;
 import org.haobtc.onekey.ui.base.BaseFragment;
@@ -71,8 +74,8 @@ public class HardwareUpgradeFragment extends BaseFragment {
                 nrfUpdateDescription.setText(HardwareUpgradeActivity.nrfChangelog);
             }
         }
-
     }
+
 
     /***
      * init layout
@@ -93,5 +96,35 @@ public class HardwareUpgradeFragment extends BaseFragment {
                 EventBus.getDefault().post(new UpdateEvent(UpdateEvent.BLE));
                 break;
         }
+    }
+    /**
+     * 页面刷新监听
+     * */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onRefreshView(RefreshViewEvent event) {
+
+        switch (event.getId()) {
+            case R.string.firmware_nrf:
+                currentNrfVersionCode.setText(HardwareUpgradeActivity.newNrfVersion);
+                ble.setVisibility(View.GONE);
+                if (stm32.getVisibility() == View.GONE) {
+                    noUpdatePromote.setVisibility(View.VISIBLE);
+                }
+                break;
+            case R.string.firmware_stm32:
+                currentStm32VersionCode.setText(HardwareUpgradeActivity.newFirmwareVersion);
+                stm32.setVisibility(View.GONE);
+                if (ble.getVisibility() == View.GONE) {
+                    noUpdatePromote.setVisibility(View.VISIBLE);
+                }
+                break;
+            default:
+        }
+
+    }
+
+    @Override
+    public boolean needEvents() {
+        return true;
     }
 }

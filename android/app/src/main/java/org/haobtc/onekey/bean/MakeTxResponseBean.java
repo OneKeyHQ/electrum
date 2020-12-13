@@ -1,6 +1,11 @@
 package org.haobtc.onekey.bean;
 
-public class GetAddressBean {
+import com.google.gson.Gson;
+
+/**
+ * @author liyan
+ */
+public class MakeTxResponseBean {
 
     /**
      * amount : 0
@@ -11,7 +16,9 @@ public class GetAddressBean {
     private String amount;
     private String fee;
     private String tx;
-
+    public static MakeTxResponseBean objectFromData(String str) {
+        return new Gson().fromJson(str, MakeTxResponseBean.class);
+    }
     public String getAmount() {
         return amount;
     }

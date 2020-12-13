@@ -22,10 +22,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.MultiFormatWriter;
-import com.google.zxing.WriterException;
-import com.google.zxing.common.BitMatrix;
 import com.yzq.zxinglibrary.encode.CodeCreator;
 
 import org.haobtc.onekey.MainActivity;
@@ -34,9 +30,8 @@ import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.activities.settings.recovery_set.BackupRecoveryActivity;
 import org.haobtc.onekey.adapter.PublicPersonAdapter;
 import org.haobtc.onekey.aop.SingleClick;
-import org.haobtc.onekey.bean.GetCodeAddressBean;
+import org.haobtc.onekey.bean.CurrentAddressDetail;
 import org.haobtc.onekey.bean.XpubItem;
-import org.haobtc.onekey.event.AddBixinKeyEvent;
 import org.haobtc.onekey.utils.Daemon;
 
 import java.io.File;
@@ -176,8 +171,8 @@ public class CreatFinishPersonalActivity extends BaseActivity {
             String strCode = walletAddressShowUi.toString();
             Log.i("strCode", "mGenerate--: " + strCode);
             Gson gson = new Gson();
-            GetCodeAddressBean getCodeAddressBean = gson.fromJson(strCode, GetCodeAddressBean.class);
-            String qrData = getCodeAddressBean.getQrData();
+            CurrentAddressDetail currentAddressDetail = gson.fromJson(strCode, CurrentAddressDetail.class);
+            String qrData = currentAddressDetail.getQrData();
             bitmap = CodeCreator.createQRCode(qrData, 268, 268, null);
             imgOrcode.setImageBitmap(bitmap);
         }

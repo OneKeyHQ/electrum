@@ -15,7 +15,8 @@ public enum HardWareExceptions {
    UN_PAIRABLE("BaseException: Can't Pair With You Device", 8),
    USER_CANCEL("BaseException: user cancel", 14),
    WALLET_ALREADY_EXIST("BaseException: file already exists at path", 15),
-   WALLET_ALREADY_EXIST_1("The same xpubs have create wallet", 15);
+   WALLET_ALREADY_EXIST_1("The same xpubs have create wallet", 16),
+   UPDATE_FAILED("BaseException: Update failed: FirmwareError", 17);
    private final String message;
    private final int code;
 

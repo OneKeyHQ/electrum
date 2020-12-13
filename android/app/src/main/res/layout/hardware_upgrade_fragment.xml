@@ -19,7 +19,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="当前固件版本"/>
+                android:text="@string/current_stm32_version"/>
             <TextView
                 android:id="@+id/current_stm32_version_code"
                 android:layout_width="wrap_content"
@@ -34,7 +34,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="当前蓝牙版本"/>
+                android:text="@string/current_ble_version"/>
             <TextView
                 android:id="@+id/current_nrf_version_code"
                 android:layout_width="wrap_content"
@@ -46,7 +46,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="升级固件前务必备份好钱包，否则可能造成资产损失。"
+            android:text="@string/update_warning"
             android:layout_marginTop="@dimen/dp_6"/>
     </LinearLayout>
 
@@ -56,6 +56,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/promote"
         android:layout_marginTop="7dp"
+        android:minHeight="@dimen/dp_60"
         app:cardBackgroundColor="#FAFAFA"
         app:cardCornerRadius="@dimen/dp_20"
         android:layout_marginHorizontal="@dimen/dp_20">
@@ -85,7 +86,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="新系统固件可用"
+                            android:text="@string/new_firmware_usable"
                             android:textColor="#00B812"
                             android:textSize="@dimen/sp_15"/>
                         <TextView
@@ -117,12 +118,7 @@
                     android:layout_gravity="center_horizontal"
                     android:layout_marginHorizontal="@dimen/dp_10"
                     android:textSize="@dimen/sp_14"
-                    android:textColor="#546370"
-                    android:text="- 完全去中心化，不依赖任何中心化服务器\n- 开源更彻底，不只是代码和硬件设计，外壳3D设计，UI设计图\n
-- 安全芯片非安全芯片都支持，选择你喜欢的\n
-- 多客户端，流行钱包全支持，Electrum，Wasabi，Trezor，Bitcoin core\n
-- 多OS支持，Android/Windows/Linux/macOS\n
-- 多种连接硬件钱包方式，BLE/NFC/USB"/>
+                    android:textColor="#546370"/>
             </LinearLayout>
 
             <LinearLayout
@@ -147,7 +143,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="新蓝牙固件可用"
+                            android:text="@string/new_ble_version_usable"
                             android:textColor="#00B812"
                             android:textSize="@dimen/sp_15"/>
                         <TextView
@@ -181,19 +177,16 @@
                     android:layout_gravity="center_horizontal"
                     android:layout_marginHorizontal="@dimen/dp_10"
                     android:textSize="@dimen/sp_14"
-                    android:textColor="#546370"
-                    android:text="- 完全去中心化，不依赖任何中心化服务器\n- 开源更彻底，不只是代码和硬件设计，外壳3D设计，UI设计图\n
-- 安全芯片非安全芯片都支持，选择你喜欢的\n
-- 多客户端，流行钱包全支持，Electrum，Wasabi，Trezor，Bitcoin core\n
-- 多OS支持，Android/Windows/Linux/macOS\n
-- 多种连接硬件钱包方式，BLE/NFC/USB"/>
+                    android:textColor="#546370"/>
             </LinearLayout>
             <TextView
                 android:id="@+id/no_update_promote"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/dp_20"
                 android:gravity="center"
-                android:text="设备固件已经是最新版本。"
+                android:text="@string/newest"
                 android:visibility="gone"/>
         </LinearLayout>
 
@@ -213,7 +206,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="升级固件前请务必备份好钱包，否则可能造成资产损失。"
+            android:text="@string/update_warning"
             android:drawableStart="@drawable/warning"
             android:textSize="@dimen/sp_12"
             android:textColor="#FFB000"

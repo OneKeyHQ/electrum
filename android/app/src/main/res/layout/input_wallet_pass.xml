@@ -61,7 +61,8 @@
             android:layout_width="230dp"
             android:layout_height="40dp"
             android:layout_marginTop="@dimen/dp_20"
-            android:background="@drawable/btn_checked"
+            android:background="@drawable/btn_enable_selector"
+            android:enabled="false"
             android:text="@string/confirm"
             android:textAllCaps="false"
             android:textColor="@android:color/white" />

@@ -104,8 +104,8 @@ public class VersionUpgradeActivity extends BaseActivity {
         if (bundle != null) {
             firmwareVersion = bundle.getString("stm32_version");
             ble_version = bundle.getString("nrf_version");
-            stm32VersionTip.setText(String.format("V%s " + getString(R.string.verson_updates), firmwareVersion));
-            nrfVersionTip.setText(String.format("V%s " + getString(R.string.verson_updates), ble_version));
+            stm32VersionTip.setText(String.format("V%s " + getString(R.string.version_updates), firmwareVersion));
+            nrfVersionTip.setText(String.format("V%s " + getString(R.string.version_updates), ble_version));
             stm32VersionDetail.setText(bundle.getString("stm32_description"));
             nrfVersionDetail.setText(bundle.getString("nrf_description"));
             bleName = bundle.getString("ble_name", "");

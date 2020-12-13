@@ -10,7 +10,7 @@ import org.haobtc.onekey.activities.AboutActivity;
 import org.haobtc.onekey.activities.LanguageSettingActivity;
 import org.haobtc.onekey.activities.ServerSettingActivity;
 import org.haobtc.onekey.activities.TransactionsSettingActivity;
-import org.haobtc.onekey.activities.settings.BixinKEYManageActivity;
+import org.haobtc.onekey.activities.settings.OneKeyManageActivity;
 import org.haobtc.onekey.activities.settings.CurrencyActivity;
 import org.haobtc.onekey.activities.settings.SelectorActivity;
 import org.haobtc.onekey.constant.Constant;
@@ -82,7 +82,7 @@ public class MindFragment extends BaseFragment {
                 startActivity(intent3);
                 break;
             case R.id.rel_all_device:
-                Intent intent7 = new Intent(getActivity(), BixinKEYManageActivity.class);
+                Intent intent7 = new Intent(getActivity(), OneKeyManageActivity.class);
                 startActivity(intent7);
                 break;
             case R.id.rel_link_method:

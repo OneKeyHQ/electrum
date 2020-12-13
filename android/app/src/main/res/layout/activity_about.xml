@@ -4,20 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
-    android:clipToPadding="true"
-    android:fitsSystemWindows="true">
+    android:background="@android:color/white">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="@dimen/dp_10"
         android:background="@color/bk_page"
+        android:layout_marginTop="@dimen/dp_36"
         android:orientation="vertical">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_marginTop="@dimen/dp_10"
             android:layout_height="@dimen/dp_60"
             android:background="@android:color/white">
 
@@ -76,7 +73,7 @@
                     android:layout_marginStart="@dimen/dp_20"
                     android:focusable="true"
                     android:gravity="center_vertical"
-                    android:text="@string/verson_updates"
+                    android:text="@string/version_updates"
                     android:textColor="@color/text" />
 
                 <TextView

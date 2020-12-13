@@ -141,5 +141,44 @@ public final class PyConstant {
      * 固件升级
      * */
     public static final String FIRMWARE_UPDATE = "firmware_update";
-
+    /**
+     * 解析交易
+     * */
+    public static final String ANALYZE_TX = "get_tx_info_from_raw";
+    /**
+     * 获取当前费率信息
+     * */
+    public static final String GET_DEFAULT_FEE_DETAILS = "get_default_fee_info";
+    /**
+     * 计算当前交易的手续费
+     * */
+    public static final String CALCULATE_FEE = "get_fee_by_feerate";
+    /**
+     * 通过临时交易构建最终交易
+     * */
+    public static final String MAKE_TX = "mktx";
+    /**
+     * 检验地址合法性
+     * */
+    public static final String VERIFY_ADDRESS = "verify_address";
+    /**
+     * 比特币-> 现金 转换
+     * */
+    public static final String EXCHANGE_RATE_CONVERSION = "get_exchange_currency";
+    /**
+     * 广播交易
+     * */
+    public static final String BROADCAST_TX = "broadcast_tx";
+    /**
+     * 签名交易
+     * */
+    public static final String SIGN_TX = "sign_tx";
+    /**
+     * 获取当前选择钱包的地址信息
+     * */
+    public static final String ADDRESS_INFO = "get_wallet_address_show_UI";
+    /**
+     * 校验签名信息
+     * */
+    public static final String VERIFY_MESSAGE_SIGNATURE = "verify_message";
 }

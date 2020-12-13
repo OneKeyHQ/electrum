@@ -18,7 +18,7 @@ import org.haobtc.onekey.MainActivity;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.aop.SingleClick;
-import org.haobtc.onekey.bean.GetCodeAddressBean;
+import org.haobtc.onekey.bean.CurrentAddressDetail;
 import org.haobtc.onekey.utils.Daemon;
 
 import butterknife.BindView;
@@ -67,9 +67,9 @@ public class CreateWalletSuccessfulActivity extends BaseActivity {
         if (walletAddressShowUi!=null){
             String strCode = walletAddressShowUi.toString();
             Gson gson = new Gson();
-            GetCodeAddressBean getCodeAddressBean = gson.fromJson(strCode, GetCodeAddressBean.class);
-            String qrData = getCodeAddressBean.getQrData();
-            String addr = getCodeAddressBean.getAddr();
+            CurrentAddressDetail currentAddressDetail = gson.fromJson(strCode, CurrentAddressDetail.class);
+            String qrData = currentAddressDetail.getQrData();
+            String addr = currentAddressDetail.getAddr();
             textPublicKey.setText(addr);
             Bitmap bitmap = CodeCreator.createQRCode(qrData, 248, 248, null);
             imgCodePublicKey.setImageBitmap(bitmap);
