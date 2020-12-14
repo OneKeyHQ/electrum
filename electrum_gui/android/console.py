@@ -36,6 +36,7 @@ from electrum import commands, daemon, keystore, simple_config, storage, util, b
 from electrum.util import bfh, Fiat, create_and_start_event_loop, decimal_point_to_base_unit_name, standardize_path, DecimalEncoder
 from electrum.util import user_dir as get_dir
 from electrum import MutiBase
+from .tx_db import TxDb
 from electrum.i18n import _
 from .create_wallet_info import CreateWalletInfo
 from electrum.storage import WalletStorage
@@ -174,6 +175,7 @@ class AndroidCommands(commands.Commands):
         self.daemon = daemon.Daemon(self.config, fd)
         self.coins = read_json('eth_servers.json', {})
         self.pywalib = PyWalib(self.config, chain_type="mainnet", path=self._tx_list_path())
+        self.txdb = TxDb(path=self._tx_list_path())
         self.pywalib.set_server(self.coins["eth"])
         self.network = self.daemon.network
         self.daemon_running = False
@@ -916,6 +918,7 @@ class AndroidCommands(commands.Commands):
             tx.deserialize()
             try:
                 print(f"do save tx")
+                #self.txdb.add_tx_info(self.wallet.get_addresses()[0], tx, tx.txid())
                 self.do_save(tx)
             except BaseException as e:
                 pass
@@ -1263,6 +1266,16 @@ class AndroidCommands(commands.Commands):
         except BaseException as e:
             raise e
 
+    ##history
+    def get_history_tx(self):
+        try:
+            self._assert_wallet_isvalid()
+        except Exception as e:
+            raise BaseException(e)
+        history = reversed(self.wallet.get_history())
+        all_data = [self.get_card(*item) for item in history]
+        return json.dumps(all_data)
+
     def get_all_tx_list(self, search_type=None):
         '''
         Get the histroy list with the wallet that you select
@@ -1287,22 +1300,39 @@ class AndroidCommands(commands.Commands):
                     history_data.append(info)
 
         all_data = []
-        for i in history_data:
-            i['type'] = 'history'
-            data = self.get_tx_info(i['tx_hash'])
-            i['tx_status'] = json.loads(data)['tx_status']
-            all_data.append(i)
-        return json.dumps(all_data)
+        if search_type == "receive":
+            for info in history_data:
+                self.get_history_show_info(info, all_data)
+            return json.dumps(all_data)
+        else:
+            for info in history_data:
+                self.get_history_show_info(info, all_data)
 
-    ##history
-    def get_history_tx(self):
-        try:
-            self._assert_wallet_isvalid()
-        except Exception as e:
-            raise BaseException(e)
-        history = reversed(self.wallet.get_history())
-        all_data = [self.get_card(*item) for item in history]
-        return json.dumps(all_data)
+            local_tx = self.txdb.get_tx_info(self.wallet.get_addresses()[0])
+            for info in local_tx:
+                i = {}
+                i['type'] = 'history'
+                data = self.get_tx_info_from_raw(info[3])
+                i['tx_status'] = _("Sending failure")
+                i['tx_hash'] = info[1]
+                i['date'] = util.format_time(info[4])
+                i['is_mine'] = True
+                i['confirmations'] = 0
+                data = json.loads(data)
+                amount = data['amount'].split(" ")[0]
+                fee = data['fee'].split(" ")[0]
+                fait = self.daemon.fx.format_amount_and_units(float(amount) + float(fee)) if self.daemon.fx else None
+                i['amount'] = '%s %s (%s)' % (str(float(amount) + float(fee)), self.base_unit, fait)
+                all_data.append(i)
+
+            all_data.sort(reverse=True, key=lambda info: info['date'])
+            return json.dumps(all_data)
+
+    def get_history_show_info(self, info, list_info):
+        info['type'] = 'history'
+        data = self.get_tx_info(info['tx_hash'])
+        info['tx_status'] = json.loads(data)['tx_status']
+        list_info.append(info)
 
     def get_tx_info(self, tx_hash):
         '''
@@ -1316,6 +1346,10 @@ class AndroidCommands(commands.Commands):
             raise BaseException(e)
         tx = self.wallet.db.get_transaction(tx_hash)
         if not tx:
+            local_tx = self.txdb.get_tx_info(self.wallet.get_addresses()[0])
+            for temp_tx in local_tx:
+                if temp_tx[1] == tx_hash:
+                    return self.get_tx_info_from_raw(temp_tx[3])
             raise BaseException(_('Failed to get transaction details.'))
         # tx = PartialTransaction.from_tx(tx)
         label = self.wallet.get_label(tx_hash) or None
@@ -1527,7 +1561,10 @@ class AndroidCommands(commands.Commands):
                     tx.deserialize()
                 self.network.run_from_another_thread(self.network.broadcast_transaction(tx))
             except TxBroadcastError as e:
+                #TODO DB self.delete_tx()
                 msg = e.__str__()
+                self.remove_local_tx(tx.txid())
+                self.txdb.add_tx_info(address=self.wallet.get_addresses()[0], tx_hash=tx.txid(), psbt_tx="", raw_tx=tx, failed_info=msg)
                 #msg = e.get_message_for_gui()
                 raise BaseException(msg)
             except BestEffortRequestFailed as e:
@@ -2613,7 +2650,7 @@ class AndroidCommands(commands.Commands):
                     else:
                         # if not hw:
                         #     self.btc_derived_info.update_recovery_info(recovery_info['account_id'])
-                        wallet_type = 'btc-hw-derived-%s-%s' % (wallet.m, wallet.n) if hw else (
+                        wallet_type = 'btc-hw-derived-%s-%s' % (1, 1) if hw else (
                                 'btc-derived-standard')
                         self.update_devired_wallet_info(bip44_derivation(recovery_info['account_id'], bip43_purpose=84, coin=constants.net.BIP44_COIN_TYPE),
                                                         recovery_info['key'], wallet.get_name())
@@ -2867,6 +2904,33 @@ class AndroidCommands(commands.Commands):
             wallet.start_network(self.daemon.network)
         wallet.save_db()
 
+    def get_devired_num(self, coin):
+        '''
+        Get devired HD num by app
+        :param wallet:btc/eth as string
+        :return:
+        '''
+        xpub = self.get_hd_wallet_encode_seed(coin)
+        if self.derived_info.__contains__(xpub):
+            num = len(self.derived_info[xpub])
+        return num
+
+    def delete_devired_wallet_info(self, wallet_obj):
+        derivation = wallet_obj.keystore.get_derivation_prefix()
+        account_id = int(derivation.split('/')[ACCOUNT_POS].split('\'')[0])
+        if self.coins.__contains__(wallet_obj.wallet_type[0:3]):
+            coin = wallet_obj.wallet_type[0:3]
+        else:
+            coin = 'btc'
+        xpub = self.get_hd_wallet_encode_seed(coin)
+        if self.derived_info.__contains__(xpub):
+            derived_wallet = self.derived_info[xpub]
+            for pos, wallet_info in enumerate(derived_wallet):
+                if int(wallet_info['account_id']) == account_id:
+                    derived_wallet.pop(pos)
+                    break
+            self.derived_info[xpub] = derived_wallet
+            self.config.set_key("derived_info", self.derived_info)
 
 
     def update_devired_wallet_info(self, bip39_derivation, xpub, name):
@@ -3293,6 +3357,14 @@ class AndroidCommands(commands.Commands):
         except BaseException as e:
             raise BaseException(e)
 
+    def has_history_wallet(self, wallet_obj):
+        have_tx_flag = False
+        history = reversed(wallet_obj.get_history())
+        for item in history:
+            have_tx_flag = True
+            break
+        return have_tx_flag
+
     def delete_wallet(self, password, name):
         """Delete a wallet"""
         try:
@@ -3300,13 +3372,16 @@ class AndroidCommands(commands.Commands):
             if not wallet.is_watching_only():
                 self.check_password(password=password)
             if self.local_wallet_info.__contains__(name):
-                wallet = self.local_wallet_info.get(name)
-                wallet_type = wallet['type']
+                wallet_info = self.local_wallet_info.get(name)
+                wallet_type = wallet_info['type']
                 if -1 != wallet_type.find("-hd-") and -1 == wallet_type.find("-hw-"):
                     self.delete_derived_wallet()
-                elif -1 != wallet_type.find('-derived-') and -1 == wallet_type.find("-hw-"):
-                    raise BaseException(("HD derivted wallet can't be delete"))
                 else:
+                    if -1 != wallet_type.find('-derived-') and -1 == wallet_type.find("-hw-"):
+                        have_tx = self.has_history_wallet(wallet)
+                        if not have_tx:
+                            #delete wallet info from config
+                            self.delete_devired_wallet_info(wallet)
                     self.delete_wallet_from_deamon(self._wallet_path(name))
                     self.local_wallet_info.pop(name)
                     self.config.set_key('all_wallet_type_info', self.local_wallet_info)
