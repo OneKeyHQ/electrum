@@ -1,5 +1,6 @@
 package com.yzq.zxinglibrary.android;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.FeatureInfo;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,6 +26,8 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.LinearLayoutCompat;
 
 import com.google.zxing.Result;
+import com.tbruyelle.rxpermissions2.Permission;
+import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.R;
 import com.yzq.zxinglibrary.bean.ZxingConfig;
 import com.yzq.zxinglibrary.camera.CameraManager;
@@ -34,6 +38,8 @@ import com.yzq.zxinglibrary.decode.ImageUtil;
 import com.yzq.zxinglibrary.view.ViewfinderView;
 
 import java.io.IOException;
+
+import io.reactivex.functions.Consumer;
 
 
 /**
@@ -49,7 +55,7 @@ public class CaptureActivity extends AppCompatActivity implements SurfaceHolder.
     private SurfaceView previewView;
     private ViewfinderView viewfinderView;
     private ImageView flashLightIv;
-    private TextView flashLightTv;
+    private TextView flashLightTv, galley;
     private ImageView backIv;
     private LinearLayoutCompat flashLightLayout;
     private LinearLayoutCompat albumLayout;
@@ -60,6 +66,8 @@ public class CaptureActivity extends AppCompatActivity implements SurfaceHolder.
     private CameraManager cameraManager;
     private CaptureActivityHandler handler;
     private SurfaceHolder surfaceHolder;
+    private LinearLayout flightLayout;
+    private RxPermissions rxPermissions;
 
 
     public ViewfinderView getViewfinderView() {
@@ -88,6 +96,7 @@ public class CaptureActivity extends AppCompatActivity implements SurfaceHolder.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        rxPermissions = new RxPermissions(this);
         // 保持Activity处于唤醒状态
         Window window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -141,6 +150,11 @@ public class CaptureActivity extends AppCompatActivity implements SurfaceHolder.
         albumLayout = findViewById(R.id.albumLayout);
         albumLayout.setOnClickListener(this);
         bottomLayout = findViewById(R.id.bottomLayout);
+        galley = findViewById(R.id.new_galley);
+        galley.setOnClickListener(this);
+
+        flightLayout = findViewById(R.id.turn_flight_ll);
+        flightLayout.setOnClickListener(this);
 
 
         switchVisibility(bottomLayout, config.isShowbottomLayout());
@@ -273,7 +287,7 @@ public class CaptureActivity extends AppCompatActivity implements SurfaceHolder.
     @Override
     protected void onPause() {
 
-        Log.i("CaptureActivity","onPause");
+        Log.i("CaptureActivity", "onPause");
         if (handler != null) {
             handler.quitSynchronously();
             handler = null;
@@ -320,15 +334,36 @@ public class CaptureActivity extends AppCompatActivity implements SurfaceHolder.
     public void onClick(View view) {
 
         int id = view.getId();
-        if (id == R.id.flashLightLayout) {
+        if (id == R.id.turn_flight_ll) {
             /*切换闪光灯*/
             cameraManager.switchFlashLight(handler);
-        } else if (id == R.id.albumLayout) {
-            /*打开相册*/
-            Intent intent = new Intent();
-            intent.setAction(Intent.ACTION_PICK);
-            intent.setType("image/*");
-            startActivityForResult(intent, Constant.REQUEST_IMAGE);
+        } else if (id == R.id.new_galley) {
+
+            rxPermissions.requestEach(Manifest.permission.READ_EXTERNAL_STORAGE)
+                    .subscribe(permission -> {
+                        try {
+                            if (permission.name.equalsIgnoreCase(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                                if (permission.granted) {
+                                    //权限被用户通过
+                                    /*打开相册*/
+                                    Intent intent = new Intent();
+                                    intent.setAction(Intent.ACTION_PICK);
+                                    intent.setType("image/*");
+                                    startActivityForResult(intent, Constant.REQUEST_IMAGE);
+                                } else if (permission.shouldShowRequestPermissionRationale) {
+                                    //权限被用户禁止，但未选中‘不在提示’，则下次涉及此权限还会弹出权限申请框
+                                } else {
+                                    //权限被用户禁止，且选择‘不在提示’，当下次涉及此权限，不会弹出权限申请框
+
+                                }
+                            }
+                        } catch (Exception e) {
+                            e.toString();
+                        }
+
+                    });
+
+
         } else if (id == R.id.backIv) {
             finish();
         }

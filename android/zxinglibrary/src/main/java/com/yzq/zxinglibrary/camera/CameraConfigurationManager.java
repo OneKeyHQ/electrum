@@ -39,7 +39,6 @@ final class CameraConfigurationManager {
     private Point cameraResolution;
 
 
-
     CameraConfigurationManager(Context context) {
         this.context = context;
     }
@@ -159,7 +158,7 @@ final class CameraConfigurationManager {
 
     private static int findBestMotZoomValue(CharSequence stringValues, int tenDesiredZoom) {
 
-        Log.i("CameraManager","findBestMotZoomValue");
+        Log.i("CameraManager", "findBestMotZoomValue");
         int tenBestValue = 0;
         for (String stringValue : COMMA_PATTERN.split(stringValues)) {
             stringValue = stringValue.trim();
@@ -175,15 +174,14 @@ final class CameraConfigurationManager {
             }
         }
 
-        Log.i("findBestMotZoomValue",tenBestValue+"");
+        Log.i("findBestMotZoomValue", tenBestValue + "");
         return tenBestValue;
     }
 
 
-
     private void setZoom(Camera.Parameters parameters) {
 
-        Log.i("CameraManager","setZoom");
+        Log.i("CameraManager", "setZoom");
 
         String zoomSupportedString = parameters.get("zoom-supported");
         if (zoomSupportedString != null && !Boolean.parseBoolean(zoomSupportedString)) {

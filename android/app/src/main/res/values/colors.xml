@@ -70,5 +70,6 @@
     <color name="text_nine">#F7931B</color>
     <color name="text_ten">#EB5757</color>
     <color name="text_eleven">#BFFFFFFF</color>
+    <color name="color_0xff44ce61">#ff44ce61</color>
 
 </resources>

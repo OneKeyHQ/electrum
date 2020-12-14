@@ -112,7 +112,6 @@ public class BackupGuideActivity extends BaseActivity {
                 intent1.putExtra("importHdword", "backupMnemonic");
                 intent1.putExtra(Constant.OPERATE_TYPE, Constant.EXPORT_DESTINATIONS);
                 startActivity(intent1);
-                finish();
                 break;
         }
     }
@@ -159,5 +158,10 @@ public class BackupGuideActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
+    }
+
+    @Override
+    public boolean isRestricted() {
+        return super.isRestricted();
     }
 }

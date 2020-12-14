@@ -25,10 +25,14 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     api files('libs/core-3.3.3.jar')
     compileOnly 'androidx.annotation:annotation:1.1.0'
-    compileOnly 'androidx.appcompat:appcompat:1.2.0'
+    compileOnly 'androidx.appcompat:appcompat:1.1.0'
     compileOnly 'androidx.constraintlayout:constraintlayout:2.0.0'
     compileOnly 'androidx.legacy:legacy-support-v4:1.0.0'
     compileOnly 'androidx.recyclerview:recyclerview:1.1.0'
     compileOnly 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     compileOnly 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.github.tbruyelle:rxpermissions:0.10.2'
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.6'
+    implementation 'com.lxj:xpopup:2.2.7'
+
 }

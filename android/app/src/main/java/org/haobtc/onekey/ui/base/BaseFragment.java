@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import org.greenrobot.eventbus.EventBus;
+import org.haobtc.onekey.utils.EventBusUtils;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -21,7 +22,7 @@ import butterknife.Unbinder;
 /**
  * @author liyan
  */
-public abstract class BaseFragment extends Fragment implements IBaseView{
+public abstract class BaseFragment extends Fragment implements IBaseView {
     protected Unbinder unbinder;
 
     public Handler mHandler;
@@ -44,7 +45,7 @@ public abstract class BaseFragment extends Fragment implements IBaseView{
         View view = inflater.inflate(getContentViewId(), container, false);
         unbinder = ButterKnife.bind(this, view);
         if (needEvents()) {
-            EventBus.getDefault().register(this);
+            EventBusUtils.register(this);
         }
         init(view);
         return view;
@@ -53,6 +54,7 @@ public abstract class BaseFragment extends Fragment implements IBaseView{
     /**
      * init views
      * it's needless
+     *
      * @param view
      */
     public abstract void init(View view);
@@ -69,7 +71,7 @@ public abstract class BaseFragment extends Fragment implements IBaseView{
         if (unbinder != null) {
             unbinder.unbind();
         } else if (needEvents()) {
-            EventBus.getDefault().unregister(this);
+            EventBusUtils.unRegister(this);
         }
 
     }
@@ -81,6 +83,7 @@ public abstract class BaseFragment extends Fragment implements IBaseView{
         }
         mHandler.post(runnable);
     }
+
     public boolean needEvents() {
         return false;
     }

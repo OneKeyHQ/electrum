@@ -12,30 +12,32 @@ public class PreferencesManager {
 
     /**
      * commit
+     *
      * @param editor
      */
-    private static void commit(SharedPreferences.Editor editor){
-            editor.commit();
+    private static void commit(SharedPreferences.Editor editor) {
+        editor.commit();
     }
 
 
-    private static SharedPreferences getSharedPreferences(Context context,String name){
+    private static SharedPreferences getSharedPreferences(Context context, String name) {
         return context.getSharedPreferences(name,
                 Context.MODE_PRIVATE);
     }
 
     /**
      * save
+     *
      * @param context
      * @param name
      * @param key
      * @param object
      */
-    public static void put(Context context,String name, String key, Object object) {
+    public static void put(Context context, String name, String key, Object object) {
         if (context == null || object == null) {
             return;
         }
-        SharedPreferences.Editor editor = getSharedPreferences(context,name).edit();
+        SharedPreferences.Editor editor = getSharedPreferences(context, name).edit();
         if (object instanceof String) {
             editor.putString(key, (String) object);
         } else if (object instanceof Integer) {
@@ -55,6 +57,7 @@ public class PreferencesManager {
 
     /**
      * get
+     *
      * @param context
      * @param name
      * @param key
@@ -65,7 +68,7 @@ public class PreferencesManager {
         if (context == null) {
             return null;
         }
-        SharedPreferences sp = getSharedPreferences(context,name);
+        SharedPreferences sp = getSharedPreferences(context, name);
 
         if (defaultObject instanceof String) {
             return sp.getString(key, (String) defaultObject);
@@ -84,53 +87,58 @@ public class PreferencesManager {
 
     /**
      * remove key
+     *
      * @param context
      * @param name
      * @param key
      */
-    public static void remove(Context context,String name, String key) {
-        SharedPreferences.Editor editor = getSharedPreferences(context,name).edit();
+    public static void remove(Context context, String name, String key) {
+        SharedPreferences.Editor editor = getSharedPreferences(context, name).edit();
         editor.remove(key);
         commit(editor);
     }
 
     /**
      * clear
+     *
      * @param context
      * @param name
      */
-    public static void clear(Context context,String name) {
-        SharedPreferences.Editor editor = getSharedPreferences(context,name).edit();
+    public static void clear(Context context, String name) {
+        SharedPreferences.Editor editor = getSharedPreferences(context, name).edit();
         editor.clear();
         commit(editor);
     }
 
     /**
      * contains
+     *
      * @param context
      * @param name
      * @param key
      * @return
      */
-    public static boolean contains(Context context, String name,String key) {
-        SharedPreferences sp = getSharedPreferences(context,name);
+    public static boolean contains(Context context, String name, String key) {
+        SharedPreferences sp = getSharedPreferences(context, name);
         return sp.contains(key);
     }
 
     /**
      * remove all
+     *
      * @param context
      * @param name
      * @return
      */
-    public static Map<String, ?> getAll(Context context,String name) {
-        SharedPreferences sp = getSharedPreferences(context,name);
+    public static Map<String, ?> getAll(Context context, String name) {
+        SharedPreferences sp = getSharedPreferences(context, name);
         return sp.getAll();
     }
+
     /**
      * @param context
      * @return true if has wallet
-     * */
+     */
     public static boolean hasWallet(Context context) {
         return !PreferencesManager.getAll(context, org.haobtc.onekey.constant.Constant.WALLETS).isEmpty();
     }

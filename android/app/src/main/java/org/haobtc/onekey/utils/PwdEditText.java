@@ -6,15 +6,20 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
 
 
+import com.google.zxing.common.StringUtils;
+
 import org.haobtc.onekey.R;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import dr.android.utils.LogUtil;
 
 
 public class PwdEditText extends androidx.appcompat.widget.AppCompatEditText {
@@ -28,6 +33,7 @@ public class PwdEditText extends androidx.appcompat.widget.AppCompatEditText {
     private int textLength;
     private int Circle, Round;
     private boolean isPwd, isWaitInput;
+    private int mPos = 0;
 
     public PwdEditText(Context context) {
         super(context);
@@ -95,6 +101,12 @@ public class PwdEditText extends androidx.appcompat.widget.AppCompatEditText {
         if (mText == null) {
             return;
         }
+        if (lengthBefore == 0 && !TextUtils.isEmpty(text)) {
+            mPos = start + 1;
+        } else {
+            mPos = start;
+        }
+
         //如果字数不超过用户设置的总字数，就赋值给成员变量mText；
         // 如果字数大于用户设置的总字数，就只保留用户设置的几位数字，并把光标制动到最后，让用户可以删除；
         if (text.toString().length() <= textLength) {
@@ -148,11 +160,12 @@ public class PwdEditText extends androidx.appcompat.widget.AppCompatEditText {
 
         for (int i = 0; i < textLength; i++) {
             //区分已输入和未输入的边框颜色
-            if (mText.length() >= i) {
+            if (i == mPos) {
                 sidePaint.setColor(checkedColor);
             } else {
                 sidePaint.setColor(defaultColor);
             }
+
 
             //RectF的参数(left,  top,  right,  bottom); 画出每个矩形框并设置间距，间距其实是增加左边框距离，缩小上下右边框距离；
             RectF rect = new RectF(i * Wide + spzceX, spzceY, i * Wide + Wide - spzceX, Wide - spzceY); //四个值，分别代表4条线，距离起点位置的线
@@ -174,10 +187,6 @@ public class PwdEditText extends androidx.appcompat.widget.AppCompatEditText {
                 canvas.drawCircle(rectFS.get(j).centerX(), rectFS.get(j).centerY(), Circle, textPaint);
             } else {
                 canvas.drawText(mText.substring(j, j + 1), rectFS.get(j).centerX() - (textSize - spzceX) / 2, rectFS.get(j).centerY() + (textSize - spzceY) / 2, textPaint);
-//                Rect textRect = new Rect();
-//                textPaint.getTextBounds(mText.substring(j, j + 1), 0, 1, textRect);
-//                canvas.drawText(mText.substring(j, j + 1), rectFS.get(j).left + (rectFS.get(j).right - rectFS.get(j).left) / 2 - textRect.width() / 2,
-//                        rectFS.get(j).top + ((rectFS.get(j).bottom - rectFS.get(j).top) / 2) + textRect.height() / 2, textPaint);
             }
         }
     }

@@ -8,6 +8,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -56,74 +57,56 @@ public final class ViewfinderView extends View {
 
     public ViewfinderView(Context context) {
         this(context, null);
-
     }
 
     public ViewfinderView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
-
-
     }
 
 
     public void setZxingConfig(ZxingConfig config) {
         this.config = config;
         reactColor = ContextCompat.getColor(getContext(), config.getReactColor());
-
         if (config.getFrameLineColor() != -1) {
             frameLineColor = ContextCompat.getColor(getContext(), config.getFrameLineColor());
         }
-
         scanLineColor = ContextCompat.getColor(getContext(), config.getScanLineColor());
         initPaint();
-
     }
 
 
     public ViewfinderView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-
         maskColor = ContextCompat.getColor(getContext(), R.color.viewfinder_mask);
         resultColor = ContextCompat.getColor(getContext(), R.color.result_view);
         resultPointColor = ContextCompat.getColor(getContext(), R.color.possible_result_points);
-
         possibleResultPoints = new ArrayList<ResultPoint>(10);
         lastPossibleResultPoints = null;
-
-
     }
 
     private void initPaint() {
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-
         /*四个角的画笔*/
         reactPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         reactPaint.setColor(reactColor);
         reactPaint.setStyle(Paint.Style.FILL);
         reactPaint.setStrokeWidth(dp2px(1));
-
         /*边框线画笔*/
-
         if (frameLineColor != -1) {
             frameLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
             frameLinePaint.setColor(ContextCompat.getColor(getContext(), config.getFrameLineColor()));
             frameLinePaint.setStrokeWidth(dp2px(1));
             frameLinePaint.setStyle(Paint.Style.STROKE);
         }
-
-
-
         /*扫描线画笔*/
         scanLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         scanLinePaint.setStrokeWidth(dp2px(2));
         scanLinePaint.setStyle(Paint.Style.FILL);
         scanLinePaint.setDither(true);
         scanLinePaint.setColor(scanLineColor);
-
     }
 
     private void initAnimator() {
-
         if (valueAnimator == null) {
             valueAnimator = ValueAnimator.ofInt(frame.top, frame.bottom);
             valueAnimator.setDuration(3000);
@@ -139,17 +122,12 @@ public final class ViewfinderView extends View {
 
                 }
             });
-
             valueAnimator.start();
         }
-
-
     }
 
     public void setCameraManager(CameraManager cameraManager) {
         this.cameraManager = cameraManager;
-
-
     }
 
     public void stopAnimator() {
@@ -158,17 +136,14 @@ public final class ViewfinderView extends View {
             valueAnimator.cancel();
             valueAnimator = null;
         }
-
     }
 
     @SuppressLint("DrawAllocation")
     @Override
     public void onDraw(Canvas canvas) {
-
         if (cameraManager == null) {
             return;
         }
-
         // frame为取景框
         frame = cameraManager.getFramingRect();
         Rect previewFrame = cameraManager.getFramingRectInPreview();
@@ -176,26 +151,20 @@ public final class ViewfinderView extends View {
             return;
         }
         initAnimator();
-
         int width = canvas.getWidth();
         int height = canvas.getHeight();
-
         /*绘制遮罩*/
         drawMaskView(canvas, frame, width, height);
-
         /*绘制取景框边框*/
         drawFrameBounds(canvas, frame);
-
         if (resultBitmap != null) {
             // Draw the opaque result bitmap over the scanning rectangle
             // 如果有二维码结果的Bitmap，在扫取景框内绘制不透明的result Bitmap
             paint.setAlpha(CURRENT_POINT_OPACITY);
             canvas.drawBitmap(resultBitmap, null, frame, paint);
         } else {
-
             /*绘制扫描线*/
             drawScanLight(canvas, frame);
-
             /*绘制闪动的点*/
             // drawPoint(canvas, frame, previewFrame);
         }
@@ -204,7 +173,6 @@ public final class ViewfinderView extends View {
     private void drawPoint(Canvas canvas, Rect frame, Rect previewFrame) {
         float scaleX = frame.width() / (float) previewFrame.width();
         float scaleY = frame.height() / (float) previewFrame.height();
-
         // 绘制扫描线周围的特征点
         List<ResultPoint> currentPossible = possibleResultPoints;
         List<ResultPoint> currentLast = lastPossibleResultPoints;
@@ -238,7 +206,6 @@ public final class ViewfinderView extends View {
                 }
             }
         }
-
         // Request another update at the animation interval, but only
         // repaint the laser line,
         // not the entire viewfinder mask.
@@ -270,21 +237,15 @@ public final class ViewfinderView extends View {
      * @param frame
      */
     private void drawFrameBounds(Canvas canvas, Rect frame) {
-
         /*扫描框的边框线*/
         if (frameLineColor != -1) {
             canvas.drawRect(frame, frameLinePaint);
         }
-
-
         /*四个角的长度和宽度*/
         int width = frame.width();
         int corLength = (int) (width * 0.07);
         int corWidth = (int) (corLength * 0.2);
-
         corWidth = corWidth > 15 ? 15 : corWidth;
-
-
         /*角在线外*/
         // 左上角
         canvas.drawRect(frame.left - corWidth, frame.top, frame.left, frame.top
@@ -316,10 +277,7 @@ public final class ViewfinderView extends View {
      * @param frame
      */
     private void drawScanLight(Canvas canvas, Rect frame) {
-
         canvas.drawLine(frame.left, scanLineTop, frame.right, scanLineTop, scanLinePaint);
-
-
     }
 
     public void drawViewfinder() {
@@ -357,7 +315,6 @@ public final class ViewfinderView extends View {
 
     private int dp2px(int dp) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, getResources().getDisplayMetrics());
-
     }
 
 }

@@ -52,6 +52,7 @@ import java.util.TimerTask;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import dr.android.utils.LogUtil;
 
 import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE;
 import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE_SHORT;
@@ -104,6 +105,12 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
         operateType = getIntent().getStringExtra(Constant.OPERATE_TYPE);
         deleteHdWalletName = getIntent().getStringExtra("deleteHdWalletName");//删除所有hd钱包的名字
         inits();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         keyBroad();
     }
 
@@ -115,6 +122,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
         timer.schedule(new TimerTask() {
                            @Override
                            public void run() {
+                               LogUtil.d("xiaopeng", "定时器");
                                InputMethodManager inputManager =
                                        (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                                inputManager.showSoftInput(pwdEdittext, 0);
@@ -526,7 +534,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
             startActivity(intent);
             finish();
         } else {
-            EventBus.getDefault().post(new FinishEvent());
+//            EventBus.getDefault().post(new FinishEvent());
             Intent intent = new Intent(SetHDWalletPassActivity.this, HdRootMnemonicsActivity.class);
             intent.putExtra("exportWord", exportSeed.toString());
             intent.putExtra("importHdword", importHdword);

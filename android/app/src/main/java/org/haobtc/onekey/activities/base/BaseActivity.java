@@ -23,6 +23,7 @@ import com.google.common.base.Strings;
 
 import org.haobtc.onekey.activities.service.CommunicationModeSelector;
 import org.haobtc.onekey.constant.Constant;
+import org.haobtc.onekey.manager.ActivityHQManager;
 import org.haobtc.onekey.utils.NfcUtils;
 
 import java.io.UnsupportedEncodingException;
@@ -56,7 +57,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         mBinitState();
         initView();
         initData();
-
+        ActivityHQManager.getInstance().activities.add(this);
     }
 
     /**

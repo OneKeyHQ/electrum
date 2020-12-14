@@ -52,13 +52,14 @@ public final class CaptureActivityHandler extends Handler {
     private final CameraManager cameraManager;
     private StringBuilder result = new StringBuilder();
     private PsbtData[] datas;
+
     private enum State {
         PREVIEW, SUCCESS, DONE
     }
 
-    public CaptureActivityHandler(CaptureActivity activity,CameraManager cameraManager) {
+    public CaptureActivityHandler(CaptureActivity activity, CameraManager cameraManager) {
         this.activity = activity;
-        decodeThread = new DecodeThread(activity,  new ViewfinderResultPointCallback(
+        decodeThread = new DecodeThread(activity, new ViewfinderResultPointCallback(
                 activity.getViewfinderView()));
         decodeThread.start();
         state = State.SUCCESS;

@@ -14,6 +14,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -52,10 +53,13 @@ import org.haobtc.onekey.utils.Daemon;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import dr.android.utils.LogUtil;
 
 import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE;
 import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE_LONG;
@@ -121,6 +125,25 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
         //删除所有hd钱包的名字
         deleteHdWalletName = getIntent().getStringExtra("deleteHdWalletName");
         inits();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        editPass.setFocusable(true);
+        editPass.setFocusableInTouchMode(true);
+        editPass.requestFocus();
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+                           @Override
+                           public void run() {
+                               LogUtil.d("xiaopeng", "定时器");
+                               InputMethodManager inputManager =
+                                       (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                               inputManager.showSoftInput(editPass, 0);
+                           }
+                       },
+                200);
     }
 
     private void inits() {

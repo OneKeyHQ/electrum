@@ -67,7 +67,6 @@ public class DecodeImgThread extends Thread {
 
         } catch (Exception e) {
             e.printStackTrace();
-            //  Log.i("解析的图片结果","失败");
         }
 
         if (rawResult != null) {

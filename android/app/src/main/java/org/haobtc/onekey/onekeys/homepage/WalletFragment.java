@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.IdRes;
+import androidx.annotation.LayoutRes;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.chaquo.python.PyObject;
@@ -63,6 +64,8 @@ import java.util.Optional;
 import butterknife.BindView;
 import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
+import dr.android.utils.LogUtil;
+import io.reactivex.functions.Consumer;
 
 import static android.app.Activity.RESULT_OK;
 import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
@@ -396,8 +399,8 @@ public class WalletFragment extends BaseFragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onConnected(BleConnectedEvent event) {
-            toNext(currentAction);
-            currentAction = 0;
+        toNext(currentAction);
+        currentAction = 0;
     }
 
     /**
@@ -558,23 +561,32 @@ public class WalletFragment extends BaseFragment {
             case R.id.img_scan:
                 rxPermissions
                         .request(Manifest.permission.CAMERA)
-                        .subscribe(granted -> {
-                            if (granted) { // Always true pre-M
-                                //If you have already authorized it, you can directly jump to the QR code scanning interface
-                                Intent intent2 = new Intent(getActivity(), CaptureActivity.class);
-                                ZxingConfig config = new ZxingConfig();
-                                config.setPlayBeep(true);
-                                config.setShake(true);
-                                config.setDecodeBarCode(false);
-                                config.setFullScreenScan(true);
-                                config.setShowAlbum(false);
-                                config.setShowbottomLayout(false);
-                                intent2.putExtra(Constant.INTENT_ZXING_CONFIG, config);
-                                startActivityForResult(intent2, REQUEST_CODE);
-                            } else { // Oups permission denied
-                                Toast.makeText(getActivity(), R.string.photopersion, Toast.LENGTH_SHORT).show();
+                        .subscribe(new Consumer<Boolean>() {
+                            @Override
+                            public void accept(Boolean granted) throws Exception {
+                                if (granted) {
+                                    // Always true pre-M
+                                    //If you have already authorized it, you can directly jump to the QR code scanning interface
+                                    Intent intent2 = new Intent(getActivity(), CaptureActivity.class);
+                                    ZxingConfig config = new ZxingConfig();
+                                    config.setPlayBeep(true);
+                                    config.setShake(true);
+                                    config.setDecodeBarCode(false);
+                                    config.setFullScreenScan(true);
+                                    config.setShowAlbum(false);
+                                    config.setShowbottomLayout(false);
+                                    intent2.putExtra(Constant.INTENT_ZXING_CONFIG, config);
+                                    startActivityForResult(intent2, REQUEST_CODE);
+                                } else {
+                                    // TODO: 2020/12/11  引导去设置页面开启权限
+                                    Toast.makeText(getActivity(), R.string.photopersion, Toast.LENGTH_SHORT).show();
+//                                    String packageName = (getActivity()).getPackageName();
+//                                    Uri packageURI = Uri.parse("package:" + packageName);
+//                                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, packageURI);
+//                                    startActivity(intent);
+                                }
                             }
-                        }).dispose();
+                        });
                 break;
             case R.id.img_Add:
             case R.id.rel_create_hd:
@@ -613,7 +625,7 @@ public class WalletFragment extends BaseFragment {
             case R.id.rel_bi_detail:
                 Intent intent5 = new Intent(getActivity(), TransactionDetailWalletActivity.class);
                 if (nowType.contains("hw")) {
-                   intent5.putExtra(org.haobtc.onekey.constant.Constant.BLE_MAC, bleMac);
+                    intent5.putExtra(org.haobtc.onekey.constant.Constant.BLE_MAC, bleMac);
                 }
                 intent5.putExtra("walletBalance", changeBalance);
                 intent5.putExtra("walletDollar", textDollar.getText().toString());

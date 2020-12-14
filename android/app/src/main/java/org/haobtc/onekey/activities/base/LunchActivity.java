@@ -1,6 +1,7 @@
 package org.haobtc.onekey.activities.base;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.text.TextUtils;
 
 import org.haobtc.onekey.R;
@@ -13,6 +14,8 @@ import org.haobtc.onekey.utils.NfcUtils;
 
 import java.util.Optional;
 
+import dr.android.utils.LogUtil;
+
 /**
  * @author liyan
  */
@@ -24,6 +27,7 @@ public class LunchActivity extends BaseActivity {
         return R.layout.activity_lunch;
     }
 
+
     @Override
     public void initView() {
         if (!Optional.ofNullable(NfcUtils.nfcCheck(this, false)).isPresent()) {
@@ -33,10 +37,10 @@ public class LunchActivity extends BaseActivity {
     }
 
     private void init() {
-        String language =  PreferencesManager.get(this, "Preferences", Constant.LANGUAGE, "").toString();
+        String language = PreferencesManager.get(this, "Preferences", Constant.LANGUAGE, "").toString();
         judgeLanguage(language);
 
-        boolean firstRun = (boolean)PreferencesManager.get(this, "Preferences", Constant.FIRST_RUN, false);
+        boolean firstRun = (boolean) PreferencesManager.get(this, "Preferences", Constant.FIRST_RUN, false);
         if (firstRun) {
             Intent intent = new Intent(LunchActivity.this, HomeOneKeyActivity.class);
             startActivity(intent);

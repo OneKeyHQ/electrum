@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -13,18 +12,14 @@ import android.widget.TextView;
 
 import androidx.annotation.LayoutRes;
 
-import com.chaquo.python.PyObject;
-
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.event.FinishEvent;
+import org.haobtc.onekey.manager.ActivityHQManager;
 import org.haobtc.onekey.onekeys.backup.CheckMnemonicActivity;
-import org.haobtc.onekey.onekeys.dialog.recovery.ImprotSingleActivity;
-import org.haobtc.onekey.onekeys.homepage.process.CreateWalletChooseTypeActivity;
-import org.haobtc.onekey.utils.Daemon;
 import org.haobtc.onekey.utils.ScreenShotListenManager;
 
 import java.util.ArrayList;
@@ -170,6 +165,7 @@ public class HdRootMnemonicsActivity extends BaseActivity {
         switch (view.getId()) {
             case R.id.img_back:
                 finish();
+//                ActivityHQManager.getInstance().backToBackupGuideActivity();
                 break;
             case R.id.btn_copy_it:
                 if ("exportHdword".equals(importHdword)) {
@@ -196,6 +192,7 @@ public class HdRootMnemonicsActivity extends BaseActivity {
     public boolean requireSecure() {
         return true;
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();

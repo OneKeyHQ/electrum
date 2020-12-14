@@ -279,10 +279,10 @@ public class CheckMnemonicActivity extends BaseActivity {
                         e.printStackTrace();
                         return;
                     }
-                    EventBus.getDefault().post(new BackupEvent());
-                    EventBus.getDefault().post(new FinishEvent());
+//                    EventBus.getDefault().post(new BackupEvent());
+//                    EventBus.getDefault().post(new FinishEvent());
                     mIntent(BackupCheckSuccessActivity.class);
-                    finish();
+//                    finish();
                 } else {
                     checkMnemonicFail(CheckMnemonicActivity.this, R.layout.check_mnemonic_fail);
                 }
