@@ -17,6 +17,8 @@ public class BalanceInfo {
     private String balance;
     @SerializedName("name")
     private String name;
+    @SerializedName("label")
+    private String label;
 
     public static BalanceInfo objectFromData(String str) {
         return new Gson().fromJson(str, BalanceInfo.class);
@@ -35,5 +37,13 @@ public class BalanceInfo {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 }

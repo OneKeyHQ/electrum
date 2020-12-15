@@ -237,6 +237,8 @@ public final class Constant {
     public static final String SIGNATURE = "message_signature";
     public static final String FORCE_UPDATE = "force_update";
 
+    public static final String DEVICE_DEFAULT_LABEL = "oneKey";
+
     public static class SearchDeviceMode{
         /**
          * 通过硬件恢复 HD 钱包

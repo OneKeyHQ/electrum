@@ -111,13 +111,7 @@ public class RecoveryHardwareOnceWallet extends BaseActivity implements Business
     @Override
     public void onResult(String s) {
         String xpubs = "[[\"" + s + "\", \"" + FindNormalDeviceActivity.deviceId + "\"]]";
-        List<BalanceInfo> infos = PyEnv.recoveryWallet(this, xpubs, true);
-        if (infos != null) {
-            EventBus.getDefault().post(new FindOnceWalletEvent<>(infos));
-        } else {
-            showToast("未发现可用钱包");
-            finish();
-        }
+        PyEnv.recoveryWallet(this, xpubs, true);
     }
 
     @Override

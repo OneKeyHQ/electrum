@@ -12,9 +12,9 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.asynctask.BusinessAsyncTask;
+import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.PyConstant;
-import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.event.BackupFinishEvent;
 import org.haobtc.onekey.event.ButtonRequestConfirmedEvent;
 import org.haobtc.onekey.event.ButtonRequestEvent;
@@ -23,6 +23,7 @@ import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.event.InitDeviceEvent;
 import org.haobtc.onekey.event.NameSettedEvent;
 import org.haobtc.onekey.event.NextFragmentEvent;
+import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.ui.fragment.ConfirmOnHardwareFragment;
@@ -183,6 +184,14 @@ public class ActivateColdWalletActivity extends BaseActivity implements Business
                 switch (mode) {
                     case Constant.ACTIVE_MODE_IMPORT:
                         updateTitle(R.string.backups_wallet);
+                        String cname = PreferencesManager.get(this, "Preferences", Constant.CURRENT_SELECTED_WALLET_NAME, "").toString();
+                        if (Strings.isNullOrEmpty(cname)) {
+                            PyResponse<Void> response = PyEnv.clearHdBackupFlags(cname);
+                            String errors = response.getErrors();
+                            if (!Strings.isNullOrEmpty(errors)) {
+                                showToast(errors);
+                            }
+                        }
                         startFragment(new NormalActiveSuccessfulFragment(name, R.string.import_success_description, R.string.success_1));
                         break;
                     default:

@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.bean.BalanceInfo;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +57,7 @@ public class OnceWalletAdapter extends RecyclerView.Adapter<OnceWalletAdapter.Vi
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.tetWalletName.setText(walletList.get(position).getName());
+        holder.tetWalletName.setText(walletList.get(position).getLabel());
         holder.textWalletBalance.setText(walletList.get(position).getBalance());
         selectMap.put(walletList.get(position).getName(), holder.checkbox);
     }

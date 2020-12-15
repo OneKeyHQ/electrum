@@ -3,6 +3,7 @@ package org.haobtc.onekey.ui.fragment;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -16,8 +17,8 @@ import org.haobtc.onekey.bean.BalanceInfo;
 import org.haobtc.onekey.bean.FindOnceWalletEvent;
 import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.event.SelectedEvent;
-import org.haobtc.onekey.ui.base.BaseFragment;
 import org.haobtc.onekey.ui.adapter.OnceWalletAdapter;
+import org.haobtc.onekey.ui.base.BaseFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +41,8 @@ public class RecoveryWalletFromHdFragment extends BaseFragment {
     CardView walletCard;
     @BindView(R.id.recovery)
     Button recovery;
+    @BindView(R.id.promote)
+    TextView promote;
     private OnceWalletAdapter adapter;
     private List<String> nameList;
 
@@ -52,20 +55,27 @@ public class RecoveryWalletFromHdFragment extends BaseFragment {
     public void init(View view) {
         nameList = new ArrayList<>();
     }
-    @Subscribe(threadMode = ThreadMode.MAIN)
+
+    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     public void onFind(FindOnceWalletEvent<BalanceInfo> event) {
-        walletCard.setVisibility(View.VISIBLE);
-        recovery.setVisibility(View.VISIBLE);
+        // avoid eventBus' needless deliver
+        if (loadedWallet == null) {
+            return;
+        }
         loadedWallet.setVisibility(View.GONE);
+        recovery.setVisibility(View.VISIBLE);
         if (event.getWallets().isEmpty()) {
-           recovery.setText(R.string.back);
+            promote.setText(R.string.no_use_wallet);
+            recovery.setText(R.string.back);
         } else {
+            walletCard.setVisibility(View.VISIBLE);
             adapter = new OnceWalletAdapter(getContext(), event.getWallets());
             walletRec.setAdapter(adapter);
             walletRec.setLayoutManager(new LinearLayoutManager(getContext()));
             adapter.notifyDataSetChanged();
         }
     }
+
     /***
      * init layout
      * @return

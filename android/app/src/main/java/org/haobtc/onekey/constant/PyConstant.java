@@ -181,4 +181,8 @@ public final class PyConstant {
      * 校验签名信息
      * */
     public static final String VERIFY_MESSAGE_SIGNATURE = "verify_message";
+    /**
+     * 删除钱包备份状态
+     * */
+    public static final String CLEAR_BACK_FLAGS = "delete_backup_info";
 }

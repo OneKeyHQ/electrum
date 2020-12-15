@@ -19,6 +19,7 @@ import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.bean.BalanceInfo;
 import org.haobtc.onekey.bean.CreateWalletBean;
 import org.haobtc.onekey.bean.CurrentAddressDetail;
+import org.haobtc.onekey.bean.FindOnceWalletEvent;
 import org.haobtc.onekey.bean.HardwareFeatures;
 import org.haobtc.onekey.bean.MakeTxResponseBean;
 import org.haobtc.onekey.bean.PyResponse;
@@ -27,6 +28,7 @@ import org.haobtc.onekey.bean.TransactionInfoBean;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.PyConstant;
 import org.haobtc.onekey.event.CreateSuccessEvent;
+import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.exception.HardWareExceptions;
 import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.utils.Daemon;
@@ -268,22 +270,25 @@ public final class PyEnv {
     /**
      * 通过xpub恢复钱包
      */
-    public static List<BalanceInfo> recoveryWallet(BaseActivity activity, String xPubs, boolean hd) {
+    public static void recoveryWallet(BaseActivity activity, String xPubs, boolean hd) {
         List<BalanceInfo> infos = new ArrayList<>();
         try {
-            String walletsInfo = sCommands.callAttr(PyConstant.CREATE_WALLET_BY_XPUB, "", 1, 1, xPubs, new Kwarg("hd", hd)).toString();
-            CreateWalletBean.objectFromData(walletsInfo).getDerivedInfo().forEach(derivedInfoBean -> {
-                BalanceInfo info = new BalanceInfo();
-                info.setBalance(derivedInfoBean.getBlance());
-                info.setName(derivedInfoBean.getName());
-                infos.add(info);
+            mexecutorService.execute(() -> {
+                String walletsInfo = sCommands.callAttr(PyConstant.CREATE_WALLET_BY_XPUB, "", 1, 1, xPubs, new Kwarg("hd", hd)).toString();
+                CreateWalletBean.objectFromData(walletsInfo).getDerivedInfo().forEach(derivedInfoBean -> {
+                    BalanceInfo info = new BalanceInfo();
+                    info.setBalance(derivedInfoBean.getBlance());
+                    info.setLabel(derivedInfoBean.getLabel());
+                    info.setName(derivedInfoBean.getName());
+                    infos.add(info);
+                });
+                EventBus.getDefault().post(new FindOnceWalletEvent<>(infos));
             });
-            return infos;
         } catch (Exception e) {
             activity.showToast(e.getMessage());
+            EventBus.getDefault().post(new ExitEvent());
             e.printStackTrace();
         }
-        return null;
     }
 
     /**
@@ -360,14 +365,17 @@ public final class PyEnv {
             walletBean.getDerivedInfo().forEach(derivedInfoBean -> {
                 BalanceInfo info = new BalanceInfo();
                 info.setBalance(derivedInfoBean.getBlance());
+                info.setLabel(derivedInfoBean.getLabel());
                 info.setName(derivedInfoBean.getName());
                infos.add(info);
             });
+            // HD 根钱包
             Optional.ofNullable(walletBean.getWalletInfo()).ifPresent((walletInfos -> {
                 walletInfos.forEach((walletInfo -> {
                    String name = walletInfo.getName();
                    BalanceInfo info = PyEnv.selectWallet(name);
                    EventBus.getDefault().post(new CreateSuccessEvent(name));
+                   // 现在的HD钱包的Label是BTC-1
                    info.setName("BTC-1");
                    infos.add(info);
                 }));
@@ -554,6 +562,19 @@ public final class PyEnv {
         try {
             boolean verified = sCommands.callAttr(PyConstant.VERIFY_MESSAGE_SIGNATURE, address, message, signature).toBoolean();
             response.setResult(verified);
+        } catch (Exception e) {
+            response.setErrors(e.getMessage());
+            e.printStackTrace();
+        }
+        return response;
+    }
+    /**
+     * 删除hd钱包的备份标记
+     * */
+    public static  PyResponse<Void> clearHdBackupFlags(String name) {
+        PyResponse<Void> response = new PyResponse<>();
+        try {
+            sCommands.callAttr(PyConstant.CLEAR_BACK_FLAGS, name);
         } catch (Exception e) {
             response.setErrors(e.getMessage());
             e.printStackTrace();
