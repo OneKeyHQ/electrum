@@ -48,7 +48,7 @@ public class CheckSignActivity extends BaseActivity {
     public void init() {
         rxPermissions = new RxPermissions(this);
         getCurrentAddress();
-        Bundle bundle = getIntent().getExtras();
+        Bundle bundle = getIntent().getBundleExtra(org.haobtc.onekey.constant.Constant.VERIFY_DETAIL);
         if (bundle != null) {
             editRawMessage.setText(bundle.getString(org.haobtc.onekey.constant.Constant.RAW_MESSAGE));
             editSignature.setText(bundle.getString(org.haobtc.onekey.constant.Constant.SIGNATURE));
@@ -76,17 +76,17 @@ public class CheckSignActivity extends BaseActivity {
             showToast(errors);
         }
     }
-    @OnTextChanged(R.id.edit_address)
+    @OnTextChanged(value = R.id.edit_address, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
     public void onTextChangedAddress(CharSequence sequence) {
-        btnConfirm.setEnabled(Strings.isNullOrEmpty(sequence.toString()));
+        btnConfirm.setEnabled(!Strings.isNullOrEmpty(sequence.toString()));
     }
-    @OnTextChanged(R.id.edit_signature)
+    @OnTextChanged(value = R.id.edit_signature, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
     public void onTextChangedSignature(CharSequence sequence) {
-        btnConfirm.setEnabled(Strings.isNullOrEmpty(sequence.toString()));
+        btnConfirm.setEnabled(!Strings.isNullOrEmpty(sequence.toString()));
     }
-    @OnTextChanged(R.id.edit_message)
+    @OnTextChanged(value = R.id.edit_message, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
     public void onTextChangedMessage(CharSequence sequence) {
-        btnConfirm.setEnabled(Strings.isNullOrEmpty(sequence.toString()));
+        btnConfirm.setEnabled(!Strings.isNullOrEmpty(sequence.toString()));
     }
     @SingleClick
     @OnClick({R.id.img_back, R.id.scan, R.id.paste_message, R.id.paste_address, R.id.paste_signature, R.id.btnConfirm})
@@ -158,5 +158,4 @@ public class CheckSignActivity extends BaseActivity {
             }
         }
     }
-
 }

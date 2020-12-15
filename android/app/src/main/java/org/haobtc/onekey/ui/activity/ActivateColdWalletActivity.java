@@ -185,7 +185,7 @@ public class ActivateColdWalletActivity extends BaseActivity implements Business
                     case Constant.ACTIVE_MODE_IMPORT:
                         updateTitle(R.string.backups_wallet);
                         String cname = PreferencesManager.get(this, "Preferences", Constant.CURRENT_SELECTED_WALLET_NAME, "").toString();
-                        if (Strings.isNullOrEmpty(cname)) {
+                        if (!Strings.isNullOrEmpty(cname)) {
                             PyResponse<Void> response = PyEnv.clearHdBackupFlags(cname);
                             String errors = response.getErrors();
                             if (!Strings.isNullOrEmpty(errors)) {

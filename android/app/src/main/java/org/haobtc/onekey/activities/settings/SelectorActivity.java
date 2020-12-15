@@ -2,11 +2,9 @@ package org.haobtc.onekey.activities.settings;
 
 import android.content.SharedPreferences;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
@@ -17,9 +15,10 @@ import butterknife.OnClick;
 import cn.com.heaton.blelibrary.ble.Ble;
 import cn.com.heaton.blelibrary.ble.model.BleDevice;
 
-//
-// Created by liyan on 2020/5/28.
-//
+
+/**
+ * @author liyan
+ */
 public class SelectorActivity extends BaseActivity {
     @BindView(R.id.img_back)
     ImageView imgBack;
@@ -78,14 +77,15 @@ public class SelectorActivity extends BaseActivity {
         switch (view.getId()) {
             case R.id.nfc:
             case R.id.nfc_item:
-                disconnectBle();
-                if (preferences.getBoolean("nfc_support", true)) {
-                    nfc.setChecked(true);
-                    ble.setChecked(false);
-                    usb.setChecked(false);
-                } else {
-                    Toast.makeText(this, R.string.nfc_useless, Toast.LENGTH_LONG).show();
-                }
+                mToast(getString(R.string.support_less_promote));
+//                disconnectBle();
+//                if (preferences.getBoolean("nfc_support", true)) {
+//                    nfc.setChecked(true);
+//                    ble.setChecked(false);
+//                    usb.setChecked(false);
+//                } else {
+//                    Toast.makeText(this, R.string.nfc_useless, Toast.LENGTH_LONG).show();
+//                }
                 break;
             case R.id.ble:
             case R.id.ble_item:
@@ -95,10 +95,11 @@ public class SelectorActivity extends BaseActivity {
                 break;
             case R.id.usb:
             case R.id.usb_item:
-                disconnectBle();
-                nfc.setChecked(false);
-                ble.setChecked(false);
-                usb.setChecked(true);
+                mToast(getString(R.string.support_less_promote));
+//                disconnectBle();
+//                nfc.setChecked(false);
+//                ble.setChecked(false);
+//                usb.setChecked(true);
                 break;
             case R.id.img_back:
                 saveSetting();

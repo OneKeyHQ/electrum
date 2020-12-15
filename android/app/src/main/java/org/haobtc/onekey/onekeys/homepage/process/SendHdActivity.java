@@ -139,10 +139,8 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     TextView textRollback;
     @BindView(R.id.linear_customize)
     LinearLayout linearCustomize;
-    private String balance;
     private int screenHeight;
     private boolean mIsSoftKeyboardShowing;
-    private ViewTreeObserver.OnGlobalLayoutListener mLayoutChangeListener;
     private SharedPreferences preferences;
     private String hdWalletName;
     private String baseUnit;
@@ -163,7 +161,6 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     private String previousTempTransaction;
     private BigDecimal minAmount;
     private BigDecimal decimalBalance;
-    private BigDecimal maxAmount;
     private int scale;
     private CustomizeFeeDialog feeDialog;
 
@@ -177,7 +174,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         currentFeeRate = currentFeeDetails.getFast().getFeerate();
         hdWalletName = getIntent().getStringExtra("hdWalletName");
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-        balance = getIntent().getStringExtra(WALLET_BALANCE);
+        String balance = getIntent().getStringExtra(WALLET_BALANCE);
         assert balance != null;
         decimalBalance = BigDecimal.valueOf(Double.parseDouble(balance));
         showWalletType = preferences.getString(CURRENT_SELECTED_WALLET_TYPE, "");
@@ -341,7 +338,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     private void calculateMaxSpendableAmount(double feeRate) {
         BigDecimal decimalFee = new BigDecimal(feeRate).multiply(BigDecimal.valueOf(transactionSize == 0 ?
                 DEFAULT_TX_SIZE : transactionSize)).multiply(minAmount);
-        maxAmount = decimalBalance.subtract(decimalFee);
+        BigDecimal maxAmount = decimalBalance.subtract(decimalFee);
         maxAmount = maxAmount.setScale(scale, RoundingMode.HALF_EVEN);
         editAmount.requestFocus();
         editAmount.setText(String.valueOf(maxAmount));
@@ -360,23 +357,15 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
             if (Constant.WALLET_TYPE_HARDWARE.equals(showWalletType)) {
                 hardwareSign(rawTx);
             } else {
-                // 获取主密码
-                if (SOFT_HD_PASS_TYPE_SHORT.equals(preferences.getString(SOFT_HD_PASS_TYPE, SOFT_HD_PASS_TYPE_SHORT))) {
-                    Intent intent = new Intent(this, SetHDWalletPassActivity.class);
-                    intent.putExtra("importHdword", "send");
-                    startActivity(intent);
-                } else {
-                    Intent intent = new Intent(this, SetLongPassActivity.class);
-                    intent.putExtra("importHdword", "send");
-                    startActivity(intent);
-                }
+                sendConfirmDialog(rawTx);
             }
         } else {
-            if (errors.contains("Insufficient funds")) {
-                showToast(getString(R.string.wallet_insufficient));
-            } else {
-                showToast(getString(R.string.changeaddress));
-            }
+          showToast(errors);
+//            if (errors.contains("Insufficient funds")) {
+//                showToast(getString(R.string.wallet_insufficient));
+//            } else {
+//                showToast(getString(R.string.changeaddress));
+//            }
         }
     }
     @Subscribe
@@ -392,9 +381,10 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         if (Strings.isNullOrEmpty(errorMsg)) {
             broadcastTx(pyResponse.getResult().getTx());
         } else {
-            if (errorMsg.contains("Incorrect password")) {
-                showToast(getString(R.string.wrong_pass));
-            }
+            showToast(errorMsg);
+//            if (errorMsg.contains("Incorrect password")) {
+//                showToast(getString(R.string.wrong_pass));
+//            }
         }
     }
     /**
@@ -420,7 +410,8 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         PyResponse<String> response= PyEnv.analysisRawTx(rawTx);
         String errors = response.getErrors();
         if (!Strings.isNullOrEmpty(errors)) {
-            showToast(R.string.transaction_parse_error);
+            showToast(errors);
+//            showToast(R.string.transaction_parse_error);
             return;
         }
         TransactionInfoBean info = TransactionInfoBean.objectFromData(response.getResult());
@@ -447,6 +438,17 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         if (Constant.WALLET_TYPE_HARDWARE.equals(showWalletType)) {
             TransactionInfoBean info = TransactionInfoBean.objectFromData(signedTx);
             broadcastTx(info.getTx());
+        } else {
+            // 获取主密码
+            if (SOFT_HD_PASS_TYPE_SHORT.equals(preferences.getString(SOFT_HD_PASS_TYPE, SOFT_HD_PASS_TYPE_SHORT))) {
+                Intent intent = new Intent(this, SetHDWalletPassActivity.class);
+                intent.putExtra("importHdword", "send");
+                startActivity(intent);
+            } else {
+                Intent intent = new Intent(this, SetLongPassActivity.class);
+                intent.putExtra("importHdword", "send");
+                startActivity(intent);
+            }
         }
     }
 
@@ -469,7 +471,8 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                         textFeeInCash1.setText(String.format(Locale.ENGLISH, "%s %s", cnyUnit, response1.getResult()));
                         ;
                     } else {
-                        showToast(R.string.exchange_error);
+                        showToast(errors1);
+//                        showToast(R.string.exchange_error);
                     }
                     tempRecommendTransaction = temp;
                     currentTempTransaction = tempRecommendTransaction;
@@ -482,7 +485,8 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                     if (Strings.isNullOrEmpty(errors0)) {
                         textFeeInCash0.setText(String.format(Locale.ENGLISH, "%s %s", cnyUnit, response0.getResult()));
                     } else {
-                        showToast(R.string.exchange_error);
+//                        showToast(R.string.exchange_error);
+                        showToast(errors0);
                     }
                     tempSlowTransaction = temp;
                     break;
@@ -494,7 +498,8 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                     if (Strings.isNullOrEmpty(errors2)) {
                         textFeeInCash2.setText(String.format(Locale.ENGLISH, "%s %s", cnyUnit, response2.getResult()));
                     } else {
-                        showToast(R.string.exchange_error);
+                        showToast(errors2);
+//                        showToast(R.string.exchange_error);
                     }
                     tempFastTransaction = temp;
                     break;
@@ -509,14 +514,16 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                         textFeeCustomizeInCash.setText(String.format(Locale.ENGLISH, "%s %s", cnyUnit, response3.getResult()));
                         feeDialog.getTextFeeInCash().setText(String.format(Locale.ENGLISH, "%s %s", cnyUnit, response3.getResult()));
                     } else {
-                        showToast(R.string.exchange_error);
+                        showToast(errors3);
+//                        showToast(R.string.exchange_error);
                     }
                     tempCustomizeTransaction = temp;
                     break;
             }
 
         } else {
-            showToast(R.string.get_fee_info_failed);
+            showToast(errors);
+//            showToast(R.string.get_fee_info_failed);
         }
     }
 
@@ -558,7 +565,10 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         getWindowManager().getDefaultDisplay().getMetrics(metric);
         screenHeight = metric.heightPixels;
         mIsSoftKeyboardShowing = false;
-        mLayoutChangeListener = () -> {
+        //Determine the size of window visible area
+        //If the difference between screen height and window visible area height is greater than 1 / 3 of the whole screen height, it means that the soft keyboard is in display, otherwise, the soft keyboard is hidden.
+        // If the status of the soft keyboard was previously displayed, it is now closed, or it was previously closed, it is now displayed, it means that the status of the soft keyboard has changed
+        ViewTreeObserver.OnGlobalLayoutListener mLayoutChangeListener = () -> {
             //Determine the size of window visible area
             Rect r = new Rect();
             getWindow().getDecorView().getWindowVisibleDisplayFrame(r);
