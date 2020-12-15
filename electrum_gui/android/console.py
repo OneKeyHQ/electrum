@@ -29,7 +29,7 @@ from electrum.util import (
 from electrum.i18n import _, set_language
 from electrum.keystore import bip44_derivation, purpose48_derivation, Imported_KeyStore
 from electrum.plugin import Plugins
-from electrum.plugins.trezor.clientbase import TrezorClientBase
+#from electrum.plugins.trezor.clientbase import TrezorClientBase
 from electrum.transaction import PartialTransaction, Transaction, TxOutput, PartialTxOutput, tx_from_any, TxInput, \
     PartialTxInput
 from electrum import commands, daemon, keystore, simple_config, storage, util, bitcoin
@@ -832,23 +832,50 @@ class AndroidCommands(commands.Commands):
                 coins.append(utxo)
         return coins
 
-    def get_default_fee_info(self):
+    def get_best_block_by_feerate(self, feerate, list):
+        if feerate < list[25]:
+            return 30
+        elif list[25] < feerate < list[10]:
+            return 25
+        elif list[10] < feerate < list[5]:
+            return 10
+        elif list[5] < feerate < list[4]:
+            return 5
+        elif list[4] < feerate < list[3]:
+            return 4
+        elif list[3] < feerate < list[2]:
+            return 3
+        elif list[2] < feerate < list[1]:
+            return 2
+        elif list[1] < feerate:
+            return 1
+
+
+    def format_return_data(self, feerate, size, block):
+        fee = float(feerate / 1000) * size
+        ret_data = {
+            'fee': self.format_amount(fee),
+            'feerate': feerate / 1000,
+            'time': block * BTC_BLOCK_INTERVAL_TIME,
+            'fiat': self.daemon.fx.format_amount_and_units(fee) if self.daemon.fx else None,
+            'size': size
+        }
+        return ret_data
+
+    def get_default_fee_info(self, feerate=None):
         try:
+            fee_info_list = self.config.get_block_fee_info()
             my_change_addr_size = Transaction.estimated_output_size(self.wallet.get_addresses()[0])
             out_size_p2pkh = 34 + my_change_addr_size
-            fee_info = self.config.get_block_fee_info()
             out_info = {}
-            for block, feerate in fee_info.items():
-                fee = float(feerate / 1000) * out_size_p2pkh
-                ret_data = {
-                    'fee': self.format_amount(fee),
-                    'feerate': feerate / 1000,
-                    'time': block * BTC_BLOCK_INTERVAL_TIME,
-                    'fiat': self.daemon.fx.format_amount_and_units(fee) if self.daemon.fx else None,
-                    'size': out_size_p2pkh
-                }
-                key = "slow" if block == 10 else "normal" if block == 5 else "fast" if block == 2 else "slowest"
-                out_info[key] = ret_data
+            if feerate is None:
+                for block, feerate in fee_info_list.items():
+                    if block == 2 or block == 5 or block == 10:
+                        key = "slow" if block == 10 else "normal" if block == 5 else "fast" if block == 2 else "slowest"
+                        out_info[key] = self.format_return_data(feerate, out_size_p2pkh, block)
+            else:
+                block = self.get_best_block_by_feerate(feerate*1000, fee_info_list)
+                out_info["customer"] = self.format_return_data(feerate*1000, out_size_p2pkh, block)
             return json.dumps(out_info)
         except BaseException as e:
             raise e
@@ -888,17 +915,13 @@ class AndroidCommands(commands.Commands):
             tx_details = self.wallet.get_tx_info(tx)
             print("tx_details 1111111 = %s" % json.dumps(tx_details))
 
-            dyn = self.config.is_dynfee()
-            mempool = self.config.use_mempool_fees()
-            pos = self.config.get_depth_level() if mempool else self.config.get_fee_level()
-            fee_rate = feerate * 1000 if feerate is None else self.config.fee_per_kb()
-            target, tooltip = self.config.get_fee_text(pos, dyn, mempool, fee_rate)
-            #block = target.split()[-2]
+            fee_info_list = self.config.get_block_fee_info()
+            block = self.get_best_block_by_feerate(feerate * 1000, fee_info_list)
             ret_data = {
                 'amount': self.format_amount(tx_details.amount),
                 'size': size,
                 'fee': self.format_amount(tx_details.fee),
-                'time': 20,
+                'time': block * BTC_BLOCK_INTERVAL_TIME,
                 'tx': str(self.tx)
             }
             return json.dumps(ret_data)
@@ -1713,7 +1736,6 @@ class AndroidCommands(commands.Commands):
         except BaseException as e:
             raise e
 
-
     ##connection with terzorlib#########################
     def hardware_verify(self, msg, path='android_usb'):
         '''
@@ -2134,6 +2156,19 @@ class AndroidCommands(commands.Commands):
 
     ####################################################
     ## app wallet
+    # def export_keystore(self, password):
+    #     '''
+    #     Export keystory from eth wallet
+    #     :param password:
+    #     :return:
+    #     '''
+    #     try:
+    #         address = self.wallet.get_addresses()[0]
+    #         keystore = self.wallet.export_keystore(address, password=password)
+    #         return keystore
+    #     except BaseException as e:
+    #         raise e
+
     def export_privkey(self, password):
         '''
         Export privkey for the first receiving address
@@ -2144,7 +2179,11 @@ class AndroidCommands(commands.Commands):
             testcommond.load_all_wallet()
             testcommond.select_wallet("BTC-1")
             priv = testcommond.export_privkey(password)
-            {priv='p2wpkh:cVJo3o48E6j8xxbTQprEzaCWQJ7aL3Y59R2W1owzJnX8NBh5AXnt'}
+            if the wallet you select is "btc" wallet, you will get:
+            'cVJo3o48E6j8xxbTQprEzaCWQJ7aL3Y59R2W1owzJnX8NBh5AXnt'
+
+            if the wallet you select is "eth" wallet, you will get:
+            '0x31271366888ccad468157770734b5ac0d98a9363d4b229767a28c44fde445f51'
         '''
         try:
             address = self.wallet.get_addresses()[0]
@@ -2323,7 +2362,7 @@ class AndroidCommands(commands.Commands):
 
         wallet_data = []
         ##create BTC-1
-        wallet_info = self.create("BTC-1", password, seed=seed, passphrase=passphrase, bip39_derivation=bip44_derivation(0, purpose, coin=constants.net.BIP44_COIN_TYPE),
+        wallet_info = self.create("BTC-1", password, seed=seed, passphrase=passphrase, bip39_derivation=bip44_derivation(0, purpose),
                     hd=True)
         wallet_data.append(json.loads(wallet_info))
 
@@ -2538,13 +2577,15 @@ class AndroidCommands(commands.Commands):
                 wallet = Standard_Eth_Wallet(db, storage, config=self.config)
         addr = wallet.get_addresses()[0]
         print(f"addre........{addr, bip39_derivation}")
-        self.check_exist_file(addr)
-        wallet.update_password(old_pw=None, new_pw=password, str_pw=self.android_id, encrypt_storage=True)
+        new_name = self.get_unique_path(wallet)
+        wallet.storage.set_path(self._wallet_path(new_name))
         wallet.set_name(name)
         wallet.save_db()
+        wallet.update_password(old_pw=None, new_pw=password, str_pw=self.android_id, encrypt_storage=True)
+        self.check_exist_file(addr)
         self.daemon.add_wallet(wallet)
-        self.update_wallet_name(temp_path, self.get_unique_path(wallet))
-        wallet = self.get_wallet_by_name(self.get_unique_path(wallet))
+        #self.update_wallet_name(temp_path, self.get_unique_path(wallet))
+        #wallet = self.get_wallet_by_name(self.get_unique_path(wallet))
         if coin == "btc":
             wallet.start_network(self.daemon.network)
         if hd and seed is not None:
@@ -2552,7 +2593,7 @@ class AndroidCommands(commands.Commands):
             if coin == "btc":
                 self.set_hd_wallet(wallet)
             wallet_type = '%s-hd-standard' % coin
-        self.update_local_wallet_info(self.get_unique_path(wallet), wallet_type)
+        self.update_local_wallet_info(new_name, wallet_type)
         if derived_flag:
             self.update_devired_wallet_info(bip39_derivation, self.get_hd_wallet_encode_seed(coin), name)
         # if self.label_flag:

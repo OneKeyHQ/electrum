@@ -354,7 +354,6 @@ class Abstract_Eth_Wallet(ABC):
     def export_private_key(self, address: str, password: Optional[str]) -> str:
         # if self.is_watching_only():
         #     raise Exception(_("This is a watching-only wallet"))
-        # print("TODO")
         # # if not is_address(address):
         # #     raise Exception(f"Invalid bitcoin address: {address}")
         # if not self.is_mine(address):
@@ -1096,7 +1095,7 @@ class Standard_Eth_Wallet(Simple_Eth_Deterministic_Wallet):
     def get_private_key(self, address, password):
         path = self.db.get_address_index(address)
         private_key = self.export_private_key_for_path(path, password)
-        return private_key
+        return "0x%s" %private_key
 
 wallet_types = ['standard', 'multisig', 'imported']
 
