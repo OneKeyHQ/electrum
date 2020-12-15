@@ -1,6 +1,7 @@
 package org.haobtc.onekey.adapter;
 
 import android.annotation.SuppressLint;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -55,12 +56,9 @@ public class OnekeyTxListAdapter extends BaseQuickAdapter<MaintrsactionlistEvent
             imgStatus.setImageDrawable(mContext.getDrawable(R.drawable.receive_));
         }
         TextView sendStatus = helper.getView(R.id.text_send_status);
-        if ("Unconfirmed".equals(item.getTxStatus())) {
+        if (!TextUtils.isEmpty(item.getTxStatus())) {
             sendStatus.setTextColor(mContext.getColor(R.color.text_six));
-            sendStatus.setText(mContext.getString(R.string.waitchoose));
-        } else if (item.getTxStatus().contains("confirmations")) {
-            sendStatus.setTextColor(mContext.getColor(R.color.text_six));
-            sendStatus.setText(mContext.getString(R.string.alreadychoose));
+            sendStatus.setText(item.getTxStatus());
         } else {
             sendStatus.setVisibility(View.GONE);
         }

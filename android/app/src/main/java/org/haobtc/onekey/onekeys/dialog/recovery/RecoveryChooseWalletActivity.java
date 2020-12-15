@@ -14,6 +14,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.adapter.RecoveryWalletAdapter;
+import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.CreateWalletBean;
 import org.haobtc.onekey.bean.RecoveryWalletBean;
 import org.haobtc.onekey.event.CreateSuccessEvent;
@@ -86,6 +87,7 @@ public class RecoveryChooseWalletActivity extends BaseActivity {
         }
     }
 
+    @SingleClick
     @OnClick({R.id.btn_recovery})
     public void onViewClicked(View view) {
         switch (view.getId()) {
@@ -103,14 +105,14 @@ public class RecoveryChooseWalletActivity extends BaseActivity {
                         Daemon.commands.callAttr("recovery_confirmed", recoveryName);
                     } catch (Exception e) {
                         e.printStackTrace();
+                        mToast(e.getMessage());
                         return;
                     }
-
                     EventBus.getDefault().post(new CreateSuccessEvent("BTC-1"));
                     mIntent(HomeOneKeyActivity.class);
-                    mIntent(HomeOneKeyActivity.class);
                 } else {
-                    mToast(getString(R.string.choose_recovery_wallet));
+                    EventBus.getDefault().post(new CreateSuccessEvent("BTC-1"));
+                    mIntent(HomeOneKeyActivity.class);
                 }
                 break;
         }

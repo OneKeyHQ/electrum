@@ -36,7 +36,6 @@
     <string name="touch_fail">连接失败，请检查设置是否正确</string>
     <string name="retry">重试</string>
     <string name="touch_fail_text">1.目前仅支持币信Key硬件设备 \n 2.请确保手机具有NFC功能，并且软件已开启NFC权限 \n 3.请将卡片和手机进行触碰</string>
-    <string name="pin_setting">设置PIN码</string>
     <string name="pin_setting_first">请为您的币信Key设置安全密码</string>
     <string name="confirm_pin">请再次输入您设置的安全密码</string>
     <string name="touch_again">请保持与硬件贴合</string>
@@ -1068,7 +1067,6 @@
     <string name="backup_hide">您的助记词已经成功备份到这台设备，我们也没什么可提醒您的了。总之，切记保管好它，搞丢了没有任何人可以帮您找回来。祝您在区块链的世界玩儿开心️。</string>
     <string name="auth_verify">防伪校验</string>
     <string name="connecting_device">正在连接设备</string>
-    <string name="conn_device">连接设备</string>
     <string name="get_auth_sign">获取防伪签名</string>
     <string name="push_auth_sign">提交防伪验证信息</string>
     <string name="verify_success">验证通过</string>
@@ -1103,14 +1101,11 @@
     <string name="i_know_">我知道了</string>
     <string name="please_create_wallet">请先创建钱包</string>
     <string name="dont_greater_than">不得超过1*10^8</string>
-    <string name="private_key_wrong">私钥导入错误，请重新输入</string>
     <string name="private_key_export">私钥导出</string>
-    <string name="find_this_wallet">找到以下钱包</string>
     <string name="find_wallet_tip">您曾使用 HD 助记词派生过以下钱包,\n选择您要恢复的。暂时不想恢复的钱包您可以跳过，并稍后在 HD 钱包中重新添加，您的资产不会丢失。</string>
     <string name="add_hd_wallet">添加 HD 钱包</string>
     <string name="recovery_wallet">恢复钱包</string>
     <string name="input_seed_import">通过助记词导入</string>
-    <string name="not_recovery_wallet">暂无可导入的钱包</string>
     <string name="quotation_choose">价格行情</string>
     <string name="price_quotation_tip">选择适合的行情来源\n只影响 BTC 和 ETH 的价格显示</string>
     <string name="recovery_default_">恢复默认</string>
@@ -1186,7 +1181,6 @@
     <string name="long_pass_34">密码长度不应大于 34 位字符，请重新填写。</string>
     <string name="wrong_private">私钥输入错误，请重新输入！</string>
     <string name="have_private">已存在该私钥创建的钱包！</string>
-    <string name="changemessage">导入信息已存在请更换</string>
     <string name="support_backup">独立钱包不支持备份到硬件设备</string>
     <string name="dont_sreenshot">不要截图</string>
     <string name="dont_screenshot_tip">助记词是非常敏感和隐私的内容，一旦被其他人获取，您的资产有可能全部丢失， <b>因此不要截屏，并注意您的周边有无摄像头。</b></string>
@@ -1249,7 +1243,6 @@
     <string name="pos_24">24位</string>
     <string name="ble_connect_timeout">连接蓝牙设备超时，请确认你的设备是否已开启蓝牙，并在你的旁边</string>
     <string name="get_update_info_failed">获取更新信息失败</string>
-    <string name="unkonw_device">未知设备 ！！！</string>
     <string name="support_less_promote">暂不支持，敬请期待</string>
     <string name="wallet_active_successful">钱包激活成功</string>
     <string name="wallet_active_success_promote">您的硬件钱包激活成功，\n 我们也没什么可提醒您的了。\n 总之，切记保管好它，\n 搞丢了没有任何人可以帮您找回来。\n 祝您在区块链的世界玩儿开心❤️。</string>
@@ -1258,16 +1251,12 @@
     <string name="check_message">核对信息</string>
     <string name="set_name_hint">请输入一个名字，方便记忆</string>
     <string name="plublic_key">公钥地址</string>
-    <string name="confirm_on_hardware_1">在设备上进行确认</string>
     <string name="xpub_promote">「扩展公钥」，也被称为XPUB。是比特币标准(BIP32)的一部分，不包含任何私钥。 您可以将其导入其他观察钱包（Watch-Only），全面查看特定钱包中的所有交易、地址和余额，但无法花费其中的币。</string>
     <string name="xpub">扩展公钥</string>
     <string name="select_mnemonic_size">选择助记词个数</string>
     <string name="_24">24</string>
     <string name="_12">12</string>
-    <string name="_12_">12位</string>
-    <string name="_24_">24位</string>
     <string name="mnemonic_size_select_promote_12">硬件钱包将为你生成 12 位助记词</string>
-    <string name="verify_successful">验证通过</string>
     <string name="current_stm32_version">当前固件版本</string>
     <string name="current_ble_version">当前蓝牙版本</string>
     <string name="update_warning">升级固件前务必备份好钱包，否则可能造成资产损失。</string>
@@ -1280,12 +1269,9 @@
     <string name="watting">请稍后...</string>
     <string name="set_pin">设置PIN码</string>
     <string name="connectting">连接设备</string>
-    <string name="get_signature">获取防伪签名</string>
-    <string name="post_verify_message">提交防伪验证信息</string>
     <string name="copy_by_device_dispaly">从硬件设备上完成抄写</string>
     <string name="copy_mnemonic_12">请抄写你的 12 位助记词</string>
     <string name="copy_mnemonic_promote">1. 备好纸笔认真抄写，再次确认无误后请妥善保管。\n 2. OneKey 不会为您存储私密数据，助记词一旦丢失将无法找回。</string>
-    <string name="copy_done">我抄好了</string>
     <string name="get_fee_info_failed">获取费率信息失败</string>
     <string name="exchange_error">费率转换出错</string>
     <string name="fee_rate_too_small">费率低于当前网络的最小值，请重新输入</string>
@@ -1293,5 +1279,9 @@
     <string name="only_backup_only_device">该操作仅支持backupOnly的特殊设备</string>
     <string name="hard_tip3">当前设备未激活，或者是备份的特殊设备，不支持该操作</string>
     <string name="hard_tip4">当前设备未激活，不支持该操作，请去配对页面激活设备</string>
-    <string name="newest_app">当前已是最新版本</string>
+    <string name="unknown_device">未知设备！！！</string>
+    <string name="not_found_device_msg">未发现设备信息</string>
+    <string name="bluetooth_exception">蓝牙链接异常</string>
+    <string name="name_lenth_8">名字最多为8个字符哦~</string>
+
 </resources>

@@ -5,6 +5,7 @@ import android.view.View;
 
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.aop.SingleClick;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -26,6 +27,7 @@ public class ImprotSingleActivity extends BaseActivity {
 
     }
 
+    @SingleClick(value = 1000)
     @OnClick({R.id.img_back, R.id.rel_import_btc, R.id.rel_import_eth})
     public void onViewClicked(View view) {
         switch (view.getId()) {

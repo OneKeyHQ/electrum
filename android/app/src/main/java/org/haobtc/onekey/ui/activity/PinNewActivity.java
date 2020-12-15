@@ -50,7 +50,7 @@ public class PinNewActivity extends BaseActivity implements NumKeyboardUtil.Call
         updateTitle(R.string.change_pin);
         pinOrigin = Optional.ofNullable(getIntent().getStringExtra(Constant.PIN_ORIGIN)).orElse("");
         if (Strings.isNullOrEmpty(pinOrigin)) {
-            promote.setText(R.string.pin_setting);
+            promote.setText(R.string.set_pin);
         } else {
             promote.setText(R.string.change_pin_promote);
         }

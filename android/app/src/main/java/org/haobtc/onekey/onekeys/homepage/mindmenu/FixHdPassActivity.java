@@ -6,6 +6,7 @@ import android.view.View;
 
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.onekeys.dialog.SetHDWalletPassActivity;
 import org.haobtc.onekey.onekeys.dialog.SetLongPassActivity;
 
@@ -34,6 +35,7 @@ public class FixHdPassActivity extends BaseActivity {
 
     }
 
+    @SingleClick
     @OnClick({R.id.img_back, R.id.rel_fix_pass})
     public void onViewClicked(View view) {
         Intent intent;

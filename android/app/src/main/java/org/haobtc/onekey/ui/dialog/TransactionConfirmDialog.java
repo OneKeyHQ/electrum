@@ -66,7 +66,7 @@ public class TransactionConfirmDialog extends BaseDialogFragment {
                 btnConfirmPay.setEnabled(true);
                 break;
             case Constant.WALLET_TYPE_HARDWARE_PERSONAL:
-                btnConfirmPay.setText(R.string.confirm_on_hardware_1);
+                btnConfirmPay.setText(R.string.cold_device_confirm);
                 break;
             case Constant.WALLET_TYPE_HARDWARE_MULTI:
                 break;

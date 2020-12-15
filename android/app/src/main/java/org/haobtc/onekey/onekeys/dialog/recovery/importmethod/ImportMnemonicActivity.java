@@ -25,6 +25,7 @@ import com.chaquo.python.PyObject;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.adapter.SearchMnemonicAdapter;
+import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.utils.Daemon;
 
 import java.util.ArrayList;
@@ -201,6 +202,7 @@ public class ImportMnemonicActivity extends BaseActivity implements View.OnFocus
         }
     }
 
+    @SingleClick(value = 1000)
     @OnClick({R.id.img_back, R.id.btn_recovery, R.id.img_test_paste})
     public void onViewClicked(View view) {
         switch (view.getId()) {
@@ -274,9 +276,9 @@ public class ImportMnemonicActivity extends BaseActivity implements View.OnFocus
             isSeeds = Daemon.commands.callAttr("is_seed", strNewseed);
         } catch (Exception e) {
             e.printStackTrace();
+            mToast(e.getMessage());
             return;
         }
-        Log.i("isSeedsisSeedsisSeeds", "isSeed: " + isSeeds.toBoolean());
         if (isSeeds.toBoolean()) {
             Intent intent = new Intent(ImportMnemonicActivity.this, ImportWalletSetNameActivity.class);
             intent.putExtra("importHdword", "importMnemonic");

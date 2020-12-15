@@ -70,7 +70,7 @@ public class PinSettingActivity extends BaseActivity {
         tag = Optional.ofNullable(getIntent().getStringExtra("tag")).orElse("");
         switch (pinType) {
             case 2:
-                textViewPinDescription.setText(getString(R.string.pin_setting));
+                textViewPinDescription.setText(getString(R.string.set_pin));
                 break;
             case 3:
                 textViewPinDescription.setText(getString(R.string.pin_original));

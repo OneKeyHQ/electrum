@@ -129,7 +129,7 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
                     }
                 }
                 if (Strings.isNullOrEmpty(bleMac)) {
-                    showToast(R.string.unkonw_device);
+                    showToast(getString(R.string.unknown_device));
                 }
                 currentMethod = BusinessAsyncTask.CHANGE_PIN;
                 initBle();
@@ -142,7 +142,7 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
                     }
                 }
                 if (Strings.isNullOrEmpty(bleMac)) {
-                    showToast(R.string.unkonw_device);
+                    showToast(getString(R.string.unknown_device));
                 }
                 currentMethod = BusinessAsyncTask.WIPE_DEVICE;
                 initBle();
@@ -167,7 +167,7 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
                     }
                 }
                 if (Strings.isNullOrEmpty(bleMac)) {
-                    showToast(R.string.unkonw_device);
+                    showToast(getString(R.string.unknown_device));
                 }
                 currentMethod = BusinessAsyncTask.COUNTER_VERIFICATION;
                 initBle();
@@ -180,7 +180,7 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
                     }
                 }
                 if (Strings.isNullOrEmpty(bleMac)) {
-                    showToast(R.string.unkonw_device);
+                    showToast(getString(R.string.unknown_device));
                 }
                 currentMethod = BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY;
                 initBle();

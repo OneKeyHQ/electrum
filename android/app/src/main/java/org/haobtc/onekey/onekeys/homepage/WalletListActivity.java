@@ -116,6 +116,7 @@ public class WalletListActivity extends BaseActivity {
         getHomeWalletList();
     }
 
+    @SingleClick
     @SuppressLint("UseCompatLoadingForDrawables")
     @OnClick({R.id.img_close, R.id.recl_wallet_detail, R.id.lin_pair_wallet, R.id.lin_add_wallet, R.id.view_all, R.id.view_btc, R.id.view_eth, R.id.recl_add_wallet, R.id.img_add, R.id.img_w, R.id.recl_add_hd_wallet, R.id.recl_recovery_wallet})
     public void onViewClicked(View view) {
@@ -338,80 +339,6 @@ public class WalletListActivity extends BaseActivity {
                 });
             }
         }
-//        try {
-//            getWalletsListInfo = Daemon.commands.callAttr("list_wallets");
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return;
-//        }
-        //       if (getWalletsListInfo.toString().length() > 2) {
-//            String toStrings = getWalletsListInfo.toString();
-//            Log.i("mWheelplanting", "toStrings: " + toStrings);
-//            JSONArray jsonDatas = com.alibaba.fastjson.JSONObject.parseArray(toStrings);
-//            for (int i = 0; i < jsonDatas.size(); i++) {
-//                Map jsonToMap = (Map) jsonDatas.get(i);
-//                Set keySets = jsonToMap.keySet();
-//                Iterator ki = keySets.iterator();
-//                AddressEvent addressEvent = new AddressEvent();
-//                AddressEvent btcEvent = new AddressEvent();
-//                AddressEvent ethEvent = new AddressEvent();
-//
-//                while (ki.hasNext()) {
-//                    try {
-//                        //get key
-//                        String key = (String) ki.next();
-//                        String value = jsonToMap.get(key).toString();
-//                        JSONObject jsonObject = new JSONObject(value);
-//                        String addr = jsonObject.getString("addr");
-//                        String type = jsonObject.getString("type");
-//                        if (type.contains("hd") || type.contains("derived")) {
-//                            addressEvent.setName(key);
-//                            addressEvent.setType(type);
-//                            addressEvent.setAmount(addr);
-//                            hdWalletList.add(addressEvent);
-//                        }
-//                        if (type.contains("btc")) {
-//                            btcEvent.setName(key);
-//                            btcEvent.setType(type);
-//                            btcEvent.setAmount(addr);
-//                            btcList.add(btcEvent);
-//                        } else if (type.contains("eth")) {
-//                            ethEvent.setName(key);
-//                            ethEvent.setType(type);
-//                            ethEvent.setAmount(addr);
-//                            ethList.add(ethEvent);
-//                        }
-//                    } catch (JSONException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            }
-//            textWalletNum.setText(String.valueOf(hdWalletList.size()));
-//            if (hdWalletList == null || hdWalletList.size() == 0) {
-//                reclWalletDetail.setVisibility(View.GONE);
-//                reclAddWallet.setVisibility(View.GONE);
-//                reclAddHdWallet.setVisibility(View.VISIBLE);
-//                reclRecoveryWallet.setVisibility(View.VISIBLE);
-//            } else {
-//                reclAddWallet.setVisibility(View.VISIBLE);
-//                WalletListAdapter walletListAdapter = new WalletListAdapter(hdWalletList);
-//                reclWalletList.setAdapter(walletListAdapter);
-//                walletListAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
-//                    @Override
-//                    public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-//                        String name = hdWalletList.get(position).getName();
-//                        edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME, name);
-//                        edit.apply();
-//                        mIntent(HomeOneKeyActivity.class);
-//                    }
-//                });
-//            }
-//        } else {
-//            reclWalletDetail.setVisibility(View.GONE);
-//            reclAddWallet.setVisibility(View.GONE);
-//            reclAddHdWallet.setVisibility(View.VISIBLE);
-//            reclRecoveryWallet.setVisibility(View.VISIBLE);
-//        }
     }
 
     private void createWalletChooseDialog(Context context, @LayoutRes int resource) {

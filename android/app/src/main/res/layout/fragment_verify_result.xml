@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:background="@android:color/white"
         android:layout_gravity="center_horizontal"
-        android:text="@string/verify_successful"
+        android:text="@string/verify_success"
         android:layout_marginHorizontal="@dimen/dp_51"
         android:textColor="#00B812"
         android:textSize="30sp" />

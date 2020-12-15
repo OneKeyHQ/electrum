@@ -697,7 +697,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         OkHttpClient okHttpClient = new OkHttpClient();
         Request request = new Request.Builder().url(url).build();
         Call call = okHttpClient.newCall(request);
-        Log.d("Main", "正在检查更新信息");
         call.enqueue(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, IOException e) {
@@ -716,7 +715,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 } catch (Exception e) {
                     e.printStackTrace();
                     if (e instanceof JsonSyntaxException) {
-                        Log.e("Main", "获取到的更新信息格式错误");
                     }
                     return;
                 }

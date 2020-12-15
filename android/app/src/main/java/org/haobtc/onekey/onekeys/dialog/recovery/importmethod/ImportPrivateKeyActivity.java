@@ -25,6 +25,7 @@ import com.yzq.zxinglibrary.common.Constant;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.CreateWalletBean;
 import org.haobtc.onekey.event.CreateSuccessEvent;
 import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
@@ -68,6 +69,7 @@ public class ImportPrivateKeyActivity extends BaseActivity implements TextWatche
         return true;
     }
 
+    @SingleClick(value = 1000)
     @OnClick({R.id.img_back, R.id.img_scan, R.id.btn_import})
     public void onViewClicked(View view) {
         switch (view.getId()) {
@@ -109,9 +111,7 @@ public class ImportPrivateKeyActivity extends BaseActivity implements TextWatche
         try {
             Daemon.commands.callAttr("verify_legality", editInputPrivate.getText().toString(), new Kwarg("flag", "private"));
         } catch (Exception e) {
-            if (e.getMessage().contains("Incorrect private key")) {
-                mToast(getString(R.string.invalid_private));
-            }
+            mToast(e.getMessage());
             e.printStackTrace();
             return;
         }

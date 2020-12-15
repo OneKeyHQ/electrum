@@ -23,6 +23,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.MyApplication;
+import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.asynctask.BusinessAsyncTask;
 import org.haobtc.onekey.bean.CurrentFeeDetails;
 import org.haobtc.onekey.bean.PyResponse;
@@ -222,6 +223,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     }
 
     @OnClick({R.id.img_back, R.id.switch_coin_type, R.id.text_max_amount, R.id.text_customize_fee_rate, R.id.linear_slow, R.id.linear_recommend, R.id.linear_fast, R.id.text_rollback, R.id.btn_next, R.id.paste_address})
+    @SingleClick
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
@@ -379,16 +381,18 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
             }
         }
     }
+
     @Subscribe
     public void onGotSoftPass(InputPassSendEvent event) {
         softSign(event.getPass());
     }
+
     /**
      * 软件签名交易
      */
     private void softSign(String password) {
         PyResponse<TransactionInfoBean> pyResponse = PyEnv.signTx(rawTx, password);
-        String errorMsg =  pyResponse.getErrors();
+        String errorMsg = pyResponse.getErrors();
         if (Strings.isNullOrEmpty(errorMsg)) {
             broadcastTx(pyResponse.getResult().getTx());
         } else {
@@ -397,6 +401,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
             }
         }
     }
+
     /**
      * 广播交易
      */
@@ -409,7 +414,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
             startActivity(intent);
             finish();
         } else {
-           showToast(errors);
+            showToast(errors);
         }
     }
 
@@ -417,7 +422,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
      * 弹出交易确认框
      */
     private void sendConfirmDialog(String rawTx) {
-        PyResponse<String> response= PyEnv.analysisRawTx(rawTx);
+        PyResponse<String> response = PyEnv.analysisRawTx(rawTx);
         String errors = response.getErrors();
         if (!Strings.isNullOrEmpty(errors)) {
             showToast(R.string.transaction_parse_error);
@@ -530,9 +535,10 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
             btnNext.setEnabled(false);
         }
     }
+
     /**
      * 自定义费率确认响应
-     * */
+     */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onCustomizeFee(CustomizeFeeRateEvent event) {
         linearRateSelector.setVisibility(View.GONE);
@@ -542,14 +548,16 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         previousTempTransaction = currentTempTransaction;
         currentTempTransaction = tempCustomizeTransaction;
     }
+
     /**
      * 自定义费率监听
-     * */
+     */
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     public void onGetFee(GetFeeEvent event) {
         String feeRate = event.getFeeRate();
         getFee(feeRate, CUSTOMIZE_FEE_RATE);
     }
+
     /**
      * 注册全局视图监听器
      */
@@ -577,9 +585,10 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         // Register layout change monitoring
         getWindow().getDecorView().getViewTreeObserver().addOnGlobalLayoutListener(mLayoutChangeListener);
     }
+
     /**
      * 收币地址输入框实时监听
-     * */
+     */
     @OnFocusChange(value = R.id.edit_receiver_address)
     public void onFocusChanged(boolean focused) {
         if (!focused) {
@@ -595,40 +604,43 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
             }
         }
     }
+
     /**
      * 交易金额实时监听
-     * */
+     */
     @OnTextChanged(value = R.id.edit_amount, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
     public void onTextChangeAmount(CharSequence sequence) {
-            if (Strings.isNullOrEmpty(editReceiverAddress.getText().toString())) {
-                showToast(R.string.input_address);
-                editAmount.setText("");
+        if (Strings.isNullOrEmpty(editReceiverAddress.getText().toString())) {
+            showToast(R.string.input_address);
+            editAmount.setText("");
+            return;
+        }
+        String amount = editAmount.getText().toString();
+        if (!Strings.isNullOrEmpty(amount) && Double.parseDouble(amount) > 0) {
+            BigDecimal decimal = BigDecimal.valueOf(Double.parseDouble(amount));
+            if (decimal.compareTo(minAmount) < 0) {
+                editAmount.setText(String.format(Locale.ENGLISH, "%s", minAmount.toString()));
+            } else if (decimal.compareTo(decimalBalance) >= 0) {
+                showToast(R.string.insufficient);
                 return;
             }
-            String amount = editAmount.getText().toString();
-            if (!Strings.isNullOrEmpty(amount) && Double.parseDouble(amount) > 0) {
-                BigDecimal decimal = BigDecimal.valueOf(Double.parseDouble(amount));
-                if (decimal.compareTo(minAmount) < 0) {
-                    editAmount.setText(String.format(Locale.ENGLISH, "%s", minAmount.toString()));
-                } else if (decimal.compareTo(decimalBalance) >= 0) {
-                    showToast(R.string.insufficient);
-                    return;
-                }
-                changeButton();
-            }
+            changeButton();
+        }
     }
+
     /**
      * 交易金额输入框失焦监听
-     * */
+     */
     @OnFocusChange(value = R.id.edit_amount)
     public void onFocusChange(boolean focused) {
         if (!focused) {
             refreshFeeView();
         }
     }
+
     /**
      * 获取三种不同费率对应的临时交易
-     * */
+     */
     private void refreshFeeView() {
 
         Optional.ofNullable(currentFeeDetails).ifPresent((currentFeeDetails1 -> {

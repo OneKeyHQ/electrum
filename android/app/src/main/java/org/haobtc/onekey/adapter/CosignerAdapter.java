@@ -1,5 +1,6 @@
 package org.haobtc.onekey.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,9 +41,10 @@ public class CosignerAdapter extends RecyclerView.Adapter<CosignerAdapter.myView
         return new myViewHolder(inflate);
     }
 
+    @SuppressLint("DefaultLocale")
     @Override
     public void onBindViewHolder(@NonNull myViewHolder holder, int position) {
-        holder.tetName.setText("联署人 "+nameNums.get(position));
+        holder.tetName.setText(String.format("%s %d", context.getString(R.string.co_signer), nameNums.get(position)));
         holder.tetContent.setText(xlistData.get(position));
         holder.imgdelete.setOnClickListener(v -> onItemDeteleLisoner.onClick(position));
 

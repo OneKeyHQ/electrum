@@ -220,7 +220,7 @@ public final class BleManager {
         public void onConnectException(BleDevice device, int errorCode) {
             super.onConnectException(device, errorCode);
             connecting = false;
-            Toast.makeText(MyApplication.getInstance(), "蓝牙链接异常",Toast.LENGTH_SHORT).show();
+            Toast.makeText(MyApplication.getInstance(), R.string.bluetooth_exception,Toast.LENGTH_SHORT).show();
             EventBus.getDefault().post(BleConnectionEx.BLE_CONNECTION_EX_OTHERS);
             EventBus.getDefault().post(new ExitEvent());
             PyEnv.cancelAll();

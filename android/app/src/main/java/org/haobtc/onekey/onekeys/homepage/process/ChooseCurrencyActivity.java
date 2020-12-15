@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.adapter.HomeHdAdapter;
+import org.haobtc.onekey.aop.SingleClick;
 
 import java.util.ArrayList;
 
@@ -39,6 +40,7 @@ public class ChooseCurrencyActivity extends BaseActivity {
         reclHdList.setAdapter(homeHdAdapter);
     }
 
+    @SingleClick
     @OnClick({R.id.img_back, R.id.lin_search})
     public void onViewClicked(View view) {
         switch (view.getId()) {

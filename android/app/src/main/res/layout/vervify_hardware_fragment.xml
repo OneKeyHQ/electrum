@@ -86,7 +86,7 @@
             android:id="@+id/retrieve_verify_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:text="@string/get_signature" />
+            app:text="@string/get_auth_sign" />
 
 
         <org.haobtc.onekey.ui.custom.LoadingTextView
@@ -94,7 +94,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/dp_20"
-            app:text="@string/post_verify_message" />
+            app:text="@string/push_auth_sign" />
 
 
     </LinearLayout>

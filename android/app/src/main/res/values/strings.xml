@@ -36,7 +36,6 @@
     <string name="touch_fail">Connection failed, please doublecheck settings</string>
     <string name="retry">Retry</string>
     <string name="touch_fail_text">1. Only hardware devices of Bixin\'s BixinKey are supported \n  2. Please make sure the phone supports NFC, and NFC permission has been given to the software \n 3. Please make the card touch the phone</string>
-    <string name="pin_setting">Set Pin code</string>
     <string name="pin_setting_first">Please set safety password for your BixinKey</string>
     <string name="confirm_pin">Please re-enter the safety password you set</string>
     <string name="touch_again">Make hareware wallet touch with phone</string>
@@ -1125,7 +1124,6 @@
     <string name="backup_hide">Your mnemonics have been successfully backed up to this device, and we have nothing to remind you. In a word, remember to take good care of it. If it is lost, no one can help you find it back. Have a good time in the world of blockchain ❤️.</string>
     <string name="auth_verify">Anti counterfeiting verification</string>
     <string name="connecting_device">Connecting device</string>
-    <string name="conn_device">Connected Devices</string>
     <string name="get_auth_sign">Get security signature</string>
     <string name="push_auth_sign">Submit anti-counterfeiting verification information</string>
     <string name="verify_success">Validation passed</string>
@@ -1159,14 +1157,11 @@
     <string name="i_know_">I got it!</string>
     <string name="please_create_wallet">Please create a wallet first</string>
     <string name="dont_greater_than">No more than 1 * 10 ^ 8</string>
-    <string name="private_key_wrong">Private key import error, please re-enter</string>
     <string name="private_key_export">Private key export</string>
-    <string name="find_this_wallet">Find the following Wallet</string>
     <string name="find_wallet_tip">You have used the HD mnemonic to derive the following wallets. Select the one you want to restore. The HD wallet you do not want to temporarily add to your wallet will not be recovered later.</string>
     <string name="add_hd_wallet">Add HD Wallet</string>
     <string name="recovery_wallet">Recovery Wallet</string>
     <string name="input_seed_import">Import through mnemonics</string>
-    <string name="not_recovery_wallet">No wallet to import</string>
     <string name="usb">USB</string>
     <string name="quotation_choose">Price quotation</string>
     <string name="price_quotation_tip">Choosing the appropriate market source will \nonly affect the price display of BTC and eth</string>
@@ -1245,7 +1240,6 @@
     <string name="long_pass_34">Password length should not be greater than 34 characters, please fill in again.</string>
     <string name="wrong_private">Private key input error, please re-enter!</string>
     <string name="have_private">The wallet created by the private key already exists!</string>
-    <string name="changemessage">Import information already exists, please replace</string>
     <string name="support_backup">Stand alone wallets do not support backing up to hardware devices</string>
     <string name="dont_sreenshot">No screenshots</string>
     <string name="dont_screenshot_tip">Mnemonics are very sensitive and private content. Once acquired by others, your assets may be lost. Therefore, <b>do not take screen shots and pay attention to whether there are cameras around you.</b></string>
@@ -1308,7 +1302,6 @@
     <string name="pos_24">24位</string>
     <string name="ble_connect_timeout">The connection to the Bluetooth device has timed out, please confirm whether your device has Bluetooth enabled and is next to you</string>
     <string name="get_update_info_failed">Failed to fetch update information</string>
-    <string name="unkonw_device">Unknown device !!!</string>
     <string name="support_less_promote">Not supported yet, stay tuned</string>
     <string name="wallet_active_successful">钱包激活成功</string>
     <string name="wallet_active_success_promote">您的硬件钱包激活成功，\n 我们也没什么可提醒您的了。\n 总之，切记保管好它，\n 搞丢了没有任何人可以帮您找回来。\n 祝您在区块链的世界玩儿开心❤️。</string>
@@ -1317,16 +1310,12 @@
     <string name="check_message">核对信息</string>
     <string name="set_name_hint">请输入一个名字，方便记忆</string>
     <string name="plublic_key">公钥地址</string>
-    <string name="confirm_on_hardware_1">在设备上进行确认</string>
     <string name="xpub_promote">「扩展公钥」，也被称为XPUB。是比特币标准(BIP32)的一部分，不包含任何私钥。 您可以将其导入其他观察钱包（Watch-Only），全面查看特定钱包中的所有交易、地址和余额，但无法花费其中的币。</string>
     <string name="xpub">扩展公钥</string>
     <string name="select_mnemonic_size">选择助记词个数</string>
     <string name="_24">24</string>
     <string name="_12">12</string>
-    <string name="_12_">12位</string>
-    <string name="_24_">24位</string>
     <string name="mnemonic_size_select_promote_12">硬件钱包将为你生成 12 位助记词</string>
-    <string name="verify_successful">验证通过</string>
     <string name="current_stm32_version">当前固件版本</string>
     <string name="current_ble_version">当前蓝牙版本</string>
     <string name="update_warning">升级固件前务必备份好钱包，否则可能造成资产损失。</string>
@@ -1339,12 +1328,9 @@
     <string name="watting">请稍后...</string>
     <string name="set_pin">设置PIN码</string>
     <string name="connectting">连接设备</string>
-    <string name="get_signature">获取防伪签名</string>
-    <string name="post_verify_message">提交防伪验证信息</string>
     <string name="copy_by_device_dispaly">从硬件设备上完成抄写</string>
     <string name="copy_mnemonic_12">请抄写你的 12 位助记词</string>
     <string name="copy_mnemonic_promote">1. 备好纸笔认真抄写，再次确认无误后请妥善保管。\n 2. OneKey 不会为您存储私密数据，助记词一旦丢失将无法找回。</string>
-    <string name="copy_done">我抄好了</string>
     <string name="get_fee_info_failed">获取费率信息失败</string>
     <string name="exchange_error">费率转换出错</string>
     <string name="fee_rate_too_small">费率低于当前网络的最小值，请重新输入</string>
@@ -1352,5 +1338,9 @@
     <string name="only_backup_only_device">该操作仅支持backupOnly的特殊设备</string>
     <string name="hard_tip3">当前设备未激活，或者是备份的特殊设备，不支持该操作</string>
     <string name="hard_tip4">当前设备未激活，不支持该操作，请去配对页面激活设备</string>
-    <string name="newest_app">当前已是最新版本</string>
+    <string name="unknown_device">Unknown device!!!</string>
+    <string name="not_found_device_msg">No device information found</string>
+    <string name="bluetooth_exception">Bluetooth link abnormal</string>
+    <string name="lable">lable</string>
+    <string name="name_lenth_8">Name can be up to 8 characters~</string>
 </resources>

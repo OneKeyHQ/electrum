@@ -16,6 +16,7 @@ import com.google.gson.Gson;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.CreateWalletBean;
 import org.haobtc.onekey.event.CreateSuccessEvent;
 import org.haobtc.onekey.manager.PyEnv;
@@ -65,6 +66,7 @@ public class ImportWalletSetNameActivity extends BaseActivity implements TextWat
         editSetWalletName.addTextChangedListener(this);
     }
 
+    @SingleClick(value = 1000)
     @OnClick({R.id.img_back, R.id.btn_import})
     public void onViewClicked(View view) {
         switch (view.getId()) {
@@ -109,16 +111,7 @@ public class ImportWalletSetNameActivity extends BaseActivity implements TextWat
 
         } catch (Exception e) {
             e.printStackTrace();
-            if (e.getMessage().contains("path is exist")) {
-                mToast(getString(R.string.changewalletname));
-            } else if (e.getMessage().contains("The same seed have create wallet")) {
-                String haveWalletName = e.getMessage().substring(e.getMessage().indexOf("name=") + 5);
-                mToast(getString(R.string.same_seed_have) + haveWalletName);
-            } else if (e.getMessage().contains("The file already exists")) {
-                mToast(getString(R.string.have_private));
-            } else if (e.getMessage().contains("Please enter the correct address or pubkey")) {
-                mToast(getString(R.string.private_invalid));
-            }
+            mToast(e.getMessage());
         }
     }
 
@@ -129,7 +122,16 @@ public class ImportWalletSetNameActivity extends BaseActivity implements TextWat
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-
+        // 禁止EditText输入空格
+        if (s.toString().contains(" ")) {
+            String[] str = s.toString().split(" ");
+            StringBuffer sb = new StringBuffer();
+            for (int i = 0; i < str.length; i++) {
+                sb.append(str[i]);
+            }
+            editSetWalletName.setText(sb.toString());
+            editSetWalletName.setSelection(start);
+        }
     }
 
     @Override

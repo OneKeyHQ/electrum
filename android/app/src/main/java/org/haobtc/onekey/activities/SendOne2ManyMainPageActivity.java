@@ -184,6 +184,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
             walletAddressShowUi = Daemon.commands.callAttr("get_wallet_address_show_UI");
         } catch (Exception e) {
             e.printStackTrace();
+            mToast(e.getMessage());
             return;
         }
         if (walletAddressShowUi != null) {
@@ -258,6 +259,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
             getWalletsListInfo = Daemon.commands.callAttr("list_wallets");
         } catch (Exception e) {
             e.printStackTrace();
+            mToast(e.getMessage());
             return;
         }
         if (getWalletsListInfo != null) {

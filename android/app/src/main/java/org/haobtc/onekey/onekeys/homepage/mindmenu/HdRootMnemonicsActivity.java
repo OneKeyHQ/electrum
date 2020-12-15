@@ -20,6 +20,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.event.FinishEvent;
 import org.haobtc.onekey.onekeys.backup.CheckMnemonicActivity;
 import org.haobtc.onekey.onekeys.dialog.recovery.ImprotSingleActivity;
@@ -165,6 +166,7 @@ public class HdRootMnemonicsActivity extends BaseActivity {
         }
     }
 
+    @SingleClick
     @OnClick({R.id.img_back, R.id.btn_copy_it})
     public void onViewClicked(View view) {
         switch (view.getId()) {

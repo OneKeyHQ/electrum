@@ -7,6 +7,7 @@ import android.widget.RelativeLayout;
 
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.aop.SingleClick;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -38,6 +39,7 @@ public class CreateWalletChooseTypeActivity extends BaseActivity {
 
     }
 
+    @SingleClick
     @OnClick({R.id.img_back, R.id.rel_derive_hd, R.id.rel_single_wallet})
     public void onViewClicked(View view) {
         switch (view.getId()) {

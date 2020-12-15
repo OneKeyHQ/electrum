@@ -27,6 +27,7 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.adapter.SearchMnemonicAdapter;
 import org.haobtc.onekey.constant.Constant;
+import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.onekeys.dialog.recovery.ImprotSingleActivity;
 import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
 import org.haobtc.onekey.utils.Daemon;
@@ -214,6 +215,7 @@ public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocu
 
     }
 
+    @SingleClick
     @OnClick({R.id.img_back, R.id.btn_recovery, R.id.lin_hard_recovery, R.id.lin_import, R.id.img_copy_test})
     public void onViewClicked(View view) {
         switch (view.getId()) {

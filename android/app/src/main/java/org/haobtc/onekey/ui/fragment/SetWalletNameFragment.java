@@ -1,9 +1,12 @@
 package org.haobtc.onekey.ui.fragment;
 
 import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.common.base.Strings;
 
@@ -19,7 +22,7 @@ import butterknife.OnTextChanged;
 /**
  * @author liyan
  */
-public class SetWalletNameFragment extends BaseFragment {
+public class SetWalletNameFragment extends BaseFragment implements TextWatcher {
 
     @BindView(R.id.device_name)
     protected EditText mDeviceNameEditText;
@@ -28,6 +31,7 @@ public class SetWalletNameFragment extends BaseFragment {
 
     @Override
     public void init(View view) {
+        mDeviceNameEditText.addTextChangedListener(this);
     }
 
     @OnTextChanged(value = R.id.device_name, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
@@ -46,5 +50,24 @@ public class SetWalletNameFragment extends BaseFragment {
             return;
         }
         EventBus.getDefault().post(new CreateWalletEvent(mDeviceNameEditText.getText().toString()));
+    }
+
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+        if (!TextUtils.isEmpty(s.toString())) {
+            if (s.length() > 14) {
+                Toast.makeText(getActivity(), getString(R.string.name_lenth), Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }

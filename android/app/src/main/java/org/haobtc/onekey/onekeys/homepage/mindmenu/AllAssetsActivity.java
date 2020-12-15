@@ -81,6 +81,7 @@ public class AllAssetsActivity extends BaseActivity {
             }
         } catch (Exception e) {
             tetNone.setVisibility(View.VISIBLE);
+            mToast(e.getMessage());
             e.printStackTrace();
             return;
         }

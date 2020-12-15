@@ -116,7 +116,6 @@ public class AboutActivity extends BaseActivity implements OnDownloadListener {
         call.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                System.out.println("获取更新信息失败");
             }
 
             @Override
@@ -162,7 +161,7 @@ public class AboutActivity extends BaseActivity implements OnDownloadListener {
     private void attemptUpdate(String uri,  int versionCode, String versionName, String size, String description) {
         int versionCodeLocal  = ApkUtil.getVersionCode(this);
         if (versionCodeLocal >= versionCode) {
-            mToast(getString(R.string.newest_app));
+            mToast(getString(R.string.is_new));
             return;
         }
 

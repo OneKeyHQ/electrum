@@ -96,6 +96,7 @@ public class HDWalletActivity extends BaseActivity {
         getHomeWalletList();
     }
 
+    @SingleClick
     @OnClick({R.id.img_back, R.id.text_manage, R.id.recl_add_wallet, R.id.recl_add_hd_wallet, R.id.recl_recovery_wallet, R.id.img_what_hd})
     public void onViewClicked(View view) {
         switch (view.getId()) {
@@ -184,60 +185,6 @@ public class HDWalletActivity extends BaseActivity {
                 textManage.setVisibility(View.GONE);
             }
         }
-//        PyObject getWalletsListInfo;
-//        //wallet list
-//        try {
-//            getWalletsListInfo = Daemon.commands.callAttr("list_wallets");
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return;
-//        }
-//        String toStrings = getWalletsListInfo.toString();
-//        Log.i("mWheelplanting", "toStrings: " + toStrings);
-//        if (getWalletsListInfo.toString().length() > 2) {
-//            JSONArray jsonDatas = com.alibaba.fastjson.JSONObject.parseArray(toStrings);
-//            for (int i = 0; i < jsonDatas.size(); i++) {
-//                Map jsonToMap = (Map) jsonDatas.get(i);
-//                Set keySets = jsonToMap.keySet();
-//                Iterator ki = keySets.iterator();
-//                AddressEvent addressEvent = new AddressEvent();
-//
-//                while (ki.hasNext()) {
-//                    try {
-//                        //get key
-//                        String key = (String) ki.next();
-//                        String value = jsonToMap.get(key).toString();
-//                        JSONObject jsonObject = new JSONObject(value);
-//                        String addr = jsonObject.getString("addr");
-//                        String type = jsonObject.getString("type");
-//                        if (type.contains("hd") || type.contains("derived")) {
-//                            addressEvent.setName(key);
-//                            addressEvent.setType(type);
-//                            addressEvent.setAmount(addr);
-//                            hdWalletList.add(addressEvent);
-//                        }
-//                        if ("btc-hd-standard".equals(type)) {
-//                            deleteHdWalletName = key;
-//                        }
-//                    } catch (JSONException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            }
-//            textWalletNum.setText(String.valueOf(hdWalletList.size()));
-//            if (hdWalletList != null && hdWalletList.size() > 0) {
-//                walletListAdapter.notifyDataSetChanged();
-//            } else {
-//                reclAddWallet.setVisibility(View.GONE);
-//                linNotWallet.setVisibility(View.VISIBLE);
-//                textManage.setVisibility(View.GONE);
-//            }
-//        } else {
-//            textWalletNum.setText(String.valueOf(hdWalletList.size()));
-//            reclAddWallet.setVisibility(View.GONE);
-//            linNotWallet.setVisibility(View.VISIBLE);
-//            textManage.setVisibility(View.GONE);
-//        }
     }
 
     @Subscribe

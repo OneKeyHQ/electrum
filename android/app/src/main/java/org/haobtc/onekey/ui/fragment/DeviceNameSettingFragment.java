@@ -2,9 +2,11 @@ package org.haobtc.onekey.ui.fragment;
 
 import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
@@ -27,6 +29,26 @@ public class DeviceNameSettingFragment extends BaseFragment {
 
     @Override
     public void init(View view) {
+        mDeviceNameEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (!TextUtils.isEmpty(s.toString())) {
+                    if (s.length() > 7) {
+                        Toast.makeText(getActivity(), getString(R.string.name_lenth_8), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
     }
 
     @OnTextChanged(value = R.id.device_name, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)

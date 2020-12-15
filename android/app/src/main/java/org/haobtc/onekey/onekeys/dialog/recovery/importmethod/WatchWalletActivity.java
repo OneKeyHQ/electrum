@@ -19,6 +19,7 @@ import com.yzq.zxinglibrary.common.Constant;
 
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.aop.SingleClick;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -51,6 +52,7 @@ public class WatchWalletActivity extends BaseActivity implements TextWatcher {
 
     }
 
+    @SingleClick(value = 1000)
     @OnClick({R.id.img_back, R.id.img_scan, R.id.btn_import})
     public void onViewClicked(View view) {
         switch (view.getId()) {

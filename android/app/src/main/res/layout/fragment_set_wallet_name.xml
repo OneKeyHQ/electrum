@@ -36,7 +36,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="34dp"
         android:background="@drawable/edit_text_bg"
-        android:hint="@string/input_device_name_hide"
+        android:hint="@string/please_input_walletname"
         android:paddingHorizontal="@dimen/dp_24"/>
 
 

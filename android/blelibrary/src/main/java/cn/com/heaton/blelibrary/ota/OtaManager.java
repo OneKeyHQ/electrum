@@ -98,7 +98,7 @@ public class OtaManager {
 							otaManager.mUpdateDialog.dismiss();
 
 							AlertDialog.Builder builder = new AlertDialog.Builder(otaManager.mContext);
-							builder.setTitle("硬件更新");
+							builder.setTitle(otaManager.mContext.getString(R.string.hardware_update));
 							builder.setMessage(otaManager.mContext.getString(R.string.ota_error, bleDevice != null ? "[" + bleDevice.getBleName() + "]" : ""));
 							final BleOtaUpdater otaUpdater = updater;
 							builder.setPositiveButton(R.string.update_retry, new DialogInterface.OnClickListener() {

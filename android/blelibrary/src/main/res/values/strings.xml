@@ -4,4 +4,5 @@
     <string name="update_retry">重试</string>
     <string name="update_cancel">取消</string>
     <string name="updating">更新中,请稍后</string>
+    <string name="hardware_update">硬件更新</string>
 </resources>

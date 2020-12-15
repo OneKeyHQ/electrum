@@ -22,6 +22,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.event.FinishEvent;
 import org.haobtc.onekey.onekeys.dialog.SetHDWalletPassActivity;
 import org.haobtc.onekey.onekeys.dialog.SetLongPassActivity;
@@ -62,6 +63,7 @@ public class WalletManageActivity extends BaseActivity {
 
     }
 
+    @SingleClick
     @OnClick({R.id.img_back, R.id.rel_export_word, R.id.rel_delete_wallet})
     public void onViewClicked(View view) {
         switch (view.getId()) {
@@ -96,6 +98,7 @@ public class WalletManageActivity extends BaseActivity {
                 dontBackup(this, R.layout.confrim_delete_hdwallet);
             }
         } catch (Exception e) {
+            mToast(e.getMessage());
             e.printStackTrace();
         }
     }

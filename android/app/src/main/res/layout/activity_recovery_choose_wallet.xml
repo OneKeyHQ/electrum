@@ -33,7 +33,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_40"
-        android:text="@string/find_this_wallet"
+        android:text="@string/find_device_promote"
         android:textColor="@color/text_two"
         android:textSize="30sp" />
 

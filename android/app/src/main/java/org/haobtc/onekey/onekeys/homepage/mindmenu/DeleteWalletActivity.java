@@ -26,6 +26,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.FinishEvent;
 import org.haobtc.onekey.event.LoadOtherWalletEvent;
@@ -97,6 +98,7 @@ public class DeleteWalletActivity extends BaseActivity implements CompoundButton
 
     }
 
+    @SingleClick
     @OnClick({R.id.img_back, R.id.btn_forward})
     public void onViewClicked(View view) {
         switch (view.getId()) {
@@ -148,11 +150,7 @@ public class DeleteWalletActivity extends BaseActivity implements CompoundButton
             Daemon.commands.callAttr("delete_wallet", "111111", new Kwarg("name", keyName));
         } catch (Exception e) {
             e.printStackTrace();
-            if (e.getMessage().contains("path is exist")) {
-                mToast(getString(R.string.changewalletname));
-            } else if (e.getMessage().contains("'NoneType' object is not iterable")) {
-                mToast(getString(R.string.private_key_wrong));
-            }
+            mToast(e.getMessage());
             return;
         }
         mToast(getString(R.string.delete_succse));

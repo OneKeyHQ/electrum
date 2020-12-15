@@ -316,6 +316,7 @@ public class WalletFragment extends BaseFragment {
                 }
             }
         } catch (Exception e) {
+            Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
     }
@@ -327,7 +328,7 @@ public class WalletFragment extends BaseFragment {
         if (org.haobtc.onekey.constant.Constant.WALLET_TYPE_HARDWARE.equals(nowType)) {
             currentAction = id;
             if (Strings.isNullOrEmpty(bleMac)) {
-                Toast.makeText(getContext(), "未发现设备信息", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), getString(R.string.not_found_device_msg), Toast.LENGTH_SHORT).show();
             } else {
                 Intent intent2 = new Intent(getActivity(), SearchDevicesActivity.class);
                 intent2.putExtra(org.haobtc.onekey.constant.Constant.SEARCH_DEVICE_MODE, org.haobtc.onekey.constant.Constant.SearchDeviceMode.MODE_PREPARE);
@@ -487,7 +488,7 @@ public class WalletFragment extends BaseFragment {
                         parseQr = Daemon.commands.callAttr("parse_pr", content);
                     } catch (Exception e) {
                         e.printStackTrace();
-                        Toast.makeText(getActivity(), getString(R.string.address_wrong), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
                         return;
                     }
                     if (parseQr.toString().length() > 2) {

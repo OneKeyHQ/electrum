@@ -129,6 +129,7 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
 
         } catch (Exception e) {
             e.printStackTrace();
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
             return;
         }
         if (walletAddressShowUi != null) {

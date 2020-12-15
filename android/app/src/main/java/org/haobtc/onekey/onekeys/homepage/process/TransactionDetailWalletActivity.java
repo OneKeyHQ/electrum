@@ -23,6 +23,7 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.activities.sign.SignActivity;
 import org.haobtc.onekey.adapter.OnekeyTxListAdapter;
+import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.MaintrsactionlistEvent;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.BleConnectedEvent;
@@ -161,6 +162,7 @@ public class TransactionDetailWalletActivity extends BaseActivity {
 
     }
 
+    @SingleClick
     @SuppressLint("UseCompatLoadingForDrawables")
     @OnClick({R.id.img_back, R.id.text_All, R.id.text_into, R.id.text_output, R.id.btn_forward, R.id.btn_collect})
     public void onViewClicked(View view) {

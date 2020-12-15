@@ -18,6 +18,7 @@ import androidx.annotation.LayoutRes;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.event.BackupEvent;
 import org.haobtc.onekey.event.FinishEvent;
 import org.haobtc.onekey.manager.PreferencesManager;
@@ -264,6 +265,7 @@ public class CheckMnemonicActivity extends BaseActivity {
 
     }
 
+    @SingleClick(value = 1000)
     @OnClick({R.id.img_back, R.id.btn_check})
     public void onViewClicked(View view) {
         switch (view.getId()) {
@@ -277,6 +279,7 @@ public class CheckMnemonicActivity extends BaseActivity {
                         Daemon.commands.callAttr("delete_backup_info", keyName);
                     } catch (Exception e) {
                         e.printStackTrace();
+                        mToast(e.getMessage());
                         return;
                     }
                     EventBus.getDefault().post(new BackupEvent());

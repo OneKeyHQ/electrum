@@ -84,7 +84,8 @@ public class LanguageSettingActivity extends BaseActivity {
                 break;
             case R.id.radio_system:
                 edit.putString("language", "System");
-                edit.commit();
+                edit.apply();
+                setLanguage("zh_CN");
                 imgSystem.setVisibility(View.VISIBLE);
                 imgChinese.setVisibility(View.GONE);
                 imgEnglish.setVisibility(View.GONE);
@@ -95,9 +96,8 @@ public class LanguageSettingActivity extends BaseActivity {
                 break;
             case R.id.radio_chineseasy:
                 mTextChinese();
-                setLanguage("Chinese");
-                edit.putString("language", "zh_CN");
-                edit.apply();
+                setLanguage("zh_CN");
+                edit.putString("language", "Chinese");
                 edit.apply();
                 imgSystem.setVisibility(View.GONE);
                 imgChinese.setVisibility(View.VISIBLE);
@@ -108,8 +108,8 @@ public class LanguageSettingActivity extends BaseActivity {
                 break;
             case R.id.radio_english:
                 mTextEnglish();
-                setLanguage("English");
-                edit.putString("language", "en_UK");
+                setLanguage("en_UK");
+                edit.putString("language", "English");
                 edit.apply();
                 imgSystem.setVisibility(View.GONE);
                 imgChinese.setVisibility(View.GONE);
@@ -126,7 +126,7 @@ public class LanguageSettingActivity extends BaseActivity {
 
     private void setLanguage(String language) {
         try {
-            Daemon.commands.callAttr("set_language",language);
+            Daemon.commands.callAttr("set_language", language);
         } catch (Exception e) {
             e.printStackTrace();
             mToast(e.getMessage());

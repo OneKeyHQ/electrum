@@ -11,6 +11,7 @@ import android.widget.EditText;
 
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.onekeys.dialog.SetHDWalletPassActivity;
 import org.haobtc.onekey.onekeys.dialog.SetLongPassActivity;
 
@@ -54,6 +55,7 @@ public class SetDeriveWalletNameActivity extends BaseActivity implements TextWat
         editSetWalletName.addTextChangedListener(this);
     }
 
+    @SingleClick
     @OnClick({R.id.img_back, R.id.btn_import})
     public void onViewClicked(View view) {
         switch (view.getId()) {
@@ -85,7 +87,16 @@ public class SetDeriveWalletNameActivity extends BaseActivity implements TextWat
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-
+        // 禁止EditText输入空格
+        if (s.toString().contains(" ")) {
+            String[] str = s.toString().split(" ");
+            StringBuffer sb = new StringBuffer();
+            for (int i = 0; i < str.length; i++) {
+                sb.append(str[i]);
+            }
+            editSetWalletName.setText(sb.toString());
+            editSetWalletName.setSelection(start);
+        }
     }
 
     @Override

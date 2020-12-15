@@ -30,6 +30,7 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.activities.sign.SignActivity;
 import org.haobtc.onekey.bean.CurrentAddressDetail;
+import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.event.FixWalletNameEvent;
 import org.haobtc.onekey.event.SecondEvent;
 import org.haobtc.onekey.manager.PreferencesManager;
@@ -149,6 +150,7 @@ public class HdWalletDetailActivity extends BaseActivity {
 
     }
 
+    @SingleClick
     @OnClick({R.id.img_back, R.id.img_copy, R.id.rel_export_word, R.id.rel_export_private_key, R.id.rel_export_keystore, R.id.rel_delete_wallet, R.id.text_wallet_name, R.id.text_sign})
     public void onViewClicked(View view) {
         switch (view.getId()) {
@@ -241,7 +243,16 @@ public class HdWalletDetailActivity extends BaseActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
+                // 禁止EditText输入空格
+                if (s.toString().contains(" ")) {
+                    String[] str = s.toString().split(" ");
+                    StringBuffer sb = new StringBuffer();
+                    for (int i = 0; i < str.length; i++) {
+                        sb.append(str[i]);
+                    }
+                    walletName.setText(sb.toString());
+                    walletName.setSelection(start);
+                }
             }
 
             @Override

@@ -20,6 +20,7 @@ import com.yzq.zxinglibrary.encode.CodeCreator;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.event.SecondEvent;
 import org.haobtc.onekey.utils.ScreenShotListenManager;
 
@@ -62,6 +63,7 @@ public class ExportPrivateActivity extends BaseActivity {
         imaPrivateCode.setImageBitmap(bitmap);
     }
 
+    @SingleClick
     @OnClick({R.id.img_back, R.id.btn_next, R.id.img_copy, R.id.text_show_code})
     public void onViewClicked(View view) {
         switch (view.getId()) {

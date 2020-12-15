@@ -17,6 +17,7 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.activities.transaction.CheckChainDetailWebActivity;
 import org.haobtc.onekey.bean.TransactionInfoBean;
+import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.utils.Daemon;
 
 import java.util.Objects;
@@ -85,6 +86,7 @@ public class DetailTransactionActivity extends BaseActivity {
                 infoFromRaw = Daemon.commands.callAttr("get_tx_info_from_raw", tx);
             } catch (Exception e) {
                 e.printStackTrace();
+                mToast(e.getMessage());
                 return;
             }
             if (!TextUtils.isEmpty(infoFromRaw.toString())) {
@@ -97,6 +99,7 @@ public class DetailTransactionActivity extends BaseActivity {
                 infoFromRaw = Daemon.commands.callAttr("get_tx_info", hashDetail);
             } catch (Exception e) {
                 e.printStackTrace();
+                mToast(e.getMessage());
                 return;
             }
             if (!TextUtils.isEmpty(infoFromRaw.toString())) {
@@ -153,6 +156,7 @@ public class DetailTransactionActivity extends BaseActivity {
         textBlockHigh.setText(high);
     }
 
+    @SingleClick
     @OnClick({R.id.img_back, R.id.img_send_copy, R.id.img_receive_copy, R.id.text_block_high, R.id.text_tx_num})
     public void onViewClicked(View view) {
         switch (view.getId()) {

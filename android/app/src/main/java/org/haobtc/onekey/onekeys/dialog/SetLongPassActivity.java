@@ -30,8 +30,10 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.CreateWalletBean;
 import org.haobtc.onekey.bean.LocalWalletInfo;
+import org.haobtc.onekey.bean.RecoveryWalletBean;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.CreateSuccessEvent;
 import org.haobtc.onekey.event.FinishEvent;
@@ -51,6 +53,7 @@ import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
 import org.haobtc.onekey.utils.Daemon;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -158,6 +161,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
         editPass.setHint(getString(R.string.input_password));
     }
 
+    @SingleClick(value = 3000)
     @OnClick({R.id.img_back, R.id.img_eye_yes, R.id.img_eye_no, R.id.btn_next, R.id.lin_short_pass})
     public void onViewClicked(View view) {
         switch (view.getId()) {
@@ -279,9 +283,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            if (e.getMessage().contains("Incorrect password")) {
-                mToast(getString(R.string.wrong_pass));
-            }
+            mToast(e.getMessage());
         }
     }
 
@@ -291,9 +293,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
             Daemon.commands.callAttr("delete_wallet", editPass.getText().toString(), new Kwarg("name", keyName));
         } catch (Exception e) {
             e.printStackTrace();
-            if (e.getMessage().contains("Incorrect password")) {
-                mToast(getString(R.string.wrong_pass));
-            }
+            mToast(e.getMessage());
             return;
         }
         mToast(getString(R.string.delete_succse));
@@ -314,20 +314,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
 
         } catch (Exception e) {
             e.printStackTrace();
-            if (e.getMessage().contains("path is exist")) {
-                mToast(getString(R.string.changewalletname));
-            } else if (e.getMessage().contains("The same seed have create wallet")) {
-                String haveWalletName = e.getMessage().substring(e.getMessage().indexOf("name=") + 5);
-                mToast(getString(R.string.same_seed_have) + haveWalletName);
-            } else if (e.getMessage().contains("'NoneType' object is not iterable")) {
-                mToast(getString(R.string.private_key_wrong));
-            } else if (e.getMessage().contains("Incorrect password")) {
-                mToast(getString(R.string.wrong_pass));
-            } else if (e.getMessage().contains("The file already exists")) {
-                mToast(getString(R.string.changemessage));
-            } else if (e.getMessage().contains("Invalid private")) {
-                mToast(getString(R.string.private_invalid));
-            }
+            mToast(e.getMessage());
             return;
         }
     }
@@ -342,18 +329,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
 
         } catch (Exception e) {
             e.printStackTrace();
-            if (e.getMessage().contains("path is exist")) {
-                mToast(getString(R.string.changewalletname));
-            } else if (e.getMessage().contains("The same seed have create wallet")) {
-                String haveWalletName = e.getMessage().substring(e.getMessage().indexOf("name=") + 5);
-                mToast(getString(R.string.same_seed_have) + haveWalletName);
-            } else if (e.getMessage().contains("'NoneType' object is not iterable")) {
-                mToast(getString(R.string.private_key_wrong));
-            } else if (e.getMessage().contains("Incorrect password")) {
-                mToast(getString(R.string.wrong_pass));
-            } else if (e.getMessage().contains("The file already exists")) {
-                mToast(getString(R.string.changemessage));
-            }
+            mToast(e.getMessage());
             return;
         }
     }
@@ -366,9 +342,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
             mIntent(HomeOneKeyActivity.class);
             finish();
         } catch (Exception e) {
-            if (e.getMessage().contains("Incorrect password")) {
-                mToast(getString(R.string.wrong_pass));
-            }
+            mToast(e.getMessage());
             e.printStackTrace();
             return;
         }
@@ -382,9 +356,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
             mIntent(HomeOneKeyActivity.class);
             finish();
         } catch (Exception e) {
-            if (e.getMessage().contains("Incorrect password")) {
-                mToast(getString(R.string.wrong_pass));
-            }
+            mToast(e.getMessage());
             e.printStackTrace();
             return;
         }
@@ -393,7 +365,9 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
     private void recoveryHdWallet() {
         try {
             PyObject pyObject = Daemon.commands.callAttr("create_hd_wallet", editPass.getText().toString(), new Kwarg("seed", recoverySeed));
-            if (pyObject.toString().length() > 2) {
+            RecoveryWalletBean recoveryWalletBean = new Gson().fromJson(pyObject.toString(), RecoveryWalletBean.class);
+            List<RecoveryWalletBean.DerivedInfoBean> derivedInfo = recoveryWalletBean.getDerivedInfo();
+            if (derivedInfo != null && derivedInfo.size() > 0) {
                 Intent intent = new Intent(SetLongPassActivity.this, RecoveryChooseWalletActivity.class);
                 intent.putExtra("recoveryData", pyObject.toString());
                 startActivity(intent);
@@ -404,19 +378,18 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
                     Daemon.commands.callAttr("recovery_confirmed", "");
                 } catch (Exception e) {
                     e.printStackTrace();
+                    mToast(e.getMessage());
                     return;
                 }
-                mToast(getString(R.string.not_recovery_wallet));
-                CreateWalletBean createWalletBean = new Gson().fromJson(pyObject.toString(), CreateWalletBean.class);
-                EventBus.getDefault().post(new CreateSuccessEvent(createWalletBean.getWalletInfo().get(0).getName()));
+                List<RecoveryWalletBean.WalletInfoBean> walletInfo = recoveryWalletBean.getWalletInfo();
+                String name = walletInfo.get(0).getName();
+                EventBus.getDefault().post(new CreateSuccessEvent(name));
                 mIntent(HomeOneKeyActivity.class);
                 finish();
             }
 
         } catch (Exception e) {
-            if (e.getMessage().contains("Incorrect password")) {
-                mToast(getString(R.string.wrong_pass));
-            }
+            mToast(e.getMessage());
             e.printStackTrace();
         }
     }
@@ -437,10 +410,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
             Daemon.commands.callAttr("delete_wallet", editPass.getText().toString(), new Kwarg("name", deleteHdWalletName));
 //            Daemon.commands.callAttr("delete_wallet", pwdEdittext.getText().toString(), new Kwarg("name", "ETH-1"));
         } catch (Exception e) {
-            e.printStackTrace();
-            if (e.getMessage().contains("Incorrect password")) {
-                mToast(getString(R.string.wrong_pass));
-            }
+            mToast(e.getMessage());
             e.printStackTrace();
             return;
         }
@@ -464,9 +434,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
             intent.putExtra("privateKey", exportPrivateKey.toString());
             startActivity(intent);
         } catch (Exception e) {
-            if (e.getMessage().contains("Incorrect password")) {
-                mToast(getString(R.string.wrong_pass));
-            }
+            mToast(e.getMessage());
             e.printStackTrace();
             return;
         }
@@ -480,10 +448,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
                 Daemon.commands.callAttr("check_password", editPass.getText().toString());
             } catch (Exception e) {
                 e.printStackTrace();
-                Log.i("fixHdPassfixHdPass", "fixHdPass: " + e.getMessage());
-                if (e.getMessage().contains("Incorrect password")) {
-                    mToast(getString(R.string.wrong_pass_next_input));
-                }
+                mToast(e.getMessage());
                 return;
             }
             firstPass = editPass.getText().toString();
@@ -496,9 +461,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
             try {
                 Daemon.commands.callAttr("update_wallet_password", firstPass, editPass.getText().toString());
             } catch (Exception e) {
-                if (e.getMessage().contains("Incorrect password")) {
-                    mToast(getString(R.string.wrong_pass));
-                }
+                mToast(e.getMessage());
                 e.printStackTrace();
                 return;
             }
@@ -521,9 +484,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
                 return;
             }
         } catch (Exception e) {
-            if (e.getMessage().contains("Incorrect password")) {
-                mToast(getString(R.string.wrong_pass));
-            }
+            mToast(e.getMessage());
             e.printStackTrace();
             return;
         }

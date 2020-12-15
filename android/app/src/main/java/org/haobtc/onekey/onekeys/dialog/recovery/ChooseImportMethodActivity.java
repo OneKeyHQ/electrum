@@ -7,6 +7,7 @@ import android.widget.RelativeLayout;
 
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.onekeys.dialog.recovery.importmethod.ImportKeystoreActivity;
 import org.haobtc.onekey.onekeys.dialog.recovery.importmethod.ImportMnemonicActivity;
 import org.haobtc.onekey.onekeys.dialog.recovery.importmethod.ImportPrivateKeyActivity;
@@ -43,6 +44,7 @@ public class ChooseImportMethodActivity extends BaseActivity {
 
     }
 
+    @SingleClick(value = 1000)
     @OnClick({R.id.img_back, R.id.rel_import_private, R.id.rel_import_help, R.id.rel_import_keystore, R.id.rel_watch})
     public void onViewClicked(View view) {
         switch (view.getId()) {
