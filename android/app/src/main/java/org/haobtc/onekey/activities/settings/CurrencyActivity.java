@@ -1,7 +1,6 @@
 package org.haobtc.onekey.activities.settings;
 
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
@@ -10,7 +9,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -34,6 +32,9 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
+import static org.haobtc.onekey.constant.Constant.CURRENT_CURRENCY_GRAPHIC_SYMBOL;
+import static org.haobtc.onekey.constant.Constant.CURRENT_CURRENCY_SYMBOL;
 
 public class CurrencyActivity extends BaseActivity {
 
@@ -226,7 +227,8 @@ public class CurrencyActivity extends BaseActivity {
                             e.printStackTrace();
                             return;
                         }
-                        edit.putString("cny_strunit", "CNY");
+                        edit.putString(CURRENT_CURRENCY_SYMBOL, "CNY");
+                        edit.putString(CURRENT_CURRENCY_GRAPHIC_SYMBOL, "¥");
                     } else if (pos == 1) {
                         try {
                             Daemon.commands.callAttr("set_currency", "USD");
@@ -234,7 +236,8 @@ public class CurrencyActivity extends BaseActivity {
                             e.printStackTrace();
                             return;
                         }
-                        edit.putString("cny_strunit", "USD");
+                        edit.putString(CURRENT_CURRENCY_SYMBOL, "USD");
+                        edit.putString(CURRENT_CURRENCY_GRAPHIC_SYMBOL, "$");
                     } else if (pos == 2) {
                         try {
                             Daemon.commands.callAttr("set_currency", "KRW");
@@ -242,7 +245,8 @@ public class CurrencyActivity extends BaseActivity {
                             e.printStackTrace();
                             return;
                         }
-                        edit.putString("cny_strunit", "KRW");
+                        edit.putString(CURRENT_CURRENCY_SYMBOL, "KRW");
+                        edit.putString(CURRENT_CURRENCY_GRAPHIC_SYMBOL, "₩");
                     } else {
                         try {
                             Daemon.commands.callAttr("set_currency", listCNY.get(pos).getName());
@@ -250,7 +254,7 @@ public class CurrencyActivity extends BaseActivity {
                             e.printStackTrace();
                             return;
                         }
-                        edit.putString("cny_strunit", listCNY.get(pos).getName());
+                        edit.putString(CURRENT_CURRENCY_SYMBOL, listCNY.get(pos).getName());
                     }
                     edit.putInt("cny_unit", pos);
                     edit.apply();

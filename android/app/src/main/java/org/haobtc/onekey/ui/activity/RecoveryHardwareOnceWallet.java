@@ -44,6 +44,7 @@ public class RecoveryHardwareOnceWallet extends BaseActivity implements Business
      */
     @Override
     public void init() {
+        updateTitle(R.string.recovery_wallet);
         fromHdFragment = new RecoveryWalletFromHdFragment();
         getXpubP2wpkh();
         startFragment(fromHdFragment);

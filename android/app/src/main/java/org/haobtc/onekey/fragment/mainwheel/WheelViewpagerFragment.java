@@ -50,6 +50,7 @@ import org.json.JSONObject;
 
 import java.util.Objects;
 
+import static org.haobtc.onekey.constant.Constant.CURRENT_CURRENCY_SYMBOL;
 import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
 
 /**
@@ -171,7 +172,7 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
 
     public void refreshList() {
         if (preferences != null) {
-            String cnyStrunit = preferences.getString("cny_strunit", "CNY");
+            String cnyStrunit = preferences.getString(CURRENT_CURRENCY_SYMBOL, "CNY");
             testStarCny.setText(String.format("%s%s", getString(R.string.cny_star), cnyStrunit));
         }
 
@@ -347,7 +348,7 @@ public class WheelViewpagerFragment extends Fragment implements View.OnClickList
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void event(CardUnitEvent cardUnitEvent) {
-        String cnyStrunit = preferences.getString("cny_strunit", "CNY");
+        String cnyStrunit = preferences.getString(CURRENT_CURRENCY_SYMBOL, "CNY");
         testStarCny.setText(String.format("%s%s", getString(R.string.cny_star), cnyStrunit));
 
     }

@@ -83,6 +83,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.com.heaton.blelibrary.ble.Ble;
 
+import static org.haobtc.onekey.constant.Constant.CURRENT_CURRENCY_SYMBOL;
 import static org.haobtc.onekey.constant.Constant.WALLET_BALANCE;
 
 public class SendOne2OneMainPageActivity extends BaseActivity implements View.OnClickListener, TextWatcher {
@@ -171,7 +172,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         hideRefresh = getIntent().getStringExtra("hideRefresh");
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         base_unit = preferences.getString("base_unit", "mBTC");
-        strUnit = preferences.getString("cny_strunit", "CNY");
+        strUnit = preferences.getString(CURRENT_CURRENCY_SYMBOL, "CNY");
         wallet_type_to_sign = preferences.getString("wallet_type_to_sign", "");//1-n wallet  --> Direct signature and broadcast
         selectSend = findViewById(R.id.llt_select_wallet);
         LinearLayout linChooseUtxo = findViewById(R.id.lin_choose_utxo);

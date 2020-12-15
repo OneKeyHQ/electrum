@@ -56,6 +56,7 @@ import butterknife.OnClick;
 import butterknife.OnFocusChange;
 import butterknife.OnTextChanged;
 
+import static org.haobtc.onekey.constant.Constant.CURRENT_CURRENCY_GRAPHIC_SYMBOL;
 import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
 import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE;
 import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE_SHORT;
@@ -144,7 +145,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     private SharedPreferences preferences;
     private String hdWalletName;
     private String baseUnit;
-    private String cnyUnit;
+    private String currencySymbols;
     private String showWalletType;
     private String signedTx;
     private String rawTx;
@@ -170,19 +171,16 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
      */
     @Override
     public void init() {
-        getDefaultFee();
-        currentFeeRate = currentFeeDetails.getFast().getFeerate();
         hdWalletName = getIntent().getStringExtra("hdWalletName");
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         String balance = getIntent().getStringExtra(WALLET_BALANCE);
         assert balance != null;
         decimalBalance = BigDecimal.valueOf(Double.parseDouble(balance));
         showWalletType = preferences.getString(CURRENT_SELECTED_WALLET_TYPE, "");
-        textSpendTime0.setText(String.format("%s%s%s", getString(R.string.about_), currentFeeDetails == null ? 0 : currentFeeDetails.getSlow().getTime(), getString(R.string.minute)));
-        textSpendTime1.setText(String.format("%s%s%s", getString(R.string.about_), currentFeeDetails == null ? 0 : currentFeeDetails.getNormal().getTime(), getString(R.string.minute)));
-        textSpendTime2.setText(String.format("%s%s%s", getString(R.string.about_), currentFeeDetails == null ? 0 : currentFeeDetails.getFast().getTime(), getString(R.string.minute)));
         baseUnit = preferences.getString("base_unit", "");
-        cnyUnit = preferences.getString("cny_strunit", "CNY");
+        currencySymbols = preferences.getString(CURRENT_CURRENCY_GRAPHIC_SYMBOL, "¥");
+        getDefaultFee();
+        currentFeeRate = currentFeeDetails.getFast().getFeerate();
         setMinAmount();
         String addressScan = getIntent().getStringExtra("addressScan");
         if (!TextUtils.isEmpty(addressScan)) {
@@ -327,8 +325,41 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         String errors = response.getErrors();
         if (Strings.isNullOrEmpty(errors)) {
             currentFeeDetails = CurrentFeeDetails.objectFromDate(response.getResult());
+            initFeeSelectorStatus();
         } else {
             showToast(R.string.get_fee_info_failed);
+        }
+    }
+    /**
+     * 初始化三种等级手续费的默认视图
+     * */
+    private void initFeeSelectorStatus() {
+        textSpendTime0.setText(String.format("%s%s%s", getString(R.string.about_), currentFeeDetails == null ? 0 : currentFeeDetails.getSlow().getTime(), getString(R.string.minute)));
+        textFeeInBtc0.setText(String.format(Locale.ENGLISH, "%s %s", currentFeeDetails.getSlow().getFee(), baseUnit));
+        PyResponse<String> response0 = PyEnv.exchange(currentFeeDetails.getSlow().getFee());
+        String errors0 = response0.getErrors();
+        if (Strings.isNullOrEmpty(errors0)) {
+            textFeeInCash0.setText(String.format(Locale.ENGLISH, "%s %s", currencySymbols, response0.getResult()));
+        } else {
+            showToast(errors0);
+        }
+        textSpendTime1.setText(String.format("%s%s%s", getString(R.string.about_), currentFeeDetails == null ? 0 : currentFeeDetails.getNormal().getTime(), getString(R.string.minute)));
+        textFeeInBtc1.setText(String.format(Locale.ENGLISH, "%s %s", currentFeeDetails.getNormal().getFee(), baseUnit));
+        PyResponse<String> response1 = PyEnv.exchange(currentFeeDetails.getNormal().getFee());
+        String errors1 = response1.getErrors();
+        if (Strings.isNullOrEmpty(errors1)) {
+            textFeeInCash1.setText(String.format(Locale.ENGLISH, "%s %s", currencySymbols, response1.getResult()));
+        } else {
+            showToast(errors0);
+        }
+        textSpendTime2.setText(String.format("%s%s%s", getString(R.string.about_), currentFeeDetails == null ? 0 : currentFeeDetails.getFast().getTime(), getString(R.string.minute)));
+        textFeeInBtc2.setText(String.format(Locale.ENGLISH, "%s %s", currentFeeDetails.getFast().getFee(), baseUnit));
+        PyResponse<String> response2 = PyEnv.exchange(currentFeeDetails.getFast().getFee());
+        String errors2 = response2.getErrors();
+        if (Strings.isNullOrEmpty(errors2)) {
+            textFeeInCash2.setText(String.format(Locale.ENGLISH, "%s %s", currencySymbols, response2.getResult()));
+        } else {
+            showToast(errors0);
         }
     }
 
@@ -339,10 +370,14 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         BigDecimal decimalFee = new BigDecimal(feeRate).multiply(BigDecimal.valueOf(transactionSize == 0 ?
                 DEFAULT_TX_SIZE : transactionSize)).multiply(minAmount);
         BigDecimal maxAmount = decimalBalance.subtract(decimalFee);
-        maxAmount = maxAmount.setScale(scale, RoundingMode.HALF_EVEN);
-        editAmount.requestFocus();
-        editAmount.setText(String.valueOf(maxAmount));
-        editAmount.clearFocus();
+        if (maxAmount.compareTo(BigDecimal.ZERO) <= 0) {
+            showToast(R.string.insufficient);
+        } else {
+            maxAmount = maxAmount.setScale(scale, RoundingMode.HALF_EVEN);
+            editAmount.requestFocus();
+            editAmount.setText(String.valueOf(maxAmount));
+            editAmount.clearFocus();
+        }
     }
 
     /**
@@ -418,7 +453,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         // set see view
         String sender = info.getInputAddr().get(0).getAddr();
         String receiver = info.getOutputAddr().get(0).getAddr();
-        String amount = String.format("%s%s", info.getAmount(), preferences.getString("base_unit", ""));
+        String amount = info.getAmount().substring(0, info.getAmount().indexOf("(")-1);
         String fee = info.getFee();
         Bundle bundle = new Bundle();
         bundle.putString(Constant.TRANSACTION_SENDER, sender);
@@ -452,12 +487,12 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         }
     }
 
-    private void getFee(String feeRate, int type) {
+    private boolean getFee(String feeRate, int type) {
         PyResponse<TemporaryTxInfo> pyResponse = PyEnv.getFeeByFeeRate(editReceiverAddress.getText().toString(), editAmount.getText().toString(), feeRate);
         String errors = pyResponse.getErrors();
         if (Strings.isNullOrEmpty(errors)) {
             TemporaryTxInfo temporaryTxInfo = pyResponse.getResult();
-            double fee = temporaryTxInfo.getFee();
+            String fee = BigDecimal.valueOf(temporaryTxInfo.getFee()).toString();
             int time = temporaryTxInfo.getTime();
             String temp = temporaryTxInfo.getTx();
             transactionSize = temporaryTxInfo.getSize();
@@ -465,13 +500,14 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                 case RECOMMENDED_FEE_RATE:
                     textSpendTime1.setText(String.format("%s%s%s", getString(R.string.about_), time + "", getString(R.string.minute)));
                     textFeeInBtc1.setText(String.format(Locale.ENGLISH, "%s %s", fee, baseUnit));
-                    PyResponse<String> response1 = PyEnv.exchange(String.valueOf(fee));
+                    PyResponse<String> response1 = PyEnv.exchange(fee);
                     String errors1 = response1.getErrors();
                     if (Strings.isNullOrEmpty(errors1)) {
-                        textFeeInCash1.setText(String.format(Locale.ENGLISH, "%s %s", cnyUnit, response1.getResult()));
+                        textFeeInCash1.setText(String.format(Locale.ENGLISH, "%s %s", currencySymbols, response1.getResult()));
                         ;
                     } else {
                         showToast(errors1);
+                        return false;
 //                        showToast(R.string.exchange_error);
                     }
                     tempRecommendTransaction = temp;
@@ -480,25 +516,27 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                 case SLOW_FEE_RATE:
                     textSpendTime0.setText(String.format("%s%s%s", getString(R.string.about_), time + "", getString(R.string.minute)));
                     textFeeInBtc0.setText(String.format(Locale.ENGLISH, "%s %s", fee, baseUnit));
-                    PyResponse<String> response0 = PyEnv.exchange(String.valueOf(fee));
+                    PyResponse<String> response0 = PyEnv.exchange(fee);
                     String errors0 = response0.getErrors();
                     if (Strings.isNullOrEmpty(errors0)) {
-                        textFeeInCash0.setText(String.format(Locale.ENGLISH, "%s %s", cnyUnit, response0.getResult()));
+                        textFeeInCash0.setText(String.format(Locale.ENGLISH, "%s %s", currencySymbols, response0.getResult()));
                     } else {
 //                        showToast(R.string.exchange_error);
                         showToast(errors0);
+                        return false;
                     }
                     tempSlowTransaction = temp;
                     break;
                 case FAST_FEE_RATE:
                     textSpendTime2.setText(String.format("%s%s%s", getString(R.string.about_), time + "", getString(R.string.minute)));
                     textFeeInBtc2.setText(String.format(Locale.ENGLISH, "%s %s", fee, baseUnit));
-                    PyResponse<String> response2 = PyEnv.exchange(String.valueOf(fee));
+                    PyResponse<String> response2 = PyEnv.exchange(fee);
                     String errors2 = response2.getErrors();
                     if (Strings.isNullOrEmpty(errors2)) {
-                        textFeeInCash2.setText(String.format(Locale.ENGLISH, "%s %s", cnyUnit, response2.getResult()));
+                        textFeeInCash2.setText(String.format(Locale.ENGLISH, "%s %s", currencySymbols, response2.getResult()));
                     } else {
                         showToast(errors2);
+                        return false;
 //                        showToast(R.string.exchange_error);
                     }
                     tempFastTransaction = temp;
@@ -508,13 +546,14 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                     feeDialog.getTextTime().setText(String.format("%s %s", time, getString(R.string.minute)));
                     textFeeCustomizeInBtc.setText(String.format(Locale.ENGLISH, "%s %s", fee, baseUnit));
                     feeDialog.getTextFeeInBtc().setText(String.format(Locale.ENGLISH, "%s %s", fee, baseUnit));
-                    PyResponse<String> response3 = PyEnv.exchange(String.valueOf(fee));
+                    PyResponse<String> response3 = PyEnv.exchange(fee);
                     String errors3 = response3.getErrors();
                     if (Strings.isNullOrEmpty(errors3)) {
-                        textFeeCustomizeInCash.setText(String.format(Locale.ENGLISH, "%s %s", cnyUnit, response3.getResult()));
-                        feeDialog.getTextFeeInCash().setText(String.format(Locale.ENGLISH, "%s %s", cnyUnit, response3.getResult()));
+                        textFeeCustomizeInCash.setText(String.format(Locale.ENGLISH, "%s %s", currencySymbols, response3.getResult()));
+                        feeDialog.getTextFeeInCash().setText(String.format(Locale.ENGLISH, "%s %s", currencySymbols, response3.getResult()));
                     } else {
                         showToast(errors3);
+                        return false;
 //                        showToast(R.string.exchange_error);
                     }
                     tempCustomizeTransaction = temp;
@@ -523,8 +562,10 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
 
         } else {
             showToast(errors);
+            return false;
 //            showToast(R.string.get_fee_info_failed);
         }
+        return true;
     }
 
     /**
@@ -645,13 +686,14 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
             if (sendReady()) {
                 synchronized (SendHdActivity.class) {
                     double fast = currentFeeDetails1.getFast().getFeerate();
-                    getFee(Double.toString(fast), FAST_FEE_RATE);
-                    double normal = currentFeeDetails1.getNormal().getFeerate();
-                    getFee(Double.toString(normal), RECOMMENDED_FEE_RATE);
-                    double slow = currentFeeDetails1.getSlow().getFeerate();
-                    getFee(Double.toString(slow), SLOW_FEE_RATE);
+                    boolean success = getFee(Double.toString(fast), FAST_FEE_RATE);
+                    if (success) {
+                        double normal = currentFeeDetails1.getNormal().getFeerate();
+                        getFee(Double.toString(normal), RECOMMENDED_FEE_RATE);
+                        double slow = currentFeeDetails1.getSlow().getFeerate();
+                        getFee(Double.toString(slow), SLOW_FEE_RATE);
+                    }
                 }
-
             }
         }));
     }

@@ -356,4 +356,13 @@ public final class Constant {
     public static final String BTC_UNIT_M_BITS = "bits";
 
     public static final String VERIFY_DETAIL = "verify_detail";
+    /**
+     * 当前发币的货币符号
+     * */
+    public static final String CURRENT_CURRENCY_SYMBOL = "currency_symbol";
+
+    /**
+     * 当前发币的货币图形符号
+     * */
+    public static final String CURRENT_CURRENCY_GRAPHIC_SYMBOL = "currency_graphic_symbol";
 }
