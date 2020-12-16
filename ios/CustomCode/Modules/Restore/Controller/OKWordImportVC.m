@@ -169,6 +169,6 @@
 
 - (void)tapFromClick
 {
-    [kTools tipMessage:@"暂不支持"];
+    [kTools tipMessage:MyLocalizedString(@"Temporary does not support", nil)];
 }
 @end

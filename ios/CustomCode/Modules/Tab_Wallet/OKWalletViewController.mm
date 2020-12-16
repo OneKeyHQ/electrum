@@ -507,7 +507,7 @@
             BaseNavigationController *baseVc = [[BaseNavigationController alloc]initWithRootViewController:wordImport];
             [weakself.OK_TopViewController presentViewController:baseVc animated:YES completion:nil];
         }else if (model.type == OKSelectCellTypeMatchHD){ //匹配硬件
-            [kTools tipMessage:@"暂不支持"];
+            [kTools tipMessage:MyLocalizedString(@"Temporary does not support", nil)];
 //            OKMatchingInCirclesViewController *matchVc = [OKMatchingInCirclesViewController matchingInCirclesViewController];
 //            [self.navigationController pushViewController:matchVc animated:YES];
         }
