@@ -41,6 +41,16 @@ static dispatch_once_t once;
 }
 
 
+- (void)setIsLongPwd:(BOOL)isLongPwd
+{
+    [OKStorageManager saveToUserDefaults:@(isLongPwd) key:KUserPwdType];
+    self.currentSelectPwdType = @"";
+}
+
+-(BOOL)isLongPwd
+{
+    return [[OKStorageManager loadFromUserDefaults:KUserPwdType] boolValue];
+}
 
 - (void)setCurrentSynchronousServer:(NSString *)currentSynchronousServer
 {

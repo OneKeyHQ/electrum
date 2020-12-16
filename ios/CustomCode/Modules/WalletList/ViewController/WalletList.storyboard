@@ -249,17 +249,17 @@
                                                                 <constraint firstItem="SYu-59-VbQ" firstAttribute="leading" secondItem="jSL-yw-gxe" secondAttribute="leading" constant="7" id="gCt-sU-1qr"/>
                                                             </constraints>
                                                         </view>
-                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="3Psadafqwfascxzcef" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hvr-b5-maF">
-                                                            <rect key="frame" x="20" y="45" width="105" height="19.5"/>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="3Psadafqwfascxzcef" lineBreakMode="clip" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hvr-b5-maF">
+                                                            <rect key="frame" x="20" y="45" width="120" height="19.5"/>
                                                             <constraints>
-                                                                <constraint firstAttribute="width" constant="105" id="MWu-vh-egf"/>
+                                                                <constraint firstAttribute="width" constant="120" id="MWu-vh-egf"/>
                                                             </constraints>
                                                             <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                             <color key="textColor" white="1" alpha="0.75090967465753422" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rOf-iw-iy7">
-                                                            <rect key="frame" x="140" y="35" width="40" height="40"/>
+                                                            <rect key="frame" x="155" y="35" width="40" height="40"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="width" constant="40" id="hfv-Ei-Bed"/>
                                                                 <constraint firstAttribute="height" constant="40" id="yeG-sF-Jkm"/>

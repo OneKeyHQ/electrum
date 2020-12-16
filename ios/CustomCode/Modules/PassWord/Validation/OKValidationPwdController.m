@@ -62,7 +62,13 @@ typedef enum {
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    _type = PwdTypeShort;
+    if (kUserSettingManager.isLongPwd) {
+        _type = PwdTypeLong;
+        [self.longPwdFirstTextField becomeFirstResponder];
+    }else{
+        _type = PwdTypeShort;
+        [self.pwdInputViewFirst becomeFirstResponder];
+    }
     [self setNavigationBarBackgroundColorWithClearColor];
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(switchPwdViewBtnClick)];
     [self.switchPwdViewBtn addGestureRecognizer:tap];
@@ -81,7 +87,6 @@ typedef enum {
     self.eyeBtnFirst.selected = NO;
     self.navigationController.delegate = self;
     self.pwdInputViewFirst.delegate = self;
-    [self.pwdInputViewFirst becomeFirstResponder];
     // Do any additional setup after loading the view.
     [self.pwdInputViewFirst updateWithConfigure:^(CLPasswordInputViewConfigure * _Nonnull configure) {
         configure.pointColor = HexColor(APP_MAIN_BLACK_COLOR);

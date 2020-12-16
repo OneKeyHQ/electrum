@@ -11,6 +11,9 @@
 #define kCurrentBtcBrowser              @"kCurrentBtcBrowser"
 #define kCurrentMarketSource            @"kCurrentMarketSource"
 
+#define KUserPwdType                    @"KUserPwdType"
+
+
 #define kCurrentSynchronousServer       @"kCurrentSynchronousServer"
 #define kSysServerFlag                  @"kSysServerFlag"
 #define kRbf                            @"kRbf"
@@ -34,6 +37,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,assign)BOOL unconfFlag;
 @property (nonatomic,assign)BOOL sysServerFlag;
 @property (nonatomic,copy)NSString *currentProxyDict;
+
+
+@property (nonatomic,assign)BOOL isLongPwd;
+
+@property (nonatomic,copy)NSString* currentSelectPwdType;
+
 @end
 
 NS_ASSUME_NONNULL_END

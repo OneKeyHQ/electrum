@@ -49,6 +49,16 @@
         }
     };
     [self.scanView createTimer];
+    NSString *mediaType = AVMediaTypeVideo;//读取媒体类型
+    [AVCaptureDevice requestAccessForMediaType:mediaType completionHandler:^(BOOL granted) {
+            if (granted) {
+
+            }else{
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self.navigationController popViewControllerAnimated:YES];
+                });
+            }
+    }];
     [self.scanManager setupSessionOnController:self];
 }
 
@@ -140,6 +150,11 @@
             [self scanFinish:result];
             break;
     }
+}
+
+- (void)qrCodeDenialOfPermission
+{
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)scanFinish:(id)message {

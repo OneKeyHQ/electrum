@@ -83,7 +83,14 @@ typedef enum {
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
-    _type = PwdTypeShort;
+    if (kUserSettingManager.isLongPwd) {
+        _type = PwdTypeLong;
+        [self.longPwdViewFirst becomeFirstResponder];
+    }else{
+        _type = PwdTypeShort;
+        [self.pwdInputViewFirst becomeFirstResponder];
+    }
+    
     _isSecret = YES;
     self.eyeBtnFirst.selected = !_isSecret;
     self.eyeBtnSecond.selected = !_isSecret;
@@ -108,12 +115,12 @@ typedef enum {
             break;
         case OKPwdUseTypeUpdatePassword:
         {
-            self.navTitleFirstLabel.text = MyLocalizedString(@"Change the password", nil);;
-            self.navTitleSecondLabel.text = MyLocalizedString(@"Change the password", nil);;
-            self.titleLabelFirst.text  = MyLocalizedString(@"Enter your original password", nil);
-            self.titleDescLabelFirst.text = MyLocalizedString(@"After changing the password, your original biometrics (face, fingerprint) will become invalid and need to be reset", nil);
-            self.titleLabelSecond.text  = MyLocalizedString(@"Set your new password", nil);
-            self.titleDescLabelSecond.text = MyLocalizedString(@"After changing the password, your original biometrics (face, fingerprint) will become invalid and need to be reset", nil);
+            self.navTitleFirstLabel.text = MyLocalizedString(@"Change master password", nil);;
+            self.navTitleSecondLabel.text = MyLocalizedString(@"Change master password", nil);;
+            self.titleLabelFirst.text  = MyLocalizedString(@"Set a new password", nil);
+            self.titleDescLabelFirst.text = @"";
+            self.titleLabelSecond.text  = MyLocalizedString(@"Please enter again", nil);
+            self.titleDescLabelSecond.text = @"";
         }
             break;
             
@@ -134,8 +141,7 @@ typedef enum {
     self.pwdInputViewSecond.delegate = self;
 
     
-    [self.pwdInputViewFirst becomeFirstResponder];
-    // Do any additional setup after loading the view.
+    
     [self.pwdInputViewFirst updateWithConfigure:^(CLPasswordInputViewConfigure * _Nonnull configure) {
         configure.pointColor = HexColor(APP_MAIN_BLACK_COLOR);
         configure.rectColor = HexColor(0xF2F2F2);
@@ -221,7 +227,6 @@ typedef enum {
         [self.scrollViewBg setContentOffset:CGPointMake(self.page * SCREEN_WIDTH, 0) animated:animated];
         return;
     }
-    
     //长密码
     if (self.page == PageTypeFirst) { //第一页
         [self.longPwdFirstTextField becomeFirstResponder];
@@ -237,14 +242,7 @@ typedef enum {
     //NSLog(@"正在输入");
 }
 - (void)passwordInputViewCompleteInput:(CLPasswordInputView *)passwordInputView {
-    //NSLog(@"输入完毕");
     if (passwordInputView == self.pwdInputViewFirst) {//第一页输入结束
-        if (_pwdUseType == OKPwdUseTypeUpdatePassword) {
-            id result = [kPyCommandsManager callInterface:kInterfacecheck_password parameter:@{@"password":self.pwdInputViewFirst.text}];
-            if (result == nil) {
-                return;
-            }
-        }
         self.page = 1;
         [self resetViewWithAnimated:YES];
         [self resetPwdViewTips];
@@ -256,28 +254,31 @@ typedef enum {
                 [self pwdWrongTip];
             }
         }else if (self.pwdUseType == OKPwdUseTypeUpdatePassword){
-            NSString *old_password  = self.pwdInputViewFirst.text;
-            NSString *new_password = self.pwdInputViewSecond.text;
-            if ([old_password isEqualToString:new_password]) {
-                [kTools tipMessage:MyLocalizedString(@"The new password cannot be the same as the old one", nil)];
-                return;
+            if ([self.pwdInputViewFirst.text isEqualToString:self.pwdInputViewSecond.text] && self.pwdInputViewFirst.text.length > 0) {
+                NSString *new_password = self.pwdInputViewSecond.text;
+                NSString *result = [kPyCommandsManager callInterface:kInterfaceUpdate_password parameter:@{@"old_password":self.oldPwd,@"new_password":new_password}];
+                if (result != nil) {
+                    [[NSNotificationCenter defaultCenter]postNotificationName:kNotiUpdatePassWordComplete object:nil];
+                    kWalletManager.isOpenAuthBiological = NO;
+                    [kUserSettingManager setIsLongPwd:_type];
+                    [kTools tipMessage:MyLocalizedString(@"Password changed successfully", nil)];
+                }
+                [self dismissViewControllerAnimated:YES completion:nil];
+            }else{
+                [self pwdWrongTip];
             }
-            NSString *result = [kPyCommandsManager callInterface:kInterfaceUpdate_password parameter:@{@"old_password":old_password,@"new_password":new_password}];
-            if (result != nil) {
-                [[NSNotificationCenter defaultCenter]postNotificationName:kNotiUpdatePassWordComplete object:nil];
-                kWalletManager.isOpenAuthBiological = NO;
-                [kTools tipMessage:MyLocalizedString(@"Password changed successfully", nil)];
-            }
-            [self dismissViewControllerAnimated:YES completion:nil];
         }
     }
 }
+
 - (void)passwordInputViewDidDeleteBackward:(CLPasswordInputView *)passwordInputView {
     //NSLog(@"点击删除");
 }
+
 - (void)passwordInputViewBeginInput:(CLPasswordInputView *)passwordInputView {
     //NSLog(@"开始输入");
 }
+
 - (void)passwordInputViewEndInput:(CLPasswordInputView *)passwordInputView {
     //NSLog(@"结束输入");
  
@@ -312,13 +313,6 @@ typedef enum {
             return;
         }
         
-        if (_pwdUseType == OKPwdUseTypeUpdatePassword) {
-            id result = [kPyCommandsManager callInterface:kInterfacecheck_password parameter:@{@"password":self.longPwdFirstTextField.text}];
-            if (result == nil) {
-                return;
-            }
-        }
-        
         self.page = PageTypeSecond;
         [self resetViewWithAnimated:YES];
         [self resetPwdViewTips];
@@ -341,19 +335,19 @@ typedef enum {
             break;
         case OKPwdUseTypeUpdatePassword:
         {
-            NSString *old_password  = self.longPwdFirstTextField.text;
-            NSString *new_password = self.longPwdSecondTextField.text;
-            if ([old_password isEqualToString:new_password]) {
-                [kTools tipMessage:MyLocalizedString(@"The new password cannot be the same as the old one", nil)];
-                return;
+            if ([self.longPwdFirstTextField.text isEqualToString:self.longPwdSecondTextField.text]&&self.longPwdFirstTextField.text.length > 0) { //密码一致
+                NSString *new_password = self.longPwdSecondTextField.text;
+                NSString *result = [kPyCommandsManager callInterface:kInterfaceUpdate_password parameter:@{@"old_password":self.oldPwd,@"new_password":new_password}];
+                if (result != nil) {
+                    kWalletManager.isOpenAuthBiological = NO;
+                    [[NSNotificationCenter defaultCenter]postNotificationName:kNotiUpdatePassWordComplete object:nil];
+                    [kUserSettingManager setIsLongPwd:_type];
+                    [kTools tipMessage:MyLocalizedString(@"Password changed successfully", nil)];
+                }
+                [self dismissViewControllerAnimated:YES completion:nil];
+            }else{
+                [self pwdWrongTip];
             }
-            NSString *result = [kPyCommandsManager callInterface:kInterfaceUpdate_password parameter:@{@"old_password":old_password,@"new_password":new_password}];
-            if (result != nil) {
-                kWalletManager.isOpenAuthBiological = NO;
-                [[NSNotificationCenter defaultCenter]postNotificationName:kNotiUpdatePassWordComplete object:nil];
-                [kTools tipMessage:MyLocalizedString(@"Password changed successfully", nil)];
-            }
-            [self dismissViewControllerAnimated:YES completion:nil];
         }
         default:
             break;
@@ -368,6 +362,7 @@ typedef enum {
         [self.pwdInputViewFirst resignFirstResponder];
         [self.pwdInputViewSecond resignFirstResponder];
         [self.longPwdViewSecond resignFirstResponder];
+        kUserSettingManager.currentSelectPwdType = [NSString stringWithFormat:@"%d",_type];
         self.block(pwd);
     }
 }

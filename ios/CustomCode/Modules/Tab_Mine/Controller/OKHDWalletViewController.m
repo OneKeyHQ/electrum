@@ -223,6 +223,9 @@
         OKCreateResultWalletInfoModel *model =  createResultModel.wallet_info.firstObject;
         OKWalletInfoModel *curentWalletModel= [kWalletManager getCurrentWalletAddress:model.name];
         [kWalletManager setCurrentWalletInfo:curentWalletModel];
+        if (kUserSettingManager.currentSelectPwdType.length > 0 && kUserSettingManager.currentSelectPwdType !=  nil) {
+            [kUserSettingManager setIsLongPwd:[kUserSettingManager.currentSelectPwdType boolValue]];
+        }
         if (!kWalletManager.isOpenAuthBiological) {
             OKBiologicalViewController *biologicalVc = [OKBiologicalViewController biologicalViewController:@"OKWalletViewController" pwd:pwd biologicalViewBlock:^{
                 [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":pwd,@"backupshow":@"1"}];

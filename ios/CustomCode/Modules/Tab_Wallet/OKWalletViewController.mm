@@ -326,7 +326,7 @@
                 }];
             } else if (state == YZAuthIDStateSuccess) {
                 NSString *pwd = [kOneKeyPwdManager getOneKeyPassWord];
-                [weakself backUpPwd:pwd];;
+                [weakself backUpPwd:pwd];
             }
         }];
     }else{
@@ -507,8 +507,9 @@
             BaseNavigationController *baseVc = [[BaseNavigationController alloc]initWithRootViewController:wordImport];
             [weakself.OK_TopViewController presentViewController:baseVc animated:YES completion:nil];
         }else if (model.type == OKSelectCellTypeMatchHD){ //匹配硬件
-            OKMatchingInCirclesViewController *matchVc = [OKMatchingInCirclesViewController matchingInCirclesViewController];
-            [self.navigationController pushViewController:matchVc animated:YES];
+            [kTools tipMessage:@"暂不支持"];
+//            OKMatchingInCirclesViewController *matchVc = [OKMatchingInCirclesViewController matchingInCirclesViewController];
+//            [self.navigationController pushViewController:matchVc animated:YES];
         }
         return;
     }
@@ -529,6 +530,9 @@
         OKCreateResultWalletInfoModel *model =  createResultModel.wallet_info.firstObject;
         OKWalletInfoModel *walletInfoModel = [kWalletManager getCurrentWalletAddress:model.name];
         [kWalletManager setCurrentWalletInfo:walletInfoModel];
+        if (kUserSettingManager.currentSelectPwdType.length > 0 && kUserSettingManager.currentSelectPwdType !=  nil) {
+            [kUserSettingManager setIsLongPwd:[kUserSettingManager.currentSelectPwdType boolValue]];
+        }
         OKBiologicalViewController *biologicalVc = [OKBiologicalViewController biologicalViewController:@"OKWalletViewController" pwd:pwd biologicalViewBlock:^{
             [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":pwd,@"backupshow":@"1"}];
         }];
@@ -653,6 +657,9 @@
 
 - (void)notiBackUPWalletComplete
 {
+    if (kWalletManager.isOpenAuthBiological) {
+        [self dismissViewControllerAnimated:YES completion:nil];
+    }
     [self checkWalletResetUI];
 }
 

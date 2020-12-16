@@ -18,6 +18,9 @@
 - (void)pickerController:(UIImagePickerController *)picker didFinishPickingMediaWithMessage:(NSString *)message;
 // 亮度值回调(-5 ~ 9 ？)
 - (void)captureDidOutput:(CGFloat)brightnessValue;
+
+- (void)qrCodeDenialOfPermission;
+
 @end
 
 @interface OKQRCodeScanManager : NSObject
@@ -25,6 +28,7 @@
 @property (nonatomic, weak) id<OKQRCodeScanManagerDelegate> delegate;
 
 @property (nonatomic, readonly) BOOL torchHadOn; // 已经打开了背光灯
+
 - (void)setupSessionOnController:(UIViewController *)currentController;
 /** 延迟3秒重新开始开启会话对象扫描 */
 - (void)sessionRestartRunning;

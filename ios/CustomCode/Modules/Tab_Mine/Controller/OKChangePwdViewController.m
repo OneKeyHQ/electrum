@@ -21,22 +21,20 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
     self.title = MyLocalizedString(@"password", nil);
     self.tableView.tableFooterView = [UIView new];
     self.view.backgroundColor = HexColor(0xF5F6F7);
-    
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    OKPwdViewController *pwdVc = [OKPwdViewController setPwdViewControllerPwdUseType:OKPwdUseTypeUpdatePassword setPwd:^(NSString * _Nonnull pwd) {
-        
+    OKWeakSelf(self)
+    [OKValidationPwdController showValidationPwdPageOn:self isDis:NO complete:^(NSString * _Nonnull pwd) {
+        OKPwdViewController *pwdVc = [OKPwdViewController setPwdViewControllerPwdUseType:OKPwdUseTypeUpdatePassword setPwd:^(NSString * _Nonnull pwd) {
+            
+        }];
+        pwdVc.oldPwd = pwd;
+        [weakself.OK_TopViewController.navigationController pushViewController:pwdVc animated:YES];
     }];
-    BaseNavigationController *baseVc = [[BaseNavigationController alloc]initWithRootViewController:pwdVc];
-    [self.view.window.rootViewController presentViewController:baseVc animated:YES completion:nil];
-
 }
-
-
 @end

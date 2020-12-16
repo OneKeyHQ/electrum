@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef void(^SetPwdBlock)(NSString *pwd);
 @interface OKPwdViewController : BaseViewController
+@property (nonatomic,copy)NSString *oldPwd;
 + (instancetype)setPwdViewControllerPwdUseType:(OKPwdUseType)useType setPwd:(SetPwdBlock)setPwd;
 @end
 

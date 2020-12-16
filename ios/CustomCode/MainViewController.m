@@ -30,8 +30,10 @@
     [self addTabBarController];
     [self tabBarAppearance];
     [self tabBarResetLineColor];
-    // Do any additional setup after loading the view.
     
+    if (self.isTabSettingVC) {
+        [self selectLangue];
+    }
 }
 
 - (void)addTabBarController
@@ -65,6 +67,13 @@
         [item setTitleTextAttributes:@{NSFontAttributeName:ItemTitleFont, NSForegroundColorAttributeName:ItemUnSelectedColor} forState:UIControlStateNormal];
         [item setTitleTextAttributes:@{NSFontAttributeName:ItemTitleFont, NSForegroundColorAttributeName:ItemSelectedColor} forState:UIControlStateSelected];
     }
+}
+
+- (void)selectLangue
+{
+    [self.tab setSelectedIndex:1];
+    OKMineViewController *mine = [self.mineVC.viewControllers firstObject];
+    [mine tableViewDidSelectLangue];
 }
 
 - (UITabBarController *)tab {

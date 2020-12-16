@@ -95,7 +95,6 @@
     }
     self.newLanguage = kLocalizableManager.languageType;
     if (self.oldLanguage != self.newLanguage) {
-        
         [self.navigationController popToRootViewControllerAnimated:YES];
         [kAppdelegate resetMainVCRootViewControllerSelectSetingVc:YES];
     }

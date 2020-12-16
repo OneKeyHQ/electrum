@@ -65,7 +65,9 @@
             OKCreateResultWalletInfoModel *walletInfoModel = [createResultModel.wallet_info firstObject];
             OKWalletInfoModel *model = [kWalletManager getCurrentWalletAddress:walletInfoModel.name];
             [kWalletManager setCurrentWalletInfo:model];
-            
+            if (kUserSettingManager.currentSelectPwdType.length > 0 && kUserSettingManager.currentSelectPwdType !=  nil) {
+                [kUserSettingManager setIsLongPwd:[kUserSettingManager.currentSelectPwdType boolValue]];
+            }
             [[NSNotificationCenter defaultCenter]postNotificationName:kNotiRefreshWalletList object:nil];
             [[NSNotificationCenter defaultCenter]postNotification:[NSNotification notificationWithName:kNotiRefreshWalletList object:nil]];
             [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:nil];
@@ -136,6 +138,9 @@
         OKCreateResultWalletInfoModel *walletInfoModel = [createResultModel.wallet_info firstObject];
         OKWalletInfoModel *model = [kWalletManager getCurrentWalletAddress:walletInfoModel.name];
         [kWalletManager setCurrentWalletInfo:model];
+        if (kUserSettingManager.currentSelectPwdType.length > 0 && kUserSettingManager.currentSelectPwdType !=  nil) {
+            [kUserSettingManager setIsLongPwd:[kUserSettingManager.currentSelectPwdType boolValue]];
+        }
         if (weakself.addType == OKAddTypeCreateSolo) {
             [kTools tipMessage:MyLocalizedString(@"Creating successful", nil)];
             [[NSNotificationCenter defaultCenter]postNotificationName:kNotiRefreshWalletList object:nil];

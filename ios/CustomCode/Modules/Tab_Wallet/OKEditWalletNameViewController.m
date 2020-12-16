@@ -8,7 +8,7 @@
 
 #import "OKEditWalletNameViewController.h"
 
-@interface OKEditWalletNameViewController ()
+@interface OKEditWalletNameViewController ()<UITextFieldDelegate>
 
 @property (weak, nonatomic) IBOutlet UIView *contentView;
 @property (weak, nonatomic) IBOutlet UILabel *titleLabel;
@@ -43,6 +43,7 @@
     self.descLabel.text = MyLocalizedString(@"The name of the", nil);
     [self.confirmBtn setTitle:MyLocalizedString(@"determine", nil) forState:UIControlStateNormal];
     self.textField.text = kWalletManager.currentWalletInfo.label;
+    self.textField.delegate = self;
 }
 
 - (IBAction)confirmBtnClick:(UIButton *)sender {
@@ -61,7 +62,6 @@
         return;
     }
     
-    
     NSString *msg =  [kPyCommandsManager callInterface:kInterfacerename_wallet parameter:@{@"old_name": kWalletManager.currentWalletInfo.name,@"new_name" : self.textField.text}];
     if (msg != nil) {
         [kTools tipMessage:MyLocalizedString(@"Name modification successful", nil)];
@@ -74,7 +74,21 @@
         }
     }
 }
+
 - (IBAction)closeBtnClick:(UIButton *)sender {
     [self dismissViewControllerAnimated:NO completion:nil];
 }
+
+
+#pragma mark -  UITextViewDelegate
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+{
+    NSString *str =   [self.textField.text stringByAppendingString:string];
+    if (str.length > 15 && string.length > 0) {
+        return NO;
+    }else{
+        return YES;
+    }
+}
+
 @end

@@ -96,6 +96,9 @@
     OKCreateResultWalletInfoModel *createResultWalletInfoModel = [self.createResultModel.wallet_info firstObject];
     OKWalletInfoModel *infoModel = [kWalletManager getCurrentWalletAddress:createResultWalletInfoModel.name];
     [kWalletManager setCurrentWalletInfo:infoModel];
+    if (kUserSettingManager.currentSelectPwdType.length > 0 && kUserSettingManager.currentSelectPwdType !=  nil) {
+        [kUserSettingManager setIsLongPwd:[kUserSettingManager.currentSelectPwdType boolValue]];
+    }
     [self.OK_TopViewController dismissToViewControllerWithClassName:@"OKWalletViewController" animated:YES complete:^{
         [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":self.pwd,@"backupshow":@"0"}];
     }];

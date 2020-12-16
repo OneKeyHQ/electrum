@@ -39,7 +39,11 @@
     _model = model;
     self.walletNameLabel.text = model.label;
     self.walletTypeBgView.backgroundColor = model.backColor;
-    self.addressLabel.text = model.address;
+    NSString *address = model.address;
+    if (model.address.length > 12) {
+        address = [NSString stringWithFormat:@"%@...%@",[model.address substringToIndex:6],[model.address substringFromIndex:model.address.length - 6]];
+    }
+    self.addressLabel.text = address;
     self.rightCoinTypeBgImageView.image = [UIImage imageNamed:model.iconName];
     self.walletTypeLabel.text = model.walletTypeShowStr;
     self.walletTypeBgView.hidden = model.walletTypeShowStr.length == 0;
@@ -53,6 +57,6 @@
 }
 
 - (IBAction)btnCopyClick:(UIButton *)sender {
-    [kTools pasteboardCopyString:self.addressLabel.text msg:MyLocalizedString(@"Copied", nil)];
+    [kTools pasteboardCopyString:self.model.address msg:MyLocalizedString(@"Copied", nil)];
 }
 @end

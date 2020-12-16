@@ -131,8 +131,8 @@ void soundCompleteCallback(SystemSoundID soundID, void *clientData){
                         imagePicker.delegate = self;
                         [self.currentVC presentViewController:imagePicker animated:YES completion:nil];
                     });
-                } else { // 用户第一次拒绝了访问相机权限
-
+                } else { // 用户第一次拒绝了访问相册权限
+                
                 }
             }];
             

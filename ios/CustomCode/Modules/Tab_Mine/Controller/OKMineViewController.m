@@ -22,7 +22,6 @@
 #import "OKOneKeyPwdManager.h"
 
 @interface OKMineViewController ()<UINavigationControllerDelegate,UITableViewDelegate,UITableViewDataSource,OKMineTableViewCellDelegate>
-
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
 @property (nonatomic,strong)NSArray *allMenuData;
@@ -149,6 +148,7 @@
                 {
                     NSArray *listDictArray =  [kPyCommandsManager callInterface:kInterfaceList_wallets parameter:@{}];
                     if (listDictArray.count > 0) {
+                        
                         OKChangePwdViewController *changePwd = [OKChangePwdViewController changePwdViewController];
                         [self.navigationController pushViewController:changePwd animated:YES];
                     }else{
@@ -302,7 +302,7 @@
                         break;
             }
         }];
-        _allMenuData = @[@[model1,model2],biologicaArray,@[model8,model9,model10,model11,model12,model3]];
+        _allMenuData = @[@[model1,model2],biologicaArray,@[model8,model9,model10,model11,model12]];
     }
     return _allMenuData;
 }
@@ -353,5 +353,11 @@
     }
     return _authIDControl;
 }
+
+- (void)tableViewDidSelectLangue
+{
+    [self tableView:self.tableView didSelectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:2]];
+}
+
 
 @end

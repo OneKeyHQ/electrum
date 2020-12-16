@@ -355,7 +355,7 @@ typedef enum {
     model.sendAddress = kWalletManager.currentWalletInfo.addr;
     model.rAddress = self.addressTextField.text;
     model.txType = @"";
-    model.fee = [NSString stringWithFormat:@"%@ %@",[kWalletManager getFeeBaseWithSat:[dict safeStringForKey:@"fee"]],[kWalletManager currentBitcoinUnit]];
+    model.fee = [NSString stringWithFormat:@"%@ %@",[dict safeStringForKey:@"fee"],[kWalletManager currentBitcoinUnit]];
     sendVc.info = model;
     [sendVc showOnWindowWithParentViewController:self block:^(NSString * _Nonnull str) {
         if (kWalletManager.isOpenAuthBiological) {
@@ -387,10 +387,12 @@ typedef enum {
     NSString *password = pwd;
     NSDictionary *signTxDict =  [kPyCommandsManager callInterface:kInterfaceSign_tx parameter:@{@"tx":tx,@"password":password}];
     NSString *signTx = [signTxDict safeStringForKey:@"tx"];
-    [kPyCommandsManager callInterface:kInterfaceBroadcast_tx parameter:@{@"tx":signTx}];
-    [kTools tipMessage:MyLocalizedString(@"Send a success", nil)];
-    [[NSNotificationCenter defaultCenter]postNotificationName:kNotiSendTxComplete object:nil];
-    [self.navigationController popViewControllerAnimated:YES];
+    id result =  [kPyCommandsManager callInterface:kInterfaceBroadcast_tx parameter:@{@"tx":signTx}];
+    if (result != nil) {
+        [kTools tipMessage:MyLocalizedString(@"Send a success", nil)];
+        [[NSNotificationCenter defaultCenter]postNotificationName:kNotiSendTxComplete object:nil];
+        [self.navigationController popViewControllerAnimated:YES];
+    }
 }
 
 
