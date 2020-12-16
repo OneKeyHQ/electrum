@@ -236,6 +236,7 @@ class AndroidCommands(commands.Commands):
             if callback is not None:
                 self.set_callback_fun(callback)
         self.start_daemon()
+        self.get_block_info()
 
     def set_language(self, language):
         '''
@@ -864,7 +865,7 @@ class AndroidCommands(commands.Commands):
 
     def get_default_fee_info(self, feerate=None):
         try:
-            fee_info_list = self.config.get_block_fee_info()
+            fee_info_list = self.get_block_info()
             my_change_addr_size = Transaction.estimated_output_size(self.wallet.get_addresses()[0])
             out_size_p2pkh = 34 + my_change_addr_size
             out_info = {}
@@ -874,11 +875,19 @@ class AndroidCommands(commands.Commands):
                         key = "slow" if block == 10 else "normal" if block == 5 else "fast" if block == 2 else "slowest"
                         out_info[key] = self.format_return_data(feerate, out_size_p2pkh, block)
             else:
-                block = self.get_best_block_by_feerate(feerate*1000, fee_info_list)
-                out_info["customer"] = self.format_return_data(feerate*1000, out_size_p2pkh, block)
+                block = self.get_best_block_by_feerate(float(feerate)*1000, fee_info_list)
+                out_info["customer"] = self.format_return_data(float(feerate)*1000, out_size_p2pkh, block)
             return json.dumps(out_info)
         except BaseException as e:
             raise e
+
+    def get_block_info(self):
+        fee_info_list = self.config.get_block_fee_info()
+        if fee_info_list is not None:
+            self.config.set_key("fee_info_list", fee_info_list)
+        else:
+            fee_info_list = self.config.get("fee_info_list", fee_info_list)
+        return fee_info_list
 
     def get_fee_by_feerate(self, outputs, message, feerate, customer=None):
         '''
@@ -915,13 +924,13 @@ class AndroidCommands(commands.Commands):
             tx_details = self.wallet.get_tx_info(tx)
             print("tx_details 1111111 = %s" % json.dumps(tx_details))
 
-            fee_info_list = self.config.get_block_fee_info()
-            block = self.get_best_block_by_feerate(feerate * 1000, fee_info_list)
+            # fee_info_list = self.get_block_info()
+            # block = self.get_best_block_by_feerate(float(feerate) * 1000, fee_info_list)
             ret_data = {
                 'amount': self.format_amount(tx_details.amount),
                 'size': size,
                 'fee': self.format_amount(tx_details.fee),
-                'time': block * BTC_BLOCK_INTERVAL_TIME,
+                'time': 2 * BTC_BLOCK_INTERVAL_TIME,
                 'tx': str(self.tx)
             }
             return json.dumps(ret_data)
@@ -1187,6 +1196,19 @@ class AndroidCommands(commands.Commands):
         data = self.get_details_info(tx)
         return data
 
+    def get_input_info(self, tx):
+        input_list = []
+        for txin in tx.inputs():
+            input_info = {}
+            input_info['prevout_hash'] = txin.prevout.txid.hex()
+            input_info['prevout_n'] = txin.prevout.out_idx
+            addr = self.wallet.get_txin_address(txin)
+            if addr is None:
+                addr = ''
+            input_info['address'] = addr
+            input_list.append(input_info)
+        return input_list
+
     def get_details_info(self, tx):
         try:
             self._assert_wallet_isvalid()
@@ -1205,13 +1227,7 @@ class AndroidCommands(commands.Commands):
                 s = r = len(self.wallet.get_keystores())
             else:
                 s, r = self.wallet.wallet_type.split("of", 1)
-        in_list = []
-        if isinstance(tx, PartialTransaction):
-            for i in tx.inputs():
-                in_info = {}
-                in_info['addr'] = i.address
-                if not in_list.__contains__(in_info):
-                    in_list.append(in_info)
+        in_list = self.get_input_info(tx)
         out_list = []
         for index, o in enumerate(tx.outputs()):
             address, value = o.address, o.value
@@ -1570,6 +1586,11 @@ class AndroidCommands(commands.Commands):
             out_data['data'] = "parse pr error"
         return json.dumps(out_data)
 
+    def update_local_info(self, tx_id, address, tx, msg):
+        self.remove_local_tx(tx_id)
+        self.txdb.add_tx_info(address=address, tx_hash=tx_id, psbt_tx="", raw_tx=tx,
+                              failed_info=msg)
+
     def broadcast_tx(self, tx):
         '''
         Broadcast the tx
@@ -1586,9 +1607,8 @@ class AndroidCommands(commands.Commands):
             except TxBroadcastError as e:
                 #TODO DB self.delete_tx()
                 msg = e.__str__()
-                self.remove_local_tx(tx.txid())
-                self.txdb.add_tx_info(address=self.wallet.get_addresses()[0], tx_hash=tx.txid(), psbt_tx="", raw_tx=tx, failed_info=msg)
-                #msg = e.get_message_for_gui()
+                self.update_local_info(tx.tx_id(), self.wallet.get_addresses()[0], tx, msg)
+                # #msg = e.get_message_for_gui()
                 raise BaseException(msg)
             except BestEffortRequestFailed as e:
                 msg = repr(e)
@@ -1720,6 +1740,8 @@ class AndroidCommands(commands.Commands):
                 pass
             return self.get_tx_info_from_raw(sign_tx)
         except Exception as e:
+            msg = e.__str__()
+            self.update_local_info(tx.tx_id(), self.wallet.get_addresses()[0], tx, msg)
             raise BaseException(e)
 
     def get_derived_list(self, xpub):
@@ -2153,7 +2175,7 @@ class AndroidCommands(commands.Commands):
             # self.check_pw_wallet = wallet
             wallet_type = 'eth-hd-standard-hw'
         self.update_local_wallet_info(self.get_unique_path(wallet), wallet_type)
-
+    
     ####################################################
     ## app wallet
     # def export_keystore(self, password):
@@ -2579,10 +2601,10 @@ class AndroidCommands(commands.Commands):
         print(f"addre........{addr, bip39_derivation}")
         new_name = self.get_unique_path(wallet)
         wallet.storage.set_path(self._wallet_path(new_name))
+        self.check_exist_file(addr)
         wallet.set_name(name)
         wallet.save_db()
         wallet.update_password(old_pw=None, new_pw=password, str_pw=self.android_id, encrypt_storage=True)
-        self.check_exist_file(addr)
         self.daemon.add_wallet(wallet)
         #self.update_wallet_name(temp_path, self.get_unique_path(wallet))
         #wallet = self.get_wallet_by_name(self.get_unique_path(wallet))
