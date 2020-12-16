@@ -94,7 +94,7 @@
                                                 <constraint firstItem="tmW-BF-8ty" firstAttribute="top" secondItem="FZD-Qy-sSM" secondAttribute="top" id="mbN-yh-EAD"/>
                                             </constraints>
                                         </view>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="预计时间：约0分" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="8" translatesAutoresizingMaskIntoConstraints="NO" id="gWX-qK-xBK">
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="--" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="8" translatesAutoresizingMaskIntoConstraints="NO" id="gWX-qK-xBK">
                                             <rect key="frame" x="20" y="113" width="157.5" height="18"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="18" id="KcH-kc-7Sa"/>
@@ -103,7 +103,7 @@
                                             <color key="textColor" red="0.33085581660000002" green="0.38708245749999998" blue="0.43922376629999998" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0.0 sat" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="8" translatesAutoresizingMaskIntoConstraints="NO" id="7Sf-dG-D5A">
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="--" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="8" translatesAutoresizingMaskIntoConstraints="NO" id="7Sf-dG-D5A">
                                             <rect key="frame" x="177.5" y="113" width="157.5" height="18"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="18" id="YmW-6z-sVt"/>

@@ -8,11 +8,11 @@
 #import <UIKit/UIKit.h>
 
 typedef void(^CancelBlock)(void);
-typedef void(^SureBlock)(NSDictionary *customFeeDict,NSString *fiat);
+typedef void(^SureBlock)(NSDictionary *customFeeDict,NSString *fiat,NSString *feeBit);
 
 @interface OKWalletInputFeeView : UIView
 @property (nonatomic, copy) CancelBlock cancelBlock;
 @property (nonatomic, copy) SureBlock sureBlock;
-+ (void)showWalletCustomFeeAddress:(NSString *)address amount:(NSString *)amount dsize:(NSString *)dsize sure:(SureBlock)sureBlock  Cancel:(CancelBlock)cancelBlock;
++ (void)showWalletCustomFeeDsize:(NSString *)dsize sure:(SureBlock)sureBlock  Cancel:(CancelBlock)cancelBlock;
 
 @end

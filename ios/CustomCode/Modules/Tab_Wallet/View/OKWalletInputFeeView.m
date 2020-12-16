@@ -8,6 +8,7 @@
 
 #import "OKWalletInputFeeView.h"
 #import "OKDeleteTextField.h"
+#import "OKDefaultFeeInfoModel.h"
 
 @interface OKWalletInputFeeView () <UITextFieldDelegate>
 
@@ -24,13 +25,9 @@
 @property (weak, nonatomic) IBOutlet UIView *feeBgView;
 @property (weak, nonatomic) IBOutlet UIView *sizeBgView;
 
-@property (nonatomic,copy)NSString *address;
-@property (nonatomic,copy)NSString *amount;
 @property (nonatomic,copy)NSString *dsize;
-
 @property (nonatomic,strong)NSDictionary *customFeeDict;
 @property (nonatomic,copy)NSString *fiatCustom;
-
 @end
 
 @implementation OKWalletInputFeeView
@@ -39,12 +36,10 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-+ (void)showWalletCustomFeeAddress:(NSString *)address amount:(NSString *)amount dsize:(NSString *)dsize sure:(SureBlock)sureBlock  Cancel:(CancelBlock)cancelBlock{
++ (void)showWalletCustomFeeDsize:(NSString *)dsize sure:(SureBlock)sureBlock  Cancel:(CancelBlock)cancelBlock{
     OKWalletInputFeeView *inputView = [[[NSBundle mainBundle] loadNibNamed:@"OKWalletInputFeeView" owner:self options:nil] firstObject];
     inputView.cancelBlock = cancelBlock;
     inputView.sureBlock = sureBlock;
-    inputView.address = address;
-    inputView.amount = amount;
     inputView.dsize = dsize;
     if (dsize.length != 0 && dsize != nil) {
         inputView.sizeTF.text = dsize;
@@ -80,12 +75,12 @@
 }
 
 - (IBAction)sureBtnAction:(id)sender {
-    if (self.sizeTF.text.length == 0) {
+    if (self.feeTF.text.length == 0) {
         [kTools tipMessage:MyLocalizedString(@"Please enter the rate", nil)];
         return;
     }
     if (self.sureBlock) {
-        self.sureBlock(self.customFeeDict,self.fiatCustom);
+        self.sureBlock(self.customFeeDict,self.fiatCustom,self.feeTF.text);
         [self closeBtnClick:nil];
     }
 }
@@ -105,7 +100,6 @@
 }
 
 #pragma mark - UITextFieldDelegate
-
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
     if ([string containsChinese]) {
         return NO;
@@ -114,9 +108,13 @@
 }
 - (void)textChange:(NSString *)str
 {
-    if (self.address > 0 && self.amount.length > 0) {
-        [self loadCustomFee];
+    if (self.feeTF.text.length == 0) {
+        return;
     }
+    NSDictionary *dict = [kPyCommandsManager callInterface:kInterfaceget_default_fee_info parameter:@{@"feerate":self.feeTF.text}];
+    self.customFeeDict = dict[@"customer"];
+    NSString *feesat = [self.customFeeDict safeStringForKey:@"fee"];
+    self.fiatCustom =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":feesat}];
     [self refreshFeeUI];
 }
 
@@ -124,27 +122,13 @@
 {
     if (self.customFeeDict == nil) {
         self.sizeTF.text = [self.customFeeDict safeStringForKey:@"size"];
-        self.equaltoLabel.text = [NSString stringWithFormat:@"%@ %@",[self.customFeeDict safeStringForKey:@"fee"],@"sat"];
+        self.equaltoLabel.text = [NSString stringWithFormat:@"%@ %@",[self.customFeeDict safeStringForKey:@"fee"],kWalletManager.currentBitcoinUnit];
         self.timeStrLabel.text = [NSString stringWithFormat:@"预计时间：约%@分钟",[self.customFeeDict safeStringForKey:@"time"]];
     }else{
         self.sizeTF.text = [self.customFeeDict safeStringForKey:@"size"];
-        self.equaltoLabel.text = [NSString stringWithFormat:@"%@ %@",[self.customFeeDict safeStringForKey:@"fee"],@"sat"];
+        self.equaltoLabel.text = [NSString stringWithFormat:@"%@ %@",[self.customFeeDict safeStringForKey:@"fee"],kWalletManager.currentBitcoinUnit];
         self.timeStrLabel.text = [NSString stringWithFormat:@"预计时间：约%@分钟",[self.customFeeDict safeStringForKey:@"time"]];
     }
 }
 
-- (void)loadCustomFee
-{
-    NSString *status = self.feeTF.text;
-    //输入地址和转账额度 获取fee
-    NSDictionary *outputsDict = @{self.address:self.amount};
-    NSArray *outputsArray = @[outputsDict];
-    NSString *outputs = [outputsArray mj_JSONString];
-    NSString *memo = @"";
-    NSDictionary *dict =  [kPyCommandsManager callInterface:kInterfaceGet_fee_by_feerate parameter:@{@"outputs":outputs,@"message":memo,@"feerate":status}];
-    self.customFeeDict = dict;
-    
-    NSString *feesat = [dict safeStringForKey:@"fee"];
-    self.fiatCustom =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":[kWalletManager getFeeBaseWithSat:feesat]}];
-}
 @end

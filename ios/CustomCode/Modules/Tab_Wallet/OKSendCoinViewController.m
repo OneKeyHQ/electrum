@@ -94,8 +94,6 @@ typedef enum {
 @property (weak, nonatomic) IBOutlet UIView *restoreDefaultBgView;
 - (IBAction)restoreDefaultOptionsBtnClick:(UIButton *)sender;
 
-
-
 @property (nonatomic,copy)NSString* currentFee_status;
 
 @property (nonatomic,assign)OKFeeType currentFeeType;
@@ -118,6 +116,7 @@ typedef enum {
 
 @property (nonatomic,strong)OKDefaultFeeInfoModel *defaultFeeInfoModel;
 
+@property (nonatomic,strong)NSString *feeBit;
 @end
 
 @implementation OKSendCoinViewController
@@ -134,12 +133,6 @@ typedef enum {
     _custom = NO;
     [self stupUI];
     [self changeFeeType:OKFeeTypeRecommend];
-    
-    
-//    NSString *default_fee_status =  [kPyCommandsManager callInterface:kInterfaceGet_default_fee_status parameter:@{}];
-//    NSArray *default_fee_statusArray = [default_fee_status componentsSeparatedByString:@" "];
-//    NSString* default_fee_statusNum = [default_fee_statusArray firstObject];
-//    self.currentFee_status = default_fee_statusNum;
     
     NSDictionary *dict = [kPyCommandsManager callInterface:kInterfaceget_default_fee_info parameter:@{}];
     self.defaultFeeInfoModel = [OKDefaultFeeInfoModel mj_objectWithKeyValues:dict];
@@ -287,10 +280,11 @@ typedef enum {
         dsize = [self.defaultFeeInfoModel.normal safeStringForKey:@"size"];
     }
     OKWeakSelf(self)
-    [OKWalletInputFeeView showWalletCustomFeeAddress:self.addressTextField.text amount:self.amountTextField.text dsize:dsize sure:^(NSDictionary *customFeeDict, NSString *fiat) {
+    [OKWalletInputFeeView showWalletCustomFeeDsize:dsize sure:^(NSDictionary *customFeeDict, NSString *fiat, NSString *feeBit) {
         weakself.customFeeDict = customFeeDict;
         weakself.fiatCustom = fiat;
         weakself.custom = YES;
+        weakself.feeBit = feeBit;
         [weakself refreshFeeSelect];
     } Cancel:nil];
 }
@@ -322,6 +316,7 @@ typedef enum {
     if (![self checkTextField]) {
         return;
     }
+    [self loadFee];
     OKWeakSelf(self)
     __block  NSDictionary *dict = [NSDictionary dictionary];
     if (weakself.custom) {
@@ -399,9 +394,32 @@ typedef enum {
 
 - (void)loadFee
 {
-    [self loadZeroFee];
-    [self loadReRecommendFee];
-    [self loadFastFee];
+    if (self.custom) {
+        [self loadCustomFee];
+        return;
+    }
+    switch (_currentFeeType) {
+        case OKFeeTypeSlow:
+        {
+            [self loadZeroFee];
+        }
+            break;
+        case OKFeeTypeRecommend:
+        {
+            [self loadReRecommendFee];
+        }
+            break;
+        case OKFeeTypeFast:
+        {
+            [self loadFastFee];
+        }
+            break;
+        default:
+        {
+            [self loadReRecommendFee];
+        }
+            break;
+    }
 }
 - (void)loadFastFee
 {
@@ -444,6 +462,21 @@ typedef enum {
     
     NSString *feesat = [dict safeStringForKey:@"fee"];
     self.fiatLow =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":feesat}];
+}
+
+- (void)loadCustomFee
+{
+    NSString *status = self.feeBit;
+    //输入地址和转账额度 获取fee
+    NSDictionary *outputsDict = @{self.addressTextField.text:self.amountTextField.text};
+    NSArray *outputsArray = @[outputsDict];
+    NSString *outputs = [outputsArray mj_JSONString];
+    NSString *memo = @"";
+    NSDictionary *dict =  [kPyCommandsManager callInterface:kInterfaceGet_fee_by_feerate parameter:@{@"outputs":outputs,@"message":memo,@"feerate":status}];
+    self.customFeeDict = dict;
+
+    NSString *feesat = [dict safeStringForKey:@"fee"];
+    self.fiatCustom =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":[kWalletManager getFeeBaseWithSat:feesat]}];
 }
 
 
@@ -510,10 +543,7 @@ typedef enum {
 #pragma mark - UITextFieldDelegate
 - (void)textChange:(NSString *)str
 {
-    if (self.addressTextField.text.length > 0 && self.amountTextField.text.length > 0 && [self.amountTextField.text doubleValue] > 0 && [self.amountTextField.text doubleValue] <= [self.balanceLabel.text doubleValue]) {
-        [self loadFee];
-        [self refreshFeeSelect];
-    }
+    
 }
 - (IBAction)restoreDefaultOptionsBtnClick:(UIButton *)sender {
     _custom = NO;

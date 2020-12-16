@@ -236,7 +236,12 @@ static dispatch_once_t once;
         result = PyObject_CallMethod(self.pyInstance, [kInterfaceget_all_wallet_balance UTF8String], "()",NULL);
         
     }else if([method isEqualToString:kInterfaceget_default_fee_info]){
-        result = PyObject_CallMethod(self.pyInstance, [kInterfaceget_default_fee_info UTF8String], "()",NULL);
+        NSString *feerate = [parameter safeStringForKey:@"feerate"];
+        if (feerate.length == 0 || feerate == nil) {
+            result = PyObject_CallMethod(self.pyInstance, [kInterfaceget_default_fee_info UTF8String], "()",NULL);
+        }else{
+            result = PyObject_CallMethod(self.pyInstance, [kInterfaceget_default_fee_info UTF8String], "(i)",[feerate intValue]);
+        }
         
     }else if([method isEqualToString:kInterfacerename_wallet]){
         NSString * old_name = [parameter safeStringForKey:@"old_name"];
