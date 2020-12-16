@@ -100,7 +100,6 @@ public class WalletListActivity extends BaseActivity {
         EventBus.getDefault().register(this);
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         edit = preferences.edit();
-
     }
 
     @Override
@@ -206,7 +205,6 @@ public class WalletListActivity extends BaseActivity {
                         }
                     });
                 }
-
                 break;
             case R.id.view_eth:
                 textWalletType.setText(getString(R.string.eth_wallet));
@@ -307,7 +305,6 @@ public class WalletListActivity extends BaseActivity {
             wallets.entrySet().forEach(stringEntry -> {
                 LocalWalletInfo info = LocalWalletInfo.objectFromData(stringEntry.getValue().toString());
                 String type = info.getType();
-
                 if ("btc-hd-standard".equals(type) || "btc-derived-standard".equals(type)) {
                     hdWalletList.add(info);
                 }
@@ -369,7 +366,6 @@ public class WalletListActivity extends BaseActivity {
         window.setWindowAnimations(R.style.AnimBottom);
         dialogBtoms.setCanceledOnTouchOutside(true);
         dialogBtoms.show();
-
     }
 
     @Subscribe

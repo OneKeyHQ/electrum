@@ -56,21 +56,15 @@ public class WalletListAdapter extends BaseQuickAdapter<LocalWalletInfo, BaseVie
         textAddr.setText(address);
         helper.setText(R.id.text_address, String.format("%s…%s", front6, after6));
         ImageView copyAddr = helper.getView(R.id.img_copy_addr);
-
         SharedPreferences preferences = mContext.getSharedPreferences("Preferences", Context.MODE_PRIVATE);
         String loadWalletName = preferences.getString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME, "");
         ImageView chooseView = helper.getView(R.id.img_choose);
         if (loadWalletName.equals(item.getName())) {
             chooseView.setVisibility(View.VISIBLE);
         }
-
         copyAddr.setOnClickListener(v -> {
             //copy text
             ClipboardUtils.copyText(mContext, textAddr.getText().toString());
-//                ClipboardManager cm2 = (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
-//                // The text is placed on the system clipboard.
-//                Objects.requireNonNull(cm2, "ClipboardManager not available").setPrimaryClip(ClipData.newPlainText(null, textAddr.getText()));
-//                Toast.makeText(mContext, R.string.copysuccess, Toast.LENGTH_LONG).show();
         });
     }
 }

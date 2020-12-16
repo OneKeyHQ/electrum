@@ -1,14 +1,21 @@
 package org.haobtc.onekey.onekeys.homepage.process;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -109,8 +116,35 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
             textSendType.setText(String.format("%s BTC", getString(R.string.scan_send)));
             textWalletAddressText.setText(String.format("BTC %s", getString(R.string.wallet_address)));
         }
+        //whether backup
+        boolean whetherBackup = getIntent().getBooleanExtra("whetherBackup", false);
+        if (!whetherBackup) {
+            noBackupDialog();
+        }
         //get receive address
         mGeneratecode();
+    }
+
+    private void noBackupDialog() {
+        View view1 = LayoutInflater.from(this).inflate(R.layout.unbackup_tip, null, false);
+        AlertDialog alertDialog = new AlertDialog.Builder(this).setView(view1).create();
+        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        view1.findViewById(R.id.text_back).setOnClickListener(v -> {
+            finish();
+            alertDialog.dismiss();
+        });
+        view1.findViewById(R.id.text_i_know).setOnClickListener(v -> {
+            alertDialog.dismiss();
+        });
+        alertDialog.show();
+        //show center
+        Window dialogWindow = alertDialog.getWindow();
+        WindowManager m = getWindowManager();
+        Display d = m.getDefaultDisplay();
+        WindowManager.LayoutParams p = dialogWindow.getAttributes();
+        p.width = (int) (d.getWidth() * 0.95);
+        p.gravity = Gravity.CENTER;
+        dialogWindow.setAttributes(p);
     }
 
     /***

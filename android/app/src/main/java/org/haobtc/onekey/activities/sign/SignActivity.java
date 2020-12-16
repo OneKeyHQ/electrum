@@ -257,8 +257,7 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
            if (Strings.isNullOrEmpty(errors)) {
              infoBean = TransactionInfoBean.objectFromData(response.getResult());
            } else {
-               Log.e(TAG, errors);
-               showToast(getString(R.string.transaction_wrong));
+               showToast(errors);
                return;
            }
             switch (showWalletType) {

@@ -1286,4 +1286,10 @@
     <string name="newest_app">当前已是最新版本</string>
     <string name="already_has_local_hd">您本地已经创建过HD钱包！，不能在创建了呦</string>
     <string name="looking_for_wallets">搜寻钱包中</string>
+    <string name="unbackup_tip_dialog">该钱包尚未备份。为了您的资金安全，请完成备份后再使用该地址发起收款。</string>
+    <string name="know">我已知晓</string>
+    <string name="transaction_complete">交易完成</string>
+    <string name="transaction_confirm">交易确认中</string>
+    <string name="check_transaction_detail">查看交易详情</string>
+
 </resources>

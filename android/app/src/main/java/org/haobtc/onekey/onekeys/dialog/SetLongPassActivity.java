@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -52,6 +53,7 @@ import org.haobtc.onekey.onekeys.homepage.mindmenu.HdRootMnemonicsActivity;
 import org.haobtc.onekey.onekeys.homepage.process.ExportPrivateActivity;
 import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
 import org.haobtc.onekey.utils.Daemon;
+import org.haobtc.onekey.utils.MyDialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -101,6 +103,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
     private String currencyType;
     private ArrayList<String> typeList;
     private String operateType;
+    private MyDialog myDialog;
 
     @Override
     public int getLayoutId() {
@@ -111,6 +114,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
     public void initView() {
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
+        myDialog = MyDialog.showDialog(this);
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         edit = preferences.edit();
         editPass.addTextChangedListener(this);
@@ -378,35 +382,42 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
     }
 
     private void recoveryHdWallet() {
-        try {
-            PyObject pyObject = Daemon.commands.callAttr("create_hd_wallet", editPass.getText().toString(), new Kwarg("seed", recoverySeed));
-            RecoveryWalletBean recoveryWalletBean = new Gson().fromJson(pyObject.toString(), RecoveryWalletBean.class);
-            List<RecoveryWalletBean.DerivedInfoBean> derivedInfo = recoveryWalletBean.getDerivedInfo();
-            if (derivedInfo != null && derivedInfo.size() > 0) {
-                Intent intent = new Intent(SetLongPassActivity.this, RecoveryChooseWalletActivity.class);
-                intent.putExtra("recoveryData", pyObject.toString());
-                startActivity(intent);
-                mlToast(getString(R.string.loading));
-                finish();
-            } else {
+        myDialog.show();
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
                 try {
-                    Daemon.commands.callAttr("recovery_confirmed", "");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    mToast(e.getMessage());
-                    return;
-                }
-                List<RecoveryWalletBean.WalletInfoBean> walletInfo = recoveryWalletBean.getWalletInfo();
-                String name = walletInfo.get(0).getName();
-                EventBus.getDefault().post(new CreateSuccessEvent(name));
-                mIntent(HomeOneKeyActivity.class);
-                finish();
-            }
+                    PyObject pyObject = Daemon.commands.callAttr("create_hd_wallet", editPass.getText().toString(), new Kwarg("seed", recoverySeed));
+                    RecoveryWalletBean recoveryWalletBean = new Gson().fromJson(pyObject.toString(), RecoveryWalletBean.class);
+                    List<RecoveryWalletBean.DerivedInfoBean> derivedInfo = recoveryWalletBean.getDerivedInfo();
+                    myDialog.dismiss();
+                    if (derivedInfo != null && derivedInfo.size() > 0) {
+                        Intent intent = new Intent(SetLongPassActivity.this, RecoveryChooseWalletActivity.class);
+                        intent.putExtra("recoveryData", pyObject.toString());
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        try {
+                            Daemon.commands.callAttr("recovery_confirmed", "[]");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            mToast(e.getMessage());
+                            return;
+                        }
+                        List<RecoveryWalletBean.WalletInfoBean> walletInfo = recoveryWalletBean.getWalletInfo();
+                        String name = walletInfo.get(0).getName();
+                        EventBus.getDefault().post(new CreateSuccessEvent(name));
+                        mIntent(HomeOneKeyActivity.class);
+                        finish();
+                    }
 
-        } catch (Exception e) {
-            mToast(e.getMessage());
-            e.printStackTrace();
-        }
+                } catch (Exception e) {
+                    mToast(e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        }, 300);
     }
 
     private void deleteAllWallet() {

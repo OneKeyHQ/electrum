@@ -59,7 +59,13 @@ public class TransactionConfirmDialog extends BaseDialogFragment {
         textSendName.setText(name);
         textSendAddress.setText(sender);
         textReceiveAddress.setText(receiver);
-        textTxAmount.setText(amount);
+        if (amount.contains("(")) {
+            String btcAmount = amount.substring(0, amount.indexOf("("));
+            textTxAmount.setText(btcAmount);
+        } else {
+            textTxAmount.setText(amount);
+        }
+
         textTxFee.setText(fee);
         switch (type) {
             case Constant.WALLET_TYPE_SOFTWARE:

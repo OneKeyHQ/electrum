@@ -9,10 +9,19 @@ public class WalletAddressEvent {
      * balance : 67 mBTC (4,340.95 CNY)
      */
 
+    private String key;
     @SerializedName("address")
     private String address;
     @SerializedName("balance")
     private String balance;
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
 
     public String getAddress() {
         return address;

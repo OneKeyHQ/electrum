@@ -42,6 +42,7 @@ public class RecoveryChooseWalletActivity extends BaseActivity {
     private ArrayList<String> listDates;
     private String recoveryData;
     private SharedPreferences.Editor edit;
+    private String name;
 
     @Override
     public int getLayoutId() {
@@ -73,11 +74,14 @@ public class RecoveryChooseWalletActivity extends BaseActivity {
     private void getRecoveryWallet() {
         try {
             RecoveryWalletBean recoveryWalletBean = new Gson().fromJson(recoveryData, RecoveryWalletBean.class);
+            List<RecoveryWalletBean.WalletInfoBean> walletInfo = recoveryWalletBean.getWalletInfo();
+            name = walletInfo.get(0).getName();
             List<RecoveryWalletBean.DerivedInfoBean> derivedInfo = recoveryWalletBean.getDerivedInfo();
             for (int i = 0; i < derivedInfo.size(); i++) {
                 WalletAddressEvent walletAddressEvent = new WalletAddressEvent();
-                walletAddressEvent.setAddress(derivedInfo.get(i).getName());
+                walletAddressEvent.setAddress(derivedInfo.get(i).getLabel());
                 walletAddressEvent.setBalance(derivedInfo.get(i).getBlance());
+                walletAddressEvent.setKey(derivedInfo.get(i).getName());
                 walletList.add(walletAddressEvent);
             }
             recoveryWalletAdapter.notifyDataSetChanged();
@@ -96,11 +100,12 @@ public class RecoveryChooseWalletActivity extends BaseActivity {
                 Map<Integer, Boolean> map = recoveryWalletAdapter.getMap();
                 for (int i = 0; i < walletList.size(); i++) {
                     if (map.get(i)) {
-                        listDates.add(walletList.get(i).getAddress());
+                        listDates.add(walletList.get(i).getKey());
                     }
                 }
                 String recoveryName = new Gson().toJson(listDates);
-                if (listDates != null && recoveryName.length() > 2) {
+                Log.i("recoveryNamejxm", "onViewClicked: " + recoveryName);
+                if (listDates != null) {
                     try {
                         Daemon.commands.callAttr("recovery_confirmed", recoveryName);
                     } catch (Exception e) {
@@ -108,10 +113,10 @@ public class RecoveryChooseWalletActivity extends BaseActivity {
                         mToast(e.getMessage());
                         return;
                     }
-                    EventBus.getDefault().post(new CreateSuccessEvent("BTC-1"));
+                    EventBus.getDefault().post(new CreateSuccessEvent(name));
                     mIntent(HomeOneKeyActivity.class);
                 } else {
-                    EventBus.getDefault().post(new CreateSuccessEvent("BTC-1"));
+                    EventBus.getDefault().post(new CreateSuccessEvent(name));
                     mIntent(HomeOneKeyActivity.class);
                 }
                 break;

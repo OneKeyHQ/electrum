@@ -117,11 +117,10 @@
 
             <ImageView
                 android:id="@+id/img_back"
-                android:layout_width="@dimen/dp_40"
-                android:layout_height="@dimen/dp_40"
+                android:layout_width="@dimen/dp_44"
+                android:layout_height="@dimen/dp_44"
                 android:layout_centerVertical="true"
                 android:layout_marginStart="@dimen/dp_10"
-                android:padding="@dimen/dp_8"
                 android:src="@drawable/left_white" />
 
             <TextView

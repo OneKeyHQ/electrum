@@ -3,15 +3,18 @@ package org.haobtc.onekey.onekeys.dialog.recovery.importmethod;
 import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import com.chaquo.python.Kwarg;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.bean.ZxingConfig;
@@ -20,6 +23,7 @@ import com.yzq.zxinglibrary.common.Constant;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.aop.SingleClick;
+import org.haobtc.onekey.utils.Daemon;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -29,6 +33,8 @@ public class WatchWalletActivity extends BaseActivity implements TextWatcher {
 
     @BindView(R.id.edit_address)
     EditText editAddress;
+    @BindView(R.id.btn_import)
+    Button btnImport;
     private RxPermissions rxPermissions;
     private static final int REQUEST_CODE = 0;
     private SharedPreferences.Editor edit;
@@ -81,15 +87,23 @@ public class WatchWalletActivity extends BaseActivity implements TextWatcher {
                         }).dispose();
                 break;
             case R.id.btn_import:
-                if (TextUtils.isEmpty(editAddress.getText().toString())) {
-                    mToast(getString(R.string.please_input_addr_or_xpub));
-                    return;
-                }
-                Intent intent = new Intent(WatchWalletActivity.this, ImportWalletSetNameActivity.class);
-                intent.putExtra("watchAddress",editAddress.getText().toString());
-                startActivity(intent);
+                addressIsRight();
                 break;
         }
+    }
+
+    private void addressIsRight() {
+        try {
+            Daemon.commands.callAttr("verify_legality", editAddress.getText().toString(), new Kwarg("flag", "address"));
+        } catch (Exception e) {
+            mToast(e.getMessage());
+            e.printStackTrace();
+            return;
+        }
+
+        Intent intent = new Intent(WatchWalletActivity.this, ImportWalletSetNameActivity.class);
+        intent.putExtra("watchAddress", editAddress.getText().toString());
+        startActivity(intent);
     }
 
     @Override
@@ -124,6 +138,14 @@ public class WatchWalletActivity extends BaseActivity implements TextWatcher {
 
     @Override
     public void afterTextChanged(Editable s) {
+        if (!TextUtils.isEmpty(s.toString())) {
+            btnImport.setEnabled(true);
+            btnImport.setBackground(getDrawable(R.drawable.btn_checked));
+
+        } else {
+            btnImport.setEnabled(false);
+            btnImport.setBackground(getDrawable(R.drawable.btn_no_check));
+        }
 
     }
 }

@@ -45,7 +45,6 @@
             android:id="@+id/check_wallet"
             android:layout_width="@dimen/dp_24"
             android:layout_height="@dimen/dp_24"
-            android:checked="true"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_marginEnd="@dimen/dp_21"

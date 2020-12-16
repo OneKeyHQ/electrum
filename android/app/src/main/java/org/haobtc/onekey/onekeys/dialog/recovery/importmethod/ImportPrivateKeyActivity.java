@@ -98,10 +98,6 @@ public class ImportPrivateKeyActivity extends BaseActivity implements TextWatche
                         }).dispose();
                 break;
             case R.id.btn_import:
-                if (TextUtils.isEmpty(editInputPrivate.getText().toString())) {
-                    mToast(getString(R.string.input_private_key));
-                    return;
-                }
                 isRightPrivate();
                 break;
         }
@@ -153,6 +149,14 @@ public class ImportPrivateKeyActivity extends BaseActivity implements TextWatche
 
     @Override
     public void afterTextChanged(Editable s) {
+        if (!TextUtils.isEmpty(s.toString())) {
+            btnImport.setEnabled(true);
+            btnImport.setBackground(getDrawable(R.drawable.btn_checked));
+
+        } else {
+            btnImport.setEnabled(false);
+            btnImport.setBackground(getDrawable(R.drawable.btn_no_check));
+        }
 
     }
 }

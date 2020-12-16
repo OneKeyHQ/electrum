@@ -54,20 +54,13 @@
 
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="@dimen/dp_30"
                     android:layout_centerVertical="true"
                     android:gravity="center"
                     android:text="@string/original_msg"
                     android:textColor="@color/text_six"
                     android:textSize="@dimen/sp_14" />
 
-                <ImageView
-                    android:id="@+id/scan"
-                    android:layout_width="@dimen/dp_30"
-                    android:layout_height="@dimen/dp_30"
-                    android:layout_alignParentEnd="true"
-                    android:padding="3dp"
-                    android:src="@drawable/scan_gray" />
             </RelativeLayout>
 
             <RelativeLayout
@@ -87,6 +80,17 @@
                     android:hint="@string/input_msg"
                     android:padding="@dimen/dp_20"
                     android:textSize="@dimen/text_size" />
+
+                <ImageView
+                    android:id="@+id/scan"
+                    android:layout_width="@dimen/dp_30"
+                    android:layout_height="@dimen/dp_30"
+                    android:layout_below="@id/edit_message"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="@dimen/dp_55"
+                    android:layout_marginBottom="@dimen/dp_8"
+                    android:padding="3dp"
+                    android:src="@drawable/scan_gray" />
 
                 <TextView
                     android:id="@+id/paste_message"
@@ -132,6 +136,17 @@
                     android:textColor="@color/set_txt"
                     android:textSize="@dimen/sp_15" />
 
+                <ImageView
+                    android:id="@+id/scan_public"
+                    android:layout_width="@dimen/dp_30"
+                    android:layout_height="@dimen/dp_30"
+                    android:layout_below="@id/edit_address"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="@dimen/dp_55"
+                    android:layout_marginBottom="@dimen/dp_8"
+                    android:padding="3dp"
+                    android:src="@drawable/scan_gray" />
+
                 <TextView
                     android:id="@+id/paste_address"
                     android:layout_width="wrap_content"
@@ -175,6 +190,17 @@
                     android:padding="@dimen/dp_20"
                     android:textColor="@color/text_color"
                     android:textSize="@dimen/sp_15" />
+
+                <ImageView
+                    android:id="@+id/scan_signed"
+                    android:layout_width="@dimen/dp_30"
+                    android:layout_height="@dimen/dp_30"
+                    android:layout_below="@id/edit_signature"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="@dimen/dp_55"
+                    android:layout_marginBottom="@dimen/dp_8"
+                    android:padding="3dp"
+                    android:src="@drawable/scan_gray" />
 
                 <TextView
                     android:id="@+id/paste_signature"

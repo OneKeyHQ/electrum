@@ -33,6 +33,7 @@
         android:id="@+id/device_name"
         android:layout_width="@dimen/dp_300"
         android:layout_height="@dimen/dp_60"
+        android:maxLength="15"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="34dp"
         android:background="@drawable/edit_text_bg"

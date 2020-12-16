@@ -1,13 +1,21 @@
 package org.haobtc.onekey.onekeys.homepage.process;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.view.Display;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -23,6 +31,8 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.MyApplication;
+import org.haobtc.onekey.activities.personalwallet.CreatFinishPersonalActivity;
+import org.haobtc.onekey.activities.settings.recovery_set.BackupRecoveryActivity;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.asynctask.BusinessAsyncTask;
 import org.haobtc.onekey.bean.CurrentFeeDetails;
@@ -165,6 +175,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     private BigDecimal decimalBalance;
     private int scale;
     private CustomizeFeeDialog feeDialog;
+    private String amounts;
 
 
     /**
@@ -189,7 +200,35 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         }
         textBalance.setText(String.format("%s%s", balance, preferences.getString("base_unit", "")));
         registerLayoutChangeListener();
+        //whether backup
+        boolean whetherBackup = getIntent().getBooleanExtra("whetherBackup", false);
+        if (!whetherBackup) {
+            noBackupDialog();
+        }
     }
+
+    private void noBackupDialog() {
+        View view1 = LayoutInflater.from(this).inflate(R.layout.unbackup_tip, null, false);
+        AlertDialog alertDialog = new AlertDialog.Builder(this).setView(view1).create();
+        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        view1.findViewById(R.id.text_back).setOnClickListener(v -> {
+            finish();
+            alertDialog.dismiss();
+        });
+        view1.findViewById(R.id.text_i_know).setOnClickListener(v -> {
+            alertDialog.dismiss();
+        });
+        alertDialog.show();
+        //show center
+        Window dialogWindow = alertDialog.getWindow();
+        WindowManager m = getWindowManager();
+        Display d = m.getDefaultDisplay();
+        WindowManager.LayoutParams p = dialogWindow.getAttributes();
+        p.width = (int) (d.getWidth() * 0.95);
+        p.gravity = Gravity.CENTER;
+        dialogWindow.setAttributes(p);
+    }
+
 
     /***
      * init layout
@@ -332,9 +371,10 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
             showToast(R.string.get_fee_info_failed);
         }
     }
+
     /**
      * 初始化三种等级手续费的默认视图
-     * */
+     */
     private void initFeeSelectorStatus() {
         textSpendTime0.setText(String.format("%s%s%s", getString(R.string.about_), currentFeeDetails == null ? 0 : currentFeeDetails.getSlow().getTime(), getString(R.string.minute)));
         textFeeInBtc0.setText(String.format(Locale.ENGLISH, "%s %s", currentFeeDetails.getSlow().getFee(), baseUnit));
@@ -397,12 +437,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                 sendConfirmDialog(rawTx);
             }
         } else {
-          showToast(errors);
-//            if (errors.contains("Insufficient funds")) {
-//                showToast(getString(R.string.wallet_insufficient));
-//            } else {
-//                showToast(getString(R.string.changeaddress));
-//            }
+            showToast(errors);
         }
     }
 
@@ -434,8 +469,9 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         PyResponse<Void> response = PyEnv.broadcast(signedTx);
         String errors = response.getErrors();
         if (Strings.isNullOrEmpty(errors)) {
-            Intent intent = new Intent(SendHdActivity.this, DetailTransactionActivity.class);
+            Intent intent = new Intent(SendHdActivity.this, TransactionCompletion.class);
             intent.putExtra("txDetail", signedTx);
+            intent.putExtra("amounts", amounts);
             startActivity(intent);
             finish();
         } else {
@@ -458,12 +494,12 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         // set see view
         String sender = info.getInputAddr().get(0).getAddr();
         String receiver = info.getOutputAddr().get(0).getAddr();
-        String amount = info.getAmount().substring(0, info.getAmount().indexOf("(")-1);
+        amounts = info.getAmount();
         String fee = info.getFee();
         Bundle bundle = new Bundle();
         bundle.putString(Constant.TRANSACTION_SENDER, sender);
         bundle.putString(Constant.TRANSACTION_RECEIVER, receiver);
-        bundle.putString(Constant.TRANSACTION_AMOUNT, amount);
+        bundle.putString(Constant.TRANSACTION_AMOUNT, amounts);
         bundle.putString(Constant.TRANSACTION_FEE, fee);
         bundle.putString(Constant.WALLET_LABEL, hdWalletName);
         bundle.putInt(Constant.WALLET_TYPE, Constant.WALLET_TYPE_HARDWARE.equals(showWalletType) ?
@@ -509,11 +545,9 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                     String errors1 = response1.getErrors();
                     if (Strings.isNullOrEmpty(errors1)) {
                         textFeeInCash1.setText(String.format(Locale.ENGLISH, "%s %s", currencySymbols, response1.getResult()));
-                        ;
                     } else {
                         showToast(errors1);
                         return false;
-//                        showToast(R.string.exchange_error);
                     }
                     tempRecommendTransaction = temp;
                     currentTempTransaction = tempRecommendTransaction;
@@ -526,7 +560,6 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                     if (Strings.isNullOrEmpty(errors0)) {
                         textFeeInCash0.setText(String.format(Locale.ENGLISH, "%s %s", currencySymbols, response0.getResult()));
                     } else {
-//                        showToast(R.string.exchange_error);
                         showToast(errors0);
                         return false;
                     }
@@ -542,7 +575,6 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                     } else {
                         showToast(errors2);
                         return false;
-//                        showToast(R.string.exchange_error);
                     }
                     tempFastTransaction = temp;
                     break;
@@ -559,16 +591,12 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                     } else {
                         showToast(errors3);
                         return false;
-//                        showToast(R.string.exchange_error);
                     }
                     tempCustomizeTransaction = temp;
                     break;
             }
-
         } else {
             showToast(errors);
-            return false;
-//            showToast(R.string.get_fee_info_failed);
         }
         return true;
     }
@@ -624,7 +652,6 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
             //If the difference between screen height and window visible area height is greater than 1 / 3 of the whole screen height, it means that the soft keyboard is in display, otherwise, the soft keyboard is hidden.
             int heightDifference = screenHeight - (r.bottom - r.top);
             boolean isKeyboardShowing = heightDifference > screenHeight / 3;
-
             // If the status of the soft keyboard was previously displayed, it is now closed, or it was previously closed, it is now displayed, it means that the status of the soft keyboard has changed
             if ((mIsSoftKeyboardShowing && !isKeyboardShowing) || (!mIsSoftKeyboardShowing && isKeyboardShowing)) {
                 mIsSoftKeyboardShowing = isKeyboardShowing;
@@ -693,7 +720,6 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
      * 获取三种不同费率对应的临时交易
      */
     private void refreshFeeView() {
-
         Optional.ofNullable(currentFeeDetails).ifPresent((currentFeeDetails1 -> {
             if (sendReady()) {
                 synchronized (SendHdActivity.class) {
@@ -744,7 +770,6 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
 
     @Override
     public void onPreExecute() {
-
     }
 
     @Override
@@ -766,12 +791,10 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
 
     @Override
     public void onCancelled() {
-
     }
 
     @Override
     public void currentMethod(String methodName) {
-
     }
 
     @Override

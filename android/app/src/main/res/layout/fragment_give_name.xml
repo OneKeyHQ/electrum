@@ -30,6 +30,7 @@
         android:layout_marginEnd="34dp"
         android:background="@drawable/gray_broken"
         android:hint="@string/input_device_name_hide"
+        android:maxLength="8"
         android:paddingStart="@dimen/dp_20"
         android:paddingEnd="@dimen/dp_20"
         android:textSize="@dimen/sp_16" />

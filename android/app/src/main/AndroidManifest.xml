@@ -46,6 +46,7 @@
         android:theme="@style/AppTheme"
         tools:replace="label, android:allowBackup"
         tools:targetApi="q">
+        <activity android:name=".onekeys.homepage.process.TransactionCompletion"></activity>
         <activity
             android:name=".onekeys.dialog.recovery.importmethod.ImportWalletSetNameActivity"
             android:screenOrientation="portrait"

@@ -354,12 +354,14 @@ public class WalletFragment extends BaseFragment {
         switch (id) {
             case R.id.linear_send:
                 Intent intent2 = new Intent(getActivity(), SendHdActivity.class);
+                intent2.putExtra("whetherBackup",isBackup);
                 intent2.putExtra(WALLET_BALANCE, changeBalance);
                 intent2.putExtra("hdWalletName", textWalletName.getText().toString());
                 startActivity(intent2);
                 break;
             case R.id.linear_receive:
                 Intent intent3 = new Intent(getActivity(), ReceiveHDActivity.class);
+                intent3.putExtra("whetherBackup",isBackup);
                 if (org.haobtc.onekey.constant.Constant.WALLET_TYPE_HARDWARE.equals(nowType)) {
                     intent3.putExtra(org.haobtc.onekey.constant.Constant.WALLET_TYPE, org.haobtc.onekey.constant.Constant.WALLET_TYPE_HARDWARE_PERSONAL);
                 }

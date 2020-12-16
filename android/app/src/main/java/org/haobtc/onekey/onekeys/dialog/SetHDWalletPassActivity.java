@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -42,6 +43,7 @@ import org.haobtc.onekey.onekeys.homepage.mindmenu.HdRootMnemonicsActivity;
 import org.haobtc.onekey.onekeys.homepage.process.ExportPrivateActivity;
 import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
 import org.haobtc.onekey.utils.Daemon;
+import org.haobtc.onekey.utils.MyDialog;
 import org.haobtc.onekey.utils.PwdEditText;
 
 import java.util.ArrayList;
@@ -86,6 +88,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
     private String deleteHdWalletName;
     private SharedPreferences preferences;
     private ArrayList<String> typeList;
+    private MyDialog myDialog;
 
     @Override
     public int getLayoutId() {
@@ -96,6 +99,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
     public void initView() {
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
+        myDialog = MyDialog.showDialog(this);
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         edit = preferences.edit();
         importHdword = getIntent().getStringExtra("importHdword");
@@ -106,7 +110,6 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
         operateType = getIntent().getStringExtra(Constant.OPERATE_TYPE);
         deleteHdWalletName = getIntent().getStringExtra("deleteHdWalletName");//删除所有hd钱包的名字
         inits();
-
     }
 
     @Override
@@ -143,7 +146,6 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
                 typeList.add(label);
             }
         });
-
         if (typeList == null || typeList.size() == 0) {
             textPageTitle.setText(getString(R.string.set_you_pass));
         } else {
@@ -180,20 +182,20 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
                 finish();
                 break;
             case R.id.lin_short_pass:
-                    pwdEdittext.clearText();
-                    Intent intent1 = new Intent(SetHDWalletPassActivity.this, SetLongPassActivity.class);
-                    intent1.putExtra("importHdword", importHdword);
-                    intent1.putExtra("walletName", walletName);
-                    intent1.putExtra("recoverySeed", seed);
+                pwdEdittext.clearText();
+                Intent intent1 = new Intent(SetHDWalletPassActivity.this, SetLongPassActivity.class);
+                intent1.putExtra("importHdword", importHdword);
+                intent1.putExtra("walletName", walletName);
+                intent1.putExtra("recoverySeed", seed);
+                intent1.putExtra("privateKey", privateKey);
+                intent1.putExtra(Constant.OPERATE_TYPE, operateType);
+                intent1.putExtra("deleteHdWalletName", deleteHdWalletName);
+                if ("derive".equals(importHdword)) {
+                    intent1.putExtra("currencyType", currencyType);
+                } else if ("importPrivateKey".equals(importHdword)) {
                     intent1.putExtra("privateKey", privateKey);
-                    intent1.putExtra(Constant.OPERATE_TYPE, operateType);
-                    intent1.putExtra("deleteHdWalletName", deleteHdWalletName);
-                    if ("derive".equals(importHdword)) {
-                        intent1.putExtra("currencyType", currencyType);
-                    } else if ("importPrivateKey".equals(importHdword)) {
-                        intent1.putExtra("privateKey", privateKey);
-                    }
-                    startActivity(intent1);
+                }
+                startActivity(intent1);
                 break;
         }
     }
@@ -319,36 +321,41 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
 
     //recovery Hd Wallet
     private void recoveryHdWallet() {
-        try {
-            PyObject pyObject = Daemon.commands.callAttr("create_hd_wallet", pwdEdittext.getText().toString(), new Kwarg("seed", seed));
-            RecoveryWalletBean recoveryWalletBean = new Gson().fromJson(pyObject.toString(), RecoveryWalletBean.class);
-            List<RecoveryWalletBean.DerivedInfoBean> derivedInfo = recoveryWalletBean.getDerivedInfo();
-            if (derivedInfo != null && derivedInfo.size() > 0) {
-                Intent intent = new Intent(SetHDWalletPassActivity.this, RecoveryChooseWalletActivity.class);
-                intent.putExtra("recoveryData", pyObject.toString());
-                startActivity(intent);
-                mlToast(getString(R.string.loading));
-                finish();
-            } else {
+        myDialog.show();
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
                 try {
-                    Daemon.commands.callAttr("recovery_confirmed", "[]");
+                    PyObject pyObject = Daemon.commands.callAttr("create_hd_wallet", pwdEdittext.getText().toString(), new Kwarg("seed", seed));
+                    RecoveryWalletBean recoveryWalletBean = new Gson().fromJson(pyObject.toString(), RecoveryWalletBean.class);
+                    List<RecoveryWalletBean.DerivedInfoBean> derivedInfo = recoveryWalletBean.getDerivedInfo();
+                    myDialog.dismiss();
+                    if (derivedInfo != null && derivedInfo.size() > 0) {
+                        Intent intent = new Intent(SetHDWalletPassActivity.this, RecoveryChooseWalletActivity.class);
+                        intent.putExtra("recoveryData", pyObject.toString());
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        try {
+                            Daemon.commands.callAttr("recovery_confirmed", "[]");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            mToast(e.getMessage());
+                            return;
+                        }
+                        List<RecoveryWalletBean.WalletInfoBean> walletInfo = recoveryWalletBean.getWalletInfo();
+                        String name = walletInfo.get(0).getName();
+                        EventBus.getDefault().post(new CreateSuccessEvent(name));
+                        mIntent(HomeOneKeyActivity.class);
+                        finish();
+                    }
                 } catch (Exception e) {
-                    e.printStackTrace();
                     mToast(e.getMessage());
-                    return;
+                    e.printStackTrace();
                 }
-                List<RecoveryWalletBean.WalletInfoBean> walletInfo = recoveryWalletBean.getWalletInfo();
-                String name = walletInfo.get(0).getName();
-                EventBus.getDefault().post(new CreateSuccessEvent(name));
-                mIntent(HomeOneKeyActivity.class);
-                finish();
             }
-
-        } catch (Exception e) {
-            mToast(e.getMessage());
-            e.printStackTrace();
-        }
-
+        }, 300);
     }
 
     private void deleteAllWallet() {
@@ -362,7 +369,6 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
                 hd.add(name);
             }
         });
-
         try {
             Daemon.commands.callAttr("delete_wallet", pwdEdittext.getText().toString(), new Kwarg("name", deleteHdWalletName));
             PreferencesManager.put(this, "Preferences", Constant.HAS_LOCAL_HD, false);
@@ -376,7 +382,6 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
         for (int i = 0; i < hd.size(); i++) {
             PreferencesManager.remove(this, Constant.WALLETS, hd.get(i));
         }
-
         PyEnv.loadLocalWalletInfo(this);
         EventBus.getDefault().post(new LoadOtherWalletEvent());
         EventBus.getDefault().post(new LoadWalletlistEvent());
@@ -415,6 +420,8 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
             input = true;
         } else {
             try {
+                Log.i("sixPassjxm", "fixHdPass: " + sixPass);
+                Log.i("sixPassjxm", "fixHdPass--: " + pwdEdittext.getText().toString());
                 Daemon.commands.callAttr("update_wallet_password", sixPass, pwdEdittext.getText().toString());
             } catch (Exception e) {
                 e.printStackTrace();
@@ -462,41 +469,44 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
 
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
     }
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
     @Override
     public void afterTextChanged(Editable s) {
-        int length = s.length();
-        if ((length == 6)) {
-            if (typeList == null || typeList.size() == 0) {
-                if (!input) {
-                    sixPass = pwdEdittext.getText().toString();
-                    testSetPass.setText(getString(R.string.input_pass));
-                    textTip.setText(getString(R.string.dont_tell));
-                    pwdEdittext.clearText();
-                    textLong.setText(getString(R.string.test_long_tip));
-                    input = true;
-                } else {
-                    edit.putString("shortOrLongPass", "short");
-                    edit.apply();
-                    if (!sixPass.equals(pwdEdittext.getText().toString())) {
-                        mToast(getString(R.string.two_different_pass));
-                        return;
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                int length = s.length();
+                if ((length == 6)) {
+                    if (typeList == null || typeList.size() == 0) {
+                        if (!input) {
+                            sixPass = pwdEdittext.getText().toString();
+                            testSetPass.setText(getString(R.string.input_pass));
+                            textTip.setText(getString(R.string.dont_tell));
+                            pwdEdittext.clearText();
+                            textLong.setText(getString(R.string.test_long_tip));
+                            input = true;
+                        } else {
+                            edit.putString("shortOrLongPass", "short");
+                            edit.apply();
+                            if (!sixPass.equals(pwdEdittext.getText().toString())) {
+                                mToast(getString(R.string.two_different_pass));
+                            } else {
+                                walletStatus();
+                            }
+                        }
                     } else {
                         walletStatus();
                     }
                 }
-            } else {
-                walletStatus();
             }
-        }
+        }, 200);
     }
 
     @Override

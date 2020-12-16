@@ -299,7 +299,7 @@ public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocu
                             editOne.setText(wordList.get(0));
                             break;
                         default:
-                            throw new IllegalStateException("Unexpected value: " + wordList.size());
+                            throw new IllegalStateException("Unexpected value: ");
                     }
                 }
             }
