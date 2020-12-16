@@ -1,6 +1,6 @@
 /* 
   Localizable.strings
-  ElectronCash
+  OneKey
 
   Created by xiaoliang on 2020/10/9.
   Copyright © 2020 OneKey. All rights reserved..
@@ -323,3 +323,4 @@
 "Your hardware wallet has been successfully activated and we have nothing to remind you of. In a word, please take good care of it. No one can help you get it back. I wish you play in the chain of blocks in the world happy" = "您的硬件钱包激活成功， \n我们也没什么可提醒您的了。 \n总之，切记保管好它，\n 搞丢了没有任何人可以帮您找回来。 \n祝您在区块链的世界玩儿开心❤️。";
 "Set a new password" = "设置新密码";
 "Please enter again" = "请再次输入";
+"Temporary does not support" = "暂不支持";
