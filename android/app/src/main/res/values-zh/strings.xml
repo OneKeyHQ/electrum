@@ -1283,5 +1283,7 @@
     <string name="not_found_device_msg">未发现设备信息</string>
     <string name="bluetooth_exception">蓝牙链接异常</string>
     <string name="name_lenth_8">名字最多为8个字符哦~</string>
-
+    <string name="newest_app">当前已是最新版本</string>
+    <string name="already_has_local_hd">您本地已经创建过HD钱包！，不能在创建了呦</string>
+    <string name="looking_for_wallets">搜寻钱包中</string>
 </resources>

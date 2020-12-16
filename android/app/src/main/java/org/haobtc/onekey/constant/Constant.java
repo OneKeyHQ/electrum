@@ -191,9 +191,13 @@ public final class Constant {
     * */
     public static final String BLE_MAC = "mac";
     /**
-     * todo: 临时的
+     * 通过硬件创建
      * */
     public static final String WALLET_TYPE_HARDWARE = "btc-hw-derived-1-1";
+    /**
+     * 软件hd
+     * */
+    public static final String WALLET_TYPE_LOCAL_HD = "btc-hd-standard";
     /**
      * 固件升级文件后缀
      * */
@@ -238,6 +242,10 @@ public final class Constant {
     public static final String FORCE_UPDATE = "force_update";
 
     public static final String DEVICE_DEFAULT_LABEL = "oneKey";
+    /**
+     * 本地是否存在软件hd
+     * */
+    public static final String HAS_LOCAL_HD = "has_local_hd";
 
     public static class SearchDeviceMode{
         /**

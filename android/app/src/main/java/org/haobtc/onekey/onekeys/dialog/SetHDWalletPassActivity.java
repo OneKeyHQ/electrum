@@ -180,7 +180,6 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
                 finish();
                 break;
             case R.id.lin_short_pass:
-                if (SOFT_HD_PASS_TYPE_SHORT.equals(preferences.getString(SOFT_HD_PASS_TYPE, SOFT_HD_PASS_TYPE_SHORT))) {
                     pwdEdittext.clearText();
                     Intent intent1 = new Intent(SetHDWalletPassActivity.this, SetLongPassActivity.class);
                     intent1.putExtra("importHdword", importHdword);
@@ -195,9 +194,6 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
                         intent1.putExtra("privateKey", privateKey);
                     }
                     startActivity(intent1);
-                } else {
-                    finish();
-                }
                 break;
         }
     }
@@ -369,6 +365,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
 
         try {
             Daemon.commands.callAttr("delete_wallet", pwdEdittext.getText().toString(), new Kwarg("name", deleteHdWalletName));
+            PreferencesManager.put(this, "Preferences", Constant.HAS_LOCAL_HD, false);
 //            Daemon.commands.callAttr("delete_wallet", pwdEdittext.getText().toString(), new Kwarg("name", "ETH-1"));
         } catch (Exception e) {
             e.printStackTrace();

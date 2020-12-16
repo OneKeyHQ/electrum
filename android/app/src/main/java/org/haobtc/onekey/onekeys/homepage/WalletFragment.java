@@ -248,6 +248,9 @@ public class WalletFragment extends BaseFragment {
 
     private void showTypeInfo(LocalWalletInfo localWalletInfo) {
         nowType = localWalletInfo.getType();
+        if (org.haobtc.onekey.constant.Constant.WALLET_TYPE_LOCAL_HD.equals(nowType)) {
+            PreferencesManager.put(getContext(), "Preferences", org.haobtc.onekey.constant.Constant.HAS_LOCAL_HD, true);
+        }
         edit.putString(CURRENT_SELECTED_WALLET_TYPE, nowType);
         edit.apply();
         if (nowType.contains("btc")) {

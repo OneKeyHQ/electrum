@@ -170,11 +170,13 @@
             tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".onekeys.dialog.SetLongPassActivity"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
             tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".onekeys.dialog.SetHDWalletPassActivity"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
             tools:ignore="LockedOrientationActivity" />

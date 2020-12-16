@@ -1343,4 +1343,7 @@
     <string name="bluetooth_exception">Bluetooth link abnormal</string>
     <string name="lable">lable</string>
     <string name="name_lenth_8">Name can be up to 8 characters~</string>
+    <string name="newest_app">Current version is newest </string>
+    <string name="already_has_local_hd">There is a local HD wallet already!!</string>
+    <string name="looking_for_wallets">Looking for wallets</string>
 </resources>

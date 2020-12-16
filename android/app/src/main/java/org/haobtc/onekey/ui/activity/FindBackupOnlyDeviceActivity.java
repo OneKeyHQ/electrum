@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.google.common.base.Strings;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -13,6 +15,7 @@ import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.asynctask.BusinessAsyncTask;
 import org.haobtc.onekey.bean.BalanceInfo;
 import org.haobtc.onekey.bean.FindOnceWalletEvent;
+import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.PyConstant;
 import org.haobtc.onekey.event.ButtonRequestEvent;
@@ -75,11 +78,13 @@ public class FindBackupOnlyDeviceActivity extends BaseActivity implements Busine
     }
     @Subscribe
     public void onGotPassEvent(GotPassEvent event) {
-        List<BalanceInfo> infos = PyEnv.createLocalHd(event.getPassword(), mnemonics);
-        if (infos != null) {
-            EventBus.getDefault().post(new FindOnceWalletEvent<>(infos));
+        PyResponse<List<BalanceInfo>> response = PyEnv.createLocalHd(event.getPassword(), mnemonics);
+        String errors = response.getErrors();
+        if (Strings.isNullOrEmpty(errors)) {
+            EventBus.getDefault().post(new FindOnceWalletEvent<>(response.getResult()));
         } else {
-            showToast("未发现可用钱包");
+            showToast(errors);
+            EventBus.getDefault().post(new ExitEvent());
             finish();
         }
     }

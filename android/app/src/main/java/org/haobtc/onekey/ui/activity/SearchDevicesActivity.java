@@ -247,7 +247,12 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
             case Constant.SearchDeviceMode.MODE_RECOVERY_WALLET_BY_COLD:
                 if (features.isInitialized()) {
                     if (features.isBackupOnly()) {
-                        startActivity(new Intent(this, FindBackupOnlyDeviceActivity.class));
+                        boolean hasLocalHd = (boolean)PreferencesManager.get(this, "Preferences", Constant.HAS_LOCAL_HD, false);
+                        if (hasLocalHd) {
+                            showToast(R.string.already_has_local_hd);
+                        } else {
+                            startActivity(new Intent(this, FindBackupOnlyDeviceActivity.class));
+                        }
                     } else {
                         showToast(R.string.only_backup_only_device);
                     }
@@ -262,7 +267,12 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
                     startActivity(new Intent(this, FindUnInitDeviceActivity.class));
                     finish();
                 } else if (features.isBackupOnly()) {
-                    startActivity(new Intent(this, FindBackupOnlyDeviceActivity.class));
+                    boolean hasLocalHd = (boolean)PreferencesManager.get(this, "Preferences", Constant.HAS_LOCAL_HD, false);
+                    if (hasLocalHd) {
+                        showToast(R.string.already_has_local_hd);
+                    } else {
+                        startActivity(new Intent(this, FindBackupOnlyDeviceActivity.class));
+                    }
                     finish();
                 } else {
                     Intent intent = new Intent(this, FindNormalDeviceActivity.class);

@@ -235,7 +235,6 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
 
                 break;
             case R.id.lin_short_pass:
-                if (SOFT_HD_PASS_TYPE_LONG.equals(preferences.getString(SOFT_HD_PASS_TYPE, SOFT_HD_PASS_TYPE_SHORT))) {
                     editPass.setText("");
                     Intent intent1 = new Intent(this, SetHDWalletPassActivity.class);
                     intent1.putExtra("importHdword", importHdword);
@@ -249,10 +248,6 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
                         intent1.putExtra("privateKey", privateKey);
                     }
                     startActivity(intent1);
-                } else {
-                    finish();
-                }
-
                 break;
         }
     }
@@ -338,7 +333,6 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
         } catch (Exception e) {
             e.printStackTrace();
             mToast(e.getMessage());
-            return;
         }
     }
 
@@ -353,7 +347,6 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
         } catch (Exception e) {
             e.printStackTrace();
             mToast(e.getMessage());
-            return;
         }
     }
 
@@ -381,7 +374,6 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
         } catch (Exception e) {
             mToast(e.getMessage());
             e.printStackTrace();
-            return;
         }
     }
 
@@ -431,6 +423,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
 
         try {
             Daemon.commands.callAttr("delete_wallet", editPass.getText().toString(), new Kwarg("name", deleteHdWalletName));
+            PreferencesManager.put(this, "Preferences", Constant.HAS_LOCAL_HD, false);
 //            Daemon.commands.callAttr("delete_wallet", pwdEdittext.getText().toString(), new Kwarg("name", "ETH-1"));
         } catch (Exception e) {
             mToast(e.getMessage());

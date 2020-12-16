@@ -357,7 +357,8 @@ public final class PyEnv {
     /**
      * 创建HD钱包
      * */
-    public static List<BalanceInfo> createLocalHd(String passwd, String mnemonics) {
+    public static PyResponse<List<BalanceInfo>> createLocalHd(String passwd, String mnemonics) {
+        PyResponse<List<BalanceInfo>> response = new PyResponse<>();
         List<BalanceInfo> infos = new ArrayList<>();
         try {
             String walletsInfo = sCommands.callAttr(PyConstant.CREATE_HD_WALLET, passwd, mnemonics).toString();
@@ -380,11 +381,12 @@ public final class PyEnv {
                    infos.add(info);
                 }));
             }));
-            return infos;
+            response.setResult(infos);
         } catch (Exception e) {
+            response.setErrors(e.getMessage());
             e.printStackTrace();
         }
-        return null;
+        return response;
     }
     /**
      * 确认恢复
