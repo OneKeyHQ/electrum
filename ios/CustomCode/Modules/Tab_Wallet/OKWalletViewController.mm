@@ -27,6 +27,7 @@
 #import "OKCreateResultModel.h"
 #import "OKCreateResultWalletInfoModel.h"
 #import "OKMatchingInCirclesViewController.h"
+#import "OKTakeCareMnemonicViewController.h"
 
 
 @interface OKWalletViewController ()<UITableViewDelegate,UITableViewDataSource,UINavigationControllerDelegate,UIGestureRecognizerDelegate>
@@ -615,30 +616,36 @@
 {
     [self checkWalletResetUI];
     NSDictionary *dict = noti.object;
-    BOOL show = [[dict safeStringForKey:@"backupshow"] boolValue];
-    if (!show) {
-        return;
-    }
-    NSString *pwd = [dict safeStringForKey:@"pwd"];
-    OKWeakSelf(self)
-    OKBackUpTipsViewController *backUpTips = [OKBackUpTipsViewController backUpTipsViewController:^(BackUpBtnClickType type) {
-            if (type == BackUpBtnClickTypeClose) {
-                //下次再说  关闭窗口
-            }else if (type == BackUpBtnClickTypeBackUp){
-                NSString *words = [kPyCommandsManager callInterface:kInterfaceexport_seed parameter:@{@"password":pwd,@"name":kWalletManager.currentWalletInfo.name}];
-                if (words != nil) {
-                    OKReadyToStartViewController *readyToStart = [OKReadyToStartViewController readyToStartViewController];
-                    readyToStart.pwd = pwd;
-                    readyToStart.words = words;
-                    readyToStart.walletName = kWalletManager.currentWalletInfo.name;
-                    [weakself.OK_TopViewController.navigationController pushViewController:readyToStart animated:YES];
-                }
-            }
-    }];
+    BOOL showB = [[dict safeStringForKey:@"backupshow"] boolValue];
+    BOOL showT = [[dict safeStringForKey:@"takecareshow"]boolValue];
     
-    UINavigationController *navVc = [[UINavigationController alloc]initWithRootViewController:backUpTips];
-    navVc.modalPresentationStyle = UIModalPresentationOverFullScreen;
-    [self.OK_TopViewController presentViewController:navVc animated:NO completion:nil];
+    if (showB == YES) {
+        NSString *pwd = [dict safeStringForKey:@"pwd"];
+        OKWeakSelf(self)
+        OKBackUpTipsViewController *backUpTips = [OKBackUpTipsViewController backUpTipsViewController:^(BackUpBtnClickType type) {
+                if (type == BackUpBtnClickTypeClose) {
+                    //下次再说  关闭窗口
+                }else if (type == BackUpBtnClickTypeBackUp){
+                    NSString *words = [kPyCommandsManager callInterface:kInterfaceexport_seed parameter:@{@"password":pwd,@"name":kWalletManager.currentWalletInfo.name}];
+                    if (words != nil) {
+                        OKReadyToStartViewController *readyToStart = [OKReadyToStartViewController readyToStartViewController];
+                        readyToStart.pwd = pwd;
+                        readyToStart.words = words;
+                        readyToStart.walletName = kWalletManager.currentWalletInfo.name;
+                        [weakself.OK_TopViewController.navigationController pushViewController:readyToStart animated:YES];
+                    }
+                }
+        }];
+        
+        UINavigationController *navVc = [[UINavigationController alloc]initWithRootViewController:backUpTips];
+        navVc.modalPresentationStyle = UIModalPresentationOverFullScreen;
+        [self.OK_TopViewController presentViewController:navVc animated:NO completion:nil];
+    }else if (showT == YES){
+        OKTakeCareMnemonicViewController *TakeCareMnemonicVc = [OKTakeCareMnemonicViewController takeCareMnemonicViewController];
+        TakeCareMnemonicVc.modalPresentationStyle = UIModalPresentationOverFullScreen;
+        [self.OK_TopViewController presentViewController:TakeCareMnemonicVc animated:NO completion:nil];
+    }
+    
 }
 - (void)notiSelectWalletComplete
 {

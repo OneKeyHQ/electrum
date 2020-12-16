@@ -29,6 +29,14 @@
     NSString *bStr = [NSString stringWithFormat:@"%@%@",[model.is_mine boolValue] == NO ? @"+":@"-" ,[amountArray firstObject]];
     self.amountLabel.text = bStr;
     self.addressLabel.text = model.tx_hash;
+    
+    if ([model.is_mine boolValue]) {
+        self.amountLabel.textColor = HexColor(0x3E70F2);
+    }else{
+        self.amountLabel.textColor = HexColor(0x00B812);
+    }
+    
+    
 }
 
 

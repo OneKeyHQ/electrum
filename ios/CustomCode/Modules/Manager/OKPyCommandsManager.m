@@ -354,7 +354,6 @@ static dispatch_once_t once;
     }
   
     if (result == NULL) {
-//        PyErr_Print();
         if (PyErr_Occurred()) {
             PyObject* ptype,*pvalue,*ptraceback;
             PyObject* pystr;
@@ -368,7 +367,6 @@ static dispatch_once_t once;
             dispatch_main_async_safe(
                 [kTools tipMessage:[NSString stringWithCString:msg encoding:NSUTF8StringEncoding]];
             );
-            
             return nil;
         }
     }

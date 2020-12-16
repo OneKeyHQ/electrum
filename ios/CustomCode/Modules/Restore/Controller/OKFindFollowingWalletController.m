@@ -100,7 +100,7 @@
         [kUserSettingManager setIsLongPwd:[kUserSettingManager.currentSelectPwdType boolValue]];
     }
     [self.OK_TopViewController dismissToViewControllerWithClassName:@"OKWalletViewController" animated:YES complete:^{
-        [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":self.pwd,@"backupshow":@"0"}];
+        [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":self.pwd,@"backupshow":@"0",@"takecareshow":@"1"}];
     }];
 }
 

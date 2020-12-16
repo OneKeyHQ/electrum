@@ -135,8 +135,7 @@
                         [kUserSettingManager setIsLongPwd:[kUserSettingManager.currentSelectPwdType boolValue]];
                     }
                     OKBiologicalViewController *biologicalVc = [OKBiologicalViewController biologicalViewController:@"OKWalletViewController" pwd:pwd biologicalViewBlock:^{
-                        //创建HD成功刷新首页的UI
-                        [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":pwd,@"backupshow":@"1"}];
+                        [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":pwd,@"backupshow":@"0",@"takecareshow":@"1"}];
                     }];
                     [kTools hideIndicatorView];
                     [weakself.OK_TopViewController.navigationController pushViewController:biologicalVc animated:YES];

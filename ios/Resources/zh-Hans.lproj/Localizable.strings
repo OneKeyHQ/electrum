@@ -324,3 +324,9 @@
 "Set a new password" = "设置新密码";
 "Please enter again" = "请再次输入";
 "Temporary does not support" = "暂不支持";
+"You have successfully restored the HD Wallet on this device. We believe that you are already familiar with backing up and keeping mnemonics, so we do not require you to repeat the backup of your existing mnemonic" = "您已经成功在这台设备上恢复了 HD 钱包，我们相信您已经对于备份和保管助记词轻车熟路了，所以不再要求您重复备份已有的助记词";
+"But again, don't lose your mnemonic in case you need to use it again" = "不过还是再次提醒您，不要遗失手中的助记词，以免将来还会用到。";
+"Take care of your mnemonic" = "保管好您的助记词";
+"The wallet has not been backed up. For the safety of your funds, please complete the backup before using this address to initiate the collection" = "该钱包尚未备份。为了您的资金安全，请完成备份后再使用该地址发起收款。";
+"prompt" = "提示";
+"I have known_alert" = "我已知晓";

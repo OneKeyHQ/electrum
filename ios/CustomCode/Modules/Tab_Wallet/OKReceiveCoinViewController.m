@@ -52,6 +52,13 @@
     NSDictionary *dict = [kPyCommandsManager callInterface:kInterfaceget_wallet_address_show_UI parameter:@{}];
     self.qrDataDict = dict;
     [self refreshUI];
+    BOOL isBackUp = [[kPyCommandsManager callInterface:kInterfaceget_backup_info parameter:@{@"name":kWalletManager.currentWalletInfo.name}] boolValue];
+    if (!isBackUp) {
+        OKWeakSelf(self)
+        [kTools alertTips:MyLocalizedString(@"prompt", nil) desc:MyLocalizedString(@"The wallet has not been backed up. For the safety of your funds, please complete the backup before using this address to initiate the collection", nil) confirm:^{} cancel:^{
+            [weakself.navigationController popViewControllerAnimated:YES];
+        } vc:weakself conLabel:MyLocalizedString(@"I have known_alert", nil)];
+    }
 }
 
 - (void)stupUI

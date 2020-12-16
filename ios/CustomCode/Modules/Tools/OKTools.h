@@ -29,6 +29,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isJailBreak;
 - (BOOL)isNotchScreen;
 - (NSDecimalNumber *)decimalNumberHandlerWithValue:(NSDecimalNumber *)value roundingMode:(NSRoundingMode)mode scale:(NSInteger)scale;
+
+- (void)alertTips:(NSString *)title desc:(NSString *)desc confirm:(void(^)(void))cblock cancel:(void(^)(void))cancel vc:(UIViewController *)vc conLabel:(NSString *)conLabel;
 @end
 
 NS_ASSUME_NONNULL_END

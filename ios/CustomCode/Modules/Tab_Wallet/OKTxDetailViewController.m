@@ -87,7 +87,7 @@
 - (void)refreshUI
 {
     NSString *amountStr = [[[self.txInfo safeStringForKey:@"amount"] componentsSeparatedByString:@" ("]firstObject];
-    self.amountLabel.text = amountStr;
+    self.amountLabel.text = [amountStr containsString:@"-"] ? amountStr : [NSString stringWithFormat:@"+%@",amountStr];
     self.statusLabel.text = [self getStatusLabel:[self.txInfo safeStringForKey:@"tx_status"]];
     self.txNumLabel.text = [self.txInfo safeStringForKey:@"txid"];
     NSArray *output_addr_array = self.txInfo[@"output_addr"];
@@ -99,10 +99,8 @@
     self.memoLabel.text = [self.txInfo safeStringForKey:@"description"];
     self.txDateLabel.text = self.txDate;
     NSString *confirmationNum = @"--";
-    if ([[self.txInfo safeStringForKey:@"tx_status"]containsString:@"confirmations"]) {
-        NSArray *strlist =  [[self.txInfo safeStringForKey:@"tx_status"] componentsSeparatedByString:@" "];
-        confirmationNum = [strlist firstObject];
-    }
+    NSArray *strlist =  [[self.txInfo safeStringForKey:@"tx_status"] componentsSeparatedByString:@" "];
+    confirmationNum = [strlist firstObject];
     self.confirmNumLabel.text = confirmationNum;
 }
 
