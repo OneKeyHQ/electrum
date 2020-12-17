@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <string name="app_name">OneKey</string>
     <string name="settings">设置</string>
     <string name="check">查看/激活币信Key</string>
@@ -350,7 +350,7 @@
     <string name="import_tips2">2.公开信息不包含任何私钥等隐私信息。</string>
     <string name="import_tips">3.导入的钱包，需配合BixinKey使用。</string>
     <string name="walletname">钱包名称</string>
-    <string name="delete_wallet">删除钱包</string>
+    <string name="delete_wallet">删除所有 HD 派生钱包</string>
     <string name="delete_thiswallet">确认删除该钱包</string>
     <string name="delete_succse">删除成功</string>
     <string name="ifconfirm_recovery">是否确认恢复</string>
@@ -865,8 +865,8 @@
     <string name="mind">我的</string>
     <string name="no_use_wallet">无可用钱包</string>
     <string name="creat_hd">创建 HD 钱包</string>
-    <string name="not_num">完全免费且不限数量</string>
-    <string name="home_tip">只要几分钟就可以免费、快速创建钱包，然后你就可以自由地收发资产，进行各类交易，尽情探索区块链世界。</string>
+    <string name="not_num">通过助记词派生出更多子钱包</string>
+    <string name="home_tip">HD 钱包是迄今最为先进的钱包格式，中文称为分层确定性钱包。只需一个助记词，就能派生无限公链或币种。好记、好用、好管理，很安全。</string>
     <string name="recovery_hd">恢复 HD 钱包</string>
     <string name="word_recovery">通过助记词恢复</string>
     <string name="pair_hard">配对硬件钱包</string>
@@ -888,7 +888,7 @@
     <string name="assets">资产</string>
     <string name="search">搜索</string>
     <string name="all_assets">全部资产</string>
-    <string name="hd_wallet">HD 钱包</string>
+    <string name="hd_wallet">HD 派生钱包</string>
     <string name="hardwares">硬件</string>
     <string name="safe">安全</string>
     <string name="face_discern">面部识别</string>
@@ -1015,7 +1015,7 @@
     <string name="coin_eth">以太坊</string>
     <string name="coin_eos">柚子</string>
     <string name="manage">管理</string>
-    <string name="export_word">导出 HD 钱包的根助记词</string>
+    <string name="export_word">导出 HD 根助记词</string>
     <string name="danger">危险操作</string>
     <string name="delete_hd_wallet">删除 HD 钱包</string>
     <string name="risk_tip">⚠️ 风险提示</string>
@@ -1024,7 +1024,7 @@
     <string name="risk_tip_3">2. 请您在删除前务必确认 HD 钱包的根助记词已经抄写并保管好，您可以使用它恢复所有 HD 钱包，从而找回资产。</string>
     <string name="i_know_danger">我已知晓以上风险</string>
     <string name="choose_wallet_type">选择钱包类型</string>
-    <string name="hd_derive">基于 HD 钱包派生（推荐）</string>
+    <string name="hd_derive">基于 HD 根助记词派生（推荐）</string>
     <string name="hd_derive_tip">带有 HD 标识，从钱包根助记词（您初次创建钱包时抄录的那个助记词）派生而来，一个助记词可以创建无数钱包，支持多个币种。也可以用它恢复所有派生出的钱包，省时省力且安全，是比特币核心协议 BIP44 的实现。</string>
     <string name="single_wallet">独立钱包</string>
     <string name="single_wallet_tip">独立的钱包，由本地加密算法生成独立私钥。需要重新抄写助记词，一切都不与 HD 钱包共享。</string>
@@ -1291,5 +1291,9 @@
     <string name="transaction_complete">交易完成</string>
     <string name="transaction_confirm">交易确认中</string>
     <string name="check_transaction_detail">查看交易详情</string>
-
+    <string name="reset_app">重置 App</string>
+    <string name="risk_of_resetApp">这将删除 App 中的全部数据，包括当前已创建的钱包及自定义设置。该操作不可撤销。请在删除前务必做好钱包备份，以便找回资产。</string>
+    <string name="confirm_do_this">确认要执行此操作吗</string>
+    <string name="reset_tip">这将立即删除您已在 OneKey 创建的所有数据，未备份的钱包将永远无法找回。确认要继续进行该操作吗？</string>
+    <string name="confirm_reset">我已确认，立即重置</string>
 </resources>

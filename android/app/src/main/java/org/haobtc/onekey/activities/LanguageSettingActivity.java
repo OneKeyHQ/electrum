@@ -1,19 +1,17 @@
 package org.haobtc.onekey.activities;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
-import org.haobtc.onekey.activities.base.LunchActivity;
 import org.haobtc.onekey.aop.SingleClick;
-import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
+import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.utils.Daemon;
+import org.haobtc.onekey.utils.NavUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -82,39 +80,28 @@ public class LanguageSettingActivity extends BaseActivity {
             case R.id.img_back:
                 finish();
                 break;
-            case R.id.radio_system:
-                edit.putString("language", "System");
-                edit.apply();
-                setLanguage("zh_CN");
-                imgSystem.setVisibility(View.VISIBLE);
-                imgChinese.setVisibility(View.GONE);
-                imgEnglish.setVisibility(View.GONE);
-                Intent intent = new Intent(this, LunchActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-                System.exit(0);
-                break;
             case R.id.radio_chineseasy:
                 mTextChinese();
-                setLanguage("zh_CN");
-                edit.putString("language", "Chinese");
+                setLanguage(Constant.Zh_CN);
+                edit.putString(Constant.LANGUAGE, Constant.Chinese);
                 edit.apply();
                 imgSystem.setVisibility(View.GONE);
                 imgChinese.setVisibility(View.VISIBLE);
                 imgEnglish.setVisibility(View.GONE);
-                refreshSelf();
+                changeLanguage(Constant.Chinese);
                 break;
             case R.id.radio_character:
                 break;
+            case R.id.radio_system:
             case R.id.radio_english:
                 mTextEnglish();
-                setLanguage("en_UK");
-                edit.putString("language", "English");
+                setLanguage(Constant.En_UK);
+                edit.putString(Constant.LANGUAGE, Constant.English);
                 edit.apply();
                 imgSystem.setVisibility(View.GONE);
                 imgChinese.setVisibility(View.GONE);
                 imgEnglish.setVisibility(View.VISIBLE);
-                refreshSelf();
+                changeLanguage(Constant.English);
                 break;
             case R.id.radio_Korean:
                 break;
@@ -124,18 +111,20 @@ public class LanguageSettingActivity extends BaseActivity {
         }
     }
 
-    private void setLanguage(String language) {
+    private void changeLanguage (String language) {
+//        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+//            LanguageUtils.changeAppLanguage(MyApplication.getInstance(), language);
+//        }
+        NavUtils.gotoMainActivityTask(LanguageSettingActivity.this);
+    }
+
+    private void setLanguage (String language) {
         try {
             Daemon.commands.callAttr("set_language", language);
         } catch (Exception e) {
             e.printStackTrace();
             mToast(e.getMessage());
         }
-    }
-
-    public void refreshSelf() {
-        Intent intent = new Intent(this, HomeOneKeyActivity.class);
-        startActivity(intent);
     }
 
 }

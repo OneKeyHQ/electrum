@@ -351,6 +351,7 @@ public class CaptureActivity extends AppCompatActivity implements SurfaceHolder.
                                     intent.setType("image/*");
                                     startActivityForResult(intent, Constant.REQUEST_IMAGE);
                                 } else if (permission.shouldShowRequestPermissionRationale) {
+                                    // TODO: 2020/12/17
                                     //权限被用户禁止，但未选中‘不在提示’，则下次涉及此权限还会弹出权限申请框
                                 } else {
                                     //权限被用户禁止，且选择‘不在提示’，当下次涉及此权限，不会弹出权限申请框

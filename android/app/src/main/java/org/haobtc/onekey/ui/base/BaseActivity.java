@@ -1,6 +1,7 @@
 package org.haobtc.onekey.ui.base;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -19,8 +20,11 @@ import androidx.fragment.app.FragmentTransaction;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.LunchActivity;
-import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
-import org.haobtc.onekey.utils.EventBusUtils;
+import org.haobtc.onekey.activities.base.MyApplication;
+import org.haobtc.onekey.constant.Constant;
+import org.haobtc.onekey.constant.FileNameConstant;
+import org.haobtc.onekey.manager.PreferencesManager;
+import org.haobtc.onekey.utils.LanguageUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -30,8 +34,8 @@ import butterknife.ButterKnife;
  */
 public abstract class BaseActivity extends AppCompatActivity implements IBaseView {
 
-
     public Fragment mCurrentFragment;
+    public Context mContext;
 
     @BindView(R.id.title)
     @Nullable
@@ -46,6 +50,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
         }
+        mContext = this;
         setContentView(getContentViewId());
         ButterKnife.bind(this);
         if (requireSecure()) {
@@ -134,6 +139,8 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
             }
         });
     }
+
+
 
     /**
      * 禁止录屏和截图

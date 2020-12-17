@@ -10,15 +10,15 @@ import org.haobtc.onekey.activities.AboutActivity;
 import org.haobtc.onekey.activities.LanguageSettingActivity;
 import org.haobtc.onekey.activities.ServerSettingActivity;
 import org.haobtc.onekey.activities.TransactionsSettingActivity;
-import org.haobtc.onekey.activities.settings.OneKeyManageActivity;
 import org.haobtc.onekey.activities.settings.CurrencyActivity;
+import org.haobtc.onekey.activities.settings.OneKeyManageActivity;
 import org.haobtc.onekey.activities.settings.SelectorActivity;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.manager.PreferencesManager;
-import org.haobtc.onekey.ui.base.BaseFragment;
 import org.haobtc.onekey.onekeys.homepage.mindmenu.AllAssetsActivity;
 import org.haobtc.onekey.onekeys.homepage.mindmenu.FixHdPassActivity;
 import org.haobtc.onekey.onekeys.homepage.mindmenu.HDWalletActivity;
+import org.haobtc.onekey.ui.base.BaseFragment;
 
 import butterknife.BindView;
 import butterknife.OnClick;

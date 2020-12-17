@@ -14,7 +14,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.IdRes;
-import androidx.annotation.LayoutRes;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.chaquo.python.PyObject;
@@ -58,6 +57,7 @@ import org.haobtc.onekey.utils.Daemon;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DecimalFormat;
 import java.util.Map;
 import java.util.Optional;
 
@@ -233,7 +233,7 @@ public class WalletFragment extends BaseFragment {
                     case 1:
                         tetAmount.setText(String.format("$%s", (Strings.isNullOrEmpty(strCny)) ? getString(R.string.zero) : strCny));
                 }
-                textBtcAmount.setText(String.format("%s%s", num, preferences.getString("base_unit", "")));
+                textBtcAmount.setText(String.valueOf(num));
                 if (!"0".equals(num)) {
                     getCny(num, cnyUnit);
                 }
@@ -460,7 +460,7 @@ public class WalletFragment extends BaseFragment {
             if (msgVote.contains("fiat")) {
                 String fiat = jsonObject.getString("fiat");
                 changeBalance = jsonObject.getString("balance");
-                textBtcAmount.setText(String.format("%s%s", changeBalance, preferences.getString("base_unit", "")));
+                textBtcAmount.setText(String.valueOf(changeBalance));
                 if (!TextUtils.isEmpty(fiat)) {
                     if (fiat.contains("USD")) {
                         String usd = fiat.substring(0, fiat.indexOf(" "));
@@ -469,7 +469,7 @@ public class WalletFragment extends BaseFragment {
                     } else if (fiat.contains("CNY")) {
                         String cny = fiat.substring(0, fiat.indexOf(" "));
                         tetAmount.setText(String.format("￥%s", cny));
-                        textDollar.setText(String.format("≈ ￥ %s", cny));
+                        textDollar.setText(String.format(getString(R.string.money_sign), cny));
                     } else {
                         tetAmount.setText(String.format("%s", fiat));
                         textDollar.setText(String.format("≈ %s", fiat));
@@ -586,10 +586,6 @@ public class WalletFragment extends BaseFragment {
                                 } else {
                                     // TODO: 2020/12/11  引导去设置页面开启权限
                                     Toast.makeText(getActivity(), R.string.photopersion, Toast.LENGTH_SHORT).show();
-//                                    String packageName = (getActivity()).getPackageName();
-//                                    Uri packageURI = Uri.parse("package:" + packageName);
-//                                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, packageURI);
-//                                    startActivity(intent);
                                 }
                             }
                         });
@@ -629,14 +625,18 @@ public class WalletFragment extends BaseFragment {
                 startActivity(intent6);
                 break;
             case R.id.rel_bi_detail:
-                Intent intent5 = new Intent(getActivity(), TransactionDetailWalletActivity.class);
-                if (nowType.contains("hw")) {
-                    intent5.putExtra(org.haobtc.onekey.constant.Constant.BLE_MAC, bleMac);
+                if (!TextUtils.isEmpty(nowType)) {
+                    Intent intent5 = new Intent(getActivity(), TransactionDetailWalletActivity.class);
+                    if (nowType.contains("hw")) {
+                        intent5.putExtra(org.haobtc.onekey.constant.Constant.BLE_MAC, bleMac);
+                    }
+                    intent5.putExtra("walletBalance", changeBalance);
+                    intent5.putExtra("walletDollar", textDollar.getText().toString());
+                    intent5.putExtra("hdWalletName", textWalletName.getText().toString());
+                    startActivity(intent5);
                 }
-                intent5.putExtra("walletBalance", changeBalance);
-                intent5.putExtra("walletDollar", textDollar.getText().toString());
-                intent5.putExtra("hdWalletName", textWalletName.getText().toString());
-                startActivity(intent5);
+                break;
+            default:
                 break;
         }
     }

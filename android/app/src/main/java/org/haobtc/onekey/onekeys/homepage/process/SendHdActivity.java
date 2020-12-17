@@ -31,8 +31,6 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.MyApplication;
-import org.haobtc.onekey.activities.personalwallet.CreatFinishPersonalActivity;
-import org.haobtc.onekey.activities.settings.recovery_set.BackupRecoveryActivity;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.asynctask.BusinessAsyncTask;
 import org.haobtc.onekey.bean.CurrentFeeDetails;
@@ -66,6 +64,7 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import butterknife.OnFocusChange;
 import butterknife.OnTextChanged;
+import dr.android.utils.LogUtil;
 
 import static org.haobtc.onekey.constant.Constant.CURRENT_CURRENCY_GRAPHIC_SYMBOL;
 import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
@@ -175,14 +174,16 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     private BigDecimal decimalBalance;
     private int scale;
     private CustomizeFeeDialog feeDialog;
+    private boolean addressInvalid;
+    private String amount;
+    private boolean isFeeValid;
     private String amounts;
-
 
     /**
      * init
      */
     @Override
-    public void init() {
+    public void init () {
         hdWalletName = getIntent().getStringExtra("hdWalletName");
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         String balance = getIntent().getStringExtra(WALLET_BALANCE);
@@ -276,13 +277,16 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                 break;
             case R.id.text_customize_fee_rate:
                 if (sendReady()) {
-                    Bundle bundle = new Bundle();
-                    bundle.putDouble(Constant.CUSTOMIZE_FEE_RATE_MIN, currentFeeDetails.getSlowest().getFeerate());
-                    bundle.putDouble(Constant.CUSTOMIZE_FEE_RATE_MAX, currentFeeDetails.getFast().getFeerate() * 2);
-                    bundle.putInt(Constant.TAG_TX_SIZE, transactionSize);
-                    feeDialog = new CustomizeFeeDialog();
-                    feeDialog.setArguments(bundle);
-                    feeDialog.show(getSupportFragmentManager(), "customize_fee");
+                    if (currentFeeDetails.getSlow() != null) {
+                        Bundle bundle = new Bundle();
+                        bundle.putDouble(Constant.CUSTOMIZE_FEE_RATE_MIN, currentFeeDetails.getSlow().getFeerate());
+                        bundle.putDouble(Constant.CUSTOMIZE_FEE_RATE_MAX, currentFeeDetails.getFast().getFeerate() * 20);
+                        bundle.putInt(Constant.TAG_TX_SIZE, transactionSize);
+                        feeDialog = new CustomizeFeeDialog();
+                        feeDialog.setArguments(bundle);
+                        feeDialog.show(getSupportFragmentManager(), "customize_fee");
+                    }
+                    LogUtil.d("xiaopeng", "=====");
                 }
                 break;
             case R.id.linear_slow:
@@ -353,6 +357,9 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         }
         if (Strings.isNullOrEmpty(editAmount.getText().toString())) {
             showToast(R.string.input_out_number);
+            return false;
+        }
+        if (Double.parseDouble(amount) <= 0){
             return false;
         }
         return true;
@@ -529,7 +536,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     }
 
     private boolean getFee(String feeRate, int type) {
-        PyResponse<TemporaryTxInfo> pyResponse = PyEnv.getFeeByFeeRate(editReceiverAddress.getText().toString(), editAmount.getText().toString(), feeRate);
+        PyResponse<TemporaryTxInfo> pyResponse = PyEnv.getFeeByFeeRate(editReceiverAddress.getText().toString(), amount, feeRate);
         String errors = pyResponse.getErrors();
         if (Strings.isNullOrEmpty(errors)) {
             TemporaryTxInfo temporaryTxInfo = pyResponse.getResult();
@@ -551,7 +558,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                     }
                     tempRecommendTransaction = temp;
                     currentTempTransaction = tempRecommendTransaction;
-                    break;
+                    return true;
                 case SLOW_FEE_RATE:
                     textSpendTime0.setText(String.format("%s%s%s", getString(R.string.about_), time + "", getString(R.string.minute)));
                     textFeeInBtc0.setText(String.format(Locale.ENGLISH, "%s %s", fee, baseUnit));
@@ -564,7 +571,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                         return false;
                     }
                     tempSlowTransaction = temp;
-                    break;
+                    return true;
                 case FAST_FEE_RATE:
                     textSpendTime2.setText(String.format("%s%s%s", getString(R.string.about_), time + "", getString(R.string.minute)));
                     textFeeInBtc2.setText(String.format(Locale.ENGLISH, "%s %s", fee, baseUnit));
@@ -577,7 +584,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                         return false;
                     }
                     tempFastTransaction = temp;
-                    break;
+                    return true;
                 case CUSTOMIZE_FEE_RATE:
                     textCustomizeSpendTime.setText(String.format("%s%s%s", getString(R.string.about_), time + "", getString(R.string.minute)));
                     feeDialog.getTextTime().setText(String.format("%s %s", time, getString(R.string.minute)));
@@ -593,19 +600,20 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                         return false;
                     }
                     tempCustomizeTransaction = temp;
-                    break;
+                    return true;
             }
         } else {
             showToast(errors);
         }
-        return true;
+        return false;
     }
+
 
     /**
      * 改变发送按钮状态
      */
     private void changeButton() {
-        if (!TextUtils.isEmpty(editReceiverAddress.getText().toString()) && !TextUtils.isEmpty(editAmount.getText().toString())) {
+        if (addressInvalid && isFeeValid) {
             btnNext.setEnabled(true);
         } else {
             btnNext.setEnabled(false);
@@ -631,7 +639,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     public void onGetFee(GetFeeEvent event) {
         String feeRate = event.getFeeRate();
-        getFee(feeRate, CUSTOMIZE_FEE_RATE);
+        isFeeValid = getFee(feeRate, CUSTOMIZE_FEE_RATE);
     }
 
     /**
@@ -656,7 +664,13 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
             if ((mIsSoftKeyboardShowing && !isKeyboardShowing) || (!mIsSoftKeyboardShowing && isKeyboardShowing)) {
                 mIsSoftKeyboardShowing = isKeyboardShowing;
                 if (!mIsSoftKeyboardShowing) {
-                    editAmount.clearFocus();
+                    if (editAmount.getText().toString().endsWith(".")) {
+                        amount = editAmount.getText().toString().substring(0, editAmount.getText().toString().length() - 1);
+                    } else {
+                        amount = editAmount.getText().toString();
+                    }
+                    refreshFeeView();
+                    changeButton();
                 }
             }
         };
@@ -672,12 +686,10 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         if (!focused) {
             String address = editReceiverAddress.getText().toString();
             if (!Strings.isNullOrEmpty(address)) {
-                boolean invalid = PyEnv.verifyAddress(address);
-                if (!invalid) {
+                addressInvalid = PyEnv.verifyAddress(address);
+                if (!addressInvalid) {
                     editReceiverAddress.setText("");
                     showToast(R.string.invalid_address);
-                } else {
-                    changeButton();
                 }
             }
         }
@@ -688,31 +700,22 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
      */
     @OnTextChanged(value = R.id.edit_amount, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
     public void onTextChangeAmount(CharSequence sequence) {
-        if (Strings.isNullOrEmpty(editReceiverAddress.getText().toString())) {
-            showToast(R.string.input_address);
+        String amount = sequence.toString();
+        if (amount.startsWith(".")) {
             editAmount.setText("");
             return;
         }
-        String amount = editAmount.getText().toString();
+        if (Strings.isNullOrEmpty(editReceiverAddress.getText().toString())) {
+            showToast(R.string.input_address);
+            return;
+        }
         if (!Strings.isNullOrEmpty(amount) && Double.parseDouble(amount) > 0) {
             BigDecimal decimal = BigDecimal.valueOf(Double.parseDouble(amount));
             if (decimal.compareTo(minAmount) < 0) {
                 editAmount.setText(String.format(Locale.ENGLISH, "%s", minAmount.toString()));
             } else if (decimal.compareTo(decimalBalance) >= 0) {
                 showToast(R.string.insufficient);
-                return;
             }
-            changeButton();
-        }
-    }
-
-    /**
-     * 交易金额输入框失焦监听
-     */
-    @OnFocusChange(value = R.id.edit_amount)
-    public void onFocusChange(boolean focused) {
-        if (!focused) {
-            refreshFeeView();
         }
     }
 
@@ -724,8 +727,8 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
             if (sendReady()) {
                 synchronized (SendHdActivity.class) {
                     double fast = currentFeeDetails1.getFast().getFeerate();
-                    boolean success = getFee(Double.toString(fast), FAST_FEE_RATE);
-                    if (success) {
+                    isFeeValid = getFee(Double.toString(fast), FAST_FEE_RATE);
+                    if (isFeeValid) {
                         double normal = currentFeeDetails1.getNormal().getFeerate();
                         getFee(Double.toString(normal), RECOMMENDED_FEE_RATE);
                         double slow = currentFeeDetails1.getSlow().getFeerate();

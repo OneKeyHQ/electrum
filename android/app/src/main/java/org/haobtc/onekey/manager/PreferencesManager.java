@@ -20,7 +20,7 @@ public class PreferencesManager {
     }
 
 
-    private static SharedPreferences getSharedPreferences(Context context, String name) {
+    public static SharedPreferences getSharedPreferences(Context context, String name) {
         return context.getSharedPreferences(name,
                 Context.MODE_PRIVATE);
     }
@@ -69,7 +69,6 @@ public class PreferencesManager {
             return null;
         }
         SharedPreferences sp = getSharedPreferences(context, name);
-
         if (defaultObject instanceof String) {
             return sp.getString(key, (String) defaultObject);
         } else if (defaultObject instanceof Integer) {

@@ -10,7 +10,6 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -144,7 +143,6 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
         timer.schedule(new TimerTask() {
                            @Override
                            public void run() {
-                               LogUtil.d("xiaopeng", "定时器");
                                InputMethodManager inputManager =
                                        (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                                inputManager.showSoftInput(editPass, 0);
@@ -364,12 +362,12 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
         } catch (Exception e) {
             mToast(e.getMessage());
             e.printStackTrace();
-            return;
         }
     }
 
     private void createSingleWallet() {
         try {
+            LogUtil.d("xiaopeng", "输入的密码：" + editPass.getText().toString() + " 钱包名称：" + walletName);
             PyObject pyObject = Daemon.commands.callAttr("create", walletName, editPass.getText().toString());
             CreateWalletBean createWalletBean = new Gson().fromJson(pyObject.toString(), CreateWalletBean.class);
             EventBus.getDefault().post(new CreateSuccessEvent(createWalletBean.getWalletInfo().get(0).getName()));

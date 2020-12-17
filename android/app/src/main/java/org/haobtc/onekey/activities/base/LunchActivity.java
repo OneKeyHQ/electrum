@@ -1,7 +1,6 @@
 package org.haobtc.onekey.activities.base;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.text.TextUtils;
 
 import org.haobtc.onekey.R;
@@ -39,8 +38,8 @@ public class LunchActivity extends BaseActivity {
     private void init() {
         String language = PreferencesManager.get(this, "Preferences", Constant.LANGUAGE, "").toString();
         judgeLanguage(language);
-
         boolean firstRun = (boolean) PreferencesManager.get(this, "Preferences", Constant.FIRST_RUN, false);
+        LogUtil.d("xiaopeng", "是否是第一次：" + firstRun);
         if (firstRun) {
             Intent intent = new Intent(LunchActivity.this, HomeOneKeyActivity.class);
             startActivity(intent);
@@ -48,7 +47,6 @@ public class LunchActivity extends BaseActivity {
 
         } else {
             initGuide();
-
         }
     }
 

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/dp_10"
+    android:layout_marginEnd="@dimen/dp_10"
+    android:layout_marginBottom="@dimen/dp_20"
+    android:background="@drawable/add_bk"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/dp_32"
+        android:text="@string/confirm_do_this"
+        android:textColor="@color/color_142A3B"
+        android:textSize="@dimen/sp_18" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_24"
+        android:layout_marginTop="@dimen/dp_16"
+        android:layout_marginEnd="@dimen/dp_24"
+        android:text="@string/reset_tip"
+        android:textColor="@color/color_142A3B"
+        android:textSize="@dimen/sp_14" />
+
+
+    <org.haobtc.onekey.ui.widget.SuperTextView
+        android:id="@+id/confirm_button"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_60"
+        android:layout_marginStart="@dimen/dp_25"
+        android:layout_marginTop="@dimen/dp_14"
+        android:layout_marginEnd="@dimen/dp_25"
+        app:solid="@color/color_EB5757"
+        android:gravity="center"
+        android:text="@string/confirm_reset"
+        app:corner="20dp"
+        android:textSize="@dimen/sp_16"
+        android:textColor="@color/defaultColor"/>
+
+    <org.haobtc.onekey.ui.widget.SuperTextView
+        android:id="@+id/cancel_button"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_60"
+        android:layout_marginStart="@dimen/dp_25"
+        android:layout_marginTop="@dimen/dp_20"
+        android:layout_marginEnd="@dimen/dp_25"
+        android:background="@color/defaultColor"
+        android:gravity="center"
+        android:text="@string/cancel"
+        app:corner="20dp"
+        android:textSize="@dimen/sp_16"
+        android:textColor="@color/color_142A3B"
+        app:stroke_color="@color/color_BDBDBD"
+        app:stroke_width="1px"
+        android:layout_marginBottom="@dimen/dp_30"/>
+
+
+</LinearLayout>

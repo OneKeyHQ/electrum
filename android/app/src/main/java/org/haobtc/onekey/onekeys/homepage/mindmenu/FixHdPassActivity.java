@@ -9,8 +9,8 @@ import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.onekeys.dialog.SetHDWalletPassActivity;
 import org.haobtc.onekey.onekeys.dialog.SetLongPassActivity;
+import org.haobtc.onekey.utils.NavUtils;
 
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE;
@@ -26,7 +26,6 @@ public class FixHdPassActivity extends BaseActivity {
 
     @Override
     public void initView() {
-        ButterKnife.bind(this);
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
     }
 
@@ -36,7 +35,7 @@ public class FixHdPassActivity extends BaseActivity {
     }
 
     @SingleClick
-    @OnClick({R.id.img_back, R.id.rel_fix_pass})
+    @OnClick({R.id.img_back, R.id.rel_fix_pass, R.id.reset_pass})
     public void onViewClicked(View view) {
         Intent intent;
         switch (view.getId()) {
@@ -51,6 +50,9 @@ public class FixHdPassActivity extends BaseActivity {
                 }
                 intent.putExtra("importHdword", "fixHdPass");
                 startActivity(intent);
+                break;
+            case R.id.reset_pass:
+                NavUtils.gotoResetAppActivity(this);
                 break;
         }
     }

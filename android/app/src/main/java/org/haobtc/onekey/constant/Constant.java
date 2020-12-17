@@ -5,7 +5,6 @@ package org.haobtc.onekey.constant;
  * @author liyan
  */
 public final class Constant {
-
     //=======================sp constant===============
     /**
      * 是否是第一次启动
@@ -88,10 +87,7 @@ public final class Constant {
      * 短密码
      * */
     public static final String SOFT_HD_PASS_TYPE_SHORT = "short";
-
-
     // ======================= Intent Tag ===================
-
 
     /**
      * 硬件label
@@ -180,19 +176,19 @@ public final class Constant {
     public static final String SEARCH_DEVICE_MODE = "search_device_mode";
     /**
      * 设备id
-     * */
+     */
     public static final String DEVICE_ID = "device_id";
     /**
      * 自动关机时间
-     * */
+     */
     public static final String AUTO_SHUT_DOWN_TIME = "shut_down_time";
-   /**
-    * 蓝牙Mac地址
-    * */
+    /**
+     * 蓝牙Mac地址
+     */
     public static final String BLE_MAC = "mac";
     /**
      * 通过硬件创建
-     * */
+     */
     public static final String WALLET_TYPE_HARDWARE = "btc-hw-derived-1-1";
     /**
      * 软件hd
@@ -200,7 +196,7 @@ public final class Constant {
     public static final String WALLET_TYPE_LOCAL_HD = "btc-hd-standard";
     /**
      * 固件升级文件后缀
-     * */
+     */
     public static final String FIRMWARE_UPDATE_FILE_SUFFIX = ".bin";
 
     /**
@@ -273,6 +269,7 @@ public final class Constant {
          * */
         public static final int MODE_PREPARE = 6;
     }
+
     public static final String OPERATE_TYPE = "operate_type";
 
     public static final String EXPORT_DESTINATIONS = "export2_hardware";
@@ -366,11 +363,19 @@ public final class Constant {
     public static final String VERIFY_DETAIL = "verify_detail";
     /**
      * 当前发币的货币符号
-     * */
+     */
     public static final String CURRENT_CURRENCY_SYMBOL = "currency_symbol";
 
     /**
      * 当前发币的货币图形符号
-     * */
+     */
     public static final String CURRENT_CURRENCY_GRAPHIC_SYMBOL = "currency_graphic_symbol";
+
+    public static final String English = "English";
+
+    public static final String Chinese = "Chinese";
+
+    public static final String En_UK = "en_UK";
+
+    public static final String Zh_CN = "zh_CN";
 }
