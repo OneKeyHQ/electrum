@@ -9,6 +9,7 @@
 #import "OKDeleteWalletTipsViewController.h"
 #import "OKDeleteBackUpTipsController.h"
 #import "OKHDWalletViewController.h"
+#import "OKDeleteWalletConfirmController.h"
 
 @interface OKDeleteWalletTipsViewController ()
 
@@ -47,6 +48,15 @@
             [self.deleteBtn setTitle:MyLocalizedString(@"To delete the wallet", nil) forState:UIControlStateNormal];
         }
             break;
+        case OKWhereToDeleteTypeAPP:
+        {
+            self.title = MyLocalizedString(@"Reset the App", nil);
+            self.descLabel.text = MyLocalizedString(@"This will delete all the data in the App, including the currently created wallet and custom Settings. This operation is irrevocable. Please make a backup of your wallet before deleting it so that you can recover your assets", nil);
+            [self.titleLabel setTitle:MyLocalizedString(@"⚠️ risk warning", nil) forState:UIControlStateNormal];
+            [self.deleteBtn setTitle:MyLocalizedString(@"Reset the App", nil) forState:UIControlStateNormal];
+            
+        }
+            break;
         default:
             break;
     }
@@ -59,33 +69,51 @@
 }
 
 - (IBAction)deleteBtnClick:(UIButton *)sender {
-    BOOL isBackUp = [[kPyCommandsManager callInterface:kInterfaceget_backup_info parameter:@{@"name":self.walletName}] boolValue];
     OKWeakSelf(self)
-    if (isBackUp) {
-        if (kWalletManager.isOpenAuthBiological) {
-            [[YZAuthID sharedInstance]yz_showAuthIDWithDescribe:MyLocalizedString(@"OenKey request enabled", nil) BlockState:^(YZAuthIDState state, NSError *error) {
-                if (state == YZAuthIDStateNotSupport
-                    || state == YZAuthIDStatePasswordNotSet || state == YZAuthIDStateTouchIDNotSet) { // 不支持TouchID/FaceID
+    switch (_deleteType) {
+        case OKWhereToDeleteTypeAPP:
+        {
+            OKDeleteWalletConfirmController *deleteVc = [OKDeleteWalletConfirmController deleteWalletConfirmController:^{
+                [weakself resetAPP];
+            } type:OKDeleteTipsTypeAPP];
+            deleteVc.modalPresentationStyle = UIModalPresentationOverFullScreen;
+            [weakself.OK_TopViewController presentViewController:deleteVc animated:NO completion:nil];
+        }
+            break;
+        case OKWhereToDeleteTypeDetail:
+        case OKWhereToDeleteTypeMine:
+        {
+            BOOL isBackUp = [[kPyCommandsManager callInterface:kInterfaceget_backup_info parameter:@{@"name":self.walletName}] boolValue];
+            if (isBackUp) {
+                if (kWalletManager.isOpenAuthBiological) {
+                    [[YZAuthID sharedInstance]yz_showAuthIDWithDescribe:MyLocalizedString(@"OenKey request enabled", nil) BlockState:^(YZAuthIDState state, NSError *error) {
+                        if (state == YZAuthIDStateNotSupport
+                            || state == YZAuthIDStatePasswordNotSet || state == YZAuthIDStateTouchIDNotSet) { // 不支持TouchID/FaceID
+                            [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
+                                [weakself deleteWallet:pwd];
+                            }];
+                        } else if (state == YZAuthIDStateSuccess) {
+                            NSString *pwd = [kOneKeyPwdManager getOneKeyPassWord];
+                            [weakself deleteWallet:pwd];
+                        }
+                    }];
+                }else{
                     [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
                         [weakself deleteWallet:pwd];
                     }];
-                } else if (state == YZAuthIDStateSuccess) {
-                    NSString *pwd = [kOneKeyPwdManager getOneKeyPassWord];
-                    [weakself deleteWallet:pwd];
                 }
-            }];
-        }else{
-            [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
-                [weakself deleteWallet:pwd];
-            }];
+            }else{
+                OKWeakSelf(self)
+                OKDeleteBackUpTipsController *tipsVc = [OKDeleteBackUpTipsController deleteBackUpTipsController:^{
+                    [weakself.OK_TopViewController.navigationController popViewControllerAnimated:YES];
+                }];
+                tipsVc.modalPresentationStyle = UIModalPresentationOverFullScreen;
+                [self presentViewController:tipsVc animated:NO completion:nil];
+            }
         }
-    }else{
-        OKWeakSelf(self)
-        OKDeleteBackUpTipsController *tipsVc = [OKDeleteBackUpTipsController deleteBackUpTipsController:^{
-            [weakself.OK_TopViewController.navigationController popViewControllerAnimated:YES];
-        }];
-        tipsVc.modalPresentationStyle = UIModalPresentationOverFullScreen;
-        [self presentViewController:tipsVc animated:NO completion:nil];
+            break;
+        default:
+            break;
     }
 }
 - (void)deleteWallet:(NSString *)pwd
@@ -111,10 +139,43 @@
     }
 }
 
+- (void)resetAPP
+{
+    OKWeakSelf(self)
+    NSString *path =  [OKStorageManager getDocumentDirectoryPath];
+    NSUserDefaults *defatluts = [NSUserDefaults standardUserDefaults];
+    NSDictionary *dictionary = [defatluts dictionaryRepresentation];
+    for(NSString *key in [dictionary allKeys]){
+             [defatluts removeObjectForKey:key];
+             [defatluts synchronize];
+    }
+    BOOL isSuccess = [kTools clearDataWithFilePath:path];
+    if (isSuccess) {
+        [kTools alertTips:MyLocalizedString(@"prompt", nil) desc:MyLocalizedString(@"When the APP is reset, just open it again", nil) confirm:^{
+            [weakself exitApplication];
+        } cancel:^{
+            
+        } vc:self conLabel:MyLocalizedString(@"determine", nil) isOneBtn:NO];
+    }
+}
+
+- (void)exitApplication {
+    OKWeakSelf(self)
+    [UIView animateWithDuration:0.4f animations:^{
+         weakself.view.window.alpha = 0;
+         CGFloat y = weakself.view.window.bounds.size.height;
+         CGFloat x = weakself.view.window.bounds.size.width / 2;
+         weakself.view.window.frame = CGRectMake(x, y, 0, 0);
+    } completion:^(BOOL finished) {
+         exit(0);
+    }];
+}
+
 - (IBAction)iAgreeClick:(UIButton *)sender {
     self.iAgree.selected = !sender.isSelected;
     [self checkUI];
 }
+
 - (void)checkUI
 {
     if (self.iAgree.selected) {

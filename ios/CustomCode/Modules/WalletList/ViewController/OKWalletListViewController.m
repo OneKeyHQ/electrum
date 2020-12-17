@@ -158,10 +158,12 @@
         self.detailBtn.hidden = self.showList.count== 0 ? YES:NO;
         self.detailLabel.hidden = self.showList.count== 0 ? YES:NO;
         self.circlePlusBtn.hidden = YES;
+        self.tipsBtn.hidden = NO;
     }else{
         self.detailBtn.hidden = YES;
         self.detailLabel.hidden = YES;
         self.circlePlusBtn.hidden = NO;
+        self.tipsBtn.hidden = YES;
     }
     [self.tableView reloadData];
 }
@@ -373,7 +375,7 @@
         model0.coinType = @"HD";
         model0.iconName = @"cointype_hd";
         model0.isSelected = [kWalletManager.currentSelectCoinType isEqualToString:model0.coinType];
-        model0.headerWaletType = MyLocalizedString(@"HD wallet", nil);
+        model0.headerWaletType = MyLocalizedString(@"HD derived wallet", nil);
         
         OKWalletListCollectionViewCellModel *model1 = [OKWalletListCollectionViewCellModel new];
         model1.coinType = @"BTC";

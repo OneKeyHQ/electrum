@@ -157,15 +157,17 @@
     return number;
 }
 
-- (void)alertTips:(NSString *)title desc:(NSString *)desc confirm:(void(^)(void))cblock cancel:(void(^)(void))cancel vc:(UIViewController *)vc conLabel:(NSString *)conLabel
+- (void)alertTips:(NSString *)title desc:(NSString *)desc confirm:(void(^)(void))cblock cancel:(void(^)(void))cancel vc:(UIViewController *)vc conLabel:(NSString *)conLabel isOneBtn:(BOOL)oneBtn
 {
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:desc preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:MyLocalizedString(@"cancel", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
-        if (cancel) {
-            cancel();
-        }
-    }];
-    [alert addAction:cancelAction];
+    if (oneBtn) {
+        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:MyLocalizedString(@"cancel", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+            if (cancel) {
+                cancel();
+            }
+        }];
+        [alert addAction:cancelAction];
+    }
     UIAlertAction *updateAction = [UIAlertAction actionWithTitle:conLabel style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         if (cblock) {
             cblock();
@@ -196,5 +198,19 @@
     }
 }
 
+- (BOOL)clearDataWithFilePath:(NSString *)path{
+    NSArray *subPathArr = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:path error:nil];
+    NSString *filePath = nil;
+    NSError *error = nil;
+    for (NSString *subPath in subPathArr)
+    {
+        filePath = [path stringByAppendingPathComponent:subPath];
+        [[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
+        if (error) {
+            return NO;
+        }
+    }
+    return YES;
+}
 
 @end

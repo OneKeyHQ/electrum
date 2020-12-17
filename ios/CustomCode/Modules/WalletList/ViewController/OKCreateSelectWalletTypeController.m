@@ -61,7 +61,7 @@
     if (!_walletTypeListArray) {
         
         OKCreateSelectWalletTypeModel *model = [OKCreateSelectWalletTypeModel new];
-        model.createWalletType = MyLocalizedString(@"HD Wallet Based Derivation (recommended)", nil);
+        model.createWalletType = MyLocalizedString(@"Derivations based on HD Root Mnemonics (recommended)", nil);
         model.iconName = @"id_wallet";
         model.tipsString = MyLocalizedString(@"With the HD logo, derived from the wallet root mnemonic (the mnemonic you copied when you first created your wallet), a mnemonic can create an infinite number of wallets in multiple currencies. It can also be used to recover all derived wallets, save time, effort and security, is the core bitcoin protocol BIP44 implementation", nil);
         model.addtype = OKAddTypeCreateHDDerived;

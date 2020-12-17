@@ -7,11 +7,17 @@
 //
 
 #import "BaseViewController.h"
+
+typedef enum {
+    OKDeleteTipsTypeWallet,
+    OKDeleteTipsTypeAPP
+}OKDeleteTipsType;
+
 typedef void (^ConfirmBtnClick)(void);
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OKDeleteWalletConfirmController : BaseViewController
-+ (instancetype)deleteWalletConfirmController:(ConfirmBtnClick)btnClick;
++ (instancetype)deleteWalletConfirmController:(ConfirmBtnClick)btnClick type:(OKDeleteTipsType)type;
 @end
 
 NS_ASSUME_NONNULL_END

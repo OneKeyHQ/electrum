@@ -86,7 +86,8 @@ typedef enum {
 //删除钱包的跳转类型
 typedef enum {
     OKWhereToDeleteTypeDetail,
-    OKWhereToDeleteTypeMine
+    OKWhereToDeleteTypeMine,
+    OKWhereToDeleteTypeAPP
 }OKWhereToDeleteType;
 
 

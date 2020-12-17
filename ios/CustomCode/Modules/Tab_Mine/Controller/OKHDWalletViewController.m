@@ -113,7 +113,7 @@
     OKWalletListTableViewCellModel *hdModel = [[walletArray filteredArrayUsingPredicate:predicateHD] firstObject];
     self.HDWalletName = hdModel.walletName;
     self.countLabel.text = [NSString stringWithFormat:@"%zd",self.showList.count];
-    self.headerTitleLabel.text = MyLocalizedString(@"HD wallet", nil);
+    self.headerTitleLabel.text = MyLocalizedString(@"HD derived wallet", nil);
     self.footerBgView.hidden = self.showList.count == 0 ? YES : NO;
     
     if (self.showList.count == 0) {

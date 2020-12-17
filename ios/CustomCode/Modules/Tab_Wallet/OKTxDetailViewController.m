@@ -95,7 +95,13 @@
     self.fromAddressLabel.text = @"-------------";
     self.toAddressLabel.text  = [output_addr_dict safeStringForKey:@"addr"];
     self.blockNumLabel.text = [self.txInfo safeStringForKey:@"height"];
-    self.feeLabel.text = [self.txInfo safeStringForKey:@"fee"];
+    NSString *feeresult = [self.txInfo safeStringForKey:@"fee"];
+    if ([feeresult containsString:@"("]) {
+        NSArray *feeArray = [feeresult componentsSeparatedByString:@"("];
+        self.feeLabel.text = [feeArray firstObject];
+    }else{
+        self.feeLabel.text = feeresult;
+    }
     self.memoLabel.text = [self.txInfo safeStringForKey:@"description"];
     self.txDateLabel.text = self.txDate;
     NSString *confirmationNum = @"--";

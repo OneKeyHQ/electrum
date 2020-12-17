@@ -272,19 +272,19 @@
                                     <color key="textColor" red="0.3294117647" green="0.38823529410000002" blue="0.43921568630000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                     <nil key="highlightedColor"/>
                                 </label>
-                                <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aki-Qr-fjI">
-                                    <rect key="frame" x="70" y="11" width="40" height="40"/>
+                                <button opaque="NO" contentMode="center" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aki-Qr-fjI">
+                                    <rect key="frame" x="70" y="19" width="24" height="24"/>
                                     <constraints>
-                                        <constraint firstAttribute="width" constant="40" id="CKd-3P-E1l"/>
-                                        <constraint firstAttribute="height" constant="40" id="fdP-o5-wa2"/>
+                                        <constraint firstAttribute="width" constant="24" id="CKd-3P-E1l"/>
+                                        <constraint firstAttribute="height" constant="24" id="fdP-o5-wa2"/>
                                     </constraints>
-                                    <state key="normal" image="info"/>
+                                    <state key="normal" image="info_tips"/>
                                     <connections>
                                         <action selector="headerTipsBtnclick:" destination="u7l-Uo-VVO" eventType="touchUpInside" id="jBB-Yl-xEI"/>
                                     </connections>
                                 </button>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="yS5-ba-XDT">
-                                    <rect key="frame" x="115" y="21" width="38" height="20"/>
+                                    <rect key="frame" x="99" y="21" width="38" height="20"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="2" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TCn-lR-F6H">
                                             <rect key="frame" x="15" y="0.0" width="8" height="20"/>
@@ -613,6 +613,35 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" rowHeight="73" id="xB3-vx-Orf">
+                                        <rect key="frame" x="0.0" y="182" width="414" height="73"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="xB3-vx-Orf" id="lTq-xv-0qU">
+                                            <rect key="frame" x="0.0" y="0.0" width="414" height="73"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="重置APP" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3Ax-AE-FZZ" customClass="OKLabel">
+                                                    <rect key="frame" x="20" y="26.666666666666671" width="63" height="20"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                    <color key="textColor" red="0.92156862745098034" green="0.3411764705882353" blue="0.3411764705882353" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="right_arrow_small" translatesAutoresizingMaskIntoConstraints="NO" id="BlV-4s-LJA">
+                                                    <rect key="frame" x="370" y="24.666666666666671" width="24" height="24"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="24" id="WYZ-cQ-K1e"/>
+                                                        <constraint firstAttribute="width" constant="24" id="vcK-4h-0gS"/>
+                                                    </constraints>
+                                                </imageView>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="3Ax-AE-FZZ" firstAttribute="leading" secondItem="lTq-xv-0qU" secondAttribute="leading" constant="20" id="5EY-6E-LnG"/>
+                                                <constraint firstItem="3Ax-AE-FZZ" firstAttribute="centerY" secondItem="lTq-xv-0qU" secondAttribute="centerY" id="f3j-xX-CII"/>
+                                                <constraint firstAttribute="trailing" secondItem="BlV-4s-LJA" secondAttribute="trailing" constant="20" id="k53-nC-gvD"/>
+                                                <constraint firstItem="BlV-4s-LJA" firstAttribute="centerY" secondItem="lTq-xv-0qU" secondAttribute="centerY" id="qXE-df-M2w"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
                                 </cells>
                             </tableViewSection>
                         </sections>
@@ -667,8 +696,8 @@
                                             <rect key="frame" x="0.0" y="0.0" width="414" height="73"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="导出HD钱包的根助记词" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ob2-S8-0wl">
-                                                    <rect key="frame" x="20" y="26.666666666666671" width="170" height="20"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="The HD root mnemonic is derived" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ob2-S8-0wl" customClass="OKLabel">
+                                                    <rect key="frame" x="20.000000000000014" y="26.666666666666671" width="242.33333333333337" height="20"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                     <color key="textColor" red="0.078431372550000003" green="0.16078431369999999" blue="0.23137254900000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                     <nil key="highlightedColor"/>
@@ -718,8 +747,8 @@
                                             <rect key="frame" x="0.0" y="0.0" width="414" height="73"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="删除钱包" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nQW-bL-M3M">
-                                                    <rect key="frame" x="20" y="26.666666666666671" width="65.333333333333329" height="20"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Delete all HD-derived wallets" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nQW-bL-M3M" customClass="OKLabel">
+                                                    <rect key="frame" x="20" y="26.666666666666671" width="210" height="20"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                     <color key="textColor" red="0.92156862745098034" green="0.3411764705882353" blue="0.3411764705882353" alpha="1" colorSpace="deviceRGB"/>
                                                     <nil key="highlightedColor"/>
@@ -1723,6 +1752,116 @@
             </objects>
             <point key="canvasLocation" x="4474" y="669"/>
         </scene>
+        <!--Delete Wallet Confirm Controller-->
+        <scene sceneID="e94-DA-6ii">
+            <objects>
+                <viewController storyboardIdentifier="OKDeleteWalletConfirmController" id="ytp-6O-bmM" customClass="OKDeleteWalletConfirmController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="RNa-5X-Hfa"/>
+                        <viewControllerLayoutGuide type="bottom" id="ZWv-fR-3X1"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="Oly-If-afI">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qHp-Ua-7bN">
+                                <rect key="frame" x="10" y="567.33333333333337" width="394" height="298.66666666666663"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="删除钱包" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="qwz-14-6rX">
+                                        <rect key="frame" x="50" y="30" width="294" height="25"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="25" id="hHX-UW-qsn"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="18"/>
+                                        <color key="textColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WPK-vo-7ri">
+                                        <rect key="frame" x="25" y="208.66666666666663" width="344" height="60"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="60" id="oho-Tl-ApI"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="16"/>
+                                        <state key="normal" title="取消">
+                                            <color key="titleColor" red="0.081574462350000002" green="0.1630090475" blue="0.23138180380000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="cancleBtnClick:" destination="ytp-6O-bmM" eventType="touchUpInside" id="SeA-2m-hei"/>
+                                        </connections>
+                                    </button>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="此操作将会删除该钱包的所有数据，请在删除前确保该钱包已备份" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pO5-Zt-P4q">
+                                        <rect key="frame" x="20" y="75" width="354" height="28.666666666666671"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                        <color key="textColor" red="0.078431372550000003" green="0.1647058824" blue="0.23137254900000001" alpha="0.84705882349999995" colorSpace="calibratedRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <button opaque="NO" contentMode="center" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="b0U-fv-t61">
+                                        <rect key="frame" x="341" y="10" width="40" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="40" id="dEo-mo-FGk"/>
+                                            <constraint firstAttribute="height" constant="40" id="j02-4T-jx4"/>
+                                        </constraints>
+                                        <state key="normal" image="close"/>
+                                        <connections>
+                                            <action selector="closeBtnClick:" destination="ytp-6O-bmM" eventType="touchUpInside" id="AEI-3M-jUi"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PQH-7L-ncR">
+                                        <rect key="frame" x="25" y="128.66666666666663" width="344" height="60"/>
+                                        <color key="backgroundColor" red="0.91760021449999996" green="0.34183880690000001" blue="0.3411470056" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="60" id="hur-nb-ujX"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="16"/>
+                                        <state key="normal" title="确认删除该钱包">
+                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="confirmDeleteBtnClick:" destination="ytp-6O-bmM" eventType="touchUpInside" id="jz9-vk-OxL"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstItem="qwz-14-6rX" firstAttribute="centerX" secondItem="qHp-Ua-7bN" secondAttribute="centerX" id="2Iy-Pg-Rx0"/>
+                                    <constraint firstItem="WPK-vo-7ri" firstAttribute="top" secondItem="PQH-7L-ncR" secondAttribute="bottom" constant="20" id="3N2-4z-OAl"/>
+                                    <constraint firstAttribute="bottom" secondItem="WPK-vo-7ri" secondAttribute="bottom" constant="30" id="5WV-Pz-5Nc"/>
+                                    <constraint firstItem="qwz-14-6rX" firstAttribute="top" secondItem="qHp-Ua-7bN" secondAttribute="top" constant="30" id="9Ti-Lw-4fX"/>
+                                    <constraint firstItem="pO5-Zt-P4q" firstAttribute="top" secondItem="qwz-14-6rX" secondAttribute="bottom" constant="20" id="Gkm-Yx-Hg9"/>
+                                    <constraint firstAttribute="trailing" secondItem="pO5-Zt-P4q" secondAttribute="trailing" constant="20" id="JpV-ew-tDe"/>
+                                    <constraint firstItem="qwz-14-6rX" firstAttribute="top" secondItem="b0U-fv-t61" secondAttribute="bottom" constant="-20" id="RY1-Xc-FJN"/>
+                                    <constraint firstAttribute="trailing" secondItem="WPK-vo-7ri" secondAttribute="trailing" constant="25" id="Ta5-sZ-gUM"/>
+                                    <constraint firstItem="PQH-7L-ncR" firstAttribute="top" secondItem="pO5-Zt-P4q" secondAttribute="bottom" constant="25" id="U7q-gp-Uq6"/>
+                                    <constraint firstItem="pO5-Zt-P4q" firstAttribute="leading" secondItem="qHp-Ua-7bN" secondAttribute="leading" constant="20" id="Uaa-JW-Q8T"/>
+                                    <constraint firstAttribute="trailing" secondItem="b0U-fv-t61" secondAttribute="trailing" constant="13" id="Wzv-Ra-ayu"/>
+                                    <constraint firstItem="WPK-vo-7ri" firstAttribute="leading" secondItem="qHp-Ua-7bN" secondAttribute="leading" constant="25" id="lJT-3s-WdF"/>
+                                    <constraint firstAttribute="trailing" secondItem="qwz-14-6rX" secondAttribute="trailing" priority="750" constant="50" id="oAa-fs-S9P"/>
+                                    <constraint firstItem="WPK-vo-7ri" firstAttribute="trailing" secondItem="PQH-7L-ncR" secondAttribute="trailing" id="s04-zc-Gth"/>
+                                    <constraint firstItem="WPK-vo-7ri" firstAttribute="leading" secondItem="PQH-7L-ncR" secondAttribute="leading" id="wP2-kU-9lS"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="pVR-Qi-Mz4"/>
+                        <color key="backgroundColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="0.1953392551" colorSpace="custom" customColorSpace="displayP3"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="qHp-Ua-7bN" secondAttribute="trailing" constant="10" id="Fxs-Lq-Dx0"/>
+                            <constraint firstAttribute="bottom" secondItem="qHp-Ua-7bN" secondAttribute="bottom" constant="30" id="dSR-QW-JrI"/>
+                            <constraint firstItem="qHp-Ua-7bN" firstAttribute="leading" secondItem="Oly-If-afI" secondAttribute="leading" constant="10" id="gDh-W3-Pvt"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="cancleBtn" destination="WPK-vo-7ri" id="9aX-oN-wp1"/>
+                        <outlet property="confirmDeleteBtn" destination="PQH-7L-ncR" id="U9Z-5i-CIh"/>
+                        <outlet property="contentView" destination="qHp-Ua-7bN" id="Orq-DC-qyn"/>
+                        <outlet property="descLabel" destination="pO5-Zt-P4q" id="DfP-uz-U8S"/>
+                        <outlet property="titleLabel" destination="qwz-14-6rX" id="ZyR-9z-Jji"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="2TV-AM-tFl" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3512" y="1412"/>
+        </scene>
     </scenes>
     <resources>
         <image name="The_camera" width="36" height="31.666666030883789"/>
@@ -1731,7 +1870,7 @@
         <image name="close" width="24" height="24"/>
         <image name="copy_white" width="16" height="16"/>
         <image name="iconwriteselect" width="16.666666030883789" height="12.333333015441895"/>
-        <image name="info" width="24" height="24"/>
+        <image name="info_tips" width="24" height="24"/>
         <image name="isselected" width="16" height="16"/>
         <image name="logo" width="38" height="73.333335876464844"/>
         <image name="logo_text" width="87.333335876464844" height="27.333333969116211"/>

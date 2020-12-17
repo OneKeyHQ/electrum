@@ -207,7 +207,7 @@
                                 }];
                             }
                         }
-                    }];
+                    } type:OKDeleteTipsTypeWallet];
                     deleteVc.modalPresentationStyle = UIModalPresentationOverFullScreen;
                     [self.OK_TopViewController presentViewController:deleteVc animated:NO completion:nil];
                 }
@@ -378,7 +378,7 @@
 {
     switch (type) {
         case OKWalletTypeHD:
-            return MyLocalizedString(@"HD wallet", nil);
+            return MyLocalizedString(@"HD derived wallet", nil);
             break;
         case OKWalletTypeIndependent:
             return MyLocalizedString(@"Independent wallet", nil);

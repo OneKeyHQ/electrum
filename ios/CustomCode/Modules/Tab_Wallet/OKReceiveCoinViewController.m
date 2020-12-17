@@ -57,7 +57,7 @@
         OKWeakSelf(self)
         [kTools alertTips:MyLocalizedString(@"prompt", nil) desc:MyLocalizedString(@"The wallet has not been backed up. For the safety of your funds, please complete the backup before using this address to initiate the collection", nil) confirm:^{} cancel:^{
             [weakself.navigationController popViewControllerAnimated:YES];
-        } vc:weakself conLabel:MyLocalizedString(@"I have known_alert", nil)];
+        } vc:weakself conLabel:MyLocalizedString(@"I have known_alert", nil) isOneBtn:YES];
     }
 }
 

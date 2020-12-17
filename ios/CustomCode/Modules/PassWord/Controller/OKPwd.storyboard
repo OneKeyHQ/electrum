@@ -504,7 +504,7 @@
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9cK-hP-Lgg" userLabel="longpwdView">
                                         <rect key="frame" x="34" y="172" width="346" height="60"/>
                                         <subviews>
-                                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="输入新密码" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Fsu-ra-hMA">
+                                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="输入密码" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Fsu-ra-hMA">
                                                 <rect key="frame" x="24" y="22" width="268" height="18"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="18" id="BED-SJ-K8q"/>

@@ -188,9 +188,9 @@ typedef enum {
     BOOL isBackUp = [[kPyCommandsManager callInterface:kInterfaceget_backup_info parameter:@{@"name":kWalletManager.currentWalletInfo.name}] boolValue];
     if (!isBackUp) {
         OKWeakSelf(self)
-        [kTools alertTips:MyLocalizedString(@"prompt", nil) desc:MyLocalizedString(@"The wallet has not been backed up. For the safety of your funds, please complete the backup before using this address to initiate the collection", nil) confirm:^{} cancel:^{
+        [kTools alertTips:MyLocalizedString(@"prompt", nil) desc:MyLocalizedString(@"The wallet has not been backed up. For the safety of your funds, please complete the backup before initiating the transfer using this address", nil) confirm:^{} cancel:^{
             [weakself.navigationController popViewControllerAnimated:YES];
-        } vc:weakself conLabel:MyLocalizedString(@"I have known_alert", nil)];
+        } vc:weakself conLabel:MyLocalizedString(@"I have known_alert", nil) isOneBtn:YES];
     }
 }
 
@@ -315,6 +315,13 @@ typedef enum {
     
     if ([self.amountTextField.text doubleValue] <= 0) {
         [kTools tipMessage:MyLocalizedString(@"The transfer amount cannot be zero", nil)];
+        return NO;
+    }
+    
+    id result =  [kPyCommandsManager callInterface:kInterfaceverify_legality parameter:@{@"data":self.addressTextField.text,@"flag":@"address"}];
+    if (result != nil) {
+        return YES;
+    }else{
         return NO;
     }
     return YES;

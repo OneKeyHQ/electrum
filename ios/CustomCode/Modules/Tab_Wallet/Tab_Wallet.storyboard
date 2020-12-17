@@ -2388,7 +2388,7 @@
                                                 </connections>
                                             </button>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zpP-eb-XNO">
-                                                <rect key="frame" x="83" y="596.5" width="284" height="14.5"/>
+                                                <rect key="frame" x="163" y="596.5" width="204" height="14.5"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                                 <color key="textColor" red="0.24313725489999999" green="0.43921568630000002" blue="0.94901960780000005" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                 <nil key="highlightedColor"/>
@@ -2426,7 +2426,7 @@
                                             <constraint firstItem="tbd-z3-12T" firstAttribute="top" secondItem="8MM-ol-hNh" secondAttribute="bottom" constant="20" id="lKv-gv-w6e"/>
                                             <constraint firstItem="fLN-2z-Lxg" firstAttribute="trailing" secondItem="ZR6-pL-odq" secondAttribute="trailing" id="lVU-h4-Sf2"/>
                                             <constraint firstItem="Dbd-e9-xcv" firstAttribute="top" secondItem="LHP-bS-VVp" secondAttribute="bottom" constant="26" id="mA0-IL-4dQ"/>
-                                            <constraint firstItem="zpP-eb-XNO" firstAttribute="leading" secondItem="eSf-qv-Lk4" secondAttribute="trailing" constant="20" id="mHZ-u2-E1y"/>
+                                            <constraint firstItem="zpP-eb-XNO" firstAttribute="leading" secondItem="eSf-qv-Lk4" secondAttribute="trailing" constant="100" id="mHZ-u2-E1y"/>
                                             <constraint firstItem="zpP-eb-XNO" firstAttribute="centerY" secondItem="eSf-qv-Lk4" secondAttribute="centerY" id="n47-dO-STq"/>
                                             <constraint firstItem="BY2-XT-yBo" firstAttribute="leading" secondItem="Dbd-e9-xcv" secondAttribute="leading" id="nWj-Zg-x8u"/>
                                             <constraint firstItem="189-8t-pp9" firstAttribute="top" secondItem="pQ0-h7-bif" secondAttribute="bottom" constant="20" id="oTr-Lv-Zwe"/>

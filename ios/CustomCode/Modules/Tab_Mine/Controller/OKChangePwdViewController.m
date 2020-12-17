@@ -8,6 +8,7 @@
 
 #import "OKChangePwdViewController.h"
 #import "OKPwdViewController.h"
+#import "OKDeleteWalletTipsViewController.h"
 
 @interface OKChangePwdViewController ()<UITableViewDelegate,UITableViewDataSource>
 
@@ -29,12 +30,28 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     OKWeakSelf(self)
-    [OKValidationPwdController showValidationPwdPageOn:self isDis:NO complete:^(NSString * _Nonnull pwd) {
-        OKPwdViewController *pwdVc = [OKPwdViewController setPwdViewControllerPwdUseType:OKPwdUseTypeUpdatePassword setPwd:^(NSString * _Nonnull pwd) {
-            
-        }];
-        pwdVc.oldPwd = pwd;
-        [weakself.OK_TopViewController.navigationController pushViewController:pwdVc animated:YES];
-    }];
+    switch (indexPath.row) {
+        case 0:
+        {
+            [OKValidationPwdController showValidationPwdPageOn:self isDis:NO complete:^(NSString * _Nonnull pwd) {
+                OKPwdViewController *pwdVc = [OKPwdViewController setPwdViewControllerPwdUseType:OKPwdUseTypeUpdatePassword setPwd:^(NSString * _Nonnull pwd) {
+                    
+                }];
+                pwdVc.oldPwd = pwd;
+                [weakself.OK_TopViewController.navigationController pushViewController:pwdVc animated:YES];
+            }];
+        }
+            break;
+        case 1:
+        {
+            OKDeleteWalletTipsViewController *deleteVc = [OKDeleteWalletTipsViewController deleteWalletTipsViewController];
+            deleteVc.deleteType = OKWhereToDeleteTypeAPP;
+            [weakself.navigationController pushViewController:deleteVc animated:YES];
+        }
+            break;
+        default:
+            break;
+    }
+    
 }
 @end

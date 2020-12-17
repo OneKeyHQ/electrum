@@ -26,7 +26,12 @@
 {
     _model = model;
     self.titleLabel.text = model.titleStr;
-    self.rightLabel.text = model.rightLabelStr;
+    
+    NSString *addr = model.rightLabelStr;
+    if (addr.length > 12) {
+        addr = [NSString stringWithFormat:@"%@...%@",[addr substringToIndex:6],[addr substringFromIndex:addr.length - 6]];
+    }
+    self.rightLabel.text = addr;
     self.rightLabel.textColor = model.rightLabelColor;
     self.titleLabel.textColor = model.leftLabelColor;
     
@@ -72,7 +77,7 @@
 
 - (void)copy_smallClick
 {
-    [kTools pasteboardCopyString:self.rightLabel.text msg:MyLocalizedString(@"Copied", nil)];
+    [kTools pasteboardCopyString:self.model.rightLabelStr msg:MyLocalizedString(@"Copied", nil)];
 }
 
 @end
