@@ -570,7 +570,7 @@ class AndroidCommands(commands.Commands):
         '''
         try:
             device_info = wallet_info.get_device_info()
-            return json.dumps(device_info)
+            return device_info
         except BaseException as e:
             raise e
 
@@ -2031,14 +2031,14 @@ class AndroidCommands(commands.Commands):
                 xpub = client.get_xpub(derivation, _type, creating=is_creating)
             except Exception as e:
                 raise BaseException(e)
-            return xpub
+            return xpub, client.features.device_id
         else:
             derivation = bip44_derivation(account_id, bip43_purpose=self.coins[coin]['addressType'], coin=self.coins[coin]['coinId'])
             try:
                 xpub = client.get_eth_xpub(derivation)
             except Exception as e:
                 raise BaseException(e)
-            return xpub
+            return xpub, client.features.device_id
 
     def create_hw_derived_wallet(self, path='android_usb', _type='p2wpkh', is_creating=True, coin='btc'):
         '''
@@ -2047,15 +2047,15 @@ class AndroidCommands(commands.Commands):
         :param _type: p2wsh/p2wsh/p2pkh/p2pkh-p2sh as str
         :return: xpub as str
         '''
-        xpub = self.get_xpub_from_hw(path=path, _type=_type)
+        xpub, device_id = self.get_xpub_from_hw(path=path, _type=_type)
         list_info = self.get_derived_list(xpub)
         if list_info is None:
-            self.hw_info = {"xpub": xpub, "account_id": 0}
+            self.hw_info = {"xpub": xpub, "account_id": 0, "device_id": device_id}
             return xpub
         if len(list_info) == 0:
             raise BaseException(DerivedWalletLimit())
         dervied_xpub = self.get_xpub_from_hw(path=path, _type=_type, account_id=list_info[0])
-        self.hw_info = {"xpub":xpub, "account_id":list_info[0]}
+        self.hw_info = {"xpub":xpub, "account_id":list_info[0], "device_id": device_id}
         return dervied_xpub
 
 
@@ -2790,8 +2790,7 @@ class AndroidCommands(commands.Commands):
             if coin == 'btc':
                 print(f"xpubs=========={m, n, xpubs}")
                 self.set_multi_wallet_info(name, m, n)
-                for xpub_info in xpubs:
-                    self.add_xpub(xpub_info)
+                self.add_xpub(xpubs[0], xpubs[1])
 
                 temp_path = self.get_temp_file()
                 path = self._wallet_path(temp_path)
@@ -2833,8 +2832,8 @@ class AndroidCommands(commands.Commands):
                                              bip39_derivation=bip39_derivation,
                                              passphrase=passphrase, coin=coin)
                     else:
-                        xpub = self.get_xpub_from_hw(path=path, _type='p2wpkh', account_id=derived_info['account_id'], coin=coin)
-                        self.recovery_import_create_hw_wallet(derived_info['account_id'], derived_info['name'], 1, 1, [xpub])
+                        xpub, device_id = self.get_xpub_from_hw(path=path, _type='p2wpkh', account_id=derived_info['account_id'], coin=coin)
+                        self.recovery_import_create_hw_wallet(derived_info['account_id'], derived_info['name'], 1, 1, [xpub, device_id], coin=coin)
                     derived.update_recovery_info(derived_info['account_id'])
 
         derived.reset_list()
@@ -2847,8 +2846,8 @@ class AndroidCommands(commands.Commands):
                     self.recovery_create("%s_derived_%s" % (coin, i), seed, password=password,
                                  bip39_derivation=bip39_derivation, passphrase=passphrase, coin=coin)
                 else:
-                    xpub = self.get_xpub_from_hw(path, _type='p2wpkh', account_id=i, coin=coin)
-                    self.recovery_import_create_hw_wallet(i, "%s_hd_derived_%s" % (coin, i), 1, 1, [xpub], coin=coin)
+                    xpub, device_id = self.get_xpub_from_hw(path, _type='p2wpkh', account_id=i, coin=coin)
+                    self.recovery_import_create_hw_wallet(i, "%s_hd_derived_%s" % (coin, i), 1, 1, [xpub, device_id], coin=coin)
         # if hw:
         #     ##TODO recovery multi info from server, need test
         #     info = self.get_wallet_info_from_server(hd_wallet.get_keystore().xpub)
