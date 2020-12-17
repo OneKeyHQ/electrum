@@ -73,10 +73,10 @@ public class BackupHelper extends BaseActivity implements BusinessAsyncTask.Help
     private AnimationDrawable animationDrawable;
 
 
-    @Override
-    public int getLayoutId() {
-        return R.layout.bluetooth_nfc;
-    }
+//     @Override
+//     public int getLayoutId() {
+//         return R.layout.bluetooth_nfc;
+//     }
 
     @Override
     public void initView() {

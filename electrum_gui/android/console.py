@@ -59,15 +59,15 @@ from electrum.keystore import Hardware_KeyStore
 from eth_account import Account
 from eth_utils.address import to_checksum_address
 from eth_keys.utils.address import public_key_bytes_to_address
-# from trezorlib.customer_ui import CustomerUI
-# from trezorlib import (
-#     btc,
-#     exceptions,
-#     firmware,
-#     protobuf,
-#     messages,
-#     device,
-# )
+from trezorlib.customer_ui import CustomerUI
+from trezorlib import (
+    btc,
+    exceptions,
+    firmware,
+    protobuf,
+    messages,
+    device,
+)
 from trezorlib.cli import trezorctl
 from electrum.bip32 import get_uncompressed_key
 from electrum.wallet_db import WalletDB
