@@ -155,12 +155,7 @@ def verify_address(address) -> bool:
 class AndroidCommands(commands.Commands):
     def __init__(self, android_id=None, config=None, user_dir=None, callback=None):
         self.asyncio_loop, self._stop_loop, self._loop_thread = create_and_start_event_loop()  # TODO:close loop
-        config_options = {}
-        config_options['auto_connect'] = True
-        if config is None:
-            self.config = simple_config.SimpleConfig(config_options)
-        else:
-            self.config = config
+        self.config = self.init_config(config=config)
         if user_dir is None:
             self.user_dir = get_dir()
         else:
@@ -174,8 +169,8 @@ class AndroidCommands(commands.Commands):
         # its callback before the daemon threads start.
         self.daemon = daemon.Daemon(self.config, fd)
         self.coins = read_json('eth_servers.json', {})
-        self.pywalib = PyWalib(self.config, chain_type="mainnet", path=self._tx_list_path())
-        self.txdb = TxDb(path=self._tx_list_path())
+        self.pywalib = PyWalib(self.config, chain_type="mainnet", path=self._tx_list_path(name="tx_info.db"))
+        self.txdb = TxDb(path=self._tx_list_path(name="tx_info.db"))
         self.pywalib.set_server(self.coins["eth"])
         self.network = self.daemon.network
         self.daemon_running = False
@@ -237,6 +232,15 @@ class AndroidCommands(commands.Commands):
                 self.set_callback_fun(callback)
         self.start_daemon()
         self.get_block_info()
+
+    def init_config(self, config=None):
+        config_options = {}
+        config_options['auto_connect'] = True
+        if config is None:
+            out_config = simple_config.SimpleConfig(config_options)
+        else:
+            out_config = config
+        return out_config
 
     def set_language(self, language):
         '''
@@ -356,12 +360,15 @@ class AndroidCommands(commands.Commands):
         :param delete_tx: tx_hash that you need to delete
         :return :
         '''
-        to_delete = {delete_tx}
-        to_delete |= self.wallet.get_depending_transactions(delete_tx)
-        for tx in to_delete:
-            self.wallet.remove_transaction(tx)
-            self.delete_tx(tx)
-        self.wallet.save_db()
+        try:
+            to_delete = {delete_tx}
+            to_delete |= self.wallet.get_depending_transactions(delete_tx)
+            for tx in to_delete:
+                self.wallet.remove_transaction(tx)
+                self.delete_tx(tx)
+            self.wallet.save_db()
+        except BaseException as e:
+            raise e
         # need to update at least: history_list, utxo_list, address_list
         # self.parent.need_update.set()
 
@@ -935,6 +942,10 @@ class AndroidCommands(commands.Commands):
             }
             return json.dumps(ret_data)
         except Exception as e:
+            try:
+                self.remove_local_tx(tx_details.txid)
+            except:
+                pass
             raise BaseException(e)
 
     def mktx(self, tx=None):
@@ -1353,7 +1364,7 @@ class AndroidCommands(commands.Commands):
                 i['type'] = 'history'
                 data = self.get_tx_info_from_raw(info[3])
                 i['tx_status'] = _("Sending failure")
-                i['tx_hash'] = info[1]
+                i['tx_hash'] = info[0]
                 i['date'] = util.format_time(info[4])
                 i['is_mine'] = True
                 i['confirmations'] = 0
@@ -1361,7 +1372,7 @@ class AndroidCommands(commands.Commands):
                 amount = data['amount'].split(" ")[0]
                 fee = data['fee'].split(" ")[0]
                 fait = self.daemon.fx.format_amount_and_units(float(amount) + float(fee)) if self.daemon.fx else None
-                i['amount'] = '%s %s (%s)' % (str(float(amount) + float(fee)), self.base_unit, fait)
+                i['amount'] = '%f %s (%s)' % (float(amount) + float(fee), self.base_unit, fait)
                 all_data.append(i)
 
             all_data.sort(reverse=True, key=lambda info: info['date'])
@@ -1387,7 +1398,7 @@ class AndroidCommands(commands.Commands):
         if not tx:
             local_tx = self.txdb.get_tx_info(self.wallet.get_addresses()[0])
             for temp_tx in local_tx:
-                if temp_tx[1] == tx_hash:
+                if temp_tx[0] == tx_hash:
                     return self.get_tx_info_from_raw(temp_tx[3])
             raise BaseException(_('Failed to get transaction details.'))
         # tx = PartialTransaction.from_tx(tx)
@@ -1432,11 +1443,16 @@ class AndroidCommands(commands.Commands):
         '''
         try:
             self._assert_wallet_isvalid()
-            self.show_addr = self.config.get('%s_show_addr' % self.wallet, self.wallet.get_addresses()[0])
+            show_addr_info = self.config.get("show_addr_info", {})
+            if show_addr_info.__contains__(self.wallet.__str__()):
+                self.show_addr = show_addr_info[self.wallet.__str__()]
+            else:
+                self.show_addr = self.wallet.get_addresses()[0]
             if next:
                 addr = self.wallet.create_new_address(False)
                 self.show_addr = addr
-                self.config.set_key('%s_show_addr' % self.wallet, self.show_addr)
+                show_addr_info[self.wallet.__str__()] = self.show_addr
+                self.config.set_key("show_addr_info", show_addr_info)
             data = util.create_bip21_uri(self.show_addr, "", "")
         except Exception as e:
             raise BaseException(e)
@@ -1586,9 +1602,9 @@ class AndroidCommands(commands.Commands):
             out_data['data'] = "parse pr error"
         return json.dumps(out_data)
 
-    def update_local_info(self, tx_id, address, tx, msg):
-        self.remove_local_tx(tx_id)
-        self.txdb.add_tx_info(address=address, tx_hash=tx_id, psbt_tx="", raw_tx=tx,
+    def update_local_info(self, txid, address, tx, msg):
+        self.remove_local_tx(txid)
+        self.txdb.add_tx_info(address=address, tx_hash=txid, psbt_tx="", raw_tx=tx,
                               failed_info=msg)
 
     def broadcast_tx(self, tx):
@@ -1607,7 +1623,7 @@ class AndroidCommands(commands.Commands):
             except TxBroadcastError as e:
                 #TODO DB self.delete_tx()
                 msg = e.__str__()
-                self.update_local_info(tx.tx_id(), self.wallet.get_addresses()[0], tx, msg)
+                self.update_local_info(tx.txid(), self.wallet.get_addresses()[0], tx, msg)
                 # #msg = e.get_message_for_gui()
                 raise BaseException(msg)
             except BestEffortRequestFailed as e:
@@ -1735,13 +1751,13 @@ class AndroidCommands(commands.Commands):
             try:
                 if self.label_flag and self.wallet.wallet_type != "standard":
                     self.label_plugin.push_tx(self.wallet, 'signtx', tx.txid(), str(sign_tx))
-            except Exception as e:
+            except BaseException as e:
                 print(f"push_tx signtx error {e}")
                 pass
             return self.get_tx_info_from_raw(sign_tx)
-        except Exception as e:
+        except BaseException as e:
             msg = e.__str__()
-            self.update_local_info(tx.tx_id(), self.wallet.get_addresses()[0], tx, msg)
+            self.update_local_info(tx.txid(), self.wallet.get_addresses()[0], tx, msg)
             raise BaseException(e)
 
     def get_derived_list(self, xpub):
@@ -1757,7 +1773,7 @@ class AndroidCommands(commands.Commands):
             return None
         except BaseException as e:
             raise e
-
+    
     ##connection with terzorlib#########################
     def hardware_verify(self, msg, path='android_usb'):
         '''
@@ -2175,7 +2191,7 @@ class AndroidCommands(commands.Commands):
             # self.check_pw_wallet = wallet
             wallet_type = 'eth-hd-standard-hw'
         self.update_local_wallet_info(self.get_unique_path(wallet), wallet_type)
-    
+
     ####################################################
     ## app wallet
     # def export_keystore(self, password):
@@ -2406,7 +2422,14 @@ class AndroidCommands(commands.Commands):
         return json.dumps(out)
 
     def get_wallet_num(self):
-        return len(json.loads(self.list_wallets()))
+        list_info = json.loads(self.list_wallets())
+        num = 0
+        name = {}
+        for info in list_info:
+            for key, value in info.items():
+                if -1 == value['type'].find("-hw-"):
+                    num+=1
+        return num
 
     def get_temp_file(self):
         return ''.join(random.sample(string.ascii_letters + string.digits, 8)) + '.unique.file'
@@ -2736,9 +2759,12 @@ class AndroidCommands(commands.Commands):
 
     def get_check_wallet(self):
         wallets = self.daemon.get_wallets()
-        key = sorted(wallets.keys())[0]
-        # value = wallets.values()[0]
-        return wallets[key]
+        for key, wallet in wallets.items():
+            if not isinstance(wallet.keystore, Hardware_KeyStore):
+                return wallet
+                # key = sorted(wallets.keys())[0]
+                # # value = wallets.values()[0]
+                # return wallets[key]
 
     def update_recover_list(self, recovery_list, balance, name, label, coin):
         show_info = {}
@@ -3427,6 +3453,23 @@ class AndroidCommands(commands.Commands):
             break
         return have_tx_flag
 
+    def reset_config_info(self):
+        self.config.set_key("all_wallet_type_info", {})
+        self.config.set_key("derived_info", {})
+        self.config.set_key("backupinfo", {})
+        self.config.set_key("decimal_point", 5)
+        self.config.set_key("language", "zh_CN")
+        self.config.set_key("sync_server_host", "39.105.86.163:8080")
+        self.config.set_key("show_addr_info", {})
+
+    def reset_wallet_info(self):
+        try:
+            util.delete_file(self._wallet_path())
+            util.delete_file(self._tx_list_path())
+            self.reset_config_info()
+        except BaseException as e:
+            raise e
+
     def delete_wallet(self, password, name):
         """Delete a wallet"""
         try:
@@ -3487,7 +3530,7 @@ class AndroidCommands(commands.Commands):
             util.make_dir(wallets_dir)
             return util.standardize_path(join(wallets_dir, name))
 
-    def _tx_list_path(self, name="tx_info.db"):
+    def _tx_list_path(self, name=""):
         wallets_dir = join(self.user_dir, "tx_history")
         util.make_dir(wallets_dir)
         return util.standardize_path(join(wallets_dir, name))

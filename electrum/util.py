@@ -512,6 +512,13 @@ def standardize_path(path):
                         path
     ))))
 
+def delete_file(path):
+    for i in os.listdir(path):
+        path_file = os.path.join(path, i)
+        if os.path.isfile(path_file):
+            os.remove(path_file)
+        else:
+            delete_file(path_file)
 
 def get_new_wallet_name(wallet_folder: str) -> str:
     i = 1
