@@ -70,4 +70,5 @@ public class LunchActivity extends BaseActivity {
         PyEnv.init(this);
         init();
     }
+
 }

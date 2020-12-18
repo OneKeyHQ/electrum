@@ -4,14 +4,6 @@ import android.content.Context;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
-/**
- * @Description: 键盘管理类
- * @Author: peter Qin
- * @CreateDate: 2020/12/16$ 9:58 AM$
- * @UpdateUser: 更新者：
- * @UpdateDate: 2020/12/16$ 9:58 AM$
- * @UpdateRemark: 更新说明：
- */
 public class KeyBoardUtils {
 
     public static void showKeyBoard(Context context, EditText editText) {

@@ -9,6 +9,4 @@
     <string name="gallery">相册</string>
     <string name="scan_failed_tip">图片解析失败，换个图片试试.</string>
     <string name="request_galley">获取相册权限被拒绝，无法执行</string>
-
-
 </resources>

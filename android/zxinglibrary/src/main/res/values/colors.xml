@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <!--zxing-->
     <color name="contents_text">#000000</color>
     <color name="encode_view">#ffffff</color>
@@ -14,6 +13,4 @@
     <color name="react">#ffffff</color>
     <color name="scanLineColor">#ffffff</color>
     <color name="defaultColor">#ffffff</color>
-
-
 </resources>

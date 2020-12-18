@@ -5,16 +5,9 @@ import android.os.Message;
 
 import java.lang.ref.WeakReference;
 
-/**
- * @Description: 作为线程间传递消息
- * @Author: peter Qin
- * @CreateDate: 2020/12/16$ 9:58 AM$
- * @UpdateUser: 更新者：
- * @UpdateDate: 2020/12/16$ 9:58 AM$
- * @UpdateRemark: 更新说明：
- */
 
 public class NoLeakHandler extends Handler {
+
     private WeakReference<HandlerCallback> mCallback;
     private boolean isValid = true;
 
@@ -36,4 +29,5 @@ public class NoLeakHandler extends Handler {
     public void setValid(boolean isValid) {
         this.isValid = isValid;
     }
+
 }

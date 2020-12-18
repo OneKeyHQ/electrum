@@ -42,7 +42,7 @@ import org.haobtc.onekey.onekeys.dialog.SetHDWalletPassActivity;
 import org.haobtc.onekey.onekeys.dialog.SetLongPassActivity;
 import org.haobtc.onekey.onekeys.homepage.mindmenu.DeleteWalletActivity;
 import org.haobtc.onekey.ui.dialog.custom.CustomBackupDialog;
-import org.haobtc.onekey.ui.dialog.custom.CustomResetBottomPopup;
+import org.haobtc.onekey.ui.dialog.custom.CustomReSetBottomPopup;
 import org.haobtc.onekey.utils.Daemon;
 
 import java.util.Objects;
@@ -213,7 +213,7 @@ public class HdWalletDetailActivity extends BaseActivity {
         new XPopup.Builder(mContext)
                 .dismissOnTouchOutside(false)
                 .isDestroyOnDismiss(true)
-                .asCustom(new CustomResetBottomPopup(mContext, new CustomResetBottomPopup.onClick() {
+                .asCustom(new CustomReSetBottomPopup(mContext, new CustomReSetBottomPopup.onClick() {
                     @Override
                     public void onConfirm () {
                         if (!isBackup) {
@@ -221,7 +221,7 @@ public class HdWalletDetailActivity extends BaseActivity {
                         } else {
                         }
                     }
-                }, CustomResetBottomPopup.deleteHdChildren)).show();
+                }, CustomReSetBottomPopup.deleteHdChildren)).show();
     }
 
     private void showBackDialog () {

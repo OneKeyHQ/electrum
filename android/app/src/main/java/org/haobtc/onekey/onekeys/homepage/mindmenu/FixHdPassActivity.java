@@ -58,4 +58,5 @@ public class FixHdPassActivity extends BaseActivity {
                 break;
         }
     }
+
 }

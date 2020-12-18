@@ -315,4 +315,5 @@ public abstract class BaseActivity extends AppCompatActivity {
         // Return the string type of the converted currency 
         return format.format(numDouble);
     }
+
 }

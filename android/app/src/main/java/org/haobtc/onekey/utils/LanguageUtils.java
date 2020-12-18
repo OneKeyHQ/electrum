@@ -14,14 +14,6 @@ import org.haobtc.onekey.constant.Constant;
 
 import java.util.Locale;
 
-/**
- * @Description: Language Utils
- * @Author: peter Qin
- * @CreateDate: 2020/12/16$ 2:39 PM$
- * @UpdateUser: 更新者：
- * @UpdateDate: 2020/12/16$ 2:39 PM$
- * @UpdateRemark: 更新说明：
- */
 public class LanguageUtils {
     private static final String TAG = "LanguageUtil";
 

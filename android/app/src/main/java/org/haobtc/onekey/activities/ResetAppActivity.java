@@ -21,7 +21,7 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.constant.FileNameConstant;
-import org.haobtc.onekey.ui.dialog.custom.CustomResetBottomPopup;
+import org.haobtc.onekey.ui.dialog.custom.CustomReSetBottomPopup;
 import org.haobtc.onekey.utils.FileUtils;
 import org.haobtc.onekey.utils.NavUtils;
 import org.haobtc.onekey.utils.NoLeakHandler;
@@ -92,13 +92,13 @@ public class ResetAppActivity extends BaseActivity implements OnCheckedChangeLis
                 .dismissOnTouchOutside(false)
                 .isDestroyOnDismiss(true)
                 .moveUpToKeyboard(false)
-                .asCustom(new CustomResetBottomPopup(ResetAppActivity.this, () -> new Thread(() -> {
+                .asCustom(new CustomReSetBottomPopup(ResetAppActivity.this, () -> new Thread(() -> {
                     boolean isSuccess = FileUtils.resetApp(getFilesDir() + FileNameConstant.data_Path, getDataDir() + FileNameConstant.Sp_Path);
                     Message message = new Message();
                     message.what = Reset_Code;
                     message.obj = isSuccess;
                     mHandler.sendMessage(message);
-                }).start(), CustomResetBottomPopup.resetApp))
+                }).start(), CustomReSetBottomPopup.resetApp))
                 .show();
     }
 
@@ -131,4 +131,5 @@ public class ResetAppActivity extends BaseActivity implements OnCheckedChangeLis
         mHandler.removeCallbacks(null);
         mHandler = null;
     }
+
 }

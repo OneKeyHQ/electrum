@@ -10,23 +10,16 @@ import com.lxj.xpopup.core.BottomPopupView;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.ui.widget.SuperTextView;
 
-/**
- * @Description:  reset app dialog style
- * @Author: peter Qin
- * @CreateDate: 2020/12/16$ 5:55 PM$
- * @UpdateUser: 更新者：
- * @UpdateDate: 2020/12/16$ 5:55 PM$
- * @UpdateRemark: 更新说明：
- */
-public class CustomResetBottomPopup extends BottomPopupView {
+public class CustomReSetBottomPopup extends BottomPopupView {
     private onClick onClick;
     private SuperTextView confirmBtn, cancelBtn;
     private TextView title, content;
     private int mode;
     public static final int resetApp = 0;
+
     public static final int deleteHdChildren = 1;
 
-    public CustomResetBottomPopup (@NonNull Context context, onClick onClick, int mode) {
+    public CustomReSetBottomPopup (@NonNull Context context, onClick onClick, int mode) {
         super(context);
         this.onClick = onClick;
         this.mode = mode;
@@ -68,4 +61,5 @@ public class CustomResetBottomPopup extends BottomPopupView {
     public interface onClick {
         void onConfirm();
     }
+
 }
