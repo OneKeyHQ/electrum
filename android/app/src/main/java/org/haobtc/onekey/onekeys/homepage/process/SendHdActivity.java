@@ -46,12 +46,14 @@ import org.haobtc.onekey.event.CustomizeFeeRateEvent;
 import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.event.GetFeeEvent;
 import org.haobtc.onekey.event.InputPassSendEvent;
+import org.haobtc.onekey.event.SecondEvent;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.ui.activity.SoftPassActivity;
 import org.haobtc.onekey.ui.activity.VerifyPinActivity;
 import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.ui.dialog.CustomizeFeeDialog;
 import org.haobtc.onekey.ui.dialog.TransactionConfirmDialog;
+import org.haobtc.onekey.ui.dialog.UnBackupTipDialog;
 import org.haobtc.onekey.utils.ClipboardUtils;
 
 import java.math.BigDecimal;
@@ -179,7 +181,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
      * init
      */
     @Override
-    public void init () {
+    public void init() {
         hdWalletName = getIntent().getStringExtra("hdWalletName");
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         String balance = getIntent().getStringExtra(WALLET_BALANCE);
@@ -194,38 +196,20 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         String addressScan = getIntent().getStringExtra("addressScan");
         if (!TextUtils.isEmpty(addressScan)) {
             editReceiverAddress.setText(addressScan);
+        } else {
+            //whether backup
+            boolean whetherBackup = getIntent().getBooleanExtra("whetherBackup", false);
+            if (!whetherBackup) {
+                Bundle bundle = new Bundle();
+                bundle.putString(Constant.UN_BACKUP_TIP, getString(R.string.receive_unbackup_tip));
+                UnBackupTipDialog unBackupTipDialog = new UnBackupTipDialog();
+                unBackupTipDialog.setArguments(bundle);
+                unBackupTipDialog.show(getSupportFragmentManager(), "");
+            }
         }
         textBalance.setText(String.format("%s%s", balance, preferences.getString("base_unit", "")));
         registerLayoutChangeListener();
-        //whether backup
-        boolean whetherBackup = getIntent().getBooleanExtra("whetherBackup", false);
-        if (!whetherBackup) {
-            noBackupDialog();
-        }
     }
-
-    private void noBackupDialog() {
-        View view1 = LayoutInflater.from(this).inflate(R.layout.unbackup_tip, null, false);
-        AlertDialog alertDialog = new AlertDialog.Builder(this).setView(view1).create();
-        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        view1.findViewById(R.id.text_back).setOnClickListener(v -> {
-            finish();
-            alertDialog.dismiss();
-        });
-        view1.findViewById(R.id.text_i_know).setOnClickListener(v -> {
-            alertDialog.dismiss();
-        });
-        alertDialog.show();
-        //show center
-        Window dialogWindow = alertDialog.getWindow();
-        WindowManager m = getWindowManager();
-        Display d = m.getDefaultDisplay();
-        WindowManager.LayoutParams p = dialogWindow.getAttributes();
-        p.width = (int) (d.getWidth() * 0.95);
-        p.gravity = Gravity.CENTER;
-        dialogWindow.setAttributes(p);
-    }
-
 
     /***
      * init layout
@@ -357,7 +341,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
             showToast(R.string.input_out_number);
             return false;
         }
-        if (Double.parseDouble(amount) <= 0){
+        if (Double.parseDouble(amount) <= 0) {
             return false;
         }
         return true;
@@ -497,7 +481,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         }
         TransactionInfoBean info = TransactionInfoBean.objectFromData(response.getResult());
         // set see view
-        String sender = info.getInputAddr().get(0).getAddr();
+        String sender = info.getInputAddr().get(0).getPrevoutHash();
         String receiver = info.getOutputAddr().get(0).getAddr();
         amounts = info.getAmount();
         String fee = info.getFee();
@@ -557,7 +541,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                     if (Strings.isNullOrEmpty(errors0)) {
                         textFeeInCash0.setText(String.format(Locale.ENGLISH, "%s %s", currencySymbols, response0.getResult()));
                     } else {
-                        showToast(errors0);
+//                        showToast(errors0);
                         return false;
                     }
                     tempSlowTransaction = temp;
@@ -570,7 +554,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                     if (Strings.isNullOrEmpty(errors2)) {
                         textFeeInCash2.setText(String.format(Locale.ENGLISH, "%s %s", currencySymbols, response2.getResult()));
                     } else {
-                        showToast(errors2);
+//                        showToast(errors2);
                         return false;
                     }
                     tempFastTransaction = temp;
@@ -800,5 +784,19 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     @Override
     public boolean needEvents() {
         return true;
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void event(SecondEvent updataHint) {
+        String msgVote = updataHint.getMsg();
+        if ("finish".equals(msgVote)) {
+            finish();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 }

@@ -4,6 +4,7 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 
 import org.greenrobot.eventbus.EventBus;
@@ -20,6 +21,9 @@ public class ImportWalletSetNameActivity extends BaseActivity implements TextWat
 
     @BindView(R.id.edit_set_wallet_name)
     EditText editSetWalletName;
+
+    @BindView(R.id.btn_import)
+    Button btnImport;
 
     @Override
     public int getLayoutId() {
@@ -54,10 +58,8 @@ public class ImportWalletSetNameActivity extends BaseActivity implements TextWat
         }
     }
 
-
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
     }
 
     @Override
@@ -76,10 +78,14 @@ public class ImportWalletSetNameActivity extends BaseActivity implements TextWat
 
     @Override
     public void afterTextChanged(Editable s) {
-        if (!TextUtils.isEmpty(s.toString())) {
+        String text = s.toString().replace(" ", "");
+        if (!TextUtils.isEmpty(text)) {
+            btnImport.setEnabled(true);
             if (s.length() > 14) {
                 mToast(getString(R.string.name_lenth));
             }
+        } else {
+            btnImport.setEnabled(false);
         }
     }
 }

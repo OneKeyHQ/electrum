@@ -21,6 +21,7 @@ import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.bean.ZxingConfig;
@@ -229,7 +230,7 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
         startActivity(intent);
     }
     public void popupDialog(TransactionInfoBean info) {
-        String sender = info.getInputAddr().get(0).getAddr();
+        String sender = info.getInputAddr().get(0).getPrevoutHash();
         String receiver = info.getOutputAddr().get(0).getAddr();
         String amount = String.format("%s%s", info.getAmount(), PreferencesManager.get(this, "Preferences", "base_unit", ""));
         String fee = info.getFee();

@@ -69,6 +69,7 @@ import butterknife.OnClick;
 import io.reactivex.functions.Consumer;
 
 import static android.app.Activity.RESULT_OK;
+import static org.haobtc.onekey.constant.Constant.CURRENT_CURRENCY_GRAPHIC_SYMBOL;
 import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
 import static org.haobtc.onekey.constant.Constant.NEED_POP_BACKUP_DIALOG;
 import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE;
@@ -149,6 +150,7 @@ public class WalletFragment extends BaseFragment {
     private boolean isBackup;
     private String bleMac;
     private static int currentAction;
+    private boolean isRecovery;
 
     /**
      * init views
@@ -191,7 +193,6 @@ public class WalletFragment extends BaseFragment {
             //get wallet balance
             getWalletBalance();
             // get wallet list save wallet type
-
         } else {
             //no wallet
             try {
@@ -226,25 +227,31 @@ public class WalletFragment extends BaseFragment {
                 }
                 num = balance.substring(0, balance.indexOf(" "));
                 String strCny = balance.substring(balance.indexOf("(") + 1, balance.indexOf(")"));
-                int cnyUnit = preferences.getInt("cny_unit", 0);
-                switch (cnyUnit) {
-                    case 0:
-                        tetAmount.setText(String.format("￥%s", (Strings.isNullOrEmpty(strCny)) ? getString(R.string.zero) : strCny));
-                        break;
-                    case 1:
-                        tetAmount.setText(String.format("$%s", (Strings.isNullOrEmpty(strCny)) ? getString(R.string.zero) : strCny));
-                }
-                textBtcAmount.setText(String.valueOf(num));
+                String currencySymbol = preferences.getString(CURRENT_CURRENCY_GRAPHIC_SYMBOL, "¥");
+                tetAmount.setText(String.format("%s %s", (Strings.isNullOrEmpty(strCny)) ? getString(R.string.zero) : currencySymbol, strCny));
+                textBtcAmount.setText(String.format("%s %s", num, preferences.getString("base_unit", "")));
                 if (!"0".equals(num)) {
-                    getCny(num, cnyUnit);
+                    getCny(num, currencySymbol);
                 }
                 whetherBackup();
             }));
-
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
 
+    private void getCny(String changeBalance, String currencySymbol) {
+        try {
+            PyObject money = Daemon.commands.callAttr("get_exchange_currency", "base", changeBalance);
+            if (!TextUtils.isEmpty(money.toString())) {
+                tetAmount.setText(String.format("%s %s", currencySymbol, money.toString()));
+            } else {
+                tetAmount.setText(String.format("%s %s", currencySymbol, getString(R.string.zero)));
+            }
+        } catch (Exception e) {
+            Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
     }
 
     private void showTypeInfo(LocalWalletInfo localWalletInfo) {
@@ -301,29 +308,6 @@ public class WalletFragment extends BaseFragment {
             e.printStackTrace();
             relNowBackUp.setVisibility(View.GONE);
         }
-
-    }
-
-    private void getCny(String changeBalance, int cnyUnits) {
-        try {
-            PyObject money = Daemon.commands.callAttr("get_exchange_currency", "base", changeBalance);
-            if (!TextUtils.isEmpty(money.toString())) {
-                if (cnyUnits == 0) {
-                    tetAmount.setText(String.format("￥%s", money.toString()));
-                } else if (cnyUnits == 1) {
-                    tetAmount.setText(String.format("$%s", money.toString()));
-                }
-            } else {
-                if (cnyUnits == 0) {
-                    tetAmount.setText(String.format("￥%s", getString(R.string.zero)));
-                } else if (cnyUnits == 1) {
-                    tetAmount.setText(String.format("$%s", getString(R.string.zero)));
-                }
-            }
-        } catch (Exception e) {
-            Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -343,7 +327,6 @@ public class WalletFragment extends BaseFragment {
             return;
         }
         toNext(id);
-
     }
 
     /**
@@ -353,14 +336,14 @@ public class WalletFragment extends BaseFragment {
         switch (id) {
             case R.id.linear_send:
                 Intent intent2 = new Intent(getActivity(), SendHdActivity.class);
-                intent2.putExtra("whetherBackup",isBackup);
+                intent2.putExtra("whetherBackup", isBackup);
                 intent2.putExtra(WALLET_BALANCE, changeBalance);
                 intent2.putExtra("hdWalletName", textWalletName.getText().toString());
                 startActivity(intent2);
                 break;
             case R.id.linear_receive:
                 Intent intent3 = new Intent(getActivity(), ReceiveHDActivity.class);
-                intent3.putExtra("whetherBackup",isBackup);
+                intent3.putExtra("whetherBackup", isBackup);
                 if (org.haobtc.onekey.constant.Constant.WALLET_TYPE_HARDWARE.equals(nowType)) {
                     intent3.putExtra(org.haobtc.onekey.constant.Constant.WALLET_TYPE, org.haobtc.onekey.constant.Constant.WALLET_TYPE_HARDWARE_PERSONAL);
                 }
@@ -416,7 +399,6 @@ public class WalletFragment extends BaseFragment {
         if (connectionEx == BleConnectionEx.BLE_CONNECTION_EX_TIMEOUT) {
             Toast.makeText(getContext(), R.string.ble_connect_timeout, Toast.LENGTH_SHORT).show();
         }
-
     }
 
     /**
@@ -461,20 +443,18 @@ public class WalletFragment extends BaseFragment {
                 changeBalance = jsonObject.getString("balance");
                 textBtcAmount.setText(String.valueOf(changeBalance));
                 if (!TextUtils.isEmpty(fiat)) {
-                    if (fiat.contains("USD")) {
-                        String usd = fiat.substring(0, fiat.indexOf(" "));
-                        tetAmount.setText(String.format("$%s", usd));
-                        textDollar.setText(String.format("≈ $ %s", usd));
-                    } else if (fiat.contains("CNY")) {
-                        String cny = fiat.substring(0, fiat.indexOf(" "));
-                        tetAmount.setText(String.format("￥%s", cny));
-                        textDollar.setText(String.format(getString(R.string.money_sign), cny));
-                    } else {
-                        tetAmount.setText(String.format("%s", fiat));
-                        textDollar.setText(String.format("≈ %s", fiat));
+                    String[] currencyArray = getResources().getStringArray(R.array.currency);
+                    String[] currencySymbolArray = getResources().getStringArray(R.array.currency_symbol);
+                    for (int i = 0; i < currencyArray.length; i++) {
+                        if (fiat.contains(currencyArray[i])) {
+                            String cny = fiat.substring(0, fiat.indexOf(" "));
+                            tetAmount.setText(String.format("%s %s", currencySymbolArray[i], cny));
+                            textDollar.setText(String.format("≈ %s %s", currencySymbolArray[i], cny));
+                        }
                     }
                 } else {
-                    textDollar.setText(String.format("≈ $ %s", getString(R.string.zero)));
+                    String currencySymbol = preferences.getString(CURRENT_CURRENCY_GRAPHIC_SYMBOL, "¥");
+                    textDollar.setText(String.format("≈ %s %s", currencySymbol, getString(R.string.zero)));
                 }
             }
         } catch (JSONException e) {
@@ -515,7 +495,6 @@ public class WalletFragment extends BaseFragment {
                                 intent2.putExtra("hdWalletName", name);
                                 intent2.putExtra("addressScan", address);
                                 startActivity(intent2);
-
                             } else if (type == 2) {
                                 Intent intent = new Intent(getActivity(), DetailTransactionActivity.class);
                                 intent.putExtra("scanDetail", detailScan);
@@ -528,12 +507,10 @@ public class WalletFragment extends BaseFragment {
                             e.printStackTrace();
                             Toast.makeText(getActivity(), getString(R.string.address_wrong), Toast.LENGTH_SHORT).show();
                         }
-
                     }
                 }
             }
         }
-
     }
 
     @OnCheckedChanged(R.id.img_check_money)
@@ -595,6 +572,7 @@ public class WalletFragment extends BaseFragment {
                 startActivity(intent0);
                 break;
             case R.id.rel_recovery_hd:
+                isRecovery = true;
                 Intent intent = new Intent(getActivity(), RecoverHdWalletActivity.class);
                 startActivity(intent);
                 break;
@@ -634,22 +612,25 @@ public class WalletFragment extends BaseFragment {
                 break;
         }
     }
+
     private boolean shouldResponseEvent() {
         return (linearNoWallet.getVisibility() == View.VISIBLE);
-
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGotPass(GotPassEvent event) {
         if (shouldResponseEvent()) {
             PyEnv.createLocalHd(event.getPassword(), null);
         }
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onRefresh(RefreshEvent refreshEvent) {
         if (shouldResponseEvent()) {
             startActivity(new Intent(getActivity(), HomeOneKeyActivity.class));
         }
     }
+
     /**
      * 注册EventBus
      */

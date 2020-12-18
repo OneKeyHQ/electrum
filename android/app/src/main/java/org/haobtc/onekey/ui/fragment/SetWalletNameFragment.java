@@ -54,7 +54,6 @@ public class SetWalletNameFragment extends BaseFragment implements TextWatcher {
 
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
     }
 
     @Override
@@ -73,10 +72,14 @@ public class SetWalletNameFragment extends BaseFragment implements TextWatcher {
 
     @Override
     public void afterTextChanged(Editable s) {
-        if (!TextUtils.isEmpty(s.toString())) {
+        String text = s.toString().replace(" ", "");
+        if (!TextUtils.isEmpty(text)) {
+            mCreate.setEnabled(true);
             if (s.length() > 14) {
                 Toast.makeText(getActivity(), getString(R.string.name_lenth), Toast.LENGTH_SHORT).show();
             }
+        } else {
+            mCreate.setEnabled(false);
         }
     }
 }

@@ -1,6 +1,7 @@
 package org.haobtc.onekey.activities.settings;
 
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
@@ -72,7 +73,6 @@ public class CurrencyActivity extends BaseActivity {
         base_unit = preferences.getString("base_unit", "mBTC");
         cny_unit = preferences.getInt("cny_unit", 0);
         edit = preferences.edit();
-
     }
 
     @Override
@@ -89,7 +89,6 @@ public class CurrencyActivity extends BaseActivity {
                 radioSelectTwo();
             }
         }, 200);
-
     }
 
     private void radioSelectOne() {
@@ -116,7 +115,6 @@ public class CurrencyActivity extends BaseActivity {
                 break;
             default:
         }
-
         radioOne.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -192,79 +190,37 @@ public class CurrencyActivity extends BaseActivity {
     }
 
     private void radioSelectTwo() {
-        PyObject get_currencies;
-        try {
-            get_currencies = Daemon.commands.callAttr("get_currencies");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
+        Resources resources = getResources();
+        String[] currencyArray = resources.getStringArray(R.array.currency);
+        String[] currencySymbolArray = resources.getStringArray(R.array.currency_symbol);
+        for (int i = 0; i < currencyArray.length; i++) {
+            CNYBean cnyBean = new CNYBean(currencyArray[i], false);
+            cnyBean.setSymbol(currencySymbolArray[i]);
+            listCNY.add(cnyBean);
         }
-        listCNY.add(new CNYBean(getString(R.string.money_cny), false));
-        listCNY.add(new CNYBean(getString(R.string.doller), false));
-        listCNY.add(new CNYBean(getString(R.string.korean_money), false));
-        Log.i("get_currenciesjxm", "radioSelectTwo: " + get_currencies);
-        if (get_currencies != null) {
-            String content = get_currencies.toString();
-            String unit = content.replaceAll("\"", "");
-            String[] pathArr = (unit.substring(1, unit.length() - 1)).split(",");
-            List<String> pathList = Arrays.asList(pathArr);
-
-            for (int i = 0; i < pathList.size(); i++) {
-                if (!"CNY".equals(pathList.get(i)) && !"USD".equals(pathList.get(i)) && !"KMR".equals(pathList.get(i))) {
-                    listCNY.add(new CNYBean(pathList.get(i), false));
+        reclCnyTable.setVisibility(View.VISIBLE);
+        CNYAdapter cnyAdapter = new CNYAdapter(CurrencyActivity.this, listCNY, cny_unit);
+        reclCnyTable.setAdapter(cnyAdapter);
+        cnyAdapter.setOnLisennorClick(new CNYAdapter.onLisennorClick() {
+            @Override
+            public void itemClick(int pos) {
+                try {
+                    Daemon.commands.callAttr("set_currency", listCNY.get(pos).getName());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return;
                 }
+                edit.putString(CURRENT_CURRENCY_SYMBOL, listCNY.get(pos).getName());
+                edit.putString(CURRENT_CURRENCY_GRAPHIC_SYMBOL, listCNY.get(pos).getSymbol());
+                edit.putInt("cny_unit", pos);
+                edit.apply();
+                EventBus.getDefault().post(new FirstEvent("11"));
+                EventBus.getDefault().post(new FirstEvent("22"));
+                EventBus.getDefault().post(new CardUnitEvent());
             }
-            reclCnyTable.setVisibility(View.VISIBLE);
-            CNYAdapter cnyAdapter = new CNYAdapter(CurrencyActivity.this, listCNY, cny_unit);
-            reclCnyTable.setAdapter(cnyAdapter);
-            cnyAdapter.setOnLisennorClick(new CNYAdapter.onLisennorClick() {
-                @Override
-                public void itemClick(int pos) {
-                    if (pos == 0) {
-                        try {
-                            Daemon.commands.callAttr("set_currency", "CNY");
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            return;
-                        }
-                        edit.putString(CURRENT_CURRENCY_SYMBOL, "CNY");
-                        edit.putString(CURRENT_CURRENCY_GRAPHIC_SYMBOL, "¥");
-                    } else if (pos == 1) {
-                        try {
-                            Daemon.commands.callAttr("set_currency", "USD");
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            return;
-                        }
-                        edit.putString(CURRENT_CURRENCY_SYMBOL, "USD");
-                        edit.putString(CURRENT_CURRENCY_GRAPHIC_SYMBOL, "$");
-                    } else if (pos == 2) {
-                        try {
-                            Daemon.commands.callAttr("set_currency", "KRW");
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            return;
-                        }
-                        edit.putString(CURRENT_CURRENCY_SYMBOL, "KRW");
-                        edit.putString(CURRENT_CURRENCY_GRAPHIC_SYMBOL, "₩");
-                    } else {
-                        try {
-                            Daemon.commands.callAttr("set_currency", listCNY.get(pos).getName());
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            return;
-                        }
-                        edit.putString(CURRENT_CURRENCY_SYMBOL, listCNY.get(pos).getName());
-                    }
-                    edit.putInt("cny_unit", pos);
-                    edit.apply();
-                    EventBus.getDefault().post(new FirstEvent("11"));
-                    EventBus.getDefault().post(new FirstEvent("22"));
-                    EventBus.getDefault().post(new CardUnitEvent());
-                }
-            });
-        }
+        });
     }
+
 
     @SingleClick
     @OnClick({R.id.img_back, R.id.tet_CheckAll})
@@ -290,5 +246,4 @@ public class CurrencyActivity extends BaseActivity {
             default:
         }
     }
-
 }

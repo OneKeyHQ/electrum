@@ -27,7 +27,6 @@ public class CreateDeriveChooseTypeActivity extends BaseActivity {
 
     @Override
     public void initData() {
-
     }
 
     @SingleClick
@@ -41,7 +40,7 @@ public class CreateDeriveChooseTypeActivity extends BaseActivity {
                 new XPopup.Builder(mContext)
                         .asCustom(new SelectWalletTypeDialog(mContext, new SelectWalletTypeDialog.onClickListener() {
                             @Override
-                            public void onClick (int mode) {
+                            public void onClick(int mode) {
                                 switch (mode) {
                                     case SelectWalletTypeDialog.RecommendType:
                                     case SelectWalletTypeDialog.NativeType:

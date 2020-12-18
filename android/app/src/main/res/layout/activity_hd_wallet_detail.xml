@@ -92,10 +92,10 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
-                    android:gravity="end"
                     android:layout_marginStart="@dimen/dp_20"
                     android:layout_marginEnd="@dimen/dp_50"
                     android:ellipsize="middle"
+                    android:gravity="end"
                     android:singleLine="true"
                     android:textColor="@color/text_six"
                     android:textSize="@dimen/sp_16"
@@ -171,16 +171,12 @@
                     android:layout_marginStart="@dimen/dp_20"
                     android:layout_marginTop="13dp"
                     android:layout_marginEnd="@dimen/dp_20"
+                    android:paddingBottom="@dimen/dp_10"
                     android:text="@string/wallet_detail_tip"
                     android:textColor="@color/text_three"
                     android:textSize="@dimen/sp_14"
                     android:visibility="visible" />
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="13dp"
-                    android:background="@color/text_seven" />
             </LinearLayout>
 
             <LinearLayout

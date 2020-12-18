@@ -265,9 +265,6 @@
     <string name="bee_table">货币单位</string>
     <string name="btc_table">比特币单位</string>
     <string name="legal_table">法币单位</string>
-    <string name="money_cny">CNY</string>
-    <string name="doller">USD</string>
-    <string name="korean_money">KMR</string>
     <string name="synchroniz_service">同步服务器</string>
     <string name="electrum_select">Electrum 节点选择</string>
     <string name="add_custom_node">添加自定义节点</string>
@@ -1150,7 +1147,6 @@
     <string name="backup_success_tip">看来一切都已就绪！\n我们也没什么可提醒您的了。\n 总之，切记保管好助记词，\n搞丢了没有任何人可以帮您找回来。\n祝您在区块链的世界玩儿开心❤️。</string>
     <string name="mnemonic_wrong">助记词有误</string>
     <string name="begin_check">重新核对</string>
-    <string name="active_hardware">激活硬件钱包</string>
     <string name="electrum_node">Electrum 节点</string>
     <string name="btc_wallet">比特币钱包</string>
     <string name="eth_wallet">以太坊钱包</string>
@@ -1251,7 +1247,7 @@
     <string name="check_message">核对信息</string>
     <string name="set_name_hint">请输入一个名字，方便记忆</string>
     <string name="plublic_key">公钥地址</string>
-    <string name="xpub_promote">「扩展公钥」，也被称为XPUB。是比特币标准(BIP32)的一部分，不包含任何私钥。 您可以将其导入其他观察钱包（Watch-Only），全面查看特定钱包中的所有交易、地址和余额，但无法花费其中的币。</string>
+    <string name="xpub_promote">「扩展公钥」，也被称为XPUB。是比特币标准(BIP32)的一部分，不包含任何私钥。 \n\n您在创建或加入共管（多重签名）钱包时，会用到下方显示的扩展公钥。</string>
     <string name="xpub">扩展公钥</string>
     <string name="select_mnemonic_size">选择助记词个数</string>
     <string name="_24">24</string>
@@ -1316,4 +1312,9 @@
     <string name="native_segwit_infor">以 bc1 开头，正在普及，转账手续费最低</string>
     <string name="normal_segwit">普通地址 Legacy</string>
     <string name="normal_segwit_info">以 1 开头，全面普及，转账手续费中等</string>
+    <string name="recovery_hardware_wallet">您曾使用硬件设备创建这些钱包，选择您要恢复的。</string>
+    <string name="multi_signature">多重签名扩展公钥</string>
+    <string name="receive_unbackup_tip">该钱包尚未备份。为了您的资金安全，请完成备份后再使用该地址发起转账。</string>
+    <string name="share_to">分享到：</string>
+    <string name="delete_watch_wallet_tip">此操作将会删除该钱包的所有数据，确定要继续此操作吗？</string>
 </resources>

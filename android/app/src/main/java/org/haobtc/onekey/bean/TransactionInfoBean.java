@@ -10,25 +10,26 @@ import java.util.List;
 /**
  * @author liyan
  */
-public class TransactionInfoBean implements Serializable{
+public class TransactionInfoBean implements Serializable {
 
     /**
-     * txid : 54437025414b07c746596656f37d411be705d93a2faa467d2edf489eec3d6731
+     * txid : 57ff90ae7f98727fd2782c95542c692e8aadcd6add156a52d505f8ab85d3543b
      * can_broadcast : false
-     * amount : 0 mBTC (0.00 CNY)
-     * fee : 0.508 mBTC (51.64 CNY)
+     * amount : 0.0002 BTC (4.55 USD)
+     * fee : unknown BTC (无数据 USD)
      * description :
-     * tx_status : Unsigned
-     * sign_status : [0,1]
-     * output_addr : [{"addr":"bcrt1qtsmu4zem4cyf6swrzye8as4cxl5fjlkh2zfkym","amount":"1 mBTC (101.66 CNY)","is_change":false},{"addr":"bcrt1qtsmu4zem4cyf6swrzye8as4cxl5fjlkh2zfkym","amount":"11.492 mBTC (1,168.31 CNY)","is_change":true}]
-     * input_addr : [{"addr":"bcrt1qtsmu4zem4cyf6swrzye8as4cxl5fjlkh2zfkym"}]
-     * height : -2
-     * cosigner : ["vpub5ZnTu9psVLf4zPYfWQT9GGfmuNZEYNNGc4gRLUNYGU6STjtfzR89Dcck6De3y6yr2VPHTqezHZ4av8oHEQmiGksdodbHzv64q6zToR8Gvfq"]
-     * tx : cHNidP8BAHECAAAAAVSrjEy1PY/rUd0HloZxnl0IhwgazJdpO+tOOdf8zqv6AAAAAAD9////AqCGAQAAAAAAFgAUXDfKizuuCJ1BwxEyfsK4N+iZftcQiREAAAAAABYAFFw3yos7rgidQcMRMn7CuDfomX7XAAAAAAABAP1yAQIAAAAAAQL3prCALdewsZNDVVoddwYqWt1j0ZiKaxgDcP0e8mfmiwEAAAAA/v///ywdfMjf3m/1HjxKUH/4/v/rXMi+5Jxe3Ac+SGZaQqz4AAAAAAD+////AiDWEwAAAAAAFgAUXDfKizuuCJ1BwxEyfsK4N+iZfteo5w8AAAAAABYAFLBc+/JfJHNu+0KGFlOhySxp8NXdAkcwRAIgNXgfEotUae+Cl+z8FDQ6IKI96ZUxSKxSP9HkETg7l+ICIDt+EZc7L8EijO/HVf+pJp3/lZTL/O3zbF3fZnSh3WdbASEDg6QHEBqU0ATHY9ExnSpVDt9g988wMCQn5o5elmGhmj0CRzBEAiB2GDvwObU/eZFKn5CXa5OrXwJ/V3UYImPEB9aWGWq6iQIgKKxc1txQqNQWxgeq/jh8YMsJU/2FnADaOFPAaS3+MXoBIQLBVV5LuZqkS6o3OSzcsnLAngM576IfK3Z1LFM1vBkXNQAAAAAiBgJRgWa5SzIDGfJjd8+xdX4R+DE4vz2hzCQ9Z+4/vclehwwQqA1BAAAAAAAAAAAAIgICUYFmuUsyAxnyY3fPsXV+EfgxOL89ocwkPWfuP73JXocMEKgNQQAAAAAAAAAAACICAlGBZrlLMgMZ8mN3z7F1fhH4MTi/PaHMJD1n7j+9yV6HDBCoDUEAAAAAAAAAAAA=
+     * tx_status : 527 个确认
+     * sign_status : [1,1]
+     * output_addr : [{"addr":"bcrt1qsnn9wl3f0wvvz8wvrsrp44sefe9fsn2cgucdwd","amount":"0.0002 BTC (4.55 USD)","is_change":false},{"addr":"bcrt1qlwc77qht4962vr993mjsq2l5kuts4txqp6qh3e","amount":"0.000152 BTC (3.46 USD)","is_change":true}]
+     * input_addr : [{"prevout_hash":"f2813dc816c15c37100a6f1c5915791bd2ba6c1b981129617ddd38f69804ffd3","prevout_n":1,"address":""}]
+     * height : 4313
+     * cosigner : ["vpub5Y6t2r9bbCXUCcCBUZGgzeUYXvWtctcddPN8JhhXRkkeGtQY4yh7uSVbG64fEuyrCD86GAc9a4Zj1abgkh78FKfJ8n9VFHv4KGwSKbSbnHL"]
+     * tx : 02000000000101d3ff0498f638dd7d612911981b6cbad21b7915591c6f0a10375cc116c83d81f20100000000fdffffff02204e00000000000016001484e6577e297b98c11dcc1c061ad6194e4a984d58603b000000000000160014fbb1ef02eba974a60ca58ee5002bf4b7170aacc00247304402207b105d607dff7b9ad703ae11a10e22d07c3a55b40a3d2b75c2efc9499ef896d7022069075e4cfdc71080aba1f559f4267cbf8a2937d83d27ff6f8a8d67d4eea5254d012102e598d7898b6f36aa0ddc226bc849e1f8e81d7bb9dde26df33155b4f9c0e2b643d8100000
      */
     public static TransactionInfoBean objectFromData(String s) {
         return new Gson().fromJson(s, TransactionInfoBean.class);
     }
+
     @SerializedName("txid")
     private String txid;
     @SerializedName("can_broadcast")
@@ -48,9 +49,9 @@ public class TransactionInfoBean implements Serializable{
     @SerializedName("sign_status")
     private List<Integer> signStatus;
     @SerializedName("output_addr")
-    private ArrayList<OutputAddrBean> outputAddr;
+    private ArrayList<TransactionInfoBean.OutputAddrBean> outputAddr;
     @SerializedName("input_addr")
-    private List<InputAddrBean> inputAddr;
+    private List<TransactionInfoBean.InputAddrBean> inputAddr;
     @SerializedName("cosigner")
     private List<String> cosigner;
 
@@ -126,7 +127,7 @@ public class TransactionInfoBean implements Serializable{
         this.signStatus = signStatus;
     }
 
-    public ArrayList<OutputAddrBean> getOutputAddr() {
+    public ArrayList<TransactionInfoBean.OutputAddrBean> getOutputAddr() {
         return outputAddr;
     }
 
@@ -134,11 +135,11 @@ public class TransactionInfoBean implements Serializable{
         this.outputAddr = outputAddr;
     }
 
-    public List<InputAddrBean> getInputAddr() {
+    public List<TransactionInfoBean.InputAddrBean> getInputAddr() {
         return inputAddr;
     }
 
-    public void setInputAddr(List<InputAddrBean> inputAddr) {
+    public void setInputAddr(List<TransactionInfoBean.InputAddrBean> inputAddr) {
         this.inputAddr = inputAddr;
     }
 
@@ -152,8 +153,8 @@ public class TransactionInfoBean implements Serializable{
 
     public static class OutputAddrBean {
         /**
-         * addr : bcrt1qtsmu4zem4cyf6swrzye8as4cxl5fjlkh2zfkym
-         * amount : 1 mBTC (101.66 CNY)
+         * addr : bcrt1qsnn9wl3f0wvvz8wvrsrp44sefe9fsn2cgucdwd
+         * amount : 0.0002 BTC (4.55 USD)
          * is_change : false
          */
 
@@ -191,18 +192,40 @@ public class TransactionInfoBean implements Serializable{
 
     public static class InputAddrBean {
         /**
-         * addr : bcrt1qtsmu4zem4cyf6swrzye8as4cxl5fjlkh2zfkym
+         * prevout_hash : f2813dc816c15c37100a6f1c5915791bd2ba6c1b981129617ddd38f69804ffd3
+         * prevout_n : 1
+         * address :
          */
 
-        @SerializedName("addr")
-        private String addr;
+        @SerializedName("prevout_hash")
+        private String prevoutHash;
+        @SerializedName("prevout_n")
+        private int prevoutN;
+        @SerializedName("address")
+        private String address;
 
-        public String getAddr() {
-            return addr;
+        public String getPrevoutHash() {
+            return prevoutHash;
         }
 
-        public void setAddr(String addr) {
-            this.addr = addr;
+        public void setPrevoutHash(String prevoutHash) {
+            this.prevoutHash = prevoutHash;
+        }
+
+        public int getPrevoutN() {
+            return prevoutN;
+        }
+
+        public void setPrevoutN(int prevoutN) {
+            this.prevoutN = prevoutN;
+        }
+
+        public String getAddress() {
+            return address;
+        }
+
+        public void setAddress(String address) {
+            this.address = address;
         }
     }
 }

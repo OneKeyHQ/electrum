@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Display;
@@ -42,9 +43,13 @@ import org.haobtc.onekey.constant.PyConstant;
 import org.haobtc.onekey.event.ButtonRequestEvent;
 import org.haobtc.onekey.event.ChangePinEvent;
 import org.haobtc.onekey.event.ExitEvent;
+import org.haobtc.onekey.event.SecondEvent;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.ui.activity.VerifyPinActivity;
 import org.haobtc.onekey.ui.base.BaseActivity;
+import org.haobtc.onekey.ui.dialog.AddXpubByHandDialog;
+import org.haobtc.onekey.ui.dialog.ChooseAddXpubWayDialog;
+import org.haobtc.onekey.ui.dialog.UnBackupTipDialog;
 import org.haobtc.onekey.utils.ClipboardUtils;
 import org.haobtc.onekey.utils.Daemon;
 import org.haobtc.onekey.utils.ImageUtils;
@@ -119,32 +124,14 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
         //whether backup
         boolean whetherBackup = getIntent().getBooleanExtra("whetherBackup", false);
         if (!whetherBackup) {
-            noBackupDialog();
+            Bundle bundle = new Bundle();
+            bundle.putString(Constant.UN_BACKUP_TIP, getString(R.string.unbackup_tip_dialog));
+            UnBackupTipDialog unBackupTipDialog = new UnBackupTipDialog();
+            unBackupTipDialog.setArguments(bundle);
+            unBackupTipDialog.show(getSupportFragmentManager(), "");
         }
         //get receive address
         mGeneratecode();
-    }
-
-    private void noBackupDialog() {
-        View view1 = LayoutInflater.from(this).inflate(R.layout.unbackup_tip, null, false);
-        AlertDialog alertDialog = new AlertDialog.Builder(this).setView(view1).create();
-        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        view1.findViewById(R.id.text_back).setOnClickListener(v -> {
-            finish();
-            alertDialog.dismiss();
-        });
-        view1.findViewById(R.id.text_i_know).setOnClickListener(v -> {
-            alertDialog.dismiss();
-        });
-        alertDialog.show();
-        //show center
-        Window dialogWindow = alertDialog.getWindow();
-        WindowManager m = getWindowManager();
-        Display d = m.getDefaultDisplay();
-        WindowManager.LayoutParams p = dialogWindow.getAttributes();
-        p.width = (int) (d.getWidth() * 0.95);
-        p.gravity = Gravity.CENTER;
-        dialogWindow.setAttributes(p);
     }
 
     /***
@@ -160,7 +147,6 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
         PyObject walletAddressShowUi = null;
         try {
             walletAddressShowUi = Daemon.commands.callAttr("get_wallet_address_show_UI");
-
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -191,7 +177,6 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
                     break;
             }
         }
-
     }
 
     @SingleClick
@@ -227,12 +212,11 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
                                         shareIntent.setType("image/*");
                                         shareIntent.putExtra(Intent.EXTRA_TEXT, textReceiveAddress.getText().toString());
                                         shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                        shareIntent = Intent.createChooser(shareIntent, "分享到：");
+                                        shareIntent = Intent.createChooser(shareIntent, getString(R.string.share_to));
                                         startActivity(shareIntent);
                                     } else {
                                         Toast.makeText(this, getString(R.string.pictrue_fail), Toast.LENGTH_SHORT).show();
                                     }
-
                                 } else { // Oups permission denied
                                     Toast.makeText(this, R.string.reservatpion_photo, Toast.LENGTH_SHORT).show();
                                 }
@@ -279,14 +263,12 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
                 verifyStart.setVisibility(View.GONE);
                 verifyPromote.setGravity(Gravity.CENTER);
                 verifyPromote.setText(R.string.verifying);
-
             default:
         }
     }
 
     @Override
     public void onPreExecute() {
-
     }
 
     @Override
@@ -305,11 +287,23 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
 
     @Override
     public void onCancelled() {
-
     }
 
     @Override
     public void currentMethod(String methodName) {
+    }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void event(SecondEvent updataHint) {
+        String msgVote = updataHint.getMsg();
+        if ("finish".equals(msgVote)) {
+            finish();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 }

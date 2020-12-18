@@ -265,6 +265,8 @@ public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocu
     }
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     public void onFind(FindOnceWalletEvent<BalanceInfo> event) {
+        List<BalanceInfo> wallets = event.getWallets();
+        Log.i("derivedInfoJXM", "run: " + wallets.toString());
         Intent intent = new Intent(this, RecoveryChooseWalletActivity.class);
         intent.putExtra("recoveryData", (ArrayList<BalanceInfo>)event.getWallets());
         startActivity(intent);

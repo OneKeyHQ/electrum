@@ -20,12 +20,8 @@ import butterknife.OnClick;
  */
 
 public class CheckXpubActivity extends BaseActivity {
-    @BindView(R.id.img_back)
-    ImageView imgBack;
     @BindView(R.id.xpub_text)
     TextView xpubText;
-    @BindView(R.id.copy)
-    FrameLayout copy;
     private String xpub;
 
     /**

@@ -5,50 +5,61 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_marginStart="@dimen/dp_10"
-        android:layout_marginBottom="@dimen/dp_10"
-        android:layout_marginEnd="@dimen/dp_10"
         android:layout_height="wrap_content"
-        android:background="@drawable/white_tuo"
+        android:layout_marginStart="@dimen/dp_10"
+        android:layout_marginEnd="@dimen/dp_10"
+        android:layout_marginBottom="@dimen/dp_10"
+        android:background="@drawable/white_back_tuo"
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/text_soft_delete"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_21"
-            android:layout_marginBottom="@dimen/dp_21"
+            android:layout_marginTop="@dimen/dp_30"
             android:gravity="center_horizontal"
-            android:text="@string/deletewallet_tips"
-            android:textColor="@color/graytext_color"
-            android:textSize="@dimen/sp_13" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/line_hight"
-            android:background="@color/line_color" />
+            android:text="@string/delete_wallet"
+            android:textColor="@color/text_two"
+            android:textSize="@dimen/sp_18"
+            android:textStyle="bold" />
 
         <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp_24"
+            android:layout_marginTop="@dimen/dp_16"
+            android:layout_marginEnd="@dimen/dp_24"
+            android:gravity="center_horizontal"
+            android:text="@string/delete_watch_wallet_tip"
+            android:textColor="@color/text_two"
+            android:textSize="@dimen/sp_14" />
+
+
+        <Button
             android:id="@+id/tet_ConfirmDelete"
             android:layout_width="match_parent"
-            android:layout_height="70dp"
+            android:layout_height="@dimen/dp_60"
+            android:layout_marginStart="@dimen/dp_25"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="@dimen/dp_25"
+            android:background="@drawable/delete_wallet_yes"
             android:gravity="center"
             android:text="@string/delete_thiswallet"
-            android:textColor="@color/red_text"
+            android:textColor="@color/button_bk_ddake"
             android:textSize="@dimen/sp_16" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/line_hight"
-            android:background="@color/line_color" />
 
-        <TextView
-            android:id="@+id/tet_cancle"
+        <Button
+            android:id="@+id/btn_cancel"
             android:layout_width="match_parent"
-            android:layout_height="70dp"
-            android:gravity="center"
+            android:layout_height="@dimen/dp_60"
+            android:layout_marginStart="@dimen/dp_25"
+            android:layout_marginTop="@dimen/dp_20"
+            android:layout_marginEnd="@dimen/dp_25"
+            android:layout_marginBottom="@dimen/dp_30"
+            android:background="@drawable/gray_stoken"
             android:text="@string/cancel"
-            android:textColor="@color/set_txt"
+            android:textAllCaps="false"
+            android:textColor="@color/text_two"
             android:textSize="@dimen/sp_16" />
 
     </LinearLayout>

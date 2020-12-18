@@ -56,7 +56,7 @@
             android:gravity="center"
             android:layout_marginTop="17dp"
             android:textColor="#546370"
-            android:text="@string/recovery_promote"/>
+            android:text="@string/recovery_hardware_wallet"/>
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/wallet_rec"
             android:layout_width="match_parent"

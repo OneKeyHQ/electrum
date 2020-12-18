@@ -86,7 +86,7 @@ public class RecoveryWalletAdapter extends RecyclerView.Adapter<RecoveryWalletAd
             }
         });
         if (checkStatus.get(position) == null) {
-            checkStatus.put(position, false);
+            checkStatus.put(position, true);
         }
     }
 

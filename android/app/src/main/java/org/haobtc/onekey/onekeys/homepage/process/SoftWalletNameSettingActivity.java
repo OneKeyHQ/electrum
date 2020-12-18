@@ -3,6 +3,7 @@ package org.haobtc.onekey.onekeys.homepage.process;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -58,7 +59,6 @@ public class SoftWalletNameSettingActivity extends BaseActivity implements TextW
     }
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
     }
 
     @Override
@@ -77,10 +77,14 @@ public class SoftWalletNameSettingActivity extends BaseActivity implements TextW
 
     @Override
     public void afterTextChanged(Editable s) {
-        if (!TextUtils.isEmpty(s.toString())) {
+        String text = s.toString().replace(" ", "");
+        if (!TextUtils.isEmpty(text)) {
+            btnImport.setEnabled(true);
             if (s.length() > 14) {
                 mToast(getString(R.string.name_lenth));
             }
+        } else {
+            btnImport.setEnabled(false);
         }
     }
 }

@@ -48,6 +48,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/dp_25"
         android:layout_marginBottom="@dimen/dp_30"
+        android:enabled="false"
         android:background="@drawable/btn_enable_selector"
         android:text="@string/create_"
         android:textAllCaps="false"

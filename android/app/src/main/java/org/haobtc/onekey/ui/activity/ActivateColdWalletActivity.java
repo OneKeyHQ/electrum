@@ -51,7 +51,7 @@ public class ActivateColdWalletActivity extends BaseActivity implements Business
     @Override
     public void init() {
         mode = getIntent().getIntExtra(Constant.ACTIVE_MODE, 0);
-        updateTitle(R.string.active_hardware);
+        updateTitle(R.string.activate_cold_wallet);
         startFragment(new DeviceNameSettingFragment());
     }
 

@@ -230,8 +230,7 @@ public class WalletDetailsActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.tet_deleteWallet:
-                //delete wallet dialog
-                showDialogs(WalletDetailsActivity.this, R.layout.delete_wallet);
+
                 break;
             case R.id.text_fix_name:
                 Intent intent = new Intent(WalletDetailsActivity.this, FixWalletNameActivity.class);
@@ -249,44 +248,6 @@ public class WalletDetailsActivity extends BaseActivity {
         }
     }
 
-    private void showDialogs(Context context, @LayoutRes int resource) {
-        //set see view
-        View view = View.inflate(context, resource, null);
-        dialogBtom = new Dialog(context, R.style.dialog);
-        TextView textSoftDelete = view.findViewById(R.id.text_soft_delete);
-        if ("standard".equals(walletType)) {
-            textSoftDelete.setVisibility(View.GONE);
-        }
-        //cancel dialog
-        view.findViewById(R.id.tet_ConfirmDelete).setOnClickListener(v -> {
-            myDialog.show();
-            Log.i("wallet_name", "showDialogs: " + walletName);
-            try {
-                Daemon.commands.callAttr("delete_wallet", walletName);
-                EventBus.getDefault().post(new FirstEvent("11"));
-                mToast(getString(R.string.delete_succse));
-                finish();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            myDialog.dismiss();
-            dialogBtom.cancel();
-        });
-        //cancel dialog
-        view.findViewById(R.id.tet_cancle).setOnClickListener(v -> {
-            dialogBtom.cancel();
-        });
-
-        dialogBtom.setContentView(view);
-        Window window = dialogBtom.getWindow();
-        //set pop_up size
-        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-        //set locate
-        window.setGravity(Gravity.BOTTOM);
-        //set animal
-        window.setWindowAnimations(R.style.AnimBottom);
-        dialogBtom.show();
-    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void fixName(FixWalletNameEvent event) {

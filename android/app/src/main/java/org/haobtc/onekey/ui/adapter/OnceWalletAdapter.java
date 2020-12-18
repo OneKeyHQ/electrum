@@ -44,6 +44,7 @@ public class OnceWalletAdapter extends RecyclerView.Adapter<OnceWalletAdapter.Vi
             tetWalletName = itemView.findViewById(R.id.text_wallet_name);
             textWalletBalance = itemView.findViewById(R.id.text_wallet_balance);
             checkbox = itemView.findViewById(R.id.check_wallet);
+            checkbox.setChecked(true);
         }
     }
 

@@ -78,11 +78,7 @@ public class DeleteWalletActivity extends BaseActivity implements CompoundButton
         deleteWalletType = getIntent().getStringExtra("delete_wallet_type");
         Log.i("deleteWalletType", "initView: " + deleteWalletType);
         if ("deleteSingleWallet".equals(importHdword)) {
-            if (deleteWalletType.contains("watch")) {
-                textTitle.setText(getString(R.string.delete_watch_wallet));
-            } else {
-                textTitle.setText(getString(R.string.delete_single_wallet));
-            }
+            textTitle.setText(getString(R.string.delete_single_wallet));
             deleteWalletTip1.setText(getString(R.string.delele_tip1));
             deleteWalletTip2.setText(getString(R.string.delete_tip2));
         }
@@ -90,7 +86,6 @@ public class DeleteWalletActivity extends BaseActivity implements CompoundButton
 
     @Override
     public void initData() {
-
     }
 
     @SingleClick
@@ -102,7 +97,7 @@ public class DeleteWalletActivity extends BaseActivity implements CompoundButton
                 break;
             case R.id.btn_forward:
                 if (!TextUtils.isEmpty(deleteWalletType)) {
-                    if (deleteWalletType.contains("watch") || deleteWalletType.contains("hw")) {
+                    if (deleteWalletType.contains("hw")) {
                         // 删除观察钱包
                         deleteWatchWallet();
                     } else {
@@ -125,13 +120,14 @@ public class DeleteWalletActivity extends BaseActivity implements CompoundButton
         }
         startActivity(new Intent(this, SoftPassActivity.class));
     }
+
     @Subscribe
     public void onGotPass(GotPassEvent event) {
         if ("deleteSingleWallet".equals(importHdword)) {
-           deleteSingleWallet(event.getPassword());
-       } else if (!Strings.isNullOrEmpty(deleteHdWalletName)) {
+            deleteSingleWallet(event.getPassword());
+        } else if (!Strings.isNullOrEmpty(deleteHdWalletName)) {
             deleteAllWallet(event.getPassword());
-       }
+        }
     }
 
     public void onDeleteSuccess(String walletName) {
@@ -140,6 +136,7 @@ public class DeleteWalletActivity extends BaseActivity implements CompoundButton
         EventBus.getDefault().post(new LoadOtherWalletEvent());
         finish();
     }
+
     private void deleteSingleWallet(String password) {
         String keyName = PreferencesManager.get(this, "Preferences", Constant.CURRENT_SELECTED_WALLET_NAME, "").toString();
         PyResponse<Void> response = PyEnv.deleteWallet(password, keyName);
@@ -165,13 +162,16 @@ public class DeleteWalletActivity extends BaseActivity implements CompoundButton
         PyResponse<Void> response = PyEnv.deleteWallet(password, deleteHdWalletName);
         String errors = response.getErrors();
         if (Strings.isNullOrEmpty(errors)) {
-            hd.forEach((name) -> {PreferencesManager.remove(this, Constant.WALLETS, name);});
+            hd.forEach((name) -> {
+                PreferencesManager.remove(this, Constant.WALLETS, name);
+            });
             onDeleteSuccess(deleteHdWalletName);
         } else {
 //            mToast(getString(R.string.delete_succse));
             mlToast(errors);
         }
     }
+
     private void deleteWatchWallet() {
         String keyName = PreferencesManager.get(this, "Preferences", Constant.CURRENT_SELECTED_WALLET_NAME, "").toString();
         try {

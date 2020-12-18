@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -46,6 +47,8 @@ import org.haobtc.onekey.onekeys.homepage.mindmenu.DeleteWalletActivity;
 import org.haobtc.onekey.ui.dialog.custom.CustomBackupDialog;
 import org.haobtc.onekey.ui.dialog.ExportTipsDialog;
 import org.haobtc.onekey.ui.dialog.custom.CustomReSetBottomPopup;
+import org.haobtc.onekey.ui.dialog.DeleteWatchWalletDialog;
+import org.haobtc.onekey.ui.dialog.ExportTipsDialog;
 import org.haobtc.onekey.utils.Daemon;
 
 import java.util.Objects;
@@ -90,7 +93,7 @@ public class HdWalletDetailActivity extends BaseActivity {
     private int currentOperation;
 
     @Override
-    public int getLayoutId () {
+    public int getLayoutId() {
         return R.layout.activity_hd_wallet_detail;
     }
 
@@ -130,7 +133,6 @@ public class HdWalletDetailActivity extends BaseActivity {
             linSingleShow.setVisibility(View.VISIBLE);
             textHdWallet.setText(getString(R.string.single_wallet));
         }
-
     }
 
     @Override
@@ -143,7 +145,6 @@ public class HdWalletDetailActivity extends BaseActivity {
         PyObject walletAddressShowUi = null;
         try {
             walletAddressShowUi = Daemon.commands.callAttr("get_wallet_address_show_UI");
-
         } catch (Exception e) {
             e.printStackTrace();
             return;
@@ -158,7 +159,6 @@ public class HdWalletDetailActivity extends BaseActivity {
             textAddr.setText(addr);
             textAddress.setText(String.format("%s…%s", front6, after6));
         }
-
     }
 
     @SingleClick
@@ -203,17 +203,16 @@ public class HdWalletDetailActivity extends BaseActivity {
                 startActivity(intent1);
                 break;
             default:
-                break;
         }
     }
 
-    private void showDeleteDialog () {
+    private void showDeleteDialog() {
         new XPopup.Builder(mContext)
                 .dismissOnTouchOutside(false)
                 .isDestroyOnDismiss(true)
                 .asCustom(new CustomReSetBottomPopup(mContext, new CustomReSetBottomPopup.onClick() {
                     @Override
-                    public void onConfirm () {
+                    public void onConfirm() {
                         if (!isBackup) {
                             showBackDialog();
                         } else {
@@ -222,13 +221,13 @@ public class HdWalletDetailActivity extends BaseActivity {
                 }, CustomReSetBottomPopup.deleteHdChildren)).show();
     }
 
-    private void showBackDialog () {
+    private void showBackDialog() {
         new XPopup.Builder(mContext)
                 .dismissOnTouchOutside(false)
                 .isDestroyOnDismiss(true)
                 .asCustom(new CustomBackupDialog(mContext, new CustomBackupDialog.onClick() {
                     @Override
-                    public void onBack () {
+                    public void onBack() {
                         finish();
                     }
                 })).show();
@@ -248,6 +247,7 @@ public class HdWalletDetailActivity extends BaseActivity {
         }
         new ExportTipsDialog().show(getSupportFragmentManager(), "export");
     }
+
     @Subscribe
     public void onGotPass(GotPassEvent event) {
         switch (currentOperation) {
@@ -280,6 +280,7 @@ public class HdWalletDetailActivity extends BaseActivity {
                 break;
         }
     }
+
     private void fixWalletNameDialog(Context context, @LayoutRes int resource) {
         //set see view
         View view = View.inflate(context, resource, null);
@@ -289,7 +290,6 @@ public class HdWalletDetailActivity extends BaseActivity {
         walletName.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
             }
 
             @Override
@@ -347,7 +347,6 @@ public class HdWalletDetailActivity extends BaseActivity {
         window.setWindowAnimations(R.style.AnimBottom);
         dialogBtoms.setCanceledOnTouchOutside(true);
         dialogBtoms.show();
-
     }
 
     @Override
@@ -363,5 +362,4 @@ public class HdWalletDetailActivity extends BaseActivity {
             finish();
         }
     }
-
 }

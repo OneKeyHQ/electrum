@@ -2,6 +2,7 @@ package org.haobtc.onekey.onekeys.homepage.mindmenu;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -87,6 +88,7 @@ public class WalletManageActivity extends BaseActivity {
         }
     }
     private void hdWalletIsBackup() {
+        Log.i("deleteHdWalletNamejxm", "hdWalletIsBackup: "+deleteHdWalletName);
         try {
             PyObject data = Daemon.commands.callAttr("get_backup_info", new Kwarg("name", deleteHdWalletName));
             boolean isBackup = data.toBoolean();

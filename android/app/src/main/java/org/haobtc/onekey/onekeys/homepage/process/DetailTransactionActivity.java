@@ -46,8 +46,6 @@ public class DetailTransactionActivity extends BaseActivity {
     TextView textBlockHigh;
     @BindView(R.id.text_tx_num)
     TextView textTxNum;
-    @BindView(R.id.lin_choose_fee)
-    LinearLayout linChooseFee;
     private String tx;
     private String hashDetail;
     private String txTime;
@@ -63,7 +61,6 @@ public class DetailTransactionActivity extends BaseActivity {
         tx = getIntent().getStringExtra("txDetail");
         hashDetail = getIntent().getStringExtra("hashDetail");
         txTime = getIntent().getStringExtra("txTime");
-
     }
 
     @Override
@@ -115,10 +112,15 @@ public class DetailTransactionActivity extends BaseActivity {
         TransactionInfoBean listBean = gson.fromJson(detailMsg, TransactionInfoBean.class);
         String amount = listBean.getAmount();
         if (listBean.getInputAddr() != null && listBean.getInputAddr().size() != 0) {
-            String inputAddr = listBean.getInputAddr().get(0).getAddr();
-            textSendAddress.setText(inputAddr);
+            String address = listBean.getInputAddr().get(0).getAddress();
+            String inputAddr = listBean.getInputAddr().get(0).getPrevoutHash();
+            if (!TextUtils.isEmpty(address)) {
+                textSendAddress.setText(address);
+            } else {
+                textSendAddress.setText(inputAddr);
+            }
         } else {
-            linChooseFee.setVisibility(View.GONE);
+            textSendAddress.setText("----------------");
         }
         if (listBean.getOutputAddr() != null && listBean.getOutputAddr().size() != 0) {
             String outputAddr = listBean.getOutputAddr().get(0).getAddr();
@@ -134,8 +136,6 @@ public class DetailTransactionActivity extends BaseActivity {
         } else {
             textTxAmount.setText(amount);
         }
-
-
         if (txStatus.contains("confirmations")) {
             String confirms = txStatus.substring(0, txStatus.indexOf(" "));
             textConfirmNum.setText(confirms);
@@ -185,5 +185,4 @@ public class DetailTransactionActivity extends BaseActivity {
                 break;
         }
     }
-
 }

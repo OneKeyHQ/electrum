@@ -3,6 +3,7 @@ package org.haobtc.onekey.ui.fragment;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -32,7 +33,6 @@ public class DeviceNameSettingFragment extends BaseFragment {
         mDeviceNameEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
             }
 
             @Override
@@ -51,19 +51,18 @@ public class DeviceNameSettingFragment extends BaseFragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (!TextUtils.isEmpty(s.toString())) {
+                String text = s.toString().replace(" ", "");
+                Log.i("textjxmjxm", "afterTextChanged: " + text.length());
+                if (!TextUtils.isEmpty(text)) {
+                    mNext.setEnabled(true);
                     if (s.length() > 7) {
                         Toast.makeText(getActivity(), getString(R.string.name_lenth_8), Toast.LENGTH_SHORT).show();
                     }
+                } else {
+                    mNext.setEnabled(false);
                 }
             }
         });
-    }
-
-    @OnTextChanged(value = R.id.device_name, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
-    public void afterTextChanged(Editable s) {
-        String name = s.toString();
-        mNext.setEnabled(!TextUtils.isEmpty(name));
     }
 
     @Override

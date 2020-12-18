@@ -266,9 +266,6 @@
     <string name="bee_table">Unit of currency</string>
     <string name="btc_table">Unit of Bitcoin</string>
     <string name="legal_table">Unit of fiat</string>
-    <string name="money_cny">CNY</string>
-    <string name="doller">USD</string>
-    <string name="korean_money">KRW</string>
     <string name="synchroniz_service">Syncing server</string>
     <string name="electrum_select">Select Electrum node</string>
     <string name="add_custom_node">Add customized node</string>
@@ -1207,7 +1204,6 @@
     <string name="backup_success_tip">It seems that everything is ready! \nWe have nothing to remind you of.\n In a word, remember to keep the mnemonics well. \nIf you lose them, no one can help you find them back.\n Have a good time in the world of blockchain ❤️。</string>
     <string name="mnemonic_wrong">Errors in mnemonics</string>
     <string name="begin_check">Recheck</string>
-    <string name="active_hardware">Active Hardware wallet</string>
     <string name="electrum_node">Electrum node</string>
     <string name="btc_wallet">BTC Wallet</string>
     <string name="eth_wallet">ETH Wallet</string>
@@ -1310,7 +1306,7 @@
     <string name="check_message">Check the information</string>
     <string name="set_name_hint">Please enter a name for easy memory</string>
     <string name="plublic_key">Public key address</string>
-    <string name="xpub_promote">「扩展公钥」，也被称为XPUB。是比特币标准(BIP32)的一部分，不包含任何私钥。 您可以将其导入其他观察钱包（Watch-Only），全面查看特定钱包中的所有交易、地址和余额，但无法花费其中的币。</string>
+    <string name="xpub_promote">「扩展公钥」，也被称为XPUB。是比特币标准(BIP32)的一部分，不包含任何私钥。 \n\n您在创建或加入共管（多重签名）钱包时，会用到下方显示的扩展公钥。</string>
     <string name="xpub">扩展公钥</string>
     <string name="select_mnemonic_size">选择助记词个数</string>
     <string name="_24">24</string>
@@ -1377,4 +1373,10 @@
     <string name="native_segwit_infor">Starting with BC1, it is becoming more popular and has the lowest transfer fees</string>
     <string name="normal_segwit">Legacy general address</string>
     <string name="normal_segwit_info">Start with 1, comprehensive popularity, transfer charges medium</string>
+    <string name="recovery_hardware_wallet">您曾使用硬件设备创建这些钱包，选择您要恢复的。</string>
+    <string name="multi_signature">多重签名扩展公钥</string>
+    <string name="receive_unbackup_tip">该钱包尚未备份。为了您的资金安全，请完成备份后再使用该地址发起转账。</string>
+    <string name="share_to">分享到：</string>
+    <string name="delete_watch_wallet_tip">此操作将会删除该钱包的所有数据，确定要继续此操作吗？</string>
+
 </resources>
