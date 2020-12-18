@@ -103,7 +103,7 @@ def base_unit_name_to_decimal_point(unit_name: str) -> int:
 
 class NotEnoughFunds(Exception):
     def __str__(self):
-        return BaseException(_("Insufficient funds"))
+        return _("Insufficient funds")
 
 
 class NoDynamicFeeEstimates(Exception):

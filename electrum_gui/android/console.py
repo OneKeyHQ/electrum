@@ -944,7 +944,7 @@ class AndroidCommands(commands.Commands):
                 'tx': str(self.tx)
             }
             return json.dumps(ret_data)
-        except Exception as e:
+        except BaseException as e:
             try:
                 self.remove_local_tx(tx_details.txid)
             except:
@@ -1214,11 +1214,15 @@ class AndroidCommands(commands.Commands):
         input_list = []
         for txin in tx.inputs():
             input_info = {}
-            input_info['prevout_hash'] = txin.prevout.txid.hex()
-            input_info['prevout_n'] = txin.prevout.out_idx
             addr = self.wallet.get_txin_address(txin)
             if addr is None:
-                addr = ''
+                import asyncio
+                try:
+                    addr = asyncio.run_coroutine_threadsafe(
+                        self.gettransaction(txin.prevout.txid.hex(), txin.prevout.out_idx),
+                        self.network.asyncio_loop).result()
+                except:
+                    addr = ''
             input_info['address'] = addr
             input_list.append(input_info)
         return input_list
@@ -1329,6 +1333,21 @@ class AndroidCommands(commands.Commands):
         all_data = [self.get_card(*item) for item in history]
         return json.dumps(all_data)
 
+    #get input address for receive tx
+    async def gettransaction(self, txid, n):
+        """Retrieve a transaction. """
+        tx = None
+        raw = await self.network.get_transaction(txid, timeout=3)
+        if raw:
+            tx = Transaction(raw)
+        else:
+            raise Exception("Unknown transaction")
+        if tx.txid() != txid:
+            raise Exception("Mismatching txid")
+        addr = tx._outputs[2].address
+        return addr
+
+
     def get_all_tx_list(self, search_type=None):
         '''
         Get the histroy list with the wallet that you select
@@ -1367,11 +1386,12 @@ class AndroidCommands(commands.Commands):
                 i['type'] = 'history'
                 data = self.get_tx_info_from_raw(info[3])
                 i['tx_status'] = _("Sending failure")
-                i['tx_hash'] = info[0]
                 i['date'] = util.format_time(info[4])
+                i['tx_hash'] = info[0]
                 i['is_mine'] = True
                 i['confirmations'] = 0
                 data = json.loads(data)
+                i['address'] = self.get_show_addr(data['output_addr'][0]['addr'])
                 amount = data['amount'].split(" ")[0]
                 fee = data['fee'].split(" ")[0]
                 fait = self.daemon.fx.format_amount_and_units(float(amount) + float(fee)) if self.daemon.fx else None
@@ -1381,10 +1401,14 @@ class AndroidCommands(commands.Commands):
             all_data.sort(reverse=True, key=lambda info: info['date'])
             return json.dumps(all_data)
 
+    def get_show_addr(self, addr):
+        return '%s...%s' % (addr[0:6], addr[-6:])
+
     def get_history_show_info(self, info, list_info):
         info['type'] = 'history'
         data = self.get_tx_info(info['tx_hash'])
         info['tx_status'] = json.loads(data)['tx_status']
+        info['address'] = self.get_show_addr(json.loads(data)['output_addr'][0]['addr'])
         list_info.append(info)
 
     def get_tx_info(self, tx_hash):
@@ -2196,7 +2220,7 @@ class AndroidCommands(commands.Commands):
             # self.check_pw_wallet = wallet
             wallet_type = 'eth-hd-standard-hw'
         self.update_local_wallet_info(self.get_unique_path(wallet), wallet_type)
-
+    
     ####################################################
     ## app wallet
     # def export_keystore(self, password):
