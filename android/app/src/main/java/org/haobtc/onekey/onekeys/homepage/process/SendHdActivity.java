@@ -64,7 +64,6 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import butterknife.OnFocusChange;
 import butterknife.OnTextChanged;
-import dr.android.utils.LogUtil;
 
 import static org.haobtc.onekey.constant.Constant.CURRENT_CURRENCY_GRAPHIC_SYMBOL;
 import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
@@ -286,7 +285,6 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                         feeDialog.setArguments(bundle);
                         feeDialog.show(getSupportFragmentManager(), "customize_fee");
                     }
-                    LogUtil.d("xiaopeng", "=====");
                 }
                 break;
             case R.id.linear_slow:
@@ -330,9 +328,12 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                 break;
             case R.id.paste_address:
                 editReceiverAddress.setText(ClipboardUtils.pasteText(this));
+                editReceiverAddress.requestFocus();
                 break;
             case R.id.btn_next:
                 send();
+                break;
+            default:
                 break;
         }
     }
@@ -601,6 +602,8 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                     }
                     tempCustomizeTransaction = temp;
                     return true;
+                default:
+                    return false;
             }
         } else {
             showToast(errors);

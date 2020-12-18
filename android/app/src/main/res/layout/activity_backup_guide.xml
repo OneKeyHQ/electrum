@@ -113,7 +113,8 @@
                     android:text="@string/ready_go"
                     android:textAllCaps="false"
                     android:textColor="@android:color/white"
-                    android:textSize="@dimen/sp_20" />
+                    android:textSize="@dimen/sp_20"
+                    android:layout_marginBottom="23dp"/>
 
                 <TextView
                     android:id="@+id/text_dont_copy"
@@ -121,7 +122,6 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginStart="34dp"
-                    android:layout_marginTop="23dp"
                     android:layout_marginEnd="34dp"
                     android:layout_marginBottom="15dp"
                     android:gravity="center"

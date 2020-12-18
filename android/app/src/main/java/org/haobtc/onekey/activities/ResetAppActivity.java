@@ -75,26 +75,7 @@ public class ResetAppActivity extends BaseActivity implements OnCheckedChangeLis
                             @Override
                             public void accept (Boolean granted) throws Exception {
                                 if (granted) {
-                                    new XPopup.Builder(ResetAppActivity.this)
-                                            .dismissOnTouchOutside(false)
-                                            .isDestroyOnDismiss(true)
-                                            .moveUpToKeyboard(false)
-                                            .asCustom(new CustomResetBottomPopup(ResetAppActivity.this, new CustomResetBottomPopup.onClick() {
-                                                @Override
-                                                public void onConfirm () {
-                                                    new Thread(new Runnable() {
-                                                        @Override
-                                                        public void run () {
-                                                            boolean isSuccess = FileUtils.resetApp(getFilesDir() + FileNameConstant.data_Path, getDataDir() + FileNameConstant.Sp_Path);
-                                                            Message message = new Message();
-                                                            message.what = Reset_Code;
-                                                            message.obj = isSuccess;
-                                                            mHandler.sendMessage(message);
-                                                        }
-                                                    }).start();
-                                                }
-                                            }))
-                                            .show();
+                                    showDialog();
                                 } else {
                                     Toast.makeText(mContext, R.string.photopersion, Toast.LENGTH_SHORT).show();
                                 }
@@ -104,6 +85,21 @@ public class ResetAppActivity extends BaseActivity implements OnCheckedChangeLis
             default:
                 break;
         }
+    }
+
+    private void showDialog () {
+        new XPopup.Builder(mContext)
+                .dismissOnTouchOutside(false)
+                .isDestroyOnDismiss(true)
+                .moveUpToKeyboard(false)
+                .asCustom(new CustomResetBottomPopup(ResetAppActivity.this, () -> new Thread(() -> {
+                    boolean isSuccess = FileUtils.resetApp(getFilesDir() + FileNameConstant.data_Path, getDataDir() + FileNameConstant.Sp_Path);
+                    Message message = new Message();
+                    message.what = Reset_Code;
+                    message.obj = isSuccess;
+                    mHandler.sendMessage(message);
+                }).start(), CustomResetBottomPopup.resetApp))
+                .show();
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")

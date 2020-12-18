@@ -112,9 +112,6 @@ public class LanguageSettingActivity extends BaseActivity {
     }
 
     private void changeLanguage (String language) {
-//        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-//            LanguageUtils.changeAppLanguage(MyApplication.getInstance(), language);
-//        }
         NavUtils.gotoMainActivityTask(LanguageSettingActivity.this);
     }
 

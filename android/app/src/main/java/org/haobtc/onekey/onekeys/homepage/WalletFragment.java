@@ -584,7 +584,6 @@ public class WalletFragment extends BaseFragment {
                                     intent2.putExtra(Constant.INTENT_ZXING_CONFIG, config);
                                     startActivityForResult(intent2, REQUEST_CODE);
                                 } else {
-                                    // TODO: 2020/12/11  引导去设置页面开启权限
                                     Toast.makeText(getActivity(), R.string.photopersion, Toast.LENGTH_SHORT).show();
                                 }
                             }

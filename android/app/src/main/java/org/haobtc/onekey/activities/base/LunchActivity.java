@@ -13,8 +13,6 @@ import org.haobtc.onekey.utils.NfcUtils;
 
 import java.util.Optional;
 
-import dr.android.utils.LogUtil;
-
 /**
  * @author liyan
  */
@@ -39,7 +37,6 @@ public class LunchActivity extends BaseActivity {
         String language = PreferencesManager.get(this, "Preferences", Constant.LANGUAGE, "").toString();
         judgeLanguage(language);
         boolean firstRun = (boolean) PreferencesManager.get(this, "Preferences", Constant.FIRST_RUN, false);
-        LogUtil.d("xiaopeng", "是否是第一次：" + firstRun);
         if (firstRun) {
             Intent intent = new Intent(LunchActivity.this, HomeOneKeyActivity.class);
             startActivity(intent);

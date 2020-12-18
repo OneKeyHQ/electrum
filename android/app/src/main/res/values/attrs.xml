@@ -72,5 +72,4 @@
         </attr>
         <attr name="shaderEnable" format="boolean"/>
     </declare-styleable>
-
 </resources>

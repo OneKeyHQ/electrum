@@ -367,7 +367,6 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
 
     private void createSingleWallet() {
         try {
-            LogUtil.d("xiaopeng", "输入的密码：" + editPass.getText().toString() + " 钱包名称：" + walletName);
             PyObject pyObject = Daemon.commands.callAttr("create", walletName, editPass.getText().toString());
             CreateWalletBean createWalletBean = new Gson().fromJson(pyObject.toString(), CreateWalletBean.class);
             EventBus.getDefault().post(new CreateSuccessEvent(createWalletBean.getWalletInfo().get(0).getName()));

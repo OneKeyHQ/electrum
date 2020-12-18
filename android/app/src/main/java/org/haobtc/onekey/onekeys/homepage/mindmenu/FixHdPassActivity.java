@@ -54,6 +54,8 @@ public class FixHdPassActivity extends BaseActivity {
             case R.id.reset_pass:
                 NavUtils.gotoResetAppActivity(this);
                 break;
+            default:
+                break;
         }
     }
 }

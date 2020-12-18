@@ -108,10 +108,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="@dimen/dp_10"
                 android:src="@drawable/right_arrow_small" />
-
         </RelativeLayout>
-
-
     </LinearLayout>
 
 </LinearLayout>

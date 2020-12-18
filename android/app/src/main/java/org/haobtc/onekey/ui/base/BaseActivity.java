@@ -20,11 +20,6 @@ import androidx.fragment.app.FragmentTransaction;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.LunchActivity;
-import org.haobtc.onekey.activities.base.MyApplication;
-import org.haobtc.onekey.constant.Constant;
-import org.haobtc.onekey.constant.FileNameConstant;
-import org.haobtc.onekey.manager.PreferencesManager;
-import org.haobtc.onekey.utils.LanguageUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -139,8 +134,6 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
             }
         });
     }
-
-
 
     /**
      * 禁止录屏和截图

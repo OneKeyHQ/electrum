@@ -15,8 +15,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
 
-import dr.android.utils.LogUtil;
-
 public class FileUtils {
     // 将字符串写入到文本文件中
     public static void writeTxtToFile (String strcontent, String filePath, String fileName) {
@@ -105,10 +103,9 @@ public class FileUtils {
      */
     public static boolean deleteSingleFile (String filePath$Name) {
         File file = new File(filePath$Name);
-// 如果文件路径所对应的文件存在，并且是一个文件，则直接删除
+        // 如果文件路径所对应的文件存在，并且是一个文件，则直接删除
         if (file.exists() && file.isFile()) {
             if (file.delete()) {
-                Log.e("--Method--", "Copy_Delete.deleteSingleFile: 删除单个文件" + filePath$Name + "成功！");
                 return true;
             } else {
                 return false;
@@ -122,7 +119,6 @@ public class FileUtils {
         File file = new File(targetPath);
         File[] files = file.listFiles();
         if (files == null) {
-            LogUtil.e("error", "空目录表明不需要删除");
             return false;
         }
         for (File file1 : files) {
@@ -147,27 +143,27 @@ public class FileUtils {
     }
 
     public static boolean deleteDirectory (String filePath) {
-// 如果dir不以文件分隔符结尾，自动添加文件分隔符
+        // 如果dir不以文件分隔符结尾，自动添加文件分隔符
         if (!filePath.endsWith(File.separator)) {
             filePath = filePath + File.separator;
         }
         File dirFile = new File(filePath);
-// 表示dir对应的文件不存在，或者不是一个目录
+        // 表示dir对应的文件不存在，或者不是一个目录
         if ((!dirFile.exists()) || (!dirFile.isDirectory())) {
             return false;
         }
         boolean flag = true;
-// 删除文件夹中的所有文件包括子目录
+        // 删除文件夹中的所有文件包括子目录
         File[] files = dirFile.listFiles();
         for (File file : files) {
-// 删除子文件
+            // 删除子文件
             if (file.isFile()) {
                 flag = deleteSingleFile(file.getAbsolutePath());
                 if (!flag) {
                     break;
                 }
             }
-// 删除子目录
+            // 删除子目录
             else if (file.isDirectory()) {
                 flag = deleteDirectory(file
                         .getAbsolutePath());
@@ -179,7 +175,7 @@ public class FileUtils {
         if (!flag) {
             return false;
         }
-// 删除当前目录
+        // 删除当前目录
         if (dirFile.delete()) {
             return true;
         } else {
@@ -196,9 +192,9 @@ public class FileUtils {
         if (!spSuccess) {
             return false;
         }
-        PreferencesManager.getSharedPreferences(MyApplication.getInstance(), FileNameConstant.myPreferences).edit().clear().commit();
-        PreferencesManager.getSharedPreferences(MyApplication.getInstance(), FileNameConstant.Device).edit().clear().commit();
-        PreferencesManager.getSharedPreferences(MyApplication.getInstance(), FileNameConstant.BLE_INFO).edit().clear().commit();
+        PreferencesManager.getSharedPreferences(MyApplication.getInstance(), FileNameConstant.myPreferences).edit().clear().apply();
+        PreferencesManager.getSharedPreferences(MyApplication.getInstance(), FileNameConstant.Device).edit().clear().apply();
+        PreferencesManager.getSharedPreferences(MyApplication.getInstance(), FileNameConstant.BLE_INFO).edit().clear().apply();
         return true;
     }
 }

@@ -1296,4 +1296,6 @@
     <string name="confirm_do_this">确认要执行此操作吗</string>
     <string name="reset_tip">这将立即删除您已在 OneKey 创建的所有数据，未备份的钱包将永远无法找回。确认要继续进行该操作吗？</string>
     <string name="confirm_reset">我已确认，立即重置</string>
+    <string name="delete_wallet_single">删除钱包</string>
+    <string name="delete_wallet_single_tip">此操作将会删除该钱包的所有数据，请在删除前确保该钱包已备份。</string>
 </resources>

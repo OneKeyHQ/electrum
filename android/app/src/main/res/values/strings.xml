@@ -1357,4 +1357,6 @@
     <string name="reset_tip">This will immediately delete all data that you have created in OneKey, and unbacked wallets will never be retrieved. Are you sure you want to proceed with the operation?</string>
     <string name="confirm_reset">I have confirmed, reset immediately</string>
     <string name="money_sign">≈ ¥ %s</string>
+    <string name="delete_wallet_single">To delete the wallet</string>
+    <string name="delete_wallet_single_tip">This action will delete all data for the wallet, please make sure the wallet is backed up before deleting.</string>
 </resources>

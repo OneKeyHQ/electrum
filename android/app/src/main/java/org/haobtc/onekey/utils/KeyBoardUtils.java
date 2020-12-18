@@ -24,8 +24,6 @@ public class KeyBoardUtils {
         InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
         boolean isOpen = imm.isActive();
         if (isOpen) {
-            // imm.toggleSoftInput(0,
-            // InputMethodManager.HIDE_NOT_ALWAYS);//没有显示则显示
             imm.hideSoftInputFromWindow(editText.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
         }
     }

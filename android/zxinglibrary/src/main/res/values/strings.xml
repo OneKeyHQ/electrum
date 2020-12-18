@@ -8,5 +8,6 @@
     <string name="close_flash">Turn off the flash</string>
     <string name="gallery">Gallery</string>
     <string name="scan_failed_tip">Scan image failed, please retry.</string>
+    <string name="request_galley">Access to albums was denied and cannot be executed</string>
 
 </resources>

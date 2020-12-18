@@ -6,11 +6,12 @@ import android.os.Message;
 import java.lang.ref.WeakReference;
 
 /**
- * Created by baojie on 2017/7/10.
- * Description: 防止handler溢出
- * Author:baojie
- * Date:2017/7/10
- * Time:22:45
+ * @Description: 作为线程间传递消息
+ * @Author: peter Qin
+ * @CreateDate: 2020/12/16$ 9:58 AM$
+ * @UpdateUser: 更新者：
+ * @UpdateDate: 2020/12/16$ 9:58 AM$
+ * @UpdateRemark: 更新说明：
  */
 
 public class NoLeakHandler extends Handler {

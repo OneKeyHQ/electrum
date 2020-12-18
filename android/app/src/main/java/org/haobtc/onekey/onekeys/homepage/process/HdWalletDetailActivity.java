@@ -15,6 +15,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,6 +23,7 @@ import androidx.annotation.LayoutRes;
 
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
+import com.lxj.xpopup.XPopup;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -29,8 +31,9 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.activities.sign.SignActivity;
-import org.haobtc.onekey.bean.CurrentAddressDetail;
 import org.haobtc.onekey.aop.SingleClick;
+import org.haobtc.onekey.bean.CurrentAddressDetail;
+import org.haobtc.onekey.constant.StringConstant;
 import org.haobtc.onekey.event.FixWalletNameEvent;
 import org.haobtc.onekey.event.SecondEvent;
 import org.haobtc.onekey.manager.PreferencesManager;
@@ -38,6 +41,8 @@ import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.dialog.SetHDWalletPassActivity;
 import org.haobtc.onekey.onekeys.dialog.SetLongPassActivity;
 import org.haobtc.onekey.onekeys.homepage.mindmenu.DeleteWalletActivity;
+import org.haobtc.onekey.ui.dialog.custom.CustomBackupDialog;
+import org.haobtc.onekey.ui.dialog.custom.CustomResetBottomPopup;
 import org.haobtc.onekey.utils.Daemon;
 
 import java.util.Objects;
@@ -73,13 +78,17 @@ public class HdWalletDetailActivity extends BaseActivity {
     TextView textAddr;
     @BindView(R.id.text_content_type)
     TextView textContentType;
+    @BindView(R.id.rel_delete_wallet)
+    RelativeLayout deleteLayout;
+    @BindView(R.id.delete_tv)
+    TextView deleteTV;
     private String type;
     private boolean isBackup;
     private SharedPreferences preferences;
     private String showWalletType;
 
     @Override
-    public int getLayoutId() {
+    public int getLayoutId () {
         return R.layout.activity_hd_wallet_detail;
     }
 
@@ -96,12 +105,13 @@ public class HdWalletDetailActivity extends BaseActivity {
         String hdWalletName = getIntent().getStringExtra("hdWalletName");
         isBackup = getIntent().getBooleanExtra("isBackup", false);
         textWalletName.setText(hdWalletName);
-        if ("btc-hd-standard".equals(showWalletType) || "btc-derived-standard".equals(showWalletType)) {
+        if (StringConstant.Btc_HD_Standard.equals(showWalletType) || StringConstant.Btc_Derived_Standard.equals(showWalletType)) {
             textHdWallet.setText(getString(R.string.hd_wallet));
             //HD wallet detail and derive wallet
             linHdWalletShow.setVisibility(View.VISIBLE);
             linSingleShow.setVisibility(View.GONE);
-        } else if (showWalletType.contains("hw")) {
+            deleteTV.setText(R.string.delete_wallet_single);
+        } else if (showWalletType.contains(StringConstant.HW)) {
             textHdWallet.setText(getString(R.string.multi_sig));
             linSingleShow.setVisibility(View.VISIBLE);
             linSingle.setVisibility(View.GONE);
@@ -109,11 +119,10 @@ public class HdWalletDetailActivity extends BaseActivity {
             type = showWalletType.substring(showWalletType.indexOf("hw-") + 3);
             textSign.setText(String.format("%s %s", type, getString(R.string.sign_num)));
             textContentType.setText(getString(R.string.sign_num_tip));
-
-        } else if (showWalletType.contains("watch")) {
+        } else if (showWalletType.contains(StringConstant.Watch)) {
             textHdWallet.setText(getString(R.string.watch_wallet));
             linSingle.setVisibility(View.GONE);
-        } else if ("btc-standard".equals(showWalletType) || "btc-private-standard".equals(showWalletType)) {
+        } else if (StringConstant.Btc_Standard.equals(showWalletType) || StringConstant.Btc_Private_Standard.equals(showWalletType)) {
             //Independent Wallet
             linHdWalletShow.setVisibility(View.GONE);
             linSingleShow.setVisibility(View.VISIBLE);
@@ -151,7 +160,8 @@ public class HdWalletDetailActivity extends BaseActivity {
     }
 
     @SingleClick
-    @OnClick({R.id.img_back, R.id.img_copy, R.id.rel_export_word, R.id.rel_export_private_key, R.id.rel_export_keystore, R.id.rel_delete_wallet, R.id.text_wallet_name, R.id.text_sign})
+    @OnClick({R.id.img_back, R.id.img_copy, R.id.rel_export_word, R.id.rel_export_private_key,
+            R.id.rel_export_keystore, R.id.rel_delete_wallet, R.id.text_wallet_name, R.id.text_sign})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
@@ -178,23 +188,55 @@ public class HdWalletDetailActivity extends BaseActivity {
 //                exportTipDialog(HdWalletDetailActivity.this, R.layout.export_mnemonic_tip,"exportPrivateKey");
                 break;
             case R.id.rel_delete_wallet:
-                Intent intent = new Intent(HdWalletDetailActivity.this, DeleteWalletActivity.class);
-                intent.putExtra("importHdword", "deleteSingleWallet");
-                intent.putExtra("walletName", textWalletName.getText().toString());
-                intent.putExtra("isBackup", isBackup);
-                intent.putExtra("delete_wallet_type", showWalletType);
-                startActivity(intent);
+                if (StringConstant.Btc_HD_Standard.equals(showWalletType) || StringConstant.Btc_Derived_Standard.equals(showWalletType)) {
+                    showDeleteDialog();
+                } else {
+                    Intent intent = new Intent(HdWalletDetailActivity.this, DeleteWalletActivity.class);
+                    intent.putExtra("importHdword", "deleteSingleWallet");
+                    intent.putExtra("walletName", textWalletName.getText().toString());
+                    intent.putExtra("isBackup", isBackup);
+                    intent.putExtra("delete_wallet_type", showWalletType);
+                    startActivity(intent);
+                }
                 break;
             case R.id.text_sign:
                 Intent intent1 = new Intent(HdWalletDetailActivity.this, SignActivity.class);
                 intent1.putExtra("personceType", type);
                 startActivity(intent1);
                 break;
-
+            default:
+                break;
         }
     }
 
-    private void exportTipDialog(Context context, @LayoutRes int resource, String export) {
+    private void showDeleteDialog () {
+        new XPopup.Builder(mContext)
+                .dismissOnTouchOutside(false)
+                .isDestroyOnDismiss(true)
+                .asCustom(new CustomResetBottomPopup(mContext, new CustomResetBottomPopup.onClick() {
+                    @Override
+                    public void onConfirm () {
+                        if (!isBackup) {
+                            showBackDialog();
+                        } else {
+                        }
+                    }
+                }, CustomResetBottomPopup.deleteHdChildren)).show();
+    }
+
+    private void showBackDialog () {
+        new XPopup.Builder(mContext)
+                .dismissOnTouchOutside(false)
+                .isDestroyOnDismiss(true)
+                .asCustom(new CustomBackupDialog(mContext, new CustomBackupDialog.onClick() {
+                    @Override
+                    public void onBack () {
+                        finish();
+                    }
+                })).show();
+    }
+
+    private void exportTipDialog (Context context, @LayoutRes int resource, String export) {
         //set see view
         View view = View.inflate(context, resource, null);
         Dialog dialogBtoms = new Dialog(context, R.style.dialog);

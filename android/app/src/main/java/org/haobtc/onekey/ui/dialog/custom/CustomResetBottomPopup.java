@@ -1,7 +1,7 @@
 package org.haobtc.onekey.ui.dialog.custom;
 
 import android.content.Context;
-import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
@@ -11,7 +11,7 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.ui.widget.SuperTextView;
 
 /**
- * @Description: java类作用描述
+ * @Description:  reset app dialog style
  * @Author: peter Qin
  * @CreateDate: 2020/12/16$ 5:55 PM$
  * @UpdateUser: 更新者：
@@ -19,33 +19,45 @@ import org.haobtc.onekey.ui.widget.SuperTextView;
  * @UpdateRemark: 更新说明：
  */
 public class CustomResetBottomPopup extends BottomPopupView {
-
     private onClick onClick;
     private SuperTextView confirmBtn, cancelBtn;
+    private TextView title, content;
+    private int mode;
+    public static final int resetApp = 0;
+    public static final int deleteHdChildren = 1;
 
-    public CustomResetBottomPopup(@NonNull Context context, onClick onClick) {
+    public CustomResetBottomPopup (@NonNull Context context, onClick onClick, int mode) {
         super(context);
         this.onClick = onClick;
+        this.mode = mode;
     }
 
     @Override
-    protected void onCreate() {
+    protected void onCreate () {
         super.onCreate();
         confirmBtn = findViewById(R.id.confirm_button);
         cancelBtn = findViewById(R.id.cancel_button);
-        confirmBtn.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onClick.onConfirm();
-                dismiss();
-            }
+        title = findViewById(R.id.title);
+        content = findViewById(R.id.content);
+        switch (mode) {
+            case resetApp:
+                title.setText(R.string.confirm_do_this);
+                content.setText(R.string.reset_tip);
+                confirmBtn.setText(R.string.confirm_reset);
+                break;
+            case deleteHdChildren:
+                title.setText(R.string.delete_wallet_single);
+                content.setText(R.string.delete_wallet_single_tip);
+                confirmBtn.setText(R.string.delete_thiswallet);
+                break;
+            default:
+                break;
+        }
+        confirmBtn.setOnClickListener(v -> {
+            onClick.onConfirm();
+            dismiss();
         });
-        cancelBtn.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dismiss();
-            }
-        });
+        cancelBtn.setOnClickListener(v -> dismiss());
     }
 
     @Override

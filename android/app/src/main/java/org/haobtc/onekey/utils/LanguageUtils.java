@@ -15,7 +15,7 @@ import org.haobtc.onekey.constant.Constant;
 import java.util.Locale;
 
 /**
- * @Description: java类作用描述
+ * @Description: Language Utils
  * @Author: peter Qin
  * @CreateDate: 2020/12/16$ 2:39 PM$
  * @UpdateUser: 更新者：
