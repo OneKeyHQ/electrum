@@ -84,6 +84,9 @@ public final class CaptureActivityHandler extends Handler {
                 String text = ((Result) message.obj).getText();
                 try {
                     PsbtData data = PsbtData.objectFromData(text);
+                    if (data.getTotal() == 0 || "".equals(data.getCheckSum())) {
+                       throw new JsonSyntaxException("bad format");
+                    }
                     if (datas == null) {
                         datas = new PsbtData[data.getTotal()];
                     }

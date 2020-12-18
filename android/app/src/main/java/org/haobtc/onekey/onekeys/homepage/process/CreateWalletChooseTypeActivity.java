@@ -1,24 +1,34 @@
 package org.haobtc.onekey.onekeys.homepage.process;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.RelativeLayout;
 
+import com.google.common.base.Strings;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.aop.SingleClick;
+import org.haobtc.onekey.bean.PyResponse;
+import org.haobtc.onekey.event.GotPassEvent;
+import org.haobtc.onekey.event.NameSettedEvent;
+import org.haobtc.onekey.manager.PyEnv;
+import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
+import org.haobtc.onekey.ui.activity.SoftPassActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
-
 public class CreateWalletChooseTypeActivity extends BaseActivity {
 
     @BindView(R.id.rel_derive_hd)
     RelativeLayout relDeriveHd;
+    private String name;
+    private int type;
 
     @Override
     public int getLayoutId() {
@@ -28,8 +38,9 @@ public class CreateWalletChooseTypeActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
-        int ifHaveHd = getIntent().getIntExtra("ifHaveHd", 0);
-        if (ifHaveHd == 0) {
+        EventBus.getDefault().register(this);
+        boolean ifHaveHd = getIntent().getBooleanExtra("ifHaveHd", false);
+        if (!ifHaveHd) {
             relDeriveHd.setVisibility(View.GONE);
         }
     }
@@ -47,15 +58,52 @@ public class CreateWalletChooseTypeActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.rel_derive_hd:
-                Intent intent = new Intent(CreateWalletChooseTypeActivity.this, CreateDeriveChooseTypeActivity.class);
-                intent.putExtra(CURRENT_SELECTED_WALLET_TYPE, "derive");
-                startActivity(intent);
-                break;
             case R.id.rel_single_wallet:
-                Intent intent1 = new Intent(CreateWalletChooseTypeActivity.this, CreateDeriveChooseTypeActivity.class);
-                intent1.putExtra(CURRENT_SELECTED_WALLET_TYPE, "single");
-                startActivity(intent1);
+                dealCreate(view.getId());
                 break;
         }
+    }
+
+    private void dealCreate(int id) {
+        switch (id) {
+            case R.id.rel_derive_hd:
+                type = R.id.rel_derive_hd;
+                break;
+            case R.id.rel_single_wallet:
+                type = R.id.rel_single_wallet;
+                break;
+        }
+        Intent intent = new Intent(CreateWalletChooseTypeActivity.this, CreateDeriveChooseTypeActivity.class);
+        startActivity(intent);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onGotPass(GotPassEvent event) {
+       switch (type) {
+           case R.id.rel_single_wallet:
+               PyEnv.createWallet(this, name, event.getPassword(), null, null);
+               finish();
+               break;
+           case R.id.rel_derive_hd:
+               PyResponse<Void> response = PyEnv.createDerivedWallet(name, event.getPassword(), "btc");
+               String error = response.getErrors();
+               if (Strings.isNullOrEmpty(error)) {
+                   mIntent(HomeOneKeyActivity.class);
+                   finish();
+               } else {
+                   mToast(error);
+               }
+               break;
+       }
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onGotName(NameSettedEvent event) {
+        name = event.getName();
+        startActivity(new Intent(this, SoftPassActivity.class));
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 }

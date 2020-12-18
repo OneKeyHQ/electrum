@@ -36,21 +36,23 @@ import org.haobtc.onekey.event.BackupEvent;
 import org.haobtc.onekey.event.BleConnectedEvent;
 import org.haobtc.onekey.event.BleConnectionEx;
 import org.haobtc.onekey.event.FixWalletNameEvent;
+import org.haobtc.onekey.event.GotPassEvent;
 import org.haobtc.onekey.event.LoadOtherWalletEvent;
+import org.haobtc.onekey.event.RefreshEvent;
 import org.haobtc.onekey.event.SecondEvent;
 import org.haobtc.onekey.manager.BleManager;
 import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
+import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
 import org.haobtc.onekey.onekeys.backup.BackupGuideActivity;
 import org.haobtc.onekey.onekeys.dialog.RecoverHdWalletActivity;
-import org.haobtc.onekey.onekeys.dialog.SetHDWalletPassActivity;
-import org.haobtc.onekey.onekeys.dialog.SetLongPassActivity;
 import org.haobtc.onekey.onekeys.homepage.process.DetailTransactionActivity;
 import org.haobtc.onekey.onekeys.homepage.process.HdWalletDetailActivity;
 import org.haobtc.onekey.onekeys.homepage.process.ReceiveHDActivity;
 import org.haobtc.onekey.onekeys.homepage.process.SendHdActivity;
 import org.haobtc.onekey.onekeys.homepage.process.TransactionDetailWalletActivity;
 import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
+import org.haobtc.onekey.ui.activity.SoftPassActivity;
 import org.haobtc.onekey.ui.base.BaseFragment;
 import org.haobtc.onekey.ui.dialog.BackupDialog;
 import org.haobtc.onekey.utils.Daemon;
@@ -64,7 +66,6 @@ import java.util.Optional;
 import butterknife.BindView;
 import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
-import dr.android.utils.LogUtil;
 import io.reactivex.functions.Consumer;
 
 import static android.app.Activity.RESULT_OK;
@@ -264,8 +265,6 @@ public class WalletFragment extends BaseFragment {
             textHard.setVisibility(View.VISIBLE);
             linearSign.setVisibility(View.VISIBLE);
             String deviceId = localWalletInfo.getDeviceId();
-            // 去除deviceId上的双引号
-            deviceId = deviceId.substring(1, deviceId.length() - 1);
             String deviceInfo = PreferencesManager.get(getContext(), org.haobtc.onekey.constant.Constant.DEVICES, deviceId, "").toString();
             if (!Strings.isNullOrEmpty(deviceInfo)) {
                 HardwareFeatures info = HardwareFeatures.objectFromData(deviceInfo);
@@ -591,13 +590,9 @@ public class WalletFragment extends BaseFragment {
                 break;
             case R.id.img_Add:
             case R.id.rel_create_hd:
-                if (SOFT_HD_PASS_TYPE_SHORT.equals(preferences.getString(SOFT_HD_PASS_TYPE, SOFT_HD_PASS_TYPE_SHORT))) {
-                    Intent intent0 = new Intent(getActivity(), SetHDWalletPassActivity.class);
-                    startActivity(intent0);
-                } else {
-                    Intent intent0 = new Intent(getActivity(), SetLongPassActivity.class);
-                    startActivity(intent0);
-                }
+                Intent intent0 = new Intent(getActivity(), SoftPassActivity.class);
+                intent0.putExtra(org.haobtc.onekey.constant.Constant.OPERATE_TYPE, SoftPassActivity.SET);
+                startActivity(intent0);
                 break;
             case R.id.rel_recovery_hd:
                 Intent intent = new Intent(getActivity(), RecoverHdWalletActivity.class);
@@ -639,7 +634,22 @@ public class WalletFragment extends BaseFragment {
                 break;
         }
     }
+    private boolean shouldResponseEvent() {
+        return (linearNoWallet.getVisibility() == View.VISIBLE);
 
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onGotPass(GotPassEvent event) {
+        if (shouldResponseEvent()) {
+            PyEnv.createLocalHd(event.getPassword(), null);
+        }
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onRefresh(RefreshEvent refreshEvent) {
+        if (shouldResponseEvent()) {
+            startActivity(new Intent(getActivity(), HomeOneKeyActivity.class));
+        }
+    }
     /**
      * 注册EventBus
      */

@@ -1,45 +1,42 @@
 package org.haobtc.onekey.onekeys.homepage;
 
 import android.annotation.SuppressLint;
-import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import androidx.annotation.LayoutRes;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.adapter.WalletListAdapter;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.LocalWalletInfo;
 import org.haobtc.onekey.constant.Constant;
+import org.haobtc.onekey.event.GotPassEvent;
 import org.haobtc.onekey.event.LoadWalletlistEvent;
+import org.haobtc.onekey.event.RefreshEvent;
 import org.haobtc.onekey.manager.PreferencesManager;
+import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
 import org.haobtc.onekey.onekeys.dialog.RecoverHdWalletActivity;
-import org.haobtc.onekey.onekeys.dialog.SetHDWalletPassActivity;
-import org.haobtc.onekey.onekeys.dialog.SetLongPassActivity;
-import org.haobtc.onekey.onekeys.dialog.recovery.ImprotSingleActivity;
 import org.haobtc.onekey.onekeys.homepage.mindmenu.HDWalletActivity;
 import org.haobtc.onekey.onekeys.homepage.process.CreateDeriveChooseTypeActivity;
 import org.haobtc.onekey.onekeys.homepage.process.CreateWalletChooseTypeActivity;
 import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
+import org.haobtc.onekey.ui.activity.SoftPassActivity;
+import org.haobtc.onekey.ui.dialog.CreateWalletWaySelectorDialog;
+import org.haobtc.onekey.ui.dialog.HdWalletIntroductionDialog;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -49,8 +46,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
-import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE;
-import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE_SHORT;
 
 /**
  * @author jinxiaomin
@@ -126,6 +121,7 @@ public class WalletListActivity extends BaseActivity {
             case R.id.recl_wallet_detail:
                 Intent intent4 = new Intent(WalletListActivity.this, HDWalletActivity.class);
                 startActivity(intent4);
+                finish();
                 break;
             case R.id.lin_pair_wallet:
                 Intent intent = new Intent(this, SearchDevicesActivity.class);
@@ -134,7 +130,7 @@ public class WalletListActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.lin_add_wallet:
-                createWalletChooseDialog(WalletListActivity.this, R.layout.add_wallet);
+                new CreateWalletWaySelectorDialog().show(getSupportFragmentManager(), "");
                 break;
             case R.id.view_all:
                 textWalletType.setText(getString(R.string.hd_wallet));
@@ -239,7 +235,7 @@ public class WalletListActivity extends BaseActivity {
                 break;
             case R.id.img_add:
                 Intent intent00 = new Intent(this, CreateWalletChooseTypeActivity.class);
-                intent00.putExtra("ifHaveHd", hdWalletList.size());
+                intent00.putExtra("ifHaveHd", !hdWalletList.isEmpty());
                 startActivity(intent00);
                 break;
             case R.id.recl_add_wallet:
@@ -248,16 +244,10 @@ public class WalletListActivity extends BaseActivity {
                 startActivity(intent1);
                 break;
             case R.id.img_w:
-                whatIsHd(WalletListActivity.this, R.layout.what_is_hd);
+                new HdWalletIntroductionDialog().show(getSupportFragmentManager(), "hd_introduction");
                 break;
             case R.id.recl_add_hd_wallet:
-                if (SOFT_HD_PASS_TYPE_SHORT.equals(preferences.getString(SOFT_HD_PASS_TYPE, SOFT_HD_PASS_TYPE_SHORT))) {
-                    Intent intent0 = new Intent(this, SetHDWalletPassActivity.class);
-                    startActivity(intent0);
-                } else {
-                    Intent intent0 = new Intent(this, SetLongPassActivity.class);
-                    startActivity(intent0);
-                }
+                startActivity(new Intent(this, SoftPassActivity.class));
                 break;
             case R.id.recl_recovery_wallet:
                 Intent intent2 = new Intent(WalletListActivity.this, RecoverHdWalletActivity.class);
@@ -266,26 +256,18 @@ public class WalletListActivity extends BaseActivity {
         }
     }
 
-    private void whatIsHd(Context context, @LayoutRes int resource) {
-        //set see view
-        View view = View.inflate(context, resource, null);
-        Dialog dialogBtoms = new Dialog(context, R.style.dialog);
-        view.findViewById(R.id.btn_next).setOnClickListener(v -> {
-            dialogBtoms.dismiss();
-        });
-        view.findViewById(R.id.img_cancel).setOnClickListener(v -> {
-            dialogBtoms.dismiss();
-        });
-        dialogBtoms.setContentView(view);
-        Window window = dialogBtoms.getWindow();
-        //set pop_up size
-        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-        //set locate
-        window.setGravity(Gravity.BOTTOM);
-        //set animal
-        window.setWindowAnimations(R.style.AnimBottom);
-        dialogBtoms.setCanceledOnTouchOutside(true);
-        dialogBtoms.show();
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onGotPass(GotPassEvent event) {
+        if (hdWalletList.isEmpty()) {
+            PyEnv.createLocalHd(event.getPassword(), null);
+        }
+    }
+    @Subscribe
+    public void onRefresh(RefreshEvent event) {
+        if (hdWalletList.isEmpty()) {
+            startActivity(new Intent(this, HomeOneKeyActivity.class));
+            finish();
+        }
     }
 
     private void getHomeWalletList() {
@@ -315,7 +297,7 @@ public class WalletListActivity extends BaseActivity {
                 }
             });
             textWalletNum.setText(String.valueOf(hdWalletList.size()));
-            if (hdWalletList == null || hdWalletList.size() == 0) {
+            if (hdWalletList.isEmpty()) {
                 reclWalletDetail.setVisibility(View.GONE);
                 reclAddWallet.setVisibility(View.GONE);
                 reclAddHdWallet.setVisibility(View.VISIBLE);
@@ -336,36 +318,6 @@ public class WalletListActivity extends BaseActivity {
                 });
             }
         }
-    }
-
-    private void createWalletChooseDialog(Context context, @LayoutRes int resource) {
-        //set see view
-        View view = View.inflate(context, resource, null);
-        Dialog dialogBtoms = new Dialog(context, R.style.dialog);
-        view.findViewById(R.id.btn_next).setOnClickListener(v -> {
-            Intent intent = new Intent(context, CreateWalletChooseTypeActivity.class);
-            intent.putExtra("ifHaveHd", hdWalletList.size());
-            startActivity(intent);
-            dialogBtoms.dismiss();
-        });
-        view.findViewById(R.id.btn_import).setOnClickListener(v -> {
-            Intent intent = new Intent(context, ImprotSingleActivity.class);
-            startActivity(intent);
-            dialogBtoms.dismiss();
-        });
-        view.findViewById(R.id.img_cancel).setOnClickListener(v -> {
-            dialogBtoms.dismiss();
-        });
-        dialogBtoms.setContentView(view);
-        Window window = dialogBtoms.getWindow();
-        //set pop_up size
-        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-        //set locate
-        window.setGravity(Gravity.BOTTOM);
-        //set animal
-        window.setWindowAnimations(R.style.AnimBottom);
-        dialogBtoms.setCanceledOnTouchOutside(true);
-        dialogBtoms.show();
     }
 
     @Subscribe

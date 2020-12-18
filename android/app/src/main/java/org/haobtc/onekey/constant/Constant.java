@@ -305,6 +305,7 @@ public final class Constant {
     public static final String COIN_TYPE_ETH = "ETH";
 
     public static final String COIN_TYPE_EOS = "EOS";
+    public static final String COIN_TYPE = "coin_type";
     public static final String EXTEND_PUBLIC_KEY = "xpub";
 
     /**

@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.haobtc.onekey.R;
+import org.haobtc.onekey.bean.BalanceInfo;
 import org.haobtc.onekey.event.WalletAddressEvent;
 
 import java.util.ArrayList;
@@ -23,10 +24,10 @@ import java.util.Map;
  */
 public class RecoveryWalletAdapter extends RecyclerView.Adapter<RecoveryWalletAdapter.myViewHolder> {
     private Context context;
-    private ArrayList<WalletAddressEvent> walletList;
+    private ArrayList<BalanceInfo> walletList;
     private Map<Integer, Boolean> checkStatus;
 
-    public RecoveryWalletAdapter(Context context, ArrayList<WalletAddressEvent> walletList) {
+    public RecoveryWalletAdapter(Context context, ArrayList<BalanceInfo> walletList) {
         this.context = context;
         this.walletList = walletList;
         initData();
@@ -35,7 +36,7 @@ public class RecoveryWalletAdapter extends RecyclerView.Adapter<RecoveryWalletAd
     private void initData() {
         checkStatus = new HashMap<>();
         for (int i = 0; i < walletList.size(); i++) {
-            checkStatus.put(i, false);//
+            checkStatus.put(i, true);//
         }
     }
 
@@ -65,7 +66,7 @@ public class RecoveryWalletAdapter extends RecyclerView.Adapter<RecoveryWalletAd
 
     @Override
     public void onBindViewHolder(@NonNull myViewHolder holder, int position) {
-        holder.tetWalletName.setText(walletList.get(position).getAddress());
+        holder.tetWalletName.setText(walletList.get(position).getLabel());
         String strBalance = walletList.get(position).getBalance();
         if (strBalance.contains("(")) {
             String balance = strBalance.substring(0, strBalance.indexOf("("));

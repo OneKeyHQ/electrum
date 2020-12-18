@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.Display;
@@ -32,6 +33,7 @@ import org.haobtc.onekey.event.BleConnectionEx;
 import org.haobtc.onekey.event.BleScanStopEvent;
 import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.event.NotifySuccessfulEvent;
+import org.haobtc.onekey.ui.base.IBaseView;
 import org.haobtc.onekey.utils.CommonUtils;
 
 import java.util.Objects;
@@ -43,6 +45,7 @@ import cn.com.heaton.blelibrary.ble.callback.BleNotiftCallback;
 import cn.com.heaton.blelibrary.ble.callback.BleScanCallback;
 import cn.com.heaton.blelibrary.ble.callback.BleWriteCallback;
 import cn.com.heaton.blelibrary.ble.model.BleDevice;
+import io.reactivex.disposables.Disposable;
 
 import static android.content.Context.LOCATION_SERVICE;
 
@@ -110,23 +113,29 @@ public final class BleManager {
 
         RxPermissions permissions = new RxPermissions(fragmentActivity);
         // 收不到回调，要手动监听
-        permissions.requestEach(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+        Disposable subscribe = permissions.requestEach(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
                 .subscribe(
                         permission -> {
                             if (permission.granted) {
-                                    refreshBleDeviceList();
+                                refreshBleDeviceList();
+                            } else if (permission.shouldShowRequestPermissionRationale) {
+                                // 用户拒绝了该权限，没有选中『不再询问』（Never ask again）,那么下次再次启动时，还会提示请求权限的对话框
+                                if (fragmentActivity != null) {
+                                    ((IBaseView) fragmentActivity).showToast(R.string.blurtooth_need_permission);
+                                    fragmentActivity.finish();
+                                }
+                            } else {
+                                ((IBaseView) fragmentActivity).showToast(R.string.blurtooth_need_permission);
+                                Intent intent = new Intent("android.settings.APPLICATION_DETAILS_SETTINGS");
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                intent.setData(Uri.fromParts("package", MyApplication.getInstance().getPackageName(), null));
+                                if (intent.resolveActivity(MyApplication.getInstance().getPackageManager()) != null) {
+                                    fragmentActivity.startActivity(intent);
+                                    fragmentActivity.finish();
+                                }
                             }
-//                            else if (permission.shouldShowRequestPermissionRationale) {
-//                                // 用户拒绝了该权限，没有选中『不再询问』（Never ask again）,那么下次再次启动时，还会提示请求权限的对话框
-//                                if (fragmentActivity != null) {
-//                                    ((IBaseView)fragmentActivity).showToast(R.string.blurtooth_need_permission);
-//                                }
-//                            } else {
-//                                //todo: 用户拒绝了该权限，并且选中『不再询问』，提醒用户手动打开权限
-//
-//                            }
                         }
-                ).dispose();
+                );
     }
 
     /**

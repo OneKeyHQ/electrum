@@ -916,17 +916,17 @@
     <string name="encryption">End to end encryption</string>
     <string name="encryption_tip">We use the industry\'s advanced encryption technology to store information locally. Only you can decrypt information, we will not and cannot view, use or sell any of your data.</string>
     <string name="only_you">Only you can unlock your wallet</string>
-    <string name="input_onekey_pass_tip">It is used to encrypt your wallet, easy to remember and suitable for most people.</string>
+    <string name="short_pass_tip">It is used to encrypt your wallet, easy to remember and suitable for most people.</string>
     <string name="use_long_pass">Use more complex and more secure long passwords</string>
     <string name="input_pass">Please enter your password again</string>
     <string name="dont_tell">Don\'t disclose the password to anyone else</string>
     <string name="test_long_tip">We don\'t store any of your information, so once you forget your long password, we can\'t help you retrieve it.</string>
     <string name="input_new_pass">Enter new password</string>
     <string name="use_short_pass">Use short password</string>
-    <string name="short_pass_tip">Complex password security is relatively high, after setting, you should remember that it is best not to set the same password as your other websites.</string>
+    <string name="long_pass_tip">Complex password security is relatively high, after setting, you should remember that it is best not to set the same password as your other websites.</string>
     <string name="set_you_pass">Set master password</string>
     <string name="input_you_pass">Enter your password again</string>
-    <string name="long_pass_tip">We don\'t store any of your information, so once you forget your password, we can\'t help you retrieve it.</string>
+    <string name="pass_warning">We don\'t store any of your information, so once you forget your password, we can\'t help you retrieve it.</string>
     <string name="my_amount">My assets</string>
     <string name="assets">assets</string>
     <string name="search">search</string>
@@ -1078,7 +1078,7 @@
     <string name="fix_pass_tip2">"It is used for verification in the steps requiring security verification."</string>
     <string name="fix_pass">Change Password</string>
     <string name="input_your_former_pass">Enter your original password</string>
-    <string name="fix_former_tip">After changing the password, your original biometric identification (face, fingerprint) will be invalid and needs to be reset.</string>
+    <string name="change_pin_warning">After changing the password, your original biometric identification (face, fingerprint) will be invalid and needs to be reset.</string>
     <string name="set_new_pass">Set your new password</string>
     <string name="price_quotation">Price quotation (only affects the display of BTC and eth prices)</string>
     <string name="blockchain_choose">Block browser (BTC)</string>
@@ -1359,4 +1359,10 @@
     <string name="money_sign">≈ ¥ %s</string>
     <string name="delete_wallet_single">To delete the wallet</string>
     <string name="delete_wallet_single_tip">This action will delete all data for the wallet, please make sure the wallet is backed up before deleting.</string>
+    <string name="has_not_local_wallet_need_pass">您本地还没有创建过hd钱包和独立钱包！！！</string>
+    <string name="input_pass_origin">"输入原密码 "</string>
+    <string name="pin_origin_invalid">密码错误，请重新输入</string>
+    <string name="input_pass_again">"请再次输入 "</string>
+    <string name="twice_input_is_not_identical">两次输入不一直</string>
+    <string name="set_pass_failed">设置密码出错</string>
 </resources>

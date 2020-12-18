@@ -33,7 +33,7 @@
 
 
         <Button
-            android:id="@+id/btn_next"
+            android:id="@+id/btn_create"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_60"
             android:layout_marginStart="@dimen/dp_25"
@@ -50,7 +50,7 @@
             android:id="@+id/btn_import"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_60"
-            android:layout_below="@+id/btn_next"
+            android:layout_below="@+id/btn_create"
             android:layout_marginStart="@dimen/dp_25"
             android:layout_marginTop="@dimen/dp_20"
             android:layout_marginEnd="@dimen/dp_25"

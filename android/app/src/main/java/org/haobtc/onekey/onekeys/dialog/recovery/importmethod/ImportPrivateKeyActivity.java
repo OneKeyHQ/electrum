@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.text.Editable;
-import android.text.InputFilter;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
@@ -15,8 +14,6 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 
 import com.chaquo.python.Kwarg;
-import com.chaquo.python.PyObject;
-import com.google.gson.Gson;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.bean.ZxingConfig;
@@ -26,9 +23,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.aop.SingleClick;
-import org.haobtc.onekey.bean.CreateWalletBean;
-import org.haobtc.onekey.event.CreateSuccessEvent;
-import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
+import org.haobtc.onekey.event.ResultEvent;
 import org.haobtc.onekey.utils.Daemon;
 
 import butterknife.BindView;
@@ -111,10 +106,10 @@ public class ImportPrivateKeyActivity extends BaseActivity implements TextWatche
             e.printStackTrace();
             return;
         }
+        EventBus.getDefault().post(new ResultEvent(editInputPrivate.getText().toString()));
         Intent intent = new Intent(ImportPrivateKeyActivity.this, ImportWalletSetNameActivity.class);
-        intent.putExtra("importHdword", "importPrivateKey");
-        intent.putExtra("privateKey", editInputPrivate.getText().toString());
         startActivity(intent);
+        finish();
     }
 
     @Override

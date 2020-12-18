@@ -22,6 +22,7 @@ import android.widget.Toast;
 import androidx.annotation.LayoutRes;
 
 import com.chaquo.python.PyObject;
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.lxj.xpopup.XPopup;
 
@@ -34,15 +35,17 @@ import org.haobtc.onekey.activities.sign.SignActivity;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.CurrentAddressDetail;
 import org.haobtc.onekey.constant.StringConstant;
+import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.event.FixWalletNameEvent;
+import org.haobtc.onekey.event.GotPassEvent;
 import org.haobtc.onekey.event.SecondEvent;
 import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
-import org.haobtc.onekey.onekeys.dialog.SetHDWalletPassActivity;
-import org.haobtc.onekey.onekeys.dialog.SetLongPassActivity;
+import org.haobtc.onekey.onekeys.backup.BackupGuideActivity;
 import org.haobtc.onekey.onekeys.homepage.mindmenu.DeleteWalletActivity;
 import org.haobtc.onekey.ui.dialog.custom.CustomBackupDialog;
 import org.haobtc.onekey.ui.dialog.custom.CustomReSetBottomPopup;
+import org.haobtc.onekey.ui.dialog.ExportTipsDialog;
 import org.haobtc.onekey.utils.Daemon;
 
 import java.util.Objects;
@@ -53,8 +56,6 @@ import butterknife.OnClick;
 
 import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME;
 import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
-import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE;
-import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE_SHORT;
 
 public class HdWalletDetailActivity extends BaseActivity {
 
@@ -86,6 +87,7 @@ public class HdWalletDetailActivity extends BaseActivity {
     private boolean isBackup;
     private SharedPreferences preferences;
     private String showWalletType;
+    private int currentOperation;
 
     @Override
     public int getLayoutId () {
@@ -179,13 +181,9 @@ public class HdWalletDetailActivity extends BaseActivity {
                 fixWalletNameDialog(HdWalletDetailActivity.this, R.layout.edit_wallet_name);
                 break;
             case R.id.rel_export_word:
-                exportTipDialog(HdWalletDetailActivity.this, R.layout.export_mnemonic_tip, "exportHdword");
-                break;
             case R.id.rel_export_private_key:
-                exportTipDialog(HdWalletDetailActivity.this, R.layout.export_mnemonic_tip, "exportPrivateKey");
-                break;
             case R.id.rel_export_keystore:
-//                exportTipDialog(HdWalletDetailActivity.this, R.layout.export_mnemonic_tip,"exportPrivateKey");
+                export(view.getId());
                 break;
             case R.id.rel_delete_wallet:
                 if (StringConstant.Btc_HD_Standard.equals(showWalletType) || StringConstant.Btc_Derived_Standard.equals(showWalletType)) {
@@ -236,41 +234,52 @@ public class HdWalletDetailActivity extends BaseActivity {
                 })).show();
     }
 
-    private void exportTipDialog (Context context, @LayoutRes int resource, String export) {
-        //set see view
-        View view = View.inflate(context, resource, null);
-        Dialog dialogBtoms = new Dialog(context, R.style.dialog);
-        view.findViewById(R.id.btn_i_know).setOnClickListener(v -> {
-            if (SOFT_HD_PASS_TYPE_SHORT.equals(preferences.getString(SOFT_HD_PASS_TYPE, SOFT_HD_PASS_TYPE_SHORT))) {
-                Intent intent1 = new Intent(this, SetHDWalletPassActivity.class);
-                intent1.putExtra("importHdword", export);
-                startActivity(intent1);
-            } else {
-                Intent intent1 = new Intent(this, SetLongPassActivity.class);
-                intent1.putExtra("importHdword", export);
-                startActivity(intent1);
-            }
-            dialogBtoms.dismiss();
-        });
-        view.findViewById(R.id.btn_cancel).setOnClickListener(v -> {
-            dialogBtoms.dismiss();
-        });
-        view.findViewById(R.id.img_cancel).setOnClickListener(v -> {
-            dialogBtoms.dismiss();
-        });
-        dialogBtoms.setContentView(view);
-        Window window = dialogBtoms.getWindow();
-        //set pop_up size
-        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-        //set locate
-        window.setGravity(Gravity.BOTTOM);
-        //set animal
-        window.setWindowAnimations(R.style.AnimBottom);
-        dialogBtoms.setCanceledOnTouchOutside(true);
-        dialogBtoms.show();
-
+    private void export(int id) {
+        switch (id) {
+            case R.id.rel_export_word:
+                currentOperation = R.id.rel_export_word;
+                break;
+            case R.id.rel_export_private_key:
+                currentOperation = R.id.rel_export_private_key;
+                break;
+            case R.id.rel_export_keystore:
+                currentOperation = R.id.rel_export_keystore;
+                break;
+        }
+        new ExportTipsDialog().show(getSupportFragmentManager(), "export");
     }
-
+    @Subscribe
+    public void onGotPass(GotPassEvent event) {
+        switch (currentOperation) {
+            case R.id.rel_export_word:
+                PyResponse<String> response = PyEnv.exportMnemonics(event.getPassword());
+                String errors = response.getErrors();
+                if (Strings.isNullOrEmpty(errors)) {
+                    Intent intent = new Intent(this, BackupGuideActivity.class);
+                    intent.putExtra("exportWord", response.getResult());
+                    intent.putExtra("importHdword", "exportWord");
+                    startActivity(intent);
+                    finish();
+                } else {
+                    mlToast(errors);
+                }
+                break;
+            case R.id.rel_export_private_key:
+                PyResponse<String> response1 = PyEnv.exportPrivateKey(event.getPassword());
+                String error = response1.getErrors();
+                if (Strings.isNullOrEmpty(error)) {
+                    Intent intent = new Intent(this, ExportPrivateActivity.class);
+                    intent.putExtra("privateKey", response1.getResult());
+                    startActivity(intent);
+                    finish();
+                } else {
+                    mToast(error);
+                }
+                break;
+            case R.id.rel_export_keystore:
+                break;
+        }
+    }
     private void fixWalletNameDialog(Context context, @LayoutRes int resource) {
         //set see view
         View view = View.inflate(context, resource, null);

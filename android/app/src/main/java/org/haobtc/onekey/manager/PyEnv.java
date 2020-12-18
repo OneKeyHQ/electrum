@@ -1,6 +1,7 @@
 package org.haobtc.onekey.manager;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 
 import androidx.annotation.NonNull;
@@ -28,8 +29,11 @@ import org.haobtc.onekey.bean.TransactionInfoBean;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.PyConstant;
 import org.haobtc.onekey.event.CreateSuccessEvent;
+import org.haobtc.onekey.event.DeleteSuccessEvent;
 import org.haobtc.onekey.event.ExitEvent;
+import org.haobtc.onekey.event.RefreshEvent;
 import org.haobtc.onekey.exception.HardWareExceptions;
+import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
 import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.utils.Daemon;
 import org.haobtc.onekey.utils.Global;
@@ -272,6 +276,7 @@ public final class PyEnv {
      */
     public static void recoveryWallet(BaseActivity activity, String xPubs, boolean hd) {
         List<BalanceInfo> infos = new ArrayList<>();
+
         try {
             mexecutorService.execute(() -> {
                 String walletsInfo = sCommands.callAttr(PyConstant.CREATE_WALLET_BY_XPUB, "", 1, 1, xPubs, new Kwarg("hd", hd)).toString();
@@ -280,7 +285,11 @@ public final class PyEnv {
                     info.setBalance(derivedInfoBean.getBlance());
                     info.setLabel(derivedInfoBean.getLabel());
                     info.setName(derivedInfoBean.getName());
-                    infos.add(info);
+                    // 去除本地存在的钱包
+                    String wallet = PreferencesManager.get(activity, Constant.WALLETS, derivedInfoBean.getName(), "").toString();
+                    if (Strings.isNullOrEmpty(wallet)) {
+                        infos.add(info);
+                    }
                 });
                 EventBus.getDefault().post(new FindOnceWalletEvent<>(infos));
             });
@@ -357,43 +366,49 @@ public final class PyEnv {
     /**
      * 创建HD钱包
      * */
-    public static PyResponse<List<BalanceInfo>> createLocalHd(String passwd, String mnemonics) {
-        PyResponse<List<BalanceInfo>> response = new PyResponse<>();
-        List<BalanceInfo> infos = new ArrayList<>();
-        try {
-            String walletsInfo = sCommands.callAttr(PyConstant.CREATE_HD_WALLET, passwd, mnemonics).toString();
-            CreateWalletBean walletBean = CreateWalletBean.objectFromData(walletsInfo);
-            walletBean.getDerivedInfo().forEach(derivedInfoBean -> {
-                BalanceInfo info = new BalanceInfo();
-                info.setBalance(derivedInfoBean.getBlance());
-                info.setLabel(derivedInfoBean.getLabel());
-                info.setName(derivedInfoBean.getName());
-               infos.add(info);
-            });
-            // HD 根钱包
-            Optional.ofNullable(walletBean.getWalletInfo()).ifPresent((walletInfos -> {
-                walletInfos.forEach((walletInfo -> {
-                   String name = walletInfo.getName();
-                   BalanceInfo info = PyEnv.selectWallet(name);
-                   EventBus.getDefault().post(new CreateSuccessEvent(name));
-                   // 现在的HD钱包的Label是BTC-1
-                   info.setName("BTC-1");
-                   infos.add(info);
-                }));
-            }));
-            response.setResult(infos);
-        } catch (Exception e) {
-            response.setErrors(e.getMessage());
-            e.printStackTrace();
-        }
-        return response;
+    public static void createLocalHd(String passwd, String mnemonics) {
+        mexecutorService.execute(() -> {
+            try {
+                List<BalanceInfo> infos = new ArrayList<>();
+                String walletsInfo = sCommands.callAttr(PyConstant.CREATE_HD_WALLET, passwd, mnemonics).toString();
+                CreateWalletBean walletBean = CreateWalletBean.objectFromData(walletsInfo);
+                if (Strings.isNullOrEmpty(mnemonics)) {
+                    EventBus.getDefault().post(new CreateSuccessEvent(walletBean.getWalletInfo().get(0).getName()));
+                    EventBus.getDefault().post(new RefreshEvent());
+                } else {
+                    walletBean.getDerivedInfo().forEach(derivedInfoBean -> {
+                        BalanceInfo info = new BalanceInfo();
+                        info.setBalance(derivedInfoBean.getBlance());
+                        info.setLabel(derivedInfoBean.getLabel());
+                        info.setName(derivedInfoBean.getName());
+                        infos.add(info);
+                    });
+                    // HD 根钱包
+                    Optional.ofNullable(walletBean.getWalletInfo()).ifPresent((walletInfos -> {
+                        walletInfos.forEach((walletInfo -> {
+                            String name = walletInfo.getName();
+                            BalanceInfo info = PyEnv.selectWallet(name);
+                            EventBus.getDefault().post(new CreateSuccessEvent(name));
+                            // 现在的HD钱包的Label是BTC-1
+                            info.setName("BTC-1");
+                            infos.add(info);
+                        }));
+                    }));
+                    EventBus.getDefault().post(new FindOnceWalletEvent<>(infos));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                MyApplication.getInstance().toastErr(e);
+                EventBus.getDefault().post(new ExitEvent());
+            }
+        });
     }
     /**
      * 确认恢复
      * */
     public static boolean recoveryConfirm(List<String> nameList) {
         try {
-            sCommands.callAttr(PyConstant.RECOVERY_CONFIRM, new Gson().toJson(nameList.toString()), true);
+            sCommands.callAttr(PyConstant.RECOVERY_CONFIRM, new Gson().toJson(nameList), true);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -577,6 +592,85 @@ public final class PyEnv {
         PyResponse<Void> response = new PyResponse<>();
         try {
             sCommands.callAttr(PyConstant.CLEAR_BACK_FLAGS, name);
+        } catch (Exception e) {
+            response.setErrors(e.getMessage());
+            e.printStackTrace();
+        }
+        return response;
+    }
+    public static PyResponse<Void> verifySoftPass(String passwd) {
+        PyResponse<Void> response = new PyResponse<>();
+        try {
+            sCommands.callAttr(PyConstant.VERIFY_SOFT_PASS, passwd);
+        } catch (Exception e) {
+            System.out.println("verify xxxxxxx");
+            response.setErrors(e.getMessage());
+            e.printStackTrace();
+        }
+        return response;
+    }
+
+    public static PyResponse<Void> changeSoftPass(String passwdOrigin ,String passwdNew) {
+        PyResponse<Void> response = new PyResponse<>();
+        try {
+            sCommands.callAttr(PyConstant.CHANGE_SOFT_PASS, passwdOrigin, passwdNew);
+        } catch (Exception e) {
+            response.setErrors(e.getMessage());
+            e.printStackTrace();
+        }
+        return response;
+    }
+    public static PyResponse<String> exportMnemonics(String password) {
+        PyResponse<String> response = new PyResponse<>();
+        try {
+           String result = sCommands.callAttr(PyConstant.EXPORT_MNEMONICS, password, null).toString();
+           response.setResult(result);
+        } catch (Exception e) {
+            response.setErrors(e.getMessage());
+            e.printStackTrace();
+        }
+        return response;
+    }
+
+    public static void createWallet(Context context, String walletName, String password, String privateKey, String mnemonics) {
+        try {
+            String result = sCommands.callAttr(PyConstant.CREATE_WALLET, walletName, password, Strings.isNullOrEmpty(privateKey) ? new Kwarg("seed", mnemonics) : new Kwarg("privkeys", privateKey)).toString();
+            CreateWalletBean createWalletBean = CreateWalletBean.objectFromData(result);
+            EventBus.getDefault().post(new CreateSuccessEvent(createWalletBean.getWalletInfo().get(0).getName()));
+            context.startActivity(new Intent(context, HomeOneKeyActivity.class));
+        } catch (Exception e) {
+            EventBus.getDefault().post(new ExitEvent());
+            MyApplication.getInstance().toastErr(e);
+            e.printStackTrace();
+        }
+    }
+    public static PyResponse<Void> deleteWallet(String password, String walletName) {
+        PyResponse<Void> response = new PyResponse<>();
+        try {
+            sCommands.callAttr(PyConstant.DELETE_WALLET, password, new Kwarg("name", walletName));
+        } catch (Exception e) {
+            response.setErrors(e.getMessage());
+            e.printStackTrace();
+        }
+        return response;
+    }
+    public static PyResponse<Void> createDerivedWallet(String walletName, String password, String currencyType) {
+        PyResponse<Void> response = new PyResponse<>();
+        try {
+           String result = sCommands.callAttr("create_derived_wallet", walletName, password, currencyType).toString();
+            CreateWalletBean createWalletBean = CreateWalletBean.objectFromData(result);
+            EventBus.getDefault().post(new CreateSuccessEvent(createWalletBean.getWalletInfo().get(0).getName()));
+        } catch (Exception e) {
+            response.setErrors(e.getMessage());
+            e.printStackTrace();
+        }
+        return response;
+    }
+    public static PyResponse<String> exportPrivateKey(String password) {
+        PyResponse<String> response = new PyResponse<>();
+        try {
+           String result = sCommands.callAttr(PyConstant.EXPORT_PRIVATE_KEY, password).toString();
+           response.setResult(result);
         } catch (Exception e) {
             response.setErrors(e.getMessage());
             e.printStackTrace();

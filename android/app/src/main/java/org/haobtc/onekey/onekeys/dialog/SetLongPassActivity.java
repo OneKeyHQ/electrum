@@ -67,7 +67,6 @@ import dr.android.utils.LogUtil;
 
 import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE;
 import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE_LONG;
-import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE_SHORT;
 
 public class SetLongPassActivity extends BaseActivity implements TextWatcher {
 
@@ -172,8 +171,8 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
                 textPageTitle.setText(getString(R.string.fix_pass));
                 editPass.setHint(getString(R.string.input_your_former_pass));
                 testSetPass.setText(getString(R.string.input_your_former_pass));
-                textTip.setText(getString(R.string.fix_former_tip));
-                textLong.setText(getString(R.string.long_pass_tip));
+                textTip.setText(getString(R.string.change_pin_warning));
+                textLong.setText(getString(R.string.pass_warning));
             }
         }
     }
@@ -181,7 +180,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
     public void textContent() {
         testSetPass.setText(getString(R.string.input_your_pass));
         textTip.setText(getString(R.string.dont_tell));
-        textLong.setText(getString(R.string.long_pass_tip));
+        textLong.setText(getString(R.string.pass_warning));
         textChange.setText(getString(R.string.change_short_keyboard));
         editPass.setHint(getString(R.string.input_password));
     }
@@ -207,7 +206,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
                 break;
             case R.id.btn_next:
                 if (editPass.getText().toString().length() < 8) {
-                    inputTip(this, R.layout.longpass_imput_tip, "little");
+                    inputTip(this, R.layout.longpass_input_tip, "little");
                     return;
                 }
                 if (typeList == null || typeList.size() == 0) {
@@ -215,7 +214,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
                         firstPass = editPass.getText().toString();
                         testSetPass.setText(getText(R.string.input_you_pass));
                         textTip.setText(getText(R.string.dont_tell));
-                        textLong.setText(getText(R.string.long_pass_tip));
+                        textLong.setText(getText(R.string.pass_warning));
                         btnNext.setEnabled(false);
                         btnNext.setBackground(getDrawable(R.drawable.btn_no_check));
                         editPass.setHint(getString(R.string.input_you_pass));
@@ -243,6 +242,7 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
                     intent1.putExtra("walletName", walletName);
                     intent1.putExtra("recoverySeed", recoverySeed);
                     intent1.putExtra("privateKey", privateKey);
+                    intent1.putExtra(Constant.OPERATE_TYPE, operateType);
                     intent1.putExtra("deleteHdWalletName", deleteHdWalletName);
                     if ("derive".equals(importHdword)) {
                         intent1.putExtra("currencyType", currencyType);
@@ -460,7 +460,6 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
         } catch (Exception e) {
             mToast(e.getMessage());
             e.printStackTrace();
-            return;
         }
 
     }
@@ -478,7 +477,6 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
             firstPass = editPass.getText().toString();
             testSetPass.setText(getString(R.string.set_new_pass));
             btnNext.setEnabled(false);
-            btnNext.setBackground(getDrawable(R.drawable.btn_no_check));
             editPass.setText("");
             input = true;
         } else {
@@ -541,14 +539,12 @@ public class SetLongPassActivity extends BaseActivity implements TextWatcher {
     @Override
     public void afterTextChanged(Editable s) {
         if (s.length() > 34) {
-            inputTip(this, R.layout.longpass_imput_tip, "big");
+            inputTip(this, R.layout.longpass_input_tip, "big");
         }
         if ((editPass.length() > 0)) {
             btnNext.setEnabled(true);
-            btnNext.setBackground(getDrawable(R.drawable.btn_checked));
         } else {
             btnNext.setEnabled(false);
-            btnNext.setBackground(getDrawable(R.drawable.btn_no_check));
         }
     }
 

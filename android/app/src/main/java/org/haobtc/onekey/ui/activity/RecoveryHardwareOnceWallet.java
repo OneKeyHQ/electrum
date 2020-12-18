@@ -1,8 +1,10 @@
 package org.haobtc.onekey.ui.activity;
 
+import android.content.Intent;
 import android.view.View;
 import android.widget.ImageView;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
@@ -11,9 +13,11 @@ import org.haobtc.onekey.asynctask.BusinessAsyncTask;
 import org.haobtc.onekey.constant.PyConstant;
 import org.haobtc.onekey.event.ButtonRequestEvent;
 import org.haobtc.onekey.event.ChangePinEvent;
+import org.haobtc.onekey.event.CreateSuccessEvent;
 import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.event.SelectedEvent;
 import org.haobtc.onekey.manager.PyEnv;
+import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
 import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.ui.fragment.DevicePINFragment;
 import org.haobtc.onekey.ui.fragment.RecoveryWalletFromHdFragment;
@@ -81,7 +85,10 @@ public class RecoveryHardwareOnceWallet extends BaseActivity implements Business
     public void onRecovery(SelectedEvent event) {
         boolean success = PyEnv.recoveryConfirm(event.getNameList());
         if (!success) {
-            showToast("恢复失败");
+            showToast(R.string.recovery_failed);
+        } else {
+            EventBus.getDefault().post(new CreateSuccessEvent(event.getNameList().get(0)));
+            startActivity(new Intent(this, HomeOneKeyActivity.class));
         }
         finish();
     }

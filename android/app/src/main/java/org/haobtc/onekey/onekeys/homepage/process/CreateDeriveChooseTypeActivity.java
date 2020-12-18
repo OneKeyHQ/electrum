@@ -10,10 +10,7 @@ import org.haobtc.onekey.aop.SingleClick;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
-
 public class CreateDeriveChooseTypeActivity extends BaseActivity {
-    private String walletType;
 
     @Override
     public int getLayoutId() {
@@ -23,9 +20,6 @@ public class CreateDeriveChooseTypeActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
-        walletType = getIntent().getStringExtra(CURRENT_SELECTED_WALLET_TYPE);
-
-
     }
 
     @Override
@@ -41,11 +35,9 @@ public class CreateDeriveChooseTypeActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.rel_type_btc:
-                Intent intent = new Intent(CreateDeriveChooseTypeActivity.this, SetDeriveWalletNameActivity.class);
-                intent.putExtra(CURRENT_SELECTED_WALLET_TYPE,walletType);
-                intent.putExtra("currencyType","btc");
+                Intent intent = new Intent(this, SoftWalletNameSettingActivity.class);
                 startActivity(intent);
-
+                finish();
                 break;
         }
     }

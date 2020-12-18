@@ -873,17 +873,17 @@
     <string name="encryption">端到端加密</string>
     <string name="encryption_tip">我们采用业内先进的加密技术将信息储存在本地。只有您能解密信息，我们不会也无法查看、使用或出售任何您的数据。</string>
     <string name="only_you">只有您可以解锁自己的钱包</string>
-    <string name="input_onekey_pass_tip">它被用来加密您的钱包，简单好记，适用于大多数人。</string>
+    <string name="short_pass_tip">它被用来加密您的钱包，简单好记，适用于大多数人。</string>
     <string name="use_long_pass">使用更复杂，同时也更安全的长密码</string>
     <string name="input_pass">请再次输入您的密码</string>
     <string name="dont_tell">不要将密码透露给其他人</string>
     <string name="test_long_tip">我们不存储任何您的信息，因此一旦您忘记自己的长密码，我们也无法帮您找回。</string>
     <string name="input_new_pass">输入新密码</string>
     <string name="use_short_pass">使用简短密码</string>
-    <string name="short_pass_tip">复杂的密码安全性相对更高，设置完后要牢记，最好次不要设置的跟您其他网站的密码一样。</string>
+    <string name="long_pass_tip">复杂的密码安全性相对更高，设置完后要牢记，最好次不要设置的跟您其他网站的密码一样。</string>
     <string name="set_you_pass">设置主密码</string>
     <string name="input_you_pass">再输一次您的密码</string>
-    <string name="long_pass_tip">我们不存储任何您的信息，因此一旦您忘记自己的密码，我们也无法帮您找回。</string>
+    <string name="pass_warning">我们不存储任何您的信息，因此一旦您忘记自己的密码，我们也无法帮您找回。</string>
     <string name="my_amount">我的资产</string>
     <string name="assets">资产</string>
     <string name="search">搜索</string>
@@ -1039,7 +1039,7 @@
     <string name="fix_pass_tip2">"并在需要安全校验的步骤用来验证。"</string>
     <string name="fix_pass">修改密码</string>
     <string name="input_your_former_pass">输入您的原密码</string>
-    <string name="fix_former_tip">修改完密码后，您原先的生物识别（面部、指纹）将会失效，需要重新设置。</string>
+    <string name="change_pin_warning">修改完密码后，您原先的生物识别（面部、指纹）将会失效，需要重新设置。</string>
     <string name="set_new_pass">设置您的新密码</string>
     <string name="price_quotation">价格行情（只影响 BTC 和 ETH 价格的显示）</string>
     <string name="blockchain_choose">区块浏览器（BTC）</string>
@@ -1298,4 +1298,10 @@
     <string name="confirm_reset">我已确认，立即重置</string>
     <string name="delete_wallet_single">删除钱包</string>
     <string name="delete_wallet_single_tip">此操作将会删除该钱包的所有数据，请在删除前确保该钱包已备份。</string>
+    <string name="has_not_local_wallet_need_pass">您本地还没有创建过hd钱包和独立钱包！！！</string>
+    <string name="input_pass_origin">输入原密码</string>
+    <string name="pin_origin_invalid">密码错误，请重新输入</string>
+    <string name="input_pass_again">"请再次输入 "</string>
+    <string name="twice_input_is_not_identical">前后输入不一致，请重新输入</string>
+    <string name="set_pass_failed">设置密码出错</string>
 </resources>

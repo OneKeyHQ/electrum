@@ -5,7 +5,6 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
-import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -22,10 +21,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chaquo.python.PyObject;
 
+import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.adapter.SearchMnemonicAdapter;
 import org.haobtc.onekey.aop.SingleClick;
+import org.haobtc.onekey.event.ResultEvent;
 import org.haobtc.onekey.utils.Daemon;
 
 import java.util.ArrayList;
@@ -280,10 +281,10 @@ public class ImportMnemonicActivity extends BaseActivity implements View.OnFocus
             return;
         }
         if (isSeeds.toBoolean()) {
+            EventBus.getDefault().post(new ResultEvent(strNewseed));
             Intent intent = new Intent(ImportMnemonicActivity.this, ImportWalletSetNameActivity.class);
-            intent.putExtra("importHdword", "importMnemonic");
-            intent.putExtra("recoverySeed", strNewseed);
             startActivity(intent);
+            finish();
         }else{
             mToast(getString(R.string.helpword_wrong));
         }

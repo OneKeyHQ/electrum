@@ -185,4 +185,14 @@ public final class PyConstant {
      * 删除钱包备份状态
      * */
     public static final String CLEAR_BACK_FLAGS = "delete_backup_info";
+    public static final String VERIFY_SOFT_PASS = "check_password";
+
+    public static final String CHANGE_SOFT_PASS = "update_wallet_password";
+
+    public static final String EXPORT_MNEMONICS = "export_seed";
+
+    public static final String DELETE_WALLET = "delete_wallet";
+
+    public static final String CREATE_WALLET = "create";
+    public static final String EXPORT_PRIVATE_KEY = "export_privkey";
 }

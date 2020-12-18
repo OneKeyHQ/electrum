@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
-import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -23,13 +22,21 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chaquo.python.PyObject;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.adapter.SearchMnemonicAdapter;
-import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.aop.SingleClick;
-import org.haobtc.onekey.onekeys.dialog.recovery.ImprotSingleActivity;
+import org.haobtc.onekey.bean.BalanceInfo;
+import org.haobtc.onekey.bean.FindOnceWalletEvent;
+import org.haobtc.onekey.constant.Constant;
+import org.haobtc.onekey.event.GotPassEvent;
+import org.haobtc.onekey.manager.PyEnv;
+import org.haobtc.onekey.onekeys.dialog.recovery.RecoveryChooseWalletActivity;
 import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
+import org.haobtc.onekey.ui.activity.SoftPassActivity;
 import org.haobtc.onekey.utils.Daemon;
 
 import java.util.ArrayList;
@@ -41,8 +48,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import static org.haobtc.onekey.constant.Constant.SEARCH_DEVICE_MODE;
-import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE;
-import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE_SHORT;
 
 public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocusChangeListener {
 
@@ -82,9 +87,7 @@ public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocu
     private List<String> seedList;
     private int screenHeight;
     private boolean mIsSoftKeyboardShowing;
-    private ViewTreeObserver.OnGlobalLayoutListener mLayoutChangeListener;
-    private SharedPreferences preferences;
-    private Intent intent;
+    private String seed;
 
     @Override
     public int getLayoutId() {
@@ -94,7 +97,8 @@ public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocu
     @Override
     public void initView() {
         ButterKnife.bind(this);
-        preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        EventBus.getDefault().register(this);
+        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         inits();
         TextWatcher1 textWatcher1 = new TextWatcher1();
         editOne.addTextChangedListener(textWatcher1);
@@ -189,7 +193,10 @@ public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocu
         getWindowManager().getDefaultDisplay().getMetrics(metric);
         screenHeight = metric.heightPixels;
         mIsSoftKeyboardShowing = false;
-        mLayoutChangeListener = () -> {
+        //Determine the size of window visible area
+        //If the difference between screen height and window visible area height is greater than 1 / 3 of the whole screen height, it means that the soft keyboard is in display, otherwise, the soft keyboard is hidden.
+        //If the status of the soft keyboard was previously displayed, it is now closed, or it was previously closed, it is now displayed, it means that the status of the soft keyboard has changed
+        ViewTreeObserver.OnGlobalLayoutListener mLayoutChangeListener = () -> {
             //Determine the size of window visible area
             Rect r = new Rect();
             getWindow().getDecorView().getWindowVisibleDisplayFrame(r);
@@ -235,8 +242,8 @@ public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocu
                 String strten = editTen.getText().toString();
                 String streleven = editEleven.getText().toString();
                 String strtwelve = editTwelve.getText().toString();
-                String strNewseed = strone + " " + strtwo + " " + strthree + " " + strfour + " " + strfive + " " + strsix + " " + strseven + " " + streight + " " + strnine + " " + strten + " " + streleven + " " + strtwelve;
-                isSeed(strNewseed);
+                seed = strone + " " + strtwo + " " + strthree + " " + strfour + " " + strfive + " " + strsix + " " + strseven + " " + streight + " " + strnine + " " + strten + " " + streleven + " " + strtwelve;
+                startActivity(new Intent(this, SoftPassActivity.class));
                 break;
             case R.id.lin_hard_recovery:
                 break;
@@ -251,18 +258,17 @@ public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocu
                 break;
         }
     }
-
-    private void isSeed(String strNewseed) {
-        if (SOFT_HD_PASS_TYPE_SHORT.equals(preferences.getString(SOFT_HD_PASS_TYPE,SOFT_HD_PASS_TYPE_SHORT))){
-            intent = new Intent(this, SetHDWalletPassActivity.class);
-        }else{
-            intent = new Intent(this, SetLongPassActivity.class);
-        }
-        intent.putExtra("importHdword", "recoveryHdWallet");
-        intent.putExtra("recoverySeed", strNewseed);
+    @Subscribe
+    public void onGotPass(GotPassEvent event) {
+        mlToast(getString(R.string.loading));
+        PyEnv.createLocalHd(event.getPassword(), seed);
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
+    public void onFind(FindOnceWalletEvent<BalanceInfo> event) {
+        Intent intent = new Intent(this, RecoveryChooseWalletActivity.class);
+        intent.putExtra("recoveryData", (ArrayList<BalanceInfo>)event.getWallets());
         startActivity(intent);
     }
-
     private void pasteSeed() {
         ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
         if (clipboard != null) {
@@ -368,10 +374,8 @@ public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocu
                     && editFive.length() > 0 && editSix.length() > 0 && editSeven.length() > 0 && editEight.length() > 0
                     && editNine.length() > 0 && editTen.length() > 0 && editEleven.length() > 0 && editTwelve.length() > 0) {
                 btnRecovery.setEnabled(true);
-                btnRecovery.setBackground(getDrawable(R.drawable.btn_checked));
             } else {
                 btnRecovery.setEnabled(false);
-                btnRecovery.setBackground(getDrawable(R.drawable.btn_no_check));
             }
             if (!TextUtils.isEmpty(editable.toString())) {
                 for (int i = 0; i < seedList.size(); i++) {
@@ -389,5 +393,11 @@ public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocu
             }
             searchMnemonicAdapter.notifyDataSetChanged();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 }

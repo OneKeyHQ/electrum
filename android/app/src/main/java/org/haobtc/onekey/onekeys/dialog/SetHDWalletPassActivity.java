@@ -7,7 +7,6 @@ import android.content.SharedPreferences;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
@@ -102,7 +101,8 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
         seed = getIntent().getStringExtra("recoverySeed");
         privateKey = getIntent().getStringExtra("privateKey");
         operateType = getIntent().getStringExtra(Constant.OPERATE_TYPE);
-        deleteHdWalletName = getIntent().getStringExtra("deleteHdWalletName");//删除所有hd钱包的名字
+        // 删除所有hd钱包的名字
+        deleteHdWalletName = getIntent().getStringExtra("deleteHdWalletName");
         inits();
     }
 
@@ -140,7 +140,8 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
                 typeList.add(label);
             }
         });
-        if (typeList == null || typeList.size() == 0) {
+
+        if (typeList.isEmpty()) {
             textPageTitle.setText(getString(R.string.set_you_pass));
         } else {
             if ("exportHdword".equals(importHdword) || "backupMnemonic".equals(importHdword) || "exportPrivateKey".equals(importHdword) || "deleteAllWallet".equals(importHdword) || "derive".equals(importHdword) || "single".equals(importHdword) || "importMnemonic".equals(importHdword) || "importPrivateKey".equals(importHdword) || "deleteSingleWallet".equals(importHdword) || "send".equals(importHdword) || "recoveryHdWallet".equals(importHdword)) {
@@ -148,8 +149,8 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
             } else if ("fixHdPass".equals(importHdword)) {
                 textPageTitle.setText(getString(R.string.fix_pass));
                 testSetPass.setText(getString(R.string.input_your_former_pass));
-                textTip.setText(getString(R.string.fix_former_tip));
-                textLong.setText(getString(R.string.long_pass_tip));
+                textTip.setText(getString(R.string.change_pin_warning));
+                textLong.setText(getString(R.string.pass_warning));
                 textConfirm.setText(getString(R.string.change_keyboard));
             }
         }
@@ -159,7 +160,7 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
     private void checkPassTip() {
         testSetPass.setText(getString(R.string.input_your_pass));
         textTip.setText(getString(R.string.dont_tell));
-        textLong.setText(getString(R.string.long_pass_tip));
+        textLong.setText(getString(R.string.pass_warning));
         textConfirm.setText(getString(R.string.change_keyboard));
     }
 
@@ -376,7 +377,6 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
         for (int i = 0; i < hd.size(); i++) {
             PreferencesManager.remove(this, Constant.WALLETS, hd.get(i));
         }
-        PyEnv.loadLocalWalletInfo(this);
         EventBus.getDefault().post(new LoadOtherWalletEvent());
         EventBus.getDefault().post(new LoadWalletlistEvent());
         EventBus.getDefault().post(new FinishEvent());
@@ -393,14 +393,13 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
         } catch (Exception e) {
             e.printStackTrace();
             mToast(e.getMessage());
-            return;
         }
     }
 
     //fix pass
     private void fixHdPass() {
         if (!input) {
-            //原密码是否输入正确
+            // 原密码是否输入正确
             try {
                 Daemon.commands.callAttr("check_password", pwdEdittext.getText().toString());
             } catch (Exception e) {
@@ -414,8 +413,6 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
             input = true;
         } else {
             try {
-                Log.i("sixPassjxm", "fixHdPass: " + sixPass);
-                Log.i("sixPassjxm", "fixHdPass--: " + pwdEdittext.getText().toString());
                 Daemon.commands.callAttr("update_wallet_password", sixPass, pwdEdittext.getText().toString());
             } catch (Exception e) {
                 e.printStackTrace();

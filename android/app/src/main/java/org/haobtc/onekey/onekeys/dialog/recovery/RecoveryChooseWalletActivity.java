@@ -4,7 +4,8 @@ import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.Toast;
+import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -15,18 +16,12 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.adapter.RecoveryWalletAdapter;
 import org.haobtc.onekey.aop.SingleClick;
-import org.haobtc.onekey.bean.CreateWalletBean;
-import org.haobtc.onekey.bean.RecoveryWalletBean;
+import org.haobtc.onekey.bean.BalanceInfo;
 import org.haobtc.onekey.event.CreateSuccessEvent;
-import org.haobtc.onekey.event.WalletAddressEvent;
-import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
 import org.haobtc.onekey.utils.Daemon;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -37,7 +32,11 @@ public class RecoveryChooseWalletActivity extends BaseActivity {
 
     @BindView(R.id.recl_wallet_list)
     RecyclerView reclWalletList;
-    private ArrayList<WalletAddressEvent> walletList;
+    @BindView(R.id.promote)
+    TextView promote;
+    @BindView(R.id.btn_recovery)
+    Button btnRecovery;
+    private ArrayList<BalanceInfo> walletList;
     private RecoveryWalletAdapter recoveryWalletAdapter;
     private ArrayList<String> listDates;
     private String recoveryData;
@@ -53,9 +52,7 @@ public class RecoveryChooseWalletActivity extends BaseActivity {
     public void initView() {
         ButterKnife.bind(this);
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-        edit = preferences.edit();
-        recoveryData = getIntent().getStringExtra("recoveryData");
-        Log.i("pyObjectjxmjmm", "getRecoveryWallet: " + recoveryData);
+        walletList = (ArrayList<BalanceInfo>) getIntent().getSerializableExtra("recoveryData");
     }
 
     @Override
@@ -63,44 +60,29 @@ public class RecoveryChooseWalletActivity extends BaseActivity {
         //choose wallet data list
         listDates = new ArrayList<>();
         reclWalletList.setNestedScrollingEnabled(false);
-        walletList = new ArrayList<>();
-        recoveryWalletAdapter = new RecoveryWalletAdapter(RecoveryChooseWalletActivity.this, walletList);
-        reclWalletList.setAdapter(recoveryWalletAdapter);
-        //get recovery wallet
-        getRecoveryWallet();
-
-    }
-
-    private void getRecoveryWallet() {
-        try {
-            RecoveryWalletBean recoveryWalletBean = new Gson().fromJson(recoveryData, RecoveryWalletBean.class);
-            List<RecoveryWalletBean.WalletInfoBean> walletInfo = recoveryWalletBean.getWalletInfo();
-            name = walletInfo.get(0).getName();
-            List<RecoveryWalletBean.DerivedInfoBean> derivedInfo = recoveryWalletBean.getDerivedInfo();
-            for (int i = 0; i < derivedInfo.size(); i++) {
-                WalletAddressEvent walletAddressEvent = new WalletAddressEvent();
-                walletAddressEvent.setAddress(derivedInfo.get(i).getLabel());
-                walletAddressEvent.setBalance(derivedInfo.get(i).getBlance());
-                walletAddressEvent.setKey(derivedInfo.get(i).getName());
-                walletList.add(walletAddressEvent);
-            }
+        if (walletList.isEmpty()) {
+            promote.setText(R.string.no_use_wallet);
+            btnRecovery.setEnabled(true);
+            btnRecovery.setText(R.string.back);
+        } else {
+            recoveryWalletAdapter = new RecoveryWalletAdapter(this, walletList);
+            reclWalletList.setAdapter(recoveryWalletAdapter);
             recoveryWalletAdapter.notifyDataSetChanged();
-
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
     @SingleClick
     @OnClick({R.id.btn_recovery})
     public void onViewClicked(View view) {
-        switch (view.getId()) {
-            case R.id.btn_recovery:
+        if (view.getId() == R.id.btn_recovery) {
+            if (btnRecovery.getText().equals(getString(R.string.no_use_wallet))) {
+                finish();
+            } else {
                 listDates.clear();
                 Map<Integer, Boolean> map = recoveryWalletAdapter.getMap();
                 for (int i = 0; i < walletList.size(); i++) {
                     if (map.get(i)) {
-                        listDates.add(walletList.get(i).getKey());
+                        listDates.add(walletList.get(i).getName());
                     }
                 }
                 String recoveryName = new Gson().toJson(listDates);
@@ -119,7 +101,7 @@ public class RecoveryChooseWalletActivity extends BaseActivity {
                     EventBus.getDefault().post(new CreateSuccessEvent(name));
                     mIntent(HomeOneKeyActivity.class);
                 }
-                break;
+            }
         }
     }
 

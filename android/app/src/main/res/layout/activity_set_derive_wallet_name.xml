@@ -9,7 +9,7 @@
     android:fitsSystemWindows="true"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    tools:context="org.haobtc.onekey.onekeys.homepage.process.SetDeriveWalletNameActivity">
+    tools:context="org.haobtc.onekey.onekeys.homepage.process.SoftWalletNameSettingActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"

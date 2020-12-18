@@ -1,26 +1,13 @@
 package org.haobtc.onekey.onekeys.homepage.mindmenu;
 
-import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import androidx.annotation.LayoutRes;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.alibaba.fastjson.JSONArray;
-import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.chaquo.python.PyObject;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -28,32 +15,21 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.adapter.WalletListAdapter;
 import org.haobtc.onekey.aop.SingleClick;
-import org.haobtc.onekey.bean.AddressEvent;
 import org.haobtc.onekey.bean.LocalWalletInfo;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.LoadWalletlistEvent;
 import org.haobtc.onekey.manager.PreferencesManager;
-import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
-import org.haobtc.onekey.onekeys.dialog.RecoverHdWalletActivity;
-import org.haobtc.onekey.onekeys.dialog.SetHDWalletPassActivity;
-import org.haobtc.onekey.onekeys.dialog.SetLongPassActivity;
 import org.haobtc.onekey.onekeys.homepage.process.CreateDeriveChooseTypeActivity;
-import org.haobtc.onekey.utils.Daemon;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.haobtc.onekey.ui.dialog.HdWalletIntroductionDialog;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
-import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE;
-import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE_SHORT;
 
 public class HDWalletActivity extends BaseActivity {
 
@@ -72,7 +48,6 @@ public class HDWalletActivity extends BaseActivity {
     private ArrayList<LocalWalletInfo> hdWalletList;
     private WalletListAdapter walletListAdapter;
     private String deleteHdWalletName = "";
-    private SharedPreferences preferences;
 
     @Override
     public int getLayoutId() {
@@ -83,7 +58,6 @@ public class HDWalletActivity extends BaseActivity {
     public void initView() {
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
-        preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
     }
 
     @Override
@@ -97,7 +71,7 @@ public class HDWalletActivity extends BaseActivity {
     }
 
     @SingleClick
-    @OnClick({R.id.img_back, R.id.text_manage, R.id.recl_add_wallet, R.id.recl_add_hd_wallet, R.id.recl_recovery_wallet, R.id.img_what_hd})
+    @OnClick({R.id.img_back, R.id.text_manage, R.id.recl_add_wallet, R.id.img_what_hd})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
@@ -108,51 +82,17 @@ public class HDWalletActivity extends BaseActivity {
                 intent1.putExtra("hd_num", hdWalletList.size());
                 intent1.putExtra("deleteHdWalletName", deleteHdWalletName);
                 startActivity(intent1);
+                finish();
                 break;
             case R.id.recl_add_wallet:
                 Intent intent = new Intent(HDWalletActivity.this, CreateDeriveChooseTypeActivity.class);
                 intent.putExtra(CURRENT_SELECTED_WALLET_TYPE, "derive");
                 startActivity(intent);
                 break;
-            case R.id.recl_add_hd_wallet:
-                if (SOFT_HD_PASS_TYPE_SHORT.equals(preferences.getString(SOFT_HD_PASS_TYPE, SOFT_HD_PASS_TYPE_SHORT))) {
-                    Intent intent0 = new Intent(this, SetHDWalletPassActivity.class);
-                    startActivity(intent0);
-                } else {
-                    Intent intent0 = new Intent(this, SetLongPassActivity.class);
-                    startActivity(intent0);
-                }
-                break;
-            case R.id.recl_recovery_wallet:
-                Intent intent2 = new Intent(HDWalletActivity.this, RecoverHdWalletActivity.class);
-                startActivity(intent2);
-                break;
             case R.id.img_what_hd:
-                whatIsHd(HDWalletActivity.this, R.layout.what_is_hd);
+                new HdWalletIntroductionDialog().show(getSupportFragmentManager(), "");
                 break;
         }
-    }
-
-    private void whatIsHd(Context context, @LayoutRes int resource) {
-        //set see view
-        View view = View.inflate(context, resource, null);
-        Dialog dialogBtoms = new Dialog(context, R.style.dialog);
-        view.findViewById(R.id.btn_next).setOnClickListener(v -> {
-            dialogBtoms.dismiss();
-        });
-        view.findViewById(R.id.img_cancel).setOnClickListener(v -> {
-            dialogBtoms.dismiss();
-        });
-        dialogBtoms.setContentView(view);
-        Window window = dialogBtoms.getWindow();
-        //set pop_up size
-        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-        //set locate
-        window.setGravity(Gravity.BOTTOM);
-        //set animal
-        window.setWindowAnimations(R.style.AnimBottom);
-        dialogBtoms.setCanceledOnTouchOutside(true);
-        dialogBtoms.show();
     }
 
     private void getHomeWalletList() {

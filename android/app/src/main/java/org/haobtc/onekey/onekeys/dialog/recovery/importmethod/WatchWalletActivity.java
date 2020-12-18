@@ -3,7 +3,6 @@ package org.haobtc.onekey.onekeys.dialog.recovery.importmethod;
 import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -20,9 +19,11 @@ import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.bean.ZxingConfig;
 import com.yzq.zxinglibrary.common.Constant;
 
+import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.aop.SingleClick;
+import org.haobtc.onekey.event.ResultEvent;
 import org.haobtc.onekey.utils.Daemon;
 
 import butterknife.BindView;
@@ -100,10 +101,10 @@ public class WatchWalletActivity extends BaseActivity implements TextWatcher {
             e.printStackTrace();
             return;
         }
-
+        EventBus.getDefault().post(new ResultEvent(editAddress.getText().toString()));
         Intent intent = new Intent(WatchWalletActivity.this, ImportWalletSetNameActivity.class);
-        intent.putExtra("watchAddress", editAddress.getText().toString());
         startActivity(intent);
+        finish();
     }
 
     @Override

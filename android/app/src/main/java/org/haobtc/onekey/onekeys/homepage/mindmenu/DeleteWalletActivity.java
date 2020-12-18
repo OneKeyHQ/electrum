@@ -1,25 +1,18 @@
 package org.haobtc.onekey.onekeys.homepage.mindmenu;
 
 import android.annotation.SuppressLint;
-import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
-import androidx.annotation.LayoutRes;
-
 import com.chaquo.python.Kwarg;
+import com.google.common.base.Strings;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -27,23 +20,25 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.aop.SingleClick;
+import org.haobtc.onekey.bean.LocalWalletInfo;
+import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.FinishEvent;
+import org.haobtc.onekey.event.GotPassEvent;
 import org.haobtc.onekey.event.LoadOtherWalletEvent;
 import org.haobtc.onekey.event.SecondEvent;
 import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
-import org.haobtc.onekey.onekeys.dialog.SetHDWalletPassActivity;
-import org.haobtc.onekey.onekeys.dialog.SetLongPassActivity;
-import org.haobtc.onekey.onekeys.homepage.process.HdWalletDetailActivity;
+import org.haobtc.onekey.ui.activity.SoftPassActivity;
+import org.haobtc.onekey.ui.dialog.BackupRequireDialog;
 import org.haobtc.onekey.utils.Daemon;
+
+import java.util.ArrayList;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-
-import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE;
-import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE_SHORT;
 
 public class DeleteWalletActivity extends BaseActivity implements CompoundButton.OnCheckedChangeListener {
 
@@ -108,7 +103,7 @@ public class DeleteWalletActivity extends BaseActivity implements CompoundButton
             case R.id.btn_forward:
                 if (!TextUtils.isEmpty(deleteWalletType)) {
                     if (deleteWalletType.contains("watch") || deleteWalletType.contains("hw")) {
-                        //删除观察钱包
+                        // 删除观察钱包
                         deleteWatchWallet();
                     } else {
                         //删除除观察钱包以外的钱包
@@ -123,27 +118,60 @@ public class DeleteWalletActivity extends BaseActivity implements CompoundButton
     }
 
     private void deleteOtherWallet() {
-        if (SOFT_HD_PASS_TYPE_SHORT.equals(preferences.getString(SOFT_HD_PASS_TYPE, SOFT_HD_PASS_TYPE_SHORT))) {
-            intent = new Intent(this, SetHDWalletPassActivity.class);
-        } else {
-            intent = new Intent(this, SetLongPassActivity.class);
+        if ("deleteSingleWallet".equals(importHdword) && !isBackup) {
+            // 没备份提示备份
+            new BackupRequireDialog().show(getSupportFragmentManager(), "backup_require");
+            return;
         }
+        startActivity(new Intent(this, SoftPassActivity.class));
+    }
+    @Subscribe
+    public void onGotPass(GotPassEvent event) {
         if ("deleteSingleWallet".equals(importHdword)) {
-            if (isBackup) {
-                intent.putExtra("importHdword", "deleteSingleWallet");
-                intent.putExtra("walletName", walletName);
-                startActivity(intent);
-            } else {
-                //没备份提示备份
-                dontBackup(this, R.layout.confrim_delete_hdwallet);
-            }
+           deleteSingleWallet(event.getPassword());
+       } else if (!Strings.isNullOrEmpty(deleteHdWalletName)) {
+            deleteAllWallet(event.getPassword());
+       }
+    }
+
+    public void onDeleteSuccess(String walletName) {
+        mToast(getString(R.string.delete_succse));
+        PreferencesManager.remove(this, Constant.WALLETS, walletName);
+        EventBus.getDefault().post(new LoadOtherWalletEvent());
+        finish();
+    }
+    private void deleteSingleWallet(String password) {
+        String keyName = PreferencesManager.get(this, "Preferences", Constant.CURRENT_SELECTED_WALLET_NAME, "").toString();
+        PyResponse<Void> response = PyEnv.deleteWallet(password, keyName);
+        String errors = response.getErrors();
+        if (Strings.isNullOrEmpty(errors)) {
+            onDeleteSuccess(walletName);
         } else {
-            intent.putExtra("importHdword", "deleteAllWallet");
-            intent.putExtra("deleteHdWalletName", deleteHdWalletName);
-            startActivity(intent);
+            mlToast(errors);
         }
     }
 
+    private void deleteAllWallet(String password) {
+        ArrayList<String> hd = new ArrayList<>();
+        Map<String, ?> jsonToMap = PreferencesManager.getAll(this, Constant.WALLETS);
+        jsonToMap.entrySet().forEach(stringEntry -> {
+            LocalWalletInfo info = LocalWalletInfo.objectFromData(stringEntry.getValue().toString());
+            String type = info.getType();
+            String name = info.getName();
+            if ("btc-hd-standard".equals(type) || "btc-derived-standard".equals(type)) {
+                hd.add(name);
+            }
+        });
+        PyResponse<Void> response = PyEnv.deleteWallet(password, deleteHdWalletName);
+        String errors = response.getErrors();
+        if (Strings.isNullOrEmpty(errors)) {
+            hd.forEach((name) -> {PreferencesManager.remove(this, Constant.WALLETS, name);});
+            onDeleteSuccess(deleteHdWalletName);
+        } else {
+//            mToast(getString(R.string.delete_succse));
+            mlToast(errors);
+        }
+    }
     private void deleteWatchWallet() {
         String keyName = PreferencesManager.get(this, "Preferences", Constant.CURRENT_SELECTED_WALLET_NAME, "").toString();
         try {
@@ -155,29 +183,9 @@ public class DeleteWalletActivity extends BaseActivity implements CompoundButton
         }
         mToast(getString(R.string.delete_succse));
         PreferencesManager.remove(this, Constant.WALLETS, keyName);
-        PyEnv.loadLocalWalletInfo(this);
         EventBus.getDefault().post(new LoadOtherWalletEvent());
         EventBus.getDefault().post(new SecondEvent("finish"));
         finish();
-    }
-
-    private void dontBackup(Context context, @LayoutRes int resource) {
-        //set see view
-        View view = View.inflate(context, resource, null);
-        Dialog dialogBtoms = new Dialog(context, R.style.dialog);
-        view.findViewById(R.id.btn_back).setOnClickListener(v -> {
-            finish();
-        });
-        dialogBtoms.setContentView(view);
-        Window window = dialogBtoms.getWindow();
-        //set pop_up size
-        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-        //set locate
-        window.setGravity(Gravity.BOTTOM);
-        //set animal
-        window.setWindowAnimations(R.style.AnimBottom);
-        dialogBtoms.setCanceledOnTouchOutside(true);
-        dialogBtoms.show();
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")

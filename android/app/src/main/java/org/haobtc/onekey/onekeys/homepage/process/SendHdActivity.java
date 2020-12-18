@@ -47,8 +47,7 @@ import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.event.GetFeeEvent;
 import org.haobtc.onekey.event.InputPassSendEvent;
 import org.haobtc.onekey.manager.PyEnv;
-import org.haobtc.onekey.onekeys.dialog.SetHDWalletPassActivity;
-import org.haobtc.onekey.onekeys.dialog.SetLongPassActivity;
+import org.haobtc.onekey.ui.activity.SoftPassActivity;
 import org.haobtc.onekey.ui.activity.VerifyPinActivity;
 import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.ui.dialog.CustomizeFeeDialog;
@@ -67,8 +66,6 @@ import butterknife.OnTextChanged;
 
 import static org.haobtc.onekey.constant.Constant.CURRENT_CURRENCY_GRAPHIC_SYMBOL;
 import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
-import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE;
-import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE_SHORT;
 import static org.haobtc.onekey.constant.Constant.WALLET_BALANCE;
 
 /**
@@ -524,15 +521,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
             broadcastTx(info.getTx());
         } else {
             // 获取主密码
-            if (SOFT_HD_PASS_TYPE_SHORT.equals(preferences.getString(SOFT_HD_PASS_TYPE, SOFT_HD_PASS_TYPE_SHORT))) {
-                Intent intent = new Intent(this, SetHDWalletPassActivity.class);
-                intent.putExtra("importHdword", "send");
-                startActivity(intent);
-            } else {
-                Intent intent = new Intent(this, SetLongPassActivity.class);
-                intent.putExtra("importHdword", "send");
-                startActivity(intent);
-            }
+            startActivity(new Intent(this, SoftPassActivity.class));
         }
     }
 
