@@ -67,11 +67,12 @@ public class FileUtils {
         }
     }
 
-    //读取指定目录下的所有TXT文件的文件内容
     public static String getFileContent(File file) {
         String content = "";
-        if (!file.isDirectory()) {  //检查此路径名的文件是否是一个目录(文件夹)
-            if (file.getName().endsWith("txt")) {//文件格式为""文件
+        //检查此路径名的文件是否是一个目录(文件夹)
+        if (!file.isDirectory()) {
+            //文件格式为""文件
+            if (file.getName().endsWith("txt")) {
                 try {
                     InputStream instream = new FileInputStream(file);
                     if (instream != null) {

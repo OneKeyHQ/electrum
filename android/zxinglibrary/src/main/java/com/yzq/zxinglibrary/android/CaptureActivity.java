@@ -379,5 +379,4 @@ public class CaptureActivity extends AppCompatActivity implements SurfaceHolder.
         }
     }
 
-
 }
