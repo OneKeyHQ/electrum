@@ -841,21 +841,21 @@ class AndroidCommands(commands.Commands):
         return coins
 
     def get_best_block_by_feerate(self, feerate, list):
-        if feerate < list[25]:
-            return 30
-        elif list[25] < feerate < list[10]:
+        if feerate < list[20]:
             return 25
-        elif list[10] < feerate < list[5]:
+        elif list[20] <= feerate < list[10]:
+            return 20
+        elif list[10] <= feerate < list[5]:
             return 10
-        elif list[5] < feerate < list[4]:
+        elif list[5] <= feerate < list[4]:
             return 5
-        elif list[4] < feerate < list[3]:
+        elif list[4] <= feerate < list[3]:
             return 4
-        elif list[3] < feerate < list[2]:
+        elif list[3] <= feerate < list[2]:
             return 3
-        elif list[2] < feerate < list[1]:
+        elif list[2] <= feerate < list[1]:
             return 2
-        elif list[1] < feerate:
+        elif list[1] <= feerate:
             return 1
 
 
@@ -894,6 +894,9 @@ class AndroidCommands(commands.Commands):
             self.config.set_key("fee_info_list", fee_info_list)
         else:
             fee_info_list = self.config.get("fee_info_list", fee_info_list)
+            if fee_info_list is None:
+                fee_info = read_json('server_config.json', {})
+                fee_info_list = fee_info['feerate_info']
         return fee_info_list
 
     def get_fee_by_feerate(self, outputs, message, feerate, customer=None):
@@ -931,13 +934,13 @@ class AndroidCommands(commands.Commands):
             tx_details = self.wallet.get_tx_info(tx)
             print("tx_details 1111111 = %s" % json.dumps(tx_details))
 
-            # fee_info_list = self.get_block_info()
-            # block = self.get_best_block_by_feerate(float(feerate) * 1000, fee_info_list)
+            fee_info_list = self.get_block_info()
+            block = self.get_best_block_by_feerate(float(feerate) * 1000, fee_info_list)
             ret_data = {
                 'amount': self.format_amount(tx_details.amount),
                 'size': size,
                 'fee': self.format_amount(tx_details.fee),
-                'time': 2 * BTC_BLOCK_INTERVAL_TIME,
+                'time': block * BTC_BLOCK_INTERVAL_TIME,
                 'tx': str(self.tx)
             }
             return json.dumps(ret_data)
@@ -1773,7 +1776,7 @@ class AndroidCommands(commands.Commands):
             return None
         except BaseException as e:
             raise e
-    
+
     ##connection with terzorlib#########################
     def hardware_verify(self, msg, path='android_usb'):
         '''
@@ -2031,6 +2034,7 @@ class AndroidCommands(commands.Commands):
         :return: xpub str
         '''
         client = self.get_client(path=path)
+        self.hw_info['device_id'] = client.features.device_id
         if account_id is None:
             account_id = 0
         if coin == 'btc':
@@ -2047,14 +2051,14 @@ class AndroidCommands(commands.Commands):
                 xpub = client.get_xpub(derivation, _type, creating=is_creating)
             except Exception as e:
                 raise BaseException(e)
-            return xpub, client.features.device_id
+            return xpub
         else:
             derivation = bip44_derivation(account_id, bip43_purpose=self.coins[coin]['addressType'], coin=self.coins[coin]['coinId'])
             try:
                 xpub = client.get_eth_xpub(derivation)
             except Exception as e:
                 raise BaseException(e)
-            return xpub, client.features.device_id
+            return xpub
 
     def create_hw_derived_wallet(self, path='android_usb', _type='p2wpkh', is_creating=True, coin='btc'):
         '''
@@ -2063,15 +2067,16 @@ class AndroidCommands(commands.Commands):
         :param _type: p2wsh/p2wsh/p2pkh/p2pkh-p2sh as str
         :return: xpub as str
         '''
-        xpub, device_id = self.get_xpub_from_hw(path=path, _type=_type)
+        xpub = self.get_xpub_from_hw(path=path, _type=_type)
         list_info = self.get_derived_list(xpub)
+        self.hw_info['xpub'] = xpub
         if list_info is None:
-            self.hw_info = {"xpub": xpub, "account_id": 0, "device_id": device_id}
+            self.hw_info['account_id'] = 0
             return xpub
         if len(list_info) == 0:
             raise BaseException(DerivedWalletLimit())
         dervied_xpub = self.get_xpub_from_hw(path=path, _type=_type, account_id=list_info[0])
-        self.hw_info = {"xpub":xpub, "account_id":list_info[0], "device_id": device_id}
+        self.hw_info['account_id'] = list_info[0]
         return dervied_xpub
 
 
@@ -2816,7 +2821,7 @@ class AndroidCommands(commands.Commands):
             if coin == 'btc':
                 print(f"xpubs=========={m, n, xpubs}")
                 self.set_multi_wallet_info(name, m, n)
-                self.add_xpub(xpubs[0], xpubs[1])
+                self.add_xpub(xpubs, self.hw_info['device_id'])
 
                 temp_path = self.get_temp_file()
                 path = self._wallet_path(temp_path)
@@ -2858,8 +2863,8 @@ class AndroidCommands(commands.Commands):
                                              bip39_derivation=bip39_derivation,
                                              passphrase=passphrase, coin=coin)
                     else:
-                        xpub, device_id = self.get_xpub_from_hw(path=path, _type='p2wpkh', account_id=derived_info['account_id'], coin=coin)
-                        self.recovery_import_create_hw_wallet(derived_info['account_id'], derived_info['name'], 1, 1, [xpub, device_id], coin=coin)
+                        xpub = self.get_xpub_from_hw(path=path, _type='p2wpkh', account_id=derived_info['account_id'], coin=coin)
+                        self.recovery_import_create_hw_wallet(derived_info['account_id'], derived_info['name'], 1, 1, xpub, coin=coin)
                     derived.update_recovery_info(derived_info['account_id'])
 
         derived.reset_list()
@@ -2872,8 +2877,8 @@ class AndroidCommands(commands.Commands):
                     self.recovery_create("%s_derived_%s" % (coin, i), seed, password=password,
                                  bip39_derivation=bip39_derivation, passphrase=passphrase, coin=coin)
                 else:
-                    xpub, device_id = self.get_xpub_from_hw(path, _type='p2wpkh', account_id=i, coin=coin)
-                    self.recovery_import_create_hw_wallet(i, "%s_hd_derived_%s" % (coin, i), 1, 1, [xpub, device_id], coin=coin)
+                    xpub = self.get_xpub_from_hw(path, _type='p2wpkh', account_id=i, coin=coin)
+                    self.recovery_import_create_hw_wallet(i, "%s_hd_derived_%s" % (coin, i), 1, 1, xpub, coin=coin)
         # if hw:
         #     ##TODO recovery multi info from server, need test
         #     info = self.get_wallet_info_from_server(hd_wallet.get_keystore().xpub)
@@ -3454,10 +3459,14 @@ class AndroidCommands(commands.Commands):
         return have_tx_flag
 
     def reset_config_info(self):
-        self.config.set_key("all_wallet_type_info", {})
-        self.config.set_key("derived_info", {})
-        self.config.set_key("backupinfo", {})
-        self.config.set_key("decimal_point", 5)
+        self.local_wallet_info = {}
+        self.config.set_key("all_wallet_type_info", self.local_wallet_info)
+        self.derived_info = {}
+        self.config.set_key("derived_info", self.derived_info)
+        self.backup_info = {}
+        self.config.set_key("backupinfo", self.backup_info)
+        self.decimal_point = 5
+        self.config.set_key("decimal_point", self.decimal_point)
         self.config.set_key("language", "zh_CN")
         self.config.set_key("sync_server_host", "39.105.86.163:8080")
         self.config.set_key("show_addr_info", {})

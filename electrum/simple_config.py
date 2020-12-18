@@ -20,7 +20,7 @@ from .i18n import _
 from .logging import get_logger, Logger
 
 
-FEE_ETA_TARGETS = [25, 10, 5, 4, 3, 2, 1]
+FEE_ETA_TARGETS = [20, 10, 5, 4, 3, 2, 1]
 FEE_DEPTH_TARGETS = [10000000, 5000000, 2000000, 1000000, 500000, 200000, 100000]
 FEE_LN_ETA_TARGET = 2  # note: make sure the network is asking for estimates for this target
 
