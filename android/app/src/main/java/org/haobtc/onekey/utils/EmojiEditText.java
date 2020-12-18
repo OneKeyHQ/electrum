@@ -9,7 +9,7 @@ import android.util.AttributeSet;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class EmojiEditText extends EditText {
+public class EmojiEditText extends androidx.appcompat.widget.AppCompatEditText {
     // 输入表情前的光标位置
     private int cursorPos; // 输入表情前EditText中的文本
     private String inputAfterText; // 是否重置了EditText的内容

@@ -10,7 +10,7 @@ import android.widget.EditText;
 
 import org.haobtc.onekey.R;
 
-public class PasswordInputView extends EditText {
+public class PasswordInputView extends androidx.appcompat.widget.AppCompatEditText {
     private int textLength;
 
     private int borderColor;

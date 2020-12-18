@@ -18,7 +18,7 @@ import android.widget.ImageView;
  * Created by 小米粒 on 2018/12/19.
  */
 
-public class XCRoundRectImageView extends ImageView {
+public class XCRoundRectImageView extends androidx.appcompat.widget.AppCompatImageView {
     private Paint paint;
 
     public XCRoundRectImageView(Context context) {

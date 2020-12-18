@@ -360,57 +360,59 @@
 
                 </LinearLayout>
 
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/delete_ll"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
+                <LinearLayout
+                    android:id="@+id/delete_ll"
                     android:layout_width="match_parent"
-                    android:layout_height="65dp"
-                    android:background="@color/bk_page"
-                    android:paddingStart="@dimen/dp_20"
-                    android:paddingTop="@dimen/dp_40"
-                    android:paddingEnd="@dimen/dp_20"
-                    android:text="@string/danger"
-                    android:textColor="@color/text_six"
-                    android:textSize="@dimen/sp_14" />
-
-                <RelativeLayout
-                    android:id="@+id/rel_delete_wallet"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/dp_70"
-                    android:background="@color/button_bk_ddake">
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/delete_tv"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginStart="@dimen/dp_20"
-                        android:text="@string/delete_wallet"
-                        android:textColor="@color/text_ten"
-                        android:textSize="@dimen/sp_16" />
+                        android:layout_width="match_parent"
+                        android:layout_height="65dp"
+                        android:background="@color/bk_page"
+                        android:paddingStart="@dimen/dp_20"
+                        android:paddingTop="@dimen/dp_40"
+                        android:paddingEnd="@dimen/dp_20"
+                        android:text="@string/danger"
+                        android:textColor="@color/text_six"
+                        android:textSize="@dimen/sp_14" />
 
-                    <ImageView
-                        android:layout_width="@dimen/dp_28"
-                        android:layout_height="@dimen/dp_28"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginEnd="@dimen/dp_10"
-                        android:src="@drawable/right_arrow_small" />
+                    <RelativeLayout
+                        android:id="@+id/rel_delete_wallet"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/dp_70"
+                        android:background="@color/button_bk_ddake">
 
-                </RelativeLayout>
+                        <TextView
+                            android:id="@+id/delete_tv"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginStart="@dimen/dp_20"
+                            android:text="@string/delete_wallet"
+                            android:textColor="@color/text_ten"
+                            android:textSize="@dimen/sp_16" />
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:background="@color/text_seven" />
+                        <ImageView
+                            android:layout_width="@dimen/dp_28"
+                            android:layout_height="@dimen/dp_28"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:layout_marginEnd="@dimen/dp_10"
+                            android:src="@drawable/right_arrow_small" />
+
+                    </RelativeLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:background="@color/text_seven" />
+                </LinearLayout>
+
             </LinearLayout>
+
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </LinearLayout>

@@ -90,8 +90,6 @@ public class LanguageSettingActivity extends BaseActivity {
                 imgEnglish.setVisibility(View.GONE);
                 changeLanguage(Constant.Chinese);
                 break;
-            case R.id.radio_character:
-                break;
             case R.id.radio_system:
             case R.id.radio_english:
                 mTextEnglish();
@@ -103,11 +101,8 @@ public class LanguageSettingActivity extends BaseActivity {
                 imgEnglish.setVisibility(View.VISIBLE);
                 changeLanguage(Constant.English);
                 break;
-            case R.id.radio_Korean:
-                break;
-            case R.id.radio_Japanese:
-                break;
             default:
+                break;
         }
     }
 
