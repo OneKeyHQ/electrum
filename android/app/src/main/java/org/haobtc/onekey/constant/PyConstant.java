@@ -204,4 +204,9 @@ public final class PyConstant {
     public static final String CREATE_WALLET = "create";
     public static final String EXPORT_PRIVATE_KEY = "export_privkey";
     public static final String HD_DERIVED = "create_derived_wallet";
+    /**
+     * 重置App 接口
+     */
+    public static final String RESET_APP = "reset_wallet_info";
+
 }

@@ -210,6 +210,7 @@ public class HdWalletDetailActivity extends BaseActivity {
                         if (!isBackup) {
                             showBackDialog();
                         } else {
+//                            doSelect();
                         }
                     }
                 }, CustomReSetBottomPopup.deleteHdChildren)).show();

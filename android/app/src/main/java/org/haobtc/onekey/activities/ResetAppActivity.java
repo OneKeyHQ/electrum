@@ -20,9 +20,9 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.aop.SingleClick;
-import org.haobtc.onekey.constant.ApiService;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.FileNameConstant;
+import org.haobtc.onekey.constant.PyConstant;
 import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.ui.dialog.custom.CustomReSetBottomPopup;
 import org.haobtc.onekey.utils.Daemon;
@@ -105,7 +105,7 @@ public class ResetAppActivity extends BaseActivity implements OnCheckedChangeLis
                     PreferencesManager.getSharedPreferences(MyApplication.getInstance(), FileNameConstant.BLE_INFO).edit().clear().apply();
                     PreferencesManager.getSharedPreferences(MyApplication.getInstance(), Constant.WALLETS).edit().clear().apply();
                     try {
-                        Daemon.commands.callAttr(ApiService.RESET_APP);
+                        Daemon.commands.callAttr(PyConstant.RESET_APP);
                         mHandler.sendEmptyMessage(Reset_Code_OK);
                     } catch (Exception e) {
                         Message message = new Message();

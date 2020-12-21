@@ -22,6 +22,7 @@ import org.haobtc.onekey.ui.activity.SoftPassActivity;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import dr.android.utils.LogUtil;
 
 public class CreateWalletChooseTypeActivity extends BaseActivity {
 
@@ -29,6 +30,7 @@ public class CreateWalletChooseTypeActivity extends BaseActivity {
     RelativeLayout relDeriveHd;
     private String name;
     private int type;
+    private int selectWalletType;
 
     @Override
     public int getLayoutId() {
@@ -81,11 +83,11 @@ public class CreateWalletChooseTypeActivity extends BaseActivity {
     public void onGotPass(GotPassEvent event) {
        switch (type) {
            case R.id.rel_single_wallet:
-               PyEnv.createWallet(this, name, event.getPassword(), null, null);
+               PyEnv.createWallet(this, name, event.getPassword(), null, null, selectWalletType);
                finish();
                break;
            case R.id.rel_derive_hd:
-               PyResponse<Void> response = PyEnv.createDerivedWallet(name, event.getPassword(), "btc");
+               PyResponse<Void> response = PyEnv.createDerivedWallet(name, event.getPassword(), "btc", selectWalletType);
                String error = response.getErrors();
                if (Strings.isNullOrEmpty(error)) {
                    mIntent(HomeOneKeyActivity.class);
@@ -99,6 +101,8 @@ public class CreateWalletChooseTypeActivity extends BaseActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGotName(NameSettedEvent event) {
         name = event.getName();
+        selectWalletType = event.type;
+        LogUtil.d(" 选择钱包类型--》" + selectWalletType);
         startActivity(new Intent(this, SoftPassActivity.class));
     }
     @Override

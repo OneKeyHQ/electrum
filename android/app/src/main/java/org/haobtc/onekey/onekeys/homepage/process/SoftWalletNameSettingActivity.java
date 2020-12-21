@@ -1,5 +1,7 @@
 package org.haobtc.onekey.onekeys.homepage.process;
 
+import android.content.Context;
+import android.content.Intent;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -12,6 +14,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.aop.SingleClick;
+import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.NameSettedEvent;
 
 import butterknife.BindView;
@@ -19,24 +22,31 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class SoftWalletNameSettingActivity extends BaseActivity implements TextWatcher {
-
     @BindView(R.id.edit_set_wallet_name)
     EditText editSetWalletName;
     @BindView(R.id.btn_import)
     Button btnImport;
+    private int type;
+
+    public static void gotoSoftWalletNameSettingActivity (Context context, int type) {
+        Intent intent = new Intent(context, SoftWalletNameSettingActivity.class);
+        intent.putExtra(Constant.WALLET_TYPE, type);
+        context.startActivity(intent);
+    }
 
     @Override
-    public int getLayoutId() {
+    public int getLayoutId () {
         return R.layout.activity_set_derive_wallet_name;
     }
 
     @Override
-    public void initView() {
+    public void initView () {
         ButterKnife.bind(this);
     }
 
     @Override
     public void initData() {
+        type = getIntent().getIntExtra(Constant.WALLET_TYPE, 0);
         editSetWalletName.addTextChangedListener(this);
     }
 
@@ -52,7 +62,9 @@ public class SoftWalletNameSettingActivity extends BaseActivity implements TextW
                     mToast(getString(R.string.please_input_walletname));
                     return;
                 }
-                EventBus.getDefault().post(new NameSettedEvent(editSetWalletName.getText().toString()));
+                NameSettedEvent nameSettedEvent = new NameSettedEvent(editSetWalletName.getText().toString());
+                nameSettedEvent.type = type;
+                EventBus.getDefault().post(nameSettedEvent);
                 finish();
                 break;
         }

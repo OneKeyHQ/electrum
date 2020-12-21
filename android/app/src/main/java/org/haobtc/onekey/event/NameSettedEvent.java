@@ -8,6 +8,7 @@ package org.haobtc.onekey.event;
 public class NameSettedEvent {
 
     private String name;
+    public int type;
     public NameSettedEvent(String name) {
         this.name = name;
     }

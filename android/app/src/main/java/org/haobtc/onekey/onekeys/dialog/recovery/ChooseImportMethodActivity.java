@@ -113,10 +113,10 @@ public class ChooseImportMethodActivity extends BaseActivity {
         if (!Strings.isNullOrEmpty(name) && !Strings.isNullOrEmpty(data)) {
             switch (currentAction) {
                 case R.id.rel_import_help:
-                    PyEnv.createWallet(this, name, event.getPassword(), null, data);
+                    PyEnv.createWallet(this, name, event.getPassword(), null, data,-1);
                     break;
                 case R.id.rel_import_private:
-                    PyEnv.createWallet(this, name, event.getPassword(), data, null);
+                    PyEnv.createWallet(this, name, event.getPassword(), data, null,-1);
                     break;
                 default:
             }

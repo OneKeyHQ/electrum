@@ -1,5 +1,4 @@
 package org.haobtc.onekey.manager;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -29,7 +28,6 @@ import org.haobtc.onekey.bean.TransactionInfoBean;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.PyConstant;
 import org.haobtc.onekey.event.CreateSuccessEvent;
-import org.haobtc.onekey.event.DeleteSuccessEvent;
 import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.event.RefreshEvent;
 import org.haobtc.onekey.exception.HardWareExceptions;
@@ -51,6 +49,7 @@ import java.util.concurrent.TimeUnit;
 import cn.com.heaton.blelibrary.ble.Ble;
 import cn.com.heaton.blelibrary.ble.callback.BleWriteCallback;
 import cn.com.heaton.blelibrary.ble.model.BleDevice;
+import dr.android.utils.LogUtil;
 
 import static org.haobtc.onekey.activities.service.CommunicationModeSelector.protocol;
 
@@ -58,14 +57,11 @@ import static org.haobtc.onekey.activities.service.CommunicationModeSelector.pro
  * @author liyan
  */
 public final class PyEnv {
-
     private static final String TAG = PyEnv.class.getSimpleName();
-
     public static PyObject sBle, sCustomerUI, sNfc, sUsb, sBleHandler, sNfcHandler, sBleTransport,
             sNfcTransport, sUsbTransport, sProtocol, sCommands;
     public static FutureTask<PyObject> futureTask;
     private static ExecutorService mexecutorService = Executors.newSingleThreadExecutor();
-
 
     static {
         sNfc = Global.py.getModule(PyConstant.TREZORLIB_TRANSPORT_NFC);
@@ -94,7 +90,6 @@ public final class PyEnv {
     }
 
     public static void cancelPinInput() {
-
         sCustomerUI.put(PyConstant.USER_CANCEL, 1);
     }
 
@@ -129,7 +124,6 @@ public final class PyEnv {
     public static void sNotify() {
         sProtocol.callAttr(PyConstant.NOTIFICATION);
     }
-
 
     public static void bleCancel() {
         sBle.put(PyConstant.IS_CANCEL, true);
@@ -227,7 +221,6 @@ public final class PyEnv {
      * 2. 除上中情形，直接覆盖原有信息
      */
     private static HardwareFeatures dealWithConnectedDevice(Context context, HardwareFeatures features) {
-
         if (features.isInitialized()) {
             HardwareFeatures old;
             String backupMessage = "";
@@ -284,7 +277,6 @@ public final class PyEnv {
      */
     public static void recoveryWallet(BaseActivity activity, String xPubs, boolean hd) {
         List<BalanceInfo> infos = new ArrayList<>();
-
         try {
             mexecutorService.execute(() -> {
                 String walletsInfo = sCommands.callAttr(PyConstant.CREATE_WALLET_BY_XPUB, "", 1, 1, xPubs, new Kwarg("hd", hd)).toString();
@@ -343,7 +335,6 @@ public final class PyEnv {
     /**
      * 查看当前钱包的备份状态
      */
-
     public static boolean hasBackup(Context context) {
         String keyName = PreferencesManager.get(context, "Preferences", Constant.CURRENT_SELECTED_WALLET_NAME, "").toString();
         try {
@@ -364,6 +355,7 @@ public final class PyEnv {
         }
         return false;
     }
+
     /**
      * 校验地址格式
      * @param address 待校验的地址
@@ -374,6 +366,7 @@ public final class PyEnv {
         }
         return false;
     }
+
     /**
      * 创建HD钱包
      * @param passwd APP主密码
@@ -416,6 +409,7 @@ public final class PyEnv {
             }
         });
     }
+
     /**
      * 确认恢复
      * @param nameList 要恢复钱包的名称列表
@@ -429,12 +423,14 @@ public final class PyEnv {
         }
         return false;
     }
+
     /**
      * 设置固件升级进度的推送句柄
      * */
     public static void setProgressReporter(AsyncTask<String, Object, Void> task) {
         sProtocol.put(PyConstant.PROCESS_REPORTER, task);
     }
+
     /**
      * 重置固件断点续传的状态
      * */
@@ -443,6 +439,7 @@ public final class PyEnv {
         protocol.put(PyConstant.OFFSET, 0);
         protocol.put(PyConstant.PROCESS_REPORTER, null);
     }
+
     /**
      * 固件升级接口
      * @param path 升级文件路径
@@ -457,6 +454,7 @@ public final class PyEnv {
         }
         return response;
     }
+
     /**
      * 获取交易详情
      * @param rawTx
@@ -472,6 +470,7 @@ public final class PyEnv {
         }
         return response;
     }
+
     /**
      * 获取费率详情
      * */
@@ -486,6 +485,7 @@ public final class PyEnv {
         }
         return response;
     }
+
     /**
      * 获取交易费
      * @param receiver 发送方
@@ -509,6 +509,7 @@ public final class PyEnv {
         }
         return response;
     }
+
     /**
      * 构建交易
      * @param tempTx 临时交易
@@ -535,14 +536,15 @@ public final class PyEnv {
     public static PyResponse<String> exchange(String value) {
         PyResponse<String> response = new PyResponse<>();
         try {
-           String result = sCommands.callAttr(PyConstant.EXCHANGE_RATE_CONVERSION, "base", value).toString();
-           response.setResult(result);
+            String result = sCommands.callAttr(PyConstant.EXCHANGE_RATE_CONVERSION, "base", value).toString();
+            response.setResult(result);
         } catch (Exception e) {
             response.setErrors(e.getMessage());
             e.printStackTrace();
         }
         return response;
     }
+
     /**
      * 广播交易
      * @param signedTx 已签名交易
@@ -557,6 +559,7 @@ public final class PyEnv {
         }
         return response;
     }
+
     /**
      * 签名交易
      * @param rawTx 未签名的交易
@@ -588,8 +591,8 @@ public final class PyEnv {
             e.printStackTrace();
         }
         return response;
-
     }
+
     /**
      * 校验签名
      * @param address 地址
@@ -607,6 +610,7 @@ public final class PyEnv {
         }
         return response;
     }
+
     /**
      * 删除hd钱包的备份标记
      * @param name 钱包名称
@@ -621,6 +625,7 @@ public final class PyEnv {
         }
         return response;
     }
+
     /**
      * 校验APP主密码
      * @param passwd APP主密码
@@ -651,6 +656,7 @@ public final class PyEnv {
         }
         return response;
     }
+
     /**
      * 导出助记词
      * @param password APP主密码
@@ -658,8 +664,8 @@ public final class PyEnv {
     public static PyResponse<String> exportMnemonics(String password) {
         PyResponse<String> response = new PyResponse<>();
         try {
-           String result = sCommands.callAttr(PyConstant.EXPORT_MNEMONICS, password, null).toString();
-           response.setResult(result);
+            String result = sCommands.callAttr(PyConstant.EXPORT_MNEMONICS, password, null).toString();
+            response.setResult(result);
         } catch (Exception e) {
             response.setErrors(e.getMessage());
             e.printStackTrace();
@@ -674,9 +680,15 @@ public final class PyEnv {
      * @param  mnemonics 助记词 optional
      * @param privateKey 私钥 optional
      * */
-    public static void createWallet(Context context, String walletName, String password, String privateKey, String mnemonics) {
+
+    public static void createWallet (Context context, String walletName, String password, String privateKey, String mnemonics, int purpose) {
         try {
-            String result = sCommands.callAttr(PyConstant.CREATE_WALLET, walletName, password, Strings.isNullOrEmpty(privateKey) ? new Kwarg("seed", mnemonics) : new Kwarg("privkeys", privateKey)).toString();
+            String result = "";
+            if (purpose != -1) {
+                result = sCommands.callAttr(PyConstant.CREATE_WALLET, walletName, password, Strings.isNullOrEmpty(privateKey) ? new Kwarg("seed", mnemonics) : new Kwarg("privkeys", privateKey), new Kwarg(Constant.Purpose, purpose)).toString();
+            } else {
+                result = sCommands.callAttr(PyConstant.CREATE_WALLET, walletName, password, Strings.isNullOrEmpty(privateKey) ? new Kwarg("seed", mnemonics) : new Kwarg("privkeys", privateKey)).toString();
+            }
             CreateWalletBean createWalletBean = CreateWalletBean.objectFromData(result);
             EventBus.getDefault().post(new CreateSuccessEvent(createWalletBean.getWalletInfo().get(0).getName()));
             context.startActivity(new Intent(context, HomeOneKeyActivity.class));
@@ -701,16 +713,17 @@ public final class PyEnv {
         }
         return response;
     }
+
     /**
      * 创建派生钱包
      * @param walletName 钱包名称
      * @param password APP 主密码
      * @param currencyType 币种类型
      * */
-    public static PyResponse<Void> createDerivedWallet(String walletName, String password, String currencyType) {
+    public static PyResponse<Void> createDerivedWallet (String walletName, String password, String currencyType, int purpose) {
         PyResponse<Void> response = new PyResponse<>();
         try {
-           String result = sCommands.callAttr(PyConstant.HD_DERIVED, walletName, password, currencyType).toString();
+            String result = sCommands.callAttr("create_derived_wallet", walletName, password, currencyType, purpose).toString();
             CreateWalletBean createWalletBean = CreateWalletBean.objectFromData(result);
             EventBus.getDefault().post(new CreateSuccessEvent(createWalletBean.getWalletInfo().get(0).getName()));
         } catch (Exception e) {
@@ -726,12 +739,13 @@ public final class PyEnv {
     public static PyResponse<String> exportPrivateKey(String password) {
         PyResponse<String> response = new PyResponse<>();
         try {
-           String result = sCommands.callAttr(PyConstant.EXPORT_PRIVATE_KEY, password).toString();
-           response.setResult(result);
+            String result = sCommands.callAttr(PyConstant.EXPORT_PRIVATE_KEY, password).toString();
+            response.setResult(result);
         } catch (Exception e) {
             response.setErrors(e.getMessage());
             e.printStackTrace();
         }
         return response;
     }
+
 }

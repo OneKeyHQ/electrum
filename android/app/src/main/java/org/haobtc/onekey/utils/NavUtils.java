@@ -6,6 +6,7 @@ import org.haobtc.onekey.activities.ResetAppActivity;
 import org.haobtc.onekey.activities.base.LunchActivity;
 import org.haobtc.onekey.activities.transaction.CheckChainDetailWebActivity;
 import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
+import org.haobtc.onekey.onekeys.homepage.process.SoftWalletNameSettingActivity;
 
 /**
  * @Description: 页面跳转的管理类
@@ -42,6 +43,10 @@ public class NavUtils {
 
     public static void gotoCheckChainDetailWebActivity (Context context, String loadWhere, String loadUrl) {
         CheckChainDetailWebActivity.gotoCheckChainDetailWebActivity(context, loadWhere, loadUrl);
+    }
+
+    public static void gotoSoftWalletNameSettingActivity (Context context, int type) {
+        SoftWalletNameSettingActivity.gotoSoftWalletNameSettingActivity(context, type);
     }
 
 }

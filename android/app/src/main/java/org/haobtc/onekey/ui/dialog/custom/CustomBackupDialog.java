@@ -51,7 +51,7 @@ public class CustomBackupDialog extends BottomPopupView {
     }
 
     @Override
-    public int getSourceLayoutResId () {
+    protected int getImplLayoutId () {
         return R.layout.confrim_delete_hdwallet;
     }
 
@@ -63,5 +63,7 @@ public class CustomBackupDialog extends BottomPopupView {
 
     public interface onClick {
         void onBack ();
+
     }
+
 }
