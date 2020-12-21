@@ -340,3 +340,5 @@
 "Derivations based on HD Root Mnemonics (recommended)" = "基于 HD 根助记词派生（推荐）";
 "The HD root mnemonic is derived" = "导出 HD 根助记词";
 "Delete all HD-derived wallets" = "删除所有 HD 派生钱包";
+"Enter the password" = "输入密码";
+"For the current purpose of observing the wallet, the initiated transfer shall be signed by scanning the code with the cold wallet holding the private key" = "当前为观察钱包，发起的转账需使用掌握该私钥的冷钱包进行扫码签名。";

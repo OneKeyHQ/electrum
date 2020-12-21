@@ -51,7 +51,7 @@
     NSDecimalNumber *resultN = [kTools decimalNumberHandlerWithValue:dn roundingMode:NSRoundUp scale:2];
     NSArray *wallet_info = dict[@"wallet_info"];
     self.allData  = [OKAllAssetsTableViewCellModel mj_objectArrayWithKeyValuesArray:wallet_info];
-    self.balanceLabel.text = [NSString stringWithFormat:@"%@%@",resultN,[balanceArray lastObject]];
+    self.balanceLabel.text = [NSString stringWithFormat:@"%@ %@",kWalletManager.currentFiatSymbol,resultN];
     self.showList = [NSArray arrayWithArray:self.allData];
     [self.tableView reloadData];
 }

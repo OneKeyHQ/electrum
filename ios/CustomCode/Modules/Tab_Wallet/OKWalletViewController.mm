@@ -103,6 +103,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+
     [self stupUI];
     [self showFirstUse];
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notiWalletCreateComplete:) name:kNotiWalletCreateComplete object:nil];
@@ -594,7 +595,7 @@
 #pragma mark - 收款
 - (IBAction)receiveBtnClick:(UIButton *)sender {
     OKReceiveCoinViewController *receiveCoinVc = [OKReceiveCoinViewController receiveCoinViewController];
-    receiveCoinVc.coinType = COIN_BTC;
+    receiveCoinVc.coinType = kWalletManager.currentWalletInfo.coinType;
     [self.navigationController pushViewController:receiveCoinVc animated:YES];
 }
 #pragma mark - 钱包详情
@@ -608,7 +609,7 @@
 }
 #pragma mark - 添加资产
 - (IBAction)tableViewHeaderAddBtnClick:(UIButton *)sender {
-    NSLog(@"添加资产");
+    //NSLog(@"添加资产");
 }
 
 #pragma mark - NotiWalletCreateComplete

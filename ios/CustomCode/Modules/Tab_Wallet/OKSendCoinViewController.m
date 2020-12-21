@@ -190,8 +190,17 @@ typedef enum {
         OKWeakSelf(self)
         [kTools alertTips:MyLocalizedString(@"prompt", nil) desc:MyLocalizedString(@"The wallet has not been backed up. For the safety of your funds, please complete the backup before initiating the transfer using this address", nil) confirm:^{} cancel:^{
             [weakself.navigationController popViewControllerAnimated:YES];
-        } vc:weakself conLabel:MyLocalizedString(@"I have known_alert", nil) isOneBtn:YES];
+        } vc:weakself conLabel:MyLocalizedString(@"I have known_alert", nil) isOneBtn:NO];
     }
+    
+    if ([kWalletManager getWalletDetailType] == OKWalletTypeObserve) {
+        OKWeakSelf(self)
+        [kTools alertTips:MyLocalizedString(@"prompt", nil) desc:MyLocalizedString(@"For the current purpose of observing the wallet, the initiated transfer shall be signed by scanning the code with the cold wallet holding the private key", nil) confirm:^{} cancel:^{
+                       [weakself.navigationController popViewControllerAnimated:YES];
+        } vc:self conLabel:MyLocalizedString(@"confirm", nil) isOneBtn:NO];
+    }
+    
+    [self changeBtn];
 }
 
 - (void)refreshBalance:(NSNotification *)noti
@@ -296,6 +305,18 @@ typedef enum {
     } Cancel:nil];
 }
 
+- (void)changeBtn
+{
+    if (self.addressTextField.text.length > 0 && self.amountTextField.text.length > 0) {
+        self.sendBtn.alpha = 1.0;
+        self.sendBtn.userInteractionEnabled = YES;
+    }else{
+        self.sendBtn.alpha = 0.5;
+        self.sendBtn.userInteractionEnabled = NO;
+    }
+}
+
+
 - (BOOL)checkTextField
 {
     if (self.addressTextField.text.length == 0) {
@@ -303,13 +324,13 @@ typedef enum {
         return NO;
     }
 
-    if (self.amountTextField.text.length == 0) {
-        [kTools tipMessage:MyLocalizedString(@"Please enter the transfer amount", nil)];
+    id result =  [kPyCommandsManager callInterface:kInterfaceverify_legality parameter:@{@"data":self.addressTextField.text,@"flag":@"address"}];
+    if (result == nil) {
         return NO;
     }
     
-    if ([self.balanceLabel.text doubleValue] < [self.amountTextField.text doubleValue]) {
-        [kTools tipMessage:MyLocalizedString(@"Lack of balance", nil)];
+    if (self.amountTextField.text.length == 0) {
+        [kTools tipMessage:MyLocalizedString(@"Please enter the transfer amount", nil)];
         return NO;
     }
     
@@ -318,12 +339,11 @@ typedef enum {
         return NO;
     }
     
-    id result =  [kPyCommandsManager callInterface:kInterfaceverify_legality parameter:@{@"data":self.addressTextField.text,@"flag":@"address"}];
-    if (result != nil) {
-        return YES;
-    }else{
+    if ([self.balanceLabel.text doubleValue] < [self.amountTextField.text doubleValue]) {
+        [kTools tipMessage:MyLocalizedString(@"Lack of balance", nil)];
         return NO;
     }
+    
     return YES;
 }
 - (IBAction)sendBtnClick:(OKButton *)sender {
@@ -557,7 +577,7 @@ typedef enum {
 #pragma mark - UITextFieldDelegate
 - (void)textChange:(NSString *)str
 {
-    
+    [self changeBtn];
 }
 - (IBAction)restoreDefaultOptionsBtnClick:(UIButton *)sender {
     _custom = NO;

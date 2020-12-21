@@ -24,8 +24,15 @@
     self.iconImageView.image = [UIImage imageNamed:model.iconImage == nil ? @"token_btc" :model.iconImage];
     self.coinTypeLabel.text = [model.coinType uppercaseString];
     if (!kWalletManager.showAsset) {
-        self.balanceLabel.text = [NSString stringWithFormat:@"%@ %@",model.balance,kWalletManager.currentBitcoinUnit];
-        self.moneyLabel.text = model.money;
+        self.balanceLabel.text = [NSString stringWithFormat:@"%@",model.balance];
+        NSArray *moneyArray = [model.money componentsSeparatedByString:@" "];
+        NSString *money = [moneyArray firstObject];
+        if (money.length > 0 && money != nil) {
+            self.moneyLabel.text = [NSString stringWithFormat:@"≈ %@ %@",kWalletManager.currentFiatSymbol,money];
+        }else{
+            self.moneyLabel.text = @"";
+        }
+        
     }else{
         self.balanceLabel.text = @"****";
         self.moneyLabel.text = @"****";

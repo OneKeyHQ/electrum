@@ -56,5 +56,6 @@
 #import "UIViewController+Extension.h"
 #import "Sha256.h"
 #import "OKOneKeyPwdManager.h"
+#import "AESCrypt.h"
 
 #endif /* OneKeyImport_h */

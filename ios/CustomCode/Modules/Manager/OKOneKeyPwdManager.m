@@ -26,11 +26,14 @@ static dispatch_once_t once;
 
 - (void)saveOneKeyPassWord:(NSString *)pwd
 {
-    [KeyChainSaveUUID save:kSaveOneKeyPassword data:pwd];
+    NSString *pwdSecret =  [AESCrypt encrypt:pwd password:@""];
+    [KeyChainSaveUUID save:kSaveOneKeyPassword data:pwdSecret];
 }
 
 - (NSString *)getOneKeyPassWord
 {
-    return [KeyChainSaveUUID load:kSaveOneKeyPassword];
+    NSString *pwdSecret = [KeyChainSaveUUID load:kSaveOneKeyPassword];
+    NSString *pwd =  [AESCrypt decrypt:pwdSecret password:@""];
+    return pwd;
 }
 @end

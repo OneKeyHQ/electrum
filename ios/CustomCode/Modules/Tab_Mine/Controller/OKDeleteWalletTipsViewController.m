@@ -155,7 +155,7 @@
             [weakself exitApplication];
         } cancel:^{
             
-        } vc:self conLabel:MyLocalizedString(@"determine", nil) isOneBtn:NO];
+        } vc:self conLabel:MyLocalizedString(@"determine", nil) isOneBtn:YES];
     }
 }
 

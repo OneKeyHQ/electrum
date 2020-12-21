@@ -7,7 +7,6 @@
 
 #import "MainViewController.h"
 #import "AppDelegate.h"
-#import <CoreBluetooth/CoreBluetooth.h>
 #import "OKFirstUseViewController.h"
 
 @interface AppDelegate ()
@@ -37,8 +36,6 @@
     }
 }
 
-
-
 - (MainViewController *)mainVC {
     if (_mainVC == nil) {
         _mainVC = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateInitialViewController];
@@ -52,4 +49,5 @@
     self.mainVC.isTabSettingVC = isSettingVC;
     self.window.rootViewController = self.mainVC;
 }
+
 @end

@@ -160,7 +160,7 @@
 - (void)alertTips:(NSString *)title desc:(NSString *)desc confirm:(void(^)(void))cblock cancel:(void(^)(void))cancel vc:(UIViewController *)vc conLabel:(NSString *)conLabel isOneBtn:(BOOL)oneBtn
 {
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:desc preferredStyle:UIAlertControllerStyleAlert];
-    if (oneBtn) {
+    if (oneBtn == NO) {
         UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:MyLocalizedString(@"cancel", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
             if (cancel) {
                 cancel();
