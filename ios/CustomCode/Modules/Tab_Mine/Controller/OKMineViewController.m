@@ -21,7 +21,7 @@
 #import "OKBluetoothViewController.h"
 #import "OKOneKeyPwdManager.h"
 
-@interface OKMineViewController ()<UINavigationControllerDelegate,UITableViewDelegate,UITableViewDataSource,OKMineTableViewCellDelegate>
+@interface OKMineViewController ()<UINavigationControllerDelegate,UITableViewDelegate,UITableViewDataSource,OKMineTableViewCellDelegate,UIGestureRecognizerDelegate,UINavigationControllerDelegate>
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
 @property (nonatomic,strong)NSArray *allMenuData;
@@ -29,6 +29,8 @@
 @property (weak, nonatomic) IBOutlet UILabel *bottomtipsLabel;
 
 @property (nonatomic,strong)YZAuthID *authIDControl;
+
+@property (nonatomic,assign)BOOL isCanSideBack;
 
 @end
 
@@ -42,6 +44,26 @@
     [super viewDidLoad];
     [self stupUI];
 }
+
+-(void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    self.isCanSideBack = NO; //关闭ios右滑返回
+    if([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
+        self.navigationController.interactivePopGestureRecognizer.delegate = self;
+    }
+}
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    self.isCanSideBack=YES; //开启ios右滑返回
+    if([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
+        self.navigationController.interactivePopGestureRecognizer.delegate = nil;
+    }
+}
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer
+{
+    return self.isCanSideBack;
+}
+
 
 - (void)stupUI
 {
@@ -113,6 +135,7 @@
     [view addSubview:label];
     return view;
 }
+
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
     return 65;
@@ -220,7 +243,6 @@
 
 - (NSArray *)allMenuData
 {
-    if (!_allMenuData) {
         OKMineTableViewCellModel *model1 = [OKMineTableViewCellModel new];
         model1.menuName = MyLocalizedString(@"All assets", nil);
         model1.imageName = @"money";
@@ -302,8 +324,7 @@
                         break;
             }
         }];
-        _allMenuData = @[@[model1,model2],biologicaArray,@[model8,model9,model10,model11,model12]];
-    }
+    _allMenuData = @[@[model1,model2],biologicaArray,@[model8,model9,model10,model11,model12]];
     return _allMenuData;
 }
 #pragma mark - UINavigationControllerDelegate
@@ -322,29 +343,35 @@
 #pragma mark -mineTableViewCellModelDelegate
 - (void)mineTableViewCellModelDelegateSwitch:(UISwitch *)s
 {
-    OKWeakSelf(self)
-    [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
-        [weakself.authIDControl yz_showAuthIDWithDescribe:MyLocalizedString(@"OenKey request enabled", nil) BlockState:^(YZAuthIDState state, NSError *error) {
-            if (state == YZAuthIDStateNotSupport
-                || state == YZAuthIDStatePasswordNotSet || state == YZAuthIDStateTouchIDNotSet) { // 不支持TouchID/FaceID
-                [kTools tipMessage:MyLocalizedString(@"Does not support FaceID", nil)];
-                [s setOn:NO];
-            } else if(state == YZAuthIDStateFail) { // 认证失败
-                s.on = !s.isOn;
-            } else if(state == YZAuthIDStateTouchIDLockout) {   // 多次错误，已被锁定
-                s.on = !s.isOn;
-            } else if (state == YZAuthIDStateSuccess) { // TouchID/FaceID验证成功
-                kWalletManager.isOpenAuthBiological = s.on;
-                if (s.on == YES) {
-                    [kOneKeyPwdManager saveOneKeyPassWord:pwd];
+    NSArray *listDictArray =  [kPyCommandsManager callInterface:kInterfaceList_wallets parameter:@{}];
+    if (listDictArray.count > 0) {
+        OKWeakSelf(self)
+        [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
+            [weakself.authIDControl yz_showAuthIDWithDescribe:MyLocalizedString(@"OenKey request enabled", nil) BlockState:^(YZAuthIDState state, NSError *error) {
+                if (state == YZAuthIDStateNotSupport
+                    || state == YZAuthIDStatePasswordNotSet || state == YZAuthIDStateTouchIDNotSet) { // 不支持TouchID/FaceID
+                    [kTools tipMessage:MyLocalizedString(@"Does not support FaceID", nil)];
+                    [s setOn:NO];
+                } else if(state == YZAuthIDStateFail) { // 认证失败
+                    s.on = !s.isOn;
+                } else if(state == YZAuthIDStateTouchIDLockout) {   // 多次错误，已被锁定
+                    s.on = !s.isOn;
+                } else if (state == YZAuthIDStateSuccess) { // TouchID/FaceID验证成功
+                    kWalletManager.isOpenAuthBiological = s.on;
+                    if (s.on == YES) {
+                        [kOneKeyPwdManager saveOneKeyPassWord:pwd];
+                    }else{
+                        [kOneKeyPwdManager saveOneKeyPassWord:@""];
+                    }
                 }else{
-                    [kOneKeyPwdManager saveOneKeyPassWord:@""];
+                    s.on = !s.isOn;
                 }
-            }else{
-                s.on = !s.isOn;
-            }
+            }];
         }];
-    }];
+    }else{
+        s.on = !s.isOn;
+        [kTools tipMessage:MyLocalizedString(@"Please go to create a wallet first", nil)];
+    }
 }
 
 - (YZAuthID *)authIDControl {

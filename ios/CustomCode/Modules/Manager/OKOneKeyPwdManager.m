@@ -30,6 +30,11 @@ static dispatch_once_t once;
     [KeyChainSaveUUID save:kSaveOneKeyPassword data:pwdSecret];
 }
 
+- (void)deleteOneKeyPwd
+{
+    [KeyChainSaveUUID delete_:kSaveOneKeyPassword];
+}
+
 - (NSString *)getOneKeyPassWord
 {
     NSString *pwdSecret = [KeyChainSaveUUID load:kSaveOneKeyPassword];

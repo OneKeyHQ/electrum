@@ -16,12 +16,15 @@
 @property (weak, nonatomic) IBOutlet UIView *fromBg;
 @property (weak, nonatomic) IBOutlet UILabel *fromTitleLabel;
 @property (weak, nonatomic) IBOutlet UIView *fromAddressBg;
-@property (weak, nonatomic) IBOutlet UILabel *fromAddressLabel;
+
 
 @property (weak, nonatomic) IBOutlet UIView *toBg;
 @property (weak, nonatomic) IBOutlet UILabel *toTitleLabel;
 @property (weak, nonatomic) IBOutlet UIView *toAddressBg;
-@property (weak, nonatomic) IBOutlet UILabel *toAddressLabel;
+
+@property (weak, nonatomic) IBOutlet TYAttributedLabel *fromAddressLabel;
+
+@property (weak, nonatomic) IBOutlet TYAttributedLabel *toAddressLabel;
 
 
 
@@ -75,6 +78,9 @@
     [self.toBg setLayerBoarderColor:HexColor(0xF2F2F2) width:1 radius:20];
     [self.toAddressBg setLayerBoarderColor:HexColor(0xF2F2F2) width:1 radius:30];
     
+    self.fromAddressLabel.font = [UIFont systemFontOfSize:14];
+    self.toAddressLabel.font = [UIFont systemFontOfSize:14];
+    
 }
 
 - (void)loadList
@@ -90,10 +96,17 @@
     self.amountLabel.text = [amountStr containsString:@"-"] ? amountStr : [NSString stringWithFormat:@"+%@",amountStr];
     self.statusLabel.text = [self getStatusLabel:[self.txInfo safeStringForKey:@"tx_status"]];
     self.txNumLabel.text = [self.txInfo safeStringForKey:@"txid"];
+    
+    NSArray *input_addr_array = self.txInfo[@"input_addr"];
+    NSDictionary *input_addr_dict = [input_addr_array firstObject];
+    [self.fromAddressLabel appendText:[input_addr_dict safeStringForKey:@"address"]];
+    [self.fromAddressLabel appendImage:[UIImage imageNamed:@"copy_small"]];
+    
     NSArray *output_addr_array = self.txInfo[@"output_addr"];
     NSDictionary *output_addr_dict = [output_addr_array firstObject];
-    self.fromAddressLabel.text = @"-------------";
-    self.toAddressLabel.text  = [output_addr_dict safeStringForKey:@"addr"];
+    [self.toAddressLabel appendText:[output_addr_dict safeStringForKey:@"addr"]];
+    [self.toAddressLabel appendImage:[UIImage imageNamed:@"copy_small"]];
+    
     self.blockNumLabel.text = [self.txInfo safeStringForKey:@"height"];
     NSString *feeresult = [self.txInfo safeStringForKey:@"fee"];
     if ([feeresult containsString:@"("]) {
@@ -102,7 +115,8 @@
     }else{
         self.feeLabel.text = feeresult;
     }
-    self.memoLabel.text = [self.txInfo safeStringForKey:@"description"];
+    NSString *memo = [self.txInfo safeStringForKey:@"description"];
+    self.memoLabel.text = memo.length == 0 ? MyLocalizedString(@"There is no", nil):memo;
     self.txDateLabel.text = self.txDate;
     NSString *confirmationNum = @"--";
     NSArray *strlist =  [[self.txInfo safeStringForKey:@"tx_status"] componentsSeparatedByString:@" "];

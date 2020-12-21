@@ -591,8 +591,8 @@
                                             <rect key="frame" x="0.0" y="0.0" width="414" height="73"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="修改密码" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bq3-IC-SdK" customClass="OKLabel">
-                                                    <rect key="frame" x="20" y="26.666666666666671" width="65.333333333333329" height="20"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Change master password" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bq3-IC-SdK" customClass="OKLabel">
+                                                    <rect key="frame" x="20" y="26.666666666666671" width="184.33333333333334" height="20"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                     <color key="textColor" red="0.078431372550000003" green="0.16078431369999999" blue="0.23137254900000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                     <nil key="highlightedColor"/>
@@ -1870,7 +1870,7 @@
         <image name="close" width="24" height="24"/>
         <image name="copy_white" width="16" height="16"/>
         <image name="iconwriteselect" width="16.666666030883789" height="12.333333015441895"/>
-        <image name="info_tips" width="24" height="24"/>
+        <image name="info_tips" width="16" height="16"/>
         <image name="isselected" width="16" height="16"/>
         <image name="logo" width="38" height="73.333335876464844"/>
         <image name="logo_text" width="87.333335876464844" height="27.333333969116211"/>

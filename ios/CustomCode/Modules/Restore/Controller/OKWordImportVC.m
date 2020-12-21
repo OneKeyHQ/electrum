@@ -92,21 +92,21 @@
                        if (state == YZAuthIDStateNotSupport
                            || state == YZAuthIDStatePasswordNotSet || state == YZAuthIDStateTouchIDNotSet) { // 不支持TouchID/FaceID
                            [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
-                               [weakself createWallet:pwd mnemonicStr:mnemonicStr];
+                               [weakself createWallet:pwd mnemonicStr:mnemonicStr isInit:NO];
                            }];
                        } else if (state == YZAuthIDStateSuccess) {
                            NSString *pwd = [kOneKeyPwdManager getOneKeyPassWord];
-                           [weakself createWallet:pwd mnemonicStr:mnemonicStr];;
+                           [weakself createWallet:pwd mnemonicStr:mnemonicStr isInit:NO];
                        }
                    }];
                }else{
                    [OKValidationPwdController showValidationPwdPageOn:self isDis:NO complete:^(NSString * _Nonnull pwd) {
-                        [weakself createWallet:pwd mnemonicStr:mnemonicStr];
+                        [weakself createWallet:pwd mnemonicStr:mnemonicStr isInit:NO];
                    }];
                }
             }else{
                 OKPwdViewController *pwdVc = [OKPwdViewController setPwdViewControllerPwdUseType:OKPwdUseTypeInitPassword setPwd:^(NSString * _Nonnull pwd) {
-                    [weakself createWallet:pwd mnemonicStr:mnemonicStr];
+                    [weakself createWallet:pwd mnemonicStr:mnemonicStr isInit:YES];
                 }];
                 [self.navigationController pushViewController:pwdVc animated:YES];
             }
@@ -116,7 +116,7 @@
     }
 }
 
-- (void)createWallet:(NSString *)pwd mnemonicStr:(NSString *)mnemonicStr
+- (void)createWallet:(NSString *)pwd mnemonicStr:(NSString *)mnemonicStr isInit:(BOOL)isInit
 {
     NSString *seed = mnemonicStr;
     [kTools showIndicatorView];
@@ -134,15 +134,21 @@
                     if (kUserSettingManager.currentSelectPwdType.length > 0 && kUserSettingManager.currentSelectPwdType !=  nil) {
                         [kUserSettingManager setIsLongPwd:[kUserSettingManager.currentSelectPwdType boolValue]];
                     }
-                    OKBiologicalViewController *biologicalVc = [OKBiologicalViewController biologicalViewController:@"OKWalletViewController" pwd:pwd biologicalViewBlock:^{
-                        [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":pwd,@"backupshow":@"0",@"takecareshow":@"1"}];
-                    }];
-                    [kTools hideIndicatorView];
-                    [weakself.OK_TopViewController.navigationController pushViewController:biologicalVc animated:YES];
-                    
+                    if (!kWalletManager.isOpenAuthBiological && isInit) {
+                        OKBiologicalViewController *biologicalVc = [OKBiologicalViewController biologicalViewController:@"OKWalletViewController" pwd:pwd biologicalViewBlock:^{
+                            [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":pwd,@"backupshow":@"0",@"takecareshow":@"1"}];
+                        }];
+                        [kTools hideIndicatorView];
+                        [weakself.OK_TopViewController.navigationController pushViewController:biologicalVc animated:YES];
+                    }else{
+                        [self.OK_TopViewController dismissToViewControllerWithClassName:@"OKWalletViewController" animated:YES complete:^{
+                            [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":pwd,@"backupshow":@"0",@"takecareshow":@"1"}];
+                        }];
+                    }
                 }else{
                     OKFindFollowingWalletController *findFollowingWalletVc = [OKFindFollowingWalletController findFollowingWalletController];
                     findFollowingWalletVc.pwd = pwd;
+                    findFollowingWalletVc.isInit = isInit;
                     findFollowingWalletVc.createResultModel = createResultModel;
                     [kTools hideIndicatorView];
                     [weakself.OK_TopViewController.navigationController pushViewController:findFollowingWalletVc animated:YES];

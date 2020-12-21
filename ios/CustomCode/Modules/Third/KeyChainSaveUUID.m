@@ -69,7 +69,7 @@ NSString * const KEY_UDID_INSTEAD = @"com.bixin.udid.onekey";
     return ret;
 }
 
-+ (void)delete:(NSString *)service {
++ (void)delete_:(NSString *)service {
     NSMutableDictionary *keychainQuery = [self getKeychainQuery:service];
     SecItemDelete((CFDictionaryRef)keychainQuery);
 }

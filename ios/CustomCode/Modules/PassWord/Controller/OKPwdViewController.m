@@ -105,8 +105,8 @@ typedef enum {
     switch (_pwdUseType) {
         case OKPwdUseTypeInitPassword:
         {
-            self.navTitleFirstLabel.text = MyLocalizedString(@"Create a new wallet", nil);
-            self.navTitleSecondLabel.text = MyLocalizedString(@"Create a new wallet", nil);
+            self.navTitleFirstLabel.text = MyLocalizedString(@"Set the master password", nil);
+            self.navTitleSecondLabel.text = MyLocalizedString(@"Set the master password", nil);
             self.titleLabelFirst.text  = MyLocalizedString(@"Set the password", nil);
             self.titleDescLabelFirst.text = MyLocalizedString(@"Only you can unlock your wallet", nil);
             self.titleLabelSecond.text  = MyLocalizedString(@"Enter your password again", nil);

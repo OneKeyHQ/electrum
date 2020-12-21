@@ -127,6 +127,7 @@
     [kWalletManager clearCurrentWalletInfo];
     [[NSNotificationCenter defaultCenter]postNotificationName:kNotiDeleteWalletComplete object:nil];
     [kTools tipMessage:MyLocalizedString(@"Wallet deleted successfully", nil)];
+    
     if (weakself.deleteType == OKWhereToDeleteTypeMine) {
         for (int i = 0; i < weakself.navigationController.viewControllers.count; i++) {
             UIViewController *vc = weakself.navigationController.viewControllers[i];
@@ -151,7 +152,7 @@
     }
     BOOL isSuccess = [kTools clearDataWithFilePath:path];
     if (isSuccess) {
-        [kTools alertTips:MyLocalizedString(@"prompt", nil) desc:MyLocalizedString(@"When the APP is reset, just open it again", nil) confirm:^{
+        [kTools alertTips:MyLocalizedString(@"prompt", nil) desc:MyLocalizedString(@"Reset successful, please restart the application.", nil) confirm:^{
             [weakself exitApplication];
         } cancel:^{
             

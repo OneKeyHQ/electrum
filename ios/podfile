@@ -12,6 +12,7 @@ pod 'Masonry','~> 1.1.0'
 pod 'MJExtension', '~> 3.0.13'
 #pod 'ZWPullMenuView', '~> 0.1.0'
 pod 'BabyBluetooth','~> 0.7.0'
+pod 'TYAttributedLabel', '~> 2.6.2'
 end
 post_install do |installer|
      installer.pods_project.targets.each do |target|

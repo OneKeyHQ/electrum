@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OKFindFollowingWalletController : BaseViewController
 @property (nonatomic,strong)OKCreateResultModel *createResultModel;
 @property (nonatomic,copy)NSString *pwd;
+@property (nonatomic,assign)BOOL isInit;
 + (instancetype)findFollowingWalletController;
 
 @end

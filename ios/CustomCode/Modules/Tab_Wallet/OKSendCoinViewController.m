@@ -19,6 +19,7 @@ typedef enum {
 #import "OKSendTxPreModel.h"
 #import "OKDefaultFeeInfoModel.h"
 #import "OKDefaultFeeInfoSubModel.h"
+#import "OKLookWalletTipsViewController.h"
 
 
 @interface OKSendCoinViewController ()<UITextFieldDelegate>
@@ -292,9 +293,7 @@ typedef enum {
 }
 - (IBAction)customBtnClick:(UIButton *)sender {
     NSString *dsize = @"";
-    if (self.addressTextField.text.length == 0 || self.amountLabel.text.length == 0 ||[self.balanceLabel.text doubleValue] < [self.amountTextField.text doubleValue]||[self.amountTextField.text doubleValue] <= 0) {
-        dsize = [self.defaultFeeInfoModel.normal safeStringForKey:@"size"];
-    }
+    dsize = [self.defaultFeeInfoModel.normal safeStringForKey:@"size"];
     OKWeakSelf(self)
     [OKWalletInputFeeView showWalletCustomFeeDsize:dsize sure:^(NSDictionary *customFeeDict, NSString *fiat, NSString *feeBit) {
         weakself.customFeeDict = customFeeDict;
@@ -350,7 +349,10 @@ typedef enum {
     if (![self checkTextField]) {
         return;
     }
-    [self loadFee];
+    BOOL isSuccess = [self loadFee];
+    if (!isSuccess) {
+        return;
+    }
     OKWeakSelf(self)
     __block  NSDictionary *dict = [NSDictionary dictionary];
     if (weakself.custom) {
@@ -376,6 +378,15 @@ typedef enum {
                 break;
         }
     }
+    
+    if ([kWalletManager getWalletDetailType] == OKWalletTypeObserve) {
+        OKLookWalletTipsViewController *lookVc = [OKLookWalletTipsViewController lookWalletTipsViewController:[dict safeStringForKey:@"tx"]];
+        lookVc.modalPresentationStyle = UIModalPresentationOverFullScreen;
+        [self.OK_TopViewController presentViewController:lookVc animated:NO completion:nil];
+        return;
+    }
+    
+    
     OKSendTxPreInfoViewController *sendVc = [OKSendTxPreInfoViewController initViewControllerWithStoryboardName:@"Tab_Wallet"];
     OKSendTxPreModel *model = [OKSendTxPreModel new];
     model.amount = self.amountTextField.text;
@@ -426,36 +437,35 @@ typedef enum {
 
 
 
-- (void)loadFee
+- (BOOL)loadFee
 {
     if (self.custom) {
-        [self loadCustomFee];
-        return;
+        return [self loadCustomFee];
     }
     switch (_currentFeeType) {
         case OKFeeTypeSlow:
         {
-            [self loadZeroFee];
+            return [self loadZeroFee];
         }
             break;
         case OKFeeTypeRecommend:
         {
-            [self loadReRecommendFee];
+            return [self loadReRecommendFee];
         }
             break;
         case OKFeeTypeFast:
         {
-            [self loadFastFee];
+            return [self loadFastFee];
         }
             break;
         default:
         {
-            [self loadReRecommendFee];
+            return [self loadReRecommendFee];
         }
             break;
     }
 }
-- (void)loadFastFee
+- (BOOL)loadFastFee
 {
     NSString *status = [NSString stringWithFormat:@"%zd",[[self.defaultFeeInfoModel.fast safeStringForKey:@"feerate"] integerValue] * 2];
     //输入地址和转账额度 获取fee
@@ -464,13 +474,17 @@ typedef enum {
     NSString *outputs = [outputsArray mj_JSONString];
     NSString *memo = @"";
     NSDictionary *dict =  [kPyCommandsManager callInterface:kInterfaceGet_fee_by_feerate parameter:@{@"outputs":outputs,@"message":memo,@"feerate":status}];
+    if (dict == nil) {
+        return NO;
+    }
     self.fastFeeDict = dict;
     
     NSString *feesat = [dict safeStringForKey:@"fee"];
-    self.fiatFast =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":feesat}];
+    self.fiatFast =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":feesat == nil ? @"0":feesat}];
+    return YES;
 }
 
-- (void)loadReRecommendFee
+- (BOOL)loadReRecommendFee
 {
     //输入地址和转账额度 获取fee
     NSDictionary *outputsDict = @{self.addressTextField.text:self.amountTextField.text};
@@ -478,13 +492,17 @@ typedef enum {
     NSString *outputs = [outputsArray mj_JSONString];
     NSString *memo = @"";
     NSDictionary *dict =  [kPyCommandsManager callInterface:kInterfaceGet_fee_by_feerate parameter:@{@"outputs":outputs,@"message":memo,@"feerate":[self.defaultFeeInfoModel.normal safeStringForKey:@"feerate"]}];
+    if (dict == nil) {
+        return NO;
+    }
     self.recommendFeeDict = dict;
     
     NSString *feesat = [dict safeStringForKey:@"fee"];
-    self.fiatRecommend =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":feesat}];
+    self.fiatRecommend =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":feesat == nil ? @"0":feesat}];
+    return YES;
 }
 
-- (void)loadZeroFee
+- (BOOL)loadZeroFee
 {
     //输入地址和转账额度 获取fee
     NSDictionary *outputsDict = @{self.addressTextField.text:self.amountTextField.text};
@@ -492,13 +510,18 @@ typedef enum {
     NSString *outputs = [outputsArray mj_JSONString];
     NSString *memo = @"";
     NSDictionary *dict =  [kPyCommandsManager callInterface:kInterfaceGet_fee_by_feerate parameter:@{@"outputs":outputs,@"message":memo,@"feerate":[self.defaultFeeInfoModel.slow safeStringForKey:@"feerate"]}];
+    if (dict == nil) {
+        return NO;
+    }
+    
     self.lowFeeDict = dict;
     
     NSString *feesat = [dict safeStringForKey:@"fee"];
-    self.fiatLow =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":feesat}];
+    self.fiatLow =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":feesat == nil ? @"0":feesat}];
+    return YES;
 }
 
-- (void)loadCustomFee
+- (BOOL)loadCustomFee
 {
     NSString *status = self.feeBit;
     //输入地址和转账额度 获取fee
@@ -507,10 +530,14 @@ typedef enum {
     NSString *outputs = [outputsArray mj_JSONString];
     NSString *memo = @"";
     NSDictionary *dict =  [kPyCommandsManager callInterface:kInterfaceGet_fee_by_feerate parameter:@{@"outputs":outputs,@"message":memo,@"feerate":status}];
+    if (dict == nil) {
+        return NO;
+    }
     self.customFeeDict = dict;
-
+    
     NSString *feesat = [dict safeStringForKey:@"fee"];
-    self.fiatCustom =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":[kWalletManager getFeeBaseWithSat:feesat]}];
+    self.fiatCustom =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":feesat == nil ? @"0":feesat}];
+    return YES;
 }
 
 

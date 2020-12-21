@@ -12,4 +12,5 @@
 + (NSString *)getDeviceIDInKeychain;
 + (void)save:(NSString *)service data:(id)data;
 + (id)load:(NSString *)service;
++ (void)delete_:(NSString *)service;
 @end

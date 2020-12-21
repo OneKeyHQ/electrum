@@ -87,8 +87,10 @@
     if (str.length > 15 && string.length > 0) {
         return NO;
     }else{
+        if ([string isEqualToString:@" "]) {
+            return NO;
+        }
         return YES;
     }
 }
-
 @end

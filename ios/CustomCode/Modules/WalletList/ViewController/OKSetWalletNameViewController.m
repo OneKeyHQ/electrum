@@ -11,9 +11,10 @@
 #import "OKHDWalletViewController.h"
 #import "OKCreateResultModel.h"
 #import "OKCreateResultWalletInfoModel.h"
+#import "OKBiologicalViewController.h"
 
 
-@interface OKSetWalletNameViewController ()
+@interface OKSetWalletNameViewController ()<UITextFieldDelegate>
 @property (weak, nonatomic) IBOutlet UILabel *seWalletNameLabel;
 @property (weak, nonatomic) IBOutlet UILabel *descLabel;
 @property (weak, nonatomic) IBOutlet UITextField *walletNameTextfield;
@@ -43,6 +44,7 @@
     [self.nameBgView setLayerBoarderColor:HexColor(0xDBDEE7) width:1 radius:20];
     [self.createBtn setLayerDefaultRadius];
     [self.walletNameTextfield becomeFirstResponder];
+    self.walletNameTextfield.delegate = self;
 }
 
 - (IBAction)createBtnClick:(UIButton *)sender {
@@ -85,27 +87,27 @@
                if (state == YZAuthIDStateNotSupport
                    || state == YZAuthIDStatePasswordNotSet || state == YZAuthIDStateTouchIDNotSet) { // 不支持TouchID/FaceID
                    [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
-                       [weakself importWallet:pwd];
+                       [weakself importWallet:pwd isInit:NO];
                    }];
                } else if (state == YZAuthIDStateSuccess) {
                    NSString *pwd = [kOneKeyPwdManager getOneKeyPassWord];
-                   [weakself importWallet:pwd];
+                   [weakself importWallet:pwd isInit:NO];
                }
            }];
        }else{
            [OKValidationPwdController showValidationPwdPageOn:self isDis:NO complete:^(NSString * _Nonnull pwd) {
-                [weakself importWallet:pwd];
+                [weakself importWallet:pwd isInit:NO];
             }];
        }
     }else{
         OKPwdViewController *pwdVc = [OKPwdViewController setPwdViewControllerPwdUseType:OKPwdUseTypeInitPassword setPwd:^(NSString * _Nonnull pwd) {
-            [weakself importWallet:pwd];
+            [weakself importWallet:pwd isInit:YES];
         }];
         BaseNavigationController *baseVc = [[BaseNavigationController alloc]initWithRootViewController:pwdVc];
         [weakself.OK_TopViewController presentViewController:baseVc animated:YES completion:nil];
     }
 }
-- (void)importWallet:(NSString *)pwd
+- (void)importWallet:(NSString *)pwd isInit:(BOOL)isInit
 {
     OKWeakSelf(self)
     NSDictionary* create = nil;
@@ -143,11 +145,18 @@
         }
         if (weakself.addType == OKAddTypeCreateSolo) {
             [kTools tipMessage:MyLocalizedString(@"Creating successful", nil)];
-            [[NSNotificationCenter defaultCenter]postNotificationName:kNotiRefreshWalletList object:nil];
-            [weakself.OK_TopViewController dismissToViewControllerWithClassName:@"OKSetWalletNameViewController" animated:NO complete:^{
+            if (!kWalletManager.isOpenAuthBiological && isInit) {
+                OKBiologicalViewController *biologicalVc = [OKBiologicalViewController biologicalViewController:@"OKWalletViewController" pwd:pwd biologicalViewBlock:^{
+                    [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":pwd,@"backupshow":@"1"}];
+                }];
+                [self.OK_TopViewController.navigationController pushViewController:biologicalVc animated:YES];
+            }else{
+                [[NSNotificationCenter defaultCenter]postNotificationName:kNotiRefreshWalletList object:nil];
+                [weakself.OK_TopViewController dismissToViewControllerWithClassName:@"OKSetWalletNameViewController" animated:NO complete:^{
                 [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":pwd,@"backupshow":@"1"}];
-            }];
-            [weakself.navigationController popToRootViewControllerAnimated:YES];
+                }];
+                [weakself.navigationController popToRootViewControllerAnimated:YES];
+            }
         }else{
             switch (weakself.addType) {
                 case OKAddTypeCreateHDDerived:
@@ -178,26 +187,54 @@
                 default:
                     break;
             }
-            [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:nil];
-            [[NSNotificationCenter defaultCenter]postNotificationName:kNotiRefreshWalletList object:nil];
             
-            if (self.where == OKWhereToSelectTypeHDMag) {
-                [weakself.OK_TopViewController dismissToViewControllerWithClassName:@"OKSetWalletNameViewController" animated:NO complete:^{
-                    for (int i = 0; i < weakself.OK_TopViewController.navigationController.viewControllers.count; i++) {
-                        UIViewController *vc = weakself.OK_TopViewController.navigationController.viewControllers[i];
-                        if ([vc isKindOfClass:[OKHDWalletViewController class]]) {
-                            [weakself.OK_TopViewController.navigationController popToViewController:vc animated:YES];
-                        }
-                    }
+            if (!kWalletManager.isOpenAuthBiological && isInit && weakself.addType != OKAddTypeImportAddresses) {
+                OKBiologicalViewController *biologicalVc = [OKBiologicalViewController biologicalViewController:@"OKWalletViewController" pwd:pwd biologicalViewBlock:^{
+                    [weakself completeImport];
                 }];
+                [self.OK_TopViewController.navigationController pushViewController:biologicalVc animated:YES];
             }else{
-                [weakself.OK_TopViewController dismissToViewControllerWithClassName:@"OKWalletViewController" animated:NO complete:^{
-                    
-                }];
+                [weakself completeImport];
             }
         }
     }
 }
+- (void)completeImport
+{
+    OKWeakSelf(self)
+    [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:nil];
+    [[NSNotificationCenter defaultCenter]postNotificationName:kNotiRefreshWalletList object:nil];
 
+    if (self.where == OKWhereToSelectTypeHDMag) {
+        [weakself.OK_TopViewController dismissToViewControllerWithClassName:@"OKSetWalletNameViewController" animated:NO complete:^{
+            for (int i = 0; i < weakself.OK_TopViewController.navigationController.viewControllers.count; i++) {
+                UIViewController *vc = weakself.OK_TopViewController.navigationController.viewControllers[i];
+                if ([vc isKindOfClass:[OKHDWalletViewController class]]) {
+                    [weakself.OK_TopViewController.navigationController popToViewController:vc animated:YES];
+                }
+            }
+        }];
+    }else{
+        [weakself.OK_TopViewController dismissToViewControllerWithClassName:@"OKWalletViewController" animated:NO complete:^{
+        }];
+    }
+}
 
+#pragma mark - UITextFieldDelegate
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+{
+    if (textField == self.walletNameTextfield) {
+        NSString *str =   [self.walletNameTextfield.text stringByAppendingString:string];
+        if (str.length > 15 && string.length > 0) {
+            return NO;
+        }else{
+            if ([string isEqualToString:@" "]) {
+                return NO;
+            }
+            return YES;
+        }
+    }else{
+        return YES;
+    }
+}
 @end

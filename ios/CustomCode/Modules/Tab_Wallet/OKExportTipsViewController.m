@@ -14,13 +14,8 @@
 @property (weak, nonatomic) IBOutlet UIButton *cancleBtn;
 @property (weak, nonatomic) IBOutlet UILabel *descLabel;
 @property (weak, nonatomic) IBOutlet UILabel *desclabel2;
-
-
-
 - (IBAction)closeBtnClick:(UIButton *)sender;
-
 @property (weak, nonatomic) IBOutlet UIButton *confirmDeleteBtn;
-
 - (IBAction)confirmDeleteBtnClick:(UIButton *)sender;
 - (IBAction)cancleBtnClick:(UIButton *)sender;
 @property (nonatomic,copy)ConfirmBtnClick block;

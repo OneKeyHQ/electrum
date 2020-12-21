@@ -70,7 +70,6 @@ static dispatch_once_t once;
     return [OKStorageManager loadFromUserDefaults:kCurrentBitcoinUnit];
 }
 
-
 - (void)setCurrentBitcoinUnit:(NSString *)bitcoinUnit
 {
     [OKStorageManager saveToUserDefaults:bitcoinUnit key:kCurrentBitcoinUnit];
@@ -99,6 +98,9 @@ static dispatch_once_t once;
 }
 - (void)setIsOpenAuthBiological:(BOOL)isOpenAuthBiological
 {
+    if (isOpenAuthBiological == NO) {
+        [kOneKeyPwdManager deleteOneKeyPwd];
+    }
     [OKStorageManager saveToUserDefaults:@(isOpenAuthBiological) key:kIsOpenAuthBiologicalKey];
 }
 

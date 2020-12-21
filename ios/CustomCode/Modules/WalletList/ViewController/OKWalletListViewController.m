@@ -235,21 +235,21 @@
                                if (state == YZAuthIDStateNotSupport
                                    || state == YZAuthIDStatePasswordNotSet || state == YZAuthIDStateTouchIDNotSet) { // 不支持TouchID/FaceID
                                    [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
-                                       [OKWalletListViewController createWallet:pwd];
+                                       [OKWalletListViewController createWallet:pwd isInit:NO];
                                    }];
                                } else if (state == YZAuthIDStateSuccess) {
                                    NSString *pwd = [kOneKeyPwdManager getOneKeyPassWord];
-                                   [OKWalletListViewController createWallet:pwd];
+                                   [OKWalletListViewController createWallet:pwd isInit:NO];
                                }
                            }];
                        }else{
                            [OKValidationPwdController showValidationPwdPageOn:weakself isDis:NO complete:^(NSString * _Nonnull pwd) {
-                                [OKWalletListViewController createWallet:pwd];
+                                [OKWalletListViewController createWallet:pwd isInit:NO];
                             }];
                        }
                     }else{
                         OKPwdViewController *pwdVc = [OKPwdViewController setPwdViewControllerPwdUseType:OKPwdUseTypeInitPassword setPwd:^(NSString * _Nonnull pwd) {
-                            [OKWalletListViewController createWallet:pwd];
+                            [OKWalletListViewController createWallet:pwd isInit:YES];
                         }];
                         BaseNavigationController *baseVc = [[BaseNavigationController alloc]initWithRootViewController:pwdVc];
                         [weakself.OK_TopViewController presentViewController:baseVc animated:YES completion:nil];
@@ -278,7 +278,7 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-+ (void)createWallet:(NSString *)pwd
++ (void)createWallet:(NSString *)pwd isInit:(BOOL)isInit
 {
     NSString *seed = @"";
     NSString *createHD = @"";
@@ -293,7 +293,7 @@
         if (kUserSettingManager.currentSelectPwdType.length > 0 && kUserSettingManager.currentSelectPwdType !=  nil) {
             [kUserSettingManager setIsLongPwd:[kUserSettingManager.currentSelectPwdType boolValue]];
         }
-        if (!kWalletManager.isOpenAuthBiological) {
+        if (!kWalletManager.isOpenAuthBiological && isInit) {
             OKBiologicalViewController *biologicalVc = [OKBiologicalViewController biologicalViewController:@"OKWalletViewController" pwd:pwd biologicalViewBlock:^{
                 [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":pwd,@"backupshow":@"1"}];
             }];

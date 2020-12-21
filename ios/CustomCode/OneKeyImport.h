@@ -57,5 +57,6 @@
 #import "Sha256.h"
 #import "OKOneKeyPwdManager.h"
 #import "AESCrypt.h"
+#import "TYAttributedLabel.h"
 
 #endif /* OneKeyImport_h */

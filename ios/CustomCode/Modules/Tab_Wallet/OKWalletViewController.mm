@@ -485,21 +485,21 @@
                        if (state == YZAuthIDStateNotSupport
                            || state == YZAuthIDStatePasswordNotSet || state == YZAuthIDStateTouchIDNotSet) { // 不支持TouchID/FaceID
                            [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
-                               [weakself createWallet:pwd];
+                               [weakself createWallet:pwd isInit:NO];
                            }];
                        } else if (state == YZAuthIDStateSuccess) {
                            NSString *pwd = [kOneKeyPwdManager getOneKeyPassWord];
-                           [weakself createWallet:pwd];
+                           [weakself createWallet:pwd isInit:NO];
                        }
                    }];
                }else{
                    [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
-                        [weakself createWallet:pwd];
+                        [weakself createWallet:pwd isInit:NO];
                     }];
                }
             }else{
                 OKPwdViewController *pwdVc = [OKPwdViewController setPwdViewControllerPwdUseType:OKPwdUseTypeInitPassword setPwd:^(NSString * _Nonnull pwd) {
-                    [weakself createWallet:pwd];
+                    [weakself createWallet:pwd isInit:YES];
                 }];
                 BaseNavigationController *baseVc = [[BaseNavigationController alloc]initWithRootViewController:pwdVc];
                 [weakself.OK_TopViewController presentViewController:baseVc animated:YES completion:nil];
@@ -521,7 +521,7 @@
     [self.navigationController pushViewController:txListVc animated:YES];
 }
 
-- (void)createWallet:(NSString *)pwd
+- (void)createWallet:(NSString *)pwd isInit:(BOOL)isInit
 {
     NSString *seed = @"";
     NSArray *words = [NSArray array];
@@ -535,10 +535,16 @@
         if (kUserSettingManager.currentSelectPwdType.length > 0 && kUserSettingManager.currentSelectPwdType !=  nil) {
             [kUserSettingManager setIsLongPwd:[kUserSettingManager.currentSelectPwdType boolValue]];
         }
-        OKBiologicalViewController *biologicalVc = [OKBiologicalViewController biologicalViewController:@"OKWalletViewController" pwd:pwd biologicalViewBlock:^{
-            [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":pwd,@"backupshow":@"1"}];
-        }];
-        [self.OK_TopViewController.navigationController pushViewController:biologicalVc animated:YES];
+        if (!kWalletManager.isOpenAuthBiological && isInit) {
+            OKBiologicalViewController *biologicalVc = [OKBiologicalViewController biologicalViewController:@"OKWalletViewController" pwd:pwd biologicalViewBlock:^{
+                [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":pwd,@"backupshow":@"1"}];
+            }];
+            [self.OK_TopViewController.navigationController pushViewController:biologicalVc animated:YES];
+        }else{
+            [self.OK_TopViewController dismissToViewControllerWithClassName:@"OKWalletViewController" animated:YES complete:^{
+                [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":pwd,@"backupshow":@"1"}];
+            }];
+        }
     }
 }
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
@@ -648,10 +654,12 @@
     }
     
 }
+
 - (void)notiSelectWalletComplete
 {
     [self checkWalletResetUI];
 }
+
 - (void)notiUpdate_status:(NSNotification *)noti
 {
     NSDictionary * infoDic = [noti object];
@@ -661,6 +669,10 @@
 - (void)notiDeleteWalletComplete
 {
     [self checkWalletResetUI];
+    if (![kWalletManager checkIsHavePwd]) {
+        kWalletManager.isOpenAuthBiological = NO;
+        [[NSNotificationCenter defaultCenter]postNotificationName:kNotiUpdatePassWordComplete object:nil];
+    }
 }
 
 - (void)notiBackUPWalletComplete
@@ -673,9 +685,7 @@
 
 
 -(void)viewDidAppear:(BOOL)animated {
-    
     [super viewDidAppear:animated];
-    
     self.isCanSideBack = NO; //关闭ios右滑返回
     if([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
         self.navigationController.interactivePopGestureRecognizer.delegate = self;

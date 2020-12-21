@@ -333,7 +333,7 @@
 "Are you sure you want to do this" = "确认要执行此操作吗";
 "This will immediately delete all data that you have created in OneKey, and unbacked wallets will never be retrieved. Are you sure you want to proceed with the operation" = "这将立即删除您已在 OneKey 创建的所有数据，未备份的钱包将永远无法找回。确认要继续进行该操作吗？";
 "I have confirmed, reset immediately" = "我已确认，立即重置";
-"When the APP is reset, just open it again" = "APP重置完毕，重新打开即可";
+"Reset successful, please restart the application." = "重置成功，请重新启动应用。";
 "More child wallets are derived from mnemonics" = "通过助记词派生出更多子钱包";
 "HD Wallet is the most advanced wallet format, known in Chinese as hierarchical deterministic wallet. An infinite chain or currency can be derived from a mnemonic. Easy to remember, easy to use, good management, very safe" = "HD 钱包是迄今最为先进的钱包格式，中文称为分层确定性钱包。只需一个助记词，就能派生无限公链或币种。好记、好用、好管理，很安全。";
 "HD derived wallet" = "HD 派生钱包";
@@ -342,3 +342,7 @@
 "Delete all HD-derived wallets" = "删除所有 HD 派生钱包";
 "Enter the password" = "输入密码";
 "For the current purpose of observing the wallet, the initiated transfer shall be signed by scanning the code with the cold wallet holding the private key" = "当前为观察钱包，发起的转账需使用掌握该私钥的冷钱包进行扫码签名。";
+"There is no" = "无";
+"Change master password" = "修改主密码";
+"Set the master password" = "设置主密码";
+"Use cold wallet for code scanning signatures" = "使用冷钱包进行扫码签名";

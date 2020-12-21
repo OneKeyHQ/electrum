@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (OKOneKeyPwdManager *)sharedInstance;
 - (void)saveOneKeyPassWord:(NSString *)pwd;
 - (NSString *)getOneKeyPassWord;
+- (void)deleteOneKeyPwd;
 @end
 
 NS_ASSUME_NONNULL_END

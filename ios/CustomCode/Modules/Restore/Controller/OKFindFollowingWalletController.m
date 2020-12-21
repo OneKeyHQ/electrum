@@ -9,6 +9,7 @@
 #import "OKFindFollowingWalletController.h"
 #import "OKFindWalletTableViewCell.h"
 #import "OKFindWalletTableViewCellModel.h"
+#import "OKBiologicalViewController.h"
 
 @interface OKFindFollowingWalletController ()<UITableViewDelegate,UITableViewDataSource>
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
@@ -20,7 +21,6 @@
 @property (weak, nonatomic) IBOutlet UIButton *restoreBtn;
 - (IBAction)restoreBtnClick:(UIButton *)sender;
 @property (weak, nonatomic) IBOutlet UILabel *descLabel;
-
 @property (nonatomic,strong)NSArray *walletList;
 
 @end
@@ -86,6 +86,7 @@
 }
 
 - (IBAction)restoreBtnClick:(UIButton *)sender {
+    OKWeakSelf(self)
     NSMutableArray *arrayM = [NSMutableArray array];
     for (OKFindWalletTableViewCellModel *model in self.walletList) {
         if (model.isSelected) {
@@ -99,9 +100,15 @@
     if (kUserSettingManager.currentSelectPwdType.length > 0 && kUserSettingManager.currentSelectPwdType !=  nil) {
         [kUserSettingManager setIsLongPwd:[kUserSettingManager.currentSelectPwdType boolValue]];
     }
-    [self.OK_TopViewController dismissToViewControllerWithClassName:@"OKWalletViewController" animated:YES complete:^{
-        [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":self.pwd,@"backupshow":@"0",@"takecareshow":@"1"}];
-    }];
+    if (!kWalletManager.isOpenAuthBiological && weakself.isInit) {
+        OKBiologicalViewController *biologicalVc = [OKBiologicalViewController biologicalViewController:@"OKWalletViewController" pwd:weakself.pwd biologicalViewBlock:^{
+            [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":self.pwd,@"backupshow":@"0",@"takecareshow":@"1"}];
+        }];
+        [self.OK_TopViewController.navigationController pushViewController:biologicalVc animated:YES];
+    }else{
+        [self.OK_TopViewController dismissToViewControllerWithClassName:@"OKWalletViewController" animated:YES complete:^{
+            [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":self.pwd,@"backupshow":@"0",@"takecareshow":@"1"}];
+        }];
+    }
 }
-
 @end
