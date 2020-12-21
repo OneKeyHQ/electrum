@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -121,35 +120,24 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/relatilayout2"
-                android:layout_marginStart="@dimen/dp_25"
+                android:layout_marginStart="@dimen/dp_34"
                 android:layout_marginTop="56dp"
-                android:layout_marginEnd="@dimen/dp_25">
+                android:layout_marginEnd="@dimen/dp_34">
 
                 <CheckBox
                     android:id="@+id/checkbox_ok"
-                    android:layout_width="@dimen/dp_20"
-                    android:layout_height="@dimen/dp_20"
+                    android:layout_width="@dimen/dp_32"
+                    android:layout_height="@dimen/dp_32"
                     android:layout_centerVertical="true"
                     android:background="@drawable/circle_checkbox"
                     android:button="@null" />
 
                 <TextView
                     android:id="@+id/text_user1"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/dp_14"
+                    android:layout_marginStart="@dimen/dp_15"
                     android:layout_toEndOf="@+id/checkbox_ok"
-                    android:text="@string/onekey_user1"
-                    android:textSize="@dimen/sp_12" />
-
-                <TextView
-                    android:id="@+id/text_user2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/text_user1"
-                    android:layout_marginStart="@dimen/dp_14"
-                    android:layout_toEndOf="@+id/checkbox_ok"
-                    android:text="@string/onekey_user2"
                     android:textSize="@dimen/sp_12" />
 
             </RelativeLayout>

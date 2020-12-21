@@ -1076,7 +1076,7 @@
     <string name="change_short_keyboard">Switch short password keyboard</string>
     <string name="fix_pass_tip1">Your password will be used to encrypt sensitive information,</string>
     <string name="fix_pass_tip2">"It is used for verification in the steps requiring security verification."</string>
-    <string name="fix_pass">Change Password</string>
+    <string name="fix_pass">Change master password</string>
     <string name="input_your_former_pass">Enter your original password</string>
     <string name="change_pin_warning">After changing the password, your original biometric identification (face, fingerprint) will be invalid and needs to be reset.</string>
     <string name="set_new_pass">Set your new password</string>
@@ -1365,4 +1365,16 @@
     <string name="input_pass_again">"请再次输入 "</string>
     <string name="twice_input_is_not_identical">两次输入不一直</string>
     <string name="set_pass_failed">设置密码出错</string>
+    <string name="use_onekey">Starting to use means that you agree to OneKey\'s</string>
+    <string name="user_agreement_guide">《user agreement》</string>
+    <string name="and">and</string>
+    <string name="privacy_policy">《privacy policy》</string>
+    <string name="select_btc_type">Select the BTC address type</string>
+    <string name="select_tip">The address type cannot be changed after selection, it is recommended to use compatible quarantine witness SegWit.</string>
+    <string name="compatible_segwit">Compatible isolation witness SegWit</string>
+    <string name="segwit_infor">Start with 3, widely popular, low transfer fee</string>
+    <string name="native_segwit">Native isolation bears witness to the Native SegWit</string>
+    <string name="native_segwit_infor">Starting with BC1, it is becoming more popular and has the lowest transfer fees</string>
+    <string name="normal_segwit">Legacy general address</string>
+    <string name="normal_segwit_info">Start with 1, comprehensive popularity, transfer charges medium</string>
 </resources>

@@ -1037,7 +1037,7 @@
     <string name="change_short_keyboard">切换短密码键盘</string>
     <string name="fix_pass_tip1">您的密码将被用来加密敏感信息，</string>
     <string name="fix_pass_tip2">"并在需要安全校验的步骤用来验证。"</string>
-    <string name="fix_pass">修改密码</string>
+    <string name="fix_pass">修改主密码</string>
     <string name="input_your_former_pass">输入您的原密码</string>
     <string name="change_pin_warning">修改完密码后，您原先的生物识别（面部、指纹）将会失效，需要重新设置。</string>
     <string name="set_new_pass">设置您的新密码</string>
@@ -1304,4 +1304,16 @@
     <string name="input_pass_again">"请再次输入 "</string>
     <string name="twice_input_is_not_identical">前后输入不一致，请重新输入</string>
     <string name="set_pass_failed">设置密码出错</string>
+    <string name="use_onekey">开始使用即意味着您同意OneKey的</string>
+    <string name="user_agreement_guide">《用户协议》</string>
+    <string name="and">和</string>
+    <string name="privacy_policy">《隐私政策》</string>
+    <string name="select_btc_type">选择 BTC 地址类型</string>
+    <string name="select_tip">地址类型选择后无法更改，推荐使用兼容隔离见证 SegWit。</string>
+    <string name="compatible_segwit">兼容隔离见证 SegWit</string>
+    <string name="segwit_infor">以 3 开头，广泛普及，转账手续费较低</string>
+    <string name="native_segwit">原生隔离见证 Native SegWit</string>
+    <string name="native_segwit_infor">以 bc1 开头，正在普及，转账手续费最低</string>
+    <string name="normal_segwit">普通地址 Legacy</string>
+    <string name="normal_segwit_info">以 1 开头，全面普及，转账手续费中等</string>
 </resources>

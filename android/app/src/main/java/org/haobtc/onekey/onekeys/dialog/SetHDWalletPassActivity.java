@@ -120,7 +120,6 @@ public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher
         timer.schedule(new TimerTask() {
                            @Override
                            public void run() {
-                               LogUtil.d("xiaopeng", "定时器");
                                InputMethodManager inputManager =
                                        (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                                inputManager.showSoftInput(pwdEdittext, 0);

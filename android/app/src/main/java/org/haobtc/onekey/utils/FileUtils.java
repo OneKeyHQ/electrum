@@ -1,11 +1,5 @@
 package org.haobtc.onekey.utils;
-
 import android.util.Log;
-
-import org.haobtc.onekey.activities.base.MyApplication;
-import org.haobtc.onekey.constant.Constant;
-import org.haobtc.onekey.constant.FileNameConstant;
-import org.haobtc.onekey.manager.PreferencesManager;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -186,16 +180,13 @@ public class FileUtils {
 
     public static boolean resetApp (String data, String sp) {
         boolean dataSuccess = deleteDirectory(data);
-        boolean spSuccess = deleteDirSingleFile(sp, Constant.WALLETS);
+        boolean spSuccess = deleteDirectory(sp);
         if (!dataSuccess) {
             return false;
         }
         if (!spSuccess) {
             return false;
         }
-        PreferencesManager.getSharedPreferences(MyApplication.getInstance(), FileNameConstant.myPreferences).edit().clear().apply();
-        PreferencesManager.getSharedPreferences(MyApplication.getInstance(), FileNameConstant.Device).edit().clear().apply();
-        PreferencesManager.getSharedPreferences(MyApplication.getInstance(), FileNameConstant.BLE_INFO).edit().clear().apply();
         return true;
     }
 }

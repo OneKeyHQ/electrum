@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/add_bk"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_24"
+        android:gravity="center_horizontal"
+        android:text="@string/select_btc_type"
+        android:textColor="@color/color_142A3B"
+        android:textSize="@dimen/sp_20" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_2"
+        android:gravity="center_horizontal"
+        android:text="@string/select_tip"
+        android:textColor="@color/color_9FA6AD"
+        android:textSize="@dimen/sp_12" />
+
+    <LinearLayout
+        android:id="@+id/recommend_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_24"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/dp_16">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/color_line" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_16"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/compatible_segwit"
+                android:textColor="@color/color_142A3B"
+                android:textSize="@dimen/sp_16" />
+
+            <org.haobtc.onekey.ui.widget.SuperTextView
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/dp_21"
+                android:layout_marginStart="@dimen/dp_4"
+                android:paddingStart="@dimen/dp_8"
+                android:paddingEnd="@dimen/dp_8"
+                android:gravity="center_vertical"
+                android:text="@string/recommend"
+                android:textColor="@color/defaultColor"
+                android:textSize="@dimen/sp_12"
+                app:corner="@dimen/dp_10"
+                app:solid="@color/color_4F5F6C" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/dp_4"
+            android:gravity="center_horizontal"
+            android:text="@string/segwit_infor"
+            android:textColor="@color/color_9FA6AD"
+            android:textSize="@dimen/sp_12" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/native_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/dp_16">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/color_line" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/dp_16"
+            android:text="@string/native_segwit"
+            android:textColor="@color/color_142A3B"
+            android:textSize="@dimen/sp_16" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/dp_4"
+            android:gravity="center_horizontal"
+            android:text="@string/native_segwit_infor"
+            android:textColor="@color/color_9FA6AD"
+            android:textSize="@dimen/sp_12" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/normal_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/dp_24">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/color_line" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/dp_16"
+            android:text="@string/normal_segwit"
+            android:textColor="@color/color_142A3B"
+            android:textSize="@dimen/sp_16" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/dp_4"
+            android:gravity="center_horizontal"
+            android:text="@string/normal_segwit_info"
+            android:textColor="@color/color_9FA6AD"
+            android:textSize="@dimen/sp_12" />
+
+    </LinearLayout>
+
+
+</LinearLayout>

@@ -44,8 +44,8 @@ import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.backup.BackupGuideActivity;
 import org.haobtc.onekey.onekeys.homepage.mindmenu.DeleteWalletActivity;
 import org.haobtc.onekey.ui.dialog.custom.CustomBackupDialog;
-import org.haobtc.onekey.ui.dialog.custom.CustomReSetBottomPopup;
 import org.haobtc.onekey.ui.dialog.ExportTipsDialog;
+import org.haobtc.onekey.ui.dialog.custom.CustomReSetBottomPopup;
 import org.haobtc.onekey.utils.Daemon;
 
 import java.util.Objects;

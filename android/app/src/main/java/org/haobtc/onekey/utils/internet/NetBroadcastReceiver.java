@@ -20,9 +20,10 @@ public class NetBroadcastReceiver extends BroadcastReceiver{
         if (intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
             //获取网络状态的类型
             boolean netStatus = NetUtil.getNetStatus(context);
-            if (netStatusMonitor != null)
+            if (netStatusMonitor != null) {
                 // 接口传递网络状态的类型到注册广播的页面
                 netStatusMonitor.onNetChange(netStatus);
+            }
         }
     }
 

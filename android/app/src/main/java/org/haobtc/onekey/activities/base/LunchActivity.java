@@ -13,6 +13,8 @@ import org.haobtc.onekey.utils.NfcUtils;
 
 import java.util.Optional;
 
+import dr.android.utils.LogUtil;
+
 /**
  * @author liyan
  */

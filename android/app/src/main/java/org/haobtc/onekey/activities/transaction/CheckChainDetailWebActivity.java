@@ -1,12 +1,11 @@
 package org.haobtc.onekey.activities.transaction;
-
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
@@ -68,13 +67,20 @@ public class CheckChainDetailWebActivity extends BaseActivity implements NetBroa
     private String keyLink;
     private String loadUrl = "";
 
+    public static void gotoCheckChainDetailWebActivity (Context context, String loadWhere, String loadUrl) {
+        Intent intent = new Intent(context, CheckChainDetailWebActivity.class);
+        intent.putExtra("loadWhere", loadWhere);
+        intent.putExtra("loadUrl", loadUrl);
+        context.startActivity(intent);
+    }
+
     @Override
-    public int getLayoutId() {
+    public int getLayoutId () {
         return R.layout.activity_check_chain_detail_web;
     }
 
     @Override
-    public void initView() {
+    public void initView () {
         ButterKnife.bind(this);
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         blockServerLine = preferences.getString("blockServerLine", "https://btc.com/");

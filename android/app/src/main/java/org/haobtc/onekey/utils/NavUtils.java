@@ -1,11 +1,10 @@
 package org.haobtc.onekey.utils;
-
 import android.content.Context;
 import android.content.Intent;
 
-import org.haobtc.onekey.MainActivity;
 import org.haobtc.onekey.activities.ResetAppActivity;
 import org.haobtc.onekey.activities.base.LunchActivity;
+import org.haobtc.onekey.activities.transaction.CheckChainDetailWebActivity;
 import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
 
 /**
@@ -40,4 +39,9 @@ public class NavUtils {
         mContext.startActivity(intent);
         android.os.Process.killProcess(android.os.Process.myPid());
     }
+
+    public static void gotoCheckChainDetailWebActivity (Context context, String loadWhere, String loadUrl) {
+        CheckChainDetailWebActivity.gotoCheckChainDetailWebActivity(context, loadWhere, loadUrl);
+    }
+
 }

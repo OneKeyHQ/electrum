@@ -16,7 +16,6 @@ public class CustomReSetBottomPopup extends BottomPopupView {
     private TextView title, content;
     private int mode;
     public static final int resetApp = 0;
-
     public static final int deleteHdChildren = 1;
 
     public CustomReSetBottomPopup (@NonNull Context context, onClick onClick, int mode) {

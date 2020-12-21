@@ -1,5 +1,4 @@
 package org.haobtc.onekey.activities;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -19,10 +18,14 @@ import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.aop.SingleClick;
+import org.haobtc.onekey.constant.ApiService;
+import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.FileNameConstant;
+import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.ui.dialog.custom.CustomReSetBottomPopup;
-import org.haobtc.onekey.utils.FileUtils;
+import org.haobtc.onekey.utils.Daemon;
 import org.haobtc.onekey.utils.NavUtils;
 import org.haobtc.onekey.utils.NoLeakHandler;
 
@@ -41,7 +44,8 @@ public class ResetAppActivity extends BaseActivity implements OnCheckedChangeLis
     Button btnForward;
     protected NoLeakHandler mHandler;
     private final String TAG = "ResetAppActivity";
-    private static final int Reset_Code = 100;
+    private static final int Reset_Code_OK = 100;
+    private static final int Reset_Code_FAILURE = 101;
     private RxPermissions rxPermissions;
 
     public static void gotoResetAppActivity (Context context) {
@@ -65,7 +69,7 @@ public class ResetAppActivity extends BaseActivity implements OnCheckedChangeLis
     }
 
     @SingleClick
-    @OnClick({R.id.btn_forward})
+    @OnClick({R.id.btn_forward, R.id.img_back})
     public void onClick (View view) {
         switch (view.getId()) {
             case R.id.btn_forward:
@@ -82,6 +86,9 @@ public class ResetAppActivity extends BaseActivity implements OnCheckedChangeLis
                             }
                         });
                 break;
+            case R.id.img_back:
+                finish();
+                break;
             default:
                 break;
         }
@@ -93,11 +100,19 @@ public class ResetAppActivity extends BaseActivity implements OnCheckedChangeLis
                 .isDestroyOnDismiss(true)
                 .moveUpToKeyboard(false)
                 .asCustom(new CustomReSetBottomPopup(ResetAppActivity.this, () -> new Thread(() -> {
-                    boolean isSuccess = FileUtils.resetApp(getFilesDir() + FileNameConstant.data_Path, getDataDir() + FileNameConstant.Sp_Path);
-                    Message message = new Message();
-                    message.what = Reset_Code;
-                    message.obj = isSuccess;
-                    mHandler.sendMessage(message);
+                    PreferencesManager.getSharedPreferences(MyApplication.getInstance(), FileNameConstant.myPreferences).edit().clear().apply();
+                    PreferencesManager.getSharedPreferences(MyApplication.getInstance(), FileNameConstant.Device).edit().clear().apply();
+                    PreferencesManager.getSharedPreferences(MyApplication.getInstance(), FileNameConstant.BLE_INFO).edit().clear().apply();
+                    PreferencesManager.getSharedPreferences(MyApplication.getInstance(), Constant.WALLETS).edit().clear().apply();
+                    try {
+                        Daemon.commands.callAttr(ApiService.RESET_APP);
+                        mHandler.sendEmptyMessage(Reset_Code_OK);
+                    } catch (Exception e) {
+                        Message message = new Message();
+                        message.what = Reset_Code_FAILURE;
+                        message.obj = e.getMessage();
+                        mHandler.sendMessage(message);
+                    }
                 }).start(), CustomReSetBottomPopup.resetApp))
                 .show();
     }
@@ -117,8 +132,12 @@ public class ResetAppActivity extends BaseActivity implements OnCheckedChangeLis
     @Override
     public void handleMessage (Message msg) {
         switch (msg.what) {
-            case Reset_Code:
-                NavUtils.reStartApp(mContext);
+            case Reset_Code_OK:
+                PreferencesManager.getSharedPreferences(this, FileNameConstant.myPreferences).edit().putBoolean(Constant.FIRST_RUN, true).apply();
+                NavUtils.gotoMainActivityTask(mContext);
+                break;
+            case Reset_Code_FAILURE:
+                mToast((String) msg.obj);
                 break;
             default:
                 break;
