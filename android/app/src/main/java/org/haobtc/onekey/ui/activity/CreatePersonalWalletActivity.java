@@ -23,6 +23,7 @@ import org.haobtc.onekey.event.GetXpubEvent;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
 import org.haobtc.onekey.ui.base.BaseActivity;
+import org.haobtc.onekey.ui.dialog.SelectAddressTypeDialog;
 import org.haobtc.onekey.ui.fragment.AddAssetFragment;
 import org.haobtc.onekey.ui.fragment.DevicePINFragment;
 import org.haobtc.onekey.ui.fragment.SetWalletNameFragment;
@@ -65,21 +66,21 @@ public class CreatePersonalWalletActivity extends BaseActivity implements Busine
         coinType = event.getCoinName();
         switch (coinType) {
             case Constant.COIN_TYPE_BTC:
-                getXpubP2wpkh();
+                new SelectAddressTypeDialog().show(getSupportFragmentManager(), "");
             case Constant.COIN_TYPE_ETH:
                 break;
             case Constant.COIN_TYPE_EOS:
         }
 
     }
-
     /**
      * 获取用于个人钱包的扩展公钥
      */
-    private void getXpubP2wpkh() {
+    public void getXpub(String type) {
 
         new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY_PERSONAL,
-                MyApplication.getInstance().getDeviceWay());
+                MyApplication.getInstance().getDeviceWay(),
+                type);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

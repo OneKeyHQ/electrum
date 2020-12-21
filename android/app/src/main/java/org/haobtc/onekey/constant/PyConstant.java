@@ -90,9 +90,17 @@ public final class PyConstant {
      */
     public static final int VERIFY_ADDRESS_CONFIRM = 10;
     /**
-     * xpub 类型
+     * 原生隔离见证地址（bech32）
      */
-    public static final String XPUB_P2WPKH = "p2wpkh";
+    public static final String ADDRESS_TYPE_P2WPKH = "p2wpkh";
+    /**
+     * 普通地址()
+     * */
+    public static final String ADDRESS_TYPE_P2PKH = "p2pkh";
+    /**
+     * 兼容地址()
+     * */
+    public static final String ADDRESS_TYPE_P2SH_P2WPKH = "p2wpkh-p2sh";
 
 // ============================= Python api name======================
 
@@ -126,7 +134,7 @@ public final class PyConstant {
     /**
      * 校验扩展公钥合法性
      */
-    public static final String VALIDATE_XPUB = "is_valid_xpub";
+    public static final String VALIDATE_XPUB = "verify_xpub";
 
     /**
      * 通过助记词创建HD钱包
@@ -195,4 +203,5 @@ public final class PyConstant {
 
     public static final String CREATE_WALLET = "create";
     public static final String EXPORT_PRIVATE_KEY = "export_privkey";
+    public static final String HD_DERIVED = "create_derived_wallet";
 }

@@ -350,7 +350,7 @@
     <string name="import_tips">3. Wallet imported needs to be used along with BixinKey</string>
     <string name="walletname">Wallet name</string>
     <string name="delete_wallet">Delete all HD-derived wallets</string>
-    <string name="delete_thiswallet">Confirm deleting the wallet</string>
+    <string name="delete_this_wallet">Confirm deleting the wallet</string>
     <string name="delete_succse">Deleted</string>
     <string name="ifconfirm_recovery">Whether to confirm recovery</string>
     <string name="recovery_succse">Restored successfully</string>
@@ -1355,12 +1355,6 @@
     <string name="money_sign">≈ ¥ %s</string>
     <string name="delete_wallet_single">To delete the wallet</string>
     <string name="delete_wallet_single_tip">This action will delete all data for the wallet, please make sure the wallet is backed up before deleting.</string>
-    <string name="has_not_local_wallet_need_pass">您本地还没有创建过hd钱包和独立钱包！！！</string>
-    <string name="input_pass_origin">"输入原密码 "</string>
-    <string name="pin_origin_invalid">密码错误，请重新输入</string>
-    <string name="input_pass_again">"请再次输入 "</string>
-    <string name="twice_input_is_not_identical">两次输入不一直</string>
-    <string name="set_pass_failed">设置密码出错</string>
     <string name="use_onekey">Starting to use means that you agree to OneKey\'s</string>
     <string name="user_agreement_guide">《user agreement》</string>
     <string name="and">and</string>
@@ -1378,5 +1372,28 @@
     <string name="receive_unbackup_tip">该钱包尚未备份。为了您的资金安全，请完成备份后再使用该地址发起转账。</string>
     <string name="share_to">分享到：</string>
     <string name="delete_watch_wallet_tip">此操作将会删除该钱包的所有数据，确定要继续此操作吗？</string>
-
+    <string name="has_not_local_wallet_need_pass">Please set PIN first</string>
+    <string name="input_pass_origin">Please input the origin PIN</string>
+    <string name="pin_origin_invalid">Password invalid，please input again</string>
+    <string name="input_pass_again">Please input again</string>
+    <string name="twice_input_is_not_identical">It is not same in your twice input</string>
+    <string name="set_pass_failed">Password set error</string>
+    <string name="pin_verify_way">Way of verify PIN</string>
+    <string name="select_pin_verify_way">Select your way of verifying pin</string>
+    <string name="input_on_hardware">Input on hardware</string>
+    <string name="input_on_app">Input on APP</string>
+    <string name="un_init_device_support_less">UnInit device does not support this operation</string>
+    <string name="select_correct_item_in_device_list">当前选择设备的设备ID与所连接的设备ID不符，请在设备列表选择正确的项目</string>
+    <string name="device_id_about">Something about deviceId</string>
+    <string name="device_id_about_details">您在【全部设备】列表中选择的设备与所连接设备的设备ID不符\n 造成这种情况的可能原因是您的设备进行过恢复出厂设置\n这个会导致我们展示的设备状态与您的设备的真实状态有差异\n请您回到【全部设备】重新选择</string>
+    <string name="input_pin_on_device">Please input pin on your device</string>
+    <string name="input_pin_on_device_">Please complete input pin on your device</string>
+    <string name="pass_change_success">Change password successful</string>
+    <string name="pass_change_failed">Change password failed</string>
+    <string name="go">Go to Set</string>
+    <string name="need_location">Bluetooth need location permission to work</string>
+    <string name="hardware_wallet">硬件钱包</string>
+    <string name="delete_hardware_wallet_tips">此操作将会删除 App 中存储的该钱包的数据，但您仍可通过掌握其助记词的硬件钱包恢复。确定要继续此操作吗？</string>
+    <string name="delete_watch_wallet_warning">此操作将会删除该钱包的所有数据，确定要继续此操作吗？</string>
+    <string name="select_coin_type">选择币种</string>
 </resources>

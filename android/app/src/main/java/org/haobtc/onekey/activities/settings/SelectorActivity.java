@@ -44,7 +44,6 @@ public class SelectorActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
-
     }
 
     @Override
@@ -112,11 +111,6 @@ public class SelectorActivity extends BaseActivity {
         if (mBle.getConnetedDevices().size() != 0) {
             mBle.disconnectAll();
         }
-    }
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        saveSetting();
     }
 
     private void saveSetting() {

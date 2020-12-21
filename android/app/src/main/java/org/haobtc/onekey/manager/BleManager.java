@@ -2,26 +2,15 @@ package org.haobtc.onekey.manager;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGattCharacteristic;
-import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Settings;
-import android.view.Display;
-import android.view.Gravity;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentActivity;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import org.greenrobot.eventbus.EventBus;
@@ -34,6 +23,8 @@ import org.haobtc.onekey.event.BleScanStopEvent;
 import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.event.NotifySuccessfulEvent;
 import org.haobtc.onekey.ui.base.IBaseView;
+import org.haobtc.onekey.ui.dialog.OpenLocationServiceDialog;
+import org.haobtc.onekey.ui.fragment.RequestLocationPermissionsDialog;
 import org.haobtc.onekey.utils.CommonUtils;
 
 import java.util.Objects;
@@ -125,14 +116,7 @@ public final class BleManager {
                                     fragmentActivity.finish();
                                 }
                             } else {
-                                ((IBaseView) fragmentActivity).showToast(R.string.blurtooth_need_permission);
-                                Intent intent = new Intent("android.settings.APPLICATION_DETAILS_SETTINGS");
-                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                intent.setData(Uri.fromParts("package", MyApplication.getInstance().getPackageName(), null));
-                                if (intent.resolveActivity(MyApplication.getInstance().getPackageManager()) != null) {
-                                    fragmentActivity.startActivity(intent);
-                                    fragmentActivity.finish();
-                                }
+                                new RequestLocationPermissionsDialog().show(fragmentActivity.getSupportFragmentManager(), "");
                             }
                         }
                 );
@@ -321,8 +305,15 @@ public final class BleManager {
         }
     };
     private LocationManager locationManager;
-    private AlertDialog alertDialog;
     private boolean isGpsStatusChange;
+
+    public LocationManager getLocationManager() {
+        return locationManager;
+    }
+
+    public LocationListener getLocationListener() {
+        return locationListener;
+    }
 
     public boolean isGpsStatusChange() {
         return isGpsStatusChange;
@@ -332,9 +323,6 @@ public final class BleManager {
         isGpsStatusChange = gpsStatusChange;
     }
 
-    public AlertDialog getAlertDialog() {
-        return alertDialog;
-    }
     @SuppressLint("MissingPermission")
     private boolean checkGpsEnable() {
         if (locationManager == null) {
@@ -343,28 +331,7 @@ public final class BleManager {
         boolean ok = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         if (!ok) {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, (float) 0, locationListener);
-            alertDialog = new MaterialAlertDialogBuilder(fragmentActivity)
-                    .setTitle(R.string.open_location_service)
-                    .setMessage(R.string.promote_ble)
-                    .setNegativeButton(R.string.cancel, (dialog, which) -> {
-                        Toast.makeText(fragmentActivity, fragmentActivity.getString(R.string.dont_use_bluetooth), Toast.LENGTH_SHORT).show();
-                        locationManager.removeUpdates(locationListener);
-                        dialog.dismiss();
-                    })
-                    .setPositiveButton(R.string.confirm, (dialog, which) -> {
-                        Intent intent = new Intent();
-                        intent.setAction(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                        fragmentActivity.startActivity(intent);
-                    }).create();
-            alertDialog.show();
-            //show center
-            Window dialogWindow = alertDialog.getWindow();
-            WindowManager m = fragmentActivity.getWindowManager();
-            Display d = m.getDefaultDisplay();
-            WindowManager.LayoutParams p = dialogWindow.getAttributes();
-            p.width = (int) (d.getWidth() * 0.95);
-            p.gravity = Gravity.CENTER;
-            dialogWindow.setAttributes(p);
+            new OpenLocationServiceDialog().show(fragmentActivity.getSupportFragmentManager(), "");
         }
         return ok;
     }

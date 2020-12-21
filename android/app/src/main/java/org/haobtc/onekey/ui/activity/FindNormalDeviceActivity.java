@@ -57,7 +57,8 @@ public class FindNormalDeviceActivity extends BaseActivity {
                 startActivity(new Intent(this, RecoveryHardwareOnceWallet.class));
                 break;
             case R.id.multi_sig_wallet:
-               startActivity(new Intent(this, CreateMultiSigWalletActivity.class));
+                showToast(R.string.support_less_promote);
+              // startActivity(new Intent(this, CreateMultiSigWalletActivity.class));
                 break;
             default:
         }

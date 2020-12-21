@@ -45,6 +45,7 @@ import org.haobtc.onekey.event.ChangePinEvent;
 import org.haobtc.onekey.event.CustomizeFeeRateEvent;
 import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.event.GetFeeEvent;
+import org.haobtc.onekey.event.GotPassEvent;
 import org.haobtc.onekey.event.InputPassSendEvent;
 import org.haobtc.onekey.event.SecondEvent;
 import org.haobtc.onekey.manager.PyEnv;
@@ -431,8 +432,8 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     }
 
     @Subscribe
-    public void onGotSoftPass(InputPassSendEvent event) {
-        softSign(event.getPass());
+    public void onGotSoftPass(GotPassEvent event) {
+        softSign(event.getPassword());
     }
 
     /**
@@ -445,9 +446,6 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
             broadcastTx(pyResponse.getResult().getTx());
         } else {
             showToast(errorMsg);
-//            if (errorMsg.contains("Incorrect password")) {
-//                showToast(getString(R.string.wrong_pass));
-//            }
         }
     }
 

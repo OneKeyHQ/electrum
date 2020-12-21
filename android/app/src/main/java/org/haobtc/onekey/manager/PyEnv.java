@@ -199,7 +199,8 @@ public final class PyEnv {
      * 获取硬件设备信息
      */
     @NonNull
-    public static HardwareFeatures getFeature(Context context) throws Exception {
+    public static PyResponse<HardwareFeatures> getFeature(Context context) {
+        PyResponse<HardwareFeatures> response = new PyResponse<>();
         String feature;
         try {
             futureTask = new FutureTask<>(() -> Daemon.commands.callAttr(PyConstant.GET_FEATURE, MyApplication.getInstance().getDeviceWay()));
@@ -208,19 +209,21 @@ public final class PyEnv {
             if (!futureTask.isDone()) {
                 futureTask.cancel(true);
             }
-            return dealWithConnectedDevice(context, HardwareFeatures.objectFromData(feature));
+            HardwareFeatures features = dealWithConnectedDevice(context, HardwareFeatures.objectFromData(feature));
+            response.setResult(features);
         } catch (Exception e) {
             if (sBle != null) {
                 cancelAll();
             }
+            response.setErrors(e.getMessage());
             e.printStackTrace();
-            throw e;
         }
+        return response;
     }
 
     /**
      * 处理当前链接硬件的设备信息并保存
-     * 1. 已激活，并且有备份信息的不能直接覆盖
+     * 1. 已激活，并且有备份信息或已验证的不能直接覆盖
      * 2. 除上中情形，直接覆盖原有信息
      */
     private static HardwareFeatures dealWithConnectedDevice(Context context, HardwareFeatures features) {
@@ -228,9 +231,14 @@ public final class PyEnv {
         if (features.isInitialized()) {
             HardwareFeatures old;
             String backupMessage = "";
+            boolean isVerified = false;
             if (PreferencesManager.contains(context, Constant.DEVICES, features.getDeviceId())) {
                 old = HardwareFeatures.objectFromData((String) PreferencesManager.get(context, Constant.DEVICES, features.getDeviceId(), ""));
                 backupMessage = old.getBackupMessage();
+                isVerified = old.isVerify();
+            }
+            if (isVerified) {
+                features.setVerify(true);
             }
             if (!Strings.isNullOrEmpty(backupMessage)) {
                 features.setBackupMessage(backupMessage);
@@ -320,6 +328,7 @@ public final class PyEnv {
 
     /**
      * 选择要使用的钱包
+     * @param name 钱包名称
      */
     public static BalanceInfo selectWallet(@NonNull String name) {
         try {
@@ -347,6 +356,7 @@ public final class PyEnv {
 
     /**
      * 校验扩展公钥格式
+     * @param xpub 待校验的扩展公钥
      */
     public static boolean validateXpub(String xpub) {
         if (Global.guiConsole != null) {
@@ -356,6 +366,7 @@ public final class PyEnv {
     }
     /**
      * 校验地址格式
+     * @param address 待校验的地址
      * */
     public static boolean verifyAddress(String address) {
         if (Global.guiConsole != null) {
@@ -365,6 +376,8 @@ public final class PyEnv {
     }
     /**
      * 创建HD钱包
+     * @param passwd APP主密码
+     * @param mnemonics  助记词
      * */
     public static void createLocalHd(String passwd, String mnemonics) {
         mexecutorService.execute(() -> {
@@ -405,6 +418,7 @@ public final class PyEnv {
     }
     /**
      * 确认恢复
+     * @param nameList 要恢复钱包的名称列表
      * */
     public static boolean recoveryConfirm(List<String> nameList) {
         try {
@@ -431,6 +445,7 @@ public final class PyEnv {
     }
     /**
      * 固件升级接口
+     * @param path 升级文件路径
      * */
     public static PyResponse<Void> firmwareUpdate(String path) {
         PyResponse<Void> response = new PyResponse<>();
@@ -529,6 +544,7 @@ public final class PyEnv {
         return response;
     }
     /**
+     * 广播交易
      * @param signedTx 已签名交易
      * */
     public static PyResponse<Void> broadcast(String signedTx) {
@@ -542,6 +558,7 @@ public final class PyEnv {
         return response;
     }
     /**
+     * 签名交易
      * @param rawTx 未签名的交易
      * @return 签名后的交易详情
      * */
@@ -557,7 +574,9 @@ public final class PyEnv {
         }
         return response;
     }
-
+    /**
+     * 获取当前钱包的详细信息
+     * */
     public static PyResponse<CurrentAddressDetail> getCurrentAddressInfo() {
         PyResponse<CurrentAddressDetail> response = new PyResponse<>();
         try {
@@ -573,6 +592,9 @@ public final class PyEnv {
     }
     /**
      * 校验签名
+     * @param address 地址
+     * @param message 原始信息
+     * @param signature 签名
      * */
     public static PyResponse<Boolean> verifySignature(String address, String message, String signature) {
         PyResponse<Boolean> response = new PyResponse<>();
@@ -587,6 +609,7 @@ public final class PyEnv {
     }
     /**
      * 删除hd钱包的备份标记
+     * @param name 钱包名称
      * */
     public static  PyResponse<Void> clearHdBackupFlags(String name) {
         PyResponse<Void> response = new PyResponse<>();
@@ -598,6 +621,10 @@ public final class PyEnv {
         }
         return response;
     }
+    /**
+     * 校验APP主密码
+     * @param passwd APP主密码
+     * */
     public static PyResponse<Void> verifySoftPass(String passwd) {
         PyResponse<Void> response = new PyResponse<>();
         try {
@@ -609,7 +636,11 @@ public final class PyEnv {
         }
         return response;
     }
-
+    /**
+     * 修改APP主密码
+     * @param passwdOrigin APP原主密码
+     * @param passwdNew APP新主密码
+     * */
     public static PyResponse<Void> changeSoftPass(String passwdOrigin ,String passwdNew) {
         PyResponse<Void> response = new PyResponse<>();
         try {
@@ -620,6 +651,10 @@ public final class PyEnv {
         }
         return response;
     }
+    /**
+     * 导出助记词
+     * @param password APP主密码
+     * */
     public static PyResponse<String> exportMnemonics(String password) {
         PyResponse<String> response = new PyResponse<>();
         try {
@@ -631,7 +666,14 @@ public final class PyEnv {
         }
         return response;
     }
-
+    /**
+     * 创建钱包
+     * @param context
+     * @param password  APP主密码
+     * @param walletName 钱包名称
+     * @param  mnemonics 助记词 optional
+     * @param privateKey 私钥 optional
+     * */
     public static void createWallet(Context context, String walletName, String password, String privateKey, String mnemonics) {
         try {
             String result = sCommands.callAttr(PyConstant.CREATE_WALLET, walletName, password, Strings.isNullOrEmpty(privateKey) ? new Kwarg("seed", mnemonics) : new Kwarg("privkeys", privateKey)).toString();
@@ -644,6 +686,11 @@ public final class PyEnv {
             e.printStackTrace();
         }
     }
+    /**
+     * 删除指定钱包
+     * @param password APP 主密码
+     * @param walletName 要删除的钱包名称
+     * */
     public static PyResponse<Void> deleteWallet(String password, String walletName) {
         PyResponse<Void> response = new PyResponse<>();
         try {
@@ -654,10 +701,16 @@ public final class PyEnv {
         }
         return response;
     }
+    /**
+     * 创建派生钱包
+     * @param walletName 钱包名称
+     * @param password APP 主密码
+     * @param currencyType 币种类型
+     * */
     public static PyResponse<Void> createDerivedWallet(String walletName, String password, String currencyType) {
         PyResponse<Void> response = new PyResponse<>();
         try {
-           String result = sCommands.callAttr("create_derived_wallet", walletName, password, currencyType).toString();
+           String result = sCommands.callAttr(PyConstant.HD_DERIVED, walletName, password, currencyType).toString();
             CreateWalletBean createWalletBean = CreateWalletBean.objectFromData(result);
             EventBus.getDefault().post(new CreateSuccessEvent(createWalletBean.getWalletInfo().get(0).getName()));
         } catch (Exception e) {
@@ -666,6 +719,10 @@ public final class PyEnv {
         }
         return response;
     }
+    /**
+     * 导出私钥
+     * @param password APP主密码
+     * */
     public static PyResponse<String> exportPrivateKey(String password) {
         PyResponse<String> response = new PyResponse<>();
         try {

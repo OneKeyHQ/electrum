@@ -171,11 +171,13 @@ public class SoftPassActivity extends BaseActivity {
             editPassLongLayout.setVisibility(View.VISIBLE);
             btnNext.setVisibility(View.VISIBLE);
             passTypeSwitchPromote.setText(R.string.use_short_pass);
+            editPassLong.setText("");
         } else {
             editPassShort.setVisibility(View.VISIBLE);
             editPassLongLayout.setVisibility(View.GONE);
             btnNext.setVisibility(View.GONE);
             passTypeSwitchPromote.setText(R.string.use_long_pass);
+            editPassShort.clearText();
         }
         keyBroad();
     }
@@ -227,20 +229,21 @@ public class SoftPassActivity extends BaseActivity {
             pinInputFirst = pass;
             textPassPromote.setText(R.string.input_pass_again);
             textTip.setText(R.string.dont_tell);
-            if (isLongPass) {
-                editPassLong.setText("");
-            } else {
-                editPassShort.clearText();
-            }
         } else {
             // 第二次输入password
             if (pinInputFirst.equals(pass)) {
                 PreferencesManager.put(this, "Preferences", Constant.SOFT_HD_PASS_TYPE, isLongPass ? Constant.SOFT_HD_PASS_TYPE_LONG: Constant.SOFT_HD_PASS_TYPE_SHORT);
                 EventBus.getDefault().post(new GotPassEvent(pinInputFirst));
                 finish();
+                return;
             } else {
                 showToast(R.string.twice_input_is_not_identical);
             }
+        }
+        if (isLongPass) {
+            editPassLong.setText("");
+        } else {
+            editPassShort.clearText();
         }
     }
 
@@ -254,14 +257,8 @@ public class SoftPassActivity extends BaseActivity {
             PyResponse<Void> response = PyEnv.verifySoftPass(pinOrigin);
             String errors = response.getErrors();
             if (Strings.isNullOrEmpty(errors)) {
-                System.out.println("verify success");
                 textPassPromote.setText(R.string.input_new_pass);
                 textTip.setVisibility(View.GONE);
-                if (isLongPass) {
-                    editPassLong.setText("");
-                } else {
-                    editPassShort.clearText();
-                }
             } else {
                 pinOrigin = "";
                 showToast(R.string.pin_origin_invalid);
@@ -273,27 +270,29 @@ public class SoftPassActivity extends BaseActivity {
                 textPassPromote.setText(R.string.input_pass_again);
                 textTip.setText(R.string.dont_tell);
                 keyBroad();
-                if (isLongPass) {
-                    editPassLong.setText("");
-                } else {
-                    editPassShort.clearText();
-                }
             } else {
                 // 第二次输入password
+                passTypeSwitch.setVisibility(View.VISIBLE);
                 if (pinInputFirst.equals(pass)) {
                     PyResponse<Void> response = PyEnv.changeSoftPass(pinOrigin, pass);
                     String errors = response.getErrors();
                     if (Strings.isNullOrEmpty(errors)) {
                         PreferencesManager.put(this, "Preferences", Constant.SOFT_HD_PASS_TYPE, isLongPass ? Constant.SOFT_HD_PASS_TYPE_LONG: Constant.SOFT_HD_PASS_TYPE_SHORT);
-                        showToast("修改成功");
-                        finish();
+                        showToast(R.string.pass_change_success);
                     } else {
-                        showToast("修改密码失败");
+                        showToast(R.string.pass_change_failed);
                     }
+                    finish();
+                    return;
                 } else {
                     showToast(R.string.twice_input_is_not_identical);
                 }
             }
+        }
+        if (isLongPass) {
+            editPassLong.setText("");
+        } else {
+            editPassShort.clearText();
         }
     }
 

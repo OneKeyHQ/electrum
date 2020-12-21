@@ -83,6 +83,7 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
             case SIGN_TX:
             case COUNTER_VERIFICATION:
             case SE_PROXY:
+            case GET_EXTEND_PUBLIC_KEY_PERSONAL:
                 try {
                     result = Daemon.commands.callAttr(strings[0].endsWith("single") ? GET_EXTEND_PUBLIC_KEY : strings[0], strings[1], strings[2]).toString();
                 } catch (Exception e) {
@@ -104,7 +105,6 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
             case WIPE_DEVICE:
             case BACK_UP:
             case READ_MNEMONIC_FROM_HARDWARE:
-            case GET_EXTEND_PUBLIC_KEY_PERSONAL:
                 try {
                     result = Daemon.commands.callAttr(strings[0], strings[1]).toString();
                 } catch (Exception e) {

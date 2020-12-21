@@ -26,6 +26,7 @@ import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.asynctask.BusinessAsyncTask;
 import org.haobtc.onekey.bean.HardwareFeatures;
 import org.haobtc.onekey.bean.HardwareVerifyResponse;
+import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.bean.UpdateInfo;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.PyConstant;
@@ -54,10 +55,15 @@ import org.haobtc.onekey.ui.activity.VerifyHardwareActivity;
 import org.haobtc.onekey.ui.activity.VerifyPinActivity;
 import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.ui.dialog.DeleteLocalDeviceDialog;
+import org.haobtc.onekey.ui.dialog.InvalidDeviceIdWarningDialog;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -153,7 +159,7 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
                 startActivity(intent7);
                 break;
             case R.id.tet_deleteWallet:
-                new DeleteLocalDeviceDialog(this, deviceId).show(getSupportFragmentManager(), "");
+                new DeleteLocalDeviceDialog(deviceId).show(getSupportFragmentManager(), "");
                 break;
             case R.id.tetVerification:
                 Intent intent1 = new Intent(this, VerifyHardwareActivity.class);
@@ -250,7 +256,14 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
             urlPrefix = "";
         }
         Bundle bundle = new Bundle();
-        if (versionStm32.compareTo(firmwareVersion) > 0) {
+        List<Integer> firmwareCurrentVersion = new ArrayList<>();
+        Arrays.asList(firmwareVersion.split("\\.")).forEach((s) -> {
+            firmwareCurrentVersion.add(Integer.valueOf(s));
+        });
+        List<Integer> firmwareNewVersion = updateInfo.getStm32().getVersion();
+        if (firmwareNewVersion.get(0) > firmwareCurrentVersion.get(0) ||
+                 firmwareNewVersion.get(1) > firmwareCurrentVersion.get(1) ||
+            firmwareNewVersion.get(2) > firmwareCurrentVersion.get(2)) {
             bundle.putString(Constant.TAG_FIRMWARE_DOWNLOAD_URL, urlPrefix + urlStm32);
             bundle.putString(Constant.TAG_FIRMWARE_VERSION_NEW, versionStm32);
             bundle.putString(Constant.TAG_FIRMWARE_UPDATE_DES, descriptionStm32);
@@ -271,15 +284,36 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onReadyBle(NotifySuccessfulEvent event) {
+        HardwareFeatures features;
+        PyResponse<HardwareFeatures> response = PyEnv.getFeature(this);
+        String errors = response.getErrors();
+        if (Strings.isNullOrEmpty(errors)) {
+            features = response.getResult();
+            if (!deviceId.equals(features.getDeviceId())) {
+                new InvalidDeviceIdWarningDialog().show(getSupportFragmentManager(), "");
+                return;
+            }
+        } else {
+            showToast(R.string.get_hard_msg_error);
+            return;
+        }
         switch (currentMethod) {
             case BusinessAsyncTask.CHANGE_PIN:
-                changePin();
+                if (features.isInitialized()) {
+                    changePin();
+                } else {
+                   showToast(R.string.un_init_device_support_less);
+                }
                 break;
             case BusinessAsyncTask.WIPE_DEVICE:
                 startActivity(new Intent(this, ResetDevicePromoteActivity.class));
                 break;
             case BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY:
-                getXpub();
+                if (features.isInitialized()) {
+                    getXpub();
+                } else {
+                    showToast(R.string.un_init_device_support_less);
+                }
                 break;
             case BusinessAsyncTask.COUNTER_VERIFICATION:
                 EventBus.getDefault().post(new ConnectedEvent());
@@ -419,7 +453,7 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
         nrfVersion = getIntent().getStringExtra(Constant.TAG_NRF_VERSION);
         tetKeyName.setText(label);
         boolean isVerified = intent.getBooleanExtra(Constant.TAG_HARDWARE_VERIFY, false);
-        verified.setVisibility(isVerified ? View.VISIBLE: View.GONE);
+        verified.setVisibility(isVerified ? View.VISIBLE : View.GONE);
         bleMac = PreferencesManager.get(this, Constant.BLE_INFO, bleName, "").toString();
     }
 

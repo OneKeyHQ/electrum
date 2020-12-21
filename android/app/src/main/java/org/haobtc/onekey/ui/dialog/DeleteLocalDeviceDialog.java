@@ -28,10 +28,8 @@ public class DeleteLocalDeviceDialog extends BaseDialogFragment {
     @BindView(R.id.btn_confirm)
     Button btnConfirm;
     private String deviceId;
-    private AppCompatActivity activity;
 
-    public DeleteLocalDeviceDialog(AppCompatActivity activity, String deviceId) {
-        this.activity = activity;
+    public DeleteLocalDeviceDialog(String deviceId) {
         this.deviceId = deviceId;
     }
     /***
@@ -51,10 +49,9 @@ public class DeleteLocalDeviceDialog extends BaseDialogFragment {
                 dismiss();
                 break;
             case R.id.btn_confirm:
-                PreferencesManager.remove(activity, Constant.DEVICES, deviceId);
+                PreferencesManager.remove(getContext(), Constant.DEVICES, deviceId);
                 dismiss();
-                activity.finish();
-                activity = null;
+                requireActivity().finish();
                 break;
         }
     }

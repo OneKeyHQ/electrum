@@ -40,7 +40,7 @@ public class CustomReSetBottomPopup extends BottomPopupView {
             case deleteHdChildren:
                 title.setText(R.string.delete_wallet_single);
                 content.setText(R.string.delete_wallet_single_tip);
-                confirmBtn.setText(R.string.delete_thiswallet);
+                confirmBtn.setText(R.string.delete_this_wallet);
                 break;
             default:
                 break;

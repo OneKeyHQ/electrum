@@ -40,6 +40,7 @@ import org.haobtc.onekey.onekeys.dialog.recovery.RecoveryChooseWalletActivity;
 import org.haobtc.onekey.onekeys.homepage.mindmenu.HdRootMnemonicsActivity;
 import org.haobtc.onekey.onekeys.homepage.process.ExportPrivateActivity;
 import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
+import org.haobtc.onekey.ui.activity.SoftPassActivity;
 import org.haobtc.onekey.utils.Daemon;
 import org.haobtc.onekey.utils.MyDialog;
 import org.haobtc.onekey.utils.PwdEditText;
@@ -54,7 +55,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import dr.android.utils.LogUtil;
-
+/**
+ * see {@link SoftPassActivity}
+ **/
+@Deprecated
 public class SetHDWalletPassActivity extends BaseActivity implements TextWatcher {
 
     @BindView(R.id.test_set_pass)

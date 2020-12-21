@@ -1,5 +1,6 @@
 package org.haobtc.onekey.manager;
 
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 
@@ -8,7 +9,9 @@ import androidx.fragment.app.FragmentActivity;
 
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.activities.service.CommunicationModeSelector;
+import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.ButtonRequestEvent;
+import org.haobtc.onekey.ui.activity.InputPinOnHardware;
 
 import static org.haobtc.onekey.constant.PyConstant.BUTTON_REQUEST_6;
 import static org.haobtc.onekey.constant.PyConstant.BUTTON_REQUEST_7;
@@ -58,28 +61,23 @@ public class HardwareCallbackHandler extends Handler {
         super.handleMessage(msg);
         switch (msg.what) {
             case PIN_CURRENT:
-                System.out.println("============" + msg.what);
-                EventBus.getDefault().post(new ButtonRequestEvent(PIN_CURRENT));
-                break;
             case PIN_NEW_FIRST:
-                EventBus.getDefault().post(new ButtonRequestEvent(PIN_NEW_FIRST));
+                boolean isVerifyPinOnHardware = (boolean)PreferencesManager.get(fragmentActivity, "Preferences", Constant.PIN_VERIFY_ON_HARDWARE, false);
+                if (isVerifyPinOnHardware) {
+                   fragmentActivity.startActivity(new Intent(fragmentActivity, InputPinOnHardware.class));
+                   PyEnv.setPin(Constant.PIN_INVALID);
+                } else {
+                    EventBus.getDefault().post(new ButtonRequestEvent(msg.what));
+                }
                 break;
             case BUTTON_REQUEST_9:
-                EventBus.getDefault().post(new ButtonRequestEvent(BUTTON_REQUEST_9));
-                break;
             case BUTTON_REQUEST_7:
-                EventBus.getDefault().post(new ButtonRequestEvent(BUTTON_REQUEST_7));
-                break;
             case BUTTON_REQUEST_6:
-                EventBus.getDefault().post(new ButtonRequestEvent(BUTTON_REQUEST_6));
             case BUTTON_REQUEST_8:
-                EventBus.getDefault().post(new ButtonRequestEvent(BUTTON_REQUEST_8));
-                break;
-//            case PASS_NEW_PASSPHRASS:
-            case PASS_PASSPHRASS:
-                break;
             case VERIFY_ADDRESS_CONFIRM:
-                EventBus.getDefault().post(new ButtonRequestEvent(VERIFY_ADDRESS_CONFIRM));
+                EventBus.getDefault().post(new ButtonRequestEvent(msg.what));
+                break;
+            case PASS_PASSPHRASS:
                 break;
             default:
         }

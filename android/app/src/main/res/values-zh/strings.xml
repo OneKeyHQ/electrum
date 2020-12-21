@@ -348,7 +348,7 @@
     <string name="import_tips">3.导入的钱包，需配合BixinKey使用。</string>
     <string name="walletname">钱包名称</string>
     <string name="delete_wallet">删除所有 HD 派生钱包</string>
-    <string name="delete_thiswallet">确认删除该钱包</string>
+    <string name="delete_this_wallet">确认删除该钱包</string>
     <string name="delete_succse">删除成功</string>
     <string name="ifconfirm_recovery">是否确认恢复</string>
     <string name="recovery_succse">恢复成功</string>
@@ -1294,10 +1294,10 @@
     <string name="confirm_reset">我已确认，立即重置</string>
     <string name="delete_wallet_single">删除钱包</string>
     <string name="delete_wallet_single_tip">此操作将会删除该钱包的所有数据，请在删除前确保该钱包已备份。</string>
-    <string name="has_not_local_wallet_need_pass">您本地还没有创建过hd钱包和独立钱包！！！</string>
+    <string name="has_not_local_wallet_need_pass">请先设置密码</string>
     <string name="input_pass_origin">输入原密码</string>
     <string name="pin_origin_invalid">密码错误，请重新输入</string>
-    <string name="input_pass_again">"请再次输入 "</string>
+    <string name="input_pass_again">请再次输入</string>
     <string name="twice_input_is_not_identical">前后输入不一致，请重新输入</string>
     <string name="set_pass_failed">设置密码出错</string>
     <string name="use_onekey">开始使用即意味着您同意OneKey的</string>
@@ -1317,4 +1317,22 @@
     <string name="receive_unbackup_tip">该钱包尚未备份。为了您的资金安全，请完成备份后再使用该地址发起转账。</string>
     <string name="share_to">分享到：</string>
     <string name="delete_watch_wallet_tip">此操作将会删除该钱包的所有数据，确定要继续此操作吗？</string>
+    <string name="pin_verify_way">PIN码校验方式</string>
+    <string name="select_pin_verify_way">选择校验PIN码的方式</string>
+    <string name="input_on_hardware">在硬件上输入</string>
+    <string name="input_on_app">App 上输入</string>
+    <string name="un_init_device_support_less">设备未激活不支持该操作</string>
+    <string name="select_correct_item_in_device_list">当前选择设备的设备ID与所连接的设备ID不符，请在设备列表选择正确的项目</string>
+    <string name="device_id_about">关于设备ID</string>
+    <string name="device_id_about_details">您在【全部设备】列表中选择的设备与所连接设备的设备ID不符\n 造成这种情况的可能原因是您的设备进行过恢复出厂设置\n这个会导致我们展示的设备状态与您的设备的真实状态有差异\n请您回到【全部设备】重新选择</string>
+    <string name="input_pin_on_device">在设备上输入 PIN 码</string>
+    <string name="input_pin_on_device_">请在您的硬件设备上完成 PIN 码的输入。</string>
+    <string name="pass_change_success">密码修改成功</string>
+    <string name="pass_change_failed">密码修改失败</string>
+    <string name="go">去设置</string>
+    <string name="need_location">蓝牙需要使用位置权限，才能正常工作</string>
+    <string name="hardware_wallet">硬件钱包</string>
+    <string name="delete_hardware_wallet_tips">此操作将会删除 App 中存储的该钱包的数据，但您仍可通过掌握其助记词的硬件钱包恢复。确定要继续此操作吗？</string>
+    <string name="delete_watch_wallet_warning">此操作将会删除该钱包的所有数据，确定要继续此操作吗？</string>
+    <string name="select_coin_type">选择币种</string>
 </resources>

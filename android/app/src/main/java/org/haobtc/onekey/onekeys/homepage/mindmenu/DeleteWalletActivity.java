@@ -3,7 +3,6 @@ package org.haobtc.onekey.onekeys.homepage.mindmenu;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -11,7 +10,6 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
-import com.chaquo.python.Kwarg;
 import com.google.common.base.Strings;
 
 import org.greenrobot.eventbus.EventBus;
@@ -31,7 +29,6 @@ import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.ui.activity.SoftPassActivity;
 import org.haobtc.onekey.ui.dialog.BackupRequireDialog;
-import org.haobtc.onekey.utils.Daemon;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -96,18 +93,19 @@ public class DeleteWalletActivity extends BaseActivity implements CompoundButton
                 finish();
                 break;
             case R.id.btn_forward:
-                if (!TextUtils.isEmpty(deleteWalletType)) {
-                    if (deleteWalletType.contains("hw")) {
-                        // 删除观察钱包
-                        deleteWatchWallet();
-                    } else {
-                        //删除除观察钱包以外的钱包
-                        deleteOtherWallet();
-                    }
-                } else {
-                    //删除除观察钱包以外的钱包
-                    deleteOtherWallet();
-                }
+//                if (!TextUtils.isEmpty(deleteWalletType)) {
+//                    if (deleteWalletType.contains("watch") || deleteWalletType.contains("hw")) {
+//                        // 删除观察钱包
+//                        deleteWatchWallet();
+//                    } else {
+//                        //删除除观察钱包以外的钱包
+//                        deleteOtherWallet();
+//                    }
+//                } else {
+//                    //删除除观察钱包以外的钱包
+//                    deleteOtherWallet();
+//                }
+                deleteOtherWallet();
                 break;
         }
     }
@@ -171,23 +169,6 @@ public class DeleteWalletActivity extends BaseActivity implements CompoundButton
             mlToast(errors);
         }
     }
-
-    private void deleteWatchWallet() {
-        String keyName = PreferencesManager.get(this, "Preferences", Constant.CURRENT_SELECTED_WALLET_NAME, "").toString();
-        try {
-            Daemon.commands.callAttr("delete_wallet", "111111", new Kwarg("name", keyName));
-        } catch (Exception e) {
-            e.printStackTrace();
-            mToast(e.getMessage());
-            return;
-        }
-        mToast(getString(R.string.delete_succse));
-        PreferencesManager.remove(this, Constant.WALLETS, keyName);
-        EventBus.getDefault().post(new LoadOtherWalletEvent());
-        EventBus.getDefault().post(new SecondEvent("finish"));
-        finish();
-    }
-
     @SuppressLint("UseCompatLoadingForDrawables")
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {

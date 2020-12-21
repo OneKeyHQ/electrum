@@ -43,7 +43,7 @@
             android:layout_marginEnd="@dimen/dp_25"
             android:background="@drawable/delete_wallet_yes"
             android:gravity="center"
-            android:text="@string/delete_thiswallet"
+            android:text="@string/delete_this_wallet"
             android:textColor="@color/button_bk_ddake"
             android:textSize="@dimen/sp_16" />
 

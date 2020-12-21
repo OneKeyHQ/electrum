@@ -26,6 +26,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.HardwareFeatures;
+import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.bean.UpdateInfo;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.BleConnectedEvent;
@@ -198,17 +199,18 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
 
     private void toNextActivity() {
         HardwareFeatures features;
-        try {
-            features = PyEnv.getFeature(this);
+        PyResponse<HardwareFeatures> response = PyEnv.getFeature(this);
+        String errors = response.getErrors();
+        if (Strings.isNullOrEmpty(errors)) {
+            features = response.getResult();
             String firmwareVersion = features.getMajorVersion() + "." + features.getMinorVersion() + "." + features.getPatchVersion();
             if (firmwareVersion.compareTo(MIN_SUPPORT_VERSION) <= 0 ) {
                 update(features);
                 finish();
                 return;
             }
-        } catch (Exception e) {
+        } else {
             showToast(getString(R.string.get_hard_msg_error));
-            e.printStackTrace();
             finish();
             return;
         }
@@ -337,10 +339,6 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
         super.onResume();
         if (bleManager != null) {
             if (bleManager.isGpsStatusChange()) {
-                AlertDialog dialog = bleManager.getAlertDialog();
-                if (dialog != null) {
-                    dialog.dismiss();
-                }
                 bleManager.setGpsStatusChange(false);
                 bleManager.initBle();
             }

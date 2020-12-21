@@ -654,6 +654,8 @@
         <activity
             android:name=".activities.ResetAppActivity"
             android:screenOrientation="portrait" />
+        <activity android:name=".ui.activity.PinVerifyWaySelector" />
+        <activity android:name=".ui.activity.InputPinOnHardware" />
     </application>
 
 </manifest>

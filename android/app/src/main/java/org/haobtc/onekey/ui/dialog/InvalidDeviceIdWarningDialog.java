@@ -14,10 +14,10 @@ import butterknife.OnClick;
 
 /**
  * @author liyan
- * @date 12/17/20
+ * @date 12/19/20
  */
 
-public class ScreenshotWarningDialog extends BaseDialogFragment {
+public class InvalidDeviceIdWarningDialog extends BaseDialogFragment {
     @BindView(R.id.img_cancel)
     ImageView imgCancel;
     @BindView(R.id.btn_next)
@@ -29,17 +29,14 @@ public class ScreenshotWarningDialog extends BaseDialogFragment {
      */
     @Override
     public int getContentViewId() {
-        return R.layout.dont_screenshot;
+        return R.layout.invalid_device_item_warning_dialog;
     }
 
     @OnClick({R.id.img_cancel, R.id.btn_next})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_cancel:
-                dismiss();
-                break;
             case R.id.btn_next:
-                EventBus.getDefault().post(new ShowMnemonicEvent());
                 dismiss();
                 break;
         }

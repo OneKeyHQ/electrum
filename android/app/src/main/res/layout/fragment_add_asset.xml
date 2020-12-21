@@ -15,7 +15,7 @@
         android:paddingTop="@dimen/dp_20"
         android:paddingRight="@dimen/dp_30"
         android:paddingBottom="@dimen/dp_20"
-        android:text="选择币种"
+        android:text="@string/select_coin_type"
         android:textColor="#142A3B"
         android:textSize="30sp" />
 

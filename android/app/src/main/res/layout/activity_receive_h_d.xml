@@ -187,18 +187,14 @@
                 android:id="@+id/text_receive_address"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
-                android:layout_marginStart="@dimen/dp_20"
                 android:layout_marginTop="@dimen/sp_15"
-                android:layout_marginEnd="@dimen/dp_20"
                 android:layout_weight="1"
                 android:ellipsize="middle"
                 android:gravity="center_horizontal"
-                android:maxEms="100"
                 android:singleLine="true"
                 android:textColor="@color/text_two"
                 android:textSize="@dimen/sp_14"
                 tools:text="3MEtJZRVPawaRjX6R8BoXB7mMyAzmXNvn6" />
-
             <LinearLayout
                 android:id="@+id/normal_layout"
                 android:layout_width="match_parent"

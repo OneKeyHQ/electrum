@@ -61,7 +61,7 @@ public class RecoveryHardwareOnceWallet extends BaseActivity implements Business
      */
     private void getXpubP2wpkh() {
         new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY_PERSONAL,
-                MyApplication.getInstance().getDeviceWay());
+                MyApplication.getInstance().getDeviceWay(), PyConstant.ADDRESS_TYPE_P2WPKH);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

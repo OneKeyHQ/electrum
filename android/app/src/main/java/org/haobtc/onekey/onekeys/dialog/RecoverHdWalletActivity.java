@@ -48,7 +48,10 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import static org.haobtc.onekey.constant.Constant.SEARCH_DEVICE_MODE;
-
+/**
+ * see {@link SoftPassActivity}
+ **/
+@Deprecated
 public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocusChangeListener {
 
     @BindView(R.id.edit_one)

@@ -32,20 +32,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="130dp"
-        android:gravity="center"
-        android:layout_gravity="center">
+        android:gravity="center">
         <CheckBox
             android:id="@+id/checkbox"
-            android:layout_width="@dimen/dp_16"
-            android:layout_height="@dimen/dp_16"
+            android:layout_width="@dimen/dp_24"
+            android:layout_height="@dimen/dp_24"
             android:background="@drawable/circle_checkbox"
             android:button="@null"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBaseline="@id/checkbox"
-            android:layout_marginStart="@dimen/dp_20"
+            android:layout_toEndOf="@id/checkbox"
+            android:layout_marginStart="@dimen/dp_10"
             android:singleLine="true"
             android:text="@string/iknow_risk"
             android:textColor="#546370"

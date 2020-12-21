@@ -148,8 +148,14 @@ class Help:
                 cmd = all_commands[name_or_wrapper]
             return f"{cmd}\n{cmd.description}"
 
+
 def verify_address(address) -> bool:
     return is_address(address, net=constants.net)
+
+
+def verify_xpub(xpub: str) -> bool:
+    return keystore.is_bip32_key(xpub)
+
 
 # Adds additional commands which aren't available over JSON RPC.
 class AndroidCommands(commands.Commands):
@@ -282,12 +288,6 @@ class AndroidCommands(commands.Commands):
             self.config.set_key('all_wallet_type_info', self.local_wallet_info)
         except BaseException as e:
             raise e
-
-    def is_valiad_xpub(self, xpub):
-        try:
-            return keystore.is_bip32_key(xpub)
-        except BaseException as e:
-            raise BaseException(_("Unavailable xpub"))
 
     def on_fee(self, event, *arg):
         try:

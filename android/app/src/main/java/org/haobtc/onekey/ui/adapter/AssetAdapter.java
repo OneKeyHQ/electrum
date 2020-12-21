@@ -16,6 +16,7 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.bean.CoinBean;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.GetXpubEvent;
+import org.haobtc.onekey.ui.dialog.SelectAddressTypeDialog;
 
 import java.util.List;
 

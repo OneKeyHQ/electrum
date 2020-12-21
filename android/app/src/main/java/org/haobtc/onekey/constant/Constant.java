@@ -242,6 +242,10 @@ public final class Constant {
      * 本地是否存在软件hd
      */
     public static final String HAS_LOCAL_HD = "has_local_hd";
+    /**
+     * 校验PIN方式
+     * */
+    public static final String PIN_VERIFY_ON_HARDWARE = "pin_verify_on_hardware";
 
     public static class SearchDeviceMode {
         /**
@@ -269,9 +273,17 @@ public final class Constant {
          */
         public static final int MODE_PREPARE = 6;
     }
-
+    /**
+     * 这个值意味着要在硬件上输入PIN, 注意 '0' 并不是合法的可选PIN值
+     * */
+    public static final String PIN_INVALID = "000000";
+    /**
+     * 操作类型
+     * */
     public static final String OPERATE_TYPE = "operate_type";
-
+    /**
+     * 备份hd到未激活硬件设备
+     * */
     public static final String EXPORT_DESTINATIONS = "export2_hardware";
 
     public static final String RECOVERY_TYPE = "recovery_from_hardware";
