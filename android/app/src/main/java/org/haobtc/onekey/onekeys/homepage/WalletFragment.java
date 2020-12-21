@@ -59,7 +59,6 @@ import org.haobtc.onekey.utils.Daemon;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.DecimalFormat;
 import java.util.Map;
 import java.util.Optional;
 
@@ -151,6 +150,7 @@ public class WalletFragment extends BaseFragment {
     private String bleMac;
     private static int currentAction;
     private boolean isRecovery;
+    private boolean isAddHd;
 
     /**
      * init views
@@ -567,6 +567,7 @@ public class WalletFragment extends BaseFragment {
                 break;
             case R.id.img_Add:
             case R.id.rel_create_hd:
+                isAddHd = true;
                 Intent intent0 = new Intent(getActivity(), SoftPassActivity.class);
                 intent0.putExtra(org.haobtc.onekey.constant.Constant.OPERATE_TYPE, SoftPassActivity.SET);
                 startActivity(intent0);
@@ -613,20 +614,20 @@ public class WalletFragment extends BaseFragment {
         }
     }
 
-    private boolean shouldResponseEvent() {
-        return (linearNoWallet.getVisibility() == View.VISIBLE);
+    private boolean shouldResponsePassEvent() {
+        return (linearNoWallet.getVisibility() == View.VISIBLE && isAddHd);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGotPass(GotPassEvent event) {
-        if (shouldResponseEvent()) {
+        if (shouldResponsePassEvent()) {
             PyEnv.createLocalHd(event.getPassword(), null);
         }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onRefresh(RefreshEvent refreshEvent) {
-        if (shouldResponseEvent()) {
+        if (shouldResponsePassEvent()) {
             startActivity(new Intent(getActivity(), HomeOneKeyActivity.class));
         }
     }

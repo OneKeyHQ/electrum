@@ -83,6 +83,7 @@ public class WalletListActivity extends BaseActivity {
     private ArrayList<LocalWalletInfo> ethList;
     private SharedPreferences.Editor edit;
     private SharedPreferences preferences;
+    private boolean isAddHd;
 
     @Override
     public int getLayoutId() {
@@ -247,6 +248,7 @@ public class WalletListActivity extends BaseActivity {
                 new HdWalletIntroductionDialog().show(getSupportFragmentManager(), "hd_introduction");
                 break;
             case R.id.recl_add_hd_wallet:
+                isAddHd = true;
                 startActivity(new Intent(this, SoftPassActivity.class));
                 break;
             case R.id.recl_recovery_wallet:
@@ -256,15 +258,18 @@ public class WalletListActivity extends BaseActivity {
         }
     }
 
+    private boolean shouldResponsePassEvent() {
+        return (hdWalletList.isEmpty() && isAddHd);
+    }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGotPass(GotPassEvent event) {
-        if (hdWalletList.isEmpty()) {
+        if (shouldResponsePassEvent()) {
             PyEnv.createLocalHd(event.getPassword(), null);
         }
     }
     @Subscribe
     public void onRefresh(RefreshEvent event) {
-        if (hdWalletList.isEmpty()) {
+        if (shouldResponsePassEvent()) {
             startActivity(new Intent(this, HomeOneKeyActivity.class));
             finish();
         }

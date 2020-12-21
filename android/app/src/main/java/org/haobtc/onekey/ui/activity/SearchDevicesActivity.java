@@ -40,6 +40,9 @@ import org.haobtc.onekey.ui.adapter.BleDeviceAdapter;
 import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.utils.ValueAnimatorUtil;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.heaton.blelibrary.ble.Ble;
@@ -52,7 +55,6 @@ import static cn.com.heaton.blelibrary.ble.Ble.REQUEST_ENABLE_BT;
  */
 public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdapter.OnItemBleDeviceClick {
 
-    public static final String MIN_SUPPORT_VERSION = "1.9.7";
     public static final int REQUEST_ID = 65578;
     @BindView(R.id.open_wallet_hide)
 
@@ -203,8 +205,7 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
         String errors = response.getErrors();
         if (Strings.isNullOrEmpty(errors)) {
             features = response.getResult();
-            String firmwareVersion = features.getMajorVersion() + "." + features.getMinorVersion() + "." + features.getPatchVersion();
-            if (firmwareVersion.compareTo(MIN_SUPPORT_VERSION) <= 0 ) {
+            if ((features.getMajorVersion() == 1) && (features.getMinorVersion() == 9) && (features.getPatchVersion() <= 7)) {
                 update(features);
                 finish();
                 return;
