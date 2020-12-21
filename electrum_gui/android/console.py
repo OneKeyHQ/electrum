@@ -345,7 +345,7 @@ class AndroidCommands(commands.Commands):
                 # append fiat balance and price
                 if self.daemon.fx.is_enabled():
                     text += self.daemon.fx.get_fiat_status_text(c + u + x, self.base_unit, self.decimal_point) or ''
-            # print("update_statue out = %s" % (out))
+            #print("update_statue out = %s" % (out))
             self.callbackIntent.onCallback("update_status=%s" % json.dumps(out))
 
     def get_remove_flag(self, tx_hash):
@@ -945,10 +945,6 @@ class AndroidCommands(commands.Commands):
             }
             return json.dumps(ret_data)
         except BaseException as e:
-            try:
-                self.remove_local_tx(tx_details.txid)
-            except:
-                pass
             raise BaseException(e)
 
     def mktx(self, tx=None):
@@ -965,7 +961,7 @@ class AndroidCommands(commands.Commands):
             try:
                 print(f"do save tx")
                 #self.txdb.add_tx_info(self.wallet.get_addresses()[0], tx, tx.txid())
-                self.do_save(tx)
+                #self.do_save(tx)
             except BaseException as e:
                 pass
         except Exception as e:
@@ -1783,8 +1779,8 @@ class AndroidCommands(commands.Commands):
                 pass
             return self.get_tx_info_from_raw(sign_tx)
         except BaseException as e:
-            msg = e.__str__()
-            self.update_local_info(tx.txid(), self.wallet.get_addresses()[0], tx, msg)
+           # msg = e.__str__()
+           # self.update_local_info(tx.txid(), self.wallet.get_addresses()[0], tx, msg)
             raise BaseException(e)
 
     def get_derived_list(self, xpub):
@@ -3105,7 +3101,7 @@ class AndroidCommands(commands.Commands):
                     balance = self.daemon.fx.format_amount_and_units(c + u) if self.daemon.fx else None
                     fiat = float(balance.split()[0].replace(',', ""))
                     all_balance += fiat
-                    wallet_info['btc'] = self.format_amount(c)
+                    wallet_info['btc'] = self.format_amount(c + u)
                     wallet_info['fiat'] = balance
                     all_wallet_info.append(wallet_info)
             out['all_balance'] = ('%s %s' %(all_balance, self.ccy))
@@ -3457,7 +3453,7 @@ class AndroidCommands(commands.Commands):
         name_info = sorted(name_info.items(), key=lambda item: item[1]['time'], reverse=True)
         wallet_infos = []
         for key, value in name_info:
-            if -1 != key.find(".tmp."):
+            if -1 != key.find(".tmp.") or -1 != key.find(".tmptest."):
                 continue
             temp = {}
             wallet = self.daemon.wallets[self._wallet_path(key)]
@@ -3500,6 +3496,8 @@ class AndroidCommands(commands.Commands):
             util.delete_file(self._wallet_path())
             util.delete_file(self._tx_list_path())
             self.reset_config_info()
+            self.hd_wallet = None
+            self.check_pw_wallet = None
         except BaseException as e:
             raise e
 
@@ -3507,22 +3505,24 @@ class AndroidCommands(commands.Commands):
         """Delete a wallet"""
         try:
             wallet = self.daemon._wallets[self._wallet_path(name)]
-            if not wallet.is_watching_only():
-                self.check_password(password=password)
             if self.local_wallet_info.__contains__(name):
                 wallet_info = self.local_wallet_info.get(name)
                 wallet_type = wallet_info['type']
-                if -1 != wallet_type.find("-hd-") and -1 == wallet_type.find("-hw-"):
-                    self.delete_derived_wallet()
-                else:
-                    if -1 != wallet_type.find('-derived-') and -1 == wallet_type.find("-hw-"):
-                        have_tx = self.has_history_wallet(wallet)
-                        if not have_tx:
-                            #delete wallet info from config
-                            self.delete_devired_wallet_info(wallet)
-                    self.delete_wallet_from_deamon(self._wallet_path(name))
-                    self.local_wallet_info.pop(name)
-                    self.config.set_key('all_wallet_type_info', self.local_wallet_info)
+                
+            if not wallet.is_watching_only() and -1 == wallet_type.find("-hw-"):
+                print(f"delete_wallet......{password}")
+                self.check_password(password=password)
+            if -1 != wallet_type.find("-hd-") and -1 == wallet_type.find("-hw-"):
+                self.delete_derived_wallet()
+            else:
+                if -1 != wallet_type.find('-derived-') and -1 == wallet_type.find("-hw-"):
+                    have_tx = self.has_history_wallet(wallet)
+                    if not have_tx:
+                        #delete wallet info from config
+                        self.delete_devired_wallet_info(wallet)
+                self.delete_wallet_from_deamon(self._wallet_path(name))
+                self.local_wallet_info.pop(name)
+                self.config.set_key('all_wallet_type_info', self.local_wallet_info)
             # os.remove(self._wallet_path(name))
         except Exception as e:
             raise BaseException(e)
