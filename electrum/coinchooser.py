@@ -351,7 +351,7 @@ class CoinChooserRandom(CoinChooserBase):
             if sufficient_funds([], bucket_value_sum=0):
                 return [[]]
             else:
-                raise Exception(NotEnoughFunds())
+                raise NotEnoughFunds()
 
         candidates = set()
 
@@ -378,7 +378,7 @@ class CoinChooserRandom(CoinChooserBase):
                     break
             else:
                 # note: this assumes that the effective value of any bkt is >= 0
-                raise Exception(NotEnoughFunds())
+                raise NotEnoughFunds()
 
         candidates = [[buckets[n] for n in c] for c in candidates]
         return [strip_unneeded(c, sufficient_funds) for c in candidates]
@@ -417,7 +417,7 @@ class CoinChooserRandom(CoinChooserBase):
                 already_selected_buckets += bkts_choose_from
                 already_selected_buckets_value_sum += sum(bucket.value for bucket in bkts_choose_from)
         else:
-            raise Exception(NotEnoughFunds())
+            raise NotEnoughFunds()
 
         candidates = [(already_selected_buckets + c) for c in candidates]
         return [strip_unneeded(c, sufficient_funds) for c in candidates]

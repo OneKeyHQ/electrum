@@ -15,6 +15,8 @@ import random
 import string
 from electrum.util import (
     FailedGetTx,
+    NotEnoughFunds,
+    NotEnoughFundsStr,
     FileAlreadyExist,
     DerivedWalletLimit,
     UnavailablePrivateKey,
@@ -944,6 +946,8 @@ class AndroidCommands(commands.Commands):
                 'tx': str(self.tx)
             }
             return json.dumps(ret_data)
+        except NotEnoughFunds:
+            raise BaseException(NotEnoughFundsStr())
         except BaseException as e:
             raise BaseException(e)
 
@@ -1230,7 +1234,7 @@ class AndroidCommands(commands.Commands):
             raise BaseException(e)
         tx_details = self.wallet.get_tx_info(tx)
         if 'Partially signed' in tx_details.status:
-            temp_s, _ = tx.signature_count()
+            temp_s, temp_r = tx.signature_count()
             s = int(temp_s / len(tx.inputs()))
             r = len(self.wallet.get_keystores())
         elif 'Unsigned' in tx_details.status:
@@ -3511,6 +3515,7 @@ class AndroidCommands(commands.Commands):
             self.reset_config_info()
             self.hd_wallet = None
             self.check_pw_wallet = None
+            self.daemon._wallets.clear()
         except BaseException as e:
             raise e
 

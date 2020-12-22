@@ -103,7 +103,7 @@ def base_unit_name_to_decimal_point(unit_name: str) -> int:
 
 class NotEnoughFunds(Exception):
     def __str__(self):
-        return _("Insufficient funds")
+        return BaseException(_("Insufficient funds"))
 
 
 class NoDynamicFeeEstimates(Exception):
@@ -115,6 +115,10 @@ class MultipleSpendMaxTxOutputs(Exception):
     def __str__(self):
         return BaseException(_('At most one output can be set to spend max'))
 
+
+class NotEnoughFundsStr(Exception):
+    def __str__(self):
+        return (_("Insufficient funds"))
 
 class InvalidPassword(Exception):
     def __str__(self):
