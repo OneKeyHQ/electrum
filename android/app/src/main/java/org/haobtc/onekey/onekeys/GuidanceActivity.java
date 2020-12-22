@@ -20,6 +20,7 @@ import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.constant.StringConstant;
 import org.haobtc.onekey.utils.Daemon;
 import org.haobtc.onekey.utils.NavUtils;
+import org.haobtc.onekey.utils.ViewTouchUtil;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -53,6 +54,7 @@ public class GuidanceActivity extends BaseActivity implements CompoundButton.OnC
     private void inits () {
         setAgreementPolicy();
         checkboxOk.setOnCheckedChangeListener(this);
+        ViewTouchUtil.expandViewTouchDelegate(checkboxOk,16F);
     }
 
     private void setAgreementPolicy () {
