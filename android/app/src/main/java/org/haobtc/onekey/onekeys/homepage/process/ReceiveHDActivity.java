@@ -1,22 +1,15 @@
 package org.haobtc.onekey.onekeys.homepage.process;
 
 import android.Manifest;
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.Display;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -47,14 +40,13 @@ import org.haobtc.onekey.event.SecondEvent;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.ui.activity.VerifyPinActivity;
 import org.haobtc.onekey.ui.base.BaseActivity;
-import org.haobtc.onekey.ui.dialog.AddXpubByHandDialog;
-import org.haobtc.onekey.ui.dialog.ChooseAddXpubWayDialog;
 import org.haobtc.onekey.ui.dialog.UnBackupTipDialog;
 import org.haobtc.onekey.utils.ClipboardUtils;
 import org.haobtc.onekey.utils.Daemon;
 import org.haobtc.onekey.utils.ImageUtils;
 
 import java.io.File;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -172,7 +164,7 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
                     imgShareQrcode.setImageBitmap(bitmap);
                     break;
                 case Constant.WALLET_TYPE_HARDWARE_PERSONAL:
-                    textReceiveAddress.setEms(6);
+                    textReceiveAddress.setText(String.format(Locale.ENGLISH, "%s....%s", address.substring(0, 6), address.substring(address.length()-6)));
                     imgOrcode.setImageResource(R.drawable.qrcode_shade);
                     break;
             }
@@ -259,7 +251,7 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
                 EventBus.getDefault().post(new ExitEvent());
                 imgOrcode.setImageBitmap(bitmap);
                 imgShareQrcode.setImageBitmap(bitmap);
-                textReceiveAddress.setEms(100);
+                textReceiveAddress.setText(address);
                 verifyStart.setVisibility(View.GONE);
                 verifyPromote.setGravity(Gravity.CENTER);
                 verifyPromote.setText(R.string.verifying);

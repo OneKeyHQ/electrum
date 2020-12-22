@@ -2,6 +2,7 @@ package org.haobtc.onekey.activities.settings;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -61,7 +62,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -69,7 +69,6 @@ import java.util.UUID;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import cn.com.heaton.blelibrary.ble.Ble;
 
 /**
  * @author liyan
@@ -125,30 +124,25 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
                 startActivity(intent);
                 break;
             case R.id.lin_OnckTwo:
-                getUpdateInfo();
-                break;
-            case R.id.change_pin:
-                if (Ble.getInstance().getConnetedDevices().size() != 0) {
-                    if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(bleName)) {
-                        changePin();
-                        return;
-                    }
-                }
                 if (Strings.isNullOrEmpty(bleMac)) {
                     showToast(getString(R.string.unknown_device));
+                    return;
+                }
+                currentMethod = PyConstant.FIRMWARE_UPDATE;
+                initBle();
+                break;
+            case R.id.change_pin:
+                if (Strings.isNullOrEmpty(bleMac)) {
+                    showToast(getString(R.string.unknown_device));
+                    return;
                 }
                 currentMethod = BusinessAsyncTask.CHANGE_PIN;
                 initBle();
                 break;
             case R.id.wipe_device:
-                if (Ble.getInstance().getConnetedDevices().size() != 0) {
-                    if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(bleName)) {
-                        startActivity(new Intent(this, ResetDevicePromoteActivity.class));
-                        return;
-                    }
-                }
                 if (Strings.isNullOrEmpty(bleMac)) {
                     showToast(getString(R.string.unknown_device));
+                    return;
                 }
                 currentMethod = BusinessAsyncTask.WIPE_DEVICE;
                 initBle();
@@ -162,31 +156,17 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
                 new DeleteLocalDeviceDialog(deviceId).show(getSupportFragmentManager(), "");
                 break;
             case R.id.tetVerification:
-                Intent intent1 = new Intent(this, VerifyHardwareActivity.class);
-                intent1.putExtra(Constant.BLE_INFO, Optional.of(label).orElse(bleName));
-                startActivity(intent1);
-                if (Ble.getInstance().getConnetedDevices().size() != 0) {
-                    if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(bleName)) {
-                        EventBus.getDefault().post(new ConnectedEvent());
-                        verifyHardware();
-                        return;
-                    }
-                }
                 if (Strings.isNullOrEmpty(bleMac)) {
                     showToast(getString(R.string.unknown_device));
+                    return;
                 }
                 currentMethod = BusinessAsyncTask.COUNTER_VERIFICATION;
                 initBle();
                 break;
             case R.id.check_xpub:
-                if (Ble.getInstance().getConnetedDevices().size() != 0) {
-                    if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(bleName)) {
-                        getXpub();
-                        return;
-                    }
-                }
                 if (Strings.isNullOrEmpty(bleMac)) {
                     showToast(getString(R.string.unknown_device));
+                    return;
                 }
                 currentMethod = BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY;
                 initBle();
@@ -227,7 +207,6 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
     }
 
     private void getUpdateInfo() {
-        currentMethod = PyConstant.FIRMWARE_UPDATE;
         String urlPrefix = "https://onekey.so/";
         String locate = PreferencesManager.get(this, "Preferences", Constant.LANGUAGE, "").toString();
         String info = PreferencesManager.get(this, "Preferences", Constant.UPGRADE_INFO, "").toString();
@@ -316,11 +295,16 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
                 }
                 break;
             case BusinessAsyncTask.COUNTER_VERIFICATION:
-                EventBus.getDefault().post(new ConnectedEvent());
-                verifyHardware();
+                Intent intent1 = new Intent(this, VerifyHardwareActivity.class);
+                intent1.putExtra(Constant.BLE_INFO, Optional.of(label).orElse(bleName));
+                startActivity(intent1);
+                new Handler().postDelayed(() -> {
+                    EventBus.getDefault().post(new ConnectedEvent());
+                }, 1000);
+                new Handler().postDelayed(this::verifyHardware, 2000);
                 break;
             case PyConstant.FIRMWARE_UPDATE:
-                // ignore
+                getUpdateInfo();
                 break;
             default:
         }
@@ -329,6 +313,7 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
     @Subscribe
     public void onConnectionTimeout(BleConnectionEx connectionEx) {
         if (connectionEx == BleConnectionEx.BLE_CONNECTION_EX_TIMEOUT) {
+            EventBus.getDefault().post(new ExitEvent());
             Toast.makeText(this, R.string.ble_connect_timeout, Toast.LENGTH_SHORT).show();
         }
     }
@@ -368,8 +353,8 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
                 startActivity(intent1);
             } else {
                 startActivity(new Intent(this, ConfirmOnHardWareActivity.class));
-                EventBus.getDefault().post(new ExitEvent());
             }
+            EventBus.getDefault().post(new ExitEvent());
                 break;
             case PyConstant.PIN_NEW_FIRST:
                 startActivity(new Intent(this, PinNewActivity.class));

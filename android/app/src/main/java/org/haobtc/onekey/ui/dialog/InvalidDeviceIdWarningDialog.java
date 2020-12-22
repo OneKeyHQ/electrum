@@ -37,6 +37,7 @@ public class InvalidDeviceIdWarningDialog extends BaseDialogFragment {
         switch (view.getId()) {
             case R.id.img_cancel:
             case R.id.btn_next:
+                requireActivity().finish();
                 dismiss();
                 break;
         }

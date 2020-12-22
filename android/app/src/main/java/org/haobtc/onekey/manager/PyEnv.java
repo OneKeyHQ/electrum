@@ -401,7 +401,7 @@ public final class PyEnv {
                             BalanceInfo info = PyEnv.selectWallet(name);
                             EventBus.getDefault().post(new CreateSuccessEvent(name));
                             // 现在的HD钱包的Label是BTC-1
-                            info.setName("BTC-1");
+                            info.setLabel("BTC-1");
                             infos.add(info);
                         }));
                     }));

@@ -283,7 +283,6 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
                     startActivity(intent);
                     finish();
                 }
-                break;
         }
     }
 

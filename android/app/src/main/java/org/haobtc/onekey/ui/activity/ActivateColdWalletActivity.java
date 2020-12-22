@@ -48,6 +48,7 @@ public class ActivateColdWalletActivity extends BaseActivity implements Business
     private String name;
     private String currentMethodName;
     private int mode;
+    private boolean shouldResponse = true;
     @Override
     public void init() {
         mode = getIntent().getIntExtra(Constant.ACTIVE_MODE, 0);
@@ -168,7 +169,10 @@ public class ActivateColdWalletActivity extends BaseActivity implements Business
                 default:
                     startFragment(new UpdatePinConfirmFragment());
             }
-            EventBus.getDefault().post(new ExitEvent());
+            if (!hasWindowFocus()) {
+                shouldResponse = false;
+                EventBus.getDefault().post(new ExitEvent());
+            }
         }
     }
    /**
@@ -176,7 +180,10 @@ public class ActivateColdWalletActivity extends BaseActivity implements Business
     * */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onFinish(ExitEvent exitEvent) {
-        finish();
+        if (shouldResponse) {
+            finish();
+        }
+        shouldResponse = true;
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onNext(NextFragmentEvent event) {

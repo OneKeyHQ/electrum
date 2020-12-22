@@ -253,6 +253,7 @@ public class WalletListActivity extends BaseActivity {
                 startActivity(new Intent(this, SoftPassActivity.class));
                 break;
             case R.id.recl_recovery_wallet:
+                isAddHd = false;
                 Intent intent2 = new Intent(WalletListActivity.this, RecoverHdWalletActivity.class);
                 startActivity(intent2);
                 break;
@@ -288,6 +289,7 @@ public class WalletListActivity extends BaseActivity {
             reclAddWallet.setVisibility(View.GONE);
             reclAddHdWallet.setVisibility(View.VISIBLE);
             reclRecoveryWallet.setVisibility(View.VISIBLE);
+            PreferencesManager.put(this, "Preferences", Constant.HAS_LOCAL_HD, false);
         } else {
             wallets.entrySet().forEach(stringEntry -> {
                 LocalWalletInfo info = LocalWalletInfo.objectFromData(stringEntry.getValue().toString());

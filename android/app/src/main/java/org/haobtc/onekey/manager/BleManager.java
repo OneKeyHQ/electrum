@@ -51,6 +51,7 @@ public final class BleManager {
     private static volatile BleManager sInstance;
     private FragmentActivity fragmentActivity;
     private static boolean connecting;
+    private String currentAddress;
 
 
     private BleManager(FragmentActivity fragmentActivity) {
@@ -189,7 +190,7 @@ public final class BleManager {
         disconnectAllOther(device);
         if (Ble.getInstance().getConnetedDevices().isEmpty()) {
             Ble.getInstance().connect(device, mConnectCallback);
-        } else {
+        } else if (device.equals(currentAddress)){
             EventBus.getDefault().postSticky(new NotifySuccessfulEvent());
         }
     }
@@ -255,6 +256,7 @@ public final class BleManager {
                     }
 
                 });
+                currentAddress = device.getBleAddress();
             }
 
 

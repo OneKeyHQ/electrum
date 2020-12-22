@@ -207,6 +207,7 @@ public class WalletFragment extends BaseFragment {
             linearWalletList.setVisibility(View.GONE);
             imgScan.setVisibility(View.GONE);
             relNowBackUp.setVisibility(View.GONE);
+            PreferencesManager.put(getContext(), "Preferences", org.haobtc.onekey.constant.Constant.HAS_LOCAL_HD, false);
         }
     }
 
@@ -427,6 +428,7 @@ public class WalletFragment extends BaseFragment {
             imgType.setImageDrawable(getActivity().getDrawable(R.drawable.loco_round));
             isBackup = true;
             relNowBackUp.setVisibility(View.GONE);
+            PreferencesManager.put(getContext(), "Preferences", org.haobtc.onekey.constant.Constant.HAS_LOCAL_HD, false);
         }
     }
 
