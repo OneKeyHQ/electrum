@@ -55,6 +55,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import dr.android.utils.LogUtil;
+
 /**
  * see {@link SoftPassActivity}
  **/

@@ -113,14 +113,11 @@ public class DetailTransactionActivity extends BaseActivity {
         String amount = listBean.getAmount();
         if (listBean.getInputAddr() != null && listBean.getInputAddr().size() != 0) {
             String address = listBean.getInputAddr().get(0).getAddress();
-            String inputAddr = listBean.getInputAddr().get(0).getPrevoutHash();
             if (!TextUtils.isEmpty(address)) {
                 textSendAddress.setText(address);
             } else {
-                textSendAddress.setText(inputAddr);
+                textSendAddress.setText("--------------------------");
             }
-        } else {
-            textSendAddress.setText("----------------");
         }
         if (listBean.getOutputAddr() != null && listBean.getOutputAddr().size() != 0) {
             String outputAddr = listBean.getOutputAddr().get(0).getAddr();

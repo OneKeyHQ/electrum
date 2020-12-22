@@ -123,6 +123,7 @@ public class TransactionDetailWalletActivity extends BaseActivity {
                     MaintrsactionlistEvent maintrsactionlistEvent = new MaintrsactionlistEvent();
                     String type = jsonObject.getString("type");
                     String txHash = jsonObject.getString("tx_hash");
+                    String address = jsonObject.getString("address");
                     String amount = jsonObject.getString("amount");
                     //false ->get   true ->push
                     boolean isMine = jsonObject.getBoolean("is_mine");
@@ -135,6 +136,7 @@ public class TransactionDetailWalletActivity extends BaseActivity {
                         maintrsactionlistEvent.setDate(date);
                         maintrsactionlistEvent.setAmount(amount);
                         maintrsactionlistEvent.setMine(isMine);
+                        maintrsactionlistEvent.setAddress(address);
                         maintrsactionlistEvent.setConfirmations(confirmations);
                         maintrsactionlistEvent.setType(type);
                         maintrsactionlistEvent.setTxStatus(txStatus);

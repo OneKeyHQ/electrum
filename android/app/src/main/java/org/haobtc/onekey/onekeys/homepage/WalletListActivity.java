@@ -280,7 +280,6 @@ public class WalletListActivity extends BaseActivity {
         hdWalletList.clear();
         btcList.clear();
         ethList.clear();
-//        PyObject getWalletsListInfo;
 //        wallet list
         Map<String, ?> wallets = PreferencesManager.getAll(this, Constant.WALLETS);
         Log.i("walletslist", "getHomeWalletList: " + wallets);
@@ -304,6 +303,7 @@ public class WalletListActivity extends BaseActivity {
             });
             textWalletNum.setText(String.valueOf(hdWalletList.size()));
             if (hdWalletList.isEmpty()) {
+                PreferencesManager.put(this, "Preferences", Constant.HAS_LOCAL_HD, false);
                 reclWalletDetail.setVisibility(View.GONE);
                 reclAddWallet.setVisibility(View.GONE);
                 reclAddHdWallet.setVisibility(View.VISIBLE);

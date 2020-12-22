@@ -34,6 +34,7 @@ import org.haobtc.onekey.bean.FindOnceWalletEvent;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.GotPassEvent;
 import org.haobtc.onekey.manager.PyEnv;
+import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
 import org.haobtc.onekey.onekeys.dialog.recovery.RecoveryChooseWalletActivity;
 import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
 import org.haobtc.onekey.ui.activity.SoftPassActivity;
@@ -48,10 +49,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import static org.haobtc.onekey.constant.Constant.SEARCH_DEVICE_MODE;
-/**
- * see {@link SoftPassActivity}
- **/
-@Deprecated
+
 public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocusChangeListener {
 
     @BindView(R.id.edit_one)
@@ -128,7 +126,6 @@ public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocu
         editTen.setOnFocusChangeListener(this);
         editEleven.setOnFocusChangeListener(this);
         editTwelve.setOnFocusChangeListener(this);
-
     }
 
     private void inits() {
@@ -206,7 +203,6 @@ public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocu
             //If the difference between screen height and window visible area height is greater than 1 / 3 of the whole screen height, it means that the soft keyboard is in display, otherwise, the soft keyboard is hidden.
             int heightDifference = screenHeight - (r.bottom - r.top);
             boolean isKeyboardShowing = heightDifference > screenHeight / 3;
-
             //If the status of the soft keyboard was previously displayed, it is now closed, or it was previously closed, it is now displayed, it means that the status of the soft keyboard has changed
             if ((mIsSoftKeyboardShowing && !isKeyboardShowing) || (!mIsSoftKeyboardShowing && isKeyboardShowing)) {
                 mIsSoftKeyboardShowing = isKeyboardShowing;
@@ -222,7 +218,6 @@ public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocu
 
     @Override
     public void initData() {
-
     }
 
     @SingleClick
@@ -261,19 +256,25 @@ public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocu
                 break;
         }
     }
+
     @Subscribe
     public void onGotPass(GotPassEvent event) {
         mlToast(getString(R.string.loading));
         PyEnv.createLocalHd(event.getPassword(), seed);
     }
-    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onFind(FindOnceWalletEvent<BalanceInfo> event) {
         List<BalanceInfo> wallets = event.getWallets();
-        Log.i("derivedInfoJXM", "run: " + wallets.toString());
-        Intent intent = new Intent(this, RecoveryChooseWalletActivity.class);
-        intent.putExtra("recoveryData", (ArrayList<BalanceInfo>)event.getWallets());
-        startActivity(intent);
+        if (wallets != null && wallets.size() > 0) {
+            Intent intent = new Intent(this, RecoveryChooseWalletActivity.class);
+            intent.putExtra("recoveryData", (ArrayList<BalanceInfo>) event.getWallets());
+            startActivity(intent);
+        } else {
+            mIntent(HomeOneKeyActivity.class);
+        }
     }
+
     private void pasteSeed() {
         ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
         if (clipboard != null) {
@@ -369,7 +370,6 @@ public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocu
 
         @Override
         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
         }
 
         @Override

@@ -31,16 +31,16 @@ public class OnekeyTxListAdapter extends BaseQuickAdapter<MaintrsactionlistEvent
         } else {
             amount = item.getAmount();
         }
+        helper.setText(R.id.text_address, item.getAddress());
         String date = item.getDate();
         if (date.contains("-")) {
             String str = date.substring(5);
             String strs = str.substring(0, str.length() - 3);
             String time = strs.replace("-", "/");
-            helper.setText(R.id.text_address, item.getTxHash()).setText(R.id.text_time, time);
+            helper.setText(R.id.text_time, time);
         } else {
-            helper.setText(R.id.text_address, item.getTxHash()).setText(R.id.text_time, date);
+            helper.setText(R.id.text_time, date);
         }
-
         TextView tetAmount = helper.getView(R.id.text_send_amount);
         ImageView imgStatus = helper.getView(R.id.imageView);
         if (item.isMine()) {
@@ -48,7 +48,6 @@ public class OnekeyTxListAdapter extends BaseQuickAdapter<MaintrsactionlistEvent
             tetAmount.setTextColor(mContext.getColor(R.color.text_eight));
             helper.setText(R.id.text_send_amount, "-" + amount);
             imgStatus.setImageDrawable(mContext.getDrawable(R.drawable.send_));
-
         } else {
             //get
             tetAmount.setTextColor(mContext.getColor(R.color.onekey));
@@ -62,6 +61,5 @@ public class OnekeyTxListAdapter extends BaseQuickAdapter<MaintrsactionlistEvent
         } else {
             sendStatus.setVisibility(View.GONE);
         }
-
     }
 }

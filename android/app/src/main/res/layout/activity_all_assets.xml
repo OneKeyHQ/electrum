@@ -74,7 +74,7 @@
                 android:hint="@string/search"
                 android:textColor="@color/text_two"
                 android:textSize="@dimen/sp_14"
-                android:visibility="gone" />
+                android:visibility="visible" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recl_assets"

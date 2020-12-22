@@ -230,7 +230,7 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
         startActivity(intent);
     }
     public void popupDialog(TransactionInfoBean info) {
-        String sender = info.getInputAddr().get(0).getPrevoutHash();
+        String sender = info.getInputAddr().get(0).getAddress();
         String receiver = info.getOutputAddr().get(0).getAddr();
         String amount = String.format("%s%s", info.getAmount(), PreferencesManager.get(this, "Preferences", "base_unit", ""));
         String fee = info.getFee();

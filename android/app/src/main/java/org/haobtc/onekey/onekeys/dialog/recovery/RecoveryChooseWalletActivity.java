@@ -32,8 +32,6 @@ public class RecoveryChooseWalletActivity extends BaseActivity {
 
     @BindView(R.id.recl_wallet_list)
     RecyclerView reclWalletList;
-    @BindView(R.id.promote)
-    TextView promote;
     @BindView(R.id.btn_recovery)
     Button btnRecovery;
     private ArrayList<BalanceInfo> walletList;
@@ -61,7 +59,6 @@ public class RecoveryChooseWalletActivity extends BaseActivity {
         listDates = new ArrayList<>();
         reclWalletList.setNestedScrollingEnabled(false);
         if (walletList.isEmpty()) {
-            promote.setText(R.string.no_use_wallet);
             btnRecovery.setEnabled(true);
             btnRecovery.setText(R.string.back);
         } else {

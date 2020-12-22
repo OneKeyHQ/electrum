@@ -9,6 +9,7 @@ public class MaintrsactionlistEvent {
     private String type;
     private String txStatus;
     private String invoiceId;
+    private String address;
 
     public String getInvoiceId() {
         return invoiceId;
@@ -72,5 +73,13 @@ public class MaintrsactionlistEvent {
 
     public void setMine(boolean mine) {
         this.isMine = mine;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 }

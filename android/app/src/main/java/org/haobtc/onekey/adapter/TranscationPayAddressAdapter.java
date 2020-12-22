@@ -18,7 +18,7 @@ public class TranscationPayAddressAdapter extends BaseQuickAdapter<TransactionIn
 
     @Override
     protected void convert(BaseViewHolder helper, TransactionInfoBean.InputAddrBean item) {
-        helper.setText(R.id.tet_moreaddress,item.getPrevoutHash());
+        helper.setText(R.id.tet_moreaddress,item.getAddress());
 
     }
 }

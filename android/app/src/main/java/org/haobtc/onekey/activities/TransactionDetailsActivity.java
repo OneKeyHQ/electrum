@@ -339,7 +339,7 @@ public class TransactionDetailsActivity extends BaseActivity {
         edit.putString("signedRowTransaction", rawtx);
         edit.apply();
         if (inputAddr.size() != 0) {
-            String addrInput = inputAddr.get(0).getPrevoutHash();
+            String addrInput = inputAddr.get(0).getAddress();
             tetPayAddress.setText(addrInput);
         }
         //trsaction hash

@@ -51,6 +51,7 @@ import org.haobtc.onekey.onekeys.dialog.recovery.RecoveryChooseWalletActivity;
 import org.haobtc.onekey.onekeys.homepage.mindmenu.HdRootMnemonicsActivity;
 import org.haobtc.onekey.onekeys.homepage.process.ExportPrivateActivity;
 import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
+import org.haobtc.onekey.ui.activity.SoftPassActivity;
 import org.haobtc.onekey.utils.Daemon;
 import org.haobtc.onekey.utils.MyDialog;
 
@@ -67,7 +68,10 @@ import dr.android.utils.LogUtil;
 
 import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE;
 import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE_LONG;
-
+/**
+ * see {@link SoftPassActivity}
+ **/
+@Deprecated
 public class SetLongPassActivity extends BaseActivity implements TextWatcher {
 
     @BindView(R.id.test_set_pass)

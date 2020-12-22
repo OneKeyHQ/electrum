@@ -1,5 +1,7 @@
 package org.haobtc.onekey.ui.dialog;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -15,6 +17,8 @@ import org.haobtc.onekey.ui.base.BaseDialogFragment;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+
+import static org.haobtc.onekey.constant.Constant.CURRENT_CURRENCY_GRAPHIC_SYMBOL;
 
 /**
  * @author liyan
@@ -49,6 +53,7 @@ public class TransactionConfirmDialog extends BaseDialogFragment {
 
     @Override
     public void init() {
+        SharedPreferences preferences = getActivity().getSharedPreferences("Preferences", Context.MODE_PRIVATE);
         Bundle bundle = getArguments();
         int type = bundle.getInt(Constant.WALLET_TYPE);
         String sender = bundle.getString(Constant.TRANSACTION_SENDER);
@@ -59,14 +64,21 @@ public class TransactionConfirmDialog extends BaseDialogFragment {
         textSendName.setText(name);
         textSendAddress.setText(sender);
         textReceiveAddress.setText(receiver);
-        if (amount.contains("(")) {
-            String btcAmount = amount.substring(0, amount.indexOf("("));
+        String amounts = amount.replace("-", "");
+        if (amounts.contains("(")) {
+            String btcAmount = amounts.substring(0, amounts.indexOf("("));
             textTxAmount.setText(btcAmount);
         } else {
-            textTxAmount.setText(amount);
+            textTxAmount.setText(amounts);
         }
-
-        textTxFee.setText(fee);
+        if (fee.contains("(")) {
+            String feeAmount = fee.substring(0, fee.indexOf("("));
+            String strCny = fee.substring(fee.indexOf("(") + 1, fee.indexOf(")"));
+            String cny = strCny.substring(0, strCny.indexOf(" "));
+            textTxFee.setText(String.format("%s ≈ %s %s", feeAmount, preferences.getString(CURRENT_CURRENCY_GRAPHIC_SYMBOL, "¥"), cny));
+        } else {
+            textTxFee.setText(fee);
+        }
         switch (type) {
             case Constant.WALLET_TYPE_SOFTWARE:
                 btnConfirmPay.setEnabled(true);

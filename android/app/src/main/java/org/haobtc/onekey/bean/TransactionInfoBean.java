@@ -12,19 +12,20 @@ import java.util.List;
  */
 public class TransactionInfoBean implements Serializable {
 
+
     /**
-     * txid : 57ff90ae7f98727fd2782c95542c692e8aadcd6add156a52d505f8ab85d3543b
+     * txid : 4a5106a46cfabc31a56d6ff97bab8c4deff24bd726a8a4b6be31c9fe651bbb57
      * can_broadcast : false
-     * amount : 0.0002 BTC (4.55 USD)
-     * fee : unknown BTC (无数据 USD)
+     * amount : 0.271 BTC (42,544.19 CNY)
+     * fee : unknown BTC (无数据 CNY)
      * description :
-     * tx_status : 527 个确认
+     * tx_status : 32 个确认
      * sign_status : [1,1]
-     * output_addr : [{"addr":"bcrt1qsnn9wl3f0wvvz8wvrsrp44sefe9fsn2cgucdwd","amount":"0.0002 BTC (4.55 USD)","is_change":false},{"addr":"bcrt1qlwc77qht4962vr993mjsq2l5kuts4txqp6qh3e","amount":"0.000152 BTC (3.46 USD)","is_change":true}]
-     * input_addr : [{"prevout_hash":"f2813dc816c15c37100a6f1c5915791bd2ba6c1b981129617ddd38f69804ffd3","prevout_n":1,"address":""}]
-     * height : 4313
-     * cosigner : ["vpub5Y6t2r9bbCXUCcCBUZGgzeUYXvWtctcddPN8JhhXRkkeGtQY4yh7uSVbG64fEuyrCD86GAc9a4Zj1abgkh78FKfJ8n9VFHv4KGwSKbSbnHL"]
-     * tx : 02000000000101d3ff0498f638dd7d612911981b6cbad21b7915591c6f0a10375cc116c83d81f20100000000fdffffff02204e00000000000016001484e6577e297b98c11dcc1c061ad6194e4a984d58603b000000000000160014fbb1ef02eba974a60ca58ee5002bf4b7170aacc00247304402207b105d607dff7b9ad703ae11a10e22d07c3a55b40a3d2b75c2efc9499ef896d7022069075e4cfdc71080aba1f559f4267cbf8a2937d83d27ff6f8a8d67d4eea5254d012102e598d7898b6f36aa0ddc226bc849e1f8e81d7bb9dde26df33155b4f9c0e2b643d8100000
+     * output_addr : [{"addr":"bcrt1qpsca07809ukdx8rm44hhg48l8f9t3trd7y3mek","amount":"0.01836175 BTC (2,882.60 CNY)","is_change":false},{"addr":"bcrt1qhyv0sq62cm7juwz42gh296fshxengxctaj2a67","amount":"0.271 BTC (42,544.19 CNY)","is_change":true}]
+     * input_addr : [{"address":""}]
+     * height : 4906
+     * cosigner : ["vpub5YNrBoSwK1FpupomyB3JqrbWy5Zk3TXAryyV1tLSZxhfrwNLuX7ytkHRjVjjjvqH8eJAveV1DB1nVSBKheu4xsiWn4bibdt2xTDaXi7BwvJ"]
+     * tx : 0200000000010141491fe2216f46093813273ca9c2c07c6e02d5619f8b99341004cc2c417ce8700000000000feffffff028f041c00000000001600140c31d7f8ef2f2cd31c7bad6f7454ff3a4ab8ac6d60839d0100000000160014b918f8034ac6fd2e3855522ea2e930b9b3341b0b024730440220610e04ec77d9e2981bcac1ca7e7ff08e1e4ff8fe76cbe63c40d0b8e7111f50ca022019f4e76bf9bb4ac235463ddb4218c5fe0203e890e896f37cc2c0d514c141385401210283e89cc4a027cf780baf55779e738f44b1fdb73ca8e3c8597b8188f31c828be829130000
      */
     public static TransactionInfoBean objectFromData(String s) {
         return new Gson().fromJson(s, TransactionInfoBean.class);
@@ -49,9 +50,9 @@ public class TransactionInfoBean implements Serializable {
     @SerializedName("sign_status")
     private List<Integer> signStatus;
     @SerializedName("output_addr")
-    private ArrayList<TransactionInfoBean.OutputAddrBean> outputAddr;
+    private ArrayList<OutputAddrBean> outputAddr;
     @SerializedName("input_addr")
-    private List<TransactionInfoBean.InputAddrBean> inputAddr;
+    private List<InputAddrBean> inputAddr;
     @SerializedName("cosigner")
     private List<String> cosigner;
 
@@ -127,7 +128,7 @@ public class TransactionInfoBean implements Serializable {
         this.signStatus = signStatus;
     }
 
-    public ArrayList<TransactionInfoBean.OutputAddrBean> getOutputAddr() {
+    public ArrayList<OutputAddrBean> getOutputAddr() {
         return outputAddr;
     }
 
@@ -135,11 +136,11 @@ public class TransactionInfoBean implements Serializable {
         this.outputAddr = outputAddr;
     }
 
-    public List<TransactionInfoBean.InputAddrBean> getInputAddr() {
+    public List<InputAddrBean> getInputAddr() {
         return inputAddr;
     }
 
-    public void setInputAddr(List<TransactionInfoBean.InputAddrBean> inputAddr) {
+    public void setInputAddr(List<InputAddrBean> inputAddr) {
         this.inputAddr = inputAddr;
     }
 
@@ -153,8 +154,8 @@ public class TransactionInfoBean implements Serializable {
 
     public static class OutputAddrBean {
         /**
-         * addr : bcrt1qsnn9wl3f0wvvz8wvrsrp44sefe9fsn2cgucdwd
-         * amount : 0.0002 BTC (4.55 USD)
+         * addr : bcrt1qpsca07809ukdx8rm44hhg48l8f9t3trd7y3mek
+         * amount : 0.01836175 BTC (2,882.60 CNY)
          * is_change : false
          */
 
@@ -192,33 +193,11 @@ public class TransactionInfoBean implements Serializable {
 
     public static class InputAddrBean {
         /**
-         * prevout_hash : f2813dc816c15c37100a6f1c5915791bd2ba6c1b981129617ddd38f69804ffd3
-         * prevout_n : 1
          * address :
          */
 
-        @SerializedName("prevout_hash")
-        private String prevoutHash;
-        @SerializedName("prevout_n")
-        private int prevoutN;
         @SerializedName("address")
         private String address;
-
-        public String getPrevoutHash() {
-            return prevoutHash;
-        }
-
-        public void setPrevoutHash(String prevoutHash) {
-            this.prevoutHash = prevoutHash;
-        }
-
-        public int getPrevoutN() {
-            return prevoutN;
-        }
-
-        public void setPrevoutN(int prevoutN) {
-            this.prevoutN = prevoutN;
-        }
 
         public String getAddress() {
             return address;

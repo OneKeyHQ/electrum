@@ -3,15 +3,18 @@ package org.haobtc.onekey.bean;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 /**
  * @author liyan
  */
-public class BalanceInfo {
+public class BalanceInfo implements Serializable {
 
     /**
      * balance : 0 ()
      * name : BTC-1
      */
+    private static final long serialVersionUID = 2L;
 
     @SerializedName("balance")
     private String balance;

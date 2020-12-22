@@ -1,6 +1,9 @@
 package org.haobtc.onekey.onekeys.homepage.mindmenu;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -18,13 +21,14 @@ import org.haobtc.onekey.bean.HdWalletAllAssetBean;
 import org.haobtc.onekey.utils.Daemon;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class AllAssetsActivity extends BaseActivity {
+public class AllAssetsActivity extends BaseActivity implements TextWatcher {
 
     @BindView(R.id.test_all_assets)
     TextView testAllAssets;
@@ -34,6 +38,9 @@ public class AllAssetsActivity extends BaseActivity {
     RecyclerView reclAssets;
     @BindView(R.id.tet_None)
     TextView tetNone;
+    private List<HdWalletAllAssetBean.WalletInfoBean> walletInfo;
+    private ArrayList<HdWalletAllAssetBean.WalletInfoBean> searchList;
+
 
     @Override
     public int getLayoutId() {
@@ -43,10 +50,12 @@ public class AllAssetsActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        editSearch.addTextChangedListener(this);
     }
 
     @Override
     public void initData() {
+        searchList = new ArrayList<>();
         reclAssets.setNestedScrollingEnabled(false);
         //get all wallet
         getAllWalletList();
@@ -73,7 +82,7 @@ public class AllAssetsActivity extends BaseActivity {
                 } else {
                     testAllAssets.setText(allBalance);
                 }
-                List<HdWalletAllAssetBean.WalletInfoBean> walletInfo = hdWalletAllAssetBean.getWalletInfo();
+                walletInfo = hdWalletAllAssetBean.getWalletInfo();
                 HdWalletAssetAdapter hdWalletAssetAdapter = new HdWalletAssetAdapter(walletInfo);
                 reclAssets.setAdapter(hdWalletAssetAdapter);
             } else {
@@ -93,6 +102,31 @@ public class AllAssetsActivity extends BaseActivity {
             case R.id.img_back:
                 finish();
                 break;
+        }
+    }
+
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+        searchList.clear();
+        if (!TextUtils.isEmpty(s)) {
+            for (int i = 0; i < walletInfo.size(); i++) {
+                if (walletInfo.get(i).getName().startsWith(s.toString())) {
+                    searchList.add(walletInfo.get(i));
+                }
+            }
+            HdWalletAssetAdapter hdWalletAssetAdapter = new HdWalletAssetAdapter(searchList);
+            reclAssets.setAdapter(hdWalletAssetAdapter);
+        } else {
+            HdWalletAssetAdapter hdWalletAssetAdapter = new HdWalletAssetAdapter(walletInfo);
+            reclAssets.setAdapter(hdWalletAssetAdapter);
         }
     }
 }
