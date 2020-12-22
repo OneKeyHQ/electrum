@@ -49,7 +49,6 @@
 #import "YZAuthID.h"
 #import "OKStorageManager.h"
 #import "OKLocalizableManager.h"
-#import "OKBlueManager.h"
 #import "NSData+StringToData.h"
 #import "OKUserSettingManager.h"
 #import "UIButton+OneKey.h"

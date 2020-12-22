@@ -13,10 +13,7 @@
 
 @interface OKTxViewController ()<UITableViewDelegate,UITableViewDataSource>
 + (instancetype)txViewController;
-
-
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
-
 @property (nonatomic,strong)NSArray *txListArray;
 
 @end

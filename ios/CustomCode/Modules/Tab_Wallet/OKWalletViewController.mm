@@ -643,7 +643,6 @@
                     }
                 }
         }];
-        
         UINavigationController *navVc = [[UINavigationController alloc]initWithRootViewController:backUpTips];
         navVc.modalPresentationStyle = UIModalPresentationOverFullScreen;
         [self.OK_TopViewController presentViewController:navVc animated:NO completion:nil];
@@ -652,7 +651,6 @@
         TakeCareMnemonicVc.modalPresentationStyle = UIModalPresentationOverFullScreen;
         [self.OK_TopViewController presentViewController:TakeCareMnemonicVc animated:NO completion:nil];
     }
-    
 }
 
 - (void)notiSelectWalletComplete

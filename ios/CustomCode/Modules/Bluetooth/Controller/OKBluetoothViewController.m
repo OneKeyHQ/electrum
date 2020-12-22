@@ -9,8 +9,7 @@
 #import "OKBluetoothViewController.h"
 #import "OKBluetoothViewCell.h"
 #import "OKBluetoothViewCellModel.h"
-
-
+#import "OKBlueManager.h"
 #import "BabyBluetooth.h"
 
 @interface  OKBluetoothViewController()<UITableViewDelegate,UITableViewDataSource,OKBabyBluetoothManageDelegate>

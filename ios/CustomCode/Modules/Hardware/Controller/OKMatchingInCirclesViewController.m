@@ -12,6 +12,7 @@
 #import "OKBluetoothViewCellModel.h"
 #import "OKActivateDeviceSelectViewController.h"
 #import "OKSetDeviceNameViewController.h"
+#import "OKBlueManager.h"
 
 @interface OKMatchingInCirclesViewController ()<OKBabyBluetoothManageDelegate,UITableViewDelegate,UITableViewDataSource>
 

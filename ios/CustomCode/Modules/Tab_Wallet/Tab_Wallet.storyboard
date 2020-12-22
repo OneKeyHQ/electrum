@@ -69,6 +69,16 @@
                                                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                     <nil key="highlightedColor"/>
                                                                 </label>
+                                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Eny-YM-POz">
+                                                                    <rect key="frame" x="310" y="65.5" width="44" height="44"/>
+                                                                    <constraints>
+                                                                        <constraint firstAttribute="height" constant="44" id="9cI-Cj-gQz"/>
+                                                                        <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="44" id="bRF-ql-L0u"/>
+                                                                        <constraint firstAttribute="width" constant="44" id="gaW-tq-d8M"/>
+                                                                        <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="44" id="zwX-Jh-slc"/>
+                                                                    </constraints>
+                                                                    <state key="normal" image="right_arrow_small_white"/>
+                                                                </button>
                                                             </subviews>
                                                             <color key="backgroundColor" red="0.0087685678149999995" green="0.7238946557" blue="0.070093713700000004" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                             <constraints>
@@ -77,10 +87,12 @@
                                                                 <constraint firstItem="N7E-Vz-Gg3" firstAttribute="top" secondItem="Tjz-8n-OLl" secondAttribute="bottom" constant="19" id="Fcg-Hg-dY9"/>
                                                                 <constraint firstAttribute="bottom" secondItem="N7E-Vz-Gg3" secondAttribute="bottom" constant="22.5" id="Hyl-25-4TS"/>
                                                                 <constraint firstItem="N7E-Vz-Gg3" firstAttribute="leading" secondItem="aKh-rV-EkY" secondAttribute="leading" constant="24" id="NWa-SU-vdU"/>
+                                                                <constraint firstItem="Eny-YM-POz" firstAttribute="centerY" secondItem="aKh-rV-EkY" secondAttribute="centerY" id="cy4-bk-ENY"/>
                                                                 <constraint firstItem="Tjz-8n-OLl" firstAttribute="leading" secondItem="aKh-rV-EkY" secondAttribute="leading" constant="24" id="dVd-r2-SCb"/>
                                                                 <constraint firstItem="Gto-cy-x9h" firstAttribute="top" secondItem="aKh-rV-EkY" secondAttribute="top" constant="28" id="gZ6-iS-hQr"/>
                                                                 <constraint firstItem="Tjz-8n-OLl" firstAttribute="top" secondItem="aKh-rV-EkY" secondAttribute="top" constant="32" id="hvP-I5-KeU"/>
                                                                 <constraint firstItem="Ghl-vI-ZDa" firstAttribute="top" secondItem="Gto-cy-x9h" secondAttribute="bottom" constant="3" id="lYv-H8-1vL"/>
+                                                                <constraint firstAttribute="trailing" secondItem="Eny-YM-POz" secondAttribute="trailing" constant="20" id="s7g-mn-SeX"/>
                                                                 <constraint firstItem="Gto-cy-x9h" firstAttribute="leading" secondItem="Tjz-8n-OLl" secondAttribute="trailing" constant="20" id="wRf-5g-ABn"/>
                                                             </constraints>
                                                         </tableViewCellContentView>
@@ -120,6 +132,14 @@
                                                                     <color key="textColor" red="0.99607843139999996" green="1" blue="0.99607843139999996" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="deviceRGB"/>
                                                                     <nil key="highlightedColor"/>
                                                                 </label>
+                                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1U9-mg-uSs">
+                                                                    <rect key="frame" x="310" y="22.5" width="44" height="44"/>
+                                                                    <constraints>
+                                                                        <constraint firstAttribute="height" constant="44" id="T6J-qn-mhg"/>
+                                                                        <constraint firstAttribute="width" constant="44" id="XIi-5M-dEB"/>
+                                                                    </constraints>
+                                                                    <state key="normal" image="right_arrow_small_white"/>
+                                                                </button>
                                                             </subviews>
                                                             <color key="backgroundColor" red="0.0078431372549019607" green="0.72549019607843135" blue="0.070588235294117646" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                             <constraints>
@@ -130,6 +150,8 @@
                                                                 <constraint firstItem="tvz-cd-rJ2" firstAttribute="top" secondItem="Vf8-Kp-RK2" secondAttribute="top" constant="16" id="Ygg-XG-A8j"/>
                                                                 <constraint firstItem="LfS-gB-Sc4" firstAttribute="leading" secondItem="tvz-cd-rJ2" secondAttribute="leading" id="fw6-yy-zNK"/>
                                                                 <constraint firstItem="HSm-3i-T02" firstAttribute="top" secondItem="Vf8-Kp-RK2" secondAttribute="top" constant="24" id="ibS-fB-Mzp"/>
+                                                                <constraint firstItem="1U9-mg-uSs" firstAttribute="centerY" secondItem="Vf8-Kp-RK2" secondAttribute="centerY" id="nYf-Jz-HJ2"/>
+                                                                <constraint firstAttribute="trailing" secondItem="1U9-mg-uSs" secondAttribute="trailing" constant="20" id="pDj-RN-2Vl"/>
                                                             </constraints>
                                                         </tableViewCellContentView>
                                                         <connections>

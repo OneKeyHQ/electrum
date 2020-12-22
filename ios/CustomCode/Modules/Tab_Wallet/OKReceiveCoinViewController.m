@@ -59,12 +59,19 @@
             [weakself.navigationController popViewControllerAnimated:YES];
         } vc:weakself conLabel:MyLocalizedString(@"I have known_alert", nil) isOneBtn:NO];
     }
+    
+    if ([kWalletManager getWalletDetailType] == OKWalletTypeObserve) {
+        OKWeakSelf(self)
+        [kTools alertTips:MyLocalizedString(@"prompt", nil) desc:MyLocalizedString(@"Are you sure you want to use the address of the wallet to initiate a collection in order to view the wallet?", nil) confirm:^{} cancel:^{
+                       [weakself.navigationController popViewControllerAnimated:YES];
+        } vc:self conLabel:MyLocalizedString(@"confirm", nil) isOneBtn:NO];
+    }
 }
 
 - (void)stupUI
 {
     self.titleNavLabel.text = MyLocalizedString(@"ok collection", nil);
-    self.titleLabel.text = [NSString stringWithFormat:@"%@%@",MyLocalizedString(@"Scan goes to", nil),self.coinType];
+    self.titleLabel.text = [NSString stringWithFormat:@"%@%@",MyLocalizedString(@"Scan goes to", nil),[self.coinType uppercaseString]];
     self.walletAddressTitleLabel.text = MyLocalizedString(@"The wallet address", nil);
     [self.bgView setLayerDefaultRadius];
     [self setNavigationBarBackgroundColorWithClearColor];

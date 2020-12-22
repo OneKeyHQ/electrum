@@ -55,7 +55,10 @@
     CGImageRef scaledImage = CGBitmapContextCreateImage(bitmapRef);
     CGContextRelease(bitmapRef);
     CGImageRelease(bitmapImage);
-    return [UIImage imageWithCGImage:scaledImage];
+    CGColorSpaceRelease(cs);
+    UIImage *imager = [UIImage imageWithCGImage:scaledImage];
+    CGImageRelease(scaledImage);
+    return imager;
 }
 
 /**

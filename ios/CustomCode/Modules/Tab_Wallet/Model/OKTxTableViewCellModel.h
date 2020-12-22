@@ -19,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,strong) NSNumber* is_mine;
 @property (nonatomic,copy) NSString* history;
 @property (nonatomic,copy) NSString* tx_status;
+@property (nonatomic,copy) NSString* address;
 @end
 
 NS_ASSUME_NONNULL_END

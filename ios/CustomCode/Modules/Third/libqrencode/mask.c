@@ -264,7 +264,6 @@ unsigned char *Mask_mask(int width, unsigned char *frame, QRecLevel level)
 	int i;
 	unsigned char *mask, *bestMask;
 	int minDemerit = INT_MAX;
-	int bestMaskNum = 0;
 	int blacks;
 	int demerit;
 
@@ -273,18 +272,13 @@ unsigned char *Mask_mask(int width, unsigned char *frame, QRecLevel level)
 	bestMask = NULL;
 
 	for(i=0; i<8; i++) {
-//		n1 = n2 = n3 = n4 = 0;
-		demerit = 0;
 		blacks = maskMakers[i](width, frame, mask);
 		blacks += Mask_writeFormatInformation(width, mask, i, level);
 		blacks = 100 * blacks / (width * width);
 		demerit = (abs(blacks - 50) / 5) * N4;
-//		n4 = demerit;
 		demerit += Mask_evaluateSymbol(width, mask);
-//		printf("(%d,%d,%d,%d)=%d\n", n1, n2, n3 ,n4, demerit);
 		if(demerit < minDemerit) {
 			minDemerit = demerit;
-			bestMaskNum = i;
 			if(bestMask != NULL) {
 				free(bestMask);
 			}

@@ -346,3 +346,4 @@
 "Change master password" = "修改主密码";
 "Set the master password" = "设置主密码";
 "Use cold wallet for code scanning signatures" = "使用冷钱包进行扫码签名";
+"Are you sure you want to use the address of the wallet to initiate a collection in order to view the wallet?" = "当前为观察钱包，确定要使用该钱包的地址发起收款吗？";
