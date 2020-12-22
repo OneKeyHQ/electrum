@@ -48,6 +48,8 @@ import org.haobtc.onekey.event.FirstEvent;
 import org.haobtc.onekey.event.GotPassEvent;
 import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
+import org.haobtc.onekey.onekeys.homepage.process.SendHdActivity;
+import org.haobtc.onekey.onekeys.homepage.process.TransactionCompletion;
 import org.haobtc.onekey.ui.activity.VerifyPinActivity;
 import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.ui.dialog.PassInputDialog;
@@ -107,6 +109,7 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
     private TransactionInfoBean infoBean;
     private String signedTx;
     private String signature;
+    private String amounts;
 
     /**
      * init
@@ -250,7 +253,6 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
      * 签名逻辑处理
      * */
     private void dealSign(@NonNull String rawMessage) {
-        TransactionInfoBean infoBean;
         if (signTransaction.isChecked()) {
             // sign transaction
            PyResponse<String> response = PyEnv.analysisRawTx(rawMessage);
@@ -294,9 +296,26 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onButtonRequestConfirmedEvent(ButtonRequestConfirmedEvent event) {
-
+        TransactionInfoBean info = TransactionInfoBean.objectFromData(signedTx);
+        amounts = info.getAmount();
+        broadcastTx(info.getTx());
     }
-
+    /**
+     * 广播交易
+     * */
+    private void broadcastTx(String signedTx) {
+        PyResponse<Void> response = PyEnv.broadcast(signedTx);
+        String errors = response.getErrors();
+        if (Strings.isNullOrEmpty(errors)) {
+            Intent intent = new Intent(this, TransactionCompletion.class);
+            intent.putExtra("txDetail", signedTx);
+            intent.putExtra("amounts", amounts);
+            startActivity(intent);
+            finish();
+        } else {
+            showToast(errors);
+        }
+    }
     @Override
     public void onPreExecute() {
 

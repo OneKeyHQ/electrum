@@ -49,13 +49,13 @@ public class InputPinOnHardware extends BaseActivity {
 
     @OnClick(R.id.img_back)
     public void onViewClicked(View view) {
-        if (hasWindowFocus()) {
-            finish();
-        }
+       finish();
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onFinish(ExitEvent event) {
-        finish();
+        if (hasWindowFocus()) {
+            finish();
+        }
     }
     @Override
     public boolean needEvents() {

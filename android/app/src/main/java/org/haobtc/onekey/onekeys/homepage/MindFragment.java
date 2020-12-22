@@ -123,8 +123,8 @@ public class MindFragment extends BaseFragment {
                 startActivity(intent5);
                 break;
             case R.id.pin_verify_way:
-                showToast(R.string.support_less_promote);
-              //  startActivity(new Intent(getActivity(), PinVerifyWaySelector.class));
+//                showToast(R.string.support_less_promote);
+               startActivity(new Intent(getActivity(), PinVerifyWaySelector.class));
                 break;
         }
     }

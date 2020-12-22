@@ -32,12 +32,12 @@ public class ConfirmOnHardWareActivity extends BaseActivity {
      */
     @Override
     public void init() {
-        switch (action) {
-            case BusinessAsyncTask.WIPE_DEVICE:
-                updateTitle(R.string.restore_factory);
-                promote.setText(getString(R.string.cold_device_confirm));
-            default:
-                updateTitle(R.string.change_pin);
+        action = getIntent().getAction();
+        if (BusinessAsyncTask.WIPE_DEVICE.equals(action)) {
+            updateTitle(R.string.restore_factory);
+            promote.setText(getString(R.string.cold_device_confirm));
+        } else {
+            updateTitle(R.string.change_pin);
         }
     }
 

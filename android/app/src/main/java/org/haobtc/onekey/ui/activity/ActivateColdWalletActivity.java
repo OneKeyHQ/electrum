@@ -168,6 +168,7 @@ public class ActivateColdWalletActivity extends BaseActivity implements Business
                 default:
                     startFragment(new UpdatePinConfirmFragment());
             }
+            EventBus.getDefault().post(new ExitEvent());
         }
     }
    /**

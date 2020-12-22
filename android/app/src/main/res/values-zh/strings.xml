@@ -1092,7 +1092,7 @@
     <string name="export_mnemonic">助记词导出</string>
     <string name="recovery_default">恢复默认选项</string>
     <string name="please_input_fee">请输入费率</string>
-    <string name="check_pass">校验密码</string>
+    <string name="check_pass">校验主密码</string>
     <string name="wrong_pass_next_input">原密码输入错误</string>
     <string name="what_is_hd">HD钱包即 Hierarchical Deterministic Wallet，中文称为分层确定性钱包。它是目前来说最好用的、最方便的确定性钱包。</string>
     <string name="i_know_">我知道了</string>

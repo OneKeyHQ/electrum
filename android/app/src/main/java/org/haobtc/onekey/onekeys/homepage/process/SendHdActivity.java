@@ -407,7 +407,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         } else {
             maxAmount = maxAmount.setScale(scale, RoundingMode.HALF_EVEN);
             editAmount.requestFocus();
-            editAmount.setText(String.valueOf(maxAmount));
+            editAmount.setText(maxAmount.toPlainString());
             editAmount.clearFocus();
         }
     }
@@ -512,7 +512,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         String errors = pyResponse.getErrors();
         if (Strings.isNullOrEmpty(errors)) {
             TemporaryTxInfo temporaryTxInfo = pyResponse.getResult();
-            String fee = BigDecimal.valueOf(temporaryTxInfo.getFee()).toString();
+            String fee = BigDecimal.valueOf(temporaryTxInfo.getFee()).toPlainString();
             int time = temporaryTxInfo.getTime();
             String temp = temporaryTxInfo.getTx();
             transactionSize = temporaryTxInfo.getSize();
@@ -675,18 +675,22 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     @OnTextChanged(value = R.id.edit_amount, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
     public void onTextChangeAmount(CharSequence sequence) {
         String amount = sequence.toString();
+        // 金额以点开头
         if (amount.startsWith(".")) {
             editAmount.setText("");
             return;
         }
-        if (Strings.isNullOrEmpty(editReceiverAddress.getText().toString())) {
+        // 地址为空的情况下输入金额
+        if (Strings.isNullOrEmpty(editReceiverAddress.getText().toString()) && !Strings.isNullOrEmpty(amount)) {
             showToast(R.string.input_address);
+            editAmount.setText("");
             return;
         }
+        // 金额不能是负数
         if (!Strings.isNullOrEmpty(amount) && Double.parseDouble(amount) > 0) {
             BigDecimal decimal = BigDecimal.valueOf(Double.parseDouble(amount));
             if (decimal.compareTo(minAmount) < 0) {
-                editAmount.setText(String.format(Locale.ENGLISH, "%s", minAmount.toString()));
+                editAmount.setText(String.format(Locale.ENGLISH, "%s", minAmount.stripTrailingZeros().toPlainString()));
             } else if (decimal.compareTo(decimalBalance) >= 0) {
                 showToast(R.string.insufficient);
             }

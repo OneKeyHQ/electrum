@@ -75,7 +75,9 @@ public class FindBackupOnlyDeviceActivity extends BaseActivity implements Busine
     }
     @Subscribe
     public void onFinish(ExitEvent exitEvent) {
-        finish();
+        if (hasWindowFocus()) {
+            finish();
+        }
     }
     @Override
     public void onPreExecute() {
@@ -90,6 +92,9 @@ public class FindBackupOnlyDeviceActivity extends BaseActivity implements Busine
 
     @Override
     public void onResult(String s) {
+        if (!hasWindowFocus()) {
+            EventBus.getDefault().post(new ExitEvent());
+        }
         mnemonics = s;
         startActivity(new Intent(this, SoftPassActivity.class));
     }

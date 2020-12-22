@@ -402,6 +402,7 @@ public class HardwareUpgradeActivity extends BaseActivity {
         protected void onProgressUpdate(Object... progresses) {
             if (fragment.getProgressBar().isIndeterminate()) {
                 fragment.getProgressBar().setIndeterminate(false);
+                EventBus.getDefault().post(new ExitEvent());
             }
             fragment.getProgressBar().setProgress(Integer.parseInt(((progresses[0]).toString())));
         }
@@ -470,6 +471,8 @@ public class HardwareUpgradeActivity extends BaseActivity {
      * */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onExit(ExitEvent exitEvent) {
-        startFragment(hardwareUpgradeFragment);
+        if (hasWindowFocus()) {
+            startFragment(hardwareUpgradeFragment);
+        }
     }
 }

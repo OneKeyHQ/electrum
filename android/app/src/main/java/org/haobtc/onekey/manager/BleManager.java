@@ -24,7 +24,7 @@ import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.event.NotifySuccessfulEvent;
 import org.haobtc.onekey.ui.base.IBaseView;
 import org.haobtc.onekey.ui.dialog.OpenLocationServiceDialog;
-import org.haobtc.onekey.ui.fragment.RequestLocationPermissionsDialog;
+import org.haobtc.onekey.ui.dialog.RequestLocationPermissionsDialog;
 import org.haobtc.onekey.utils.CommonUtils;
 
 import java.util.Objects;

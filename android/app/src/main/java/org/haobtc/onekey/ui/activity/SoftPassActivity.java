@@ -125,12 +125,14 @@ public class SoftPassActivity extends BaseActivity {
         }
         switch (operationType) {
             case SET:
+                textPageTitle.setText(R.string.set_you_pass);
                 break;
             case VERIFY:
                 textPassPromote.setText(R.string.input_your_pass);
                 textTip.setText(R.string.dont_tell);
                 break;
             case CHANGE:
+                textPageTitle.setText(R.string.fix_pass);
                 textPassPromote.setText(R.string.input_pass_origin);
                 textTip.setText(R.string.change_pin_warning);
                 break;
@@ -272,7 +274,7 @@ public class SoftPassActivity extends BaseActivity {
                 keyBroad();
             } else {
                 // 第二次输入password
-                passTypeSwitch.setVisibility(View.VISIBLE);
+                passTypeSwitch.setVisibility(View.INVISIBLE);
                 if (pinInputFirst.equals(pass)) {
                     PyResponse<Void> response = PyEnv.changeSoftPass(pinOrigin, pass);
                     String errors = response.getErrors();

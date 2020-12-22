@@ -353,26 +353,23 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
                 if (hasWindowFocus()) {
                     showToast(R.string.confirm_hardware_msg);
                 } else {
-                    switch (currentMethod) {
-                        case BusinessAsyncTask.CHANGE_PIN:
-                            PyEnv.cancelAll();
-                            startActivity(new Intent(this, ConfirmOnHardWareActivity.class));
-                            EventBus.getDefault().post(new ExitEvent());
-                            break;
-                        case BusinessAsyncTask.WIPE_DEVICE:
-                            PyEnv.cancelAll();
-                            Intent intent1 = new Intent(this, ConfirmOnHardWareActivity.class);
-                            intent1.setAction(BusinessAsyncTask.WIPE_DEVICE);
-                            startActivity(intent1);
-                            break;
-                        default:
+                    if (BusinessAsyncTask.CHANGE_PIN.equals(currentMethod)) {
+                        PyEnv.cancelAll();
+                        startActivity(new Intent(this, ConfirmOnHardWareActivity.class));
+                        EventBus.getDefault().post(new ExitEvent());
                     }
-
                 }
                 break;
             case PyConstant.BUTTON_REQUEST_6:
+            if (BusinessAsyncTask.WIPE_DEVICE.equals(currentMethod)) {
+                PyEnv.cancelAll();
+                Intent intent1 = new Intent(this, ConfirmOnHardWareActivity.class);
+                intent1.setAction(BusinessAsyncTask.WIPE_DEVICE);
+                startActivity(intent1);
+            } else {
                 startActivity(new Intent(this, ConfirmOnHardWareActivity.class));
                 EventBus.getDefault().post(new ExitEvent());
+            }
                 break;
             case PyConstant.PIN_NEW_FIRST:
                 startActivity(new Intent(this, PinNewActivity.class));

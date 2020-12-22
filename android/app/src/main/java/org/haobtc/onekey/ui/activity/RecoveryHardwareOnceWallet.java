@@ -95,7 +95,9 @@ public class RecoveryHardwareOnceWallet extends BaseActivity implements Business
 
     @Subscribe
     public void onFinish(ExitEvent exitEvent) {
-        finish();
+        if (hasWindowFocus()) {
+            finish();
+        }
     }
 
     @Override
@@ -106,11 +108,17 @@ public class RecoveryHardwareOnceWallet extends BaseActivity implements Business
     @Override
     public void onException(Exception e) {
         showToast(e.getMessage());
+        if (!hasWindowFocus()) {
+            EventBus.getDefault().post(new ExitEvent());
+        }
         finish();
     }
 
     @Override
     public void onResult(String s) {
+        if (!hasWindowFocus()) {
+            EventBus.getDefault().post(new ExitEvent());
+        }
         String xpubs = "[[\"" + s + "\", \"" + FindNormalDeviceActivity.deviceId + "\"]]";
         PyEnv.recoveryWallet(this, xpubs, true);
     }

@@ -7,6 +7,7 @@ import android.widget.ImageView;
 
 import com.google.common.base.Strings;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
@@ -19,6 +20,7 @@ import org.haobtc.onekey.event.ButtonRequestEvent;
 import org.haobtc.onekey.event.ChangePinEvent;
 import org.haobtc.onekey.event.CreateSuccessEvent;
 import org.haobtc.onekey.event.CreateWalletEvent;
+import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.event.GetXpubEvent;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
@@ -145,6 +147,7 @@ public class CreatePersonalWalletActivity extends BaseActivity implements Busine
 
     @Override
     public void onResult(String s) {
+        EventBus.getDefault().post(new ExitEvent());
         xpub = s;
         startFragment(new SetWalletNameFragment());
     }

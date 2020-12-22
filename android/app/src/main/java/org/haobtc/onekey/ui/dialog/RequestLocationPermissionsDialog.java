@@ -1,4 +1,4 @@
-package org.haobtc.onekey.ui.fragment;
+package org.haobtc.onekey.ui.dialog;
 
 import android.content.Intent;
 import android.net.Uri;
