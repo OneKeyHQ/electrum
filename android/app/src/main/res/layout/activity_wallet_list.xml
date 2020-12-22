@@ -68,12 +68,17 @@
             android:layout_marginTop="@dimen/dp_15"
             android:src="@drawable/hd_wallet_1" />
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_marginTop="11dp"
+            android:background="@color/text_four" />
 
         <ImageView
             android:id="@+id/view_btc"
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_36"
-            android:layout_marginTop="27dp"
+            android:layout_marginTop="14dp"
             android:src="@drawable/token_trans_btc" />
 
         <ImageView
