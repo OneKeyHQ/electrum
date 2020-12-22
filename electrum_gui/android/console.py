@@ -1386,7 +1386,7 @@ class AndroidCommands(commands.Commands):
                 i['type'] = 'history'
                 data = self.get_tx_info_from_raw(info[3])
                 i['tx_status'] = _("Sending failure")
-                i['date'] = util.format_time(info[4])
+                i['date'] = util.format_time(int(info[4]))
                 i['tx_hash'] = info[0]
                 i['is_mine'] = True
                 i['confirmations'] = 0
