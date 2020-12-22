@@ -15,24 +15,22 @@
  */
 
 package com.yzq.zxinglibrary.android;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
-
+import android.widget.Toast;
 
 import com.google.gson.JsonSyntaxException;
 import com.google.zxing.Result;
+import com.yzq.zxinglibrary.R;
 import com.yzq.zxinglibrary.bean.PsbtData;
 import com.yzq.zxinglibrary.camera.CameraManager;
 import com.yzq.zxinglibrary.common.Constant;
 import com.yzq.zxinglibrary.decode.DecodeThread;
 import com.yzq.zxinglibrary.view.ViewfinderResultPointCallback;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -123,7 +121,6 @@ public final class CaptureActivityHandler extends Handler {
                         Constant.DECODE);
                 break;
             case Constant.RETURN_SCAN_RESULT:
-
                 activity.setResult(Activity.RESULT_OK, (Intent) message.obj);
                 activity.finish();
                 break;
@@ -133,6 +130,7 @@ public final class CaptureActivityHandler extends Handler {
             case Constant.FLASH_CLOSE:
                 activity.switchFlashImg(Constant.FLASH_CLOSE);
                 break;
+            default:
         }
     }
 

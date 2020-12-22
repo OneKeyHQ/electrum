@@ -198,9 +198,7 @@ public final class PyConstant {
     public static final String CHANGE_SOFT_PASS = "update_wallet_password";
 
     public static final String EXPORT_MNEMONICS = "export_seed";
-
     public static final String DELETE_WALLET = "delete_wallet";
-
     public static final String CREATE_WALLET = "create";
     public static final String EXPORT_PRIVATE_KEY = "export_privkey";
     public static final String HD_DERIVED = "create_derived_wallet";
@@ -208,5 +206,9 @@ public final class PyConstant {
      * 重置App 接口
      */
     public static final String RESET_APP = "reset_wallet_info";
+    /**
+     * 获取派生钱包个数
+     */
+    public static final String GET_DEVIRED_NUM = "get_devired_num";
 
 }

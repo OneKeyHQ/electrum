@@ -1,6 +1,7 @@
 package org.haobtc.onekey.onekeys.homepage.mindmenu;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
@@ -61,6 +62,8 @@ public class DeleteWalletActivity extends BaseActivity implements CompoundButton
     public int getLayoutId() {
         return R.layout.activity_delete_wallet;
     }
+
+
 
     @Override
     public void initView() {
@@ -140,7 +143,7 @@ public class DeleteWalletActivity extends BaseActivity implements CompoundButton
         PyResponse<Void> response = PyEnv.deleteWallet(password, keyName);
         String errors = response.getErrors();
         if (Strings.isNullOrEmpty(errors)) {
-            onDeleteSuccess(walletName);
+            onDeleteSuccess(keyName);
         } else {
             mlToast(errors);
         }

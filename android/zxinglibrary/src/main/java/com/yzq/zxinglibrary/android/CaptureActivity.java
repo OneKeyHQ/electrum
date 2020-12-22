@@ -284,7 +284,6 @@ public class CaptureActivity extends AppCompatActivity implements SurfaceHolder.
 
     @Override
     protected void onPause() {
-
         Log.i("CaptureActivity", "onPause");
         if (handler != null) {
             handler.quitSynchronously();
@@ -293,9 +292,7 @@ public class CaptureActivity extends AppCompatActivity implements SurfaceHolder.
         inactivityTimer.onPause();
         beepManager.close();
         cameraManager.closeDriver();
-
         if (!hasSurface) {
-
             surfaceHolder.removeCallback(this);
         }
         super.onPause();
@@ -373,7 +370,12 @@ public class CaptureActivity extends AppCompatActivity implements SurfaceHolder.
 
                 @Override
                 public void onImageDecodeFailed() {
-                    Toast.makeText(CaptureActivity.this, R.string.scan_failed_tip, Toast.LENGTH_SHORT).show();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run () {
+                            Toast.makeText(CaptureActivity.this, R.string.scan_failed_tip, Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
             }).start();
         }

@@ -6,6 +6,7 @@ import org.haobtc.onekey.activities.ResetAppActivity;
 import org.haobtc.onekey.activities.base.LunchActivity;
 import org.haobtc.onekey.activities.transaction.CheckChainDetailWebActivity;
 import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
+import org.haobtc.onekey.onekeys.homepage.process.CreateDeriveChooseTypeActivity;
 import org.haobtc.onekey.onekeys.homepage.process.SoftWalletNameSettingActivity;
 
 /**
@@ -30,7 +31,7 @@ public class NavUtils {
 
     public static void gotoLunchActivity (Context context) {
         Intent intent = new Intent(context, LunchActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         context.startActivity(intent);
     }
 
@@ -47,6 +48,10 @@ public class NavUtils {
 
     public static void gotoSoftWalletNameSettingActivity (Context context, int type) {
         SoftWalletNameSettingActivity.gotoSoftWalletNameSettingActivity(context, type);
+    }
+
+    public static void gotoCreateDeriveChooseTypeActivity (Context context, boolean finish) {
+        CreateDeriveChooseTypeActivity.gotoCreateDeriveChooseTypeActivity(context, finish);
     }
 
 }

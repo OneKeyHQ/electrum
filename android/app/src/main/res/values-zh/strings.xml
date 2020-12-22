@@ -862,7 +862,7 @@
     <string name="mind">我的</string>
     <string name="no_use_wallet">无可用钱包</string>
     <string name="creat_hd">创建 HD 钱包</string>
-    <string name="not_num">通过助记词派生出更多子钱包</string>
+    <string name="not_num">多链、简单、安全、好用</string>
     <string name="home_tip">HD 钱包是迄今最为先进的钱包格式，中文称为分层确定性钱包。只需一个助记词，就能派生无限公链或币种。好记、好用、好管理，很安全。</string>
     <string name="recovery_hd">恢复 HD 钱包</string>
     <string name="word_recovery">通过助记词恢复</string>
@@ -1335,4 +1335,8 @@
     <string name="delete_hardware_wallet_tips">此操作将会删除 App 中存储的该钱包的数据，但您仍可通过掌握其助记词的硬件钱包恢复。确定要继续此操作吗？</string>
     <string name="delete_watch_wallet_warning">此操作将会删除该钱包的所有数据，确定要继续此操作吗？</string>
     <string name="select_coin_type">选择币种</string>
+    <string name="restart_tip">重置成功，请重新启动应用</string>
+    <string name="delete_hd_derived">删除根 HD 钱包</string>
+    <string name="delete_dh_derived_tip">该钱包是 App 内仅存的根 HD 派生的子钱包。删除该钱包的同时，根 HD 钱包也会被删除。</string>
+    <string name="delete_hd_derived_confirm">同时删除根 HD 钱包</string>
 </resources>

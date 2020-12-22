@@ -368,4 +368,11 @@ public final class Constant {
      */
     public static final String UN_BACKUP_TIP = "un_backup_tip";
     public static final String Purpose = "purpose";
+    public static final String BTC = "btc";
+    public static final String ETH = "eth";
+    public static final String DELETE_SINGLE = "deleteSingleWallet";
+    public static final String IMPORT_HD = "importHdword";
+    public static final String WALLET_NAME = "walletName";
+    public static final String FINISH = "finish";
+
 }

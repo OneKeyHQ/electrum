@@ -1,5 +1,4 @@
 package org.haobtc.onekey.onekeys.homepage;
-
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -37,6 +36,7 @@ import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
 import org.haobtc.onekey.ui.activity.SoftPassActivity;
 import org.haobtc.onekey.ui.dialog.CreateWalletWaySelectorDialog;
 import org.haobtc.onekey.ui.dialog.HdWalletIntroductionDialog;
+import org.haobtc.onekey.utils.NavUtils;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -44,7 +44,6 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import dr.android.utils.LogUtil;
 
 import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
 
@@ -241,9 +240,10 @@ public class WalletListActivity extends BaseActivity {
                 startActivity(intent00);
                 break;
             case R.id.recl_add_wallet:
-                Intent intent1 = new Intent(WalletListActivity.this, CreateDeriveChooseTypeActivity.class);
-                intent1.putExtra(CURRENT_SELECTED_WALLET_TYPE, "derive");
-                startActivity(intent1);
+//                Intent intent1 = new Intent(WalletListActivity.this, CreateDeriveChooseTypeActivity.class);
+//                intent1.putExtra(CURRENT_SELECTED_WALLET_TYPE, "derive");
+//                startActivity(intent1);
+                NavUtils.gotoCreateDeriveChooseTypeActivity(mContext, false);
                 break;
             case R.id.img_w:
                 new HdWalletIntroductionDialog().show(getSupportFragmentManager(), "hd_introduction");
@@ -336,4 +336,5 @@ public class WalletListActivity extends BaseActivity {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
     }
+
 }

@@ -1,5 +1,4 @@
 package org.haobtc.onekey.onekeys.homepage.mindmenu;
-
 import android.content.Intent;
 import android.view.View;
 import android.widget.ImageView;
@@ -21,6 +20,7 @@ import org.haobtc.onekey.event.LoadWalletlistEvent;
 import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.onekeys.homepage.process.CreateDeriveChooseTypeActivity;
 import org.haobtc.onekey.ui.dialog.HdWalletIntroductionDialog;
+import org.haobtc.onekey.utils.NavUtils;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -85,9 +85,10 @@ public class HDWalletActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.recl_add_wallet:
-                Intent intent = new Intent(HDWalletActivity.this, CreateDeriveChooseTypeActivity.class);
-                intent.putExtra(CURRENT_SELECTED_WALLET_TYPE, "derive");
-                startActivity(intent);
+//                Intent intent = new Intent(HDWalletActivity.this, CreateDeriveChooseTypeActivity.class);
+//                intent.putExtra(CURRENT_SELECTED_WALLET_TYPE, "derive");
+//                startActivity(intent);
+                NavUtils.gotoCreateDeriveChooseTypeActivity(mContext, false);
                 break;
             case R.id.img_what_hd:
                 new HdWalletIntroductionDialog().show(getSupportFragmentManager(), "");
@@ -128,13 +129,14 @@ public class HDWalletActivity extends BaseActivity {
     }
 
     @Subscribe
-    public void onLoad(LoadWalletlistEvent event) {
+    public void onLoad (LoadWalletlistEvent event) {
         getHomeWalletList();
     }
 
     @Override
-    protected void onDestroy() {
+    protected void onDestroy () {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
     }
+
 }

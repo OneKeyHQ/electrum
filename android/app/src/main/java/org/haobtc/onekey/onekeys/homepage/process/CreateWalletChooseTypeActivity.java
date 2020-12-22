@@ -18,6 +18,7 @@ import org.haobtc.onekey.event.NameSettedEvent;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
 import org.haobtc.onekey.ui.activity.SoftPassActivity;
+import org.haobtc.onekey.utils.NavUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -75,8 +76,9 @@ public class CreateWalletChooseTypeActivity extends BaseActivity {
                 type = R.id.rel_single_wallet;
                 break;
         }
-        Intent intent = new Intent(CreateWalletChooseTypeActivity.this, CreateDeriveChooseTypeActivity.class);
-        startActivity(intent);
+//        Intent intent = new Intent(CreateWalletChooseTypeActivity.this, CreateDeriveChooseTypeActivity.class);
+//        startActivity(intent);
+        NavUtils.gotoCreateDeriveChooseTypeActivity(mContext, true);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

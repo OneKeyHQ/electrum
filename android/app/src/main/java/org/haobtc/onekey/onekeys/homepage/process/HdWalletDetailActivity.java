@@ -1,5 +1,4 @@
 package org.haobtc.onekey.onekeys.homepage.process;
-
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -8,6 +7,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -19,6 +19,8 @@ import android.widget.TextView;
 
 import androidx.annotation.LayoutRes;
 
+import com.chaquo.python.Kwarg;
+import com.chaquo.python.PyObject;
 import com.google.common.base.Strings;
 import com.lxj.xpopup.XPopup;
 
@@ -29,6 +31,7 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.CurrentAddressDetail;
+import org.haobtc.onekey.bean.LocalWalletInfo;
 import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.StringConstant;
@@ -39,12 +42,15 @@ import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.backup.BackupGuideActivity;
 import org.haobtc.onekey.onekeys.homepage.mindmenu.DeleteWalletActivity;
+import org.haobtc.onekey.ui.dialog.BackupRequireDialog;
 import org.haobtc.onekey.ui.dialog.DeleteWalletTipsDialog;
 import org.haobtc.onekey.ui.dialog.ExportTipsDialog;
 import org.haobtc.onekey.ui.dialog.custom.CustomBackupDialog;
 import org.haobtc.onekey.ui.dialog.custom.CustomReSetBottomPopup;
 import org.haobtc.onekey.utils.ClipboardUtils;
 import org.haobtc.onekey.utils.Daemon;
+
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -84,14 +90,16 @@ public class HdWalletDetailActivity extends BaseActivity {
     private SharedPreferences preferences;
     private String showWalletType;
     private int currentOperation;
+    private String qrData;
+    private String deleteHdWalletName;
 
     @Override
-    public int getLayoutId() {
+    public int getLayoutId () {
         return R.layout.activity_hd_wallet_detail;
     }
 
     @Override
-    public void initView() {
+    public void initView () {
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
         inits();
@@ -140,6 +148,7 @@ public class HdWalletDetailActivity extends BaseActivity {
         PyResponse<CurrentAddressDetail> response = PyEnv.getCurrentAddressInfo();
         String error = response.getErrors();
         if (Strings.isNullOrEmpty(error)) {
+            qrData = response.getResult().getQrData();
             String addr = response.getResult().getAddr();
             String front6 = addr.substring(0, 6);
             String after6 = addr.substring(addr.length() - 6);
@@ -171,7 +180,7 @@ public class HdWalletDetailActivity extends BaseActivity {
                 break;
             case R.id.rel_delete_wallet:
                 if (StringConstant.Btc_HD_Standard.equals(showWalletType) || StringConstant.Btc_Derived_Standard.equals(showWalletType)) {
-                    showDeleteDialog();
+                    showDeleteDialog(0);
                 } else {
                     if (showWalletType.contains(StringConstant.HW) || showWalletType.contains(StringConstant.Watch)) {
                         DeleteWalletTipsDialog dialog = new DeleteWalletTipsDialog();
@@ -200,29 +209,96 @@ public class HdWalletDetailActivity extends BaseActivity {
         }
     }
 
-    private void showDeleteDialog() {
+    private void showDeleteDialog (int mode) {
         new XPopup.Builder(mContext)
                 .dismissOnTouchOutside(false)
                 .isDestroyOnDismiss(true)
                 .asCustom(new CustomReSetBottomPopup(mContext, new CustomReSetBottomPopup.onClick() {
                     @Override
-                    public void onConfirm() {
+                    public void onConfirm () {
                         if (!isBackup) {
                             showBackDialog();
                         } else {
-//                            doSelect();
+                            doSelect(mode);
                         }
                     }
                 }, CustomReSetBottomPopup.deleteHdChildren)).show();
     }
 
-    private void showBackDialog() {
+    private void doSelect (int mode) {
+        PyResponse<String> response = PyEnv.getDeviredNum("btc");
+        if (Strings.isNullOrEmpty(response.getErrors())) {
+            int coinNum = Integer.parseInt(response.getResult());
+            if (coinNum == 1) {
+                showDeleteHDRootWallet();
+            } else {
+                showDeleteHdDeriveWallet();
+            }
+        }
+    }
+
+    private void showDeleteHdDeriveWallet () {
+        Intent intent = new Intent(mContext, DeleteWalletActivity.class);
+        intent.putExtra(Constant.IMPORT_HD, Constant.DELETE_SINGLE);
+        intent.putExtra("isBackup", isBackup);
+        startActivity(intent);
+        finish();
+    }
+
+    private void showDeleteHDRootWallet () {
+        new XPopup.Builder(mContext)
+                .dismissOnTouchOutside(false)
+                .isDestroyOnDismiss(true)
+                .asCustom(new CustomReSetBottomPopup(mContext, new CustomReSetBottomPopup.onClick() {
+                    @Override
+                    public void onConfirm () {
+                        deleteHdRoot();
+                    }
+                }, CustomReSetBottomPopup.deleteHdRoot)).show();
+    }
+
+    private void deleteHdRoot () {
+        Map<String, ?> wallets = PreferencesManager.getAll(this, Constant.WALLETS);
+        if (!wallets.isEmpty()) {
+            wallets.entrySet().forEach(stringEntry -> {
+                LocalWalletInfo info = LocalWalletInfo.objectFromData(stringEntry.getValue().toString());
+                String type = info.getType();
+                String name = info.getName();
+                if (Constant.WALLET_TYPE_LOCAL_HD.equals(type)) {
+                    deleteHdWalletName = name;
+                }
+            });
+        }
+        hdWalletIsBackup();
+    }
+
+    private void hdWalletIsBackup () {
+        Log.i("deleteHdWalletNamejxm", "hdWalletIsBackup: " + deleteHdWalletName);
+        try {
+            PyObject data = Daemon.commands.callAttr("get_backup_info", new Kwarg("name", deleteHdWalletName));
+            boolean isBackup = data.toBoolean();
+            if (isBackup) {
+                Intent intent = new Intent(mContext, DeleteWalletActivity.class);
+                intent.putExtra("deleteHdWalletName", deleteHdWalletName);
+                startActivity(intent);
+                finish();
+            } else {
+                //没备份提示备份
+                new BackupRequireDialog().show(getSupportFragmentManager(), "");
+            }
+        } catch (Exception e) {
+            mToast(e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void showBackDialog () {
         new XPopup.Builder(mContext)
                 .dismissOnTouchOutside(false)
                 .isDestroyOnDismiss(true)
                 .asCustom(new CustomBackupDialog(mContext, new CustomBackupDialog.onClick() {
                     @Override
-                    public void onBack() {
+                    public void onBack () {
                         finish();
                     }
                 })).show();

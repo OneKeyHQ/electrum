@@ -49,7 +49,6 @@ import java.util.concurrent.TimeUnit;
 import cn.com.heaton.blelibrary.ble.Ble;
 import cn.com.heaton.blelibrary.ble.callback.BleWriteCallback;
 import cn.com.heaton.blelibrary.ble.model.BleDevice;
-import dr.android.utils.LogUtil;
 
 import static org.haobtc.onekey.activities.service.CommunicationModeSelector.protocol;
 
@@ -744,6 +743,23 @@ public final class PyEnv {
         } catch (Exception e) {
             response.setErrors(e.getMessage());
             e.printStackTrace();
+        }
+        return response;
+    }
+
+    /**
+     * 获取派生HD钱包的个数
+     *
+     * @param coin
+     * @return
+     */
+    public static PyResponse<String> getDeviredNum (String coin) {
+        PyResponse<String> response = new PyResponse<>();
+        try {
+            String res = sCommands.callAttr(PyConstant.GET_DEVIRED_NUM, coin).toString();
+            response.setResult(res);
+        } catch (Exception e) {
+            response.setErrors(e.getMessage());
         }
         return response;
     }

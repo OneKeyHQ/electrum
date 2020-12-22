@@ -24,6 +24,7 @@ import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.FileNameConstant;
 import org.haobtc.onekey.constant.PyConstant;
 import org.haobtc.onekey.manager.PreferencesManager;
+import org.haobtc.onekey.ui.dialog.ReStartDialog;
 import org.haobtc.onekey.ui.dialog.custom.CustomReSetBottomPopup;
 import org.haobtc.onekey.utils.Daemon;
 import org.haobtc.onekey.utils.NavUtils;
@@ -47,6 +48,7 @@ public class ResetAppActivity extends BaseActivity implements OnCheckedChangeLis
     private static final int Reset_Code_OK = 100;
     private static final int Reset_Code_FAILURE = 101;
     private RxPermissions rxPermissions;
+    private ReStartDialog reStartDialog;
 
     public static void gotoResetAppActivity (Context context) {
         context.startActivity(new Intent(context, ResetAppActivity.class));
@@ -100,6 +102,15 @@ public class ResetAppActivity extends BaseActivity implements OnCheckedChangeLis
                 .isDestroyOnDismiss(true)
                 .moveUpToKeyboard(false)
                 .asCustom(new CustomReSetBottomPopup(ResetAppActivity.this, () -> new Thread(() -> {
+                    showConfirmDialog();
+                }).start(), CustomReSetBottomPopup.resetApp))
+                .show();
+    }
+
+    private void showConfirmDialog () {
+        new XPopup.Builder(mContext)
+                .isDestroyOnDismiss(true)
+                .asCustom(new ReStartDialog(mContext, () -> {
                     PreferencesManager.getSharedPreferences(MyApplication.getInstance(), FileNameConstant.myPreferences).edit().clear().apply();
                     PreferencesManager.getSharedPreferences(MyApplication.getInstance(), FileNameConstant.Device).edit().clear().apply();
                     PreferencesManager.getSharedPreferences(MyApplication.getInstance(), FileNameConstant.BLE_INFO).edit().clear().apply();
@@ -113,8 +124,12 @@ public class ResetAppActivity extends BaseActivity implements OnCheckedChangeLis
                         message.obj = e.getMessage();
                         mHandler.sendMessage(message);
                     }
-                }).start(), CustomReSetBottomPopup.resetApp))
-                .show();
+                })).show();
+    }
+
+    public static int px2dip (Context context, float pxValue) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (pxValue / scale + 0.5f);
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
@@ -133,8 +148,8 @@ public class ResetAppActivity extends BaseActivity implements OnCheckedChangeLis
     public void handleMessage (Message msg) {
         switch (msg.what) {
             case Reset_Code_OK:
-                PreferencesManager.getSharedPreferences(this, FileNameConstant.myPreferences).edit().putBoolean(Constant.FIRST_RUN, true).apply();
-                NavUtils.gotoMainActivityTask(mContext);
+                PreferencesManager.getSharedPreferences(this, FileNameConstant.myPreferences).edit().putBoolean(Constant.FIRST_RUN, false).apply();
+                NavUtils.gotoLunchActivity(mContext);
                 break;
             case Reset_Code_FAILURE:
                 mToast((String) msg.obj);

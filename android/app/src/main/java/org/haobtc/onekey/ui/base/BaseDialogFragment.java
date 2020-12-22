@@ -27,6 +27,7 @@ import butterknife.Unbinder;
 public abstract class BaseDialogFragment extends DialogFragment {
 
     protected Unbinder unbinder;
+    private int width;
     /***
      * init layout
      * @return
@@ -49,21 +50,32 @@ public abstract class BaseDialogFragment extends DialogFragment {
             } else {
                 wlp.gravity = Gravity.BOTTOM;
             }
-            wlp.width = WindowManager.LayoutParams.MATCH_PARENT;
+            if (width == 0) {
+                wlp.width = WindowManager.LayoutParams.MATCH_PARENT;
+            } else {
+                wlp.width = width;
+            }
             wlp.height = WindowManager.LayoutParams.WRAP_CONTENT;
             window.setAttributes(wlp);
             window.setWindowAnimations(R.style.AnimBottom);
         }
         return view;
     }
-    public void init() {
+
+    public void setWidth (int width) {
+        this.width = width;
     }
+
+    public void init () {
+    }
+
     @Override
-    public void onDestroyView() {
+    public void onDestroyView () {
         super.onDestroyView();
         unbinder.unbind();
     }
-    public boolean requireGravityCenter() {
-       return false;
+
+    public boolean requireGravityCenter () {
+        return false;
     }
 }

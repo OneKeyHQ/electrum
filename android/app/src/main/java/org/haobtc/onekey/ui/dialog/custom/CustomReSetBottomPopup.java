@@ -17,6 +17,7 @@ public class CustomReSetBottomPopup extends BottomPopupView {
     private int mode;
     public static final int resetApp = 0;
     public static final int deleteHdChildren = 1;
+    public static final int deleteHdRoot =2;
 
     public CustomReSetBottomPopup (@NonNull Context context, onClick onClick, int mode) {
         super(context);
@@ -41,6 +42,11 @@ public class CustomReSetBottomPopup extends BottomPopupView {
                 title.setText(R.string.delete_wallet_single);
                 content.setText(R.string.delete_wallet_single_tip);
                 confirmBtn.setText(R.string.delete_this_wallet);
+                break;
+            case deleteHdRoot:
+                title.setText(R.string.delete_hd_derived);
+                content.setText(R.string.delete_dh_derived_tip);
+                confirmBtn.setText(R.string.delete_hd_derived_confirm);
                 break;
             default:
                 break;
