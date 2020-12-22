@@ -1022,7 +1022,7 @@
     <string name="i_know_danger">我已知晓以上风险</string>
     <string name="choose_wallet_type">选择钱包类型</string>
     <string name="hd_derive">基于 HD 根助记词派生（推荐）</string>
-    <string name="hd_derive_tip">带有 HD 标识，从钱包根助记词（您初次创建钱包时抄录的那个助记词）派生而来，一个助记词可以创建无数钱包，支持多个币种。也可以用它恢复所有派生出的钱包，省时省力且安全，是比特币核心协议 BIP44 的实现。</string>
+    <string name="hd_derive_tip">不用抄助记词。带有 HD 标识，从钱包根助记词（您初次创建 HD 钱包时保存的那个助记词）派生而来，是比特币核心协议 BIP44 的实现，方便且安全。</string>
     <string name="single_wallet">独立钱包</string>
     <string name="single_wallet_tip">独立的钱包，由本地加密算法生成独立私钥。需要重新抄写助记词，一切都不与 HD 钱包共享。</string>
     <string name="please_input_addr_or_xpub">请输入地址或公钥</string>
