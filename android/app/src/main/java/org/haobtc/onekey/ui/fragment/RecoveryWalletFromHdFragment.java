@@ -2,6 +2,7 @@ package org.haobtc.onekey.ui.fragment;
 
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -38,7 +39,7 @@ public class RecoveryWalletFromHdFragment extends BaseFragment {
     @BindView(R.id.wallet_rec)
     RecyclerView walletRec;
     @BindView(R.id.wallet_card)
-    CardView walletCard;
+    LinearLayout walletCard;
     @BindView(R.id.recovery)
     Button recovery;
     @BindView(R.id.promote)

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -16,11 +17,14 @@ import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
 
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
+import com.google.gson.Gson;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -31,14 +35,20 @@ import org.haobtc.onekey.adapter.SearchMnemonicAdapter;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.BalanceInfo;
 import org.haobtc.onekey.bean.FindOnceWalletEvent;
+import org.haobtc.onekey.bean.RecoveryWalletBean;
 import org.haobtc.onekey.constant.Constant;
+import org.haobtc.onekey.event.CreateSuccessEvent;
 import org.haobtc.onekey.event.GotPassEvent;
+import org.haobtc.onekey.event.ResultEvent;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
 import org.haobtc.onekey.onekeys.dialog.recovery.RecoveryChooseWalletActivity;
+import org.haobtc.onekey.onekeys.dialog.recovery.importmethod.ImportMnemonicActivity;
+import org.haobtc.onekey.onekeys.dialog.recovery.importmethod.ImportWalletSetNameActivity;
 import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
 import org.haobtc.onekey.ui.activity.SoftPassActivity;
 import org.haobtc.onekey.utils.Daemon;
+import org.haobtc.onekey.utils.MyDialog;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,6 +59,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import static org.haobtc.onekey.constant.Constant.SEARCH_DEVICE_MODE;
+import static org.haobtc.onekey.constant.Constant.myPreferences;
 
 public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocusChangeListener {
 
@@ -89,6 +100,8 @@ public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocu
     private int screenHeight;
     private boolean mIsSoftKeyboardShowing;
     private String seed;
+    private boolean showLoading;
+    private MyDialog myDialog;
 
     @Override
     public int getLayoutId() {
@@ -98,6 +111,7 @@ public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocu
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        myDialog = MyDialog.showDialog(mContext);
         EventBus.getDefault().register(this);
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         inits();
@@ -241,7 +255,7 @@ public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocu
                 String streleven = editEleven.getText().toString();
                 String strtwelve = editTwelve.getText().toString();
                 seed = strone + " " + strtwo + " " + strthree + " " + strfour + " " + strfive + " " + strsix + " " + strseven + " " + streight + " " + strnine + " " + strten + " " + streleven + " " + strtwelve;
-                startActivity(new Intent(this, SoftPassActivity.class));
+                isSeed(seed);
                 break;
             case R.id.lin_hard_recovery:
                 break;
@@ -257,8 +271,33 @@ public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocu
         }
     }
 
-    @Subscribe
+    private void isSeed(String seed) {
+        PyObject isSeeds = null;
+        try {
+            isSeeds = Daemon.commands.callAttr("is_seed", seed);
+        } catch (Exception e) {
+            e.printStackTrace();
+            mToast(e.getMessage());
+            return;
+        }
+        if (isSeeds.toBoolean()) {
+            startActivity(new Intent(this, SoftPassActivity.class));
+        } else {
+            mToast(getString(R.string.helpword_wrong));
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (showLoading) {
+            myDialog.show();
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGotPass(GotPassEvent event) {
+        showLoading = true;
         mlToast(getString(R.string.loading));
         PyEnv.createLocalHd(event.getPassword(), seed);
     }
@@ -266,6 +305,7 @@ public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocu
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onFind(FindOnceWalletEvent<BalanceInfo> event) {
         List<BalanceInfo> wallets = event.getWallets();
+        myDialog.dismiss();
         if (!wallets.isEmpty()) {
             Intent intent = new Intent(this, RecoveryChooseWalletActivity.class);
             intent.putExtra("recoveryData", (ArrayList<BalanceInfo>) event.getWallets());

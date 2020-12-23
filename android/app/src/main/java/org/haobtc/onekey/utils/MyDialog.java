@@ -32,7 +32,7 @@ public class MyDialog extends Dialog {
     public static MyDialog showDialog(Context context) {
         dialog = new MyDialog(context, R.style.MyDialog);//dialog style
         dialog.setContentView(R.layout.dialog_layout);//dialog view file
-//        dialog.setCanceledOnTouchOutside(false);//onclick out don't close dialog
+        dialog.setCanceledOnTouchOutside(false);//onclick out don't close dialog
         return dialog;
     }
 

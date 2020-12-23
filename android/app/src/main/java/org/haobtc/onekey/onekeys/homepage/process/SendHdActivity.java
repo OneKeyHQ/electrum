@@ -53,6 +53,7 @@ import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.ui.activity.SoftPassActivity;
 import org.haobtc.onekey.ui.activity.VerifyPinActivity;
 import org.haobtc.onekey.ui.base.BaseActivity;
+import org.haobtc.onekey.ui.dialog.BackupDialog;
 import org.haobtc.onekey.ui.dialog.CustomizeFeeDialog;
 import org.haobtc.onekey.ui.dialog.TransactionConfirmDialog;
 import org.haobtc.onekey.ui.dialog.UnBackupTipDialog;
@@ -70,6 +71,7 @@ import butterknife.OnTextChanged;
 
 import static org.haobtc.onekey.constant.Constant.CURRENT_CURRENCY_GRAPHIC_SYMBOL;
 import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
+import static org.haobtc.onekey.constant.Constant.NEED_POP_BACKUP_DIALOG;
 import static org.haobtc.onekey.constant.Constant.WALLET_BALANCE;
 
 /**
@@ -201,14 +203,19 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
             editReceiverAddress.setText(addressScan);
         } else {
             //whether backup
-            boolean whetherBackup = getIntent().getBooleanExtra("whetherBackup", false);
-            if (!whetherBackup) {
-                Bundle bundle = new Bundle();
-                bundle.putString(Constant.UN_BACKUP_TIP, getString(R.string.receive_unbackup_tip));
-                UnBackupTipDialog unBackupTipDialog = new UnBackupTipDialog();
-                unBackupTipDialog.setArguments(bundle);
-                unBackupTipDialog.show(getSupportFragmentManager(), "");
+            try {
+                boolean isBackup = PyEnv.hasBackup(getActivity());
+                if (!isBackup) {
+                    Bundle bundle = new Bundle();
+                    bundle.putString(Constant.UN_BACKUP_TIP, getString(R.string.receive_unbackup_tip));
+                    UnBackupTipDialog unBackupTipDialog = new UnBackupTipDialog();
+                    unBackupTipDialog.setArguments(bundle);
+                    unBackupTipDialog.show(getSupportFragmentManager(), "");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+
         }
         textBalance.setText(String.format("%s%s", balance, preferences.getString("base_unit", "")));
         registerLayoutChangeListener();

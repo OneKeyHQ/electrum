@@ -1,29 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="match_parent">
+
     <TextView
         android:id="@+id/promote"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/find_device_promote"
         android:gravity="center"
+        android:text="@string/find_device_promote"
         android:textColor="#142A3B"
         android:textSize="@dimen/sp_30"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <RelativeLayout
         android:id="@+id/loaded_wallet"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginHorizontal="@dimen/dp_20"
         android:layout_marginTop="@dimen/dp_60"
         android:layout_marginBottom="@dimen/dp_28"
-        android:layout_marginHorizontal="@dimen/dp_20"
         android:background="@drawable/dark_bg"
         android:visibility="visible"
         app:layout_constraintTop_toBottomOf="@id/promote">
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -40,43 +42,46 @@
             android:indeterminateOnly="true" />
 
     </RelativeLayout>
-    <androidx.cardview.widget.CardView
+
+    <LinearLayout
         android:id="@+id/wallet_card"
         android:layout_width="match_parent"
         android:layout_height="360dp"
-        android:layout_marginTop="@dimen/dp_28"
         android:layout_marginHorizontal="@dimen/dp_20"
-        app:cardCornerRadius="@dimen/dp_20"
-        app:cardBackgroundColor="#FAFAFA"
-        app:layout_constraintTop_toBottomOf="@id/promote"
-        android:visibility="gone">
+        android:layout_marginTop="@dimen/dp_28"
+        android:background="@drawable/dark_bg"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/promote">
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
             android:layout_marginTop="17dp"
-            android:textColor="#546370"
-            android:text="@string/recovery_hardware_wallet"/>
+            android:gravity="center"
+            android:text="@string/recovery_hardware_wallet"
+            android:textColor="#546370" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/wallet_rec"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="@dimen/dp_50"
             android:layout_marginHorizontal="@dimen/dp_8"
-            tools:listitem="@layout/choose_hd_wallet_item"
-            android:layout_marginBottom="@dimen/dp_26"/>
-    </androidx.cardview.widget.CardView>
+            android:layout_marginTop="@dimen/dp_20"
+            android:layout_marginBottom="@dimen/dp_26"
+            tools:listitem="@layout/choose_hd_wallet_item" />
+    </LinearLayout>
 
     <Button
         android:id="@+id/recovery"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_60"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:text="@string/recovery"
-        android:textColor="@android:color/white"
-        android:background="@drawable/btn_enable_selector"
         android:layout_marginHorizontal="@dimen/dp_36"
         android:layout_marginBottom="124dp"
-        android:visibility="gone"/>
+        android:background="@drawable/btn_enable_selector"
+        android:text="@string/recovery"
+        android:textColor="@android:color/white"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

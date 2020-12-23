@@ -114,14 +114,19 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
             textWalletAddressText.setText(String.format("BTC %s", getString(R.string.wallet_address)));
         }
         //whether backup
-        boolean whetherBackup = getIntent().getBooleanExtra("whetherBackup", false);
-        if (!whetherBackup) {
-            Bundle bundle = new Bundle();
-            bundle.putString(Constant.UN_BACKUP_TIP, getString(R.string.unbackup_tip_dialog));
-            UnBackupTipDialog unBackupTipDialog = new UnBackupTipDialog();
-            unBackupTipDialog.setArguments(bundle);
-            unBackupTipDialog.show(getSupportFragmentManager(), "");
+        try {
+            boolean isBackup = PyEnv.hasBackup(getActivity());
+            if (!isBackup) {
+                Bundle bundle = new Bundle();
+                bundle.putString(Constant.UN_BACKUP_TIP, getString(R.string.unbackup_tip_dialog));
+                UnBackupTipDialog unBackupTipDialog = new UnBackupTipDialog();
+                unBackupTipDialog.setArguments(bundle);
+                unBackupTipDialog.show(getSupportFragmentManager(), "");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
         //get receive address
         mGeneratecode();
     }

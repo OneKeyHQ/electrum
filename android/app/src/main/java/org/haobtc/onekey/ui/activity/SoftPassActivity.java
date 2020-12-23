@@ -138,9 +138,10 @@ public class SoftPassActivity extends BaseActivity {
                 break;
         }
     }
+
     /**
      * 唤起软键盘
-     * */
+     */
     private void keyBroad() {
         if (editPassShort.getVisibility() == View.VISIBLE) {
             editPassShort.setFocusable(true);
@@ -163,7 +164,6 @@ public class SoftPassActivity extends BaseActivity {
                     },
                     200, TimeUnit.MILLISECONDS);
         }
-
     }
 
     private void showLongPassLayout(boolean yes) {
@@ -183,6 +183,7 @@ public class SoftPassActivity extends BaseActivity {
         }
         keyBroad();
     }
+
     private void dealVerify(String password) {
         PyResponse<Void> response = PyEnv.verifySoftPass(pinOrigin);
         String errors = response.getErrors();
@@ -193,6 +194,7 @@ public class SoftPassActivity extends BaseActivity {
             showToast(R.string.pin_origin_invalid);
         }
     }
+
     /**
      * 短密码框实时监听
      */
@@ -204,7 +206,7 @@ public class SoftPassActivity extends BaseActivity {
                     dealSetPass(editable.toString(), false);
                     break;
                 case VERIFY:
-                   dealVerify(editable.toString());
+                    dealVerify(editable.toString());
                     break;
                 case CHANGE:
                     dealChangePass(editable.toString(), false);
@@ -234,7 +236,7 @@ public class SoftPassActivity extends BaseActivity {
         } else {
             // 第二次输入password
             if (pinInputFirst.equals(pass)) {
-                PreferencesManager.put(this, "Preferences", Constant.SOFT_HD_PASS_TYPE, isLongPass ? Constant.SOFT_HD_PASS_TYPE_LONG: Constant.SOFT_HD_PASS_TYPE_SHORT);
+                PreferencesManager.put(this, "Preferences", Constant.SOFT_HD_PASS_TYPE, isLongPass ? Constant.SOFT_HD_PASS_TYPE_LONG : Constant.SOFT_HD_PASS_TYPE_SHORT);
                 EventBus.getDefault().post(new GotPassEvent(pinInputFirst));
                 finish();
                 return;
@@ -279,7 +281,7 @@ public class SoftPassActivity extends BaseActivity {
                     PyResponse<Void> response = PyEnv.changeSoftPass(pinOrigin, pass);
                     String errors = response.getErrors();
                     if (Strings.isNullOrEmpty(errors)) {
-                        PreferencesManager.put(this, "Preferences", Constant.SOFT_HD_PASS_TYPE, isLongPass ? Constant.SOFT_HD_PASS_TYPE_LONG: Constant.SOFT_HD_PASS_TYPE_SHORT);
+                        PreferencesManager.put(this, "Preferences", Constant.SOFT_HD_PASS_TYPE, isLongPass ? Constant.SOFT_HD_PASS_TYPE_LONG : Constant.SOFT_HD_PASS_TYPE_SHORT);
                         showToast(R.string.pass_change_success);
                     } else {
                         showToast(R.string.pass_change_failed);

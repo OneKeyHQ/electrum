@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageView;
@@ -226,14 +227,23 @@ public class WalletFragment extends BaseFragment {
                     textWalletName.setText(localWalletInfo.getLabel());
                     showTypeInfo(localWalletInfo);
                 }
+                Log.i("balancejxms", "getWalletBalance: " + balance);
                 num = balance.substring(0, balance.indexOf(" "));
                 String strCny = balance.substring(balance.indexOf("(") + 1, balance.indexOf(")"));
                 String currencySymbol = preferences.getString(CURRENT_CURRENCY_GRAPHIC_SYMBOL, "¥");
-                tetAmount.setText(String.format("%s %s", (Strings.isNullOrEmpty(strCny)) ? getString(R.string.zero) : currencySymbol, strCny));
-                textBtcAmount.setText(String.format("%s %s", num, preferences.getString("base_unit", "")));
-                if (!"0".equals(num)) {
-                    getCny(num, currencySymbol);
+                if (Strings.isNullOrEmpty(strCny)) {
+                    if (strCny.contains("CNY")) {
+                        String cash = strCny.replace("CNY", "");
+                        tetAmount.setText(String.format("%s %s", currencySymbol, cash));
+                    }
+                } else {
+                    if (!"0".equals(num)) {
+                        getCny(num, currencySymbol);
+                    } else {
+                        tetAmount.setText(String.format("%s %s", currencySymbol, "0.00"));
+                    }
                 }
+                textBtcAmount.setText(String.format("%s %s", num, preferences.getString("base_unit", "")));
                 whetherBackup();
             }));
         } catch (Exception e) {
@@ -337,14 +347,12 @@ public class WalletFragment extends BaseFragment {
         switch (id) {
             case R.id.linear_send:
                 Intent intent2 = new Intent(getActivity(), SendHdActivity.class);
-                intent2.putExtra("whetherBackup", isBackup);
                 intent2.putExtra(WALLET_BALANCE, changeBalance);
                 intent2.putExtra("hdWalletName", textWalletName.getText().toString());
                 startActivity(intent2);
                 break;
             case R.id.linear_receive:
                 Intent intent3 = new Intent(getActivity(), ReceiveHDActivity.class);
-                intent3.putExtra("whetherBackup", isBackup);
                 if (org.haobtc.onekey.constant.Constant.WALLET_TYPE_HARDWARE.equals(nowType)) {
                     intent3.putExtra(org.haobtc.onekey.constant.Constant.WALLET_TYPE, org.haobtc.onekey.constant.Constant.WALLET_TYPE_HARDWARE_PERSONAL);
                 }
@@ -443,7 +451,7 @@ public class WalletFragment extends BaseFragment {
             if (msgVote.contains("fiat")) {
                 String fiat = jsonObject.getString("fiat");
                 changeBalance = jsonObject.getString("balance");
-                textBtcAmount.setText(String.valueOf(changeBalance));
+                textBtcAmount.setText(changeBalance);
                 if (!TextUtils.isEmpty(fiat)) {
                     String[] currencyArray = getResources().getStringArray(R.array.currency);
                     String[] currencySymbolArray = getResources().getStringArray(R.array.currency_symbol);
@@ -456,6 +464,7 @@ public class WalletFragment extends BaseFragment {
                     }
                 } else {
                     String currencySymbol = preferences.getString(CURRENT_CURRENCY_GRAPHIC_SYMBOL, "¥");
+                    tetAmount.setText(String.format("%s %s", currencySymbol, "0.00"));
                     textDollar.setText(String.format("≈ %s %s", currencySymbol, getString(R.string.zero)));
                 }
             }

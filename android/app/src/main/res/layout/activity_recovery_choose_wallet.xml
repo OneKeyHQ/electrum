@@ -27,14 +27,15 @@
             android:textSize="@dimen/text_size" />
 
     </RelativeLayout>
+
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <LinearLayout
-            android:gravity="center_horizontal"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:gravity="center_horizontal"
             android:orientation="vertical">
 
             <TextView
@@ -47,15 +48,16 @@
 
             <androidx.core.widget.NestedScrollView
                 android:layout_width="match_parent"
-                android:layout_height="409dp"
+                android:layout_height="410dp"
                 android:layout_marginStart="@dimen/dp_19"
+                android:paddingBottom="@dimen/dp_10"
                 android:layout_marginTop="@dimen/dp_28"
                 android:layout_marginEnd="@dimen/dp_19"
                 android:background="@drawable/bg">
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
                     android:orientation="vertical">
 
@@ -75,11 +77,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/dp_7"
-                        android:layout_marginTop="@dimen/dp_28"
+                        android:layout_marginTop="@dimen/dp_8"
                         android:layout_marginEnd="@dimen/dp_7"
-                        android:layout_marginBottom="@dimen/dp_10"
                         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                        tools:itemCount="3"
+                        tools:itemCount="4"
                         tools:listitem="@layout/choose_hd_wallet_item">
 
                     </androidx.recyclerview.widget.RecyclerView>

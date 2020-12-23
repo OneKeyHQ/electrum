@@ -1,4 +1,5 @@
 package org.haobtc.onekey.onekeys.homepage;
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -36,6 +37,7 @@ import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
 import org.haobtc.onekey.ui.activity.SoftPassActivity;
 import org.haobtc.onekey.ui.dialog.CreateWalletWaySelectorDialog;
 import org.haobtc.onekey.ui.dialog.HdWalletIntroductionDialog;
+import org.haobtc.onekey.utils.MyDialog;
 import org.haobtc.onekey.utils.NavUtils;
 
 import java.util.ArrayList;
@@ -128,7 +130,6 @@ public class WalletListActivity extends BaseActivity {
                 Intent intent = new Intent(this, SearchDevicesActivity.class);
                 intent.putExtra(Constant.SEARCH_DEVICE_MODE, Constant.SearchDeviceMode.MODE_PAIR_WALLET_TO_COLD);
                 startActivity(intent);
-                finish();
                 break;
             case R.id.lin_add_wallet:
                 new CreateWalletWaySelectorDialog().show(getSupportFragmentManager(), "");
@@ -263,12 +264,14 @@ public class WalletListActivity extends BaseActivity {
     private boolean shouldResponsePassEvent() {
         return (hdWalletList.isEmpty() && isAddHd);
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGotPass(GotPassEvent event) {
         if (shouldResponsePassEvent()) {
             PyEnv.createLocalHd(event.getPassword(), null);
         }
     }
+
     @Subscribe
     public void onRefresh(RefreshEvent event) {
         if (shouldResponsePassEvent()) {
@@ -338,5 +341,4 @@ public class WalletListActivity extends BaseActivity {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
     }
-
 }

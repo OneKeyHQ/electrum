@@ -2,6 +2,7 @@ package org.haobtc.onekey.adapter;
 
 import android.annotation.SuppressLint;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -14,9 +15,11 @@ import com.chad.library.adapter.base.BaseViewHolder;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.bean.MaintrsactionlistEvent;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 public class OnekeyTxListAdapter extends BaseQuickAdapter<MaintrsactionlistEvent, BaseViewHolder> {
+    private String amountFinal;
 
     public OnekeyTxListAdapter(@Nullable List<MaintrsactionlistEvent> data) {
         super(R.layout.btc_detail_item, data);
@@ -43,15 +46,23 @@ public class OnekeyTxListAdapter extends BaseQuickAdapter<MaintrsactionlistEvent
         }
         TextView tetAmount = helper.getView(R.id.text_send_amount);
         ImageView imgStatus = helper.getView(R.id.imageView);
+        String substring = amount.substring(0, amount.indexOf(" "));
+        String amountFix = substring.substring(substring.indexOf(".") + 1);
+        if (amountFix.length() > 8) {
+            DecimalFormat dfs = new DecimalFormat("0.00000000");
+            amountFinal = dfs.format(amountFix);
+        } else {
+            amountFinal = amount;
+        }
         if (item.isMine()) {
             //send
             tetAmount.setTextColor(mContext.getColor(R.color.text_eight));
-            helper.setText(R.id.text_send_amount, "-" + amount);
+            helper.setText(R.id.text_send_amount, "-" + amountFinal);
             imgStatus.setImageDrawable(mContext.getDrawable(R.drawable.send_));
         } else {
             //get
             tetAmount.setTextColor(mContext.getColor(R.color.onekey));
-            helper.setText(R.id.text_send_amount, "+" + amount);
+            helper.setText(R.id.text_send_amount, "+" + amountFinal);
             imgStatus.setImageDrawable(mContext.getDrawable(R.drawable.receive_));
         }
         TextView sendStatus = helper.getView(R.id.text_send_status);
