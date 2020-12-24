@@ -110,7 +110,8 @@
         model1.isSelected = type == AppLanguageTypeFollowSys;
         
         OKLanguageCellModel *model2 = [[OKLanguageCellModel alloc]init];
-        model2.titleStr = MyLocalizedString(@"Chinese (Simplified)", nil);
+        // fix https://github.com/OneKeyHQ/TaskHub/issues/496
+        model2.titleStr = @"中文（简体）";
         model2.isSelected = type == AppLanguageTypeZh_Hans;
         
         OKLanguageCellModel *model3 = [[OKLanguageCellModel alloc]init];
