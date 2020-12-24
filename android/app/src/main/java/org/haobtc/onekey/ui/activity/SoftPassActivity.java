@@ -166,6 +166,14 @@ public class SoftPassActivity extends BaseActivity {
         }
     }
 
+    /**
+     * 隐藏软键盘
+     */
+    private void hideKeyBroad() {
+        InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputManager.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), 0);
+    }
+
     private void showLongPassLayout(boolean yes) {
         isLongPass = !isLongPass;
         if (yes) {
@@ -188,6 +196,7 @@ public class SoftPassActivity extends BaseActivity {
         PyResponse<Void> response = PyEnv.verifySoftPass(pinOrigin);
         String errors = response.getErrors();
         if (Strings.isNullOrEmpty(errors)) {
+            hideKeyBroad();
             EventBus.getDefault().post(new GotPassEvent(password));
             finish();
         } else {
@@ -281,6 +290,7 @@ public class SoftPassActivity extends BaseActivity {
                     PyResponse<Void> response = PyEnv.changeSoftPass(pinOrigin, pass);
                     String errors = response.getErrors();
                     if (Strings.isNullOrEmpty(errors)) {
+                        hideKeyBroad();
                         PreferencesManager.put(this, "Preferences", Constant.SOFT_HD_PASS_TYPE, isLongPass ? Constant.SOFT_HD_PASS_TYPE_LONG : Constant.SOFT_HD_PASS_TYPE_SHORT);
                         showToast(R.string.pass_change_success);
                     } else {
