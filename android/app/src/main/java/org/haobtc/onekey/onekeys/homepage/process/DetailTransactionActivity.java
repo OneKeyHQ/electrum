@@ -6,9 +6,13 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.DrawableRes;
+import androidx.core.content.res.ResourcesCompat;
 
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
@@ -38,6 +42,10 @@ public class DetailTransactionActivity extends BaseActivity {
     TextView textConfirmNum;
     @BindView(R.id.text_tx_time)
     TextView textTxTime;
+    @BindView(R.id.text_tx_status)
+    TextView textTxStatus;
+    @BindView(R.id.img_tx_status)
+    ImageView imgTxStatus;
     @BindView(R.id.text_fee)
     TextView textFee;
     @BindView(R.id.text_remarks)
@@ -106,10 +114,40 @@ public class DetailTransactionActivity extends BaseActivity {
         }
     }
 
+    private @DrawableRes
+    int getTxStatusImage(int showStatusType) {
+        int imageId;
+        switch (showStatusType) {
+            case 1:
+                imageId = R.drawable.ic_tx_unconfirmed;
+                break;
+            case 2:
+                imageId = R.drawable.ic_tx_failure;
+                break;
+            case 3:
+                imageId = R.drawable.ic_tx_confirmed;
+                break;
+            default:
+                imageId = R.drawable.ic_tx_failure;
+        }
+        return imageId;
+    }
+
     private void jsonDetailData(String detailMsg) {
         Log.i("detailMsg====", "jsonDetailData--: " + detailMsg);
         Gson gson = new Gson();
         TransactionInfoBean listBean = gson.fromJson(detailMsg, TransactionInfoBean.class);
+        String showStatus;
+        int showStatusType;
+        try {
+            showStatus = listBean.getShowStatus().get(1).toString();
+            showStatusType = ((Number) listBean.getShowStatus().get(0)).intValue();
+        } catch (Exception e) {
+            showStatus = getString(R.string.unknown);
+            showStatusType = 1;
+        }
+        textTxStatus.setText(showStatus);
+        imgTxStatus.setImageDrawable(ResourcesCompat.getDrawable(getResources(), getTxStatusImage(showStatusType), getTheme()));
         String amount = listBean.getAmount();
         if (listBean.getInputAddr() != null && listBean.getInputAddr().size() != 0) {
             String address = listBean.getInputAddr().get(0).getAddress();
@@ -147,7 +185,7 @@ public class DetailTransactionActivity extends BaseActivity {
         if (!TextUtils.isEmpty(description)) {
             textRemarks.setText(description);
         } else {
-            textRemarks.setText(getString(R.string.no));
+            textRemarks.setText("-");
         }
         String high = String.valueOf(listBean.getHeight());
         textBlockHigh.setText(high);

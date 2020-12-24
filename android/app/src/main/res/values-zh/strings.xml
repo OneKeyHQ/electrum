@@ -1345,4 +1345,5 @@
     <string name="unknown_version">未知版本</string>
     <string name="not_found_once_wallet">没有钱包</string>
     <string name="not_allow_un_check">该项不可取消</string>
+    <string name="unknown">未知</string>
 </resources>
