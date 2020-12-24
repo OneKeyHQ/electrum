@@ -5,6 +5,7 @@
 # 
 # Translators:
 # danielsocials <daniel.socials@gmail.com>, 2020
+# leihao <fungiriot@gmail.com>, 2020
 # Yishi Wang <rayston92@hotmail.com>, 2020
 # 
 #, fuzzy
@@ -12,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-10 00:19-0800\n"
+"POT-Creation-Date: 2020-12-22 02:59-0800\n"
 "PO-Revision-Date: 2020-12-08 08:51+0000\n"
 "Last-Translator: Yishi Wang <rayston92@hotmail.com>, 2020\n"
 "Language-Team: Chinese (China) (https://www.transifex.com/onekey/teams/113632/zh_CN/)\n"
@@ -607,7 +608,7 @@ msgstr "已保存备份:"
 #: electrum/gui/qt/address_list.py:126 electrum/gui/qt/address_list.py:127
 #: electrum/gui/qt/history_list.py:409 electrum/gui/qt/main_window.py:964
 #: electrum/gui/stdio.py:112 electrum/gui/stdio.py:124
-#: electrum_gui/android/console.py:323
+#: electrum_gui/android/console.py:333
 msgid "Balance"
 msgstr "余额"
 
@@ -722,7 +723,7 @@ msgstr "追加手续费"
 msgid "CLTV expiry"
 msgstr "CLTV过期"
 
-#: electrum_gui/android/console.py:3058
+#: electrum_gui/android/console.py:3265
 msgid ""
 "CPFP(Child Pays For Parent) fails because it does not get the fee "
 "intormation of the original transaction."
@@ -931,7 +932,7 @@ msgstr "勾选以请求新的机密信息。您需要重新键入您的密语种
 
 #: electrum/plugins/keepkey/clientbase.py:27
 #: electrum/plugins/safe_t/clientbase.py:29
-#: electrum/plugins/trezor/clientbase.py:37
+#: electrum/plugins/trezor/clientbase.py:38
 msgid "Check your {} device to continue"
 msgstr "查看你的 {} 设备然后继续"
 
@@ -1017,7 +1018,7 @@ msgstr ""
 "对于最后两种方法，您在键盘上输入的私密信息将会上传到您的{}，所以你应该只在你认为值得信赖且没有恶意软件的计算机上执行这些操作。"
 
 #: electrum/plugins/safe_t/clientbase.py:28
-#: electrum/plugins/trezor/clientbase.py:34
+#: electrum/plugins/trezor/clientbase.py:35
 msgid "Choose on your {} device where to enter your passphrase"
 msgstr "在您的{}设备上选择输入密码的地方"
 
@@ -1133,7 +1134,7 @@ msgstr "主题颜色"
 msgid "Combine"
 msgstr "组合"
 
-#: electrum/plugins/trezor/clientbase.py:22
+#: electrum/plugins/trezor/clientbase.py:23
 msgid "Complete the initialization process on your {} device"
 msgstr "让您的{}设备完成初始化流程"
 
@@ -1188,7 +1189,7 @@ msgstr "在您的Ledger上确认交易..."
 msgid "Confirm action"
 msgstr "确认操作"
 
-#: electrum/plugins/trezor/clientbase.py:172
+#: electrum/plugins/trezor/clientbase.py:173
 msgid "Confirm anti_counterfeiting_verify on your {} device"
 msgstr "在您的{}上确认防伪验证。"
 
@@ -1207,78 +1208,78 @@ msgstr "确认新密码"
 
 #: electrum/plugins/keepkey/clientbase.py:23
 #: electrum/plugins/safe_t/clientbase.py:24
-#: electrum/plugins/trezor/clientbase.py:28
+#: electrum/plugins/trezor/clientbase.py:29
 msgid "Confirm on your {} device the message to sign"
 msgstr "在您的 {} 设备上确认要签名的消息"
 
 #: electrum/plugins/keepkey/clientbase.py:194
 #: electrum/plugins/safe_t/clientbase.py:196
-#: electrum/plugins/trezor/clientbase.py:204
+#: electrum/plugins/trezor/clientbase.py:205
 msgid "Confirm on your {} device to change your PIN"
 msgstr "在您的 {} 设备上确认更改您的PIN"
 
 #: electrum/plugins/keepkey/clientbase.py:187
 #: electrum/plugins/safe_t/clientbase.py:189
-#: electrum/plugins/trezor/clientbase.py:193
+#: electrum/plugins/trezor/clientbase.py:194
 msgid "Confirm on your {} device to change your home screen"
 msgstr "在您的 {} 设备上确认更改您的主屏幕"
 
 #: electrum/plugins/keepkey/clientbase.py:192
 #: electrum/plugins/safe_t/clientbase.py:194
-#: electrum/plugins/trezor/clientbase.py:202
+#: electrum/plugins/trezor/clientbase.py:203
 msgid "Confirm on your {} device to disable PIN protection"
 msgstr "在您的 {} 设备上确认停用PIN码保护"
 
 #: electrum/plugins/keepkey/clientbase.py:176
 #: electrum/plugins/safe_t/clientbase.py:178
-#: electrum/plugins/trezor/clientbase.py:177
+#: electrum/plugins/trezor/clientbase.py:178
 msgid "Confirm on your {} device to disable passphrases"
 msgstr "在您的 {} 设备上确认停用附加密码"
 
 #: electrum/plugins/keepkey/clientbase.py:178
 #: electrum/plugins/safe_t/clientbase.py:180
-#: electrum/plugins/trezor/clientbase.py:179
+#: electrum/plugins/trezor/clientbase.py:180
 msgid "Confirm on your {} device to enable passphrases"
 msgstr "在您的 {} 设备上确认启用附加密码"
 
 #: electrum/plugins/keepkey/clientbase.py:196
 #: electrum/plugins/safe_t/clientbase.py:198
-#: electrum/plugins/trezor/clientbase.py:206
+#: electrum/plugins/trezor/clientbase.py:207
 msgid "Confirm on your {} device to set a PIN"
 msgstr "在您的 {} 设备上确认设置您的PIN"
 
 #: electrum/plugins/keepkey/clientbase.py:22
 #: electrum/plugins/safe_t/clientbase.py:23
-#: electrum/plugins/trezor/clientbase.py:26
+#: electrum/plugins/trezor/clientbase.py:27
 msgid "Confirm on your {} that you want to wipe it clean"
 msgstr "在您的 {} 上确认要清除所有数据"
 
 #: electrum/plugins/keepkey/clientbase.py:183
 #: electrum/plugins/safe_t/clientbase.py:185
-#: electrum/plugins/trezor/clientbase.py:189
+#: electrum/plugins/trezor/clientbase.py:190
 msgid "Confirm the new label on your {} device"
 msgstr "确认您的 {} 设备上的新标签"
 
-#: electrum/plugins/trezor/clientbase.py:185
+#: electrum/plugins/trezor/clientbase.py:186
 msgid "Confirm the new language on your {} device"
 msgstr "在您的{}设备上确认新语言"
 
 #: electrum/plugins/keepkey/clientbase.py:24
 #: electrum/plugins/safe_t/clientbase.py:25
-#: electrum/plugins/trezor/clientbase.py:30
+#: electrum/plugins/trezor/clientbase.py:31
 msgid ""
 "Confirm the total amount spent and the transaction fee on your {} device"
 msgstr "在您的 {} 设备上确认总支出金额和交易手续费"
 
 #: electrum/plugins/keepkey/clientbase.py:19
 #: electrum/plugins/safe_t/clientbase.py:20
-#: electrum/plugins/trezor/clientbase.py:20
+#: electrum/plugins/trezor/clientbase.py:21
 msgid "Confirm the transaction output on your {} device"
 msgstr "在您的 {} 设备上确认交易输出"
 
 #: electrum/plugins/keepkey/clientbase.py:26
 #: electrum/plugins/safe_t/clientbase.py:27
-#: electrum/plugins/trezor/clientbase.py:32
+#: electrum/plugins/trezor/clientbase.py:33
 msgid "Confirm wallet address on your {} device"
 msgstr "在您的 {} 设备确认钱包地址"
 
@@ -1458,11 +1459,11 @@ msgstr "当前手续费水平"
 msgid "Current version: {}"
 msgstr "当前版本：{}"
 
-#: electrum/util.py:129
+#: electrum/util.py:133
 msgid "Current wallet does not support exporting Mnemonic."
 msgstr "当前钱包不支持导出助记词。"
 
-#: electrum_gui/android/console.py:1572
+#: electrum_gui/android/console.py:1704
 msgid "Current wallet does not support signature message:{}"
 msgstr "当前钱包不支持对交易信息签名:{}"
 
@@ -1679,7 +1680,7 @@ msgstr "要显示您的密语种子吗？"
 msgid "Distributed by Electrum Technologies GmbH"
 msgstr "由Electrum Technologies GmbH分发"
 
-#: electrum_gui/android/console.py:114
+#: electrum_gui/android/console.py:116
 msgid ""
 "Do not enter code here that you don't understand. Executing the wrong code "
 "could lead to your coins being irreversibly lost."
@@ -2030,7 +2031,7 @@ msgstr "在'付给'输入框填写输出列表。"
 
 #: electrum/plugins/keepkey/clientbase.py:52
 #: electrum/plugins/safe_t/clientbase.py:54
-#: electrum/plugins/trezor/clientbase.py:307
+#: electrum/plugins/trezor/clientbase.py:311
 msgid "Enter a new PIN for your {}:"
 msgstr "为您的你的 {} 输入新PIN码:"
 
@@ -2040,7 +2041,7 @@ msgstr "请在下面输入您的新密码。"
 
 #: electrum/plugins/keepkey/clientbase.py:69
 #: electrum/plugins/safe_t/clientbase.py:74
-#: electrum/plugins/trezor/clientbase.py:324
+#: electrum/plugins/trezor/clientbase.py:337
 msgid ""
 "Enter a passphrase to generate this wallet.  Each time you use this wallet "
 "your {} will prompt you for the passphrase.  If you forget the passphrase "
@@ -2097,7 +2098,7 @@ msgstr "输入xprv开头的主私钥："
 
 #: electrum/plugins/keepkey/clientbase.py:74
 #: electrum/plugins/safe_t/clientbase.py:79
-#: electrum/plugins/trezor/clientbase.py:329
+#: electrum/plugins/trezor/clientbase.py:345
 msgid "Enter the passphrase to unlock this wallet:"
 msgstr "输入附加密码以解锁这个钱包："
 
@@ -2152,7 +2153,7 @@ msgstr "请输入您的PIN码以继续。"
 
 #: electrum/plugins/keepkey/clientbase.py:57
 #: electrum/plugins/safe_t/clientbase.py:59
-#: electrum/plugins/trezor/clientbase.py:312
+#: electrum/plugins/trezor/clientbase.py:322
 msgid "Enter your current {} PIN:"
 msgstr "请输入您当前的PIN码："
 
@@ -2255,7 +2256,7 @@ msgstr "世界语"
 msgid "Estimate"
 msgstr "估计"
 
-#: electrum_gui/android/console.py:3096
+#: electrum_gui/android/console.py:3303
 msgid "Exceeding the Maximum fee limit."
 msgstr "超出手续费上限"
 
@@ -2355,28 +2356,28 @@ msgstr "使用此硬件设备解密失败。"
 msgid "Failed to display QR code."
 msgstr "无法显示二维码。"
 
-#: electrum/util.py:177
+#: electrum/util.py:181
 msgid "Failed to export to file."
 msgstr "导出文件失败。"
 
-#: electrum_gui/android/console.py:1310
+#: electrum_gui/android/console.py:1430
 msgid "Failed to get transaction details."
 msgstr "获取交易信息失败"
 
-#: electrum/util.py:161
+#: electrum/util.py:165
 msgid "Failed to get transaction."
 msgstr "获取交易失败"
 
-#: electrum/util.py:169
+#: electrum/util.py:173
 msgid "Failed to import from file."
 msgstr "导入文件失败。"
 
 #. (_("Your {} were successfully imported").format(title))
-#: electrum_gui/android/console.py:482
+#: electrum_gui/android/console.py:496
 msgid "Failed to load file {}"
 msgstr "读取文件失败 {}"
 
-#: electrum_gui/android/console.py:1445
+#: electrum_gui/android/console.py:1570
 msgid "Failed to open file."
 msgstr "打开文件失败"
 
@@ -2426,7 +2427,7 @@ msgstr "文件"
 msgid "File Backup"
 msgstr "文件备份"
 
-#: electrum/util.py:157
+#: electrum/util.py:161
 msgid "File already exists."
 msgstr "文件已存在"
 
@@ -2455,7 +2456,7 @@ msgstr "查找"
 msgid "Firmware Version"
 msgstr "固件版本"
 
-#: electrum_gui/android/console.py:2032
+#: electrum_gui/android/console.py:2172
 msgid "Firmware not compatible with your equipment, Aborting."
 msgstr "固件与您当前设备不匹配，请检查。"
 
@@ -2944,27 +2945,27 @@ msgstr "收入"
 msgid "Incoming payments"
 msgstr "即将到账的付款"
 
-#: electrum/util.py:125
+#: electrum/util.py:129
 msgid "Incorrect Bip39 mnemonic format."
 msgstr "这似乎不是正确的 BIP39 助记词格式"
 
-#: electrum_gui/android/console.py:2405
+#: electrum_gui/android/console.py:2569
 msgid "Incorrect address or pubkey."
 msgstr "地址或公钥错误"
 
-#: electrum/util.py:133
+#: electrum/util.py:137
 msgid "Incorrect bitcoin address."
 msgstr "比特币地址错误"
 
-#: electrum/util.py:137
+#: electrum/util.py:141
 msgid "Incorrect eth address."
 msgstr "以太坊地址错误"
 
-#: electrum_gui/android/console.py:2349
+#: electrum_gui/android/console.py:2513
 msgid "Incorrect eth keystore."
 msgstr "以太坊 Keystore 文件格式不正确"
 
-#: electrum_gui/android/console.py:2322
+#: electrum_gui/android/console.py:2486
 msgid "Incorrect mnemonic format."
 msgstr "助记词格式有误"
 
@@ -2972,15 +2973,15 @@ msgstr "助记词格式有误"
 msgid "Incorrect password entered."
 msgstr "密码不正确。"
 
-#: electrum/util.py:121
+#: electrum/util.py:125
 msgid "Incorrect password."
 msgstr "密码有误"
 
-#: electrum/util.py:149
+#: electrum/util.py:153
 msgid "Incorrect private key."
 msgstr "私钥格式不正确"
 
-#: electrum/util.py:145
+#: electrum/util.py:149
 msgid "Incorrect public key."
 msgstr "公钥格式有误"
 
@@ -3061,7 +3062,7 @@ msgstr "安装zbar包以启用此功能。"
 msgid "Instructions:"
 msgstr "说明："
 
-#: electrum/util.py:106
+#: electrum/util.py:106 electrum/util.py:121
 msgid "Insufficient funds"
 msgstr "资金不足"
 
@@ -3092,7 +3093,7 @@ msgstr "比特币地址无效。"
 msgid "Invalid Fee"
 msgstr "手续费输入无效"
 
-#: electrum/util.py:1070
+#: electrum/util.py:1081
 msgid "Invalid JSON code."
 msgstr "无效的JSON代码。"
 
@@ -3592,7 +3593,7 @@ msgstr "下一步"
 msgid "No"
 msgstr "否"
 
-#: electrum/util.py:256 electrum/util.py:262
+#: electrum/util.py:260 electrum/util.py:266
 msgid "No Data"
 msgstr "无数据"
 
@@ -3604,7 +3605,7 @@ msgstr "无说明"
 msgid "No Wallet"
 msgstr "无钱包"
 
-#: electrum_gui/android/console.py:2421
+#: electrum_gui/android/console.py:2585
 msgid "No address available."
 msgstr "无可用地址"
 
@@ -3652,7 +3653,7 @@ msgstr "无此输出"
 msgid "No path found"
 msgstr "找不到路径"
 
-#: electrum_gui/android/console.py:2453
+#: electrum_gui/android/console.py:2617
 msgid "No private key available."
 msgstr "无可用私钥"
 
@@ -3678,7 +3679,7 @@ msgid "Nodes"
 msgstr "节点"
 
 #: electrum/gui/kivy/main_window.py:134 electrum/gui/qt/settings_dialog.py:353
-#: electrum/gui/qt/history_list.py:475 electrum_gui/android/console.py:395
+#: electrum/gui/qt/history_list.py:475 electrum_gui/android/console.py:409
 msgid "None"
 msgstr "无"
 
@@ -3799,7 +3800,7 @@ msgid "OR"
 msgstr "或者"
 
 #: electrum/gui/text.py:146 electrum/gui/kivy/main_window.py:889
-#: electrum/gui/qt/main_window.py:944 electrum_gui/android/console.py:310
+#: electrum/gui/qt/main_window.py:944 electrum_gui/android/console.py:320
 msgid "Offline"
 msgstr "离线"
 
@@ -4145,7 +4146,7 @@ msgstr "请检查你的{}设备"
 msgid "Please confirm"
 msgstr "请确认"
 
-#: electrum/util.py:141
+#: electrum/util.py:145
 msgid "Please create HD wallet first."
 msgstr "请先创建 HD 钱包"
 
@@ -4170,7 +4171,7 @@ msgstr "请输入你的谷歌验证码："
 msgid "Please enter your e-mail address"
 msgstr "请输入你的电子邮件地址"
 
-#: electrum/plugins/trezor/clientbase.py:36
+#: electrum/plugins/trezor/clientbase.py:37
 msgid "Please enter your passphrase on the {} device"
 msgstr "请在{}设备上输入您的附加密码（passphrase）"
 
@@ -4259,7 +4260,7 @@ msgstr "请在这儿输入。"
 msgid "Please type your seed phrase using the virtual keyboard."
 msgstr "请用虚拟键盘输入你的密语种子。"
 
-#: electrum_gui/android/console.py:871
+#: electrum_gui/android/console.py:923
 msgid "Please use unconfirmed utxo."
 msgstr "请使用未确认的 UTXO"
 
@@ -4441,7 +4442,7 @@ msgstr "退出"
 msgid "R/W error accessing path"
 msgstr "读/写 访问路径错误"
 
-#: electrum_gui/android/console.py:2972
+#: electrum_gui/android/console.py:3179
 msgid ""
 "RBF(Replace-By-Fee) fails because it does not get the fee intormation of the"
 " original transaction."
@@ -4461,7 +4462,7 @@ msgstr "原始交易记录"
 
 #: electrum/plugins/keepkey/clientbase.py:54
 #: electrum/plugins/safe_t/clientbase.py:56
-#: electrum/plugins/trezor/clientbase.py:309
+#: electrum/plugins/trezor/clientbase.py:316
 msgid ""
 "Re-enter the new PIN for your {}.\n"
 "\n"
@@ -4898,6 +4899,10 @@ msgstr "正在发送"
 msgid "Sending crash report..."
 msgstr "正在发送崩溃报告……"
 
+#: electrum_gui/android/console.py:1388
+msgid "Sending failure"
+msgstr "发送失败"
+
 #: electrum/plugins/cosigner_pool/qt.py:210
 msgid "Sending transaction to cosigning pool..."
 msgstr "将交易发送到联署池..."
@@ -4926,7 +4931,7 @@ msgid "Server hosting your email account"
 msgstr "托管您电子邮件帐户的服务器"
 
 #: electrum/gui/kivy/main_window.py:899 electrum/gui/qt/main_window.py:960
-#: electrum_gui/android/console.py:320
+#: electrum_gui/android/console.py:330
 msgid "Server is lagging ({} blocks)"
 msgstr "服务器滞后 ( {} 个区块)"
 
@@ -5206,11 +5211,11 @@ msgstr "状态:"
 
 #: electrum/plugins/keepkey/clientbase.py:89
 #: electrum/plugins/safe_t/clientbase.py:97
-#: electrum/plugins/trezor/clientbase.py:363
+#: electrum/plugins/trezor/clientbase.py:379
 msgid "Step {}/24.  Enter seed word as explained on your {}:"
 msgstr "步骤{}/24。按照{}中的说明输入密语种子："
 
-#: electrum_gui/android/console.py:3094
+#: electrum_gui/android/console.py:3301
 msgid "Sub-transaction fee error."
 msgstr "子交易费用出错"
 
@@ -5263,13 +5268,13 @@ msgstr "扫入钱包"
 msgid "Sweep private keys"
 msgstr "将私钥上保存的币转入钱包"
 
-#: electrum_gui/android/console.py:1997
+#: electrum_gui/android/console.py:2137
 msgid "Switch the device to bootloader mode."
 msgstr "请您将设备切换至 bootloader 模式"
 
 #: electrum/gui/text.py:149 electrum/gui/kivy/main_window.py:897
 #: electrum/gui/qt/main_window.py:957 electrum/gui/stdio.py:121
-#: electrum_gui/android/console.py:318
+#: electrum_gui/android/console.py:328
 msgid "Synchronizing..."
 msgstr "同步中..."
 
@@ -5340,7 +5345,7 @@ msgstr ""
 
 #: electrum/plugins/keepkey/clientbase.py:61
 #: electrum/plugins/safe_t/clientbase.py:63
-#: electrum/plugins/trezor/clientbase.py:318
+#: electrum/plugins/trezor/clientbase.py:328
 msgid "The PIN cannot be longer than 9 characters."
 msgstr "PIN不能超过9个字符。"
 
@@ -5350,7 +5355,7 @@ msgid ""
 "fingerprint passed in with the --serverfingerprint option."
 msgstr "主服务器提供的SSL证书与--serverfingerprint选项传入的指纹不符。"
 
-#: electrum_gui/android/console.py:1569
+#: electrum_gui/android/console.py:1701
 msgid "The address is not in the current wallet."
 msgstr "该地址在当前钱包中不存在"
 
@@ -5366,7 +5371,7 @@ msgid ""
 "wallet."
 msgstr "如果您的钱包资金不足，金额会被显示为红色。"
 
-#: electrum_gui/android/console.py:3306
+#: electrum_gui/android/console.py:3549
 msgid ""
 "The background process does not start and it is recommended to restart the "
 "application."
@@ -5458,7 +5463,7 @@ msgid ""
 msgstr ""
 "下一步会生成钱包的密语种子。这个密语种子不会被保存在您的计算机中，您必须把它抄在纸上。为了抵御恶意软件，您可以先在断网的计算机上进行这个操作，然后再把钱包移动到联网的计算机上。"
 
-#: electrum/util.py:153
+#: electrum/util.py:157
 msgid ""
 "The number of wallets created is limited, currently up to 20 HD wallets can "
 "be created."
@@ -5610,7 +5615,7 @@ msgid "This is a watching-only wallet"
 msgstr "这是一个仅供监视的钱包"
 
 #: electrum/gui/qt/main_window.py:2471 electrum/gui/qt/main_window.py:2551
-#: electrum_gui/android/console.py:1567
+#: electrum_gui/android/console.py:1699
 msgid "This is a watching-only wallet."
 msgstr "这是一个仅供监视的钱包。"
 
@@ -5835,7 +5840,7 @@ msgstr "切换是否加密"
 
 #: electrum/plugins/keepkey/clientbase.py:83
 #: electrum/plugins/safe_t/clientbase.py:88
-#: electrum/plugins/trezor/clientbase.py:340
+#: electrum/plugins/trezor/clientbase.py:356
 msgid "Too long passphrase ({} > 50 chars)."
 msgstr "附加密码太长（{} > 50个字符）。"
 
@@ -5895,7 +5900,7 @@ msgstr "交易字节数太多。"
 msgid "Transaction is unrelated to this wallet."
 msgstr "与这个钱包无关交易。"
 
-#: electrum_gui/android/console.py:1191
+#: electrum_gui/android/console.py:1260
 msgid "Transaction not related to the current wallet."
 msgstr "交易与当前钱包无关联"
 
@@ -6037,7 +6042,7 @@ msgstr "无法读取文件或没有发现交易"
 msgid "Unable to send report"
 msgstr "无法发送报告"
 
-#: electrum/MutiBase.py:135 electrum_gui/android/console.py:282
+#: electrum/MutiBase.py:135
 msgid "Unavailable xpub"
 msgstr "Xpub 不可用"
 
@@ -6089,7 +6094,7 @@ msgstr "解冻币"
 #. note: when not finalized, RBF and locktime changes do not trigger
 #. a make_tx, so the txid is unreliable, hence:
 #: electrum/gui/qt/transaction_dialog.py:426
-#: electrum/gui/qt/invoice_list.py:115 electrum/util.py:755
+#: electrum/gui/qt/invoice_list.py:115 electrum/util.py:766
 #: electrum/lnutil.py:281 electrum/invoices.py:46
 msgid "Unknown"
 msgstr "未知"
@@ -6128,7 +6133,7 @@ msgstr "更新检查"
 msgid "Update check failed"
 msgstr "检查更新失败"
 
-#: electrum_gui/android/console.py:2053
+#: electrum_gui/android/console.py:2193
 msgid "Update failed: {}"
 msgstr "升级失败: {}"
 
@@ -6213,6 +6218,10 @@ msgstr "在这个对话框中切换是否加密。"
 msgid "Used"
 msgstr "用过"
 
+#: electrum/wallet.py:1597
+msgid "User cancellation of operations"
+msgstr "用户取消操作"
+
 #: electrum/gui/qt/main_window.py:779
 msgid "Uses icons from the Icons8 icon pack (icons8.com)."
 msgstr "使用Icons8图标包 (icons8.com)中的图标。"
@@ -6287,7 +6296,7 @@ msgstr "使用区块浏览器查看"
 msgid "WARNING"
 msgstr "警告"
 
-#: electrum_gui/android/console.py:113
+#: electrum_gui/android/console.py:115
 msgid "WARNING!"
 msgstr "警告！"
 
@@ -6485,7 +6494,7 @@ msgstr "有新版本Electrum可用时需要通知您吗？"
 
 #: electrum/plugins/keepkey/clientbase.py:21
 #: electrum/plugins/safe_t/clientbase.py:22
-#: electrum/plugins/trezor/clientbase.py:24
+#: electrum/plugins/trezor/clientbase.py:25
 msgid "Write down the seed word shown on your {}"
 msgstr "写下你的种子单词并展示在你的{}"
 
@@ -6586,7 +6595,7 @@ msgid ""
 " your passphrase."
 msgstr "您的密码开头或结尾含有空格，或者含有多个连续的空格。"
 
-#: electrum_gui/android/console.py:3316
+#: electrum_gui/android/console.py:3559
 msgid "You haven't chosen a wallet yet."
 msgstr "您尚未选择钱包"
 
@@ -6631,7 +6640,7 @@ msgid ""
 msgstr ""
 "您需要给每一个不同的附加密码创建一个独立的Electrum钱包，每个钱包都对应不同的一组地址。修改附加密码不会导致原有钱包丢失，只要使用原有附加密码就可以找回与之对应的钱包。"
 
-#: electrum_gui/android/console.py:2027
+#: electrum_gui/android/console.py:2167
 msgid "You need to upgrade the bootloader immediately."
 msgstr "您需要尽快升级 bootloader。"
 
@@ -6708,7 +6717,7 @@ msgstr "设备固件版本太旧"
 msgid "Your device might not have support for this functionality."
 msgstr "您的设备可能不支持此功能。"
 
-#: electrum_gui/android/console.py:2025
+#: electrum_gui/android/console.py:2165
 msgid "Your device's firmware version is too low. Aborting."
 msgstr "您设备中运行的固件版本过低，操作中断。"
 
@@ -6841,7 +6850,7 @@ msgstr "添加输入和输出"
 msgid "add invoice timed out"
 msgstr "添加发票超时"
 
-#: electrum/wallet.py:2246 electrum/eth_wallet.py:756
+#: electrum/wallet.py:2246 electrum/eth_wallet.py:755
 msgid "address already in wallet"
 msgstr "地址已经在钱包​​里了"
 
@@ -6891,11 +6900,11 @@ msgstr "高手续费"
 msgid "initialized"
 msgstr "已初始化"
 
-#: electrum/wallet.py:2243 electrum/eth_wallet.py:753
+#: electrum/wallet.py:2243 electrum/eth_wallet.py:752
 msgid "invalid address"
 msgstr "无效地址"
 
-#: electrum/wallet.py:2325 electrum/eth_wallet.py:799
+#: electrum/wallet.py:2325 electrum/eth_wallet.py:798
 msgid "invalid private key"
 msgstr "私钥无效"
 
@@ -6980,7 +6989,7 @@ msgstr "未知"
 msgid "unknown parser {!r} (choices: {})"
 msgstr "未知解析器{!r}(选项：{})"
 
-#: electrum/plugins/trezor/clientbase.py:197
+#: electrum/plugins/trezor/clientbase.py:198
 msgid "used in oneKey app only"
 msgstr "仅可在 OneKey App 中使用"
 
