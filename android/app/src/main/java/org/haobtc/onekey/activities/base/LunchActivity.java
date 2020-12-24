@@ -12,8 +12,6 @@ import org.haobtc.onekey.utils.NfcUtils;
 
 import java.util.Optional;
 
-import dr.android.utils.LogUtil;
-
 /**
  * @author liyan
  */
@@ -62,7 +60,6 @@ public class LunchActivity extends BaseActivity {
         Intent intent = new Intent(LunchActivity.this, GuidanceActivity.class);
         startActivity(intent);
         finish();
-
     }
 
     @Override

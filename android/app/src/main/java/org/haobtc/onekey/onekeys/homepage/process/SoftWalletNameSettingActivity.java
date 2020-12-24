@@ -97,4 +97,5 @@ public class SoftWalletNameSettingActivity extends BaseActivity implements TextW
             btnImport.setEnabled(false);
         }
     }
+
 }
