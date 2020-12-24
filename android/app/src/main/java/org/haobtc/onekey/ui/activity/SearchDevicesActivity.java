@@ -205,7 +205,7 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
         String errors = response.getErrors();
         if (Strings.isNullOrEmpty(errors)) {
             features = response.getResult();
-            if ((features.getMajorVersion() == 1) && (features.getMinorVersion() == 9) && (features.getPatchVersion() <= 7)) {
+            if (((features.getMajorVersion() == 1) && (features.getMinorVersion() == 9) && (features.getPatchVersion() <= 7)) || features.isBootloaderMode()) {
                 update(features);
                 finish();
                 return;
@@ -352,7 +352,10 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
             showToast(R.string.get_update_info_failed);
             return;
         }
-        String firmwareVersion = features.getMajorVersion() + "." + features.getMinorVersion() + "." + features.getPatchVersion();
+        String firmwareVersion = "";
+        if (!features.isBootloaderMode()) {
+            firmwareVersion = features.getMajorVersion() + "." + features.getMinorVersion() + "." + features.getPatchVersion();
+        }
         String nrfVersion = features.getBleVer();
         String bleName = features.getBleName();
         String label = features.getLabel();

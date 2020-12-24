@@ -2,7 +2,6 @@ package org.haobtc.onekey.ui.fragment;
 
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -39,11 +38,13 @@ public class RecoveryWalletFromHdFragment extends BaseFragment {
     @BindView(R.id.wallet_rec)
     RecyclerView walletRec;
     @BindView(R.id.wallet_card)
-    LinearLayout walletCard;
+    CardView walletCard;
     @BindView(R.id.recovery)
     Button recovery;
     @BindView(R.id.promote)
     TextView promote;
+    @BindView(R.id.find_result_promote)
+    TextView findResultPromote;
     private OnceWalletAdapter adapter;
     private List<String> nameList;
 
@@ -64,12 +65,12 @@ public class RecoveryWalletFromHdFragment extends BaseFragment {
             return;
         }
         loadedWallet.setVisibility(View.GONE);
+        walletCard.setVisibility(View.VISIBLE);
         recovery.setVisibility(View.VISIBLE);
         if (event.getWallets().isEmpty()) {
-            promote.setText(R.string.no_use_wallet);
             recovery.setText(R.string.back);
+            findResultPromote.setText(R.string.not_found_once_wallet);
         } else {
-            walletCard.setVisibility(View.VISIBLE);
             adapter = new OnceWalletAdapter(getContext(), event.getWallets());
             walletRec.setAdapter(adapter);
             walletRec.setLayoutManager(new LinearLayoutManager(getContext()));

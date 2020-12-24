@@ -58,8 +58,16 @@ public class HardwareUpgradeFragment extends BaseFragment {
 
     @Override
     public void init(View view) {
-        currentStm32VersionCode.setText(HardwareUpgradeActivity.currentFirmwareVersion);
-        currentNrfVersionCode.setText(HardwareUpgradeActivity.currentNrfVersion);
+        if (Strings.isNullOrEmpty(HardwareUpgradeActivity.currentFirmwareVersion)) {
+            currentStm32VersionCode.setText(R.string.unknown_version);
+        } else {
+            currentStm32VersionCode.setText(HardwareUpgradeActivity.currentFirmwareVersion);
+        }
+        if (Strings.isNullOrEmpty(HardwareUpgradeActivity.currentNrfVersion)) {
+           currentNrfVersionCode.setText(R.string.unknown_version);
+        } else {
+            currentNrfVersionCode.setText(HardwareUpgradeActivity.currentNrfVersion);
+        }
         if (Strings.isNullOrEmpty(HardwareUpgradeActivity.newFirmwareVersion) && Strings.isNullOrEmpty(HardwareUpgradeActivity.newNrfVersion)) {
             noUpdatePromote.setVisibility(View.VISIBLE);
         } else {

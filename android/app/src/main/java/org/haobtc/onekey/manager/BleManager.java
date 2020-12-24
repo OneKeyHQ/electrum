@@ -52,6 +52,7 @@ public final class BleManager {
     private FragmentActivity fragmentActivity;
     private static boolean connecting;
     private String currentAddress;
+    public static String currentBleName;
 
 
     private BleManager(FragmentActivity fragmentActivity) {
@@ -257,6 +258,7 @@ public final class BleManager {
 
                 });
                 currentAddress = device.getBleAddress();
+                currentBleName = device.getBleName();
             }
 
 

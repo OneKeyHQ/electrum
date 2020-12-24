@@ -48,10 +48,9 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_marginEnd="@dimen/dp_21"
-            android:background="@drawable/circle_checkbox"
             android:button="@null"
-            android:checked="true" />
-
+            android:checked="true"
+            android:background="@drawable/checkbox_selector_onkey"/>
     </RelativeLayout>
 
 </RelativeLayout>

@@ -237,11 +237,10 @@ public final class PyEnv {
             if (!Strings.isNullOrEmpty(backupMessage)) {
                 features.setBackupMessage(backupMessage);
             }
+        } else if (features.isBootloaderMode()) {
+            features.setBleName(BleManager.currentBleName);
+            return features;
         }
-        // 测试强制升级代码
-        /*features.setMajorVersion(1);
-        features.setMinorVersion(9);
-        features.setPatchVersion(6);*/
         PreferencesManager.put(context, Constant.DEVICES, features.getDeviceId(), features.toString());
         return features;
     }
@@ -387,13 +386,6 @@ public final class PyEnv {
                     EventBus.getDefault().post(new CreateSuccessEvent(walletBean.getWalletInfo().get(0).getName()));
                     EventBus.getDefault().post(new RefreshEvent());
                 } else {
-                    walletBean.getDerivedInfo().forEach(derivedInfoBean -> {
-                        BalanceInfo info = new BalanceInfo();
-                        info.setBalance(derivedInfoBean.getBlance());
-                        info.setLabel(derivedInfoBean.getLabel());
-                        info.setName(derivedInfoBean.getName());
-                        infos.add(info);
-                    });
                     // HD 根钱包
                     Optional.ofNullable(walletBean.getWalletInfo()).ifPresent((walletInfos -> {
                         walletInfos.forEach((walletInfo -> {
@@ -405,6 +397,13 @@ public final class PyEnv {
                             infos.add(info);
                         }));
                     }));
+                    walletBean.getDerivedInfo().forEach(derivedInfoBean -> {
+                        BalanceInfo info = new BalanceInfo();
+                        info.setBalance(derivedInfoBean.getBlance());
+                        info.setLabel(derivedInfoBean.getLabel());
+                        info.setName(derivedInfoBean.getName());
+                        infos.add(info);
+                    });
                     EventBus.getDefault().post(new FindOnceWalletEvent<>(infos));
                 }
             } catch (Exception e) {

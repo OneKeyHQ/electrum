@@ -6,8 +6,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.haobtc.onekey.R;
@@ -35,19 +37,6 @@ public class OnceWalletAdapter extends RecyclerView.Adapter<OnceWalletAdapter.Vi
         return selectMap;
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tetWalletName, textWalletBalance;
-        CheckBox checkbox;
-
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-            tetWalletName = itemView.findViewById(R.id.text_wallet_name);
-            textWalletBalance = itemView.findViewById(R.id.text_wallet_balance);
-            checkbox = itemView.findViewById(R.id.check_wallet);
-            checkbox.setChecked(true);
-        }
-    }
-
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -60,11 +49,34 @@ public class OnceWalletAdapter extends RecyclerView.Adapter<OnceWalletAdapter.Vi
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.tetWalletName.setText(walletList.get(position).getLabel());
         holder.textWalletBalance.setText(walletList.get(position).getBalance());
+        if ("BTC-1".equals(walletList.get(position).getLabel())) {
+            holder.checkbox.setBackground(ContextCompat.getDrawable(context, R.drawable.gray_not_check));
+            holder.checkbox.setChecked(true);
+            holder.checkbox.setOnCheckedChangeListener(((buttonView, isChecked) ->
+            {
+                if (!isChecked) {
+                    buttonView.setChecked(true);
+                }
+                Toast.makeText(context, R.string.not_allow_un_check, Toast.LENGTH_SHORT).show();
+            }));
+        }
         selectMap.put(walletList.get(position).getName(), holder.checkbox);
     }
 
     @Override
     public int getItemCount() {
         return walletList.size();
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        TextView tetWalletName, textWalletBalance;
+        CheckBox checkbox;
+
+        public ViewHolder(@NonNull View itemView) {
+            super(itemView);
+            tetWalletName = itemView.findViewById(R.id.text_wallet_name);
+            textWalletBalance = itemView.findViewById(R.id.text_wallet_balance);
+            checkbox = itemView.findViewById(R.id.check_wallet);
+        }
     }
 }

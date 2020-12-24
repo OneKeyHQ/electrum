@@ -1323,8 +1323,8 @@
     <string name="input_on_app">App 上输入</string>
     <string name="un_init_device_support_less">设备未激活不支持该操作</string>
     <string name="select_correct_item_in_device_list">当前选择设备的设备ID与所连接的设备ID不符，请在设备列表选择正确的项目</string>
-    <string name="device_id_about">关于设备ID</string>
-    <string name="device_id_about_details">您在【全部设备】列表中选择的设备与所连接设备的设备ID不符\n 造成这种情况的可能原因是您的设备进行过恢复出厂设置\n这个会导致我们展示的设备状态与您的设备的真实状态有差异\n请您回到【全部设备】重新选择</string>
+    <string name="device_id_about">设备 ID 不一致</string>
+    <string name="device_id_about_details">检测到当前连接设备的设备 ID 发生了变化，可能是因为该设备曾进行过重置。这将导致此刻展示的设备状态与您的设备真实状态有差异。请退回到上一页重新选择。</string>
     <string name="input_pin_on_device">在设备上输入 PIN 码</string>
     <string name="input_pin_on_device_">请在您的硬件设备上完成 PIN 码的输入。</string>
     <string name="pass_change_success">密码修改成功</string>
@@ -1341,4 +1341,8 @@
     <string name="delete_hd_derived_confirm">同时删除根 HD 钱包</string>
     <string name="reset_ok">重置App成功</string>
     <string name="reset_failure">重置失败，请重试</string>
+
+    <string name="unknown_version">未知版本</string>
+    <string name="not_found_once_wallet">没有钱包</string>
+    <string name="not_allow_un_check">该项不可取消</string>
 </resources>

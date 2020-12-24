@@ -268,7 +268,10 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
         String errors = response.getErrors();
         if (Strings.isNullOrEmpty(errors)) {
             features = response.getResult();
-            if (!deviceId.equals(features.getDeviceId())) {
+            if (!deviceId.equals(features.getDeviceId()) && !features.isBootloaderMode()) {
+                new InvalidDeviceIdWarningDialog().show(getSupportFragmentManager(), "");
+                return;
+            } else if (features.isBootloaderMode() && !PyConstant.FIRMWARE_UPDATE.equals(currentMethod)) {
                 new InvalidDeviceIdWarningDialog().show(getSupportFragmentManager(), "");
                 return;
             }
@@ -304,7 +307,9 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
                 new Handler().postDelayed(this::verifyHardware, 2000);
                 break;
             case PyConstant.FIRMWARE_UPDATE:
-                getUpdateInfo();
+                if (hasWindowFocus()) {
+                    getUpdateInfo();
+                }
                 break;
             default:
         }

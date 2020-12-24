@@ -400,11 +400,12 @@ public class HardwareUpgradeActivity extends BaseActivity {
 
         @Override
         protected void onProgressUpdate(Object... progresses) {
-            if (fragment.getProgressBar().isIndeterminate()) {
-                fragment.getProgressBar().setIndeterminate(false);
-                EventBus.getDefault().post(new ExitEvent());
+            if (fragment.getProgressBar() != null) {
+                if (fragment.getProgressBar().isIndeterminate()) {
+                    fragment.getProgressBar().setIndeterminate(false);
+                }
+                fragment.getProgressBar().setProgress(Integer.parseInt(((progresses[0]).toString())));
             }
-            fragment.getProgressBar().setProgress(Integer.parseInt(((progresses[0]).toString())));
         }
 
         @Override
