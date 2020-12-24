@@ -55,6 +55,8 @@ public class TransactionInfoBean implements Serializable {
     private List<InputAddrBean> inputAddr;
     @SerializedName("cosigner")
     private List<String> cosigner;
+    @SerializedName("show_status")
+    private List<Object> showStatus;
 
     public String getTxid() {
         return txid;
@@ -150,6 +152,14 @@ public class TransactionInfoBean implements Serializable {
 
     public void setCosigner(List<String> cosigner) {
         this.cosigner = cosigner;
+    }
+
+    public List<Object> getShowStatus() {
+        return showStatus;
+    }
+
+    public void setShowStatus(List<Object> showStatus) {
+        this.showStatus = showStatus;
     }
 
     public static class OutputAddrBean {
