@@ -1594,7 +1594,7 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
                 msg = str(e)
                 print(f"wallet:L1510======={e}======")
                 if isinstance(e, UserCancelled):
-                    raise BaseException(_("User cancellation of operations"))
+                    raise BaseException(_("Operation cancelled"))
                 if -1 != msg.find("sign success"):
                     break
                 if -1 != msg.find("Can't Pair With You Device When Sign tx"):

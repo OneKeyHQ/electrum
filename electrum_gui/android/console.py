@@ -1261,6 +1261,7 @@ class AndroidCommands(commands.Commands):
         else:
             amount_str = self.format_amount_and_units(tx_details.amount)
 
+        block_height = tx_details.tx_mined_status.height
         ret_data = {
             'txid': tx_details.txid,
             'can_broadcast': tx_details.can_broadcast,
@@ -1271,9 +1272,10 @@ class AndroidCommands(commands.Commands):
             'sign_status': [s, r],
             'output_addr': out_list,
             'input_addr': in_list,
-            'height': tx_details.tx_mined_status.height,
+            'height': block_height,
             'cosigner': [x.xpub if not isinstance(x, Imported_KeyStore) else "" for x in self.wallet.get_keystores()],
-            'tx': str(tx)
+            'tx': str(tx),
+            'show_status':_("Unconfirmed") if block_height == 0 else _("Sending failure") if block_height < 0 else _("Confirmed") if block_height > 0 else ""
         }
         json_data = json.dumps(ret_data)
         return json_data
@@ -1393,9 +1395,15 @@ class AndroidCommands(commands.Commands):
                 data = json.loads(data)
                 i['address'] = self.get_show_addr(data['output_addr'][0]['addr'])
                 amount = data['amount'].split(" ")[0]
+                if amount[0] == '-':
+                    amount = amount[1:]
                 fee = data['fee'].split(" ")[0]
                 fait = self.daemon.fx.format_amount_and_units(float(amount) + float(fee)) if self.daemon.fx else None
-                i['amount'] = '%f %s (%s)' % (float(amount) + float(fee), self.base_unit, fait)
+                show_amount = '%.8f' %(float(amount) + float(fee))
+                show_amount = str(show_amount).rstrip('0')
+                if show_amount[-1] == '.':
+                    show_amount = show_amount[0:-1]
+                i['amount'] = '%s %s (%s)' % (show_amount, self.base_unit, fait)
                 all_data.append(i)
 
             all_data.sort(reverse=True, key=lambda info: info['date'])
@@ -2225,7 +2233,7 @@ class AndroidCommands(commands.Commands):
             # self.check_pw_wallet = wallet
             wallet_type = 'eth-hd-standard-hw'
         self.update_local_wallet_info(self.get_unique_path(wallet), wallet_type)
-
+    
     ####################################################
     ## app wallet
     # def export_keystore(self, password):
@@ -2596,6 +2604,9 @@ class AndroidCommands(commands.Commands):
                     ecc.ECPrivkey(bfh(privkeys))
                     keys = [privkeys]
                 except BaseException as e:
+                    addr_type = 'p2pkh' if purpose==44 else 'p2wpkh' if purpose==84 else 'p2wpkh-p2sh' if purpose==49 else ""
+                    if addr_type != "":
+                        privkeys = '%s:%s' %(addr_type, privkeys)
                     keys = keystore.get_private_keys(privkeys, allow_spaces_inside_key=False)
                     if keys is None:
                         raise BaseException(UnavailablePrivateKey())
