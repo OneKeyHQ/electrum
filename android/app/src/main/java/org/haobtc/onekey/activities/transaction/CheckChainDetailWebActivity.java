@@ -85,6 +85,7 @@ public class CheckChainDetailWebActivity extends BaseActivity implements NetBroa
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         blockServerLine = preferences.getString("blockServerLine", "https://btc.com/");
         myDialog = MyDialog.showDialog(CheckChainDetailWebActivity.this);
+        myDialog.onTouchOutside(true);
         myDialog.show();
         Intent intent = getIntent();
         String loadWhere = intent.getStringExtra("loadWhere");

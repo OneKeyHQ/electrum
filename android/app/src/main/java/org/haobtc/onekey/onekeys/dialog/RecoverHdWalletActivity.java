@@ -292,6 +292,7 @@ public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocu
         super.onResume();
         if (showLoading) {
             myDialog.show();
+            myDialog.onTouchOutside(false);
         }
     }
 

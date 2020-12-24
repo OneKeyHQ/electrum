@@ -420,9 +420,9 @@ public final class PyEnv {
      *
      * @param nameList 要恢复钱包的名称列表
      */
-    public static boolean recoveryConfirm(List<String> nameList) {
+    public static boolean recoveryConfirm(List<String> nameList, boolean isHw) {
         try {
-            sCommands.callAttr(PyConstant.RECOVERY_CONFIRM, new Gson().toJson(nameList), true);
+            sCommands.callAttr(PyConstant.RECOVERY_CONFIRM, new Gson().toJson(nameList), isHw);
             return true;
         } catch (Exception e) {
             e.printStackTrace();

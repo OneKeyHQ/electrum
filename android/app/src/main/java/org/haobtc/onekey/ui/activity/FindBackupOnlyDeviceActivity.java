@@ -132,7 +132,7 @@ public class FindBackupOnlyDeviceActivity extends BaseActivity implements Busine
      * */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onRecovery(SelectedEvent event) {
-        boolean success = PyEnv.recoveryConfirm(event.getNameList());
+        boolean success = PyEnv.recoveryConfirm(event.getNameList(), false);
         if (!success) {
             showToast(R.string.recovery_failed);
         } else {

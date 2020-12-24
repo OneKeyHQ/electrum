@@ -83,7 +83,7 @@ public class RecoveryHardwareOnceWallet extends BaseActivity implements Business
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onRecovery(SelectedEvent event) {
-        boolean success = PyEnv.recoveryConfirm(event.getNameList());
+        boolean success = PyEnv.recoveryConfirm(event.getNameList(), true);
         if (!success) {
             showToast(R.string.recovery_failed);
         } else {

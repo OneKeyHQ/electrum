@@ -14,7 +14,7 @@ import org.haobtc.onekey.R;
 
 public class MyDialog extends Dialog {
     private Context context;
-    private static  MyDialog dialog;
+    private static MyDialog dialog;
     private ImageView ivProgress;
 
     public MyDialog(Context context) {
@@ -25,25 +25,27 @@ public class MyDialog extends Dialog {
     private MyDialog(Context context, int themeResId) {
         super(context, themeResId);
         this.context = context;
-
     }
 
     //check dialog
     public static MyDialog showDialog(Context context) {
         dialog = new MyDialog(context, R.style.MyDialog);//dialog style
         dialog.setContentView(R.layout.dialog_layout);//dialog view file
-        dialog.setCanceledOnTouchOutside(false);//onclick out don't close dialog
         return dialog;
+    }
+
+    //onclick out don't close dialog
+    public void onTouchOutside(boolean flag) {
+        dialog.setCanceledOnTouchOutside(flag);
     }
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        if(hasFocus && dialog != null){
+        if (hasFocus && dialog != null) {
             ivProgress = (ImageView) dialog.findViewById(R.id.ivProgress);
             Animation animation = AnimationUtils.loadAnimation(context, R.anim.dialog_progress_anim);
             ivProgress.startAnimation(animation);
         }
     }
-
 }
