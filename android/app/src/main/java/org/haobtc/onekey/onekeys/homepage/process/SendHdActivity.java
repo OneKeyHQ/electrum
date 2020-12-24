@@ -1,5 +1,6 @@
 package org.haobtc.onekey.onekeys.homepage.process;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
@@ -16,10 +17,14 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.google.common.base.Strings;
 import com.lxj.xpopup.XPopup;
+import com.tbruyelle.rxpermissions2.RxPermissions;
+import com.yzq.zxinglibrary.android.CaptureActivity;
+import com.yzq.zxinglibrary.bean.ZxingConfig;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -29,9 +34,11 @@ import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.asynctask.BusinessAsyncTask;
 import org.haobtc.onekey.bean.CurrentFeeDetails;
+import org.haobtc.onekey.bean.MainSweepcodeBean;
 import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.bean.TemporaryTxInfo;
 import org.haobtc.onekey.bean.TransactionInfoBean;
+import org.haobtc.onekey.business.qrdecode.QRDecode;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.PyConstant;
 import org.haobtc.onekey.event.ButtonRequestConfirmedEvent;
@@ -55,6 +62,7 @@ import org.haobtc.onekey.ui.widget.PointLengthFilter;
 import org.haobtc.onekey.utils.ClipboardUtils;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -63,6 +71,13 @@ import butterknife.OnClick;
 import butterknife.OnFocusChange;
 import butterknife.OnTextChanged;
 import dr.android.utils.LogUtil;
+import io.reactivex.functions.Consumer;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.ObservableOnSubscribe;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 import static org.haobtc.onekey.constant.Constant.CURRENT_CURRENCY_GRAPHIC_SYMBOL;
 import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
@@ -82,6 +97,8 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     EditText editAmount;
     @BindView(R.id.btn_next)
     Button btnNext;
+    @BindView(R.id.img_scan)
+    ImageView imgScan;
     @BindView(R.id.checkbox_slow)
     CheckBox checkboxSlow;
     @BindView(R.id.view_slow)
@@ -148,6 +165,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     LinearLayout linearCustomize;
     private int screenHeight;
     private boolean mIsSoftKeyboardShowing;
+    private RxPermissions rxPermissions;
     private SharedPreferences preferences;
     private String hdWalletName;
     private String baseUnit;
@@ -184,11 +202,16 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     private double normalRate;
     private double fastRate;
 
+    private static final int REQUEST_SCAN_CODE = 0;
+
+    private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
+
     /**
      * init
      */
     @Override
     public void init() {
+        rxPermissions = new RxPermissions(this);
         hdWalletName = getIntent().getStringExtra("hdWalletName");
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         balance = getIntent().getStringExtra(WALLET_BALANCE);
@@ -202,7 +225,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         setMinAmount();
         editAmount.setFilters(new InputFilter[]{new PointLengthFilter(8, new PointLengthFilter.onMaxListener() {
             @Override
-            public void onMax (int maxNum) {
+            public void onMax(int maxNum) {
                 showToast(R.string.accuracy_num);
             }
         })});
@@ -273,7 +296,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         }
     }
 
-    @OnClick({R.id.img_back, R.id.switch_coin_type, R.id.text_max_amount, R.id.text_customize_fee_rate, R.id.linear_slow, R.id.linear_recommend, R.id.linear_fast, R.id.text_rollback, R.id.btn_next, R.id.paste_address})
+    @OnClick({R.id.img_back, R.id.switch_coin_type, R.id.text_max_amount, R.id.text_customize_fee_rate, R.id.linear_slow, R.id.linear_recommend, R.id.linear_fast, R.id.text_rollback, R.id.btn_next, R.id.paste_address, R.id.img_scan})
     @SingleClick
     public void onViewClicked(View view) {
         switch (view.getId()) {
@@ -358,6 +381,27 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                 break;
             case R.id.btn_next:
                 send();
+                break;
+            case R.id.img_scan:
+                rxPermissions
+                        .request(Manifest.permission.CAMERA)
+                        .subscribe(granted -> {
+                            if (granted) {
+                                // If you have already authorized it, you can directly jump to the QR code scanning interface
+                                Intent intent2 = new Intent(getActivity(), CaptureActivity.class);
+                                ZxingConfig config = new ZxingConfig();
+                                config.setPlayBeep(true);
+                                config.setShake(true);
+                                config.setDecodeBarCode(false);
+                                config.setFullScreenScan(true);
+                                config.setShowAlbum(false);
+                                config.setShowbottomLayout(false);
+                                intent2.putExtra(com.yzq.zxinglibrary.common.Constant.INTENT_ZXING_CONFIG, config);
+                                startActivityForResult(intent2, REQUEST_SCAN_CODE);
+                            } else {
+                                Toast.makeText(getActivity(), R.string.photopersion, Toast.LENGTH_SHORT).show();
+                            }
+                        });
                 break;
             default:
                 break;
@@ -455,7 +499,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
      * 计算最大可用余额
      */
 
-    private void calculateMaxSpendableAmount () {
+    private void calculateMaxSpendableAmount() {
         PyResponse<TemporaryTxInfo> pyResponse = PyEnv.getFeeByFeeRate(editReceiverAddress.getText().toString(), "!", String.valueOf(currentFeeRate));
         String errorMsg = pyResponse.getErrors();
         if (Strings.isNullOrEmpty(errorMsg)) {
@@ -775,7 +819,75 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     }
 
     @Override
-    protected void onPause () {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Scan QR code return
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_SCAN_CODE && resultCode == RESULT_OK) {
+            if (data != null) {
+                String content = data.getStringExtra(com.yzq.zxinglibrary.common.Constant.CODED_CONTENT);
+                Disposable disposable = Observable
+                        .create((ObservableOnSubscribe<MainSweepcodeBean.DataBean>) emitter -> {
+                            MainSweepcodeBean.DataBean dataBean = new QRDecode().decodeAddress(content);
+                            if (dataBean == null) {
+                                emitter.onError(new RuntimeException("Parse failure"));
+                            } else {
+                                emitter.onNext(dataBean);
+                            }
+                            emitter.onComplete();
+                        })
+                        .map(dataBean -> {
+                            BigDecimal amountBigDecimal;
+                            if (TextUtils.isEmpty(dataBean.getAmount())) {
+                                amountBigDecimal = new BigDecimal("0");
+                            } else {
+                                try {
+                                    amountBigDecimal = new BigDecimal(dataBean.getAmount());
+                                } catch (NumberFormatException e) {
+                                    amountBigDecimal = new BigDecimal("0");
+                                }
+                            }
+
+                            if (amountBigDecimal.equals(BigDecimal.ZERO)) {
+                                return dataBean;
+                            }
+                            int scale;
+                            switch (baseUnit) {
+                                case Constant.BTC_UNIT_BTC:
+                                    scale = 8;
+                                    break;
+                                case Constant.BTC_UNIT_M_BTC:
+                                    scale = 5;
+                                    break;
+                                case Constant.BTC_UNIT_M_BITS:
+                                    scale = 2;
+                                    break;
+                                default:
+                                    scale = 0;
+                            }
+
+                            String amountStr = amountBigDecimal.setScale(scale, RoundingMode.DOWN).stripTrailingZeros().toPlainString();
+                            dataBean.setAmount(amountStr);
+                            return dataBean;
+                        })
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(output -> {
+                            editReceiverAddress.setText(output.getAddress());
+                            if (null != output && !TextUtils.isEmpty(output.getAmount())) {
+                                editAmount.setText(output.getAmount());
+                            }
+                            getAddressIsValid();
+                        }, e -> {
+                            e.printStackTrace();
+                            showToast(R.string.invalid_address);
+                        });
+                mCompositeDisposable.add(disposable);
+            }
+        }
+    }
+
+    @Override
+    protected void onPause() {
         super.onPause();
         isResume = false;
     }
@@ -957,5 +1069,6 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
+        mCompositeDisposable.clear();
     }
 }
