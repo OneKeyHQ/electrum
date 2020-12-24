@@ -1275,7 +1275,7 @@ class AndroidCommands(commands.Commands):
             'height': block_height,
             'cosigner': [x.xpub if not isinstance(x, Imported_KeyStore) else "" for x in self.wallet.get_keystores()],
             'tx': str(tx),
-            'show_status':_("Unconfirmed") if block_height == 0 else _("Sending failure") if block_height < 0 else _("Confirmed") if block_height > 0 else ""
+            'show_status':[1, _("Unconfirmed")] if block_height == 0 else [2, _("Sending failure")] if block_height < 0 else [3, _("Confirmed")]
         }
         json_data = json.dumps(ret_data)
         return json_data
