@@ -1,7 +1,5 @@
 package org.haobtc.onekey.onekeys.homepage.mindmenu;
-
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
@@ -116,7 +114,7 @@ public class DeleteWalletActivity extends BaseActivity implements CompoundButton
     private void deleteOtherWallet() {
         if ("deleteSingleWallet".equals(importHdword) && !isBackup) {
             // 没备份提示备份
-            new BackupRequireDialog().show(getSupportFragmentManager(), "backup_require");
+            new BackupRequireDialog(mContext).show(getSupportFragmentManager(), "backup_require");
             return;
         }
         startActivity(new Intent(this, SoftPassActivity.class));

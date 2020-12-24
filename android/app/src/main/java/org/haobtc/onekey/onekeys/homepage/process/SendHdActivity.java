@@ -1,22 +1,12 @@
 package org.haobtc.onekey.onekeys.homepage.process;
-
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.graphics.Rect;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.Display;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -25,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.alibaba.fastjson.JSON;
 import com.google.common.base.Strings;
 
 import org.greenrobot.eventbus.EventBus;
@@ -47,20 +38,17 @@ import org.haobtc.onekey.event.CustomizeFeeRateEvent;
 import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.event.GetFeeEvent;
 import org.haobtc.onekey.event.GotPassEvent;
-import org.haobtc.onekey.event.InputPassSendEvent;
 import org.haobtc.onekey.event.SecondEvent;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.ui.activity.SoftPassActivity;
 import org.haobtc.onekey.ui.activity.VerifyPinActivity;
 import org.haobtc.onekey.ui.base.BaseActivity;
-import org.haobtc.onekey.ui.dialog.BackupDialog;
 import org.haobtc.onekey.ui.dialog.CustomizeFeeDialog;
 import org.haobtc.onekey.ui.dialog.TransactionConfirmDialog;
 import org.haobtc.onekey.ui.dialog.UnBackupTipDialog;
 import org.haobtc.onekey.utils.ClipboardUtils;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -68,10 +56,10 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import butterknife.OnFocusChange;
 import butterknife.OnTextChanged;
+import dr.android.utils.LogUtil;
 
 import static org.haobtc.onekey.constant.Constant.CURRENT_CURRENCY_GRAPHIC_SYMBOL;
 import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
-import static org.haobtc.onekey.constant.Constant.NEED_POP_BACKUP_DIALOG;
 import static org.haobtc.onekey.constant.Constant.WALLET_BALANCE;
 
 /**
@@ -167,11 +155,9 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     private String tempFastTransaction;
     private String tempSlowTransaction;
     private String tempRecommendTransaction;
-    private String tempCustomizeTransaction;
     private int transactionSize;
     private double currentFeeRate;
     private double previousFeeRate;
-    private String previousTempTransaction;
     private BigDecimal minAmount;
     private BigDecimal decimalBalance;
     private int scale;
@@ -181,16 +167,23 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     private boolean isFeeValid;
     private String amounts;
     private int customSize;
+    private boolean isCustom;
+    private boolean isSetBig;
+    private String balance;
+    private BigDecimal maxAmount;
+    // 保存当前的选中位置，默认是推荐
+    private int selectFlag = 0;
+    private boolean isResume;
 
     /**
      * init
      */
     @Override
-    public void init() {
+    public void init () {
         hdWalletName = getIntent().getStringExtra("hdWalletName");
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-        String balance = getIntent().getStringExtra(WALLET_BALANCE);
-        if (!TextUtils.isEmpty(balance)) {
+        balance = getIntent().getStringExtra(WALLET_BALANCE);
+        if (!Strings.isNullOrEmpty(balance)) {
             decimalBalance = BigDecimal.valueOf(Double.parseDouble(balance));
         }
         showWalletType = preferences.getString(CURRENT_SELECTED_WALLET_TYPE, "");
@@ -233,15 +226,15 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     private void setMinAmount() {
         switch (baseUnit) {
             case Constant.BTC_UNIT_BTC:
-                minAmount = BigDecimal.valueOf(0.00000001);
+                minAmount = BigDecimal.valueOf(0.00000546);
                 scale = 8;
                 break;
             case Constant.BTC_UNIT_M_BTC:
-                minAmount = BigDecimal.valueOf(0.00001);
+                minAmount = BigDecimal.valueOf(0.00546);
                 scale = 5;
                 break;
             case Constant.BTC_UNIT_M_BITS:
-                minAmount = BigDecimal.valueOf(0.01);
+                minAmount = BigDecimal.valueOf(5.46);
                 scale = 2;
                 break;
         }
@@ -261,8 +254,8 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                 if (Strings.isNullOrEmpty(editReceiverAddress.getText().toString())) {
                     showToast(R.string.input_number);
                 } else {
-                    calculateMaxSpendableAmount(currentFeeRate);
-                    changeButton();
+                    isSetBig = true;
+                    calculateMaxSpendableAmount(currentFeeRate, false);
                 }
                 break;
             case R.id.text_customize_fee_rate:
@@ -270,54 +263,54 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                     Bundle bundle = new Bundle();
                     bundle.putDouble(Constant.CUSTOMIZE_FEE_RATE_MIN, currentFeeDetails.getSlow().getFeerate());
                     bundle.putDouble(Constant.CUSTOMIZE_FEE_RATE_MAX, currentFeeDetails.getFast().getFeerate() * 20);
-                    bundle.putInt(Constant.TAG_TX_SIZE, customSize);
+                    bundle.putInt(Constant.TAG_TX_SIZE, transactionSize);
                     feeDialog = new CustomizeFeeDialog();
                     feeDialog.setArguments(bundle);
                     feeDialog.show(getSupportFragmentManager(), "customize_fee");
                 }
                 break;
             case R.id.linear_slow:
-                if (sendReady()) {
-                    viewSlow.setVisibility(View.VISIBLE);
-                    viewRecommend.setVisibility(View.GONE);
-                    viewFast.setVisibility(View.GONE);
-                    checkboxSlow.setVisibility(View.VISIBLE);
-                    checkboxRecommend.setVisibility(View.GONE);
-                    checkboxFast.setVisibility(View.GONE);
-                    currentFeeRate = currentFeeDetails.getSlow().getFeerate();
-                    currentTempTransaction = tempSlowTransaction;
-                }
+                viewSlow.setVisibility(View.VISIBLE);
+                viewRecommend.setVisibility(View.GONE);
+                viewFast.setVisibility(View.GONE);
+                checkboxSlow.setVisibility(View.VISIBLE);
+                checkboxRecommend.setVisibility(View.GONE);
+                checkboxFast.setVisibility(View.GONE);
+                currentFeeRate = currentFeeDetails.getSlow().getFeerate();
+                currentTempTransaction = tempSlowTransaction;
+                selectFlag = SLOW_FEE_RATE;
                 break;
             case R.id.linear_recommend:
-                if (sendReady()) {
-                    viewSlow.setVisibility(View.GONE);
-                    viewRecommend.setVisibility(View.VISIBLE);
-                    viewFast.setVisibility(View.GONE);
-                    checkboxSlow.setVisibility(View.GONE);
-                    checkboxRecommend.setVisibility(View.VISIBLE);
-                    checkboxFast.setVisibility(View.GONE);
-                    currentFeeRate = currentFeeDetails.getNormal().getFeerate();
-                    currentTempTransaction = tempRecommendTransaction;
-                }
+                viewSlow.setVisibility(View.GONE);
+                viewRecommend.setVisibility(View.VISIBLE);
+                viewFast.setVisibility(View.GONE);
+                checkboxSlow.setVisibility(View.GONE);
+                checkboxRecommend.setVisibility(View.VISIBLE);
+                checkboxFast.setVisibility(View.GONE);
+                currentFeeRate = currentFeeDetails.getNormal().getFeerate();
+                currentTempTransaction = tempRecommendTransaction;
+                selectFlag = RECOMMENDED_FEE_RATE;
                 break;
             case R.id.linear_fast:
-                if (sendReady()) {
-                    viewSlow.setVisibility(View.GONE);
-                    viewRecommend.setVisibility(View.GONE);
-                    viewFast.setVisibility(View.VISIBLE);
-                    checkboxSlow.setVisibility(View.GONE);
-                    checkboxRecommend.setVisibility(View.GONE);
-                    checkboxFast.setVisibility(View.VISIBLE);
-                    currentFeeRate = currentFeeDetails.getFast().getFeerate();
-                    currentTempTransaction = tempFastTransaction;
-                }
+                viewSlow.setVisibility(View.GONE);
+                viewRecommend.setVisibility(View.GONE);
+                viewFast.setVisibility(View.VISIBLE);
+                checkboxSlow.setVisibility(View.GONE);
+                checkboxRecommend.setVisibility(View.GONE);
+                checkboxFast.setVisibility(View.VISIBLE);
+                currentFeeRate = currentFeeDetails.getFast().getFeerate();
+                currentTempTransaction = tempFastTransaction;
+                selectFlag = FAST_FEE_RATE;
                 break;
             case R.id.text_rollback:
                 turnOffCustomize();
                 break;
             case R.id.paste_address:
                 editReceiverAddress.setText(ClipboardUtils.pasteText(this));
-                editReceiverAddress.requestFocus();
+                getAddressIsValid();
+                if (!mIsSoftKeyboardShowing) {
+                    keyBoardHideRefresh();
+                }
                 break;
             case R.id.btn_next:
                 send();
@@ -331,10 +324,11 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
      * 取消自定义费率
      */
     private void turnOffCustomize() {
+        isCustom = false;
         linearRateSelector.setVisibility(View.VISIBLE);
         linearCustomize.setVisibility(View.GONE);
         currentFeeRate = previousFeeRate;
-        currentTempTransaction = previousTempTransaction;
+        refreshFeeView();
     }
 
     /**
@@ -363,6 +357,8 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         String errors = response.getErrors();
         if (Strings.isNullOrEmpty(errors)) {
             currentFeeDetails = CurrentFeeDetails.objectFromDate(response.getResult());
+            transactionSize = currentFeeDetails.getFast().getSize();
+            LogUtil.d(" 获取详情-->" + JSON.toJSONString(currentFeeDetails));
             initFeeSelectorStatus();
         } else {
             showToast(R.string.get_fee_info_failed);
@@ -415,19 +411,26 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     /**
      * 计算最大可用余额
      */
-    private void calculateMaxSpendableAmount(double feeRate) {
-        BigDecimal decimalFee = new BigDecimal(feeRate).multiply(BigDecimal.valueOf(transactionSize == 0 ?
-                DEFAULT_TX_SIZE : transactionSize)).multiply(minAmount);
-        BigDecimal maxAmount = decimalBalance.subtract(decimalFee);
-        if (maxAmount.compareTo(BigDecimal.ZERO) <= 0) {
-            showToast(R.string.insufficient);
-        } else {
-            maxAmount = maxAmount.setScale(scale, RoundingMode.HALF_EVEN);
-            editAmount.requestFocus();
-            editAmount.setText(maxAmount.toPlainString());
-            editAmount.clearFocus();
+    private void calculateMaxSpendableAmount (double feeRate, boolean judgeBig) {
+        PyResponse<TemporaryTxInfo> pyResponse = PyEnv.getFeeByFeeRate(editReceiverAddress.getText().toString(), "!", String.valueOf(feeRate));
+        if (Strings.isNullOrEmpty(pyResponse.getErrors())) {
+            TemporaryTxInfo temporaryTxInfo = pyResponse.getResult();
+            maxAmount = BigDecimal.valueOf(Double.parseDouble(balance)).subtract(BigDecimal.valueOf(temporaryTxInfo.getFee()));
+            if (judgeBig) {
+                if (!Strings.isNullOrEmpty(amount) && Double.parseDouble(amount) > 0) {
+                    BigDecimal decimal = BigDecimal.valueOf(Double.parseDouble(amount));
+                    if (decimal.compareTo(decimalBalance) >= 0) {
+                        editAmount.setText(maxAmount.toPlainString());
+                    }
+                }
+            } else {
+                editAmount.setText(maxAmount.toPlainString());
+                refreshFeeView();
+            }
+            editAmount.setFocusable(true);
         }
     }
+
 
     /**
      * 发送交易
@@ -518,14 +521,15 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         if (Constant.WALLET_TYPE_HARDWARE.equals(showWalletType)) {
             TransactionInfoBean info = TransactionInfoBean.objectFromData(signedTx);
             broadcastTx(info.getTx());
-        } else {
+        } else { // TODO: 2020/12/23
             // 获取主密码
             startActivity(new Intent(this, SoftPassActivity.class));
         }
     }
 
     private boolean getFee(String feeRate, int type) {
-        PyResponse<TemporaryTxInfo> pyResponse = PyEnv.getFeeByFeeRate(editReceiverAddress.getText().toString(), amount, feeRate);
+        PyResponse<TemporaryTxInfo> pyResponse = PyEnv.getFeeByFeeRate(editReceiverAddress.getText().toString(), isSetBig ? "!" : amount, feeRate);
+        LogUtil.d("请求：", "=========" + amount + "--->" + isSetBig);
         String errors = pyResponse.getErrors();
         if (Strings.isNullOrEmpty(errors)) {
             TemporaryTxInfo temporaryTxInfo = pyResponse.getResult();
@@ -546,7 +550,9 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                         return false;
                     }
                     tempRecommendTransaction = temp;
-                    currentTempTransaction = tempRecommendTransaction;
+                    if (selectFlag == RECOMMENDED_FEE_RATE) {
+                        currentTempTransaction = temp;
+                    }
                     return true;
                 case SLOW_FEE_RATE:
                     textSpendTime0.setText(String.format("%s%s%s", getString(R.string.about_), time + "", getString(R.string.minute)));
@@ -558,6 +564,9 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                     } else {
 //                        showToast(errors0);
                         return false;
+                    }
+                    if (selectFlag == SLOW_FEE_RATE) {
+                        currentTempTransaction = temp;
                     }
                     tempSlowTransaction = temp;
                     return true;
@@ -572,23 +581,31 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
 //                        showToast(errors2);
                         return false;
                     }
+                    if (selectFlag == FAST_FEE_RATE) {
+                        currentTempTransaction = temp;
+                    }
                     tempFastTransaction = temp;
                     return true;
                 case CUSTOMIZE_FEE_RATE:
                     textCustomizeSpendTime.setText(String.format("%s%s%s", getString(R.string.about_), time + "", getString(R.string.minute)));
-                    feeDialog.getTextTime().setText(String.format("%s %s", time, getString(R.string.minute)));
                     textFeeCustomizeInBtc.setText(String.format(Locale.ENGLISH, "%s %s", fee, baseUnit));
-                    feeDialog.getTextFeeInBtc().setText(String.format(Locale.ENGLISH, "%s %s", fee, baseUnit));
+                    if (feeDialog.isVisible()) {
+                        feeDialog.getTextTime().setText(String.format("%s %s", time, getString(R.string.minute)));
+                        feeDialog.getTextFeeInBtc().setText(String.format(Locale.ENGLISH, "%s %s", fee, baseUnit));
+                    }
                     PyResponse<String> response3 = PyEnv.exchange(fee);
                     String errors3 = response3.getErrors();
                     if (Strings.isNullOrEmpty(errors3)) {
+                        String string = String.format(Locale.ENGLISH, "%s %s", currencySymbols, response3.getResult());
                         textFeeCustomizeInCash.setText(String.format(Locale.ENGLISH, "%s %s", currencySymbols, response3.getResult()));
-                        feeDialog.getTextFeeInCash().setText(String.format(Locale.ENGLISH, "%s %s", currencySymbols, response3.getResult()));
+                        if (feeDialog.isVisible()) {
+                            feeDialog.getTextFeeInCash().setText(String.format(Locale.ENGLISH, "%s %s", currencySymbols, response3.getResult()));
+                        }
                     } else {
 //                        showToast(errors3);
                         return false;
                     }
-                    tempCustomizeTransaction = temp;
+                    currentTempTransaction = temp;
                     return true;
                 default:
                     return false;
@@ -616,6 +633,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onCustomizeFee(CustomizeFeeRateEvent event) {
+        isCustom = true;
         linearRateSelector.setVisibility(View.GONE);
         linearCustomize.setVisibility(View.VISIBLE);
         previousFeeRate = currentFeeRate;
@@ -623,8 +641,8 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         textFeeCustomizeInBtc.setText(String.format(Locale.ENGLISH, "%s %s", event.getFee(), preferences.getString("base_unit", "")));
         textFeeCustomizeInCash.setText(String.format(Locale.ENGLISH, "%s %s", preferences.getString(CURRENT_CURRENCY_GRAPHIC_SYMBOL, "¥"), event.getCash()));
         textCustomizeSpendTime.setText(String.format("%s%s%s", getString(R.string.about_), event.getTime(), getString(R.string.minute)));
-        previousTempTransaction = currentTempTransaction;
-        currentTempTransaction = tempCustomizeTransaction;
+//        previousTempTransaction = currentTempTransaction;
+//        currentTempTransaction = tempCustomizeTransaction;
     }
 
     /**
@@ -657,14 +675,8 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
             // If the status of the soft keyboard was previously displayed, it is now closed, or it was previously closed, it is now displayed, it means that the status of the soft keyboard has changed
             if ((mIsSoftKeyboardShowing && !isKeyboardShowing) || (!mIsSoftKeyboardShowing && isKeyboardShowing)) {
                 mIsSoftKeyboardShowing = isKeyboardShowing;
-                if (!mIsSoftKeyboardShowing) {
-                    if (editAmount.getText().toString().endsWith(".")) {
-                        amount = editAmount.getText().toString().substring(0, editAmount.getText().toString().length() - 1);
-                    } else {
-                        amount = editAmount.getText().toString();
-                    }
-                    refreshFeeView();
-                    changeButton();
+                if (!mIsSoftKeyboardShowing && isResume) {
+                    keyBoardHideRefresh();
                 }
             }
         };
@@ -672,19 +684,65 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         getWindow().getDecorView().getViewTreeObserver().addOnGlobalLayoutListener(mLayoutChangeListener);
     }
 
-    /**
-     * 收币地址输入框实时监听
-     */
-    @OnFocusChange(value = R.id.edit_receiver_address)
-    public void onFocusChanged(boolean focused) {
-        if (!focused) {
-            String address = editReceiverAddress.getText().toString();
-            if (!Strings.isNullOrEmpty(address)) {
-                addressInvalid = PyEnv.verifyAddress(address);
-                if (!addressInvalid) {
-                    editReceiverAddress.setText("");
-                    showToast(R.string.invalid_address);
+    private void keyBoardHideRefresh () {
+        if (editAmount.getText().toString().endsWith(".")) {
+            amount = editAmount.getText().toString().substring(0, editAmount.getText().toString().length() - 1).trim();
+        } else {
+            amount = editAmount.getText().toString().trim();
+        }
+        if (Strings.isNullOrEmpty(editReceiverAddress.getText().toString().trim())) {
+            showToast(R.string.input_address);
+            btnNext.setEnabled(false);
+            return;
+        } else {
+            // 收起键盘地址认为 focus，所以再次校验地址正确性
+            getAddressIsValid();
+        }
+        if (Strings.isNullOrEmpty(editAmount.getText().toString().trim())) {
+            showToast(R.string.inoutnum);
+            btnNext.setEnabled(false);
+            return;
+        } else {
+            if (!Strings.isNullOrEmpty(amount) && Double.parseDouble(amount) > 0) {
+                BigDecimal decimal = BigDecimal.valueOf(Double.parseDouble(amount));
+                if (decimal.compareTo(minAmount) < 0) {
+                    String min = String.format(Locale.ENGLISH, "%s", minAmount.stripTrailingZeros().toPlainString());
+                    editAmount.setText(min);
+                    editAmount.setSelection(min.length());
+                } else if (decimal.compareTo(decimalBalance) >= 0) {
+                    if (addressInvalid) {
+                        calculateMaxSpendableAmount(currentFeeRate, true);
+                    }
                 }
+            } else if (Double.parseDouble(editAmount.getText().toString().trim()) == 0) {
+                btnNext.setEnabled(false);
+                return;
+            }
+        }
+        refreshFeeView();
+    }
+
+    @Override
+    protected void onResume () {
+        super.onResume();
+        isResume = true;
+    }
+
+    @Override
+    protected void onPause () {
+        super.onPause();
+        isResume = false;
+    }
+
+    private void getAddressIsValid () {
+        String address = editReceiverAddress.getText().toString();
+        if (!Strings.isNullOrEmpty(address)) {
+            addressInvalid = PyEnv.verifyAddress(address);
+            if (!addressInvalid) {
+                editReceiverAddress.setText("");
+                showToast(R.string.invalid_address);
+            } else {
+                calculateMaxSpendableAmount(currentFeeRate, true);
             }
         }
     }
@@ -693,26 +751,57 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
      * 交易金额实时监听
      */
     @OnTextChanged(value = R.id.edit_amount, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
-    public void onTextChangeAmount(CharSequence sequence) {
-        String amount = sequence.toString();
+    public void onTextChangeAmount (CharSequence sequence) {
+        amount = sequence.toString();
+        if (!String.valueOf(maxAmount).equals(amount)) {
+            isSetBig = false;
+        }
         // 金额以点开头
         if (amount.startsWith(".")) {
             editAmount.setText("");
             return;
         }
         // 地址为空的情况下输入金额
-        if (Strings.isNullOrEmpty(editReceiverAddress.getText().toString()) && !Strings.isNullOrEmpty(amount)) {
-            showToast(R.string.input_address);
-            editAmount.setText("");
-            return;
-        }
+//            if (Strings.isNullOrEmpty(editReceiverAddress.getText().toString()) && !Strings.isNullOrEmpty(amount)) {
+//                showToast(R.string.input_address);
+//                editAmount.setText("");
+//                return;
+//            }
         // 金额不能是负数
-        if (!Strings.isNullOrEmpty(amount) && Double.parseDouble(amount) > 0) {
-            BigDecimal decimal = BigDecimal.valueOf(Double.parseDouble(amount));
-            if (decimal.compareTo(minAmount) < 0) {
-                editAmount.setText(String.format(Locale.ENGLISH, "%s", minAmount.stripTrailingZeros().toPlainString()));
-            } else if (decimal.compareTo(decimalBalance) >= 0) {
-                showToast(R.string.insufficient);
+//        if (!Strings.isNullOrEmpty(amount) && Double.parseDouble(amount) > 0) {
+//            BigDecimal decimal = BigDecimal.valueOf(Double.parseDouble(amount));
+//            if (decimal.compareTo(minAmount) < 0) {
+////                String min = String.format(Locale.ENGLISH, "%s", minAmount.stripTrailingZeros().toPlainString());
+////                editAmount.setText(min);
+////                editAmount.setSelection(min.length());
+//            } else if (decimal.compareTo(decimalBalance) >= 0) {
+////                showToast(R.string.insufficient);
+//                btnNext.setEnabled(false);
+//            }
+//        }
+    }
+
+    @OnFocusChange(value = R.id.edit_receiver_address)
+    public void onFocusChanged (boolean focused) {
+        if (!focused) {
+            getAddressIsValid();
+        }
+    }
+
+    @OnFocusChange(value = R.id.edit_amount)
+    public void onEditAmountFocusChange (boolean focused) {
+        if (!focused) {
+            if (!Strings.isNullOrEmpty(amount) && Double.parseDouble(amount) > 0) {
+                BigDecimal decimal = BigDecimal.valueOf(Double.parseDouble(amount));
+                if (decimal.compareTo(minAmount) < 0) {
+                    String min = String.format(Locale.ENGLISH, "%s", minAmount.stripTrailingZeros().toPlainString());
+                    editAmount.setText(min);
+                    editAmount.setSelection(min.length());
+                } else if (decimal.compareTo(decimalBalance) >= 0) {
+                    if (addressInvalid) {
+                        calculateMaxSpendableAmount(currentFeeRate, true);
+                    }
+                }
             }
         }
     }
@@ -720,18 +809,37 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     /**
      * 获取三种不同费率对应的临时交易
      */
-    private void refreshFeeView() {
+    private void refreshFeeView () {
+        isFeeValid = isCanRefresh();
+        if (isFeeValid) {
+            if (!isCustom) {
+                refreshOther();
+            }
+            changeButton();
+        }
+    }
+
+    private boolean isCanRefresh () {
+        boolean success;
+        if (isCustom) {
+            return getFee(String.valueOf(currentFeeRate), CUSTOMIZE_FEE_RATE);
+        } else {
+            if (currentFeeDetails != null) {
+                double fast = currentFeeDetails.getFast().getFeerate();
+                return getFee(Double.toString(fast), FAST_FEE_RATE);
+            }
+        }
+        return false;
+    }
+
+    private void refreshOther () {
         Optional.ofNullable(currentFeeDetails).ifPresent((currentFeeDetails1 -> {
             if (sendReady()) {
                 synchronized (SendHdActivity.class) {
-                    double fast = currentFeeDetails1.getFast().getFeerate();
-                    isFeeValid = getFee(Double.toString(fast), FAST_FEE_RATE);
-                    if (isFeeValid) {
-                        double normal = currentFeeDetails1.getNormal().getFeerate();
-                        getFee(Double.toString(normal), RECOMMENDED_FEE_RATE);
-                        double slow = currentFeeDetails1.getSlow().getFeerate();
-                        getFee(Double.toString(slow), SLOW_FEE_RATE);
-                    }
+                    double normal = currentFeeDetails1.getNormal().getFeerate();
+                    getFee(Double.toString(normal), RECOMMENDED_FEE_RATE);
+                    double slow = currentFeeDetails1.getSlow().getFeerate();
+                    getFee(Double.toString(slow), SLOW_FEE_RATE);
                 }
             }
         }));
@@ -740,18 +848,18 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     /**
      * 硬件签名方法
      */
-    private void hardwareSign(String rawTx) {
+    private void hardwareSign (String rawTx) {
         new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.SIGN_TX, rawTx, MyApplication.getInstance().getDeviceWay());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onChangePin(ChangePinEvent event) {
+    public void onChangePin (ChangePinEvent event) {
         // 回写PIN码
         PyEnv.setPin(event.toString());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onButtonRequest(ButtonRequestEvent event) {
+    public void onButtonRequest (ButtonRequestEvent event) {
         switch (event.getType()) {
             case PyConstant.PIN_CURRENT:
                 Intent intent = new Intent(this, VerifyPinActivity.class);

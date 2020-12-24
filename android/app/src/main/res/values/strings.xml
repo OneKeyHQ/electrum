@@ -1401,4 +1401,6 @@
     <string name="delete_hd_derived">Delete the root HD wallet</string>
     <string name="delete_dh_derived_tip">The wallet is the only remaining root HD-derived subwallet in the App. When you delete the wallet, the root HD wallet will also be deleted.</string>
     <string name="delete_hd_derived_confirm">Also delete the root HD wallet</string>
+    <string name="reset_ok">Reset App successfully</string>
+    <string name="reset_failure">Reset failed. Please try again</string>
 </resources>

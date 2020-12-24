@@ -1,11 +1,9 @@
 package org.haobtc.onekey.onekeys.homepage;
-
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageView;
@@ -66,6 +64,7 @@ import java.util.Optional;
 import butterknife.BindView;
 import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
+import dr.android.utils.LogUtil;
 import io.reactivex.functions.Consumer;
 
 import static android.app.Activity.RESULT_OK;
@@ -152,7 +151,6 @@ public class WalletFragment extends BaseFragment {
     private static int currentAction;
     private boolean isRecovery;
     private boolean isAddHd;
-
     /**
      * init views
      *
@@ -209,6 +207,7 @@ public class WalletFragment extends BaseFragment {
             imgScan.setVisibility(View.GONE);
             relNowBackUp.setVisibility(View.GONE);
             PreferencesManager.put(getContext(), "Preferences", org.haobtc.onekey.constant.Constant.HAS_LOCAL_HD, false);
+            textWalletName.setText(R.string.no_use_wallet);
         }
     }
 
@@ -217,35 +216,29 @@ public class WalletFragment extends BaseFragment {
         //Get current wallet name
         String loadWalletName = preferences.getString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME, "");
         try {
-            Optional.ofNullable(PyEnv.selectWallet(loadWalletName)).ifPresent((balanceInfo -> {
-                String balance = balanceInfo.getBalance();
-                name = balanceInfo.getName();
-                LocalWalletInfo localWalletInfo;
-                String str = PreferencesManager.get(getContext(), org.haobtc.onekey.constant.Constant.WALLETS, name, "").toString();
-                if (!Strings.isNullOrEmpty(str)) {
-                    localWalletInfo = LocalWalletInfo.objectFromData(str);
-                    textWalletName.setText(localWalletInfo.getLabel());
-                    showTypeInfo(localWalletInfo);
-                }
-                Log.i("balancejxms", "getWalletBalance: " + balance);
-                num = balance.substring(0, balance.indexOf(" "));
-                String strCny = balance.substring(balance.indexOf("(") + 1, balance.indexOf(")"));
-                String currencySymbol = preferences.getString(CURRENT_CURRENCY_GRAPHIC_SYMBOL, "¥");
-                if (Strings.isNullOrEmpty(strCny)) {
-                    if (strCny.contains("CNY")) {
-                        String cash = strCny.replace("CNY", "");
-                        tetAmount.setText(String.format("%s %s", currencySymbol, cash));
+            if (!Strings.isNullOrEmpty(loadWalletName)) {
+                Optional.ofNullable(PyEnv.selectWallet(loadWalletName)).ifPresent((balanceInfo -> {
+                    String balance = balanceInfo.getBalance();
+                    name = balanceInfo.getName();
+                    LocalWalletInfo localWalletInfo;
+                    String str = PreferencesManager.get(getContext(), org.haobtc.onekey.constant.Constant.WALLETS, name, "").toString();
+                    if (!Strings.isNullOrEmpty(str)) {
+                        localWalletInfo = LocalWalletInfo.objectFromData(str);
+                        LogUtil.d("显示钱包", "-->" + localWalletInfo.getLabel());
+                        textWalletName.setText(localWalletInfo.getLabel());
+                        showTypeInfo(localWalletInfo);
                     }
-                } else {
+                    num = balance.substring(0, balance.indexOf(" "));
+                    String strCny = balance.substring(balance.indexOf("(") + 1, balance.indexOf(")"));
+                    String currencySymbol = preferences.getString(CURRENT_CURRENCY_GRAPHIC_SYMBOL, "¥");
+                    tetAmount.setText(String.format("%s %s", (Strings.isNullOrEmpty(strCny)) ? getString(R.string.zero) : currencySymbol, strCny));
+                    textBtcAmount.setText(String.format("%s %s", num, preferences.getString("base_unit", "")));
                     if (!"0".equals(num)) {
                         getCny(num, currencySymbol);
-                    } else {
-                        tetAmount.setText(String.format("%s %s", currencySymbol, "0.00"));
                     }
-                }
-                textBtcAmount.setText(String.format("%s %s", num, preferences.getString("base_unit", "")));
-                whetherBackup();
-            }));
+                    whetherBackup();
+                }));
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -371,24 +364,23 @@ public class WalletFragment extends BaseFragment {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
-    public void event(SecondEvent updataHint) {
+    public void event (SecondEvent updataHint) {
         String msgVote = updataHint.getMsg();
         if (!TextUtils.isEmpty(msgVote) && msgVote.length() != 2 && msgVote.contains("{")) {
             setValue(msgVote);
         }
     }
-
-    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
-    public void event(BackupEvent updataHint) {
-        //whether back up
-        whetherBackup();
-    }
+//    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
+//    public void event(BackupEvent updataHint) {
+//        //whether back up
+//        whetherBackup();
+//    }
 
     /**
      * 备份钱包响应
      */
     @Subscribe
-    public void onBack(BackupEvent event) {
+    public void onBack (BackupEvent event) {
         Intent intent = new Intent(getActivity(), BackupGuideActivity.class);
         intent.putExtra(CURRENT_SELECTED_WALLET_TYPE, nowType);
         startActivity(intent);
@@ -451,7 +443,9 @@ public class WalletFragment extends BaseFragment {
             if (msgVote.contains("fiat")) {
                 String fiat = jsonObject.getString("fiat");
                 changeBalance = jsonObject.getString("balance");
-                textBtcAmount.setText(changeBalance);
+                if (changeBalance != null) {
+                    textBtcAmount.setText(changeBalance);
+                }
                 if (!TextUtils.isEmpty(fiat)) {
                     String[] currencyArray = getResources().getStringArray(R.array.currency);
                     String[] currencySymbolArray = getResources().getStringArray(R.array.currency_symbol);

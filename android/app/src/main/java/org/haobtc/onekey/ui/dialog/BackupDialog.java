@@ -1,5 +1,6 @@
 package org.haobtc.onekey.ui.dialog;
 
+import android.content.Intent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -10,10 +11,13 @@ import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.BackupEvent;
 import org.haobtc.onekey.manager.PreferencesManager;
+import org.haobtc.onekey.onekeys.backup.BackupGuideActivity;
 import org.haobtc.onekey.ui.base.BaseDialogFragment;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+
+import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
 
 /**
  * @author liyan

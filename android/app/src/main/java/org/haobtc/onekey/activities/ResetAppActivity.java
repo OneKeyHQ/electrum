@@ -1,5 +1,4 @@
 package org.haobtc.onekey.activities;
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -11,14 +10,12 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.lxj.xpopup.XPopup;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
-import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.FileNameConstant;
@@ -32,7 +29,6 @@ import org.haobtc.onekey.utils.NoLeakHandler;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import io.reactivex.functions.Consumer;
 
 public class ResetAppActivity extends BaseActivity implements OnCheckedChangeListener, NoLeakHandler.HandlerCallback {
     @BindView(R.id.img_back)
@@ -75,18 +71,7 @@ public class ResetAppActivity extends BaseActivity implements OnCheckedChangeLis
     public void onClick (View view) {
         switch (view.getId()) {
             case R.id.btn_forward:
-                rxPermissions
-                        .request(Manifest.permission.READ_EXTERNAL_STORAGE)
-                        .subscribe(new Consumer<Boolean>() {
-                            @Override
-                            public void accept (Boolean granted) throws Exception {
-                                if (granted) {
-                                    showDialog();
-                                } else {
-                                    Toast.makeText(mContext, R.string.photopersion, Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
+                showDialog();
                 break;
             case R.id.img_back:
                 finish();
@@ -102,30 +87,24 @@ public class ResetAppActivity extends BaseActivity implements OnCheckedChangeLis
                 .isDestroyOnDismiss(true)
                 .moveUpToKeyboard(false)
                 .asCustom(new CustomReSetBottomPopup(ResetAppActivity.this, () -> new Thread(() -> {
-                    showConfirmDialog();
-                }).start(), CustomReSetBottomPopup.resetApp))
-                .show();
-    }
-
-    private void showConfirmDialog () {
-        new XPopup.Builder(mContext)
-                .isDestroyOnDismiss(true)
-                .asCustom(new ReStartDialog(mContext, () -> {
-                    PreferencesManager.getSharedPreferences(MyApplication.getInstance(), FileNameConstant.myPreferences).edit().clear().apply();
-                    PreferencesManager.getSharedPreferences(MyApplication.getInstance(), FileNameConstant.Device).edit().clear().apply();
-                    PreferencesManager.getSharedPreferences(MyApplication.getInstance(), FileNameConstant.BLE_INFO).edit().clear().apply();
-                    PreferencesManager.getSharedPreferences(MyApplication.getInstance(), Constant.WALLETS).edit().clear().apply();
                     try {
                         Daemon.commands.callAttr(PyConstant.RESET_APP);
-                        mHandler.sendEmptyMessage(Reset_Code_OK);
+                        PreferencesManager.getSharedPreferences(mContext, FileNameConstant.myPreferences).edit().clear().apply();
+                        PreferencesManager.getSharedPreferences(mContext, FileNameConstant.Device).edit().clear().apply();
+                        PreferencesManager.getSharedPreferences(mContext, FileNameConstant.BLE_INFO).edit().clear().apply();
+                        PreferencesManager.getSharedPreferences(mContext, Constant.WALLETS).edit().clear().apply();
+                        PreferencesManager.getSharedPreferences(this, FileNameConstant.myPreferences).edit().putBoolean(Constant.FIRST_RUN, false).apply();
+                        mHandler.sendEmptyMessageDelayed(Reset_Code_OK, 200);
                     } catch (Exception e) {
                         Message message = new Message();
                         message.what = Reset_Code_FAILURE;
                         message.obj = e.getMessage();
                         mHandler.sendMessage(message);
                     }
-                })).show();
+                }).start(), CustomReSetBottomPopup.resetApp))
+                .show();
     }
+
 
     public static int px2dip (Context context, float pxValue) {
         final float scale = context.getResources().getDisplayMetrics().density;
@@ -148,11 +127,11 @@ public class ResetAppActivity extends BaseActivity implements OnCheckedChangeLis
     public void handleMessage (Message msg) {
         switch (msg.what) {
             case Reset_Code_OK:
-                PreferencesManager.getSharedPreferences(this, FileNameConstant.myPreferences).edit().putBoolean(Constant.FIRST_RUN, false).apply();
+                mToast(getString(R.string.reset_ok));
                 NavUtils.gotoLunchActivity(mContext);
                 break;
             case Reset_Code_FAILURE:
-                mToast((String) msg.obj);
+                mToast(getString(R.string.reset_failure));
                 break;
             default:
                 break;

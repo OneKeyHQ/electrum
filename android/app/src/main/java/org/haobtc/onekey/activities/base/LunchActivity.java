@@ -1,5 +1,4 @@
 package org.haobtc.onekey.activities.base;
-
 import android.content.Intent;
 import android.text.TextUtils;
 
@@ -43,7 +42,6 @@ public class LunchActivity extends BaseActivity {
             Intent intent = new Intent(LunchActivity.this, HomeOneKeyActivity.class);
             startActivity(intent);
             finish();
-
         } else {
             initGuide();
         }

@@ -107,7 +107,7 @@ public class LanguageSettingActivity extends BaseActivity {
     }
 
     private void changeLanguage (String language) {
-        NavUtils.gotoMainActivityTask(LanguageSettingActivity.this);
+        NavUtils.gotoMainActivityTask(LanguageSettingActivity.this, true);
     }
 
     private void setLanguage (String language) {

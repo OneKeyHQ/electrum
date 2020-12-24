@@ -1339,4 +1339,6 @@
     <string name="delete_hd_derived">删除根 HD 钱包</string>
     <string name="delete_dh_derived_tip">该钱包是 App 内仅存的根 HD 派生的子钱包。删除该钱包的同时，根 HD 钱包也会被删除。</string>
     <string name="delete_hd_derived_confirm">同时删除根 HD 钱包</string>
+    <string name="reset_ok">重置App成功</string>
+    <string name="reset_failure">重置失败，请重试</string>
 </resources>

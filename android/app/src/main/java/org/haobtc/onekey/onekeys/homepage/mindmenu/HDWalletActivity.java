@@ -85,9 +85,6 @@ public class HDWalletActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.recl_add_wallet:
-//                Intent intent = new Intent(HDWalletActivity.this, CreateDeriveChooseTypeActivity.class);
-//                intent.putExtra(CURRENT_SELECTED_WALLET_TYPE, "derive");
-//                startActivity(intent);
                 NavUtils.gotoCreateDeriveChooseTypeActivity(mContext, false);
                 break;
             case R.id.img_what_hd:

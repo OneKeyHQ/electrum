@@ -388,7 +388,7 @@
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:layout_marginStart="@dimen/dp_20"
-                        android:text="@string/delete_wallet"
+                        android:text="@string/delete_wallet_single"
                         android:textColor="@color/text_ten"
                         android:textSize="@dimen/sp_16" />
 

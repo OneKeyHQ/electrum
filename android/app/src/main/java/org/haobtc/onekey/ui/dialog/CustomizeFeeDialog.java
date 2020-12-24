@@ -1,8 +1,6 @@
 package org.haobtc.onekey.ui.dialog;
-
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,11 +12,9 @@ import com.google.common.base.Strings;
 
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
-import org.haobtc.onekey.bean.CurrentFeeDetails;
 import org.haobtc.onekey.bean.CustomFeeInfo;
 import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.constant.Constant;
-import org.haobtc.onekey.constant.PyConstant;
 import org.haobtc.onekey.event.CustomizeFeeRateEvent;
 import org.haobtc.onekey.event.GetFeeEvent;
 import org.haobtc.onekey.manager.PyEnv;
@@ -31,7 +27,6 @@ import butterknife.OnClick;
 import butterknife.OnTextChanged;
 
 import static android.content.Context.MODE_PRIVATE;
-import static org.haobtc.onekey.constant.Constant.CURRENT_CURRENCY_GRAPHIC_SYMBOL;
 
 /**
  * @author liyan
@@ -56,7 +51,7 @@ public class CustomizeFeeDialog extends BaseDialogFragment {
     Button btnNext;
     private int size;
     private double feeRateMin;
-    private double feeRateMax;
+    private int feeRateMax;
     private SharedPreferences preferences;
     private int time;
     private String fee;
@@ -67,7 +62,7 @@ public class CustomizeFeeDialog extends BaseDialogFragment {
      * @return
      */
     @Override
-    public int getContentViewId() {
+    public int getContentViewId () {
         return R.layout.custom_fee;
     }
 
@@ -78,8 +73,9 @@ public class CustomizeFeeDialog extends BaseDialogFragment {
         assert bundle != null;
         size = bundle.getInt(Constant.TAG_TX_SIZE, 0);
         feeRateMin = bundle.getDouble(Constant.CUSTOMIZE_FEE_RATE_MIN);
-        feeRateMax = bundle.getDouble(Constant.CUSTOMIZE_FEE_RATE_MAX);
+        feeRateMax = (int) bundle.getDouble(Constant.CUSTOMIZE_FEE_RATE_MAX);
         textSize.setText(String.valueOf(size));
+
     }
 
     public TextView getTextFeeInBtc() {
@@ -101,6 +97,13 @@ public class CustomizeFeeDialog extends BaseDialogFragment {
                 dismiss();
                 break;
             case R.id.btn_next:
+                // 如果费率小于限制，不可创建
+                String feeRate = editFeeByte.getText().toString();
+                double feeRate1 = Double.parseDouble(feeRate);
+                if (feeRate1 < feeRateMin) {
+                    Toast.makeText(getContext(), R.string.fee_rate_too_small, Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 EventBus.getDefault().post(new CustomizeFeeRateEvent(editFeeByte.getText().toString(), fee, fiat, String.valueOf(time)));
                 dismiss();
                 break;
@@ -123,17 +126,14 @@ public class CustomizeFeeDialog extends BaseDialogFragment {
                 textTime.setText(String.format("%s%s%s", getString(R.string.about_), time, getString(R.string.minute)));
                 textFeeInBtc.setText(String.format(Locale.ENGLISH, "%s %s", fee, preferences.getString("base_unit", "")));
                 textSize.setText(String.valueOf(customer.getSize()));
-//                textFeeInCash.setText(String.format(Locale.ENGLISH, "%s %s", preferences.getString(CURRENT_CURRENCY_GRAPHIC_SYMBOL, "¥"), customer.getFiat()));
             } else {
                 Toast.makeText(getActivity(), errors, Toast.LENGTH_SHORT).show();
             }
             double feeRate1 = Double.parseDouble(feeRate);
-            if (feeRate1 < feeRateMin) {
-                Toast.makeText(getContext(), R.string.fee_rate_too_small, Toast.LENGTH_SHORT).show();
-                return;
-            } else if (feeRate1 > feeRateMax) {
-                Toast.makeText(getContext(), R.string.fee_rate_too_big, Toast.LENGTH_SHORT).show();
-                editFeeByte.setText(String.format(Locale.ENGLISH, "%s", feeRateMax));
+            if (feeRate1 > feeRateMax) {
+                String max = String.format(Locale.ENGLISH, "%s", feeRateMax);
+                editFeeByte.setText(max);
+                editFeeByte.setSelection(max.length());
                 return;
             }
             EventBus.getDefault().post(new GetFeeEvent(feeRate));
@@ -143,4 +143,5 @@ public class CustomizeFeeDialog extends BaseDialogFragment {
             textFeeInBtc.setText("-------");
         }
     }
+
 }

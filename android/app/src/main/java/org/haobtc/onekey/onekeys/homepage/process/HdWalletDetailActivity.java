@@ -37,11 +37,13 @@ import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.StringConstant;
 import org.haobtc.onekey.event.FixWalletNameEvent;
 import org.haobtc.onekey.event.GotPassEvent;
+import org.haobtc.onekey.event.LoadOtherWalletEvent;
 import org.haobtc.onekey.event.SecondEvent;
 import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.backup.BackupGuideActivity;
 import org.haobtc.onekey.onekeys.homepage.mindmenu.DeleteWalletActivity;
+import org.haobtc.onekey.ui.activity.SoftPassActivity;
 import org.haobtc.onekey.ui.dialog.BackupRequireDialog;
 import org.haobtc.onekey.ui.dialog.DeleteWalletTipsDialog;
 import org.haobtc.onekey.ui.dialog.ExportTipsDialog;
@@ -92,6 +94,7 @@ public class HdWalletDetailActivity extends BaseActivity {
     private int currentOperation;
     private String qrData;
     private String deleteHdWalletName;
+    private static final int DELETE_HD_DERIVED = 100;
 
     @Override
     public int getLayoutId () {
@@ -229,7 +232,7 @@ public class HdWalletDetailActivity extends BaseActivity {
         PyResponse<String> response = PyEnv.getDeviredNum("btc");
         if (Strings.isNullOrEmpty(response.getErrors())) {
             int coinNum = Integer.parseInt(response.getResult());
-            if (coinNum == 1) {
+            if (coinNum <= 1) {
                 showDeleteHDRootWallet();
             } else {
                 showDeleteHdDeriveWallet();
@@ -238,12 +241,10 @@ public class HdWalletDetailActivity extends BaseActivity {
     }
 
     private void showDeleteHdDeriveWallet () {
-        Intent intent = new Intent(mContext, DeleteWalletActivity.class);
-        intent.putExtra(Constant.IMPORT_HD, Constant.DELETE_SINGLE);
-        intent.putExtra("isBackup", isBackup);
-        startActivity(intent);
-        finish();
+        currentOperation = DELETE_HD_DERIVED;
+        startActivity(new Intent(this, SoftPassActivity.class));
     }
+
 
     private void showDeleteHDRootWallet () {
         new XPopup.Builder(mContext)
@@ -284,7 +285,7 @@ public class HdWalletDetailActivity extends BaseActivity {
                 finish();
             } else {
                 //没备份提示备份
-                new BackupRequireDialog().show(getSupportFragmentManager(), "");
+                new BackupRequireDialog(mContext).show(getSupportFragmentManager(), "");
             }
         } catch (Exception e) {
             mToast(e.getMessage());
@@ -349,10 +350,31 @@ public class HdWalletDetailActivity extends BaseActivity {
                 break;
             case R.id.rel_export_keystore:
                 break;
+            case DELETE_HD_DERIVED:
+                deleteSingleWallet(event.getPassword());
+                break;
         }
     }
 
-    private void fixWalletNameDialog(Context context, @LayoutRes int resource) {
+    private void deleteSingleWallet (String password) {
+        String keyName = PreferencesManager.get(this, "Preferences", Constant.CURRENT_SELECTED_WALLET_NAME, "").toString();
+        PyResponse<Void> response = PyEnv.deleteWallet(password, keyName);
+        String errors = response.getErrors();
+        if (Strings.isNullOrEmpty(errors)) {
+            onDeleteSuccess(keyName);
+        } else {
+            mlToast(errors);
+        }
+    }
+
+    public void onDeleteSuccess (String walletName) {
+        mToast(getString(R.string.delete_succse));
+        PreferencesManager.remove(this, Constant.WALLETS, walletName);
+        EventBus.getDefault().post(new LoadOtherWalletEvent());
+        finish();
+    }
+
+    private void fixWalletNameDialog (Context context, @LayoutRes int resource) {
         //set see view
         View view = View.inflate(context, resource, null);
         Dialog dialogBtoms = new Dialog(context, R.style.dialog);
@@ -360,7 +382,7 @@ public class HdWalletDetailActivity extends BaseActivity {
         walletName.setText(textWalletName.getText().toString());
         walletName.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            public void beforeTextChanged (CharSequence s, int start, int count, int after) {
             }
 
             @Override
@@ -433,4 +455,5 @@ public class HdWalletDetailActivity extends BaseActivity {
             finish();
         }
     }
+
 }

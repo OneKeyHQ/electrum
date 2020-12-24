@@ -99,7 +99,7 @@ public class WalletManageActivity extends BaseActivity {
                 finish();
             } else {
                 //没备份提示备份
-                new BackupRequireDialog().show(getSupportFragmentManager(), "");
+                new BackupRequireDialog(mContext).show(getSupportFragmentManager(), "");
             }
         } catch (Exception e) {
             mToast(e.getMessage());

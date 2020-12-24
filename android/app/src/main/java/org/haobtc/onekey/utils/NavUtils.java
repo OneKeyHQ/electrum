@@ -1,6 +1,7 @@
 package org.haobtc.onekey.utils;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 
 import org.haobtc.onekey.activities.ResetAppActivity;
 import org.haobtc.onekey.activities.base.LunchActivity;
@@ -8,6 +9,8 @@ import org.haobtc.onekey.activities.transaction.CheckChainDetailWebActivity;
 import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
 import org.haobtc.onekey.onekeys.homepage.process.CreateDeriveChooseTypeActivity;
 import org.haobtc.onekey.onekeys.homepage.process.SoftWalletNameSettingActivity;
+
+import me.jessyan.autosize.utils.LogUtils;
 
 /**
  * @Description: 页面跳转的管理类
@@ -23,9 +26,11 @@ public class NavUtils {
         ResetAppActivity.gotoResetAppActivity(context);
     }
 
-    public static void gotoMainActivityTask (Context context) {
+    public static void gotoMainActivityTask (Context context, boolean isNewTask) {
         Intent intent = new Intent(context, HomeOneKeyActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        if (isNewTask) {
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        }
         context.startActivity(intent);
     }
 
@@ -52,6 +57,23 @@ public class NavUtils {
 
     public static void gotoCreateDeriveChooseTypeActivity (Context context, boolean finish) {
         CreateDeriveChooseTypeActivity.gotoCreateDeriveChooseTypeActivity(context, finish);
+    }
+
+
+    /**
+     * 重启app
+     * @param context
+     */
+    public static void restartApp(Context context) {
+        PackageManager packageManager = context.getPackageManager();
+        if (null == packageManager) {
+            return;
+        }
+        final Intent intent = packageManager.getLaunchIntentForPackage(context.getPackageName());
+        if (intent != null) {
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            context.startActivity(intent);
+        }
     }
 
 }

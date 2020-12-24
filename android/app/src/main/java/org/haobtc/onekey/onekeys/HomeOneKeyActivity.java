@@ -1,10 +1,5 @@
 package org.haobtc.onekey.onekeys;
-
-import android.app.LauncherActivity;
 import android.content.Intent;
-import android.content.res.Configuration;
-import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.FrameLayout;
@@ -12,14 +7,10 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import com.azhon.appupdate.config.UpdateConfiguration;
 import com.azhon.appupdate.listener.OnDownloadListener;
 import com.azhon.appupdate.manager.DownloadManager;
 import com.azhon.appupdate.utils.ApkUtil;
-import com.azhon.appupdate.utils.LogUtil;
 import com.google.common.base.Strings;
 import com.google.gson.JsonSyntaxException;
 
@@ -27,7 +18,6 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.BuildConfig;
 import org.haobtc.onekey.R;
-import org.haobtc.onekey.activities.base.LunchActivity;
 import org.haobtc.onekey.bean.UpdateInfo;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.CreateSuccessEvent;
@@ -270,4 +260,5 @@ public class HomeOneKeyActivity extends BaseActivity implements RadioGroup.OnChe
         super.onNewIntent(intent);
         refreshView();
     }
+
 }
