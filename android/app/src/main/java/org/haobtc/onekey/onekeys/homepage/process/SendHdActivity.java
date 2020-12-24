@@ -1,4 +1,6 @@
 package org.haobtc.onekey.onekeys.homepage.process;
+
+import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
@@ -14,9 +16,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
+import com.chaquo.python.PyObject;
 import com.google.common.base.Strings;
+import com.google.gson.Gson;
+import com.tbruyelle.rxpermissions2.RxPermissions;
+import com.yzq.zxinglibrary.android.CaptureActivity;
+import com.yzq.zxinglibrary.bean.ZxingConfig;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -26,6 +34,7 @@ import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.asynctask.BusinessAsyncTask;
 import org.haobtc.onekey.bean.CurrentFeeDetails;
+import org.haobtc.onekey.bean.MainSweepcodeBean;
 import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.bean.TemporaryTxInfo;
 import org.haobtc.onekey.bean.TransactionInfoBean;
@@ -47,6 +56,9 @@ import org.haobtc.onekey.ui.dialog.CustomizeFeeDialog;
 import org.haobtc.onekey.ui.dialog.TransactionConfirmDialog;
 import org.haobtc.onekey.ui.dialog.UnBackupTipDialog;
 import org.haobtc.onekey.utils.ClipboardUtils;
+import org.haobtc.onekey.utils.Daemon;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.math.BigDecimal;
 import java.util.Locale;
@@ -57,6 +69,7 @@ import butterknife.OnClick;
 import butterknife.OnFocusChange;
 import butterknife.OnTextChanged;
 import dr.android.utils.LogUtil;
+import io.reactivex.functions.Consumer;
 
 import static org.haobtc.onekey.constant.Constant.CURRENT_CURRENCY_GRAPHIC_SYMBOL;
 import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
@@ -76,6 +89,8 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     EditText editAmount;
     @BindView(R.id.btn_next)
     Button btnNext;
+    @BindView(R.id.img_scan)
+    ImageView imgScan;
     @BindView(R.id.checkbox_slow)
     CheckBox checkboxSlow;
     @BindView(R.id.view_slow)
@@ -142,6 +157,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     LinearLayout linearCustomize;
     private int screenHeight;
     private boolean mIsSoftKeyboardShowing;
+    private RxPermissions rxPermissions;
     private SharedPreferences preferences;
     private String hdWalletName;
     private String baseUnit;
@@ -175,11 +191,14 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     private int selectFlag = 0;
     private boolean isResume;
 
+    private static final int REQUEST_SCAN_CODE = 0;
+
     /**
      * init
      */
     @Override
     public void init () {
+        rxPermissions = new RxPermissions(this);
         hdWalletName = getIntent().getStringExtra("hdWalletName");
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         balance = getIntent().getStringExtra(WALLET_BALANCE);
@@ -240,7 +259,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         }
     }
 
-    @OnClick({R.id.img_back, R.id.switch_coin_type, R.id.text_max_amount, R.id.text_customize_fee_rate, R.id.linear_slow, R.id.linear_recommend, R.id.linear_fast, R.id.text_rollback, R.id.btn_next, R.id.paste_address})
+    @OnClick({R.id.img_back, R.id.switch_coin_type, R.id.text_max_amount, R.id.text_customize_fee_rate, R.id.linear_slow, R.id.linear_recommend, R.id.linear_fast, R.id.text_rollback, R.id.btn_next, R.id.paste_address, R.id.img_scan})
     @SingleClick
     public void onViewClicked(View view) {
         switch (view.getId()) {
@@ -314,6 +333,30 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                 break;
             case R.id.btn_next:
                 send();
+                break;
+            case R.id.img_scan:
+                rxPermissions
+                        .request(Manifest.permission.CAMERA)
+                        .subscribe(new Consumer<Boolean>() {
+                            @Override
+                            public void accept(Boolean granted) throws Exception {
+                                if (granted) {
+                                    // If you have already authorized it, you can directly jump to the QR code scanning interface
+                                    Intent intent2 = new Intent(getActivity(), CaptureActivity.class);
+                                    ZxingConfig config = new ZxingConfig();
+                                    config.setPlayBeep(true);
+                                    config.setShake(true);
+                                    config.setDecodeBarCode(false);
+                                    config.setFullScreenScan(true);
+                                    config.setShowAlbum(false);
+                                    config.setShowbottomLayout(false);
+                                    intent2.putExtra(com.yzq.zxinglibrary.common.Constant.INTENT_ZXING_CONFIG, config);
+                                    startActivityForResult(intent2, REQUEST_SCAN_CODE);
+                                } else {
+                                    Toast.makeText(getActivity(), R.string.photopersion, Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
                 break;
             default:
                 break;
@@ -729,6 +772,19 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Scan QR code return
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_SCAN_CODE && resultCode == RESULT_OK) {
+            if (data != null) {
+                String content = data.getStringExtra(com.yzq.zxinglibrary.common.Constant.CODED_CONTENT);
+                editReceiverAddress.setText(decodeAddress(content));
+                getAddressIsValid();
+            }
+        }
+    }
+
+    @Override
     protected void onPause () {
         super.onPause();
         isResume = false;
@@ -745,6 +801,40 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                 calculateMaxSpendableAmount(currentFeeRate, true);
             }
         }
+    }
+
+    /**
+     * 在字符串中尝试解析 BTC 地址，如果解析不出来返回原字符串
+     * support: bip72、bip21
+     *
+     * @param content 要解析的字符串
+     * @return BTC 地址
+     */
+    private static String decodeAddress(String content) {
+        String result = content;
+        if (!TextUtils.isEmpty(content)) {
+            try {
+                PyObject parseQr = Daemon.commands.callAttr("parse_pr", content);
+                if (parseQr.toString().length() > 2) {
+                    String strParse = parseQr.toString();
+                    String substring = strParse.substring(20);
+                    String detailScan = substring.substring(0, substring.length() - 1);
+                    JSONObject jsonObject = new JSONObject(strParse);
+                    int type = jsonObject.getInt("type");
+                    Gson gson = new Gson();
+                    if (type == 1) {
+                        MainSweepcodeBean mainSweepcodeBean = gson.fromJson(strParse, MainSweepcodeBean.class);
+                        MainSweepcodeBean.DataBean listData = mainSweepcodeBean.getData();
+                        result = listData.getAddress();
+                    } else {
+                        result = detailScan;
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
     }
 
     /**
