@@ -1268,7 +1268,8 @@ class AndroidCommands(commands.Commands):
             'can_broadcast': tx_details.can_broadcast,
             'amount': amount_str,
             'fee': self.format_amount_and_units(tx_details.fee),
-            'description': self.wallet.get_label(tx_details.txid),
+            #'description': self.wallet.get_label(tx_details.txid) if 44 != int(self.wallet.keystore.get_derivation_prefix().split('/')[COIN_POS].split('\'')[0]) else "",
+            'description':"",
             'tx_status': tx_details.status,
             'sign_status': [s, r],
             'output_addr': out_list,
@@ -2130,7 +2131,8 @@ class AndroidCommands(commands.Commands):
         self.hw_info['xpub'] = xpub
         if list_info is None:
             self.hw_info['account_id'] = 0
-            return xpub
+            dervied_xpub = self.get_xpub_from_hw(path=path, _type=_type, account_id=0)
+            return dervied_xpub
         if len(list_info) == 0:
             raise BaseException(DerivedWalletLimit())
         dervied_xpub = self.get_xpub_from_hw(path=path, _type=_type, account_id=list_info[0])
@@ -2882,12 +2884,11 @@ class AndroidCommands(commands.Commands):
             if coin == 'btc':
                 print(f"xpubs=========={m, n, xpubs}")
                 self.set_multi_wallet_info(name, m, n)
-                self.add_xpub(xpubs, self.hw_info['device_id'], self.hw_info['type'])
+                self.add_xpub(xpubs, self.hw_info['device_id'], i, self.hw_info['type'])
 
                 temp_path = self.get_temp_file()
                 path = self._wallet_path(temp_path)
                 keystores = self.get_keystores_info()
-                print(f"keystores---------------{keystores}")
                 # if not hide_type:
                 #     for key, value in self.local_wallet_info.items():
                 #         num = 0
