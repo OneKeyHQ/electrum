@@ -98,6 +98,13 @@
 
 - (void)tapRightViewClick
 {
+    UISwitch *sender = self.switchR;
+    sender.on = YES;
+    NSString *flag = sender.isOn == YES ? @"1" : @"0";
+    [kPyCommandsManager callInterface:kInterfaceset_syn_server parameter:@{@"flag":flag}];
+    [kUserSettingManager setSysServerFlag:sender.isOn];
+    [self.confirmBtn checkBtnStatus:sender.isOn];
+    
     [self refreshUI:self.defaultSeting];
 }
 
