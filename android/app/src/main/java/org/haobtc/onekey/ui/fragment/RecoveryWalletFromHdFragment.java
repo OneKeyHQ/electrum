@@ -6,6 +6,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.Group;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -45,6 +46,8 @@ public class RecoveryWalletFromHdFragment extends BaseFragment {
     TextView promote;
     @BindView(R.id.find_result_promote)
     TextView findResultPromote;
+    @BindView(R.id.wallet_group)
+    Group walletGroup;
     private OnceWalletAdapter adapter;
     private List<String> nameList;
 
@@ -65,8 +68,7 @@ public class RecoveryWalletFromHdFragment extends BaseFragment {
             return;
         }
         loadedWallet.setVisibility(View.GONE);
-        walletCard.setVisibility(View.VISIBLE);
-        recovery.setVisibility(View.VISIBLE);
+        walletGroup.setVisibility(View.VISIBLE);
         if (event.getWallets().isEmpty()) {
             recovery.setText(R.string.back);
             findResultPromote.setText(R.string.not_found_once_wallet);

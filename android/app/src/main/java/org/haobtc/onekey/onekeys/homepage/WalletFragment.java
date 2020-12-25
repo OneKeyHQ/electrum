@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.IdRes;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.chaquo.python.PyObject;
@@ -199,7 +200,7 @@ public class WalletFragment extends BaseFragment {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            imgType.setImageDrawable(getActivity().getDrawable(R.drawable.loco_round));
+            imgType.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.loco_round));
             linearNoWallet.setVisibility(View.VISIBLE);
             imgBottom.setVisibility(View.VISIBLE);
             linearHaveWallet.setVisibility(View.GONE);
@@ -266,11 +267,11 @@ public class WalletFragment extends BaseFragment {
         edit.putString(CURRENT_SELECTED_WALLET_TYPE, nowType);
         edit.apply();
         if (nowType.contains("btc")) {
-            imgType.setImageDrawable(getActivity().getDrawable(R.drawable.token_btc));
+            imgType.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.token_btc));
         } else if (nowType.contains("eth")) {
-            imgType.setImageDrawable(getActivity().getDrawable(R.drawable.token_eth));
+            imgType.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.token_eth));
         } else {
-            imgType.setImageDrawable(getActivity().getDrawable(R.drawable.loco_round));
+            imgType.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.loco_round));
         }
         if (nowType.contains("hw")) {
             textHard.setVisibility(View.VISIBLE);
@@ -365,16 +366,13 @@ public class WalletFragment extends BaseFragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     public void event (SecondEvent updataHint) {
-        String msgVote = updataHint.getMsg();
-        if (!TextUtils.isEmpty(msgVote) && msgVote.length() != 2 && msgVote.contains("{")) {
-            setValue(msgVote);
+        if (requireActivity().hasWindowFocus()) {
+            String msgVote = updataHint.getMsg();
+            if (!TextUtils.isEmpty(msgVote) && msgVote.length() != 2 && msgVote.contains("{")) {
+                setValue(msgVote);
+            }
         }
     }
-//    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
-//    public void event(BackupEvent updataHint) {
-//        //whether back up
-//        whetherBackup();
-//    }
 
     /**
      * 备份钱包响应
@@ -425,7 +423,7 @@ public class WalletFragment extends BaseFragment {
             imgBottom.setVisibility(View.VISIBLE);
             linearHaveWallet.setVisibility(View.GONE);
             linearWalletList.setVisibility(View.GONE);
-            imgType.setImageDrawable(getActivity().getDrawable(R.drawable.loco_round));
+            imgType.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.loco_round));
             isBackup = true;
             relNowBackUp.setVisibility(View.GONE);
             PreferencesManager.put(getContext(), "Preferences", org.haobtc.onekey.constant.Constant.HAS_LOCAL_HD, false);
