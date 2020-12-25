@@ -100,8 +100,6 @@ public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocu
     private int screenHeight;
     private boolean mIsSoftKeyboardShowing;
     private String seed;
-    private boolean showLoading;
-    private MyDialog myDialog;
 
     @Override
     public int getLayoutId() {
@@ -111,7 +109,6 @@ public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocu
     @Override
     public void initView() {
         ButterKnife.bind(this);
-        myDialog = MyDialog.showDialog(mContext);
         EventBus.getDefault().register(this);
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         inits();
@@ -287,33 +284,12 @@ public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocu
         }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (showLoading) {
-            myDialog.show();
-            myDialog.onTouchOutside(false);
-        }
-    }
-
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGotPass(GotPassEvent event) {
-        showLoading = true;
-        mlToast(getString(R.string.loading));
-        PyEnv.createLocalHd(event.getPassword(), seed);
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onFind(FindOnceWalletEvent<BalanceInfo> event) {
-        List<BalanceInfo> wallets = event.getWallets();
-        myDialog.dismiss();
-        if (!wallets.isEmpty()) {
-            Intent intent = new Intent(this, RecoveryChooseWalletActivity.class);
-            intent.putExtra("recoveryData", (ArrayList<BalanceInfo>) event.getWallets());
-            startActivity(intent);
-        } else {
-            mIntent(HomeOneKeyActivity.class);
-        }
+        Intent intent = new Intent(this, RecoveryChooseWalletActivity.class);
+        intent.putExtra("password", event.getPassword());
+        intent.putExtra("recoverySeed",seed);
+        startActivity(intent);
     }
 
     private void pasteSeed() {

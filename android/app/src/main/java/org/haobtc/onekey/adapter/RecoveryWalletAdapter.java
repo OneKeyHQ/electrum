@@ -7,16 +7,17 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.bean.BalanceInfo;
-import org.haobtc.onekey.event.WalletAddressEvent;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -24,10 +25,10 @@ import java.util.Map;
  */
 public class RecoveryWalletAdapter extends RecyclerView.Adapter<RecoveryWalletAdapter.myViewHolder> {
     private Context context;
-    private ArrayList<BalanceInfo> walletList;
+    private List<BalanceInfo> walletList;
     private Map<Integer, Boolean> checkStatus;
 
-    public RecoveryWalletAdapter(Context context, ArrayList<BalanceInfo> walletList) {
+    public RecoveryWalletAdapter(Context context, List<BalanceInfo> walletList) {
         this.context = context;
         this.walletList = walletList;
         initData();
@@ -74,19 +75,27 @@ public class RecoveryWalletAdapter extends RecyclerView.Adapter<RecoveryWalletAd
         } else {
             holder.textWalletBalance.setText(walletList.get(position).getBalance());
         }
-
-        holder.checkbox.setOnCheckedChangeListener(null);
-        if (checkStatus.get(position) != null) {
-            holder.checkbox.setChecked(checkStatus.get(position));
-        }
-        holder.checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                checkStatus.put(position, isChecked);
+        if ("BTC-1".equals(walletList.get(position).getLabel())) {
+            holder.checkbox.setBackground(ContextCompat.getDrawable(context, R.drawable.gray_not_check));
+            holder.checkbox.setChecked(true);
+            holder.checkbox.setOnCheckedChangeListener(((buttonView, isChecked) ->
+            {
+                Toast.makeText(context, R.string.not_allow_un_check, Toast.LENGTH_SHORT).show();
+            }));
+        } else {
+            holder.checkbox.setOnCheckedChangeListener(null);
+            if (checkStatus.get(position) != null) {
+                holder.checkbox.setChecked(checkStatus.get(position));
             }
-        });
-        if (checkStatus.get(position) == null) {
-            checkStatus.put(position, true);
+            holder.checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    checkStatus.put(position, isChecked);
+                }
+            });
+            if (checkStatus.get(position) == null) {
+                checkStatus.put(position, true);
+            }
         }
     }
 

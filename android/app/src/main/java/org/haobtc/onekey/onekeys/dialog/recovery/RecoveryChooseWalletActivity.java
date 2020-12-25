@@ -1,27 +1,33 @@
 package org.haobtc.onekey.onekeys.dialog.recovery;
 
-import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
+import android.widget.RelativeLayout;
 
+import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.Gson;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.adapter.RecoveryWalletAdapter;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.BalanceInfo;
+import org.haobtc.onekey.bean.FindOnceWalletEvent;
 import org.haobtc.onekey.event.CreateSuccessEvent;
+import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
 import org.haobtc.onekey.utils.Daemon;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -34,12 +40,14 @@ public class RecoveryChooseWalletActivity extends BaseActivity {
     RecyclerView reclWalletList;
     @BindView(R.id.btn_recovery)
     Button btnRecovery;
-    private ArrayList<BalanceInfo> walletList;
+    @BindView(R.id.loaded_wallet)
+    RelativeLayout loadedWallet;
+    @BindView(R.id.scroll_wallet)
+    NestedScrollView scrollWallet;
     private RecoveryWalletAdapter recoveryWalletAdapter;
     private ArrayList<String> listDates;
-    private String recoveryData;
-    private SharedPreferences.Editor edit;
     private String name;
+    private List<BalanceInfo> walletList;
 
     @Override
     public int getLayoutId() {
@@ -49,23 +57,18 @@ public class RecoveryChooseWalletActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
-        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-        walletList = (ArrayList<BalanceInfo>) getIntent().getSerializableExtra("recoveryData");
+        EventBus.getDefault().register(this);
     }
 
     @Override
     public void initData() {
+        String password = getIntent().getStringExtra("password");
+        String recoverySeed = getIntent().getStringExtra("recoverySeed");
+        //recovery mnemonic wallet
+        PyEnv.createLocalHd(password, recoverySeed);
         //choose wallet data list
         listDates = new ArrayList<>();
         reclWalletList.setNestedScrollingEnabled(false);
-        if (walletList.isEmpty()) {
-            btnRecovery.setEnabled(true);
-            btnRecovery.setText(R.string.back);
-        } else {
-            recoveryWalletAdapter = new RecoveryWalletAdapter(this, walletList);
-            reclWalletList.setAdapter(recoveryWalletAdapter);
-            recoveryWalletAdapter.notifyDataSetChanged();
-        }
     }
 
     @SingleClick
@@ -102,11 +105,30 @@ public class RecoveryChooseWalletActivity extends BaseActivity {
         }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onFind(FindOnceWalletEvent<BalanceInfo> event) {
+        if (loadedWallet == null) {
+            return;
+        }
+        loadedWallet.setVisibility(View.GONE);
+        btnRecovery.setVisibility(View.VISIBLE);
+        scrollWallet.setVisibility(View.VISIBLE);
+        walletList = event.getWallets();
+        recoveryWalletAdapter = new RecoveryWalletAdapter(this, walletList);
+        reclWalletList.setAdapter(recoveryWalletAdapter);
+    }
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
             return true;
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 }

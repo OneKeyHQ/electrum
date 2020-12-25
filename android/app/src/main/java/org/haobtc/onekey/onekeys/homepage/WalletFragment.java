@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageView;
@@ -231,8 +232,9 @@ public class WalletFragment extends BaseFragment {
                     }
                     num = balance.substring(0, balance.indexOf(" "));
                     String strCny = balance.substring(balance.indexOf("(") + 1, balance.indexOf(")"));
+                    String cash = strCny.substring(0, strCny.indexOf(" "));
                     String currencySymbol = preferences.getString(CURRENT_CURRENCY_GRAPHIC_SYMBOL, "¥");
-                    tetAmount.setText(String.format("%s %s", (Strings.isNullOrEmpty(strCny)) ? getString(R.string.zero) : currencySymbol, strCny));
+                    tetAmount.setText(String.format("%s %s", (Strings.isNullOrEmpty(strCny)) ? getString(R.string.zero) : currencySymbol, cash));
                     textBtcAmount.setText(String.format("%s %s", num, preferences.getString("base_unit", "")));
                     if (!"0".equals(num)) {
                         getCny(num, currencySymbol);

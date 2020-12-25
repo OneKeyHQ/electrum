@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -106,6 +107,7 @@ public class ImportPrivateKeyActivity extends BaseActivity implements TextWatche
             Daemon.commands.callAttr("verify_legality", editInputPrivate.getText().toString(), new Kwarg("flag", "private"));
         } catch (Exception e) {
             mToast(e.getMessage());
+            Log.i("jxmerror", "isRightPrivate: "+e.getMessage());
             e.printStackTrace();
             return;
         }

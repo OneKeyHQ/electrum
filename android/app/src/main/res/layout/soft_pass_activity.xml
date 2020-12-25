@@ -72,11 +72,12 @@
             android:inputType="number"
             android:maxLength="6"
             android:textColor="@color/black_0"
+            android:visibility="visible"
             app:defaultColor="@color/text_four"
             app:isPwd="true"
             app:round="14dp"
-            android:visibility="visible"
             app:space="@dimen/dp_5" />
+
         <LinearLayout
             android:id="@+id/edit_pass_long_layout"
             android:layout_width="match_parent"
@@ -84,9 +85,9 @@
             android:layout_marginStart="34dp"
             android:layout_marginTop="26dp"
             android:layout_marginEnd="34dp"
-            android:visibility="gone"
             android:background="@drawable/gray_broken"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:visibility="gone">
 
             <EditText
                 android:id="@+id/edit_pass_long"
@@ -95,6 +96,8 @@
                 android:layout_weight="1"
                 android:background="@null"
                 android:digits="@string/rule_password"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 android:hint="@string/input_new_pass"
                 android:inputType="textPassword"
                 android:maxLength="35"
@@ -103,9 +106,7 @@
                 android:textColor="@color/text_two"
                 android:textSize="@dimen/sp_14"
                 android:textStyle="normal"
-                tools:ignore="RtlSymmetry"
-                android:focusable="true"
-                android:focusableInTouchMode="true"/>
+                tools:ignore="RtlSymmetry" />
 
             <ImageView
                 android:id="@+id/img_eye_yes"
@@ -123,6 +124,7 @@
                 android:visibility="gone" />
 
         </LinearLayout>
+
         <Button
             android:id="@+id/btn_next"
             android:layout_width="match_parent"
@@ -134,13 +136,13 @@
             android:enabled="false"
             android:text="@string/next"
             android:textAllCaps="false"
-            android:visibility="gone"
             android:textColor="@android:color/white"
-            android:textSize="@dimen/sp_20" />
+            android:textSize="@dimen/sp_20"
+            android:visibility="gone" />
 
     </LinearLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -148,13 +150,17 @@
         android:gravity="center_horizontal"
         android:orientation="vertical">
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/pass_type_switch"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/dp_28"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="@dimen/dp_15"
+            android:layout_marginEnd="@dimen/dp_15"
             android:layout_marginBottom="@dimen/dp_9"
             android:background="@drawable/green_bacj"
-            android:gravity="center_vertical">
+            android:paddingTop="@dimen/dp_5"
+            android:paddingBottom="@dimen/dp_5">
 
             <TextView
                 android:id="@+id/pass_type_switch_promote"
@@ -168,24 +174,27 @@
 
             <ImageView
                 android:layout_width="@dimen/dp_15"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
                 android:layout_marginStart="@dimen/dp_15"
                 android:layout_marginEnd="@dimen/dp_15"
+                android:layout_toEndOf="@+id/pass_type_switch_promote"
                 android:src="@drawable/green_right" />
 
-        </LinearLayout>
+        </RelativeLayout>
 
         <TextView
             android:id="@+id/promote"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/pass_type_switch"
             android:layout_marginStart="@dimen/dp_20"
             android:layout_marginEnd="@dimen/dp_20"
             android:gravity="center_horizontal"
             android:text="@string/short_pass_tip"
             android:textColor="@color/text_three"
             android:textSize="@dimen/sp_12" />
-    </LinearLayout>
+    </RelativeLayout>
 
 
 </RelativeLayout>

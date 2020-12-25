@@ -1,10 +1,12 @@
 package org.haobtc.onekey.onekeys.homepage.process;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
@@ -179,7 +181,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
      * init
      */
     @Override
-    public void init () {
+    public void init() {
         hdWalletName = getIntent().getStringExtra("hdWalletName");
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         balance = getIntent().getStringExtra(WALLET_BALANCE);
@@ -208,7 +210,6 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
         }
         textBalance.setText(String.format("%s%s", balance, preferences.getString("base_unit", "")));
         registerLayoutChangeListener();
@@ -353,17 +354,17 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
      * 获取费率详情
      */
     private void getDefaultFee() {
-        PyResponse<String> response = PyEnv.getFeeInfo();
-        String errors = response.getErrors();
-        if (Strings.isNullOrEmpty(errors)) {
-            currentFeeDetails = CurrentFeeDetails.objectFromDate(response.getResult());
-            transactionSize = currentFeeDetails.getFast().getSize();
-            LogUtil.d(" 获取详情-->" + JSON.toJSONString(currentFeeDetails));
-            initFeeSelectorStatus();
-        } else {
-            showToast(R.string.get_fee_info_failed);
-        }
         try {
+            PyResponse<String> response = PyEnv.getFeeInfo();
+            String errors = response.getErrors();
+            if (Strings.isNullOrEmpty(errors)) {
+                currentFeeDetails = CurrentFeeDetails.objectFromDate(response.getResult());
+                transactionSize = currentFeeDetails.getFast().getSize();
+                LogUtil.d(" 获取详情-->" + JSON.toJSONString(currentFeeDetails));
+                initFeeSelectorStatus();
+            } else {
+                showToast(R.string.get_fee_info_failed);
+            }
             currentFeeRate = currentFeeDetails.getFast().getFeerate();
         } catch (Exception e) {
             e.printStackTrace();
@@ -411,7 +412,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     /**
      * 计算最大可用余额
      */
-    private void calculateMaxSpendableAmount (double feeRate, boolean judgeBig) {
+    private void calculateMaxSpendableAmount(double feeRate, boolean judgeBig) {
         PyResponse<TemporaryTxInfo> pyResponse = PyEnv.getFeeByFeeRate(editReceiverAddress.getText().toString(), "!", String.valueOf(feeRate));
         if (Strings.isNullOrEmpty(pyResponse.getErrors())) {
             TemporaryTxInfo temporaryTxInfo = pyResponse.getResult();
@@ -684,7 +685,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         getWindow().getDecorView().getViewTreeObserver().addOnGlobalLayoutListener(mLayoutChangeListener);
     }
 
-    private void keyBoardHideRefresh () {
+    private void keyBoardHideRefresh() {
         if (editAmount.getText().toString().endsWith(".")) {
             amount = editAmount.getText().toString().substring(0, editAmount.getText().toString().length() - 1).trim();
         } else {
@@ -723,18 +724,18 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     }
 
     @Override
-    protected void onResume () {
+    protected void onResume() {
         super.onResume();
         isResume = true;
     }
 
     @Override
-    protected void onPause () {
+    protected void onPause() {
         super.onPause();
         isResume = false;
     }
 
-    private void getAddressIsValid () {
+    private void getAddressIsValid() {
         String address = editReceiverAddress.getText().toString();
         if (!Strings.isNullOrEmpty(address)) {
             addressInvalid = PyEnv.verifyAddress(address);
@@ -751,7 +752,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
      * 交易金额实时监听
      */
     @OnTextChanged(value = R.id.edit_amount, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
-    public void onTextChangeAmount (CharSequence sequence) {
+    public void onTextChangeAmount(CharSequence sequence) {
         amount = sequence.toString();
         if (!String.valueOf(maxAmount).equals(amount)) {
             isSetBig = false;
@@ -782,14 +783,14 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     }
 
     @OnFocusChange(value = R.id.edit_receiver_address)
-    public void onFocusChanged (boolean focused) {
+    public void onFocusChanged(boolean focused) {
         if (!focused) {
             getAddressIsValid();
         }
     }
 
     @OnFocusChange(value = R.id.edit_amount)
-    public void onEditAmountFocusChange (boolean focused) {
+    public void onEditAmountFocusChange(boolean focused) {
         if (!focused) {
             if (!Strings.isNullOrEmpty(amount) && Double.parseDouble(amount) > 0) {
                 BigDecimal decimal = BigDecimal.valueOf(Double.parseDouble(amount));
@@ -809,7 +810,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     /**
      * 获取三种不同费率对应的临时交易
      */
-    private void refreshFeeView () {
+    private void refreshFeeView() {
         isFeeValid = isCanRefresh();
         if (isFeeValid) {
             if (!isCustom) {
@@ -819,7 +820,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         }
     }
 
-    private boolean isCanRefresh () {
+    private boolean isCanRefresh() {
         boolean success;
         if (isCustom) {
             return getFee(String.valueOf(currentFeeRate), CUSTOMIZE_FEE_RATE);
@@ -832,7 +833,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         return false;
     }
 
-    private void refreshOther () {
+    private void refreshOther() {
         Optional.ofNullable(currentFeeDetails).ifPresent((currentFeeDetails1 -> {
             if (sendReady()) {
                 synchronized (SendHdActivity.class) {
@@ -848,18 +849,18 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     /**
      * 硬件签名方法
      */
-    private void hardwareSign (String rawTx) {
+    private void hardwareSign(String rawTx) {
         new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.SIGN_TX, rawTx, MyApplication.getInstance().getDeviceWay());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onChangePin (ChangePinEvent event) {
+    public void onChangePin(ChangePinEvent event) {
         // 回写PIN码
         PyEnv.setPin(event.toString());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onButtonRequest (ButtonRequestEvent event) {
+    public void onButtonRequest(ButtonRequestEvent event) {
         switch (event.getType()) {
             case PyConstant.PIN_CURRENT:
                 Intent intent = new Intent(this, VerifyPinActivity.class);

@@ -1,5 +1,7 @@
 package org.haobtc.onekey.onekeys.homepage.mindmenu;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -28,6 +30,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static org.haobtc.onekey.constant.Constant.CURRENT_CURRENCY_GRAPHIC_SYMBOL;
+
 public class AllAssetsActivity extends BaseActivity implements TextWatcher {
 
     @BindView(R.id.test_all_assets)
@@ -40,6 +44,7 @@ public class AllAssetsActivity extends BaseActivity implements TextWatcher {
     TextView tetNone;
     private List<HdWalletAllAssetBean.WalletInfoBean> walletInfo;
     private ArrayList<HdWalletAllAssetBean.WalletInfoBean> searchList;
+    private SharedPreferences preferences;
 
 
     @Override
@@ -50,6 +55,7 @@ public class AllAssetsActivity extends BaseActivity implements TextWatcher {
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        preferences = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
         editSearch.addTextChangedListener(this);
     }
 
@@ -73,15 +79,10 @@ public class AllAssetsActivity extends BaseActivity implements TextWatcher {
                 String allBalance = hdWalletAllAssetBean.getAllBalance();
                 String fiat = allBalance.substring(0, allBalance.indexOf(" "));
                 float f = Float.parseFloat(fiat);
-                DecimalFormat decimalFormat = new DecimalFormat(".00");//构造方法的字符格式这里如果小数不足2位,会以0补足.
+                DecimalFormat decimalFormat = new DecimalFormat("0.00");//构造方法的字符格式这里如果小数不足2位,会以0补足.
                 String money = decimalFormat.format(f);
-                if (allBalance.contains("CNY")) {
-                    testAllAssets.setText(String.format("￥ %s", money));
-                } else if (allBalance.contains("USD")) {
-                    testAllAssets.setText(String.format("$ %s", money));
-                } else {
-                    testAllAssets.setText(allBalance);
-                }
+                String currencySymbol = preferences.getString(CURRENT_CURRENCY_GRAPHIC_SYMBOL, "¥");
+                testAllAssets.setText(String.format("%s %s", currencySymbol, money));
                 walletInfo = hdWalletAllAssetBean.getWalletInfo();
                 HdWalletAssetAdapter hdWalletAssetAdapter = new HdWalletAssetAdapter(walletInfo);
                 reclAssets.setAdapter(hdWalletAssetAdapter);

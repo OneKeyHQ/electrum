@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.common.base.Strings;
@@ -69,7 +70,7 @@ public class SoftPassActivity extends BaseActivity {
     @BindView(R.id.btn_next)
     Button btnNext;
     @BindView(R.id.pass_type_switch)
-    LinearLayout passTypeSwitch;
+    RelativeLayout passTypeSwitch;
     @BindView(R.id.promote)
     TextView promote;
     @BindView(R.id.pass_type_switch_promote)

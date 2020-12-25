@@ -170,13 +170,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/create_multisig_warning"
-        android:drawableStart="@drawable/warning"
         android:textSize="@dimen/sp_12"
         android:textColor="#FFB000"
         android:paddingStart="@dimen/dp_25"
         android:paddingEnd="17dp"
         android:paddingVertical="@dimen/dp_10"
-        android:drawablePadding="@dimen/dp_15"/>
+        android:drawablePadding="@dimen/dp_15"
+        app:drawableStartCompat="@drawable/warning" />
     </androidx.cardview.widget.CardView>
 
     <View

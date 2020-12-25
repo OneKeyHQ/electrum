@@ -19,6 +19,7 @@ import org.haobtc.onekey.event.CustomizeFeeRateEvent;
 import org.haobtc.onekey.event.GetFeeEvent;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.ui.base.BaseDialogFragment;
+import static org.haobtc.onekey.constant.Constant.CURRENT_CURRENCY_GRAPHIC_SYMBOL;
 
 import java.util.Locale;
 
@@ -126,6 +127,7 @@ public class CustomizeFeeDialog extends BaseDialogFragment {
                 textTime.setText(String.format("%s%s%s", getString(R.string.about_), time, getString(R.string.minute)));
                 textFeeInBtc.setText(String.format(Locale.ENGLISH, "%s %s", fee, preferences.getString("base_unit", "")));
                 textSize.setText(String.valueOf(customer.getSize()));
+                textFeeInCash.setText(String.format(Locale.ENGLISH, "%s %s", preferences.getString(CURRENT_CURRENCY_GRAPHIC_SYMBOL, "¥"), customer.getFiat()));
             } else {
                 Toast.makeText(getActivity(), errors, Toast.LENGTH_SHORT).show();
             }

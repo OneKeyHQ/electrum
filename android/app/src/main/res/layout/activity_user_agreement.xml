@@ -58,7 +58,6 @@
                 android:layout_height="wrap_content"
                 android:lineSpacingExtra="8sp"
                 android:paddingTop="@dimen/dp_16"
-                android:text="@string/user_agreement_content"
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/sp_13" />
 
@@ -66,7 +65,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:lineSpacingExtra="8sp"
-                android:text="@string/user_agreement_content_down"
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/sp_13" />
 

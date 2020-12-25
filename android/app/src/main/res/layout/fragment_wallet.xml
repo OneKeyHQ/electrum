@@ -330,7 +330,7 @@
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="17dp"
+                        android:layout_height="wrap_content"
                         android:layout_below="@+id/RelativeLayout11"
                         android:layout_marginTop="@dimen/dp_12"
                         android:gravity="center_horizontal">
@@ -338,7 +338,7 @@
                         <TextView
                             android:id="@+id/wallet_card_tv3"
                             android:layout_width="wrap_content"
-                            android:layout_height="17dp"
+                            android:layout_height="wrap_content"
                             android:text="@string/my_amount"
                             android:textColor="@color/button_bk_ddake"
                             android:textSize="@dimen/sp_14" />
