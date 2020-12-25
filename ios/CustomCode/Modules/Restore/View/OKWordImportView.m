@@ -139,8 +139,10 @@
             }
         }
 
-        _tfs[targetIndex].text = nil;
-        [_tfs[targetIndex] becomeFirstResponder];
+        if (targetIndex < _tfs.count) {
+            _tfs[targetIndex].text = nil;
+            [_tfs[targetIndex] becomeFirstResponder];
+        }
     }
 
     return YES;
