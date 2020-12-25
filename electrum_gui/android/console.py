@@ -1,5 +1,6 @@
 from __future__ import absolute_import, division, print_function
 
+import asyncio
 import binascii
 import copy
 from code import InteractiveConsole
@@ -34,7 +35,7 @@ from electrum.plugin import Plugins
 #from electrum.plugins.trezor.clientbase import TrezorClientBase
 from electrum.transaction import PartialTransaction, Transaction, TxOutput, PartialTxOutput, tx_from_any, TxInput, \
     PartialTxInput
-from electrum import commands, daemon, keystore, simple_config, storage, util, bitcoin
+from electrum import commands, daemon, keystore, simple_config, storage, util, bitcoin, paymentrequest
 from electrum.util import bfh, Fiat, create_and_start_event_loop, decimal_point_to_base_unit_name, standardize_path, DecimalEncoder
 from electrum.util import user_dir as get_dir
 from electrum import MutiBase
@@ -1583,10 +1584,30 @@ class AndroidCommands(commands.Commands):
     def parse_address(self, data):
         data = data.strip()
         try:
-            uri = util.parse_URI(data)
-            if uri.__contains__('amount'):
-                uri['amount'] = self.format_amount_and_units(uri['amount'])
-            return uri
+            out = util.parse_URI(data)
+
+            r = out.get('r')
+            sig = out.get('sig')
+            name = out.get('name')
+
+            if r or (name and sig):
+
+                if name and sig:
+                    s = paymentrequest.serialize_request(out).SerializeToString()
+                    result = paymentrequest.PaymentRequest(s)
+                else:
+                    result = asyncio.run_coroutine_threadsafe(
+                        paymentrequest.get_payment_request(r),
+                        self.network.asyncio_loop).result()
+
+                out = {'address': result.get_address(), 'memo': result.get_memo()}
+                if result.get_amount() != 0:
+                    out['amount'] = result.get_amount()
+
+            if out.__contains__('amount'):
+                out['amount'] = self.format_amount_and_units(out['amount'])
+
+            return out
         except Exception as e:
             raise Exception(e)
 
