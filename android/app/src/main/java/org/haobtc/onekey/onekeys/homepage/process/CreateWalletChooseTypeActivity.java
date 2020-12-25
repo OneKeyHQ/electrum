@@ -76,8 +76,6 @@ public class CreateWalletChooseTypeActivity extends BaseActivity {
                 type = R.id.rel_single_wallet;
                 break;
         }
-//        Intent intent = new Intent(CreateWalletChooseTypeActivity.this, CreateDeriveChooseTypeActivity.class);
-//        startActivity(intent);
         NavUtils.gotoCreateDeriveChooseTypeActivity(mContext, true);
     }
 

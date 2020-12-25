@@ -1341,9 +1341,9 @@
     <string name="delete_hd_derived_confirm">同时删除根 HD 钱包</string>
     <string name="reset_ok">重置App成功</string>
     <string name="reset_failure">重置失败，请重试</string>
-
     <string name="unknown_version">未知版本</string>
     <string name="not_found_once_wallet">没有钱包</string>
     <string name="not_allow_un_check">该项不可取消</string>
     <string name="unknown">未知</string>
+    <string name="empty_help_words">助记词为空</string>
 </resources>

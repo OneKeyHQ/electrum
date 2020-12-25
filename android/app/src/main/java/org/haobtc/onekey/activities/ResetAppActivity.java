@@ -128,7 +128,7 @@ public class ResetAppActivity extends BaseActivity implements OnCheckedChangeLis
         switch (msg.what) {
             case Reset_Code_OK:
                 mToast(getString(R.string.reset_ok));
-                NavUtils.gotoLunchActivity(mContext);
+                NavUtils.reSetApp(mContext);
                 break;
             case Reset_Code_FAILURE:
                 mToast(getString(R.string.reset_failure));

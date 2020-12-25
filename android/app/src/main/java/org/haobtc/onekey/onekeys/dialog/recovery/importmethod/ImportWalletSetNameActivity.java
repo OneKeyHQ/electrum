@@ -1,5 +1,7 @@
 package org.haobtc.onekey.onekeys.dialog.recovery.importmethod;
 
+import android.content.Context;
+import android.content.Intent;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -11,6 +13,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.aop.SingleClick;
+import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.NameSettedEvent;
 
 import butterknife.BindView;
@@ -18,25 +21,33 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class ImportWalletSetNameActivity extends BaseActivity implements TextWatcher {
-
     @BindView(R.id.edit_set_wallet_name)
     EditText editSetWalletName;
-
     @BindView(R.id.btn_import)
     Button btnImport;
+    private int purpose;
+
+    public static void gotoImportWalletSetNameActivity (Context context, int purpose) {
+        Intent intent = new Intent(context, ImportWalletSetNameActivity.class);
+        intent.putExtra(Constant.Purpose, purpose);
+        context.startActivity(intent);
+    }
 
     @Override
-    public int getLayoutId() {
+    public int getLayoutId () {
         return R.layout.activity_import_wallet_set_name;
     }
 
     @Override
-    public void initView() {
+    public void initView () {
         ButterKnife.bind(this);
     }
 
     @Override
     public void initData() {
+        if (getIntent().hasExtra(Constant.Purpose)) {
+            purpose = getIntent().getIntExtra(Constant.Purpose, -1);
+        }
         editSetWalletName.addTextChangedListener(this);
     }
 
@@ -52,7 +63,11 @@ public class ImportWalletSetNameActivity extends BaseActivity implements TextWat
                     mToast(getString(R.string.please_input_walletname));
                     return;
                 }
-                EventBus.getDefault().post(new NameSettedEvent(editSetWalletName.getText().toString()));
+                NameSettedEvent nameSettedEvent = new NameSettedEvent(editSetWalletName.getText().toString());
+                if (purpose > -1) {
+                    nameSettedEvent.type = purpose;
+                }
+                EventBus.getDefault().post(nameSettedEvent);
                 finish();
                 break;
         }
@@ -88,4 +103,5 @@ public class ImportWalletSetNameActivity extends BaseActivity implements TextWat
             btnImport.setEnabled(false);
         }
     }
+
 }

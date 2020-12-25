@@ -1,5 +1,4 @@
 package org.haobtc.onekey.activities;
-
 import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.view.View;
@@ -91,6 +90,13 @@ public class LanguageSettingActivity extends BaseActivity {
                 changeLanguage(Constant.Chinese);
                 break;
             case R.id.radio_system:
+                edit.putString("language", "");
+                edit.commit();
+                radioSystem.setTextColor(getColor(R.color.onekey));
+                radioEnglish.setTextColor(getColor(R.color.text_color1));
+                radioChineseasy.setTextColor(getColor(R.color.text_color1));
+                NavUtils.reSetApp(mContext);
+                break;
             case R.id.radio_english:
                 mTextEnglish();
                 setLanguage(Constant.En_UK);

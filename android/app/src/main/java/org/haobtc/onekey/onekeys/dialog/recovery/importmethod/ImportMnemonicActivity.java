@@ -1,9 +1,7 @@
 package org.haobtc.onekey.onekeys.dialog.recovery.importmethod;
-
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Rect;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -20,6 +18,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chaquo.python.PyObject;
+import com.google.common.base.Strings;
+import com.lxj.xpopup.XPopup;
 
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
@@ -27,7 +27,9 @@ import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.adapter.SearchMnemonicAdapter;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.event.ResultEvent;
+import org.haobtc.onekey.ui.dialog.custom.SelectWalletTypeDialog;
 import org.haobtc.onekey.utils.Daemon;
+import org.haobtc.onekey.utils.NavUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -232,42 +234,47 @@ public class ImportMnemonicActivity extends BaseActivity implements View.OnFocus
                     ClipData data = clipboard.getPrimaryClip();
                     if (data != null && data.getItemCount() > 0) {
                         CharSequence text = data.getItemAt(0).getText();
-                        if (!TextUtils.isEmpty(text.toString())) {
+                        if (!Strings.isNullOrEmpty(text.toString())) {
                             String[] wordsList = text.toString().split("\\s+");
                             ArrayList<String> wordList = new ArrayList<>(Arrays.asList(wordsList));
-                            switch (wordList.size()) {
-                                case 12:
-                                    editTwelve.setText(wordList.get(11));
-                                case 11:
-                                    editEleven.setText(wordList.get(10));
-                                case 10:
-                                    editTen.setText(wordList.get(9));
-                                case 9:
-                                    editNine.setText(wordList.get(8));
-                                case 8:
-                                    editEight.setText(wordList.get(7));
-                                case 7:
-                                    editSeven.setText(wordList.get(6));
-                                case 6:
-                                    editSix.setText(wordList.get(5));
-                                case 5:
-                                    editFive.setText(wordList.get(4));
-                                case 4:
-                                    editFour.setText(wordList.get(3));
-                                case 3:
-                                    editThree.setText(wordList.get(2));
-                                case 2:
-                                    editTwo.setText(wordList.get(1));
-                                case 1:
-                                    editOne.setText(wordList.get(0));
-                                    break;
-                                default:
-                                    throw new IllegalStateException("Unexpected value: " + wordList.size());
+                            if (wordList.size() > 0) {
+                                switch (wordList.size()) {
+                                    case 12:
+                                        editTwelve.setText(wordList.get(11));
+                                    case 11:
+                                        editEleven.setText(wordList.get(10));
+                                    case 10:
+                                        editTen.setText(wordList.get(9));
+                                    case 9:
+                                        editNine.setText(wordList.get(8));
+                                    case 8:
+                                        editEight.setText(wordList.get(7));
+                                    case 7:
+                                        editSeven.setText(wordList.get(6));
+                                    case 6:
+                                        editSix.setText(wordList.get(5));
+                                    case 5:
+                                        editFive.setText(wordList.get(4));
+                                    case 4:
+                                        editFour.setText(wordList.get(3));
+                                    case 3:
+                                        editThree.setText(wordList.get(2));
+                                    case 2:
+                                        editTwo.setText(wordList.get(1));
+                                    case 1:
+                                        editOne.setText(wordList.get(0));
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            } else {
+                                mToast(getString(R.string.empty_help_words));
                             }
                         }
                     }
                 }
                 break;
+            default:
         }
     }
 
@@ -281,17 +288,25 @@ public class ImportMnemonicActivity extends BaseActivity implements View.OnFocus
             return;
         }
         if (isSeeds.toBoolean()) {
-            EventBus.getDefault().post(new ResultEvent(strNewseed));
-            Intent intent = new Intent(ImportMnemonicActivity.this, ImportWalletSetNameActivity.class);
-            startActivity(intent);
-            finish();
-        }else{
+            showSelectDialog(strNewseed);
+        } else {
             mToast(getString(R.string.helpword_wrong));
         }
     }
 
+    private void showSelectDialog (String strNewseed) {
+        new XPopup.Builder(mContext).asCustom(new SelectWalletTypeDialog(mContext, new SelectWalletTypeDialog.onClickListener() {
+            @Override
+            public void onClick (int purpose) {
+                EventBus.getDefault().post(new ResultEvent(strNewseed));
+                NavUtils.gotoImportWalletSetNameActivity(mContext, purpose);
+                finish();
+            }
+        })).show();
+    }
+
     @Override
-    public void onFocusChange(View v, boolean hasFocus) {
+    public void onFocusChange (View v, boolean hasFocus) {
         if (hasFocus) {
             switch (v.getId()) {
                 case R.id.edit_one:
@@ -381,4 +396,5 @@ public class ImportMnemonicActivity extends BaseActivity implements View.OnFocus
     public boolean requireSecure() {
         return true;
     }
+
 }

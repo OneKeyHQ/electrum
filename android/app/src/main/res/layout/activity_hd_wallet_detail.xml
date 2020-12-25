@@ -356,9 +356,8 @@
 
                 </LinearLayout>
 
-
             </LinearLayout>
-
+            <!--  暂时隐藏删除HD子钱包功能   -->
             <LinearLayout
                 android:id="@+id/delete_ll"
                 android:layout_width="match_parent"

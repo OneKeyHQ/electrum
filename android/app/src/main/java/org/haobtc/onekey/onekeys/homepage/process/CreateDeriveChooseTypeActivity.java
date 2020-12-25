@@ -65,21 +65,7 @@ public class CreateDeriveChooseTypeActivity extends BaseActivity {
                 new XPopup.Builder(mContext)
                         .asCustom(new SelectWalletTypeDialog(mContext, new SelectWalletTypeDialog.onClickListener() {
                             @Override
-                            public void onClick (int mode) {
-                                int purpose = 0;
-                                switch (mode) {
-                                    case SelectWalletTypeDialog.RecommendType:
-                                        purpose = 49;
-                                        break;
-                                    case SelectWalletTypeDialog.NativeType:
-                                        purpose = 84;
-                                        break;
-                                    case SelectWalletTypeDialog.NormalType:
-                                        purpose = 44;
-                                        break;
-                                    default:
-                                        break;
-                                }
+                            public void onClick (int purpose) {
                                 LogUtil.d("purpose  :" + isFinish);
                                 PreferencesManager.getSharedPreferences(mContext, Constant.myPreferences).edit().putInt(Constant.Wallet_Purpose, purpose).apply();
                                 NavUtils.gotoSoftWalletNameSettingActivity(mContext, purpose);

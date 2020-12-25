@@ -87,6 +87,8 @@ public class HdWalletDetailActivity extends BaseActivity {
     RelativeLayout deleteLayout;
     @BindView(R.id.delete_tv)
     TextView deleteTV;
+    @BindView(R.id.delete_ll)
+    LinearLayout mDeleteLayout;
     private String type;
     private boolean isBackup;
     private SharedPreferences preferences;
@@ -120,6 +122,7 @@ public class HdWalletDetailActivity extends BaseActivity {
             linHdWalletShow.setVisibility(View.VISIBLE);
             linSingleShow.setVisibility(View.GONE);
             deleteTV.setText(R.string.delete_wallet_single);
+            mDeleteLayout.setVisibility(View.GONE);
         } else if (showWalletType.contains(StringConstant.HW)) {
             textHdWallet.setText(getString(R.string.hardware_wallet));
             linSingleShow.setVisibility(View.VISIBLE);

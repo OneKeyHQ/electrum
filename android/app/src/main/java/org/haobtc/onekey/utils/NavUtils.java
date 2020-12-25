@@ -7,6 +7,7 @@ import org.haobtc.onekey.activities.ResetAppActivity;
 import org.haobtc.onekey.activities.base.LunchActivity;
 import org.haobtc.onekey.activities.transaction.CheckChainDetailWebActivity;
 import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
+import org.haobtc.onekey.onekeys.dialog.recovery.importmethod.ImportWalletSetNameActivity;
 import org.haobtc.onekey.onekeys.homepage.process.CreateDeriveChooseTypeActivity;
 import org.haobtc.onekey.onekeys.homepage.process.SoftWalletNameSettingActivity;
 
@@ -40,11 +41,11 @@ public class NavUtils {
         context.startActivity(intent);
     }
 
-    public static void reStartApp (Context mContext) {
-        final Intent intent = mContext.getPackageManager().getLaunchIntentForPackage(mContext.getPackageName());
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    public static void reSetApp (Context mContext) {
+        Intent intent = new Intent(mContext, LunchActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         mContext.startActivity(intent);
-        android.os.Process.killProcess(android.os.Process.myPid());
+        System.exit(0);
     }
 
     public static void gotoCheckChainDetailWebActivity (Context context, String loadWhere, String loadUrl) {
@@ -74,6 +75,15 @@ public class NavUtils {
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             context.startActivity(intent);
         }
+    }
+    /**
+     * 跳转到导入私钥的设置名称页面
+     *
+     * @param context
+     * @param purpose
+     */
+    public static void gotoImportWalletSetNameActivity (Context context, int purpose) {
+        ImportWalletSetNameActivity.gotoImportWalletSetNameActivity(context, purpose);
     }
 
 }

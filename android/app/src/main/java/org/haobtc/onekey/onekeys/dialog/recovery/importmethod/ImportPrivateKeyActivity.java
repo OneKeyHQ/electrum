@@ -14,6 +14,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 
 import com.chaquo.python.Kwarg;
+import com.lxj.xpopup.XPopup;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.bean.ZxingConfig;
@@ -24,7 +25,9 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.event.ResultEvent;
+import org.haobtc.onekey.ui.dialog.custom.SelectWalletTypeDialog;
 import org.haobtc.onekey.utils.Daemon;
+import org.haobtc.onekey.utils.NavUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -90,7 +93,7 @@ public class ImportPrivateKeyActivity extends BaseActivity implements TextWatche
                             } else { // Oups permission denied
                                 Toast.makeText(this, R.string.photopersion, Toast.LENGTH_SHORT).show();
                             }
-                        }).dispose();
+                        });
                 break;
             case R.id.btn_import:
                 isRightPrivate();
@@ -98,7 +101,7 @@ public class ImportPrivateKeyActivity extends BaseActivity implements TextWatche
         }
     }
 
-    private void isRightPrivate() {
+    private void isRightPrivate () {
         try {
             Daemon.commands.callAttr("verify_legality", editInputPrivate.getText().toString(), new Kwarg("flag", "private"));
         } catch (Exception e) {
@@ -106,14 +109,22 @@ public class ImportPrivateKeyActivity extends BaseActivity implements TextWatche
             e.printStackTrace();
             return;
         }
-        EventBus.getDefault().post(new ResultEvent(editInputPrivate.getText().toString()));
-        Intent intent = new Intent(ImportPrivateKeyActivity.this, ImportWalletSetNameActivity.class);
-        startActivity(intent);
-        finish();
+        showSelectDialog();
+    }
+
+    private void showSelectDialog () {
+        new XPopup.Builder(mContext).asCustom(new SelectWalletTypeDialog(mContext, new SelectWalletTypeDialog.onClickListener() {
+            @Override
+            public void onClick (int purpose) {
+                EventBus.getDefault().post(new ResultEvent(editInputPrivate.getText().toString()));
+                NavUtils.gotoImportWalletSetNameActivity(mContext, purpose);
+                finish();
+            }
+        })).show();
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    protected void onActivityResult (int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 0 && resultCode == RESULT_OK) {
             if (data != null) {
@@ -154,4 +165,5 @@ public class ImportPrivateKeyActivity extends BaseActivity implements TextWatche
         }
 
     }
+
 }

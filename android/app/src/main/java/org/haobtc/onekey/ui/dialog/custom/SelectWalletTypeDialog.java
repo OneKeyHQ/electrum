@@ -12,15 +12,15 @@ import org.haobtc.onekey.R;
 public class SelectWalletTypeDialog extends BottomPopupView {
     private LinearLayout recommendLayout, nativeLayout, normalLayout;
     private onClickListener onClickListener;
-    public static final int RecommendType=0;
-    public static final int NativeType=1;
-    public static final int NormalType=2;
+    private static final int RecommendType = 49;
+    private static final int NativeType = 84;
+    private static final int NormalType = 44;
     private Context context;
 
     public SelectWalletTypeDialog (@NonNull Context context, onClickListener onClickListener) {
         super(context);
         this.onClickListener = onClickListener;
-        this.context=context;
+        this.context = context;
     }
 
     @Override

@@ -33,6 +33,7 @@ import org.haobtc.onekey.utils.Daemon;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import dr.android.utils.LogUtil;
 
 public class ChooseImportMethodActivity extends BaseActivity {
 
@@ -41,6 +42,7 @@ public class ChooseImportMethodActivity extends BaseActivity {
     private String name;
     private String data;
     private int currentAction;
+    private int purpose;
 
     @Override
     public int getLayoutId() {
@@ -102,21 +104,23 @@ public class ChooseImportMethodActivity extends BaseActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGotName(NameSettedEvent event) {
         name = event.getName();
+        purpose = event.type;
         if (currentAction == R.id.rel_watch) {
             importWallet();
         } else {
             startActivity(new Intent(this, SoftPassActivity.class));
         }
     }
+
     @Subscribe
     public void onGotPass(GotPassEvent event) {
         if (!Strings.isNullOrEmpty(name) && !Strings.isNullOrEmpty(data)) {
             switch (currentAction) {
                 case R.id.rel_import_help:
-                    PyEnv.createWallet(this, name, event.getPassword(), null, data,-1);
+                    PyEnv.createWallet(this, name, event.getPassword(), null, data, purpose);
                     break;
                 case R.id.rel_import_private:
-                    PyEnv.createWallet(this, name, event.getPassword(), data, null,-1);
+                    PyEnv.createWallet(this, name, event.getPassword(), data, null, purpose);
                     break;
                 default:
             }
@@ -143,4 +147,5 @@ public class ChooseImportMethodActivity extends BaseActivity {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
     }
+
 }

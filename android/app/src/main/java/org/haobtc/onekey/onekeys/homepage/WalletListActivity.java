@@ -241,9 +241,6 @@ public class WalletListActivity extends BaseActivity {
                 startActivity(intent00);
                 break;
             case R.id.recl_add_wallet:
-//                Intent intent1 = new Intent(WalletListActivity.this, CreateDeriveChooseTypeActivity.class);
-//                intent1.putExtra(CURRENT_SELECTED_WALLET_TYPE, "derive");
-//                startActivity(intent1);
                 NavUtils.gotoCreateDeriveChooseTypeActivity(mContext, false);
                 break;
             case R.id.img_w:
@@ -341,4 +338,5 @@ public class WalletListActivity extends BaseActivity {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
     }
+
 }
