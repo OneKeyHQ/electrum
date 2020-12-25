@@ -1,17 +1,16 @@
 {
   "images" : [
     {
-      "filename" : "hide_on.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "hide_on@2x.png",
+      "filename" : "Union.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "hide_on@3x.png",
+      "filename" : "cloase.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
