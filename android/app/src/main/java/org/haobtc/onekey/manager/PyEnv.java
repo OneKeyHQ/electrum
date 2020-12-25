@@ -380,7 +380,7 @@ public final class PyEnv {
         mexecutorService.execute(() -> {
             try {
                 List<BalanceInfo> infos = new ArrayList<>();
-                String walletsInfo = sCommands.callAttr(PyConstant.CREATE_HD_WALLET, passwd, mnemonics).toString();
+                String walletsInfo = sCommands.callAttr(PyConstant.CREATE_HD_WALLET, passwd, mnemonics,new Kwarg(Constant.Purpose, 49)).toString();
                 CreateWalletBean walletBean = CreateWalletBean.objectFromData(walletsInfo);
                 if (Strings.isNullOrEmpty(mnemonics)) {
                     EventBus.getDefault().post(new CreateSuccessEvent(walletBean.getWalletInfo().get(0).getName()));

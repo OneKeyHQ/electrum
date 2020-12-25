@@ -1269,5 +1269,5 @@
     <string name="not_allow_un_check">Current item is not editable</string>
     <string name="unknown">unknown</string>
     <string name="empty_help_words">The mnemonic is empty</string>
-
+    <string name="accuracy_num">Accuracy should not exceed 8 decimal places</string>
 </resources>

@@ -142,7 +142,7 @@ public class RecoveryActivity extends BaseActivity {
                             } else { // Oups permission denied
                                 Toast.makeText(this, R.string.photopersion, Toast.LENGTH_SHORT).show();
                             }
-                        }).dispose();
+                        });
                 break;
             case R.id.bn_paste:
                 ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);

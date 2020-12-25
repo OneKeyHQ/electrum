@@ -598,7 +598,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                             } else { // Oups permission denied
                                 Toast.makeText(this, R.string.photopersion, Toast.LENGTH_SHORT).show();
                             }
-                        }).dispose();
+                        });
                 break;
             case R.id.bn_paste_one2one:
                 ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);

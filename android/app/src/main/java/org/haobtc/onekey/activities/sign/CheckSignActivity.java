@@ -187,7 +187,7 @@ public class CheckSignActivity extends BaseActivity {
                     } else { // Oups permission denied
                         Toast.makeText(this, R.string.photopersion, Toast.LENGTH_SHORT).show();
                     }
-                }).dispose();
+                });
     }
 
     private void verify() {

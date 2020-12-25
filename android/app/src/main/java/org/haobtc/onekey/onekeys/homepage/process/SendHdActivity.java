@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.text.InputFilter;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -48,6 +49,7 @@ import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.ui.dialog.CustomizeFeeDialog;
 import org.haobtc.onekey.ui.dialog.TransactionConfirmDialog;
 import org.haobtc.onekey.ui.dialog.UnBackupTipDialog;
+import org.haobtc.onekey.ui.widget.PointLengthFilter;
 import org.haobtc.onekey.utils.ClipboardUtils;
 
 import java.math.BigDecimal;
@@ -193,6 +195,12 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         currencySymbols = preferences.getString(CURRENT_CURRENCY_GRAPHIC_SYMBOL, "¥");
         getDefaultFee();
         setMinAmount();
+        editAmount.setFilters(new InputFilter[]{new PointLengthFilter(8, new PointLengthFilter.onMaxListener() {
+            @Override
+            public void onMax (int maxNum) {
+                showToast(R.string.accuracy_num);
+            }
+        })});
         String addressScan = getIntent().getStringExtra("addressScan");
         if (!TextUtils.isEmpty(addressScan)) {
             editReceiverAddress.setText(addressScan);
@@ -256,7 +264,8 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                     showToast(R.string.input_number);
                 } else {
                     isSetBig = true;
-                    calculateMaxSpendableAmount(currentFeeRate, false);
+                    // 点击最大之后也需要刷新当前
+                    calculateMaxSpendableAmount();
                 }
                 break;
             case R.id.text_customize_fee_rate:
@@ -280,6 +289,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                 currentFeeRate = currentFeeDetails.getSlow().getFeerate();
                 currentTempTransaction = tempSlowTransaction;
                 selectFlag = SLOW_FEE_RATE;
+                calculateMaxSpendableAmount();
                 break;
             case R.id.linear_recommend:
                 viewSlow.setVisibility(View.GONE);
@@ -291,6 +301,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                 currentFeeRate = currentFeeDetails.getNormal().getFeerate();
                 currentTempTransaction = tempRecommendTransaction;
                 selectFlag = RECOMMENDED_FEE_RATE;
+                calculateMaxSpendableAmount();
                 break;
             case R.id.linear_fast:
                 viewSlow.setVisibility(View.GONE);
@@ -302,6 +313,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                 currentFeeRate = currentFeeDetails.getFast().getFeerate();
                 currentTempTransaction = tempFastTransaction;
                 selectFlag = FAST_FEE_RATE;
+                calculateMaxSpendableAmount();
                 break;
             case R.id.text_rollback:
                 turnOffCustomize();
@@ -329,7 +341,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         linearRateSelector.setVisibility(View.VISIBLE);
         linearCustomize.setVisibility(View.GONE);
         currentFeeRate = previousFeeRate;
-        refreshFeeView();
+        calculateMaxSpendableAmount();
     }
 
     /**
@@ -412,22 +424,25 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     /**
      * 计算最大可用余额
      */
-    private void calculateMaxSpendableAmount(double feeRate, boolean judgeBig) {
-        PyResponse<TemporaryTxInfo> pyResponse = PyEnv.getFeeByFeeRate(editReceiverAddress.getText().toString(), "!", String.valueOf(feeRate));
+
+    private void calculateMaxSpendableAmount () {
+        PyResponse<TemporaryTxInfo> pyResponse = PyEnv.getFeeByFeeRate(editReceiverAddress.getText().toString(), "!", String.valueOf(currentFeeRate));
+
         if (Strings.isNullOrEmpty(pyResponse.getErrors())) {
             TemporaryTxInfo temporaryTxInfo = pyResponse.getResult();
             maxAmount = BigDecimal.valueOf(Double.parseDouble(balance)).subtract(BigDecimal.valueOf(temporaryTxInfo.getFee()));
-            if (judgeBig) {
+            if (isSetBig) {
+                editAmount.setText(maxAmount.toPlainString());
+            } else {
+                // 不能大于最大值，
                 if (!Strings.isNullOrEmpty(amount) && Double.parseDouble(amount) > 0) {
                     BigDecimal decimal = BigDecimal.valueOf(Double.parseDouble(amount));
-                    if (decimal.compareTo(decimalBalance) >= 0) {
+                    if (decimal.compareTo(maxAmount) >= 0) {
                         editAmount.setText(maxAmount.toPlainString());
                     }
                 }
-            } else {
-                editAmount.setText(maxAmount.toPlainString());
-                refreshFeeView();
             }
+            refreshFeeView();
             editAmount.setFocusable(true);
         }
     }
@@ -611,8 +626,6 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                 default:
                     return false;
             }
-        } else {
-//            showToast(errors);
         }
         return false;
     }
@@ -704,20 +717,17 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
             btnNext.setEnabled(false);
             return;
         } else {
-            if (!Strings.isNullOrEmpty(amount) && Double.parseDouble(amount) > 0) {
+            if (!Strings.isNullOrEmpty(amount) && Double.parseDouble(amount) >= 0) {
                 BigDecimal decimal = BigDecimal.valueOf(Double.parseDouble(amount));
-                if (decimal.compareTo(minAmount) < 0) {
+                if (decimal.compareTo(minAmount) <= 0) {
                     String min = String.format(Locale.ENGLISH, "%s", minAmount.stripTrailingZeros().toPlainString());
                     editAmount.setText(min);
                     editAmount.setSelection(min.length());
-                } else if (decimal.compareTo(decimalBalance) >= 0) {
+                } else {
                     if (addressInvalid) {
-                        calculateMaxSpendableAmount(currentFeeRate, true);
+                        calculateMaxSpendableAmount();
                     }
                 }
-            } else if (Double.parseDouble(editAmount.getText().toString().trim()) == 0) {
-                btnNext.setEnabled(false);
-                return;
             }
         }
         refreshFeeView();
@@ -743,7 +753,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                 editReceiverAddress.setText("");
                 showToast(R.string.invalid_address);
             } else {
-                calculateMaxSpendableAmount(currentFeeRate, true);
+                calculateMaxSpendableAmount();
             }
         }
     }
@@ -762,24 +772,6 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
             editAmount.setText("");
             return;
         }
-        // 地址为空的情况下输入金额
-//            if (Strings.isNullOrEmpty(editReceiverAddress.getText().toString()) && !Strings.isNullOrEmpty(amount)) {
-//                showToast(R.string.input_address);
-//                editAmount.setText("");
-//                return;
-//            }
-        // 金额不能是负数
-//        if (!Strings.isNullOrEmpty(amount) && Double.parseDouble(amount) > 0) {
-//            BigDecimal decimal = BigDecimal.valueOf(Double.parseDouble(amount));
-//            if (decimal.compareTo(minAmount) < 0) {
-////                String min = String.format(Locale.ENGLISH, "%s", minAmount.stripTrailingZeros().toPlainString());
-////                editAmount.setText(min);
-////                editAmount.setSelection(min.length());
-//            } else if (decimal.compareTo(decimalBalance) >= 0) {
-////                showToast(R.string.insufficient);
-//                btnNext.setEnabled(false);
-//            }
-//        }
     }
 
     @OnFocusChange(value = R.id.edit_receiver_address)
@@ -800,7 +792,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                     editAmount.setSelection(min.length());
                 } else if (decimal.compareTo(decimalBalance) >= 0) {
                     if (addressInvalid) {
-                        calculateMaxSpendableAmount(currentFeeRate, true);
+                        calculateMaxSpendableAmount();
                     }
                 }
             }

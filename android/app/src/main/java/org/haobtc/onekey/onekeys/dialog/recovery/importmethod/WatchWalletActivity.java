@@ -85,7 +85,7 @@ public class WatchWalletActivity extends BaseActivity implements TextWatcher {
                             } else { // Oups permission denied
                                 Toast.makeText(this, R.string.photopersion, Toast.LENGTH_SHORT).show();
                             }
-                        }).dispose();
+                        });
                 break;
             case R.id.btn_import:
                 addressIsRight();

@@ -452,7 +452,7 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
                     } else {
                         Toast.makeText(this, R.string.photopersion, Toast.LENGTH_SHORT).show();
                     }
-                }).dispose();
+                });
     }
     /**
      * 从文件系统读取交易文件

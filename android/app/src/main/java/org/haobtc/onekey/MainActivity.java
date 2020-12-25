@@ -601,7 +601,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                             } else { // Oups permission denied
                                 Toast.makeText(this, R.string.photopersion, Toast.LENGTH_SHORT).show();
                             }
-                        }).dispose();
+                        });
                 break;
             case R.id.img_setting:
                 Intent intent1 = new Intent(this, SettingActivity.class);
