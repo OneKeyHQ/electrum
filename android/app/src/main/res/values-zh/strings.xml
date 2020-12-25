@@ -1143,7 +1143,7 @@
     <string name="bluetooth_exception">蓝牙链接异常</string>
     <string name="name_lenth_8">名字最多为8个字符哦~</string>
     <string name="newest_app">当前已是最新版本</string>
-    <string name="already_has_local_hd">您本地已经创建过HD钱包！，不能在创建了呦</string>
+    <string name="already_has_local_hd">本地已存在 HD 钱包，无法再连接 backup 模式的硬件钱包</string>
     <string name="looking_for_wallets">搜寻钱包中</string>
     <string name="unbackup_tip_dialog">该钱包尚未备份。为了您的资金安全，请完成备份后再使用该地址发起收款。</string>
     <string name="know">我已知晓</string>

@@ -1202,7 +1202,7 @@
     <string name="lable">lable</string>
     <string name="name_lenth_8">Name can be up to 8 characters~</string>
     <string name="newest_app">Current version is newest </string>
-    <string name="already_has_local_hd">There is a local HD wallet already!!</string>
+    <string name="already_has_local_hd">You have already created a local HD wallet! You can\'t create it again!</string>
     <string name="looking_for_wallets">Looking for wallets</string>
     <string name="unbackup_tip_dialog">The wallet has not been backed up. For the safety of your funds, please complete the backup and then use this address to initiate collection.</string>
     <string name="know">I already know</string>

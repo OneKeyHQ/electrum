@@ -100,7 +100,7 @@ public class AboutActivity extends BaseActivity implements OnDownloadListener {
     private void getUpdateInfo() {
         // version_testnet.json version_regtest.json
         String appId = BuildConfig.APPLICATION_ID;
-        String urlPrefix = "https://onekey.so/";
+        String urlPrefix = Constant.ONE_KEY_WEBSITE;
         String url = "";
         if (appId.endsWith(BITCOIN_NETWORK_TYPE_0)) {
             url = urlPrefix + "version.json";

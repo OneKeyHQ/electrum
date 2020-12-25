@@ -25,7 +25,7 @@ class TxDb:
                 tx_list.append(info)
             return tx_list
         except Exception as e:
-            pass
+            raise e
         finally:
             if cursor:
                 cursor.close()
@@ -44,7 +44,7 @@ class TxDb:
             conn.commit()
         except Exception as e:
             e.__repr__()
-            pass
+            raise e
         finally:
             if cursor:
                 cursor.close()

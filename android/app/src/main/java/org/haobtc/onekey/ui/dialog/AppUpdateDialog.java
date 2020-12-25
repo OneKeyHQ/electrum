@@ -1,5 +1,6 @@
 package org.haobtc.onekey.ui.dialog;
 
+import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -48,6 +49,7 @@ public class AppUpdateDialog extends BaseDialogFragment {
     @Override
     public void init() {
         versionNameText.setText(versionName);
+        updateDescription.setMovementMethod(ScrollingMovementMethod.getInstance());
         updateDescription.setText(description);
     }
 

@@ -1,5 +1,6 @@
 package org.haobtc.onekey.ui.fragment;
 
+import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -74,11 +75,13 @@ public class HardwareUpgradeFragment extends BaseFragment {
             if (!Strings.isNullOrEmpty(HardwareUpgradeActivity.newFirmwareVersion)) {
                 stm32.setVisibility(View.VISIBLE);
                 newerStm32VersionName.setText(HardwareUpgradeActivity.newFirmwareVersion);
+                stm32UpdateDescription.setMovementMethod(ScrollingMovementMethod.getInstance());
                 stm32UpdateDescription.setText(HardwareUpgradeActivity.firmwareChangelog);
             }
             if (!Strings.isNullOrEmpty(HardwareUpgradeActivity.newNrfVersion)) {
                 ble.setVisibility(View.VISIBLE);
                 newerNrfVersionName.setText(HardwareUpgradeActivity.newNrfVersion);
+                nrfUpdateDescription.setMovementMethod(ScrollingMovementMethod.getInstance());
                 nrfUpdateDescription.setText(HardwareUpgradeActivity.nrfChangelog);
             }
         }

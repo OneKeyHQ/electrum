@@ -329,7 +329,7 @@ public final class Constant {
      * onekey官网
      * https://onekey.so/
      */
-    public static final String ONE_KEY_WEBSITE = "https://key.bixin.com/";
+    public static final String ONE_KEY_WEBSITE = "https://data.onekey.so/";
     /**
      * 钱包可见名字
      */
