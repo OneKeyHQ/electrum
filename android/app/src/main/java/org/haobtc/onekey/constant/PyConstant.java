@@ -210,5 +210,8 @@ public final class PyConstant {
      * 获取派生钱包个数
      */
     public static final String GET_DEVIRED_NUM = "get_devired_num";
-
+    /**
+     * 获取交易历史
+     * */
+    public static final String GET_TX_HISTORY = "get_all_tx_list";
 }
