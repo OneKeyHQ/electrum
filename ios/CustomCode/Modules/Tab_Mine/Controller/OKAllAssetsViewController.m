@@ -53,9 +53,25 @@
     self.allData  = [OKAllAssetsTableViewCellModel mj_objectArrayWithKeyValuesArray:wallet_info];
     self.balanceLabel.text = [NSString stringWithFormat:@"%@ %@",kWalletManager.currentFiatSymbol,resultN];
     self.showList = [NSArray arrayWithArray:self.allData];
+    [self refreshFooterViewByCount:self.showList.count];
     [self.tableView reloadData];
 }
-
+- (void)refreshFooterViewByCount:(NSUInteger)count {
+    if (count > 0) {
+        self.tableView.tableFooterView = [UIView new];
+        return;
+    }
+    
+    UILabel *lab = [UILabel new];
+    lab.font = [UIFont systemFontOfSize:21];
+    lab.textColor = HexColor(0x9FA6AD);
+    lab.text = MyLocalizedString(@"暂无资产", nil);
+    lab.textAlignment = NSTextAlignmentCenter;
+    [lab sizeToFit];
+    self.tableView.tableFooterView = lab;
+    
+    
+}
 #pragma mark - UITableViewDataSource ,UITableViewDelegate
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
@@ -88,6 +104,7 @@
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"name contains %@",text];
         self.showList = [self.allData filteredArrayUsingPredicate:predicate];
     }
+    [self refreshFooterViewByCount:self.showList.count];
     [self.tableView reloadData];
 }
 @end
