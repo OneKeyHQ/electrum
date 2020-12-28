@@ -39,6 +39,12 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.ObservableOnSubscribe;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 import static org.haobtc.onekey.constant.Constant.WALLET_BALANCE;
 
@@ -64,6 +70,7 @@ public class TransactionDetailWalletActivity extends BaseActivity {
     private String walletBalance;
     private String bleMac;
     private int currentAction;
+    private Disposable mLoadTxListDisposable;
 
     @Override
     public int getLayoutId() {
@@ -95,73 +102,92 @@ public class TransactionDetailWalletActivity extends BaseActivity {
     }
 
     private void getTxList(String status) {
-        PyObject getHistoryTx = null;
-        try {
-            //get transaction json
-            if ("all".equals(status)) {
-                getHistoryTx = Daemon.commands.callAttr("get_all_tx_list");
-            } else {
-                getHistoryTx = Daemon.commands.callAttr("get_all_tx_list", status);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            mToast(e.getMessage());
-            reclTransactionList.setVisibility(View.GONE);
-            tetNone.setVisibility(View.VISIBLE);
-            return;
-
+        if (mLoadTxListDisposable != null && !mLoadTxListDisposable.isDisposed()) {
+            mLoadTxListDisposable.dispose();
         }
-        Log.i("jxmgetHistoryTx", "getTxList===: " + getHistoryTx);
-        if (getHistoryTx.toString().length() > 2) {
-            reclTransactionList.setVisibility(View.VISIBLE);
-            tetNone.setVisibility(View.GONE);
-            try {
-                JSONArray jsonArray = new JSONArray(getHistoryTx.toString());
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    JSONObject jsonObject = jsonArray.getJSONObject(i);
-                    MaintrsactionlistEvent maintrsactionlistEvent = new MaintrsactionlistEvent();
-                    String type = jsonObject.getString("type");
-                    String txHash = jsonObject.getString("tx_hash");
-                    String address = jsonObject.getString("address");
-                    String amount = jsonObject.getString("amount");
-                    //false ->get   true ->push
-                    boolean isMine = jsonObject.getBoolean("is_mine");
-                    String date = jsonObject.getString("date");
-                    String txStatus = jsonObject.getString("tx_status");
-                    if ("history".equals(type)) {
-                        String confirmations = jsonObject.getString("confirmations");
-                        //add attribute
-                        maintrsactionlistEvent.setTxHash(txHash);
-                        maintrsactionlistEvent.setDate(date);
-                        maintrsactionlistEvent.setAmount(amount);
-                        maintrsactionlistEvent.setMine(isMine);
-                        maintrsactionlistEvent.setAddress(address);
-                        maintrsactionlistEvent.setConfirmations(confirmations);
-                        maintrsactionlistEvent.setType(type);
-                        maintrsactionlistEvent.setTxStatus(txStatus);
-                        listBeans.add(maintrsactionlistEvent);
+        mLoadTxListDisposable = Observable
+                .create((ObservableOnSubscribe<PyObject>) emitter -> {
+                    try {
+                        PyObject getHistoryTx = null;
+                        //get transaction json
+                        if ("all".equals(status)) {
+                            getHistoryTx = Daemon.commands.callAttr("get_all_tx_list");
+                        } else {
+                            getHistoryTx = Daemon.commands.callAttr("get_all_tx_list", status);
+                        }
+                        emitter.onNext(getHistoryTx);
+                        emitter.onComplete();
+                    } catch (Exception e) {
+                        emitter.onError(e);
                     }
-                }
-                onekeyTxListAdapter.notifyDataSetChanged();
-                onekeyTxListAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                        Intent intent = new Intent(TransactionDetailWalletActivity.this, DetailTransactionActivity.class);
-                        intent.putExtra("hashDetail", listBeans.get(position).getTxHash());
-                        intent.putExtra("txTime", listBeans.get(position).getDate());
-                        startActivity(intent);
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .map(historyTx -> {
+                    if (historyTx.toString().length() > 2) {
+                        reclTransactionList.setVisibility(View.VISIBLE);
+                        tetNone.setVisibility(View.GONE);
+                    } else {
+                        reclTransactionList.setVisibility(View.GONE);
+                        tetNone.setVisibility(View.VISIBLE);
+                    }
+                    return historyTx;
+                })
+                .observeOn(Schedulers.io())
+                .map(historyTx -> {
+                    try {
+                        JSONArray jsonArray = new JSONArray(historyTx.toString());
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject jsonObject = jsonArray.getJSONObject(i);
+                            MaintrsactionlistEvent maintrsactionlistEvent = new MaintrsactionlistEvent();
+                            String type = jsonObject.getString("type");
+                            String txHash = jsonObject.getString("tx_hash");
+                            String address = jsonObject.getString("address");
+                            String amount = jsonObject.getString("amount");
+                            //false ->get   true ->push
+                            boolean isMine = jsonObject.getBoolean("is_mine");
+                            String date = jsonObject.getString("date");
+                            String txStatus = jsonObject.getString("tx_status");
+                            if ("history".equals(type)) {
+                                String confirmations = jsonObject.getString("confirmations");
+                                //add attribute
+                                maintrsactionlistEvent.setTxHash(txHash);
+                                maintrsactionlistEvent.setDate(date);
+                                maintrsactionlistEvent.setAmount(amount);
+                                maintrsactionlistEvent.setMine(isMine);
+                                maintrsactionlistEvent.setAddress(address);
+                                maintrsactionlistEvent.setConfirmations(confirmations);
+                                maintrsactionlistEvent.setType(type);
+                                maintrsactionlistEvent.setTxStatus(txStatus);
+                                listBeans.add(maintrsactionlistEvent);
+                            }
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    return historyTx;
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(o -> {
+                    if (null != onekeyTxListAdapter) {
+                        onekeyTxListAdapter.notifyDataSetChanged();
+                        onekeyTxListAdapter.setOnItemClickListener((adapter, view, position) -> {
+                            Intent intent = new Intent(TransactionDetailWalletActivity.this, DetailTransactionActivity.class);
+                            intent.putExtra("hashDetail", listBeans.get(position).getTxHash());
+                            intent.putExtra("txTime", listBeans.get(position).getDate());
+                            startActivity(intent);
+                        });
+                    }
+                }, e -> {
+                    e.printStackTrace();
+                    mToast(e.getMessage());
+                    if (null != reclTransactionList) {
+                        reclTransactionList.setVisibility(View.GONE);
+                    }
+                    if (null != tetNone) {
+                        tetNone.setVisibility(View.VISIBLE);
                     }
                 });
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        } else {
-            reclTransactionList.setVisibility(View.GONE);
-            tetNone.setVisibility(View.VISIBLE);
-        }
-
     }
 
     @SingleClick
@@ -251,5 +277,8 @@ public class TransactionDetailWalletActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
+        if (mLoadTxListDisposable != null && !mLoadTxListDisposable.isDisposed()) {
+            mLoadTxListDisposable.dispose();
+        }
     }
 }
