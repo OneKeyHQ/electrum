@@ -1,4 +1,5 @@
 package org.haobtc.onekey.onekeys.homepage.process;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
@@ -179,6 +180,9 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     // 保存当前的选中位置，默认是推荐
     private int selectFlag = 0;
     private boolean isResume;
+    private double slowRate;
+    private double normalRate;
+    private double fastRate;
 
     /**
      * init
@@ -211,11 +215,15 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
             try {
                 boolean isBackup = PyEnv.hasBackup(getActivity());
                 if (!isBackup) {
-                    Bundle bundle = new Bundle();
-                    bundle.putString(Constant.UN_BACKUP_TIP, getString(R.string.receive_unbackup_tip));
-                    UnBackupTipDialog unBackupTipDialog = new UnBackupTipDialog();
-                    unBackupTipDialog.setArguments(bundle);
-                    unBackupTipDialog.show(getSupportFragmentManager(), "");
+                    new XPopup.Builder(mContext)
+                            .dismissOnTouchOutside(false)
+                            .isDestroyOnDismiss(true)
+                            .asCustom(new UnBackupTipDialog(mContext, getString(R.string.receive_unbackup_tip), new UnBackupTipDialog.onClick() {
+                                @Override
+                                public void onBack() {
+                                    finish();
+                                }
+                            })).show();
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -290,6 +298,13 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                     bundle.putDouble(Constant.CUSTOMIZE_FEE_RATE_MIN, currentFeeDetails.getSlow().getFeerate());
                     bundle.putDouble(Constant.CUSTOMIZE_FEE_RATE_MAX, currentFeeDetails.getFast().getFeerate() * 20);
                     bundle.putInt(Constant.TAG_TX_SIZE, transactionSize);
+                    if (selectFlag == RECOMMENDED_FEE_RATE) {
+                        bundle.putDouble(Constant.FEE_RATE, normalRate);
+                    } else if (selectFlag == SLOW_FEE_RATE) {
+                        bundle.putDouble(Constant.FEE_RATE, slowRate);
+                    } else if (selectFlag == FAST_FEE_RATE) {
+                        bundle.putDouble(Constant.FEE_RATE, fastRate);
+                    }
                     feeDialog = new CustomizeFeeDialog();
                     feeDialog.setArguments(bundle);
                     feeDialog.show(getSupportFragmentManager(), "customize_fee");
@@ -407,6 +422,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
             textSpendTime0.setText(String.format("%s%s%s", getString(R.string.about_), currentFeeDetails == null ? 0 : currentFeeDetails.getSlow().getTime(), getString(R.string.minute)));
             customSize = currentFeeDetails.getSlow().getSize();
             textFeeInBtc0.setText(String.format(Locale.ENGLISH, "%s %s", currentFeeDetails.getSlow().getFee(), baseUnit));
+            slowRate = currentFeeDetails.getSlow().getFeerate();
             PyResponse<String> response0 = PyEnv.exchange(currentFeeDetails.getSlow().getFee());
             String errors0 = response0.getErrors();
             if (Strings.isNullOrEmpty(errors0)) {
@@ -416,21 +432,19 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
             }
             textSpendTime1.setText(String.format("%s%s%s", getString(R.string.about_), currentFeeDetails == null ? 0 : currentFeeDetails.getNormal().getTime(), getString(R.string.minute)));
             textFeeInBtc1.setText(String.format(Locale.ENGLISH, "%s %s", currentFeeDetails.getNormal().getFee(), baseUnit));
+            normalRate = currentFeeDetails.getNormal().getFeerate();
             PyResponse<String> response1 = PyEnv.exchange(currentFeeDetails.getNormal().getFee());
             String errors1 = response1.getErrors();
             if (Strings.isNullOrEmpty(errors1)) {
                 textFeeInCash1.setText(String.format(Locale.ENGLISH, "%s %s", currencySymbols, response1.getResult()));
-            } else {
-//                showToast(errors0);
             }
             textSpendTime2.setText(String.format("%s%s%s", getString(R.string.about_), currentFeeDetails == null ? 0 : currentFeeDetails.getFast().getTime(), getString(R.string.minute)));
             textFeeInBtc2.setText(String.format(Locale.ENGLISH, "%s %s", currentFeeDetails.getFast().getFee(), baseUnit));
+            fastRate = currentFeeDetails.getFast().getFeerate();
             PyResponse<String> response2 = PyEnv.exchange(currentFeeDetails.getFast().getFee());
             String errors2 = response2.getErrors();
             if (Strings.isNullOrEmpty(errors2)) {
                 textFeeInCash2.setText(String.format(Locale.ENGLISH, "%s %s", currencySymbols, response2.getResult()));
-            } else {
-//                showToast(errors0);
             }
         } catch (Exception e) {
             e.printStackTrace();

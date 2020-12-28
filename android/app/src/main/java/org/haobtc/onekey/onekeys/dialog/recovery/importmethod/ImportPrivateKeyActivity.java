@@ -60,7 +60,6 @@ public class ImportPrivateKeyActivity extends BaseActivity implements TextWatche
 
     @Override
     public void initData() {
-
     }
 
     @Override
@@ -102,22 +101,21 @@ public class ImportPrivateKeyActivity extends BaseActivity implements TextWatche
         }
     }
 
-    private void isRightPrivate () {
+    private void isRightPrivate() {
         try {
             Daemon.commands.callAttr("verify_legality", editInputPrivate.getText().toString(), new Kwarg("flag", "private"));
         } catch (Exception e) {
-            mToast(e.getMessage());
-            Log.i("jxmerror", "isRightPrivate: "+e.getMessage());
+            mToast(e.getMessage().replace("BaseException:", ""));
             e.printStackTrace();
             return;
         }
         showSelectDialog();
     }
 
-    private void showSelectDialog () {
+    private void showSelectDialog() {
         new XPopup.Builder(mContext).asCustom(new SelectWalletTypeDialog(mContext, new SelectWalletTypeDialog.onClickListener() {
             @Override
-            public void onClick (int purpose) {
+            public void onClick(int purpose) {
                 EventBus.getDefault().post(new ResultEvent(editInputPrivate.getText().toString()));
                 NavUtils.gotoImportWalletSetNameActivity(mContext, purpose);
                 finish();
@@ -126,7 +124,7 @@ public class ImportPrivateKeyActivity extends BaseActivity implements TextWatche
     }
 
     @Override
-    protected void onActivityResult (int requestCode, int resultCode, @Nullable Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 0 && resultCode == RESULT_OK) {
             if (data != null) {
@@ -138,7 +136,6 @@ public class ImportPrivateKeyActivity extends BaseActivity implements TextWatche
 
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
     }
 
     @Override
@@ -160,12 +157,9 @@ public class ImportPrivateKeyActivity extends BaseActivity implements TextWatche
         if (!TextUtils.isEmpty(s.toString())) {
             btnImport.setEnabled(true);
             btnImport.setBackground(getDrawable(R.drawable.btn_checked));
-
         } else {
             btnImport.setEnabled(false);
             btnImport.setBackground(getDrawable(R.drawable.btn_no_check));
         }
-
     }
-
 }

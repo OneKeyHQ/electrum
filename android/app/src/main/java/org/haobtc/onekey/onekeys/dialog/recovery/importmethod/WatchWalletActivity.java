@@ -56,7 +56,6 @@ public class WatchWalletActivity extends BaseActivity implements TextWatcher {
 
     @Override
     public void initData() {
-
     }
 
     @SingleClick(value = 1000)
@@ -97,7 +96,7 @@ public class WatchWalletActivity extends BaseActivity implements TextWatcher {
         try {
             Daemon.commands.callAttr("verify_legality", editAddress.getText().toString(), new Kwarg("flag", "address"));
         } catch (Exception e) {
-            mToast(e.getMessage());
+            mToast(e.getMessage().replace("BaseException:", ""));
             e.printStackTrace();
             return;
         }
@@ -120,7 +119,6 @@ public class WatchWalletActivity extends BaseActivity implements TextWatcher {
 
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
     }
 
     @Override
@@ -142,11 +140,9 @@ public class WatchWalletActivity extends BaseActivity implements TextWatcher {
         if (!TextUtils.isEmpty(s.toString())) {
             btnImport.setEnabled(true);
             btnImport.setBackground(getDrawable(R.drawable.btn_checked));
-
         } else {
             btnImport.setEnabled(false);
             btnImport.setBackground(getDrawable(R.drawable.btn_no_check));
         }
-
     }
 }

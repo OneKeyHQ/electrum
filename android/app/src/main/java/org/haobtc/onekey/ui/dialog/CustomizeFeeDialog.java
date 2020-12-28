@@ -1,4 +1,5 @@
 package org.haobtc.onekey.ui.dialog;
+
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
@@ -19,6 +20,7 @@ import org.haobtc.onekey.event.CustomizeFeeRateEvent;
 import org.haobtc.onekey.event.GetFeeEvent;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.ui.base.BaseDialogFragment;
+
 import static org.haobtc.onekey.constant.Constant.CURRENT_CURRENCY_GRAPHIC_SYMBOL;
 
 import java.util.Locale;
@@ -63,7 +65,7 @@ public class CustomizeFeeDialog extends BaseDialogFragment {
      * @return
      */
     @Override
-    public int getContentViewId () {
+    public int getContentViewId() {
         return R.layout.custom_fee;
     }
 
@@ -75,8 +77,14 @@ public class CustomizeFeeDialog extends BaseDialogFragment {
         size = bundle.getInt(Constant.TAG_TX_SIZE, 0);
         feeRateMin = bundle.getDouble(Constant.CUSTOMIZE_FEE_RATE_MIN);
         feeRateMax = (int) bundle.getDouble(Constant.CUSTOMIZE_FEE_RATE_MAX);
+        double nowRate = bundle.getDouble(Constant.FEE_RATE);
         textSize.setText(String.valueOf(size));
-
+        if (String.valueOf(nowRate).contains(".")) {
+            String rate = String.valueOf(nowRate).substring(0, String.valueOf(nowRate).indexOf("."));
+            editFeeByte.setText(rate);
+        } else {
+            editFeeByte.setText(String.valueOf(nowRate));
+        }
     }
 
     public TextView getTextFeeInBtc() {
@@ -127,7 +135,8 @@ public class CustomizeFeeDialog extends BaseDialogFragment {
                 textTime.setText(String.format("%s%s%s", getString(R.string.about_), time, getString(R.string.minute)));
                 textFeeInBtc.setText(String.format(Locale.ENGLISH, "%s %s", fee, preferences.getString("base_unit", "")));
                 textSize.setText(String.valueOf(customer.getSize()));
-                textFeeInCash.setText(String.format(Locale.ENGLISH, "%s %s", preferences.getString(CURRENT_CURRENCY_GRAPHIC_SYMBOL, "¥"), customer.getFiat()));
+                textFeeInCash.setVisibility(View.VISIBLE);
+                textFeeInCash.setText(String.format(Locale.ENGLISH, "≈ %s %s", preferences.getString(CURRENT_CURRENCY_GRAPHIC_SYMBOL, "¥"), customer.getFiat()));
             } else {
                 Toast.makeText(getActivity(), errors, Toast.LENGTH_SHORT).show();
             }
@@ -141,9 +150,9 @@ public class CustomizeFeeDialog extends BaseDialogFragment {
             EventBus.getDefault().post(new GetFeeEvent(feeRate));
         } else {
             btnNext.setEnabled(false);
-            textTime.setText("-------");
-            textFeeInBtc.setText("-------");
+            textTime.setText(getString(R.string.line));
+            textFeeInBtc.setText(getString(R.string.line));
+            textFeeInCash.setVisibility(View.GONE);
         }
     }
-
 }

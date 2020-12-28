@@ -218,13 +218,12 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
                 }
                 break;
             default:
-
         }
     }
 
     /**
      * 跳转到验证界面
-     * */
+     */
     public void toVerifyActivity(Bundle bundle) {
         Intent intent = new Intent(this, CheckSignActivity.class);
         if (bundle != null) {
@@ -232,6 +231,7 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
         }
         startActivity(intent);
     }
+
     public void popupDialog(TransactionInfoBean info) {
         String sender = info.getInputAddr().get(0).getAddress();
         String receiver = info.getOutputAddr().get(0).getAddr();
@@ -251,18 +251,18 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
 
     /**
      * 签名逻辑处理
-     * */
+     */
     private void dealSign(@NonNull String rawMessage) {
         if (signTransaction.isChecked()) {
             // sign transaction
-           PyResponse<String> response = PyEnv.analysisRawTx(rawMessage);
-           String errors = response.getErrors();
-           if (Strings.isNullOrEmpty(errors)) {
-             infoBean = TransactionInfoBean.objectFromData(response.getResult());
-           } else {
-               showToast(errors);
-               return;
-           }
+            PyResponse<String> response = PyEnv.analysisRawTx(rawMessage);
+            String errors = response.getErrors();
+            if (Strings.isNullOrEmpty(errors)) {
+                infoBean = TransactionInfoBean.objectFromData(response.getResult());
+            } else {
+                showToast(errors);
+                return;
+            }
             switch (showWalletType) {
                 case org.haobtc.onekey.constant.Constant.WALLET_TYPE_HARDWARE_PERSONAL:
                     new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.SIGN_TX,
@@ -294,15 +294,17 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
             }
         }
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onButtonRequestConfirmedEvent(ButtonRequestConfirmedEvent event) {
         TransactionInfoBean info = TransactionInfoBean.objectFromData(signedTx);
         amounts = info.getAmount();
         broadcastTx(info.getTx());
     }
+
     /**
      * 广播交易
-     * */
+     */
     private void broadcastTx(String signedTx) {
         PyResponse<Void> response = PyEnv.broadcast(signedTx);
         String errors = response.getErrors();
@@ -316,9 +318,9 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
             showToast(errors);
         }
     }
+
     @Override
     public void onPreExecute() {
-
     }
 
     @Override
@@ -351,7 +353,6 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
 
     @Override
     public void onCancelled() {
-
     }
 
     @Override
@@ -366,7 +367,7 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
 
     /**
      * 获取地址
-     * */
+     */
     private void getAddress() {
         PyObject walletAddressShowUi = null;
         try {
@@ -380,13 +381,12 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
             Gson gson = new Gson();
             CurrentAddressDetail currentAddressDetail = gson.fromJson(strCode, CurrentAddressDetail.class);
             strinputAddress = currentAddressDetail.getAddr();
-
         }
     }
 
     /**
      * 软件签名处理
-     * */
+     */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGotPass(GotPassEvent event) {
         String password = event.getPassword();
@@ -432,7 +432,7 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
 
     /**
      * 扫描二维码
-     * */
+     */
     private void scanMessage() {
         rxPermissions
                 .request(Manifest.permission.CAMERA)
@@ -450,13 +450,14 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
                         intent2.putExtra(Constant.INTENT_ZXING_CONFIG, config);
                         startActivityForResult(intent2, REQUEST_CODE);
                     } else {
-                        Toast.makeText(this, R.string.photopersion, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, getString(R.string.photopersion), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
+
     /**
      * 从文件系统读取交易文件
-     * */
+     */
     private void importTxFromFile() {
         rxPermissions
                 .request(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -468,7 +469,6 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
                         intent1.addCategory(Intent.CATEGORY_OPENABLE);
                         intent1.putExtra("keyFile", "1");
                         startActivityForResult(intent1, 1);
-
                     } else {
                         Toast.makeText(this, R.string.reservatpion_photo, Toast.LENGTH_SHORT).show();
                     }
@@ -506,5 +506,4 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
             }
         }
     }
-
 }

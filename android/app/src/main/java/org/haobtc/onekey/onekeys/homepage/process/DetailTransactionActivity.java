@@ -3,6 +3,7 @@ package org.haobtc.onekey.onekeys.homepage.process;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -57,6 +58,7 @@ public class DetailTransactionActivity extends BaseActivity {
     private String tx;
     private String hashDetail;
     private String txTime;
+    private String txid;
 
     @Override
     public int getLayoutId() {
@@ -162,7 +164,7 @@ public class DetailTransactionActivity extends BaseActivity {
             textReceiveAddress.setText(outputAddr);
         }
         String txStatus = listBean.getTxStatus();
-        String txid = listBean.getTxid();
+        txid = listBean.getTxid();
         String fee = listBean.getFee();
         String description = listBean.getDescription();
         if (amount.contains(" (")) {
@@ -203,20 +205,24 @@ public class DetailTransactionActivity extends BaseActivity {
                 ClipboardManager cm1 = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                 // The text is placed on the system clipboard.
                 Objects.requireNonNull(cm1, "ClipboardManager not available").setPrimaryClip(ClipData.newPlainText(null, textSendAddress.getText()));
-                Toast.makeText(DetailTransactionActivity.this, R.string.copysuccess, Toast.LENGTH_LONG).show();
+                mlToast(getString(R.string.copysuccess));
                 break;
             case R.id.img_receive_copy:
                 //copy text
                 ClipboardManager cm2 = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                 // The text is placed on the system clipboard.
                 Objects.requireNonNull(cm2, "ClipboardManager not available").setPrimaryClip(ClipData.newPlainText(null, textReceiveAddress.getText()));
-                Toast.makeText(DetailTransactionActivity.this, R.string.copysuccess, Toast.LENGTH_LONG).show();
+                mToast(getString(R.string.copysuccess));
                 break;
             case R.id.text_block_high:
-                mIntent(CheckChainDetailWebActivity.class);
+                Intent intent = new Intent(this, CheckChainDetailWebActivity.class);
+                intent.putExtra("checkTxid", txid);
+                startActivity(intent);
                 break;
             case R.id.text_tx_num:
-                mIntent(CheckChainDetailWebActivity.class);
+                Intent intent1 = new Intent(this, CheckChainDetailWebActivity.class);
+                intent1.putExtra("checkTxid", txid);
+                startActivity(intent1);
                 break;
         }
     }

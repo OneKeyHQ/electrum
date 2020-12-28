@@ -112,7 +112,7 @@ public class AboutActivity extends BaseActivity implements OnDownloadListener {
         OkHttpClient okHttpClient = new OkHttpClient();
         Request request = new Request.Builder().url(url).build();
         Call call = okHttpClient.newCall(request);
-        Toast.makeText(this, getString(R.string.updating_dialog), Toast.LENGTH_LONG).show();
+        mlToast(getString(R.string.updating_dialog));
         call.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {

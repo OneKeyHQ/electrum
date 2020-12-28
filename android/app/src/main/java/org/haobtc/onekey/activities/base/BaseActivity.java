@@ -155,12 +155,13 @@ public abstract class BaseActivity extends AppCompatActivity {
                 CommunicationModeSelector.nfcTag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             }
         }
-
     }
 
     //toast short
     public void mToast(String str) {
-        Toast.makeText(this, str, Toast.LENGTH_SHORT).show();
+        Toast toast = Toast.makeText(this, str, Toast.LENGTH_SHORT);
+        toast.setText(str);
+        toast.show();
     }
 
     //toast long
@@ -206,7 +207,6 @@ public abstract class BaseActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         return filed1utf;
-
     }
 
     //get now time
@@ -220,7 +220,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     public boolean isMobileNO(String mobiles) {
         Pattern p = compile("^((17[0-9])|(14[0-9])|(13[0-9])|(15[^4,\\D])|(16[0-9])|(18[0,5-9]))\\d{8}$");
         Matcher m = p.matcher(mobiles);
-
         return m.matches();
     }
 
@@ -228,7 +227,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     public boolean isPassType(String mobiles) {
         Pattern p = compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[$@$!%*?&])[A-Za-z\\d$@$!%*?&]{8,}");
         Matcher m = p.matcher(mobiles);
-
         return m.matches();
     }
 
@@ -272,7 +270,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         options.inSampleSize = 2;
         options.inJustDecodeBounds = false;
         return BitmapFactory.decodeFile(imgPath, options);
-
     }
 
     /**
@@ -292,7 +289,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 //        LinearLayout top_manger=findViewById(R.id.top_manger);
         //透明状态栏
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-
     }
 
     /**
@@ -303,7 +299,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         getWindow().setStatusBarColor(Color.WHITE);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-
     }
 
     //Transformation  price
@@ -315,5 +310,4 @@ public abstract class BaseActivity extends AppCompatActivity {
         // Return the string type of the converted currency 
         return format.format(numDouble);
     }
-
 }

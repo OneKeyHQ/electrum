@@ -1,4 +1,5 @@
 package org.haobtc.onekey.activities.transaction;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +10,7 @@ import android.net.ConnectivityManager;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
@@ -67,7 +69,7 @@ public class CheckChainDetailWebActivity extends BaseActivity implements NetBroa
     private String keyLink;
     private String loadUrl = "";
 
-    public static void gotoCheckChainDetailWebActivity (Context context, String loadWhere, String loadUrl) {
+    public static void gotoCheckChainDetailWebActivity(Context context, String loadWhere, String loadUrl) {
         Intent intent = new Intent(context, CheckChainDetailWebActivity.class);
         intent.putExtra("loadWhere", loadWhere);
         intent.putExtra("loadUrl", loadUrl);
@@ -75,12 +77,12 @@ public class CheckChainDetailWebActivity extends BaseActivity implements NetBroa
     }
 
     @Override
-    public int getLayoutId () {
+    public int getLayoutId() {
         return R.layout.activity_check_chain_detail_web;
     }
 
     @Override
-    public void initView () {
+    public void initView() {
         ButterKnife.bind(this);
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         blockServerLine = preferences.getString("blockServerLine", "https://btc.com/");
@@ -99,7 +101,6 @@ public class CheckChainDetailWebActivity extends BaseActivity implements NetBroa
             checkTxid = intent.getStringExtra("checkTxid");
             keyLink = intent.getStringExtra("key_link");
         }
-
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -131,7 +132,6 @@ public class CheckChainDetailWebActivity extends BaseActivity implements NetBroa
                 myDialog.dismiss();
             }
         });
-
         if (nets == 2) {
             if (!TextUtils.isEmpty(loadUrl)) {
                 webHeckChain.loadUrl(loadUrl);
@@ -159,7 +159,6 @@ public class CheckChainDetailWebActivity extends BaseActivity implements NetBroa
     protected void onStart() {
         super.onStart();
         registerBroadcastReceiver();
-
     }
 
     private void registerBroadcastReceiver() {
@@ -185,16 +184,14 @@ public class CheckChainDetailWebActivity extends BaseActivity implements NetBroa
             message.what = 99;
             handler.sendMessage(message);
         } else {
-            Toast.makeText(this, getString(R.string.net_dont_use), Toast.LENGTH_SHORT).show();
+            mToast(getString(R.string.net_dont_use));
             message.what = 100;
             handler.sendMessage(message);
         }
-
     }
 
     @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
-
     }
 
     @Override
@@ -208,5 +205,4 @@ public class CheckChainDetailWebActivity extends BaseActivity implements NetBroa
             unregisterReceiver(netBroadcastReceiver);
         }
     }
-
 }

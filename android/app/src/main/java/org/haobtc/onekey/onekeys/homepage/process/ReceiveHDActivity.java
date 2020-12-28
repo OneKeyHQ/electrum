@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.chaquo.python.PyObject;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
+import com.lxj.xpopup.XPopup;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.encode.CodeCreator;
 
@@ -117,11 +118,15 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
         try {
             boolean isBackup = PyEnv.hasBackup(getActivity());
             if (!isBackup) {
-                Bundle bundle = new Bundle();
-                bundle.putString(Constant.UN_BACKUP_TIP, getString(R.string.unbackup_tip_dialog));
-                UnBackupTipDialog unBackupTipDialog = new UnBackupTipDialog();
-                unBackupTipDialog.setArguments(bundle);
-                unBackupTipDialog.show(getSupportFragmentManager(), "");
+                new XPopup.Builder(mContext)
+                        .dismissOnTouchOutside(false)
+                        .isDestroyOnDismiss(true)
+                        .asCustom(new UnBackupTipDialog(this, getString(R.string.unbackup_tip_dialog), new UnBackupTipDialog.onClick() {
+                            @Override
+                            public void onBack() {
+                                finish();
+                            }
+                        })).show();
             }
         } catch (Exception e) {
             e.printStackTrace();

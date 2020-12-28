@@ -1,51 +1,70 @@
 package org.haobtc.onekey.ui.dialog;
 
-import android.os.Bundle;
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
 
-import org.greenrobot.eventbus.EventBus;
+import androidx.annotation.NonNull;
+
+import com.lxj.xpopup.core.CenterPopupView;
+
 import org.haobtc.onekey.R;
-import org.haobtc.onekey.constant.Constant;
-import org.haobtc.onekey.event.SecondEvent;
-import org.haobtc.onekey.ui.base.BaseDialogFragment;
 
 import butterknife.BindView;
-import butterknife.OnClick;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 
-public class UnBackupTipDialog extends BaseDialogFragment {
+@SuppressLint("ViewConstructor")
+public class UnBackupTipDialog extends CenterPopupView {
     @BindView(R.id.text_tip)
     TextView textTip;
+    @BindView(R.id.text_back)
+    TextView textBack;
+    @BindView(R.id.text_i_know)
+    TextView textIKnow;
+    private onClick onClick;
+    private Unbinder bind;
+    private String content;
+
+    public UnBackupTipDialog(@NonNull Context context, String text, onClick onClick) {
+        super(context);
+        this.onClick = onClick;
+        content = text;
+    }
 
     @Override
-    public int getContentViewId() {
+    protected void onCreate() {
+        super.onCreate();
+        bind = ButterKnife.bind(this);
+        textTip.setText(content);
+        textIKnow.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dismiss();
+            }
+        });
+        textBack.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dismiss();
+                onClick.onBack();
+            }
+        });
+    }
+
+    @Override
+    protected int getImplLayoutId() {
         return R.layout.unbackup_tip;
     }
 
     @Override
-    public void init() {
-        super.init();
-        Bundle bundle = getArguments();
-        assert bundle != null;
-        String unBackupTip = bundle.getString(Constant.UN_BACKUP_TIP);
-        textTip.setText(unBackupTip);
+    public void onDestroy() {
+        super.onDestroy();
+        bind.unbind();
     }
 
-    @OnClick({R.id.text_back, R.id.text_i_know})
-    public void onViewClicked(View view) {
-        switch (view.getId()) {
-            case R.id.text_back:
-                dismiss();
-                EventBus.getDefault().post(new SecondEvent("finish"));
-                break;
-            case R.id.text_i_know:
-                dismiss();
-                break;
-        }
-    }
-
-    @Override
-    public boolean requireGravityCenter() {
-        return true;
+    public interface onClick {
+        void onBack();
     }
 }

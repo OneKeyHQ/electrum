@@ -355,6 +355,7 @@ public final class Constant {
      * 当前发币的货币符号
      */
     public static final String CURRENT_CURRENCY_SYMBOL = "currency_symbol";
+    public static final String FEE_RATE = "fee_rate";
     /**
      * 当前发币的货币图形符号
      */

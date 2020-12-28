@@ -524,7 +524,7 @@ public final class PyEnv {
         params.put(receiver, amount);
         arrayList.add(params);
         try {
-            String result = Daemon.commands.callAttr(PyConstant.CALCULATE_FEE, new Gson().toJson(arrayList), "stool", feeRate).toString();
+            String result = Daemon.commands.callAttr(PyConstant.CALCULATE_FEE, new Gson().toJson(arrayList), "", feeRate).toString();
             TemporaryTxInfo temporaryTxInfo = TemporaryTxInfo.objectFromData(result);
             response.setResult(temporaryTxInfo);
         } catch (Exception e) {
