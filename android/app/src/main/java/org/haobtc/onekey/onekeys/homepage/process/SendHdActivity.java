@@ -1,6 +1,7 @@
 package org.haobtc.onekey.onekeys.homepage.process;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
@@ -18,6 +19,9 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 
 import com.alibaba.fastjson.JSON;
 import com.google.common.base.Strings;
@@ -87,6 +91,20 @@ import static org.haobtc.onekey.constant.Constant.WALLET_BALANCE;
  * @author liyan
  */
 public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.Helper {
+
+    private static final String EXT_BALANCE = WALLET_BALANCE;
+    private static final String EXT_WALLET_NAME = "hdWalletName";
+    private static final String EXT_SCAN_ADDRESS = "addressScan";
+    private static final String EXT_SCAN_AMOUNT = "amountScan";
+
+    public static void start(Context context, String balance, String name, String address, String amount) {
+        Intent intent = new Intent(context, SendHdActivity.class);
+        intent.putExtra(EXT_BALANCE, balance);
+        intent.putExtra(EXT_WALLET_NAME, name);
+        intent.putExtra(EXT_SCAN_ADDRESS, address);
+        intent.putExtra(EXT_SCAN_AMOUNT, amount);
+        context.startActivity(intent);
+    }
 
     static final int RECOMMENDED_FEE_RATE = 0;
     static final int SLOW_FEE_RATE = 1;
@@ -212,7 +230,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     @Override
     public void init() {
         rxPermissions = new RxPermissions(this);
-        hdWalletName = getIntent().getStringExtra("hdWalletName");
+        hdWalletName = getIntent().getStringExtra(EXT_WALLET_NAME);
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         balance = getIntent().getStringExtra(WALLET_BALANCE);
         if (!Strings.isNullOrEmpty(balance)) {
@@ -229,7 +247,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                 showToast(R.string.accuracy_num);
             }
         })});
-        String addressScan = getIntent().getStringExtra("addressScan");
+        String addressScan = getIntent().getStringExtra(EXT_SCAN_ADDRESS);
         if (!TextUtils.isEmpty(addressScan)) {
             editReceiverAddress.setText(addressScan);
             getAddressIsValid();
@@ -254,6 +272,14 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         }
         if (Constant.BTC_WATCH.equals(showWalletType)) {
             showWatchTipDialog();
+        }
+        try {
+            String amountScan = getIntent().getStringExtra(EXT_SCAN_AMOUNT);
+            String amountConvert = new QRDecode().getAmountByPythonResultAmount(amountScan);
+            String amountStr = checkAndConvertAmount(amountConvert);
+            editAmount.setText(amountStr);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
         }
         textBalance.setText(String.format("%s%s", balance, preferences.getString("base_unit", "")));
         registerLayoutChangeListener();
@@ -818,6 +844,47 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         isResume = true;
     }
 
+    /**
+     * 判断验证 BTC 金额有效性，并去掉多余的 0
+     *
+     * @param amount BTC 金额
+     * @return 返回处理过的 BTC 金额
+     */
+    @WorkerThread
+    @Nullable
+    private String checkAndConvertAmount(String amount) {
+        BigDecimal amountBigDecimal;
+        if (TextUtils.isEmpty(amount)) {
+            amountBigDecimal = new BigDecimal("0");
+        } else {
+            try {
+                amountBigDecimal = new BigDecimal(amount);
+            } catch (NumberFormatException e) {
+                amountBigDecimal = new BigDecimal("0");
+            }
+        }
+
+        if (amountBigDecimal.equals(BigDecimal.ZERO)) {
+            return null;
+        }
+        int scale;
+        switch (baseUnit) {
+            case Constant.BTC_UNIT_BTC:
+                scale = 8;
+                break;
+            case Constant.BTC_UNIT_M_BTC:
+                scale = 5;
+                break;
+            case Constant.BTC_UNIT_M_BITS:
+                scale = 2;
+                break;
+            default:
+                scale = 0;
+        }
+
+        return amountBigDecimal.setScale(scale, RoundingMode.DOWN).stripTrailingZeros().toPlainString();
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Scan QR code return
@@ -836,37 +903,10 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                             emitter.onComplete();
                         })
                         .map(dataBean -> {
-                            BigDecimal amountBigDecimal;
-                            if (TextUtils.isEmpty(dataBean.getAmount())) {
-                                amountBigDecimal = new BigDecimal("0");
-                            } else {
-                                try {
-                                    amountBigDecimal = new BigDecimal(dataBean.getAmount());
-                                } catch (NumberFormatException e) {
-                                    amountBigDecimal = new BigDecimal("0");
-                                }
+                            String amountStr = checkAndConvertAmount(dataBean.getAmount());
+                            if (!TextUtils.isEmpty(amountStr)) {
+                                dataBean.setAmount(amountStr);
                             }
-
-                            if (amountBigDecimal.equals(BigDecimal.ZERO)) {
-                                return dataBean;
-                            }
-                            int scale;
-                            switch (baseUnit) {
-                                case Constant.BTC_UNIT_BTC:
-                                    scale = 8;
-                                    break;
-                                case Constant.BTC_UNIT_M_BTC:
-                                    scale = 5;
-                                    break;
-                                case Constant.BTC_UNIT_M_BITS:
-                                    scale = 2;
-                                    break;
-                                default:
-                                    scale = 0;
-                            }
-
-                            String amountStr = amountBigDecimal.setScale(scale, RoundingMode.DOWN).stripTrailingZeros().toPlainString();
-                            dataBean.setAmount(amountStr);
                             return dataBean;
                         })
                         .subscribeOn(Schedulers.io())

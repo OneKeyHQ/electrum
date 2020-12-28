@@ -23,6 +23,21 @@ import org.json.JSONObject;
 public class QRDecode {
 
     /**
+     * 在 Python 返回的金额字符串中截取 BTC 金额
+     *
+     * @param resultAmount Python 返回的金额字符串
+     * @return 实际的 BTC 金额
+     */
+    @Nullable
+    public String getAmountByPythonResultAmount(@Nullable String resultAmount) {
+        if (TextUtils.isEmpty(resultAmount)) {
+            return null;
+        }
+        String[] amountSplit = resultAmount.split(" ");
+        return amountSplit.length >= 1 ? amountSplit[0] : null;
+    }
+
+    /**
      * 在二维码字符串中尝试解析 BTC 地址
      * support: bip72、bip21
      *
@@ -48,9 +63,8 @@ public class QRDecode {
                         MainSweepcodeBean mainSweepcodeBean = gson.fromJson(strParse, MainSweepcodeBean.class);
                         resultBean = mainSweepcodeBean.getData();
                         if (!TextUtils.isEmpty(resultBean.getAmount())) {
-                            Log.e("===decode Amount===",resultBean.getAmount());
-                            String[] amountSplit = resultBean.getAmount().split(" ");
-                            resultBean.setAmount(amountSplit[0]);
+                            String amountByPythonResultAmount = getAmountByPythonResultAmount(resultBean.getAmount());
+                            resultBean.setAmount(amountByPythonResultAmount);
                         }
                     } else {
                         resultBean.setAddress(detailScan);
