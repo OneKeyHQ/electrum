@@ -28,8 +28,6 @@
     <string name="boot_message">我以阅读并同意（协议）</string>
     <string name="create">创建钱包</string>
     <string name="import_w">多人共管钱包</string>
-    <string name="introduce">币信Key介绍</string>
-    <string name="introduce_detials">1.币信Key为BTC硬件钱包，私钥永不触网 \n 2.币信Key为开源钱包 \n 3.币信Key自带屏幕，付款时进行双向确认，资产更为安全 \n4.币信Key工卡片式设计符合人体工学，使用和保存更方便\n 5.币信Key使用军工级芯片 \n6.币信Key不提供私钥导出功能，若您不需要多人签名，您可设置1 of 2的多签钱包，当其中一个币信Key丢失时，您可使用备份币信Key进行交易或进行资产转移 \n7.建议您购买>2个币信Key 购买地址</string>
     <string name="active">作为新设备激活</string>
     <string name="active_prompt">BixinKey未激活</string>
     <string name="prompt_touch">请将钱包硬件与手机贴合</string>
@@ -109,7 +107,6 @@
     <string name="format_iswrong">名字格式错误、所需签名数量不能大于联署人数量</string>
     <string name="dowbke_to_exit">再按一次退出程序</string>
     <string name="dongt_isnull">钱包名称、联署人数量、所需签名数量均不能为空</string>
-    <string name="bixinmoney">币信Key介绍</string>
     <string name="copy_self">复制</string>
     <string name="address_qr">地址二维码</string>
     <string name="attention">注意：该地址仅支持BTC收款，转入其他币种将无法找回</string>
@@ -271,7 +268,6 @@
     <string name="restore_factory">恢复出厂设置</string>
     <string name="somemore_wallet">**的钱包</string>
     <string name="bixinkey_message">设备信息</string>
-    <string name="bixinkey">小米的BixinKey</string>
     <string name="verson_update">升级固件</string>
     <string name="v_1_2_3">V 1.2.3</string>
     <string name="fix_pin">修改 PIN 码</string>
@@ -279,7 +275,6 @@
     <string name="opened">已开启</string>
     <string name="bluetooth_name">蓝牙名称</string>
     <string name="bixinkey_name">名称</string>
-    <string name="bixinkey_set">BixinKey设置</string>
     <string name="choose_update">请选择固件进行升级, 请确保升级前已经备份硬件钱包</string>
     <string name="bluetooth_code">蓝牙固件版本</string>
     <string name="input_old_pin">输入原始PIN码</string>
@@ -290,7 +285,6 @@
     <string name="input_new_pin">输入新PIN码</string>
     <string name="recovery_risk">恢复出厂设置将存在以下风险</string>
     <string name="tips_1">1.恢复出厂设置后私钥将被抹除</string>
-    <string name="tips_2">2.该BixinKey将不能签名相关钱包的交易</string>
     <string name="tips_3">3.为避免数字资产丢失，</string>
     <string name="please_backups">请备份BixinKey</string>
     <string name="confirm_recovery">确认恢复出厂设置</string>
@@ -309,7 +303,6 @@
     <string name="wallet">钱包</string>
     <string name="_12_help_word">请按顺序输入12位助记词</string>
     <string name="set_wallet">请设置钱包名称</string>
-    <string name="set_bixinkey_num">请设置BixinKey数</string>
     <string name="set_public_num">请设置共管人数</string>
     <string name="set_sign_num">请设置签名人数</string>
     <string name="signnum_dongt_public">签名人数不可大于共管人数</string>
@@ -539,7 +532,6 @@
     <string name="testnet">币信Key T</string>
     <string name="regnet">OneKey</string>
     <string name="update_file_not_exist">升级文件不存在</string>
-    <string name="keep_connection">请保持手机与BixinKey连接</string>
     <string name="tip_connnection">数据传输需要一些时间，请保持连接状态</string>
     <string name="bluetooth_setting">蓝牙设置</string>
     <string name="confirm_fix">确认修改</string>
@@ -726,7 +718,6 @@
     <string name="no_use_wallet">无可用钱包</string>
     <string name="creat_hd">创建 HD 钱包</string>
     <string name="not_num">多链、简单、安全、好用</string>
-    <string name="home_tip">HD 钱包是迄今最为先进的钱包格式，中文称为分层确定性钱包。只需一个助记词，就能派生无限公链或币种。好记、好用、好管理，很安全。</string>
     <string name="recovery_hd">恢复 HD 钱包</string>
     <string name="word_recovery">通过助记词恢复</string>
     <string name="pair_hard">配对硬件钱包</string>
@@ -1143,7 +1134,6 @@
     <string name="bluetooth_exception">蓝牙链接异常</string>
     <string name="name_lenth_8">名字最多为8个字符哦~</string>
     <string name="newest_app">当前已是最新版本</string>
-    <string name="already_has_local_hd">本地已存在 HD 钱包，无法再连接 backup 模式的硬件钱包</string>
     <string name="looking_for_wallets">搜寻钱包中</string>
     <string name="unbackup_tip_dialog">该钱包尚未备份。为了您的资金安全，请完成备份后再使用该地址发起收款。</string>
     <string name="know">我已知晓</string>
@@ -1208,9 +1198,13 @@
     <string name="not_found_once_wallet">没有钱包</string>
     <string name="not_allow_un_check">该项不可取消</string>
     <string name="unknown">未知</string>
+
+    <!--  last translate  -->
     <string name="empty_help_words">助记词为空</string>
     <string name="accuracy_num">精度不应超过小数点后 8 位</string>
     <string name="use_cold_sign">使用冷钱包进行扫码签名</string>
     <string name="watch_wallet_tip">当前为观察钱包，发起的转账需使用掌握该私钥的冷钱包进行扫码签名。</string>
     <string name="qr_exception">交易金额过大，无法生成二维码</string>
+    <string name="home_tip">HD 钱包是迄今最为先进的钱包格式，中文称为分层确定性钱包。只需一个助记词，就能派生无限公链或币种。好记、好用、好管理，很安全。</string>
+    <string name="already_has_local_hd">本地已存在 HD 钱包，无法再连接 backup 模式的硬件钱包</string>
 </resources>

@@ -94,8 +94,6 @@ public class WalletFragment extends BaseFragment {
     ImageView imgScan;
     @BindView(R.id.img_Add)
     ImageView imgAdd;
-    @BindView(R.id.text)
-    TextView text;
     @BindView(R.id.rel_create_hd)
     RelativeLayout relCreateHd;
     @BindView(R.id.rel_recovery_hd)

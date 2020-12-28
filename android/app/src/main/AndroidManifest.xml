@@ -476,10 +476,6 @@
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
         <activity
-            android:name=".activities.settings.AgreementActivity"
-            android:screenOrientation="portrait"
-            tools:ignore="LockedOrientationActivity" />
-        <activity
             android:name=".activities.ShareOtherActivity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />

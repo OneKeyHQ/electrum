@@ -27,7 +27,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="31dp"
             android:gravity="center_horizontal"
-            android:text="@string/keep_connection"
             android:textColor="@color/text"
             android:textSize="18sp" />
 
