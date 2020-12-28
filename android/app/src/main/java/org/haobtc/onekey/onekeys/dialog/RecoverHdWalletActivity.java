@@ -274,7 +274,7 @@ public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocu
             isSeeds = Daemon.commands.callAttr("is_seed", seed);
         } catch (Exception e) {
             e.printStackTrace();
-            mToast(e.getMessage());
+            mToast(e.getMessage().replace("BaseException:", ""));
             return;
         }
         if (isSeeds.toBoolean()) {

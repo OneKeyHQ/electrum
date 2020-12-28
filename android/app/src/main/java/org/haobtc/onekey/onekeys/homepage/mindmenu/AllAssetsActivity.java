@@ -91,7 +91,7 @@ public class AllAssetsActivity extends BaseActivity implements TextWatcher {
             }
         } catch (Exception e) {
             tetNone.setVisibility(View.VISIBLE);
-            mToast(e.getMessage());
+            mToast(e.getMessage().replace("BaseException:", ""));
             e.printStackTrace();
             return;
         }

@@ -199,7 +199,6 @@ public class ImportMnemonicActivity extends BaseActivity implements View.OnFocus
             String seeds = content.replaceAll("\"", "");
             String[] pathArr = (seeds.substring(1, seeds.length() - 1)).split(",");
             seedList = Arrays.asList(pathArr);
-            Log.i("allSeeds", "getAllMnemonic: " + seedList);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -284,7 +283,7 @@ public class ImportMnemonicActivity extends BaseActivity implements View.OnFocus
             isSeeds = Daemon.commands.callAttr("is_seed", strNewseed);
         } catch (Exception e) {
             e.printStackTrace();
-            mToast(e.getMessage());
+            mToast(e.getMessage().replace("BaseException:", ""));
             return;
         }
         if (isSeeds.toBoolean()) {
@@ -386,7 +385,6 @@ public class ImportMnemonicActivity extends BaseActivity implements View.OnFocus
                 reclSearchMnemonic.setVisibility(View.VISIBLE);
                 viewShow.setVisibility(View.VISIBLE);
             }
-            Log.i("afterTextChanged", "afterTextChanged: " + searchWordList);
             searchMnemonicAdapter.notifyDataSetChanged();
 
         }

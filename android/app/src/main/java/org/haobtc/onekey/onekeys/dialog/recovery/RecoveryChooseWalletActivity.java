@@ -92,7 +92,7 @@ public class RecoveryChooseWalletActivity extends BaseActivity {
                         Daemon.commands.callAttr("recovery_confirmed", recoveryName);
                     } catch (Exception e) {
                         e.printStackTrace();
-                        mToast(e.getMessage());
+                        mToast(e.getMessage().replace("BaseException:", ""));
                         return;
                     }
                     EventBus.getDefault().post(new CreateSuccessEvent(name));

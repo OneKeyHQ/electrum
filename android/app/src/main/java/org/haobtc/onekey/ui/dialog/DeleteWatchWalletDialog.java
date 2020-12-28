@@ -14,6 +14,8 @@ import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.ui.base.BaseDialogFragment;
 import org.haobtc.onekey.utils.Daemon;
 
+import java.util.Objects;
+
 import butterknife.OnClick;
 
 public class DeleteWatchWalletDialog extends BaseDialogFragment {
@@ -41,7 +43,7 @@ public class DeleteWatchWalletDialog extends BaseDialogFragment {
             Daemon.commands.callAttr("delete_wallet", "111111", new Kwarg("name", keyName));
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), Objects.requireNonNull(e.getMessage()).replace("BaseException:", ""), Toast.LENGTH_SHORT).show();
             return;
         }
         Toast.makeText(getActivity(), getString(R.string.delete_succse), Toast.LENGTH_SHORT).show();

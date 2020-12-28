@@ -194,7 +194,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         linChooseUtxo.setOnClickListener(this);
         imgBack.setOnClickListener(this);
         init();
-
     }
 
     //edittext focus change
@@ -222,10 +221,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         //cny to btc
         TextWatcher2 textWatcher2 = new TextWatcher2();
         editChangeMoney.addTextChangedListener(textWatcher2);
-
         TextWatcher3 textWatcher3 = new TextWatcher3();
         textBlocks.addTextChangedListener(textWatcher3);
-
     }
 
     private void registerKeyBoard() {
@@ -240,7 +237,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             //If the difference between screen height and window visible area height is greater than 1 / 3 of the whole screen height, it means that the soft keyboard is in display, otherwise, the soft keyboard is hidden.
             int heightDifference = screenHeight - (r.bottom - r.top);
             boolean isKeyboardShowing = heightDifference > screenHeight / 3;
-
             //If the status of the soft keyboard was previously displayed, it is now closed, or it was previously closed, it is now displayed, it means that the status of the soft keyboard has changed
             if ((mIsSoftKeyboardShowing && !isKeyboardShowing) || (!mIsSoftKeyboardShowing && isKeyboardShowing)) {
                 mIsSoftKeyboardShowing = isKeyboardShowing;
@@ -322,7 +318,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         } else {
             editTextComments.setText(String.format("%s", ""));
         }
-
         //fee
         getFeeamont();
         //InputMaxTextNum
@@ -330,7 +325,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         payAddressMore();
         //edittext focus change
         focusChange();
-
     }
 
     private void getFeeamont() {
@@ -339,7 +333,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             getDefaultFeeStatus = Daemon.commands.callAttr("get_default_fee_status");
         } catch (Exception e) {
             e.printStackTrace();
-            mToast(e.getMessage());
+            mToast(e.getMessage().replace("BaseException:", ""));
             return;
         }
         if (getDefaultFeeStatus != null) {
@@ -364,7 +358,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         seekBar.setOnSeekBarChangeListener(new IndicatorSeekBar.OnIndicatorSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, float indicatorOffset) {
-
             }
 
             @Override
@@ -418,7 +411,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     private void showPopupSelectWallet() {
         //check address
         showDialogs(SendOne2OneMainPageActivity.this, R.layout.select_send_wallet_popwindow);
-
     }
 
     private void showDialogs(Context context, @LayoutRes int resource) {
@@ -451,7 +443,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                             testNowCanUse.setText(String.format("%s%s", getString(R.string.usable), balanceC));
                         }
                     }
-
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -506,10 +497,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                         }
                     }
                 }
-
             }
         }, 200);
-
     }
 
     private void recyclerviewOnclick() {
@@ -552,7 +541,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             case R.id.create_trans_one2one:
                 straddress = editAddress.getText().toString();
                 strAmount = tetamount.getText().toString();
-
                 if (TextUtils.isEmpty(straddress)) {
                     Toast.makeText(this, R.string.input_address, Toast.LENGTH_SHORT).show();
                     return;
@@ -577,7 +565,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                         mToast(errorMessage);
                     }
                 }
-
                 break;
             case R.id.bn_sweep_one2noe:
                 rxPermissions
@@ -629,8 +616,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 if (!TextUtils.isEmpty(tetamount.getText().toString())) {
                     Intent intent1 = new Intent(SendOne2OneMainPageActivity.this, ChooseUtxoActivity.class);
                     intent1.putExtra(WALLET_BALANCE, tetamount.getText().toString());
-                    intent1.putStringArrayListExtra("utxoPositionData",utxoPosData);
-                    intent1.putExtra("sumUtxoTotal",sumUtxo);
+                    intent1.putStringArrayListExtra("utxoPositionData", utxoPosData);
+                    intent1.putExtra("sumUtxoTotal", sumUtxo);
                     startActivityForResult(intent1, 1);
                 } else {
                     mToast(getString(R.string.please_input_send_num));
@@ -653,7 +640,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         PyObject mktx;
         try {
             mktx = Daemon.commands.callAttr("mktx", strPramas, strComment);
-
         } catch (Exception e) {
             e.printStackTrace();
             if (e.getMessage().contains("Insufficient funds")) {
@@ -697,7 +683,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                                 EventBus.getDefault().postSticky(new HandlerEvent());
                             }
                         }
-
                     }
                     CommunicationModeSelector.runnables.clear();
                     CommunicationModeSelector.runnables.add(runnable);
@@ -705,7 +690,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                     intent1.putExtra("tag", TAG);
                     intent1.putExtra("extras", rowtx);
                     startActivity(intent1);
-
                 } else {
                     if (onlickName.equals(wallet_name)) {
                         EventBus.getDefault().post(new FirstEvent("22"));
@@ -787,7 +771,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                                     tetamount.setText(amount);
                                 }
                                 editTextComments.setText(message);
-
                             } else {
                                 mToast(getString(R.string.address_wrong));
                             }
@@ -832,7 +815,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
 
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
     }
 
     @Override
@@ -857,7 +839,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 tetamount.setSelection(1);
             }
         }
-
     }
 
     @Override
@@ -867,11 +848,10 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             BigDecimal amount = new BigDecimal(strAmount);
             try {
                 pyObject = Daemon.commands.callAttr("get_exchange_currency", "base", amount);
-
                 Log.i("pyObjectcommands", "---------: " + pyObject);
             } catch (Exception e) {
                 e.printStackTrace();
-                mToast(e.getMessage());
+                mToast(e.getMessage().replace("BaseException:", ""));
             }
             if (pyObject != null) {
                 editChangeMoney.setText(pyObject.toString());
@@ -926,7 +906,6 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 double fee = temporaryTxInfo.getFee();
                 feeNum = String.valueOf(fee);
                 tetMoneye.setText(String.format("%s sat", feeNum));
-
             }
         }
     }

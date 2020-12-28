@@ -177,7 +177,6 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
     }
 
     private void onException(Exception e) {
-        Log.e(TAG, e.getMessage() == null ? "unknown exception" : e.getMessage());
         if (HardWareExceptions.PASSPHRASE_OPERATION_TIMEOUT.getMessage().equals(e.getMessage()) || HardWareExceptions.PIN_OPERATION_TIMEOUT.getMessage().equals(e.getMessage())) {
             EventBus.getDefault().post(new OperationTimeoutEvent());
         } else if (HardWareExceptions.USER_CANCEL.getMessage().equals(e.getMessage())) {

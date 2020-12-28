@@ -184,7 +184,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
             walletAddressShowUi = Daemon.commands.callAttr("get_wallet_address_show_UI");
         } catch (Exception e) {
             e.printStackTrace();
-            mToast(e.getMessage());
+            mToast(e.getMessage().replace("BaseException:", ""));
             return;
         }
         if (walletAddressShowUi != null) {
@@ -201,7 +201,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
             getDefaultFeeStatuses = Daemon.commands.callAttr("get_default_fee_status");
         } catch (Exception e) {
             e.printStackTrace();
-            mToast(e.getMessage());
+            mToast(e.getMessage().replace("BaseException:", ""));
             return;
         }
         if (getDefaultFeeStatuses != null) {
@@ -259,7 +259,7 @@ public class SendOne2ManyMainPageActivity extends BaseActivity {
             getWalletsListInfo = Daemon.commands.callAttr("list_wallets");
         } catch (Exception e) {
             e.printStackTrace();
-            mToast(e.getMessage());
+            mToast(e.getMessage().replace("BaseException:", ""));
             return;
         }
         if (getWalletsListInfo != null) {

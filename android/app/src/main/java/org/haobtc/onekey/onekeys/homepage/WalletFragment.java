@@ -257,7 +257,7 @@ public class WalletFragment extends BaseFragment {
                 tetAmount.setText(String.format("%s %s", currencySymbol, getString(R.string.zero)));
             }
         } catch (Exception e) {
-            Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), e.getMessage().replace("BaseException:", ""), Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
     }
@@ -481,7 +481,7 @@ public class WalletFragment extends BaseFragment {
                         parseQr = Daemon.commands.callAttr("parse_pr", content);
                     } catch (Exception e) {
                         e.printStackTrace();
-                        Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), e.getMessage().replace("BaseException:", ""), Toast.LENGTH_SHORT).show();
                         return;
                     }
                     if (parseQr.toString().length() > 2) {

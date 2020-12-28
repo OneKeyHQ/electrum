@@ -93,7 +93,7 @@ public class DetailTransactionActivity extends BaseActivity {
                 infoFromRaw = Daemon.commands.callAttr("get_tx_info_from_raw", tx);
             } catch (Exception e) {
                 e.printStackTrace();
-                mToast(e.getMessage());
+                mToast(e.getMessage().replace("BaseException:", ""));
                 return;
             }
             if (!TextUtils.isEmpty(infoFromRaw.toString())) {
@@ -156,7 +156,7 @@ public class DetailTransactionActivity extends BaseActivity {
             if (!TextUtils.isEmpty(address)) {
                 textSendAddress.setText(address);
             } else {
-                textSendAddress.setText("--------------------------");
+                textSendAddress.setText(getString(R.string.line));
             }
         }
         if (listBean.getOutputAddr() != null && listBean.getOutputAddr().size() != 0) {

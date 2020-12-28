@@ -102,7 +102,6 @@ public class CreateWalletChooseTypeActivity extends BaseActivity {
     public void onGotName(NameSettedEvent event) {
         name = event.getName();
         selectWalletType = event.type;
-        LogUtil.d(" 选择钱包类型--》" + selectWalletType);
         startActivity(new Intent(this, SoftPassActivity.class));
     }
     @Override

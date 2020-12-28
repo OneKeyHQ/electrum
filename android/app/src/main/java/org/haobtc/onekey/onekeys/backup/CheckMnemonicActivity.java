@@ -279,7 +279,7 @@ public class CheckMnemonicActivity extends BaseActivity {
                         Daemon.commands.callAttr("delete_backup_info", keyName);
                     } catch (Exception e) {
                         e.printStackTrace();
-                        mToast(e.getMessage());
+                        mToast(e.getMessage().replace("BaseException:", ""));
                         return;
                     }
 //                    EventBus.getDefault().post(new BackupEvent());

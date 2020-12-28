@@ -57,8 +57,6 @@ public class ChooseHistryWalletActivity extends BaseActivity {
         ButterKnife.bind(this);
         Intent intent = getIntent();
         historyXpub = intent.getStringExtra("history_xpub");
-        Log.i("history_xpub", "initView: " + historyXpub);
-
     }
 
     @Override
@@ -70,7 +68,6 @@ public class ChooseHistryWalletActivity extends BaseActivity {
         reclImportWallet.setAdapter(histryWalletAdapter);
         //get histry wallet
         getHistryWallet();
-
     }
 
     private void getHistryWallet() {
@@ -97,7 +94,6 @@ public class ChooseHistryWalletActivity extends BaseActivity {
                         inputHistoryWalletEvent.setName(name);
                         walletList.add(inputHistoryWalletEvent);
                     }
-
                     boolean flag = false;
                     for (int i = 0; i < walletList.size(); i++) {
                         String c = walletList.get(i).getName();
@@ -181,13 +177,11 @@ public class ChooseHistryWalletActivity extends BaseActivity {
             if (!TextUtils.isEmpty(errorStr)) {
                 mToast(getString(R.string.some_wallet_existence));
             }
-
         } catch (Exception e) {
             e.printStackTrace();
-            mToast(e.getMessage());
+            mToast(e.getMessage().replace("BaseException:", ""));
             return;
         }
         mIntent(MainActivity.class);
-
     }
 }

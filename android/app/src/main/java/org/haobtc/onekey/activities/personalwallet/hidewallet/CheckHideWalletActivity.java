@@ -297,7 +297,6 @@ public class CheckHideWalletActivity extends BaseActivity implements OnRefreshLi
             });
 
         } catch (JSONException e) {
-            Log.e("sndkjnskjn", "type++++: " + e.getMessage());
             e.printStackTrace();
         }
 

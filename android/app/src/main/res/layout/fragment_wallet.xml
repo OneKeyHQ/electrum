@@ -82,7 +82,7 @@
                 android:layout_marginTop="23dp"
                 android:layout_marginEnd="@dimen/dp_20"
                 android:orientation="vertical"
-                android:visibility="visible">
+                android:visibility="gone">
 
                 <RelativeLayout
                     android:id="@+id/rel_create_hd"
@@ -272,7 +272,7 @@
             <LinearLayout
                 android:id="@+id/lin_have_wallet"
                 android:layout_width="match_parent"
-                android:layout_height="236dp"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/dp_20"
                 android:layout_marginTop="23dp"
                 android:layout_marginEnd="@dimen/dp_20"
@@ -282,7 +282,7 @@
                 <RelativeLayout
                     android:id="@+id/rel_wallet_detail"
                     android:layout_width="match_parent"
-                    android:layout_height="168dp"
+                    android:layout_height="wrap_content"
                     android:background="@drawable/home_bg_up">
 
                     <TextView
@@ -331,6 +331,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/dp_10"
                         android:layout_below="@+id/RelativeLayout11"
                         android:layout_marginTop="@dimen/dp_12"
                         android:gravity="center_horizontal">

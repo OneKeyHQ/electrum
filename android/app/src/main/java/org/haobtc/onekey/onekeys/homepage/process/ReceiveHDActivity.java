@@ -48,6 +48,7 @@ import org.haobtc.onekey.utils.ImageUtils;
 
 import java.io.File;
 import java.util.Locale;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -151,7 +152,7 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
             walletAddressShowUi = Daemon.commands.callAttr("get_wallet_address_show_UI");
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, Objects.requireNonNull(e.getMessage()).replace("BaseException:", ""), Toast.LENGTH_SHORT).show();
             return;
         }
         if (walletAddressShowUi != null) {

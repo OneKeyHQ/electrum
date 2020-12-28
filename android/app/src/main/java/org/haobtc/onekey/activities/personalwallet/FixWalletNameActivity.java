@@ -64,7 +64,6 @@ public class FixWalletNameActivity extends BaseActivity {
                 if (input.length() > 15) {
                     mToast(getString(R.string.moreinput_text_fixbixinkey));
                 }
-
             }
 
             @Override
@@ -79,6 +78,7 @@ public class FixWalletNameActivity extends BaseActivity {
             }
         });
     }
+
     @SingleClick
     @OnClick({R.id.img_back, R.id.btn_next})
     public void onViewClicked(View view) {
@@ -96,15 +96,14 @@ public class FixWalletNameActivity extends BaseActivity {
     private void reNameWallet() {
         String walletName = getIntent().getStringExtra("wallet_name");
         try {
-            Daemon.commands.callAttr("rename_wallet",walletName,nameEdit.getText().toString());
+            Daemon.commands.callAttr("rename_wallet", walletName, nameEdit.getText().toString());
         } catch (Exception e) {
             e.printStackTrace();
-            mToast(e.getMessage());
+            mToast(e.getMessage().replace("BaseException:", ""));
             return;
         }
         EventBus.getDefault().post(new FixWalletNameEvent(nameEdit.getText().toString()));
         mToast(getString(R.string.fix_success));
         finish();
-
     }
 }

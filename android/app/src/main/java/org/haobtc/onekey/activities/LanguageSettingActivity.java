@@ -121,7 +121,7 @@ public class LanguageSettingActivity extends BaseActivity {
             Daemon.commands.callAttr("set_language", language);
         } catch (Exception e) {
             e.printStackTrace();
-            mToast(e.getMessage());
+            mToast(e.getMessage().replace("BaseException:", ""));
         }
     }
 

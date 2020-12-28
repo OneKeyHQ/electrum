@@ -187,13 +187,14 @@
                 android:id="@+id/text_receive_address"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
+                android:layout_marginHorizontal="@dimen/dp_20"
                 android:layout_marginTop="@dimen/sp_15"
                 android:layout_weight="1"
-                android:layout_marginHorizontal="@dimen/dp_20"
                 android:gravity="center_horizontal"
                 android:textColor="@color/text_two"
                 android:textSize="@dimen/sp_14"
                 tools:text="3MEtJZRVPawaRjX6R8BoXB7mMyAzmXNvn6" />
+
             <LinearLayout
                 android:id="@+id/normal_layout"
                 android:layout_width="match_parent"
@@ -273,15 +274,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="68dp"
                 android:background="@drawable/laft_green_tuo"
-                android:orientation="horizontal">
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
                 <TextView
                     android:id="@id/verify_promote"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
                     android:layout_marginStart="@dimen/dp_16"
+                    android:layout_marginTop="@dimen/dp_9"
                     android:layout_marginEnd="@dimen/dp_14"
-                    android:layout_weight="1"
                     android:text="@string/verify_promote"
                     android:textColor="#00B812"
                     android:textSize="@dimen/sp_14" />
@@ -289,9 +291,8 @@
                 <Button
                     android:id="@+id/verify_start"
                     android:layout_width="wrap_content"
-                    android:layout_height="37dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginEnd="@dimen/dp_20"
+                    android:layout_height="@dimen/dp_28"
+                    android:layout_marginTop="@dimen/dp_4"
                     android:background="@drawable/btn_enable_selector"
                     android:drawableEnd="@drawable/right_white"
                     android:drawablePadding="@dimen/dp_10"

@@ -102,7 +102,7 @@ public class WalletManageActivity extends BaseActivity {
                 new BackupRequireDialog(mContext).show(getSupportFragmentManager(), "");
             }
         } catch (Exception e) {
-            mToast(e.getMessage());
+            mToast(e.getMessage().replace("BaseException:", ""));
             e.printStackTrace();
         }
     }
