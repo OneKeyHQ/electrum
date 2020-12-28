@@ -1210,4 +1210,7 @@
     <string name="unknown">未知</string>
     <string name="empty_help_words">助记词为空</string>
     <string name="accuracy_num">精度不应超过小数点后 8 位</string>
+    <string name="use_cold_sign">使用冷钱包进行扫码签名</string>
+    <string name="watch_wallet_tip">当前为观察钱包，发起的转账需使用掌握该私钥的冷钱包进行扫码签名。</string>
+    <string name="qr_exception">交易金额过大，无法生成二维码</string>
 </resources>

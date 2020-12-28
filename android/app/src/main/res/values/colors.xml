@@ -80,5 +80,8 @@
     <color name="color_3C3C43">#3C3C43</color>
     <color name="color_007AFF">#007AFF</color>
     <color name="color_FF0000">#FF0000</color>
+    <color name="color_333333">#333333</color>
+    <color name="color_white">#FFFFFF</color>
+    <color name="color_dddddd">#DDDDDD</color>
 
 </resources>

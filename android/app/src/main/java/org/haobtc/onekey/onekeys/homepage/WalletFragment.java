@@ -500,7 +500,7 @@ public class WalletFragment extends BaseFragment {
                                 String address = listData.getAddress();
                                 Intent intent2 = new Intent(getActivity(), SendHdActivity.class);
                                 intent2.putExtra(WALLET_BALANCE, changeBalance);
-                                intent2.putExtra("hdWalletName", name);
+                                intent2.putExtra("hdWalletName", textWalletName.getText().toString());
                                 intent2.putExtra("addressScan", address);
                                 startActivity(intent2);
                             } else if (type == 2) {

@@ -1270,4 +1270,7 @@
     <string name="unknown">unknown</string>
     <string name="empty_help_words">The mnemonic is empty</string>
     <string name="accuracy_num">Accuracy should not exceed 8 decimal places</string>
+    <string name="use_cold_sign">Use cold wallet for code scanning signatures</string>
+    <string name="watch_wallet_tip">For the current purpose of observing the wallet, the initiated transfer shall be signed by scanning the code with the cold wallet holding the private key.</string>
+    <string name="qr_exception">The transaction amount is too large to generate a QR code</string>
 </resources>

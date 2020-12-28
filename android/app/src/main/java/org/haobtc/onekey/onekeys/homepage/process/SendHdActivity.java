@@ -1,5 +1,4 @@
 package org.haobtc.onekey.onekeys.homepage.process;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
@@ -7,7 +6,6 @@ import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
@@ -20,6 +18,7 @@ import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
 import com.google.common.base.Strings;
+import com.lxj.xpopup.XPopup;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -49,6 +48,8 @@ import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.ui.dialog.CustomizeFeeDialog;
 import org.haobtc.onekey.ui.dialog.TransactionConfirmDialog;
 import org.haobtc.onekey.ui.dialog.UnBackupTipDialog;
+import org.haobtc.onekey.ui.dialog.custom.CustomCenterDialog;
+import org.haobtc.onekey.ui.dialog.custom.CustomWatchWalletDialog;
 import org.haobtc.onekey.ui.widget.PointLengthFilter;
 import org.haobtc.onekey.utils.ClipboardUtils;
 
@@ -204,6 +205,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         String addressScan = getIntent().getStringExtra("addressScan");
         if (!TextUtils.isEmpty(addressScan)) {
             editReceiverAddress.setText(addressScan);
+            getAddressIsValid();
         } else {
             //whether backup
             try {
@@ -219,8 +221,22 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                 e.printStackTrace();
             }
         }
+        if (Constant.BTC_WATCH.equals(showWalletType)) {
+            showWatchTipDialog();
+        }
         textBalance.setText(String.format("%s%s", balance, preferences.getString("base_unit", "")));
         registerLayoutChangeListener();
+    }
+
+    private void showWatchTipDialog () {
+        CustomCenterDialog centerDialog = new CustomCenterDialog(mContext, new CustomCenterDialog.onConfirmClick() {
+            @Override
+            public void onConfirm () {
+                finish();
+            }
+        });
+        centerDialog.setContent(getString(R.string.watch_wallet_tip));
+        new XPopup.Builder(mContext).asCustom(centerDialog).show();
     }
 
     /***
@@ -228,7 +244,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
      * @return
      */
     @Override
-    public int getContentViewId() {
+    public int getContentViewId () {
         return R.layout.activity_send_hd;
     }
 
@@ -427,8 +443,8 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
 
     private void calculateMaxSpendableAmount () {
         PyResponse<TemporaryTxInfo> pyResponse = PyEnv.getFeeByFeeRate(editReceiverAddress.getText().toString(), "!", String.valueOf(currentFeeRate));
-
-        if (Strings.isNullOrEmpty(pyResponse.getErrors())) {
+        String errorMsg = pyResponse.getErrors();
+        if (Strings.isNullOrEmpty(errorMsg)) {
             TemporaryTxInfo temporaryTxInfo = pyResponse.getResult();
             maxAmount = BigDecimal.valueOf(Double.parseDouble(balance)).subtract(BigDecimal.valueOf(temporaryTxInfo.getFee()));
             if (isSetBig) {
@@ -537,15 +553,20 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         if (Constant.WALLET_TYPE_HARDWARE.equals(showWalletType)) {
             TransactionInfoBean info = TransactionInfoBean.objectFromData(signedTx);
             broadcastTx(info.getTx());
+        } else if (Constant.BTC_WATCH.equals(showWalletType)) {
+            showWatchQrDialog();
         } else { // TODO: 2020/12/23
             // 获取主密码
             startActivity(new Intent(this, SoftPassActivity.class));
         }
     }
 
-    private boolean getFee(String feeRate, int type) {
+    private void showWatchQrDialog () {
+        new XPopup.Builder(mContext).asCustom(new CustomWatchWalletDialog(mContext, rawTx)).show();
+    }
+
+    private boolean getFee (String feeRate, int type) {
         PyResponse<TemporaryTxInfo> pyResponse = PyEnv.getFeeByFeeRate(editReceiverAddress.getText().toString(), isSetBig ? "!" : amount, feeRate);
-        LogUtil.d("请求：", "=========" + amount + "--->" + isSetBig);
         String errors = pyResponse.getErrors();
         if (Strings.isNullOrEmpty(errors)) {
             TemporaryTxInfo temporaryTxInfo = pyResponse.getResult();
@@ -740,12 +761,15 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     }
 
     @Override
-    protected void onPause() {
+    protected void onPause () {
         super.onPause();
         isResume = false;
     }
 
-    private void getAddressIsValid() {
+    /**
+     * 校验收款地址是否有效
+     */
+    private void getAddressIsValid () {
         String address = editReceiverAddress.getText().toString();
         if (!Strings.isNullOrEmpty(address)) {
             addressInvalid = PyEnv.verifyAddress(address);
