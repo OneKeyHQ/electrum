@@ -27,6 +27,7 @@ import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.ui.dialog.PassInvalidDialog;
 import org.haobtc.onekey.utils.PwdEditText;
+import org.haobtc.onekey.utils.ViewHeightStatusDetector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,17 +39,23 @@ import java.util.concurrent.TimeUnit;
 import butterknife.BindView;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
+import me.jessyan.autosize.utils.AutoSizeUtils;
 
 /**
  * @author liyan
  * @date 12/17/20
  */
 
-public class SoftPassActivity extends BaseActivity {
+public class SoftPassActivity extends BaseActivity implements ViewHeightStatusDetector.VisibilityListener {
+    private static final int LONG_PASS_MODE_MIN_HEIGHT = 440;
+    private static final int SHORT_PASS_MODE_MIN_HEIGHT = 320;
 
     public static final int SET = 0;
     public static final int VERIFY = 1;
     public static final int CHANGE = 2;
+
+    private ViewHeightStatusDetector mViewHeightStatusDetector;
+
     @BindView(R.id.img_back)
     ImageView imgBack;
     @BindView(R.id.text_page_title)
@@ -89,6 +96,17 @@ public class SoftPassActivity extends BaseActivity {
         scheduledExecutorService = Executors.newScheduledThreadPool(1);
         judgeStatus();
         keyBroad();
+        viewHeightStatusListener();
+    }
+
+    private void viewHeightStatusListener() {
+        if (editPassShort.getVisibility() == View.VISIBLE) {
+            mViewHeightStatusDetector = new ViewHeightStatusDetector(AutoSizeUtils.dp2px(this, SHORT_PASS_MODE_MIN_HEIGHT));
+        } else {
+            mViewHeightStatusDetector = new ViewHeightStatusDetector(AutoSizeUtils.dp2px(this, LONG_PASS_MODE_MIN_HEIGHT));
+        }
+        mViewHeightStatusDetector.register(this)
+                .setVisibilityListener(this);
     }
 
     /***
@@ -183,12 +201,14 @@ public class SoftPassActivity extends BaseActivity {
             btnNext.setVisibility(View.VISIBLE);
             passTypeSwitchPromote.setText(R.string.use_short_pass);
             editPassLong.setText("");
+            mViewHeightStatusDetector.notification(AutoSizeUtils.dp2px(this, LONG_PASS_MODE_MIN_HEIGHT));
         } else {
             editPassShort.setVisibility(View.VISIBLE);
             editPassLongLayout.setVisibility(View.GONE);
             btnNext.setVisibility(View.GONE);
             passTypeSwitchPromote.setText(R.string.use_long_pass);
             editPassShort.clearText();
+            mViewHeightStatusDetector.notification(AutoSizeUtils.dp2px(this, SHORT_PASS_MODE_MIN_HEIGHT));
         }
         keyBroad();
     }
@@ -362,5 +382,30 @@ public class SoftPassActivity extends BaseActivity {
                 showLongPassLayout(!isLongPass);
                 break;
         }
+    }
+
+    @Override
+    public void onVisibilityChanged(boolean keyboardVisible) {
+        if (keyboardVisible) {
+            if (textTip != null) {
+                textTip.setVisibility(View.VISIBLE);
+            }
+            if (promote != null) {
+                promote.setVisibility(View.VISIBLE);
+            }
+        } else {
+            if (textTip != null) {
+                textTip.setVisibility(View.GONE);
+            }
+            if (promote != null) {
+                promote.setVisibility(View.GONE);
+            }
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mViewHeightStatusDetector.unregister(this);
     }
 }
