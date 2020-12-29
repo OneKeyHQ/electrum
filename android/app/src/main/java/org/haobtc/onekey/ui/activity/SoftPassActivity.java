@@ -28,6 +28,7 @@ import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.ui.dialog.PassInvalidDialog;
 import org.haobtc.onekey.utils.PwdEditText;
 import org.haobtc.onekey.utils.ViewHeightStatusDetector;
+import org.haobtc.onekey.utils.ViewTouchUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -97,6 +98,7 @@ public class SoftPassActivity extends BaseActivity implements ViewHeightStatusDe
         judgeStatus();
         keyBroad();
         viewHeightStatusListener();
+        ViewTouchUtil.expandViewTouchDelegate(passTypeSwitch, 12);
     }
 
     private void viewHeightStatusListener() {
