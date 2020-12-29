@@ -497,7 +497,7 @@ public class WalletFragment extends BaseFragment {
                                 MainSweepcodeBean mainSweepcodeBean = gson.fromJson(strParse, MainSweepcodeBean.class);
                                 MainSweepcodeBean.DataBean listData = mainSweepcodeBean.getData();
                                 String address = listData.getAddress();
-                                SendHdActivity.start(getActivity(), changeBalance, name, address, listData.getAmount());
+                                SendHdActivity.start(getActivity(), changeBalance, textWalletName.getText().toString(), address, listData.getAmount());
                             } else if (type == 2) {
                                 Intent intent = new Intent(getActivity(), DetailTransactionActivity.class);
                                 intent.putExtra("scanDetail", detailScan);
