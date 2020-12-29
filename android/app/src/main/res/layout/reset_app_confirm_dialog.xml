@@ -11,13 +11,14 @@
 
     <TextView
         android:id="@+id/title"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/dp_32"
         android:text="@string/confirm_do_this"
         android:textColor="@color/color_142A3B"
-        android:textSize="@dimen/sp_18" />
+        android:textSize="@dimen/sp_18"
+        android:gravity="center"/>
 
     <TextView
         android:id="@+id/content"

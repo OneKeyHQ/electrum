@@ -25,6 +25,7 @@ import org.haobtc.onekey.activities.base.LunchActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import dr.android.utils.LogUtil;
 
 /**
  * @author liyan

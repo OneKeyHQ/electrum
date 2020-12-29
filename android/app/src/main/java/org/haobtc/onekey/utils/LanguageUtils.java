@@ -11,6 +11,8 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 
 import org.haobtc.onekey.constant.Constant;
+import org.haobtc.onekey.constant.FileNameConstant;
+import org.haobtc.onekey.manager.PreferencesManager;
 
 import java.util.Locale;
 
@@ -64,5 +66,32 @@ public class LanguageUtils {
         configuration.setLocale(locale);
         configuration.setLocales(new LocaleList(locale));
         return context.createConfigurationContext(configuration);
+    }
+
+    public static void changeLanguage(Context context){
+        String language = PreferencesManager.get(context, FileNameConstant.myPreferences, Constant.LANGUAGE, "").toString();
+        if (!TextUtils.isEmpty(language)) {
+            if (Constant.English.equals(language)) {
+                switchLanguage(1,context);
+            } else if (Constant.Chinese.equals(language)) {
+                switchLanguage(0,context);
+            }
+        }
+    }
+
+    public static void switchLanguage (int mode,Context context) {
+        if (mode == 0) {
+            Locale.setDefault(Locale.CHINESE);
+        } else if (mode == 1) {
+            Locale.setDefault(Locale.ENGLISH);
+        }
+        Configuration config1 = context.getResources().getConfiguration();
+        if (mode == 0) {
+            config1.locale = Locale.CHINESE;
+        } else if (mode == 1) {
+            config1.locale = Locale.ENGLISH;
+        }
+        context.getResources().updateConfiguration(config1
+                , context.getResources().getDisplayMetrics());
     }
 }

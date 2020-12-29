@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment;
 
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.utils.EventBusUtils;
+import org.haobtc.onekey.utils.LanguageUtils;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -48,6 +49,7 @@ public abstract class BaseFragment extends Fragment implements IBaseView {
             EventBusUtils.register(this);
         }
         init(view);
+        LanguageUtils.changeLanguage(getContext());
         return view;
     }
 

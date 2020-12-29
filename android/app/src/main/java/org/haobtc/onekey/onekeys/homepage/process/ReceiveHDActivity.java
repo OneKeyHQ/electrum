@@ -1,11 +1,9 @@
 package org.haobtc.onekey.onekeys.homepage.process;
-
 import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Gravity;
@@ -237,7 +235,7 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
                                 } else { // Oups permission denied
                                     Toast.makeText(this, R.string.reservatpion_photo, Toast.LENGTH_SHORT).show();
                                 }
-                            }).dispose();
+                            });
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
