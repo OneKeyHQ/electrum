@@ -266,8 +266,8 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
         HardwareFeatures features;
         PyResponse<HardwareFeatures> response = PyEnv.getFeature(this);
         String errors = response.getErrors();
-        if (Strings.isNullOrEmpty(errors)) {
-            features = response.getResult();
+        features = response.getResult();
+        if (Strings.isNullOrEmpty(errors) && features != null) {
             if (!deviceId.equals(features.getDeviceId()) && !features.isBootloaderMode()) {
                 new InvalidDeviceIdWarningDialog().show(getSupportFragmentManager(), "");
                 return;

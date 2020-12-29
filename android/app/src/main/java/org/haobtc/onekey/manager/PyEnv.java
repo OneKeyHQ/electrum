@@ -43,10 +43,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import cn.com.heaton.blelibrary.ble.Ble;
 import cn.com.heaton.blelibrary.ble.callback.BleWriteCallback;
@@ -190,6 +192,9 @@ public final class PyEnv {
         sCustomerUI.put(PyConstant.PIN, pin);
     }
 
+    public static void cancelRecovery() {
+       sCommands.callAttr(PyConstant.CANCEL_RECOVERY);
+    }
     /**
      * 获取硬件设备信息
      */
@@ -200,7 +205,16 @@ public final class PyEnv {
         try {
             futureTask = new FutureTask<>(() -> Daemon.commands.callAttr(PyConstant.GET_FEATURE, MyApplication.getInstance().getDeviceWay()));
             mExecutorService.submit(futureTask);
-            feature = futureTask.get(5, TimeUnit.SECONDS).toString();
+            try {
+                feature = futureTask.get(5, TimeUnit.SECONDS).toString();
+            } catch (Exception e) {
+                cancelAll();
+                e.printStackTrace();
+                if (e instanceof TimeoutException) {
+                    response.setErrors(context.getString(R.string.get_hard_msg_error));
+                }
+                return response;
+            }
             if (!futureTask.isDone()) {
                 futureTask.cancel(true);
             }
@@ -279,7 +293,12 @@ public final class PyEnv {
         List<BalanceInfo> infos = new ArrayList<>();
         try {
             mExecutorService.execute(() -> {
-                String walletsInfo = sCommands.callAttr(PyConstant.CREATE_WALLET_BY_XPUB, "", 1, 1, xPubs, new Kwarg("hd", hd)).toString();
+                String walletsInfo = null;
+                try {
+                    walletsInfo = sCommands.callAttr(PyConstant.CREATE_WALLET_BY_XPUB, "", 1, 1, xPubs, new Kwarg("hd", hd)).toString();
+                } catch (Exception ignored) {
+                    return;
+                }
                 CreateWalletBean.objectFromData(walletsInfo).getDerivedInfo().forEach(derivedInfoBean -> {
                     BalanceInfo info = new BalanceInfo();
                     info.setBalance(derivedInfoBean.getBlance());

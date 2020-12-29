@@ -23,7 +23,7 @@
             android:id="@+id/device_alias"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@android:color/white"
+            android:background="@drawable/ble_item_bk_selector"
             android:drawableStart="@drawable/bluetooth"
             android:drawableEnd="@drawable/jiantou"
             android:drawablePadding="@dimen/dp_10"

@@ -140,6 +140,7 @@ public class RecoveryHardwareOnceWallet extends BaseActivity implements Business
 
     @OnClick(R.id.img_back)
     public void onViewClicked(View view) {
+        PyEnv.cancelRecovery();
         PyEnv.cancelPinInput();
         PyEnv.cancelAll();
         finish();

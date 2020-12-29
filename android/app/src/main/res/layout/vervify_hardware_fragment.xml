@@ -80,7 +80,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_30"
-            app:text="@string/connectting" />
+            app:text="@string/connecting" />
 
 
         <org.haobtc.onekey.ui.custom.LoadingTextView

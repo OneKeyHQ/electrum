@@ -1,11 +1,12 @@
 package org.haobtc.onekey.exception;
 
+import java.util.Objects;
+
 /**
  * @author liyan
  */
 
 public enum HardWareExceptions {
-
    BLE_RESPONSE_READ_TIMEOUT("BaseException: read ble response timeout", 12),
    FILE_FORMAT_ERROR("BaseException: File is not a zip file", 13),
    PASSPHRASE_OPERATION_TIMEOUT("BaseException: waiting passphrase timeout", 11),
@@ -19,6 +20,7 @@ public enum HardWareExceptions {
    UPDATE_FAILED("BaseException: Update failed: FirmwareError", 17);
    private final String message;
    private final int code;
+   public static final String BASE_EXCEPTION_PREFIX = "BaseException:";
 
    HardWareExceptions(String message, int code) {
       this.message = message;
@@ -31,5 +33,11 @@ public enum HardWareExceptions {
 
    public String getMessage() {
       return message;
+   }
+   public static Exception exceptionConvert(Exception e) {
+      if (Objects.requireNonNull(e.getMessage()).startsWith(BASE_EXCEPTION_PREFIX)) {
+         return new Exception(e.getMessage().replaceFirst(BASE_EXCEPTION_PREFIX, ""));
+      }
+      return e;
    }
 }

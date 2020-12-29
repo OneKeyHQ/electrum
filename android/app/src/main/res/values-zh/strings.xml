@@ -1208,5 +1208,7 @@
     <string name="home_tip">HD 钱包是迄今最为先进的钱包格式，中文称为分层确定性钱包。只需一个助记词，就能派生无限公链或币种。好记、好用、好管理，很安全。</string>
     <string name="already_has_local_hd">本地已存在 HD 钱包，无法再连接 backup 模式的硬件钱包</string>
     <string name="watch_wallet_receive_tip">当前为观察钱包，确定要使用该钱包的地址发起收款吗？</string>
+    <string name="connecting_1">连接中...</string>
+    <string name="ble_connect_error">蓝牙连接异常</string>
 
 </resources>

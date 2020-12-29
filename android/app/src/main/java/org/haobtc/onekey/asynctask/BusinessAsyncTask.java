@@ -182,7 +182,7 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
         } else if (HardWareExceptions.USER_CANCEL.getMessage().equals(e.getMessage())) {
             Log.d(TAG, "cancel by user");
         } else {
-            helper.onException(e);
+            helper.onException(HardWareExceptions.exceptionConvert(e));
         }
         if (ble != null) {
             PyEnv.cancelAll();

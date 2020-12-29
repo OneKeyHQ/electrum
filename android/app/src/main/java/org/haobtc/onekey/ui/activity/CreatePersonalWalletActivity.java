@@ -156,8 +156,9 @@ public class CreatePersonalWalletActivity extends BaseActivity implements Busine
     public void onException(Exception e) {
         if (e.getMessage().contains("PIN invalid")){
             showToast(getString(R.string.pin_input_wrong));
+        } else {
+            showToast(e.getMessage());
         }
-        showToast(e.getMessage());
         finish();
     }
 

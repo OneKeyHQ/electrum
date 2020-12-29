@@ -30,7 +30,11 @@ import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.bean.UpdateInfo;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.BleConnectedEvent;
+import org.haobtc.onekey.event.BleConnectionEx;
 import org.haobtc.onekey.event.BleScanStopEvent;
+import org.haobtc.onekey.event.ConnectedEvent;
+import org.haobtc.onekey.event.ConnectingEvent;
+import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.event.GetXpubEvent;
 import org.haobtc.onekey.event.NotifySuccessfulEvent;
 import org.haobtc.onekey.manager.BleManager;
@@ -38,10 +42,12 @@ import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.ui.adapter.BleDeviceAdapter;
 import org.haobtc.onekey.ui.base.BaseActivity;
+import org.haobtc.onekey.ui.dialog.ConnectingDialog;
 import org.haobtc.onekey.utils.ValueAnimatorUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -77,6 +83,7 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
     private BleDeviceAdapter mBleAdapter;
     private int mSearchMode;
     private BleManager bleManager;
+    private ConnectingDialog dialog;
 
     @Override
     public void init() {
@@ -101,7 +108,29 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
             mBleAdapter.add(device);
         }
     }
-
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onConnecting(ConnectingEvent event) {
+        if (dialog == null) {
+            dialog = new ConnectingDialog();
+        }
+        dialog.show(getSupportFragmentManager(), "");
+        Objects.requireNonNull(dialog.getDialog()).setCanceledOnTouchOutside(false);
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onConnectionEx(BleConnectionEx connectionEx) {
+        if (connectionEx == BleConnectionEx.BLE_CONNECTION_EX_TIMEOUT) {
+            if (dialog != null) {
+                dialog.dismiss();
+            }
+            Toast.makeText(this, R.string.ble_connect_timeout, Toast.LENGTH_SHORT).show();
+        } else {
+            if (dialog != null) {
+                dialog.dismiss();
+            }
+            Toast.makeText(this, R.string.ble_connect_error, Toast.LENGTH_SHORT).show();
+            finish();
+        }
+    }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onBleScanStop(BleScanStopEvent event) {
         if (mSearchMode == Constant.SearchDeviceMode.MODE_PREPARE) {
@@ -203,8 +232,8 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
         HardwareFeatures features;
         PyResponse<HardwareFeatures> response = PyEnv.getFeature(this);
         String errors = response.getErrors();
-        if (Strings.isNullOrEmpty(errors)) {
-            features = response.getResult();
+        features = response.getResult();
+        if (Strings.isNullOrEmpty(errors) && features != null) {
             if (((features.getMajorVersion() == 1) && (features.getMinorVersion() == 9) && (features.getPatchVersion() <= 7)) || features.isBootloaderMode()) {
                 update(features);
                 finish();

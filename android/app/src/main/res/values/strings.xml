@@ -1169,12 +1169,12 @@
     <string name="new_firmware_usable">New system firmware available</string>
     <string name="new_ble_version_usable">New bluetooth firmware available</string>
     <string name="newest">The device firmware is already the latest version.</string>
-    <string name="pin_origin">输入设备原 PIN 码以继续</string>
+    <string name="pin_origin">Please enter the original PIN</string>
     <string name="find_device_promote">Find the following wallets</string>
     <string name="reading_xpub">Read public key info</string>
     <string name="watting">Please wait...</string>
     <string name="set_pin">Set Pin code</string>
-    <string name="connectting">Connecting Devices</string>
+    <string name="connecting">Connecting Devices</string>
     <string name="copy_by_device_dispaly">Complete transcription on hardware device</string>
     <string name="copy_mnemonic_12">Please write down your 12-digit mnemonic</string>
     <string name="copy_mnemonic_promote">1. Have a pen and paper available to copy carefully and keep it safe after reconfirming that it is correct. \n 2. OneKey does not store private data for you, and you will not be able to retrieve the helper words once they are lost.</string>
@@ -1262,6 +1262,7 @@
     <string name="home_tip">HD Wallet is the most advanced wallet format to date. With root seed phrase, it can derive unlimited wallets of all kinds. It is easy to remember, easy to use, easy to manage and very secure.</string>
     <string name="already_has_local_hd">HD wallet already exists in the local area. The hardware wallet in backup mode cannot be connected</string>
     <string name="watch_wallet_receive_tip">Are you sure you want to use the address of the wallet to initiate a collection in order to view the wallet?</string>
-
+    <string name="connecting_1">Connecting...</string>
+    <string name="ble_connect_error">Ble connect error</string>
 
 </resources>

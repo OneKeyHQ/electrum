@@ -9,9 +9,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.constant.Constant;
+import org.haobtc.onekey.event.ConnectingEvent;
+import org.haobtc.onekey.ui.dialog.ConnectingDialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,6 +69,7 @@ public class BleDeviceAdapter extends RecyclerView.Adapter<BleDeviceAdapter.View
             @Override
             public void onClick(View v) {
                 if (mOnItemBleDeviceClick != null) {
+                    EventBus.getDefault().post(new ConnectingEvent());
                     mOnItemBleDeviceClick.connectBle(holder.device);
                 }
             }
