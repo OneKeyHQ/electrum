@@ -24,6 +24,7 @@ import org.haobtc.onekey.event.FinishEvent;
 import org.haobtc.onekey.event.GotPassEvent;
 import org.haobtc.onekey.event.LoadOtherWalletEvent;
 import org.haobtc.onekey.event.SecondEvent;
+import org.haobtc.onekey.manager.ActivityHQManager;
 import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.ui.activity.SoftPassActivity;
@@ -94,18 +95,6 @@ public class DeleteWalletActivity extends BaseActivity implements CompoundButton
                 finish();
                 break;
             case R.id.btn_forward:
-//                if (!TextUtils.isEmpty(deleteWalletType)) {
-//                    if (deleteWalletType.contains("watch") || deleteWalletType.contains("hw")) {
-//                        // 删除观察钱包
-//                        deleteWatchWallet();
-//                    } else {
-//                        //删除除观察钱包以外的钱包
-//                        deleteOtherWallet();
-//                    }
-//                } else {
-//                    //删除除观察钱包以外的钱包
-//                    deleteOtherWallet();
-//                }
                 deleteOtherWallet();
                 break;
         }
@@ -133,7 +122,7 @@ public class DeleteWalletActivity extends BaseActivity implements CompoundButton
         mToast(getString(R.string.delete_succse));
         PreferencesManager.remove(this, Constant.WALLETS, walletName);
         EventBus.getDefault().post(new LoadOtherWalletEvent());
-        finish();
+        ActivityHQManager.getInstance().gotoMain();
     }
 
     private void deleteSingleWallet(String password) {
@@ -200,4 +189,5 @@ public class DeleteWalletActivity extends BaseActivity implements CompoundButton
         super.onDestroy();
         EventBus.getDefault().unregister(this);
     }
+
 }
