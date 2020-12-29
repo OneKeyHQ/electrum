@@ -13,6 +13,7 @@ import org.haobtc.onekey.activities.TransactionsSettingActivity;
 import org.haobtc.onekey.activities.settings.CurrencyActivity;
 import org.haobtc.onekey.activities.settings.OneKeyManageActivity;
 import org.haobtc.onekey.activities.settings.SelectorActivity;
+import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.onekeys.homepage.mindmenu.AllAssetsActivity;
@@ -71,6 +72,7 @@ public class MindFragment extends BaseFragment {
 
     }
 
+    @SingleClick
     @OnClick({R.id.all_assets, R.id.rel_hd_wallet, R.id.rel_all_device, R.id.rel_link_method, R.id.rel_pass, R.id.face_id, R.id.fingerprint, R.id.rel_language, R.id.rel_currency, R.id.rel_internet, R.id.rel_tx_set, R.id.rel_about, R.id.pin_verify_way})
     public void onViewClicked(View view) {
         switch (view.getId()) {
