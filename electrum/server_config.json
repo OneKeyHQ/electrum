@@ -1,3 +1,6 @@
 {
+  "btc_server": [
+      {"trezor-mainnet1": "https://btc1.trezor.io/api/v2/tx/"}
+  ],
   "feerate_info":"{20:40709, 10:58543, 5:65424, 4:66944, 3:70175, 2:73272, 1:73272}"
 }

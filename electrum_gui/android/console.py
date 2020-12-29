@@ -1195,7 +1195,7 @@ class AndroidCommands(commands.Commands):
         except BaseException as e:
             raise e
 
-    def get_tx_info_from_raw(self, raw_tx):
+    def get_tx_info_from_raw(self, raw_tx, tx_list=None):
         '''
         You can get detail info from a raw_tx
         :param raw_tx: raw tx
@@ -1208,7 +1208,7 @@ class AndroidCommands(commands.Commands):
             tx = None
             raise BaseException(e)
         data = {}
-        data = self.get_details_info(tx)
+        data = self.get_details_info(tx, tx_list=tx_list)
         return data
 
     def get_input_info(self, tx):
@@ -1228,7 +1228,41 @@ class AndroidCommands(commands.Commands):
             input_list.append(input_info)
         return input_list
 
-    def get_details_info(self, tx):
+    def get_fee_from_server(self, txid):
+        """Retrieve a transaction. """
+        url_info = read_json('server_config.json', {})
+        url_list = url_info['btc_server']
+        for urlinfo in url_list:
+            for key, url in urlinfo.items():
+                url += txid
+                try:
+                    import requests
+                    response = requests.get(url, timeout=2)
+                    #response = await self.network.send_http_on_proxy("get", url, timeout=2)
+                    response_json = response.json()
+                except BaseException as e:
+                    print(f"error....when get_btc_fee.....{e}")
+                    pass
+                    continue
+                if response_json.__contains__('fee'):
+                    return self.format_amount_and_units(response_json['fee'])
+                elif response_json.__contains__('fees'):
+                    return self.format_amount_and_units(response_json['fees'])
+                else:
+                    continue
+        return ""
+
+    # def get_receive_fee_by_hash(self, tx_hash):
+    #     import asyncio
+    #     try:
+    #         fee = asyncio.run_coroutine_threadsafe(
+    #             self.get_fee_from_server(tx_hash),
+    #             self.network.asyncio_loop).result()
+    #     except:
+    #         fee = None
+    #     return fee
+
+    def get_details_info(self, tx, tx_list=None):
         try:
             self._assert_wallet_isvalid()
         except Exception as e:
@@ -1263,11 +1297,17 @@ class AndroidCommands(commands.Commands):
             amount_str = self.format_amount_and_units(tx_details.amount)
 
         block_height = tx_details.tx_mined_status.height
+        show_fee = ""
+        if tx_list is None:
+            if tx_details.fee is not None:
+                show_fee = self.format_amount_and_units(tx_details.fee)
+            else:
+                show_fee = self.get_fee_from_server(tx_details.txid)
         ret_data = {
             'txid': tx_details.txid,
             'can_broadcast': tx_details.can_broadcast,
             'amount': amount_str,
-            'fee': self.format_amount_and_units(tx_details.fee),
+            'fee': show_fee,
             #'description': self.wallet.get_label(tx_details.txid) if 44 != int(self.wallet.keystore.get_derivation_prefix().split('/')[COIN_POS].split('\'')[0]) else "",
             'description':"",
             'tx_status': tx_details.status,
@@ -1277,7 +1317,7 @@ class AndroidCommands(commands.Commands):
             'height': block_height,
             'cosigner': [x.xpub if not isinstance(x, Imported_KeyStore) else "" for x in self.wallet.get_keystores()],
             'tx': str(tx),
-            'show_status':[1, _("Unconfirmed")] if block_height == 0 else [2, _("Sending failure")] if block_height < 0 else [3, _("Confirmed")]
+            'show_status':[1, _("Unconfirmed")] if (block_height == 0 or (block_height < 0 and not tx_details.can_broadcast)) else [3, _("Confirmed")] if block_height >0 else [2, _("Sending failure")] 
         }
         json_data = json.dumps(ret_data)
         return json_data
@@ -1348,7 +1388,7 @@ class AndroidCommands(commands.Commands):
             raise Exception("Unknown transaction")
         if tx.txid() != txid:
             raise Exception("Mismatching txid")
-        addr = tx._outputs[2].address
+        addr = tx._outputs[n].address
         return addr
 
 
@@ -1388,7 +1428,7 @@ class AndroidCommands(commands.Commands):
             for info in local_tx:
                 i = {}
                 i['type'] = 'history'
-                data = self.get_tx_info_from_raw(info[3])
+                data = self.get_tx_info_from_raw(info[3], tx_list = True)
                 i['tx_status'] = _("Sending failure")
                 i['date'] = util.format_time(int(info[4]))
                 i['tx_hash'] = info[0]
@@ -1416,12 +1456,15 @@ class AndroidCommands(commands.Commands):
 
     def get_history_show_info(self, info, list_info):
         info['type'] = 'history'
-        data = self.get_tx_info(info['tx_hash'])
+        data = self.get_tx_info(info['tx_hash'], tx_list = True)
         info['tx_status'] = json.loads(data)['tx_status']
-        info['address'] = self.get_show_addr(json.loads(data)['output_addr'][0]['addr'])
+        info['address'] = self.get_show_addr(json.loads(data)['output_addr'][0]['addr']) if info['is_mine'] else self.get_show_addr(json.loads(data)['input_addr'][0]['address']) 
+        time = self.txdb.get_tx_time_info(info['tx_hash'])
+        if len(time) != 0:
+            info['date'] = util.format_time(int(time[0][1]))
         list_info.append(info)
 
-    def get_tx_info(self, tx_hash):
+    def get_tx_info(self, tx_hash, tx_list=None):
         '''
         Get detail info by tx_hash
         :param tx_hash:
@@ -1446,7 +1489,7 @@ class AndroidCommands(commands.Commands):
         except Exception as e:
             raise e
         tx.add_info_from_wallet(self.wallet)
-        return self.get_details_info(tx)
+        return self.get_details_info(tx, tx_list=tx_list)
 
     def get_card(self, tx_hash, tx_mined_status, delta, fee, balance):
         try:
@@ -1681,7 +1724,6 @@ class AndroidCommands(commands.Commands):
                 #TODO DB self.delete_tx()
                 msg = e.__str__()
                 self.update_local_info(tx.txid(), self.wallet.get_addresses()[0], tx, msg)
-                # #msg = e.get_message_for_gui()
                 raise BaseException(msg)
             except BestEffortRequestFailed as e:
                 msg = repr(e)
@@ -1689,6 +1731,8 @@ class AndroidCommands(commands.Commands):
             else:
                 print("--------broadcast ok............")
                 return "success"
+            finally:
+                self.txdb.add_tx_time_info(tx.txid())
                 #status, msg = True, tx.txid()
         #          self.callbackIntent.onCallback(Status.broadcast, msg)
         else:
@@ -2256,7 +2300,7 @@ class AndroidCommands(commands.Commands):
             # self.check_pw_wallet = wallet
             wallet_type = 'eth-hd-standard-hw'
         self.update_local_wallet_info(self.get_unique_path(wallet), wallet_type)
-    
+
     ####################################################
     ## app wallet
     # def export_keystore(self, password):
