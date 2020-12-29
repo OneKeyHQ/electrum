@@ -232,7 +232,7 @@ public class HdWalletDetailActivity extends BaseActivity {
     }
 
     private void doSelect (int mode) {
-        PyResponse<String> response = PyEnv.getDeviredNum("btc");
+        PyResponse<String> response = PyEnv.getDerivedNum("btc");
         if (Strings.isNullOrEmpty(response.getErrors())) {
             int coinNum = Integer.parseInt(response.getResult());
             if (coinNum <= 1) {

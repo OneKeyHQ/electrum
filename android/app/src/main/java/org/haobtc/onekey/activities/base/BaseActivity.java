@@ -77,12 +77,15 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @Override
     public Resources getResources() {
-        Resources res = super.getResources();
-        Configuration config = new Configuration();
-        config.setToDefaults();
-        res.updateConfiguration(config, res.getDisplayMetrics());
-        return res;
+        Resources resources = super.getResources();
+        Configuration configuration = resources.getConfiguration();
+        if (configuration.fontScale > 1) {
+            configuration.fontScale = 1f;
+        }
+        resources.updateConfiguration(configuration,resources.getDisplayMetrics());
+        return resources;
     }
+
 
     /**
      * 禁止录屏和截图的钩子

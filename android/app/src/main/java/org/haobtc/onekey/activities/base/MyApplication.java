@@ -23,7 +23,6 @@ import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.FileNameConstant;
 import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.utils.Global;
-import org.haobtc.onekey.utils.LanguageUtils;
 
 import java.util.Locale;
 import java.util.UUID;

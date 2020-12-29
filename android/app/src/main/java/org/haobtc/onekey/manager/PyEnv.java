@@ -58,11 +58,11 @@ import static org.haobtc.onekey.activities.service.CommunicationModeSelector.pro
  * @author liyan
  */
 public final class PyEnv {
-    private static final String TAG = PyEnv.class.getSimpleName();
+//    private static final String TAG = PyEnv.class.getSimpleName();
     public static PyObject sBle, sCustomerUI, sNfc, sUsb, sBleHandler, sNfcHandler, sBleTransport,
             sNfcTransport, sUsbTransport, sProtocol, sCommands;
     public static FutureTask<PyObject> futureTask;
-    private static ExecutorService mexecutorService = Executors.newSingleThreadExecutor();
+    public static ExecutorService mExecutorService = Executors.newSingleThreadExecutor();
 
     static {
         sNfc = Global.py.getModule(PyConstant.TREZORLIB_TRANSPORT_NFC);
@@ -199,7 +199,7 @@ public final class PyEnv {
         String feature;
         try {
             futureTask = new FutureTask<>(() -> Daemon.commands.callAttr(PyConstant.GET_FEATURE, MyApplication.getInstance().getDeviceWay()));
-            mexecutorService.submit(futureTask);
+            mExecutorService.submit(futureTask);
             feature = futureTask.get(5, TimeUnit.SECONDS).toString();
             if (!futureTask.isDone()) {
                 futureTask.cancel(true);
@@ -278,7 +278,7 @@ public final class PyEnv {
     public static void recoveryWallet(BaseActivity activity, String xPubs, boolean hd) {
         List<BalanceInfo> infos = new ArrayList<>();
         try {
-            mexecutorService.execute(() -> {
+            mExecutorService.execute(() -> {
                 String walletsInfo = sCommands.callAttr(PyConstant.CREATE_WALLET_BY_XPUB, "", 1, 1, xPubs, new Kwarg("hd", hd)).toString();
                 CreateWalletBean.objectFromData(walletsInfo).getDerivedInfo().forEach(derivedInfoBean -> {
                     BalanceInfo info = new BalanceInfo();
@@ -377,7 +377,7 @@ public final class PyEnv {
      * @param mnemonics 助记词
      */
     public static void createLocalHd(String passwd, String mnemonics) {
-        mexecutorService.execute(() -> {
+        mExecutorService.execute(() -> {
             try {
                 List<BalanceInfo> infos = new ArrayList<>();
                 String walletsInfo = sCommands.callAttr(PyConstant.CREATE_HD_WALLET, passwd, mnemonics,new Kwarg(Constant.Purpose, 49)).toString();
@@ -796,7 +796,7 @@ public final class PyEnv {
      * @param coin
      * @return
      */
-    public static PyResponse<String> getDeviredNum(String coin) {
+    public static PyResponse<String> getDerivedNum(String coin) {
         PyResponse<String> response = new PyResponse<>();
         try {
             String res = sCommands.callAttr(PyConstant.GET_DEVIRED_NUM, coin).toString();

@@ -28,6 +28,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
+        android:gravity="center"
         android:layout_marginTop="@dimen/dp_21"
         android:text="@string/get_info_by_cold_wallet_hide"
         android:textColor="#142A3B"

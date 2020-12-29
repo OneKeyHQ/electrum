@@ -3,6 +3,8 @@ package org.haobtc.onekey.ui.base;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.MotionEvent;
@@ -161,5 +163,18 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
      */
     public boolean keepScreenOn() {
         return false;
+    }
+    /**
+     * 设置 app 不随着系统字体的调整而变化
+     */
+    @Override
+    public Resources getResources() {
+        Resources resources = super.getResources();
+        Configuration configuration = resources.getConfiguration();
+        if (configuration.fontScale > 1) {
+            configuration.fontScale = 1f;
+        }
+        resources.updateConfiguration(configuration,resources.getDisplayMetrics());
+        return resources;
     }
 }

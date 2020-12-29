@@ -50,7 +50,7 @@ public final class BleManager {
     private BleScanCallback<BleDevice> mBleScanCallBack;
     private static volatile BleManager sInstance;
     private FragmentActivity fragmentActivity;
-    private static boolean connecting;
+    private volatile boolean connecting;
     private String currentAddress;
     public static String currentBleName;
 
@@ -174,7 +174,9 @@ public final class BleManager {
                 return;
             }
             disconnectAllOther(device.getBleAddress());
-            Ble.getInstance().connect(device, mConnectCallback);
+            PyEnv.mExecutorService.execute(() -> {
+                Ble.getInstance().connect(device, mConnectCallback);
+            });
         }
     }
 
@@ -188,11 +190,20 @@ public final class BleManager {
      * @param device
      */
     public void connDevByMac(String device) {
-        disconnectAllOther(device);
-        if (Ble.getInstance().getConnetedDevices().isEmpty()) {
-            Ble.getInstance().connect(device, mConnectCallback);
-        } else if (device.equals(currentAddress)){
-            EventBus.getDefault().postSticky(new NotifySuccessfulEvent());
+        if (connecting) {
+            return;
+        }
+        synchronized (BleManager.class) {
+            connecting = true;
+            disconnectAllOther(device);
+            if (Ble.getInstance().getConnetedDevices().isEmpty()) {
+                PyEnv.mExecutorService.execute(() -> {
+                    Ble.getInstance().connect(device, mConnectCallback);
+                });
+            } else if (device.equals(currentAddress)) {
+                EventBus.getDefault().postSticky(new NotifySuccessfulEvent());
+                connecting = false;
+            }
         }
     }
 
@@ -247,15 +258,14 @@ public final class BleManager {
             @Override
             public void onNotifySuccess(BleDevice device) {
                 super.onNotifySuccess(device);
-                connecting = false;
                 Ble.getInstance().setMTU(device.getBleAddress(), 512, new BleMtuCallback<BleDevice>() {
                     @Override
                     public void onMtuChanged(BleDevice device, int mtu, int status) {
                         super.onMtuChanged(device, mtu, status);
                         PyEnv.bleEnable(device, mWriteCallBack);
                         EventBus.getDefault().post(new NotifySuccessfulEvent());
+                        connecting = false;
                     }
-
                 });
                 currentAddress = device.getBleAddress();
                 currentBleName = device.getBleName();
