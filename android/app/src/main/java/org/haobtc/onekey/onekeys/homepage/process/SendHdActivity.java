@@ -1,4 +1,5 @@
 package org.haobtc.onekey.onekeys.homepage.process;
+
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -95,12 +96,14 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     private static final String EXT_SCAN_ADDRESS = "addressScan";
     private static final String EXT_SCAN_AMOUNT = "amountScan";
 
-    public static void start(Context context, String balance, String name, String address, String amount) {
+    public static void start(Context context, String balance, String name, @Nullable String address, @Nullable String amount) {
         Intent intent = new Intent(context, SendHdActivity.class);
         intent.putExtra(EXT_BALANCE, balance);
         intent.putExtra(EXT_WALLET_NAME, name);
-        intent.putExtra(EXT_SCAN_ADDRESS, address);
-        intent.putExtra(EXT_SCAN_AMOUNT, amount);
+        if (!TextUtils.isEmpty(address)) {
+            intent.putExtra(EXT_SCAN_ADDRESS, address);
+            intent.putExtra(EXT_SCAN_AMOUNT, amount);
+        }
         context.startActivity(intent);
     }
 
@@ -248,7 +251,15 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         String addressScan = getIntent().getStringExtra(EXT_SCAN_ADDRESS);
         if (!TextUtils.isEmpty(addressScan)) {
             editReceiverAddress.setText(addressScan);
-            getAddressIsValid();
+            String amountScan = getIntent().getStringExtra(EXT_SCAN_AMOUNT);
+            String amountConvert = new QRDecode().getAmountByPythonResultAmount(amountScan);
+            String amountStr = checkAndConvertAmount(amountConvert);
+            if (amountStr == null) {
+                getAddressIsValid();
+            } else {
+                editAmount.setText(amountStr);
+                keyBoardHideRefresh();
+            }
         } else {
             //whether backup
             try {
@@ -270,14 +281,6 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         }
         if (Constant.BTC_WATCH.equals(showWalletType)) {
             showWatchTipDialog();
-        }
-        try {
-            String amountScan = getIntent().getStringExtra(EXT_SCAN_AMOUNT);
-            String amountConvert = new QRDecode().getAmountByPythonResultAmount(amountScan);
-            String amountStr = checkAndConvertAmount(amountConvert);
-            editAmount.setText(amountStr);
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
         }
         textBalance.setText(String.format("%s%s", balance, preferences.getString("base_unit", "")));
         registerLayoutChangeListener();
@@ -848,7 +851,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
      */
     @WorkerThread
     @Nullable
-    private String checkAndConvertAmount(String amount) {
+    private String checkAndConvertAmount(@Nullable String amount) {
         BigDecimal amountBigDecimal;
         if (TextUtils.isEmpty(amount)) {
             amountBigDecimal = new BigDecimal("0");
@@ -911,8 +914,10 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                             editReceiverAddress.setText(output.getAddress());
                             if (null != output && !TextUtils.isEmpty(output.getAmount())) {
                                 editAmount.setText(output.getAmount());
+                                keyBoardHideRefresh();
+                            } else {
+                                getAddressIsValid();
                             }
-                            getAddressIsValid();
                         }, e -> {
                             e.printStackTrace();
                             showToast(R.string.invalid_address);
