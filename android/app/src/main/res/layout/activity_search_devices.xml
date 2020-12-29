@@ -8,7 +8,7 @@
     android:background="@drawable/home_bg_onekey"
     android:orientation="vertical">
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_36"
@@ -19,9 +19,11 @@
             android:layout_width="@dimen/dp_44"
             android:layout_height="@dimen/dp_44"
             android:layout_centerVertical="true"
-            android:layout_marginTop="@dimen/dp_10"
             android:layout_marginStart="@dimen/dp_10"
-            android:src="@drawable/left_arrow" />
+            android:layout_marginTop="@dimen/dp_10"
+            android:src="@drawable/left_arrow"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/title"
@@ -31,25 +33,31 @@
             android:layout_centerVertical="true"
             android:layout_gravity="center"
             android:layout_marginLeft="@dimen/dp_20"
-            android:layout_marginTop="@dimen/dp_10"
             android:layout_marginRight="@dimen/dp_20"
             android:fontFamily="sans-serif-medium"
             android:textColor="@color/text"
             android:textSize="@dimen/sp_20"
+            app:layout_constraintBottom_toBottomOf="@+id/img_back"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/img_back"
             tools:ignore="InvalidId" />
 
         <TextView
             android:id="@+id/open_wallet_hide"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_30"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/dp_20"
-            android:layout_marginTop="@dimen/dp_70"
+            android:layout_marginTop="@dimen/dp_20"
             android:layout_marginRight="@dimen/dp_20"
             android:gravity="center_horizontal"
+            android:minHeight="@dimen/dp_30"
             android:text="@string/open_cold_wallet"
-            android:visibility="gone" />
-
-    </RelativeLayout>
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/title" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
     <LinearLayout
@@ -106,8 +114,7 @@
                 android:id="@+id/device_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_20"
-                />
+                android:layout_marginTop="@dimen/dp_20" />
 
         </LinearLayout>
 
