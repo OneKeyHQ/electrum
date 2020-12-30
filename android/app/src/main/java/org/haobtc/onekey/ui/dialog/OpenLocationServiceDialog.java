@@ -1,14 +1,22 @@
 package org.haobtc.onekey.ui.dialog;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.provider.Settings;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.manager.BleManager;
 import org.haobtc.onekey.ui.base.BaseDialogFragment;
+
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -33,6 +41,18 @@ public class OpenLocationServiceDialog extends BaseDialogFragment {
     @Override
     public int getContentViewId() {
         return R.layout.need_location_tip;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        Window window = Objects.requireNonNull(getDialog()).getWindow();
+        if (window != null) {
+            WindowManager.LayoutParams wlp = window.getAttributes();
+            wlp.width = WindowManager.LayoutParams.WRAP_CONTENT;
+            wlp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+            window.setAttributes(wlp);
+        }
     }
 
     @Override
