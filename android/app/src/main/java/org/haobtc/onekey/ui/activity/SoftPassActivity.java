@@ -108,9 +108,9 @@ public class SoftPassActivity extends BaseActivity implements ViewHeightStatusDe
     @Override
     public void init () {
         scheduledExecutorService = Executors.newScheduledThreadPool(1);
+        viewHeightStatusListener();
         judgeStatus();
         keyBroad();
-        viewHeightStatusListener();
         ViewTouchUtil.expandViewTouchDelegate(passTypeSwitch, 12);
     }
 
@@ -121,11 +121,7 @@ public class SoftPassActivity extends BaseActivity implements ViewHeightStatusDe
         mConstraintSetTipHidden.clone(layoutTip);
         mConstraintSetTipHidden.setVisibility(R.id.text_tip, View.GONE);
 
-        if (isLongPass) {
-            mViewHeightStatusDetector = new ViewHeightStatusDetector(AutoSizeUtils.dp2px(this, LONG_PASS_MODE_MIN_HEIGHT));
-        } else {
-            mViewHeightStatusDetector = new ViewHeightStatusDetector(AutoSizeUtils.dp2px(this, SHORT_PASS_MODE_MIN_HEIGHT));
-        }
+        mViewHeightStatusDetector = new ViewHeightStatusDetector(AutoSizeUtils.dp2px(this, SHORT_PASS_MODE_MIN_HEIGHT));
         mViewHeightStatusDetector.register(this)
                 .setVisibilityListener(this);
     }
