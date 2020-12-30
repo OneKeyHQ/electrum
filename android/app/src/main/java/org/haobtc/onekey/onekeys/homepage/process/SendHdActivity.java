@@ -359,48 +359,56 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                     feeDialog = new CustomizeFeeDialog();
                     feeDialog.setArguments(bundle);
                     feeDialog.show(getSupportFragmentManager(), "customize_fee");
+                } else {
+                    showToast(R.string.feerate_failure);
                 }
                 break;
             case R.id.linear_slow:
+                viewSlow.setVisibility(View.VISIBLE);
+                viewRecommend.setVisibility(View.GONE);
+                viewFast.setVisibility(View.GONE);
+                checkboxSlow.setVisibility(View.VISIBLE);
+                checkboxRecommend.setVisibility(View.GONE);
+                checkboxFast.setVisibility(View.GONE);
                 if (currentFeeDetails != null && currentFeeDetails.getSlow() != null) {
-                    viewSlow.setVisibility(View.VISIBLE);
-                    viewRecommend.setVisibility(View.GONE);
-                    viewFast.setVisibility(View.GONE);
-                    checkboxSlow.setVisibility(View.VISIBLE);
-                    checkboxRecommend.setVisibility(View.GONE);
-                    checkboxFast.setVisibility(View.GONE);
                     currentFeeRate = currentFeeDetails.getSlow().getFeerate();
                     currentTempTransaction = tempSlowTransaction;
                     selectFlag = SLOW_FEE_RATE;
                     keyBoardHideRefresh();
+                } else {
+                    showToast(R.string.feerate_failure);
                 }
                 break;
             case R.id.linear_recommend:
-                if (currentFeeDetails != null && currentFeeDetails.getNormal() != null) {
-                    viewSlow.setVisibility(View.GONE);
+                viewSlow.setVisibility(View.GONE);
                     viewRecommend.setVisibility(View.VISIBLE);
                     viewFast.setVisibility(View.GONE);
                     checkboxSlow.setVisibility(View.GONE);
                     checkboxRecommend.setVisibility(View.VISIBLE);
                     checkboxFast.setVisibility(View.GONE);
+                if (currentFeeDetails != null && currentFeeDetails.getNormal() != null) {
                     currentFeeRate = currentFeeDetails.getNormal().getFeerate();
                     currentTempTransaction = tempRecommendTransaction;
                     selectFlag = RECOMMENDED_FEE_RATE;
                     keyBoardHideRefresh();
+                } else {
+                    showToast(R.string.feerate_failure);
                 }
                 break;
             case R.id.linear_fast:
-                if (currentFeeDetails != null && currentFeeDetails.getFast() != null) {
-                    viewSlow.setVisibility(View.GONE);
-                    viewRecommend.setVisibility(View.GONE);
+                viewSlow.setVisibility(View.GONE);
+                viewRecommend.setVisibility(View.GONE);
                     viewFast.setVisibility(View.VISIBLE);
                     checkboxSlow.setVisibility(View.GONE);
                     checkboxRecommend.setVisibility(View.GONE);
                     checkboxFast.setVisibility(View.VISIBLE);
+                if (currentFeeDetails != null && currentFeeDetails.getFast() != null) {
                     currentFeeRate = currentFeeDetails.getFast().getFeerate();
                     currentTempTransaction = tempFastTransaction;
                     selectFlag = FAST_FEE_RATE;
                     keyBoardHideRefresh();
+                } else {
+                    showToast(R.string.feerate_failure);
                 }
                 break;
             case R.id.text_rollback:

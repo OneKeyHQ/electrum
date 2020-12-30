@@ -1,5 +1,4 @@
 package org.haobtc.onekey.activities.transaction;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -10,7 +9,6 @@ import android.net.ConnectivityManager;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
@@ -21,7 +19,6 @@ import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
@@ -117,19 +114,25 @@ public class CheckChainDetailWebActivity extends BaseActivity implements NetBroa
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
-                myDialog.show();
+                if (myDialog != null && !CheckChainDetailWebActivity.this.isFinishing()) {
+                    myDialog.show();
+                }
             }
 
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                myDialog.dismiss();
+                if (myDialog != null && !CheckChainDetailWebActivity.this.isFinishing()) {
+                    myDialog.dismiss();
+                }
             }
 
             @Override
             public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
                 super.onReceivedError(view, request, error);
-                myDialog.dismiss();
+                if (myDialog != null && !CheckChainDetailWebActivity.this.isFinishing()) {
+                    myDialog.dismiss();
+                }
             }
         });
         if (nets == 2) {

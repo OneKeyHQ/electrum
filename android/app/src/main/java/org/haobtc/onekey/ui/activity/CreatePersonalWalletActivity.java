@@ -67,24 +67,25 @@ public class CreatePersonalWalletActivity extends BaseActivity implements Busine
         coinType = event.getCoinName();
         switch (coinType) {
             case Constant.COIN_TYPE_BTC:
-                new XPopup.Builder(mContext).asCustom(new SelectWalletTypeDialog(mContext, new SelectWalletTypeDialog.onClickListener() {
-                    @Override
-                    public void onClick (int mode) {
-                        String walletType = null;
-                        switch (mode) {
-                            case SelectWalletTypeDialog.RecommendType:
-                                walletType = PyConstant.ADDRESS_TYPE_P2SH_P2WPKH;
-                                break;
-                            case SelectWalletTypeDialog.NativeType:
-                                walletType = PyConstant.ADDRESS_TYPE_P2WPKH;
-                                break;
-                            case SelectWalletTypeDialog.NormalType:
-                                walletType = PyConstant.ADDRESS_TYPE_P2PKH;
-                                break;
-                        }
-                        getXpub(walletType);
-                    }
-                })).show();
+                new XPopup.Builder(mContext)
+                        .asCustom(new SelectWalletTypeDialog(mContext, new SelectWalletTypeDialog.onClickListener() {
+                            @Override
+                            public void onClick (int mode) {
+                                String walletType = null;
+                                switch (mode) {
+                                    case SelectWalletTypeDialog.RecommendType:
+                                        walletType = PyConstant.ADDRESS_TYPE_P2SH_P2WPKH;
+                                        break;
+                                    case SelectWalletTypeDialog.NativeType:
+                                        walletType = PyConstant.ADDRESS_TYPE_P2WPKH;
+                                        break;
+                                    case SelectWalletTypeDialog.NormalType:
+                                        walletType = PyConstant.ADDRESS_TYPE_P2PKH;
+                                        break;
+                                }
+                                getXpub(walletType);
+                            }
+                        })).show();
             case Constant.COIN_TYPE_ETH:
                 break;
             case Constant.COIN_TYPE_EOS:

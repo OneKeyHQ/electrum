@@ -49,7 +49,6 @@ public class AssetAdapter extends RecyclerView.Adapter<AssetAdapter.ViewHolder> 
         holder.mIcon.setImageDrawable(context.getDrawable(holder.mAsset.getIconId()));
         holder.mName.setText(context.getString(holder.mAsset.getNameId()));
         holder.mView.setOnClickListener(v -> {
-            holder.mView.setClickable(false);
             switch (holder.mAsset.getNameId()) {
                 case R.string.coin_btc:
                     EventBus.getDefault().post(new GetXpubEvent(Constant.COIN_TYPE_BTC));

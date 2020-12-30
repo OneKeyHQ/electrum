@@ -1210,5 +1210,6 @@
     <string name="watch_wallet_receive_tip">当前为观察钱包，确定要使用该钱包的地址发起收款吗？</string>
     <string name="connecting_1">连接中...</string>
     <string name="ble_connect_error">蓝牙连接异常</string>
+    <string name="feerate_failure">费率获取失败，请重试</string>
 
 </resources>

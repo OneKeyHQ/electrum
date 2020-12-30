@@ -1264,5 +1264,7 @@
     <string name="watch_wallet_receive_tip">Are you sure you want to use the address of the wallet to initiate a collection in order to view the wallet?</string>
     <string name="connecting_1">Connecting...</string>
     <string name="ble_connect_error">Ble connect error</string>
+    <string name="feerate_failure"></string>
+    <string name="connectting"></string>
 
 </resources>
