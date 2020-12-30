@@ -1,5 +1,4 @@
 package org.haobtc.onekey.ui.base;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -22,10 +21,10 @@ import androidx.fragment.app.FragmentTransaction;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.LunchActivity;
+import org.haobtc.onekey.manager.ActivityManager;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import dr.android.utils.LogUtil;
 
 /**
  * @author liyan
@@ -43,6 +42,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         setCustomDensity();
         super.onCreate(savedInstanceState);
+        ActivityManager.getInstance().addActivity(this);
         if (null != savedInstanceState) {
             Intent intent = new Intent(this, LunchActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -178,4 +178,5 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
         resources.updateConfiguration(configuration,resources.getDisplayMetrics());
         return resources;
     }
+
 }

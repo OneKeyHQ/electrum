@@ -110,7 +110,7 @@ public class BackupGuideActivity extends BaseActivity {
         intent.putExtra("exportWord", exportWord);
         intent.putExtra("importHdword", importHdword);
         startActivity(intent);
-        finish();
+        BackupGuideActivity.this.finish();
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGotPass(GotPassEvent event) {
@@ -123,7 +123,7 @@ public class BackupGuideActivity extends BaseActivity {
                     intent0.putExtra("exportWord", response.getResult());
                     intent0.putExtra("importHdword", importHdword);
                     startActivity(intent0);
-                    finish();
+                    BackupGuideActivity.this.finish();
                     break;
                 case 1:
                     Intent intent = new Intent(this, SearchDevicesActivity.class);

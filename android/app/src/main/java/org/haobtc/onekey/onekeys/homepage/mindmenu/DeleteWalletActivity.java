@@ -24,9 +24,10 @@ import org.haobtc.onekey.event.FinishEvent;
 import org.haobtc.onekey.event.GotPassEvent;
 import org.haobtc.onekey.event.LoadOtherWalletEvent;
 import org.haobtc.onekey.event.SecondEvent;
-import org.haobtc.onekey.manager.ActivityHQManager;
+import org.haobtc.onekey.manager.ActivityManager;
 import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
+import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
 import org.haobtc.onekey.ui.activity.SoftPassActivity;
 import org.haobtc.onekey.ui.dialog.BackupRequireDialog;
 
@@ -122,7 +123,7 @@ public class DeleteWalletActivity extends BaseActivity implements CompoundButton
         mToast(getString(R.string.delete_succse));
         PreferencesManager.remove(this, Constant.WALLETS, walletName);
         EventBus.getDefault().post(new LoadOtherWalletEvent());
-        ActivityHQManager.getInstance().gotoMain();
+        ActivityManager.getInstance().finishLeftActivity(HomeOneKeyActivity.class);
     }
 
     private void deleteSingleWallet(String password) {

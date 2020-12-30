@@ -23,7 +23,7 @@ import com.google.common.base.Strings;
 
 import org.haobtc.onekey.activities.service.CommunicationModeSelector;
 import org.haobtc.onekey.constant.Constant;
-import org.haobtc.onekey.manager.ActivityHQManager;
+import org.haobtc.onekey.manager.ActivityManager;
 import org.haobtc.onekey.utils.NfcUtils;
 
 import java.io.UnsupportedEncodingException;
@@ -53,6 +53,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ActivityManager.getInstance().addActivity(this);
         if (!isSplash()) {
             setContentView(getLayoutId());
         }
@@ -64,7 +65,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         mBinitState();
         initView();
         initData();
-        ActivityHQManager.getInstance().activities.add(this);
+
     }
 
     /**
@@ -140,6 +141,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
         NfcUtils.mNfcAdapter = null;
         bind.unbind();
     }

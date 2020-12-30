@@ -19,7 +19,6 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.event.FinishEvent;
-import org.haobtc.onekey.manager.ActivityHQManager;
 import org.haobtc.onekey.onekeys.backup.CheckMnemonicActivity;
 import org.haobtc.onekey.utils.ScreenShotListenManager;
 

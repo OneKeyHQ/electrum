@@ -5,12 +5,12 @@ import android.view.View;
 
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
-import org.haobtc.onekey.manager.ActivityHQManager;
+import org.haobtc.onekey.manager.ActivityManager;
+import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
-import dr.android.utils.LogUtil;
 
 public class BackupCheckSuccessActivity extends BaseActivity {
 
@@ -37,7 +37,7 @@ public class BackupCheckSuccessActivity extends BaseActivity {
         switch (view.getId()) {
             case R.id.img_back:
             case R.id.btn_check:
-                ActivityHQManager.getInstance().gotoMain();
+                ActivityManager.getInstance().finishLeftActivity(HomeOneKeyActivity.class);
                 break;
         }
     }
@@ -55,7 +55,7 @@ public class BackupCheckSuccessActivity extends BaseActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         switch (keyCode) {
             case KeyEvent.KEYCODE_BACK:
-                ActivityHQManager.getInstance().gotoMain();
+                ActivityManager.getInstance().finishLeftActivity(HomeOneKeyActivity.class);
                 break;
         }
         return super.onKeyDown(keyCode, event);
