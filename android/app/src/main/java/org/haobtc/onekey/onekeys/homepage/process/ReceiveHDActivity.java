@@ -1,5 +1,6 @@
 package org.haobtc.onekey.onekeys.homepage.process;
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -194,6 +195,7 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
         }
     }
 
+    @SuppressLint("CheckResult")
     @SingleClick
     @OnClick({R.id.img_back, R.id.linear_copy, R.id.linear_share, R.id.verify_start})
     public void onViewClicked(View view) {

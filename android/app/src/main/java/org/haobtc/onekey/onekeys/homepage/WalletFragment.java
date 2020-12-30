@@ -1,9 +1,13 @@
 package org.haobtc.onekey.onekeys.homepage;
+
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageView;
@@ -80,7 +84,7 @@ import static org.haobtc.onekey.constant.Constant.WALLET_BALANCE;
 /**
  * @author jinxiaomin
  */
-public class WalletFragment extends BaseFragment {
+public class WalletFragment extends BaseFragment implements TextWatcher {
 
     private static final int REQUEST_CODE = 0;
     private static int currentAction;
@@ -162,6 +166,7 @@ public class WalletFragment extends BaseFragment {
         rxPermissions = new RxPermissions(this);
         preferences = requireActivity().getSharedPreferences("Preferences", Context.MODE_PRIVATE);
         edit = preferences.edit();
+        tetAmount.addTextChangedListener(this);
     }
 
     /***
@@ -627,7 +632,7 @@ public class WalletFragment extends BaseFragment {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onRefresh (RefreshEvent refreshEvent) {
+    public void onRefresh(RefreshEvent refreshEvent) {
         if (shouldResponsePassEvent()) {
             initdata();
         }
@@ -637,8 +642,24 @@ public class WalletFragment extends BaseFragment {
      * 注册EventBus
      */
     @Override
-    public boolean needEvents () {
+    public boolean needEvents() {
         return true;
     }
 
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+        if (s.length() > 11) {
+            tetAmount.setTextSize(26);
+        } else {
+            tetAmount.setTextSize(32);
+        }
+    }
 }

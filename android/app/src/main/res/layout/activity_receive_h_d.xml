@@ -138,7 +138,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="460dp"
+            android:layout_height="wrap_content"
             android:layout_below="@+id/RelativeLayout"
             android:layout_marginStart="@dimen/dp_20"
             android:layout_marginTop="@dimen/dp_50"
@@ -189,6 +189,7 @@
                 android:layout_height="0dp"
                 android:layout_marginHorizontal="@dimen/dp_20"
                 android:layout_marginTop="@dimen/sp_15"
+                android:layout_marginBottom="@dimen/dp_30"
                 android:layout_weight="1"
                 android:gravity="center_horizontal"
                 android:textColor="@color/text_two"
@@ -272,7 +273,7 @@
             <LinearLayout
                 android:id="@+id/need_verify_layout"
                 android:layout_width="match_parent"
-                android:layout_height="68dp"
+                android:layout_height="wrap_content"
                 android:background="@drawable/laft_green_tuo"
                 android:gravity="center_horizontal"
                 android:orientation="vertical">
@@ -293,6 +294,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/dp_28"
                     android:layout_marginTop="@dimen/dp_4"
+                    android:layout_marginBottom="@dimen/dp_9"
                     android:background="@drawable/btn_enable_selector"
                     android:drawableEnd="@drawable/right_white"
                     android:drawablePadding="@dimen/dp_10"
@@ -300,6 +302,7 @@
                     android:paddingEnd="@dimen/dp_20"
                     android:singleLine="true"
                     android:text="@string/verify_address_begin"
+                    android:textAllCaps="false"
                     android:textColor="@android:color/white"
                     android:textSize="@dimen/sp_16" />
             </LinearLayout>
