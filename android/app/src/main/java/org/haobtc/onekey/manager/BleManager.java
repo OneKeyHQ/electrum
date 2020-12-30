@@ -11,6 +11,8 @@ import android.widget.Toast;
 
 import androidx.fragment.app.FragmentActivity;
 
+import com.lxj.xpopup.XPopup;
+import com.lxj.xpopup.core.CenterPopupView;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import org.greenrobot.eventbus.EventBus;
@@ -118,7 +120,8 @@ public final class BleManager {
                                     fragmentActivity.finish();
                                 }
                             } else {
-                                new RequestLocationPermissionsDialog().show(fragmentActivity.getSupportFragmentManager(), "");
+                                new XPopup.Builder(fragmentActivity).dismissOnTouchOutside(false).
+                                        asCustom(new RequestLocationPermissionsDialog(fragmentActivity)).show();
                             }
                         }
                 );
@@ -345,7 +348,9 @@ public final class BleManager {
         boolean ok = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         if (!ok) {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, (float) 0, locationListener);
-            new OpenLocationServiceDialog().show(fragmentActivity.getSupportFragmentManager(), "");
+            new XPopup.Builder(fragmentActivity).dismissOnTouchOutside(false)
+                    .asCustom(new OpenLocationServiceDialog(fragmentActivity))
+                    .show();
         }
         return ok;
     }

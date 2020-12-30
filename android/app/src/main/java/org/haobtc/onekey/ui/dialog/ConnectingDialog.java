@@ -1,5 +1,11 @@
 package org.haobtc.onekey.ui.dialog;
 
+import android.content.Context;
+
+import androidx.annotation.NonNull;
+
+import com.lxj.xpopup.core.CenterPopupView;
+
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.ui.base.BaseDialogFragment;
 
@@ -8,24 +14,14 @@ import org.haobtc.onekey.ui.base.BaseDialogFragment;
  * @date 12/29/20
  */
 
-public class ConnectingDialog extends BaseDialogFragment {
-    /***
-     * init layout
-     * @return
-     */
+public class ConnectingDialog extends CenterPopupView {
+
+    public ConnectingDialog(@NonNull Context context) {
+        super(context);
+    }
+
     @Override
-    public int getContentViewId() {
+    protected int getImplLayoutId() {
         return R.layout.connecting_dialog;
-    }
-
-    @Override
-    public boolean requireGravityCenter() {
-        return true;
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        dismiss();
     }
 }

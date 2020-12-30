@@ -14,11 +14,12 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.common.base.Strings;
+import com.lxj.xpopup.XPopup;
+import com.lxj.xpopup.core.CenterPopupView;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -32,9 +33,7 @@ import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.BleConnectedEvent;
 import org.haobtc.onekey.event.BleConnectionEx;
 import org.haobtc.onekey.event.BleScanStopEvent;
-import org.haobtc.onekey.event.ConnectedEvent;
 import org.haobtc.onekey.event.ConnectingEvent;
-import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.event.GetXpubEvent;
 import org.haobtc.onekey.event.NotifySuccessfulEvent;
 import org.haobtc.onekey.manager.BleManager;
@@ -44,10 +43,6 @@ import org.haobtc.onekey.ui.adapter.BleDeviceAdapter;
 import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.ui.dialog.ConnectingDialog;
 import org.haobtc.onekey.utils.ValueAnimatorUtil;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -83,7 +78,7 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
     private BleDeviceAdapter mBleAdapter;
     private int mSearchMode;
     private BleManager bleManager;
-    private ConnectingDialog dialog;
+    private CenterPopupView dialog;
 
     @Override
     public void init() {
@@ -110,25 +105,27 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onConnecting(ConnectingEvent event) {
-        if (dialog == null) {
-            dialog = new ConnectingDialog();
-        }
-        dialog.show(getSupportFragmentManager(), "");
-        Objects.requireNonNull(dialog.getDialog()).setCanceledOnTouchOutside(false);
+        dialog = (CenterPopupView) new XPopup.Builder(mContext)
+                .dismissOnTouchOutside(false)
+                .dismissOnBackPressed(false)
+                .asCustom(new ConnectingDialog(mContext))
+                .show();
+        dialog.postDelayed(() -> {
+            if (dialog != null && dialog.isShow()) {
+                dialog.dismiss();
+            }
+        }, 10000);
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onConnectionEx(BleConnectionEx connectionEx) {
         if (connectionEx == BleConnectionEx.BLE_CONNECTION_EX_TIMEOUT) {
-            if (dialog != null) {
-                dialog.dismiss();
-            }
             Toast.makeText(this, R.string.ble_connect_timeout, Toast.LENGTH_SHORT).show();
         } else {
-            if (dialog != null) {
-                dialog.dismiss();
-            }
             Toast.makeText(this, R.string.ble_connect_error, Toast.LENGTH_SHORT).show();
-            finish();
+        }
+        if (dialog != null && dialog.isShow()) {
+                dialog.dismiss();
+                refreshBleList();
         }
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -241,7 +238,10 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
             }
         } else {
             showToast(getString(R.string.get_hard_msg_error));
-            finish();
+            if (dialog != null && dialog.isShow()) {
+                dialog.dismiss();
+            }
+            refreshBleList();
             return;
         }
         switch (mSearchMode) {
@@ -323,15 +323,20 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
                 finish();
                 break;
             case R.id.relode:
-                if (mLoadingLayout.getVisibility() != View.VISIBLE) {
-                    mLoadingLayout.setVisibility(View.VISIBLE);
-                }
-                if (mDeviceListLayout.getVisibility() != View.GONE) {
-                    mDeviceListLayout.setVisibility(View.GONE);
-                }
-                bleManager.refreshBleDeviceList();
+                refreshBleList();
                 break;
         }
+    }
+
+    private void refreshBleList() {
+        if (mLoadingLayout.getVisibility() != View.VISIBLE) {
+            mLoadingLayout.setVisibility(View.VISIBLE);
+        }
+        if (mDeviceListLayout.getVisibility() != View.GONE) {
+            mDeviceListLayout.setVisibility(View.GONE);
+        }
+        mBleAdapter.clear();
+        bleManager.refreshBleDeviceList();
     }
 
 

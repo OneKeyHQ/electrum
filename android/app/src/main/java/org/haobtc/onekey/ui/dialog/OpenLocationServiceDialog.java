@@ -1,5 +1,6 @@
 package org.haobtc.onekey.ui.dialog;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -10,15 +11,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.OnLifecycleEvent;
+
+import com.lxj.xpopup.core.CenterPopupView;
 
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.manager.BleManager;
-import org.haobtc.onekey.ui.base.BaseDialogFragment;
 
 import java.util.Objects;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**
@@ -26,37 +32,27 @@ import butterknife.OnClick;
  * @date 12/19/20
  */
 
-public class OpenLocationServiceDialog extends BaseDialogFragment {
+public class OpenLocationServiceDialog extends CenterPopupView {
     @BindView(R.id.back)
     TextView back;
     @BindView(R.id.go)
     TextView go;
     @BindView(R.id.promote)
     TextView promote;
+    private FragmentActivity context;
+    public OpenLocationServiceDialog(@NonNull Context context) {
+        super(context);
+        this.context = (FragmentActivity) context;
+    }
 
-    /***
-     * init layout
-     * @return
-     */
     @Override
-    public int getContentViewId() {
+    protected int getImplLayoutId() {
         return R.layout.need_location_tip;
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        Window window = Objects.requireNonNull(getDialog()).getWindow();
-        if (window != null) {
-            WindowManager.LayoutParams wlp = window.getAttributes();
-            wlp.width = WindowManager.LayoutParams.WRAP_CONTENT;
-            wlp.height = WindowManager.LayoutParams.WRAP_CONTENT;
-            window.setAttributes(wlp);
-        }
-    }
-
-    @Override
-    public void init() {
+    public void onCreate() {
+        ButterKnife.bind(this);
         promote.setText(R.string.promote_ble);
     }
 
@@ -64,28 +60,21 @@ public class OpenLocationServiceDialog extends BaseDialogFragment {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.back:
-                BleManager manager = BleManager.getInstance(requireActivity());
+                BleManager manager = BleManager.getInstance(context);
                 manager.getLocationManager().removeUpdates(manager.getLocationListener());
-                Toast.makeText(requireActivity(), requireActivity().getString(R.string.dont_use_bluetooth), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, context.getString(R.string.dont_use_bluetooth), Toast.LENGTH_SHORT).show();
                 dismiss();
-                requireActivity().finish();
+                context.finish();
                 break;
             case R.id.go:
                 Intent intent = new Intent();
                 intent.setAction(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                requireActivity().startActivity(intent);
+                context.startActivity(intent);
                 break;
         }
     }
-
-    @Override
+    @OnLifecycleEvent(value = Lifecycle.Event.ON_PAUSE)
     public void onPause() {
-        super.onPause();
         dismiss();
-    }
-
-    @Override
-    public boolean requireGravityCenter() {
-        return true;
     }
 }

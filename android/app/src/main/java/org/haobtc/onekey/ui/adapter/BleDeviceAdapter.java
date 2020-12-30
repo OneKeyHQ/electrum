@@ -29,7 +29,7 @@ import cn.com.heaton.blelibrary.ble.model.BleDevice;
  */
 public class BleDeviceAdapter extends RecyclerView.Adapter<BleDeviceAdapter.ViewHolder> {
 
-    public static List<BleDevice> mValues = new ArrayList<>();
+    private List<BleDevice> mValues = new ArrayList<>();
     private LayoutInflater mInflater;
     private OnItemBleDeviceClick mOnItemBleDeviceClick;
 
@@ -39,6 +39,9 @@ public class BleDeviceAdapter extends RecyclerView.Adapter<BleDeviceAdapter.View
         this.mInflater = LayoutInflater.from(context);
     }
 
+    public void clear() {
+        mValues.clear();
+    }
 
     public void add(BleDevice device) {
         if (device.getBleName() == null) {

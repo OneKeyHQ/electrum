@@ -1,6 +1,7 @@
 package org.haobtc.onekey.ui.activity;
 
 import android.content.Intent;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -92,7 +93,13 @@ public class RecoveryHardwareOnceWallet extends BaseActivity implements Business
         }
         finish();
     }
-
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
     @Subscribe
     public void onFinish(ExitEvent exitEvent) {
         if (hasWindowFocus()) {

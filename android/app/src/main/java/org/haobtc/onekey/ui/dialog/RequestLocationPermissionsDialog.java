@@ -1,12 +1,18 @@
 package org.haobtc.onekey.ui.dialog;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.view.View;
 
-import org.haobtc.onekey.R;
-import org.haobtc.onekey.ui.base.BaseDialogFragment;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
 
+import com.lxj.xpopup.core.CenterPopupView;
+
+import org.haobtc.onekey.R;
+
+import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**
@@ -14,14 +20,22 @@ import butterknife.OnClick;
  * @date 12/19/20
  */
 
-public class RequestLocationPermissionsDialog extends BaseDialogFragment {
-    /***
-     * init layout
-     * @return
-     */
+public class RequestLocationPermissionsDialog extends CenterPopupView {
+    private Context context;
+    public RequestLocationPermissionsDialog(@NonNull Context context) {
+        super(context);
+        this.context = context;
+    }
+
     @Override
-    public int getContentViewId() {
+    protected int getImplLayoutId() {
         return R.layout.need_location_tip;
+    }
+
+    @Override
+    protected void onCreate() {
+        super.onCreate();
+        ButterKnife.bind(this);
     }
 
     @OnClick({R.id.back, R.id.go})
@@ -29,27 +43,16 @@ public class RequestLocationPermissionsDialog extends BaseDialogFragment {
         switch (view.getId()) {
             case R.id.back:
                 dismiss();
-                requireActivity().finish();
                 break;
             case R.id.go:
                 Intent intent = new Intent("android.settings.APPLICATION_DETAILS_SETTINGS");
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.setData(Uri.fromParts("package", requireContext().getPackageName(), null));
-                if (intent.resolveActivity(requireContext().getPackageManager()) != null) {
-                    requireActivity().startActivity(intent);
-                    requireActivity().finish();
+                intent.setData(Uri.fromParts("package", context.getPackageName(), null));
+                if (intent.resolveActivity(context.getPackageManager()) != null) {
+                    context.startActivity(intent);
+                    ((FragmentActivity)context).finish();
                 }
                 break;
         }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        dismiss();
-    }
-    @Override
-    public boolean requireGravityCenter() {
-        return true;
     }
 }
