@@ -108,7 +108,7 @@ public final class BleManager {
 
         RxPermissions permissions = new RxPermissions(fragmentActivity);
         // 收不到回调，要手动监听
-        Disposable subscribe = permissions.requestEach(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+        Disposable subscribe = permissions.requestEachCombined(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
                 .subscribe(
                         permission -> {
                             if (permission.granted) {
