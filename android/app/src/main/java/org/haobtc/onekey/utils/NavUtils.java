@@ -10,8 +10,7 @@ import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
 import org.haobtc.onekey.onekeys.dialog.recovery.importmethod.ImportWalletSetNameActivity;
 import org.haobtc.onekey.onekeys.homepage.process.CreateDeriveChooseTypeActivity;
 import org.haobtc.onekey.onekeys.homepage.process.SoftWalletNameSettingActivity;
-
-import me.jessyan.autosize.utils.LogUtils;
+import org.haobtc.onekey.ui.activity.SoftPassActivity;
 
 /**
  * @Description: 页面跳转的管理类
@@ -76,6 +75,7 @@ public class NavUtils {
             context.startActivity(intent);
         }
     }
+
     /**
      * 跳转到导入私钥的设置名称页面
      *
@@ -84,6 +84,10 @@ public class NavUtils {
      */
     public static void gotoImportWalletSetNameActivity (Context context, int purpose) {
         ImportWalletSetNameActivity.gotoImportWalletSetNameActivity(context, purpose);
+    }
+
+    public static void gotoSoftPassActivity (Context context, int type, int from) {
+        SoftPassActivity.gotoSoftPassActivity(context, type, from);
     }
 
 }

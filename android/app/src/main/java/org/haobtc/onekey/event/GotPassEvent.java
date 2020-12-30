@@ -6,6 +6,7 @@ package org.haobtc.onekey.event;
  */
 public class GotPassEvent {
     private String password;
+    public int fromType;
 
     public GotPassEvent(String password) {
         this.password = password;

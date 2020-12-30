@@ -1,5 +1,4 @@
 package org.haobtc.onekey.onekeys.homepage;
-
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -31,13 +30,11 @@ import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
 import org.haobtc.onekey.onekeys.dialog.RecoverHdWalletActivity;
 import org.haobtc.onekey.onekeys.homepage.mindmenu.HDWalletActivity;
-import org.haobtc.onekey.onekeys.homepage.process.CreateDeriveChooseTypeActivity;
 import org.haobtc.onekey.onekeys.homepage.process.CreateWalletChooseTypeActivity;
 import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
 import org.haobtc.onekey.ui.activity.SoftPassActivity;
 import org.haobtc.onekey.ui.dialog.CreateWalletWaySelectorDialog;
 import org.haobtc.onekey.ui.dialog.HdWalletIntroductionDialog;
-import org.haobtc.onekey.utils.MyDialog;
 import org.haobtc.onekey.utils.NavUtils;
 
 import java.util.ArrayList;
@@ -46,8 +43,6 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-
-import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
 
 /**
  * @author jinxiaomin
@@ -248,7 +243,7 @@ public class WalletListActivity extends BaseActivity {
                 break;
             case R.id.recl_add_hd_wallet:
                 isAddHd = true;
-                startActivity(new Intent(this, SoftPassActivity.class));
+                NavUtils.gotoSoftPassActivity(mContext, SoftPassActivity.SET, 1);
                 break;
             case R.id.recl_recovery_wallet:
                 isAddHd = false;
@@ -265,14 +260,15 @@ public class WalletListActivity extends BaseActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGotPass(GotPassEvent event) {
         if (shouldResponsePassEvent()) {
-            PyEnv.createLocalHd(event.getPassword(), null);
+            if (event.fromType == 1) {
+                PyEnv.createLocalHd(event.getPassword(), null);
+            }
         }
     }
 
     @Subscribe
     public void onRefresh(RefreshEvent event) {
         if (shouldResponsePassEvent()) {
-            startActivity(new Intent(this, HomeOneKeyActivity.class));
             finish();
         }
     }

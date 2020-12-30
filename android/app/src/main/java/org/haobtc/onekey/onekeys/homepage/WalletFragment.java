@@ -1,5 +1,4 @@
 package org.haobtc.onekey.onekeys.homepage;
-
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -17,7 +16,6 @@ import androidx.annotation.IdRes;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.alibaba.fastjson.JSON;
 import com.chaquo.python.PyObject;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
@@ -46,7 +44,6 @@ import org.haobtc.onekey.event.SecondEvent;
 import org.haobtc.onekey.manager.BleManager;
 import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
-import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
 import org.haobtc.onekey.onekeys.backup.BackupGuideActivity;
 import org.haobtc.onekey.onekeys.dialog.RecoverHdWalletActivity;
 import org.haobtc.onekey.onekeys.homepage.process.DetailTransactionActivity;
@@ -59,6 +56,7 @@ import org.haobtc.onekey.ui.activity.SoftPassActivity;
 import org.haobtc.onekey.ui.base.BaseFragment;
 import org.haobtc.onekey.ui.dialog.BackupDialog;
 import org.haobtc.onekey.utils.Daemon;
+import org.haobtc.onekey.utils.NavUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -571,9 +569,7 @@ public class WalletFragment extends BaseFragment {
             case R.id.img_Add:
             case R.id.rel_create_hd:
                 isAddHd = true;
-                Intent intent0 = new Intent(getActivity(), SoftPassActivity.class);
-                intent0.putExtra(org.haobtc.onekey.constant.Constant.OPERATE_TYPE, SoftPassActivity.SET);
-                startActivity(intent0);
+                NavUtils.gotoSoftPassActivity(getActivity(), SoftPassActivity.SET, 0);
                 break;
             case R.id.rel_recovery_hd:
                 isRecovery = true;
@@ -624,14 +620,16 @@ public class WalletFragment extends BaseFragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGotPass(GotPassEvent event) {
         if (shouldResponsePassEvent()) {
-            PyEnv.createLocalHd(event.getPassword(), null);
+            if (event.fromType == 0) {
+                PyEnv.createLocalHd(event.getPassword(), null);
+            }
         }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onRefresh(RefreshEvent refreshEvent) {
+    public void onRefresh (RefreshEvent refreshEvent) {
         if (shouldResponsePassEvent()) {
-            startActivity(new Intent(getActivity(), HomeOneKeyActivity.class));
+            initdata();
         }
     }
 
@@ -639,7 +637,8 @@ public class WalletFragment extends BaseFragment {
      * 注册EventBus
      */
     @Override
-    public boolean needEvents() {
+    public boolean needEvents () {
         return true;
     }
+
 }

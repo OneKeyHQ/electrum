@@ -1,6 +1,7 @@
 package org.haobtc.onekey.ui.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.method.HideReturnsTransformationMethod;
@@ -21,6 +22,7 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.bean.LocalWalletInfo;
 import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.constant.Constant;
+import org.haobtc.onekey.constant.StringConstant;
 import org.haobtc.onekey.event.GotPassEvent;
 import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
@@ -54,7 +56,6 @@ public class SoftPassActivity extends BaseActivity implements ViewHeightStatusDe
     public static final int SET = 0;
     public static final int VERIFY = 1;
     public static final int CHANGE = 2;
-
     private ViewHeightStatusDetector mViewHeightStatusDetector;
 
     @BindView(R.id.img_back)
@@ -88,12 +89,17 @@ public class SoftPassActivity extends BaseActivity implements ViewHeightStatusDe
     private boolean isLongPass;
     private String pinInputFirst;
     private String pinOrigin;
+    private int fromType;
 
-    /**
-     * init
-     */
+    public static void gotoSoftPassActivity (Context context, int type, int from) {
+        Intent intent = new Intent(context, SoftPassActivity.class);
+        intent.putExtra(StringConstant.FROM, from);
+        intent.putExtra(Constant.OPERATE_TYPE, type);
+        context.startActivity(intent);
+    }
+
     @Override
-    public void init() {
+    public void init () {
         scheduledExecutorService = Executors.newScheduledThreadPool(1);
         judgeStatus();
         keyBroad();
@@ -101,7 +107,7 @@ public class SoftPassActivity extends BaseActivity implements ViewHeightStatusDe
         ViewTouchUtil.expandViewTouchDelegate(passTypeSwitch, 12);
     }
 
-    private void viewHeightStatusListener() {
+    private void viewHeightStatusListener () {
         if (editPassShort.getVisibility() == View.VISIBLE) {
             mViewHeightStatusDetector = new ViewHeightStatusDetector(AutoSizeUtils.dp2px(this, SHORT_PASS_MODE_MIN_HEIGHT));
         } else {
@@ -124,8 +130,11 @@ public class SoftPassActivity extends BaseActivity implements ViewHeightStatusDe
      * 渲染初始视图
      */
     private void judgeStatus() {
-        // 默认是校验密码模式
+        // 默认是校验密码模式, 多此一举
         operationType = getIntent().getIntExtra(Constant.OPERATE_TYPE, 1);
+        if (getIntent().hasExtra(StringConstant.FROM)) {
+            fromType = getIntent().getIntExtra(StringConstant.FROM, -1);
+        }
         List<String> needPassWallets = new ArrayList<>();
         Map<String, ?> jsonToMap = PreferencesManager.getAll(this, Constant.WALLETS);
         jsonToMap.entrySet().forEach(stringEntry -> {
@@ -269,7 +278,9 @@ public class SoftPassActivity extends BaseActivity implements ViewHeightStatusDe
             // 第二次输入password
             if (pinInputFirst.equals(pass)) {
                 PreferencesManager.put(this, "Preferences", Constant.SOFT_HD_PASS_TYPE, isLongPass ? Constant.SOFT_HD_PASS_TYPE_LONG : Constant.SOFT_HD_PASS_TYPE_SHORT);
-                EventBus.getDefault().post(new GotPassEvent(pinInputFirst));
+                GotPassEvent gotPassEvent = new GotPassEvent(pinInputFirst);
+                gotPassEvent.fromType = fromType;
+                EventBus.getDefault().post(gotPassEvent);
                 finish();
                 return;
             } else {

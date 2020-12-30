@@ -255,10 +255,4 @@ public class HomeOneKeyActivity extends BaseActivity implements RadioGroup.OnChe
     public void error(Exception e) {
     }
 
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        refreshView();
-    }
-
 }
