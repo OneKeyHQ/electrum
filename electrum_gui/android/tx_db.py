@@ -43,7 +43,6 @@ class TxDb:
                            (tx_hash, address, str(psbt_tx), str(raw_tx), time.time(), failed_info))
             conn.commit()
         except Exception as e:
-            e.__repr__()
             raise e
         finally:
             if cursor:
@@ -88,7 +87,50 @@ class TxDb:
                            (tx_hash, time.time()))
             conn.commit()
         except Exception as e:
-            e.__repr__()
+            raise e
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
+
+    ### API for recevied tx fee
+    def create_save_fee_table(self, cursor):
+        cursor.execute(
+            "CREATE TABLE IF NOT EXISTS receviedtxfeeinfo (tx_hash TEXT PRIMARY KEY, fee TEXT)")
+
+    def get_received_tx_fee_info(self, tx_hash):
+        conn = None
+        cursor = None
+        try:
+            conn = sqlite3.connect(self.path)
+            cursor = conn.cursor()
+            self.create_save_fee_table(cursor)
+            cursor.execute("SELECT * FROM receviedtxfeeinfo WHERE tx_hash=?", (tx_hash,))
+            result = cursor.fetchall()
+            tx_list = []
+            for info in result:
+                tx_list.append(info)
+            return tx_list
+        except Exception as e:
+            raise e
+        finally:
+            if cursor:
+                cursor.close()
+            if conn:
+                conn.close()
+
+    def add_received_tx_fee_info(self, tx_hash, fee):
+        conn = None
+        cursor = None
+        try:
+            conn = sqlite3.connect(self.path)
+            cursor = conn.cursor()
+            self.create_save_fee_table(cursor)
+            cursor.execute("INSERT OR IGNORE INTO receviedtxfeeinfo VALUES(?, ?)",
+                           (tx_hash, fee))
+            conn.commit()
+        except Exception as e:
             raise e
         finally:
             if cursor:

@@ -1305,11 +1305,17 @@ class AndroidCommands(commands.Commands):
 
         block_height = tx_details.tx_mined_status.height
         show_fee = ""
-        if tx_list is None:
-            if tx_details.fee is not None:
-                show_fee = self.format_amount_and_units(tx_details.fee)
-            else:
-                show_fee = self.get_fee_from_server(tx_details.txid)
+        if tx_details.fee is not None:
+            show_fee = self.format_amount_and_units(tx_details.fee)
+        else:
+            if tx_list is None:
+                show_fee_list = self.txdb.get_received_tx_fee_info(tx_details.txid)
+                if len(show_fee_list) != 0:
+                    show_fee = show_fee_list[0][1]
+                if show_fee  == "":
+                    show_fee = self.get_fee_from_server(tx_details.txid)
+                    if show_fee != "":
+                        self.txdb.add_received_tx_fee_info(tx_details.txid, show_fee)
         ret_data = {
             'txid': tx_details.txid,
             'can_broadcast': tx_details.can_broadcast,
