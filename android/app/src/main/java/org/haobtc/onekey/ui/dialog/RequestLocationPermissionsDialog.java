@@ -22,6 +22,8 @@ import butterknife.OnClick;
 
 public class RequestLocationPermissionsDialog extends CenterPopupView {
     private Context context;
+    private OnClickListener mBackOnClickListener;
+
     public RequestLocationPermissionsDialog(@NonNull Context context) {
         super(context);
         this.context = context;
@@ -43,6 +45,7 @@ public class RequestLocationPermissionsDialog extends CenterPopupView {
         switch (view.getId()) {
             case R.id.back:
                 dismiss();
+                mBackOnClickListener.onClick(view);
                 break;
             case R.id.go:
                 Intent intent = new Intent("android.settings.APPLICATION_DETAILS_SETTINGS");
@@ -54,5 +57,10 @@ public class RequestLocationPermissionsDialog extends CenterPopupView {
                 }
                 break;
         }
+    }
+
+    public RequestLocationPermissionsDialog setBackOnClickListener(OnClickListener listener) {
+        mBackOnClickListener = listener;
+        return this;
     }
 }

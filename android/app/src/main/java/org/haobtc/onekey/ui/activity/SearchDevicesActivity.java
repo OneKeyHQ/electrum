@@ -1,5 +1,6 @@
 package org.haobtc.onekey.ui.activity;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -20,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.common.base.Strings;
 import com.lxj.xpopup.XPopup;
 import com.lxj.xpopup.core.CenterPopupView;
+import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -42,12 +44,14 @@ import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.ui.adapter.BleDeviceAdapter;
 import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.ui.dialog.ConnectingDialog;
+import org.haobtc.onekey.ui.dialog.RequestLocationPermissionsDialog;
 import org.haobtc.onekey.utils.ValueAnimatorUtil;
 
 import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.heaton.blelibrary.ble.Ble;
 import cn.com.heaton.blelibrary.ble.model.BleDevice;
+import io.reactivex.disposables.Disposable;
 
 import static cn.com.heaton.blelibrary.ble.Ble.REQUEST_ENABLE_BT;
 
@@ -86,7 +90,7 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
         addBleView();
         bleManager = BleManager.getInstance(this);
         if (mSearchMode != Constant.SearchDeviceMode.MODE_PREPARE) {
-            bleManager.initBle();
+            initBle();
         }
     }
 
@@ -351,7 +355,7 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
         if (requestCode == REQUEST_ENABLE_BT && resultCode == Activity.RESULT_CANCELED) {
             Toast.makeText(this, getString(R.string.open_bluetooth), Toast.LENGTH_LONG).show();
         } else if (requestCode == REQUEST_ENABLE_BT && resultCode == Activity.RESULT_OK) {
-            bleManager.initBle();
+            initBle();
         }
     }
 
@@ -374,7 +378,7 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
         if (bleManager != null) {
             if (bleManager.isGpsStatusChange()) {
                 bleManager.setGpsStatusChange(false);
-                bleManager.initBle();
+                initBle();
             }
         }
     }
@@ -432,4 +436,29 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
         return bundle;
     }
 
+    /**
+     * 初始化蓝牙前检查权限，为后续在 BleManager 抽离 Activity 作准备，BleManager 持有 Activity 此处会发生内存泄漏。
+     */
+    private void initBle() {
+        RxPermissions permissions = new RxPermissions(this);
+        Disposable subscribe = permissions.requestEachCombined(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+                .subscribe(
+                        permission -> {
+                            if (permission.granted) {
+                                bleManager.initBle();
+                            } else if (permission.shouldShowRequestPermissionRationale) {
+                                showToast(R.string.blurtooth_need_permission);
+                                finish();
+                            } else {
+                                new XPopup.Builder(this)
+                                        .dismissOnTouchOutside(false)
+                                        .asCustom(new RequestLocationPermissionsDialog(this)
+                                                .setBackOnClickListener(v -> {
+                                                    finish();
+                                                }))
+                                        .show();
+                            }
+                        }
+                );
+    }
 }
