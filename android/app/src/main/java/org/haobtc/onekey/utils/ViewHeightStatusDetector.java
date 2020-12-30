@@ -104,6 +104,6 @@ public class ViewHeightStatusDetector {
     }
 
     public interface VisibilityListener {
-        void onVisibilityChanged(boolean keyboardVisible);
+        void onVisibilityChanged(boolean visible);
     }
 }

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
+import android.transition.TransitionManager;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -14,6 +15,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 
 import com.google.common.base.Strings;
 
@@ -57,7 +61,10 @@ public class SoftPassActivity extends BaseActivity implements ViewHeightStatusDe
     public static final int VERIFY = 1;
     public static final int CHANGE = 2;
     private ViewHeightStatusDetector mViewHeightStatusDetector;
+    private ConstraintSet mConstraintSetTipShow, mConstraintSetTipHidden;
 
+    @BindView(R.id.layoutTip)
+    ConstraintLayout layoutTip;
     @BindView(R.id.img_back)
     ImageView imgBack;
     @BindView(R.id.text_page_title)
@@ -107,11 +114,17 @@ public class SoftPassActivity extends BaseActivity implements ViewHeightStatusDe
         ViewTouchUtil.expandViewTouchDelegate(passTypeSwitch, 12);
     }
 
-    private void viewHeightStatusListener () {
-        if (editPassShort.getVisibility() == View.VISIBLE) {
-            mViewHeightStatusDetector = new ViewHeightStatusDetector(AutoSizeUtils.dp2px(this, SHORT_PASS_MODE_MIN_HEIGHT));
-        } else {
+    private void viewHeightStatusListener() {
+        mConstraintSetTipShow = new ConstraintSet();
+        mConstraintSetTipHidden = new ConstraintSet();
+        mConstraintSetTipShow.clone(layoutTip);
+        mConstraintSetTipHidden.clone(layoutTip);
+        mConstraintSetTipHidden.setVisibility(R.id.text_tip, View.GONE);
+
+        if (isLongPass) {
             mViewHeightStatusDetector = new ViewHeightStatusDetector(AutoSizeUtils.dp2px(this, LONG_PASS_MODE_MIN_HEIGHT));
+        } else {
+            mViewHeightStatusDetector = new ViewHeightStatusDetector(AutoSizeUtils.dp2px(this, SHORT_PASS_MODE_MIN_HEIGHT));
         }
         mViewHeightStatusDetector.register(this)
                 .setVisibilityListener(this);
@@ -398,18 +411,15 @@ public class SoftPassActivity extends BaseActivity implements ViewHeightStatusDe
     }
 
     @Override
-    public void onVisibilityChanged(boolean keyboardVisible) {
-        if (keyboardVisible) {
-            if (textTip != null) {
-                textTip.setVisibility(View.VISIBLE);
-            }
+    public void onVisibilityChanged(boolean visible) {
+        TransitionManager.beginDelayedTransition(layoutTip);
+        if (visible) {
+            mConstraintSetTipShow.applyTo(layoutTip);
             if (promote != null) {
                 promote.setVisibility(View.VISIBLE);
             }
         } else {
-            if (textTip != null) {
-                textTip.setVisibility(View.GONE);
-            }
+            mConstraintSetTipHidden.applyTo(layoutTip);
             if (promote != null) {
                 promote.setVisibility(View.GONE);
             }
