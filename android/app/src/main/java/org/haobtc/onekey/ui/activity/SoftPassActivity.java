@@ -238,7 +238,7 @@ public class SoftPassActivity extends BaseActivity implements ViewHeightStatusDe
     }
 
     private void dealVerify(String password) {
-        PyResponse<Void> response = PyEnv.verifySoftPass(pinOrigin);
+        PyResponse<Void> response = PyEnv.verifySoftPass(password);
         String errors = response.getErrors();
         if (Strings.isNullOrEmpty(errors)) {
             hideKeyBroad();
