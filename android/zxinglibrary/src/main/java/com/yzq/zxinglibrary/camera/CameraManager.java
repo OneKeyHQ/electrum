@@ -167,27 +167,24 @@ public final class CameraManager {
     /*切换闪光灯*/
     public void switchFlashLight(CaptureActivityHandler handler) {
         //  Log.i("打开闪光灯", "openFlashLight");
-
-        Camera.Parameters parameters = camera.getParameters();
-
-        Message msg = new Message();
-
-        String flashMode = parameters.getFlashMode();
-
-        if (flashMode.equals(Camera.Parameters.FLASH_MODE_TORCH)) {
-            /*关闭闪光灯*/
-            parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
-
-            msg.what = Constant.FLASH_CLOSE;
-
-
-        } else {
-            /*打开闪光灯*/
-            parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
-            msg.what = Constant.FLASH_OPEN;
+        try {
+            Camera.Parameters parameters = camera.getParameters();
+            Message msg = new Message();
+            String flashMode = parameters.getFlashMode();
+            if (flashMode.equals(Camera.Parameters.FLASH_MODE_TORCH)) {
+                /*关闭闪光灯*/
+                parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+                msg.what = Constant.FLASH_CLOSE;
+            } else {
+                /*打开闪光灯*/
+                parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+                msg.what = Constant.FLASH_OPEN;
+            }
+            camera.setParameters(parameters);
+            handler.sendMessage(msg);
+        } catch (Exception e) {
+            e.toString();
         }
-        camera.setParameters(parameters);
-        handler.sendMessage(msg);
     }
 
 

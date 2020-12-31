@@ -5,6 +5,8 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
+import dr.android.utils.LogUtil;
+
 /**
  * @author liyan
  */
@@ -24,7 +26,6 @@ public class CreateWalletBean {
     private List<DerivedInfoBean> derivedInfo;
 
     public static CreateWalletBean objectFromData(String str) {
-
         return new Gson().fromJson(str, CreateWalletBean.class);
     }
 

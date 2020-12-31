@@ -222,6 +222,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     private double fastRate;
 
     private static final int REQUEST_SCAN_CODE = 0;
+    private boolean signClickable =true;
 
     private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
 
@@ -421,7 +422,11 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                 }
                 break;
             case R.id.btn_next:
-                send();
+                if (signClickable) {
+                    send();
+                }else {
+                    showToast(R.string.confirm_hardware_msg);
+                }
                 break;
             case R.id.img_scan:
                 rxPermissions
@@ -1076,27 +1081,31 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
 
     @Override
     public void onPreExecute() {
+        signClickable = false;
     }
 
     @Override
     public void onException(Exception e) {
         showToast(e.getMessage());
+        signClickable = true;
     }
 
     @Override
     public void onResult(String s) {
         if (!Strings.isNullOrEmpty(s)) {
             signedTx = s;
-            if (confirmDialog != null) {
+            if (confirmDialog != null && confirmDialog.getBtnConfirmPay() != null) {
                 confirmDialog.getBtnConfirmPay().setEnabled(true);
             }
         } else {
             finish();
         }
+        signClickable = true;
     }
 
     @Override
     public void onCancelled() {
+        signClickable = true;
     }
 
     @Override

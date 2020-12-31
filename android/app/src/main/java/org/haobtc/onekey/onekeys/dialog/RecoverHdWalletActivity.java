@@ -1,12 +1,10 @@
 package org.haobtc.onekey.onekeys.dialog;
-
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
-import android.os.Handler;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -17,14 +15,11 @@ import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
 
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
-import com.google.gson.Gson;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -33,22 +28,12 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.adapter.SearchMnemonicAdapter;
 import org.haobtc.onekey.aop.SingleClick;
-import org.haobtc.onekey.bean.BalanceInfo;
-import org.haobtc.onekey.bean.FindOnceWalletEvent;
-import org.haobtc.onekey.bean.RecoveryWalletBean;
 import org.haobtc.onekey.constant.Constant;
-import org.haobtc.onekey.event.CreateSuccessEvent;
 import org.haobtc.onekey.event.GotPassEvent;
-import org.haobtc.onekey.event.ResultEvent;
-import org.haobtc.onekey.manager.PyEnv;
-import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
 import org.haobtc.onekey.onekeys.dialog.recovery.RecoveryChooseWalletActivity;
-import org.haobtc.onekey.onekeys.dialog.recovery.importmethod.ImportMnemonicActivity;
-import org.haobtc.onekey.onekeys.dialog.recovery.importmethod.ImportWalletSetNameActivity;
 import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
 import org.haobtc.onekey.ui.activity.SoftPassActivity;
 import org.haobtc.onekey.utils.Daemon;
-import org.haobtc.onekey.utils.MyDialog;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,7 +44,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import static org.haobtc.onekey.constant.Constant.SEARCH_DEVICE_MODE;
-import static org.haobtc.onekey.constant.Constant.myPreferences;
 
 public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocusChangeListener {
 
@@ -263,7 +247,7 @@ public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocu
                 finish();
                 break;
             case R.id.img_copy_test:
-                pasteSeed();
+//                pasteSeed();
                 break;
         }
     }
@@ -327,8 +311,6 @@ public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocu
                         case 1:
                             editOne.setText(wordList.get(0));
                             break;
-                        default:
-                            throw new IllegalStateException("Unexpected value: ");
                     }
                 }
             }
@@ -399,7 +381,7 @@ public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocu
             } else {
                 btnRecovery.setEnabled(false);
             }
-            if (!TextUtils.isEmpty(editable.toString())) {
+            if (!TextUtils.isEmpty(editable.toString()) && seedList != null && seedList.size() > 0) {
                 for (int i = 0; i < seedList.size(); i++) {
                     if (seedList.get(i).replaceAll(" ", "").startsWith(editable.toString())) {
                         searchWordList.add(seedList.get(i));

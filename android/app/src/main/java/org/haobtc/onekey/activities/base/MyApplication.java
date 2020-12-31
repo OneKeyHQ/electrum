@@ -1,14 +1,10 @@
 package org.haobtc.onekey.activities.base;
-import android.app.Activity;
 import android.app.Application;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.lifecycle.ProcessLifecycleOwner;
 
 import com.chaquo.python.Python;
@@ -20,7 +16,6 @@ import org.haobtc.onekey.MyEventBusIndex;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.utils.Global;
-import org.haobtc.onekey.utils.LanguageUtils;
 
 import java.util.UUID;
 
@@ -48,42 +43,8 @@ public class MyApplication extends Application {
         mInstance = this;
         initBle();
         initChaquo();
-        registerLifeActivityCallbacks();
+        registerActivityLifecycleCallbacks(new ActivityLifeCycleCallback());
         CrashReport.initCrashReport(getApplicationContext(), BUGLY_APPID, true);
-    }
-
-    private void registerLifeActivityCallbacks () {
-        registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
-            @Override
-            public void onActivityCreated (@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
-                LanguageUtils.changeLanguage(activity);
-            }
-
-            @Override
-            public void onActivityStarted (@NonNull Activity activity) {
-            }
-
-            @Override
-            public void onActivityResumed (@NonNull Activity activity) {
-                LanguageUtils.changeLanguage(activity);
-            }
-
-            @Override
-            public void onActivityPaused (@NonNull Activity activity) {
-            }
-
-            @Override
-            public void onActivityStopped (@NonNull Activity activity) {
-            }
-
-            @Override
-            public void onActivitySaveInstanceState (@NonNull Activity activity, @NonNull Bundle outState) {
-            }
-
-            @Override
-            public void onActivityDestroyed (@NonNull Activity activity) {
-            }
-        });
     }
 
     public static MyApplication getInstance () {

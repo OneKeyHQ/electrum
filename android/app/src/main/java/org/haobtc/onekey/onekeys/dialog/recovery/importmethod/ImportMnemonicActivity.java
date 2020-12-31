@@ -228,52 +228,56 @@ public class ImportMnemonicActivity extends BaseActivity implements View.OnFocus
                 isSeed(strNewseed);
                 break;
             case R.id.img_test_paste:
-                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                if (clipboard != null) {
-                    ClipData data = clipboard.getPrimaryClip();
-                    if (data != null && data.getItemCount() > 0) {
-                        CharSequence text = data.getItemAt(0).getText();
-                        if (!Strings.isNullOrEmpty(text.toString())) {
-                            String[] wordsList = text.toString().split("\\s+");
-                            ArrayList<String> wordList = new ArrayList<>(Arrays.asList(wordsList));
-                            if (wordList.size() > 0) {
-                                switch (wordList.size()) {
-                                    case 12:
-                                        editTwelve.setText(wordList.get(11));
-                                    case 11:
-                                        editEleven.setText(wordList.get(10));
-                                    case 10:
-                                        editTen.setText(wordList.get(9));
-                                    case 9:
-                                        editNine.setText(wordList.get(8));
-                                    case 8:
-                                        editEight.setText(wordList.get(7));
-                                    case 7:
-                                        editSeven.setText(wordList.get(6));
-                                    case 6:
-                                        editSix.setText(wordList.get(5));
-                                    case 5:
-                                        editFive.setText(wordList.get(4));
-                                    case 4:
-                                        editFour.setText(wordList.get(3));
-                                    case 3:
-                                        editThree.setText(wordList.get(2));
-                                    case 2:
-                                        editTwo.setText(wordList.get(1));
-                                    case 1:
-                                        editOne.setText(wordList.get(0));
-                                        break;
-                                    default:
-                                        break;
-                                }
-                            } else {
-                                mToast(getString(R.string.empty_help_words));
-                            }
-                        }
-                    }
-                }
+//                past();
                 break;
             default:
+        }
+    }
+
+    private void past(){
+        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        if (clipboard != null) {
+            ClipData data = clipboard.getPrimaryClip();
+            if (data != null && data.getItemCount() > 0) {
+                CharSequence text = data.getItemAt(0).getText();
+                if (!Strings.isNullOrEmpty(text.toString())) {
+                    String[] wordsList = text.toString().split("\\s+");
+                    ArrayList<String> wordList = new ArrayList<>(Arrays.asList(wordsList));
+                    if (wordList.size() > 0) {
+                        switch (wordList.size()) {
+                            case 12:
+                                editTwelve.setText(wordList.get(11));
+                            case 11:
+                                editEleven.setText(wordList.get(10));
+                            case 10:
+                                editTen.setText(wordList.get(9));
+                            case 9:
+                                editNine.setText(wordList.get(8));
+                            case 8:
+                                editEight.setText(wordList.get(7));
+                            case 7:
+                                editSeven.setText(wordList.get(6));
+                            case 6:
+                                editSix.setText(wordList.get(5));
+                            case 5:
+                                editFive.setText(wordList.get(4));
+                            case 4:
+                                editFour.setText(wordList.get(3));
+                            case 3:
+                                editThree.setText(wordList.get(2));
+                            case 2:
+                                editTwo.setText(wordList.get(1));
+                            case 1:
+                                editOne.setText(wordList.get(0));
+                                break;
+                            default:
+                                break;
+                        }
+                    } else {
+                        mToast(getString(R.string.empty_help_words));
+                    }
+                }
+            }
         }
     }
 
