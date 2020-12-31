@@ -972,7 +972,6 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         // 金额以点开头
         if (amount.startsWith(".")) {
             editAmount.setText("");
-            return;
         }
     }
 

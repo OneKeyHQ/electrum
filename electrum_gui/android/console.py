@@ -247,6 +247,7 @@ class AndroidCommands(commands.Commands):
         self.start_daemon()
         self.get_block_info()
     _recovery_flag = True
+
     def init_config(self, config=None):
         config_options = {}
         config_options['auto_connect'] = True
@@ -2998,8 +2999,10 @@ class AndroidCommands(commands.Commands):
             if coin == 'btc':
                 for xtype in type_list:
                     bip39_derivation = self.get_coin_derived_path(account_id, coin, purpose=xtype)
-                    if not self._recovery_flag:
-                        return False
+                    if not AndroidCommands._recovery_flag:
+                        self.recovery_wallets.clear()
+                        AndroidCommands._recovery_flag = True
+                        raise UserCancel()
                     if not hw:
                         self.recovery_create(name, seed, password=password,
                                              bip39_derivation=bip39_derivation,
@@ -3010,6 +3013,7 @@ class AndroidCommands(commands.Commands):
                         self.recovery_import_create_hw_wallet(account_id, name, 1, 1, xpub, coin=coin)
                 return True
         except BaseException as e:
+            AndroidCommands._recovery_flag = True
             raise e
 
     def recovery_wallet(self, seed=None, password=None, passphrase="", coin='btc', xpub=None, hw=False,
@@ -3066,10 +3070,6 @@ class AndroidCommands(commands.Commands):
             #     xpub = self.get_hd_wallet_encode_seed(coin)
             #     PyWalib.set_server(info)
             #     self.recovery_wallet(seed, password, passphrase, xpub=xpub, hw=hw)
-        if not self._recovery_flag:
-            self.recovery_wallets.clear()
-            self._recovery_flag = True
-            raise UserCancel()
 
         recovery_list = self.filter_wallet()
         out_info = []
