@@ -26,7 +26,11 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:layout_gravity="center"
+            android:layout_marginStart="@dimen/dp_60"
+            android:layout_marginEnd="@dimen/dp_20"
+            android:ellipsize="end"
             android:fontFamily="sans-serif-medium"
+            android:singleLine="true"
             android:text="@string/input_help_word"
             android:textColor="@color/text"
             android:textSize="@dimen/sp_20" />

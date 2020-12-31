@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 
 import com.google.common.base.Strings;
+import com.lxj.xpopup.XPopup;
 import com.squareup.okhttp.Request;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
@@ -57,6 +58,7 @@ import org.haobtc.onekey.ui.activity.VerifyPinActivity;
 import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.ui.dialog.DeleteLocalDeviceDialog;
 import org.haobtc.onekey.ui.dialog.InvalidDeviceIdWarningDialog;
+import org.haobtc.onekey.ui.dialog.UnBackupTipDialog;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -153,7 +155,16 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
                 startActivity(intent7);
                 break;
             case R.id.tet_deleteWallet:
-                new DeleteLocalDeviceDialog(deviceId).show(getSupportFragmentManager(), "");
+//                new DeleteLocalDeviceDialog(deviceId).show(getSupportFragmentManager(), "");
+                new XPopup.Builder(mContext)
+                        .dismissOnTouchOutside(false)
+                        .isDestroyOnDismiss(true)
+                        .asCustom(new DeleteLocalDeviceDialog(mContext, deviceId, new DeleteLocalDeviceDialog.onClick() {
+                            @Override
+                            public void onBack() {
+                                finish();
+                            }
+                        })).show();
                 break;
             case R.id.tetVerification:
                 if (Strings.isNullOrEmpty(bleMac)) {
@@ -222,7 +233,6 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
 
     @NonNull
     private Bundle getBundle(String urlPrefix, String locate, String info) {
-
         UpdateInfo updateInfo = UpdateInfo.objectFromData(info);
         String urlNrf = updateInfo.getNrf().getUrl();
         String urlStm32 = updateInfo.getStm32().getUrl();
@@ -241,8 +251,8 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
         });
         List<Integer> firmwareNewVersion = updateInfo.getStm32().getVersion();
         if (firmwareNewVersion.get(0) > firmwareCurrentVersion.get(0) ||
-                 firmwareNewVersion.get(1) > firmwareCurrentVersion.get(1) ||
-            firmwareNewVersion.get(2) > firmwareCurrentVersion.get(2)) {
+                firmwareNewVersion.get(1) > firmwareCurrentVersion.get(1) ||
+                firmwareNewVersion.get(2) > firmwareCurrentVersion.get(2)) {
             bundle.putString(Constant.TAG_FIRMWARE_DOWNLOAD_URL, urlPrefix + urlStm32);
             bundle.putString(Constant.TAG_FIRMWARE_VERSION_NEW, versionStm32);
             bundle.putString(Constant.TAG_FIRMWARE_UPDATE_DES, descriptionStm32);
@@ -284,7 +294,7 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
                 if (features.isInitialized()) {
                     changePin();
                 } else {
-                   showToast(R.string.un_init_device_support_less);
+                    showToast(R.string.un_init_device_support_less);
                 }
                 break;
             case BusinessAsyncTask.WIPE_DEVICE:
@@ -351,15 +361,15 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
                 }
                 break;
             case PyConstant.BUTTON_REQUEST_6:
-            if (BusinessAsyncTask.WIPE_DEVICE.equals(currentMethod)) {
-                PyEnv.cancelAll();
-                Intent intent1 = new Intent(this, ConfirmOnHardWareActivity.class);
-                intent1.setAction(BusinessAsyncTask.WIPE_DEVICE);
-                startActivity(intent1);
-            } else {
-                startActivity(new Intent(this, ConfirmOnHardWareActivity.class));
-            }
-            EventBus.getDefault().post(new ExitEvent());
+                if (BusinessAsyncTask.WIPE_DEVICE.equals(currentMethod)) {
+                    PyEnv.cancelAll();
+                    Intent intent1 = new Intent(this, ConfirmOnHardWareActivity.class);
+                    intent1.setAction(BusinessAsyncTask.WIPE_DEVICE);
+                    startActivity(intent1);
+                } else {
+                    startActivity(new Intent(this, ConfirmOnHardWareActivity.class));
+                }
+                EventBus.getDefault().post(new ExitEvent());
                 break;
             case PyConstant.PIN_NEW_FIRST:
                 startActivity(new Intent(this, PinNewActivity.class));
@@ -452,7 +462,6 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
 
     @Override
     public void onPreExecute() {
-
     }
 
     @Override
@@ -500,7 +509,6 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
 
     @Override
     public void onCancelled() {
-
     }
 
     @Override

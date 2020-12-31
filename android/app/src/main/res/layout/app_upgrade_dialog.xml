@@ -1,104 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="match_parent">
+
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="340dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginHorizontal="@dimen/dp_10"
-        app:cardCornerRadius="@dimen/dp_20">
+        app:cardCornerRadius="@dimen/dp_20"
+        app:layout_constraintBottom_toBottomOf="parent">
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
             <ImageView
                 android:id="@+id/close"
                 android:layout_width="@dimen/dp_50"
                 android:layout_height="@dimen/dp_50"
+                android:layout_alignParentEnd="true"
                 android:layout_marginTop="@dimen/dp_5"
                 android:layout_marginEnd="@dimen/dp_5"
                 android:padding="@dimen/dp_10"
-                android:layout_alignParentEnd="true"
-                android:src="@drawable/close_dark_small"/>
+                android:src="@drawable/close_dark_small" />
+
             <TextView
                 android:id="@+id/promote"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/version_updates"
-                android:textSize="@dimen/sp_18"
-                android:textColor="#142A3B"
-                android:textStyle="bold"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="@dimen/dp_30"/>
+                android:layout_marginTop="@dimen/dp_30"
+                android:text="@string/version_updates"
+                android:textColor="#142A3B"
+                android:textSize="@dimen/sp_18"
+                android:textStyle="bold" />
+
             <ImageView
                 android:id="@+id/picture"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/promote"
-                android:src="@drawable/vector"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="@dimen/dp_14"/>
+                android:layout_marginTop="@dimen/dp_14"
+                android:src="@drawable/vector" />
+
             <TextView
                 android:id="@+id/version_code"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:text="v 1.1.2"
                 android:layout_below="@id/picture"
+                android:layout_centerHorizontal="true"
                 android:layout_marginTop="13dp"
-                android:padding="@dimen/dp_5"
-                android:background="@drawable/btn_no_check"/>
+                android:background="@drawable/green_bacj"
+                android:paddingStart="@dimen/dp_10"
+                android:paddingTop="@dimen/dp_5"
+                android:paddingEnd="@dimen/dp_10"
+                android:paddingBottom="@dimen/dp_5"
+                tools:text="v 1.1.2" />
+
             <TextView
                 android:id="@+id/update_description"
                 android:layout_width="match_parent"
                 android:layout_height="64dp"
                 android:layout_below="@id/version_code"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="@dimen/dp_20"
-                android:textSize="@dimen/sp_14"
-                android:textColor="#546370"
-                android:scrollIndicators="end"
                 android:layout_marginHorizontal="29dp"
-                android:text="- 修复了一些微小的 Bug\n
-- 支持 ETH 资产"/>
+                android:layout_marginTop="@dimen/dp_20"
+                android:scrollIndicators="end"
+                android:textColor="#546370"
+                android:textSize="@dimen/sp_14"
+                tools:text="- 修复了一些微小的 Bug\n- 支持 ETH 资产" />
+
             <Button
                 android:id="@+id/update"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dp_60"
                 android:layout_below="@id/update_description"
                 android:layout_marginHorizontal="@dimen/dp_25"
-                android:text="立即更新"
-                android:textColor="@android:color/white"
-                android:background="@drawable/btn_checked"
                 android:layout_marginTop="@dimen/dp_20"
-                android:visibility="visible"/>
+                android:background="@drawable/btn_checked"
+                android:text="@string/now_update"
+                android:textColor="@android:color/white"
+                android:visibility="visible" />
+
             <LinearLayout
                 android:id="@+id/progressBarLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_below="@id/update_description"
                 android:layout_marginHorizontal="@dimen/dp_25"
                 android:orientation="vertical"
-                android:layout_below="@id/update_description"
                 android:visibility="gone">
+
                 <ProgressBar
                     android:id="@+id/progressBar"
+                    style="?android:attr/progressBarStyleHorizontal"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/dp_10"
+                    android:layout_marginTop="38dp"
                     android:max="100"
                     android:progress="0"
-                    android:progressDrawable="@drawable/progressbar_bg"
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_marginTop="38dp"/>
+                    android:progressDrawable="@drawable/progressbar_bg" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="新版下载中，请稍后 ..."
-                    android:singleLine="true"
-                    android:textColor="#9FA6AD"
-                    android:textSize="@dimen/sp_12"
+                    android:layout_marginHorizontal="@dimen/dp_117"
                     android:layout_marginTop="@dimen/dp_10"
-                    android:layout_marginHorizontal="@dimen/dp_117"/>
+                    android:singleLine="true"
+                    android:text="@string/loading_wait"
+                    android:textColor="#9FA6AD"
+                    android:textSize="@dimen/sp_12" />
             </LinearLayout>
         </RelativeLayout>
     </androidx.cardview.widget.CardView>

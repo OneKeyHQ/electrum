@@ -34,7 +34,7 @@ public class VerifyHardwareActivity extends BaseActivity {
      */
     @Override
     public void init() {
-        updateTitle(R.string.auth_verify);
+        updateTitle(R.string.verification_key);
         label = getIntent().getStringExtra(Constant.BLE_INFO);
         startFragment(new VerifyConnFragment(label));
     }

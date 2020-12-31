@@ -28,29 +28,31 @@
         android:src="@drawable/device_success" />
 
 
-
     <TextView
         android:id="@+id/name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_26"
         android:layout_gravity="center"
-        android:background="@drawable/btn_no_check"
-        android:textSize="@dimen/sp_18"
-        android:paddingHorizontal="@dimen/dp_15"
-        android:paddingVertical="@dimen/dp_5"
+        android:layout_marginTop="@dimen/dp_26"
+        android:background="@drawable/green_bacj"
         android:gravity="center"
-        android:text="@string/label"/>
+        android:paddingHorizontal="@dimen/dp_15"
+        android:textColor="@color/onekey"
+        android:paddingVertical="@dimen/dp_5"
+        android:text="@string/label"
+        android:textSize="@dimen/sp_18" />
 
 
     <TextView
         android:id="@+id/description"
         android:layout_width="match_parent"
         android:layout_height="150dp"
+        android:layout_marginStart="@dimen/dp_16"
         android:layout_marginTop="49dp"
+        android:layout_marginEnd="@dimen/dp_16"
         android:gravity="center"
-        android:text="@string/wallet_active_success_promote"
         android:lineSpacingExtra="10dp"
+        android:text="@string/wallet_active_success_promote"
         android:textColor="#546370"
         android:textSize="@dimen/sp_14" />
 
@@ -58,8 +60,8 @@
         android:id="@+id/back_wallet"
         android:layout_width="300dp"
         android:layout_height="50dp"
-       android:layout_marginTop="100dp"
         android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginTop="100dp"
         android:background="@drawable/btn_enable_selector"
         android:text="@string/back_wallet"
         android:textColor="@android:color/white"

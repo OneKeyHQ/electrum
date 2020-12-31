@@ -504,7 +504,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
      */
     private void initFeeSelectorStatus() {
         try {
-            textSpendTime0.setText(String.format("%s%s%s", getString(R.string.about_), currentFeeDetails == null ? 0 : currentFeeDetails.getSlow().getTime(), getString(R.string.minute)));
+            textSpendTime0.setText(String.format("%s %s %s", getString(R.string.about_), currentFeeDetails == null ? 0 : currentFeeDetails.getSlow().getTime(), getString(R.string.minute)));
             customSize = currentFeeDetails.getSlow().getSize();
             textFeeInBtc0.setText(String.format(Locale.ENGLISH, "%s %s", currentFeeDetails.getSlow().getFee(), baseUnit));
             slowRate = currentFeeDetails.getSlow().getFeerate();
@@ -515,7 +515,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
             } else {
                 showToast(errors0);
             }
-            textSpendTime1.setText(String.format("%s%s%s", getString(R.string.about_), currentFeeDetails == null ? 0 : currentFeeDetails.getNormal().getTime(), getString(R.string.minute)));
+            textSpendTime1.setText(String.format("%s %s %s", getString(R.string.about_), currentFeeDetails == null ? 0 : currentFeeDetails.getNormal().getTime(), getString(R.string.minute)));
             textFeeInBtc1.setText(String.format(Locale.ENGLISH, "%s %s", currentFeeDetails.getNormal().getFee(), baseUnit));
             normalRate = currentFeeDetails.getNormal().getFeerate();
             PyResponse<String> response1 = PyEnv.exchange(currentFeeDetails.getNormal().getFee());
@@ -523,7 +523,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
             if (Strings.isNullOrEmpty(errors1)) {
                 textFeeInCash1.setText(String.format(Locale.ENGLISH, "%s %s", currencySymbols, response1.getResult()));
             }
-            textSpendTime2.setText(String.format("%s%s%s", getString(R.string.about_), currentFeeDetails == null ? 0 : currentFeeDetails.getFast().getTime(), getString(R.string.minute)));
+            textSpendTime2.setText(String.format("%s %s %s", getString(R.string.about_), currentFeeDetails == null ? 0 : currentFeeDetails.getFast().getTime(), getString(R.string.minute)));
             textFeeInBtc2.setText(String.format(Locale.ENGLISH, "%s %s", currentFeeDetails.getFast().getFee(), baseUnit));
             fastRate = currentFeeDetails.getFast().getFeerate();
             PyResponse<String> response2 = PyEnv.exchange(currentFeeDetails.getFast().getFee());

@@ -98,7 +98,7 @@ public class SoftPassActivity extends BaseActivity implements ViewHeightStatusDe
     private String pinOrigin;
     private int fromType;
 
-    public static void gotoSoftPassActivity (Context context, int type, int from) {
+    public static void gotoSoftPassActivity(Context context, int type, int from) {
         Intent intent = new Intent(context, SoftPassActivity.class);
         intent.putExtra(StringConstant.FROM, from);
         intent.putExtra(Constant.OPERATE_TYPE, type);
@@ -106,7 +106,7 @@ public class SoftPassActivity extends BaseActivity implements ViewHeightStatusDe
     }
 
     @Override
-    public void init () {
+    public void init() {
         scheduledExecutorService = Executors.newScheduledThreadPool(1);
         viewHeightStatusListener();
         judgeStatus();
@@ -120,7 +120,6 @@ public class SoftPassActivity extends BaseActivity implements ViewHeightStatusDe
         mConstraintSetTipShow.clone(layoutTip);
         mConstraintSetTipHidden.clone(layoutTip);
         mConstraintSetTipHidden.setVisibility(R.id.text_tip, View.GONE);
-
         mViewHeightStatusDetector = new ViewHeightStatusDetector(AutoSizeUtils.dp2px(this, SHORT_PASS_MODE_MIN_HEIGHT));
         mViewHeightStatusDetector.register(this)
                 .setVisibilityListener(this);
@@ -139,7 +138,6 @@ public class SoftPassActivity extends BaseActivity implements ViewHeightStatusDe
      * 渲染初始视图
      */
     private void judgeStatus() {
-
         operationType = getIntent().getIntExtra(Constant.OPERATE_TYPE, 1);
         if (getIntent().hasExtra(StringConstant.FROM)) {
             fromType = getIntent().getIntExtra(StringConstant.FROM, -1);

@@ -185,9 +185,9 @@ public class CheckMnemonicActivity extends BaseActivity {
             listPos.add(num);
             chooseWord.add(array[num - 1]);//choose 3 words
         }
-        textWordOne.setText(String.format("%s%s%s", getString(R.string.chooseword_left), listPos.get(0), getString(R.string.chooseword_right)));
-        textWordTwo.setText(String.format("%s%s%s", getString(R.string.chooseword_left), listPos.get(1), getString(R.string.chooseword_right)));
-        textWordThree.setText(String.format("%s%s%s", getString(R.string.chooseword_left), listPos.get(2), getString(R.string.chooseword_right)));
+        textWordOne.setText(String.format("%s %s %s", getString(R.string.chooseword_left), listPos.get(0), getString(R.string.chooseword_right)));
+        textWordTwo.setText(String.format("%s %s %s", getString(R.string.chooseword_left), listPos.get(1), getString(R.string.chooseword_right)));
+        textWordThree.setText(String.format("%s %s %s", getString(R.string.chooseword_left), listPos.get(2), getString(R.string.chooseword_right)));
 
         List list1 = new ArrayList();
         for (int i = 0; i < 3; i++) {

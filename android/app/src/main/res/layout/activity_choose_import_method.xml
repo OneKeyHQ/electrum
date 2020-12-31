@@ -38,13 +38,16 @@
     </RelativeLayout>
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:layout_marginStart="@dimen/dp_16"
         android:layout_marginTop="@dimen/dp_12"
+        android:layout_marginEnd="@dimen/dp_16"
+        android:gravity="center"
         android:text="@string/choose_method"
         android:textColor="@color/text"
-        android:textSize="27sp"
+        android:textSize="@dimen/sp_25"
         android:textStyle="bold" />
 
     <RelativeLayout
@@ -161,6 +164,7 @@
             android:layout_alignParentBottom="true"
             android:background="@color/line_color" />
     </RelativeLayout>
+
     <RelativeLayout
         android:id="@+id/rel_watch"
         android:layout_width="match_parent"

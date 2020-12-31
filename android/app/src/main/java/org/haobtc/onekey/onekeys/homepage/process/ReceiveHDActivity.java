@@ -277,7 +277,7 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
                 imgOrcode.setImageBitmap(bitmap);
                 imgShareQrcode.setImageBitmap(bitmap);
                 textReceiveAddress.setText(address);
-                verifyStart.setVisibility(View.GONE);
+                verifyStart.setVisibility(View.INVISIBLE);
                 verifyPromote.setGravity(Gravity.CENTER);
                 verifyPromote.setText(R.string.verifying);
             default:

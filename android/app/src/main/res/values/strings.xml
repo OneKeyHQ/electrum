@@ -973,11 +973,10 @@
     <string name="backup_success">Success！</string>
     <string name="back_wallet">Back to wallet</string>
     <string name="backup_hide">Your mnemonic has been successfully backed up to this device, so we have nothing more to remind you. Anyway, remember to keep it safe, no one can help you get it back if you lose it. Have fun in the world of blockchain️.</string>
-    <string name="auth_verify">Anti-counterfeiting verification</string>
     <string name="connecting_device">Connecting Devices</string>
     <string name="get_auth_sign">Get a tamper-proof signature</string>
     <string name="push_auth_sign">Submit anti-counterfeit verification information</string>
-    <string name="verify_success">Verification passed</string>
+    <string name="verify_success">Pass</string>
     <string name="verify_success_hide">This is an official OneKey product with built-in official firmware, so feel free to use it!</string>
     <string name="verify_failed">Verification Failure</string>
     <string name="back_device">Back to device</string>
@@ -1016,7 +1015,7 @@
     <string name="input_seed_import">Import seed phrase</string>
     <string name="quotation_choose">Price Quotes</string>
     <string name="price_quotation_tip">Selecting the right quote source \n only affects the price display of BTC and ETH.</string>
-    <string name="recovery_default_">Restore Default</string>
+    <string name="recovery_default_">Restore</string>
     <string name="block_choose">Block Browser (BTC)</string>
     <string name="block_choose_tip">Block Browser (BTC) \nUse your favorite browser to view the on chain transactions information</string>
     <string name="choose_recovery_wallet">Please select the wallet you want to recover.</string>
@@ -1070,7 +1069,7 @@
     <string name="delete_device">Remove Device</string>
     <string name="get_xpub">View Extended Public Key (xPub)</string>
     <string name="set_shutdown_time">Automatic Shutdown</string>
-    <string name="verification_key">Anti-counterfeiting verification</string>
+    <string name="verification_key">Verificaiton</string>
     <string name="shutdown_tip">Set the auto shutdown time to save power by automatically turning off the device when the time comes</string>
     <string name="ci">Time</string>
     <string name="fast_send_tips">After enabling quick payment, if a single transaction is less than the set limit, there is no need to verify the PIN or to confirm. After repeatedly using the Quick pay for a set number of times, the system will automatically close it.</string>
@@ -1262,9 +1261,12 @@
     <string name="home_tip">HD Wallet is the most advanced wallet format to date. With root seed phrase, it can derive unlimited wallets of all kinds. It is easy to remember, easy to use, easy to manage and very secure.</string>
     <string name="already_has_local_hd">HD wallet already exists in the local area. The hardware wallet in backup mode cannot be connected</string>
     <string name="watch_wallet_receive_tip">Are you sure you want to use the address of the wallet to initiate a collection in order to view the wallet?</string>
-    <string name="connecting_1">Connecting...</string>
+    <string name="connecting_1">Connecting…</string>
     <string name="ble_connect_error">Ble connect error</string>
-    <string name="feerate_failure"></string>
-    <string name="connectting"></string>
+    <string name="feerate_failure">费率获取失败，请重试</string>
+    <string name="connectting">连接设备</string>
+    <string name="updates">Update</string>
+    <string name="now_update">立即更新</string>
+    <string name="loading_wait">新版下载中，请稍后 …</string>
 
 </resources>
