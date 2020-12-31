@@ -75,12 +75,8 @@ android {
         main {
             python {
                 srcDir REPO_ROOT
-//                include "electrum/**"                               // In ../.. (renamed below)
-//                include("chaquopy/**", "electrum_gui/**",  // In src/main/python
-//                        "electrum_plugins/**")
                 include ("electrum/**","electrum_gui/**")
                 exclude "**/*.po", "**/*.pot"
-//                srcDir "src/main/trezor/python-trezor/src"
                 srcDir "$REPO_ROOT/trezor/python-trezor/src"
                 include "trezorlib/**"
             }
@@ -204,7 +200,6 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.preference:preference:1.1.1'
     // third part
-//    implementation 'com.github.yuzhiqiang1993:zxing:2.2.8' // qrcode
     implementation 'com.github.tbruyelle:rxpermissions:0.10.2'
     implementation 'io.reactivex.rxjava2:rxjava:2.2.6'
     implementation 'com.google.android.material:material:1.2.1'

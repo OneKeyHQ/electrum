@@ -3068,8 +3068,8 @@ class AndroidCommands(commands.Commands):
             #     self.recovery_wallet(seed, password, passphrase, xpub=xpub, hw=hw)
         if not self._recovery_flag:
             self.recovery_wallets.clear()
-            self.recovery_flag = True
-            return UserCancel()
+            self._recovery_flag = True
+            raise UserCancel()
 
         recovery_list = self.filter_wallet()
         out_info = []

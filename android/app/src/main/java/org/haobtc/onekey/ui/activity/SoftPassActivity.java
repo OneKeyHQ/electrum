@@ -139,7 +139,7 @@ public class SoftPassActivity extends BaseActivity implements ViewHeightStatusDe
      * 渲染初始视图
      */
     private void judgeStatus() {
-        // 默认是校验密码模式, 多此一举
+
         operationType = getIntent().getIntExtra(Constant.OPERATE_TYPE, 1);
         if (getIntent().hasExtra(StringConstant.FROM)) {
             fromType = getIntent().getIntExtra(StringConstant.FROM, -1);
