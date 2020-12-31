@@ -15,6 +15,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
@@ -54,6 +55,7 @@ public class BleService extends Service {
     private final IntentFilter bondFilter = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
     private boolean isBonded;
     private BleDevice mBleDevice;
+    private final Handler mHandler = new Handler();
 
     @Nullable
     @Override
@@ -64,8 +66,7 @@ public class BleService extends Service {
     public void onCreate() {
         super.onCreate();
         mBle = Ble.getInstance();
-        registerReceiver(broadcastReceiver, bondFilter);
-
+        registerReceiver(broadcastReceiver, bondFilter, null, mHandler);
     }
 
     private final BleWriteCallback<BleDevice> writeCallBack = new BleWriteCallback<BleDevice>() {
@@ -247,7 +248,7 @@ public class BleService extends Service {
                     Log.d(TAG, "receive broadcast===" + action + "state===" + bluetoothDevice.getBondState() + "===previous===" + previousState + "===STATE" + state);
                     // In order to support pair and upgrade ble one time
                     if (state == BluetoothDevice.BOND_BONDED && previousState == BluetoothDevice.BOND_BONDING && !isBonded) {
-                        new Handler().postDelayed(() -> EventBus.getDefault().postSticky(new DfuEvent(3)), 2000);
+                        mHandler.postDelayed(() -> EventBus.getDefault().postSticky(new DfuEvent(3)), 2000);
                         return;
                     }
                     if (state == BluetoothDevice.BOND_NONE && previousState == BluetoothDevice.BOND_BONDED) {

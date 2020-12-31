@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -32,6 +33,7 @@ public class CustomerUsbManager {
     private IntentFilter permissionFilter = new IntentFilter(ACTION_USB_PERMISSION);
     private IntentFilter observerFilter;
     private PendingIntent permissionIntent;
+    private final Handler mHandler = new Handler();
     public static final String TAG = CustomerUsbManager.class.getSimpleName();
 
     public static CustomerUsbManager getInstance(Context context) {
@@ -124,8 +126,8 @@ public class CustomerUsbManager {
    };
 
     public void register(Context context) {
-       context.registerReceiver(connectionStateChangeReceiver, observerFilter);
-       context.registerReceiver(permissionGrantedStateChangeReceiver, permissionFilter);
+       context.registerReceiver(connectionStateChangeReceiver, observerFilter, null, mHandler);
+       context.registerReceiver(permissionGrantedStateChangeReceiver, permissionFilter, null, mHandler);
    }
 
    public void unRegister(Context context) {
