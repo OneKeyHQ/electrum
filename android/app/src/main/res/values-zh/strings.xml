@@ -725,7 +725,7 @@
     <string name="encryption_tip">我们采用业内先进的加密技术将信息储存在本地。只有您能解密信息，我们不会也无法查看、使用或出售任何您的数据。</string>
     <string name="only_you">只有您可以解锁自己的钱包</string>
     <string name="short_pass_tip">它被用来加密您的钱包，简单好记，适用于大多数人。</string>
-    <string name="use_long_pass">使用更复杂，同时也更安全的长密码</string>
+    <string name="use_long_pass">使用长密码</string>
     <string name="input_pass">请再次输入您的密码</string>
     <string name="dont_tell">不要将密码透露给其他人</string>
     <string name="test_long_tip">我们不存储任何您的信息，因此一旦您忘记自己的长密码，我们也无法帮您找回。</string>

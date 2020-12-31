@@ -783,7 +783,7 @@
     <string name="encryption_tip">We use industry-leading encryption technology to store information locally. Only you can decrypt the information and we do not and cannot view, use or sell any of your data.</string>
     <string name="only_you">Only you can unlock your wallet</string>
     <string name="short_pass_tip">It is used to encrypt your wallet, is easy to remember, and works for most people</string>
-    <string name="use_long_pass">Use long passwords, which is more complex and also more secure.</string>
+    <string name="use_long_pass">Use long passwords</string>
     <string name="input_pass">Please enter your password again</string>
     <string name="dont_tell">Do not share your password with anyone</string>
     <string name="test_long_tip">We do not store any of your information, so if you forget your long password, we cannot help you retrieve it.</string>
