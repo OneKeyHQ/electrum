@@ -1752,7 +1752,9 @@ class AndroidCommands(commands.Commands):
                 # status, msg = True, tx.txid()
         #          self.callbackIntent.onCallback(Status.broadcast, msg)
         else:
-            raise BaseException(_(('Cannot broadcast transaction Not connected')))
+            self.txdb.add_tx_time_info(tx.txid())
+            raise BaseException(_('Cannot broadcast transaction Not connected'))
+
 
     def set_use_change(self, status_change):
         '''
@@ -2354,6 +2356,8 @@ class AndroidCommands(commands.Commands):
         try:
             address = self.wallet.get_addresses()[0]
             priv = self.wallet.export_private_key(address, password=password)
+            if -1 != priv.find(":"):
+                priv = priv.split(":")[1]
             return priv
         except BaseException as e:
             raise e

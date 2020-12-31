@@ -542,7 +542,7 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
         index = self.get_address_index(address)
         pk, compressed = self.keystore.get_private_key(index, password)
         txin_type = self.get_txin_type(address)
-        serialized_privkey = bitcoin.serialize_privkey(pk, compressed, txin_type, internal_use=True)
+        serialized_privkey = bitcoin.serialize_privkey(pk, compressed, txin_type, internal_use=False)
         return serialized_privkey
 
     def export_private_key_for_path(self, path: Union[Sequence[int], str], password: Optional[str]) -> str:
