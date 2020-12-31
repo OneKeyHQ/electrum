@@ -122,7 +122,8 @@
                 android:textColor="@color/onekey"
                 android:textSize="@dimen/sp_14" />
 
-            <RelativeLayout
+            <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="34dp"
@@ -132,8 +133,7 @@
                 <View
                     android:id="@+id/view"
                     android:layout_width="@dimen/dp_4"
-                    android:layout_height="@dimen/dp_80"
-                    android:layout_centerVertical="true"
+                    android:layout_height="match_parent"
                     android:background="@drawable/rectangle" />
 
                 <LinearLayout
@@ -145,7 +145,6 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/dp_10"
                         android:layout_marginTop="@dimen/dp_5"
                         android:text="@string/export_tip2"
                         android:textColor="@color/text_three"
@@ -154,7 +153,6 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/dp_10"
                         android:text="@string/export_tip3"
                         android:textColor="@color/text_three"
                         android:textSize="@dimen/sp_13" />
@@ -162,14 +160,13 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/dp_10"
                         android:layout_marginBottom="@dimen/dp_5"
                         android:text="@string/export_tip4"
                         android:textColor="@color/text_three"
                         android:textSize="@dimen/sp_13" />
                 </LinearLayout>
 
-            </RelativeLayout>
+            </LinearLayout>
 
             <Button
                 android:id="@+id/btn_next"

@@ -278,18 +278,18 @@
 
             </RadioGroup>
 
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="34dp"
                 android:layout_marginTop="@dimen/dp_30"
+                android:orientation="horizontal"
                 android:layout_marginEnd="@dimen/dp_30">
 
                 <View
                     android:id="@+id/view"
                     android:layout_width="@dimen/dp_4"
-                    android:layout_height="@dimen/dp_50"
-                    android:layout_centerVertical="true"
+                    android:layout_height="match_parent"
                     android:background="@drawable/rectangle" />
 
                 <TextView
@@ -302,7 +302,7 @@
                     android:textColor="@color/text_three"
                     android:textSize="@dimen/sp_13" />
 
-            </RelativeLayout>
+            </LinearLayout>
 
             <Button
                 android:id="@+id/btn_check"
