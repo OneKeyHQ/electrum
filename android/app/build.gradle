@@ -224,7 +224,6 @@ dependencies {
     //OKhttp
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'
     implementation 'com.zhy:okhttputils:2.0.0'
-    implementation 'org.xutils:xutils:3.5.0'
     //autosize
     implementation 'me.jessyan:autosize:0.9.1'
     //gson
