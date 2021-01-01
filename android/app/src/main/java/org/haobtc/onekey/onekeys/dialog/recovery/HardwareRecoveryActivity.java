@@ -2,7 +2,7 @@ package org.haobtc.onekey.onekeys.dialog.recovery;
 
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
-
+@Deprecated
 public class HardwareRecoveryActivity extends BaseActivity {
 
     @Override

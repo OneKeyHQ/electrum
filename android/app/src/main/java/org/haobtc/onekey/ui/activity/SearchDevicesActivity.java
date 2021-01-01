@@ -18,9 +18,11 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import com.lxj.xpopup.XPopup;
 import com.lxj.xpopup.core.CenterPopupView;
+import com.orhanobut.logger.Logger;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import org.greenrobot.eventbus.EventBus;
@@ -103,7 +105,7 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onBleScanDevice(BleDevice device) {
         if (mBleAdapter != null) {
-            System.out.println("find device ====" + device.getBleName());
+            Logger.d("find device ====%s", device.getBleName());
             mBleAdapter.add(device);
         }
     }
@@ -230,93 +232,102 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
     }
 
     private void toNextActivity() {
+        PyEnv.getFeature(this, this::dealResponse);
+    }
+
+    private void dealResponse(PyResponse<HardwareFeatures> response) {
         HardwareFeatures features;
-        PyResponse<HardwareFeatures> response = PyEnv.getFeature(this);
         String errors = response.getErrors();
         features = response.getResult();
-        if (Strings.isNullOrEmpty(errors) && features != null) {
-            if (((features.getMajorVersion() == 1) && (features.getMinorVersion() == 9) && (features.getPatchVersion() <= 7)) || features.isBootloaderMode()) {
-                update(features);
-                finish();
+        runOnUiThread(() -> {
+            if (Strings.isNullOrEmpty(errors) && features != null) {
+                if (((features.getMajorVersion() == 1) && (features.getMinorVersion() == 9) && (features.getPatchVersion() <= 7)) || features.isBootloaderMode()) {
+                    update(features);
+                    finish();
+                    return;
+                }
+            } else {
+                showToast(getString(R.string.get_hard_msg_error));
+                if (dialog != null && dialog.isShow()) {
+                    dialog.dismiss();
+                }
+                if (Objects.equal(mSearchMode, Constant.SearchDeviceMode.MODE_PREPARE)) {
+                    finish();
+                } else {
+                    refreshBleList();
+                }
                 return;
             }
-        } else {
-            showToast(getString(R.string.get_hard_msg_error));
-            if (dialog != null && dialog.isShow()) {
-                dialog.dismiss();
-            }
-            refreshBleList();
-            return;
-        }
-        switch (mSearchMode) {
-            // 通过备份提示过来
-            case Constant.SearchDeviceMode.MODE_BACKUP_HD_WALLET_TO_DEVICE:
-                if (features.isInitialized()) {
-                    showToast(getString(R.string.hard_tip2));
-                } else {
-                    Intent intent = new Intent(this, ActivateColdWalletActivity.class);
-                    intent.putExtra(Constant.ACTIVE_MODE, Constant.ACTIVE_MODE_IMPORT);
-                    intent.putExtra(Constant.MNEMONICS, getIntent().getStringExtra(Constant.MNEMONICS));
-                    startActivity(intent);
-                    finish();
-                }
-                break;
+            switch (mSearchMode) {
+                // 通过备份提示过来
+                case Constant.SearchDeviceMode.MODE_BACKUP_HD_WALLET_TO_DEVICE:
+                    if (features.isInitialized()) {
+                        showToast(getString(R.string.hard_tip2));
+                    } else {
+                        Intent intent = new Intent(this, ActivateColdWalletActivity.class);
+                        intent.putExtra(Constant.ACTIVE_MODE, Constant.ACTIVE_MODE_IMPORT);
+                        intent.putExtra(Constant.MNEMONICS, getIntent().getStringExtra(Constant.MNEMONICS));
+                        startActivity(intent);
+                        finish();
+                    }
+                    break;
                 // 共管钱包
-            case Constant.SearchDeviceMode.MODE_BIND_ADMIN_PERSON:
-                if (features.isInitialized() && !features.isBackupOnly()) {
-                    EventBus.getDefault().post(new GetXpubEvent(Constant.COIN_TYPE_BTC));
-                } else {
-                    showToast(getString(R.string.hard_tip1));
-                }
-                finish();
-                break;
+                case Constant.SearchDeviceMode.MODE_BIND_ADMIN_PERSON:
+                    if (features.isInitialized() && !features.isBackupOnly()) {
+                        EventBus.getDefault().post(new GetXpubEvent(Constant.COIN_TYPE_BTC));
+                    } else {
+                        showToast(getString(R.string.hard_tip1));
+                    }
+                    finish();
+                    break;
                 // 仅连接蓝牙
-            case Constant.SearchDeviceMode.MODE_PREPARE:
-                if (features.isInitialized() && !features.isBackupOnly()) {
-                    EventBus.getDefault().post(new BleConnectedEvent());
-                } else {
-                    showToast(getString(R.string.hard_tip3));
-                }
-                finish();
-                break;
+                case Constant.SearchDeviceMode.MODE_PREPARE:
+                    if (features.isInitialized() && !features.isBackupOnly()) {
+                        EventBus.getDefault().post(new BleConnectedEvent());
+                    } else {
+                        showToast(getString(R.string.hard_tip3));
+                    }
+                    finish();
+                    break;
                 // 恢复 HD
-            case Constant.SearchDeviceMode.MODE_RECOVERY_WALLET_BY_COLD:
-                if (features.isInitialized()) {
-                    if (features.isBackupOnly()) {
+                case Constant.SearchDeviceMode.MODE_RECOVERY_WALLET_BY_COLD:
+                    if (features.isInitialized()) {
+                        if (features.isBackupOnly()) {
+                            boolean hasLocalHd = (boolean) PreferencesManager.get(this, "Preferences", Constant.HAS_LOCAL_HD, false);
+                            if (hasLocalHd) {
+                                showToast(R.string.already_has_local_hd);
+                            } else {
+                                startActivity(new Intent(this, FindBackupOnlyDeviceActivity.class));
+                            }
+                        } else {
+                            showToast(R.string.only_backup_only_device);
+                        }
+                    } else {
+                        showToast(getString(R.string.hard_tip4));
+                    }
+                    finish();
+                    break;
+                default:
+                    // 配对过来的逻辑
+                    if (!features.isInitialized()) {
+                        startActivity(new Intent(this, FindUnInitDeviceActivity.class));
+                        finish();
+                    } else if (features.isBackupOnly()) {
                         boolean hasLocalHd = (boolean)PreferencesManager.get(this, "Preferences", Constant.HAS_LOCAL_HD, false);
                         if (hasLocalHd) {
                             showToast(R.string.already_has_local_hd);
                         } else {
                             startActivity(new Intent(this, FindBackupOnlyDeviceActivity.class));
                         }
+                        finish();
                     } else {
-                        showToast(R.string.only_backup_only_device);
+                        Intent intent = new Intent(this, FindNormalDeviceActivity.class);
+                        intent.putExtra(Constant.DEVICE_ID, features.getDeviceId());
+                        startActivity(intent);
+                        finish();
                     }
-                } else {
-                    showToast(getString(R.string.hard_tip4));
-                }
-                finish();
-                break;
-            default:
-                // 配对过来的逻辑
-                if (!features.isInitialized()) {
-                    startActivity(new Intent(this, FindUnInitDeviceActivity.class));
-                    finish();
-                } else if (features.isBackupOnly()) {
-                    boolean hasLocalHd = (boolean)PreferencesManager.get(this, "Preferences", Constant.HAS_LOCAL_HD, false);
-                    if (hasLocalHd) {
-                        showToast(R.string.already_has_local_hd);
-                    } else {
-                        startActivity(new Intent(this, FindBackupOnlyDeviceActivity.class));
-                    }
-                    finish();
-                } else {
-                    Intent intent = new Intent(this, FindNormalDeviceActivity.class);
-                    intent.putExtra(Constant.DEVICE_ID, features.getDeviceId());
-                    startActivity(intent);
-                    finish();
-                }
-        }
+            }
+        });
     }
 
     @SingleClick

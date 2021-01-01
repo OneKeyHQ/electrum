@@ -2,6 +2,7 @@ package org.haobtc.onekey.bean;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
+import com.orhanobut.logger.Logger;
 
 public class CustomFeeInfo {
 
@@ -11,7 +12,7 @@ public class CustomFeeInfo {
 
 
     public static CustomFeeInfo objectFromDate(String str) {
-        System.out.println("============" + str);
+        Logger.d(str);
         return new Gson().fromJson(str, CustomFeeInfo.class);
     }
     @SerializedName("customer")

@@ -15,6 +15,7 @@ public class HardwareVerifyResponse {
      * is_bixinkey : true
      * is_verified : true
      * last_check_time : 1607409468
+     * error:
      */
 
     @SerializedName("serialno")
@@ -25,6 +26,8 @@ public class HardwareVerifyResponse {
     private boolean isVerified;
     @SerializedName("last_check_time")
     private int lastCheckTime;
+    @SerializedName("error")
+    private String errors;
 
     public static HardwareVerifyResponse objectFromData(String str) {
 
@@ -61,5 +64,8 @@ public class HardwareVerifyResponse {
 
     public void setLastCheckTime(int lastCheckTime) {
         this.lastCheckTime = lastCheckTime;
+    }
+    public String getErrors() {
+        return errors;
     }
 }

@@ -3,16 +3,22 @@ package org.haobtc.onekey.manager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
 import com.google.common.base.Strings;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningScheduledExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
+import com.orhanobut.logger.Logger;
 
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.BuildConfig;
@@ -43,12 +49,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.FutureTask;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Consumer;
 
 import cn.com.heaton.blelibrary.ble.Ble;
 import cn.com.heaton.blelibrary.ble.callback.BleWriteCallback;
@@ -60,11 +65,12 @@ import static org.haobtc.onekey.activities.service.CommunicationModeSelector.pro
  * @author liyan
  */
 public final class PyEnv {
-//    private static final String TAG = PyEnv.class.getSimpleName();
+
     public static PyObject sBle, sCustomerUI, sNfc, sUsb, sBleHandler, sNfcHandler, sBleTransport,
             sNfcTransport, sUsbTransport, sProtocol, sCommands;
-    public static FutureTask<PyObject> futureTask;
-    public static ExecutorService mExecutorService = Executors.newSingleThreadExecutor();
+    private static ScheduledThreadPoolExecutor scheduledThreadPoolExecutor =  new ScheduledThreadPoolExecutor(1,
+            new ThreadFactoryBuilder().setNameFormat("PyEnv-schedule-%d").build(), new ThreadPoolExecutor.DiscardPolicy());
+    public static ListeningScheduledExecutorService  mExecutorService = MoreExecutors.listeningDecorator(scheduledThreadPoolExecutor);
 
     static {
         sNfc = Global.py.getModule(PyConstant.TREZORLIB_TRANSPORT_NFC);
@@ -193,41 +199,42 @@ public final class PyEnv {
     }
 
     public static void cancelRecovery() {
-       sCommands.callAttr(PyConstant.CANCEL_RECOVERY);
+        sCommands.callAttr(PyConstant.CANCEL_RECOVERY);
     }
+
     /**
      * 获取硬件设备信息
      */
-    @NonNull
-    public static PyResponse<HardwareFeatures> getFeature(Context context) {
+
+    public static void getFeature(Context context, Consumer<PyResponse<HardwareFeatures>> callback) {
+        Logger.d("get feature");
         PyResponse<HardwareFeatures> response = new PyResponse<>();
-        String feature;
-        try {
-            futureTask = new FutureTask<>(() -> Daemon.commands.callAttr(PyConstant.GET_FEATURE, MyApplication.getInstance().getDeviceWay()));
-            mExecutorService.submit(futureTask);
-            try {
-                feature = futureTask.get(5, TimeUnit.SECONDS).toString();
-            } catch (Exception e) {
-                cancelAll();
-                e.printStackTrace();
-                if (e instanceof TimeoutException) {
-                    response.setErrors(context.getString(R.string.get_hard_msg_error));
+        ListenableFuture<String> listenableFuture = Futures.withTimeout(mExecutorService.submit(
+                () -> Daemon.commands.callAttr(PyConstant.GET_FEATURE, MyApplication.getInstance().getDeviceWay()).toString()),
+                5, TimeUnit.SECONDS, mExecutorService);
+        Futures.addCallback(listenableFuture, new FutureCallback<String>() {
+            @Override
+            public void onSuccess(String result) {
+                Logger.json(result);
+                HardwareFeatures features = dealWithConnectedDevice(context, HardwareFeatures.objectFromData(result));
+                response.setResult(features);
+                callback.accept(response);
+            }
+
+            @Override
+            public void onFailure(@NonNull Throwable t) {
+                Logger.e(t.getMessage());
+                if (sBle != null) {
+                    cancelAll();
                 }
-                return response;
+                if (t instanceof TimeoutException) {
+                    response.setErrors(context.getString(R.string.get_hard_msg_error));
+                } else {
+                    response.setErrors(t.getMessage());
+                }
+                callback.accept(response);
             }
-            if (!futureTask.isDone()) {
-                futureTask.cancel(true);
-            }
-            HardwareFeatures features = dealWithConnectedDevice(context, HardwareFeatures.objectFromData(feature));
-            response.setResult(features);
-        } catch (Exception e) {
-            if (sBle != null) {
-                cancelAll();
-            }
-            response.setErrors(e.getMessage());
-            e.printStackTrace();
-        }
-        return response;
+        }, mExecutorService);
     }
 
     /**
@@ -399,7 +406,7 @@ public final class PyEnv {
         mExecutorService.execute(() -> {
             try {
                 List<BalanceInfo> infos = new ArrayList<>();
-                String walletsInfo = sCommands.callAttr(PyConstant.CREATE_HD_WALLET, passwd, mnemonics,new Kwarg(Constant.Purpose, 49)).toString();
+                String walletsInfo = sCommands.callAttr(PyConstant.CREATE_HD_WALLET, passwd, mnemonics, new Kwarg(Constant.Purpose, 49)).toString();
                 CreateWalletBean walletBean = CreateWalletBean.objectFromData(walletsInfo);
                 if (Strings.isNullOrEmpty(mnemonics)) {
                     EventBus.getDefault().post(new CreateSuccessEvent(walletBean.getWalletInfo().get(0).getName()));
@@ -519,7 +526,7 @@ public final class PyEnv {
         PyResponse<String> response = new PyResponse<>();
         try {
             String info = sCommands.callAttr(PyConstant.GET_DEFAULT_FEE_DETAILS, new Kwarg("feerate", value)).toString();
-            Log.i("customFeeInfojxm", "getCustomFeeInfo: " + info);
+            Logger.d(info);
             response.setResult(info);
         } catch (Exception e) {
             e.printStackTrace();

@@ -5,6 +5,7 @@ import android.view.View;
 
 import com.google.common.base.Strings;
 import com.lxj.xpopup.XPopup;
+import com.orhanobut.logger.Logger;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -66,7 +67,7 @@ public class CreateDeriveChooseTypeActivity extends BaseActivity {
                         .asCustom(new SelectWalletTypeDialog(mContext, new SelectWalletTypeDialog.onClickListener() {
                             @Override
                             public void onClick (int purpose) {
-                                LogUtil.d("purpose  :" + isFinish);
+                                Logger.d("purpose  :%s", isFinish);
                                 PreferencesManager.getSharedPreferences(mContext, Constant.myPreferences).edit().putInt(Constant.Wallet_Purpose, purpose).apply();
                                 NavUtils.gotoSoftWalletNameSettingActivity(mContext, purpose);
                                 if (isFinish) {
@@ -84,7 +85,7 @@ public class CreateDeriveChooseTypeActivity extends BaseActivity {
     public void onGotName (NameSettedEvent event) {
         name = event.getName();
         selectWalletType = event.type;
-        LogUtil.d(" 选择钱包类型--》" + selectWalletType);
+        Logger.d(" 选择钱包类型--》%s", selectWalletType);
         startActivity(new Intent(this, SoftPassActivity.class));
     }
 

@@ -67,7 +67,6 @@ public class VerifyConnFragment extends BaseFragment {
     public void onPostVerifyInfo(PostVerifyInfoEvent event) {
         if (commitVerifyInfo != null) {
             commitVerifyInfo.completeLoading();
-            EventBus.getDefault().post(new VerifySuccessEvent());
         }
     }
 }

@@ -9,9 +9,12 @@ import androidx.lifecycle.ProcessLifecycleOwner;
 
 import com.chaquo.python.Python;
 import com.chaquo.python.android.AndroidPlatform;
+import com.orhanobut.logger.AndroidLogAdapter;
+import com.orhanobut.logger.Logger;
 import com.tencent.bugly.crashreport.CrashReport;
 
 import org.greenrobot.eventbus.EventBus;
+import org.haobtc.onekey.BuildConfig;
 import org.haobtc.onekey.MyEventBusIndex;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.manager.PreferencesManager;
@@ -45,6 +48,11 @@ public class MyApplication extends Application {
         initChaquo();
         registerActivityLifecycleCallbacks(new ActivityLifeCycleCallback());
         CrashReport.initCrashReport(getApplicationContext(), BUGLY_APPID, true);
+        Logger.addLogAdapter(new AndroidLogAdapter() {
+            @Override public boolean isLoggable(int priority, String tag) {
+                return BuildConfig.DEBUG;
+            }
+        });
     }
 
     public static MyApplication getInstance () {

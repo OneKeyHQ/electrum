@@ -23,9 +23,9 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
-import com.alibaba.fastjson.JSON;
 import com.google.common.base.Strings;
 import com.lxj.xpopup.XPopup;
+import com.orhanobut.logger.Logger;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.bean.ZxingConfig;
@@ -68,13 +68,13 @@ import org.haobtc.onekey.utils.ClipboardUtils;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 
 import butterknife.BindView;
 import butterknife.OnClick;
 import butterknife.OnFocusChange;
 import butterknife.OnTextChanged;
-import dr.android.utils.LogUtil;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.ObservableOnSubscribe;
@@ -223,6 +223,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
 
     private static final int REQUEST_SCAN_CODE = 0;
     private boolean signClickable =true;
+    io.reactivex.disposables.Disposable subscribe;
 
     private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
 
@@ -429,7 +430,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                 }
                 break;
             case R.id.img_scan:
-                rxPermissions
+                subscribe = rxPermissions
                         .request(Manifest.permission.CAMERA)
                         .subscribe(granted -> {
                             if (granted) {
@@ -477,10 +478,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
             showToast(R.string.input_out_number);
             return false;
         }
-        if (Double.parseDouble(amount) <= 0) {
-            return false;
-        }
-        return true;
+        return !(Double.parseDouble(amount) <= 0);
     }
 
     /**
@@ -491,9 +489,9 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
             PyResponse<String> response = PyEnv.getFeeInfo();
             String errors = response.getErrors();
             if (Strings.isNullOrEmpty(errors)) {
+                Logger.json(response.getResult());
                 currentFeeDetails = CurrentFeeDetails.objectFromDate(response.getResult());
                 transactionSize = currentFeeDetails.getFast().getSize();
-                LogUtil.d(" 获取详情-->" + JSON.toJSONString(currentFeeDetails));
                 initFeeSelectorStatus();
             } else {
                 showToast(R.string.get_fee_info_failed);
@@ -1134,5 +1132,8 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         super.onDestroy();
         EventBus.getDefault().unregister(this);
         mCompositeDisposable.clear();
+        if (Objects.nonNull(subscribe)) {
+            subscribe.dispose();
+        }
     }
 }

@@ -66,6 +66,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -108,7 +109,7 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
     private String nrfVersion;
     private String currentMethod;
 
-    @SingleClick
+    @SingleClick(value = 6000L)
     @OnClick({R.id.img_back, R.id.lin_OnckOne, R.id.lin_OnckTwo, R.id.change_pin, R.id.wipe_device, R.id.tetBuckup, R.id.tet_deleteWallet, R.id.tetVerification, R.id.check_xpub, R.id.text_hide_wallet})
     public void onViewClicked(View view) {
         switch (view.getId()) {
@@ -155,7 +156,6 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
                 startActivity(intent7);
                 break;
             case R.id.tet_deleteWallet:
-//                new DeleteLocalDeviceDialog(deviceId).show(getSupportFragmentManager(), "");
                 new XPopup.Builder(mContext)
                         .dismissOnTouchOutside(false)
                         .isDestroyOnDismiss(true)
@@ -250,9 +250,9 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
             firmwareCurrentVersion.add(Integer.valueOf(s));
         });
         List<Integer> firmwareNewVersion = updateInfo.getStm32().getVersion();
-        if (firmwareNewVersion.get(0) > firmwareCurrentVersion.get(0) ||
-                firmwareNewVersion.get(1) > firmwareCurrentVersion.get(1) ||
-                firmwareNewVersion.get(2) > firmwareCurrentVersion.get(2)) {
+        if (firmwareNewVersion.get(0).compareTo(firmwareCurrentVersion.get(0)) > 0 ||
+                firmwareNewVersion.get(1).compareTo(firmwareCurrentVersion.get(1)) > 0 ||
+                firmwareNewVersion.get(2).compareTo(firmwareCurrentVersion.get(2)) > 0) {
             bundle.putString(Constant.TAG_FIRMWARE_DOWNLOAD_URL, urlPrefix + urlStm32);
             bundle.putString(Constant.TAG_FIRMWARE_VERSION_NEW, versionStm32);
             bundle.putString(Constant.TAG_FIRMWARE_UPDATE_DES, descriptionStm32);
@@ -273,56 +273,62 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onReadyBle(NotifySuccessfulEvent event) {
-        HardwareFeatures features;
-        PyResponse<HardwareFeatures> response = PyEnv.getFeature(this);
-        String errors = response.getErrors();
-        features = response.getResult();
-        if (Strings.isNullOrEmpty(errors) && features != null) {
-            if (!deviceId.equals(features.getDeviceId()) && !features.isBootloaderMode()) {
-                new InvalidDeviceIdWarningDialog().show(getSupportFragmentManager(), "");
-                return;
-            } else if (features.isBootloaderMode() && !PyConstant.FIRMWARE_UPDATE.equals(currentMethod)) {
-                new InvalidDeviceIdWarningDialog().show(getSupportFragmentManager(), "");
-                return;
-            }
-        } else {
-            showToast(R.string.get_hard_msg_error);
+        if (Objects.equals(currentMethod, PyConstant.FIRMWARE_UPDATE) && !hasWindowFocus()) {
             return;
         }
-        switch (currentMethod) {
-            case BusinessAsyncTask.CHANGE_PIN:
-                if (features.isInitialized()) {
-                    changePin();
-                } else {
-                    showToast(R.string.un_init_device_support_less);
+        PyEnv.getFeature(this, this::dealResponse);
+    }
+
+    private void dealResponse(PyResponse<HardwareFeatures> response) {
+        HardwareFeatures features;
+        String errors = response.getErrors();
+        features = response.getResult();
+        runOnUiThread(() -> {
+            if (Strings.isNullOrEmpty(errors) && features != null) {
+                if (!deviceId.equals(features.getDeviceId()) && !features.isBootloaderMode()) {
+                    new InvalidDeviceIdWarningDialog().show(getSupportFragmentManager(), "");
+                    return;
+                } else if (features.isBootloaderMode() && !PyConstant.FIRMWARE_UPDATE.equals(currentMethod)) {
+                    new InvalidDeviceIdWarningDialog().show(getSupportFragmentManager(), "");
+                    return;
                 }
-                break;
-            case BusinessAsyncTask.WIPE_DEVICE:
-                startActivity(new Intent(this, ResetDevicePromoteActivity.class));
-                break;
-            case BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY:
-                if (features.isInitialized()) {
-                    getXpub();
-                } else {
-                    showToast(R.string.un_init_device_support_less);
-                }
-                break;
-            case BusinessAsyncTask.COUNTER_VERIFICATION:
-                Intent intent1 = new Intent(this, VerifyHardwareActivity.class);
-                intent1.putExtra(Constant.BLE_INFO, Optional.of(label).orElse(bleName));
-                startActivity(intent1);
-                new Handler().postDelayed(() -> {
-                    EventBus.getDefault().post(new ConnectedEvent());
-                }, 1000);
-                new Handler().postDelayed(this::verifyHardware, 2000);
-                break;
-            case PyConstant.FIRMWARE_UPDATE:
-                if (hasWindowFocus()) {
-                    getUpdateInfo();
-                }
-                break;
-            default:
-        }
+            } else {
+                showToast(R.string.get_hard_msg_error);
+                return;
+            }
+            switch (currentMethod) {
+                case BusinessAsyncTask.CHANGE_PIN:
+                    if (features.isInitialized()) {
+                        changePin();
+                    } else {
+                        showToast(R.string.un_init_device_support_less);
+                    }
+                    break;
+                case BusinessAsyncTask.WIPE_DEVICE:
+                    startActivity(new Intent(this, ResetDevicePromoteActivity.class));
+                    break;
+                case BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY:
+                    if (features.isInitialized()) {
+                        getXpub();
+                    } else {
+                        showToast(R.string.un_init_device_support_less);
+                    }
+                    break;
+                case BusinessAsyncTask.COUNTER_VERIFICATION:
+                    Intent intent1 = new Intent(this, VerifyHardwareActivity.class);
+                    intent1.putExtra(Constant.BLE_INFO, Optional.of(label).orElse(bleName));
+                    startActivity(intent1);
+                    new Handler().postDelayed(() -> {
+                        EventBus.getDefault().post(new ConnectedEvent());
+                    }, 1000);
+                    new Handler().postDelayed(this::verifyHardware, 2000);
+                    break;
+                case PyConstant.FIRMWARE_UPDATE:
+                        getUpdateInfo();
+                    break;
+                default:
+            }
+        });
     }
 
     @Subscribe
@@ -407,7 +413,7 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
                     public void onResponse(String response) {
                         try {
                             HardwareVerifyResponse verifyResponse = HardwareVerifyResponse.objectFromData(response);
-                            if (verifyResponse.isIsVerified()) {
+                            if (verifyResponse.isIsBixinkey() && verifyResponse.isIsVerified()) {
                                 verified.setVisibility(View.VISIBLE);
                                 EventBus.getDefault().post(new VerifySuccessEvent());
                                 // 修改本地设备信息

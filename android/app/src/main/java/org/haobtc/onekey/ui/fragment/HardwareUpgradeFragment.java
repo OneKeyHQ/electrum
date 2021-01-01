@@ -12,10 +12,13 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
+import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.event.RefreshViewEvent;
 import org.haobtc.onekey.event.UpdateEvent;
 import org.haobtc.onekey.ui.activity.HardwareUpgradeActivity;
 import org.haobtc.onekey.ui.base.BaseFragment;
+
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -96,7 +99,7 @@ public class HardwareUpgradeFragment extends BaseFragment {
     public int getContentViewId() {
         return R.layout.hardware_upgrade_fragment;
     }
-
+    @SingleClick(value = 2000L)
     @OnClick({R.id.stm32_update, R.id.nrf_update})
     public void onViewClicked(View view) {
         switch (view.getId()) {
@@ -113,7 +116,9 @@ public class HardwareUpgradeFragment extends BaseFragment {
      * */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onRefreshView(RefreshViewEvent event) {
-
+        if (Objects.isNull(noUpdatePromote)) {
+            return;
+        }
         switch (event.getId()) {
             case R.string.firmware_nrf:
                 currentNrfVersionCode.setText(HardwareUpgradeActivity.newNrfVersion);

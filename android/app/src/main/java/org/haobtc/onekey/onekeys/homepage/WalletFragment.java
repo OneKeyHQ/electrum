@@ -7,7 +7,6 @@ import android.content.SharedPreferences;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageView;
@@ -70,7 +69,6 @@ import java.util.Optional;
 import butterknife.BindView;
 import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
-import dr.android.utils.LogUtil;
 import io.reactivex.functions.Consumer;
 
 import static android.app.Activity.RESULT_OK;
@@ -538,7 +536,7 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
         }
     }
 
-    @SingleClick
+    @SingleClick(value = 6000L)
     @OnClick({R.id.rel_check_wallet, R.id.img_scan, R.id.img_Add, R.id.rel_create_hd, R.id.rel_recovery_hd, R.id.rel_pair_hard, R.id.rel_wallet_detail, R.id.linear_send, R.id.linear_receive, R.id.linear_sign, R.id.rel_now_back_up, R.id.rel_bi_detail})
     public void onViewClicked(View view) {
         switch (view.getId()) {

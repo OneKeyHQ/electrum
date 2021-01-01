@@ -2,9 +2,9 @@ package org.haobtc.onekey.asynctask;
 
 import android.annotation.SuppressLint;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.chaquo.python.Kwarg;
+import com.orhanobut.logger.Logger;
 
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.event.CheckReceiveAddress;
@@ -14,11 +14,7 @@ import org.haobtc.onekey.exception.HardWareExceptions;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.utils.Daemon;
 
-import no.nordicsemi.android.dfu.DfuServiceInitiator;
-
 import static org.haobtc.onekey.activities.service.CommunicationModeSelector.ble;
-import static org.haobtc.onekey.activities.service.CommunicationModeSelector.nfc;
-import static org.haobtc.onekey.activities.service.CommunicationModeSelector.protocol;
 
 /**
  * @author liyan
@@ -76,7 +72,7 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
     @Override
     protected String doInBackground(String... strings) {
         helper.currentMethod(strings[0]);
-        System.out.println(String.format("method==%s===in thread===%d", strings[0], Thread.currentThread().getId()));
+        Logger.d("current async method==%s", strings[0]);
         String result = "";
         switch (strings[0]) {
             case GET_EXTEND_PUBLIC_KEY_SINGLE:
@@ -180,7 +176,7 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
         if (HardWareExceptions.PASSPHRASE_OPERATION_TIMEOUT.getMessage().equals(e.getMessage()) || HardWareExceptions.PIN_OPERATION_TIMEOUT.getMessage().equals(e.getMessage())) {
             EventBus.getDefault().post(new OperationTimeoutEvent());
         } else if (HardWareExceptions.USER_CANCEL.getMessage().equals(e.getMessage())) {
-            Log.d(TAG, "cancel by user");
+            Logger.e("cancel by user");
         } else {
             helper.onException(HardWareExceptions.exceptionConvert(e));
         }

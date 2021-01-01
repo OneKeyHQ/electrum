@@ -16,13 +16,13 @@ import androidx.annotation.StringRes;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.common.base.Strings;
+import com.orhanobut.logger.Logger;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.aop.SingleClick;
-import org.haobtc.onekey.asynctask.BusinessAsyncTask;
 import org.haobtc.onekey.bean.HardwareFeatures;
 import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.bean.UpdateSuccessEvent;
@@ -245,6 +245,7 @@ public class HardwareUpgradeActivity extends BaseActivity {
      * */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onReadyBle(NotifySuccessfulEvent event) {
+        Logger.d("update");
         String path = String.format("%s/%s%s%s", cacheDir, Constant.UPDATE_FILE_NAME, newFirmwareVersion, Constant.FIRMWARE_UPDATE_FILE_SUFFIX);
         toNext(R.string.firmware_stm32);
         new MyTask(new MyTask.CallBack() {

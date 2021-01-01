@@ -215,7 +215,7 @@ public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocu
     public void initData() {
     }
 
-    @SingleClick
+    @SingleClick(value = 6000L)
     @OnClick({R.id.img_back, R.id.btn_recovery, R.id.lin_hard_recovery, R.id.lin_import, R.id.img_copy_test})
     public void onViewClicked(View view) {
         switch (view.getId()) {

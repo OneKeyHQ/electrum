@@ -2,6 +2,7 @@ package org.haobtc.onekey.bean;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
+import com.orhanobut.logger.Logger;
 
 /**
  * @author jinxiaomin
@@ -24,7 +25,6 @@ public class CurrentFeeDetails {
     @SerializedName("fast")
     private FastBean fast;
     public static CurrentFeeDetails objectFromDate(String str) {
-        System.out.println("============" + str);
         return new Gson().fromJson(str, CurrentFeeDetails.class);
     }
     public SlowBean getSlow() {

@@ -33,7 +33,6 @@ import org.haobtc.onekey.utils.Daemon;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import dr.android.utils.LogUtil;
 
 public class ChooseImportMethodActivity extends BaseActivity {
 

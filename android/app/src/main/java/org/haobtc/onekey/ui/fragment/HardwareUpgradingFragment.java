@@ -5,6 +5,8 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.orhanobut.logger.Logger;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -15,6 +17,8 @@ import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.event.RefreshViewEvent;
 import org.haobtc.onekey.event.UpdatingEvent;
 import org.haobtc.onekey.ui.base.BaseFragment;
+
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -66,6 +70,9 @@ public class HardwareUpgradingFragment extends BaseFragment {
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onUpdatedSuccess(UpdateSuccessEvent event) {
+        if (Objects.isNull(progressPromote)) {
+            return;
+        }
         EventBus.getDefault().post(new RefreshViewEvent(promoteId));
         progressPromote.setText(R.string.updated);
         complete.setEnabled(true);

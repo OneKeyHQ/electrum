@@ -13,6 +13,7 @@ import com.azhon.appupdate.manager.DownloadManager;
 import com.azhon.appupdate.utils.ApkUtil;
 import com.google.common.base.Strings;
 import com.google.gson.JsonSyntaxException;
+import com.orhanobut.logger.Logger;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -160,14 +161,14 @@ public class HomeOneKeyActivity extends BaseActivity implements RadioGroup.OnChe
             @Override
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
-                System.out.println("获取更新信息失败");
+                Logger.e("获取更新信息失败");
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 assert response.body() != null;
                 if (response.code() != HTTP_OK) {
-                    Log.e("Main", "获取更新信息失败===" + response.body().string());
+                    Logger.e(response.body().string());
                     return;
                 }
                 String locate = PreferencesManager.get(HomeOneKeyActivity.this, "Preferences", Constant.LANGUAGE, "").toString();

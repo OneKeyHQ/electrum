@@ -23,7 +23,6 @@ import org.haobtc.onekey.utils.NavUtils;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import dr.android.utils.LogUtil;
 
 public class CreateWalletChooseTypeActivity extends BaseActivity {
 
