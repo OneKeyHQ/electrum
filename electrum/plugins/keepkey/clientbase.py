@@ -3,12 +3,12 @@ from struct import pack
 from typing import Optional
 
 from electrum import ecc
-from electrum.i18n import _
-from electrum.util import UserCancelled
-from electrum.keystore import bip39_normalize_passphrase
 from electrum.bip32 import BIP32Node, convert_bip32_path_to_list_of_uint32
+from electrum.i18n import _
+from electrum.keystore import bip39_normalize_passphrase
 from electrum.logging import Logger
 from electrum.plugins.hw_wallet.plugin import HardwareClientBase, HardwareHandlerBase
+from electrum.util import UserCancelled
 
 
 class GuiMixin(object):
@@ -21,10 +21,12 @@ class GuiMixin(object):
         5: _("Write down the seed word shown on your {}"),
         6: _("Confirm on your {} that you want to wipe it clean"),
         7: _("Confirm on your {} device the message to sign"),
-        8: _("Confirm the total amount spent and the transaction fee on your "
-             "{} device"),
+        8: _(
+            "Confirm the total amount spent and the transaction fee on your "
+            "{} device"
+        ),
         10: _("Confirm wallet address on your {} device"),
-        'default': _("Check your {} device to continue"),
+        "default": _("Check your {} device to continue"),
     }
 
     def callback_Failure(self, msg):
@@ -33,16 +35,18 @@ class GuiMixin(object):
         # However, making the user acknowledge they cancelled
         # gets old very quickly, so we suppress those.  The NotInitialized
         # one is misnamed and indicates a passphrase request was cancelled.
-        if msg.code in (self.types.Failure_PinCancelled,
-                        self.types.Failure_ActionCancelled,
-                        self.types.Failure_NotInitialized):
+        if msg.code in (
+            self.types.Failure_PinCancelled,
+            self.types.Failure_ActionCancelled,
+            self.types.Failure_NotInitialized,
+        ):
             raise UserCancelled()
         raise RuntimeError(msg.message)
 
     def callback_ButtonRequest(self, msg):
         message = self.msg
         if not message:
-            message = self.messages.get(msg.code, self.messages['default'])
+            message = self.messages.get(msg.code, self.messages["default"])
         self.handler.show_message(message.format(self.device), self.cancel)
         return self.proto.ButtonAck()
 
@@ -51,25 +55,29 @@ class GuiMixin(object):
         if msg.type == 2:
             msg = _("Enter a new PIN for your {}:")
         elif msg.type == 3:
-            msg = (_("Re-enter the new PIN for your {}.\n\n"
-                     "NOTE: the positions of the numbers have changed!"))
+            msg = _(
+                "Re-enter the new PIN for your {}.\n\n"
+                "NOTE: the positions of the numbers have changed!"
+            )
         else:
             msg = _("Enter your current {} PIN:")
             show_strength = False
         pin = self.handler.get_pin(msg.format(self.device), show_strength=show_strength)
         if len(pin) > 9:
-            self.handler.show_error(_('The PIN cannot be longer than 9 characters.'))
-            pin = ''  # to cancel below
+            self.handler.show_error(_("The PIN cannot be longer than 9 characters."))
+            pin = ""  # to cancel below
         if not pin:
             return self.proto.Cancel()
         return self.proto.PinMatrixAck(pin=pin)
 
     def callback_PassphraseRequest(self, req):
         if self.creating_wallet:
-            msg = _("Enter a passphrase to generate this wallet.  Each time "
-                    "you use this wallet your {} will prompt you for the "
-                    "passphrase.  If you forget the passphrase you cannot "
-                    "access the bitcoins in the wallet.").format(self.device)
+            msg = _(
+                "Enter a passphrase to generate this wallet.  Each time "
+                "you use this wallet your {} will prompt you for the "
+                "passphrase.  If you forget the passphrase you cannot "
+                "access the bitcoins in the wallet."
+            ).format(self.device)
         else:
             msg = _("Enter the passphrase to unlock this wallet:")
         passphrase = self.handler.get_passphrase(msg, self.creating_wallet)
@@ -80,14 +88,17 @@ class GuiMixin(object):
         ack = self.proto.PassphraseAck(passphrase=passphrase)
         length = len(ack.passphrase)
         if length > 50:
-            self.handler.show_error(_("Too long passphrase ({} > 50 chars).").format(length))
+            self.handler.show_error(
+                _("Too long passphrase ({} > 50 chars).").format(length)
+            )
             return self.proto.Cancel()
         return ack
 
     def callback_WordRequest(self, msg):
         self.step += 1
-        msg = _("Step {}/24.  Enter seed word as explained on "
-                "your {}:").format(self.step, self.device)
+        msg = _("Step {}/24.  Enter seed word as explained on " "your {}:").format(
+            self.step, self.device
+        )
         word = self.handler.get_word(msg)
         # Unfortunately the device can't handle self.proto.Cancel()
         return self.proto.WordAck(word=word)
@@ -100,9 +111,8 @@ class GuiMixin(object):
 
 
 class KeepKeyClientBase(HardwareClientBase, GuiMixin, Logger):
-
     def __init__(self, handler, plugin, proto):
-        assert hasattr(self, 'tx_api')  # ProtocolMixin already constructed?
+        assert hasattr(self, "tx_api")  # ProtocolMixin already constructed?
         HardwareClientBase.__init__(self, plugin=plugin)
         self.proto = proto
         self.device = plugin.device
@@ -141,10 +151,10 @@ class KeepKeyClientBase(HardwareClientBase, GuiMixin, Logger):
         self.last_operation = time.time()
 
     def prevent_timeouts(self):
-        self.last_operation = float('inf')
+        self.last_operation = float("inf")
 
     def timeout(self, cutoff):
-        '''Time out the client if the last operation was before cutoff.'''
+        """Time out the client if the last operation was before cutoff."""
         if self.last_operation < cutoff:
             self.logger.info("timed out")
             self.clear_session()
@@ -154,22 +164,24 @@ class KeepKeyClientBase(HardwareClientBase, GuiMixin, Logger):
         return convert_bip32_path_to_list_of_uint32(n)
 
     def cancel(self):
-        '''Provided here as in keepkeylib but not trezorlib.'''
+        """Provided here as in keepkeylib but not trezorlib."""
         self.transport.write(self.proto.Cancel())
 
     def i4b(self, x):
-        return pack('>I', x)
+        return pack(">I", x)
 
     def get_xpub(self, bip32_path, xtype):
         address_n = self.expand_path(bip32_path)
         creating = False
         node = self.get_public_node(address_n, creating).node
-        return BIP32Node(xtype=xtype,
-                         eckey=ecc.ECPubkey(node.public_key),
-                         chaincode=node.chain_code,
-                         depth=node.depth,
-                         fingerprint=self.i4b(node.fingerprint),
-                         child_number=self.i4b(node.child_num)).to_xpub()
+        return BIP32Node(
+            xtype=xtype,
+            eckey=ecc.ECPubkey(node.public_key),
+            chaincode=node.chain_code,
+            depth=node.depth,
+            fingerprint=self.i4b(node.fingerprint),
+            child_number=self.i4b(node.child_num),
+        ).to_xpub()
 
     def toggle_passphrase(self):
         if self.features.passphrase_protection:
@@ -197,8 +209,8 @@ class KeepKeyClientBase(HardwareClientBase, GuiMixin, Logger):
         self.change_pin(remove)
 
     def clear_session(self):
-        '''Clear the session to force pin (and passphrase if enabled)
-        re-entry.  Does not leak exceptions.'''
+        """Clear the session to force pin (and passphrase if enabled)
+        re-entry.  Does not leak exceptions."""
         self.logger.info(f"clear session: {self}")
         self.prevent_timeouts()
         try:
@@ -212,7 +224,7 @@ class KeepKeyClientBase(HardwareClientBase, GuiMixin, Logger):
         return super(KeepKeyClientBase, self).get_public_node(address_n)
 
     def close(self):
-        '''Called when Our wallet was closed or the device removed.'''
+        """Called when Our wallet was closed or the device removed."""
         self.logger.info("closing client")
         self.clear_session()
         # Release the device
@@ -227,7 +239,7 @@ class KeepKeyClientBase(HardwareClientBase, GuiMixin, Logger):
 
     @staticmethod
     def wrapper(func):
-        '''Wrap methods to clear any message box they opened.'''
+        """Wrap methods to clear any message box they opened."""
 
         def wrapped(self, *args, **kwargs):
             try:
@@ -243,9 +255,17 @@ class KeepKeyClientBase(HardwareClientBase, GuiMixin, Logger):
 
     @staticmethod
     def wrap_methods(cls):
-        for method in ['apply_settings', 'change_pin',
-                       'get_address', 'get_public_node',
-                       'load_device_by_mnemonic', 'load_device_by_xprv',
-                       'recovery_device', 'reset_device', 'sign_message',
-                       'sign_tx', 'wipe_device']:
+        for method in [
+            "apply_settings",
+            "change_pin",
+            "get_address",
+            "get_public_node",
+            "load_device_by_mnemonic",
+            "load_device_by_xprv",
+            "recovery_device",
+            "reset_device",
+            "sign_message",
+            "sign_tx",
+            "wipe_device",
+        ]:
             setattr(cls, method, cls.wrapper(getattr(cls, method)))

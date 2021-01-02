@@ -25,34 +25,33 @@
 #
 # Kivy GUI
 
-import sys
 import os
+import sys
 from typing import TYPE_CHECKING
 
 try:
-    sys.argv = ['']
+    sys.argv = [""]
     import kivy
 except ImportError:
     # This error ideally shouldn't be raised with pre-built packages
-    sys.exit("Error: Could not import kivy. Please install it using the "
-             "instructions mentioned here `https://kivy.org/#download` .")
+    sys.exit(
+        "Error: Could not import kivy. Please install it using the "
+        "instructions mentioned here `https://kivy.org/#download` ."
+    )
 
 # minimum required version for kivy
-kivy.require('1.8.0')
+kivy.require("1.8.0")
 from kivy.logger import Logger
 
 if TYPE_CHECKING:
-    from electrum.simple_config import SimpleConfig
     from electrum.daemon import Daemon
     from electrum.plugin import Plugins
-
-
+    from electrum.simple_config import SimpleConfig
 
 
 class ElectrumGui:
-
-    def __init__(self, config: 'SimpleConfig', daemon: 'Daemon', plugins: 'Plugins'):
-        Logger.debug('ElectrumGUI: initialising')
+    def __init__(self, config: "SimpleConfig", daemon: "Daemon", plugins: "Plugins"):
+        Logger.debug("ElectrumGUI: initialising")
         self.daemon = daemon
         self.network = daemon.network
         self.config = config
@@ -60,10 +59,13 @@ class ElectrumGui:
 
     def main(self):
         from .main_window import ElectrumWindow
-        w = ElectrumWindow(config=self.config,
-                           network=self.network,
-                           plugins = self.plugins,
-                           gui_object=self)
+
+        w = ElectrumWindow(
+            config=self.config,
+            network=self.network,
+            plugins=self.plugins,
+            gui_object=self,
+        )
         w.run()
 
     def stop(self):

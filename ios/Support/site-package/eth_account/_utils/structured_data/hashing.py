@@ -1,29 +1,12 @@
-from itertools import (
-    groupby,
-)
 import json
-from operator import (
-    itemgetter,
-)
+from itertools import groupby
+from operator import itemgetter
 
-from eth_abi import (
-    encode_abi,
-    is_encodable,
-    is_encodable_type,
-)
-from eth_abi.grammar import (
-    parse,
-)
-from eth_utils import (
-    ValidationError,
-    keccak,
-    to_tuple,
-    toolz,
-)
+from eth_abi import encode_abi, is_encodable, is_encodable_type
+from eth_abi.grammar import parse
+from eth_utils import ValidationError, keccak, to_tuple, toolz
 
-from .validation import (
-    validate_structured_data,
-)
+from .validation import validate_structured_data
 
 
 def get_dependencies(primary_type, types):
@@ -65,8 +48,7 @@ def field_identifier(field):
 
 def encode_struct(struct_name, struct_field_types):
     return "{0}({1})".format(
-        struct_name,
-        ','.join(map(field_identifier, struct_field_types)),
+        struct_name, ",".join(map(field_identifier, struct_field_types)),
     )
 
 
@@ -79,11 +61,8 @@ def encode_type(primary_type, types):
     deps = get_dependencies(primary_type, types)
     sorted_deps = (primary_type,) + tuple(sorted(deps))
 
-    result = ''.join(
-        [
-            encode_struct(struct_name, types[struct_name])
-            for struct_name in sorted_deps
-        ]
+    result = "".join(
+        [encode_struct(struct_name, types[struct_name]) for struct_name in sorted_deps]
     )
     return result
 
@@ -136,10 +115,11 @@ def get_array_dimensions(data):
     )
     if invalid_depths_dimensions:
         raise ValidationError(
-            '\n'.join(
+            "\n".join(
                 [
-                    "Depth {0} of array data has more than one dimensions: {1}".
-                    format(depth, dimensions)
+                    "Depth {0} of array data has more than one dimensions: {1}".format(
+                        depth, dimensions
+                    )
                     for depth, dimensions in invalid_depths_dimensions
                 ]
             )
@@ -177,10 +157,7 @@ def _encode_data(primary_type, types, data):
                 raise TypeError(
                     "Value of `{0}` ({2}) in the struct `{1}` is of the type `{3}`, but expected "
                     "string value".format(
-                        field["name"],
-                        primary_type,
-                        value,
-                        type(value),
+                        field["name"], primary_type, value, type(value),
                     )
                 )
             # Special case where the values need to be keccak hashed before they are encoded
@@ -191,10 +168,7 @@ def _encode_data(primary_type, types, data):
                 raise TypeError(
                     "Value of `{0}` ({2}) in the struct `{1}` is of the type `{3}`, but expected "
                     "bytes value".format(
-                        field["name"],
-                        primary_type,
-                        value,
-                        type(value),
+                        field["name"], primary_type, value, type(value),
                     )
                 )
             # Special case where the values need to be keccak hashed before they are encoded
@@ -229,7 +203,7 @@ def _encode_data(primary_type, types, data):
                 encode_data(parsed_type.base, types, array_item)
                 for array_item in array_items
             ]
-            concatenated_array_encodings = b''.join(array_items_encoding)
+            concatenated_array_encodings = b"".join(array_items_encoding)
             hashed_value = keccak(concatenated_array_encodings)
             yield "bytes32", hashed_value
         else:
@@ -237,8 +211,7 @@ def _encode_data(primary_type, types, data):
             if not is_encodable_type(field["type"]):
                 raise TypeError(
                     "Received Invalid type `{0}` in the struct `{1}`".format(
-                        field["type"],
-                        primary_type,
+                        field["type"], primary_type,
                     )
                 )
 
@@ -250,11 +223,7 @@ def _encode_data(primary_type, types, data):
                 raise TypeError(
                     "Value of `{0}` ({2}) in the struct `{1}` is of the type `{3}`, but expected "
                     "{4} value".format(
-                        field["name"],
-                        primary_type,
-                        value,
-                        type(value),
-                        field["type"],
+                        field["name"], primary_type, value, type(value), field["type"],
                     )
                 )
 
@@ -274,11 +243,7 @@ def load_and_validate_structured_message(structured_json_string_data):
 
 def hash_domain(structured_data):
     return keccak(
-        encode_data(
-            "EIP712Domain",
-            structured_data["types"],
-            structured_data["domain"]
-        )
+        encode_data("EIP712Domain", structured_data["types"], structured_data["domain"])
     )
 
 
@@ -287,6 +252,6 @@ def hash_message(structured_data):
         encode_data(
             structured_data["primaryType"],
             structured_data["types"],
-            structured_data["message"]
+            structured_data["message"],
         )
     )

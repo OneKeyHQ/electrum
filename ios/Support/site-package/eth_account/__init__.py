@@ -1,3 +1,1 @@
-from eth_account.account import (  # noqa: F401
-    Account,
-)
+from eth_account.account import Account  # noqa: F401

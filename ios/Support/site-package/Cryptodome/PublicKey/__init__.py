@@ -18,8 +18,13 @@
 # SOFTWARE.
 # ===================================================================
 
-from Cryptodome.Util.asn1 import (DerSequence, DerInteger, DerBitString,
-                             DerObjectId, DerNull)
+from Cryptodome.Util.asn1 import (
+    DerBitString,
+    DerInteger,
+    DerNull,
+    DerObjectId,
+    DerSequence,
+)
 
 
 def _expand_subject_public_key_info(encoded):
@@ -44,7 +49,7 @@ def _expand_subject_public_key_info(encoded):
     #
 
     spki = DerSequence().decode(encoded, nr_elements=2)
-    algo = DerSequence().decode(spki[0], nr_elements=(1,2))
+    algo = DerSequence().decode(spki[0], nr_elements=(1, 2))
     algo_oid = DerObjectId().decode(algo[0])
     spk = DerBitString().decode(spki[1]).value
 
@@ -65,12 +70,9 @@ def _create_subject_public_key_info(algo_oid, secret_key, params=None):
     if params is None:
         params = DerNull()
 
-    spki = DerSequence([
-                DerSequence([
-                    DerObjectId(algo_oid),
-                    params]),
-                DerBitString(secret_key)
-                ])
+    spki = DerSequence(
+        [DerSequence([DerObjectId(algo_oid), params]), DerBitString(secret_key)]
+    )
     return spki.encode()
 
 
@@ -78,8 +80,7 @@ def _extract_subject_public_key_info(x509_certificate):
     """Extract subjectPublicKeyInfo from a DER X.509 certificate."""
 
     certificate = DerSequence().decode(x509_certificate, nr_elements=3)
-    tbs_certificate = DerSequence().decode(certificate[0],
-                                           nr_elements=range(6, 11))
+    tbs_certificate = DerSequence().decode(certificate[0], nr_elements=range(6, 11))
 
     index = 5
     try:

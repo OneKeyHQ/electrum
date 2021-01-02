@@ -1,11 +1,11 @@
 #!/usr/bin/python3
-import re
-import os
-import sys
 import importlib
+import os
+import re
+import sys
 
 # load version.py; needlessly complicated alternative to "imp.load_source":
-version_spec = importlib.util.spec_from_file_location('version', 'electrum/version.py')
+version_spec = importlib.util.spec_from_file_location("version", "electrum/version.py")
 version_module = importlib.util.module_from_spec(version_spec)
 version_spec.loader.exec_module(version_module)
 
@@ -30,36 +30,40 @@ string = string.replace("##VERSION_ANDROID##", version_android)
 string = string.replace("##VERSION_APK##", APK_VERSION)
 
 files = {
-    'tgz': "Electrum-%s.tar.gz" % version,
-    'appimage': "electrum-%s-x86_64.AppImage" % version,
-    'zip': "Electrum-%s.zip" % version,
-    'mac': "electrum-%s.dmg" % version_mac,
-    'win': "electrum-%s.exe" % version_win,
-    'win_setup': "electrum-%s-setup.exe" % version_win,
-    'win_portable': "electrum-%s-portable.exe" % version_win,
+    "tgz": "Electrum-%s.tar.gz" % version,
+    "appimage": "electrum-%s-x86_64.AppImage" % version,
+    "zip": "Electrum-%s.zip" % version,
+    "mac": "electrum-%s.dmg" % version_mac,
+    "win": "electrum-%s.exe" % version_win,
+    "win_setup": "electrum-%s-setup.exe" % version_win,
+    "win_portable": "electrum-%s-portable.exe" % version_win,
 }
 
 for k, n in files.items():
-    path = "dist/%s"%n
-    link = "https://download.electrum.org/%s/%s"%(version,n)
+    path = "dist/%s" % n
+    link = "https://download.electrum.org/%s/%s" % (version, n)
     if not os.path.exists(path):
         os.system("wget -q %s -O %s" % (link, path))
     if not os.path.getsize(path):
         os.unlink(path)
-        string = re.sub("<div id=\"%s\">(.*?)</div>"%k, '', string, flags=re.DOTALL + re.MULTILINE)
+        string = re.sub(
+            '<div id="%s">(.*?)</div>' % k, "", string, flags=re.DOTALL + re.MULTILINE
+        )
         continue
-    sigpath = path + '.asc'
-    siglink = link + '.asc'
+    sigpath = path + ".asc"
+    siglink = link + ".asc"
     if not os.path.exists(sigpath):
         os.system("wget -q %s -O %s" % (siglink, sigpath))
     if not os.path.getsize(sigpath):
         os.unlink(sigpath)
-        string = re.sub("<div id=\"%s\">(.*?)</div>"%k, '', string, flags=re.DOTALL + re.MULTILINE)
+        string = re.sub(
+            '<div id="%s">(.*?)</div>' % k, "", string, flags=re.DOTALL + re.MULTILINE
+        )
         continue
-    if os.system("gpg --verify %s"%sigpath) != 0:
+    if os.system("gpg --verify %s" % sigpath) != 0:
         raise Exception(sigpath)
-    string = string.replace("##link_%s##"%k, link)
+    string = string.replace("##link_%s##" % k, link)
 
 
-with open(download_page,'w') as f:
+with open(download_page, "w") as f:
     f.write(string)

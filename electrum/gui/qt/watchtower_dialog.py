@@ -23,17 +23,20 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import (QDialog, QVBoxLayout, QPushButton, QLabel)
+from PyQt5.QtGui import QStandardItem, QStandardItemModel
+from PyQt5.QtWidgets import QDialog, QLabel, QPushButton, QVBoxLayout
 
 from electrum.i18n import _
-from .util import MyTreeView, Buttons
+
+from .util import Buttons, MyTreeView
 
 
 class WatcherList(MyTreeView):
     def __init__(self, parent):
-        super().__init__(parent, self.create_menu, stretch_column=0, editable_columns=[])
+        super().__init__(
+            parent, self.create_menu, stretch_column=0, editable_columns=[]
+        )
         self.setModel(QStandardItemModel(self))
         self.setSortingEnabled(True)
         self.update()
@@ -45,20 +48,21 @@ class WatcherList(MyTreeView):
         if self.parent.lnwatcher is None:
             return
         self.model().clear()
-        self.update_headers({0:_('Outpoint'), 1:_('Tx'), 2:_('Status')})
+        self.update_headers({0: _("Outpoint"), 1: _("Tx"), 2: _("Status")})
         lnwatcher = self.parent.lnwatcher
         l = lnwatcher.list_sweep_tx()
         for outpoint in l:
             n = lnwatcher.get_num_tx(outpoint)
             status = lnwatcher.get_channel_status(outpoint)
-            items = [QStandardItem(e) for e in [outpoint, "%d"%n, status]]
+            items = [QStandardItem(e) for e in [outpoint, "%d" % n, status]]
             self.model().insertRow(self.model().rowCount(), items)
         size = lnwatcher.sweepstore.filesize()
-        self.parent.size_label.setText('Database size: %.2f Mb'%(size/1024/1024.))
+        self.parent.size_label.setText(
+            "Database size: %.2f Mb" % (size / 1024 / 1024.0)
+        )
 
 
 class WatchtowerDialog(QDialog):
-
     def __init__(self, gui_object):
         QDialog.__init__(self)
         self.gui_object = gui_object
@@ -66,7 +70,7 @@ class WatchtowerDialog(QDialog):
         self.network = gui_object.daemon.network
         assert self.network
         self.lnwatcher = self.network.local_watchtower
-        self.setWindowTitle(_('Watchtower'))
+        self.setWindowTitle(_("Watchtower"))
         self.setMinimumSize(600, 20)
         self.size_label = QLabel()
         self.watcher_list = WatcherList(self)
@@ -74,7 +78,7 @@ class WatchtowerDialog(QDialog):
         vbox = QVBoxLayout(self)
         vbox.addWidget(self.size_label)
         vbox.addWidget(self.watcher_list)
-        b = QPushButton(_('Close'))
+        b = QPushButton(_("Close"))
         b.clicked.connect(self.close)
         vbox.addLayout(Buttons(b))
         self.watcher_list.update()

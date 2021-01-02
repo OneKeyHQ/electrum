@@ -30,32 +30,35 @@
 
 from __future__ import print_function
 
-import re
-import sys
-import struct
 import binascii
+import re
+import struct
+import sys
 from collections import namedtuple
 
-from Cryptodome.Util.py3compat import bord, tobytes, tostr, bchr, is_string
-from Cryptodome.Util.number import bytes_to_long, long_to_bytes
-
 from Cryptodome.Math.Numbers import Integer
-from Cryptodome.Util.asn1 import (DerObjectId, DerOctetString, DerSequence,
-                              DerBitString)
-
-from Cryptodome.PublicKey import (_expand_subject_public_key_info,
-                              _create_subject_public_key_info,
-                              _extract_subject_public_key_info)
-
-from Cryptodome.Util._raw_api import (load_pycryptodome_raw_lib, VoidPointer,
-                                  SmartPointer, c_size_t, c_uint8_ptr,
-                                  c_ulonglong)
-
+from Cryptodome.PublicKey import (
+    _create_subject_public_key_info,
+    _expand_subject_public_key_info,
+    _extract_subject_public_key_info,
+)
 from Cryptodome.Random import get_random_bytes
 from Cryptodome.Random.random import getrandbits
+from Cryptodome.Util._raw_api import (
+    SmartPointer,
+    VoidPointer,
+    c_size_t,
+    c_uint8_ptr,
+    c_ulonglong,
+    load_pycryptodome_raw_lib,
+)
+from Cryptodome.Util.asn1 import DerBitString, DerObjectId, DerOctetString, DerSequence
+from Cryptodome.Util.number import bytes_to_long, long_to_bytes
+from Cryptodome.Util.py3compat import bchr, bord, is_string, tobytes, tostr
 
-
-_ec_lib = load_pycryptodome_raw_lib("Cryptodome.PublicKey._ec_ws", """
+_ec_lib = load_pycryptodome_raw_lib(
+    "Cryptodome.PublicKey._ec_ws",
+    """
 typedef void EcContext;
 typedef void EcPoint;
 int ec_ws_new_context(EcContext **pec_ctx,
@@ -87,50 +90,53 @@ int ec_ws_cmp(const EcPoint *ecp1, const EcPoint *ecp2);
 int ec_ws_neg(EcPoint *p);
 int ec_ws_normalize(EcPoint *ecp);
 int ec_ws_is_pai(EcPoint *ecp);
-""")
+""",
+)
 
 _Curve = namedtuple("_Curve", "p b order Gx Gy G modulus_bits oid context desc openssh")
 _curves = {}
 
 
-p256_names = ["p256", "NIST P-256", "P-256", "prime256v1", "secp256r1",
-              "nistp256"]
+p256_names = ["p256", "NIST P-256", "P-256", "prime256v1", "secp256r1", "nistp256"]
 
 
 def init_p256():
-    p = 0xffffffff00000001000000000000000000000000ffffffffffffffffffffffff
-    b = 0x5ac635d8aa3a93e7b3ebbd55769886bc651d06b0cc53b0f63bce3c3e27d2604b
-    order = 0xffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc632551
-    Gx = 0x6b17d1f2e12c4247f8bce6e563a440f277037d812deb33a0f4a13945d898c296
-    Gy = 0x4fe342e2fe1a7f9b8ee7eb4a7c0f9e162bce33576b315ececbb6406837bf51f5
+    p = 0xFFFFFFFF00000001000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFF
+    b = 0x5AC635D8AA3A93E7B3EBBD55769886BC651D06B0CC53B0F63BCE3C3E27D2604B
+    order = 0xFFFFFFFF00000000FFFFFFFFFFFFFFFFBCE6FAADA7179E84F3B9CAC2FC632551
+    Gx = 0x6B17D1F2E12C4247F8BCE6E563A440F277037D812DEB33A0F4A13945D898C296
+    Gy = 0x4FE342E2FE1A7F9B8EE7EB4A7C0F9E162BCE33576B315ECECBB6406837BF51F5
 
     p256_modulus = long_to_bytes(p, 32)
     p256_b = long_to_bytes(b, 32)
     p256_order = long_to_bytes(order, 32)
 
     ec_p256_context = VoidPointer()
-    result = _ec_lib.ec_ws_new_context(ec_p256_context.address_of(),
-                                       c_uint8_ptr(p256_modulus),
-                                       c_uint8_ptr(p256_b),
-                                       c_uint8_ptr(p256_order),
-                                       c_size_t(len(p256_modulus)),
-                                       c_ulonglong(getrandbits(64))
-                                       )
+    result = _ec_lib.ec_ws_new_context(
+        ec_p256_context.address_of(),
+        c_uint8_ptr(p256_modulus),
+        c_uint8_ptr(p256_b),
+        c_uint8_ptr(p256_order),
+        c_size_t(len(p256_modulus)),
+        c_ulonglong(getrandbits(64)),
+    )
     if result:
         raise ImportError("Error %d initializing P-256 context" % result)
 
     context = SmartPointer(ec_p256_context.get(), _ec_lib.ec_free_context)
-    p256 = _Curve(Integer(p),
-                  Integer(b),
-                  Integer(order),
-                  Integer(Gx),
-                  Integer(Gy),
-                  None,
-                  256,
-                  "1.2.840.10045.3.1.7",    # ANSI X9.62
-                  context,
-                  "NIST P-256",
-                  "ecdsa-sha2-nistp256")
+    p256 = _Curve(
+        Integer(p),
+        Integer(b),
+        Integer(order),
+        Integer(Gx),
+        Integer(Gy),
+        None,
+        256,
+        "1.2.840.10045.3.1.7",  # ANSI X9.62
+        context,
+        "NIST P-256",
+        "ecdsa-sha2-nistp256",
+    )
     global p256_names
     _curves.update(dict.fromkeys(p256_names, p256))
 
@@ -139,44 +145,46 @@ init_p256()
 del init_p256
 
 
-p384_names = ["p384", "NIST P-384", "P-384", "prime384v1", "secp384r1",
-              "nistp384"]
+p384_names = ["p384", "NIST P-384", "P-384", "prime384v1", "secp384r1", "nistp384"]
 
 
 def init_p384():
-    p = 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffeffffffff0000000000000000ffffffff
-    b = 0xb3312fa7e23ee7e4988e056be3f82d19181d9c6efe8141120314088f5013875ac656398d8a2ed19d2a85c8edd3ec2aef
-    order = 0xffffffffffffffffffffffffffffffffffffffffffffffffc7634d81f4372ddf581a0db248b0a77aecec196accc52973
-    Gx = 0xaa87ca22be8b05378eb1c71ef320ad746e1d3b628ba79b9859f741e082542a385502f25dbf55296c3a545e3872760aB7
-    Gy = 0x3617de4a96262c6f5d9e98bf9292dc29f8f41dbd289a147ce9da3113b5f0b8c00a60b1ce1d7e819d7a431d7c90ea0e5F
+    p = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFFFF0000000000000000FFFFFFFF
+    b = 0xB3312FA7E23EE7E4988E056BE3F82D19181D9C6EFE8141120314088F5013875AC656398D8A2ED19D2A85C8EDD3EC2AEF
+    order = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFC7634D81F4372DDF581A0DB248B0A77AECEC196ACCC52973
+    Gx = 0xAA87CA22BE8B05378EB1C71EF320AD746E1D3B628BA79B9859F741E082542A385502F25DBF55296C3A545E3872760AB7
+    Gy = 0x3617DE4A96262C6F5D9E98BF9292DC29F8F41DBD289A147CE9DA3113B5F0B8C00A60B1CE1D7E819D7A431D7C90EA0E5F
 
     p384_modulus = long_to_bytes(p, 48)
     p384_b = long_to_bytes(b, 48)
     p384_order = long_to_bytes(order, 48)
 
     ec_p384_context = VoidPointer()
-    result = _ec_lib.ec_ws_new_context(ec_p384_context.address_of(),
-                                       c_uint8_ptr(p384_modulus),
-                                       c_uint8_ptr(p384_b),
-                                       c_uint8_ptr(p384_order),
-                                       c_size_t(len(p384_modulus)),
-                                       c_ulonglong(getrandbits(64))
-                                       )
+    result = _ec_lib.ec_ws_new_context(
+        ec_p384_context.address_of(),
+        c_uint8_ptr(p384_modulus),
+        c_uint8_ptr(p384_b),
+        c_uint8_ptr(p384_order),
+        c_size_t(len(p384_modulus)),
+        c_ulonglong(getrandbits(64)),
+    )
     if result:
         raise ImportError("Error %d initializing P-384 context" % result)
 
     context = SmartPointer(ec_p384_context.get(), _ec_lib.ec_free_context)
-    p384 = _Curve(Integer(p),
-                  Integer(b),
-                  Integer(order),
-                  Integer(Gx),
-                  Integer(Gy),
-                  None,
-                  384,
-                  "1.3.132.0.34",   # SEC 2
-                  context,
-                  "NIST P-384",
-                  "ecdsa-sha2-nistp384")
+    p384 = _Curve(
+        Integer(p),
+        Integer(b),
+        Integer(order),
+        Integer(Gx),
+        Integer(Gy),
+        None,
+        384,
+        "1.3.132.0.34",  # SEC 2
+        context,
+        "NIST P-384",
+        "ecdsa-sha2-nistp384",
+    )
     global p384_names
     _curves.update(dict.fromkeys(p384_names, p384))
 
@@ -185,44 +193,46 @@ init_p384()
 del init_p384
 
 
-p521_names = ["p521", "NIST P-521", "P-521", "prime521v1", "secp521r1",
-              "nistp521"]
+p521_names = ["p521", "NIST P-521", "P-521", "prime521v1", "secp521r1", "nistp521"]
 
 
 def init_p521():
-    p = 0x000001ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
-    b = 0x00000051953eb9618e1c9a1f929a21a0b68540eea2da725b99b315f3b8b489918ef109e156193951ec7e937b1652c0bd3bb1bf073573df883d2c34f1ef451fd46b503f00
-    order = 0x000001fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffa51868783bf2f966b7fcc0148f709a5d03bb5c9b8899c47aebb6fb71e91386409
-    Gx = 0x000000c6858e06b70404e9cd9e3ecb662395b4429c648139053fb521f828af606b4d3dbaa14b5e77efe75928fe1dc127a2ffa8de3348b3c1856a429bf97e7e31c2e5bd66
-    Gy = 0x0000011839296a789a3bc0045c8a5fb42c7d1bd998f54449579b446817afbd17273e662c97ee72995ef42640c550b9013fad0761353c7086a272c24088be94769fd16650
+    p = 0x000001FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+    b = 0x00000051953EB9618E1C9A1F929A21A0B68540EEA2DA725B99B315F3B8B489918EF109E156193951EC7E937B1652C0BD3BB1BF073573DF883D2C34F1EF451FD46B503F00
+    order = 0x000001FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFA51868783BF2F966B7FCC0148F709A5D03BB5C9B8899C47AEBB6FB71E91386409
+    Gx = 0x000000C6858E06B70404E9CD9E3ECB662395B4429C648139053FB521F828AF606B4D3DBAA14B5E77EFE75928FE1DC127A2FFA8DE3348B3C1856A429BF97E7E31C2E5BD66
+    Gy = 0x0000011839296A789A3BC0045C8A5FB42C7D1BD998F54449579B446817AFBD17273E662C97EE72995EF42640C550B9013FAD0761353C7086A272C24088BE94769FD16650
 
     p521_modulus = long_to_bytes(p, 66)
     p521_b = long_to_bytes(b, 66)
     p521_order = long_to_bytes(order, 66)
 
     ec_p521_context = VoidPointer()
-    result = _ec_lib.ec_ws_new_context(ec_p521_context.address_of(),
-                                       c_uint8_ptr(p521_modulus),
-                                       c_uint8_ptr(p521_b),
-                                       c_uint8_ptr(p521_order),
-                                       c_size_t(len(p521_modulus)),
-                                       c_ulonglong(getrandbits(64))
-                                       )
+    result = _ec_lib.ec_ws_new_context(
+        ec_p521_context.address_of(),
+        c_uint8_ptr(p521_modulus),
+        c_uint8_ptr(p521_b),
+        c_uint8_ptr(p521_order),
+        c_size_t(len(p521_modulus)),
+        c_ulonglong(getrandbits(64)),
+    )
     if result:
         raise ImportError("Error %d initializing P-521 context" % result)
 
     context = SmartPointer(ec_p521_context.get(), _ec_lib.ec_free_context)
-    p521 = _Curve(Integer(p),
-                  Integer(b),
-                  Integer(order),
-                  Integer(Gx),
-                  Integer(Gy),
-                  None,
-                  521,
-                  "1.3.132.0.35",   # SEC 2
-                  context,
-                  "NIST P-521",
-                  "ecdsa-sha2-nistp521")
+    p521 = _Curve(
+        Integer(p),
+        Integer(b),
+        Integer(order),
+        Integer(Gx),
+        Integer(Gy),
+        None,
+        521,
+        "1.3.132.0.35",  # SEC 2
+        context,
+        "NIST P-521",
+        "ecdsa-sha2-nistp521",
+    )
     global p521_names
     _curves.update(dict.fromkeys(p521_names, p521))
 
@@ -273,11 +283,13 @@ class EccPoint(object):
             raise ValueError("Incorrect coordinate length")
 
         self._point = VoidPointer()
-        result = _ec_lib.ec_ws_new_point(self._point.address_of(),
-                                         c_uint8_ptr(xb),
-                                         c_uint8_ptr(yb),
-                                         c_size_t(modulus_bytes),
-                                         context.get())
+        result = _ec_lib.ec_ws_new_point(
+            self._point.address_of(),
+            c_uint8_ptr(xb),
+            c_uint8_ptr(yb),
+            c_size_t(modulus_bytes),
+            context.get(),
+        )
         if result:
             if result == 15:
                 raise ValueError("The EC point does not belong to the curve")
@@ -285,18 +297,15 @@ class EccPoint(object):
 
         # Ensure that object disposal of this Python object will (eventually)
         # free the memory allocated by the raw library for the EC point
-        self._point = SmartPointer(self._point.get(),
-                                   _ec_lib.ec_free_point)
+        self._point = SmartPointer(self._point.get(), _ec_lib.ec_free_point)
 
     def set(self, point):
         self._point = VoidPointer()
-        result = _ec_lib.ec_ws_clone(self._point.address_of(),
-                                     point._point.get())
+        result = _ec_lib.ec_ws_clone(self._point.address_of(), point._point.get())
         if result:
             raise ValueError("Error %d while cloning an EC point" % result)
 
-        self._point = SmartPointer(self._point.get(),
-                                   _ec_lib.ec_free_point)
+        self._point = SmartPointer(self._point.get(), _ec_lib.ec_free_point)
         return self
 
     def __eq__(self, point):
@@ -336,10 +345,9 @@ class EccPoint(object):
         modulus_bytes = self.size_in_bytes()
         xb = bytearray(modulus_bytes)
         yb = bytearray(modulus_bytes)
-        result = _ec_lib.ec_ws_get_xy(c_uint8_ptr(xb),
-                                      c_uint8_ptr(yb),
-                                      c_size_t(modulus_bytes),
-                                      self._point.get())
+        result = _ec_lib.ec_ws_get_xy(
+            c_uint8_ptr(xb), c_uint8_ptr(yb), c_size_t(modulus_bytes), self._point.get()
+        )
         if result:
             raise ValueError("Error %d while encoding an EC point" % result)
 
@@ -386,12 +394,16 @@ class EccPoint(object):
         """Multiply this point by a scalar"""
 
         if scalar < 0:
-            raise ValueError("Scalar multiplication is only defined for non-negative integers")
+            raise ValueError(
+                "Scalar multiplication is only defined for non-negative integers"
+            )
         sb = long_to_bytes(scalar)
-        result = _ec_lib.ec_ws_scalar(self._point.get(),
-                                      c_uint8_ptr(sb),
-                                      c_size_t(len(sb)),
-                                      c_ulonglong(getrandbits(64)))
+        result = _ec_lib.ec_ws_scalar(
+            self._point.get(),
+            c_uint8_ptr(sb),
+            c_size_t(len(sb)),
+            c_ulonglong(getrandbits(64)),
+        )
         if result:
             raise ValueError("Error %d during scalar multiplication" % result)
         return self
@@ -408,18 +420,18 @@ class EccPoint(object):
 
 
 # Last piece of initialization
-p256_G = EccPoint(_curves['p256'].Gx, _curves['p256'].Gy, "p256")
-p256 = _curves['p256']._replace(G=p256_G)
+p256_G = EccPoint(_curves["p256"].Gx, _curves["p256"].Gy, "p256")
+p256 = _curves["p256"]._replace(G=p256_G)
 _curves.update(dict.fromkeys(p256_names, p256))
 del p256_G, p256, p256_names
 
-p384_G = EccPoint(_curves['p384'].Gx, _curves['p384'].Gy, "p384")
-p384 = _curves['p384']._replace(G=p384_G)
+p384_G = EccPoint(_curves["p384"].Gx, _curves["p384"].Gy, "p384")
+p384 = _curves["p384"]._replace(G=p384_G)
 _curves.update(dict.fromkeys(p384_names, p384))
 del p384_G, p384, p384_names
 
-p521_G = EccPoint(_curves['p521'].Gx, _curves['p521'].Gy, "p521")
-p521 = _curves['p521']._replace(G=p521_G)
+p521_G = EccPoint(_curves["p521"].Gx, _curves["p521"].Gy, "p521")
+p521 = _curves["p521"]._replace(G=p521_G)
 _curves.update(dict.fromkeys(p521_names, p521))
 del p521_G, p521, p521_names
 
@@ -465,7 +477,9 @@ class EccKey(object):
 
         if self._d is None:
             if self._point is None:
-                raise ValueError("Either private or public ECC component must be specified, not both")
+                raise ValueError(
+                    "Either private or public ECC component must be specified, not both"
+                )
         else:
             self._d = Integer(self._d)
             if not 1 <= self._d < self._curve.order:
@@ -485,7 +499,12 @@ class EccKey(object):
         else:
             extra = ""
         x, y = self.pointQ.xy
-        return "EccKey(curve='%s', point_x=%d, point_y=%d%s)" % (self._curve.desc, x, y, extra)
+        return "EccKey(curve='%s', point_x=%d, point_y=%d%s)" % (
+            self._curve.desc,
+            x,
+            y,
+            extra,
+        )
 
     def has_private(self):
         """``True`` if this key can be used for making signatures or decrypting data."""
@@ -496,8 +515,7 @@ class EccKey(object):
         assert 0 < k < self._curve.order
 
         order = self._curve.order
-        blind = Integer.random_range(min_inclusive=1,
-                                     max_exclusive=order)
+        blind = Integer.random_range(min_inclusive=1, max_exclusive=order)
 
         blind_d = self._d * blind
         inv_blind_k = (blind * k).inverse(order)
@@ -548,17 +566,18 @@ class EccKey(object):
 
         if compress:
             first_byte = 2 + self.pointQ.y.is_odd()
-            public_key = (bchr(first_byte) +
-                          self.pointQ.x.to_bytes(modulus_bytes))
+            public_key = bchr(first_byte) + self.pointQ.x.to_bytes(modulus_bytes)
         else:
-            public_key = (b'\x04' +
-                          self.pointQ.x.to_bytes(modulus_bytes) +
-                          self.pointQ.y.to_bytes(modulus_bytes))
+            public_key = (
+                b"\x04"
+                + self.pointQ.x.to_bytes(modulus_bytes)
+                + self.pointQ.y.to_bytes(modulus_bytes)
+            )
 
         unrestricted_oid = "1.2.840.10045.2.1"
-        return _create_subject_public_key_info(unrestricted_oid,
-                                               public_key,
-                                               DerObjectId(self._curve.oid))
+        return _create_subject_public_key_info(
+            unrestricted_oid, public_key, DerObjectId(self._curve.oid)
+        )
 
     def _export_private_der(self, include_ec_params=True):
 
@@ -573,14 +592,18 @@ class EccKey(object):
 
         # Public key - uncompressed form
         modulus_bytes = self.pointQ.size_in_bytes()
-        public_key = (b'\x04' +
-                      self.pointQ.x.to_bytes(modulus_bytes) +
-                      self.pointQ.y.to_bytes(modulus_bytes))
+        public_key = (
+            b"\x04"
+            + self.pointQ.x.to_bytes(modulus_bytes)
+            + self.pointQ.y.to_bytes(modulus_bytes)
+        )
 
-        seq = [1,
-               DerOctetString(self.d.to_bytes(modulus_bytes)),
-               DerObjectId(self._curve.oid, explicit=0),
-               DerBitString(public_key, explicit=1)]
+        seq = [
+            1,
+            DerOctetString(self.d.to_bytes(modulus_bytes)),
+            DerObjectId(self._curve.oid, explicit=0),
+            DerBitString(public_key, explicit=1),
+        ]
 
         if not include_ec_params:
             del seq[2]
@@ -590,15 +613,17 @@ class EccKey(object):
     def _export_pkcs8(self, **kwargs):
         from Cryptodome.IO import PKCS8
 
-        if kwargs.get('passphrase', None) is not None and 'protection' not in kwargs:
+        if kwargs.get("passphrase", None) is not None and "protection" not in kwargs:
             raise ValueError("At least the 'protection' parameter should be present")
 
         unrestricted_oid = "1.2.840.10045.2.1"
         private_key = self._export_private_der(include_ec_params=False)
-        result = PKCS8.wrap(private_key,
-                            unrestricted_oid,
-                            key_params=DerObjectId(self._curve.oid),
-                            **kwargs)
+        result = PKCS8.wrap(
+            private_key,
+            unrestricted_oid,
+            key_params=DerObjectId(self._curve.oid),
+            **kwargs
+        )
         return result
 
     def _export_public_pem(self, compress):
@@ -623,7 +648,7 @@ class EccKey(object):
         from Cryptodome.IO import PEM
 
         assert passphrase
-        if 'protection' not in kwargs:
+        if "protection" not in kwargs:
             raise ValueError("At least the 'protection' parameter should be present")
         encoded_der = self._export_pkcs8(passphrase=passphrase, **kwargs)
         return PEM.encode(encoded_der, "ENCRYPTED PRIVATE KEY")
@@ -637,12 +662,13 @@ class EccKey(object):
 
         if compress:
             first_byte = 2 + self.pointQ.y.is_odd()
-            public_key = (bchr(first_byte) +
-                          self.pointQ.x.to_bytes(modulus_bytes))
+            public_key = bchr(first_byte) + self.pointQ.x.to_bytes(modulus_bytes)
         else:
-            public_key = (b'\x04' +
-                          self.pointQ.x.to_bytes(modulus_bytes) +
-                          self.pointQ.y.to_bytes(modulus_bytes))
+            public_key = (
+                b"\x04"
+                + self.pointQ.x.to_bytes(modulus_bytes)
+                + self.pointQ.y.to_bytes(modulus_bytes)
+            )
 
         middle = desc.split("-")[2]
         comps = (tobytes(desc), tobytes(middle), public_key)
@@ -726,7 +752,9 @@ class EccKey(object):
             if ext_format == "PEM":
                 if use_pkcs8:
                     if passphrase:
-                        return self._export_private_encrypted_pkcs8_in_clear_pem(passphrase, **args)
+                        return self._export_private_encrypted_pkcs8_in_clear_pem(
+                            passphrase, **args
+                        )
                     else:
                         return self._export_private_clear_pkcs8_in_clear_pem()
                 else:
@@ -734,7 +762,9 @@ class EccKey(object):
             elif ext_format == "DER":
                 # DER
                 if passphrase and not use_pkcs8:
-                    raise ValueError("Private keys can only be encrpyted with DER using PKCS#8")
+                    raise ValueError(
+                        "Private keys can only be encrpyted with DER using PKCS#8"
+                    )
                 if use_pkcs8:
                     return self._export_pkcs8(passphrase=passphrase, **args)
                 else:
@@ -771,9 +801,9 @@ def generate(**kwargs):
     if kwargs:
         raise TypeError("Unknown parameters: " + str(kwargs))
 
-    d = Integer.random_range(min_inclusive=1,
-                             max_exclusive=curve.order,
-                             randfunc=randfunc)
+    d = Integer.random_range(
+        min_inclusive=1, max_exclusive=curve.order, randfunc=randfunc
+    )
 
     return EccKey(curve=curve_name, d=d)
 
@@ -851,14 +881,14 @@ def _import_public_der(curve_oid, ec_point):
     if point_type == 0x04:
         if len(ec_point) != (1 + 2 * modulus_bytes):
             raise ValueError("Incorrect EC point length")
-        x = Integer.from_bytes(ec_point[1:modulus_bytes+1])
-        y = Integer.from_bytes(ec_point[modulus_bytes+1:])
+        x = Integer.from_bytes(ec_point[1 : modulus_bytes + 1])
+        y = Integer.from_bytes(ec_point[modulus_bytes + 1 :])
     # Compressed point
     elif point_type in (0x02, 0x3):
         if len(ec_point) != (1 + modulus_bytes):
             raise ValueError("Incorrect EC point length")
         x = Integer.from_bytes(ec_point[1:])
-        y = (x**3 - x*3 + curve.b).sqrt(curve.p)    # Short Weierstrass
+        y = (x ** 3 - x * 3 + curve.b).sqrt(curve.p)  # Short Weierstrass
         if point_type == 0x02 and y.is_odd():
             y = curve.p - y
         if point_type == 0x03 and y.is_even():
@@ -1024,13 +1054,13 @@ def _import_der(encoded, passphrase):
 
 
 def _import_openssh_public(encoded):
-    keystring = binascii.a2b_base64(encoded.split(b' ')[1])
+    keystring = binascii.a2b_base64(encoded.split(b" ")[1])
 
     keyparts = []
     while len(keystring) > 4:
         lk = struct.unpack(">I", keystring[:4])[0]
-        keyparts.append(keystring[4:4 + lk])
-        keystring = keystring[4 + lk:]
+        keyparts.append(keystring[4 : 4 + lk])
+        keystring = keystring[4 + lk :]
 
     for curve_name, curve in _curves.items():
         middle = tobytes(curve.openssh.split("-")[2])
@@ -1044,8 +1074,12 @@ def _import_openssh_public(encoded):
 
 def _import_openssh_private_ecc(data, password):
 
-    from ._openssh import (import_openssh_private_generic,
-                           read_bytes, read_string, check_padding)
+    from ._openssh import (
+        check_padding,
+        import_openssh_private_generic,
+        read_bytes,
+        read_string,
+    )
 
     ssh_name, decrypted = import_openssh_private_generic(data, password)
 
@@ -1062,8 +1096,8 @@ def _import_openssh_private_ecc(data, password):
     if len(public_key) != 2 * modulus_bytes + 1:
         raise ValueError("Incorrect public key length")
 
-    point_x = Integer.from_bytes(public_key[1:1+modulus_bytes])
-    point_y = Integer.from_bytes(public_key[1+modulus_bytes:])
+    point_x = Integer.from_bytes(public_key[1 : 1 + modulus_bytes])
+    point_y = Integer.from_bytes(public_key[1 + modulus_bytes :])
     point = EccPoint(point_x, point_y, curve=name)
 
     private_key, decrypted = read_bytes(decrypted)
@@ -1123,13 +1157,13 @@ def import_key(encoded, passphrase=None):
         passphrase = tobytes(passphrase)
 
     # PEM
-    if encoded.startswith(b'-----BEGIN OPENSSH PRIVATE KEY'):
+    if encoded.startswith(b"-----BEGIN OPENSSH PRIVATE KEY"):
         text_encoded = tostr(encoded)
         openssh_encoded, marker, enc_flag = PEM.decode(text_encoded, passphrase)
         result = _import_openssh_private_ecc(openssh_encoded, passphrase)
         return result
 
-    elif encoded.startswith(b'-----'):
+    elif encoded.startswith(b"-----"):
 
         text_encoded = tostr(encoded)
 
@@ -1138,9 +1172,9 @@ def import_key(encoded, passphrase=None):
         if sys.version_info[:2] != (2, 6):
             ecparams_start = "-----BEGIN EC PARAMETERS-----"
             ecparams_end = "-----END EC PARAMETERS-----"
-            text_encoded = re.sub(ecparams_start + ".*?" + ecparams_end, "",
-                                  text_encoded,
-                                  flags=re.DOTALL)
+            text_encoded = re.sub(
+                ecparams_start + ".*?" + ecparams_end, "", text_encoded, flags=re.DOTALL
+            )
 
         der_encoded, marker, enc_flag = PEM.decode(text_encoded, passphrase)
         if enc_flag:
@@ -1154,7 +1188,7 @@ def import_key(encoded, passphrase=None):
         return result
 
     # OpenSSH
-    if encoded.startswith(b'ecdsa-sha2-'):
+    if encoded.startswith(b"ecdsa-sha2-"):
         return _import_openssh_public(encoded)
 
     # DER
@@ -1168,9 +1202,9 @@ if __name__ == "__main__":
 
     import time
 
-    d = 0xc51e4753afdec1e6b6c6a5b992f43f8dd0c7a8933072708b6522468b2ffb06fd
+    d = 0xC51E4753AFDEC1E6B6C6A5B992F43F8DD0C7A8933072708B6522468B2FFB06FD
 
-    point = _curves['p256'].G.copy()
+    point = _curves["p256"].G.copy()
     count = 3000
 
     start = time.time()

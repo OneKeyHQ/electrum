@@ -29,20 +29,18 @@ from typing import TYPE_CHECKING, Dict, Set
 
 import aiorpcx
 
-from . import bitcoin
-from . import ecc
-from . import constants
-from .util import bh2u, bfh, NetworkJobOnDefaultServer
-from .lnutil import funding_output_script_from_keys, ShortChannelID
-from .verifier import verify_tx_is_in_block, MerkleVerificationFailure
-from .transaction import Transaction
-from .interface import GracefulDisconnect
+from . import bitcoin, constants, ecc
 from .crypto import sha256d
+from .interface import GracefulDisconnect
 from .lnmsg import decode_msg, encode_msg
+from .lnutil import ShortChannelID, funding_output_script_from_keys
+from .transaction import Transaction
+from .util import NetworkJobOnDefaultServer, bfh, bh2u
+from .verifier import MerkleVerificationFailure, verify_tx_is_in_block
 
 if TYPE_CHECKING:
-    from .network import Network
     from .lnrouter import ChannelDB
+    from .network import Network
 
 
 class LNChannelVerifier(NetworkJobOnDefaultServer):
@@ -52,10 +50,12 @@ class LNChannelVerifier(NetworkJobOnDefaultServer):
     # will start throttling us, making it even slower. one option would be to
     # spread it over multiple servers.
 
-    def __init__(self, network: 'Network', channel_db: 'ChannelDB'):
+    def __init__(self, network: "Network", channel_db: "ChannelDB"):
         self.channel_db = channel_db
         self.lock = threading.Lock()
-        self.unverified_channel_info = {}  # type: Dict[ShortChannelID, dict]  # scid -> msg_dict
+        self.unverified_channel_info = (
+            {}
+        )  # type: Dict[ShortChannelID, dict]  # scid -> msg_dict
         # channel announcements that seem to be invalid:
         self.blacklist = set()  # type: Set[ShortChannelID]
         NetworkJobOnDefaultServer.__init__(self, network)
@@ -100,30 +100,39 @@ class LNChannelVerifier(NetworkJobOnDefaultServer):
             header = blockchain.read_header(block_height)
             if header is None:
                 if block_height < constants.net.max_checkpoint():
-                    await self.taskgroup.spawn(self.network.request_chunk(block_height, None, can_return_early=True))
+                    await self.taskgroup.spawn(
+                        self.network.request_chunk(
+                            block_height, None, can_return_early=True
+                        )
+                    )
                 continue
             self.started_verifying_channel.add(short_channel_id)
-            await self.taskgroup.spawn(self.verify_channel(block_height, short_channel_id))
-            #self.logger.info(f'requested short_channel_id {bh2u(short_channel_id)}')
+            await self.taskgroup.spawn(
+                self.verify_channel(block_height, short_channel_id)
+            )
+            # self.logger.info(f'requested short_channel_id {bh2u(short_channel_id)}')
 
     async def verify_channel(self, block_height: int, short_channel_id: ShortChannelID):
         # we are verifying channel announcements as they are from untrusted ln peers.
         # we use electrum servers to do this. however we don't trust electrum servers either...
         try:
             result = await self.network.get_txid_from_txpos(
-                block_height, short_channel_id.txpos, True)
+                block_height, short_channel_id.txpos, True
+            )
         except aiorpcx.jsonrpc.RPCError:
             # the electrum server is complaining about the txpos for given block.
             # it is not clear what to do now, but let's believe the server.
             self._blacklist_short_channel_id(short_channel_id)
             return
-        tx_hash = result['tx_hash']
-        merkle_branch = result['merkle']
+        tx_hash = result["tx_hash"]
+        merkle_branch = result["merkle"]
         # we need to wait if header sync/reorg is still ongoing, hence lock:
         async with self.network.bhi_lock:
             header = self.network.blockchain().read_header(block_height)
         try:
-            verify_tx_is_in_block(tx_hash, merkle_branch, short_channel_id.txpos, header, block_height)
+            verify_tx_is_in_block(
+                tx_hash, merkle_branch, short_channel_id.txpos, header, block_height
+            )
         except MerkleVerificationFailure as e:
             # the electrum server sent an incorrect proof. blame is on server, not the ln peer
             raise GracefulDisconnect(e) from e
@@ -144,12 +153,16 @@ class LNChannelVerifier(NetworkJobOnDefaultServer):
         if tx_hash != tx.txid():
             # either bug in client, or electrum server is evil.
             # if we connect to a diff server at some point, let's try again.
-            self.logger.info(f"received tx does not match expected txid ({tx_hash} != {tx.txid()})")
+            self.logger.info(
+                f"received tx does not match expected txid ({tx_hash} != {tx.txid()})"
+            )
             return
         # check funding output
         chan_ann_msg = self.unverified_channel_info[short_channel_id]
-        redeem_script = funding_output_script_from_keys(chan_ann_msg['bitcoin_key_1'], chan_ann_msg['bitcoin_key_2'])
-        expected_address = bitcoin.redeem_script_to_address('p2wsh', redeem_script)
+        redeem_script = funding_output_script_from_keys(
+            chan_ann_msg["bitcoin_key_1"], chan_ann_msg["bitcoin_key_2"]
+        )
+        expected_address = bitcoin.redeem_script_to_address("p2wsh", redeem_script)
         try:
             actual_output = tx.outputs()[short_channel_id.output_index]
         except IndexError:
@@ -161,7 +174,9 @@ class LNChannelVerifier(NetworkJobOnDefaultServer):
             self._remove_channel_from_unverified_db(short_channel_id)
             return
         # put channel into channel DB
-        self.channel_db.add_verified_channel_info(chan_ann_msg, capacity_sat=actual_output.value)
+        self.channel_db.add_verified_channel_info(
+            chan_ann_msg, capacity_sat=actual_output.value
+        )
         self._remove_channel_from_unverified_db(short_channel_id)
 
     def _remove_channel_from_unverified_db(self, short_channel_id: ShortChannelID):
@@ -176,10 +191,10 @@ class LNChannelVerifier(NetworkJobOnDefaultServer):
 
 
 def verify_sig_for_channel_update(chan_upd: dict, node_id: bytes) -> bool:
-    msg_bytes = chan_upd['raw']
-    pre_hash = msg_bytes[2+64:]
+    msg_bytes = chan_upd["raw"]
+    pre_hash = msg_bytes[2 + 64 :]
     h = sha256d(pre_hash)
-    sig = chan_upd['signature']
+    sig = chan_upd["signature"]
     if not ecc.verify_signature(node_id, sig, h):
         return False
     return True

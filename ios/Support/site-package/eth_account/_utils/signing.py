@@ -1,11 +1,3 @@
-from toolz import (
-    pipe,
-)
-from eth_utils import (
-    to_bytes,
-    to_int,
-)
-
 from eth_account._utils.transactions import (
     ChainAwareUnsignedTransaction,
     UnsignedTransaction,
@@ -13,14 +5,16 @@ from eth_account._utils.transactions import (
     serializable_unsigned_transaction_from_dict,
     strip_signature,
 )
+from eth_utils import to_bytes, to_int
+from toolz import pipe
 
 CHAIN_ID_OFFSET = 35
 V_OFFSET = 27
 
 # signature versions
-PERSONAL_SIGN_VERSION = b'E'  # Hex value 0x45
-INTENDED_VALIDATOR_SIGN_VERSION = b'\x00'  # Hex value 0x00
-STRUCTURED_DATA_SIGN_VERSION = b'\x01'  # Hex value 0x01
+PERSONAL_SIGN_VERSION = b"E"  # Hex value 0x45
+INTENDED_VALIDATOR_SIGN_VERSION = b"\x00"  # Hex value 0x00
+STRUCTURED_DATA_SIGN_VERSION = b"\x01"  # Hex value 0x01
 
 
 def sign_transaction_dict(eth_key, transaction_dict):
@@ -116,15 +110,11 @@ def sign_transaction_hash(account, transaction_hash, chain_id):
 
 
 def _pad_to_eth_word(bytes_val):
-    return bytes_val.rjust(32, b'\0')
+    return bytes_val.rjust(32, b"\0")
 
 
 def to_bytes32(val):
-    return pipe(
-        val,
-        to_bytes,
-        _pad_to_eth_word,
-    )
+    return pipe(val, to_bytes, _pad_to_eth_word,)
 
 
 def sign_message_hash(key, msg_hash):

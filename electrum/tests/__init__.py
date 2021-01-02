@@ -1,10 +1,9 @@
-import unittest
-import threading
-import tempfile
 import shutil
+import tempfile
+import threading
+import unittest
 
 from electrum import constants
-
 
 # Set this locally to make the test suite run faster.
 # If set, unit tests that would normally test functions with multiple implementations,
@@ -40,7 +39,6 @@ class ElectrumTestCase(SequentialTestCase):
 
 
 class TestCaseForTestnet(ElectrumTestCase):
-
     @classmethod
     def setUpClass(cls):
         super().setUpClass()

@@ -32,15 +32,11 @@
 # ===================================================================
 
 from Cryptodome import Random
-from Cryptodome.Util.asn1 import (
-            DerSequence, DerOctetString,
-            DerObjectId, DerInteger,
-            )
-
-from Cryptodome.Util.Padding import pad, unpad
+from Cryptodome.Cipher import AES, ARC2, DES, DES3
 from Cryptodome.Hash import MD5, SHA1, SHA224, SHA256, SHA384, SHA512
-from Cryptodome.Cipher import DES, ARC2, DES3, AES
 from Cryptodome.Protocol.KDF import PBKDF1, PBKDF2, scrypt
+from Cryptodome.Util.asn1 import DerInteger, DerObjectId, DerOctetString, DerSequence
+from Cryptodome.Util.Padding import pad, unpad
 
 _OID_PBE_WITH_MD5_AND_DES_CBC = "1.2.840.113549.1.5.3"
 _OID_PBE_WITH_MD5_AND_RC2_CBC = "1.2.840.113549.1.5.6"
@@ -66,6 +62,7 @@ _OID_AES256_CBC = "2.16.840.1.101.3.4.1.42"
 
 class PbesError(ValueError):
     pass
+
 
 # These are the ASN.1 definitions used by the PBES1/2 logic:
 #
@@ -111,6 +108,7 @@ class PbesError(ValueError):
 #       keyLength INTEGER (1..MAX) OPTIONAL
 #   }
 
+
 class PBES1(object):
     """Deprecated encryption scheme with password-based key derivation
     (originally defined in PKCS#5 v1.5, but still present in `v2.0`__).
@@ -147,7 +145,7 @@ class PBES1(object):
             # PBE_MD5_RC2_CBC
             hashmod = MD5
             ciphermod = ARC2
-            cipher_params['effective_keylen'] = 64
+            cipher_params["effective_keylen"] = 64
         elif pbe_oid == _OID_PBE_WITH_SHA1_AND_DES_CBC:
             # PBE_SHA1_DES_CBC
             hashmod = SHA1
@@ -156,7 +154,7 @@ class PBES1(object):
             # PBE_SHA1_RC2_CBC
             hashmod = SHA1
             ciphermod = ARC2
-            cipher_params['effective_keylen'] = 64
+            cipher_params["effective_keylen"] = 64
         else:
             raise PbesError("Unknown OID for PBES1")
 
@@ -231,25 +229,22 @@ class PBES2(object):
         if randfunc is None:
             randfunc = Random.new().read
 
-        if protection == 'PBKDF2WithHMAC-SHA1AndDES-EDE3-CBC':
+        if protection == "PBKDF2WithHMAC-SHA1AndDES-EDE3-CBC":
             key_size = 24
             module = DES3
             cipher_mode = DES3.MODE_CBC
             enc_oid = _OID_DES_EDE3_CBC
-        elif protection in ('PBKDF2WithHMAC-SHA1AndAES128-CBC',
-                'scryptAndAES128-CBC'):
+        elif protection in ("PBKDF2WithHMAC-SHA1AndAES128-CBC", "scryptAndAES128-CBC"):
             key_size = 16
             module = AES
             cipher_mode = AES.MODE_CBC
             enc_oid = _OID_AES128_CBC
-        elif protection in ('PBKDF2WithHMAC-SHA1AndAES192-CBC',
-                'scryptAndAES192-CBC'):
+        elif protection in ("PBKDF2WithHMAC-SHA1AndAES192-CBC", "scryptAndAES192-CBC"):
             key_size = 24
             module = AES
             cipher_mode = AES.MODE_CBC
             enc_oid = _OID_AES192_CBC
-        elif protection in ('PBKDF2WithHMAC-SHA1AndAES256-CBC',
-                'scryptAndAES256-CBC'):
+        elif protection in ("PBKDF2WithHMAC-SHA1AndAES256-CBC", "scryptAndAES256-CBC"):
             key_size = 32
             module = AES
             cipher_mode = AES.MODE_CBC
@@ -262,53 +257,50 @@ class PBES2(object):
         salt = randfunc(prot_params.get("salt_size", 8))
 
         # Derive key from password
-        if protection.startswith('PBKDF2'):
+        if protection.startswith("PBKDF2"):
             count = prot_params.get("iteration_count", 1000)
             key = PBKDF2(passphrase, salt, key_size, count)
-            kdf_info = DerSequence([
-                    DerObjectId(_OID_PBKDF2),   # PBKDF2
-                    DerSequence([
-                        DerOctetString(salt),
-                        DerInteger(count)
-                    ])
-            ])
+            kdf_info = DerSequence(
+                [
+                    DerObjectId(_OID_PBKDF2),  # PBKDF2
+                    DerSequence([DerOctetString(salt), DerInteger(count)]),
+                ]
+            )
         else:
             # It must be scrypt
             count = prot_params.get("iteration_count", 16384)
-            scrypt_r = prot_params.get('block_size', 8)
-            scrypt_p = prot_params.get('parallelization', 1)
-            key = scrypt(passphrase, salt, key_size,
-                         count, scrypt_r, scrypt_p)
-            kdf_info = DerSequence([
+            scrypt_r = prot_params.get("block_size", 8)
+            scrypt_p = prot_params.get("parallelization", 1)
+            key = scrypt(passphrase, salt, key_size, count, scrypt_r, scrypt_p)
+            kdf_info = DerSequence(
+                [
                     DerObjectId(_OID_SCRYPT),  # scrypt
-                    DerSequence([
-                        DerOctetString(salt),
-                        DerInteger(count),
-                        DerInteger(scrypt_r),
-                        DerInteger(scrypt_p)
-                    ])
-            ])
+                    DerSequence(
+                        [
+                            DerOctetString(salt),
+                            DerInteger(count),
+                            DerInteger(scrypt_r),
+                            DerInteger(scrypt_p),
+                        ]
+                    ),
+                ]
+            )
 
         # Create cipher and use it
         cipher = module.new(key, cipher_mode, iv)
         encrypted_data = cipher.encrypt(pad(data, cipher.block_size))
-        enc_info = DerSequence([
-                DerObjectId(enc_oid),
-                DerOctetString(iv)
-        ])
+        enc_info = DerSequence([DerObjectId(enc_oid), DerOctetString(iv)])
 
         # Result
-        enc_private_key_info = DerSequence([
-            # encryptionAlgorithm
-            DerSequence([
-                DerObjectId(_OID_PBES2),
-                DerSequence([
-                    kdf_info,
-                    enc_info
-                ]),
-            ]),
-            DerOctetString(encrypted_data)
-        ])
+        enc_private_key_info = DerSequence(
+            [
+                # encryptionAlgorithm
+                DerSequence(
+                    [DerObjectId(_OID_PBES2), DerSequence([kdf_info, enc_info]),]
+                ),
+                DerOctetString(encrypted_data),
+            ]
+        )
         return enc_private_key_info.encode()
 
     @staticmethod
@@ -370,8 +362,7 @@ class PBES2(object):
 
             scrypt_params = DerSequence().decode(kdf_info[1], nr_elements=(4, 5))
             salt = DerOctetString().decode(scrypt_params[0]).payload
-            iteration_count, scrypt_r, scrypt_p = [scrypt_params[x]
-                                                   for x in (1, 2, 3)]
+            iteration_count, scrypt_r, scrypt_p = [scrypt_params[x] for x in (1, 2, 3)]
             if len(scrypt_params) > 4:
                 kdf_key_length = scrypt_params[4]
             else:
@@ -403,8 +394,9 @@ class PBES2(object):
             raise PbesError("Unsupported PBES2 cipher")
 
         if kdf_key_length and kdf_key_length != key_size:
-            raise PbesError("Mismatch between PBES2 KDF parameters"
-                            " and selected cipher")
+            raise PbesError(
+                "Mismatch between PBES2 KDF parameters" " and selected cipher"
+            )
 
         IV = DerOctetString().decode(enc_info[1]).payload
 
@@ -423,11 +415,17 @@ class PBES2(object):
             else:
                 raise PbesError("Unsupported HMAC %s" % pbkdf2_prf_oid)
 
-            key = PBKDF2(passphrase, salt, key_size, iteration_count,
-                         hmac_hash_module=hmac_hash_module)
+            key = PBKDF2(
+                passphrase,
+                salt,
+                key_size,
+                iteration_count,
+                hmac_hash_module=hmac_hash_module,
+            )
         else:
-            key = scrypt(passphrase, salt, key_size, iteration_count,
-                         scrypt_r, scrypt_p)
+            key = scrypt(
+                passphrase, salt, key_size, iteration_count, scrypt_r, scrypt_p
+            )
         cipher = ciphermod.new(key, ciphermod.MODE_CBC, IV)
 
         # Decrypt data

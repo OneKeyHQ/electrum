@@ -23,10 +23,13 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from base64 import b64decode
 import time
+from base64 import b64decode
 
-from jsonrpclib.SimpleJSONRPCServer import SimpleJSONRPCServer, SimpleJSONRPCRequestHandler
+from jsonrpclib.SimpleJSONRPCServer import (
+    SimpleJSONRPCRequestHandler,
+    SimpleJSONRPCServer,
+)
 
 from . import util
 from .logging import Logger
@@ -34,22 +37,21 @@ from .logging import Logger
 
 class RPCAuthCredentialsInvalid(Exception):
     def __str__(self):
-        return 'Authentication failed (bad credentials)'
+        return "Authentication failed (bad credentials)"
 
 
 class RPCAuthCredentialsMissing(Exception):
     def __str__(self):
-        return 'Authentication failed (missing credentials)'
+        return "Authentication failed (missing credentials)"
 
 
 class RPCAuthUnsupportedType(Exception):
     def __str__(self):
-        return 'Authentication failed (only basic auth is supported)'
+        return "Authentication failed (only basic auth is supported)"
 
 
 # based on http://acooke.org/cute/BasicHTTPA0.html by andrew cooke
 class VerifyingJSONRPCServer(SimpleJSONRPCServer, Logger):
-
     def __init__(self, *args, rpc_user, rpc_password, **kargs):
         Logger.__init__(self)
         self.rpc_user = rpc_user
@@ -61,39 +63,45 @@ class VerifyingJSONRPCServer(SimpleJSONRPCServer, Logger):
                 # True if all OK so far
                 if SimpleJSONRPCRequestHandler.parse_request(myself):
                     # Do not authenticate OPTIONS-requests
-                    if myself.command.strip() == 'OPTIONS':
+                    if myself.command.strip() == "OPTIONS":
                         return True
                     try:
                         self.authenticate(myself.headers)
                         return True
-                    except (RPCAuthCredentialsInvalid, RPCAuthCredentialsMissing,
-                            RPCAuthUnsupportedType) as e:
+                    except (
+                        RPCAuthCredentialsInvalid,
+                        RPCAuthCredentialsMissing,
+                        RPCAuthUnsupportedType,
+                    ) as e:
                         myself.send_error(401, str(e))
                     except BaseException as e:
-                        self.logger.exception('')
+                        self.logger.exception("")
                         myself.send_error(500, str(e))
                 return False
 
         SimpleJSONRPCServer.__init__(
-            self, requestHandler=VerifyingRequestHandler, *args, **kargs)
+            self, requestHandler=VerifyingRequestHandler, *args, **kargs
+        )
 
     def authenticate(self, headers):
-        if self.rpc_password == '':
+        if self.rpc_password == "":
             # RPC authentication is disabled
             return
 
-        auth_string = headers.get('Authorization', None)
+        auth_string = headers.get("Authorization", None)
         if auth_string is None:
             raise RPCAuthCredentialsMissing()
 
-        (basic, _, encoded) = auth_string.partition(' ')
-        if basic != 'Basic':
+        (basic, _, encoded) = auth_string.partition(" ")
+        if basic != "Basic":
             raise RPCAuthUnsupportedType()
 
-        encoded = util.to_bytes(encoded, 'utf8')
-        credentials = util.to_string(b64decode(encoded), 'utf8')
-        (username, _, password) = credentials.partition(':')
-        if not (util.constant_time_compare(username, self.rpc_user)
-                and util.constant_time_compare(password, self.rpc_password)):
+        encoded = util.to_bytes(encoded, "utf8")
+        credentials = util.to_string(b64decode(encoded), "utf8")
+        (username, _, password) = credentials.partition(":")
+        if not (
+            util.constant_time_compare(username, self.rpc_user)
+            and util.constant_time_compare(password, self.rpc_password)
+        ):
             time.sleep(0.050)
             raise RPCAuthCredentialsInvalid()

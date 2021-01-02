@@ -1,17 +1,14 @@
-from electrum.plugin import hook
-from electrum.util import print_msg, raw_input, print_stderr
 from electrum.logging import get_logger
+from electrum.plugin import hook
+from electrum.util import print_msg, print_stderr, raw_input
 
 from ..hw_wallet.cmdline import CmdLineHandler
-
 from .coldcard import ColdcardPlugin
-
 
 _logger = get_logger(__name__)
 
 
 class ColdcardCmdLineHandler(CmdLineHandler):
-
     def get_passphrase(self, msg, confirm):
         raise NotImplementedError
 
@@ -23,16 +20,17 @@ class ColdcardCmdLineHandler(CmdLineHandler):
 
     def yes_no_question(self, msg):
         print_msg(msg)
-        return raw_input() in 'yY'
+        return raw_input() in "yY"
 
     def stop(self):
         pass
 
     def update_status(self, b):
-        _logger.info(f'hw device status {b}')
+        _logger.info(f"hw device status {b}")
 
     def finished(self):
         pass
+
 
 class Plugin(ColdcardPlugin):
     handler = ColdcardCmdLineHandler()
@@ -45,5 +43,6 @@ class Plugin(ColdcardPlugin):
 
     def create_handler(self, window):
         return self.handler
+
 
 # EOF

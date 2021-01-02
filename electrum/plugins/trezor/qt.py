@@ -1,51 +1,88 @@
-from functools import partial
 import threading
+from functools import partial
 
-from PyQt5.QtCore import Qt, QEventLoop, pyqtSignal
-from PyQt5.QtWidgets import (QVBoxLayout, QLabel, QGridLayout, QPushButton,
-                             QHBoxLayout, QButtonGroup, QGroupBox, QDialog,
-                             QLineEdit, QRadioButton, QCheckBox, QWidget,
-                             QMessageBox, QFileDialog, QSlider, QTabWidget)
+from PyQt5.QtCore import QEventLoop, Qt, pyqtSignal
+from PyQt5.QtWidgets import (
+    QButtonGroup,
+    QCheckBox,
+    QDialog,
+    QFileDialog,
+    QGridLayout,
+    QGroupBox,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QMessageBox,
+    QPushButton,
+    QRadioButton,
+    QSlider,
+    QTabWidget,
+    QVBoxLayout,
+    QWidget,
+)
 
-from electrum.gui.qt.util import (WindowModalDialog, WWLabel, Buttons, CancelButton,
-                                  OkButton, CloseButton, PasswordLineEdit)
+from electrum.gui.qt.util import (
+    Buttons,
+    CancelButton,
+    CloseButton,
+    OkButton,
+    PasswordLineEdit,
+    WindowModalDialog,
+    WWLabel,
+)
 from electrum.i18n import _
 from electrum.plugin import hook
 from electrum.util import bh2u
 
-from ..hw_wallet.qt import QtHandlerBase, QtPluginBase
 from ..hw_wallet.plugin import only_hook_if_libraries_available
-from .trezor import (TrezorPlugin, TIM_NEW, TIM_RECOVER, TrezorInitSettings,
-                     PASSPHRASE_ON_DEVICE, Capability, BackupType, RecoveryDeviceType)
+from ..hw_wallet.qt import QtHandlerBase, QtPluginBase
+from .trezor import (
+    PASSPHRASE_ON_DEVICE,
+    TIM_NEW,
+    TIM_RECOVER,
+    BackupType,
+    Capability,
+    RecoveryDeviceType,
+    TrezorInitSettings,
+    TrezorPlugin,
+)
 
-
-PASSPHRASE_HELP_SHORT =_(
+PASSPHRASE_HELP_SHORT = _(
     "Passphrases allow you to access new wallets, each "
-    "hidden behind a particular case-sensitive passphrase.")
-PASSPHRASE_HELP = PASSPHRASE_HELP_SHORT + "  " + _(
-    "You need to create a separate Electrum wallet for each passphrase "
-    "you use as they each generate different addresses.  Changing "
-    "your passphrase does not lose other wallets, each is still "
-    "accessible behind its own passphrase.")
+    "hidden behind a particular case-sensitive passphrase."
+)
+PASSPHRASE_HELP = (
+    PASSPHRASE_HELP_SHORT
+    + "  "
+    + _(
+        "You need to create a separate Electrum wallet for each passphrase "
+        "you use as they each generate different addresses.  Changing "
+        "your passphrase does not lose other wallets, each is still "
+        "accessible behind its own passphrase."
+    )
+)
 RECOMMEND_PIN = _(
     "You should enable PIN protection.  Your PIN is the only protection "
-    "for your bitcoins if your device is lost or stolen.")
+    "for your bitcoins if your device is lost or stolen."
+)
 PASSPHRASE_NOT_PIN = _(
     "If you forget a passphrase you will be unable to access any "
     "bitcoins in the wallet behind it.  A passphrase is not a PIN. "
-    "Only change this if you are sure you understand it.")
+    "Only change this if you are sure you understand it."
+)
 MATRIX_RECOVERY = _(
     "Enter the recovery words by pressing the buttons according to what "
     "the device shows on its display.  You can also use your NUMPAD.\n"
-    "Press BACKSPACE to go back a choice or word.\n")
+    "Press BACKSPACE to go back a choice or word.\n"
+)
 SEEDLESS_MODE_WARNING = _(
     "In seedless mode, the mnemonic seed words are never shown to the user.\n"
     "There is no backup, and the user has a proof of this.\n"
-    "This is an advanced feature, only suggested to be used in redundant multisig setups.")
+    "This is an advanced feature, only suggested to be used in redundant multisig setups."
+)
 
 
 class MatrixDialog(WindowModalDialog):
-
     def __init__(self, parent):
         super(MatrixDialog, self).__init__(parent)
         self.setWindowTitle(_("Trezor Matrix Recovery"))
@@ -60,14 +97,16 @@ class MatrixDialog(WindowModalDialog):
         self.char_buttons = []
         for y in range(3):
             for x in range(3):
-                button = QPushButton('?')
-                button.clicked.connect(partial(self.process_key, ord('1') + y * 3 + x))
+                button = QPushButton("?")
+                button.clicked.connect(partial(self.process_key, ord("1") + y * 3 + x))
                 grid.addWidget(button, 3 - y, x)
                 self.char_buttons.append(button)
         vbox.addLayout(grid)
 
         self.backspace_button = QPushButton("<=")
-        self.backspace_button.clicked.connect(partial(self.process_key, Qt.Key_Backspace))
+        self.backspace_button.clicked.connect(
+            partial(self.process_key, Qt.Key_Backspace)
+        )
         self.cancel_button = QPushButton(_("Cancel"))
         self.cancel_button.clicked.connect(partial(self.process_key, Qt.Key_Escape))
         buttons = Buttons(self.backspace_button, self.cancel_button)
@@ -81,17 +120,17 @@ class MatrixDialog(WindowModalDialog):
             self.char_buttons[3 * y + 1].setEnabled(self.num == 9)
 
     def is_valid(self, key):
-        return key >= ord('1') and key <= ord('9')
+        return key >= ord("1") and key <= ord("9")
 
     def process_key(self, key):
         self.data = None
         if key == Qt.Key_Backspace:
-            self.data = '\010'
+            self.data = "\010"
         elif key == Qt.Key_Escape:
-            self.data = 'x'
+            self.data = "x"
         elif self.is_valid(key):
-            self.char_buttons[key - ord('1')].setFocus()
-            self.data = '%c' % key
+            self.char_buttons[key - ord("1")].setFocus()
+            self.data = "%c" % key
         if self.data:
             self.loop.exit(0)
 
@@ -132,7 +171,7 @@ class QtHandler(QtHandlerBase):
         self.matrix_signal.emit(msg)
         self.done.wait()
         data = self.matrix_dialog.data
-        if data == 'x':
+        if data == "x":
             self.close_matrix_dialog()
         return data
 
@@ -167,10 +206,10 @@ class QtHandler(QtHandlerBase):
     def passphrase_dialog(self, msg, confirm):
         # If confirm is true, require the user to enter the passphrase twice
         parent = self.top_level_window()
-        d = WindowModalDialog(parent, _('Enter Passphrase'))
+        d = WindowModalDialog(parent, _("Enter Passphrase"))
 
-        OK_button = OkButton(d, _('Enter Passphrase'))
-        OnDevice_button = QPushButton(_('Enter Passphrase on Device'))
+        OK_button = OkButton(d, _("Enter Passphrase"))
+        OnDevice_button = QPushButton(_("Enter Passphrase on Device"))
 
         new_pw = PasswordLineEdit()
         conf_pw = PasswordLineEdit()
@@ -183,15 +222,15 @@ class QtHandler(QtHandlerBase):
         grid.setSpacing(8)
         grid.setColumnMinimumWidth(0, 150)
         grid.setColumnMinimumWidth(1, 100)
-        grid.setColumnStretch(1,1)
+        grid.setColumnStretch(1, 1)
 
         vbox.addWidget(label)
 
-        grid.addWidget(QLabel(_('Passphrase:')), 0, 0)
+        grid.addWidget(QLabel(_("Passphrase:")), 0, 0)
         grid.addWidget(new_pw, 0, 1)
 
         if confirm:
-            grid.addWidget(QLabel(_('Confirm Passphrase:')), 1, 0)
+            grid.addWidget(QLabel(_("Confirm Passphrase:")), 1, 0)
             grid.addWidget(conf_pw, 1, 1)
 
         vbox.addLayout(grid)
@@ -241,8 +280,12 @@ class QtPlugin(QtPluginBase):
             return
         for keystore in wallet.get_keystores():
             if type(keystore) == self.keystore_class:
+
                 def show_address(keystore=keystore):
-                    keystore.thread.add(partial(self.show_address, wallet, addrs[0], keystore))
+                    keystore.thread.add(
+                        partial(self.show_address, wallet, addrs[0], keystore)
+                    )
+
                 device_name = "{} ({})".format(self.device, keystore.label)
                 menu.addAction(_("Show on {}").format(device_name), show_address)
 
@@ -250,9 +293,11 @@ class QtPlugin(QtPluginBase):
         def connect():
             device_id = self.choose_device(window, keystore)
             return device_id
+
         def show_dialog(device_id):
             if device_id:
                 SettingsDialog(window, self, keystore, device_id).exec_()
+
         keystore.thread.add(connect, on_success=show_dialog)
 
     def request_trezor_init_settings(self, wizard, method, device_id):
@@ -282,18 +327,18 @@ class QtPlugin(QtPluginBase):
         hbox_backuptype = QHBoxLayout()
         gb_backuptype.setLayout(hbox_backuptype)
         vbox.addWidget(gb_backuptype)
-        gb_backuptype.setTitle(_('Select backup type:'))
+        gb_backuptype.setTitle(_("Select backup type:"))
         bg_backuptype = QButtonGroup()
 
         rb_single = QRadioButton(gb_backuptype)
-        rb_single.setText(_('Single seed (BIP39)'))
+        rb_single.setText(_("Single seed (BIP39)"))
         bg_backuptype.addButton(rb_single)
         bg_backuptype.setId(rb_single, BackupType.Bip39)
         hbox_backuptype.addWidget(rb_single)
         rb_single.setChecked(True)
 
         rb_shamir = QRadioButton(gb_backuptype)
-        rb_shamir.setText(_('Shamir'))
+        rb_shamir.setText(_("Shamir"))
         bg_backuptype.addButton(rb_shamir)
         bg_backuptype.setId(rb_shamir, BackupType.Slip39_Basic)
         hbox_backuptype.addWidget(rb_shamir)
@@ -301,7 +346,7 @@ class QtPlugin(QtPluginBase):
         rb_shamir.setVisible(False)  # visible with "expert settings"
 
         rb_shamir_groups = QRadioButton(gb_backuptype)
-        rb_shamir_groups.setText(_('Super Shamir'))
+        rb_shamir_groups.setText(_("Super Shamir"))
         bg_backuptype.addButton(rb_shamir_groups)
         bg_backuptype.setId(rb_shamir_groups, BackupType.Slip39_Advanced)
         hbox_backuptype.addWidget(rb_shamir_groups)
@@ -339,11 +384,11 @@ class QtPlugin(QtPluginBase):
                     valid_word_counts = (12, 18, 24)
             elif rb_single.isChecked():
                 valid_word_counts = (12, 18, 24)
-                gb_numwords.setTitle(_('Select seed length:'))
+                gb_numwords.setTitle(_("Select seed length:"))
             else:
                 valid_word_counts = (20, 33)
                 checked_wordcount = 20
-                gb_numwords.setTitle(_('Select share length:'))
+                gb_numwords.setTitle(_("Select share length:"))
 
             word_count_buttons[checked_wordcount].setChecked(True)
             for c, btn in word_count_buttons.items():
@@ -360,7 +405,7 @@ class QtPlugin(QtPluginBase):
             gb_numwords.setVisible(False)
 
         # PIN
-        cb_pin = QCheckBox(_('Enable PIN protection'))
+        cb_pin = QCheckBox(_("Enable PIN protection"))
         cb_pin.setChecked(True)
         vbox.addWidget(WWLabel(RECOMMEND_PIN))
         vbox.addWidget(cb_pin)
@@ -371,11 +416,13 @@ class QtPlugin(QtPluginBase):
         expert_widget.setLayout(expert_vbox)
         expert_widget.setVisible(False)
         expert_button = QPushButton(_("Show expert settings"))
+
         def show_expert_settings():
             expert_button.setVisible(False)
             expert_widget.setVisible(True)
             rb_shamir.setVisible(True)
             rb_shamir_groups.setVisible(True)
+
         expert_button.clicked.connect(show_expert_settings)
         vbox.addWidget(expert_button)
 
@@ -383,7 +430,7 @@ class QtPlugin(QtPluginBase):
         passphrase_msg = WWLabel(PASSPHRASE_HELP_SHORT)
         passphrase_warning = WWLabel(PASSPHRASE_NOT_PIN)
         passphrase_warning.setStyleSheet("color: red")
-        cb_phrase = QCheckBox(_('Enable passphrases'))
+        cb_phrase = QCheckBox(_("Enable passphrases"))
         cb_phrase.setChecked(False)
         expert_vbox.addWidget(passphrase_msg)
         expert_vbox.addWidget(passphrase_warning)
@@ -391,7 +438,7 @@ class QtPlugin(QtPluginBase):
 
         # ask for recovery type (random word order OR matrix)
         bg_rectype = None
-        if method == TIM_RECOVER and model == '1':
+        if method == TIM_RECOVER and model == "1":
             gb_rectype = QGroupBox()
             hbox_rectype = QHBoxLayout()
             gb_rectype.setLayout(hbox_rectype)
@@ -400,14 +447,14 @@ class QtPlugin(QtPluginBase):
             bg_rectype = QButtonGroup()
 
             rb1 = QRadioButton(gb_rectype)
-            rb1.setText(_('Scrambled words'))
+            rb1.setText(_("Scrambled words"))
             bg_rectype.addButton(rb1)
             bg_rectype.setId(rb1, RecoveryDeviceType.ScrambledWords)
             hbox_rectype.addWidget(rb1)
             rb1.setChecked(True)
 
             rb2 = QRadioButton(gb_rectype)
-            rb2.setText(_('Matrix'))
+            rb2.setText(_("Matrix"))
             bg_rectype.addButton(rb2)
             bg_rectype.setId(rb2, RecoveryDeviceType.Matrix)
             hbox_rectype.addWidget(rb2)
@@ -415,14 +462,18 @@ class QtPlugin(QtPluginBase):
         # no backup
         cb_no_backup = None
         if method == TIM_NEW:
-            cb_no_backup = QCheckBox(f'''{_('Enable seedless mode')}''')
+            cb_no_backup = QCheckBox(f"""{_('Enable seedless mode')}""")
             cb_no_backup.setChecked(False)
-            if (model == '1' and fw_version >= (1, 7, 1)
-                    or model == 'T' and fw_version >= (2, 0, 9)):
+            if (
+                model == "1"
+                and fw_version >= (1, 7, 1)
+                or model == "T"
+                and fw_version >= (2, 0, 9)
+            ):
                 cb_no_backup.setToolTip(SEEDLESS_MODE_WARNING)
             else:
                 cb_no_backup.setEnabled(False)
-                cb_no_backup.setToolTip(_('Firmware version too old.'))
+                cb_no_backup.setToolTip(_("Firmware version too old."))
             expert_vbox.addWidget(cb_no_backup)
 
         vbox.addWidget(expert_widget)
@@ -449,13 +500,14 @@ class Plugin(TrezorPlugin, QtPlugin):
     @classmethod
     def pin_matrix_widget_class(self):
         from trezorlib.qt.pinmatrix import PinMatrixWidget
+
         return PinMatrixWidget
 
 
 class SettingsDialog(WindowModalDialog):
-    '''This dialog doesn't require a device be paired with a wallet.
+    """This dialog doesn't require a device be paired with a wallet.
     We want users to be able to wipe a device even if they've forgotten
-    their PIN.'''
+    their PIN."""
 
     def __init__(self, window, plugin, keystore, device_id):
         title = _("{} Settings").format(plugin.device)
@@ -469,7 +521,7 @@ class SettingsDialog(WindowModalDialog):
         hs_cols, hs_rows = (128, 64)
 
         def invoke_client(method, *args, **kw_args):
-            unpair_after = kw_args.pop('unpair_after', False)
+            unpair_after = kw_args.pop("unpair_after", False)
 
             def task():
                 client = devmgr.client_by_id(device_id)
@@ -496,9 +548,11 @@ class SettingsDialog(WindowModalDialog):
             disen = [_("Disabled"), _("Enabled")]
             setchange = [_("Set a PIN"), _("Change PIN")]
 
-            version = "%d.%d.%d" % (features.major_version,
-                                    features.minor_version,
-                                    features.patch_version)
+            version = "%d.%d.%d" % (
+                features.major_version,
+                features.minor_version,
+                features.patch_version,
+            )
 
             device_label.setText(features.label)
             pin_set_label.setText(noyes[features.pin_protection])
@@ -519,27 +573,31 @@ class SettingsDialog(WindowModalDialog):
             label_apply.setEnabled(label_edit.text() != self.features.label)
 
         def rename():
-            invoke_client('change_label', label_edit.text())
+            invoke_client("change_label", label_edit.text())
 
         def toggle_passphrase():
             title = _("Confirm Toggle Passphrase Protection")
             currently_enabled = self.features.passphrase_protection
             if currently_enabled:
-                msg = _("After disabling passphrases, you can only pair this "
-                        "Electrum wallet if it had an empty passphrase.  "
-                        "If its passphrase was not empty, you will need to "
-                        "create a new wallet with the install wizard.  You "
-                        "can use this wallet again at any time by re-enabling "
-                        "passphrases and entering its passphrase.")
+                msg = _(
+                    "After disabling passphrases, you can only pair this "
+                    "Electrum wallet if it had an empty passphrase.  "
+                    "If its passphrase was not empty, you will need to "
+                    "create a new wallet with the install wizard.  You "
+                    "can use this wallet again at any time by re-enabling "
+                    "passphrases and entering its passphrase."
+                )
             else:
-                msg = _("Your current Electrum wallet can only be used with "
-                        "an empty passphrase.  You must create a separate "
-                        "wallet with the install wizard for other passphrases "
-                        "as each one generates a new set of addresses.")
+                msg = _(
+                    "Your current Electrum wallet can only be used with "
+                    "an empty passphrase.  You must create a separate "
+                    "wallet with the install wizard for other passphrases "
+                    "as each one generates a new set of addresses."
+                )
             msg += "\n\n" + _("Are you sure you want to proceed?")
             if not self.question(msg, title=title):
                 return
-            invoke_client('toggle_passphrase', unpair_after=currently_enabled)
+            invoke_client("toggle_passphrase", unpair_after=currently_enabled)
 
         def change_homescreen():
             dialog = QFileDialog(self, _("Choose Homescreen"))
@@ -547,47 +605,49 @@ class SettingsDialog(WindowModalDialog):
             if not filename:
                 return  # user cancelled
 
-            if filename.endswith('.toif'):
-                img = open(filename, 'rb').read()
-                if img[:8] != b'TOIf\x90\x00\x90\x00':
-                    handler.show_error('File is not a TOIF file with size of 144x144')
+            if filename.endswith(".toif"):
+                img = open(filename, "rb").read()
+                if img[:8] != b"TOIf\x90\x00\x90\x00":
+                    handler.show_error("File is not a TOIF file with size of 144x144")
                     return
             else:
-                from PIL import Image # FIXME
+                from PIL import Image  # FIXME
+
                 im = Image.open(filename)
                 if im.size != (128, 64):
-                    handler.show_error('Image must be 128 x 64 pixels')
+                    handler.show_error("Image must be 128 x 64 pixels")
                     return
-                im = im.convert('1')
+                im = im.convert("1")
                 pix = im.load()
                 img = bytearray(1024)
                 for j in range(64):
                     for i in range(128):
                         if pix[i, j]:
-                            o = (i + j * 128)
-                            img[o // 8] |= (1 << (7 - o % 8))
+                            o = i + j * 128
+                            img[o // 8] |= 1 << (7 - o % 8)
                 img = bytes(img)
-            invoke_client('change_homescreen', img)
+            invoke_client("change_homescreen", img)
 
         def clear_homescreen():
-            invoke_client('change_homescreen', b'\x00')
+            invoke_client("change_homescreen", b"\x00")
 
         def set_pin():
-            invoke_client('set_pin', remove=False)
+            invoke_client("set_pin", remove=False)
 
         def clear_pin():
-            invoke_client('set_pin', remove=True)
+            invoke_client("set_pin", remove=True)
 
         def wipe_device():
             wallet = window.wallet
             if wallet and sum(wallet.get_balance()):
                 title = _("Confirm Device Wipe")
-                msg = _("Are you SURE you want to wipe the device?\n"
-                        "Your wallet still has bitcoins in it!")
-                if not self.question(msg, title=title,
-                                     icon=QMessageBox.Critical):
+                msg = _(
+                    "Are you SURE you want to wipe the device?\n"
+                    "Your wallet still has bitcoins in it!"
+                )
+                if not self.question(msg, title=title, icon=QMessageBox.Critical):
                     return
-            invoke_client('wipe_device', unpair_after=True)
+            invoke_client("wipe_device", unpair_after=True)
 
         def slider_moved():
             mins = timeout_slider.sliderPosition()
@@ -631,9 +691,12 @@ class SettingsDialog(WindowModalDialog):
         settings_glayout = QGridLayout()
 
         # Settings tab - Label
-        label_msg = QLabel(_("Name this {}.  If you have multiple devices "
-                             "their labels help distinguish them.")
-                           .format(plugin.device))
+        label_msg = QLabel(
+            _(
+                "Name this {}.  If you have multiple devices "
+                "their labels help distinguish them."
+            ).format(plugin.device)
+        )
         label_msg.setWordWrap(True)
         label_label = QLabel(_("Device Label"))
         label_edit = QLineEdit()
@@ -653,10 +716,14 @@ class SettingsDialog(WindowModalDialog):
         pin_button.clicked.connect(set_pin)
         settings_glayout.addWidget(pin_label, 2, 0)
         settings_glayout.addWidget(pin_button, 2, 1)
-        pin_msg = QLabel(_("PIN protection is strongly recommended.  "
-                           "A PIN is your only protection against someone "
-                           "stealing your bitcoins if they obtain physical "
-                           "access to your {}.").format(plugin.device))
+        pin_msg = QLabel(
+            _(
+                "PIN protection is strongly recommended.  "
+                "A PIN is your only protection against someone "
+                "stealing your bitcoins if they obtain physical "
+                "access to your {}."
+            ).format(plugin.device)
+        )
         pin_msg.setWordWrap(True)
         pin_msg.setStyleSheet("color: red")
         settings_glayout.addWidget(pin_msg, 3, 1, 1, -1)
@@ -671,13 +738,19 @@ class SettingsDialog(WindowModalDialog):
         except ImportError:
             homescreen_change_button.setDisabled(True)
             homescreen_change_button.setToolTip(
-                _("Required package 'PIL' is not available - Please install it or use the Trezor website instead.")
+                _(
+                    "Required package 'PIL' is not available - Please install it or use the Trezor website instead."
+                )
             )
         homescreen_clear_button.clicked.connect(clear_homescreen)
-        homescreen_msg = QLabel(_("You can set the homescreen on your "
-                                  "device to personalize it.  You must "
-                                  "choose a {} x {} monochrome black and "
-                                  "white image.").format(hs_cols, hs_rows))
+        homescreen_msg = QLabel(
+            _(
+                "You can set the homescreen on your "
+                "device to personalize it.  You must "
+                "choose a {} x {} monochrome black and "
+                "white image."
+            ).format(hs_cols, hs_rows)
+        )
         homescreen_msg.setWordWrap(True)
         settings_glayout.addWidget(homescreen_label, 4, 0)
         settings_glayout.addWidget(homescreen_change_button, 4, 1)
@@ -694,10 +767,13 @@ class SettingsDialog(WindowModalDialog):
         timeout_slider.setTickPosition(QSlider.TicksBelow)
         timeout_slider.setTracking(True)
         timeout_msg = QLabel(
-            _("Clear the session after the specified period "
-              "of inactivity.  Once a session has timed out, "
-              "your PIN and passphrase (if enabled) must be "
-              "re-entered to use the device."))
+            _(
+                "Clear the session after the specified period "
+                "of inactivity.  Once a session has timed out, "
+                "your PIN and passphrase (if enabled) must be "
+                "re-entered to use the device."
+            )
+        )
         timeout_msg.setWordWrap(True)
         timeout_slider.setSliderPosition(config.get_session_timeout() // 60)
         slider_moved()
@@ -719,8 +795,11 @@ class SettingsDialog(WindowModalDialog):
         clear_pin_button = QPushButton(_("Disable PIN"))
         clear_pin_button.clicked.connect(clear_pin)
         clear_pin_warning = QLabel(
-            _("If you disable your PIN, anyone with physical access to your "
-              "{} device can spend your bitcoins.").format(plugin.device))
+            _(
+                "If you disable your PIN, anyone with physical access to your "
+                "{} device can spend your bitcoins."
+            ).format(plugin.device)
+        )
         clear_pin_warning.setWordWrap(True)
         clear_pin_warning.setStyleSheet("color: red")
         advanced_glayout.addWidget(clear_pin_button, 0, 2)
@@ -740,13 +819,19 @@ class SettingsDialog(WindowModalDialog):
         wipe_device_button = QPushButton(_("Wipe Device"))
         wipe_device_button.clicked.connect(wipe_device)
         wipe_device_msg = QLabel(
-            _("Wipe the device, removing all data from it.  The firmware "
-              "is left unchanged."))
+            _(
+                "Wipe the device, removing all data from it.  The firmware "
+                "is left unchanged."
+            )
+        )
         wipe_device_msg.setWordWrap(True)
         wipe_device_warning = QLabel(
-            _("Only wipe a device if you have the recovery seed written down "
-              "and the device wallet(s) are empty, otherwise the bitcoins "
-              "will be lost forever."))
+            _(
+                "Only wipe a device if you have the recovery seed written down "
+                "and the device wallet(s) are empty, otherwise the bitcoins "
+                "will be lost forever."
+            )
+        )
         wipe_device_warning.setWordWrap(True)
         wipe_device_warning.setStyleSheet("color: red")
         advanced_glayout.addWidget(wipe_device_button, 6, 2)

@@ -23,17 +23,23 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from functools import partial
-from threading import Thread
 import re
 from decimal import Decimal
+from functools import partial
+from threading import Thread
 
 from kivy.clock import Clock
 
 from electrum.i18n import _
 from electrum.plugin import hook
-from .trustedcoin import TrustedCoinPlugin, server, KIVY_DISCLAIMER, TrustedCoinException, ErrorConnectingServer
 
+from .trustedcoin import (
+    KIVY_DISCLAIMER,
+    ErrorConnectingServer,
+    TrustedCoinException,
+    TrustedCoinPlugin,
+    server,
+)
 
 
 class Plugin(TrustedCoinPlugin):
@@ -51,12 +57,15 @@ class Plugin(TrustedCoinPlugin):
 
     def go_online_dialog(self, wizard):
         # we skip this step on android
-        wizard.run('accept_terms_of_use')
+        wizard.run("accept_terms_of_use")
 
     def prompt_user_for_otp(self, wallet, tx, on_success, on_failure):
         from ...gui.kivy.uix.dialogs.label_dialog import LabelDialog
-        msg = _('Please enter your Google Authenticator code')
-        d = LabelDialog(msg, '', lambda otp: self.on_otp(wallet, tx, otp, on_success, on_failure))
+
+        msg = _("Please enter your Google Authenticator code")
+        d = LabelDialog(
+            msg, "", lambda otp: self.on_otp(wallet, tx, otp, on_success, on_failure)
+        )
         d.open()
 
     def on_otp(self, wallet, tx, otp, on_success, on_failure):
@@ -64,24 +73,35 @@ class Plugin(TrustedCoinPlugin):
             wallet.on_otp(tx, otp)
         except TrustedCoinException as e:
             if e.status_code == 400:  # invalid OTP
-                Clock.schedule_once(lambda dt: on_failure(_('Invalid one-time password.')))
+                Clock.schedule_once(
+                    lambda dt: on_failure(_("Invalid one-time password."))
+                )
             else:
-                Clock.schedule_once(lambda dt, bound_e=e: on_failure(_('Error') + ':\n' + str(bound_e)))
+                Clock.schedule_once(
+                    lambda dt, bound_e=e: on_failure(_("Error") + ":\n" + str(bound_e))
+                )
         except Exception as e:
-            Clock.schedule_once(lambda dt, bound_e=e: on_failure(_('Error') + ':\n' + str(bound_e)))
+            Clock.schedule_once(
+                lambda dt, bound_e=e: on_failure(_("Error") + ":\n" + str(bound_e))
+            )
         else:
             on_success(tx)
 
     def accept_terms_of_use(self, wizard):
         def handle_error(msg, e):
-            wizard.show_error(msg + ':\n' + repr(e))
+            wizard.show_error(msg + ":\n" + repr(e))
             wizard.terminate()
+
         try:
             tos = server.get_terms_of_service()
         except ErrorConnectingServer as e:
-            Clock.schedule_once(lambda dt, bound_e=e: handle_error(_('Error connecting to server'), bound_e))
+            Clock.schedule_once(
+                lambda dt, bound_e=e: handle_error(
+                    _("Error connecting to server"), bound_e
+                )
+            )
         except Exception as e:
-            Clock.schedule_once(lambda dt, bound_e=e: handle_error(_('Error'), bound_e))
+            Clock.schedule_once(lambda dt, bound_e=e: handle_error(_("Error"), bound_e))
         else:
             f = lambda x: self.read_email(wizard)
             wizard.tos_dialog(tos=tos, run_next=f)
@@ -91,7 +111,9 @@ class Plugin(TrustedCoinPlugin):
         wizard.email_dialog(run_next=f)
 
     def request_otp_dialog(self, wizard, short_id, otp_secret, xpub3):
-        f = lambda otp, reset: self.check_otp(wizard, short_id, otp_secret, xpub3, otp, reset)
+        f = lambda otp, reset: self.check_otp(
+            wizard, short_id, otp_secret, xpub3, otp, reset
+        )
         wizard.otp_dialog(otp_secret=otp_secret, run_next=f)
 
     @hook
@@ -104,7 +126,11 @@ class Plugin(TrustedCoinPlugin):
         if wallet.billing_info is None:
             self.start_request_thread(wallet)
             Clock.schedule_once(
-                lambda dt: window.show_error(_('Requesting account info from TrustedCoin server...') + '\n' +
-                                             _('Please try again.')))
+                lambda dt: window.show_error(
+                    _("Requesting account info from TrustedCoin server...")
+                    + "\n"
+                    + _("Please try again.")
+                )
+            )
             return True
         return False

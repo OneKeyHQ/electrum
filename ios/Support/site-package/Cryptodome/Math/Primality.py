@@ -35,7 +35,6 @@
 
 from Cryptodome import Random
 from Cryptodome.Math.Numbers import Integer
-
 from Cryptodome.Util.py3compat import iter_range
 
 COMPOSITE = 0
@@ -67,7 +66,7 @@ def miller_rabin_test(candidate, iterations, randfunc=None):
 
     if candidate in (1, 2, 3, 5):
         return PROBABLY_PRIME
-    
+
     if candidate.is_even():
         return COMPOSITE
 
@@ -92,9 +91,8 @@ def miller_rabin_test(candidate, iterations, randfunc=None):
         # Step 4.1-2
         base = 1
         while base in (one, minus_one):
-            base = Integer.random_range(min_inclusive=2,
-                    max_inclusive=candidate - 2)
-            assert(2 <= base <= candidate - 2)
+            base = Integer.random_range(min_inclusive=2, max_inclusive=candidate - 2)
+            assert 2 <= base <= candidate - 2
 
         # Step 4.3-4.4
         z = pow(base, m, candidate)
@@ -213,6 +211,7 @@ def lucas_test(candidate):
 
 
 from Cryptodome.Util.number import sieve_base as _sieve_base_large
+
 ## The optimal number of small primes to use for the sieve
 ## is probably dependent on the platform and the candidate size
 _sieve_base = set(_sieve_base_large[:100])
@@ -257,19 +256,26 @@ def test_probable_prime(candidate, randfunc=None):
     # These are the number of Miller-Rabin iterations s.t. p(k, t) < 1E-30,
     # with p(k, t) being the probability that a randomly chosen k-bit number
     # is composite but still survives t MR iterations.
-    mr_ranges = ((220, 30), (280, 20), (390, 15), (512, 10),
-                 (620, 7), (740, 6), (890, 5), (1200, 4),
-                 (1700, 3), (3700, 2))
+    mr_ranges = (
+        (220, 30),
+        (280, 20),
+        (390, 15),
+        (512, 10),
+        (620, 7),
+        (740, 6),
+        (890, 5),
+        (1200, 4),
+        (1700, 3),
+        (3700, 2),
+    )
 
     bit_size = candidate.size_in_bits()
     try:
-        mr_iterations = list(filter(lambda x: bit_size < x[0],
-                                    mr_ranges))[0][1]
+        mr_iterations = list(filter(lambda x: bit_size < x[0], mr_ranges))[0][1]
     except IndexError:
         mr_iterations = 1
 
-    if miller_rabin_test(candidate, mr_iterations,
-                         randfunc=randfunc) == COMPOSITE:
+    if miller_rabin_test(candidate, mr_iterations, randfunc=randfunc) == COMPOSITE:
         return COMPOSITE
     if lucas_test(candidate) == COMPOSITE:
         return COMPOSITE
@@ -326,8 +332,7 @@ def generate_probable_prime(**kwargs):
 
     result = COMPOSITE
     while result == COMPOSITE:
-        candidate = Integer.random(exact_bits=exact_bits,
-                                   randfunc=randfunc) | 1
+        candidate = Integer.random(exact_bits=exact_bits, randfunc=randfunc) | 1
         if not prime_filter(candidate):
             continue
         result = test_probable_prime(candidate, randfunc)

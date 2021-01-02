@@ -1,14 +1,20 @@
-from functools import partial
-import traceback
 import sys
+import traceback
+from functools import partial
 from typing import TYPE_CHECKING
 
 from PyQt5.QtCore import QObject, pyqtSignal
-from PyQt5.QtWidgets import (QHBoxLayout, QLabel, QVBoxLayout)
+from PyQt5.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout
 
-from electrum.plugin import hook
+from electrum.gui.qt.util import (
+    Buttons,
+    EnterButton,
+    OkButton,
+    ThreadedButton,
+    WindowModalDialog,
+)
 from electrum.i18n import _
-from electrum.gui.qt.util import ThreadedButton, Buttons, EnterButton, WindowModalDialog, OkButton
+from electrum.plugin import hook
 
 from .labels import LabelsPlugin
 
@@ -17,12 +23,12 @@ if TYPE_CHECKING:
     from electrum.gui.qt.main_window import ElectrumWindow
     from electrum.wallet import Abstract_Wallet
 
+
 class QLabelsSignalObject(QObject):
     labels_changed_signal = pyqtSignal(object)
 
 
 class Plugin(LabelsPlugin):
-
     def __init__(self, *args):
         LabelsPlugin.__init__(self, *args)
         self.obj = QLabelsSignalObject()
@@ -32,22 +38,25 @@ class Plugin(LabelsPlugin):
         return True
 
     def settings_widget(self, window):
-        return EnterButton(_('Settings'),
-                           partial(self.settings_dialog, window))
+        return EnterButton(_("Settings"), partial(self.settings_dialog, window))
 
     def settings_dialog(self, window):
         wallet = window.parent().wallet
         d = WindowModalDialog(window, _("Label Settings"))
         hbox = QHBoxLayout()
         hbox.addWidget(QLabel("Label sync options:"))
-        upload = ThreadedButton("Force upload",
-                                partial(self.push, wallet),
-                                partial(self.done_processing_success, d),
-                                partial(self.done_processing_error, d))
-        download = ThreadedButton("Force download",
-                                  partial(self.pull, wallet, True),
-                                  partial(self.done_processing_success, d),
-                                  partial(self.done_processing_error, d))
+        upload = ThreadedButton(
+            "Force upload",
+            partial(self.push, wallet),
+            partial(self.done_processing_success, d),
+            partial(self.done_processing_error, d),
+        )
+        download = ThreadedButton(
+            "Force download",
+            partial(self.pull, wallet, True),
+            partial(self.done_processing_success, d),
+            partial(self.done_processing_error, d),
+        )
         vbox = QVBoxLayout()
         vbox.addWidget(upload)
         vbox.addWidget(download)
@@ -66,10 +75,10 @@ class Plugin(LabelsPlugin):
 
     def done_processing_error(self, dialog, exc_info):
         self.logger.error("Error synchronising labels", exc_info=exc_info)
-        dialog.show_error(_("Error synchronising labels") + f':\n{repr(exc_info[1])}')
+        dialog.show_error(_("Error synchronising labels") + f":\n{repr(exc_info[1])}")
 
     @hook
-    def init_qt(self, gui: 'ElectrumGui'):
+    def init_qt(self, gui: "ElectrumGui"):
         if self._init_qt_received:  # only need/want the first signal
             return
         self._init_qt_received = True
@@ -79,7 +88,7 @@ class Plugin(LabelsPlugin):
             self.load_wallet(window.wallet, window)
 
     @hook
-    def load_wallet(self, wallet: 'Abstract_Wallet', window: 'ElectrumWindow'):
+    def load_wallet(self, wallet: "Abstract_Wallet", window: "ElectrumWindow"):
         self.obj.labels_changed_signal.connect(window.update_tabs)
         self.start_wallet(wallet)
 

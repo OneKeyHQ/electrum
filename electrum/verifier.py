@@ -22,34 +22,44 @@
 # SOFTWARE.
 
 import asyncio
-from typing import Sequence, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional, Sequence
 
 import aiorpcx
 
-from .util import bh2u, TxMinedInfo, NetworkJobOnDefaultServer
-from .crypto import sha256d
+from . import constants
 from .bitcoin import hash_decode, hash_encode
-from .transaction import Transaction
 from .blockchain import hash_header
+from .crypto import sha256d
 from .interface import GracefulDisconnect
 from .network import UntrustedServerReturnedError
-from . import constants
+from .transaction import Transaction
+from .util import NetworkJobOnDefaultServer, TxMinedInfo, bh2u
 
 if TYPE_CHECKING:
-    from .network import Network
     from .address_synchronizer import AddressSynchronizer
+    from .network import Network
 
 
-class MerkleVerificationFailure(Exception): pass
-class MissingBlockHeader(MerkleVerificationFailure): pass
-class MerkleRootMismatch(MerkleVerificationFailure): pass
-class InnerNodeOfSpvProofIsValidTx(MerkleVerificationFailure): pass
+class MerkleVerificationFailure(Exception):
+    pass
+
+
+class MissingBlockHeader(MerkleVerificationFailure):
+    pass
+
+
+class MerkleRootMismatch(MerkleVerificationFailure):
+    pass
+
+
+class InnerNodeOfSpvProofIsValidTx(MerkleVerificationFailure):
+    pass
 
 
 class SPV(NetworkJobOnDefaultServer):
     """ Simple Payment Verification """
 
-    def __init__(self, network: 'Network', wallet: 'AddressSynchronizer'):
+    def __init__(self, network: "Network", wallet: "AddressSynchronizer"):
         self.wallet = wallet
         NetworkJobOnDefaultServer.__init__(self, network)
 
@@ -87,12 +97,18 @@ class SPV(NetworkJobOnDefaultServer):
             header = self.blockchain.read_header(tx_height)
             if header is None:
                 if tx_height < constants.net.max_checkpoint():
-                    await self.taskgroup.spawn(self.network.request_chunk(tx_height, None, can_return_early=True))
+                    await self.taskgroup.spawn(
+                        self.network.request_chunk(
+                            tx_height, None, can_return_early=True
+                        )
+                    )
                 continue
             # request now
-            self.logger.info(f'requested merkle {tx_hash}')
+            self.logger.info(f"requested merkle {tx_hash}")
             self.requested_merkle.add(tx_hash)
-            await self.taskgroup.spawn(self._request_and_verify_single_proof, tx_hash, tx_height)
+            await self.taskgroup.spawn(
+                self._request_and_verify_single_proof, tx_hash, tx_height
+            )
 
     async def _request_and_verify_single_proof(self, tx_hash, tx_height):
         try:
@@ -100,18 +116,21 @@ class SPV(NetworkJobOnDefaultServer):
         except UntrustedServerReturnedError as e:
             if not isinstance(e.original_exception, aiorpcx.jsonrpc.RPCError):
                 raise
-            self.logger.info(f'tx {tx_hash} not at height {tx_height}')
+            self.logger.info(f"tx {tx_hash} not at height {tx_height}")
             self.wallet.remove_unverified_tx(tx_hash, tx_height)
             self.requested_merkle.discard(tx_hash)
             return
         # Verify the hash of the server-provided merkle branch to a
         # transaction matches the merkle root of its block
-        if tx_height != merkle.get('block_height'):
-            self.logger.info('requested tx_height {} differs from received tx_height {} for txid {}'
-                             .format(tx_height, merkle.get('block_height'), tx_hash))
-        tx_height = merkle.get('block_height')
-        pos = merkle.get('pos')
-        merkle_branch = merkle.get('merkle')
+        if tx_height != merkle.get("block_height"):
+            self.logger.info(
+                "requested tx_height {} differs from received tx_height {} for txid {}".format(
+                    tx_height, merkle.get("block_height"), tx_hash
+                )
+            )
+        tx_height = merkle.get("block_height")
+        pos = merkle.get("pos")
+        merkle_branch = merkle.get("merkle")
         # we need to wait if header sync/reorg is still ongoing, hence lock:
         async with self.network.bhi_lock:
             header = self.network.blockchain().read_header(tx_height)
@@ -124,18 +143,22 @@ class SPV(NetworkJobOnDefaultServer):
                 self.logger.info(repr(e))
                 raise GracefulDisconnect(e) from e
         # we passed all the tests
-        self.merkle_roots[tx_hash] = header.get('merkle_root')
+        self.merkle_roots[tx_hash] = header.get("merkle_root")
         self.requested_merkle.discard(tx_hash)
         self.logger.info(f"verified {tx_hash}")
         header_hash = hash_header(header)
-        tx_info = TxMinedInfo(height=tx_height,
-                              timestamp=header.get('timestamp'),
-                              txpos=pos,
-                              header_hash=header_hash)
+        tx_info = TxMinedInfo(
+            height=tx_height,
+            timestamp=header.get("timestamp"),
+            txpos=pos,
+            header_hash=header_hash,
+        )
         self.wallet.add_verified_tx(tx_hash, tx_info)
 
     @classmethod
-    def hash_merkle_root(cls, merkle_branch: Sequence[str], tx_hash: str, leaf_pos_in_tree: int):
+    def hash_merkle_root(
+        cls, merkle_branch: Sequence[str], tx_hash: str, leaf_pos_in_tree: int
+    ):
         """Return calculated merkle root."""
         try:
             h = hash_decode(tx_hash)
@@ -144,17 +167,19 @@ class SPV(NetworkJobOnDefaultServer):
         except Exception as e:
             raise MerkleVerificationFailure(e)
         if leaf_pos_in_tree < 0:
-            raise MerkleVerificationFailure('leaf_pos_in_tree must be non-negative')
+            raise MerkleVerificationFailure("leaf_pos_in_tree must be non-negative")
         index = leaf_pos_in_tree
         for item in merkle_branch_bytes:
             if len(item) != 32:
-                raise MerkleVerificationFailure('all merkle branch items have to 32 bytes long')
+                raise MerkleVerificationFailure(
+                    "all merkle branch items have to 32 bytes long"
+                )
             inner_node = (item + h) if (index & 1) else (h + item)
             cls._raise_if_valid_tx(bh2u(inner_node))
             h = sha256d(inner_node)
             index >>= 1
         if index != 0:
-            raise MerkleVerificationFailure(f'leaf_pos_in_tree too large for branch')
+            raise MerkleVerificationFailure(f"leaf_pos_in_tree too large for branch")
         return hash_encode(h)
 
     @classmethod
@@ -176,7 +201,9 @@ class SPV(NetworkJobOnDefaultServer):
         cur_chain = self.network.blockchain()
         if cur_chain != old_chain:
             self.blockchain = cur_chain
-            above_height = cur_chain.get_height_of_last_common_block_with_chain(old_chain)
+            above_height = cur_chain.get_height_of_last_common_block_with_chain(
+                old_chain
+            )
             self.logger.info(f"undoing verifications above height {above_height}")
             tx_hashes = self.wallet.undo_verifications(self.blockchain, above_height)
             for tx_hash in tx_hashes:
@@ -191,16 +218,26 @@ class SPV(NetworkJobOnDefaultServer):
         return not self.requested_merkle
 
 
-def verify_tx_is_in_block(tx_hash: str, merkle_branch: Sequence[str],
-                          leaf_pos_in_tree: int, block_header: Optional[dict],
-                          block_height: int) -> None:
+def verify_tx_is_in_block(
+    tx_hash: str,
+    merkle_branch: Sequence[str],
+    leaf_pos_in_tree: int,
+    block_header: Optional[dict],
+    block_height: int,
+) -> None:
     """Raise MerkleVerificationFailure if verification fails."""
     if not block_header:
-        raise MissingBlockHeader("merkle verification failed for {} (missing header {})"
-                                 .format(tx_hash, block_height))
+        raise MissingBlockHeader(
+            "merkle verification failed for {} (missing header {})".format(
+                tx_hash, block_height
+            )
+        )
     if len(merkle_branch) > 30:
         raise MerkleVerificationFailure(f"merkle branch too long: {len(merkle_branch)}")
     calc_merkle_root = SPV.hash_merkle_root(merkle_branch, tx_hash, leaf_pos_in_tree)
-    if block_header.get('merkle_root') != calc_merkle_root:
-        raise MerkleRootMismatch("merkle verification failed for {} ({} != {})".format(
-            tx_hash, block_header.get('merkle_root'), calc_merkle_root))
+    if block_header.get("merkle_root") != calc_merkle_root:
+        raise MerkleRootMismatch(
+            "merkle verification failed for {} ({} != {})".format(
+                tx_hash, block_header.get("merkle_root"), calc_merkle_root
+            )
+        )

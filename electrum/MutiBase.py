@@ -24,27 +24,38 @@
 # SOFTWARE.
 
 import os
-from typing import List, TYPE_CHECKING, Tuple, NamedTuple, Any, Dict, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, NamedTuple, Optional, Tuple
 
-from . import bitcoin
-from . import keystore
-from . import mnemonic
-from .bip32 import is_bip32_derivation, xpub_type, normalize_bip32_derivation, BIP32Node, root_fp_and_der_prefix_from_xkey
-from .keystore import purpose48_derivation, bip44_derivation
-from .wallet import (Imported_Wallet, Standard_Wallet, Multisig_Wallet,
-                     wallet_types, Wallet, Abstract_Wallet)
-from .storage import (WalletStorage,
-                      get_derivation_used_for_hw_device_encryption)
+from . import bitcoin, keystore, mnemonic
+from .bip32 import (
+    BIP32Node,
+    is_bip32_derivation,
+    normalize_bip32_derivation,
+    root_fp_and_der_prefix_from_xkey,
+    xpub_type,
+)
 from .i18n import _
-from .util import UserCancelled, InvalidPassword, WalletFileException
+from .keystore import bip44_derivation, purpose48_derivation
 from .logging import Logger
 from .simple_config import SimpleConfig
+from .storage import WalletStorage, get_derivation_used_for_hw_device_encryption
+from .util import InvalidPassword, UserCancelled, WalletFileException
+from .wallet import (
+    Abstract_Wallet,
+    Imported_Wallet,
+    Multisig_Wallet,
+    Standard_Wallet,
+    Wallet,
+    wallet_types,
+)
 from .wallet_db import WalletDB
 
-class ScriptTypeNotSupported(Exception): pass
+
+class ScriptTypeNotSupported(Exception):
+    pass
+
 
 class MutiBase(Logger):
-
     def __init__(self, config: SimpleConfig):
         super(MutiBase, self).__init__()
         Logger.__init__(self)
@@ -56,7 +67,6 @@ class MutiBase(Logger):
 
     def get_keystores_info(self):
         return [k for k in map(lambda x: x.xpub, self.keystores)]
-
 
     def delete_xpub(self, xpub):
         find = False
@@ -71,20 +81,21 @@ class MutiBase(Logger):
 
     def set_multi_wallet_info(self, path, m, n):
         if n == 1 and m == 1:
-            self.wallet_type = 'standard'
-            self.data['wallet_type'] = 'standard'
+            self.wallet_type = "standard"
+            self.data["wallet_type"] = "standard"
         else:
-            self.wallet_type = 'multisig'
+            self.wallet_type = "multisig"
             multisig_type = "%dof%d" % (m, n)
-            self.data['wallet_type'] = multisig_type
+            self.data["wallet_type"] = multisig_type
             self.n = n
             self.m = m
         self.path = path
         print("=================set_multi_wallet_info ok....")
 
     @staticmethod
-    def get_eth_keystore(xpub, coin, device_id=''):
+    def get_eth_keystore(xpub, coin, device_id=""):
         from .keystore import hardware_keystore
+
         print("restore_from_xpub in....")
         is_valid = keystore.is_bip32_key(xpub)
         if is_valid:
@@ -92,12 +103,12 @@ class MutiBase(Logger):
             try:
                 derivation = bip44_derivation(0, bip43_purpose=44, coin=coin)
                 d = {
-                    'type': 'hardware',
-                    'hw_type': 'trezor',
-                    'derivation': derivation,
-                    'xpub': xpub,
-                    'label': 'device_info.label',
-                    'device_id': device_id,
+                    "type": "hardware",
+                    "hw_type": "trezor",
+                    "derivation": derivation,
+                    "xpub": xpub,
+                    "label": "device_info.label",
+                    "device_id": device_id,
                 }
                 k = hardware_keystore(d)
                 return k
@@ -108,24 +119,25 @@ class MutiBase(Logger):
 
     def restore_from_xpub(self, xpub, device_id, account_id=0, type=84):
         from .keystore import hardware_keystore
+
         print("restore_from_xpub in....")
         is_valid = keystore.is_bip32_key(xpub)
         if is_valid:
             print("valid is true....")
-            #k = keystore.from_master_key(xpub)
+            # k = keystore.from_master_key(xpub)
             try:
-                if self.wallet_type == 'multisig':
-                    derivation = purpose48_derivation(0, xtype='p2wsh')
-                    #derivation = bip44_derivation(0, bip43_purpose=48)
+                if self.wallet_type == "multisig":
+                    derivation = purpose48_derivation(0, xtype="p2wsh")
+                    # derivation = bip44_derivation(0, bip43_purpose=48)
                 else:
                     derivation = bip44_derivation(account_id, bip43_purpose=type)
                 d = {
-                    'type': 'hardware',
-                    'hw_type': 'trezor',
-                    'derivation': derivation,
-                    'xpub': xpub,
-                    'label': 'device_info.label',
-                    'device_id': device_id,
+                    "type": "hardware",
+                    "hw_type": "trezor",
+                    "derivation": derivation,
+                    "xpub": xpub,
+                    "label": "device_info.label",
+                    "device_id": device_id,
                 }
                 k = hardware_keystore(d)
                 self.on_keystore(k)
@@ -135,29 +147,30 @@ class MutiBase(Logger):
             raise BaseException(_("Unavailable xpub"))
 
     def on_restore_seed(self, seed, is_bip39, is_ext):
-        self.seed_type = 'bip39' if is_bip39 else mnemonic.seed_type(seed)
-        if self.seed_type == 'bip39':
+        self.seed_type = "bip39" if is_bip39 else mnemonic.seed_type(seed)
+        if self.seed_type == "bip39":
             f = lambda passphrase: self.on_restore_bip39(seed, passphrase)
-            self.passphrase_dialog(run_next=f, is_restoring=True) if is_ext else f('')
-        elif self.seed_type in ['standard', 'segwit']:
-            f = lambda passphrase: self.run('create_keystore', seed, passphrase)
-            self.passphrase_dialog(run_next=f, is_restoring=True) if is_ext else f('')
-        elif self.seed_type == 'old':
-            self.run('create_keystore', seed, '')
+            self.passphrase_dialog(run_next=f, is_restoring=True) if is_ext else f("")
+        elif self.seed_type in ["standard", "segwit"]:
+            f = lambda passphrase: self.run("create_keystore", seed, passphrase)
+            self.passphrase_dialog(run_next=f, is_restoring=True) if is_ext else f("")
+        elif self.seed_type == "old":
+            self.run("create_keystore", seed, "")
         elif mnemonic.is_any_2fa_seed_type(self.seed_type):
             self.load_2fa()
-            self.run('on_restore_seed', seed, is_ext)
+            self.run("on_restore_seed", seed, is_ext)
         else:
-            raise Exception('Unknown seed type', self.seed_type)
+            raise Exception("Unknown seed type", self.seed_type)
 
     def on_restore_bip39(self, seed, passphrase):
         def f(derivation, script_type):
             derivation = normalize_bip32_derivation(derivation)
-            self.run('on_bip43', seed, passphrase, derivation, script_type)
+            self.run("on_bip43", seed, passphrase, derivation, script_type)
+
         self.derivation_and_script_type_dialog(f)
 
     def create_keystore(self, seed, passphrase):
-        k = keystore.from_seed(seed, passphrase, self.wallet_type == 'multisig')
+        k = keystore.from_seed(seed, passphrase, self.wallet_type == "multisig")
         return self.on_keystore(k)
 
     def on_bip43(self, seed, passphrase, derivation, script_type):
@@ -168,54 +181,61 @@ class MutiBase(Logger):
         has_xpub = isinstance(k, keystore.Xpub)
         if has_xpub:
             t1 = xpub_type(k.xpub)
-        if self.wallet_type == 'standard':
-            if has_xpub and t1 not in ['standard', 'p2wpkh', 'p2wpkh-p2sh', 'p2pkh']:
-                raise Exception(_('Wrong key type') + ' %s'%t1)
+        if self.wallet_type == "standard":
+            if has_xpub and t1 not in ["standard", "p2wpkh", "p2wpkh-p2sh", "p2pkh"]:
+                raise Exception(_("Wrong key type") + " %s" % t1)
             self.keystores.append(k)
-            #self.run('create_wallet')
-        elif self.wallet_type == 'multisig':
+            # self.run('create_wallet')
+        elif self.wallet_type == "multisig":
             assert has_xpub
-            if t1 not in ['standard', 'p2wsh', 'p2wsh-p2sh']:
-                raise Exception(('Wrong key type') + ' %s' % t1)
+            if t1 not in ["standard", "p2wsh", "p2wsh-p2sh"]:
+                raise Exception(("Wrong key type") + " %s" % t1)
             if k.xpub in map(lambda x: x.xpub, self.keystores):
-                raise Exception('Error: duplicate master public key')
-            if len(self.keystores)<self.n:
+                raise Exception("Error: duplicate master public key")
+            if len(self.keystores) < self.n:
                 self.keystores.append(k)
             else:
                 raise Exception("len(xpub) > n")
 
     def get_cosigner_num(self):
-        return self.m,self.n
+        return self.m, self.n
 
-    def create_storage(self,path, password, hide_type=False, encrypt_storage=False, storage_enc_version=None):
+    def create_storage(
+        self,
+        path,
+        password,
+        hide_type=False,
+        encrypt_storage=False,
+        storage_enc_version=None,
+    ):
         encrypt_keystore = any(k.may_have_password() for k in self.keystores)
 
-        if self.wallet_type == 'standard':
-            #self.data['seed_type'] = self.seed_type
-            self.data['seed_type'] = 'segwit'
+        if self.wallet_type == "standard":
+            # self.data['seed_type'] = self.seed_type
+            self.data["seed_type"] = "segwit"
             keys = self.keystores[0].dump()
-            self.data['keystore'] = keys
-        elif self.wallet_type == 'multisig':
+            self.data["keystore"] = keys
+        elif self.wallet_type == "multisig":
             for i, k in enumerate(self.keystores):
-                self.data['x%d/'%(i+1)] = k.dump()
-        elif self.wallet_type == 'imported':
+                self.data["x%d/" % (i + 1)] = k.dump()
+        elif self.wallet_type == "imported":
             if len(self.keystores) > 0:
                 keys = self.keystores[0].dump()
-                self.data['keystore'] = keys
+                self.data["keystore"] = keys
         else:
-            raise Exception('Unknown wallet type')
+            raise Exception("Unknown wallet type")
 
         self.pw_args = path, password, encrypt_storage, storage_enc_version
 
         if len(self.keystores) == 0:
-            raise Exception('keystores is empty')
+            raise Exception("keystores is empty")
         if not self.pw_args:
             raise Exception("args wrong")
 
         storage = WalletStorage(path)
         if encrypt_storage:
             storage.set_password(password, enc_version=storage_enc_version)
-        db = WalletDB('', manual_upgrades=False)
+        db = WalletDB("", manual_upgrades=False)
         db.set_keystore_encryption(bool(password) and encrypt_keystore)
         for key, value in self.data.items():
             db.put(key, value)

@@ -1,26 +1,28 @@
-from typing import Callable, TYPE_CHECKING, Optional, Union
 import os
+from decimal import Decimal
+from typing import TYPE_CHECKING, Callable, Optional, Union
 
 from kivy.app import App
-from kivy.factory import Factory
-from kivy.properties import ObjectProperty
-from kivy.lang import Builder
-from decimal import Decimal
 from kivy.clock import Clock
+from kivy.factory import Factory
+from kivy.lang import Builder
+from kivy.properties import ObjectProperty
 
-from electrum.util import InvalidPassword
-from electrum.wallet import WalletStorage, Wallet
 from electrum.gui.kivy.i18n import _
+from electrum.util import InvalidPassword
+from electrum.wallet import Wallet, WalletStorage
 from electrum.wallet_db import WalletDB
 
 from .wallets import WalletDialog
 
 if TYPE_CHECKING:
-    from ...main_window import ElectrumWindow
-    from electrum.wallet import Abstract_Wallet
     from electrum.storage import WalletStorage
+    from electrum.wallet import Abstract_Wallet
 
-Builder.load_string('''
+    from ...main_window import ElectrumWindow
+
+Builder.load_string(
+    """
 
 <PasswordDialog@Popup>
     id: popup
@@ -161,19 +163,24 @@ Builder.load_string('''
                 text: '0'
             KButton:
                 text: '<'
-''')
+"""
+)
 
 
 class AbstractPasswordDialog(Factory.Popup):
-
-    def __init__(self, app: 'ElectrumWindow', *,
-             check_password = None,
-             on_success: Callable = None, on_failure: Callable = None,
-             is_change: bool = False,
-             is_password: bool = True,  # whether this is for a generic password or for a numeric PIN
-             has_password: bool = False,
-             message: str = '',
-             basename:str=''):
+    def __init__(
+        self,
+        app: "ElectrumWindow",
+        *,
+        check_password=None,
+        on_success: Callable = None,
+        on_failure: Callable = None,
+        is_change: bool = False,
+        is_password: bool = True,  # whether this is for a generic password or for a numeric PIN
+        has_password: bool = False,
+        message: str = "",
+        basename: str = ""
+    ):
         Factory.Popup.__init__(self)
         self.app = app
         self.pw_check = check_password
@@ -184,14 +191,14 @@ class AbstractPasswordDialog(Factory.Popup):
         self.is_change = is_change
         self.pw = None
         self.new_password = None
-        self.title = 'Electrum'
+        self.title = "Electrum"
         self.level = 1 if is_change and not has_password else 0
         self.basename = basename
         self.update_screen()
 
     def update_screen(self):
         self.clear_password()
-        if self.level == 0 and self.message == '':
+        if self.level == 0 and self.message == "":
             self.message = self.enter_pw_message
         elif self.level == 1:
             self.message = self.enter_new_pw_message
@@ -225,21 +232,20 @@ class AbstractPasswordDialog(Factory.Popup):
     def update_password(self, c):
         kb = self.ids.kb
         text = kb.password
-        if c == '<':
+        if c == "<":
             text = text[:-1]
-        elif c == 'Clear':
-            text = ''
+        elif c == "Clear":
+            text = ""
         else:
             text += c
         kb.password = text
-
 
     def do_check(self, pw):
         if self.check_password(pw):
             if self.is_change is False:
                 self.success = True
                 self.pw = pw
-                self.message = _('Please wait...')
+                self.message = _("Please wait...")
                 self.dismiss()
             elif self.level == 0:
                 self.level = 1
@@ -258,47 +264,48 @@ class AbstractPasswordDialog(Factory.Popup):
 
 
 class PasswordDialog(AbstractPasswordDialog):
-    enter_pw_message = _('Enter your password')
-    enter_new_pw_message = _('Enter new password')
-    confirm_new_pw_message = _('Confirm new password')
-    wrong_password_message = _('Wrong password')
+    enter_pw_message = _("Enter your password")
+    enter_new_pw_message = _("Enter new password")
+    confirm_new_pw_message = _("Confirm new password")
+    wrong_password_message = _("Wrong password")
     allow_disable = False
 
     def __init__(self, app, **kwargs):
         AbstractPasswordDialog.__init__(self, app, **kwargs)
 
     def clear_password(self):
-        self.ids.textinput_generic_password.text = ''
+        self.ids.textinput_generic_password.text = ""
 
     def on_password(self, pw: str):
         #
         if not self.require_password:
             self.success = True
-            self.message = _('Please wait...')
+            self.message = _("Please wait...")
             self.dismiss()
             return
         # if setting new generic password, enforce min length
         if self.level > 0:
             if len(pw) < 6:
-                self.app.show_error(_('Password is too short (min {} characters)').format(6))
+                self.app.show_error(
+                    _("Password is too short (min {} characters)").format(6)
+                )
                 return
         # don't enforce minimum length on existing
         self.do_check(pw)
 
 
-
 class PincodeDialog(AbstractPasswordDialog):
-    enter_pw_message = _('Enter your PIN')
-    enter_new_pw_message = _('Enter new PIN')
-    confirm_new_pw_message = _('Confirm new PIN')
-    wrong_password_message = _('Wrong PIN')
+    enter_pw_message = _("Enter your PIN")
+    enter_new_pw_message = _("Enter new PIN")
+    confirm_new_pw_message = _("Confirm new PIN")
+    wrong_password_message = _("Wrong PIN")
     allow_disable = True
 
     def __init__(self, app, **kwargs):
         AbstractPasswordDialog.__init__(self, app, **kwargs)
 
     def clear_password(self):
-        self.ids.kb.password = ''
+        self.ids.kb.password = ""
 
     def on_password(self, pw: str):
         # PIN codes are exactly 6 chars
@@ -307,25 +314,29 @@ class PincodeDialog(AbstractPasswordDialog):
 
 
 class ChangePasswordDialog(PasswordDialog):
-
     def __init__(self, app, wallet, on_success, on_failure):
-        PasswordDialog.__init__(self, app,
-            basename = wallet.basename(),
-            check_password = wallet.check_password,
+        PasswordDialog.__init__(
+            self,
+            app,
+            basename=wallet.basename(),
+            check_password=wallet.check_password,
             on_success=on_success,
             on_failure=on_failure,
             is_change=True,
-            has_password=wallet.has_password())
+            has_password=wallet.has_password(),
+        )
 
 
 class OpenWalletDialog(PasswordDialog):
-
     def __init__(self, app, path, callback):
         self.app = app
         self.callback = callback
-        PasswordDialog.__init__(self, app,
+        PasswordDialog.__init__(
+            self,
+            app,
             on_success=lambda pw: self.callback(pw, self.storage),
-            on_failure=self.app.stop)
+            on_failure=self.app.stop,
+        )
         self.init_storage_from_path(path)
 
     def select_file(self):
@@ -338,10 +349,12 @@ class OpenWalletDialog(PasswordDialog):
         self.basename = self.storage.basename()
         if not self.storage.file_exists():
             self.require_password = False
-            self.message = _('Press Next to create')
+            self.message = _("Press Next to create")
         elif self.storage.is_encrypted():
             if not self.storage.is_encrypted_with_user_pw():
-                raise Exception("Kivy GUI does not support this type of encrypted wallet files.")
+                raise Exception(
+                    "Kivy GUI does not support this type of encrypted wallet files."
+                )
             self.require_password = True
             self.pw_check = self.storage.check_password
             self.message = self.enter_pw_message
@@ -352,4 +365,8 @@ class OpenWalletDialog(PasswordDialog):
             wallet = Wallet(db, self.storage, config=self.app.electrum_config)
             self.require_password = wallet.has_password()
             self.pw_check = wallet.check_password
-            self.message = self.enter_pw_message if self.require_password else _('Wallet not encrypted')
+            self.message = (
+                self.enter_pw_message
+                if self.require_password
+                else _("Wallet not encrypted")
+            )

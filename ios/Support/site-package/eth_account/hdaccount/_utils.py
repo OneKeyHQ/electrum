@@ -1,22 +1,16 @@
 import hashlib
 import hmac
-from typing import (
-    Union,
-)
 import unicodedata
+from typing import Union
 
-from eth_keys import (
-    keys,
-)
-from eth_utils import (
-    ValidationError,
-)
-from hexbytes import (
-    HexBytes,
-)
+from eth_keys import keys
+from eth_utils import ValidationError
+from hexbytes import HexBytes
 
 PBKDF2_ROUNDS = 2048
-SECP256K1_N = int("FFFFFFFF_FFFFFFFF_FFFFFFFF_FFFFFFFE_BAAEDCE6_AF48A03B_BFD25E8C_D0364141", 16)
+SECP256K1_N = int(
+    "FFFFFFFF_FFFFFFFF_FFFFFFFF_FFFFFFFE_BAAEDCE6_AF48A03B_BFD25E8C_D0364141", 16
+)
 
 
 def normalize_string(txt: Union[str, bytes]) -> str:
@@ -43,10 +37,7 @@ def hmac_sha512(chain_code: bytes, data: bytes) -> bytes:
 
 def pbkdf2_hmac_sha512(passcode: str, salt: str) -> bytes:
     return hashlib.pbkdf2_hmac(
-        "sha512",
-        passcode.encode("utf-8"),
-        salt.encode("utf-8"),
-        PBKDF2_ROUNDS,
+        "sha512", passcode.encode("utf-8"), salt.encode("utf-8"), PBKDF2_ROUNDS,
     )
 
 

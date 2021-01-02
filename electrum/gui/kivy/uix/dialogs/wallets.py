@@ -2,16 +2,17 @@ import os
 
 from kivy.app import App
 from kivy.factory import Factory
-from kivy.properties import ObjectProperty
 from kivy.lang import Builder
+from kivy.properties import ObjectProperty
 
-from electrum.util import base_units
 from electrum.storage import StorageReadWriteError
+from electrum.util import base_units
 
 from ...i18n import _
 from .label_dialog import LabelDialog
 
-Builder.load_string('''
+Builder.load_string(
+    """
 <WalletDialog@Popup>:
     title: _('Wallets')
     id: popup
@@ -49,10 +50,11 @@ Builder.load_string('''
                 on_release:
                     popup.dismiss()
                     root.callback(wallet_selector.selection[0])
-''')
+"""
+)
+
 
 class WalletDialog(Factory.Popup):
-
     def __init__(self, path, callback):
         Factory.Popup.__init__(self)
         self.path = path
@@ -64,5 +66,6 @@ class WalletDialog(Factory.Popup):
                 return
             # FIXME? "filename" might contain ".." (etc) and hence sketchy path traversals are possible
             self.callback(os.path.join(dirname, filename))
-        d = LabelDialog(_('Enter wallet name'), '', cb)
+
+        d = LabelDialog(_("Enter wallet name"), "", cb)
         d.open()

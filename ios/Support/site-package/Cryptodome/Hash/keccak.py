@@ -28,16 +28,20 @@
 # POSSIBILITY OF SUCH DAMAGE.
 # ===================================================================
 
+from Cryptodome.Util._raw_api import (
+    SmartPointer,
+    VoidPointer,
+    c_size_t,
+    c_uint8_ptr,
+    create_string_buffer,
+    get_raw_buffer,
+    load_pycryptodome_raw_lib,
+)
 from Cryptodome.Util.py3compat import bord
 
-from Cryptodome.Util._raw_api import (load_pycryptodome_raw_lib,
-                                  VoidPointer, SmartPointer,
-                                  create_string_buffer,
-                                  get_raw_buffer, c_size_t,
-                                  c_uint8_ptr)
-
-_raw_keccak_lib = load_pycryptodome_raw_lib("Cryptodome.Hash._keccak",
-                        """
+_raw_keccak_lib = load_pycryptodome_raw_lib(
+    "Cryptodome.Hash._keccak",
+    """
                         int keccak_init(void **state,
                                         size_t capacity_bytes,
                                         uint8_t padding_byte);
@@ -49,7 +53,9 @@ _raw_keccak_lib = load_pycryptodome_raw_lib("Cryptodome.Hash._keccak",
                                            uint8_t *out,
                                            size_t len);
                         int keccak_digest(void *state, uint8_t *digest, size_t len);
-                        """)
+                        """,
+)
+
 
 class Keccak_Hash(object):
     """A Keccak hash object.
@@ -68,13 +74,12 @@ class Keccak_Hash(object):
         self._digest_done = False
 
         state = VoidPointer()
-        result = _raw_keccak_lib.keccak_init(state.address_of(),
-                                             c_size_t(self.digest_size * 2),
-                                             0x01)
+        result = _raw_keccak_lib.keccak_init(
+            state.address_of(), c_size_t(self.digest_size * 2), 0x01
+        )
         if result:
             raise ValueError("Error %d while instantiating keccak" % result)
-        self._state = SmartPointer(state.get(),
-                                   _raw_keccak_lib.keccak_destroy)
+        self._state = SmartPointer(state.get(), _raw_keccak_lib.keccak_destroy)
         if data:
             self.update(data)
 
@@ -88,9 +93,9 @@ class Keccak_Hash(object):
         if self._digest_done and not self._update_after_digest:
             raise TypeError("You can only call 'digest' or 'hexdigest' on this object")
 
-        result = _raw_keccak_lib.keccak_absorb(self._state.get(),
-                                               c_uint8_ptr(data),
-                                               c_size_t(len(data)))
+        result = _raw_keccak_lib.keccak_absorb(
+            self._state.get(), c_uint8_ptr(data), c_size_t(len(data))
+        )
         if result:
             raise ValueError("Error %d while updating keccak" % result)
         return self
@@ -105,9 +110,9 @@ class Keccak_Hash(object):
 
         self._digest_done = True
         bfr = create_string_buffer(self.digest_size)
-        result = _raw_keccak_lib.keccak_digest(self._state.get(),
-                                               bfr,
-                                               c_size_t(self.digest_size))
+        result = _raw_keccak_lib.keccak_digest(
+            self._state.get(), bfr, c_size_t(self.digest_size)
+        )
         if result:
             raise ValueError("Error %d while squeezing keccak" % result)
 

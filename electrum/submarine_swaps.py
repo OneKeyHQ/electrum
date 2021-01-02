@@ -1,33 +1,52 @@
 import asyncio
 import json
 import os
-from typing import TYPE_CHECKING, Optional, Dict, Union
+from typing import TYPE_CHECKING, Dict, Optional, Union
 
 import attr
 
-from .crypto import sha256, hash_160
-from .ecc import ECPrivkey
-from .bitcoin import address_to_script, script_to_p2wsh, redeem_script_to_address, opcodes, p2wsh_nested_script, push_script, is_segwit_address
-from .transaction import TxOutpoint, PartialTxInput, PartialTxOutput, PartialTransaction, construct_witness
-from .transaction import script_GetOp, match_script_against_template, OPPushDataGeneric, OPPushDataPubkey
-from .util import log_exceptions
-from .lnutil import REDEEM_AFTER_DOUBLE_SPENT_DELAY, ln_dummy_address, LN_MAX_HTLC_VALUE_MSAT
-from .bitcoin import dust_threshold
-from .logging import Logger
-from .lnutil import hex_to_bytes
-from .json_db import StoredObject
 from . import constants
-
+from .bitcoin import (
+    address_to_script,
+    dust_threshold,
+    is_segwit_address,
+    opcodes,
+    p2wsh_nested_script,
+    push_script,
+    redeem_script_to_address,
+    script_to_p2wsh,
+)
+from .crypto import hash_160, sha256
+from .ecc import ECPrivkey
+from .json_db import StoredObject
+from .lnutil import (
+    LN_MAX_HTLC_VALUE_MSAT,
+    REDEEM_AFTER_DOUBLE_SPENT_DELAY,
+    hex_to_bytes,
+    ln_dummy_address,
+)
+from .logging import Logger
+from .transaction import (
+    OPPushDataGeneric,
+    OPPushDataPubkey,
+    PartialTransaction,
+    PartialTxInput,
+    PartialTxOutput,
+    TxOutpoint,
+    construct_witness,
+    match_script_against_template,
+    script_GetOp,
+)
+from .util import log_exceptions
 
 if TYPE_CHECKING:
     from .network import Network
     from .wallet import Abstract_Wallet
 
 
-API_URL_MAINNET = 'https://swaps.electrum.org/api'
-API_URL_TESTNET = 'https://swaps.electrum.org/testnet'
-API_URL_REGTEST = 'https://localhost/api'
-
+API_URL_MAINNET = "https://swaps.electrum.org/api"
+API_URL_TESTNET = "https://swaps.electrum.org/testnet"
+API_URL_REGTEST = "https://localhost/api"
 
 
 WITNESS_TEMPLATE_SWAP = [
@@ -42,7 +61,7 @@ WITNESS_TEMPLATE_SWAP = [
     opcodes.OP_DROP,
     OPPushDataPubkey,
     opcodes.OP_ENDIF,
-    opcodes.OP_CHECKSIG
+    opcodes.OP_CHECKSIG,
 ]
 
 
@@ -62,7 +81,7 @@ WITNESS_TEMPLATE_REVERSE_SWAP = [
     opcodes.OP_DROP,
     OPPushDataPubkey,
     opcodes.OP_ENDIF,
-    opcodes.OP_CHECKSIG
+    opcodes.OP_CHECKSIG,
 ]
 
 
@@ -83,29 +102,29 @@ class SwapData(StoredObject):
 
 
 def create_claim_tx(
-        *,
-        txin: PartialTxInput,
-        witness_script: bytes,
-        preimage: Union[bytes, int],  # 0 if timing out forward-swap
-        privkey: bytes,
-        address: str,
-        amount_sat: int,
-        locktime: int,
+    *,
+    txin: PartialTxInput,
+    witness_script: bytes,
+    preimage: Union[bytes, int],  # 0 if timing out forward-swap
+    privkey: bytes,
+    address: str,
+    amount_sat: int,
+    locktime: int,
 ) -> PartialTransaction:
     """Create tx to either claim successful reverse-swap,
     or to get refunded for timed-out forward-swap.
     """
     if is_segwit_address(txin.address):
-        txin.script_type = 'p2wsh'
-        txin.script_sig = b''
+        txin.script_type = "p2wsh"
+        txin.script_sig = b""
     else:
-        txin.script_type = 'p2wsh-p2sh'
+        txin.script_type = "p2wsh-p2sh"
         txin.redeem_script = bytes.fromhex(p2wsh_nested_script(witness_script.hex()))
         txin.script_sig = bytes.fromhex(push_script(txin.redeem_script.hex()))
     txin.witness_script = witness_script
     txout = PartialTxOutput.from_address_and_value(address, amount_sat)
     tx = PartialTransaction.from_io([txin], [txout], version=2, locktime=locktime)
-    #tx.set_rbf(True)
+    # tx.set_rbf(True)
     sig = bytes.fromhex(tx.sign_txin(0, privkey))
     witness = [sig, preimage, witness_script]
     txin.witness = bytes.fromhex(construct_witness(witness))
@@ -113,8 +132,7 @@ def create_claim_tx(
 
 
 class SwapManager(Logger):
-
-    def __init__(self, wallet: 'Abstract_Wallet', network: 'Network'):
+    def __init__(self, wallet: "Abstract_Wallet", network: "Network"):
         Logger.__init__(self)
         self.normal_fee = 0
         self.lockup_fee = 0
@@ -125,7 +143,9 @@ class SwapManager(Logger):
         self.wallet = wallet
         self.lnworker = wallet.lnworker
         self.lnwatcher = self.wallet.lnworker.lnwatcher
-        self.swaps = self.wallet.db.get_dict('submarine_swaps')  # type: Dict[str, SwapData]
+        self.swaps = self.wallet.db.get_dict(
+            "submarine_swaps"
+        )  # type: Dict[str, SwapData]
         self.prepayments = {}  # type: Dict[bytes, bytes] # fee_preimage -> preimage
         for k, swap in self.swaps.items():
             if swap.is_reverse and swap.prepay_hash is not None:
@@ -153,18 +173,21 @@ class SwapManager(Logger):
         txos = self.lnwatcher.get_addr_outputs(swap.lockup_address)
         for txin in txos.values():
             if swap.is_reverse and txin.value_sats() < swap.onchain_amount:
-                self.logger.info('amount too low, we should not reveal the preimage')
+                self.logger.info("amount too low, we should not reveal the preimage")
                 continue
             spent_height = txin.spent_height
             if spent_height is not None:
-                if spent_height > 0 and current_height - spent_height > REDEEM_AFTER_DOUBLE_SPENT_DELAY:
-                    self.logger.info(f'stop watching swap {swap.lockup_address}')
+                if (
+                    spent_height > 0
+                    and current_height - spent_height > REDEEM_AFTER_DOUBLE_SPENT_DELAY
+                ):
+                    self.logger.info(f"stop watching swap {swap.lockup_address}")
                     self.lnwatcher.remove_callback(swap.lockup_address)
                     swap.is_redeemed = True
                 continue
             amount_sat = txin.value_sats() - self.get_claim_fee()
             if amount_sat < dust_threshold():
-                self.logger.info('utxo value below dust threshold')
+                self.logger.info("utxo value below dust threshold")
                 continue
             address = self.wallet.get_receiving_address()
             if swap.is_reverse:  # successful reverse swap
@@ -187,10 +210,12 @@ class SwapManager(Logger):
             if swap.is_reverse:
                 swap.spending_txid = tx.txid()
             else:
-                self.wallet.set_label(tx.txid(), 'Swap refund')
+                self.wallet.set_label(tx.txid(), "Swap refund")
 
     def get_claim_fee(self):
-        return self.lnwatcher.config.estimate_fee(136, allow_fallback_to_static_rates=True)
+        return self.lnwatcher.config.estimate_fee(
+            136, allow_fallback_to_static_rates=True
+        )
 
     def get_swap(self, payment_hash: bytes) -> Optional[SwapData]:
         # for history
@@ -205,12 +230,20 @@ class SwapManager(Logger):
         callback = lambda: self._claim_swap(swap)
         self.lnwatcher.add_callback(swap.lockup_address, callback)
 
-    async def normal_swap(self, lightning_amount: int, expected_onchain_amount: int,
-                          password, *, tx: PartialTransaction = None) -> str:
+    async def normal_swap(
+        self,
+        lightning_amount: int,
+        expected_onchain_amount: int,
+        password,
+        *,
+        tx: PartialTransaction = None,
+    ) -> str:
         """send on-chain BTC, receive on Lightning"""
         privkey = os.urandom(32)
         pubkey = ECPrivkey(privkey).get_public_key_bytes(compressed=True)
-        lnaddr, invoice = await self.lnworker.create_invoice(lightning_amount, 'swap', expiry=3600*24)
+        lnaddr, invoice = await self.lnworker.create_invoice(
+            lightning_amount, "swap", expiry=3600 * 24
+        )
         payment_hash = lnaddr.paymenthash
         preimage = self.lnworker.get_preimage(payment_hash)
         request_data = {
@@ -218,13 +251,11 @@ class SwapManager(Logger):
             "pairId": "BTC/BTC",
             "orderSide": "sell",
             "invoice": invoice,
-            "refundPublicKey": pubkey.hex()
+            "refundPublicKey": pubkey.hex(),
         }
         response = await self.network._send_http_on_proxy(
-            'post',
-            self.api_url + '/createswap',
-            json=request_data,
-            timeout=30)
+            "post", self.api_url + "/createswap", json=request_data, timeout=30
+        )
         data = json.loads(response)
         response_id = data["id"]
         zeroconf = data["acceptZeroConf"]
@@ -243,39 +274,47 @@ class SwapManager(Logger):
             raise Exception("fswap check failed: our preimage not in script")
         if pubkey != parsed_script[9][1]:
             raise Exception("fswap check failed: our pubkey not in script")
-        if locktime != int.from_bytes(parsed_script[6][1], byteorder='little'):
+        if locktime != int.from_bytes(parsed_script[6][1], byteorder="little"):
             raise Exception("fswap check failed: inconsistent locktime and script")
         # check that onchain_amount is not more than what we estimated
         if onchain_amount > expected_onchain_amount:
-            raise Exception(f"fswap check failed: onchain_amount is more than what we estimated: "
-                            f"{onchain_amount} > {expected_onchain_amount}")
+            raise Exception(
+                f"fswap check failed: onchain_amount is more than what we estimated: "
+                f"{onchain_amount} > {expected_onchain_amount}"
+            )
         # verify that they are not locking up funds for more than a day
         if locktime - self.network.get_local_height() >= 144:
             raise Exception("fswap check failed: locktime too far in future")
         # create funding tx
-        funding_output = PartialTxOutput.from_address_and_value(lockup_address, expected_onchain_amount)
+        funding_output = PartialTxOutput.from_address_and_value(
+            lockup_address, expected_onchain_amount
+        )
         if tx is None:
-            tx = self.wallet.create_transaction(outputs=[funding_output], rbf=False, password=password)
+            tx = self.wallet.create_transaction(
+                outputs=[funding_output], rbf=False, password=password
+            )
         else:
-            dummy_output = PartialTxOutput.from_address_and_value(ln_dummy_address(), expected_onchain_amount)
+            dummy_output = PartialTxOutput.from_address_and_value(
+                ln_dummy_address(), expected_onchain_amount
+            )
             tx.outputs().remove(dummy_output)
             tx.add_outputs([funding_output])
             tx.set_rbf(False)
             self.wallet.sign_transaction(tx, password)
         # save swap data in wallet in case we need a refund
         swap = SwapData(
-            redeem_script = redeem_script,
-            locktime = locktime,
-            privkey = privkey,
-            preimage = preimage,
-            prepay_hash = None,
-            lockup_address = lockup_address,
-            onchain_amount = expected_onchain_amount,
-            lightning_amount = lightning_amount,
-            is_reverse = False,
-            is_redeemed = False,
-            funding_txid = tx.txid(),
-            spending_txid = None,
+            redeem_script=redeem_script,
+            locktime=locktime,
+            privkey=privkey,
+            preimage=preimage,
+            prepay_hash=None,
+            lockup_address=lockup_address,
+            onchain_amount=expected_onchain_amount,
+            lightning_amount=lightning_amount,
+            is_reverse=False,
+            is_redeemed=False,
+            funding_txid=tx.txid(),
+            spending_txid=None,
         )
         self.swaps[payment_hash.hex()] = swap
         self.add_lnwatcher_callback(swap)
@@ -294,25 +333,25 @@ class SwapManager(Logger):
             "orderSide": "buy",
             "invoiceAmount": amount_sat,
             "preimageHash": preimage_hash.hex(),
-            "claimPublicKey": pubkey.hex()
+            "claimPublicKey": pubkey.hex(),
         }
         response = await self.network._send_http_on_proxy(
-            'post',
-            self.api_url + '/createswap',
-            json=request_data,
-            timeout=30)
+            "post", self.api_url + "/createswap", json=request_data, timeout=30
+        )
         data = json.loads(response)
-        invoice = data['invoice']
-        fee_invoice = data.get('minerFeeInvoice')
-        lockup_address = data['lockupAddress']
-        redeem_script = data['redeemScript']
-        locktime = data['timeoutBlockHeight']
+        invoice = data["invoice"]
+        fee_invoice = data.get("minerFeeInvoice")
+        lockup_address = data["lockupAddress"]
+        redeem_script = data["redeemScript"]
+        locktime = data["timeoutBlockHeight"]
         onchain_amount = data["onchainAmount"]
-        response_id = data['id']
+        response_id = data["id"]
         # verify redeem_script is built with our pubkey and preimage
         redeem_script = bytes.fromhex(redeem_script)
         parsed_script = [x for x in script_GetOp(redeem_script)]
-        if not match_script_against_template(redeem_script, WITNESS_TEMPLATE_REVERSE_SWAP):
+        if not match_script_against_template(
+            redeem_script, WITNESS_TEMPLATE_REVERSE_SWAP
+        ):
             raise Exception("rswap check failed: scriptcode does not match template")
         if script_to_p2wsh(redeem_script.hex()) != lockup_address:
             raise Exception("rswap check failed: inconsistent scriptcode and address")
@@ -320,12 +359,14 @@ class SwapManager(Logger):
             raise Exception("rswap check failed: our preimage not in script")
         if pubkey != parsed_script[7][1]:
             raise Exception("rswap check failed: our pubkey not in script")
-        if locktime != int.from_bytes(parsed_script[10][1], byteorder='little'):
+        if locktime != int.from_bytes(parsed_script[10][1], byteorder="little"):
             raise Exception("rswap check failed: inconsistent locktime and script")
         # check that the onchain amount is what we expected
         if onchain_amount < expected_amount:
-            raise Exception(f"rswap check failed: onchain_amount is less than what we expected: "
-                            f"{onchain_amount} < {expected_amount}")
+            raise Exception(
+                f"rswap check failed: onchain_amount is less than what we expected: "
+                f"{onchain_amount} < {expected_amount}"
+            )
         # verify that we will have enough time to get our tx confirmed
         if locktime - self.network.get_local_height() <= 60:
             raise Exception("rswap check failed: locktime too close")
@@ -342,22 +383,24 @@ class SwapManager(Logger):
         else:
             prepay_hash = None
         if int(invoice_amount) != amount_sat:
-            raise Exception(f"rswap check failed: invoice_amount ({invoice_amount}) "
-                            f"not what we requested ({amount_sat})")
+            raise Exception(
+                f"rswap check failed: invoice_amount ({invoice_amount}) "
+                f"not what we requested ({amount_sat})"
+            )
         # save swap data to wallet file
         swap = SwapData(
-            redeem_script = redeem_script,
-            locktime = locktime,
-            privkey = privkey,
-            preimage = preimage,
-            prepay_hash = prepay_hash,
-            lockup_address = lockup_address,
-            onchain_amount = onchain_amount,
-            lightning_amount = amount_sat,
-            is_reverse = True,
-            is_redeemed = False,
-            funding_txid = None,
-            spending_txid = None,
+            redeem_script=redeem_script,
+            locktime=locktime,
+            privkey=privkey,
+            preimage=preimage,
+            prepay_hash=prepay_hash,
+            lockup_address=lockup_address,
+            onchain_amount=onchain_amount,
+            lightning_amount=amount_sat,
+            is_reverse=True,
+            is_redeemed=False,
+            funding_txid=None,
+            spending_txid=None,
         )
         self.swaps[preimage_hash.hex()] = swap
         # add callback to lnwatcher
@@ -372,17 +415,16 @@ class SwapManager(Logger):
 
     async def get_pairs(self) -> None:
         response = await self.network._send_http_on_proxy(
-            'get',
-            self.api_url + '/getpairs',
-            timeout=30)
+            "get", self.api_url + "/getpairs", timeout=30
+        )
         pairs = json.loads(response)
-        fees = pairs['pairs']['BTC/BTC']['fees']
-        self.percentage = fees['percentage']
-        self.normal_fee = fees['minerFees']['baseAsset']['normal']
-        self.lockup_fee = fees['minerFees']['baseAsset']['reverse']['lockup']
-        limits = pairs['pairs']['BTC/BTC']['limits']
-        self.min_amount = limits['minimal']
-        self._max_amount = limits['maximal']
+        fees = pairs["pairs"]["BTC/BTC"]["fees"]
+        self.percentage = fees["percentage"]
+        self.normal_fee = fees["minerFees"]["baseAsset"]["normal"]
+        self.lockup_fee = fees["minerFees"]["baseAsset"]["reverse"]["lockup"]
+        limits = pairs["pairs"]["BTC/BTC"]["limits"]
+        self.min_amount = limits["minimal"]
+        self._max_amount = limits["maximal"]
 
     def get_max_amount(self):
         return min(self._max_amount, LN_MAX_HTLC_VALUE_MSAT // 1000)
@@ -390,7 +432,9 @@ class SwapManager(Logger):
     def check_invoice_amount(self, x):
         return x >= self.min_amount and x <= self._max_amount
 
-    def get_recv_amount(self, send_amount: Optional[int], is_reverse: bool) -> Optional[int]:
+    def get_recv_amount(
+        self, send_amount: Optional[int], is_reverse: bool
+    ) -> Optional[int]:
         if send_amount is None:
             return
         x = send_amount
@@ -407,7 +451,9 @@ class SwapManager(Logger):
                 return
         return x
 
-    def get_send_amount(self, recv_amount: Optional[int], is_reverse: bool) -> Optional[int]:
+    def get_send_amount(
+        self, recv_amount: Optional[int], is_reverse: bool
+    ) -> Optional[int]:
         if not recv_amount:
             return
         x = recv_amount
@@ -423,4 +469,3 @@ class SwapManager(Logger):
             x = int(x * 100 / (100 - self.percentage)) + 1
             x += self.normal_fee
         return x
-

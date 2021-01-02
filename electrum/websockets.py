@@ -22,23 +22,23 @@
 # ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-import threading
-import os
-import json
-from collections import defaultdict
 import asyncio
-from typing import Dict, List, Tuple, TYPE_CHECKING
-import traceback
+import json
+import os
 import sys
+import threading
+import traceback
+from collections import defaultdict
+from typing import TYPE_CHECKING, Dict, List, Tuple
 
 try:
-    from SimpleWebSocketServer import WebSocket, SimpleSSLWebSocketServer
+    from SimpleWebSocketServer import SimpleSSLWebSocketServer, WebSocket
 except ImportError:
     sys.exit("install SimpleWebSocketServer")
 
 from . import bitcoin
-from .synchronizer import SynchronizerBase
 from .logging import Logger
+from .synchronizer import SynchronizerBase
 
 if TYPE_CHECKING:
     from .network import Network
@@ -49,17 +49,17 @@ request_queue = asyncio.Queue()
 
 
 class ElectrumWebSocket(WebSocket, Logger):
-
     def __init__(self):
         WebSocket.__init__(self)
         Logger.__init__(self)
 
     def handleMessage(self):
-        assert self.data[0:3] == 'id:'
+        assert self.data[0:3] == "id:"
         self.logger.info(f"message received {self.data}")
         request_id = self.data[3:]
         asyncio.run_coroutine_threadsafe(
-            request_queue.put((self, request_id)), asyncio.get_event_loop())
+            request_queue.put((self, request_id)), asyncio.get_event_loop()
+        )
 
     def handleConnected(self):
         self.logger.info(f"connected {self.address}")
@@ -69,21 +69,24 @@ class ElectrumWebSocket(WebSocket, Logger):
 
 
 class BalanceMonitor(SynchronizerBase):
-
-    def __init__(self, config: 'SimpleConfig', network: 'Network'):
+    def __init__(self, config: "SimpleConfig", network: "Network"):
         SynchronizerBase.__init__(self, network)
         self.config = config
-        self.expected_payments = defaultdict(list)  # type: Dict[str, List[Tuple[WebSocket, int]]]
+        self.expected_payments = defaultdict(
+            list
+        )  # type: Dict[str, List[Tuple[WebSocket, int]]]
 
     def make_request(self, request_id):
         # read json file
-        rdir = self.config.get('requests_dir')
-        n = os.path.join(rdir, 'req', request_id[0], request_id[1], request_id, request_id + '.json')
-        with open(n, encoding='utf-8') as f:
+        rdir = self.config.get("requests_dir")
+        n = os.path.join(
+            rdir, "req", request_id[0], request_id[1], request_id, request_id + ".json"
+        )
+        with open(n, encoding="utf-8") as f:
             s = f.read()
         d = json.loads(s)
-        addr = d.get('address')
-        amount = d.get('amount')
+        addr = d.get("address")
+        amount = d.get("amount")
         return addr, amount
 
     async def main(self):
@@ -96,24 +99,23 @@ class BalanceMonitor(SynchronizerBase):
             try:
                 addr, amount = self.make_request(request_id)
             except Exception:
-                self.logger.exception('')
+                self.logger.exception("")
                 continue
             self.expected_payments[addr].append((ws, amount))
             await self._add_address(addr)
 
     async def _on_address_status(self, addr, status):
-        self.logger.info(f'new status for addr {addr}')
+        self.logger.info(f"new status for addr {addr}")
         sh = bitcoin.address_to_scripthash(addr)
         balance = await self.network.get_balance_for_scripthash(sh)
         for ws, amount in self.expected_payments[addr]:
             if not ws.closed:
                 if sum(balance.values()) >= amount:
-                    ws.sendMessage('paid')
+                    ws.sendMessage("paid")
 
 
 class WebSocketServer(threading.Thread):
-
-    def __init__(self, config: 'SimpleConfig', network: 'Network'):
+    def __init__(self, config: "SimpleConfig", network: "Network"):
         threading.Thread.__init__(self)
         self.config = config
         self.network = network
@@ -124,9 +126,11 @@ class WebSocketServer(threading.Thread):
 
     def run(self):
         asyncio.set_event_loop(self.network.asyncio_loop)
-        host = self.config.get('websocket_server')
-        port = self.config.get('websocket_port', 9999)
-        certfile = self.config.get('ssl_chain')
-        keyfile = self.config.get('ssl_privkey')
-        self.server = SimpleSSLWebSocketServer(host, port, ElectrumWebSocket, certfile, keyfile)
+        host = self.config.get("websocket_server")
+        port = self.config.get("websocket_port", 9999)
+        certfile = self.config.get("ssl_chain")
+        keyfile = self.config.get("ssl_privkey")
+        self.server = SimpleSSLWebSocketServer(
+            host, port, ElectrumWebSocket, certfile, keyfile
+        )
         self.server.serveforever()

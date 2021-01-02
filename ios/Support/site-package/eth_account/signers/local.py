@@ -1,8 +1,6 @@
 import warnings
 
-from eth_account.signers.base import (
-    BaseAccount,
-)
+from eth_account.signers.base import BaseAccount
 
 
 class LocalAccount(BaseAccount):
@@ -25,6 +23,7 @@ class LocalAccount(BaseAccount):
         >>> bytes(my_local_account) # doctest: +SKIP
         b"\\x01\\x23..."
     """
+
     def __init__(self, key, account):
         """
         :param eth_keys.PrivateKey key: to prefill in private key execution
@@ -50,8 +49,7 @@ class LocalAccount(BaseAccount):
             This attribute will be removed in v0.5
         """
         warnings.warn(
-            "privateKey is deprecated in favor of key",
-            category=DeprecationWarning,
+            "privateKey is deprecated in favor of key", category=DeprecationWarning,
         )
         return self._private_key
 
@@ -67,13 +65,12 @@ class LocalAccount(BaseAccount):
         Generate a string with the encrypted key, as in
         :meth:`~eth_account.account.Account.encrypt`, but without a private key argument.
         """
-        return self._publicapi.encrypt(self.key, password, kdf=kdf, iterations=iterations)
+        return self._publicapi.encrypt(
+            self.key, password, kdf=kdf, iterations=iterations
+        )
 
     def signHash(self, message_hash):
-        return self._publicapi.signHash(
-            message_hash,
-            private_key=self.key,
-        )
+        return self._publicapi.signHash(message_hash, private_key=self.key,)
 
     def sign_message(self, signable_message):
         """

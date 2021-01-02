@@ -1,19 +1,8 @@
 import itertools
-from typing import (
-    Dict,
-)
+from typing import Dict
 
-from toolz import (
-    curry,
-    dissoc,
-    identity,
-    merge,
-    partial,
-    pipe,
-)
-from eth_rlp import (
-    HashableRLP,
-)
+import rlp
+from eth_rlp import HashableRLP
 from eth_utils.curried import (
     apply_formatters_to_dict,
     apply_one_of_formatters,
@@ -25,18 +14,12 @@ from eth_utils.curried import (
     to_bytes,
     to_int,
 )
-import rlp
-from rlp.sedes import (
-    Binary,
-    big_endian_int,
-    binary,
-)
+from rlp.sedes import Binary, big_endian_int, binary
+from toolz import curry, dissoc, identity, merge, partial, pipe
 
-from .validation import (
-    is_valid_address,
-)
+from .validation import is_valid_address
 
-VALID_EMPTY_ADDRESSES = {None, b'', ''}
+VALID_EMPTY_ADDRESSES = {None, b"", ""}
 
 
 def serializable_unsigned_transaction_from_dict(transaction_dict):
@@ -48,7 +31,7 @@ def serializable_unsigned_transaction_from_dict(transaction_dict):
         chain_id_to_v,
         apply_formatters_to_dict(TRANSACTION_FORMATTERS),
     )
-    if 'v' in filled_transaction:
+    if "v" in filled_transaction:
         serializer = Transaction
     else:
         serializer = UnsignedTransaction
@@ -57,7 +40,7 @@ def serializable_unsigned_transaction_from_dict(transaction_dict):
 
 def encode_transaction(unsigned_transaction, vrs):
     (v, r, s) = vrs
-    chain_naive_transaction = dissoc(unsigned_transaction.as_dict(), 'v', 'r', 's')
+    chain_naive_transaction = dissoc(unsigned_transaction.as_dict(), "v", "r", "s")
     signed_transaction = Transaction(v=v, r=r, s=s, **chain_naive_transaction)
     return rlp.encode(signed_transaction)
 
@@ -83,49 +66,53 @@ def is_none(val):
 
 
 TRANSACTION_DEFAULTS = {
-    'to': b'',
-    'value': 0,
-    'data': b'',
-    'chainId': None,
+    "to": b"",
+    "value": 0,
+    "data": b"",
+    "chainId": None,
 }
 
 TRANSACTION_FORMATTERS = {
-    'nonce': hexstr_if_str(to_int),
-    'gasPrice': hexstr_if_str(to_int),
-    'gas': hexstr_if_str(to_int),
-    'to': apply_one_of_formatters((
-        (is_string, hexstr_if_str(to_bytes)),
-        (is_bytes, identity),
-        (is_none, lambda val: b''),
-    )),
-    'value': hexstr_if_str(to_int),
-    'data': hexstr_if_str(to_bytes),
-    'v': hexstr_if_str(to_int),
-    'r': hexstr_if_str(to_int),
-    's': hexstr_if_str(to_int),
+    "nonce": hexstr_if_str(to_int),
+    "gasPrice": hexstr_if_str(to_int),
+    "gas": hexstr_if_str(to_int),
+    "to": apply_one_of_formatters(
+        (
+            (is_string, hexstr_if_str(to_bytes)),
+            (is_bytes, identity),
+            (is_none, lambda val: b""),
+        )
+    ),
+    "value": hexstr_if_str(to_int),
+    "data": hexstr_if_str(to_bytes),
+    "v": hexstr_if_str(to_int),
+    "r": hexstr_if_str(to_int),
+    "s": hexstr_if_str(to_int),
 }
 
 TRANSACTION_VALID_VALUES = {
-    'nonce': is_int_or_prefixed_hexstr,
-    'gasPrice': is_int_or_prefixed_hexstr,
-    'gas': is_int_or_prefixed_hexstr,
-    'to': is_empty_or_checksum_address,
-    'value': is_int_or_prefixed_hexstr,
-    'data': lambda val: isinstance(val, (int, str, bytes, bytearray)),
-    'chainId': lambda val: val is None or is_int_or_prefixed_hexstr(val),
+    "nonce": is_int_or_prefixed_hexstr,
+    "gasPrice": is_int_or_prefixed_hexstr,
+    "gas": is_int_or_prefixed_hexstr,
+    "to": is_empty_or_checksum_address,
+    "value": is_int_or_prefixed_hexstr,
+    "data": lambda val: isinstance(val, (int, str, bytes, bytearray)),
+    "chainId": lambda val: val is None or is_int_or_prefixed_hexstr(val),
 }
 
 ALLOWED_TRANSACTION_KEYS = {
-    'nonce',
-    'gasPrice',
-    'gas',
-    'to',
-    'value',
-    'data',
-    'chainId',  # set chainId to None if you want a transaction that can be replayed across networks
+    "nonce",
+    "gasPrice",
+    "gas",
+    "to",
+    "value",
+    "data",
+    "chainId",  # set chainId to None if you want a transaction that can be replayed across networks
 }
 
-REQUIRED_TRANSACITON_KEYS = ALLOWED_TRANSACTION_KEYS.difference(TRANSACTION_DEFAULTS.keys())
+REQUIRED_TRANSACITON_KEYS = ALLOWED_TRANSACTION_KEYS.difference(
+    TRANSACTION_DEFAULTS.keys()
+)
 
 
 def assert_valid_fields(transaction_dict):
@@ -137,19 +124,25 @@ def assert_valid_fields(transaction_dict):
     # check if any extra keys were specified
     superfluous_keys = set(transaction_dict.keys()).difference(ALLOWED_TRANSACTION_KEYS)
     if superfluous_keys:
-        raise TypeError("Transaction must not include unrecognized fields: %r" % superfluous_keys)
+        raise TypeError(
+            "Transaction must not include unrecognized fields: %r" % superfluous_keys
+        )
 
     # check for valid types in each field
     valid_fields: Dict[str, bool]
     valid_fields = apply_formatters_to_dict(TRANSACTION_VALID_VALUES, transaction_dict)
     if not all(valid_fields.values()):
-        invalid = {key: transaction_dict[key] for key, valid in valid_fields.items() if not valid}
+        invalid = {
+            key: transaction_dict[key]
+            for key, valid in valid_fields.items()
+            if not valid
+        }
         raise TypeError("Transaction had invalid fields: %r" % invalid)
 
 
 def chain_id_to_v(transaction_dict):
     # See EIP 155
-    chain_id = transaction_dict.pop('chainId')
+    chain_id = transaction_dict.pop("chainId")
     if chain_id is None:
         return transaction_dict
     else:
@@ -162,20 +155,20 @@ def fill_transaction_defaults(transaction):
 
 
 UNSIGNED_TRANSACTION_FIELDS = (
-    ('nonce', big_endian_int),
-    ('gasPrice', big_endian_int),
-    ('gas', big_endian_int),
-    ('to', Binary.fixed_length(20, allow_empty=True)),
-    ('value', big_endian_int),
-    ('data', binary),
+    ("nonce", big_endian_int),
+    ("gasPrice", big_endian_int),
+    ("gas", big_endian_int),
+    ("to", Binary.fixed_length(20, allow_empty=True)),
+    ("value", big_endian_int),
+    ("data", binary),
 )
 
 
 class Transaction(HashableRLP):
     fields = UNSIGNED_TRANSACTION_FIELDS + (
-        ('v', big_endian_int),
-        ('r', big_endian_int),
-        ('s', big_endian_int),
+        ("v", big_endian_int),
+        ("r", big_endian_int),
+        ("s", big_endian_int),
     )
 
 
@@ -192,4 +185,4 @@ def strip_signature(txn):
 
 
 def vrs_from(transaction):
-    return (getattr(transaction, part) for part in 'vrs')
+    return (getattr(transaction, part) for part in "vrs")

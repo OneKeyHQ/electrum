@@ -25,27 +25,27 @@
 
 import re
 from decimal import Decimal
-from typing import NamedTuple, Sequence, Optional, List, TYPE_CHECKING
+from typing import TYPE_CHECKING, List, NamedTuple, Optional, Sequence
 
-from PyQt5.QtGui import QFontMetrics, QFont
+from PyQt5.QtGui import QFont, QFontMetrics
 
 from electrum import bitcoin
-from electrum.util import bfh, maybe_extract_bolt11_invoice
-from electrum.transaction import push_script, PartialTxOutput
 from electrum.bitcoin import opcodes
-from electrum.logging import Logger
 from electrum.lnaddr import LnDecodeException
+from electrum.logging import Logger
+from electrum.transaction import PartialTxOutput, push_script
+from electrum.util import bfh, maybe_extract_bolt11_invoice
 
-from .qrtextedit import ScanQRTextEdit
-from .completion_text_edit import CompletionTextEdit
 from . import util
+from .completion_text_edit import CompletionTextEdit
+from .qrtextedit import ScanQRTextEdit
 from .util import MONOSPACE_FONT
 
 if TYPE_CHECKING:
     from .main_window import ElectrumWindow
 
 
-RE_ALIAS = r'(.*?)\s*\<([0-9A-Za-z]{1,})\>'
+RE_ALIAS = r"(.*?)\s*\<([0-9A-Za-z]{1,})\>"
 
 frozen_style = "QWidget {border:none;}"
 normal_style = "QPlainTextEdit { }"
@@ -58,8 +58,7 @@ class PayToLineError(NamedTuple):
 
 
 class PayToEdit(CompletionTextEdit, ScanQRTextEdit, Logger):
-
-    def __init__(self, win: 'ElectrumWindow'):
+    def __init__(self, win: "ElectrumWindow"):
         CompletionTextEdit.__init__(self)
         ScanQRTextEdit.__init__(self)
         Logger.__init__(self)
@@ -78,7 +77,7 @@ class PayToEdit(CompletionTextEdit, ScanQRTextEdit, Logger):
         self.update_size()
         self.payto_scriptpubkey = None  # type: Optional[bytes]
         self.lightning_invoice = None
-        self.previous_payto = ''
+        self.previous_payto = ""
 
     def setFrozen(self, b):
         self.setReadOnly(b)
@@ -93,7 +92,7 @@ class PayToEdit(CompletionTextEdit, ScanQRTextEdit, Logger):
         self.setStyleSheet(util.ColorScheme.RED.as_stylesheet(True))
 
     def parse_address_and_amount(self, line) -> PartialTxOutput:
-        x, y = line.split(',')
+        x, y = line.split(",")
         scriptpubkey = self.parse_output(x)
         amount = self.parse_amount(y)
         return PartialTxOutput(scriptpubkey=scriptpubkey, value=amount)
@@ -107,9 +106,9 @@ class PayToEdit(CompletionTextEdit, ScanQRTextEdit, Logger):
             return bfh(script)
 
     def parse_script(self, x):
-        script = ''
+        script = ""
         for word in x.split():
-            if word[0:3] == 'OP_':
+            if word[0:3] == "OP_":
                 opcode_int = opcodes[word]
                 assert opcode_int < 256  # opcode is single-byte
                 script += bitcoin.int_to_hex(opcode_int)
@@ -119,14 +118,14 @@ class PayToEdit(CompletionTextEdit, ScanQRTextEdit, Logger):
         return script
 
     def parse_amount(self, x):
-        if x.strip() == '!':
-            return '!'
+        if x.strip() == "!":
+            return "!"
         p = pow(10, self.amount_edit.decimal_point())
         return int(p * Decimal(x.strip()))
 
     def parse_address(self, line):
         r = line.strip()
-        m = re.match('^'+RE_ALIAS+'$', r)
+        m = re.match("^" + RE_ALIAS + "$", r)
         address = str(m.group(2) if m else r)
         assert bitcoin.is_address(address)
         return address
@@ -169,10 +168,12 @@ class PayToEdit(CompletionTextEdit, ScanQRTextEdit, Logger):
             try:
                 output = self.parse_address_and_amount(line)
             except Exception as e:
-                self.errors.append(PayToLineError(idx=i, line_content=line.strip(), exc=e))
+                self.errors.append(
+                    PayToLineError(idx=i, line_content=line.strip(), exc=e)
+                )
                 continue
             outputs.append(output)
-            if output.value == '!':
+            if output.value == "!":
                 is_max = True
             else:
                 total += output.value
@@ -198,15 +199,17 @@ class PayToEdit(CompletionTextEdit, ScanQRTextEdit, Logger):
     def get_outputs(self, is_max):
         if self.payto_scriptpubkey:
             if is_max:
-                amount = '!'
+                amount = "!"
             else:
                 amount = self.amount_edit.get_amount()
-            self.outputs = [PartialTxOutput(scriptpubkey=self.payto_scriptpubkey, value=amount)]
+            self.outputs = [
+                PartialTxOutput(scriptpubkey=self.payto_scriptpubkey, value=amount)
+            ]
 
         return self.outputs[:]
 
     def lines(self):
-        return self.toPlainText().split('\n')
+        return self.toPlainText().split("\n")
 
     def is_multiline(self):
         return len(self.lines()) > 1
@@ -225,7 +228,7 @@ class PayToEdit(CompletionTextEdit, ScanQRTextEdit, Logger):
         self.verticalScrollBar().hide()
 
     def qr_input(self):
-        data = super(PayToEdit,self).qr_input()
+        data = super(PayToEdit, self).qr_input()
         if data.startswith("bitcoin:"):
             self.win.pay_to_URI(data)
             # TODO: update fee
@@ -243,33 +246,33 @@ class PayToEdit(CompletionTextEdit, ScanQRTextEdit, Logger):
         if key == self.previous_payto:
             return
         self.previous_payto = key
-        if not (('.' in key) and (not '<' in key) and (not ' ' in key)):
+        if not (("." in key) and (not "<" in key) and (not " " in key)):
             return
-        parts = key.split(sep=',')  # assuming single line
+        parts = key.split(sep=",")  # assuming single line
         if parts and len(parts) > 0 and bitcoin.is_address(parts[0]):
             return
         try:
             data = self.win.contacts.resolve(key)
         except Exception as e:
-            self.logger.info(f'error resolving address/alias: {repr(e)}')
+            self.logger.info(f"error resolving address/alias: {repr(e)}")
             return
         if not data:
             return
         self.is_alias = True
 
-        address = data.get('address')
-        name = data.get('name')
-        new_url = key + ' <' + address + '>'
+        address = data.get("address")
+        name = data.get("name")
+        new_url = key + " <" + address + ">"
         self.setText(new_url)
         self.previous_payto = new_url
 
-        #if self.win.config.get('openalias_autoadd') == 'checked':
-        self.win.contacts[key] = ('openalias', name)
+        # if self.win.config.get('openalias_autoadd') == 'checked':
+        self.win.contacts[key] = ("openalias", name)
         self.win.contact_list.update()
 
         self.setFrozen(True)
-        if data.get('type') == 'openalias':
-            self.validated = data.get('validated')
+        if data.get("type") == "openalias":
+            self.validated = data.get("validated")
             if self.validated:
                 self.setGreen()
             else:

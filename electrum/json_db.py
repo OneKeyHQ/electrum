@@ -22,26 +22,30 @@
 # ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-import threading
 import copy
 import json
+import threading
 
 from . import util
 from .logging import Logger
 
 JsonDBJsonEncoder = util.MyEncoder
 
+
 def modifier(func):
     def wrapper(self, *args, **kwargs):
         with self.lock:
             self._modified = True
             return func(self, *args, **kwargs)
+
     return wrapper
+
 
 def locked(func):
     def wrapper(self, *args, **kwargs):
         with self.lock:
             return func(self, *args, **kwargs)
+
     return wrapper
 
 
@@ -59,17 +63,16 @@ class StoredObject:
 
     def to_json(self):
         d = dict(vars(self))
-        d.pop('db', None)
+        d.pop("db", None)
         # don't expose/store private stuff
-        d = {k: v for k, v in d.items()
-             if not k.startswith('_')}
+        d = {k: v for k, v in d.items() if not k.startswith("_")}
         return d
 
 
-_RaiseKeyError = object() # singleton for no-default behavior
+_RaiseKeyError = object()  # singleton for no-default behavior
+
 
 class StoredDict(dict):
-
     def __init__(self, data, db, path):
         self.db = db
         self.lock = self.db.lock if self.db else threading.RLock()
@@ -150,10 +153,7 @@ class StoredDict(dict):
         return dict.get(self, key, default)
 
 
-
-
 class JsonDB(Logger):
-
     def __init__(self, data):
         Logger.__init__(self)
         self.lock = threading.RLock()

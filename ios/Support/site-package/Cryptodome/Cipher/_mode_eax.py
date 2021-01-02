@@ -32,20 +32,17 @@
 EAX mode.
 """
 
-__all__ = ['EaxMode']
+__all__ = ["EaxMode"]
 
 import struct
 from binascii import unhexlify
 
-from Cryptodome.Util.py3compat import byte_string, bord, _copy_bytes
-
-from Cryptodome.Util._raw_api import is_buffer
-
-from Cryptodome.Util.strxor import strxor
-from Cryptodome.Util.number import long_to_bytes, bytes_to_long
-
 from Cryptodome.Hash import CMAC, BLAKE2s
 from Cryptodome.Random import get_random_bytes
+from Cryptodome.Util._raw_api import is_buffer
+from Cryptodome.Util.number import bytes_to_long, long_to_bytes
+from Cryptodome.Util.py3compat import _copy_bytes, bord, byte_string
+from Cryptodome.Util.strxor import strxor
 
 
 class EaxMode(object):
@@ -90,13 +87,13 @@ class EaxMode(object):
         self._mac_tag = None  # Cache for MAC tag
 
         # Allowed transitions after initialization
-        self._next = [self.update, self.encrypt, self.decrypt,
-                      self.digest, self.verify]
+        self._next = [self.update, self.encrypt, self.decrypt, self.digest, self.verify]
 
         # MAC tag length
         if not (4 <= self._mac_len <= self.block_size):
-            raise ValueError("Parameter 'mac_len' must not be larger than %d"
-                             % self.block_size)
+            raise ValueError(
+                "Parameter 'mac_len' must not be larger than %d" % self.block_size
+            )
 
         # Nonce cannot be empty and must be a byte string
         if len(self.nonce) == 0:
@@ -105,12 +102,14 @@ class EaxMode(object):
             raise TypeError("nonce must be bytes, bytearray or memoryview")
 
         self._omac = [
-                CMAC.new(key,
-                         b'\x00' * (self.block_size - 1) + struct.pack('B', i),
-                         ciphermod=factory,
-                         cipher_params=cipher_params)
-                for i in range(0, 3)
-                ]
+            CMAC.new(
+                key,
+                b"\x00" * (self.block_size - 1) + struct.pack("B", i),
+                ciphermod=factory,
+                cipher_params=cipher_params,
+            )
+            for i in range(0, 3)
+        ]
 
         # Compute MAC of nonce
         self._omac[0].update(self.nonce)
@@ -118,11 +117,9 @@ class EaxMode(object):
 
         # MAC of the nonce is also the initial counter for CTR encryption
         counter_int = bytes_to_long(self._omac[0].digest())
-        self._cipher = factory.new(key,
-                                   factory.MODE_CTR,
-                                   initial_value=counter_int,
-                                   nonce=b"",
-                                   **cipher_params)
+        self._cipher = factory.new(
+            key, factory.MODE_CTR, initial_value=counter_int, nonce=b"", **cipher_params
+        )
 
     def update(self, assoc_data):
         """Protect associated data
@@ -146,11 +143,11 @@ class EaxMode(object):
         """
 
         if self.update not in self._next:
-            raise TypeError("update() can only be called"
-                                " immediately after initialization")
+            raise TypeError(
+                "update() can only be called" " immediately after initialization"
+            )
 
-        self._next = [self.update, self.encrypt, self.decrypt,
-                      self.digest, self.verify]
+        self._next = [self.update, self.encrypt, self.decrypt, self.digest, self.verify]
 
         self._signer.update(assoc_data)
         return self
@@ -189,8 +186,9 @@ class EaxMode(object):
         """
 
         if self.encrypt not in self._next:
-            raise TypeError("encrypt() can only be called after"
-                            " initialization or an update()")
+            raise TypeError(
+                "encrypt() can only be called after" " initialization or an update()"
+            )
         self._next = [self.encrypt, self.digest]
         ct = self._cipher.encrypt(plaintext, output=output)
         if output is None:
@@ -233,8 +231,9 @@ class EaxMode(object):
         """
 
         if self.decrypt not in self._next:
-            raise TypeError("decrypt() can only be called"
-                            " after initialization or an update()")
+            raise TypeError(
+                "decrypt() can only be called" " after initialization or an update()"
+            )
         self._next = [self.decrypt, self.verify]
         self._omac[2].update(ciphertext)
         return self._cipher.decrypt(ciphertext, output=output)
@@ -251,15 +250,16 @@ class EaxMode(object):
         """
 
         if self.digest not in self._next:
-            raise TypeError("digest() cannot be called when decrypting"
-                                " or validating a message")
+            raise TypeError(
+                "digest() cannot be called when decrypting" " or validating a message"
+            )
         self._next = [self.digest]
 
         if not self._mac_tag:
-            tag = b'\x00' * self.block_size
+            tag = b"\x00" * self.block_size
             for i in range(3):
                 tag = strxor(tag, self._omac[i].digest())
-            self._mac_tag = tag[:self._mac_len]
+            self._mac_tag = tag[: self._mac_len]
 
         return self._mac_tag
 
@@ -290,15 +290,14 @@ class EaxMode(object):
         """
 
         if self.verify not in self._next:
-            raise TypeError("verify() cannot be called"
-                                " when encrypting a message")
+            raise TypeError("verify() cannot be called" " when encrypting a message")
         self._next = [self.verify]
 
         if not self._mac_tag:
-            tag = b'\x00' * self.block_size
+            tag = b"\x00" * self.block_size
             for i in range(3):
                 tag = strxor(tag, self._omac[i].digest())
-            self._mac_tag = tag[:self._mac_len]
+            self._mac_tag = tag[: self._mac_len]
 
         secret = get_random_bytes(16)
 

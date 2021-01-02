@@ -1,13 +1,7 @@
-from eth_utils import (
-    ValidationError,
-)
+from eth_utils import ValidationError
 
-from .deterministic import (
-    HDPath,
-)
-from .mnemonic import (
-    Mnemonic,
-)
+from .deterministic import HDPath
+from .mnemonic import Mnemonic
 
 ETHEREUM_DEFAULT_PATH = "m/44'/60'/0'/0/0"
 

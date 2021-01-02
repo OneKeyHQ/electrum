@@ -32,23 +32,22 @@
 # ===================================================================
 
 
+from Cryptodome.IO._PBES import PBES1, PBES2, PbesError
+from Cryptodome.Util.asn1 import DerNull, DerObjectId, DerOctetString, DerSequence
 from Cryptodome.Util.py3compat import *
 
-from Cryptodome.Util.asn1 import (
-            DerNull,
-            DerSequence,
-            DerObjectId,
-            DerOctetString,
-            )
-
-from Cryptodome.IO._PBES import PBES1, PBES2, PbesError
+__all__ = ["wrap", "unwrap"]
 
 
-__all__ = ['wrap', 'unwrap']
-
-
-def wrap(private_key, key_oid, passphrase=None, protection=None,
-         prot_params=None, key_params=None, randfunc=None):
+def wrap(
+    private_key,
+    key_oid,
+    passphrase=None,
+    protection=None,
+    prot_params=None,
+    key_params=None,
+    randfunc=None,
+):
     """Wrap a private key into a PKCS#8 blob (clear or encrypted).
 
     Args:
@@ -117,14 +116,13 @@ def wrap(private_key, key_oid, passphrase=None, protection=None,
     #       attributes              [0]  IMPLICIT Attributes OPTIONAL
     #   }
     #
-    pk_info = DerSequence([
-                0,
-                DerSequence([
-                    DerObjectId(key_oid),
-                    key_params
-                ]),
-                DerOctetString(private_key)
-            ])
+    pk_info = DerSequence(
+        [
+            0,
+            DerSequence([DerObjectId(key_oid), key_params]),
+            DerOctetString(private_key),
+        ]
+    )
     pk_info_der = pk_info.encode()
 
     if passphrase is None:
@@ -136,9 +134,8 @@ def wrap(private_key, key_oid, passphrase=None, protection=None,
     # Encryption with PBES2
     passphrase = tobytes(passphrase)
     if protection is None:
-        protection = 'PBKDF2WithHMAC-SHA1AndDES-EDE3-CBC'
-    return PBES2.encrypt(pk_info_der, passphrase,
-                         protection, prot_params, randfunc)
+        protection = "PBKDF2WithHMAC-SHA1AndDES-EDE3-CBC"
+    return PBES2.encrypt(pk_info_der, passphrase, protection, prot_params, randfunc)
 
 
 def unwrap(p8_private_key, passphrase=None):
@@ -187,8 +184,9 @@ def unwrap(p8_private_key, passphrase=None):
 
     pk_info = DerSequence().decode(p8_private_key, nr_elements=(2, 3, 4))
     if len(pk_info) == 2 and not passphrase:
-        raise ValueError("Not a valid clear PKCS#8 structure "
-                         "(maybe it is encrypted?)")
+        raise ValueError(
+            "Not a valid clear PKCS#8 structure " "(maybe it is encrypted?)"
+        )
 
     #
     #   PrivateKeyInfo ::= SEQUENCE {

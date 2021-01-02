@@ -28,12 +28,18 @@
 # POSSIBILITY OF SUCH DAMAGE.
 # ===================================================================
 
-from Cryptodome.Util._raw_api import (load_pycryptodome_raw_lib, c_size_t,
-                                  create_string_buffer, get_raw_buffer,
-                                  c_uint8_ptr, is_writeable_buffer)
+from Cryptodome.Util._raw_api import (
+    c_size_t,
+    c_uint8_ptr,
+    create_string_buffer,
+    get_raw_buffer,
+    is_writeable_buffer,
+    load_pycryptodome_raw_lib,
+)
 
-_raw_strxor = load_pycryptodome_raw_lib("Cryptodome.Util._strxor",
-                    """
+_raw_strxor = load_pycryptodome_raw_lib(
+    "Cryptodome.Util._strxor",
+    """
                     void strxor(const uint8_t *in1,
                                 const uint8_t *in2,
                                 uint8_t *out, size_t len);
@@ -41,12 +47,13 @@ _raw_strxor = load_pycryptodome_raw_lib("Cryptodome.Util._strxor",
                                   uint8_t c,
                                   uint8_t *out,
                                   size_t len);
-                    """)
+                    """,
+)
 
 
 def strxor(term1, term2, output=None):
     """XOR two byte strings.
-    
+
     Args:
       term1 (bytes/bytearray/memoryview):
         The first term of the XOR operation.
@@ -62,24 +69,28 @@ def strxor(term1, term2, output=None):
 
     if len(term1) != len(term2):
         raise ValueError("Only byte strings of equal length can be xored")
-    
+
     if output is None:
         result = create_string_buffer(len(term1))
     else:
         # Note: output may overlap with either input
         result = output
-        
+
         if not is_writeable_buffer(output):
             raise TypeError("output must be a bytearray or a writeable memoryview")
-        
-        if len(term1) != len(output):
-            raise ValueError("output must have the same length as the input"
-                             "  (%d bytes)" % len(term1))
 
-    _raw_strxor.strxor(c_uint8_ptr(term1),
-                       c_uint8_ptr(term2),
-                       c_uint8_ptr(result),
-                       c_size_t(len(term1)))
+        if len(term1) != len(output):
+            raise ValueError(
+                "output must have the same length as the input"
+                "  (%d bytes)" % len(term1)
+            )
+
+    _raw_strxor.strxor(
+        c_uint8_ptr(term1),
+        c_uint8_ptr(term2),
+        c_uint8_ptr(result),
+        c_size_t(len(term1)),
+    )
 
     if output is None:
         return get_raw_buffer(result)
@@ -105,25 +116,23 @@ def strxor_c(term, c, output=None):
 
     if not 0 <= c < 256:
         raise ValueError("c must be in range(256)")
-    
+
     if output is None:
         result = create_string_buffer(len(term))
     else:
         # Note: output may overlap with either input
         result = output
-       
+
         if not is_writeable_buffer(output):
             raise TypeError("output must be a bytearray or a writeable memoryview")
-        
-        if len(term) != len(output):
-            raise ValueError("output must have the same length as the input"
-                             "  (%d bytes)" % len(term))
 
-    _raw_strxor.strxor_c(c_uint8_ptr(term),
-                         c,
-                         c_uint8_ptr(result),
-                         c_size_t(len(term))
-                         )
+        if len(term) != len(output):
+            raise ValueError(
+                "output must have the same length as the input"
+                "  (%d bytes)" % len(term)
+            )
+
+    _raw_strxor.strxor_c(c_uint8_ptr(term), c, c_uint8_ptr(result), c_size_t(len(term)))
 
     if output is None:
         return get_raw_buffer(result)
@@ -134,4 +143,3 @@ def strxor_c(term, c, output=None):
 def _strxor_direct(term1, term2, result):
     """Very fast XOR - check conditions!"""
     _raw_strxor.strxor(term1, term2, result, c_size_t(len(term1)))
-

@@ -2,7 +2,8 @@ from threading import Timer
 
 RECOVERY_DERIVAT_NUM = 20
 
-class DerivedInfo():
+
+class DerivedInfo:
     def __init__(self, config):
         self.config = config
         self.derived_account_id = self.init_list()

@@ -26,53 +26,75 @@
 #   - Standard_Wallet: one HD keystore, P2PKH-like scripts
 #   - Multisig_Wallet: several HD keystores, M-of-N OP_CHECKMULTISIG scripts
 
-import os
-import sys
-import random
-import time
-import json
 import copy
 import errno
-import traceback
-import operator
-import threading
-from functools import partial
-from collections import defaultdict
-from numbers import Number
-from decimal import Decimal
-from typing import TYPE_CHECKING, List, Optional, Tuple, Union, NamedTuple, Sequence, Dict, Any, Set
-from abc import ABC, abstractmethod
 import itertools
+import json
+import operator
+import os
+import random
+import sys
+import threading
+import time
+import traceback
+from abc import ABC, abstractmethod
+from collections import defaultdict
+from decimal import Decimal
+from functools import partial
+from numbers import Number
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    List,
+    NamedTuple,
+    Optional,
+    Sequence,
+    Set,
+    Tuple,
+    Union,
+)
 
 from aiorpcx import TaskGroup
-
-from .i18n import _
-from .bip32 import convert_bip32_intpath_to_strpath, convert_bip32_path_to_list_of_uint32
-from .util import (profiler,
-                   WalletFileException,
-                   InvalidPassword)
-from .util import get_backup_dir
-from .simple_config import SimpleConfig
-from .keystore import load_keystore, Hardware_KeyStore, KeyStore, KeyStoreWithMPK, AddressIndexGeneric
-from .storage import StorageEncryptionVersion, WalletStorage
-from .wallet_db import WalletDB
-from . import bip32, bitcoin
-from .invoices import Invoice
-from .invoices import PR_EXPIRED
-from .eth_contract import Eth_Contract
-from .logging import get_logger
 from eth_account import Account
-from eth_utils.address import to_checksum_address
 from eth_keys.utils.address import public_key_bytes_to_address
+from eth_utils.address import to_checksum_address
+
+from . import bip32, bitcoin
+from .bip32 import (
+    convert_bip32_intpath_to_strpath,
+    convert_bip32_path_to_list_of_uint32,
+)
+from .eth_contract import Eth_Contract
+from .i18n import _
+from .invoices import PR_EXPIRED, Invoice
+from .keystore import (
+    AddressIndexGeneric,
+    Hardware_KeyStore,
+    KeyStore,
+    KeyStoreWithMPK,
+    load_keystore,
+)
+from .logging import get_logger
+from .simple_config import SimpleConfig
+from .storage import StorageEncryptionVersion, WalletStorage
+from .util import InvalidPassword, WalletFileException, get_backup_dir, profiler
+from .wallet_db import WalletDB
+
 if TYPE_CHECKING:
     from .network import Network
+
 from .pywalib import PyWalib
+
 _logger = get_logger(__name__)
+
 
 class InternalAddressCorruption(Exception):
     def __str__(self):
-        return _("Wallet file corruption detected. "
-                 "Please restore your wallet from seed, and compare the addresses in both files")
+        return _(
+            "Wallet file corruption detected. "
+            "Please restore your wallet from seed, and compare the addresses in both files"
+        )
 
 
 class Abstract_Eth_Wallet(ABC):
@@ -81,16 +103,17 @@ class Abstract_Eth_Wallet(ABC):
     Completion states (watching-only, single account, no seed, etc) are handled inside classes.
     """
 
-    LOGGING_SHORTCUT = 'w'
+    LOGGING_SHORTCUT = "w"
     max_change_outputs = 1
-    #gap_limit_for_change = 10
+    # gap_limit_for_change = 10
     gap_limit_for_change = 1
-
 
     txin_type: str
     wallet_type: str
 
-    def __init__(self, db: WalletDB, storage: Optional[WalletStorage], *, config: SimpleConfig):
+    def __init__(
+        self, db: WalletDB, storage: Optional[WalletStorage], *, config: SimpleConfig
+    ):
         if not db.is_ready_to_be_used_by_wallet():
             raise Exception("storage not ready to be used by Abstract_Wallet")
 
@@ -98,7 +121,7 @@ class Abstract_Eth_Wallet(ABC):
         assert self.config is not None, "config must not be None"
         self.db = db
         self.name = None
-        self.hide_type=False
+        self.hide_type = False
         self.storage = storage
         self.storage_pw = None
         # load addresses needs to be called before constructor for sanity checks
@@ -107,18 +130,20 @@ class Abstract_Eth_Wallet(ABC):
         self.lock = threading.RLock()
         self.load_and_cleanup()
         # saved fields
-        self.use_change            = db.get('use_change', True)
-        self.multiple_change       = db.get('multiple_change', False)
-        self.labels                = db.get_dict('labels')
-        self.fiat_value            = db.get_dict('fiat_value')
-        self.receive_requests      = db.get_dict('payment_requests')  # type: Dict[str, Invoice]
-        self.invoices              = db.get_dict('invoices')  # type: Dict[str, Invoice]
-        self._reserved_addresses   = set(db.get('reserved_addresses', []))
+        self.use_change = db.get("use_change", True)
+        self.multiple_change = db.get("multiple_change", False)
+        self.labels = db.get_dict("labels")
+        self.fiat_value = db.get_dict("fiat_value")
+        self.receive_requests = db.get_dict(
+            "payment_requests"
+        )  # type: Dict[str, Invoice]
+        self.invoices = db.get_dict("invoices")  # type: Dict[str, Invoice]
+        self._reserved_addresses = set(db.get("reserved_addresses", []))
         self.total_balance = {}
         self.calc_unused_change_addresses()
         # save wallet type the first time
-        if self.db.get('wallet_type') is None:
-            self.db.put('wallet_type', self.wallet_type)
+        if self.db.get("wallet_type") is None:
+            self.db.put("wallet_type", self.wallet_type)
         self.name = self.db.get("name")
         self.contacts = dict()
         self._coin_price_cache = {}
@@ -128,8 +153,12 @@ class Abstract_Eth_Wallet(ABC):
         self.db.put("name", self.name)
 
     def get_name(self):
-        return self.name if self.name != "" else '%s...%s' % (
-        self.get_addresses()[0][0:6], self.get_addresses()[0][-6:])
+        return (
+            self.name
+            if self.name != ""
+            else "%s...%s"
+            % (self.get_addresses()[0][0:6], self.get_addresses()[0][-6:])
+        )
 
     def save_db(self):
         if self.storage and not self.hide_type:
@@ -141,7 +170,7 @@ class Abstract_Eth_Wallet(ABC):
             return
         new_db = WalletDB(self.db.dump(), manual_upgrades=False)
 
-        new_path = os.path.join(backup_dir, self.basename() + '.backup')
+        new_path = os.path.join(backup_dir, self.basename() + ".backup")
         new_storage = WalletStorage(new_path)
         new_storage._encryption_version = self.storage._encryption_version
         new_storage.pubkey = self.storage.pubkey
@@ -150,8 +179,13 @@ class Abstract_Eth_Wallet(ABC):
         return new_path
 
     def stop(self):
-        #super().stop()
-        if any([ks.is_requesting_to_be_rewritten_to_wallet_file for ks in self.get_keystores()]):
+        # super().stop()
+        if any(
+            [
+                ks.is_requesting_to_be_rewritten_to_wallet_file
+                for ks in self.get_keystores()
+            ]
+        ):
             self.save_keystore()
         self.save_db()
 
@@ -164,32 +198,36 @@ class Abstract_Eth_Wallet(ABC):
     #     self.save_db()
 
     def pubkeys_to_address(self, public_key: str):
-        return to_checksum_address(public_key_bytes_to_address(bytes.fromhex(public_key)))
+        return to_checksum_address(
+            public_key_bytes_to_address(bytes.fromhex(public_key))
+        )
 
     def set_total_balance(self, balance):
-        self.total_balance['balance_info'] = balance
-        self.total_balance['time'] = time.time()
+        self.total_balance["balance_info"] = balance
+        self.total_balance["time"] = time.time()
 
     def get_total_balance(self):
         return self.total_balance
 
     def get_all_balance(self, wallet_address, from_coin):
         if len(self.total_balance) != 0:
-            if len(self.total_balance['balance_info']) != 0 and (time.time() - self.total_balance['time'] > 10):
-                return self.total_balance['balance_info']
+            if len(self.total_balance["balance_info"]) != 0 and (
+                time.time() - self.total_balance["time"] > 10
+            ):
+                return self.total_balance["balance_info"]
         eth_info = {}
         last_price = PyWalib.get_coin_price(from_coin)
         eth, balance = PyWalib.get_balance(wallet_address)
         balance_info = {}
-        balance_info['%s' %self.wallet_type[0:3]] = balance
-        balance_info['fiat'] = balance * Decimal(last_price)
-        eth_info['%s' %self.wallet_type[0:3]] = balance_info
+        balance_info["%s" % self.wallet_type[0:3]] = balance
+        balance_info["fiat"] = balance * Decimal(last_price)
+        eth_info["%s" % self.wallet_type[0:3]] = balance_info
         for symbol, contract in self.contacts.items():
             symbol, balance = PyWalib.get_balance(wallet_address, contract)
             last_price = PyWalib.get_coin_price(symbol)
             balance_info = {}
             balance_info[symbol] = balance
-            balance_info['fiat'] = balance * last_price
+            balance_info["fiat"] = balance * last_price
             eth_info[symbol] = balance_info
         self.set_total_balance(eth_info)
         return eth_info
@@ -207,14 +245,15 @@ class Abstract_Eth_Wallet(ABC):
     def load_and_cleanup(self):
         self.load_keystore()
         ##TODO check_sum_address
+
     #     super().load_and_cleanup()
 
     # def add_address(self, address):
     #     if not self.db.get_addr_history(address):
     #         self.db.history[address] = []
     #         self.set_up_to_date(False)
-        # if self.synchronizer:
-        #     self.synchronizer.add(address)
+    # if self.synchronizer:
+    #     self.synchronizer.add(address)
 
     @abstractmethod
     def load_keystore(self) -> None:
@@ -233,13 +272,14 @@ class Abstract_Eth_Wallet(ABC):
         return []
 
     def basename(self) -> str:
-        return self.storage.basename() if self.storage else 'no name'
+        return self.storage.basename() if self.storage else "no name"
 
     def check_returned_address_for_corruption(func):
         def wrapper(self, *args, **kwargs):
             addr = func(self, *args, **kwargs)
             self.check_address_for_corruption(addr)
             return addr
+
         return wrapper
 
     def calc_unused_change_addresses(self) -> Sequence[str]:
@@ -251,12 +291,18 @@ class Abstract_Eth_Wallet(ABC):
             # As a performance optimisation, to avoid checking all addresses every time,
             # we maintain a list of "not old" addresses ("old" addresses have deeply confirmed history),
             # and only check those.
-            if not hasattr(self, '_not_old_change_addresses'):
+            if not hasattr(self, "_not_old_change_addresses"):
                 self._not_old_change_addresses = self.get_change_addresses()
-            self._not_old_change_addresses = [addr for addr in self._not_old_change_addresses
-                                              if not self.address_is_old(addr)]
-            unused_addrs = [addr for addr in self._not_old_change_addresses
-                            if not self.is_used(addr) and not self.is_address_reserved(addr)]
+            self._not_old_change_addresses = [
+                addr
+                for addr in self._not_old_change_addresses
+                if not self.address_is_old(addr)
+            ]
+            unused_addrs = [
+                addr
+                for addr in self._not_old_change_addresses
+                if not self.is_used(addr) and not self.is_address_reserved(addr)
+            ]
             return unused_addrs
 
     def is_deterministic(self) -> bool:
@@ -327,7 +373,8 @@ class Abstract_Eth_Wallet(ABC):
             return
 
     def is_mine(self, address) -> bool:
-        if not address: return False
+        if not address:
+            return False
         return bool(self.get_address_index(address))
 
     def is_change(self, address) -> bool:
@@ -365,24 +412,31 @@ class Abstract_Eth_Wallet(ABC):
         # return serialized_privkey
         pass
 
-    def export_private_key_for_path(self, path: Union[Sequence[int], str], password: Optional[str]) -> str:
+    def export_private_key_for_path(
+        self, path: Union[Sequence[int], str], password: Optional[str]
+    ) -> str:
         raise Exception("this wallet is not deterministic")
 
     @abstractmethod
     def get_public_keys(self, address: str) -> Sequence[str]:
         pass
 
-    def get_public_keys_with_deriv_info(self, address: str) -> Dict[bytes, Tuple[KeyStoreWithMPK, Sequence[int]]]:
+    def get_public_keys_with_deriv_info(
+        self, address: str
+    ) -> Dict[bytes, Tuple[KeyStoreWithMPK, Sequence[int]]]:
         """Returns a map: pubkey -> (keystore, derivation_suffix)"""
         return {}
 
-
     @abstractmethod
-    def get_receiving_addresses(self, *, slice_start=None, slice_stop=None) -> Sequence[str]:
+    def get_receiving_addresses(
+        self, *, slice_start=None, slice_stop=None
+    ) -> Sequence[str]:
         pass
 
     @abstractmethod
-    def get_change_addresses(self, *, slice_start=None, slice_stop=None) -> Sequence[str]:
+    def get_change_addresses(
+        self, *, slice_start=None, slice_stop=None
+    ) -> Sequence[str]:
         pass
 
     def dummy_address(self):
@@ -445,10 +499,10 @@ class Abstract_Eth_Wallet(ABC):
                 self._reserved_addresses.add(addr)
             else:
                 self._reserved_addresses.discard(addr)
-            self.db.put('reserved_addresses', list(self._reserved_addresses))
+            self.db.put("reserved_addresses", list(self._reserved_addresses))
 
     def can_export(self):
-        return not self.is_watching_only() and hasattr(self.keystore, 'get_private_key')
+        return not self.is_watching_only() and hasattr(self.keystore, "get_private_key")
 
     # def address_is_old(self, address: str, *, req_conf: int = 3) -> bool:
     #     """Returns whether address has any history that is deeply confirmed.
@@ -477,11 +531,17 @@ class Abstract_Eth_Wallet(ABC):
     def get_unused_addresses(self) -> Sequence[str]:
         domain = self.get_receiving_addresses()
         # TODO we should index receive_requests by id
-        in_use_by_request = [k for k in self.receive_requests.keys()
-                             if self.get_request_status(k) != PR_EXPIRED]
+        in_use_by_request = [
+            k
+            for k in self.receive_requests.keys()
+            if self.get_request_status(k) != PR_EXPIRED
+        ]
         in_use_by_request = set(in_use_by_request)
-        return [addr for addr in domain if not self.is_used(addr)
-                and addr not in in_use_by_request]
+        return [
+            addr
+            for addr in domain
+            if not self.is_used(addr) and addr not in in_use_by_request
+        ]
 
     @check_returned_address_for_corruption
     def get_unused_address(self) -> Optional[str]:
@@ -516,8 +576,9 @@ class Abstract_Eth_Wallet(ABC):
     def import_address(self, address: str) -> str:
         raise Exception("this wallet cannot import addresses")
 
-    def import_addresses(self, addresses: List[str], *,
-                         write_to_disk=True) -> Tuple[List[str], List[Tuple[str, str]]]:
+    def import_addresses(
+        self, addresses: List[str], *, write_to_disk=True
+    ) -> Tuple[List[str], List[Tuple[str, str]]]:
         raise Exception("this wallet cannot import addresses")
 
     def delete_address(self, address: str) -> None:
@@ -559,7 +620,7 @@ class Abstract_Eth_Wallet(ABC):
         If True, e.g. signing a transaction will require a password.
         """
         if self.can_have_keystore_encryption():
-            return self.db.get('use_encryption', False)
+            return self.db.get("use_encryption", False)
         return False
 
     def has_storage_encryption(self):
@@ -579,7 +640,9 @@ class Abstract_Eth_Wallet(ABC):
             else:
                 self.storage.check_password(self.storage_pw)
 
-    def update_password(self, old_pw, new_pw, str_pw=None, *, encrypt_storage: bool = True):
+    def update_password(
+        self, old_pw, new_pw, str_pw=None, *, encrypt_storage: bool = True
+    ):
         if old_pw is None and self.has_password():
             raise InvalidPassword()
         self.check_password(old_pw)
@@ -604,7 +667,9 @@ class Abstract_Eth_Wallet(ABC):
         self.save_db()
 
     @abstractmethod
-    def _update_password_for_keystore(self, old_pw: Optional[str], new_pw: Optional[str]) -> None:
+    def _update_password_for_keystore(
+        self, old_pw: Optional[str], new_pw: Optional[str]
+    ) -> None:
         pass
 
     def sign_message(self, address, message, password):
@@ -661,11 +726,15 @@ class Simple_Eth_Wallet(Abstract_Eth_Wallet):
 
     def _update_password_for_keystore(self, old_pw, new_pw):
         if self.keystore and self.keystore.may_have_password():
-            self.keystore.update_password(old_pw, new_pw, eth_status='eth' if -1 != self.wallet_type.find('eth') else None)
+            self.keystore.update_password(
+                old_pw,
+                new_pw,
+                eth_status="eth" if -1 != self.wallet_type.find("eth") else None,
+            )
             self.save_keystore()
 
     def save_keystore(self):
-        self.db.put('keystore', self.keystore.dump())
+        self.db.put("keystore", self.keystore.dump())
 
     @abstractmethod
     def get_public_key(self, address: str) -> Optional[str]:
@@ -675,12 +744,10 @@ class Simple_Eth_Wallet(Abstract_Eth_Wallet):
         return [self.get_public_key(address)]
 
 
-
-
 class Imported_Eth_Wallet(Simple_Eth_Wallet):
     # wallet made of imported addresses
 
-    wallet_type = 'eth_imported'
+    wallet_type = "eth_imported"
 
     def __init__(self, db, storage, *, config):
         Abstract_Eth_Wallet.__init__(self, db, storage, config=config)
@@ -692,10 +759,12 @@ class Imported_Eth_Wallet(Simple_Eth_Wallet):
         return bool(self.keystore)
 
     def load_keystore(self):
-        self.keystore = load_keystore(self.db, 'keystore') if self.db.get('keystore') else None
+        self.keystore = (
+            load_keystore(self.db, "keystore") if self.db.get("keystore") else None
+        )
 
     def save_keystore(self):
-        self.db.put('keystore', self.keystore.dump())
+        self.db.put("keystore", self.keystore.dump())
 
     def can_import_address(self):
         return self.is_watching_only()
@@ -716,7 +785,7 @@ class Imported_Eth_Wallet(Simple_Eth_Wallet):
         return set()
 
     def get_fingerprint(self):
-        return ''
+        return ""
 
     def get_addresses(self):
         # note: overridden so that the history can be cleared
@@ -743,20 +812,21 @@ class Imported_Eth_Wallet(Simple_Eth_Wallet):
     def get_change_addresses(self, **kwargs):
         return []
 
-    def import_addresses(self, addresses: List[str], *,
-                         write_to_disk=True) -> Tuple[List[str], List[Tuple[str, str]]]:
+    def import_addresses(
+        self, addresses: List[str], *, write_to_disk=True
+    ) -> Tuple[List[str], List[Tuple[str, str]]]:
         good_addr = []  # type: List[str]
         bad_addr = []  # type: List[Tuple[str, str]]
         for address in addresses:
             if not PyWalib.get_web3().isChecksumAddress(address):
-                bad_addr.append((address, _('invalid address')))
+                bad_addr.append((address, _("invalid address")))
                 continue
             if self.db.has_imported_address(address):
-                bad_addr.append((address, _('address already in wallet')))
+                bad_addr.append((address, _("address already in wallet")))
                 continue
             good_addr.append(address)
             self.db.add_imported_address(address, {})
-            #self.add_address(address)
+            # self.add_address(address)
         if write_to_disk:
             self.save_db()
         return good_addr, bad_addr
@@ -770,10 +840,11 @@ class Imported_Eth_Wallet(Simple_Eth_Wallet):
 
     def get_txin_type(self, address):
         pass
-        #return self.db.get_imported_address(address).get('type', 'address')
+        # return self.db.get_imported_address(address).get('type', 'address')
 
     def is_mine(self, address) -> bool:
-        if not address: return False
+        if not address:
+            return False
         return self.db.has_imported_address(address)
 
     def get_address_index(self, address) -> Optional[str]:
@@ -785,22 +856,23 @@ class Imported_Eth_Wallet(Simple_Eth_Wallet):
 
     def get_public_key(self, address) -> Optional[str]:
         x = self.db.get_imported_address(address)
-        return x.get('pubkey') if x else None
+        return x.get("pubkey") if x else None
 
-    def import_private_keys(self, keys: List[str], password: Optional[str], *,
-                            write_to_disk=True) -> Tuple[List[str], List[Tuple[str, str]]]:
+    def import_private_keys(
+        self, keys: List[str], password: Optional[str], *, write_to_disk=True
+    ) -> Tuple[List[str], List[Tuple[str, str]]]:
         good_addr = []  # type: List[str]
         bad_keys = []  # type: List[Tuple[str, str]]
         for key in keys:
             try:
                 pubkey = self.keystore.import_eth_privkey(key, password)
             except BaseException as e:
-                bad_keys.append((key, _('invalid private key') + f': {e}'))
+                bad_keys.append((key, _("invalid private key") + f": {e}"))
                 continue
             addr = pubkey.to_address()
             good_addr.append(addr)
-            self.db.add_imported_address(addr, {'pubkey':pubkey.__str__()})
-            #self.add_address(addr)
+            self.db.add_imported_address(addr, {"pubkey": pubkey.__str__()})
+            # self.add_address(addr)
         self.save_keystore()
         if write_to_disk:
             self.save_db()
@@ -812,7 +884,7 @@ class Imported_Eth_Wallet(Simple_Eth_Wallet):
             return good_addr[0]
         else:
             raise BaseException("Not checksumaddr")
-            #raise BitcoinException(str(bad_keys[0][1]))
+            # raise BitcoinException(str(bad_keys[0][1]))
 
     # def pubkeys_to_address(self, pubkeys):
     #     pubkey = pubkeys[0]
@@ -821,7 +893,7 @@ class Imported_Eth_Wallet(Simple_Eth_Wallet):
     #             return addr
     #     return None
 
-    def get_txin_type(self, ):
+    def get_txin_type(self,):
         print("11")
         pass
 
@@ -831,11 +903,10 @@ class Imported_Eth_Wallet(Simple_Eth_Wallet):
 
 
 class Deterministic_Eth_Wallet(Abstract_Eth_Wallet):
-
     def __init__(self, db, storage, *, config):
         self._ephemeral_addr_to_addr_index = {}  # type: Dict[str, Sequence[int]]
         Abstract_Eth_Wallet.__init__(self, db, storage, config=config)
-        self.gap_limit = db.get('gap_limit', 1)
+        self.gap_limit = db.get("gap_limit", 1)
         # generate addresses now. note that without libsecp this might block
         # for a few seconds!
         self.synchronize()
@@ -851,10 +922,14 @@ class Deterministic_Eth_Wallet(Abstract_Eth_Wallet):
         return out
 
     def get_receiving_addresses(self, *, slice_start=None, slice_stop=None):
-        return self.db.get_receiving_addresses(slice_start=slice_start, slice_stop=slice_stop)
+        return self.db.get_receiving_addresses(
+            slice_start=slice_start, slice_stop=slice_stop
+        )
 
     def get_change_addresses(self, *, slice_start=None, slice_stop=None):
-        return self.db.get_change_addresses(slice_start=slice_start, slice_stop=slice_stop)
+        return self.db.get_change_addresses(
+            slice_start=slice_start, slice_stop=slice_stop
+        )
 
     @profiler
     def try_detecting_internal_addresses_corruption(self):
@@ -876,11 +951,11 @@ class Deterministic_Eth_Wallet(Abstract_Eth_Wallet):
         return self.keystore.get_seed(password)
 
     def change_gap_limit(self, value):
-        '''This method is not called in the code, it is kept for console use'''
+        """This method is not called in the code, it is kept for console use"""
         value = int(value)
         if value >= self.min_acceptable_gap():
             self.gap_limit = value
-            self.db.put('gap_limit', self.gap_limit)
+            self.db.put("gap_limit", self.gap_limit)
             self.save_db()
             return True
         else:
@@ -917,7 +992,9 @@ class Deterministic_Eth_Wallet(Abstract_Eth_Wallet):
         pubkeys = self.derive_pubkeys(for_change, n)
         return self.pubkeys_to_address(pubkeys)
 
-    def export_private_key_for_path(self, path: Union[Sequence[int], str], password: Optional[str]) -> str:
+    def export_private_key_for_path(
+        self, path: Union[Sequence[int], str], password: Optional[str]
+    ) -> str:
         if isinstance(path, str):
             path = convert_bip32_path_to_list_of_uint32(path)
         pk, compressed = self.keystore.get_private_key(path, password)
@@ -927,17 +1004,23 @@ class Deterministic_Eth_Wallet(Abstract_Eth_Wallet):
     def get_public_keys_with_deriv_info(self, address: str):
         der_suffix = self.get_address_index(address)
         der_suffix = [int(x) for x in der_suffix]
-        return {k.derive_pubkey(*der_suffix): (k, der_suffix)
-                for k in self.get_keystores()}
-
+        return {
+            k.derive_pubkey(*der_suffix): (k, der_suffix) for k in self.get_keystores()
+        }
 
     def create_new_address(self, for_change: bool = False):
         assert type(for_change) is bool
         with self.lock:
-            n = self.db.num_change_addresses() if for_change else self.db.num_receiving_addresses()
+            n = (
+                self.db.num_change_addresses()
+                if for_change
+                else self.db.num_receiving_addresses()
+            )
             address = self.derive_address(int(for_change), n)
-            self.db.add_change_address(address) if for_change else self.db.add_receiving_address(address)
-           # self.add_address(address)
+            self.db.add_change_address(
+                address
+            ) if for_change else self.db.add_receiving_address(address)
+            # self.add_address(address)
             if for_change:
                 # note: if it's actually "old", it will get filtered later
                 self._not_old_change_addresses.append(address)
@@ -946,7 +1029,11 @@ class Deterministic_Eth_Wallet(Abstract_Eth_Wallet):
     def synchronize_sequence(self, for_change):
         limit = self.gap_limit_for_change if for_change else self.gap_limit
         while True:
-            num_addr = self.db.num_change_addresses() if for_change else self.db.num_receiving_addresses()
+            num_addr = (
+                self.db.num_change_addresses()
+                if for_change
+                else self.db.num_receiving_addresses()
+            )
             if num_addr < limit:
                 self.create_new_address(for_change)
                 continue
@@ -964,7 +1051,6 @@ class Deterministic_Eth_Wallet(Abstract_Eth_Wallet):
         with self.lock:
             self.synchronize_sequence(False)
             self.synchronize_sequence(True)
-
 
     def get_all_known_addresses_beyond_gap_limit(self):
         # note that we don't stop at first large gap
@@ -985,7 +1071,9 @@ class Deterministic_Eth_Wallet(Abstract_Eth_Wallet):
         return found
 
     def get_address_index(self, address) -> Optional[Sequence[int]]:
-        return self.db.get_address_index(address) or self._ephemeral_addr_to_addr_index.get(address)
+        return self.db.get_address_index(
+            address
+        ) or self._ephemeral_addr_to_addr_index.get(address)
 
     def get_address_path_str(self, address):
         intpath = self.get_address_index(address)
@@ -1019,12 +1107,12 @@ class Simple_Eth_Deterministic_Wallet(Simple_Eth_Wallet, Deterministic_Eth_Walle
         return pubkeys[0]
 
     def load_keystore(self):
-        self.keystore = load_keystore(self.db, 'keystore')
+        self.keystore = load_keystore(self.db, "keystore")
         try:
             xtype = bip32.xpub_type(self.keystore.xpub)
         except:
-            xtype = 'eth_standard'
-        #self.txin_type = 'p2pkh' if xtype == 'standard' else xtype
+            xtype = "eth_standard"
+        # self.txin_type = 'p2pkh' if xtype == 'standard' else xtype
 
     def get_master_public_key(self):
         return self.keystore.get_master_public_key()
@@ -1034,14 +1122,16 @@ class Simple_Eth_Deterministic_Wallet(Simple_Eth_Wallet, Deterministic_Eth_Walle
 
 
 class Standard_Eth_Wallet(Simple_Eth_Deterministic_Wallet):
-    wallet_type = 'eth_standard'
+    wallet_type = "eth_standard"
 
     def __init__(self, db, storage, *, config):
         Simple_Eth_Deterministic_Wallet.__init__(self, db, storage, config=config)
-        self.hd_main_eth_address = ''
+        self.hd_main_eth_address = ""
 
     def pubkeys_to_address(self, public_key: str):
-        return to_checksum_address(public_key_bytes_to_address(bytes.fromhex(public_key)))
+        return to_checksum_address(
+            public_key_bytes_to_address(bytes.fromhex(public_key))
+        )
 
     def get_keystore_by_address(self, address, password):
         privatekey = self.get_private_key(address, password)
@@ -1049,15 +1139,19 @@ class Standard_Eth_Wallet(Simple_Eth_Deterministic_Wallet):
         return json.dumps(encrypted_private_key)
 
     def load_keystore(self):
-        self.keystore = load_keystore(self.db, 'keystore') if self.db.get('keystore') else None
+        self.keystore = (
+            load_keystore(self.db, "keystore") if self.db.get("keystore") else None
+        )
 
     def save_keystore(self):
-        self.db.put('keystore', self.keystore.dump())
+        self.db.put("keystore", self.keystore.dump())
 
-    def export_private_key_for_path(self, path: Union[Sequence[int], str], password: Optional[str]) -> bytes:
+    def export_private_key_for_path(
+        self, path: Union[Sequence[int], str], password: Optional[str]
+    ) -> bytes:
         if isinstance(path, str):
             path = convert_bip32_path_to_list_of_uint32(path)
-        #pk, compressed = self.keystore.get_private_key(path, password)
+        # pk, compressed = self.keystore.get_private_key(path, password)
         ck, pk = self.keystore.get_keypair(path, password)
         return pk.hex()
 
@@ -1095,27 +1189,33 @@ class Standard_Eth_Wallet(Simple_Eth_Deterministic_Wallet):
     def get_private_key(self, address, password):
         path = self.db.get_address_index(address)
         private_key = self.export_private_key_for_path(path, password)
-        return "0x%s" %private_key
+        return "0x%s" % private_key
 
-wallet_types = ['standard', 'multisig', 'imported']
+
+wallet_types = ["standard", "multisig", "imported"]
+
 
 def register_wallet_type(category):
     wallet_types.append(category)
 
+
 wallet_constructors = {
-    'eth_standard': Standard_Eth_Wallet,
-    'eth_xpub': Standard_Eth_Wallet,
-    'eth_imported': Imported_Eth_Wallet
+    "eth_standard": Standard_Eth_Wallet,
+    "eth_xpub": Standard_Eth_Wallet,
+    "eth_imported": Imported_Eth_Wallet,
 }
+
 
 def register_constructor(wallet_type, constructor):
     wallet_constructors[wallet_type] = constructor
 
+
 # former WalletFactory
 class Eth_Wallet(object):
-
-    def __new__(self, db: 'WalletDB', storage: Optional[WalletStorage], *, config: SimpleConfig):
-        wallet_type = db.get('wallet_type')
+    def __new__(
+        self, db: "WalletDB", storage: Optional[WalletStorage], *, config: SimpleConfig
+    ):
+        wallet_type = db.get("wallet_type")
         WalletClass = Eth_Wallet.wallet_class(wallet_type)
         wallet = WalletClass(db, storage, config=config)
         return wallet
@@ -1127,5 +1227,3 @@ class Eth_Wallet(object):
         if wallet_type in wallet_constructors:
             return wallet_constructors[wallet_type]
         raise WalletFileException("Unknown wallet type: " + str(wallet_type))
-
-

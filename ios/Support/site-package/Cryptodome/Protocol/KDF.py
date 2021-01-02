@@ -26,30 +26,43 @@ import re
 import struct
 from functools import reduce
 
-from Cryptodome.Util.py3compat import (tobytes, bord, _copy_bytes, iter_range,
-                                  tostr, bchr, bstr)
-
-from Cryptodome.Hash import SHA1, SHA256, HMAC, CMAC, BLAKE2s
-from Cryptodome.Util.strxor import strxor
+from Cryptodome.Hash import CMAC, HMAC, SHA1, SHA256, BLAKE2s
 from Cryptodome.Random import get_random_bytes
-from Cryptodome.Util.number import size as bit_size, long_to_bytes, bytes_to_long
+from Cryptodome.Util._raw_api import (
+    c_size_t,
+    create_string_buffer,
+    get_raw_buffer,
+    load_pycryptodome_raw_lib,
+)
+from Cryptodome.Util.number import bytes_to_long, long_to_bytes
+from Cryptodome.Util.number import size as bit_size
+from Cryptodome.Util.py3compat import (
+    _copy_bytes,
+    bchr,
+    bord,
+    bstr,
+    iter_range,
+    tobytes,
+    tostr,
+)
+from Cryptodome.Util.strxor import strxor
 
-from Cryptodome.Util._raw_api import (load_pycryptodome_raw_lib,
-                                  create_string_buffer,
-                                  get_raw_buffer, c_size_t)
-
-_raw_salsa20_lib = load_pycryptodome_raw_lib("Cryptodome.Cipher._Salsa20",
-                    """
+_raw_salsa20_lib = load_pycryptodome_raw_lib(
+    "Cryptodome.Cipher._Salsa20",
+    """
                     int Salsa20_8_core(const uint8_t *x, const uint8_t *y,
                                        uint8_t *out);
-                    """)
+                    """,
+)
 
-_raw_scrypt_lib = load_pycryptodome_raw_lib("Cryptodome.Protocol._scrypt",
-                    """
+_raw_scrypt_lib = load_pycryptodome_raw_lib(
+    "Cryptodome.Protocol._scrypt",
+    """
                     typedef int (core_t)(const uint8_t [64], const uint8_t [64], uint8_t [64]);
                     int scryptROMix(const uint8_t *data_in, uint8_t *data_out,
                            size_t data_len, unsigned N, core_t *core);
-                    """)
+                    """,
+)
 
 
 def PBKDF1(password, salt, dkLen, count=1000, hashAlgo=None):
@@ -84,13 +97,15 @@ def PBKDF1(password, salt, dkLen, count=1000, hashAlgo=None):
     if not hashAlgo:
         hashAlgo = SHA1
     password = tobytes(password)
-    pHash = hashAlgo.new(password+salt)
+    pHash = hashAlgo.new(password + salt)
     digest = pHash.digest_size
     if dkLen > digest:
-        raise TypeError("Selected hash algorithm has a too short digest (%d bytes)." % digest)
+        raise TypeError(
+            "Selected hash algorithm has a too short digest (%d bytes)." % digest
+        )
     if len(salt) != 8:
         raise ValueError("Salt is not 8 bytes long (%d bytes instead)." % len(salt))
-    for i in iter_range(count-1):
+    for i in iter_range(count - 1):
         pHash = pHash.new(pHash.digest())
     return pHash.digest()[:dkLen]
 
@@ -150,24 +165,24 @@ def PBKDF2(password, salt, dkLen=16, count=1000, prf=None, hmac_hash_module=None
         # Generic (and slow) implementation
 
         if prf is None:
-            prf = lambda p,s: HMAC.new(p, s, hmac_hash_module).digest()
+            prf = lambda p, s: HMAC.new(p, s, hmac_hash_module).digest()
 
         def link(s):
             s[0], s[1] = s[1], prf(password, s[1])
             return s[0]
 
-        key = b''
+        key = b""
         i = 1
         while len(key) < dkLen:
-            s = [ prf(password, salt + struct.pack(">I", i)) ] * 2
-            key += reduce(strxor, (link(s) for j in range(count)) )
+            s = [prf(password, salt + struct.pack(">I", i))] * 2
+            key += reduce(strxor, (link(s) for j in range(count)))
             i += 1
 
     else:
         # Optimized implementation
-        key = b''
+        key = b""
         i = 1
-        while len(key)<dkLen:
+        while len(key) < dkLen:
             base = HMAC.new(password, b"", hmac_hash_module)
             first_digest = base.copy().update(salt + struct.pack(">I", i)).digest()
             key += base._pbkdf2_hmac_assist(first_digest, count)
@@ -200,11 +215,11 @@ class _S2V(object):
 
         self._key = _copy_bytes(None, None, key)
         self._ciphermod = ciphermod
-        self._last_string = self._cache = b'\x00' * ciphermod.block_size
-        
+        self._last_string = self._cache = b"\x00" * ciphermod.block_size
+
         # Max number of update() call we can process
         self._n_updates = ciphermod.block_size * 8 - 1
-        
+
         if cipher_params is None:
             self._cipher_params = {}
         else:
@@ -224,10 +239,10 @@ class _S2V(object):
         return _S2V(key, ciphermod)
 
     def _double(self, bs):
-        doubled = bytes_to_long(bs)<<1
+        doubled = bytes_to_long(bs) << 1
         if bord(bs[0]) & 0x80:
             doubled ^= 0x87
-        return long_to_bytes(doubled, len(bs))[-len(bs):]
+        return long_to_bytes(doubled, len(bs))[-len(bs) :]
 
     def update(self, item):
         """Pass the next component of the vector.
@@ -245,10 +260,12 @@ class _S2V(object):
             raise TypeError("Too many components passed to S2V")
         self._n_updates -= 1
 
-        mac = CMAC.new(self._key,
-                       msg=self._last_string,
-                       ciphermod=self._ciphermod,
-                       cipher_params=self._cipher_params)
+        mac = CMAC.new(
+            self._key,
+            msg=self._last_string,
+            ciphermod=self._ciphermod,
+            cipher_params=self._cipher_params,
+        )
         self._cache = strxor(self._double(self._cache), mac.digest())
         self._last_string = _copy_bytes(None, None, item)
 
@@ -260,15 +277,19 @@ class _S2V(object):
 
         if len(self._last_string) >= 16:
             # xorend
-            final = self._last_string[:-16] + strxor(self._last_string[-16:], self._cache)
+            final = self._last_string[:-16] + strxor(
+                self._last_string[-16:], self._cache
+            )
         else:
             # zero-pad & xor
-            padded = (self._last_string + b'\x80' + b'\x00' * 15)[:16]
+            padded = (self._last_string + b"\x80" + b"\x00" * 15)[:16]
             final = strxor(padded, self._double(self._cache))
-        mac = CMAC.new(self._key,
-                       msg=final,
-                       ciphermod=self._ciphermod,
-                       cipher_params=self._cipher_params)
+        mac = CMAC.new(
+            self._key,
+            msg=final,
+            ciphermod=self._ciphermod,
+            cipher_params=self._cipher_params,
+        )
         return mac.digest()
 
 
@@ -308,7 +329,7 @@ def HKDF(master, key_len, salt, hashmod, num_keys=1, context=None):
     if output_len > (255 * hashmod.digest_size):
         raise ValueError("Too much secret data to derive")
     if not salt:
-        salt = b'\x00' * hashmod.digest_size
+        salt = b"\x00" * hashmod.digest_size
     if context is None:
         context = b""
 
@@ -317,21 +338,22 @@ def HKDF(master, key_len, salt, hashmod, num_keys=1, context=None):
     prk = hmac.digest()
 
     # Step 2: expand
-    t = [ b"" ]
+    t = [b""]
     n = 1
     tlen = 0
     while tlen < output_len:
-        hmac = HMAC.new(prk, t[-1] + context + struct.pack('B', n), digestmod=hashmod)
+        hmac = HMAC.new(prk, t[-1] + context + struct.pack("B", n), digestmod=hashmod)
         t.append(hmac.digest())
         tlen += hashmod.digest_size
         n += 1
     derived_output = b"".join(t)
     if num_keys == 1:
         return derived_output[:key_len]
-    kol = [derived_output[idx:idx + key_len]
-           for idx in iter_range(0, output_len, key_len)]
+    kol = [
+        derived_output[idx : idx + key_len]
+        for idx in iter_range(0, output_len, key_len)
+    ]
     return list(kol[:num_keys])
-
 
 
 def scrypt(password, salt, key_len, N, r, p, num_keys=1):
@@ -377,7 +399,7 @@ def scrypt(password, salt, key_len, N, r, p, num_keys=1):
         raise ValueError("N must be a power of 2")
     if N >= 2 ** 32:
         raise ValueError("N is too big")
-    if p > ((2 ** 32 - 1) * 32)  // (128 * r):
+    if p > ((2 ** 32 - 1) * 32) // (128 * r):
         raise ValueError("p or r are too big")
 
     prf_hmac_sha256 = lambda p, s: HMAC.new(p, s, SHA256).digest()
@@ -392,25 +414,23 @@ def scrypt(password, salt, key_len, N, r, p, num_keys=1):
     for flow in iter_range(p):
         idx = flow * 128 * r
         buffer_out = create_string_buffer(128 * r)
-        result = scryptROMix(stage_1[idx : idx + 128 * r],
-                             buffer_out,
-                             c_size_t(128 * r),
-                             N,
-                             core)
+        result = scryptROMix(
+            stage_1[idx : idx + 128 * r], buffer_out, c_size_t(128 * r), N, core
+        )
         if result:
             raise ValueError("Error %X while running scrypt" % result)
-        data_out += [ get_raw_buffer(buffer_out) ]
+        data_out += [get_raw_buffer(buffer_out)]
 
-    dk = PBKDF2(password,
-                b"".join(data_out),
-                key_len * num_keys, 1,
-                prf=prf_hmac_sha256)
+    dk = PBKDF2(
+        password, b"".join(data_out), key_len * num_keys, 1, prf=prf_hmac_sha256
+    )
 
     if num_keys == 1:
         return dk
 
-    kol = [dk[idx:idx + key_len]
-           for idx in iter_range(0, key_len * num_keys, key_len)]
+    kol = [
+        dk[idx : idx + key_len] for idx in iter_range(0, key_len * num_keys, key_len)
+    ]
     return kol
 
 
@@ -423,7 +443,7 @@ def _bcrypt_encode(data):
         bits.append(bstr(bits_c))
     bits = b"".join(bits)
 
-    bits6 = [ bits[idx:idx+6] for idx in range(0, len(bits), 6) ]
+    bits6 = [bits[idx : idx + 6] for idx in range(0, len(bits), 6)]
 
     result = []
     for g in bits6[:-1]:
@@ -456,7 +476,7 @@ def _bcrypt_decode(data):
     elif modulo4 == 3:
         bits = bits[:-2]
 
-    bits8 = [ bits[idx:idx+8] for idx in range(0, len(bits), 8) ]
+    bits8 = [bits[idx : idx + 8] for idx in range(0, len(bits), 8)]
 
     result = []
     for g in bits8:
@@ -525,7 +545,7 @@ def bcrypt(password, cost, salt=None):
 
     cost_enc = b"$" + bstr(str(cost).zfill(2))
     salt_enc = b"$" + _bcrypt_encode(salt)
-    hash_enc = _bcrypt_encode(ctext[:-1])     # only use 23 bytes, not 24
+    hash_enc = _bcrypt_encode(ctext[:-1])  # only use 23 bytes, not 24
     return b"$2a" + cost_enc + salt_enc + hash_enc
 
 
@@ -548,12 +568,15 @@ def bcrypt_check(password, bcrypt_hash):
     bcrypt_hash = tobytes(bcrypt_hash)
 
     if len(bcrypt_hash) != 60:
-        raise ValueError("Incorrect length of the bcrypt hash: %d bytes instead of 60" % len(bcrypt_hash))
+        raise ValueError(
+            "Incorrect length of the bcrypt hash: %d bytes instead of 60"
+            % len(bcrypt_hash)
+        )
 
-    if bcrypt_hash[:4] != b'$2a$':
+    if bcrypt_hash[:4] != b"$2a$":
         raise ValueError("Unsupported prefix")
 
-    p = re.compile(br'\$2a\$([0-9][0-9])\$([A-Za-z0-9./]{22,22})([A-Za-z0-9./]{31,31})')
+    p = re.compile(br"\$2a\$([0-9][0-9])\$([A-Za-z0-9./]{22,22})([A-Za-z0-9./]{31,31})")
     r = p.match(bcrypt_hash)
     if not r:
         raise ValueError("Incorrect bcrypt hash format")
@@ -564,7 +587,7 @@ def bcrypt_check(password, bcrypt_hash):
 
     salt = _bcrypt_decode(r.group(2))
 
-    bcrypt_hash2  = bcrypt(password, cost, salt)
+    bcrypt_hash2 = bcrypt(password, cost, salt)
 
     secret = get_random_bytes(16)
 

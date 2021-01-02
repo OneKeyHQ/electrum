@@ -32,22 +32,20 @@ from binascii import unhexlify
 
 from Cryptodome.Cipher import ChaCha20
 from Cryptodome.Cipher.ChaCha20 import _HChaCha20
-from Cryptodome.Hash import Poly1305, BLAKE2s
-
+from Cryptodome.Hash import BLAKE2s, Poly1305
 from Cryptodome.Random import get_random_bytes
-
+from Cryptodome.Util._raw_api import is_buffer
 from Cryptodome.Util.number import long_to_bytes
 from Cryptodome.Util.py3compat import _copy_bytes, bord
-from Cryptodome.Util._raw_api import is_buffer
 
 
 def _enum(**enums):
-    return type('Enum', (), enums)
+    return type("Enum", (), enums)
 
 
-_CipherStatus = _enum(PROCESSING_AUTH_DATA=1,
-                      PROCESSING_CIPHERTEXT=2,
-                      PROCESSING_DONE=3)
+_CipherStatus = _enum(
+    PROCESSING_AUTH_DATA=1, PROCESSING_CIPHERTEXT=2, PROCESSING_DONE=3
+)
 
 
 class ChaCha20Poly1305Cipher(object):
@@ -65,13 +63,12 @@ class ChaCha20Poly1305Cipher(object):
 
         self.nonce = _copy_bytes(None, None, nonce)
 
-        self._next = (self.update, self.encrypt, self.decrypt, self.digest,
-                      self.verify)
+        self._next = (self.update, self.encrypt, self.decrypt, self.digest, self.verify)
 
         self._authenticator = Poly1305.new(key=key, nonce=nonce, cipher=ChaCha20)
 
         self._cipher = ChaCha20.new(key=key, nonce=nonce)
-        self._cipher.seek(64)   # Block counter starts at 1
+        self._cipher.seek(64)  # Block counter starts at 1
 
         self._len_aad = 0
         self._len_ct = 0
@@ -102,9 +99,9 @@ class ChaCha20Poly1305Cipher(object):
 
     def _pad_aad(self):
 
-        assert(self._status == _CipherStatus.PROCESSING_AUTH_DATA)
+        assert self._status == _CipherStatus.PROCESSING_AUTH_DATA
         if self._len_aad & 0x0F:
-            self._authenticator.update(b'\x00' * (16 - (self._len_aad & 0x0F)))
+            self._authenticator.update(b"\x00" * (16 - (self._len_aad & 0x0F)))
         self._status = _CipherStatus.PROCESSING_CIPHERTEXT
 
     def encrypt(self, plaintext, output=None):
@@ -165,16 +162,16 @@ class ChaCha20Poly1305Cipher(object):
         """Finalize the cipher (if not done already) and return the MAC."""
 
         if self._mac_tag:
-            assert(self._status == _CipherStatus.PROCESSING_DONE)
+            assert self._status == _CipherStatus.PROCESSING_DONE
             return self._mac_tag
 
-        assert(self._status != _CipherStatus.PROCESSING_DONE)
+        assert self._status != _CipherStatus.PROCESSING_DONE
 
         if self._status == _CipherStatus.PROCESSING_AUTH_DATA:
             self._pad_aad()
 
         if self._len_ct & 0x0F:
-            self._authenticator.update(b'\x00' * (16 - (self._len_ct & 0x0F)))
+            self._authenticator.update(b"\x00" * (16 - (self._len_ct & 0x0F)))
 
         self._status = _CipherStatus.PROCESSING_DONE
 
@@ -219,18 +216,15 @@ class ChaCha20Poly1305Cipher(object):
         """
 
         if self.verify not in self._next:
-            raise TypeError("verify() cannot be called"
-                            " when encrypting a message")
+            raise TypeError("verify() cannot be called" " when encrypting a message")
         self._next = (self.verify,)
 
         secret = get_random_bytes(16)
 
         self._compute_mac()
 
-        mac1 = BLAKE2s.new(digest_bits=160, key=secret,
-                           data=self._mac_tag)
-        mac2 = BLAKE2s.new(digest_bits=160, key=secret,
-                           data=received_mac_tag)
+        mac1 = BLAKE2s.new(digest_bits=160, key=secret, data=self._mac_tag)
+        mac2 = BLAKE2s.new(digest_bits=160, key=secret, data=received_mac_tag)
 
         if mac1.digest() != mac2.digest():
             raise ValueError("MAC check failed")
@@ -319,7 +313,7 @@ def new(**kwargs):
         pass
     elif len(nonce) == 24:
         key = _HChaCha20(key, nonce[:16])
-        nonce = b'\x00\x00\x00\x00' + nonce[16:]
+        nonce = b"\x00\x00\x00\x00" + nonce[16:]
     else:
         raise ValueError("Nonce must be 8, 12 or 24 bytes long")
 

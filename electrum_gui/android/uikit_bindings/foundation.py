@@ -4,9 +4,8 @@
 #
 # MIT License
 #
-from ctypes import cdll, c_bool
+from ctypes import c_bool, cdll
 from ctypes import util as c_utils
-
 
 from rubicon.objc import *
 
@@ -14,7 +13,7 @@ from rubicon.objc import *
 
 # FOUNDATION
 
-foundation = cdll.LoadLibrary(c_utils.find_library('Foundation'))
+foundation = cdll.LoadLibrary(c_utils.find_library("Foundation"))
 
 foundation.NSMouseInRect.restype = c_bool
 foundation.NSMouseInRect.argtypes = [NSPoint, NSRect, c_bool]
@@ -22,37 +21,35 @@ foundation.NSMouseInRect.argtypes = [NSPoint, NSRect, c_bool]
 
 # NSArray.h
 
-NSMutableArray = ObjCClass('NSMutableArray')
+NSMutableArray = ObjCClass("NSMutableArray")
 
 # NSData.h
 
-NSData = ObjCClass('NSData')
+NSData = ObjCClass("NSData")
 
 # NSURL.h
 
-NSURL = ObjCClass('NSURL')
+NSURL = ObjCClass("NSURL")
 
 # NSURLRequest.h
 
-NSURLRequest = ObjCClass('NSURLRequest')
+NSURLRequest = ObjCClass("NSURLRequest")
 
 # UIFont.h
 
-UIFont = ObjCClass('UIFont')
+UIFont = ObjCClass("UIFont")
 
 # NSTimer
-NSTimer = ObjCClass('NSTimer')
+NSTimer = ObjCClass("NSTimer")
 
-NSThread = ObjCClass('NSThread')
-NSInvocation = ObjCClass('NSInvocation')
-NSMethodSignature = ObjCClass('NSMethodSignature')
-NSEnumerator = ObjCClass('NSEnumerator')
-NSBundle = ObjCClass('NSBundle')
-#NSNumber = ObjCClass('NSNumber')
+NSThread = ObjCClass("NSThread")
+NSInvocation = ObjCClass("NSInvocation")
+NSMethodSignature = ObjCClass("NSMethodSignature")
+NSEnumerator = ObjCClass("NSEnumerator")
+NSBundle = ObjCClass("NSBundle")
+# NSNumber = ObjCClass('NSNumber')
 
-NSRunLoop = ObjCClass('NSRunLoop')
-NSDefaultRunLoopMode='kCFRunLoopDefaultMode'
+NSRunLoop = ObjCClass("NSRunLoop")
+NSDefaultRunLoopMode = "kCFRunLoopDefaultMode"
 
-__all__ = [
-
-]
+__all__ = []

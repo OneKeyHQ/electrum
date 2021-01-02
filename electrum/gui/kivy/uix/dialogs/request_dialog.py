@@ -1,20 +1,27 @@
 from typing import TYPE_CHECKING
 
-from kivy.factory import Factory
-from kivy.lang import Builder
-from kivy.core.clipboard import Clipboard
 from kivy.app import App
 from kivy.clock import Clock
+from kivy.core.clipboard import Clipboard
+from kivy.factory import Factory
+from kivy.lang import Builder
 
 from electrum.gui.kivy.i18n import _
-from electrum.invoices import pr_tooltips, pr_color
-from electrum.invoices import PR_UNKNOWN, PR_UNPAID, PR_FAILED, PR_TYPE_LN
+from electrum.invoices import (
+    PR_FAILED,
+    PR_TYPE_LN,
+    PR_UNKNOWN,
+    PR_UNPAID,
+    pr_color,
+    pr_tooltips,
+)
 
 if TYPE_CHECKING:
     from ...main_window import ElectrumWindow
 
 
-Builder.load_string('''
+Builder.load_string(
+    """
 <RequestDialog@Popup>
     id: popup
     amount_str: ''
@@ -80,10 +87,11 @@ Builder.load_string('''
                     height: '48dp'
                     text: _('Close')
                     on_release: popup.dismiss()
-''')
+"""
+)
+
 
 class RequestDialog(Factory.Popup):
-
     def __init__(self, title, key):
         self.status = PR_UNKNOWN
         Factory.Popup.__init__(self)
@@ -92,7 +100,9 @@ class RequestDialog(Factory.Popup):
         self.key = key
         r = self.app.wallet.get_request(key)
         self.is_lightning = r.is_lightning()
-        self.data = r.invoice if self.is_lightning else self.app.wallet.get_request_URI(r)
+        self.data = (
+            r.invoice if self.is_lightning else self.app.wallet.get_request_URI(r)
+        )
         self.amount_sat = r.get_amount_sat()
         self.amount_str = self.app.format_amount_and_units(self.amount_sat)
         self.description = r.message
@@ -112,15 +122,24 @@ class RequestDialog(Factory.Popup):
         self.status_str = req.get_status_str(self.status)
         self.status_color = pr_color[self.status]
         if self.status == PR_UNPAID and self.is_lightning and self.app.wallet.lnworker:
-            if self.amount_sat and self.amount_sat > self.app.wallet.lnworker.num_sats_can_receive():
-                self.warning = _('Warning') + ': ' + _('This amount exceeds the maximum you can currently receive with your channels')
+            if (
+                self.amount_sat
+                and self.amount_sat > self.app.wallet.lnworker.num_sats_can_receive()
+            ):
+                self.warning = (
+                    _("Warning")
+                    + ": "
+                    + _(
+                        "This amount exceeds the maximum you can currently receive with your channels"
+                    )
+                )
 
     def on_dismiss(self):
         self.app.request_popup = None
 
     def copy_to_clipboard(self):
         Clipboard.copy(self.data)
-        msg = _('Text copied to clipboard.')
+        msg = _("Text copied to clipboard.")
         Clock.schedule_once(lambda dt: self.app.show_info(msg))
 
     def do_share(self):
@@ -129,10 +148,12 @@ class RequestDialog(Factory.Popup):
 
     def delete_dialog(self):
         from .question import Question
+
         def cb(result):
             if result:
                 self.app.wallet.delete_request(self.key)
                 self.dismiss()
                 self.app.receive_screen.update()
-        d = Question(_('Delete request?'), cb)
+
+        d = Question(_("Delete request?"), cb)
         d.open()

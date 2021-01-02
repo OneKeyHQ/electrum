@@ -3,8 +3,8 @@
 
 from PyQt5 import QtCore, QtWidgets
 
-class CustomNode:
 
+class CustomNode:
     def __init__(self, model, data):
         self.model = model
         self._data = data
@@ -38,9 +38,7 @@ class CustomNode:
         self._children.append(child)
 
 
-
 class CustomModel(QtCore.QAbstractItemModel):
-
     def __init__(self, parent, columncount):
         QtCore.QAbstractItemModel.__init__(self, parent)
         self._root = CustomNode(self, None)

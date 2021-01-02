@@ -1,28 +1,23 @@
-
-from functools import partial
-import threading
 import os
+import threading
+from functools import partial
 from typing import TYPE_CHECKING
 
 from kivy.app import App
 from kivy.clock import Clock
-from kivy.lang import Builder
-from kivy.properties import ObjectProperty, StringProperty, OptionProperty
 from kivy.core.window import Window
+from kivy.lang import Builder
+from kivy.properties import ObjectProperty, OptionProperty, StringProperty
 from kivy.uix.button import Button
 from kivy.uix.togglebutton import ToggleButton
-from kivy.utils import platform
 from kivy.uix.widget import Widget
-from kivy.core.window import Window
-from kivy.clock import Clock
 from kivy.utils import platform
 
 from electrum.base_wizard import BaseWizard
 from electrum.util import is_valid_email
 
-
-from . import EventsDialog
 from ...i18n import _
+from . import EventsDialog
 from .password_dialog import PasswordDialog
 
 if TYPE_CHECKING:
@@ -31,7 +26,8 @@ if TYPE_CHECKING:
 
 # global Variables
 
-Builder.load_string('''
+Builder.load_string(
+    """
 #:import Window kivy.core.window.Window
 #:import _ electrum.gui.kivy.i18n._
 
@@ -573,13 +569,14 @@ Builder.load_string('''
         size_hint: 1, None
         height: '48dp'
 
-''')
-
+"""
+)
 
 
 class WizardDialog(EventsDialog):
-    ''' Abstract dialog to be used as the base for all Create Account Dialogs
-    '''
+    """ Abstract dialog to be used as the base for all Create Account Dialogs
+    """
+
     crcontent = ObjectProperty(None)
 
     def __init__(self, wizard, **kwargs):
@@ -588,28 +585,30 @@ class WizardDialog(EventsDialog):
         self.wizard = wizard
         self.ids.back.disabled = not wizard.can_go_back()
         self.app = App.get_running_app()
-        self.run_next = kwargs['run_next']
+        self.run_next = kwargs["run_next"]
 
         self._trigger_size_dialog = Clock.create_trigger(self._size_dialog)
         # note: everything bound here needs to be unbound as otherwise the
         # objects will be kept around and keep receiving the callbacks
-        Window.bind(size=self._trigger_size_dialog,
-                    rotation=self._trigger_size_dialog,
-                    on_keyboard=self.on_keyboard)
+        Window.bind(
+            size=self._trigger_size_dialog,
+            rotation=self._trigger_size_dialog,
+            on_keyboard=self.on_keyboard,
+        )
         self._trigger_size_dialog()
         self._on_release = False
 
     def _size_dialog(self, dt):
         app = App.get_running_app()
-        if app.ui_mode[0] == 'p':
+        if app.ui_mode[0] == "p":
             self.size = Window.size
         else:
-            #tablet
-            if app.orientation[0] == 'p':
-                #portrait
-                self.size = Window.size[0]/1.67, Window.size[1]/1.4
+            # tablet
+            if app.orientation[0] == "p":
+                # portrait
+                self.size = Window.size[0] / 1.67, Window.size[1] / 1.4
             else:
-                self.size = Window.size[0]/2.5, Window.size[1]
+                self.size = Window.size[0] / 2.5, Window.size[1]
 
     def add_widget(self, widget, index=0):
         if not self.crcontent:
@@ -625,16 +624,18 @@ class WizardDialog(EventsDialog):
                 app = App.get_running_app()
                 if not app.is_exit:
                     app.is_exit = True
-                    app.show_info(_('Press again to exit'))
+                    app.show_info(_("Press again to exit"))
                 else:
                     self._on_release = False
                     self.dismiss()
             return True
 
     def on_dismiss(self):
-        Window.unbind(size=self._trigger_size_dialog,
-                      rotation=self._trigger_size_dialog,
-                      on_keyboard=self.on_keyboard)
+        Window.unbind(
+            size=self._trigger_size_dialog,
+            rotation=self._trigger_size_dialog,
+            on_keyboard=self.on_keyboard,
+        )
         app = App.get_running_app()
         if app.wallet is None and not self._on_release:
             app.stop()
@@ -646,7 +647,7 @@ class WizardDialog(EventsDialog):
         self._on_release = True
         self.close()
         if not button:
-            self.parent.dispatch('on_wizard_complete', None, None)
+            self.parent.dispatch("on_wizard_complete", None, None)
             return
         if button is self.ids.back:
             self.wizard.go_back()
@@ -656,7 +657,6 @@ class WizardDialog(EventsDialog):
 
 
 class WizardMultisigDialog(WizardDialog):
-
     def get_params(self, button):
         m = self.ids.m.value
         n = self.ids.n.value
@@ -664,7 +664,6 @@ class WizardMultisigDialog(WizardDialog):
 
 
 class WizardOTPDialogBase(WizardDialog):
-
     def get_otp(self):
         otp = self.ids.otp.text
         if len(otp) != 6:
@@ -681,15 +680,18 @@ class WizardOTPDialogBase(WizardDialog):
         # press next
         next = self.ids.next
         if not next.disabled:
-            next.dispatch('on_release')
+            next.dispatch("on_release")
 
 
 class WizardKnownOTPDialog(WizardOTPDialogBase):
-
     def __init__(self, wizard, **kwargs):
         WizardOTPDialogBase.__init__(self, wizard, **kwargs)
-        self.message = _("This wallet is already registered with TrustedCoin. To finalize wallet creation, please enter your Google Authenticator Code.")
-        self.message2 =_("If you have lost your Google Authenticator account, you can request a new secret. You will need to retype your seed.")
+        self.message = _(
+            "This wallet is already registered with TrustedCoin. To finalize wallet creation, please enter your Google Authenticator Code."
+        )
+        self.message2 = _(
+            "If you have lost your Google Authenticator account, you can request a new secret. You will need to retype your seed."
+        )
         self.request_new = False
 
     def get_params(self, button):
@@ -706,29 +708,31 @@ class WizardKnownOTPDialog(WizardOTPDialogBase):
 
 
 class WizardNewOTPDialog(WizardOTPDialogBase):
-
     def __init__(self, wizard, **kwargs):
         WizardOTPDialogBase.__init__(self, wizard, **kwargs)
-        otp_secret = kwargs['otp_secret']
-        uri = "otpauth://totp/%s?secret=%s"%('trustedcoin.com', otp_secret)
-        self.message = "Please scan the following QR code in Google Authenticator. You may also use the secret key: %s"%otp_secret
-        self.message2 = _('Then, enter your Google Authenticator code:')
+        otp_secret = kwargs["otp_secret"]
+        uri = "otpauth://totp/%s?secret=%s" % ("trustedcoin.com", otp_secret)
+        self.message = (
+            "Please scan the following QR code in Google Authenticator. You may also use the secret key: %s"
+            % otp_secret
+        )
+        self.message2 = _("Then, enter your Google Authenticator code:")
         self.ids.qr.set_data(uri)
 
     def get_params(self, button):
         return (self.get_otp(), False)
 
-class WizardTOSDialog(WizardDialog):
 
+class WizardTOSDialog(WizardDialog):
     def __init__(self, wizard, **kwargs):
         WizardDialog.__init__(self, wizard, **kwargs)
-        self.ids.next.text = 'Accept'
+        self.ids.next.text = "Accept"
         self.ids.next.disabled = False
-        self.message = kwargs['tos']
-        self.message2 = _('Enter your email address:')
+        self.message = kwargs["tos"]
+        self.message2 = _("Enter your email address:")
+
 
 class WizardEmailDialog(WizardDialog):
-
     def get_params(self, button):
         return (self.ids.email.text,)
 
@@ -739,88 +743,91 @@ class WizardEmailDialog(WizardDialog):
         # press next
         next = self.ids.next
         if not next.disabled:
-            next.dispatch('on_release')
+            next.dispatch("on_release")
+
 
 class WizardConfirmDialog(WizardDialog):
-
     def __init__(self, wizard, **kwargs):
         super(WizardConfirmDialog, self).__init__(wizard, **kwargs)
-        self.message = kwargs.get('message', '')
-        self.value = 'ok'
+        self.message = kwargs.get("message", "")
+        self.value = "ok"
 
     def on_parent(self, instance, value):
         if value:
             app = App.get_running_app()
-            self._back = _back = partial(app.dispatch, 'on_back')
+            self._back = _back = partial(app.dispatch, "on_back")
 
     def get_params(self, button):
         return (True,)
 
 
 class WizardChoiceDialog(WizardDialog):
-
     def __init__(self, wizard, **kwargs):
         super(WizardChoiceDialog, self).__init__(wizard, **kwargs)
-        self.title = kwargs.get('message', '')
-        self.message = kwargs.get('message', '')
-        choices = kwargs.get('choices', [])
+        self.title = kwargs.get("message", "")
+        self.message = kwargs.get("message", "")
+        choices = kwargs.get("choices", [])
         self.init_choices(choices)
 
     def init_choices(self, choices):
         layout = self.ids.choices
-        layout.bind(minimum_height=layout.setter('height'))
+        layout.bind(minimum_height=layout.setter("height"))
         for action, text in choices:
             l = WizardButton(text=text)
             l.action = action
-            l.height = '48dp'
+            l.height = "48dp"
             l.root = self
             layout.add_widget(l)
 
     def on_parent(self, instance, value):
         if value:
             app = App.get_running_app()
-            self._back = _back = partial(app.dispatch, 'on_back')
+            self._back = _back = partial(app.dispatch, "on_back")
 
     def get_params(self, button):
         return (button.action,)
 
 
 class LineDialog(WizardDialog):
-    title = StringProperty('')
-    message = StringProperty('')
-    warning = StringProperty('')
+    title = StringProperty("")
+    message = StringProperty("")
+    warning = StringProperty("")
 
     def __init__(self, wizard, **kwargs):
         WizardDialog.__init__(self, wizard, **kwargs)
-        self.title = kwargs.get('title', '')
-        self.message = kwargs.get('message', '')
+        self.title = kwargs.get("title", "")
+        self.message = kwargs.get("message", "")
         self.ids.next.disabled = False
 
     def get_params(self, b):
         return (self.ids.passphrase_input.text,)
+
 
 class CLButton(ToggleButton):
     def on_release(self):
         self.root.script_type = self.script_type
         self.root.set_text(self.value)
 
+
 class ChoiceLineDialog(WizardChoiceDialog):
-    title = StringProperty('')
-    message1 = StringProperty('')
-    message2 = StringProperty('')
+    title = StringProperty("")
+    message1 = StringProperty("")
+    message2 = StringProperty("")
 
     def __init__(self, wizard, **kwargs):
         WizardDialog.__init__(self, wizard, **kwargs)
-        self.title = kwargs.get('title', '')
-        self.message1 = kwargs.get('message1', '')
-        self.message2 = kwargs.get('message2', '')
-        self.choices = kwargs.get('choices', [])
-        default_choice_idx = kwargs.get('default_choice_idx', 0)
+        self.title = kwargs.get("title", "")
+        self.message1 = kwargs.get("message1", "")
+        self.message2 = kwargs.get("message2", "")
+        self.choices = kwargs.get("choices", [])
+        default_choice_idx = kwargs.get("default_choice_idx", 0)
         self.ids.next.disabled = False
         layout = self.ids.choices
-        layout.bind(minimum_height=layout.setter('height'))
+        layout.bind(minimum_height=layout.setter("height"))
         for idx, (script_type, title, text) in enumerate(self.choices):
-            b = CLButton(text=title, height='30dp', group=self.title, allow_no_selection=False)
+            b = CLButton(
+                text=title, height="30dp", group=self.title, allow_no_selection=False
+            )
             b.script_type = script_type
             b.root = self
             b.value = text
@@ -834,24 +841,29 @@ class ChoiceLineDialog(WizardChoiceDialog):
     def get_params(self, b):
         return (self.ids.text_input.text, self.script_type)
 
+
 class ShowSeedDialog(WizardDialog):
-    seed_text = StringProperty('')
-    message = _("If you forget your PIN or lose your device, your seed phrase will be the only way to recover your funds.")
+    seed_text = StringProperty("")
+    message = _(
+        "If you forget your PIN or lose your device, your seed phrase will be the only way to recover your funds."
+    )
     ext = False
 
     def __init__(self, wizard, **kwargs):
         super(ShowSeedDialog, self).__init__(wizard, **kwargs)
-        self.seed_text = kwargs['seed_text']
+        self.seed_text = kwargs["seed_text"]
 
     def on_parent(self, instance, value):
         if value:
             app = App.get_running_app()
-            self._back = _back = partial(self.ids.back.dispatch, 'on_release')
+            self._back = _back = partial(self.ids.back.dispatch, "on_release")
 
     def options_dialog(self):
         from .seed_options import SeedOptionsDialog
+
         def callback(ext, _):
             self.ext = ext
+
         d = SeedOptionsDialog(self.ext, None, callback)
         d.open()
 
@@ -862,30 +874,33 @@ class ShowSeedDialog(WizardDialog):
 class WordButton(Button):
     pass
 
+
 class WizardButton(Button):
     pass
 
 
 class RestoreSeedDialog(WizardDialog):
-
     def __init__(self, wizard, **kwargs):
         super(RestoreSeedDialog, self).__init__(wizard, **kwargs)
-        self._test = kwargs['test']
+        self._test = kwargs["test"]
         from electrum.mnemonic import Mnemonic
         from electrum.old_mnemonic import wordlist as old_wordlist
-        self.words = set(Mnemonic('en').wordlist).union(set(old_wordlist))
-        self.ids.text_input_seed.text = ''
-        self.message = _('Please type your seed phrase using the virtual keyboard.')
-        self.title = _('Enter Seed')
+
+        self.words = set(Mnemonic("en").wordlist).union(set(old_wordlist))
+        self.ids.text_input_seed.text = ""
+        self.message = _("Please type your seed phrase using the virtual keyboard.")
+        self.title = _("Enter Seed")
         self.ext = False
         self.bip39 = False
 
     def options_dialog(self):
         from .seed_options import SeedOptionsDialog
+
         def callback(ext, bip39):
             self.ext = ext
             self.bip39 = bip39
             self.update_next_button()
+
         d = SeedOptionsDialog(self.ext, self.bip39, callback)
         d.open()
 
@@ -895,18 +910,20 @@ class RestoreSeedDialog(WizardDialog):
                 yield w
 
     def update_next_button(self):
-        self.ids.next.disabled = False if self.bip39 else not bool(self._test(self.get_text()))
+        self.ids.next.disabled = (
+            False if self.bip39 else not bool(self._test(self.get_text()))
+        )
 
     def on_text(self, dt):
         self.update_next_button()
 
         text = self.ids.text_input_seed.text
         if not text:
-            last_word = ''
-        elif text[-1] == ' ':
-            last_word = ''
+            last_word = ""
+        elif text[-1] == " ":
+            last_word = ""
         else:
-            last_word = text.split(' ')[-1]
+            last_word = text.split(" ")[-1]
 
         enable_space = False
         self.ids.suggestions.clear_widgets()
@@ -925,32 +942,33 @@ class RestoreSeedDialog(WizardDialog):
         i = len(last_word)
         p = set()
         for x in suggestions:
-            if len(x)>i: p.add(x[i])
+            if len(x) > i:
+                p.add(x[i])
 
         for line in [self.ids.line1, self.ids.line2, self.ids.line3]:
             for c in line.children:
                 if isinstance(c, Button):
-                    if c.text in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
+                    if c.text in "ABCDEFGHIJKLMNOPQRSTUVWXYZ":
                         c.disabled = (c.text.lower() not in p) and bool(last_word)
-                    elif c.text == ' ':
+                    elif c.text == " ":
                         c.disabled = not enable_space
 
     def on_word(self, w):
         text = self.get_text()
-        words = text.split(' ')
+        words = text.split(" ")
         words[-1] = w
-        text = ' '.join(words)
-        self.ids.text_input_seed.text = text + ' '
+        text = " ".join(words)
+        self.ids.text_input_seed.text = text + " "
         self.ids.suggestions.clear_widgets()
 
     def get_text(self):
         ti = self.ids.text_input_seed
-        return ' '.join(ti.text.strip().split())
+        return " ".join(ti.text.strip().split())
 
     def update_text(self, c):
         c = c.lower()
         text = self.ids.text_input_seed.text
-        if c == '<':
+        if c == "<":
             text = text[:-1]
         else:
             text += c
@@ -960,9 +978,8 @@ class RestoreSeedDialog(WizardDialog):
         if value:
             tis = self.ids.text_input_seed
             tis.focus = True
-            #tis._keyboard.bind(on_key_down=self.on_key_down)
-            self._back = _back = partial(self.ids.back.dispatch,
-                                         'on_release')
+            # tis._keyboard.bind(on_key_down=self.on_key_down)
+            self._back = _back = partial(self.ids.back.dispatch, "on_release")
             app = App.get_running_app()
 
     def on_key_down(self, keyboard, keycode, key, modifiers):
@@ -971,11 +988,11 @@ class RestoreSeedDialog(WizardDialog):
             return True
 
     def on_enter(self):
-        #self._remove_keyboard()
+        # self._remove_keyboard()
         # press next
         next = self.ids.next
         if not next.disabled:
-            next.dispatch('on_release')
+            next.dispatch("on_release")
 
     def _remove_keyboard(self):
         tis = self.ids.text_input_seed
@@ -988,22 +1005,21 @@ class RestoreSeedDialog(WizardDialog):
 
 
 class ConfirmSeedDialog(RestoreSeedDialog):
-
     def __init__(self, *args, **kwargs):
         RestoreSeedDialog.__init__(self, *args, **kwargs)
         self.ids.seed_dialog_header.ids.options_button.disabled = True
 
     def get_params(self, b):
         return (self.get_text(),)
+
     def options_dialog(self):
         pass
 
 
 class ShowXpubDialog(WizardDialog):
-
     def __init__(self, wizard, **kwargs):
         WizardDialog.__init__(self, wizard, **kwargs)
-        self.xpub = kwargs['xpub']
+        self.xpub = kwargs["xpub"]
         self.ids.next.disabled = False
 
     def do_copy(self):
@@ -1014,23 +1030,25 @@ class ShowXpubDialog(WizardDialog):
 
     def do_qr(self):
         from .qr_dialog import QRDialog
+
         popup = QRDialog(_("Master Public Key"), self.xpub, True)
         popup.open()
 
 
 class AddXpubDialog(WizardDialog):
-
     def __init__(self, wizard, **kwargs):
         WizardDialog.__init__(self, wizard, **kwargs)
+
         def is_valid(x):
             try:
-                return kwargs['is_valid'](x)
+                return kwargs["is_valid"](x)
             except:
                 return False
+
         self.is_valid = is_valid
-        self.title = kwargs['title']
-        self.message = kwargs['message']
-        self.allow_multi = kwargs.get('allow_multi', False)
+        self.title = kwargs["title"]
+        self.message = kwargs["message"]
+        self.allow_multi = kwargs.get("allow_multi", False)
 
     def check_text(self, dt):
         self.ids.next.disabled = not bool(self.is_valid(self.get_text()))
@@ -1045,37 +1063,37 @@ class AddXpubDialog(WizardDialog):
     def scan_xpub(self):
         def on_complete(text):
             if self.allow_multi:
-                self.ids.text_input.text += text + '\n'
+                self.ids.text_input.text += text + "\n"
             else:
                 self.ids.text_input.text = text
+
         self.app.scan_qr(on_complete)
 
     def do_paste(self):
         self.ids.text_input.text = self.app._clipboard.paste()
 
     def do_clear(self):
-        self.ids.text_input.text = ''
-
-
+        self.ids.text_input.text = ""
 
 
 class InstallWizard(BaseWizard, Widget):
-    '''
+    """
     events::
         `on_wizard_complete` Fired when the wizard is done creating/ restoring
         wallet/s.
-    '''
+    """
 
-    __events__ = ('on_wizard_complete', )
+    __events__ = ("on_wizard_complete",)
 
     def on_wizard_complete(self, storage, db):
         """overriden by main_window"""
         pass
 
     def waiting_dialog(self, task, msg, on_finished=None):
-        '''Perform a blocking task in the background by running the passed
+        """Perform a blocking task in the background by running the passed
         method in a thread.
-        '''
+        """
+
         def target():
             # run your threaded function
             try:
@@ -1085,41 +1103,57 @@ class InstallWizard(BaseWizard, Widget):
             # on  completion hide message
             Clock.schedule_once(lambda dt: app.info_bubble.hide(now=True), -1)
             if on_finished:
+
                 def protected_on_finished():
                     try:
                         on_finished()
                     except Exception as e:
                         self.show_error(str(e))
+
                 Clock.schedule_once(lambda dt: protected_on_finished(), -1)
 
         app = App.get_running_app()
         app.show_info_bubble(
-            text=msg, icon='atlas://electrum/gui/kivy/theming/light/important',
-            pos=Window.center, width='200sp', arrow_pos=None, modal=True)
-        t = threading.Thread(target = target)
+            text=msg,
+            icon="atlas://electrum/gui/kivy/theming/light/important",
+            pos=Window.center,
+            width="200sp",
+            arrow_pos=None,
+            modal=True,
+        )
+        t = threading.Thread(target=target)
         t.start()
 
     def terminate(self, *, storage=None, db=None, aborted=False):
         if storage is None and not aborted:
             storage, db = self.create_storage(self.path)
-        self.dispatch('on_wizard_complete', storage, db)
+        self.dispatch("on_wizard_complete", storage, db)
 
     def choice_dialog(self, **kwargs):
-        choices = kwargs['choices']
+        choices = kwargs["choices"]
         if len(choices) > 1:
             WizardChoiceDialog(self, **kwargs).open()
         else:
-            f = kwargs['run_next']
+            f = kwargs["run_next"]
             f(choices[0][0])
 
-    def multisig_dialog(self, **kwargs): WizardMultisigDialog(self, **kwargs).open()
-    def show_seed_dialog(self, **kwargs): ShowSeedDialog(self, **kwargs).open()
-    def line_dialog(self, **kwargs): LineDialog(self, **kwargs).open()
-    def choice_and_line_dialog(self, **kwargs): ChoiceLineDialog(self, **kwargs).open()
+    def multisig_dialog(self, **kwargs):
+        WizardMultisigDialog(self, **kwargs).open()
+
+    def show_seed_dialog(self, **kwargs):
+        ShowSeedDialog(self, **kwargs).open()
+
+    def line_dialog(self, **kwargs):
+        LineDialog(self, **kwargs).open()
+
+    def choice_and_line_dialog(self, **kwargs):
+        ChoiceLineDialog(self, **kwargs).open()
 
     def confirm_seed_dialog(self, **kwargs):
-        kwargs['title'] = _('Confirm Seed')
-        kwargs['message'] = _('Please retype your seed phrase, to confirm that you properly saved it')
+        kwargs["title"] = _("Confirm Seed")
+        kwargs["message"] = _(
+            "Please retype your seed phrase, to confirm that you properly saved it"
+        )
         ConfirmSeedDialog(self, **kwargs).open()
 
     def restore_seed_dialog(self, **kwargs):
@@ -1135,23 +1169,27 @@ class InstallWizard(BaseWizard, Widget):
         WizardEmailDialog(self, **kwargs).open()
 
     def otp_dialog(self, **kwargs):
-        if kwargs['otp_secret']:
+        if kwargs["otp_secret"]:
             WizardNewOTPDialog(self, **kwargs).open()
         else:
             WizardKnownOTPDialog(self, **kwargs).open()
 
     def add_xpub_dialog(self, **kwargs):
-        kwargs['message'] += ' ' + _('Use the camera button to scan a QR code.')
+        kwargs["message"] += " " + _("Use the camera button to scan a QR code.")
         AddXpubDialog(self, **kwargs).open()
 
     def add_cosigner_dialog(self, **kwargs):
-        kwargs['title'] = _("Add Cosigner") + " %d"%kwargs['index']
-        kwargs['message'] = _('Please paste your cosigners master public key, or scan it using the camera button.')
+        kwargs["title"] = _("Add Cosigner") + " %d" % kwargs["index"]
+        kwargs["message"] = _(
+            "Please paste your cosigners master public key, or scan it using the camera button."
+        )
         AddXpubDialog(self, **kwargs).open()
 
-    def show_xpub_dialog(self, **kwargs): ShowXpubDialog(self, **kwargs).open()
+    def show_xpub_dialog(self, **kwargs):
+        ShowXpubDialog(self, **kwargs).open()
 
-    def show_message(self, msg): self.show_error(msg)
+    def show_message(self, msg):
+        self.show_error(msg)
 
     def show_error(self, msg):
         app = App.get_running_app()  # type: ElectrumWindow
@@ -1162,21 +1200,25 @@ class InstallWizard(BaseWizard, Widget):
             # do not request PIN for watching-only wallets
             run_next(None, False)
             return
+
         def on_success(old_pw, pw):
             assert old_pw is None
             run_next(pw, True)
+
         def on_failure():
-            self.show_error(_('Password mismatch'))
-            self.run('request_password', run_next)
+            self.show_error(_("Password mismatch"))
+            self.run("request_password", run_next)
+
         app = App.get_running_app()
         popup = PasswordDialog(
             app,
-            check_password=lambda x:True,
+            check_password=lambda x: True,
             on_success=on_success,
             on_failure=on_failure,
             is_change=True,
             is_password=True,
-            message=_('Choose a password'))
+            message=_("Choose a password"),
+        )
         popup.open()
 
     def action_dialog(self, action, run_next):

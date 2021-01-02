@@ -1,30 +1,31 @@
 import copy
 from datetime import datetime
-from typing import NamedTuple, Callable, TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable, NamedTuple
 
 from kivy.app import App
-from kivy.factory import Factory
-from kivy.properties import ObjectProperty
-from kivy.lang import Builder
 from kivy.clock import Clock
-from kivy.uix.label import Label
-from kivy.uix.dropdown import DropDown
+from kivy.factory import Factory
+from kivy.lang import Builder
+from kivy.properties import ObjectProperty
 from kivy.uix.button import Button
+from kivy.uix.dropdown import DropDown
+from kivy.uix.label import Label
 
-from .question import Question
-from electrum.gui.kivy.i18n import _
-
-from electrum.util import InvalidPassword
 from electrum.address_synchronizer import TX_HEIGHT_LOCAL
+from electrum.gui.kivy.i18n import _
+from electrum.transaction import PartialTransaction, Transaction
+from electrum.util import InvalidPassword
 from electrum.wallet import CannotBumpFee
-from electrum.transaction import Transaction, PartialTransaction
+
 from ...util import address_colors
+from .question import Question
 
 if TYPE_CHECKING:
     from ...main_window import ElectrumWindow
 
 
-Builder.load_string('''
+Builder.load_string(
+    """
 
 <TxDialog>
     id: popup
@@ -114,7 +115,8 @@ Builder.load_string('''
                 height: '48dp'
                 text: _('Close')
                 on_release: root.dismiss()
-''')
+"""
+)
 
 
 class ActionButtonOption(NamedTuple):
@@ -124,7 +126,6 @@ class ActionButtonOption(NamedTuple):
 
 
 class TxDialog(Factory.Popup):
-
     def __init__(self, app, tx):
         Factory.Popup.__init__(self)
         self.app = app  # type: ElectrumWindow
@@ -151,16 +152,18 @@ class TxDialog(Factory.Popup):
         self.description = tx_details.label
         self.can_broadcast = tx_details.can_broadcast
         self.can_rbf = tx_details.can_bump
-        self.tx_hash = tx_details.txid or ''
+        self.tx_hash = tx_details.txid or ""
         if tx_mined_status.timestamp:
-            self.date_label = _('Date')
-            self.date_str = datetime.fromtimestamp(tx_mined_status.timestamp).isoformat(' ')[:-3]
+            self.date_label = _("Date")
+            self.date_str = datetime.fromtimestamp(tx_mined_status.timestamp).isoformat(
+                " "
+            )[:-3]
         elif exp_n:
-            self.date_label = _('Mempool depth')
-            self.date_str = _('{} from tip').format('%.2f MB'%(exp_n/1000000))
+            self.date_label = _("Mempool depth")
+            self.date_str = _("{} from tip").format("%.2f MB" % (exp_n / 1000000))
         else:
-            self.date_label = ''
-            self.date_str = ''
+            self.date_label = ""
+            self.date_str = ""
 
         self.can_sign = self.wallet.can_sign(self.tx)
         if amount is None:
@@ -171,21 +174,25 @@ class TxDialog(Factory.Popup):
         else:
             self.is_mine = True
             self.amount_str = format_amount(-amount)
-        risk_of_burning_coins = (isinstance(self.tx, PartialTransaction)
-                                 and self.can_sign
-                                 and fee is not None
-                                 and bool(self.wallet.get_warning_for_risk_of_burning_coins_as_fees(self.tx)))
+        risk_of_burning_coins = (
+            isinstance(self.tx, PartialTransaction)
+            and self.can_sign
+            and fee is not None
+            and bool(self.wallet.get_warning_for_risk_of_burning_coins_as_fees(self.tx))
+        )
         if fee is not None and not risk_of_burning_coins:
             self.fee_str = format_amount(fee)
             fee_per_kb = fee / self.tx.estimated_size() * 1000
             self.feerate_str = self.app.format_fee_rate(fee_per_kb)
         else:
-            self.fee_str = _('unknown')
-            self.feerate_str = _('unknown')
+            self.fee_str = _("unknown")
+            self.feerate_str = _("unknown")
         self.ids.output_list.update(self.tx.outputs())
 
         for dict_entry in self.ids.output_list.data:
-            dict_entry['color'], dict_entry['background_color'] = address_colors(self.wallet, dict_entry['address'])
+            dict_entry["color"], dict_entry["background_color"] = address_colors(
+                self.wallet, dict_entry["address"]
+            )
 
         self.can_remove_tx = tx_details.can_remove
         self.update_action_button()
@@ -193,10 +200,22 @@ class TxDialog(Factory.Popup):
     def update_action_button(self):
         action_button = self.ids.action_button
         options = (
-            ActionButtonOption(text=_('Sign'), func=lambda btn: self.do_sign(), enabled=self.can_sign),
-            ActionButtonOption(text=_('Broadcast'), func=lambda btn: self.do_broadcast(), enabled=self.can_broadcast),
-            ActionButtonOption(text=_('Bump fee'), func=lambda btn: self.do_rbf(), enabled=self.can_rbf),
-            ActionButtonOption(text=_('Remove'), func=lambda btn: self.remove_local_tx(), enabled=self.can_remove_tx),
+            ActionButtonOption(
+                text=_("Sign"), func=lambda btn: self.do_sign(), enabled=self.can_sign
+            ),
+            ActionButtonOption(
+                text=_("Broadcast"),
+                func=lambda btn: self.do_broadcast(),
+                enabled=self.can_broadcast,
+            ),
+            ActionButtonOption(
+                text=_("Bump fee"), func=lambda btn: self.do_rbf(), enabled=self.can_rbf
+            ),
+            ActionButtonOption(
+                text=_("Remove"),
+                func=lambda btn: self.remove_local_tx(),
+                enabled=self.can_remove_tx,
+            ),
         )
         num_options = sum(map(lambda o: bool(o.enabled), options))
         # if no options available, hide button
@@ -216,11 +235,11 @@ class TxDialog(Factory.Popup):
         else:
             # multiple options. button opens dropdown which has one sub-button for each
             dropdown = DropDown()
-            action_button.text = _('Options')
+            action_button.text = _("Options")
             self._action_button_fn = dropdown.open
             for option in options:
                 if option.enabled:
-                    btn = Button(text=option.text, size_hint_y=None, height='48dp')
+                    btn = Button(text=option.text, size_hint_y=None, height="48dp")
                     btn.bind(on_release=option.func)
                     dropdown.add_widget(btn)
 
@@ -230,9 +249,12 @@ class TxDialog(Factory.Popup):
 
     def do_rbf(self):
         from .bump_fee_dialog import BumpFeeDialog
+
         is_relevant, is_mine, v, fee = self.wallet.get_wallet_delta(self.tx)
         if fee is None:
-            self.app.show_error(_("Can't bump fee: unknown fee for original transaction."))
+            self.app.show_error(
+                _("Can't bump fee: unknown fee for original transaction.")
+            )
             return
         size = self.tx.estimated_size()
         d = BumpFeeDialog(self.app, fee, size, self._do_rbf)
@@ -242,8 +264,7 @@ class TxDialog(Factory.Popup):
         if new_fee_rate is None:
             return
         try:
-            new_tx = self.wallet.bump_fee(tx=self.tx,
-                                          new_fee_rate=new_fee_rate)
+            new_tx = self.wallet.bump_fee(tx=self.tx, new_fee_rate=new_fee_rate)
         except CannotBumpFee as e:
             self.app.show_error(str(e))
             return
@@ -257,7 +278,7 @@ class TxDialog(Factory.Popup):
         self.app.protected(_("Sign this transaction?"), self._do_sign, ())
 
     def _do_sign(self, password):
-        self.status_str = _('Signing') + '...'
+        self.status_str = _("Signing") + "..."
         Clock.schedule_once(lambda dt: self.__do_sign(password), 0.1)
 
     def __do_sign(self, password):
@@ -272,6 +293,7 @@ class TxDialog(Factory.Popup):
 
     def show_qr(self):
         from electrum.bitcoin import base_encode, bfh
+
         original_raw_tx = str(self.tx)
         tx = copy.deepcopy(self.tx)  # make copy as we mutate tx
         if isinstance(tx, PartialTransaction):
@@ -280,7 +302,9 @@ class TxDialog(Factory.Popup):
 
         text = tx.serialize_as_bytes()
         text = base_encode(text, base=43)
-        self.app.qr_dialog(_("Raw Transaction"), text, text_for_clipboard=original_raw_tx)
+        self.app.qr_dialog(
+            _("Raw Transaction"), text, text_for_clipboard=original_raw_tx
+        )
 
     def remove_local_tx(self):
         txid = self.tx.txid()
@@ -288,8 +312,9 @@ class TxDialog(Factory.Popup):
         to_delete |= self.wallet.get_depending_transactions(txid)
         question = _("Are you sure you want to remove this transaction?")
         if len(to_delete) > 1:
-            question = (_("Are you sure you want to remove this transaction and {} child transactions?")
-                        .format(len(to_delete) - 1))
+            question = _(
+                "Are you sure you want to remove this transaction and {} child transactions?"
+            ).format(len(to_delete) - 1)
 
         def on_prompt(b):
             if b:
@@ -298,16 +323,20 @@ class TxDialog(Factory.Popup):
                 self.wallet.save_db()
                 self.app._trigger_update_wallet()  # FIXME private...
                 self.dismiss()
+
         d = Question(question, on_prompt)
         d.open()
 
     def label_dialog(self):
         from .label_dialog import LabelDialog
+
         key = self.tx.txid()
         text = self.app.wallet.get_label(key)
+
         def callback(text):
             self.app.wallet.set_label(key, text)
             self.update()
             self.app.history_screen.update()
-        d = LabelDialog(_('Enter Transaction Label'), text, callback)
+
+        d = LabelDialog(_("Enter Transaction Label"), text, callback)
         d.open()

@@ -20,48 +20,64 @@
 # ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+import asyncio
 import binascii
-import os, sys, re, json
-from threading import Timer
-from collections import defaultdict, OrderedDict
-from typing import (NamedTuple, Union, TYPE_CHECKING, Tuple, Optional, Callable, Any,
-                    Sequence, Dict, Generic, TypeVar, List, Iterable)
-from datetime import datetime
+import builtins
 import decimal
-from functools import lru_cache
-from decimal import Decimal
+import hmac
+import ipaddress
+import json
+import os
+import random
+import re
+import ssl
+import stat
+import sys
+import threading
+import time
 import traceback
 import urllib
-import threading
-import hmac
-import stat
-from locale import localeconv
-import asyncio
-import urllib.request, urllib.parse, urllib.error
-import builtins
-import json
-import time
-from typing import NamedTuple, Optional
-import ssl
-import ipaddress
+import urllib.error
+import urllib.parse
+import urllib.request
+from collections import OrderedDict, defaultdict
+from datetime import datetime
+from decimal import Decimal
+from functools import lru_cache
 from ipaddress import IPv4Address, IPv6Address
-import random
-import attr
+from locale import localeconv
+from threading import Timer
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Dict,
+    Generic,
+    Iterable,
+    List,
+    NamedTuple,
+    Optional,
+    Sequence,
+    Tuple,
+    TypeVar,
+    Union,
+)
 
 import aiohttp
-from aiohttp_socks import ProxyConnector, ProxyType
 import aiorpcx
-from aiorpcx import TaskGroup
+import attr
 import certifi
 import dns.resolver
 import ecdsa
+from aiohttp_socks import ProxyConnector, ProxyType
+from aiorpcx import TaskGroup
 
 from .i18n import _
-from .logging import get_logger, Logger
+from .logging import Logger, get_logger
 
 if TYPE_CHECKING:
-    from .network import Network
     from .interface import Interface
+    from .network import Network
     from .simple_config import SimpleConfig
 
 
@@ -75,14 +91,15 @@ def inv_dict(d):
 ca_path = certifi.where()
 
 
-base_units = {'BTC':8, 'mBTC':5, 'bits':2, 'sat':0}
+base_units = {"BTC": 8, "mBTC": 5, "bits": 2, "sat": 0}
 base_units_inverse = inv_dict(base_units)
-base_units_list = ['BTC', 'mBTC', 'bits', 'sat']  # list(dict) does not guarantee order
+base_units_list = ["BTC", "mBTC", "bits", "sat"]  # list(dict) does not guarantee order
 
 DECIMAL_POINT_DEFAULT = 5  # mBTC
 
 
-class UnknownBaseUnit(Exception): pass
+class UnknownBaseUnit(Exception):
+    pass
 
 
 def decimal_point_to_base_unit_name(dp: int) -> str:
@@ -108,61 +125,75 @@ class NotEnoughFunds(Exception):
 
 class NoDynamicFeeEstimates(Exception):
     def __str__(self):
-        return BaseException(_('Dynamic fee estimates not available'))
+        return BaseException(_("Dynamic fee estimates not available"))
 
 
 class MultipleSpendMaxTxOutputs(Exception):
     def __str__(self):
-        return BaseException(_('At most one output can be set to spend max'))
+        return BaseException(_("At most one output can be set to spend max"))
 
 
 class NotEnoughFundsStr(Exception):
     def __str__(self):
-        return (_("Insufficient funds"))
+        return _("Insufficient funds")
+
 
 class InvalidPassword(Exception):
     def __str__(self):
         return _("Incorrect password.")
 
+
 class UserCancel(Exception):
     def __str__(self):
         return _("Operation cancelled")
+
 
 class InvalidBip39Seed(Exception):
     def __str__(self):
         return _("Incorrect Bip39 mnemonic format.")
 
+
 class NotSupportExportSeed(Exception):
     def __str__(self):
         return _("Current wallet does not support exporting Mnemonic.")
+
 
 class UnavailableBtcAddr(Exception):
     def __str__(self):
         return _("Incorrect bitcoin address.")
 
+
 class UnavailableEthAddr(Exception):
     def __str__(self):
         return _("Incorrect eth address.")
+
 
 class UnavaiableHdWallet(Exception):
     def __str__(self):
         return _("Please create HD wallet first.")
 
+
 class UnavailablePublicKey(Exception):
     def __str__(self):
         return _("Incorrect public key.")
+
 
 class UnavailablePrivateKey(Exception):
     def __str__(self):
         return _("Incorrect private key.")
 
+
 class DerivedWalletLimit(Exception):
     def __str__(self):
-        return _("The number of wallets created is limited, currently up to 20 HD wallets can be created.")
+        return _(
+            "The number of wallets created is limited, currently up to 20 HD wallets can be created."
+        )
+
 
 class FileAlreadyExist(Exception):
     def __str__(self):
         return _("File already exists.")
+
 
 class FailedGetTx(Exception):
     def __str__(self):
@@ -170,7 +201,7 @@ class FailedGetTx(Exception):
 
 
 class FileImportFailed(Exception):
-    def __init__(self, message=''):
+    def __init__(self, message=""):
         self.message = str(message)
 
     def __str__(self):
@@ -178,24 +209,27 @@ class FileImportFailed(Exception):
 
 
 class FileExportFailed(Exception):
-    def __init__(self, message=''):
+    def __init__(self, message=""):
         self.message = str(message)
 
     def __str__(self):
         return _("Failed to export to file.") + "\n" + self.message
 
 
-class WalletFileException(Exception): pass
+class WalletFileException(Exception):
+    pass
 
 
-class BitcoinException(Exception): pass
+class BitcoinException(Exception):
+    pass
 
 
 class UserFacingException(Exception):
     """Exception that contains information intended to be shown to the user."""
 
 
-class InvoiceError(UserFacingException): pass
+class InvoiceError(UserFacingException):
+    pass
 
 
 class DecimalEncoder(json.JSONEncoder):
@@ -204,22 +238,25 @@ class DecimalEncoder(json.JSONEncoder):
             return float(o)
         super(DecimalEncoder, self).default(o)
 
+
 class Ticker(Timer):
     def run(self):
         while not self.finished.is_set():
             self.function(*self.args, **self.kwargs)
             self.finished.wait(self.interval)
 
+
 # Throw this exception to unwind the stack like when an error occurs.
 # However unlike other exceptions the user won't be informed.
 class UserCancelled(Exception):
-    '''An exception that is suppressed from the user'''
+    """An exception that is suppressed from the user"""
+
     pass
 
 
 # note: this is not a NamedTuple as then its json encoding cannot be customized
 class Satoshis(object):
-    __slots__ = ('value',)
+    __slots__ = ("value",)
 
     def __new__(cls, value):
         self = super(Satoshis, cls).__new__(cls)
@@ -228,7 +265,7 @@ class Satoshis(object):
         return self
 
     def __repr__(self):
-        return f'Satoshis({self.value})'
+        return f"Satoshis({self.value})"
 
     def __str__(self):
         # note: precision is truncated to satoshis here
@@ -246,7 +283,7 @@ class Satoshis(object):
 
 # note: this is not a NamedTuple as then its json encoding cannot be customized
 class Fiat(object):
-    __slots__ = ('value', 'ccy')
+    __slots__ = ("value", "ccy")
 
     def __new__(cls, value: Optional[Decimal], ccy: str):
         self = super(Fiat, cls).__new__(cls)
@@ -257,25 +294,29 @@ class Fiat(object):
         return self
 
     def __repr__(self):
-        return 'Fiat(%s)'% self.__str__()
+        return "Fiat(%s)" % self.__str__()
 
     def __str__(self):
         if self.value is None or self.value.is_nan():
-            return _('No Data')
+            return _("No Data")
         else:
             return "{:.2f}".format(self.value)
 
     def to_ui_string(self):
         if self.value is None or self.value.is_nan():
-            return _('No Data')
+            return _("No Data")
         else:
-            return "{:.2f}".format(self.value) + ' ' + self.ccy
+            return "{:.2f}".format(self.value) + " " + self.ccy
 
     def __eq__(self, other):
         if self.ccy != other.ccy:
             return False
-        if isinstance(self.value, Decimal) and isinstance(other.value, Decimal) \
-                and self.value.is_nan() and other.value.is_nan():
+        if (
+            isinstance(self.value, Decimal)
+            and isinstance(other.value, Decimal)
+            and self.value.is_nan()
+            and other.value.is_nan()
+        ):
             return True
         return self.value == other.value
 
@@ -290,8 +331,9 @@ class Fiat(object):
 class MyEncoder(json.JSONEncoder):
     def default(self, obj):
         # note: this does not get called for namedtuples :(  https://bugs.python.org/issue30343
-        from .transaction import Transaction, TxOutput
         from .lnutil import UpdateAddHtlc
+        from .transaction import Transaction, TxOutput
+
         if isinstance(obj, UpdateAddHtlc):
             return obj.to_tuple()
         if isinstance(obj, Transaction):
@@ -305,12 +347,12 @@ class MyEncoder(json.JSONEncoder):
         if isinstance(obj, Decimal):
             return str(obj)
         if isinstance(obj, datetime):
-            return obj.isoformat(' ')[:-3]
+            return obj.isoformat(" ")[:-3]
         if isinstance(obj, set):
             return list(obj)
-        if isinstance(obj, bytes): # for nametuples in lnchannel
+        if isinstance(obj, bytes):  # for nametuples in lnchannel
             return obj.hex()
-        if hasattr(obj, 'to_json') and callable(obj.to_json):
+        if hasattr(obj, "to_json") and callable(obj.to_json):
             return obj.to_json()
         return super(MyEncoder, self).default(obj)
 
@@ -327,8 +369,10 @@ class ThreadJob(Logger):
         """Called periodically from the thread"""
         pass
 
+
 class DebugMem(ThreadJob):
-    '''A handy class for debugging GC memory leaks'''
+    """A handy class for debugging GC memory leaks"""
+
     def __init__(self, classes, interval=30):
         ThreadJob.__init__(self)
         self.next_time = 0
@@ -337,6 +381,7 @@ class DebugMem(ThreadJob):
 
     def mem_stats(self):
         import gc
+
         self.logger.info("Start memscan")
         gc.collect()
         objmap = defaultdict(list)
@@ -353,10 +398,11 @@ class DebugMem(ThreadJob):
             self.mem_stats()
             self.next_time = time.time() + self.interval
 
+
 class DaemonThread(threading.Thread, Logger):
     """ daemon thread that terminates cleanly """
 
-    LOGGING_SHORTCUT = 'd'
+    LOGGING_SHORTCUT = "d"
 
     def __init__(self):
         threading.Thread.__init__(self)
@@ -380,7 +426,7 @@ class DaemonThread(threading.Thread, Logger):
                 try:
                     job.run()
                 except Exception as e:
-                    self.logger.exception('')
+                    self.logger.exception("")
 
     def remove_jobs(self, jobs):
         with self.job_lock:
@@ -401,8 +447,9 @@ class DaemonThread(threading.Thread, Logger):
             self.running = False
 
     def on_stop(self):
-        if 'ANDROID_DATA' in os.environ:
+        if "ANDROID_DATA" in os.environ:
             import jnius
+
             jnius.detach()
             self.logger.info("jnius detach")
         self.logger.info("stopped")
@@ -413,18 +460,21 @@ def print_stderr(*args):
     sys.stderr.write(" ".join(args) + "\n")
     sys.stderr.flush()
 
+
 def print_msg(*args):
     # Stringify args
     args = [str(item) for item in args]
     sys.stdout.write(" ".join(args) + "\n")
     sys.stdout.flush()
 
+
 def json_encode(obj):
     try:
-        s = json.dumps(obj, sort_keys = True, indent = 4, cls=MyEncoder)
+        s = json.dumps(obj, sort_keys=True, indent=4, cls=MyEncoder)
     except TypeError:
         s = repr(obj)
     return s
+
 
 def json_decode(x):
     try:
@@ -436,11 +486,13 @@ def json_decode(x):
 # taken from Django Source Code
 def constant_time_compare(val1, val2):
     """Return True if the two strings are equal, False otherwise."""
-    return hmac.compare_digest(to_bytes(val1, 'utf8'), to_bytes(val2, 'utf8'))
+    return hmac.compare_digest(to_bytes(val1, "utf8"), to_bytes(val2, "utf8"))
 
 
 # decorator that prints execution time
-_profiler_logger = _logger.getChild('profiler')
+_profiler_logger = _logger.getChild("profiler")
+
+
 def profiler(func):
     def do_profile(args, kw_args):
         name = func.__qualname__
@@ -449,18 +501,22 @@ def profiler(func):
         t = time.time() - t0
         _profiler_logger.debug(f"{name} {t:,.4f}")
         return o
+
     return lambda *args, **kw_args: do_profile(args, kw_args)
 
 
 def android_ext_dir():
     from android.storage import primary_external_storage_path
+
     return primary_external_storage_path()
 
+
 def android_backup_dir():
-    d = os.path.join(android_ext_dir(), 'org.electrum.electrum')
+    d = os.path.join(android_ext_dir(), "org.electrum.electrum")
     if not os.path.exists(d):
         os.mkdir(d)
     return d
+
 
 # def android_data_dir():
 #     import jnius
@@ -469,14 +525,17 @@ def android_backup_dir():
 @lru_cache()
 def android_data_dir():
     from com.chaquo.python import Python
+
     context = Python.getPlatform().getApplication()
-    return context.getFilesDir().getPath() + '/data'
+    return context.getFilesDir().getPath() + "/data"
+
 
 def get_backup_dir(config):
-    if 'ANDROID_DATA' in os.environ:
-        return android_backup_dir() if config.get('android_backups') else None
+    if "ANDROID_DATA" in os.environ:
+        return android_backup_dir() if config.get("android_backups") else None
     else:
-        return config.get('backup_dir')
+        return config.get("backup_dir")
+
 
 def ensure_sparse_file(filename):
     # On modern Linux, no need to do anything.
@@ -485,7 +544,7 @@ def ensure_sparse_file(filename):
         try:
             os.system('fsutil sparse setflag "{}" 1'.format(filename))
         except Exception as e:
-            _logger.info(f'error marking file {filename} as sparse: {e}')
+            _logger.info(f"error marking file {filename} as sparse: {e}")
 
 
 def get_headers_dir(config):
@@ -498,8 +557,10 @@ def assert_datadir_available(config_path):
         return
     else:
         raise FileNotFoundError(
-            'Electrum datadir does not exist. Was it deleted while running?' + '\n' +
-            'Should be at {}'.format(path))
+            "Electrum datadir does not exist. Was it deleted while running?"
+            + "\n"
+            + "Should be at {}".format(path)
+        )
 
 
 def assert_file_in_datadir_available(path, config_path):
@@ -508,17 +569,15 @@ def assert_file_in_datadir_available(path, config_path):
     else:
         assert_datadir_available(config_path)
         raise FileNotFoundError(
-            'Cannot find file but datadir is there.' + '\n' +
-            'Should be at {}'.format(path))
+            "Cannot find file but datadir is there."
+            + "\n"
+            + "Should be at {}".format(path)
+        )
 
 
 def standardize_path(path):
-    return os.path.normcase(
-            os.path.realpath(
-                os.path.abspath(
-                    os.path.expanduser(
-                        path
-    ))))
+    return os.path.normcase(os.path.realpath(os.path.abspath(os.path.expanduser(path))))
+
 
 def delete_file(path):
     for i in os.listdir(path):
@@ -527,6 +586,7 @@ def delete_file(path):
             os.remove(path_file)
         else:
             delete_file(path_file)
+
 
 def get_new_wallet_name(wallet_folder: str) -> str:
     i = 1
@@ -547,7 +607,7 @@ def assert_bytes(*args):
         for x in args:
             assert isinstance(x, (bytes, bytearray))
     except:
-        print('assert bytes failed', list(map(type, args)))
+        print("assert bytes failed", list(map(type, args)))
         raise
 
 
@@ -568,7 +628,7 @@ def to_string(x, enc) -> str:
         raise TypeError("Not a string or bytes like object")
 
 
-def to_bytes(something, encoding='utf8') -> bytes:
+def to_bytes(something, encoding="utf8") -> bytes:
     """
     cast string to bytes() like object, but for python2 support it's bytearray copy
     """
@@ -598,8 +658,9 @@ def bh2u(x: bytes) -> str:
 
 def xor_bytes(a: bytes, b: bytes) -> bytes:
     size = min(len(a), len(b))
-    return ((int.from_bytes(a[:size], "big") ^ int.from_bytes(b[:size], "big"))
-            .to_bytes(size, "big"))
+    return (int.from_bytes(a[:size], "big") ^ int.from_bytes(b[:size], "big")).to_bytes(
+        size, "big"
+    )
 
 
 def user_dir():
@@ -607,16 +668,16 @@ def user_dir():
         return os.environ["ELECTRUMDIR"]
     elif "iOS_DATA" in os.environ:
         return os.environ["iOS_DATA"]
-    elif 'ANDROID_DATA' in os.environ:
+    elif "ANDROID_DATA" in os.environ:
         return android_data_dir()
-    elif os.name == 'posix':
+    elif os.name == "posix":
         return os.path.join(os.environ["HOME"], ".electrum")
     elif "APPDATA" in os.environ:
         return os.path.join(os.environ["APPDATA"], "Electrum")
     elif "LOCALAPPDATA" in os.environ:
         return os.path.join(os.environ["LOCALAPPDATA"], "Electrum")
     else:
-        #raise Exception("No home directory found in environment variables.")
+        # raise Exception("No home directory found in environment variables.")
         return
 
 
@@ -634,13 +695,16 @@ def is_valid_email(s):
 
 
 def is_hash256_str(text: Any) -> bool:
-    if not isinstance(text, str): return False
-    if len(text) != 64: return False
+    if not isinstance(text, str):
+        return False
+    if len(text) != 64:
+        return False
     return is_hex_str(text)
 
 
 def is_hex_str(text: Any) -> bool:
-    if not isinstance(text, str): return False
+    if not isinstance(text, str):
+        return False
     try:
         bytes.fromhex(text)
     except:
@@ -687,47 +751,48 @@ def chunks(items, size: int):
     if size < 1:
         raise ValueError(f"size must be positive, not {repr(size)}")
     for i in range(0, len(items), size):
-        yield items[i: i + size]
+        yield items[i : i + size]
 
 
 def format_satoshis_plain(x, *, decimal_point=8) -> str:
     """Display a satoshi amount scaled.  Always uses a '.' as a decimal
     point and has no thousands separator"""
-    if x == '!':
-        return 'max'
+    if x == "!":
+        return "max"
     scale_factor = pow(10, decimal_point)
-    return "{:.8f}".format(Decimal(x) / scale_factor).rstrip('0').rstrip('.')
+    return "{:.8f}".format(Decimal(x) / scale_factor).rstrip("0").rstrip(".")
 
 
-DECIMAL_POINT = localeconv()['decimal_point']  # type: str
+DECIMAL_POINT = localeconv()["decimal_point"]  # type: str
 
 
 def format_satoshis(
-        x,  # in satoshis
-        *,
-        num_zeros=0,
-        decimal_point=8,
-        precision=None,
-        is_diff=False,
-        whitespaces=False,
+    x,  # in satoshis
+    *,
+    num_zeros=0,
+    decimal_point=8,
+    precision=None,
+    is_diff=False,
+    whitespaces=False,
 ) -> str:
     if x is None:
-        return 'unknown'
-    if x == '!':
-        return 'max'
+        return "unknown"
+    if x == "!":
+        return "max"
     if precision is None:
         precision = decimal_point
     # format string
     decimal_format = "." + str(precision) if precision > 0 else ""
     if is_diff:
-        decimal_format = '+' + decimal_format
+        decimal_format = "+" + decimal_format
     # initial result
     scale_factor = pow(10, decimal_point)
     if not isinstance(x, Decimal):
-        x = Decimal(x).quantize(Decimal('1E-8'))
+        x = Decimal(x).quantize(Decimal("1E-8"))
     result = ("{:" + decimal_format + "f}").format(x / scale_factor)
-    if "." not in result: result += "."
-    result = result.rstrip('0')
+    if "." not in result:
+        result += "."
+    result = result.rstrip("0")
     # extra decimal places
     integer_part, fract_part = result.split(".")
     if len(fract_part) < num_zeros:
@@ -737,7 +802,7 @@ def format_satoshis(
     if whitespaces:
         result += " " * (decimal_point - len(fract_part))
         result = " " * (15 - len(result)) + result
-    if result[-1] == '.':
+    if result[-1] == ".":
         result = result[0:-1]
     return result
 
@@ -750,7 +815,9 @@ def format_fee_satoshis(fee, *, num_zeros=0, precision=None):
     if precision is None:
         precision = FEERATE_PRECISION
     num_zeros = min(num_zeros, FEERATE_PRECISION)  # no more zeroes than available prec
-    return format_satoshis(fee, num_zeros=num_zeros, decimal_point=0, precision=precision)
+    return format_satoshis(
+        fee, num_zeros=num_zeros, decimal_point=0, precision=precision
+    )
 
 
 def quantize_feerate(fee) -> Union[None, Decimal, int]:
@@ -765,13 +832,14 @@ def timestamp_to_datetime(timestamp):
         return None
     return datetime.fromtimestamp(timestamp)
 
+
 def format_time(timestamp):
     date = timestamp_to_datetime(timestamp)
-    return date.isoformat(' ') if date else _("Unknown")
+    return date.isoformat(" ") if date else _("Unknown")
 
 
 # Takes a timestamp and returns a string with the approximation of the age
-def age(from_date, since_date = None, target_tz=None, include_seconds=False):
+def age(from_date, since_date=None, target_tz=None, include_seconds=False):
     if from_date is None:
         return "Unknown"
 
@@ -784,9 +852,11 @@ def age(from_date, since_date = None, target_tz=None, include_seconds=False):
 
 
 def time_difference(distance_in_time, include_seconds):
-    #distance_in_time = since_date - from_date
-    distance_in_seconds = int(round(abs(distance_in_time.days * 86400 + distance_in_time.seconds)))
-    distance_in_minutes = int(round(distance_in_seconds/60))
+    # distance_in_time = since_date - from_date
+    distance_in_seconds = int(
+        round(abs(distance_in_time.days * 86400 + distance_in_time.seconds))
+    )
+    distance_in_minutes = int(round(distance_in_seconds / 60))
 
     if distance_in_minutes == 0:
         if include_seconds:
@@ -812,77 +882,111 @@ def time_difference(distance_in_time, include_seconds):
     else:
         return "over %d years" % (round(distance_in_minutes / 525600))
 
+
 mainnet_block_explorers = {
-    'Bitupper Explorer': ('https://bitupper.com/en/explorer/bitcoin/',
-                        {'tx': 'transactions/', 'addr': 'addresses/'}),
-    'Bitflyer.jp': ('https://chainflyer.bitflyer.jp/',
-                        {'tx': 'Transaction/', 'addr': 'Address/'}),
-    'Blockchain.info': ('https://blockchain.com/btc/',
-                        {'tx': 'tx/', 'addr': 'address/'}),
-    'blockchainbdgpzk.onion': ('https://blockchainbdgpzk.onion/',
-                        {'tx': 'tx/', 'addr': 'address/'}),
-    'Blockstream.info': ('https://blockstream.info/',
-                        {'tx': 'tx/', 'addr': 'address/'}),
-    'Bitaps.com': ('https://btc.bitaps.com/',
-                        {'tx': '', 'addr': ''}),
-    'BTC.com': ('https://btc.com/',
-                        {'tx': '', 'addr': ''}),
-    'Chain.so': ('https://www.chain.so/',
-                        {'tx': 'tx/BTC/', 'addr': 'address/BTC/'}),
-    'Insight.is': ('https://insight.bitpay.com/',
-                        {'tx': 'tx/', 'addr': 'address/'}),
-    'TradeBlock.com': ('https://tradeblock.com/blockchain/',
-                        {'tx': 'tx/', 'addr': 'address/'}),
-    'BlockCypher.com': ('https://live.blockcypher.com/btc/',
-                        {'tx': 'tx/', 'addr': 'address/'}),
-    'Blockchair.com': ('https://blockchair.com/bitcoin/',
-                        {'tx': 'transaction/', 'addr': 'address/'}),
-    'blockonomics.co': ('https://www.blockonomics.co/',
-                        {'tx': 'api/tx?txid=', 'addr': '#/search?q='}),
-    'mempool.space': ('https://mempool.space/',
-                        {'tx': 'tx/', 'addr': 'address/'}),
-    'OXT.me': ('https://oxt.me/',
-                        {'tx': 'transaction/', 'addr': 'address/'}),
-    'smartbit.com.au': ('https://www.smartbit.com.au/',
-                        {'tx': 'tx/', 'addr': 'address/'}),
-    'mynode.local': ('http://mynode.local:3002/',
-                        {'tx': 'tx/', 'addr': 'address/'}),
-    'system default': ('blockchain:/',
-                        {'tx': 'tx/', 'addr': 'address/'}),
+    "Bitupper Explorer": (
+        "https://bitupper.com/en/explorer/bitcoin/",
+        {"tx": "transactions/", "addr": "addresses/"},
+    ),
+    "Bitflyer.jp": (
+        "https://chainflyer.bitflyer.jp/",
+        {"tx": "Transaction/", "addr": "Address/"},
+    ),
+    "Blockchain.info": (
+        "https://blockchain.com/btc/",
+        {"tx": "tx/", "addr": "address/"},
+    ),
+    "blockchainbdgpzk.onion": (
+        "https://blockchainbdgpzk.onion/",
+        {"tx": "tx/", "addr": "address/"},
+    ),
+    "Blockstream.info": (
+        "https://blockstream.info/",
+        {"tx": "tx/", "addr": "address/"},
+    ),
+    "Bitaps.com": ("https://btc.bitaps.com/", {"tx": "", "addr": ""}),
+    "BTC.com": ("https://btc.com/", {"tx": "", "addr": ""}),
+    "Chain.so": ("https://www.chain.so/", {"tx": "tx/BTC/", "addr": "address/BTC/"}),
+    "Insight.is": ("https://insight.bitpay.com/", {"tx": "tx/", "addr": "address/"}),
+    "TradeBlock.com": (
+        "https://tradeblock.com/blockchain/",
+        {"tx": "tx/", "addr": "address/"},
+    ),
+    "BlockCypher.com": (
+        "https://live.blockcypher.com/btc/",
+        {"tx": "tx/", "addr": "address/"},
+    ),
+    "Blockchair.com": (
+        "https://blockchair.com/bitcoin/",
+        {"tx": "transaction/", "addr": "address/"},
+    ),
+    "blockonomics.co": (
+        "https://www.blockonomics.co/",
+        {"tx": "api/tx?txid=", "addr": "#/search?q="},
+    ),
+    "mempool.space": ("https://mempool.space/", {"tx": "tx/", "addr": "address/"}),
+    "OXT.me": ("https://oxt.me/", {"tx": "transaction/", "addr": "address/"}),
+    "smartbit.com.au": (
+        "https://www.smartbit.com.au/",
+        {"tx": "tx/", "addr": "address/"},
+    ),
+    "mynode.local": ("http://mynode.local:3002/", {"tx": "tx/", "addr": "address/"}),
+    "system default": ("blockchain:/", {"tx": "tx/", "addr": "address/"}),
 }
 
 testnet_block_explorers = {
-    'Bitaps.com': ('https://tbtc.bitaps.com/',
-                       {'tx': '', 'addr': ''}),
-    'BlockCypher.com': ('https://live.blockcypher.com/btc-testnet/',
-                       {'tx': 'tx/', 'addr': 'address/'}),
-    'Blockchain.info': ('https://www.blockchain.com/btc-testnet/',
-                       {'tx': 'tx/', 'addr': 'address/'}),
-    'Blockstream.info': ('https://blockstream.info/testnet/',
-                        {'tx': 'tx/', 'addr': 'address/'}),
-    'mempool.space': ('https://mempool.space/testnet/',
-                        {'tx': 'tx/', 'addr': 'address/'}),    
-    'smartbit.com.au': ('https://testnet.smartbit.com.au/',
-                       {'tx': 'tx/', 'addr': 'address/'}),
-    'system default': ('blockchain://000000000933ea01ad0ee984209779baaec3ced90fa3f408719526f8d77f4943/',
-                       {'tx': 'tx/', 'addr': 'address/'}),
+    "Bitaps.com": ("https://tbtc.bitaps.com/", {"tx": "", "addr": ""}),
+    "BlockCypher.com": (
+        "https://live.blockcypher.com/btc-testnet/",
+        {"tx": "tx/", "addr": "address/"},
+    ),
+    "Blockchain.info": (
+        "https://www.blockchain.com/btc-testnet/",
+        {"tx": "tx/", "addr": "address/"},
+    ),
+    "Blockstream.info": (
+        "https://blockstream.info/testnet/",
+        {"tx": "tx/", "addr": "address/"},
+    ),
+    "mempool.space": (
+        "https://mempool.space/testnet/",
+        {"tx": "tx/", "addr": "address/"},
+    ),
+    "smartbit.com.au": (
+        "https://testnet.smartbit.com.au/",
+        {"tx": "tx/", "addr": "address/"},
+    ),
+    "system default": (
+        "blockchain://000000000933ea01ad0ee984209779baaec3ced90fa3f408719526f8d77f4943/",
+        {"tx": "tx/", "addr": "address/"},
+    ),
 }
+
 
 def block_explorer_info():
     from . import constants
-    return mainnet_block_explorers if not constants.net.TESTNET else testnet_block_explorers
 
-def block_explorer(config: 'SimpleConfig') -> str:
+    return (
+        mainnet_block_explorers
+        if not constants.net.TESTNET
+        else testnet_block_explorers
+    )
+
+
+def block_explorer(config: "SimpleConfig") -> str:
     from . import constants
-    default_ = 'Blockstream.info'
-    be_key = config.get('block_explorer', default_)
+
+    default_ = "Blockstream.info"
+    be_key = config.get("block_explorer", default_)
     be = block_explorer_info().get(be_key)
     return be_key if be is not None else default_
 
-def block_explorer_tuple(config: 'SimpleConfig') -> Optional[Tuple[str, dict]]:
+
+def block_explorer_tuple(config: "SimpleConfig") -> Optional[Tuple[str, dict]]:
     return block_explorer_info().get(block_explorer(config))
 
-def block_explorer_URL(config: 'SimpleConfig', kind: str, item: str) -> Optional[str]:
+
+def block_explorer_URL(config: "SimpleConfig", kind: str, item: str) -> Optional[str]:
     be_tuple = block_explorer_tuple(config)
     if not be_tuple:
         return
@@ -891,13 +995,16 @@ def block_explorer_URL(config: 'SimpleConfig', kind: str, item: str) -> Optional
     if kind_str is None:
         return
     url_parts = [explorer_url, kind_str, item]
-    return ''.join(url_parts)
+    return "".join(url_parts)
+
 
 # URL decode
-#_ud = re.compile('%([0-9a-hA-H]{2})', re.MULTILINE)
-#urldecode = lambda x: _ud.sub(lambda m: chr(int(m.group(1), 16)), x)
+# _ud = re.compile('%([0-9a-hA-H]{2})', re.MULTILINE)
+# urldecode = lambda x: _ud.sub(lambda m: chr(int(m.group(1), 16)), x)
 
-class InvalidBitcoinURI(Exception): pass
+
+class InvalidBitcoinURI(Exception):
+    pass
 
 
 # TODO rename to parse_bip21_uri or similar
@@ -909,70 +1016,72 @@ def parse_URI(uri: str, on_pr: Callable = None, *, loop=None) -> dict:
     if not isinstance(uri, str):
         raise InvalidBitcoinURI(f"expected string, not {repr(uri)}")
 
-    if ':' not in uri:
+    if ":" not in uri:
         if not bitcoin.is_address(uri):
             raise InvalidBitcoinURI("Not a bitcoin address")
-        return {'address': uri}
+        return {"address": uri}
 
     u = urllib.parse.urlparse(uri)
-    if u.scheme != 'bitcoin':
+    if u.scheme != "bitcoin":
         raise InvalidBitcoinURI("Not a bitcoin URI")
     address = u.path
 
     # python for android fails to parse query
-    if address.find('?') > 0:
-        address, query = u.path.split('?')
+    if address.find("?") > 0:
+        address, query = u.path.split("?")
         pq = urllib.parse.parse_qs(query)
     else:
         pq = urllib.parse.parse_qs(u.query)
 
     for k, v in pq.items():
         if len(v) != 1:
-            raise InvalidBitcoinURI(f'Duplicate Key: {repr(k)}')
+            raise InvalidBitcoinURI(f"Duplicate Key: {repr(k)}")
 
     out = {k: v[0] for k, v in pq.items()}
     if address:
         if not bitcoin.is_address(address):
             raise InvalidBitcoinURI(f"Invalid bitcoin address: {address}")
-        out['address'] = address
-    if 'amount' in out:
-        am = out['amount']
+        out["address"] = address
+    if "amount" in out:
+        am = out["amount"]
         try:
-            m = re.match(r'([0-9.]+)X([0-9])', am)
+            m = re.match(r"([0-9.]+)X([0-9])", am)
             if m:
                 k = int(m.group(2)) - 8
-                amount = Decimal(m.group(1)) * pow(  Decimal(10) , k)
+                amount = Decimal(m.group(1)) * pow(Decimal(10), k)
             else:
                 amount = Decimal(am) * COIN
-            out['amount'] = int(amount)
+            out["amount"] = int(amount)
         except Exception as e:
             raise InvalidBitcoinURI(f"failed to parse 'amount' field: {repr(e)}") from e
-    if 'message' in out:
-        out['message'] = out['message']
-        out['memo'] = out['message']
-    if 'time' in out:
+    if "message" in out:
+        out["message"] = out["message"]
+        out["memo"] = out["message"]
+    if "time" in out:
         try:
-            out['time'] = int(out['time'])
+            out["time"] = int(out["time"])
         except Exception as e:
             raise InvalidBitcoinURI(f"failed to parse 'time' field: {repr(e)}") from e
-    if 'exp' in out:
+    if "exp" in out:
         try:
-            out['exp'] = int(out['exp'])
+            out["exp"] = int(out["exp"])
         except Exception as e:
             raise InvalidBitcoinURI(f"failed to parse 'exp' field: {repr(e)}") from e
-    if 'sig' in out:
+    if "sig" in out:
         try:
-            out['sig'] = bh2u(bitcoin.base_decode(out['sig'], base=58))
+            out["sig"] = bh2u(bitcoin.base_decode(out["sig"], base=58))
         except Exception as e:
             raise InvalidBitcoinURI(f"failed to parse 'sig' field: {repr(e)}") from e
 
-    r = out.get('r')
-    sig = out.get('sig')
-    name = out.get('name')
+    r = out.get("r")
+    sig = out.get("sig")
+    name = out.get("name")
     if on_pr and (r or (name and sig)):
+
         @log_exceptions
         async def get_payment_request():
             from . import paymentrequest as pr
+
             if name and sig:
                 s = pr.serialize_request(out).SerializeToString()
                 request = pr.PaymentRequest(s)
@@ -980,50 +1089,65 @@ def parse_URI(uri: str, on_pr: Callable = None, *, loop=None) -> dict:
                 request = await pr.get_payment_request(r)
             if on_pr:
                 on_pr(request)
+
         loop = loop or asyncio.get_event_loop()
         asyncio.run_coroutine_threadsafe(get_payment_request(), loop)
 
     return out
 
 
-def create_bip21_uri(addr, amount_sat: Optional[int], message: Optional[str],
-                     *, extra_query_params: Optional[dict] = None) -> str:
+def create_bip21_uri(
+    addr,
+    amount_sat: Optional[int],
+    message: Optional[str],
+    *,
+    extra_query_params: Optional[dict] = None,
+) -> str:
     from . import bitcoin
+
     if not bitcoin.is_address(addr):
         return ""
     if extra_query_params is None:
         extra_query_params = {}
     query = []
     if amount_sat:
-        query.append('amount=%s'%format_satoshis_plain(amount_sat))
+        query.append("amount=%s" % format_satoshis_plain(amount_sat))
     if message:
-        query.append('message=%s'%urllib.parse.quote(message))
+        query.append("message=%s" % urllib.parse.quote(message))
     for k, v in extra_query_params.items():
         if not isinstance(k, str) or k != urllib.parse.quote(k):
             raise Exception(f"illegal key for URI: {repr(k)}")
         v = urllib.parse.quote(v)
         query.append(f"{k}={v}")
-    p = urllib.parse.ParseResult(scheme='bitcoin', netloc='', path=addr, params='', query='&'.join(query), fragment='')
+    p = urllib.parse.ParseResult(
+        scheme="bitcoin",
+        netloc="",
+        path=addr,
+        params="",
+        query="&".join(query),
+        fragment="",
+    )
     return str(urllib.parse.urlunparse(p))
 
 
 def maybe_extract_bolt11_invoice(data: str) -> Optional[str]:
     data = data.strip()  # whitespaces
     data = data.lower()
-    if data.startswith('lightning:ln'):
+    if data.startswith("lightning:ln"):
         data = data[10:]
-    if data.startswith('ln'):
+    if data.startswith("ln"):
         return data
     return None
 
 
 # Python bug (http://bugs.python.org/issue1927) causes raw_input
 # to be redirected improperly between stdin/stderr on Unix systems
-#TODO: py3
+# TODO: py3
 def raw_input(prompt=None):
     if prompt:
         sys.stdout.write(prompt)
     return builtin_raw_input()
+
 
 builtin_raw_input = builtins.input
 builtins.input = raw_input
@@ -1031,14 +1155,14 @@ builtins.input = raw_input
 
 def parse_json(message):
     # TODO: check \r\n pattern
-    n = message.find(b'\n')
-    if n==-1:
+    n = message.find(b"\n")
+    if n == -1:
         return None, message
     try:
-        j = json.loads(message[0:n].decode('utf8'))
+        j = json.loads(message[0:n].decode("utf8"))
     except:
         j = None
-    return j, message[n+1:]
+    return j, message[n + 1 :]
 
 
 def setup_thread_excepthook():
@@ -1077,23 +1201,24 @@ def versiontuple(v):
 
 def read_json_file(path):
     try:
-        with open(path, 'r', encoding='utf-8') as f:
+        with open(path, "r", encoding="utf-8") as f:
             data = json.loads(f.read())
-    #backwards compatibility for JSONDecodeError
+    # backwards compatibility for JSONDecodeError
     except ValueError:
-        _logger.exception('')
+        _logger.exception("")
         raise FileImportFailed(_("Invalid JSON code."))
     except BaseException as e:
-        _logger.exception('')
+        _logger.exception("")
         raise FileImportFailed(e)
     return data
 
+
 def write_json_file(path, data):
     try:
-        with open(path, 'w+', encoding='utf-8') as f:
+        with open(path, "w+", encoding="utf-8") as f:
             json.dump(data, f, indent=4, sort_keys=True, cls=MyEncoder)
     except (IOError, os.error) as e:
-        _logger.exception('')
+        _logger.exception("")
         raise FileExportFailed(e)
 
 
@@ -1101,14 +1226,15 @@ def make_dir(path, allow_symlink=True):
     """Make directory if it does not yet exist."""
     if not os.path.exists(path):
         if not allow_symlink and os.path.islink(path):
-            raise Exception('Dangling link: ' + path)
+            raise Exception("Dangling link: " + path)
         os.mkdir(path)
         os.chmod(path, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR)
 
 
 def log_exceptions(func):
     """Decorator to log AND re-raise exceptions."""
-    assert asyncio.iscoroutinefunction(func), 'func needs to be a coroutine'
+    assert asyncio.iscoroutinefunction(func), "func needs to be a coroutine"
+
     async def wrapper(*args, **kwargs):
         self = args[0] if len(args) > 0 else None
         try:
@@ -1116,18 +1242,22 @@ def log_exceptions(func):
         except asyncio.CancelledError as e:
             raise
         except BaseException as e:
-            mylogger = self.logger if hasattr(self, 'logger') else _logger
+            mylogger = self.logger if hasattr(self, "logger") else _logger
             try:
                 mylogger.exception(f"Exception in {func.__name__}: {repr(e)}")
             except BaseException as e2:
-                print(f"logging exception raised: {repr(e2)}... orig exc: {repr(e)} in {func.__name__}")
+                print(
+                    f"logging exception raised: {repr(e2)}... orig exc: {repr(e)} in {func.__name__}"
+                )
             raise
+
     return wrapper
 
 
 def ignore_exceptions(func):
     """Decorator to silently swallow all exceptions."""
-    assert asyncio.iscoroutinefunction(func), 'func needs to be a coroutine'
+    assert asyncio.iscoroutinefunction(func), "func needs to be a coroutine"
+
     async def wrapper(*args, **kwargs):
         try:
             return await func(*args, **kwargs)
@@ -1136,35 +1266,42 @@ def ignore_exceptions(func):
             raise
         except Exception as e:
             pass
+
     return wrapper
 
 
 class TxMinedInfo(NamedTuple):
-    height: int                        # height of block that mined tx
-    conf: Optional[int] = None         # number of confirmations, SPV verified (None means unknown)
-    timestamp: Optional[int] = None    # timestamp of block that mined tx
-    txpos: Optional[int] = None        # position of tx in serialized block
+    height: int  # height of block that mined tx
+    conf: Optional[
+        int
+    ] = None  # number of confirmations, SPV verified (None means unknown)
+    timestamp: Optional[int] = None  # timestamp of block that mined tx
+    txpos: Optional[int] = None  # position of tx in serialized block
     header_hash: Optional[str] = None  # hash of block that mined tx
 
 
 def make_aiohttp_session(proxy: Optional[dict], headers=None, timeout=None):
     if headers is None:
-        headers = {'User-Agent': 'Electrum'}
+        headers = {"User-Agent": "Electrum"}
     if timeout is None:
         # The default timeout is high intentionally.
         # DNS on some systems can be really slow, see e.g. #5337
         timeout = aiohttp.ClientTimeout(total=45)
     elif isinstance(timeout, (int, float)):
         timeout = aiohttp.ClientTimeout(total=timeout)
-    ssl_context = ssl.create_default_context(purpose=ssl.Purpose.SERVER_AUTH, cafile=ca_path)
+    ssl_context = ssl.create_default_context(
+        purpose=ssl.Purpose.SERVER_AUTH, cafile=ca_path
+    )
 
     if proxy:
         connector = ProxyConnector(
-            proxy_type=ProxyType.SOCKS5 if proxy['mode'] == 'socks5' else ProxyType.SOCKS4,
-            host=proxy['host'],
-            port=int(proxy['port']),
-            username=proxy.get('user', None),
-            password=proxy.get('password', None),
+            proxy_type=ProxyType.SOCKS5
+            if proxy["mode"] == "socks5"
+            else ProxyType.SOCKS4,
+            host=proxy["host"],
+            port=int(proxy["port"]),
+            username=proxy.get("user", None),
+            password=proxy.get("password", None),
             rdns=True,
             ssl=ssl_context,
         )
@@ -1175,7 +1312,6 @@ def make_aiohttp_session(proxy: Optional[dict], headers=None, timeout=None):
 
 
 class SilentTaskGroup(TaskGroup):
-
     def spawn(self, *args, **kwargs):
         # don't complain if group is already closed.
         if self._closed:
@@ -1188,7 +1324,8 @@ class NetworkJobOnDefaultServer(Logger):
     interface. Every time the main interface changes, the job is
     restarted, and some of its internals are reset.
     """
-    def __init__(self, network: 'Network'):
+
+    def __init__(self, network: "Network"):
         Logger.__init__(self)
         asyncio.set_event_loop(network.asyncio_loop)
         self.network = network
@@ -1196,7 +1333,7 @@ class NetworkJobOnDefaultServer(Logger):
         self._restart_lock = asyncio.Lock()
         self._reset()
         asyncio.run_coroutine_threadsafe(self._restart(), network.asyncio_loop)
-        register_callback(self._restart, ['default_server_changed'])
+        register_callback(self._restart, ["default_server_changed"])
 
     def _reset(self):
         """Initialise fields. Called every time the underlying
@@ -1204,7 +1341,7 @@ class NetworkJobOnDefaultServer(Logger):
         """
         self.taskgroup = SilentTaskGroup()
 
-    async def _start(self, interface: 'Interface'):
+    async def _start(self, interface: "Interface"):
         self.interface = interface
         await interface.taskgroup.spawn(self._start_tasks)
 
@@ -1239,14 +1376,15 @@ class NetworkJobOnDefaultServer(Logger):
         return s
 
 
-def create_and_start_event_loop() -> Tuple[asyncio.AbstractEventLoop,
-                                           asyncio.Future,
-                                           threading.Thread]:
+def create_and_start_event_loop() -> Tuple[
+    asyncio.AbstractEventLoop, asyncio.Future, threading.Thread
+]:
     def on_exception(loop, context):
         """Suppress spurious messages it appears we cannot control."""
-        SUPPRESS_MESSAGE_REGEX = re.compile('SSL handshake|Fatal read error on|'
-                                            'SSL error in data received')
-        message = context.get('message')
+        SUPPRESS_MESSAGE_REGEX = re.compile(
+            "SSL handshake|Fatal read error on|" "SSL error in data received"
+        )
+        message = context.get("message")
         if message and SUPPRESS_MESSAGE_REGEX.match(message):
             return
         loop.default_exception_handler(context)
@@ -1255,9 +1393,9 @@ def create_and_start_event_loop() -> Tuple[asyncio.AbstractEventLoop,
     loop.set_exception_handler(on_exception)
     # loop.set_debug(1)
     stopping_fut = asyncio.Future()
-    loop_thread = threading.Thread(target=loop.run_until_complete,
-                                         args=(stopping_fut,),
-                                         name='EventLoop')
+    loop_thread = threading.Thread(
+        target=loop.run_until_complete, args=(stopping_fut,), name="EventLoop"
+    )
     loop_thread.start()
     return loop, stopping_fut, loop_thread
 
@@ -1325,11 +1463,11 @@ class OrderedDictWithIndex(OrderedDict):
 
 
 def multisig_type(wallet_type):
-    '''If wallet_type is mofn multi-sig, return [m, n],
-    otherwise return None.'''
+    """If wallet_type is mofn multi-sig, return [m, n],
+    otherwise return None."""
     if not wallet_type:
         return None
-    match = re.match(r'(\d+)of(\d+)', wallet_type)
+    match = re.match(r"(\d+)of(\d+)", wallet_type)
     if match:
         match = [int(x) for x in match.group(1, 2)]
     return match
@@ -1346,9 +1484,9 @@ def is_ip_address(x: Union[str, bytes]) -> bool:
 
 
 def is_private_netaddress(host: str) -> bool:
-    if str(host) in ('localhost', 'localhost.',):
+    if str(host) in ("localhost", "localhost.",):
         return True
-    if host[0] == '[' and host[-1] == ']':  # IPv6
+    if host[0] == "[" and host[-1] == "]":  # IPv6
         host = host[1:-1]
     try:
         ip_addr = ipaddress.ip_address(host)  # type: Union[IPv4Address, IPv6Address]
@@ -1362,20 +1500,21 @@ def list_enabled_bits(x: int) -> Sequence[int]:
     """e.g. 77 (0b1001101) --> (0, 2, 3, 6)"""
     binary = bin(x)[2:]
     rev_bin = reversed(binary)
-    return tuple(i for i, b in enumerate(rev_bin) if b == '1')
+    return tuple(i for i, b in enumerate(rev_bin) if b == "1")
 
 
 def resolve_dns_srv(host: str):
-    srv_records = dns.resolver.query(host, 'SRV')
+    srv_records = dns.resolver.query(host, "SRV")
     # priority: prefer lower
     # weight: tie breaker; prefer higher
     srv_records = sorted(srv_records, key=lambda x: (x.priority, -x.weight))
 
     def dict_from_srv_record(srv):
         return {
-            'host': str(srv.target),
-            'port': srv.port,
+            "host": str(srv.target),
+            "port": srv.port,
         }
+
     return [dict_from_srv_record(srv) for srv in srv_records]
 
 
@@ -1386,10 +1525,10 @@ def randrange(bound: int) -> int:
 
 
 class CallbackManager:
-        # callbacks set by the GUI
+    # callbacks set by the GUI
     def __init__(self):
         self.callback_lock = threading.Lock()
-        self.callbacks = defaultdict(list)      # note: needs self.callback_lock
+        self.callbacks = defaultdict(list)  # note: needs self.callback_lock
         self.asyncio_loop = None
 
     def register_callback(self, callback, events):
@@ -1412,7 +1551,9 @@ class CallbackManager:
         for callback in callbacks:
             # FIXME: if callback throws, we will lose the traceback
             if asyncio.iscoroutinefunction(callback):
-                asyncio.run_coroutine_threadsafe(callback(event, *args), self.asyncio_loop)
+                asyncio.run_coroutine_threadsafe(
+                    callback(event, *args), self.asyncio_loop
+                )
             else:
                 self.asyncio_loop.call_soon_threadsafe(callback, event, *args)
 
@@ -1430,13 +1571,16 @@ class NetworkRetryManager(Generic[_NetAddrType]):
     """Truncated Exponential Backoff for network connections."""
 
     def __init__(
-            self, *,
-            max_retry_delay_normal: float,
-            init_retry_delay_normal: float,
-            max_retry_delay_urgent: float = None,
-            init_retry_delay_urgent: float = None,
+        self,
+        *,
+        max_retry_delay_normal: float,
+        init_retry_delay_normal: float,
+        max_retry_delay_urgent: float = None,
+        init_retry_delay_urgent: float = None,
     ):
-        self._last_tried_addr = {}  # type: Dict[_NetAddrType, Tuple[float, int]]  # (unix ts, num_attempts)
+        self._last_tried_addr = (
+            {}
+        )  # type: Dict[_NetAddrType, Tuple[float, int]]  # (unix ts, num_attempts)
 
         # note: these all use "seconds" as unit
         if max_retry_delay_urgent is None:
@@ -1458,17 +1602,22 @@ class NetworkRetryManager(Generic[_NetAddrType]):
     def _on_connection_successfully_established(self, addr: _NetAddrType) -> None:
         self._last_tried_addr[addr] = time.time(), 0
 
-    def _can_retry_addr(self, peer: _NetAddrType, *,
-                        now: float = None, urgent: bool = False) -> bool:
+    def _can_retry_addr(
+        self, peer: _NetAddrType, *, now: float = None, urgent: bool = False
+    ) -> bool:
         if now is None:
             now = time.time()
         last_time, num_attempts = self._last_tried_addr.get(peer, (0, 0))
         if urgent:
-            delay = min(self._max_retry_delay_urgent,
-                        self._init_retry_delay_urgent * 2 ** num_attempts)
+            delay = min(
+                self._max_retry_delay_urgent,
+                self._init_retry_delay_urgent * 2 ** num_attempts,
+            )
         else:
-            delay = min(self._max_retry_delay_normal,
-                        self._init_retry_delay_normal * 2 ** num_attempts)
+            delay = min(
+                self._max_retry_delay_normal,
+                self._init_retry_delay_normal * 2 ** num_attempts,
+            )
         next_time = last_time + delay
         return next_time < now
 
@@ -1477,29 +1626,29 @@ class NetworkRetryManager(Generic[_NetAddrType]):
 
 
 class MySocksProxy(aiorpcx.SOCKSProxy):
-
     async def open_connection(self, host=None, port=None, **kwargs):
         loop = asyncio.get_event_loop()
         reader = asyncio.StreamReader(loop=loop)
         protocol = asyncio.StreamReaderProtocol(reader, loop=loop)
         transport, _ = await self.create_connection(
-            lambda: protocol, host, port, **kwargs)
+            lambda: protocol, host, port, **kwargs
+        )
         writer = asyncio.StreamWriter(transport, protocol, reader, loop)
         return reader, writer
 
     @classmethod
-    def from_proxy_dict(cls, proxy: dict = None) -> Optional['MySocksProxy']:
+    def from_proxy_dict(cls, proxy: dict = None) -> Optional["MySocksProxy"]:
         if not proxy:
             return None
-        username, pw = proxy.get('user'), proxy.get('password')
+        username, pw = proxy.get("user"), proxy.get("password")
         if not username or not pw:
             auth = None
         else:
             auth = aiorpcx.socks.SOCKSUserAuth(username, pw)
-        addr = aiorpcx.NetAddress(proxy['host'], proxy['port'])
-        if proxy['mode'] == "socks4":
+        addr = aiorpcx.NetAddress(proxy["host"], proxy["port"])
+        if proxy["mode"] == "socks4":
             ret = cls(addr, aiorpcx.socks.SOCKS4a, auth)
-        elif proxy['mode'] == "socks5":
+        elif proxy["mode"] == "socks5":
             ret = cls(addr, aiorpcx.socks.SOCKS5, auth)
         else:
             raise NotImplementedError  # http proxy not available with aiorpcx
@@ -1507,7 +1656,6 @@ class MySocksProxy(aiorpcx.SOCKSProxy):
 
 
 class JsonRPCClient:
-
     def __init__(self, session: aiohttp.ClientSession, url: str):
         self.session = session
         self.url = url
@@ -1515,28 +1663,33 @@ class JsonRPCClient:
 
     async def request(self, endpoint, *args):
         self._id += 1
-        data = ('{"jsonrpc": "2.0", "id":"%d", "method": "%s", "params": %s }'
-                % (self._id, endpoint, json.dumps(args)))
+        data = '{"jsonrpc": "2.0", "id":"%d", "method": "%s", "params": %s }' % (
+            self._id,
+            endpoint,
+            json.dumps(args),
+        )
         async with self.session.post(self.url, data=data) as resp:
             if resp.status == 200:
                 r = await resp.json()
-                result = r.get('result')
-                error = r.get('error')
+                result = r.get("result")
+                error = r.get("error")
                 if error:
-                    return 'Error: ' + str(error)
+                    return "Error: " + str(error)
                 else:
                     return result
             else:
                 text = await resp.text()
-                return 'Error: ' + str(text)
+                return "Error: " + str(text)
 
     def add_method(self, endpoint):
         async def coro(*args):
             return await self.request(endpoint, *args)
+
         setattr(self, endpoint, coro)
 
 
-T = TypeVar('T')
+T = TypeVar("T")
+
 
 def random_shuffled_copy(x: Iterable[T]) -> List[T]:
     """Returns a shuffled copy of the input."""

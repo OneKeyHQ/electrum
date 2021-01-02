@@ -24,23 +24,28 @@
 # SOFTWARE.
 
 import base64
-import os
-import sys
 import hashlib
 import hmac
+import os
+import sys
 from typing import Union
 
 import pyaes
 
-from .util import assert_bytes, InvalidPassword, to_bytes, to_string, WalletFileException
 from .i18n import _
-
+from .util import (
+    InvalidPassword,
+    WalletFileException,
+    assert_bytes,
+    to_bytes,
+    to_string,
+)
 
 HAS_CRYPTODOME = False
 try:
-    from Cryptodome.Cipher import ChaCha20_Poly1305 as CD_ChaCha20_Poly1305
-    from Cryptodome.Cipher import ChaCha20 as CD_ChaCha20
     from Cryptodome.Cipher import AES as CD_AES
+    from Cryptodome.Cipher import ChaCha20 as CD_ChaCha20
+    from Cryptodome.Cipher import ChaCha20_Poly1305 as CD_ChaCha20_Poly1305
 except:
     pass
 else:
@@ -49,12 +54,12 @@ else:
 HAS_CRYPTOGRAPHY = False
 try:
     import cryptography
+    import cryptography.hazmat.primitives.ciphers.aead as CG_aead
     from cryptography import exceptions
+    from cryptography.hazmat.backends import default_backend as CG_default_backend
     from cryptography.hazmat.primitives.ciphers import Cipher as CG_Cipher
     from cryptography.hazmat.primitives.ciphers import algorithms as CG_algorithms
     from cryptography.hazmat.primitives.ciphers import modes as CG_modes
-    from cryptography.hazmat.backends import default_backend as CG_default_backend
-    import cryptography.hazmat.primitives.ciphers.aead as CG_aead
 except:
     pass
 else:
@@ -62,7 +67,9 @@ else:
 
 
 if not (HAS_CRYPTODOME or HAS_CRYPTOGRAPHY):
-    sys.exit(f"Error: at least one of ('pycryptodomex', 'cryptography') needs to be installed.")
+    sys.exit(
+        f"Error: at least one of ('pycryptodomex', 'cryptography') needs to be installed."
+    )
 
 
 class InvalidPadding(Exception):
@@ -94,7 +101,9 @@ def aes_encrypt_with_iv(key: bytes, iv: bytes, data: bytes) -> bytes:
     if HAS_CRYPTODOME:
         e = CD_AES.new(key, CD_AES.MODE_CBC, iv).encrypt(data)
     elif HAS_CRYPTOGRAPHY:
-        cipher = CG_Cipher(CG_algorithms.AES(key), CG_modes.CBC(iv), backend=CG_default_backend())
+        cipher = CG_Cipher(
+            CG_algorithms.AES(key), CG_modes.CBC(iv), backend=CG_default_backend()
+        )
         encryptor = cipher.encryptor()
         e = encryptor.update(data) + encryptor.finalize()
     else:
@@ -110,7 +119,9 @@ def aes_decrypt_with_iv(key: bytes, iv: bytes, data: bytes) -> bytes:
         cipher = CD_AES.new(key, CD_AES.MODE_CBC, iv)
         data = cipher.decrypt(data)
     elif HAS_CRYPTOGRAPHY:
-        cipher = CG_Cipher(CG_algorithms.AES(key), CG_modes.CBC(iv), backend=CG_default_backend())
+        cipher = CG_Cipher(
+            CG_algorithms.AES(key), CG_modes.CBC(iv), backend=CG_default_backend()
+        )
         decryptor = cipher.decryptor()
         data = decryptor.update(data) + decryptor.finalize()
     else:
@@ -149,8 +160,11 @@ def DecodeAES_bytes(secret: bytes, ciphertext: bytes) -> bytes:
 
 
 PW_HASH_VERSION_LATEST = 1
-KNOWN_PW_HASH_VERSIONS = (1, 2, )
-SUPPORTED_PW_HASH_VERSIONS = (1, )
+KNOWN_PW_HASH_VERSIONS = (
+    1,
+    2,
+)
+SUPPORTED_PW_HASH_VERSIONS = (1,)
 assert PW_HASH_VERSION_LATEST in KNOWN_PW_HASH_VERSIONS
 assert PW_HASH_VERSION_LATEST in SUPPORTED_PW_HASH_VERSIONS
 
@@ -163,7 +177,10 @@ class UnexpectedPasswordHashVersion(InvalidPassword, WalletFileException):
         return "{unexpected}: {version}\n{instruction}".format(
             unexpected=_("Unexpected password hash version"),
             version=self.version,
-            instruction=_('You are most likely using an outdated version of Electrum. Please update.'))
+            instruction=_(
+                "You are most likely using an outdated version of Electrum. Please update."
+            ),
+        )
 
 
 class UnsupportedPasswordHashVersion(InvalidPassword, WalletFileException):
@@ -175,11 +192,12 @@ class UnsupportedPasswordHashVersion(InvalidPassword, WalletFileException):
             unsupported=_("Unsupported password hash version"),
             version=self.version,
             instruction=f"To open this wallet, try 'git checkout password_v{self.version}'.\n"
-                        "Alternatively, restore from seed.")
+            "Alternatively, restore from seed.",
+        )
 
 
 def _hash_password(password: Union[bytes, str], *, version: int) -> bytes:
-    pw = to_bytes(password, 'utf8')
+    pw = to_bytes(password, "utf8")
     if version not in SUPPORTED_PW_HASH_VERSIONS:
         raise UnsupportedPasswordHashVersion(version)
     if version == 1:
@@ -199,7 +217,9 @@ def _pw_encode_raw(data: bytes, password: Union[bytes, str], *, version: int) ->
     return ciphertext
 
 
-def _pw_decode_raw(data_bytes: bytes, password: Union[bytes, str], *, version: int) -> bytes:
+def _pw_decode_raw(
+    data_bytes: bytes, password: Union[bytes, str], *, version: int
+) -> bytes:
     if version not in KNOWN_PW_HASH_VERSIONS:
         raise UnexpectedPasswordHashVersion(version)
     # derive key from password
@@ -216,10 +236,10 @@ def pw_encode_bytes(data: bytes, password: Union[bytes, str], *, version: int) -
     """plaintext bytes -> base64 ciphertext"""
     ciphertext = _pw_encode_raw(data, password, version=version)
     ciphertext_b64 = base64.b64encode(ciphertext)
-    return ciphertext_b64.decode('utf8')
+    return ciphertext_b64.decode("utf8")
 
 
-def pw_decode_bytes(data: str, password: Union[bytes, str], *, version:int) -> bytes:
+def pw_decode_bytes(data: str, password: Union[bytes, str], *, version: int) -> bytes:
     """base64 ciphertext -> plaintext bytes"""
     if version not in KNOWN_PW_HASH_VERSIONS:
         raise UnexpectedPasswordHashVersion(version)
@@ -235,7 +255,7 @@ def pw_encode_with_version_and_mac(data: bytes, password: Union[bytes, str]) -> 
     mac = sha256(data)[0:4]
     ciphertext = _pw_encode_raw(data, password, version=version)
     ciphertext_b64 = base64.b64encode(bytes([version]) + ciphertext + mac)
-    return ciphertext_b64.decode('utf8')
+    return ciphertext_b64.decode("utf8")
 
 
 def pw_decode_with_version_and_mac(data: str, password: Union[bytes, str]) -> bytes:
@@ -273,12 +293,12 @@ def pw_decode(data: str, password: Union[bytes, str, None], *, version: int) -> 
 
 
 def sha256(x: Union[bytes, str]) -> bytes:
-    x = to_bytes(x, 'utf8')
+    x = to_bytes(x, "utf8")
     return bytes(hashlib.sha256(x).digest())
 
 
 def sha256d(x: Union[bytes, str]) -> bytes:
-    x = to_bytes(x, 'utf8')
+    x = to_bytes(x, "utf8")
     out = bytes(sha256(sha256(x)))
     return out
 
@@ -286,18 +306,21 @@ def sha256d(x: Union[bytes, str]) -> bytes:
 def hash_160(x: bytes) -> bytes:
     return ripemd(sha256(x))
 
+
 def ripemd(x):
     try:
-        md = hashlib.new('ripemd160')
+        md = hashlib.new("ripemd160")
         md.update(x)
         return md.digest()
     except BaseException:
         from . import ripemd
+
         md = ripemd.new(x)
         return md.digest()
 
+
 def hmac_oneshot(key: bytes, msg: bytes, digest) -> bytes:
-    if hasattr(hmac, 'digest'):
+    if hasattr(hmac, "digest"):
         # requires python 3.7+; faster
         return hmac.digest(key, msg, digest)
     else:
@@ -305,11 +328,7 @@ def hmac_oneshot(key: bytes, msg: bytes, digest) -> bytes:
 
 
 def chacha20_poly1305_encrypt(
-        *,
-        key: bytes,
-        nonce: bytes,
-        associated_data: bytes = None,
-        data: bytes
+    *, key: bytes, nonce: bytes, associated_data: bytes = None, data: bytes
 ) -> bytes:
     assert isinstance(key, (bytes, bytearray))
     assert isinstance(nonce, (bytes, bytearray))
@@ -328,11 +347,7 @@ def chacha20_poly1305_encrypt(
 
 
 def chacha20_poly1305_decrypt(
-        *,
-        key: bytes,
-        nonce: bytes,
-        associated_data: bytes = None,
-        data: bytes
+    *, key: bytes, nonce: bytes, associated_data: bytes = None, data: bytes
 ) -> bytes:
     assert isinstance(key, (bytes, bytearray))
     assert isinstance(nonce, (bytes, bytearray))
@@ -343,7 +358,9 @@ def chacha20_poly1305_decrypt(
         if associated_data is not None:
             cipher.update(associated_data)
         # raises ValueError if not valid (e.g. incorrect MAC)
-        return cipher.decrypt_and_verify(ciphertext=data[:-16], received_mac_tag=data[-16:])
+        return cipher.decrypt_and_verify(
+            ciphertext=data[:-16], received_mac_tag=data[-16:]
+        )
     if HAS_CRYPTOGRAPHY:
         a = CG_aead.ChaCha20Poly1305(key)
         try:

@@ -1,24 +1,26 @@
-import os
-import concurrent
-import queue
-import threading
 import asyncio
+import concurrent
+import os
+import queue
 import sqlite3
+import threading
 
 from .logging import Logger
 
 
 def sql(func):
     """wrapper for sql methods"""
+
     def wrapper(self, *args, **kwargs):
         assert threading.currentThread() != self.sql_thread
         f = asyncio.Future()
         self.db_requests.put((f, func, args, kwargs))
         return f
+
     return wrapper
 
+
 class SqlDB(Logger):
-    
     def __init__(self, asyncio_loop, path, commit_interval=None):
         Logger.__init__(self)
         self.asyncio_loop = asyncio_loop

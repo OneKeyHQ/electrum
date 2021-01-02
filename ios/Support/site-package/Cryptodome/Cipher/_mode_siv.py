@@ -32,18 +32,16 @@
 Synthetic Initialization Vector (SIV) mode.
 """
 
-__all__ = ['SivMode']
+__all__ = ["SivMode"]
 
 from binascii import hexlify, unhexlify
 
-from Cryptodome.Util.py3compat import bord, _copy_bytes
-
-from Cryptodome.Util._raw_api import is_buffer
-
-from Cryptodome.Util.number import long_to_bytes, bytes_to_long
-from Cryptodome.Protocol.KDF import _S2V
 from Cryptodome.Hash import BLAKE2s
+from Cryptodome.Protocol.KDF import _S2V
 from Cryptodome.Random import get_random_bytes
+from Cryptodome.Util._raw_api import is_buffer
+from Cryptodome.Util.number import bytes_to_long, long_to_bytes
+from Cryptodome.Util.py3compat import _copy_bytes, bord
 
 
 class SivMode(object):
@@ -102,7 +100,9 @@ class SivMode(object):
 
         if nonce is not None:
             if not is_buffer(nonce):
-                raise TypeError("When provided, the nonce must be bytes, bytearray or memoryview")
+                raise TypeError(
+                    "When provided, the nonce must be bytes, bytearray or memoryview"
+                )
 
             if len(nonce) == 0:
                 raise ValueError("When provided, the nonce must be non-empty")
@@ -114,17 +114,16 @@ class SivMode(object):
         subkey_size = len(key) // 2
 
         self._mac_tag = None  # Cache for MAC tag
-        self._kdf = _S2V(key[:subkey_size],
-                         ciphermod=factory,
-                         cipher_params=self._cipher_params)
+        self._kdf = _S2V(
+            key[:subkey_size], ciphermod=factory, cipher_params=self._cipher_params
+        )
         self._subkey_cipher = key[subkey_size:]
 
         # Purely for the purpose of verifying that cipher_params are OK
         factory.new(key[:subkey_size], factory.MODE_ECB, **kwargs)
 
         # Allowed transitions after initialization
-        self._next = [self.update, self.encrypt, self.decrypt,
-                      self.digest, self.verify]
+        self._next = [self.update, self.encrypt, self.decrypt, self.digest, self.verify]
 
     def _create_ctr_cipher(self, v):
         """Create a new CTR cipher from V in SIV mode"""
@@ -132,11 +131,12 @@ class SivMode(object):
         v_int = bytes_to_long(v)
         q = v_int & 0xFFFFFFFFFFFFFFFF7FFFFFFF7FFFFFFF
         return self._factory.new(
-                    self._subkey_cipher,
-                    self._factory.MODE_CTR,
-                    initial_value=q,
-                    nonce=b"",
-                    **self._cipher_params)
+            self._subkey_cipher,
+            self._factory.MODE_CTR,
+            initial_value=q,
+            nonce=b"",
+            **self._cipher_params
+        )
 
     def update(self, component):
         """Protect one associated data component
@@ -165,11 +165,11 @@ class SivMode(object):
         """
 
         if self.update not in self._next:
-            raise TypeError("update() can only be called"
-                                " immediately after initialization")
+            raise TypeError(
+                "update() can only be called" " immediately after initialization"
+            )
 
-        self._next = [self.update, self.encrypt, self.decrypt,
-                      self.digest, self.verify]
+        self._next = [self.update, self.encrypt, self.decrypt, self.digest, self.verify]
 
         return self._kdf.update(component)
 
@@ -181,8 +181,9 @@ class SivMode(object):
         Use `encrypt_and_digest` instead.
         """
 
-        raise TypeError("encrypt() not allowed for SIV mode."
-                        " Use encrypt_and_digest() instead.")
+        raise TypeError(
+            "encrypt() not allowed for SIV mode." " Use encrypt_and_digest() instead."
+        )
 
     def decrypt(self, ciphertext):
         """
@@ -192,8 +193,9 @@ class SivMode(object):
         Use `decrypt_and_verify` instead.
         """
 
-        raise TypeError("decrypt() not allowed for SIV mode."
-                        " Use decrypt_and_verify() instead.")
+        raise TypeError(
+            "decrypt() not allowed for SIV mode." " Use decrypt_and_verify() instead."
+        )
 
     def digest(self):
         """Compute the *binary* MAC tag.
@@ -207,8 +209,9 @@ class SivMode(object):
         """
 
         if self.digest not in self._next:
-            raise TypeError("digest() cannot be called when decrypting"
-                            " or validating a message")
+            raise TypeError(
+                "digest() cannot be called when decrypting" " or validating a message"
+            )
         self._next = [self.digest]
         if self._mac_tag is None:
             self._mac_tag = self._kdf.derive()
@@ -241,8 +244,7 @@ class SivMode(object):
         """
 
         if self.verify not in self._next:
-            raise TypeError("verify() cannot be called"
-                            " when encrypting a message")
+            raise TypeError("verify() cannot be called" " when encrypting a message")
         self._next = [self.verify]
 
         if self._mac_tag is None:
@@ -290,19 +292,20 @@ class SivMode(object):
             The first item becomes ``None`` when the ``output`` parameter
             specified a location for the result.
         """
-        
-        if self.encrypt not in self._next:
-            raise TypeError("encrypt() can only be called after"
-                            " initialization or an update()")
 
-        self._next = [ self.digest ]
+        if self.encrypt not in self._next:
+            raise TypeError(
+                "encrypt() can only be called after" " initialization or an update()"
+            )
+
+        self._next = [self.digest]
 
         # Compute V (MAC)
-        if hasattr(self, 'nonce'):
+        if hasattr(self, "nonce"):
             self._kdf.update(self.nonce)
         self._kdf.update(plaintext)
         self._mac_tag = self._kdf.derive()
-        
+
         cipher = self._create_ctr_cipher(self._mac_tag)
 
         return cipher.encrypt(plaintext, output=output), self._mac_tag
@@ -337,20 +340,21 @@ class SivMode(object):
         """
 
         if self.decrypt not in self._next:
-            raise TypeError("decrypt() can only be called"
-                            " after initialization or an update()")
-        self._next = [ self.verify ]
+            raise TypeError(
+                "decrypt() can only be called" " after initialization or an update()"
+            )
+        self._next = [self.verify]
 
         # Take the MAC and start the cipher for decryption
         self._cipher = self._create_ctr_cipher(mac_tag)
 
         plaintext = self._cipher.decrypt(ciphertext, output=output)
 
-        if hasattr(self, 'nonce'):
+        if hasattr(self, "nonce"):
             self._kdf.update(self.nonce)
         self._kdf.update(plaintext if output is None else output)
         self.verify(mac_tag)
-        
+
         return plaintext
 
 

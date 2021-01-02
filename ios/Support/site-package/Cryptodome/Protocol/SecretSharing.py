@@ -31,10 +31,10 @@
 # POSSIBILITY OF SUCH DAMAGE.
 # ===================================================================
 
-from Cryptodome.Util.py3compat import is_native_int
-from Cryptodome.Util import number
-from Cryptodome.Util.number import long_to_bytes, bytes_to_long
 from Cryptodome.Random import get_random_bytes as rng
+from Cryptodome.Util import number
+from Cryptodome.Util.number import bytes_to_long, long_to_bytes
+from Cryptodome.Util.py3compat import is_native_int
 
 
 def _mult_gf2(f1, f2):
@@ -60,7 +60,7 @@ def _div_gf2(a, b):
     a = b*q + r with deg(r)<deg(b)
     """
 
-    if (a < b):
+    if a < b:
         return 0, a
 
     deg = number.size

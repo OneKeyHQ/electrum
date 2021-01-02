@@ -2,10 +2,10 @@ from functools import partial
 
 from electrum.i18n import _
 from electrum.plugin import hook
-from electrum.wallet import Standard_Wallet, Abstract_Wallet
+from electrum.wallet import Abstract_Wallet, Standard_Wallet
 
-from ..hw_wallet.qt import QtHandlerBase, QtPluginBase
 from ..hw_wallet.plugin import only_hook_if_libraries_available
+from ..hw_wallet.qt import QtHandlerBase, QtPluginBase
 from .digitalbitbox import DigitalBitboxPlugin
 
 
@@ -31,8 +31,9 @@ class Plugin(DigitalBitboxPlugin, QtPluginBase):
 
         if len(addrs) == 1:
             addr = addrs[0]
-            if wallet.get_txin_type(addr) != 'p2pkh':
+            if wallet.get_txin_type(addr) != "p2pkh":
                 return
+
             def show_address():
                 keystore.thread.add(partial(self.show_address, wallet, addr, keystore))
 
@@ -40,6 +41,5 @@ class Plugin(DigitalBitboxPlugin, QtPluginBase):
 
 
 class DigitalBitbox_Handler(QtHandlerBase):
-
     def __init__(self, win):
-        super(DigitalBitbox_Handler, self).__init__(win, 'Digital Bitbox')
+        super(DigitalBitbox_Handler, self).__init__(win, "Digital Bitbox")

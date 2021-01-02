@@ -1,11 +1,9 @@
 from electrum.logging import get_logger
 
-
 _logger = get_logger(__name__)
 
 
 class SafeTTransport:
-
     @staticmethod
     def all_transports():
         """Reimplemented safetlib.transport.all_transports so that we can
@@ -19,46 +17,50 @@ class SafeTTransport:
         except ImportError:
             # old safetlib. compat for safetlib < 0.9.2
             transports = []
-            #try:
+            # try:
             #    from safetlib.transport_bridge import BridgeTransport
             #    transports.append(BridgeTransport)
-            #except BaseException:
+            # except BaseException:
             #    pass
             try:
                 from safetlib.transport_hid import HidTransport
+
                 transports.append(HidTransport)
             except BaseException:
                 pass
-            #try:
+            # try:
             #    from safetlib.transport_udp import UdpTransport
             #    transports.append(UdpTransport)
-            #except BaseException:
+            # except BaseException:
             #    pass
             try:
                 from safetlib.transport_webusb import WebUsbTransport
+
                 transports.append(WebUsbTransport)
             except BaseException:
                 pass
         else:
             # new safetlib.
             transports = []
-            #try:
+            # try:
             #    from safetlib.transport.bridge import BridgeTransport
             #    transports.append(BridgeTransport)
-            #except BaseException:
+            # except BaseException:
             #    pass
             try:
                 from safetlib.transport.hid import HidTransport
+
                 transports.append(HidTransport)
             except BaseException:
                 pass
-            #try:
+            # try:
             #    from safetlib.transport.udp import UdpTransport
             #    transports.append(UdpTransport)
-            #except BaseException:
+            # except BaseException:
             #    pass
             try:
                 from safetlib.transport.webusb import WebUsbTransport
+
                 transports.append(WebUsbTransport)
             except BaseException:
                 pass
@@ -74,7 +76,7 @@ class SafeTTransport:
             try:
                 new_devices = transport.enumerate()
             except BaseException as e:
-                _logger.info(f'enumerate failed for {transport.__name__}. error {e}')
+                _logger.info(f"enumerate failed for {transport.__name__}. error {e}")
             else:
                 devices.extend(new_devices)
         return devices
@@ -93,7 +95,10 @@ class SafeTTransport:
 
         def match_prefix(a, b):
             return a.startswith(b) or b.startswith(a)
-        transports = [t for t in self.all_transports() if match_prefix(path, t.PATH_PREFIX)]
+
+        transports = [
+            t for t in self.all_transports() if match_prefix(path, t.PATH_PREFIX)
+        ]
         if transports:
             return transports[0].find_by_path(path)
         raise Exception("Unknown path prefix '%s'" % path)

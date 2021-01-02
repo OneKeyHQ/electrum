@@ -28,17 +28,20 @@
 # POSSIBILITY OF SUCH DAMAGE.
 # ===================================================================
 
+from Cryptodome.Util._raw_api import (
+    SmartPointer,
+    VoidPointer,
+    c_size_t,
+    c_uint8_ptr,
+    create_string_buffer,
+    get_raw_buffer,
+    load_pycryptodome_raw_lib,
+)
 from Cryptodome.Util.py3compat import bord
 
-from Cryptodome.Util._raw_api import (load_pycryptodome_raw_lib,
-                                  VoidPointer, SmartPointer,
-                                  create_string_buffer,
-                                  get_raw_buffer, c_size_t,
-                                  c_uint8_ptr)
-
 _raw_ripemd160_lib = load_pycryptodome_raw_lib(
-                        "Cryptodome.Hash._RIPEMD160",
-                        """
+    "Cryptodome.Hash._RIPEMD160",
+    """
                         int ripemd160_init(void **shaState);
                         int ripemd160_destroy(void *shaState);
                         int ripemd160_update(void *hs,
@@ -47,7 +50,8 @@ _raw_ripemd160_lib = load_pycryptodome_raw_lib(
                         int ripemd160_digest(const void *shaState,
                                           uint8_t digest[20]);
                         int ripemd160_copy(const void *src, void *dst);
-                        """)
+                        """,
+)
 
 
 class RIPEMD160Hash(object):
@@ -77,10 +81,8 @@ class RIPEMD160Hash(object):
         state = VoidPointer()
         result = _raw_ripemd160_lib.ripemd160_init(state.address_of())
         if result:
-            raise ValueError("Error %d while instantiating RIPEMD160"
-                             % result)
-        self._state = SmartPointer(state.get(),
-                                   _raw_ripemd160_lib.ripemd160_destroy)
+            raise ValueError("Error %d while instantiating RIPEMD160" % result)
+        self._state = SmartPointer(state.get(), _raw_ripemd160_lib.ripemd160_destroy)
         if data:
             self.update(data)
 
@@ -91,12 +93,11 @@ class RIPEMD160Hash(object):
             data (byte string/byte array/memoryview): The next chunk of the message being hashed.
         """
 
-        result = _raw_ripemd160_lib.ripemd160_update(self._state.get(),
-                                                     c_uint8_ptr(data),
-                                                     c_size_t(len(data)))
+        result = _raw_ripemd160_lib.ripemd160_update(
+            self._state.get(), c_uint8_ptr(data), c_size_t(len(data))
+        )
         if result:
-            raise ValueError("Error %d while instantiating ripemd160"
-                             % result)
+            raise ValueError("Error %d while instantiating ripemd160" % result)
 
     def digest(self):
         """Return the **binary** (non-printable) digest of the message that has been hashed so far.
@@ -107,11 +108,9 @@ class RIPEMD160Hash(object):
         """
 
         bfr = create_string_buffer(self.digest_size)
-        result = _raw_ripemd160_lib.ripemd160_digest(self._state.get(),
-                                                     bfr)
+        result = _raw_ripemd160_lib.ripemd160_digest(self._state.get(), bfr)
         if result:
-            raise ValueError("Error %d while instantiating ripemd160"
-                             % result)
+            raise ValueError("Error %d while instantiating ripemd160" % result)
 
         return get_raw_buffer(bfr)
 
@@ -137,8 +136,9 @@ class RIPEMD160Hash(object):
         """
 
         clone = RIPEMD160Hash()
-        result = _raw_ripemd160_lib.ripemd160_copy(self._state.get(),
-                                                   clone._state.get())
+        result = _raw_ripemd160_lib.ripemd160_copy(
+            self._state.get(), clone._state.get()
+        )
         if result:
             raise ValueError("Error %d while copying ripemd160" % result)
         return clone
@@ -161,6 +161,7 @@ def new(data=None):
     """
 
     return RIPEMD160Hash().new(data)
+
 
 # The size of the resulting hash in bytes.
 digest_size = RIPEMD160Hash.digest_size

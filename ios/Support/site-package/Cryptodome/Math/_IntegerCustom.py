@@ -28,17 +28,18 @@
 # POSSIBILITY OF SUCH DAMAGE.
 # ===================================================================
 
-from ._IntegerNative import IntegerNative
-
-from Cryptodome.Util.number import long_to_bytes, bytes_to_long
-
-from Cryptodome.Util._raw_api import (load_pycryptodome_raw_lib,
-                                  create_string_buffer,
-                                  get_raw_buffer, backend,
-                                  c_size_t, c_ulonglong)
-
-
 from Cryptodome.Random.random import getrandbits
+from Cryptodome.Util._raw_api import (
+    backend,
+    c_size_t,
+    c_ulonglong,
+    create_string_buffer,
+    get_raw_buffer,
+    load_pycryptodome_raw_lib,
+)
+from Cryptodome.Util.number import bytes_to_long, long_to_bytes
+
+from ._IntegerNative import IntegerNative
 
 c_defs = """
 int monty_pow(const uint8_t *base,
@@ -55,7 +56,6 @@ implementation = {"library": "custom", "api": backend}
 
 
 class IntegerCustom(IntegerNative):
-
     @staticmethod
     def from_bytes(byte_string):
         return IntegerCustom(bytes_to_long(byte_string))
@@ -95,13 +95,13 @@ class IntegerCustom(IntegerNative):
         out = create_string_buffer(max_len)
 
         error = _raw_montgomery.monty_pow(
-                    out,
-                    base_b,
-                    exp_b,
-                    modulus_b,
-                    c_size_t(max_len),
-                    c_ulonglong(getrandbits(64))
-                    )
+            out,
+            base_b,
+            exp_b,
+            modulus_b,
+            c_size_t(max_len),
+            c_ulonglong(getrandbits(64)),
+        )
 
         if error:
             raise ValueError("monty_pow failed with error: %d" % error)

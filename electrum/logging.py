@@ -2,21 +2,22 @@
 # Distributed under the MIT software license, see the accompanying
 # file LICENCE or http://www.opensource.org/licenses/mit-license.php
 
-import logging
-import datetime
-import sys
-import pathlib
-import os
-import platform
-from typing import Optional
 import copy
+import datetime
+import logging
+import os
+import pathlib
+import platform
+import sys
+from typing import Optional
 
 
 class LogFormatterForFiles(logging.Formatter):
-
     def formatTime(self, record, datefmt=None):
         # timestamps follow ISO 8601 UTC
-        date = datetime.datetime.fromtimestamp(record.created).astimezone(datetime.timezone.utc)
+        date = datetime.datetime.fromtimestamp(record.created).astimezone(
+            datetime.timezone.utc
+        )
         if not datefmt:
             datefmt = "%Y%m%dT%H%M%S.%fZ"
         return date.strftime(datefmt)
@@ -26,22 +27,25 @@ class LogFormatterForFiles(logging.Formatter):
         return super().format(record)
 
 
-file_formatter = LogFormatterForFiles(fmt="%(asctime)22s | %(levelname)8s | %(name)s | %(message)s")
+file_formatter = LogFormatterForFiles(
+    fmt="%(asctime)22s | %(levelname)8s | %(name)s | %(message)s"
+)
 
 
 class LogFormatterForConsole(logging.Formatter):
-
     def format(self, record):
         record = _shorten_name_of_logrecord(record)
         text = super().format(record)
-        shortcut = getattr(record, 'custom_shortcut', None)
+        shortcut = getattr(record, "custom_shortcut", None)
         if shortcut:
             text = text[:1] + f"/{shortcut}" + text[1:]
         return text
 
 
 # try to make console log lines short... no timestamp, short levelname, no "electrum."
-console_formatter = LogFormatterForConsole(fmt="%(levelname).1s | %(name)s | %(message)s")
+console_formatter = LogFormatterForConsole(
+    fmt="%(levelname).1s | %(name)s | %(message)s"
+)
 
 
 def _shorten_name_of_logrecord(record: logging.LogRecord) -> logging.LogRecord:
@@ -54,7 +58,9 @@ def _shorten_name_of_logrecord(record: logging.LogRecord) -> logging.LogRecord:
     record.name = record.name.replace("network.Network", "network", 1)
     record.name = record.name.replace("synchronizer.Synchronizer", "synchronizer", 1)
     record.name = record.name.replace("verifier.SPV", "verifier", 1)
-    record.name = record.name.replace("gui.qt.main_window.ElectrumWindow", "gui.qt.main_window", 1)
+    record.name = record.name.replace(
+        "gui.qt.main_window.ElectrumWindow", "gui.qt.main_window", 1
+    )
     return record
 
 
@@ -80,9 +86,11 @@ def _delete_old_logs(path, keep=10):
 
 
 _logfile_path = None
+
+
 def _configure_file_logging(log_directory: pathlib.Path):
     global _logfile_path
-    assert _logfile_path is None, 'file logging already initialized'
+    assert _logfile_path is None, "file logging already initialized"
     log_directory.mkdir(exist_ok=True)
 
     _delete_old_logs(log_directory)
@@ -106,15 +114,16 @@ def _configure_verbosity(*, verbosity, verbosity_shortcuts):
 
 
 def _process_verbosity_log_levels(verbosity):
-    if verbosity == '*' or not isinstance(verbosity, str):
+    if verbosity == "*" or not isinstance(verbosity, str):
         return
     # example verbosity:
     #   debug,network=error,interface=error      // effectively blacklists network and interface
     #   warning,network=debug,interface=debug    // effectively whitelists network and interface
-    filters = verbosity.split(',')
+    filters = verbosity.split(",")
     for filt in filters:
-        if not filt: continue
-        items = filt.split('=')
+        if not filt:
+            continue
+        items = filt.split("=")
         if len(items) == 1:
             level = items[0]
             electrum_logger.setLevel(level.upper())
@@ -132,7 +141,7 @@ def _process_verbosity_filter_shortcuts(verbosity_shortcuts):
     if len(verbosity_shortcuts) < 1:
         return
     # depending on first character being '^', either blacklist or whitelist
-    is_blacklist = verbosity_shortcuts[0] == '^'
+    is_blacklist = verbosity_shortcuts[0] == "^"
     if is_blacklist:
         filters = verbosity_shortcuts[1:]
     else:  # whitelist
@@ -145,7 +154,6 @@ def _process_verbosity_filter_shortcuts(verbosity_shortcuts):
 
 
 class ShortcutInjectingFilter(logging.Filter):
-
     def __init__(self, *, shortcut: Optional[str]):
         super().__init__()
         self.__shortcut = shortcut
@@ -156,7 +164,6 @@ class ShortcutInjectingFilter(logging.Filter):
 
 
 class ShortcutFilteringFilter(logging.Filter):
-
     def __init__(self, *, is_blacklist: bool, filters: str):
         super().__init__()
         self.__is_blacklist = is_blacklist
@@ -170,7 +177,7 @@ class ShortcutFilteringFilter(logging.Filter):
         if record.name == __name__:
             return True
         # do filtering
-        shortcut = getattr(record, 'custom_shortcut', None)
+        shortcut = getattr(record, "custom_shortcut", None)
         if self.__is_blacklist:
             if shortcut is None:
                 return True
@@ -186,6 +193,7 @@ class ShortcutFilteringFilter(logging.Filter):
 
 
 # --- External API
+
 
 def get_logger(name: str) -> logging.Logger:
     if name.startswith("electrum."):
@@ -224,18 +232,19 @@ class Logger:
         return logger
 
     def diagnostic_name(self):
-        return ''
+        return ""
 
 
 def configure_logging(config):
-    verbosity = config.get('verbosity')
-    verbosity_shortcuts = config.get('verbosity_shortcuts')
+    verbosity = config.get("verbosity")
+    verbosity_shortcuts = config.get("verbosity_shortcuts")
     _configure_verbosity(verbosity=verbosity, verbosity_shortcuts=verbosity_shortcuts)
 
-    log_to_file = config.get('log_to_file', False)
-    is_android = 'ANDROID_DATA' in os.environ
+    log_to_file = config.get("log_to_file", False)
+    is_android = "ANDROID_DATA" in os.environ
     if is_android:
         from jnius import autoclass
+
         build_config = autoclass("org.electrum.electrum.BuildConfig")
         log_to_file |= bool(build_config.DEBUG)
     if log_to_file:
@@ -243,14 +252,19 @@ def configure_logging(config):
         _configure_file_logging(log_directory)
 
     # if using kivy, avoid kivy's own logs to get printed twice
-    logging.getLogger('kivy').propagate = False
+    logging.getLogger("kivy").propagate = False
 
     from . import ELECTRUM_VERSION
     from .constants import GIT_REPO_URL
-    _logger.info(f"Electrum version: {ELECTRUM_VERSION} - https://electrum.org - {GIT_REPO_URL}")
+
+    _logger.info(
+        f"Electrum version: {ELECTRUM_VERSION} - https://electrum.org - {GIT_REPO_URL}"
+    )
     _logger.info(f"Python version: {sys.version}. On platform: {describe_os_version()}")
     _logger.info(f"Logging to file: {str(_logfile_path)}")
-    _logger.info(f"Log filters: verbosity {repr(verbosity)}, verbosity_shortcuts {repr(verbosity_shortcuts)}")
+    _logger.info(
+        f"Log filters: verbosity {repr(verbosity)}, verbosity_shortcuts {repr(verbosity_shortcuts)}"
+    )
 
 
 def get_logfile_path() -> Optional[pathlib.Path]:
@@ -258,13 +272,17 @@ def get_logfile_path() -> Optional[pathlib.Path]:
 
 
 def describe_os_version() -> str:
-    if 'ANDROID_DATA' in os.environ:
+    if "ANDROID_DATA" in os.environ:
         from kivy import utils
+
         if utils.platform != "android":
             return utils.platform
         import jnius
-        bv = jnius.autoclass('android.os.Build$VERSION')
-        b = jnius.autoclass('android.os.Build')
-        return "Android {} on {} {} ({})".format(bv.RELEASE, b.BRAND, b.DEVICE, b.DISPLAY)
+
+        bv = jnius.autoclass("android.os.Build$VERSION")
+        b = jnius.autoclass("android.os.Build")
+        return "Android {} on {} {} ({})".format(
+            bv.RELEASE, b.BRAND, b.DEVICE, b.DISPLAY
+        )
     else:
         return platform.platform()

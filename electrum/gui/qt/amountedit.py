@@ -3,14 +3,18 @@
 from decimal import Decimal
 from typing import Union
 
-from PyQt5.QtCore import pyqtSignal, Qt
-from PyQt5.QtGui import QPalette, QPainter
-from PyQt5.QtWidgets import (QLineEdit, QStyle, QStyleOptionFrame)
+from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtGui import QPainter, QPalette
+from PyQt5.QtWidgets import QLineEdit, QStyle, QStyleOptionFrame
 
-from .util import char_width_in_lineedit, ColorScheme
+from electrum.util import (
+    FEERATE_PRECISION,
+    decimal_point_to_base_unit_name,
+    format_satoshis_plain,
+    quantize_feerate,
+)
 
-from electrum.util import (format_satoshis_plain, decimal_point_to_base_unit_name,
-                           FEERATE_PRECISION, quantize_feerate)
+from .util import ColorScheme, char_width_in_lineedit
 
 
 class FreezableLineEdit(QLineEdit):
@@ -20,6 +24,7 @@ class FreezableLineEdit(QLineEdit):
         self.setReadOnly(b)
         self.setFrame(not b)
         self.frozen.emit()
+
 
 class AmountEdit(FreezableLineEdit):
     shortcut = pyqtSignal()
@@ -42,18 +47,19 @@ class AmountEdit(FreezableLineEdit):
 
     def numbify(self):
         text = self.text().strip()
-        if text == '!':
+        if text == "!":
             self.shortcut.emit()
             return
         pos = self.cursorPosition()
-        chars = '0123456789'
-        if not self.is_int: chars +='.'
-        s = ''.join([i for i in text if i in chars])
+        chars = "0123456789"
         if not self.is_int:
-            if '.' in s:
-                p = s.find('.')
-                s = s.replace('.','')
-                s = s[:p] + '.' + s[p:p+self.max_precision()]
+            chars += "."
+        s = "".join([i for i in text if i in chars])
+        if not self.is_int:
+            if "." in s:
+                p = s.find(".")
+                s = s.replace(".", "")
+                s = s[:p] + "." + s[p : p + self.max_precision()]
         self.setText(s)
         # setText sets Modified to False.  Instead we want to remember
         # if updates were because of user modification.
@@ -65,11 +71,15 @@ class AmountEdit(FreezableLineEdit):
         if self.base_unit:
             panel = QStyleOptionFrame()
             self.initStyleOption(panel)
-            textRect = self.style().subElementRect(QStyle.SE_LineEditContents, panel, self)
+            textRect = self.style().subElementRect(
+                QStyle.SE_LineEditContents, panel, self
+            )
             textRect.adjust(2, 0, -10, 0)
             painter = QPainter(self)
             painter.setPen(ColorScheme.GRAY.as_color())
-            painter.drawText(textRect, Qt.AlignRight | Qt.AlignVCenter, self.base_unit())
+            painter.drawText(
+                textRect, Qt.AlignRight | Qt.AlignVCenter, self.base_unit()
+            )
 
     def get_amount(self) -> Union[None, Decimal, int]:
         try:
@@ -78,11 +88,10 @@ class AmountEdit(FreezableLineEdit):
             return None
 
     def setAmount(self, x):
-        self.setText("%d"%x)
+        self.setText("%d" % x)
 
 
 class BTCAmountEdit(AmountEdit):
-
     def __init__(self, decimal_point, is_int=False, parent=None):
         AmountEdit.__init__(self, self._base_unit, is_int, parent)
         self.decimal_point = decimal_point
@@ -103,25 +112,28 @@ class BTCAmountEdit(AmountEdit):
         if self.max_precision() == self.decimal_point():
             return max_prec_amount
         # otherwise, scale it back to the expected unit
-        amount = Decimal(max_prec_amount) / pow(10, self.max_precision()-self.decimal_point())
+        amount = Decimal(max_prec_amount) / pow(
+            10, self.max_precision() - self.decimal_point()
+        )
         return Decimal(amount) if not self.is_int else int(amount)
 
     def setAmount(self, amount_sat):
         if amount_sat is None:
             self.setText(" ")  # Space forces repaint in case units changed
         else:
-            self.setText(format_satoshis_plain(amount_sat, decimal_point=self.decimal_point()))
+            self.setText(
+                format_satoshis_plain(amount_sat, decimal_point=self.decimal_point())
+            )
         self.repaint()  # macOS hack for #6269
 
 
 class FeerateEdit(BTCAmountEdit):
-
     def __init__(self, decimal_point, is_int=False, parent=None):
         super().__init__(decimal_point, is_int, parent)
         self.extra_precision = FEERATE_PRECISION
 
     def _base_unit(self):
-        return 'sat/byte'
+        return "sat/byte"
 
     def get_amount(self):
         sat_per_byte_amount = BTCAmountEdit.get_amount(self)

@@ -58,19 +58,23 @@ tobytes(s)
     a byte string and make a byte string.
 """
 
-import sys
 import abc
-
+import sys
 
 if sys.version_info[0] == 2:
+
     def b(s):
         return s
+
     def bchr(s):
         return chr(s)
+
     def bstr(s):
         return str(s)
+
     def bord(s):
         return ord(s)
+
     def tobytes(s, encoding="latin-1"):
         if isinstance(s, unicode):
             return s.encode(encoding)
@@ -79,23 +83,26 @@ if sys.version_info[0] == 2:
         elif isinstance(s, bytearray):
             return bytes(s)
         else:
-            return ''.join(s)
+            return "".join(s)
+
     def tostr(bs):
         return bs
+
     def byte_string(s):
         return isinstance(s, str)
 
     # In Pyton 2.x, StringIO is a stand-alone module
-    from StringIO import StringIO as BytesIO
-
     from sys import maxint
+
+    from StringIO import StringIO as BytesIO
 
     if sys.version_info[1] < 7:
         import types
+
         _memoryview = types.NoneType
     else:
         _memoryview = memoryview
-    
+
     iter_range = xrange
 
     def is_native_int(x):
@@ -104,31 +111,38 @@ if sys.version_info[0] == 2:
     def is_string(x):
         return isinstance(x, basestring)
 
-    ABC = abc.ABCMeta('ABC', (object,), {'__slots__': ()})
+    ABC = abc.ABCMeta("ABC", (object,), {"__slots__": ()})
 
 else:
+
     def b(s):
-       return s.encode("latin-1") # utf-8 would cause some side-effects we don't want
+        return s.encode("latin-1")  # utf-8 would cause some side-effects we don't want
+
     def bchr(s):
         return bytes([s])
+
     def bstr(s):
-        if isinstance(s,str):
-            return bytes(s,"latin-1")
+        if isinstance(s, str):
+            return bytes(s, "latin-1")
         else:
             return bytes(s)
+
     def bord(s):
         return s
+
     def tobytes(s, encoding="latin-1"):
         if isinstance(s, bytes):
             return s
         elif isinstance(s, bytearray):
             return bytes(s)
-        elif isinstance(s,str):
+        elif isinstance(s, str):
             return s.encode(encoding)
         else:
             return bytes([s])
+
     def tostr(bs):
         return bs.decode("latin-1")
+
     def byte_string(s):
         return isinstance(s, bytes)
 
@@ -159,6 +173,7 @@ def _copy_bytes(start, end, seq):
         return bytes(seq[start:end])
     else:
         return seq[start:end]
+
 
 del sys
 del abc

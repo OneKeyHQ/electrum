@@ -1,12 +1,11 @@
 import os
 
-from electrum.simple_config import SimpleConfig
 from electrum import constants
+from electrum.commands import Commands
 from electrum.daemon import Daemon
+from electrum.simple_config import SimpleConfig
 from electrum.storage import WalletStorage
 from electrum.wallet import Wallet, create_new_wallet
-from electrum.commands import Commands
-
 
 config = SimpleConfig({"testnet": True})  # to use ~/.electrum/testnet as datadir
 constants.set_testnet()  # to set testnet magic bytes
@@ -29,10 +28,22 @@ wallet.start_network(network)
 command_runner = Commands(config=config, daemon=daemon, network=network)
 command_runner.wallet = wallet
 print("balance", command_runner.getbalance())
-print("addr",    command_runner.getunusedaddress())
-print("gettx",   command_runner.gettransaction("bd3a700b2822e10a034d110c11a596ee7481732533eb6aca7f9ca02911c70a4f"))
+print("addr", command_runner.getunusedaddress())
+print(
+    "gettx",
+    command_runner.gettransaction(
+        "bd3a700b2822e10a034d110c11a596ee7481732533eb6aca7f9ca02911c70a4f"
+    ),
+)
 
 # but you might as well interact with the underlying methods directly
 print("balance", wallet.get_balance())
-print("addr",    wallet.get_unused_address())
-print("gettx",   network.run_from_another_thread(network.get_transaction("bd3a700b2822e10a034d110c11a596ee7481732533eb6aca7f9ca02911c70a4f")))
+print("addr", wallet.get_unused_address())
+print(
+    "gettx",
+    network.run_from_another_thread(
+        network.get_transaction(
+            "bd3a700b2822e10a034d110c11a596ee7481732533eb6aca7f9ca02911c70a4f"
+        )
+    ),
+)

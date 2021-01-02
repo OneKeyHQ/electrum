@@ -9,7 +9,7 @@ import sys
 try:
     from .uikit_bindings import *
 except Exception as e:
-    sys.exit("Error: Could not import iOS libs: %s"%str(e))
+    sys.exit("Error: Could not import iOS libs: %s" % str(e))
 
 
-OKNSObject = ObjCClass('OKNSObject')
+OKNSObject = ObjCClass("OKNSObject")

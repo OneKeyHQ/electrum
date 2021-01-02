@@ -12,7 +12,9 @@ def patch_qt_stylesheet(use_dark_theme: bool) -> None:
     app = QtWidgets.QApplication.instance()
 
     style_sheet = app.styleSheet()
-    style_sheet = style_sheet + '''
+    style_sheet = (
+        style_sheet
+        + """
     /* PayToEdit text was being clipped */
     QAbstractScrollArea {
         padding: 0px;
@@ -29,5 +31,6 @@ def patch_qt_stylesheet(use_dark_theme: bool) -> None:
         font-weight: bold;
         max-height: 30px;
     }
-    '''
+    """
+    )
     app.setStyleSheet(style_sheet)

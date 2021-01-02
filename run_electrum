@@ -26,7 +26,6 @@
 import os
 import sys
 
-
 MIN_PYTHON_VERSION = "3.6.1"  # FIXME duplicated from setup.py
 _min_python_version_tuple = tuple(map(int, (MIN_PYTHON_VERSION.split("."))))
 
@@ -35,44 +34,45 @@ if sys.version_info[:3] < _min_python_version_tuple:
     sys.exit("Error: Electrum requires Python version >= %s..." % MIN_PYTHON_VERSION)
 
 
-import warnings
 import asyncio
+import warnings
 from typing import TYPE_CHECKING
 
-
 script_dir = os.path.dirname(os.path.realpath(__file__))
-is_bundle = getattr(sys, 'frozen', False)
-is_local = not is_bundle and os.path.exists(os.path.join(script_dir, "electrum.desktop"))
-is_android = 'ANDROID_DATA' in os.environ
+is_bundle = getattr(sys, "frozen", False)
+is_local = not is_bundle and os.path.exists(
+    os.path.join(script_dir, "electrum.desktop")
+)
+is_android = "ANDROID_DATA" in os.environ
 
 if is_local:  # running from source
     # developers should probably see all deprecation warnings.
-    warnings.simplefilter('default', DeprecationWarning)
+    warnings.simplefilter("default", DeprecationWarning)
 
 # move this back to gui/kivy/__init.py once plugins are moved
-os.environ['KIVY_DATA_DIR'] = os.path.abspath(os.path.dirname(__file__)) + '/electrum/gui/kivy/data/'
+os.environ["KIVY_DATA_DIR"] = (
+    os.path.abspath(os.path.dirname(__file__)) + "/electrum/gui/kivy/data/"
+)
 
 if is_local or is_android:
-    sys.path.insert(0, os.path.join(script_dir, 'packages'))
+    sys.path.insert(0, os.path.join(script_dir, "packages"))
 
 
 def check_imports():
     # pure-python dependencies need to be imported here for pyinstaller
     try:
-        import dns
-        import pyaes
-        import ecdsa
-        import certifi
-        import qrcode
-        import google.protobuf
         import aiorpcx
+        import certifi
+        import dns
+        import ecdsa
+        import google.protobuf
+        import pyaes
+        import qrcode
     except ImportError as e:
         sys.exit(f"Error: {str(e)}. Try 'sudo python3 -m pip install <module-name>'")
     # the following imports are for pyinstaller
-    from google.protobuf import descriptor
-    from google.protobuf import message
-    from google.protobuf import reflection
-    from google.protobuf import descriptor_pb2
+    from google.protobuf import descriptor, descriptor_pb2, message, reflection
+
     # make sure that certificates are here
     assert os.path.exists(certifi.where())
 
@@ -81,19 +81,21 @@ if not is_android:
     check_imports()
 
 
-from electrum.logging import get_logger, configure_logging
-from electrum import util
-from electrum import constants
-from electrum import SimpleConfig
-from electrum.wallet_db import WalletDB
-from electrum.wallet import Wallet
+from electrum import SimpleConfig, constants, daemon, keystore, util
+from electrum.commands import Commands, config_variables, get_parser, known_commands
+from electrum.logging import configure_logging, get_logger
 from electrum.storage import WalletStorage
-from electrum.util import print_msg, print_stderr, json_encode, json_decode, UserCancelled
-from electrum.util import InvalidPassword
-from electrum.commands import get_parser, known_commands, Commands, config_variables
-from electrum import daemon
-from electrum import keystore
-from electrum.util import create_and_start_event_loop
+from electrum.util import (
+    InvalidPassword,
+    UserCancelled,
+    create_and_start_event_loop,
+    json_decode,
+    json_encode,
+    print_msg,
+    print_stderr,
+)
+from electrum.wallet import Wallet
+from electrum.wallet_db import WalletDB
 
 if TYPE_CHECKING:
     from electrum.plugin import Plugins
@@ -104,6 +106,7 @@ _logger = get_logger(__name__)
 # get password routine
 def prompt_password(prompt, confirm=True):
     import getpass
+
     password = getpass.getpass(prompt, stream=None)
     if password and confirm:
         password2 = getpass.getpass("Confirm: ")
@@ -115,17 +118,17 @@ def prompt_password(prompt, confirm=True):
 
 
 def init_cmdline(config_options, wallet_path, server):
-    cmdname = config.get('cmd')
+    cmdname = config.get("cmd")
     cmd = known_commands[cmdname]
 
-    if cmdname == 'signtransaction' and config.get('privkey'):
+    if cmdname == "signtransaction" and config.get("privkey"):
         cmd.requires_wallet = False
         cmd.requires_password = False
 
-    if cmdname in ['payto', 'paytomany'] and config.get('unsigned'):
+    if cmdname in ["payto", "paytomany"] and config.get("unsigned"):
         cmd.requires_password = False
 
-    if cmdname in ['payto', 'paytomany'] and config.get('broadcast'):
+    if cmdname in ["payto", "paytomany"] and config.get("broadcast"):
         cmd.requires_network = True
 
     # instantiate wallet for command-line
@@ -133,47 +136,53 @@ def init_cmdline(config_options, wallet_path, server):
 
     if cmd.requires_wallet and not storage.file_exists():
         print_msg("Error: Wallet file not found.")
-        print_msg("Type 'electrum create' to create a new wallet, or provide a path to a wallet with the -w option")
+        print_msg(
+            "Type 'electrum create' to create a new wallet, or provide a path to a wallet with the -w option"
+        )
         sys_exit(1)
 
     # important warning
-    if cmd.name in ['getprivatekeys']:
+    if cmd.name in ["getprivatekeys"]:
         print_stderr("WARNING: ALL your private keys are secret.")
         print_stderr("Exposing a single private key can compromise your entire wallet!")
-        print_stderr("In particular, DO NOT use 'redeem private key' services proposed by third parties.")
+        print_stderr(
+            "In particular, DO NOT use 'redeem private key' services proposed by third parties."
+        )
 
     # will we need a password
     if not storage.is_encrypted():
         db = WalletDB(storage.read(), manual_upgrades=False)
-        use_encryption = db.get('use_encryption')
+        use_encryption = db.get("use_encryption")
     else:
         use_encryption = True
 
     # commands needing password
-    if  ( (cmd.requires_wallet and storage.is_encrypted() and server is False)\
-       or (cmdname == 'load_wallet' and storage.is_encrypted())\
-       or (cmd.requires_password and use_encryption)):
+    if (
+        (cmd.requires_wallet and storage.is_encrypted() and server is False)
+        or (cmdname == "load_wallet" and storage.is_encrypted())
+        or (cmd.requires_password and use_encryption)
+    ):
         if storage.is_encrypted_with_hw_device():
             # this case is handled later in the control flow
             password = None
-        elif config.get('password'):
-            password = config.get('password')
+        elif config.get("password"):
+            password = config.get("password")
         else:
-            password = prompt_password('Password:', False)
+            password = prompt_password("Password:", False)
             if not password:
                 print_msg("Error: Password required")
                 sys_exit(1)
     else:
         password = None
 
-    config_options['password'] = config_options.get('password') or password
+    config_options["password"] = config_options.get("password") or password
 
-    if cmd.name == 'password':
-        new_password = prompt_password('New password:')
-        config_options['new_password'] = new_password
+    if cmd.name == "password":
+        new_password = prompt_password("New password:")
+        config_options["new_password"] = new_password
 
 
-def get_connected_hw_devices(plugins: 'Plugins'):
+def get_connected_hw_devices(plugins: "Plugins"):
     supported_plugins = plugins.get_hardware_support()
     # scan devices
     devices = []
@@ -187,20 +196,22 @@ def get_connected_hw_devices(plugins: 'Plugins'):
         try:
             u = devmgr.unpaired_device_infos(None, plugin)
         except Exception as e:
-            _logger.error(f'error getting device infos for {name}: {repr(e)}')
+            _logger.error(f"error getting device infos for {name}: {repr(e)}")
             continue
         devices += list(map(lambda x: (name, x), u))
     return devices
 
 
-def get_password_for_hw_device_encrypted_storage(plugins: 'Plugins') -> str:
+def get_password_for_hw_device_encrypted_storage(plugins: "Plugins") -> str:
     devices = get_connected_hw_devices(plugins)
     if len(devices) == 0:
         print_msg("Error: No connected hw device found. Cannot decrypt this wallet.")
         sys.exit(1)
     elif len(devices) > 1:
-        print_msg("Warning: multiple hardware devices detected. "
-                  "The first one will be used to decrypt the wallet.")
+        print_msg(
+            "Warning: multiple hardware devices detected. "
+            "The first one will be used to decrypt the wallet."
+        )
     # FIXME we use the "first" device, in case of multiple ones
     name, device_info = devices[0]
     devmgr = plugins.device_manager
@@ -211,22 +222,22 @@ def get_password_for_hw_device_encrypted_storage(plugins: 'Plugins') -> str:
         sys.exit(0)
 
 
-async def run_offline_command(config, config_options, plugins: 'Plugins'):
-    cmdname = config.get('cmd')
+async def run_offline_command(config, config_options, plugins: "Plugins"):
+    cmdname = config.get("cmd")
     cmd = known_commands[cmdname]
-    password = config_options.get('password')
-    if 'wallet_path' in cmd.options and config_options.get('wallet_path') is None:
-        config_options['wallet_path'] = config.get_wallet_path()
+    password = config_options.get("password")
+    if "wallet_path" in cmd.options and config_options.get("wallet_path") is None:
+        config_options["wallet_path"] = config.get_wallet_path()
     if cmd.requires_wallet:
         storage = WalletStorage(config.get_wallet_path())
         if storage.is_encrypted():
             if storage.is_encrypted_with_hw_device():
                 password = get_password_for_hw_device_encrypted_storage(plugins)
-                config_options['password'] = password
+                config_options["password"] = password
             storage.decrypt(password)
         db = WalletDB(storage.read(), manual_upgrades=False)
         wallet = Wallet(db, storage, config=config)
-        config_options['wallet'] = wallet
+        config_options["wallet"] = wallet
     else:
         wallet = None
     # check password
@@ -241,12 +252,16 @@ async def run_offline_command(config, config_options, plugins: 'Plugins'):
     # arguments passed to function
     args = [config.get(x) for x in cmd.params]
     # decode json arguments
-    if cmdname not in ('setconfig',):
+    if cmdname not in ("setconfig",):
         args = list(map(json_decode, args))
     # options
     kwargs = {}
     for x in cmd.options:
-        kwargs[x] = (config_options.get(x) if x in ['wallet_path', 'wallet', 'password', 'new_password'] else config.get(x))
+        kwargs[x] = (
+            config_options.get(x)
+            if x in ["wallet_path", "wallet", "password", "new_password"]
+            else config.get(x)
+        )
     cmd_runner = Commands(config=config)
     func = getattr(cmd_runner, cmd.name)
     result = await func(*args, **kwargs)
@@ -258,7 +273,9 @@ async def run_offline_command(config, config_options, plugins: 'Plugins'):
 
 def init_plugins(config, gui_name):
     from electrum.plugin import Plugins
+
     return Plugins(config, gui_name)
+
 
 def sys_exit(i):
     # stop event loop and exit
@@ -266,40 +283,41 @@ def sys_exit(i):
     loop_thread.join(timeout=1)
     sys.exit(i)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     # The hook will only be used in the Qt GUI right now
     util.setup_thread_excepthook()
     # on macOS, delete Process Serial Number arg generated for apps launched in Finder
-    sys.argv = list(filter(lambda x: not x.startswith('-psn'), sys.argv))
+    sys.argv = list(filter(lambda x: not x.startswith("-psn"), sys.argv))
 
     # old 'help' syntax
-    if len(sys.argv) > 1 and sys.argv[1] == 'help':
-        sys.argv.remove('help')
-        sys.argv.append('-h')
+    if len(sys.argv) > 1 and sys.argv[1] == "help":
+        sys.argv.remove("help")
+        sys.argv.append("-h")
 
     # old '-v' syntax
     # Due to this workaround that keeps old -v working,
     # more advanced usages of -v need to use '-v='.
     # e.g. -v=debug,network=warning,interface=error
     try:
-        i = sys.argv.index('-v')
+        i = sys.argv.index("-v")
     except ValueError:
         pass
     else:
-        sys.argv[i] = '-v*'
+        sys.argv[i] = "-v*"
 
     # read arguments from stdin pipe and prompt
     for i, arg in enumerate(sys.argv):
-        if arg == '-':
+        if arg == "-":
             if not sys.stdin.isatty():
                 sys.argv[i] = sys.stdin.read()
                 break
             else:
-                raise Exception('Cannot get argument from stdin')
-        elif arg == '?':
+                raise Exception("Cannot get argument from stdin")
+        elif arg == "?":
             sys.argv[i] = input("Enter argument:")
-        elif arg == ':':
-            sys.argv[i] = prompt_password('Enter argument (will not echo):', False)
+        elif arg == ":":
+            sys.argv[i] = prompt_password("Enter argument (will not echo):", False)
 
     # parse command line
     parser = get_parser()
@@ -308,52 +326,60 @@ if __name__ == '__main__':
     # config is an object passed to the various constructors (wallet, interface, gui)
     if is_android:
         from jnius import autoclass
+
         build_config = autoclass("org.electrum.electrum.BuildConfig")
         config_options = {
-            'verbosity': '*' if build_config.DEBUG else '',
-            'cmd': 'gui',
-            'gui': 'kivy',
+            "verbosity": "*" if build_config.DEBUG else "",
+            "cmd": "gui",
+            "gui": "kivy",
         }
     else:
         config_options = args.__dict__
-        f = lambda key: config_options[key] is not None and key not in config_variables.get(args.cmd, {}).keys()
-        config_options = {key: config_options[key] for key in filter(f, config_options.keys())}
-        if config_options.get('server'):
-            config_options['auto_connect'] = False
+        f = (
+            lambda key: config_options[key] is not None
+            and key not in config_variables.get(args.cmd, {}).keys()
+        )
+        config_options = {
+            key: config_options[key] for key in filter(f, config_options.keys())
+        }
+        if config_options.get("server"):
+            config_options["auto_connect"] = False
 
-    config_options['cwd'] = os.getcwd()
+    config_options["cwd"] = os.getcwd()
 
     # fixme: this can probably be achieved with a runtime hook (pyinstaller)
-    if is_bundle and os.path.exists(os.path.join(sys._MEIPASS, 'is_portable')):
-        config_options['portable'] = True
+    if is_bundle and os.path.exists(os.path.join(sys._MEIPASS, "is_portable")):
+        config_options["portable"] = True
 
-    if config_options.get('portable'):
-        config_options['electrum_path'] = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'electrum_data')
+    if config_options.get("portable"):
+        config_options["electrum_path"] = os.path.join(
+            os.path.dirname(os.path.realpath(__file__)), "electrum_data"
+        )
 
-    if not config_options.get('verbosity'):
-        warnings.simplefilter('ignore', DeprecationWarning)
+    if not config_options.get("verbosity"):
+        warnings.simplefilter("ignore", DeprecationWarning)
 
     # check uri
-    uri = config_options.get('url')
+    uri = config_options.get("url")
     if uri:
-        if not uri.startswith('bitcoin:'):
-            print_stderr('unknown command:', uri)
+        if not uri.startswith("bitcoin:"):
+            print_stderr("unknown command:", uri)
             sys.exit(1)
 
     # singleton
     config = SimpleConfig(config_options)
 
     constants.set_testnet()
-    if config.get('testnet'):
+    if config.get("testnet"):
         constants.set_testnet()
-    elif config.get('regtest'):
+    elif config.get("regtest"):
         constants.set_regtest()
-    elif config.get('simnet'):
+    elif config.get("simnet"):
         constants.set_simnet()
 
-    cmdname = config.get('cmd')
+    cmdname = config.get("cmd")
 
-    if cmdname == 'daemon' and config.get("detach"):
+    if cmdname == "daemon" and config.get("detach"):
         # fork before creating the asyncio event loop
         pid = os.fork()
         if pid:
@@ -363,38 +389,38 @@ if __name__ == '__main__':
             # redirect standard file descriptors
             sys.stdout.flush()
             sys.stderr.flush()
-            si = open(os.devnull, 'r')
-            so = open(os.devnull, 'w')
-            se = open(os.devnull, 'w')
+            si = open(os.devnull, "r")
+            so = open(os.devnull, "w")
+            se = open(os.devnull, "w")
             os.dup2(si.fileno(), sys.stdin.fileno())
             os.dup2(so.fileno(), sys.stdout.fileno())
             os.dup2(se.fileno(), sys.stderr.fileno())
 
     loop, stop_loop, loop_thread = create_and_start_event_loop()
 
-    if cmdname == 'gui':
+    if cmdname == "gui":
         configure_logging(config)
         fd = daemon.get_file_descriptor(config)
         if fd is not None:
-            plugins = init_plugins(config, config.get('gui', 'qt'))
+            plugins = init_plugins(config, config.get("gui", "qt"))
             d = daemon.Daemon(config, fd)
             try:
                 d.run_gui(config, plugins)
             except BaseException as e:
-                _logger.exception('daemon.run_gui errored')
+                _logger.exception("daemon.run_gui errored")
                 sys_exit(1)
             else:
                 sys_exit(0)
         else:
-            result = daemon.request(config, 'gui', (config_options,))
+            result = daemon.request(config, "gui", (config_options,))
 
-    elif cmdname == 'daemon':
+    elif cmdname == "daemon":
 
         configure_logging(config)
         fd = daemon.get_file_descriptor(config)
         if fd is not None:
             # run daemon
-            init_plugins(config, 'cmdline')
+            init_plugins(config, "cmdline")
             d = daemon.Daemon(config, fd)
             d.run_daemon()
             sys_exit(0)
@@ -405,12 +431,15 @@ if __name__ == '__main__':
         # command line
         cmd = known_commands[cmdname]
         wallet_path = config.get_wallet_path()
-        if not config.get('offline'):
+        if not config.get("offline"):
             init_cmdline(config_options, wallet_path, True)
-            timeout = config.get('timeout', 60)
-            if timeout: timeout = int(timeout)
+            timeout = config.get("timeout", 60)
+            if timeout:
+                timeout = int(timeout)
             try:
-                result = daemon.request(config, 'run_cmdline', (config_options,), timeout)
+                result = daemon.request(
+                    config, "run_cmdline", (config_options,), timeout
+                )
             except daemon.DaemonNotRunning:
                 print_msg("Daemon not running; try 'electrum daemon -d'")
                 if not cmd.requires_network:
@@ -424,7 +453,7 @@ if __name__ == '__main__':
                 print_msg("This command cannot be run offline")
                 sys_exit(1)
             init_cmdline(config_options, wallet_path, False)
-            plugins = init_plugins(config, 'cmdline')
+            plugins = init_plugins(config, "cmdline")
             coro = run_offline_command(config, config_options, plugins)
             fut = asyncio.run_coroutine_threadsafe(coro, loop)
             try:
@@ -434,8 +463,8 @@ if __name__ == '__main__':
                 sys_exit(1)
     if isinstance(result, str):
         print_msg(result)
-    elif type(result) is dict and result.get('error'):
-        print_stderr(result.get('error'))
+    elif type(result) is dict and result.get("error"):
+        print_stderr(result.get("error"))
         sys_exit(1)
     elif result is not None:
         print_msg(json_encode(result))

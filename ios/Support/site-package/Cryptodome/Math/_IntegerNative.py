@@ -28,9 +28,9 @@
 # POSSIBILITY OF SUCH DAMAGE.
 # ===================================================================
 
-from ._IntegerBase import IntegerBase
+from Cryptodome.Util.number import bytes_to_long, long_to_bytes
 
-from Cryptodome.Util.number import long_to_bytes, bytes_to_long
+from ._IntegerBase import IntegerBase
 
 
 class IntegerNative(IntegerBase):
@@ -97,6 +97,7 @@ class IntegerNative(IntegerBase):
 
     def __nonzero__(self):
         return self._value != 0
+
     __bool__ = __nonzero__
 
     def is_negative(self):

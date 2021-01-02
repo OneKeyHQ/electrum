@@ -1,11 +1,6 @@
-from abc import (
-    ABC,
-    abstractmethod,
-)
+from abc import ABC, abstractmethod
 
-from eth_account.messages import (
-    SignableMessage,
-)
+from eth_account.messages import SignableMessage
 
 
 class BaseAccount(ABC):

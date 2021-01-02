@@ -31,16 +31,14 @@
 # POSSIBILITY OF SUCH DAMAGE.
 # ===================================================================
 
-from Cryptodome.Util.py3compat import bord, tobytes, _memoryview
-
 from binascii import unhexlify
 
-from Cryptodome.Hash import MD5
-from Cryptodome.Hash import BLAKE2s
-from Cryptodome.Util.strxor import strxor
+from Cryptodome.Hash import MD5, BLAKE2s
 from Cryptodome.Random import get_random_bytes
+from Cryptodome.Util.py3compat import _memoryview, bord, tobytes
+from Cryptodome.Util.strxor import strxor
 
-__all__ = ['new', 'HMAC']
+__all__ = ["new", "HMAC"]
 
 
 class HMAC(object):
@@ -106,10 +104,8 @@ class HMAC(object):
         """Carry out the expensive inner loop for PBKDF2-HMAC"""
 
         result = self._digestmod._pbkdf2_hmac_assist(
-                                    self._inner,
-                                    self._outer,
-                                    first_digest,
-                                    iterations)
+            self._inner, self._outer, first_digest, iterations
+        )
         return result
 
     def copy(self):
@@ -172,8 +168,7 @@ class HMAC(object):
         :rtype: string
         """
 
-        return "".join(["%02x" % bord(x)
-                        for x in tuple(self.digest())])
+        return "".join(["%02x" % bord(x) for x in tuple(self.digest())])
 
     def hexverify(self, hex_mac_tag):
         """Verify that a given **printable** MAC (computed by another party)

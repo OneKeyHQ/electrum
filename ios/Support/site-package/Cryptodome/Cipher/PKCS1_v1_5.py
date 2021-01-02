@@ -20,12 +20,13 @@
 # SOFTWARE.
 # ===================================================================
 
-__all__ = [ 'new', 'PKCS115_Cipher' ]
+__all__ = ["new", "PKCS115_Cipher"]
 
-from Cryptodome.Util.number import ceil_div, bytes_to_long, long_to_bytes
-from Cryptodome.Util.py3compat import bord, _copy_bytes
 import Cryptodome.Util.number
 from Cryptodome import Random
+from Cryptodome.Util.number import bytes_to_long, ceil_div, long_to_bytes
+from Cryptodome.Util.py3compat import _copy_bytes, bord
+
 
 class PKCS115_Cipher:
     """This cipher can perform PKCS#1 v1.5 RSA encryption or decryption.
@@ -75,7 +76,7 @@ class PKCS115_Cipher:
 
         # See 7.2.1 in RFC8017
         modBits = Cryptodome.Util.number.size(self._key.n)
-        k = ceil_div(modBits,8) # Convert from bits to bytes
+        k = ceil_div(modBits, 8)  # Convert from bits to bytes
         mLen = len(message)
 
         # Step 1
@@ -89,9 +90,9 @@ class PKCS115_Cipher:
                 continue
             ps.append(new_byte)
         ps = b"".join(ps)
-        assert(len(ps) == k - mLen - 3)
+        assert len(ps) == k - mLen - 3
         # Step 2b
-        em = b'\x00\x02' + ps + b'\x00' + _copy_bytes(None, None, message)
+        em = b"\x00\x02" + ps + b"\x00" + _copy_bytes(None, None, message)
         # Step 3a (OS2IP)
         em_int = bytes_to_long(em)
         # Step 3b (RSAEP)
@@ -158,7 +159,7 @@ class PKCS115_Cipher:
 
         # See 7.2.1 in RFC3447
         modBits = Cryptodome.Util.number.size(self._key.n)
-        k = ceil_div(modBits,8) # Convert from bits to bytes
+        k = ceil_div(modBits, 8)  # Convert from bits to bytes
 
         # Step 1
         if len(ciphertext) != k:
@@ -170,11 +171,11 @@ class PKCS115_Cipher:
         # Complete step 2c (I2OSP)
         em = long_to_bytes(m_int, k)
         # Step 3
-        sep = em.find(b'\x00', 2)
-        if  not em.startswith(b'\x00\x02') or sep < 10:
+        sep = em.find(b"\x00", 2)
+        if not em.startswith(b"\x00\x02") or sep < 10:
             return sentinel
         # Step 4
-        return em[sep + 1:]
+        return em[sep + 1 :]
 
 
 def new(key, randfunc=None):
@@ -196,4 +197,3 @@ def new(key, randfunc=None):
     if randfunc is None:
         randfunc = Random.get_random_bytes
     return PKCS115_Cipher(key, randfunc)
-

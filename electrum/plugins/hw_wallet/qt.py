@@ -26,35 +26,47 @@
 
 import threading
 from functools import partial
-from typing import TYPE_CHECKING, Union, Optional, Callable, Any
+from typing import TYPE_CHECKING, Any, Callable, Optional, Union
 
 from PyQt5.QtCore import QObject, pyqtSignal
-from PyQt5.QtWidgets import QVBoxLayout, QLineEdit, QHBoxLayout, QLabel
+from PyQt5.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QVBoxLayout
 
-from electrum.gui.qt.password_dialog import PasswordLayout, PW_PASSPHRASE
-from electrum.gui.qt.util import (read_QIcon, WWLabel, OkButton, WindowModalDialog,
-                                  Buttons, CancelButton, TaskThread, char_width_in_lineedit,
-                                  PasswordLineEdit)
-from electrum.gui.qt.main_window import StatusBarButton, ElectrumWindow
 from electrum.gui.qt.installwizard import InstallWizard
-
+from electrum.gui.qt.main_window import ElectrumWindow, StatusBarButton
+from electrum.gui.qt.password_dialog import PW_PASSPHRASE, PasswordLayout
+from electrum.gui.qt.util import (
+    Buttons,
+    CancelButton,
+    OkButton,
+    PasswordLineEdit,
+    TaskThread,
+    WindowModalDialog,
+    WWLabel,
+    char_width_in_lineedit,
+    read_QIcon,
+)
 from electrum.i18n import _
 from electrum.logging import Logger
-from electrum.util import parse_URI, InvalidBitcoinURI, UserCancelled, UserFacingException
-from electrum.plugin import hook, DeviceUnpairableError
+from electrum.plugin import DeviceUnpairableError, hook
+from electrum.util import (
+    InvalidBitcoinURI,
+    UserCancelled,
+    UserFacingException,
+    parse_URI,
+)
 
-from .plugin import OutdatedHwFirmwareException, HW_PluginBase, HardwareHandlerBase
+from .plugin import HardwareHandlerBase, HW_PluginBase, OutdatedHwFirmwareException
 
 if TYPE_CHECKING:
-    from electrum.wallet import Abstract_Wallet
     from electrum.keystore import Hardware_KeyStore
+    from electrum.wallet import Abstract_Wallet
 
 
 # The trickiest thing about this handler was getting windows properly
 # parented on macOS.
 class QtHandlerBase(HardwareHandlerBase, QObject, Logger):
-    '''An interface between the GUI (here, QT) and the device handling
-    logic for handling I/O.'''
+    """An interface between the GUI (here, QT) and the device handling
+    logic for handling I/O."""
 
     passphrase_signal = pyqtSignal(object, object)
     message_signal = pyqtSignal(object, object)
@@ -68,7 +80,9 @@ class QtHandlerBase(HardwareHandlerBase, QObject, Logger):
     def __init__(self, win: Union[ElectrumWindow, InstallWizard], device: str):
         QObject.__init__(self)
         Logger.__init__(self)
-        assert win.gui_thread == threading.current_thread(), 'must be called from GUI thread'
+        assert (
+            win.gui_thread == threading.current_thread()
+        ), "must be called from GUI thread"
         self.clear_signal.connect(self.clear_dialog)
         self.error_signal.connect(self.error_dialog)
         self.message_signal.connect(self.message_dialog)
@@ -89,7 +103,7 @@ class QtHandlerBase(HardwareHandlerBase, QObject, Logger):
         self.status_signal.emit(paired)
 
     def _update_status(self, paired):
-        if hasattr(self, 'button'):
+        if hasattr(self, "button"):
             button = self.button
             icon_name = button.icon_paired if paired else button.icon_unpaired
             button.setIcon(read_QIcon(icon_name))
@@ -170,7 +184,7 @@ class QtHandlerBase(HardwareHandlerBase, QObject, Logger):
     def message_dialog(self, msg, on_cancel):
         # Called more than once during signing, to confirm output and fee
         self.clear_dialog()
-        title = _('Please check your {} device').format(self.device)
+        title = _("Please check your {} device").format(self.device)
         self.dialog = dialog = WindowModalDialog(self.top_level_window(), title)
         l = QLabel(msg)
         vbox = QVBoxLayout(dialog)
@@ -203,11 +217,17 @@ class QtHandlerBase(HardwareHandlerBase, QObject, Logger):
 
 
 class QtPluginBase(object):
-
     @hook
-    def load_wallet(self: Union['QtPluginBase', HW_PluginBase], wallet: 'Abstract_Wallet', window: ElectrumWindow):
-        relevant_keystores = [keystore for keystore in wallet.get_keystores()
-                              if isinstance(keystore, self.keystore_class)]
+    def load_wallet(
+        self: Union["QtPluginBase", HW_PluginBase],
+        wallet: "Abstract_Wallet",
+        window: ElectrumWindow,
+    ):
+        relevant_keystores = [
+            keystore
+            for keystore in wallet.get_keystores()
+            if isinstance(keystore, self.keystore_class)
+        ]
         if not relevant_keystores:
             return
         for keystore in relevant_keystores:
@@ -215,8 +235,10 @@ class QtPluginBase(object):
                 message = keystore.plugin.get_library_not_available_message()
                 window.show_error(message)
                 return
-            tooltip = self.device + '\n' + (keystore.label or 'unnamed')
-            cb = partial(self._on_status_bar_button_click, window=window, keystore=keystore)
+            tooltip = self.device + "\n" + (keystore.label or "unnamed")
+            cb = partial(
+                self._on_status_bar_button_click, window=window, keystore=keystore
+            )
             button = StatusBarButton(read_QIcon(self.icon_unpaired), tooltip, cb)
             button.icon_paired = self.icon_paired
             button.icon_unpaired = self.icon_unpaired
@@ -224,8 +246,12 @@ class QtPluginBase(object):
             handler = self.create_handler(window)
             handler.button = button
             keystore.handler = handler
-            keystore.thread = TaskThread(window, on_error=partial(self.on_task_thread_error, window, keystore))
-            self.add_show_address_on_hw_device_button_for_receive_addr(wallet, keystore, window)
+            keystore.thread = TaskThread(
+                window, on_error=partial(self.on_task_thread_error, window, keystore)
+            )
+            self.add_show_address_on_hw_device_button_for_receive_addr(
+                wallet, keystore, window
+            )
         # Trigger pairings
         def trigger_pairings():
             devmgr = self.device_manager()
@@ -233,80 +259,114 @@ class QtPluginBase(object):
             # first pair with all devices that can be auto-selected
             for keystore in relevant_keystores:
                 try:
-                    self.get_client(keystore=keystore,
-                                    force_pair=True,
-                                    allow_user_interaction=False,
-                                    devices=devices)
+                    self.get_client(
+                        keystore=keystore,
+                        force_pair=True,
+                        allow_user_interaction=False,
+                        devices=devices,
+                    )
                 except UserCancelled:
                     pass
             # now do manual selections
             for keystore in relevant_keystores:
                 try:
-                    self.get_client(keystore=keystore,
-                                    force_pair=True,
-                                    allow_user_interaction=True,
-                                    devices=devices)
+                    self.get_client(
+                        keystore=keystore,
+                        force_pair=True,
+                        allow_user_interaction=True,
+                        devices=devices,
+                    )
                 except UserCancelled:
                     pass
 
         some_keystore = relevant_keystores[0]
         some_keystore.thread.add(trigger_pairings)
 
-    def _on_status_bar_button_click(self, *, window: ElectrumWindow, keystore: 'Hardware_KeyStore'):
+    def _on_status_bar_button_click(
+        self, *, window: ElectrumWindow, keystore: "Hardware_KeyStore"
+    ):
         try:
             self.show_settings_dialog(window=window, keystore=keystore)
         except (UserFacingException, UserCancelled) as e:
             exc_info = (type(e), e, e.__traceback__)
-            self.on_task_thread_error(window=window, keystore=keystore, exc_info=exc_info)
+            self.on_task_thread_error(
+                window=window, keystore=keystore, exc_info=exc_info
+            )
 
-    def on_task_thread_error(self: Union['QtPluginBase', HW_PluginBase], window: ElectrumWindow,
-                             keystore: 'Hardware_KeyStore', exc_info):
+    def on_task_thread_error(
+        self: Union["QtPluginBase", HW_PluginBase],
+        window: ElectrumWindow,
+        keystore: "Hardware_KeyStore",
+        exc_info,
+    ):
         e = exc_info[1]
         if isinstance(e, OutdatedHwFirmwareException):
-            if window.question(e.text_ignore_old_fw_and_continue(), title=_("Outdated device firmware")):
+            if window.question(
+                e.text_ignore_old_fw_and_continue(), title=_("Outdated device firmware")
+            ):
                 self.set_ignore_outdated_fw()
                 # will need to re-pair
                 devmgr = self.device_manager()
+
                 def re_pair_device():
                     device_id = self.choose_device(window, keystore)
                     devmgr.unpair_id(device_id)
                     self.get_client(keystore)
+
                 keystore.thread.add(re_pair_device)
             return
         else:
             window.on_error(exc_info)
 
-    def choose_device(self: Union['QtPluginBase', HW_PluginBase], window: ElectrumWindow,
-                      keystore: 'Hardware_KeyStore') -> Optional[str]:
-        '''This dialog box should be usable even if the user has
-        forgotten their PIN or it is in bootloader mode.'''
-        assert window.gui_thread != threading.current_thread(), 'must not be called from GUI thread'
+    def choose_device(
+        self: Union["QtPluginBase", HW_PluginBase],
+        window: ElectrumWindow,
+        keystore: "Hardware_KeyStore",
+    ) -> Optional[str]:
+        """This dialog box should be usable even if the user has
+        forgotten their PIN or it is in bootloader mode."""
+        assert (
+            window.gui_thread != threading.current_thread()
+        ), "must not be called from GUI thread"
         device_id = self.device_manager().xpub_id(keystore.xpub)
         if not device_id:
             try:
-                info = self.device_manager().select_device(self, keystore.handler, keystore)
+                info = self.device_manager().select_device(
+                    self, keystore.handler, keystore
+                )
             except UserCancelled:
                 return
             device_id = info.device.id_
         return device_id
 
-    def show_settings_dialog(self, window: ElectrumWindow, keystore: 'Hardware_KeyStore') -> None:
+    def show_settings_dialog(
+        self, window: ElectrumWindow, keystore: "Hardware_KeyStore"
+    ) -> None:
         # default implementation (if no dialog): just try to connect to device
         def connect():
             device_id = self.choose_device(window, keystore)
+
         keystore.thread.add(connect)
 
-    def add_show_address_on_hw_device_button_for_receive_addr(self, wallet: 'Abstract_Wallet',
-                                                              keystore: 'Hardware_KeyStore',
-                                                              main_window: ElectrumWindow):
+    def add_show_address_on_hw_device_button_for_receive_addr(
+        self,
+        wallet: "Abstract_Wallet",
+        keystore: "Hardware_KeyStore",
+        main_window: ElectrumWindow,
+    ):
         plugin = keystore.plugin
         receive_address_e = main_window.receive_address_e
 
         def show_address():
             addr = str(receive_address_e.text())
             keystore.thread.add(partial(plugin.show_address, wallet, addr, keystore))
-        dev_name = f"{plugin.device} ({keystore.label})"
-        receive_address_e.addButton("eye1.png", show_address, _("Show on {}").format(dev_name))
 
-    def create_handler(self, window: Union[ElectrumWindow, InstallWizard]) -> 'QtHandlerBase':
+        dev_name = f"{plugin.device} ({keystore.label})"
+        receive_address_e.addButton(
+            "eye1.png", show_address, _("Show on {}").format(dev_name)
+        )
+
+    def create_handler(
+        self, window: Union[ElectrumWindow, InstallWizard]
+    ) -> "QtHandlerBase":
         raise NotImplementedError()

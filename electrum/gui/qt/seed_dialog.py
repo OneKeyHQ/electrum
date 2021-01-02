@@ -25,72 +25,114 @@
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import (QVBoxLayout, QCheckBox, QHBoxLayout, QLineEdit,
-                             QLabel, QCompleter, QDialog, QStyledItemDelegate)
+from PyQt5.QtWidgets import (
+    QCheckBox,
+    QCompleter,
+    QDialog,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QStyledItemDelegate,
+    QVBoxLayout,
+)
 
+from electrum import old_mnemonic
 from electrum.i18n import _
 from electrum.mnemonic import Mnemonic, seed_type
-from electrum import old_mnemonic
 
-from .util import (Buttons, OkButton, WWLabel, ButtonsTextEdit, icon_path,
-                   EnterButton, CloseButton, WindowModalDialog, ColorScheme)
-from .qrtextedit import ShowQRTextEdit, ScanQRTextEdit
 from .completion_text_edit import CompletionTextEdit
+from .qrtextedit import ScanQRTextEdit, ShowQRTextEdit
+from .util import (
+    Buttons,
+    ButtonsTextEdit,
+    CloseButton,
+    ColorScheme,
+    EnterButton,
+    OkButton,
+    WindowModalDialog,
+    WWLabel,
+    icon_path,
+)
 
 
 def seed_warning_msg(seed):
-    return ''.join([
-        "<p>",
-        _("Please save these {0} words on paper (order is important). "),
-        _("This seed will allow you to recover your wallet in case "
-          "of computer failure."),
-        "</p>",
-        "<b>" + _("WARNING") + ":</b>",
-        "<ul>",
-        "<li>" + _("Never disclose your seed.") + "</li>",
-        "<li>" + _("Never type it on a website.") + "</li>",
-        "<li>" + _("Do not store it electronically.") + "</li>",
-        "</ul>"
-    ]).format(len(seed.split()))
+    return "".join(
+        [
+            "<p>",
+            _("Please save these {0} words on paper (order is important). "),
+            _(
+                "This seed will allow you to recover your wallet in case "
+                "of computer failure."
+            ),
+            "</p>",
+            "<b>" + _("WARNING") + ":</b>",
+            "<ul>",
+            "<li>" + _("Never disclose your seed.") + "</li>",
+            "<li>" + _("Never type it on a website.") + "</li>",
+            "<li>" + _("Do not store it electronically.") + "</li>",
+            "</ul>",
+        ]
+    ).format(len(seed.split()))
 
 
 class SeedLayout(QVBoxLayout):
-
     def seed_options(self):
         dialog = QDialog()
         vbox = QVBoxLayout(dialog)
-        if 'ext' in self.options:
-            cb_ext = QCheckBox(_('Extend this seed with custom words'))
+        if "ext" in self.options:
+            cb_ext = QCheckBox(_("Extend this seed with custom words"))
             cb_ext.setChecked(self.is_ext)
             vbox.addWidget(cb_ext)
-        if 'bip39' in self.options:
+        if "bip39" in self.options:
+
             def f(b):
                 self.is_seed = (lambda x: bool(x)) if b else self.saved_is_seed
                 self.is_bip39 = b
                 self.on_edit()
                 if b:
-                    msg = ' '.join([
-                        '<b>' + _('Warning') + ':</b>  ',
-                        _('BIP39 seeds can be imported in Electrum, so that users can access funds locked in other wallets.'),
-                        _('However, we do not generate BIP39 seeds, because they do not meet our safety standard.'),
-                        _('BIP39 seeds do not include a version number, which compromises compatibility with future software.'),
-                        _('We do not guarantee that BIP39 imports will always be supported in Electrum.'),
-                    ])
+                    msg = " ".join(
+                        [
+                            "<b>" + _("Warning") + ":</b>  ",
+                            _(
+                                "BIP39 seeds can be imported in Electrum, so that users can access funds locked in other wallets."
+                            ),
+                            _(
+                                "However, we do not generate BIP39 seeds, because they do not meet our safety standard."
+                            ),
+                            _(
+                                "BIP39 seeds do not include a version number, which compromises compatibility with future software."
+                            ),
+                            _(
+                                "We do not guarantee that BIP39 imports will always be supported in Electrum."
+                            ),
+                        ]
+                    )
                 else:
-                    msg = ''
+                    msg = ""
                 self.seed_warning.setText(msg)
-            cb_bip39 = QCheckBox(_('BIP39 seed'))
+
+            cb_bip39 = QCheckBox(_("BIP39 seed"))
             cb_bip39.toggled.connect(f)
             cb_bip39.setChecked(self.is_bip39)
             vbox.addWidget(cb_bip39)
         vbox.addLayout(Buttons(OkButton(dialog)))
         if not dialog.exec_():
             return None
-        self.is_ext = cb_ext.isChecked() if 'ext' in self.options else False
-        self.is_bip39 = cb_bip39.isChecked() if 'bip39' in self.options else False
+        self.is_ext = cb_ext.isChecked() if "ext" in self.options else False
+        self.is_bip39 = cb_bip39.isChecked() if "bip39" in self.options else False
 
-    def __init__(self, seed=None, title=None, icon=True, msg=None, options=None,
-                 is_seed=None, passphrase=None, parent=None, for_seed_words=True):
+    def __init__(
+        self,
+        seed=None,
+        title=None,
+        icon=True,
+        msg=None,
+        options=None,
+        is_seed=None,
+        passphrase=None,
+        parent=None,
+        for_seed_words=True,
+    ):
         QVBoxLayout.__init__(self)
         self.parent = parent
         self.options = options
@@ -116,22 +158,25 @@ class SeedLayout(QVBoxLayout):
         hbox = QHBoxLayout()
         if icon:
             logo = QLabel()
-            logo.setPixmap(QPixmap(icon_path("seed.png"))
-                           .scaledToWidth(64, mode=Qt.SmoothTransformation))
+            logo.setPixmap(
+                QPixmap(icon_path("seed.png")).scaledToWidth(
+                    64, mode=Qt.SmoothTransformation
+                )
+            )
             logo.setMaximumWidth(60)
             hbox.addWidget(logo)
         hbox.addWidget(self.seed_e)
         self.addLayout(hbox)
         hbox = QHBoxLayout()
         hbox.addStretch(1)
-        self.seed_type_label = QLabel('')
+        self.seed_type_label = QLabel("")
         hbox.addWidget(self.seed_type_label)
 
         # options
         self.is_bip39 = False
         self.is_ext = False
         if options:
-            opt_button = EnterButton(_('Options'), self.seed_options)
+            opt_button = EnterButton(_("Options"), self.seed_options)
             hbox.addWidget(opt_button)
             self.addLayout(hbox)
         if passphrase:
@@ -139,20 +184,22 @@ class SeedLayout(QVBoxLayout):
             passphrase_e = QLineEdit()
             passphrase_e.setText(passphrase)
             passphrase_e.setReadOnly(True)
-            hbox.addWidget(QLabel(_("Your seed extension is") + ':'))
+            hbox.addWidget(QLabel(_("Your seed extension is") + ":"))
             hbox.addWidget(passphrase_e)
             self.addLayout(hbox)
         self.addStretch(1)
-        self.seed_warning = WWLabel('')
+        self.seed_warning = WWLabel("")
         if msg:
             self.seed_warning.setText(seed_warning_msg(seed))
         self.addWidget(self.seed_warning)
 
     def initialize_completer(self):
-        bip39_english_list = Mnemonic('en').wordlist
+        bip39_english_list = Mnemonic("en").wordlist
         old_list = old_mnemonic.wordlist
         only_old_list = set(old_list) - set(bip39_english_list)
-        self.wordlist = list(bip39_english_list) + list(only_old_list)  # concat both lists
+        self.wordlist = list(bip39_english_list) + list(
+            only_old_list
+        )  # concat both lists
         self.wordlist.sort()
 
         class CompleterDelegate(QStyledItemDelegate):
@@ -164,7 +211,9 @@ class SeedLayout(QVBoxLayout):
                 # So we color words that are only in old list.
                 if option.text in only_old_list:
                     # yellow bg looks ~ok on both light/dark theme, regardless if (un)selected
-                    option.backgroundBrush = ColorScheme.YELLOW.as_color(background=True)
+                    option.backgroundBrush = ColorScheme.YELLOW.as_color(
+                        background=True
+                    )
 
         self.completer = QCompleter(self.wordlist)
         delegate = CompleterDelegate(self.seed_e)
@@ -173,19 +222,24 @@ class SeedLayout(QVBoxLayout):
 
     def get_seed(self):
         text = self.seed_e.text()
-        return ' '.join(text.split())
+        return " ".join(text.split())
 
     def on_edit(self):
         s = self.get_seed()
         b = self.is_seed(s)
         if not self.is_bip39:
             t = seed_type(s)
-            label = _('Seed Type') + ': ' + t if t else ''
+            label = _("Seed Type") + ": " + t if t else ""
         else:
             from electrum.keystore import bip39_is_checksum_valid
+
             is_checksum, is_wordlist = bip39_is_checksum_valid(s)
-            status = ('checksum: ' + ('ok' if is_checksum else 'failed')) if is_wordlist else 'unknown wordlist'
-            label = 'BIP39' + ' (%s)'%status
+            status = (
+                ("checksum: " + ("ok" if is_checksum else "failed"))
+                if is_wordlist
+                else "unknown wordlist"
+            )
+            label = "BIP39" + " (%s)" % status
         self.seed_type_label.setText(label)
         self.parent.next_button.setEnabled(b)
 
@@ -196,8 +250,11 @@ class SeedLayout(QVBoxLayout):
                 return
         self.seed_e.enable_suggestions()
 
+
 class KeysLayout(QVBoxLayout):
-    def __init__(self, parent=None, header_layout=None, is_valid=None, allow_multi=False):
+    def __init__(
+        self, parent=None, header_layout=None, is_valid=None, allow_multi=False
+    ):
         QVBoxLayout.__init__(self)
         self.parent = parent
         self.is_valid = is_valid
@@ -219,17 +276,16 @@ class KeysLayout(QVBoxLayout):
         except Exception as e:
             self.parent.next_button.setToolTip(f'{_("Error")}: {str(e)}')
         else:
-            self.parent.next_button.setToolTip('')
+            self.parent.next_button.setToolTip("")
         self.parent.next_button.setEnabled(valid)
 
 
 class SeedDialog(WindowModalDialog):
-
     def __init__(self, parent, seed, passphrase):
-        WindowModalDialog.__init__(self, parent, ('Electrum - ' + _('Seed')))
+        WindowModalDialog.__init__(self, parent, ("Electrum - " + _("Seed")))
         self.setMinimumWidth(400)
         vbox = QVBoxLayout(self)
-        title =  _("Your wallet generation seed is:")
+        title = _("Your wallet generation seed is:")
         slayout = SeedLayout(title=title, seed=seed, msg=True, passphrase=passphrase)
         vbox.addLayout(slayout)
         vbox.addLayout(Buttons(CloseButton(self)))

@@ -1,10 +1,6 @@
-from typing import (
-    NamedTuple,
-)
+from typing import NamedTuple
 
-from hexbytes import (
-    HexBytes,
-)
+from hexbytes import HexBytes
 
 
 def __getitem__(self, index):

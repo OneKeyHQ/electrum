@@ -23,15 +23,14 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from PyQt5.QtGui import QTextCursor
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QCompleter, QPlainTextEdit, QApplication
+from PyQt5.QtGui import QTextCursor
+from PyQt5.QtWidgets import QApplication, QCompleter, QPlainTextEdit
 
 from .util import ButtonsTextEdit
 
 
 class CompletionTextEdit(ButtonsTextEdit):
-
     def __init__(self, parent=None):
         super(CompletionTextEdit, self).__init__(parent)
         self.completer = None
@@ -93,16 +92,26 @@ class CompletionTextEdit(ButtonsTextEdit):
         hasModifier = (e.modifiers() != Qt.NoModifier) and not ctrlOrShift
         completionPrefix = self.text_under_cursor()
 
-        if hasModifier or not e.text() or len(completionPrefix) < 1 or eow.find(e.text()[-1]) >= 0:
+        if (
+            hasModifier
+            or not e.text()
+            or len(completionPrefix) < 1
+            or eow.find(e.text()[-1]) >= 0
+        ):
             self.completer.popup().hide()
             return
 
         if completionPrefix != self.completer.completionPrefix():
             self.completer.setCompletionPrefix(completionPrefix)
-            self.completer.popup().setCurrentIndex(self.completer.completionModel().index(0, 0))
+            self.completer.popup().setCurrentIndex(
+                self.completer.completionModel().index(0, 0)
+            )
 
         cr = self.cursorRect()
-        cr.setWidth(self.completer.popup().sizeHintForColumn(0) + self.completer.popup().verticalScrollBar().sizeHint().width())
+        cr.setWidth(
+            self.completer.popup().sizeHintForColumn(0)
+            + self.completer.popup().verticalScrollBar().sizeHint().width()
+        )
         self.completer.complete(cr)
 
     def is_special_key(self, e):
@@ -112,6 +121,7 @@ class CompletionTextEdit(ButtonsTextEdit):
         if e.key() == Qt.Key_Tab:
             return True
         return False
+
 
 if __name__ == "__main__":
     app = QApplication([])

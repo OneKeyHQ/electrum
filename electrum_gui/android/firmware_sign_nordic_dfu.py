@@ -6,6 +6,7 @@ import hashlib
 import struct
 import zipfile
 from io import BytesIO
+
 import ecdsa
 
 SLOTS = 3
@@ -80,7 +81,7 @@ def prepare_hashes(data):
 
 
 def check_hashes(data):
-    expected_hashes = data[0x20: 0x20 + 16 * 32]
+    expected_hashes = data[0x20 : 0x20 + 16 * 32]
     hashes = b""
     for h in prepare_hashes(data[FWHEADER_SIZE:]):
         hashes += h
@@ -96,7 +97,7 @@ def update_hashes_in_header(data):
     data = bytearray(data)
     o = 0
     for h in prepare_hashes(data[FWHEADER_SIZE:]):
-        data[0x20 + o: 0x20 + o + 32] = h
+        data[0x20 + o : 0x20 + o + 32] = h
         o += 32
     return bytes(data)
 
@@ -106,7 +107,7 @@ def get_header(data, zero_signatures=False):
         return data[:FWHEADER_SIZE]
     else:
         data = bytearray(data[:FWHEADER_SIZE])
-        data[SIGNATURES_START: SIGNATURES_START + 3 * 64 + 3] = b"\x00" * (3 * 64 + 3)
+        data[SIGNATURES_START : SIGNATURES_START + 3 * 64 + 3] = b"\x00" * (3 * 64 + 3)
         return bytes(data)
 
 
@@ -119,7 +120,7 @@ def check_signatures(data):
     # Analyses given firmware and prints out
     # status of included signatures
 
-    indexes = [x for x in data[INDEXES_START: INDEXES_START + SLOTS]]
+    indexes = [x for x in data[INDEXES_START : INDEXES_START + SLOTS]]
 
     to_sign = get_header(data, zero_signatures=True)
     fingerprint = hashlib.sha256(to_sign).hexdigest()
@@ -128,7 +129,7 @@ def check_signatures(data):
 
     used = []
     for x in range(SLOTS):
-        signature = data[SIGNATURES_START + 64 * x: SIGNATURES_START + 64 * x + 64]
+        signature = data[SIGNATURES_START + 64 * x : SIGNATURES_START + 64 * x + 64]
 
         if indexes[x] == 0:
             print("Slot #%d" % (x + 1), "is empty")
@@ -213,25 +214,28 @@ def check_signatures(data):
 #
 #     return modify(data, slot, index, signature)
 
+
 def parse(zipfile_path: str) -> bytes:
-    '''
+    """
     :param zipfile_path: .zip file path
     :return: the content of the update
-    '''
-    file = zipfile.ZipFile(zipfile_path, 'r')
+    """
+    file = zipfile.ZipFile(zipfile_path, "r")
     buffers = BytesIO()
     buffers.write(b"5283")
 
     buffers.seek(FWHEADER_SIZE, 0)
-    dat_file_name = ''
-    bin_file_name = ''
+    dat_file_name = ""
+    bin_file_name = ""
     for f in file.namelist():
-        if f.endswith('.dat'):
+        if f.endswith(".dat"):
             dat_file_name = f
-        elif f.endswith('.bin'):
+        elif f.endswith(".bin"):
             bin_file_name = f
     if not dat_file_name or not bin_file_name:
-        raise BaseException('zip content format error, should contains *.dat and *.bin files')
+        raise BaseException(
+            "zip content format error, should contains *.dat and *.bin files"
+        )
     data = file.read(dat_file_name)
     buffers.write(struct.pack("i", len(data)))
     buffers.write(data)

@@ -13,22 +13,7 @@ from typing import (
     cast,
 )
 
-from eth_typing import (
-    Address,
-    ChecksumAddress,
-    HexAddress,
-    HexStr,
-)
-from eth_utils import (
-    is_same_address,
-    remove_0x_prefix,
-    to_normalized_address,
-)
-from hexbytes import (
-    HexBytes,
-)
 import idna
-
 from ens.constants import (
     ACCEPTABLE_STALE_HOURS,
     AUCTION_START_GAS_CONSTANT,
@@ -37,22 +22,22 @@ from ens.constants import (
     EMPTY_SHA3_BYTES,
     REVERSE_REGISTRAR_DOMAIN,
 )
-from ens.exceptions import (
-    InvalidName,
-)
+from ens.exceptions import InvalidName
+from eth_typing import Address, ChecksumAddress, HexAddress, HexStr
+from eth_utils import is_same_address, remove_0x_prefix, to_normalized_address
+from hexbytes import HexBytes
 
 default = object()
 
 
 if TYPE_CHECKING:
     from web3 import Web3 as _Web3  # noqa: F401
-    from web3.providers import (  # noqa: F401
-        BaseProvider,
-    )
+    from web3.providers import BaseProvider  # noqa: F401
 
 
-def Web3() -> Type['_Web3']:
+def Web3() -> Type["_Web3"]:
     from web3 import Web3 as Web3Main
+
     return Web3Main
 
 
@@ -61,10 +46,12 @@ TFunc = TypeVar("TFunc", bound=Callable[..., Any])
 
 def dict_copy(func: TFunc) -> TFunc:
     "copy dict keyword args, to avoid modifying caller's copy"
+
     @functools.wraps(func)
     def wrapper(*args: Any, **kwargs: Any) -> TFunc:
         copied_kwargs = copy.deepcopy(kwargs)
         return func(*args, **copied_kwargs)
+
     return cast(TFunc, wrapper)
 
 
@@ -74,7 +61,7 @@ def ensure_hex(data: HexBytes) -> HexBytes:
     return data
 
 
-def init_web3(provider: 'BaseProvider' = cast('BaseProvider', default)) -> '_Web3':
+def init_web3(provider: "BaseProvider" = cast("BaseProvider", default)) -> "_Web3":
     from web3 import Web3 as Web3Main
 
     if provider is default:
@@ -85,13 +72,12 @@ def init_web3(provider: 'BaseProvider' = cast('BaseProvider', default)) -> '_Web
     return customize_web3(w3)
 
 
-def customize_web3(w3: '_Web3') -> '_Web3':
+def customize_web3(w3: "_Web3") -> "_Web3":
     from web3.middleware import make_stalecheck_middleware
 
-    w3.middleware_onion.remove('name_to_address')
+    w3.middleware_onion.remove("name_to_address")
     w3.middleware_onion.add(
-        make_stalecheck_middleware(ACCEPTABLE_STALE_HOURS * 3600),
-        name='stalecheck',
+        make_stalecheck_middleware(ACCEPTABLE_STALE_HOURS * 3600), name="stalecheck",
     )
     return w3
 
@@ -109,7 +95,7 @@ def normalize_name(name: str) -> str:
     if not name:
         return name
     elif isinstance(name, (bytes, bytearray)):
-        name = name.decode('utf-8')
+        name = name.decode("utf-8")
 
     try:
         return idna.uts46_remap(name, std3_rules=True)
@@ -143,13 +129,13 @@ def to_utc_datetime(timestamp: float) -> Optional[datetime.datetime]:
 
 def sha3_text(val: Union[str, bytes]) -> HexBytes:
     if isinstance(val, str):
-        val = val.encode('utf-8')
+        val = val.encode("utf-8")
     return Web3().keccak(val)
 
 
 def label_to_hash(label: str) -> HexBytes:
     label = normalize_name(label)
-    if '.' in label:
+    if "." in label:
         raise ValueError("Cannot generate hash for label %r with a '.'" % label)
     return Web3().keccak(text=label)
 
@@ -186,13 +172,15 @@ def raw_name_to_hash(name: str) -> HexBytes:
     return normal_name_to_hash(normalized_name)
 
 
-def address_in(address: ChecksumAddress, addresses: Collection[ChecksumAddress]) -> bool:
+def address_in(
+    address: ChecksumAddress, addresses: Collection[ChecksumAddress]
+) -> bool:
     return any(is_same_address(address, item) for item in addresses)
 
 
 def address_to_reverse_domain(address: ChecksumAddress) -> str:
     lower_unprefixed_address = remove_0x_prefix(HexStr(to_normalized_address(address)))
-    return lower_unprefixed_address + '.' + REVERSE_REGISTRAR_DOMAIN
+    return lower_unprefixed_address + "." + REVERSE_REGISTRAR_DOMAIN
 
 
 def estimate_auction_start_gas(labels: Collection[str]) -> int:
@@ -204,10 +192,10 @@ def assert_signer_in_modifier_kwargs(modifier_kwargs: Any) -> ChecksumAddress:
     assert len(modifier_kwargs) == 1, ERR_MSG
 
     _modifier_type, modifier_dict = dict(modifier_kwargs).popitem()
-    if 'from' not in modifier_dict:
+    if "from" not in modifier_dict:
         raise TypeError(ERR_MSG)
 
-    return modifier_dict['from']
+    return modifier_dict["from"]
 
 
 def is_none_or_zero_address(addr: Union[Address, ChecksumAddress, HexAddress]) -> bool:
@@ -215,7 +203,7 @@ def is_none_or_zero_address(addr: Union[Address, ChecksumAddress, HexAddress]) -
 
 
 def is_valid_ens_name(ens_name: str) -> bool:
-    split_domain = ens_name.split('.')
+    split_domain = ens_name.split(".")
     if len(split_domain) == 1:
         return False
     for name in split_domain:

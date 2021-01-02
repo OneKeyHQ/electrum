@@ -24,20 +24,27 @@
 Counter (CTR) mode.
 """
 
-__all__ = ['CtrMode']
+__all__ = ["CtrMode"]
 
 import struct
 
-from Cryptodome.Util._raw_api import (load_pycryptodome_raw_lib, VoidPointer,
-                                  create_string_buffer, get_raw_buffer,
-                                  SmartPointer, c_size_t, c_uint8_ptr,
-                                  is_writeable_buffer)
-
 from Cryptodome.Random import get_random_bytes
-from Cryptodome.Util.py3compat import _copy_bytes, is_native_int
+from Cryptodome.Util._raw_api import (
+    SmartPointer,
+    VoidPointer,
+    c_size_t,
+    c_uint8_ptr,
+    create_string_buffer,
+    get_raw_buffer,
+    is_writeable_buffer,
+    load_pycryptodome_raw_lib,
+)
 from Cryptodome.Util.number import long_to_bytes
+from Cryptodome.Util.py3compat import _copy_bytes, is_native_int
 
-raw_ctr_lib = load_pycryptodome_raw_lib("Cryptodome.Cipher._raw_ctr", """
+raw_ctr_lib = load_pycryptodome_raw_lib(
+    "Cryptodome.Cipher._raw_ctr",
+    """
                     int CTR_start_operation(void *cipher,
                                             uint8_t   initialCounterBlock[],
                                             size_t    initialCounterBlock_len,
@@ -53,8 +60,8 @@ raw_ctr_lib = load_pycryptodome_raw_lib("Cryptodome.Cipher._raw_ctr", """
                                     const uint8_t *in,
                                     uint8_t *out,
                                     size_t data_len);
-                    int CTR_stop_operation(void *ctrState);"""
-                                        )
+                    int CTR_stop_operation(void *ctrState);""",
+)
 
 
 class CtrMode(object):
@@ -86,8 +93,14 @@ class CtrMode(object):
     :undocumented: __init__
     """
 
-    def __init__(self, block_cipher, initial_counter_block,
-                 prefix_len, counter_len, little_endian):
+    def __init__(
+        self,
+        block_cipher,
+        initial_counter_block,
+        prefix_len,
+        counter_len,
+        little_endian,
+    ):
         """Create a new block cipher, configured in CTR mode.
 
         :Parameters:
@@ -123,21 +136,21 @@ class CtrMode(object):
             """Nonce; not available if there is a fixed suffix"""
 
         self._state = VoidPointer()
-        result = raw_ctr_lib.CTR_start_operation(block_cipher.get(),
-                                                 c_uint8_ptr(initial_counter_block),
-                                                 c_size_t(len(initial_counter_block)),
-                                                 c_size_t(prefix_len),
-                                                 counter_len,
-                                                 little_endian,
-                                                 self._state.address_of())
+        result = raw_ctr_lib.CTR_start_operation(
+            block_cipher.get(),
+            c_uint8_ptr(initial_counter_block),
+            c_size_t(len(initial_counter_block)),
+            c_size_t(prefix_len),
+            counter_len,
+            little_endian,
+            self._state.address_of(),
+        )
         if result:
-            raise ValueError("Error %X while instantiating the CTR mode"
-                             % result)
+            raise ValueError("Error %X while instantiating the CTR mode" % result)
 
         # Ensure that object disposal of this Python object will (eventually)
         # free the memory allocated by the raw library for the cipher mode
-        self._state = SmartPointer(self._state.get(),
-                                   raw_ctr_lib.CTR_stop_operation)
+        self._state = SmartPointer(self._state.get(), raw_ctr_lib.CTR_stop_operation)
 
         # Memory allocated for the underlying block cipher is now owed
         # by the cipher mode
@@ -184,29 +197,32 @@ class CtrMode(object):
         if self.encrypt not in self._next:
             raise TypeError("encrypt() cannot be called after decrypt()")
         self._next = [self.encrypt]
-        
+
         if output is None:
             ciphertext = create_string_buffer(len(plaintext))
         else:
             ciphertext = output
-            
+
             if not is_writeable_buffer(output):
                 raise TypeError("output must be a bytearray or a writeable memoryview")
-        
-            if len(plaintext) != len(output):
-                raise ValueError("output must have the same length as the input"
-                                 "  (%d bytes)" % len(plaintext))
 
-        result = raw_ctr_lib.CTR_encrypt(self._state.get(),
-                                         c_uint8_ptr(plaintext),
-                                         c_uint8_ptr(ciphertext),
-                                         c_size_t(len(plaintext)))
+            if len(plaintext) != len(output):
+                raise ValueError(
+                    "output must have the same length as the input"
+                    "  (%d bytes)" % len(plaintext)
+                )
+
+        result = raw_ctr_lib.CTR_encrypt(
+            self._state.get(),
+            c_uint8_ptr(plaintext),
+            c_uint8_ptr(ciphertext),
+            c_size_t(len(plaintext)),
+        )
         if result:
             if result == 0x60002:
-                raise OverflowError("The counter has wrapped around in"
-                                    " CTR mode")
+                raise OverflowError("The counter has wrapped around in" " CTR mode")
             raise ValueError("Error %X while encrypting in CTR mode" % result)
-        
+
         if output is None:
             return get_raw_buffer(ciphertext)
         else:
@@ -248,7 +264,7 @@ class CtrMode(object):
         if self.decrypt not in self._next:
             raise TypeError("decrypt() cannot be called after encrypt()")
         self._next = [self.decrypt]
-        
+
         if output is None:
             plaintext = create_string_buffer(len(ciphertext))
         else:
@@ -256,22 +272,24 @@ class CtrMode(object):
 
             if not is_writeable_buffer(output):
                 raise TypeError("output must be a bytearray or a writeable memoryview")
-            
+
             if len(ciphertext) != len(output):
-                raise ValueError("output must have the same length as the input"
-                                 "  (%d bytes)" % len(plaintext))
+                raise ValueError(
+                    "output must have the same length as the input"
+                    "  (%d bytes)" % len(plaintext)
+                )
 
-
-        result = raw_ctr_lib.CTR_decrypt(self._state.get(),
-                                         c_uint8_ptr(ciphertext),
-                                         c_uint8_ptr(plaintext),
-                                         c_size_t(len(ciphertext)))
+        result = raw_ctr_lib.CTR_decrypt(
+            self._state.get(),
+            c_uint8_ptr(ciphertext),
+            c_uint8_ptr(plaintext),
+            c_size_t(len(ciphertext)),
+        )
         if result:
             if result == 0x60002:
-                raise OverflowError("The counter has wrapped around in"
-                                    " CTR mode")
+                raise OverflowError("The counter has wrapped around in" " CTR mode")
             raise ValueError("Error %X while decrypting in CTR mode" % result)
-        
+
         if output is None:
             return get_raw_buffer(plaintext)
         else:
@@ -324,20 +342,22 @@ def _create_ctr_cipher(factory, **kwargs):
         raise TypeError("Invalid parameters for CTR mode: %s" % str(kwargs))
 
     if counter is not None and (nonce, initial_value) != (None, None):
-            raise TypeError("'counter' and 'nonce'/'initial_value'"
-                            " are mutually exclusive")
+        raise TypeError(
+            "'counter' and 'nonce'/'initial_value'" " are mutually exclusive"
+        )
 
     if counter is None:
         # Cryptodome.Util.Counter is not used
         if nonce is None:
             if factory.block_size < 16:
-                raise TypeError("Impossible to create a safe nonce for short"
-                                " block sizes")
+                raise TypeError(
+                    "Impossible to create a safe nonce for short" " block sizes"
+                )
             nonce = get_random_bytes(factory.block_size // 2)
         else:
             if len(nonce) >= factory.block_size:
                 raise ValueError("Nonce is too long")
-        
+
         # What is not nonce is counter
         counter_len = factory.block_size - len(nonce)
 
@@ -350,14 +370,19 @@ def _create_ctr_cipher(factory, **kwargs):
             initial_counter_block = nonce + long_to_bytes(initial_value, counter_len)
         else:
             if len(initial_value) != counter_len:
-                raise ValueError("Incorrect length for counter byte string (%d bytes, expected %d)" % (len(initial_value), counter_len))
+                raise ValueError(
+                    "Incorrect length for counter byte string (%d bytes, expected %d)"
+                    % (len(initial_value), counter_len)
+                )
             initial_counter_block = nonce + initial_value
 
-        return CtrMode(cipher_state,
-                       initial_counter_block,
-                       len(nonce),                     # prefix
-                       counter_len,
-                       False)                          # little_endian
+        return CtrMode(
+            cipher_state,
+            initial_counter_block,
+            len(nonce),  # prefix
+            counter_len,
+            False,
+        )  # little_endian
 
     # Cryptodome.Util.Counter is used
 
@@ -371,23 +396,24 @@ def _create_ctr_cipher(factory, **kwargs):
         initial_value = _counter.pop("initial_value")
         little_endian = _counter.pop("little_endian")
     except KeyError:
-        raise TypeError("Incorrect counter object"
-                        " (use Cryptodome.Util.Counter.new)")
+        raise TypeError("Incorrect counter object" " (use Cryptodome.Util.Counter.new)")
 
     # Compute initial counter block
     words = []
     while initial_value > 0:
-        words.append(struct.pack('B', initial_value & 255))
+        words.append(struct.pack("B", initial_value & 255))
         initial_value >>= 8
-    words += [ b'\x00' ] * max(0, counter_len - len(words))
+    words += [b"\x00"] * max(0, counter_len - len(words))
     if not little_endian:
         words.reverse()
     initial_counter_block = prefix + b"".join(words) + suffix
 
     if len(initial_counter_block) != factory.block_size:
-        raise ValueError("Size of the counter block (%d bytes) must match"
-                         " block size (%d)" % (len(initial_counter_block),
-                                               factory.block_size))
+        raise ValueError(
+            "Size of the counter block (%d bytes) must match"
+            " block size (%d)" % (len(initial_counter_block), factory.block_size)
+        )
 
-    return CtrMode(cipher_state, initial_counter_block,
-                   len(prefix), counter_len, little_endian)
+    return CtrMode(
+        cipher_state, initial_counter_block, len(prefix), counter_len, little_endian
+    )

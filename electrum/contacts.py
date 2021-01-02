@@ -25,18 +25,16 @@ import re
 import dns
 from dns.exception import DNSException
 
-from . import bitcoin
-from . import dnssec
-from .util import read_json_file, write_json_file, to_string
+from . import bitcoin, dnssec
 from .logging import Logger
+from .util import read_json_file, to_string, write_json_file
 
 
 class Contacts(dict, Logger):
-
     def __init__(self, db):
         Logger.__init__(self)
         self.db = db
-        d = self.db.get('contacts', {})
+        d = self.db.get("contacts", {})
         try:
             self.update(d)
         except:
@@ -44,12 +42,12 @@ class Contacts(dict, Logger):
         # backward compatibility
         for k, v in self.items():
             _type, n = v
-            if _type == 'address' and bitcoin.is_address(n):
+            if _type == "address" and bitcoin.is_address(n):
                 self.pop(k)
-                self[n] = ('address', k)
+                self[n] = ("address", k)
 
     def save(self):
-        self.db.put('contacts', dict(self))
+        self.db.put("contacts", dict(self))
 
     def import_file(self, path):
         data = read_json_file(path)
@@ -72,42 +70,36 @@ class Contacts(dict, Logger):
 
     def resolve(self, k):
         if bitcoin.is_address(k):
-            return {
-                'address': k,
-                'type': 'address'
-            }
+            return {"address": k, "type": "address"}
         if k in self.keys():
             _type, addr = self[k]
-            if _type == 'address':
-                return {
-                    'address': addr,
-                    'type': 'contact'
-                }
+            if _type == "address":
+                return {"address": addr, "type": "contact"}
         out = self.resolve_openalias(k)
         if out:
             address, name, validated = out
             return {
-                'address': address,
-                'name': name,
-                'type': 'openalias',
-                'validated': validated
+                "address": address,
+                "name": name,
+                "type": "openalias",
+                "validated": validated,
             }
         raise Exception("Invalid Bitcoin address or alias", k)
 
     def resolve_openalias(self, url):
         # support email-style addresses, per the OA standard
-        url = url.replace('@', '.')
+        url = url.replace("@", ".")
         try:
             records, validated = dnssec.query(url, dns.rdatatype.TXT)
         except DNSException as e:
-            self.logger.info(f'Error resolving openalias: {repr(e)}')
+            self.logger.info(f"Error resolving openalias: {repr(e)}")
             return None
-        prefix = 'btc'
+        prefix = "btc"
         for record in records:
-            string = to_string(record.strings[0], 'utf8')
-            if string.startswith('oa1:' + prefix):
-                address = self.find_regex(string, r'recipient_address=([A-Za-z0-9]+)')
-                name = self.find_regex(string, r'recipient_name=([^;]+)')
+            string = to_string(record.strings[0], "utf8")
+            if string.startswith("oa1:" + prefix):
+                address = self.find_regex(string, r"recipient_address=([A-Za-z0-9]+)")
+                name = self.find_regex(string, r"recipient_name=([^;]+)")
                 if not name:
                     name = address
                 if not address:
@@ -120,16 +112,15 @@ class Contacts(dict, Logger):
             return regex.search(haystack).groups()[0]
         except AttributeError:
             return None
-            
+
     def _validate(self, data):
         for k, v in list(data.items()):
-            if k == 'contacts':
+            if k == "contacts":
                 return self._validate(v)
             if not bitcoin.is_address(k):
                 data.pop(k)
             else:
                 _type, _ = v
-                if _type != 'address':
+                if _type != "address":
                     data.pop(k)
         return data
-

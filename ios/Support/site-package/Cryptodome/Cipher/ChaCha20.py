@@ -29,17 +29,22 @@
 # ===================================================================
 
 from Cryptodome.Random import get_random_bytes
-
+from Cryptodome.Util._raw_api import (
+    SmartPointer,
+    VoidPointer,
+    c_size_t,
+    c_uint8_ptr,
+    c_ulong,
+    create_string_buffer,
+    get_raw_buffer,
+    is_writeable_buffer,
+    load_pycryptodome_raw_lib,
+)
 from Cryptodome.Util.py3compat import _copy_bytes
-from Cryptodome.Util._raw_api import (load_pycryptodome_raw_lib,
-                                  create_string_buffer,
-                                  get_raw_buffer, VoidPointer,
-                                  SmartPointer, c_size_t,
-                                  c_uint8_ptr, c_ulong,
-                                  is_writeable_buffer)
 
-_raw_chacha20_lib = load_pycryptodome_raw_lib("Cryptodome.Cipher._chacha20",
-                    """
+_raw_chacha20_lib = load_pycryptodome_raw_lib(
+    "Cryptodome.Cipher._chacha20",
+    """
                     int chacha20_init(void **pState,
                                       const uint8_t *key,
                                       size_t keySize,
@@ -60,19 +65,19 @@ _raw_chacha20_lib = load_pycryptodome_raw_lib("Cryptodome.Cipher._chacha20",
                     int hchacha20(  const uint8_t key[32],
                                     const uint8_t nonce16[16],
                                     uint8_t subkey[32]);
-                    """)
+                    """,
+)
 
 
 def _HChaCha20(key, nonce):
 
-    assert(len(key) == 32)
-    assert(len(nonce) == 16)
+    assert len(key) == 32
+    assert len(nonce) == 16
 
     subkey = bytearray(32)
     result = _raw_chacha20_lib.hchacha20(
-                c_uint8_ptr(key),
-                c_uint8_ptr(nonce),
-                c_uint8_ptr(subkey))
+        c_uint8_ptr(key), c_uint8_ptr(nonce), c_uint8_ptr(subkey)
+    )
     if result:
         raise ValueError("Error %d when deriving subkey with HChaCha20" % result)
 
@@ -98,27 +103,30 @@ class ChaCha20Cipher(object):
         # See 2.3 in https://tools.ietf.org/html/draft-arciszewski-xchacha-03
         if len(nonce) == 24:
             key = _HChaCha20(key, nonce[:16])
-            nonce = b'\x00' * 4 + nonce[16:]
+            nonce = b"\x00" * 4 + nonce[16:]
             self._name = "XChaCha20"
         else:
             self._name = "ChaCha20"
 
         self.nonce = _copy_bytes(None, None, nonce)
 
-        self._next = ( self.encrypt, self.decrypt )
+        self._next = (self.encrypt, self.decrypt)
 
         self._state = VoidPointer()
         result = _raw_chacha20_lib.chacha20_init(
-                        self._state.address_of(),
-                        c_uint8_ptr(key),
-                        c_size_t(len(key)),
-                        self.nonce,
-                        c_size_t(len(nonce)))
+            self._state.address_of(),
+            c_uint8_ptr(key),
+            c_size_t(len(key)),
+            self.nonce,
+            c_size_t(len(nonce)),
+        )
         if result:
-            raise ValueError("Error %d instantiating a %s cipher" % (result,
-                                                                     self._name))
-        self._state = SmartPointer(self._state.get(),
-                                   _raw_chacha20_lib.chacha20_destroy)
+            raise ValueError(
+                "Error %d instantiating a %s cipher" % (result, self._name)
+            )
+        self._state = SmartPointer(
+            self._state.get(), _raw_chacha20_lib.chacha20_destroy
+        )
 
     def encrypt(self, plaintext, output=None):
         """Encrypt a piece of data.
@@ -135,7 +143,7 @@ class ChaCha20Cipher(object):
 
         if self.encrypt not in self._next:
             raise TypeError("Cipher object can only be used for decryption")
-        self._next = ( self.encrypt, )
+        self._next = (self.encrypt,)
         return self._encrypt(plaintext, output)
 
     def _encrypt(self, plaintext, output):
@@ -150,14 +158,17 @@ class ChaCha20Cipher(object):
                 raise TypeError("output must be a bytearray or a writeable memoryview")
 
             if len(plaintext) != len(output):
-                raise ValueError("output must have the same length as the input"
-                                 "  (%d bytes)" % len(plaintext))
+                raise ValueError(
+                    "output must have the same length as the input"
+                    "  (%d bytes)" % len(plaintext)
+                )
 
         result = _raw_chacha20_lib.chacha20_encrypt(
-                                         self._state.get(),
-                                         c_uint8_ptr(plaintext),
-                                         c_uint8_ptr(ciphertext),
-                                         c_size_t(len(plaintext)))
+            self._state.get(),
+            c_uint8_ptr(plaintext),
+            c_uint8_ptr(ciphertext),
+            c_size_t(len(plaintext)),
+        )
         if result:
             raise ValueError("Error %d while encrypting with %s" % (result, self._name))
 
@@ -181,7 +192,7 @@ class ChaCha20Cipher(object):
 
         if self.decrypt not in self._next:
             raise TypeError("Cipher object can only be used for encryption")
-        self._next = ( self.decrypt, )
+        self._next = (self.decrypt,)
 
         try:
             return self._encrypt(ciphertext, output)
@@ -201,11 +212,8 @@ class ChaCha20Cipher(object):
         block_high = position >> 32
 
         result = _raw_chacha20_lib.chacha20_seek(
-                                                 self._state.get(),
-                                                 c_ulong(block_high),
-                                                 c_ulong(block_low),
-                                                 offset
-                                                 )
+            self._state.get(), c_ulong(block_high), c_ulong(block_low), offset
+        )
         if result:
             raise ValueError("Error %d while seeking with %s" % (result, self._name))
 
@@ -229,13 +237,13 @@ def _derive_Poly1305_key_pair(key, nonce):
         # different for each sender, but should be the same for all
         # invocations of the function with the same key by a particular
         # sender.
-        padded_nonce = b'\x00\x00\x00\x00' + nonce
+        padded_nonce = b"\x00\x00\x00\x00" + nonce
     elif len(nonce) == 12:
         padded_nonce = nonce
     else:
         raise ValueError("Poly1305 with ChaCha20 requires an 8- or 12-byte nonce")
 
-    rs = new(key=key, nonce=padded_nonce).encrypt(b'\x00' * 32)
+    rs = new(key=key, nonce=padded_nonce).encrypt(b"\x00" * 32)
     return rs[:16], rs[16:], nonce
 
 
@@ -278,6 +286,7 @@ def new(**kwargs):
         raise TypeError("Unknown parameters: " + str(kwargs))
 
     return ChaCha20Cipher(key, nonce)
+
 
 # Size of a data block (in bytes)
 block_size = 1

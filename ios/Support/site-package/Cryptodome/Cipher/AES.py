@@ -38,13 +38,15 @@ Module's constants for the modes of operation supported with AES:
 import sys
 
 from Cryptodome.Cipher import _create_cipher
-from Cryptodome.Util._raw_api import (load_pycryptodome_raw_lib,
-                                  VoidPointer, SmartPointer,
-                                  c_size_t, c_uint8_ptr)
-
-from Cryptodome.Util import _cpu_features
 from Cryptodome.Random import get_random_bytes
-
+from Cryptodome.Util import _cpu_features
+from Cryptodome.Util._raw_api import (
+    SmartPointer,
+    VoidPointer,
+    c_size_t,
+    c_uint8_ptr,
+    load_pycryptodome_raw_lib,
+)
 
 _cproto = """
         int AES_start_operation(const uint8_t key[],
@@ -63,16 +65,15 @@ _cproto = """
 
 
 # Load portable AES
-_raw_aes_lib = load_pycryptodome_raw_lib("Cryptodome.Cipher._raw_aes",
-                                         _cproto)
+_raw_aes_lib = load_pycryptodome_raw_lib("Cryptodome.Cipher._raw_aes", _cproto)
 
 # Try to load AES with AES NI instructions
 try:
     _raw_aesni_lib = None
     if _cpu_features.have_aes_ni():
-        _raw_aesni_lib = load_pycryptodome_raw_lib("Cryptodome.Cipher._raw_aesni",
-                                                   _cproto.replace("AES",
-                                                                   "AESNI"))
+        _raw_aesni_lib = load_pycryptodome_raw_lib(
+            "Cryptodome.Cipher._raw_aesni", _cproto.replace("AES", "AESNI")
+        )
 # _raw_aesni may not have been compiled in
 except OSError:
     pass
@@ -100,18 +101,15 @@ def _create_base_cipher(dict_parameters):
         stop_operation = _raw_aes_lib.AES_stop_operation
 
     cipher = VoidPointer()
-    result = start_operation(c_uint8_ptr(key),
-                             c_size_t(len(key)),
-                             cipher.address_of())
+    result = start_operation(c_uint8_ptr(key), c_size_t(len(key)), cipher.address_of())
     if result:
-        raise ValueError("Error %X while instantiating the AES cipher"
-                         % result)
+        raise ValueError("Error %X while instantiating the AES cipher" % result)
     return SmartPointer(cipher.get(), stop_operation)
 
 
 def _derive_Poly1305_key_pair(key, nonce):
     """Derive a tuple (r, s, nonce) for a Poly1305 MAC.
-    
+
     If nonce is ``None``, a new 16-byte nonce is generated.
     """
 
@@ -180,7 +178,7 @@ def new(key, mode, *args, **kwargs):
 
             For ``MODE_CTR``, its length must be in the range **[0..15]**
             (recommended: **8**).
-            
+
             For ``MODE_SIV``, the nonce is optional, if it is not specified,
             then no nonce is being used, which renders the encryption
             deterministic.

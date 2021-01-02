@@ -1,41 +1,53 @@
 import time
 from struct import pack
 
-from electrum import ecc
-from electrum.i18n import _
-from electrum.util import UserCancelled, UserFacingException
-from electrum.keystore import bip39_normalize_passphrase
-from electrum.bip32 import BIP32Node, convert_bip32_path_to_list_of_uint32 as parse_path
-from electrum.logging import Logger
-from electrum.plugins.hw_wallet.plugin import OutdatedHwFirmwareException, HardwareClientBase
-
-from trezorlib.client import TrezorClient, PASSPHRASE_ON_DEVICE
-from trezorlib.exceptions import TrezorFailure, Cancelled, OutdatedFirmwareError
-from trezorlib.messages import WordRequestType, FailureType, RecoveryDeviceType, ButtonRequestType
 import trezorlib.btc
 import trezorlib.device
+from trezorlib.client import PASSPHRASE_ON_DEVICE, TrezorClient
 from trezorlib.customer_ui import CustomerUI
+from trezorlib.exceptions import Cancelled, OutdatedFirmwareError, TrezorFailure
+from trezorlib.messages import (
+    ButtonRequestType,
+    FailureType,
+    RecoveryDeviceType,
+    WordRequestType,
+)
+
+from electrum import ecc
+from electrum.bip32 import BIP32Node
+from electrum.bip32 import convert_bip32_path_to_list_of_uint32 as parse_path
+from electrum.i18n import _
+from electrum.keystore import bip39_normalize_passphrase
+from electrum.logging import Logger
+from electrum.plugins.hw_wallet.plugin import (
+    HardwareClientBase,
+    OutdatedHwFirmwareException,
+)
+from electrum.util import UserCancelled, UserFacingException
 
 MESSAGES = {
-    ButtonRequestType.ConfirmOutput:
-        _("Confirm the transaction output on your {} device"),
-    ButtonRequestType.ResetDevice:
-        _("Complete the initialization process on your {} device"),
-    ButtonRequestType.ConfirmWord:
-        _("Write down the seed word shown on your {}"),
-    ButtonRequestType.WipeDevice:
-        _("Confirm on your {} that you want to wipe it clean"),
-    ButtonRequestType.ProtectCall:
-        _("Confirm on your {} device the message to sign"),
-    ButtonRequestType.SignTx:
-        _("Confirm the total amount spent and the transaction fee on your {} device"),
-    ButtonRequestType.Address:
-        _("Confirm wallet address on your {} device"),
-    ButtonRequestType._Deprecated_ButtonRequest_PassphraseType:
-        _("Choose on your {} device where to enter your passphrase"),
-    ButtonRequestType.PassphraseEntry:
-        _("Please enter your passphrase on the {} device"),
-    'default': _("Check your {} device to continue"),
+    ButtonRequestType.ConfirmOutput: _(
+        "Confirm the transaction output on your {} device"
+    ),
+    ButtonRequestType.ResetDevice: _(
+        "Complete the initialization process on your {} device"
+    ),
+    ButtonRequestType.ConfirmWord: _("Write down the seed word shown on your {}"),
+    ButtonRequestType.WipeDevice: _(
+        "Confirm on your {} that you want to wipe it clean"
+    ),
+    ButtonRequestType.ProtectCall: _("Confirm on your {} device the message to sign"),
+    ButtonRequestType.SignTx: _(
+        "Confirm the total amount spent and the transaction fee on your {} device"
+    ),
+    ButtonRequestType.Address: _("Confirm wallet address on your {} device"),
+    ButtonRequestType._Deprecated_ButtonRequest_PassphraseType: _(
+        "Choose on your {} device where to enter your passphrase"
+    ),
+    ButtonRequestType.PassphraseEntry: _(
+        "Please enter your passphrase on the {} device"
+    ),
+    "default": _("Check your {} device to continue"),
 }
 
 
@@ -123,57 +135,66 @@ class TrezorClientBase(HardwareClientBase, Logger):
         self.last_operation = time.time()
 
     def prevent_timeouts(self):
-        self.last_operation = float('inf')
+        self.last_operation = float("inf")
 
     def timeout(self, cutoff):
-        '''Time out the client if the last operation was before cutoff.'''
+        """Time out the client if the last operation was before cutoff."""
         if self.last_operation < cutoff:
             self.logger.info("timed out")
             self.clear_session()
 
     def i4b(self, x):
-        return pack('>I', x)
+        return pack(">I", x)
 
     def get_xpub(self, bip32_path, xtype, creating=False):
         address_n = parse_path(bip32_path)
         with self.run_flow(creating_wallet=creating):
             if xtype == "standard":
-                xtype = 'p2pkh'
-            node = trezorlib.btc.get_public_node(self.client, address_n, coin_name=self.plugin.get_coin_name(), script_type=self.plugin.get_trezor_input_script_type(xtype)).node
-        return BIP32Node(xtype=xtype if xtype != "p2pkh" else 'standard',
-                         eckey=ecc.ECPubkey(node.public_key),
-                         chaincode=node.chain_code,
-                         depth=node.depth,
-                         fingerprint=self.i4b(node.fingerprint),
-                         child_number=self.i4b(node.child_num)).to_xpub()
+                xtype = "p2pkh"
+            node = trezorlib.btc.get_public_node(
+                self.client,
+                address_n,
+                coin_name=self.plugin.get_coin_name(),
+                script_type=self.plugin.get_trezor_input_script_type(xtype),
+            ).node
+        return BIP32Node(
+            xtype=xtype if xtype != "p2pkh" else "standard",
+            eckey=ecc.ECPubkey(node.public_key),
+            chaincode=node.chain_code,
+            depth=node.depth,
+            fingerprint=self.i4b(node.fingerprint),
+            child_number=self.i4b(node.child_num),
+        ).to_xpub()
 
     def backup(self) -> str:
         if type == 1:
-            msg = ("Confirm backup your {} device")
+            msg = "Confirm backup your {} device"
         elif type == 2:
-            msg = ("Confirm recovry your {} device")
-        with self.run_flow(''):
+            msg = "Confirm recovry your {} device"
+        with self.run_flow(""):
             return trezorlib.device.se_backup(self.client).hex()
 
     def se_proxy(self, message) -> str:
-        with self.run_flow(''):
+        with self.run_flow(""):
             return trezorlib.device.se_proxy(self.client, message).hex()
 
     def recovery(self, *args):
-        with self.run_flow(''):
+        with self.run_flow(""):
             return trezorlib.device.se_restore(self.client, *args)
 
     def bx_inquire_whitelist(self, **kwargs):
-        with self.run_flow(''):
+        with self.run_flow(""):
             return trezorlib.device.bx_inquire_whitelist(self.client, **kwargs)
 
     def bx_add_or_delete_whitelist(self, **kwargs):
-        with self.run_flow(''):
+        with self.run_flow(""):
             return trezorlib.device.bx_add_or_delete_whitelist(self.client, **kwargs)
 
     def anti_counterfeiting_verify(self, inputmessage):
         with self.run_flow(_("Confirm anti_counterfeiting_verify on your {} device")):
-            return trezorlib.device.anti_counterfeiting_verify(self.client, inputmessage=inputmessage)
+            return trezorlib.device.anti_counterfeiting_verify(
+                self.client, inputmessage=inputmessage
+            )
 
     def toggle_passphrase(self):
         if self.features.passphrase_protection:
@@ -211,8 +232,8 @@ class TrezorClientBase(HardwareClientBase, Logger):
             return trezorlib.device.change_pin(self.client, remove)
 
     def clear_session(self):
-        '''Clear the session to force pin (and passphrase if enabled)
-        re-entry.  Does not leak exceptions.'''
+        """Clear the session to force pin (and passphrase if enabled)
+        re-entry.  Does not leak exceptions."""
         self.logger.info(f"clear session: {self}")
         self.prevent_timeouts()
         try:
@@ -222,7 +243,7 @@ class TrezorClientBase(HardwareClientBase, Logger):
             self.logger.info(f"clear_session: ignoring error {e}")
 
     def close(self):
-        '''Called when Our wallet was closed or the device removed.'''
+        """Called when Our wallet was closed or the device removed."""
         self.logger.info("closing client")
         self.clear_session()
 
@@ -237,9 +258,9 @@ class TrezorClientBase(HardwareClientBase, Logger):
 
     def device_model_name(self):
         model = self.get_trezor_model()
-        if model == '1':
+        if model == "1":
             return "Trezor One"
-        elif model == 'T':
+        elif model == "T":
             return "Trezor T"
         return None
 
@@ -253,17 +274,16 @@ class TrezorClientBase(HardwareClientBase, Logger):
                 address_n,
                 show_display=True,
                 script_type=script_type,
-                multisig=multisig)
+                multisig=multisig,
+            )
 
     def sign_message(self, address_str, message):
         coin_name = self.plugin.get_coin_name()
         address_n = parse_path(address_str)
         with self.run_flow():
             return trezorlib.btc.sign_message(
-                self.client,
-                coin_name,
-                address_n,
-                message)
+                self.client, coin_name, address_n, message
+            )
 
     def recover_device(self, recovery_type, *args, **kwargs):
         input_callback = self.mnemonic_callback(recovery_type)
@@ -273,16 +293,17 @@ class TrezorClientBase(HardwareClientBase, Logger):
                 *args,
                 input_callback=input_callback,
                 type=recovery_type,
-                **kwargs)
+                **kwargs,
+            )
 
     # ========= Unmodified trezorlib methods =========
 
     def bixin_backup_device(self):
-        with self.run_flow(''):
+        with self.run_flow(""):
             return trezorlib.device.bixin_backup_device(self.client)
 
     def bixin_load_device(self, *args, **kwargs):
-        with self.run_flow(''):
+        with self.run_flow(""):
             return trezorlib.device.bixin_load_device(self.client, *args, **kwargs)
 
     def sign_tx(self, *args, **kwargs):
@@ -300,7 +321,7 @@ class TrezorClientBase(HardwareClientBase, Logger):
     # ========= UI methods ==========
 
     def button_request(self, code):
-        message = self.msg or MESSAGES.get(code) or MESSAGES['default']
+        message = self.msg or MESSAGES.get(code) or MESSAGES["default"]
         self.handler.button_request(code)
         self.handler.show_message(message.format(self.device), self.client.cancel)
 
@@ -315,8 +336,10 @@ class TrezorClientBase(HardwareClientBase, Logger):
             if isinstance(self.handler, CustomerUI):
                 msg = "3"
             else:
-                msg = (_("Re-enter the new PIN for your {}.\n\n"
-                     "NOTE: the positions of the numbers have changed!"))
+                msg = _(
+                    "Re-enter the new PIN for your {}.\n\n"
+                    "NOTE: the positions of the numbers have changed!"
+                )
         else:
             if isinstance(self.handler, CustomerUI):
                 msg = "1"
@@ -327,7 +350,7 @@ class TrezorClientBase(HardwareClientBase, Logger):
         if not pin:
             raise Cancelled
         if len(pin) > 9 and len(pin) != 12:
-            self.handler.show_error(_('The PIN cannot be longer than 9 characters.'))
+            self.handler.show_error(_("The PIN cannot be longer than 9 characters."))
             raise Cancelled
         return pin
 
@@ -336,10 +359,12 @@ class TrezorClientBase(HardwareClientBase, Logger):
             if isinstance(self.handler, CustomerUI):
                 msg = "6"
             else:
-                msg = _("Enter a passphrase to generate this wallet.  Each time "
+                msg = _(
+                    "Enter a passphrase to generate this wallet.  Each time "
                     "you use this wallet your {} will prompt you for the "
                     "passphrase.  If you forget the passphrase you cannot "
-                    "access the bitcoins in the wallet.").format(self.device)
+                    "access the bitcoins in the wallet."
+                ).format(self.device)
         else:
             if isinstance(self.handler, CustomerUI):
                 msg = "3"
@@ -355,14 +380,16 @@ class TrezorClientBase(HardwareClientBase, Logger):
         passphrase = bip39_normalize_passphrase(passphrase)
         length = len(passphrase)
         if length > 50:
-            self.handler.show_error(_("Too long passphrase ({} > 50 chars).").format(length))
+            self.handler.show_error(
+                _("Too long passphrase ({} > 50 chars).").format(length)
+            )
             raise Cancelled
         return passphrase
 
     def _matrix_char(self, matrix_type):
         num = 9 if matrix_type == WordRequestType.Matrix9 else 6
         char = self.handler.get_matrix(num)
-        if char == 'x':
+        if char == "x":
             raise Cancelled
         return char
 
@@ -378,7 +405,9 @@ class TrezorClientBase(HardwareClientBase, Logger):
         def word_callback(_ignored):
             nonlocal step
             step += 1
-            msg = _("Step {}/24.  Enter seed word as explained on your {}:").format(step, self.device)
+            msg = _("Step {}/24.  Enter seed word as explained on your {}:").format(
+                step, self.device
+            )
             word = self.handler.get_word(msg)
             if not word:
                 raise Cancelled

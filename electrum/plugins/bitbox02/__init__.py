@@ -1,9 +1,7 @@
 from electrum.i18n import _
 
 fullname = "BitBox02"
-description = (
-    "Provides support for the BitBox02 hardware wallet"
-)
+description = "Provides support for the BitBox02 hardware wallet"
 requires = [
     (
         "bitbox02",

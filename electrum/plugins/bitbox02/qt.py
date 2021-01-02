@@ -1,26 +1,15 @@
 from functools import partial
 
-from PyQt5.QtWidgets import (
-    QPushButton,
-    QLabel,
-    QVBoxLayout,
-    QLineEdit,
-    QHBoxLayout,
-)
+from PyQt5.QtCore import Q_RETURN_ARG, QMetaObject, Qt, pyqtSlot
+from PyQt5.QtWidgets import QHBoxLayout, QLabel, QLineEdit, QPushButton, QVBoxLayout
 
-from PyQt5.QtCore import Qt, QMetaObject, Q_RETURN_ARG, pyqtSlot
-
-from electrum.gui.qt.util import (
-    WindowModalDialog,
-    OkButton,
-)
-
+from electrum.gui.qt.util import OkButton, WindowModalDialog
 from electrum.i18n import _
 from electrum.plugin import hook
 
-from .bitbox02 import BitBox02Plugin
-from ..hw_wallet.qt import QtHandlerBase, QtPluginBase
 from ..hw_wallet.plugin import only_hook_if_libraries_available
+from ..hw_wallet.qt import QtHandlerBase, QtPluginBase
+from .bitbox02 import BitBox02Plugin
 
 
 class Plugin(BitBox02Plugin, QtPluginBase):
@@ -77,7 +66,6 @@ class Plugin(BitBox02Plugin, QtPluginBase):
 
 
 class BitBox02_Handler(QtHandlerBase):
-
     def __init__(self, win):
         super(BitBox02_Handler, self).__init__(win, "BitBox02")
 

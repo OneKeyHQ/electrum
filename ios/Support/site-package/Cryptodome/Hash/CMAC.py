@@ -24,10 +24,10 @@ import sys
 from binascii import unhexlify
 
 from Cryptodome.Hash import BLAKE2s
-from Cryptodome.Util.strxor import strxor
-from Cryptodome.Util.number import long_to_bytes, bytes_to_long
-from Cryptodome.Util.py3compat import bord, tobytes, _copy_bytes
 from Cryptodome.Random import get_random_bytes
+from Cryptodome.Util.number import bytes_to_long, long_to_bytes
+from Cryptodome.Util.py3compat import _copy_bytes, bord, tobytes
+from Cryptodome.Util.strxor import strxor
 
 if sys.version_info[:2] == (2, 6):
     memoryview = bytes
@@ -38,7 +38,7 @@ digest_size = None
 
 def _shift_bytes(bs, xor_lsb=0):
     num = (bytes_to_long(bs) << 1) ^ xor_lsb
-    return long_to_bytes(num, len(bs))[-len(bs):]
+    return long_to_bytes(num, len(bs))[-len(bs) :]
 
 
 class CMAC(object):
@@ -51,8 +51,9 @@ class CMAC(object):
 
     digest_size = None
 
-    def __init__(self, key, msg, ciphermod, cipher_params, mac_len,
-                 update_after_digest):
+    def __init__(
+        self, key, msg, ciphermod, cipher_params, mac_len, update_after_digest
+    ):
 
         self.digest_size = mac_len
 
@@ -71,14 +72,14 @@ class CMAC(object):
             const_Rb = 0x87
             self._max_size = 16 * (2 ** 48)
         else:
-            raise TypeError("CMAC requires a cipher with a block size"
-                            " of 8 or 16 bytes, not %d" % bs)
+            raise TypeError(
+                "CMAC requires a cipher with a block size"
+                " of 8 or 16 bytes, not %d" % bs
+            )
 
         # Compute sub-keys
-        zero_block = b'\x00' * bs
-        self._ecb = ciphermod.new(key,
-                                  ciphermod.MODE_ECB,
-                                  **self._cipher_params)
+        zero_block = b"\x00" * bs
+        self._ecb = ciphermod.new(key, ciphermod.MODE_ECB, **self._cipher_params)
         L = self._ecb.encrypt(zero_block)
         if bord(L[0]) & 0x80:
             self._k1 = _shift_bytes(L, const_Rb)
@@ -90,10 +91,9 @@ class CMAC(object):
             self._k2 = _shift_bytes(self._k1)
 
         # Initialize CBC cipher with zero IV
-        self._cbc = ciphermod.new(key,
-                                  ciphermod.MODE_CBC,
-                                  zero_block,
-                                  **self._cipher_params)
+        self._cbc = ciphermod.new(
+            key, ciphermod.MODE_CBC, zero_block, **self._cipher_params
+        )
 
         # Cache for outstanding data to authenticate
         self._cache = bytearray(bs)
@@ -126,7 +126,7 @@ class CMAC(object):
 
         if self._cache_n > 0:
             filler = min(bs - self._cache_n, len(msg))
-            self._cache[self._cache_n:self._cache_n+filler] = msg[:filler]
+            self._cache[self._cache_n : self._cache_n + filler] = msg[:filler]
             self._cache_n += filler
 
             if self._cache_n < bs:
@@ -147,7 +147,7 @@ class CMAC(object):
 
     def _update(self, data_block):
         """Update a block aligned to the block boundary"""
-        
+
         bs = self._block_size
         assert len(data_block) % bs == 0
 
@@ -158,7 +158,7 @@ class CMAC(object):
         if len(data_block) == bs:
             second_last = self._last_ct
         else:
-            second_last = ct[-bs*2:-bs]
+            second_last = ct[-bs * 2 : -bs]
         self._last_ct = ct[-bs:]
         self._last_pt = strxor(second_last, data_block[-bs:])
 
@@ -175,10 +175,9 @@ class CMAC(object):
 
         obj = self.__new__(CMAC)
         obj.__dict__ = self.__dict__.copy()
-        obj._cbc = self._factory.new(self._key,
-                                     self._factory.MODE_CBC,
-                                     self._last_ct,
-                                     **self._cipher_params)
+        obj._cbc = self._factory.new(
+            self._key, self._factory.MODE_CBC, self._last_ct, **self._cipher_params
+        )
         obj._cache = self._cache[:]
         obj._last_ct = self._last_ct[:]
         return obj
@@ -206,10 +205,10 @@ class CMAC(object):
         else:
             # Last block is partial (or message length is zero)
             partial = self._cache[:]
-            partial[self._cache_n:] = b'\x80' + b'\x00' * (bs - self._cache_n - 1)
+            partial[self._cache_n :] = b"\x80" + b"\x00" * (bs - self._cache_n - 1)
             pt = strxor(strxor(self._last_ct, partial), self._k2)
 
-        self._mac_tag = self._ecb.encrypt(pt)[:self.digest_size]
+        self._mac_tag = self._ecb.encrypt(pt)[: self.digest_size]
 
         return self._mac_tag
 
@@ -221,8 +220,7 @@ class CMAC(object):
         :rtype: string
         """
 
-        return "".join(["%02x" % bord(x)
-                        for x in tuple(self.digest())])
+        return "".join(["%02x" % bord(x) for x in tuple(self.digest())])
 
     def verify(self, mac_tag):
         """Verify that a given **binary** MAC (computed by another party)
@@ -255,8 +253,14 @@ class CMAC(object):
         self.verify(unhexlify(tobytes(hex_mac_tag)))
 
 
-def new(key, msg=None, ciphermod=None, cipher_params=None, mac_len=None,
-        update_after_digest=False):
+def new(
+    key,
+    msg=None,
+    ciphermod=None,
+    cipher_params=None,
+    mac_len=None,
+    update_after_digest=False,
+):
     """Create a new MAC object.
 
     Args:
@@ -294,12 +298,14 @@ def new(key, msg=None, ciphermod=None, cipher_params=None, mac_len=None,
 
     if mac_len is None:
         mac_len = ciphermod.block_size
-    
+
     if mac_len < 4:
         raise ValueError("MAC tag length must be at least 4 bytes long")
-    
-    if mac_len > ciphermod.block_size:
-        raise ValueError("MAC tag length cannot be larger than a cipher block (%d) bytes" % ciphermod.block_size)
 
-    return CMAC(key, msg, ciphermod, cipher_params, mac_len,
-                update_after_digest)
+    if mac_len > ciphermod.block_size:
+        raise ValueError(
+            "MAC tag length cannot be larger than a cipher block (%d) bytes"
+            % ciphermod.block_size
+        )
+
+    return CMAC(key, msg, ciphermod, cipher_params, mac_len, update_after_digest)

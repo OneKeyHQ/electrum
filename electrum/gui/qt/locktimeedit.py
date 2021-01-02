@@ -4,21 +4,27 @@
 
 import time
 from datetime import datetime
-from typing import Optional, Any
+from typing import Any, Optional
 
-from PyQt5.QtCore import Qt, QDateTime
-from PyQt5.QtGui import QPalette, QPainter
-from PyQt5.QtWidgets import (QWidget, QLineEdit, QStyle, QStyleOptionFrame, QComboBox,
-                             QHBoxLayout, QDateTimeEdit)
+from PyQt5.QtCore import QDateTime, Qt
+from PyQt5.QtGui import QPainter, QPalette
+from PyQt5.QtWidgets import (
+    QComboBox,
+    QDateTimeEdit,
+    QHBoxLayout,
+    QLineEdit,
+    QStyle,
+    QStyleOptionFrame,
+    QWidget,
+)
 
+from electrum.bitcoin import NLOCKTIME_BLOCKHEIGHT_MAX, NLOCKTIME_MAX, NLOCKTIME_MIN
 from electrum.i18n import _
-from electrum.bitcoin import NLOCKTIME_MIN, NLOCKTIME_MAX, NLOCKTIME_BLOCKHEIGHT_MAX
 
-from .util import char_width_in_lineedit, ColorScheme
+from .util import ColorScheme, char_width_in_lineedit
 
 
 class LockTimeEdit(QWidget):
-
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
 
@@ -30,7 +36,11 @@ class LockTimeEdit(QWidget):
         self.locktime_raw_e = LockTimeRawEdit()
         self.locktime_height_e = LockTimeHeightEdit()
         self.locktime_date_e = LockTimeDateEdit()
-        self.editors = [self.locktime_raw_e, self.locktime_height_e, self.locktime_date_e]
+        self.editors = [
+            self.locktime_raw_e,
+            self.locktime_height_e,
+            self.locktime_date_e,
+        ]
 
         self.combo = QComboBox()
         options = [_("Raw"), _("Block height"), _("Date")]
@@ -92,7 +102,6 @@ class _LockTimeEditor:
 
 
 class LockTimeRawEdit(QLineEdit, _LockTimeEditor):
-
     def __init__(self, parent=None):
         QLineEdit.__init__(self, parent)
         self.setFixedWidth(14 * char_width_in_lineedit())
@@ -100,10 +109,10 @@ class LockTimeRawEdit(QLineEdit, _LockTimeEditor):
 
     def numbify(self):
         text = self.text().strip()
-        chars = '0123456789'
+        chars = "0123456789"
         pos = self.cursorPosition()
-        pos = len(''.join([i for i in text[:pos] if i in chars]))
-        s = ''.join([i for i in text if i in chars])
+        pos = len("".join([i for i in text[:pos] if i in chars]))
+        s = "".join([i for i in text if i in chars])
         self.set_locktime(s)
         # setText sets Modified to False.  Instead we want to remember
         # if updates were because of user modification.
@@ -120,7 +129,7 @@ class LockTimeRawEdit(QLineEdit, _LockTimeEditor):
         try:
             x = int(x)
         except:
-            self.setText('')
+            self.setText("")
             return
         x = max(x, self.min_allowed_value)
         x = min(x, self.max_allowed_value)

@@ -1,20 +1,22 @@
+from decimal import Decimal
 from typing import TYPE_CHECKING
 
 from kivy.app import App
 from kivy.factory import Factory
-from kivy.properties import ObjectProperty
 from kivy.lang import Builder
-from decimal import Decimal
+from kivy.properties import ObjectProperty
 from kivy.uix.popup import Popup
 
 from electrum.gui.kivy.i18n import _
+
 from ...util import address_colors
 
 if TYPE_CHECKING:
     from ...main_window import ElectrumWindow
 
 
-Builder.load_string('''
+Builder.load_string(
+    """
 <AddressLabel@Label>
     text_size: self.width, None
     halign: 'left'
@@ -185,27 +187,28 @@ Builder.load_string('''
                 height: '48dp'
                 text: _('Close')
                 on_release: root.dismiss()
-''')
-
+"""
+)
 
 
 class AddressPopup(Popup):
-
     def __init__(self, parent, address, balance, status, **kwargs):
         super(AddressPopup, self).__init__(**kwargs)
-        self.title = _('Address Details')
+        self.title = _("Address Details")
         self.parent_dialog = parent
         self.app = parent.app
         self.address = address
         self.status = status
         self.script_type = self.app.wallet.get_txin_type(self.address)
         self.balance = self.app.format_amount_and_units(balance)
-        self.address_color, self.address_background_color = address_colors(self.app.wallet, address)
+        self.address_color, self.address_background_color = address_colors(
+            self.app.wallet, address
+        )
 
     def receive_at(self):
         self.dismiss()
         self.parent_dialog.dismiss()
-        self.app.switch_to('receive')
+        self.app.switch_to("receive")
         self.app.receive_screen.set_address(self.address)
 
     def do_export(self, pk_label):
@@ -213,18 +216,19 @@ class AddressPopup(Popup):
 
 
 class AddressesDialog(Factory.Popup):
-
     def __init__(self, app):
         Factory.Popup.__init__(self)
         self.app = app  # type: ElectrumWindow
 
     def get_card(self, addr, balance, is_used, label):
         ci = {}
-        ci['screen'] = self
-        ci['address'] = addr
-        ci['memo'] = label
-        ci['amount'] = self.app.format_amount_and_units(balance)
-        ci['status'] = _('Used') if is_used else _('Funded') if balance > 0 else _('Unused')
+        ci["screen"] = self
+        ci["address"] = addr
+        ci["memo"] = label
+        ci["amount"] = self.app.format_amount_and_units(balance)
+        ci["status"] = (
+            _("Used") if is_used else _("Funded") if balance > 0 else _("Unused")
+        )
         return ci
 
     def update(self):
@@ -240,7 +244,7 @@ class AddressesDialog(Factory.Popup):
         n = 0
         cards = []
         for address in _list:
-            label = wallet.labels.get(address, '')
+            label = wallet.labels.get(address, "")
             balance = sum(wallet.get_addr_balance(address))
             is_used_and_empty = wallet.is_used(address) and balance == 0
             if self.show_used == 1 and (balance or is_used_and_empty):
@@ -256,7 +260,7 @@ class AddressesDialog(Factory.Popup):
             n += 1
         container.data = cards
         if not n:
-            self.app.show_error('No address matching your search')
+            self.app.show_error("No address matching your search")
 
     def show_item(self, obj):
         address = obj.address
@@ -266,4 +270,4 @@ class AddressesDialog(Factory.Popup):
         d.open()
 
     def ext_search(self, card, search):
-        return card['memo'].find(search) >= 0 or card['amount'].find(search) >= 0
+        return card["memo"].find(search) >= 0 or card["amount"].find(search) >= 0

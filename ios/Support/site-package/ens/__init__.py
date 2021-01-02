@@ -1,9 +1,5 @@
 # flake8: noqa
 
-from .main import (
-    ENS,
-)
-
 from .exceptions import (
     AddressMismatch,
     BidTooLow,
@@ -13,3 +9,4 @@ from .exceptions import (
     UnderfundedBid,
     UnownedName,
 )
+from .main import ENS

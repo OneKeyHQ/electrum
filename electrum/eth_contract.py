@@ -1,4 +1,5 @@
 import time
+
 from .pywalib import PyWalib, get_abi_json
 
 
@@ -20,8 +21,9 @@ class Eth_Contract:
         self.symbol = symbol
         self.w3 = PyWalib.get_web3()
         import json
+
         self.contract = self.w3.eth.contract(address=address, abi=get_abi_json())
-        #self.contract = self.w3.eth.contract(address=address, abi=abi)
+        # self.contract = self.w3.eth.contract(address=address, abi=abi)
         self.contract_decimals = self.contract.functions.decimals().call()
 
     def get_balance(self, wallet_address):
@@ -31,7 +33,7 @@ class Eth_Contract:
         :type wallet_address: string
         :return: balance as decimal number
         """
-        #return self.contract.functions.balanceOf(wallet_address).call() / (10 ** self.contract_decimals)
+        # return self.contract.functions.balanceOf(wallet_address).call() / (10 ** self.contract_decimals)
         return self.contract.functions.balanceOf(wallet_address).call()
 
     def get_address(self):

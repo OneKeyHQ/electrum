@@ -1,6 +1,7 @@
 ####-*.patch
 *.pyc
 *.swp
+*.log
 build/
 dist/
 *.egg/
@@ -8,7 +9,8 @@ Electrum.egg-info/
 ios/iOS/
 .devlocaltmp/
 *_trial_temp
-packages
+locale/
+packages/
 env/
 .buildozer/
 bin/

@@ -1,20 +1,15 @@
-from hexbytes import HexBytes
-from eth_account import (
-    Account,
-)
+from eth_account import Account
 from eth_account._utils.transactions import (
     encode_transaction,
     serializable_unsigned_transaction_from_dict,
 )
-from eth_utils import (
-    to_normalized_address,
-    to_hex,
-    remove_0x_prefix,
-    keccak,
-)
+from eth_utils import keccak, remove_0x_prefix, to_hex, to_normalized_address
+from hexbytes import HexBytes
+
 
 def public_key_to_keccak256(public_key_bytes: bytes) -> bytes:
     return keccak(public_key_bytes)
+
 
 class Eth_Transaction:
     """Abstraction over Ethereum transaction."""
@@ -24,35 +19,30 @@ class Eth_Transaction:
         self.w3 = w3
 
     @staticmethod
-    def build_transaction(to_address,
-                          value,
-                          gas,
-                          gas_price,
-                          nonce,
-                          chain_id,
-                          data=None
-                          ):
+    def build_transaction(
+        to_address, value, gas, gas_price, nonce, chain_id, data=None
+    ):
         """Collects all necessary data to build transaction dict."""
         if data is None:  # tx dict for sending ETH
             transaction = {
                 # Note that the address must be in checksum format:
-                'to': to_address,
-                'value': value,
-                'gas': gas,
-                'gasPrice': gas_price,
-                'nonce': nonce,
-                'chainId': chain_id
+                "to": to_address,
+                "value": value,
+                "gas": gas,
+                "gasPrice": gas_price,
+                "nonce": nonce,
+                "chainId": chain_id,
             }
         else:  # tx dict for sending ERC20 tokens
             transaction = {
                 # Note that the address must be in checksum format:
-                'to': to_address,
-                'value': value,
-                'gas': gas,
-                'gasPrice': gas_price,
-                'nonce': nonce,
-                'chainId': chain_id,
-                'data': data
+                "to": to_address,
+                "value": value,
+                "gas": gas,
+                "gasPrice": gas_price,
+                "nonce": nonce,
+                "chainId": chain_id,
+                "data": data,
             }
 
         return transaction
@@ -64,7 +54,7 @@ class Eth_Transaction:
         :param transaction: transaction dict
         :return: transaction hash
         """
-        print('transaction: ' + str(transaction))
+        print("transaction: " + str(transaction))
 
         signed_tx = Account.signTransaction(transaction, account.privateKey)
         tx_hash = w3.eth.sendRawTransaction(signed_tx.rawTransaction)
@@ -73,7 +63,9 @@ class Eth_Transaction:
 
     @staticmethod
     def serialize_and_send_tx(self, w3, transaction_dict, vrs=()):
-        unsigned_transaction = serializable_unsigned_transaction_from_dict(transaction_dict)
+        unsigned_transaction = serializable_unsigned_transaction_from_dict(
+            transaction_dict
+        )
         encoded_transaction = encode_transaction(unsigned_transaction, vrs=vrs)
 
         tx_hash = w3.eth.sendRawTransaction(HexBytes(encoded_transaction))
@@ -104,13 +96,13 @@ class Eth_Transaction:
         """
         # 1. create hex of called function in solidity and take first 4 bytes
         # ERC20 transfer function will always produce a9059cbb.....
-        transfer_hex = public_key_to_keccak256(b'transfer(address,uint256)').hex()[:8]
+        transfer_hex = public_key_to_keccak256(b"transfer(address,uint256)").hex()[:8]
 
         # 2. create 32 byte number (length 64)
         # consisting of zeros and normalized hex address of receiver without 0x prefix
         # example: 000000000000000000000000aad533eb7fe7f2657960ac7703f87e10c73ae73b
         receiver = remove_0x_prefix(to_normalized_address(receiver))
-        receiver = '000000000000000000000000' + receiver  # 32 bytes together
+        receiver = "000000000000000000000000" + receiver  # 32 bytes together
 
         # 3. convert sending amount to hex and remove 0x prefix
         # this number must be integer and therefore smallest units of token used
@@ -121,10 +113,15 @@ class Eth_Transaction:
         # 4. add zeros in front of sending amount of hex value. Together it must be 32 bytes (length 64)
         # example: 0000000000000000000000000000000000000000000000000de0b6b3a7640000
         zero_end_point = 64 - len(value)
-        final_hex_amount = [value[x - zero_end_point] if x >= zero_end_point else 0 for x in range(0, 64)]
-        final_hex_amount = ''.join(str(x) for x in final_hex_amount)  # convert list to string
+        final_hex_amount = [
+            value[x - zero_end_point] if x >= zero_end_point else 0
+            for x in range(0, 64)
+        ]
+        final_hex_amount = "".join(
+            str(x) for x in final_hex_amount
+        )  # convert list to string
 
         # 5. concatenate final data field
-        data = '0x'+transfer_hex + receiver + final_hex_amount
+        data = "0x" + transfer_hex + receiver + final_hex_amount
 
         return data

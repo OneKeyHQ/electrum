@@ -1,0 +1,49 @@
+repos:
+
+-   repo: https://github.com/asottile/seed-isort-config
+    rev: v2.2.0
+    hooks:
+    -   id: seed-isort-config
+
+-   repo: https://github.com/pre-commit/mirrors-isort
+    rev: v5.1.4
+    hooks:
+    -   id: isort
+        args: ["--profile", "black", "--filter-files"]
+        language_version: python3
+        exclude: /(migrations|_pb2)/
+
+-   repo: https://github.com/psf/black
+    rev: 19.10b0
+    hooks:
+    -   id: black
+        language_version: python3
+        exclude: /(\\.eggs|\\.git|\\.hg|\\.mypy_cache|\\.nox|\\.tox|\\.venv|_build|buck-out|build|dist|migrations|_pb2)/
+
+#-   repo: https://gitlab.com/pycqa/flake8
+#    rev: 3.8.3
+#    hooks:
+#    -   id: flake8
+#        language_version: python3
+#        exclude: /(migrations|_pb2)/
+
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.1.0
+    hooks:
+    -   id: end-of-file-fixer
+        exclude: /(migrations|_pb2)/
+        files: .*.py$
+    -   id: trailing-whitespace
+        exclude: /(migrations|_pb2)/
+        files: .*.py$
+    -   id: file-contents-sorter
+        files: ^(requirements.*.txt)$
+
+#-   repo: https://github.com/PyCQA/bandit
+#    rev: 1.6.2
+#    hooks:
+#    -   id: bandit
+#        language_version: python3
+#        exclude: /(migrations|_pb2)/
+#        args: [ -r,  -c ,".bandit_scan.cfg", -f , "txt",  -o , "bandit_scan.log",  --baseline, ".bandit_baseline.json" , $(git ls-files) ]
+

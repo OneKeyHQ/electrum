@@ -1,7 +1,4 @@
-from eth_utils import (
-    is_binary_address,
-    is_checksum_address,
-)
+from eth_utils import is_binary_address, is_checksum_address
 
 
 def is_valid_address(value):

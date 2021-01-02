@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 
-import sys
 import asyncio
+import sys
 
 from electrum.network import Network
-from electrum.util import print_msg, create_and_start_event_loop
-from electrum.synchronizer import SynchronizerBase
 from electrum.simple_config import SimpleConfig
-
+from electrum.synchronizer import SynchronizerBase
+from electrum.util import create_and_start_event_loop, print_msg
 
 try:
     addr = sys.argv[1]

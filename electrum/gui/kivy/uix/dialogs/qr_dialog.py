@@ -1,10 +1,10 @@
 from typing import TYPE_CHECKING
 
-from kivy.factory import Factory
-from kivy.lang import Builder
-from kivy.core.clipboard import Clipboard
 from kivy.app import App
 from kivy.clock import Clock
+from kivy.core.clipboard import Clipboard
+from kivy.factory import Factory
+from kivy.lang import Builder
 
 from electrum.gui.kivy.i18n import _
 
@@ -12,7 +12,8 @@ if TYPE_CHECKING:
     from ...main_window import ElectrumWindow
 
 
-Builder.load_string('''
+Builder.load_string(
+    """
 <QRDialog@Popup>
     id: popup
     title: ''
@@ -57,16 +58,26 @@ Builder.load_string('''
                     text: _('Close')
                     on_release:
                         popup.dismiss()
-''')
+"""
+)
+
 
 class QRDialog(Factory.Popup):
-    def __init__(self, title, data, show_text, *,
-                 failure_cb=None, text_for_clipboard=None, help_text=None):
+    def __init__(
+        self,
+        title,
+        data,
+        show_text,
+        *,
+        failure_cb=None,
+        text_for_clipboard=None,
+        help_text=None
+    ):
         Factory.Popup.__init__(self)
         self.app = App.get_running_app()  # type: ElectrumWindow
         self.title = title
         self.data = data
-        self.help_text = (data if show_text else help_text) or ''
+        self.help_text = (data if show_text else help_text) or ""
         self.failure_cb = failure_cb
         self.text_for_clipboard = text_for_clipboard if text_for_clipboard else data
 
@@ -75,7 +86,7 @@ class QRDialog(Factory.Popup):
 
     def copy_to_clipboard(self):
         Clipboard.copy(self.text_for_clipboard)
-        msg = _('Text copied to clipboard.')
+        msg = _("Text copied to clipboard.")
         Clock.schedule_once(lambda dt: self.app.show_info(msg))
 
     def do_share(self):

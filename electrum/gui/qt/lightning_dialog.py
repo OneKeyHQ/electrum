@@ -25,7 +25,7 @@
 
 from typing import TYPE_CHECKING
 
-from PyQt5.QtWidgets import (QDialog, QLabel, QVBoxLayout, QPushButton)
+from PyQt5.QtWidgets import QDialog, QLabel, QPushButton, QVBoxLayout
 
 from electrum import util
 from electrum.i18n import _
@@ -37,44 +37,45 @@ if TYPE_CHECKING:
 
 
 class LightningDialog(QDialog):
-
-    def __init__(self, gui_object: 'ElectrumGui'):
+    def __init__(self, gui_object: "ElectrumGui"):
         QDialog.__init__(self)
         self.gui_object = gui_object
         self.config = gui_object.config
         self.network = gui_object.daemon.network
         assert self.network
-        self.setWindowTitle(_('Lightning Network'))
+        self.setWindowTitle(_("Lightning Network"))
         self.setMinimumWidth(600)
         vbox = QVBoxLayout(self)
-        self.num_peers = QLabel('')
+        self.num_peers = QLabel("")
         vbox.addWidget(self.num_peers)
-        self.num_nodes = QLabel('')
+        self.num_nodes = QLabel("")
         vbox.addWidget(self.num_nodes)
-        self.num_channels = QLabel('')
+        self.num_channels = QLabel("")
         vbox.addWidget(self.num_channels)
-        self.status = QLabel('')
+        self.status = QLabel("")
         vbox.addWidget(self.status)
         vbox.addStretch(1)
-        b = QPushButton(_('Close'))
+        b = QPushButton(_("Close"))
         b.clicked.connect(self.close)
         vbox.addLayout(Buttons(b))
-        util.register_callback(self.on_channel_db, ['channel_db'])
-        util.register_callback(self.set_num_peers, ['gossip_peers'])
-        util.register_callback(self.set_unknown_channels, ['unknown_channels'])
-        self.network.channel_db.update_counts() # trigger callback
-        self.set_num_peers('', self.network.lngossip.num_peers())
-        self.set_unknown_channels('', len(self.network.lngossip.unknown_ids))
+        util.register_callback(self.on_channel_db, ["channel_db"])
+        util.register_callback(self.set_num_peers, ["gossip_peers"])
+        util.register_callback(self.set_unknown_channels, ["unknown_channels"])
+        self.network.channel_db.update_counts()  # trigger callback
+        self.set_num_peers("", self.network.lngossip.num_peers())
+        self.set_unknown_channels("", len(self.network.lngossip.unknown_ids))
 
     def on_channel_db(self, event, num_nodes, num_channels, num_policies):
-        self.num_nodes.setText(_('{} nodes').format(num_nodes))
-        self.num_channels.setText(_('{} channels').format(num_channels))
+        self.num_nodes.setText(_("{} nodes").format(num_nodes))
+        self.num_channels.setText(_("{} channels").format(num_channels))
 
     def set_num_peers(self, event, num_peers):
-        self.num_peers.setText(_('Connected to {} peers').format(num_peers))
+        self.num_peers.setText(_("Connected to {} peers").format(num_peers))
 
     def set_unknown_channels(self, event, unknown):
-        self.status.setText(_('Requesting {} channels...').format(unknown) if unknown else '')
+        self.status.setText(
+            _("Requesting {} channels...").format(unknown) if unknown else ""
+        )
 
     def is_hidden(self):
         return self.isMinimized() or self.isHidden()

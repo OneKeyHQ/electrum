@@ -30,8 +30,9 @@
 
 import abc
 import sys
-from Cryptodome.Util.py3compat import byte_string
+
 from Cryptodome.Util._file_system import pycryptodome_filename
+from Cryptodome.Util.py3compat import byte_string
 
 #
 # List of file suffixes for Python extensions
@@ -39,6 +40,7 @@ from Cryptodome.Util._file_system import pycryptodome_filename
 if sys.version_info[0] < 3:
 
     import imp
+
     extension_suffixes = []
     for ext, mod, typ in imp.get_suffixes():
         if typ == imp.C_EXTENSION:
@@ -47,13 +49,14 @@ if sys.version_info[0] < 3:
 else:
 
     from importlib import machinery
+
     # extension_suffixes = machinery.EXTENSION_SUFFIXES
     extension_suffixes = [".cpython-38-darwin.so"]
 
 
 # Which types with buffer interface we support (apart from byte strings)
 if sys.version_info[0] == 2 and sys.version_info[1] < 7:
-    _buffer_type = (bytearray)
+    _buffer_type = bytearray
 else:
     _buffer_type = (bytearray, memoryview)
 
@@ -80,7 +83,7 @@ try:
     # Note that PyPy ships with an old version of pycparser so we can keep
     # using cffi there.
     # See https://github.com/Legrandin/pycryptodome/issues/228
-    if '__pypy__' not in sys.builtin_module_names and sys.flags.optimize == 2:
+    if "__pypy__" not in sys.builtin_module_names and sys.flags.optimize == 2:
         raise ImportError("CFFI with optimize=2 fails due to pycparser bug.")
 
     from cffi import FFI
@@ -165,10 +168,19 @@ try:
 except ImportError:
 
     import ctypes
-    from ctypes import (CDLL, c_void_p, byref, c_ulong, c_ulonglong, c_size_t,
-                        create_string_buffer, c_ubyte, c_uint)
-    from ctypes.util import find_library
+    from ctypes import CDLL
     from ctypes import Array as _Array
+    from ctypes import (
+        byref,
+        c_size_t,
+        c_ubyte,
+        c_uint,
+        c_ulong,
+        c_ulonglong,
+        c_void_p,
+        create_string_buffer,
+    )
+    from ctypes.util import find_library
 
     null_pointer = None
     cached_architecture = []
@@ -178,6 +190,7 @@ except ImportError:
             # platform.architecture() creates a subprocess, so caching the
             # result makes successive imports faster.
             import platform
+
             cached_architecture[:] = platform.architecture()
         bits, linkage = cached_architecture
         if "." not in name and not linkage.startswith("Win"):
@@ -212,22 +225,22 @@ except ImportError:
     # and https://github.com/pallets/click/blob/master/click/_winconsole.py
     class _Py_buffer(ctypes.Structure):
         _fields_ = [
-            ('buf',         c_void_p),
-            ('obj',         ctypes.py_object),
-            ('len',         _c_ssize_t),
-            ('itemsize',    _c_ssize_t),
-            ('readonly',    ctypes.c_int),
-            ('ndim',        ctypes.c_int),
-            ('format',      ctypes.c_char_p),
-            ('shape',       _c_ssize_p),
-            ('strides',     _c_ssize_p),
-            ('suboffsets',  _c_ssize_p),
-            ('internal',    c_void_p)
+            ("buf", c_void_p),
+            ("obj", ctypes.py_object),
+            ("len", _c_ssize_t),
+            ("itemsize", _c_ssize_t),
+            ("readonly", ctypes.c_int),
+            ("ndim", ctypes.c_int),
+            ("format", ctypes.c_char_p),
+            ("shape", _c_ssize_p),
+            ("strides", _c_ssize_p),
+            ("suboffsets", _c_ssize_p),
+            ("internal", c_void_p),
         ]
 
         # Extra field for CPython 2.6/2.7
         if sys.version_info[0] == 2:
-            _fields_.insert(-1, ('smalltable', _c_ssize_t * 2))
+            _fields_.insert(-1, ("smalltable", _c_ssize_t * 2))
 
     def c_uint8_ptr(data):
         if byte_string(data) or isinstance(data, _Array):
@@ -303,22 +316,23 @@ def load_pycryptodome_raw_lib(name, cdecl):
     for ext in extension_suffixes:
         try:
             filename = basename + ext
-            return load_lib(pycryptodome_filename(dir_comps, filename),
-                            cdecl)
+            return load_lib(pycryptodome_filename(dir_comps, filename), cdecl)
         except OSError as exp:
             attempts.append("Trying '%s': %s" % (filename, str(exp)))
     raise OSError("Cannot load native module '%s': %s" % (name, ", ".join(attempts)))
 
 
 if sys.version_info[:2] != (2, 6):
-    
+
     def is_buffer(x):
         """Return True if object x supports the buffer interface"""
         return isinstance(x, (bytes, bytearray, memoryview))
 
     def is_writeable_buffer(x):
-        return (isinstance(x, bytearray) or
-                (isinstance(x, memoryview) and not x.readonly))
+        return isinstance(x, bytearray) or (
+            isinstance(x, memoryview) and not x.readonly
+        )
+
 
 else:
 

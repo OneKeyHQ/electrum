@@ -1,56 +1,117 @@
 import asyncio
+import os
 import os.path
-import time
-import sys
 import platform
 import queue
+import sys
+import time
 import traceback
-import os
 import webbrowser
 from decimal import Decimal
-from functools import partial, lru_cache
-from typing import (NamedTuple, Callable, Optional, TYPE_CHECKING, Union, List, Dict, Any,
-                    Sequence, Iterable)
+from functools import lru_cache, partial
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Dict,
+    Iterable,
+    List,
+    NamedTuple,
+    Optional,
+    Sequence,
+    Union,
+)
 
-from PyQt5.QtGui import (QFont, QColor, QCursor, QPixmap, QStandardItem,
-                         QPalette, QIcon, QFontMetrics, QShowEvent)
-from PyQt5.QtCore import (Qt, QPersistentModelIndex, QModelIndex, pyqtSignal,
-                          QCoreApplication, QItemSelectionModel, QThread,
-                          QSortFilterProxyModel, QSize, QLocale, QAbstractItemModel)
-from PyQt5.QtWidgets import (QPushButton, QLabel, QMessageBox, QHBoxLayout,
-                             QAbstractItemView, QVBoxLayout, QLineEdit,
-                             QStyle, QDialog, QGroupBox, QButtonGroup, QRadioButton,
-                             QFileDialog, QWidget, QToolButton, QTreeView, QPlainTextEdit,
-                             QHeaderView, QApplication, QToolTip, QTreeWidget, QStyledItemDelegate,
-                             QMenu)
+from PyQt5.QtCore import (
+    QAbstractItemModel,
+    QCoreApplication,
+    QItemSelectionModel,
+    QLocale,
+    QModelIndex,
+    QPersistentModelIndex,
+    QSize,
+    QSortFilterProxyModel,
+    Qt,
+    QThread,
+    pyqtSignal,
+)
+from PyQt5.QtGui import (
+    QColor,
+    QCursor,
+    QFont,
+    QFontMetrics,
+    QIcon,
+    QPalette,
+    QPixmap,
+    QShowEvent,
+    QStandardItem,
+)
+from PyQt5.QtWidgets import (
+    QAbstractItemView,
+    QApplication,
+    QButtonGroup,
+    QDialog,
+    QFileDialog,
+    QGroupBox,
+    QHBoxLayout,
+    QHeaderView,
+    QLabel,
+    QLineEdit,
+    QMenu,
+    QMessageBox,
+    QPlainTextEdit,
+    QPushButton,
+    QRadioButton,
+    QStyle,
+    QStyledItemDelegate,
+    QToolButton,
+    QToolTip,
+    QTreeView,
+    QTreeWidget,
+    QVBoxLayout,
+    QWidget,
+)
 
 from electrum.i18n import _, languages
-from electrum.util import FileImportFailed, FileExportFailed, make_aiohttp_session, resource_path
-from electrum.invoices import PR_UNPAID, PR_PAID, PR_EXPIRED, PR_INFLIGHT, PR_UNKNOWN, PR_FAILED, PR_ROUTING
+from electrum.invoices import (
+    PR_EXPIRED,
+    PR_FAILED,
+    PR_INFLIGHT,
+    PR_PAID,
+    PR_ROUTING,
+    PR_UNKNOWN,
+    PR_UNPAID,
+)
+from electrum.util import (
+    FileExportFailed,
+    FileImportFailed,
+    make_aiohttp_session,
+    resource_path,
+)
 
 if TYPE_CHECKING:
-    from .main_window import ElectrumWindow
     from .installwizard import InstallWizard
+    from .main_window import ElectrumWindow
 
 
-if platform.system() == 'Windows':
-    MONOSPACE_FONT = 'Lucida Console'
-elif platform.system() == 'Darwin':
-    MONOSPACE_FONT = 'Monaco'
+if platform.system() == "Windows":
+    MONOSPACE_FONT = "Lucida Console"
+elif platform.system() == "Darwin":
+    MONOSPACE_FONT = "Monaco"
 else:
-    MONOSPACE_FONT = 'monospace'
+    MONOSPACE_FONT = "monospace"
 
 
 dialogs = []
 
 pr_icons = {
-    PR_UNKNOWN:"warning.png",
-    PR_UNPAID:"unpaid.png",
-    PR_PAID:"confirmed.png",
-    PR_EXPIRED:"expired.png",
-    PR_INFLIGHT:"unconfirmed.png",
-    PR_FAILED:"warning.png",
-    PR_ROUTING:"unconfirmed.png",
+    PR_UNKNOWN: "warning.png",
+    PR_UNPAID: "unpaid.png",
+    PR_PAID: "confirmed.png",
+    PR_EXPIRED: "expired.png",
+    PR_INFLIGHT: "unconfirmed.png",
+    PR_FAILED: "warning.png",
+    PR_ROUTING: "unconfirmed.png",
 }
 
 
@@ -58,9 +119,11 @@ pr_icons = {
 TRANSACTION_FILE_EXTENSION_FILTER_ANY = "Transaction (*.txn *.psbt);;All files (*)"
 TRANSACTION_FILE_EXTENSION_FILTER_ONLY_PARTIAL_TX = "Partial Transaction (*.psbt)"
 TRANSACTION_FILE_EXTENSION_FILTER_ONLY_COMPLETE_TX = "Complete Transaction (*.txn)"
-TRANSACTION_FILE_EXTENSION_FILTER_SEPARATE = (f"{TRANSACTION_FILE_EXTENSION_FILTER_ONLY_PARTIAL_TX};;"
-                                              f"{TRANSACTION_FILE_EXTENSION_FILTER_ONLY_COMPLETE_TX};;"
-                                              f"All files (*)")
+TRANSACTION_FILE_EXTENSION_FILTER_SEPARATE = (
+    f"{TRANSACTION_FILE_EXTENSION_FILTER_ONLY_PARTIAL_TX};;"
+    f"{TRANSACTION_FILE_EXTENSION_FILTER_ONLY_COMPLETE_TX};;"
+    f"All files (*)"
+)
 
 
 class EnterButton(QPushButton):
@@ -93,14 +156,13 @@ class ThreadedButton(QPushButton):
 
 
 class WWLabel(QLabel):
-    def __init__ (self, text="", parent=None):
+    def __init__(self, text="", parent=None):
         QLabel.__init__(self, text, parent)
         self.setWordWrap(True)
         self.setTextInteractionFlags(Qt.TextSelectableByMouse)
 
 
 class HelpLabel(QLabel):
-
     def __init__(self, text, help_text):
         QLabel.__init__(self, text)
         self.help_text = help_text
@@ -108,10 +170,12 @@ class HelpLabel(QLabel):
         self.font = QFont()
 
     def mouseReleaseEvent(self, x):
-        custom_message_box(icon=QMessageBox.Information,
-                           parent=self,
-                           title=_('Help'),
-                           text=self.help_text)
+        custom_message_box(
+            icon=QMessageBox.Information,
+            parent=self,
+            title=_("Help"),
+            text=self.help_text,
+        )
 
     def enterEvent(self, event):
         self.font.setUnderline(True)
@@ -128,34 +192,38 @@ class HelpLabel(QLabel):
 
 class HelpButton(QPushButton):
     def __init__(self, text):
-        QPushButton.__init__(self, '?')
+        QPushButton.__init__(self, "?")
         self.help_text = text
         self.setFocusPolicy(Qt.NoFocus)
         self.setFixedWidth(round(2.2 * char_width_in_lineedit()))
         self.clicked.connect(self.onclick)
 
     def onclick(self):
-        custom_message_box(icon=QMessageBox.Information,
-                           parent=self,
-                           title=_('Help'),
-                           text=self.help_text,
-                           rich_text=True)
+        custom_message_box(
+            icon=QMessageBox.Information,
+            parent=self,
+            title=_("Help"),
+            text=self.help_text,
+            rich_text=True,
+        )
 
 
 class InfoButton(QPushButton):
     def __init__(self, text):
-        QPushButton.__init__(self, 'Info')
+        QPushButton.__init__(self, "Info")
         self.help_text = text
         self.setFocusPolicy(Qt.NoFocus)
         self.setFixedWidth(6 * char_width_in_lineedit())
         self.clicked.connect(self.onclick)
 
     def onclick(self):
-        custom_message_box(icon=QMessageBox.Information,
-                           parent=self,
-                           title=_('Info'),
-                           text=self.help_text,
-                           rich_text=True)
+        custom_message_box(
+            icon=QMessageBox.Information,
+            parent=self,
+            title=_("Info"),
+            text=self.help_text,
+            rich_text=True,
+        )
 
 
 class Buttons(QHBoxLayout):
@@ -167,16 +235,19 @@ class Buttons(QHBoxLayout):
                 continue
             self.addWidget(b)
 
+
 class CloseButton(QPushButton):
     def __init__(self, dialog):
         QPushButton.__init__(self, _("Close"))
         self.clicked.connect(dialog.close)
         self.setDefault(True)
 
+
 class CopyButton(QPushButton):
     def __init__(self, text_getter, app):
         QPushButton.__init__(self, _("Copy"))
         self.clicked.connect(lambda: app.clipboard().setText(text_getter()))
+
 
 class CopyCloseButton(QPushButton):
     def __init__(self, text_getter, app, dialog):
@@ -185,16 +256,19 @@ class CopyCloseButton(QPushButton):
         self.clicked.connect(dialog.close)
         self.setDefault(True)
 
+
 class OkButton(QPushButton):
     def __init__(self, dialog, label=None):
         QPushButton.__init__(self, label or _("OK"))
         self.clicked.connect(dialog.accept)
         self.setDefault(True)
 
+
 class CancelButton(QPushButton):
     def __init__(self, dialog, label=None):
         QPushButton.__init__(self, label or _("Cancel"))
         self.clicked.connect(dialog.reject)
+
 
 class MessageBoxMixin(object):
     def top_level_window_recurse(self, window=None, test_func=None):
@@ -205,8 +279,7 @@ class MessageBoxMixin(object):
         for n, child in enumerate(window.children()):
             # Test for visibility as old closed dialogs may not be GC-ed.
             # Only accept children that confirm to test_func.
-            if isinstance(child, classes) and child.isVisible() \
-                    and test_func(child):
+            if isinstance(child, classes) and child.isVisible() and test_func(child):
                 return self.top_level_window_recurse(child, test_func=test_func)
         return window
 
@@ -215,47 +288,70 @@ class MessageBoxMixin(object):
 
     def question(self, msg, parent=None, title=None, icon=None, **kwargs) -> bool:
         Yes, No = QMessageBox.Yes, QMessageBox.No
-        return Yes == self.msg_box(icon=icon or QMessageBox.Question,
-                                   parent=parent,
-                                   title=title or '',
-                                   text=msg,
-                                   buttons=Yes|No,
-                                   defaultButton=No,
-                                   **kwargs)
+        return Yes == self.msg_box(
+            icon=icon or QMessageBox.Question,
+            parent=parent,
+            title=title or "",
+            text=msg,
+            buttons=Yes | No,
+            defaultButton=No,
+            **kwargs,
+        )
 
     def show_warning(self, msg, parent=None, title=None, **kwargs):
-        return self.msg_box(QMessageBox.Warning, parent,
-                            title or _('Warning'), msg, **kwargs)
+        return self.msg_box(
+            QMessageBox.Warning, parent, title or _("Warning"), msg, **kwargs
+        )
 
     def show_error(self, msg, parent=None, **kwargs):
-        return self.msg_box(QMessageBox.Warning, parent,
-                            _('Error'), msg, **kwargs)
+        return self.msg_box(QMessageBox.Warning, parent, _("Error"), msg, **kwargs)
 
     def show_critical(self, msg, parent=None, title=None, **kwargs):
-        return self.msg_box(QMessageBox.Critical, parent,
-                            title or _('Critical Error'), msg, **kwargs)
+        return self.msg_box(
+            QMessageBox.Critical, parent, title or _("Critical Error"), msg, **kwargs
+        )
 
     def show_message(self, msg, parent=None, title=None, **kwargs):
-        return self.msg_box(QMessageBox.Information, parent,
-                            title or _('Information'), msg, **kwargs)
+        return self.msg_box(
+            QMessageBox.Information, parent, title or _("Information"), msg, **kwargs
+        )
 
-    def msg_box(self, icon, parent, title, text, *, buttons=QMessageBox.Ok,
-                defaultButton=QMessageBox.NoButton, rich_text=False,
-                checkbox=None):
+    def msg_box(
+        self,
+        icon,
+        parent,
+        title,
+        text,
+        *,
+        buttons=QMessageBox.Ok,
+        defaultButton=QMessageBox.NoButton,
+        rich_text=False,
+        checkbox=None,
+    ):
         parent = parent or self.top_level_window()
-        return custom_message_box(icon=icon,
-                                  parent=parent,
-                                  title=title,
-                                  text=text,
-                                  buttons=buttons,
-                                  defaultButton=defaultButton,
-                                  rich_text=rich_text,
-                                  checkbox=checkbox)
+        return custom_message_box(
+            icon=icon,
+            parent=parent,
+            title=title,
+            text=text,
+            buttons=buttons,
+            defaultButton=defaultButton,
+            rich_text=rich_text,
+            checkbox=checkbox,
+        )
 
 
-def custom_message_box(*, icon, parent, title, text, buttons=QMessageBox.Ok,
-                       defaultButton=QMessageBox.NoButton, rich_text=False,
-                       checkbox=None):
+def custom_message_box(
+    *,
+    icon,
+    parent,
+    title,
+    text,
+    buttons=QMessageBox.Ok,
+    defaultButton=QMessageBox.NoButton,
+    rich_text=False,
+    checkbox=None,
+):
     if type(icon) is QPixmap:
         d = QMessageBox(QMessageBox.Information, title, str(text), buttons, parent)
         d.setIconPixmap(icon)
@@ -279,8 +375,9 @@ def custom_message_box(*, icon, parent, title, text, buttons=QMessageBox.Ok,
 
 
 class WindowModalDialog(QDialog, MessageBoxMixin):
-    '''Handy wrapper; window modal dialogs are better for our multi-window
-    daemon model as other wallet windows can still be accessed.'''
+    """Handy wrapper; window modal dialogs are better for our multi-window
+    daemon model as other wallet windows can still be accessed."""
+
     def __init__(self, parent, title=None):
         QDialog.__init__(self, parent)
         self.setWindowModality(Qt.WindowModal)
@@ -289,9 +386,12 @@ class WindowModalDialog(QDialog, MessageBoxMixin):
 
 
 class WaitingDialog(WindowModalDialog):
-    '''Shows a please wait dialog whilst running a task.  It is not
-    necessary to maintain a reference to this dialog.'''
-    def __init__(self, parent: QWidget, message: str, task, on_success=None, on_error=None):
+    """Shows a please wait dialog whilst running a task.  It is not
+    necessary to maintain a reference to this dialog."""
+
+    def __init__(
+        self, parent: QWidget, message: str, task, on_success=None, on_error=None
+    ):
         assert parent
         if isinstance(parent, MessageBoxMixin):
             parent = parent.top_level_window()
@@ -322,6 +422,7 @@ class BlockingWaitingDialog(WindowModalDialog):
     the task is running; the point of the dialog is to provide feedback
     to the user regarding what is going on.
     """
+
     def __init__(self, parent: QWidget, message: str, task: Callable[[], Any]):
         assert parent
         if isinstance(parent, MessageBoxMixin):
@@ -350,8 +451,12 @@ def line_dialog(parent, title, label, ok_label, default=None):
     if dialog.exec_():
         return txt.text()
 
-def text_dialog(parent, title, header_layout, ok_label, default=None, allow_multi=False):
+
+def text_dialog(
+    parent, title, header_layout, ok_label, default=None, allow_multi=False
+):
     from .qrtextedit import ScanQRTextEdit
+
     dialog = WindowModalDialog(parent, title)
     dialog.setMinimumWidth(600)
     l = QVBoxLayout()
@@ -368,6 +473,7 @@ def text_dialog(parent, title, header_layout, ok_label, default=None, allow_mult
     if dialog.exec_():
         return txt.toPlainText()
 
+
 class ChoicesLayout(object):
     def __init__(self, msg, choices, on_clicked=None, checked_index=0):
         vbox = QVBoxLayout()
@@ -381,13 +487,13 @@ class ChoicesLayout(object):
         gb2.setLayout(vbox2)
 
         self.group = group = QButtonGroup()
-        for i,c in enumerate(choices):
+        for i, c in enumerate(choices):
             button = QRadioButton(gb2)
             button.setText(c)
             vbox2.addWidget(button)
             group.addButton(button)
             group.setId(button, i)
-            if i==checked_index:
+            if i == checked_index:
                 button.setChecked(True)
 
         if on_clicked:
@@ -401,6 +507,7 @@ class ChoicesLayout(object):
     def selected_index(self):
         return self.group.checkedId()
 
+
 def address_field(addresses):
     hbox = QHBoxLayout()
     address_e = QLineEdit()
@@ -408,6 +515,7 @@ def address_field(addresses):
         address_e.setText(addresses[0])
     else:
         addresses = []
+
     def func():
         try:
             i = addresses.index(str(address_e.text())) + 1
@@ -418,7 +526,8 @@ def address_field(addresses):
             # address not in the wallet (or to something that isn't an address)
             if addresses and len(addresses) > 0:
                 address_e.setText(addresses[0])
-    button = QPushButton(_('Address'))
+
+    button = QPushButton(_("Address"))
     button.clicked.connect(func)
     hbox.addWidget(button)
     hbox.addWidget(address_e)
@@ -440,19 +549,25 @@ def filename_field(parent, config, defaultname, select_msg):
 
     hbox = QHBoxLayout()
 
-    directory = config.get('io_dir', os.path.expanduser('~'))
-    path = os.path.join( directory, defaultname )
+    directory = config.get("io_dir", os.path.expanduser("~"))
+    path = os.path.join(directory, defaultname)
     filename_e = QLineEdit()
     filename_e.setText(path)
 
     def func():
         text = filename_e.text()
-        _filter = "*.csv" if text.endswith(".csv") else "*.json" if text.endswith(".json") else None
+        _filter = (
+            "*.csv"
+            if text.endswith(".csv")
+            else "*.json"
+            if text.endswith(".json")
+            else None
+        )
         p, __ = QFileDialog.getSaveFileName(None, select_msg, text, _filter)
         if p:
             filename_e.setText(p)
 
-    button = QPushButton(_('File'))
+    button = QPushButton(_("File"))
     button.clicked.connect(func)
     hbox.addWidget(button)
     hbox.addWidget(filename_e)
@@ -460,7 +575,7 @@ def filename_field(parent, config, defaultname, select_msg):
 
     def set_csv(v):
         text = filename_e.text()
-        text = text.replace(".json",".csv") if v else text.replace(".csv",".json")
+        text = text.replace(".json", ".csv") if v else text.replace(".csv", ".json")
         filename_e.setText(text)
 
     b1.clicked.connect(lambda: set_csv(True))
@@ -470,20 +585,25 @@ def filename_field(parent, config, defaultname, select_msg):
 
 
 class ElectrumItemDelegate(QStyledItemDelegate):
-    def __init__(self, tv: 'MyTreeView'):
+    def __init__(self, tv: "MyTreeView"):
         super().__init__(tv)
         self.tv = tv
         self.opened = None
+
         def on_closeEditor(editor: QLineEdit, hint):
             self.opened = None
+
         def on_commitData(editor: QLineEdit):
             new_text = editor.text()
             idx = QModelIndex(self.opened)
             row, col = idx.row(), idx.column()
-            _prior_text, user_role = self.tv.get_text_and_userrole_from_coordinate(row, col)
+            _prior_text, user_role = self.tv.get_text_and_userrole_from_coordinate(
+                row, col
+            )
             # check that we didn't forget to set UserRole on an editable field
             assert user_role is not None, (row, col)
             self.tv.on_edited(idx, user_role, new_text)
+
         self.closeEditor.connect(on_closeEditor)
         self.commitData.connect(on_commitData)
 
@@ -497,8 +617,14 @@ class MyTreeView(QTreeView):
 
     filter_columns: Iterable[int]
 
-    def __init__(self, parent: 'ElectrumWindow', create_menu, *,
-                 stretch_column=None, editable_columns=None):
+    def __init__(
+        self,
+        parent: "ElectrumWindow",
+        create_menu,
+        *,
+        stretch_column=None,
+        editable_columns=None,
+    ):
         super().__init__(parent)
         self.parent = parent
         self.config = self.parent.config
@@ -565,7 +691,9 @@ class MyTreeView(QTreeView):
         if set_current:
             assert isinstance(set_current, QPersistentModelIndex)
             assert set_current.isValid()
-            self.selectionModel().select(QModelIndex(set_current), QItemSelectionModel.SelectCurrent)
+            self.selectionModel().select(
+                QModelIndex(set_current), QItemSelectionModel.SelectCurrent
+            )
 
     def update_headers(self, headers: Union[List[str], Dict[int, str]]):
         # headers is either a list of column names, or a dict: (col_idx->col_name)
@@ -575,13 +703,17 @@ class MyTreeView(QTreeView):
         self.original_model().setHorizontalHeaderLabels(col_names)
         self.header().setStretchLastSection(False)
         for col_idx in headers:
-            sm = QHeaderView.Stretch if col_idx == self.stretch_column else QHeaderView.ResizeToContents
+            sm = (
+                QHeaderView.Stretch
+                if col_idx == self.stretch_column
+                else QHeaderView.ResizeToContents
+            )
             self.header().setSectionResizeMode(col_idx, sm)
 
     def keyPressEvent(self, event):
         if self.itemDelegate().opened:
             return
-        if event.key() in [ Qt.Key_F2, Qt.Key_Return ]:
+        if event.key() in [Qt.Key_F2, Qt.Key_Return]:
             self.on_activated(self.selectionModel().currentIndex())
             return
         super().keyPressEvent(event)
@@ -602,7 +734,7 @@ class MyTreeView(QTreeView):
 
     def on_edited(self, idx: QModelIndex, user_role, text):
         self.parent.wallet.set_label(user_role, text)
-        self.parent.history_model.refresh('on_edited in MyTreeView')
+        self.parent.history_model.refresh("on_edited in MyTreeView")
         self.parent.update_completions()
 
     def should_hide(self, row):
@@ -655,7 +787,7 @@ class MyTreeView(QTreeView):
         for b in buttons:
             b.setVisible(False)
             hbox.addWidget(b)
-        hide_button = QPushButton('x')
+        hide_button = QPushButton("x")
         hide_button.setVisible(False)
         hide_button.pressed.connect(lambda: self.show_toolbar(False, config))
         self.toolbar_buttons = buttons + (hide_button,)
@@ -688,15 +820,18 @@ class MyTreeView(QTreeView):
             clipboard_data = item_col.data(self.ROLE_CLIPBOARD_DATA)
             if clipboard_data is None:
                 clipboard_data = item_col.text().strip()
-            cc.addAction(column_title,
-                         lambda text=clipboard_data, title=column_title:
-                         self.place_text_on_clipboard(text, title=title))
+            cc.addAction(
+                column_title,
+                lambda text=clipboard_data, title=column_title: self.place_text_on_clipboard(
+                    text, title=title
+                ),
+            )
         return cc
 
     def place_text_on_clipboard(self, text: str, *, title: str = None) -> None:
         self.parent.do_copy(text, title=title)
 
-    def showEvent(self, e: 'QShowEvent'):
+    def showEvent(self, e: "QShowEvent"):
         super().showEvent(e)
         if e.isAccepted() and self._pending_update:
             self._forced_update = True
@@ -732,7 +867,6 @@ class MySortModel(QSortFilterProxyModel):
 
 
 class ButtonsWidget(QWidget):
-
     def __init__(self):
         super(QWidget, self).__init__()
         self.buttons = []
@@ -749,9 +883,11 @@ class ButtonsWidget(QWidget):
     def addButton(self, icon_name, on_click, tooltip):
         button = QToolButton(self)
         button.setIcon(read_QIcon(icon_name))
-        button.setIconSize(QSize(25,25))
+        button.setIconSize(QSize(25, 25))
         button.setCursor(QCursor(Qt.PointingHandCursor))
-        button.setStyleSheet("QToolButton { border: none; hover {border: 1px} pressed {border: 1px} padding: 0px; }")
+        button.setStyleSheet(
+            "QToolButton { border: none; hover {border: 1px} pressed {border: 1px} padding: 0px; }"
+        )
         button.setVisible(True)
         button.setToolTip(tooltip)
         button.clicked.connect(on_click)
@@ -766,6 +902,7 @@ class ButtonsWidget(QWidget):
         self.app.clipboard().setText(self.text())
         QToolTip.showText(QCursor.pos(), _("Text copied to clipboard"), self)
 
+
 class ButtonsLineEdit(QLineEdit, ButtonsWidget):
     def __init__(self, text=None):
         QLineEdit.__init__(self, text)
@@ -775,6 +912,7 @@ class ButtonsLineEdit(QLineEdit, ButtonsWidget):
         o = QLineEdit.resizeEvent(self, e)
         self.resizeButtons()
         return o
+
 
 class ButtonsTextEdit(QPlainTextEdit, ButtonsWidget):
     def __init__(self, text=None):
@@ -802,8 +940,8 @@ class PasswordLineEdit(QLineEdit):
 
 
 class TaskThread(QThread):
-    '''Thread that runs background tasks.  Callbacks are guaranteed
-    to happen in the context of its parent.'''
+    """Thread that runs background tasks.  Callbacks are guaranteed
+    to happen in the context of its parent."""
 
     class Task(NamedTuple):
         task: Callable
@@ -876,7 +1014,7 @@ class ColorScheme:
     @staticmethod
     def has_dark_background(widget):
         brightness = sum(widget.palette().color(QPalette.Background).getRgb()[0:3])
-        return brightness < (255*3/2)
+        return brightness < (255 * 3 / 2)
 
     @staticmethod
     def update_from_widget(widget, force_dark=False):
@@ -927,14 +1065,19 @@ def import_meta_gui(electrum_window, title, importer, on_success):
     except FileImportFailed as e:
         electrum_window.show_critical(str(e))
     else:
-        electrum_window.show_message(_("Your {} were successfully imported").format(title))
+        electrum_window.show_message(
+            _("Your {} were successfully imported").format(title)
+        )
         on_success()
 
 
 def export_meta_gui(electrum_window, title, exporter):
     filter_ = "JSON (*.json);;All files (*)"
-    filename = electrum_window.getSaveFileName(_("Select file to save your {}").format(title),
-                                               'electrum_{}.json'.format(title), filter_)
+    filename = electrum_window.getSaveFileName(
+        _("Select file to save your {}").format(title),
+        "electrum_{}.json".format(title),
+        filter_,
+    )
     if not filename:
         return
     try:
@@ -942,17 +1085,19 @@ def export_meta_gui(electrum_window, title, exporter):
     except FileExportFailed as e:
         electrum_window.show_critical(str(e))
     else:
-        electrum_window.show_message(_("Your {0} were exported to '{1}'")
-                                     .format(title, str(filename)))
+        electrum_window.show_message(
+            _("Your {0} were exported to '{1}'").format(title, str(filename))
+        )
 
 
 def get_parent_main_window(
-        widget, *, allow_wizard: bool = False,
-) -> Union[None, 'ElectrumWindow', 'InstallWizard']:
+    widget, *, allow_wizard: bool = False,
+) -> Union[None, "ElectrumWindow", "InstallWizard"]:
     """Returns a reference to the ElectrumWindow this widget belongs to."""
+    from .installwizard import InstallWizard
     from .main_window import ElectrumWindow
     from .transaction_dialog import TxDialog
-    from .installwizard import InstallWizard
+
     for _ in range(100):
         if widget is None:
             return None
@@ -967,7 +1112,7 @@ def get_parent_main_window(
 
 
 def icon_path(icon_basename):
-    return resource_path('gui', 'icons', icon_basename)
+    return resource_path("gui", "icons", icon_basename)
 
 
 @lru_cache(maxsize=1000)
@@ -977,7 +1122,7 @@ def read_QIcon(icon_basename):
 
 def get_default_language():
     name = QLocale.system().name()
-    return name if name in languages else 'en_UK'
+    return name if name in languages else "en_UK"
 
 
 def char_width_in_lineedit() -> int:
@@ -987,12 +1132,12 @@ def char_width_in_lineedit() -> int:
 
 
 def webopen(url: str):
-    if sys.platform == 'linux' and os.environ.get('APPIMAGE'):
+    if sys.platform == "linux" and os.environ.get("APPIMAGE"):
         # When on Linux webbrowser.open can fail in AppImage because it can't find the correct libdbus.
         # We just fork the process and unset LD_LIBRARY_PATH before opening the URL.
         # See #5425
         if os.fork() == 0:
-            del os.environ['LD_LIBRARY_PATH']
+            del os.environ["LD_LIBRARY_PATH"]
             webbrowser.open(url)
             sys.exit(0)
     else:
@@ -1001,6 +1146,11 @@ def webopen(url: str):
 
 if __name__ == "__main__":
     app = QApplication([])
-    t = WaitingDialog(None, 'testing ...', lambda: [time.sleep(1)], lambda x: QMessageBox.information(None, 'done', "done"))
+    t = WaitingDialog(
+        None,
+        "testing ...",
+        lambda: [time.sleep(1)],
+        lambda x: QMessageBox.information(None, "done", "done"),
+    )
     t.start()
     app.exec_()

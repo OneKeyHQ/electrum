@@ -2,22 +2,24 @@ import asyncio
 import binascii
 from typing import TYPE_CHECKING
 
-from kivy.lang import Builder
-from kivy.factory import Factory
-from kivy.uix.popup import Popup
 from kivy.clock import Clock
+from kivy.factory import Factory
+from kivy.lang import Builder
+from kivy.uix.popup import Popup
 
-from electrum.util import bh2u
-from electrum.lnutil import LOCAL, REMOTE, format_short_channel_id
-from electrum.lnchannel import AbstractChannel, Channel
 from electrum.gui.kivy.i18n import _
+from electrum.lnchannel import AbstractChannel, Channel
+from electrum.lnutil import LOCAL, REMOTE, format_short_channel_id
+from electrum.util import bh2u
+
 from .question import Question
 
 if TYPE_CHECKING:
     from ...main_window import ElectrumWindow
 
 
-Builder.load_string(r'''
+Builder.load_string(
+    r"""
 <LightningChannelItem@CardItem>
     details: {}
     active: False
@@ -286,36 +288,40 @@ Builder.load_string(r'''
                 height: '48dp'
                 text: _('Delete')
                 on_release: root.remove_backup()
-''')
+"""
+)
 
 
 class ChannelBackupPopup(Popup):
-
-    def __init__(self, chan: AbstractChannel, app: 'ElectrumWindow', **kwargs):
-        super(ChannelBackupPopup,self).__init__(**kwargs)
+    def __init__(self, chan: AbstractChannel, app: "ElectrumWindow", **kwargs):
+        super(ChannelBackupPopup, self).__init__(**kwargs)
         self.chan = chan
         self.app = app
         self.short_id = format_short_channel_id(chan.short_channel_id)
         self.state = chan.get_state_for_GUI()
-        self.title = _('Channel Backup')
+        self.title = _("Channel Backup")
 
     def request_force_close(self):
-        msg = _('Request force close?')
+        msg = _("Request force close?")
         Question(msg, self._request_force_close).open()
 
     def _request_force_close(self, b):
         if not b:
             return
         loop = self.app.wallet.network.asyncio_loop
-        coro = asyncio.run_coroutine_threadsafe(self.app.wallet.lnbackups.request_force_close(self.chan.channel_id), loop)
+        coro = asyncio.run_coroutine_threadsafe(
+            self.app.wallet.lnbackups.request_force_close(self.chan.channel_id), loop
+        )
         try:
             coro.result(5)
-            self.app.show_info(_('Channel closed'))
+            self.app.show_info(_("Channel closed"))
         except Exception as e:
-            self.app.show_info(_('Could not close channel: ') + repr(e)) # repr because str(Exception()) == ''
+            self.app.show_info(
+                _("Could not close channel: ") + repr(e)
+            )  # repr because str(Exception()) == ''
 
     def remove_backup(self):
-        msg = _('Delete backup?')
+        msg = _("Delete backup?")
         Question(msg, self._remove_backup).open()
 
     def _remove_backup(self, b):
@@ -324,15 +330,15 @@ class ChannelBackupPopup(Popup):
         self.app.wallet.lnbackups.remove_channel_backup(self.chan.channel_id)
         self.dismiss()
 
-class ChannelDetailsPopup(Popup):
 
-    def __init__(self, chan: Channel, app: 'ElectrumWindow', **kwargs):
-        super(ChannelDetailsPopup,self).__init__(**kwargs)
+class ChannelDetailsPopup(Popup):
+    def __init__(self, chan: Channel, app: "ElectrumWindow", **kwargs):
+        super(ChannelDetailsPopup, self).__init__(**kwargs)
         self.is_closed = chan.is_closed()
         self.is_redeemed = chan.is_redeemed()
         self.app = app
         self.chan = chan
-        self.title = _('Channel details')
+        self.title = _("Channel details")
         self.node_id = bh2u(chan.node_id)
         self.channel_id = bh2u(chan.channel_id)
         self.funding_txid = chan.funding_outpoint.txid
@@ -343,31 +349,41 @@ class ChannelDetailsPopup(Popup):
         self.remote_ctn = chan.get_latest_ctn(REMOTE)
         self.local_csv = chan.config[LOCAL].to_self_delay
         self.remote_csv = chan.config[REMOTE].to_self_delay
-        self.initiator = 'Local' if chan.constraints.is_initiator else 'Remote'
+        self.initiator = "Local" if chan.constraints.is_initiator else "Remote"
         self.feerate = chan.get_latest_feerate(LOCAL)
-        self.can_send = self.app.format_amount_and_units(chan.available_to_spend(LOCAL) // 1000)
-        self.can_receive = self.app.format_amount_and_units(chan.available_to_spend(REMOTE) // 1000)
+        self.can_send = self.app.format_amount_and_units(
+            chan.available_to_spend(LOCAL) // 1000
+        )
+        self.can_receive = self.app.format_amount_and_units(
+            chan.available_to_spend(REMOTE) // 1000
+        )
         self.is_open = chan.is_open()
         closed = chan.get_closing_height()
         if closed:
             self.closing_txid, closing_height, closing_timestamp = closed
 
     def close(self):
-        Question(_('Close channel?'), self._close).open()
+        Question(_("Close channel?"), self._close).open()
 
     def _close(self, b):
         if not b:
             return
         loop = self.app.wallet.network.asyncio_loop
-        coro = asyncio.run_coroutine_threadsafe(self.app.wallet.lnworker.close_channel(self.chan.channel_id), loop)
+        coro = asyncio.run_coroutine_threadsafe(
+            self.app.wallet.lnworker.close_channel(self.chan.channel_id), loop
+        )
         try:
             coro.result(5)
-            self.app.show_info(_('Channel closed'))
+            self.app.show_info(_("Channel closed"))
         except Exception as e:
-            self.app.show_info(_('Could not close channel: ') + repr(e)) # repr because str(Exception()) == ''
+            self.app.show_info(
+                _("Could not close channel: ") + repr(e)
+            )  # repr because str(Exception()) == ''
 
     def remove_channel(self):
-        msg = _('Are you sure you want to delete this channel? This will purge associated transactions from your wallet history.')
+        msg = _(
+            "Are you sure you want to delete this channel? This will purge associated transactions from your wallet history."
+        )
         Question(msg, self._remove_channel).open()
 
     def _remove_channel(self, b):
@@ -380,34 +396,55 @@ class ChannelDetailsPopup(Popup):
     def export_backup(self):
         text = self.app.wallet.lnworker.export_channel_backup(self.chan.channel_id)
         # TODO: some messages are duplicated between Kivy and Qt.
-        help_text = ' '.join([
-            _("Channel backups can be imported in another instance of the same wallet, by scanning this QR code."),
-            _("Please note that channel backups cannot be used to restore your channels."),
-            _("If you lose your wallet file, the only thing you can do with a backup is to request your channel to be closed, so that your funds will be sent on-chain."),
-        ])
-        self.app.qr_dialog(_("Channel Backup " + self.chan.short_id_for_GUI()), text, help_text=help_text)
+        help_text = " ".join(
+            [
+                _(
+                    "Channel backups can be imported in another instance of the same wallet, by scanning this QR code."
+                ),
+                _(
+                    "Please note that channel backups cannot be used to restore your channels."
+                ),
+                _(
+                    "If you lose your wallet file, the only thing you can do with a backup is to request your channel to be closed, so that your funds will be sent on-chain."
+                ),
+            ]
+        )
+        self.app.qr_dialog(
+            _("Channel Backup " + self.chan.short_id_for_GUI()),
+            text,
+            help_text=help_text,
+        )
 
     def force_close(self):
-        Question(_('Force-close channel?'), self._force_close).open()
+        Question(_("Force-close channel?"), self._force_close).open()
 
     def _force_close(self, b):
         if not b:
             return
         if self.chan.is_closed():
-            self.app.show_error(_('Channel already closed'))
+            self.app.show_error(_("Channel already closed"))
             return
         loop = self.app.wallet.network.asyncio_loop
-        coro = asyncio.run_coroutine_threadsafe(self.app.wallet.lnworker.force_close_channel(self.chan.channel_id), loop)
+        coro = asyncio.run_coroutine_threadsafe(
+            self.app.wallet.lnworker.force_close_channel(self.chan.channel_id), loop
+        )
         try:
             coro.result(1)
-            self.app.show_info(_('Channel closed, you may need to wait at least {} blocks, because of CSV delays'.format(self.chan.config[REMOTE].to_self_delay)))
+            self.app.show_info(
+                _(
+                    "Channel closed, you may need to wait at least {} blocks, because of CSV delays".format(
+                        self.chan.config[REMOTE].to_self_delay
+                    )
+                )
+            )
         except Exception as e:
-            self.app.show_info(_('Could not force close channel: ') + repr(e)) # repr because str(Exception()) == ''
+            self.app.show_info(
+                _("Could not force close channel: ") + repr(e)
+            )  # repr because str(Exception()) == ''
 
 
 class LightningChannelsDialog(Factory.Popup):
-
-    def __init__(self, app: 'ElectrumWindow'):
+    def __init__(self, app: "ElectrumWindow"):
         super(LightningChannelsDialog, self).__init__()
         self.clocks = []
         self.app = app
@@ -425,18 +462,22 @@ class LightningChannelsDialog(Factory.Popup):
     def format_fields(self, chan):
         labels = {}
         for subject in (REMOTE, LOCAL):
-            bal_minus_htlcs = chan.balance_minus_outgoing_htlcs(subject)//1000
+            bal_minus_htlcs = chan.balance_minus_outgoing_htlcs(subject) // 1000
             label = self.app.format_amount(bal_minus_htlcs)
             other = subject.inverted()
-            bal_other = chan.balance(other)//1000
-            bal_minus_htlcs_other = chan.balance_minus_outgoing_htlcs(other)//1000
+            bal_other = chan.balance(other) // 1000
+            bal_minus_htlcs_other = chan.balance_minus_outgoing_htlcs(other) // 1000
             if bal_other != bal_minus_htlcs_other:
-                label += ' (+' + self.app.format_amount(bal_other - bal_minus_htlcs_other) + ')'
+                label += (
+                    " (+"
+                    + self.app.format_amount(bal_other - bal_minus_htlcs_other)
+                    + ")"
+                )
             labels[subject] = label
         closed = chan.is_closed()
         return [
-            'n/a' if closed else labels[LOCAL],
-            'n/a' if closed else labels[REMOTE],
+            "n/a" if closed else labels[LOCAL],
+            "n/a" if closed else labels[REMOTE],
         ]
 
     def update_item(self, item):
@@ -444,8 +485,8 @@ class LightningChannelsDialog(Factory.Popup):
         item.status = chan.get_state_for_GUI()
         item.short_channel_id = chan.short_id_for_GUI()
         l, r = self.format_fields(chan)
-        item.local_balance = _('Local') + ':' + l
-        item.remote_balance = _('Remote') + ': ' + r
+        item.local_balance = _("Local") + ":" + l
+        item.remote_balance = _("Remote") + ": " + r
         self.update_can_send()
 
     def update(self):
@@ -470,8 +511,10 @@ class LightningChannelsDialog(Factory.Popup):
     def update_can_send(self):
         lnworker = self.app.wallet.lnworker
         if not lnworker:
-            self.can_send = 'n/a'
-            self.can_receive = 'n/a'
+            self.can_send = "n/a"
+            self.can_receive = "n/a"
             return
         self.can_send = self.app.format_amount_and_units(lnworker.num_sats_can_send())
-        self.can_receive = self.app.format_amount_and_units(lnworker.num_sats_can_receive())
+        self.can_receive = self.app.format_amount_and_units(
+            lnworker.num_sats_can_receive()
+        )

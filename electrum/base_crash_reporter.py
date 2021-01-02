@@ -22,16 +22,16 @@
 import asyncio
 import json
 import locale
-import traceback
+import os
 import subprocess
 import sys
-import os
+import traceback
 
-from .version import ELECTRUM_VERSION
 from . import constants
 from .i18n import _
+from .logging import Logger, describe_os_version
 from .util import make_aiohttp_session
-from .logging import describe_os_version, Logger
+from .version import ELECTRUM_VERSION
 
 
 class BaseCrashReporter(Logger):
@@ -51,11 +51,15 @@ class BaseCrashReporter(Logger):
   <li>Locale: {locale}</li>
 </ul>
     """
-    CRASH_MESSAGE = _('Something went wrong while executing Electrum.')
-    CRASH_TITLE = _('Sorry!')
-    REQUEST_HELP_MESSAGE = _('To help us diagnose and fix the problem, you can send us a bug report that contains '
-                             'useful debug information:')
-    DESCRIBE_ERROR_MESSAGE = _("Please briefly describe what led to the error (optional):")
+    CRASH_MESSAGE = _("Something went wrong while executing Electrum.")
+    CRASH_TITLE = _("Sorry!")
+    REQUEST_HELP_MESSAGE = _(
+        "To help us diagnose and fix the problem, you can send us a bug report that contains "
+        "useful debug information:"
+    )
+    DESCRIBE_ERROR_MESSAGE = _(
+        "Please briefly describe what led to the error (optional):"
+    )
     ASK_CONFIRM_SEND = _("Do you want to send this report?")
 
     def __init__(self, exctype, value, tb):
@@ -63,13 +67,18 @@ class BaseCrashReporter(Logger):
         self.exc_args = (exctype, value, tb)
 
     def send_report(self, asyncio_loop, proxy, endpoint="/crash", *, timeout=None):
-        if constants.net.GENESIS[-4:] not in ["4943", "e26f"] and ".electrum.org" in BaseCrashReporter.report_server:
+        if (
+            constants.net.GENESIS[-4:] not in ["4943", "e26f"]
+            and ".electrum.org" in BaseCrashReporter.report_server
+        ):
             # Gah! Some kind of altcoin wants to send us crash reports.
             raise Exception(_("Missing report URL."))
         report = self.get_traceback_info()
         report.update(self.get_additional_info())
         report = json.dumps(report)
-        coro = self.do_post(proxy, BaseCrashReporter.report_server + endpoint, data=report)
+        coro = self.do_post(
+            proxy, BaseCrashReporter.report_server + endpoint, data=report
+        )
         response = asyncio.run_coroutine_threadsafe(coro, asyncio_loop).result(timeout)
         return response
 
@@ -85,13 +94,9 @@ class BaseCrashReporter(Logger):
         id = {
             "file": stack[-1].filename,
             "name": stack[-1].name,
-            "type": self.exc_args[0].__name__
+            "type": self.exc_args[0].__name__,
         }
-        return {
-            "exc_string": exc_string,
-            "stack": readable_trace,
-            "id": id
-        }
+        return {"exc_string": exc_string, "stack": readable_trace, "id": id}
 
     def get_additional_info(self):
         args = {
@@ -100,7 +105,7 @@ class BaseCrashReporter(Logger):
             "os": describe_os_version(),
             "wallet_type": "unknown",
             "locale": locale.getdefaultlocale()[0] or "?",
-            "description": self.get_user_description()
+            "description": self.get_user_description(),
         }
         try:
             args["wallet_type"] = self.get_wallet_type()
@@ -118,7 +123,8 @@ class BaseCrashReporter(Logger):
     def get_git_version():
         dir = os.path.dirname(os.path.realpath(sys.argv[0]))
         version = subprocess.check_output(
-            ['git', 'describe', '--always', '--dirty'], cwd=dir)
+            ["git", "describe", "--always", "--dirty"], cwd=dir
+        )
         return str(version, "utf8").strip()
 
     def _get_traceback_str(self) -> str:
@@ -149,5 +155,6 @@ def trigger_crash():
         raise TestingException("triggered crash for testing purposes")
 
     import threading
+
     t = threading.Thread(target=crash_test)
     t.start()

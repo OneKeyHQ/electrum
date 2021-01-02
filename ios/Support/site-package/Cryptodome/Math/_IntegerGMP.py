@@ -30,12 +30,17 @@
 
 import sys
 
-from Cryptodome.Util.py3compat import tobytes, is_native_int
-
-from Cryptodome.Util._raw_api import (backend, load_lib,
-                                  get_raw_buffer, get_c_string,
-                                  null_pointer, create_string_buffer,
-                                  c_ulong, c_size_t)
+from Cryptodome.Util._raw_api import (
+    backend,
+    c_size_t,
+    c_ulong,
+    create_string_buffer,
+    get_c_string,
+    get_raw_buffer,
+    load_lib,
+    null_pointer,
+)
+from Cryptodome.Util.py3compat import is_native_int, tobytes
 
 from ._IntegerBase import IntegerBase
 
@@ -105,15 +110,14 @@ if hasattr(lib, "__mpir_version"):
 # a new MPZ structure, we need to break the abstraction
 # and know exactly what ffi backend we have
 if implementation["api"] == "ctypes":
-    from ctypes import Structure, c_int, c_void_p, byref
+    from ctypes import Structure, byref, c_int, c_void_p
 
     class _MPZ(Structure):
-        _fields_ = [('_mp_alloc', c_int),
-                    ('_mp_size', c_int),
-                    ('_mp_d', c_void_p)]
+        _fields_ = [("_mp_alloc", c_int), ("_mp_size", c_int), ("_mp_d", c_void_p)]
 
     def new_mpz():
         return byref(_MPZ())
+
 
 else:
     # We are using CFFI
@@ -125,7 +129,6 @@ else:
 
 # Lazy creation of GMP methods
 class _GMP(object):
-
     def __getattr__(self, name):
         if name.startswith("mpz_"):
             func_name = "__gmpz_" + name[4:]
@@ -157,7 +160,7 @@ class IntegerGMP(IntegerBase):
             raise ValueError("A floating point type is not a natural number")
 
         self._initialized = True
-        
+
         if is_native_int(value):
             _gmp.mpz_init(self._mpz_p)
             result = _gmp.gmp_sscanf(tobytes(str(value)), b"%Zd", self._mpz_p)
@@ -216,20 +219,22 @@ class IntegerGMP(IntegerBase):
 
         buf_len = (_gmp.mpz_sizeinbase(self._mpz_p, 2) + 7) // 8
         if buf_len > block_size > 0:
-            raise ValueError("Number is too big to convert to byte string"
-                             "of prescribed length")
+            raise ValueError(
+                "Number is too big to convert to byte string" "of prescribed length"
+            )
         buf = create_string_buffer(buf_len)
 
         _gmp.mpz_export(
-                buf,
-                null_pointer,  # Ignore countp
-                1,             # Big endian
-                c_size_t(1),   # Each word is 1 byte long
-                0,             # Endianess within a word - not relevant
-                c_size_t(0),   # No nails
-                self._mpz_p)
+            buf,
+            null_pointer,  # Ignore countp
+            1,  # Big endian
+            c_size_t(1),  # Each word is 1 byte long
+            0,  # Endianess within a word - not relevant
+            c_size_t(0),  # No nails
+            self._mpz_p,
+        )
 
-        return b'\x00' * max(0, block_size - buf_len) + get_raw_buffer(buf)
+        return b"\x00" * max(0, block_size - buf_len) + get_raw_buffer(buf)
 
     @staticmethod
     def from_bytes(byte_string):
@@ -244,13 +249,14 @@ class IntegerGMP(IntegerBase):
         """
         result = IntegerGMP(0)
         _gmp.mpz_import(
-                        result._mpz_p,
-                        c_size_t(len(byte_string)),  # Amount of words to read
-                        1,            # Big endian
-                        c_size_t(1),  # Each word is 1 byte long
-                        0,            # Endianess within a word - not relevant
-                        c_size_t(0),  # No nails
-                        byte_string)
+            result._mpz_p,
+            c_size_t(len(byte_string)),  # Amount of words to read
+            1,  # Big endian
+            c_size_t(1),  # Each word is 1 byte long
+            0,  # Endianess within a word - not relevant
+            c_size_t(0),  # No nails
+            byte_string,
+        )
         return result
 
     # Relations
@@ -283,6 +289,7 @@ class IntegerGMP(IntegerBase):
 
     def __nonzero__(self):
         return _gmp.mpz_cmp(self._mpz_p, self._zero_mpz_p) != 0
+
     __bool__ = __nonzero__
 
     def is_negative(self):
@@ -296,9 +303,7 @@ class IntegerGMP(IntegerBase):
                 term = IntegerGMP(term)
             except NotImplementedError:
                 return NotImplemented
-        _gmp.mpz_add(result._mpz_p,
-                     self._mpz_p,
-                     term._mpz_p)
+        _gmp.mpz_add(result._mpz_p, self._mpz_p, term._mpz_p)
         return result
 
     def __sub__(self, term):
@@ -308,9 +313,7 @@ class IntegerGMP(IntegerBase):
                 term = IntegerGMP(term)
             except NotImplementedError:
                 return NotImplemented
-        _gmp.mpz_sub(result._mpz_p,
-                     self._mpz_p,
-                     term._mpz_p)
+        _gmp.mpz_sub(result._mpz_p, self._mpz_p, term._mpz_p)
         return result
 
     def __mul__(self, term):
@@ -320,36 +323,28 @@ class IntegerGMP(IntegerBase):
                 term = IntegerGMP(term)
             except NotImplementedError:
                 return NotImplemented
-        _gmp.mpz_mul(result._mpz_p,
-                     self._mpz_p,
-                     term._mpz_p)
+        _gmp.mpz_mul(result._mpz_p, self._mpz_p, term._mpz_p)
         return result
 
     def __floordiv__(self, divisor):
         if not isinstance(divisor, IntegerGMP):
             divisor = IntegerGMP(divisor)
-        if _gmp.mpz_cmp(divisor._mpz_p,
-                        self._zero_mpz_p) == 0:
+        if _gmp.mpz_cmp(divisor._mpz_p, self._zero_mpz_p) == 0:
             raise ZeroDivisionError("Division by zero")
         result = IntegerGMP(0)
-        _gmp.mpz_fdiv_q(result._mpz_p,
-                        self._mpz_p,
-                        divisor._mpz_p)
+        _gmp.mpz_fdiv_q(result._mpz_p, self._mpz_p, divisor._mpz_p)
         return result
 
     def __mod__(self, divisor):
         if not isinstance(divisor, IntegerGMP):
             divisor = IntegerGMP(divisor)
-        comp = _gmp.mpz_cmp(divisor._mpz_p,
-                            self._zero_mpz_p)
+        comp = _gmp.mpz_cmp(divisor._mpz_p, self._zero_mpz_p)
         if comp == 0:
             raise ZeroDivisionError("Division by zero")
         if comp < 0:
             raise ValueError("Modulus must be positive")
         result = IntegerGMP(0)
-        _gmp.mpz_mod(result._mpz_p,
-                     self._mpz_p,
-                     divisor._mpz_p)
+        _gmp.mpz_mod(result._mpz_p, self._mpz_p, divisor._mpz_p)
         return result
 
     def inplace_pow(self, exponent, modulus=None):
@@ -361,10 +356,7 @@ class IntegerGMP(IntegerBase):
             # Normal exponentiation
             if exponent > 256:
                 raise ValueError("Exponent is too big")
-            _gmp.mpz_pow_ui(self._mpz_p,
-                            self._mpz_p,   # Base
-                            c_ulong(int(exponent))
-                            )
+            _gmp.mpz_pow_ui(self._mpz_p, self._mpz_p, c_ulong(int(exponent)))  # Base
         else:
             # Modular exponentiation
             if not isinstance(modulus, IntegerGMP):
@@ -377,18 +369,14 @@ class IntegerGMP(IntegerBase):
                 if exponent < 0:
                     raise ValueError("Exponent must not be negative")
                 if exponent < 65536:
-                    _gmp.mpz_powm_ui(self._mpz_p,
-                                     self._mpz_p,
-                                     c_ulong(exponent),
-                                     modulus._mpz_p)
+                    _gmp.mpz_powm_ui(
+                        self._mpz_p, self._mpz_p, c_ulong(exponent), modulus._mpz_p
+                    )
                     return self
                 exponent = IntegerGMP(exponent)
             elif exponent.is_negative():
                 raise ValueError("Exponent must not be negative")
-            _gmp.mpz_powm(self._mpz_p,
-                          self._mpz_p,
-                          exponent._mpz_p,
-                          modulus._mpz_p)
+            _gmp.mpz_powm(self._mpz_p, self._mpz_p, exponent._mpz_p, modulus._mpz_p)
         return self
 
     def __pow__(self, exponent, modulus=None):
@@ -408,8 +396,7 @@ class IntegerGMP(IntegerBase):
             if self < 0:
                 raise ValueError("Square root of negative value")
             result = IntegerGMP(0)
-            _gmp.mpz_sqrt(result._mpz_p,
-                          self._mpz_p)
+            _gmp.mpz_sqrt(result._mpz_p, self._mpz_p)
         else:
             if modulus <= 0:
                 raise ValueError("Modulus must be positive")
@@ -421,70 +408,49 @@ class IntegerGMP(IntegerBase):
     def __iadd__(self, term):
         if is_native_int(term):
             if 0 <= term < 65536:
-                _gmp.mpz_add_ui(self._mpz_p,
-                                self._mpz_p,
-                                c_ulong(term))
+                _gmp.mpz_add_ui(self._mpz_p, self._mpz_p, c_ulong(term))
                 return self
             if -65535 < term < 0:
-                _gmp.mpz_sub_ui(self._mpz_p,
-                                self._mpz_p,
-                                c_ulong(-term))
+                _gmp.mpz_sub_ui(self._mpz_p, self._mpz_p, c_ulong(-term))
                 return self
             term = IntegerGMP(term)
-        _gmp.mpz_add(self._mpz_p,
-                     self._mpz_p,
-                     term._mpz_p)
+        _gmp.mpz_add(self._mpz_p, self._mpz_p, term._mpz_p)
         return self
 
     def __isub__(self, term):
         if is_native_int(term):
             if 0 <= term < 65536:
-                _gmp.mpz_sub_ui(self._mpz_p,
-                                self._mpz_p,
-                                c_ulong(term))
+                _gmp.mpz_sub_ui(self._mpz_p, self._mpz_p, c_ulong(term))
                 return self
             if -65535 < term < 0:
-                _gmp.mpz_add_ui(self._mpz_p,
-                                self._mpz_p,
-                                c_ulong(-term))
+                _gmp.mpz_add_ui(self._mpz_p, self._mpz_p, c_ulong(-term))
                 return self
             term = IntegerGMP(term)
-        _gmp.mpz_sub(self._mpz_p,
-                     self._mpz_p,
-                     term._mpz_p)
+        _gmp.mpz_sub(self._mpz_p, self._mpz_p, term._mpz_p)
         return self
 
     def __imul__(self, term):
         if is_native_int(term):
             if 0 <= term < 65536:
-                _gmp.mpz_mul_ui(self._mpz_p,
-                                self._mpz_p,
-                                c_ulong(term))
+                _gmp.mpz_mul_ui(self._mpz_p, self._mpz_p, c_ulong(term))
                 return self
             if -65535 < term < 0:
-                _gmp.mpz_mul_ui(self._mpz_p,
-                                self._mpz_p,
-                                c_ulong(-term))
+                _gmp.mpz_mul_ui(self._mpz_p, self._mpz_p, c_ulong(-term))
                 _gmp.mpz_neg(self._mpz_p, self._mpz_p)
                 return self
             term = IntegerGMP(term)
-        _gmp.mpz_mul(self._mpz_p,
-                     self._mpz_p,
-                     term._mpz_p)
+        _gmp.mpz_mul(self._mpz_p, self._mpz_p, term._mpz_p)
         return self
 
     def __imod__(self, divisor):
         if not isinstance(divisor, IntegerGMP):
             divisor = IntegerGMP(divisor)
-        comp = _gmp.mpz_cmp(divisor._mpz_p,
-                            divisor._zero_mpz_p)
+        comp = _gmp.mpz_cmp(divisor._mpz_p, divisor._zero_mpz_p)
         if comp == 0:
             raise ZeroDivisionError("Division by zero")
         if comp < 0:
             raise ValueError("Modulus must be positive")
-        _gmp.mpz_mod(self._mpz_p,
-                     self._mpz_p,
-                     divisor._mpz_p)
+        _gmp.mpz_mod(self._mpz_p, self._mpz_p, divisor._mpz_p)
         return self
 
     # Boolean/bit operations
@@ -492,18 +458,14 @@ class IntegerGMP(IntegerBase):
         result = IntegerGMP(0)
         if not isinstance(term, IntegerGMP):
             term = IntegerGMP(term)
-        _gmp.mpz_and(result._mpz_p,
-                     self._mpz_p,
-                     term._mpz_p)
+        _gmp.mpz_and(result._mpz_p, self._mpz_p, term._mpz_p)
         return result
 
     def __or__(self, term):
         result = IntegerGMP(0)
         if not isinstance(term, IntegerGMP):
             term = IntegerGMP(term)
-        _gmp.mpz_ior(result._mpz_p,
-                     self._mpz_p,
-                     term._mpz_p)
+        _gmp.mpz_ior(result._mpz_p, self._mpz_p, term._mpz_p)
         return result
 
     def __rshift__(self, pos):
@@ -515,9 +477,7 @@ class IntegerGMP(IntegerBase):
                 return -1
             else:
                 return 0
-        _gmp.mpz_tdiv_q_2exp(result._mpz_p,
-                             self._mpz_p,
-                             c_ulong(int(pos)))
+        _gmp.mpz_tdiv_q_2exp(result._mpz_p, self._mpz_p, c_ulong(int(pos)))
         return result
 
     def __irshift__(self, pos):
@@ -528,26 +488,20 @@ class IntegerGMP(IntegerBase):
                 return -1
             else:
                 return 0
-        _gmp.mpz_tdiv_q_2exp(self._mpz_p,
-                             self._mpz_p,
-                             c_ulong(int(pos)))
+        _gmp.mpz_tdiv_q_2exp(self._mpz_p, self._mpz_p, c_ulong(int(pos)))
         return self
 
     def __lshift__(self, pos):
         result = IntegerGMP(0)
         if not 0 <= pos < 65536:
             raise ValueError("Incorrect shift count")
-        _gmp.mpz_mul_2exp(result._mpz_p,
-                          self._mpz_p,
-                          c_ulong(int(pos)))
+        _gmp.mpz_mul_2exp(result._mpz_p, self._mpz_p, c_ulong(int(pos)))
         return result
 
     def __ilshift__(self, pos):
         if not 0 <= pos < 65536:
             raise ValueError("Incorrect shift count")
-        _gmp.mpz_mul_2exp(self._mpz_p,
-                          self._mpz_p,
-                          c_ulong(int(pos)))
+        _gmp.mpz_mul_2exp(self._mpz_p, self._mpz_p, c_ulong(int(pos)))
         return self
 
     def get_bit(self, n):
@@ -560,8 +514,7 @@ class IntegerGMP(IntegerBase):
             raise ValueError("negative bit count")
         if n > 65536:
             return 0
-        return bool(_gmp.mpz_tstbit(self._mpz_p,
-                                    c_ulong(int(n))))
+        return bool(_gmp.mpz_tstbit(self._mpz_p, c_ulong(int(n))))
 
     # Extra
     def is_odd(self):
@@ -589,13 +542,11 @@ class IntegerGMP(IntegerBase):
 
         if is_native_int(small_prime):
             if 0 < small_prime < 65536:
-                if _gmp.mpz_divisible_ui_p(self._mpz_p,
-                                           c_ulong(small_prime)):
+                if _gmp.mpz_divisible_ui_p(self._mpz_p, c_ulong(small_prime)):
                     raise ValueError("The value is composite")
                 return
             small_prime = IntegerGMP(small_prime)
-        if _gmp.mpz_divisible_p(self._mpz_p,
-                                small_prime._mpz_p):
+        if _gmp.mpz_divisible_p(self._mpz_p, small_prime._mpz_p):
             raise ValueError("The value is composite")
 
     def multiply_accumulate(self, a, b):
@@ -605,19 +556,13 @@ class IntegerGMP(IntegerBase):
             a = IntegerGMP(a)
         if is_native_int(b):
             if 0 < b < 65536:
-                _gmp.mpz_addmul_ui(self._mpz_p,
-                                   a._mpz_p,
-                                   c_ulong(b))
+                _gmp.mpz_addmul_ui(self._mpz_p, a._mpz_p, c_ulong(b))
                 return self
             if -65535 < b < 0:
-                _gmp.mpz_submul_ui(self._mpz_p,
-                                   a._mpz_p,
-                                   c_ulong(-b))
+                _gmp.mpz_submul_ui(self._mpz_p, a._mpz_p, c_ulong(-b))
                 return self
             b = IntegerGMP(b)
-        _gmp.mpz_addmul(self._mpz_p,
-                        a._mpz_p,
-                        b._mpz_p)
+        _gmp.mpz_addmul(self._mpz_p, a._mpz_p, b._mpz_p)
         return self
 
     def set(self, source):
@@ -625,8 +570,7 @@ class IntegerGMP(IntegerBase):
 
         if not isinstance(source, IntegerGMP):
             source = IntegerGMP(source)
-        _gmp.mpz_set(self._mpz_p,
-                     source._mpz_p)
+        _gmp.mpz_set(self._mpz_p, source._mpz_p)
         return self
 
     def inplace_inverse(self, modulus):
@@ -639,16 +583,13 @@ class IntegerGMP(IntegerBase):
         if not isinstance(modulus, IntegerGMP):
             modulus = IntegerGMP(modulus)
 
-        comp = _gmp.mpz_cmp(modulus._mpz_p,
-                            self._zero_mpz_p)
+        comp = _gmp.mpz_cmp(modulus._mpz_p, self._zero_mpz_p)
         if comp == 0:
             raise ZeroDivisionError("Modulus cannot be zero")
         if comp < 0:
             raise ValueError("Modulus must be positive")
 
-        result = _gmp.mpz_invert(self._mpz_p,
-                                 self._mpz_p,
-                                 modulus._mpz_p)
+        result = _gmp.mpz_invert(self._mpz_p, self._mpz_p, modulus._mpz_p)
         if not result:
             raise ValueError("No inverse value can be computed")
         return self
@@ -665,9 +606,7 @@ class IntegerGMP(IntegerBase):
         result = IntegerGMP(0)
         if is_native_int(term):
             if 0 < term < 65535:
-                _gmp.mpz_gcd_ui(result._mpz_p,
-                                self._mpz_p,
-                                c_ulong(term))
+                _gmp.mpz_gcd_ui(result._mpz_p, self._mpz_p, c_ulong(term))
                 return result
             term = IntegerGMP(term)
         _gmp.mpz_gcd(result._mpz_p, self._mpz_p, term._mpz_p)

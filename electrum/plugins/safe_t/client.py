@@ -1,5 +1,7 @@
-from safetlib.client import proto, BaseClient, ProtocolMixin
+from safetlib.client import BaseClient, ProtocolMixin, proto
+
 from .clientbase import SafeTClientBase
+
 
 class SafeTClient(SafeTClientBase, ProtocolMixin, BaseClient):
     def __init__(self, transport, handler, plugin):

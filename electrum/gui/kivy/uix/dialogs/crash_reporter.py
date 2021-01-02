@@ -1,5 +1,5 @@
-import sys
 import json
+import sys
 
 from aiohttp.client_exceptions import ClientError
 from kivy import base, utils
@@ -10,13 +10,12 @@ from kivy.lang import Builder
 from kivy.uix.label import Label
 from kivy.utils import platform
 
-from electrum.gui.kivy.i18n import _
-
 from electrum.base_crash_reporter import BaseCrashReporter
+from electrum.gui.kivy.i18n import _
 from electrum.logging import Logger
 
-
-Builder.load_string('''
+Builder.load_string(
+    """
 <CrashReporter@Popup>
     BoxLayout:
         orientation: 'vertical'
@@ -79,7 +78,8 @@ Builder.load_string('''
             height: '48dp'
             size_hint: 1, None
             on_release: root.dismiss()
-''')
+"""
+)
 
 
 class CrashReporter(BaseCrashReporter, Factory.Popup):
@@ -110,9 +110,11 @@ class CrashReporter(BaseCrashReporter, Factory.Popup):
         details.open()
 
     def show_popup(self, title, content):
-        popup = Factory.Popup(title=title,
-                              content=Label(text=content, text_size=(Window.size[0] * 3/4, None)),
-                              size_hint=(3/4, 3/4))
+        popup = Factory.Popup(
+            title=title,
+            content=Label(text=content, text_size=(Window.size[0] * 3 / 4, None)),
+            size_hint=(3 / 4, 3 / 4),
+        )
         popup.open()
 
     def send_report(self):
@@ -120,33 +122,39 @@ class CrashReporter(BaseCrashReporter, Factory.Popup):
             loop = self.main_window.network.asyncio_loop
             proxy = self.main_window.network.proxy
             # FIXME network request in GUI thread...
-            response = json.loads(BaseCrashReporter.send_report(self, loop, proxy,
-                                                                "/crash.json", timeout=10))
+            response = json.loads(
+                BaseCrashReporter.send_report(
+                    self, loop, proxy, "/crash.json", timeout=10
+                )
+            )
         except (ValueError, ClientError):
-            #self.logger.debug("", exc_info=True)
-            self.show_popup(_('Unable to send report'), _("Please check your network connection."))
+            # self.logger.debug("", exc_info=True)
+            self.show_popup(
+                _("Unable to send report"), _("Please check your network connection.")
+            )
         else:
-            self.show_popup(_('Report sent'), response["text"])
+            self.show_popup(_("Report sent"), response["text"])
             if response["location"]:
                 self.open_url(response["location"])
         self.dismiss()
 
     def open_url(self, url):
-        if platform != 'android':
+        if platform != "android":
             return
         from jnius import autoclass, cast
+
         String = autoclass("java.lang.String")
         url = String(url)
-        PythonActivity = autoclass('org.kivy.android.PythonActivity')
+        PythonActivity = autoclass("org.kivy.android.PythonActivity")
         activity = PythonActivity.mActivity
-        Intent = autoclass('android.content.Intent')
-        Uri = autoclass('android.net.Uri')
+        Intent = autoclass("android.content.Intent")
+        Uri = autoclass("android.net.Uri")
         browserIntent = Intent()
         # This line crashes the app:
         # browserIntent.setAction(Intent.ACTION_VIEW)
         # Luckily we don't need it because the OS is smart enough to recognize the URL
         browserIntent.setData(Uri.parse(url))
-        currentActivity = cast('android.app.Activity', activity)
+        currentActivity = cast("android.app.Activity", activity)
         currentActivity.startActivity(browserIntent)
 
     def show_never(self):
@@ -173,7 +181,9 @@ class ExceptionHook(base.ExceptionHandler, Logger):
         base.ExceptionHandler.__init__(self)
         Logger.__init__(self)
         self.main_window = main_window
-        if not main_window.electrum_config.get(BaseCrashReporter.config_key, default=True):
+        if not main_window.electrum_config.get(
+            BaseCrashReporter.config_key, default=True
+        ):
             return
         # For exceptions in Kivy:
         base.ExceptionManager.add_handler(self)
@@ -182,9 +192,10 @@ class ExceptionHook(base.ExceptionHandler, Logger):
 
     def handle_exception(self, _inst):
         exc_info = sys.exc_info()
-        self.logger.error('exception caught by crash reporter', exc_info=exc_info)
+        self.logger.error("exception caught by crash reporter", exc_info=exc_info)
         # Check if this is an exception from within the exception handler:
         import traceback
+
         for item in traceback.extract_tb(exc_info[2]):
             if item.filename.endswith("crash_reporter.py"):
                 return

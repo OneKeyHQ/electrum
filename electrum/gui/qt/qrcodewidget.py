@@ -1,29 +1,31 @@
-import qrcode
-
-from PyQt5.QtGui import QColor, QPen
 import PyQt5.QtGui as QtGui
+import qrcode
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QColor, QPen
 from PyQt5.QtWidgets import (
-    QApplication, QVBoxLayout, QTextEdit, QHBoxLayout, QPushButton, QWidget,
+    QApplication,
     QFileDialog,
+    QHBoxLayout,
+    QPushButton,
+    QTextEdit,
+    QVBoxLayout,
+    QWidget,
 )
 
 from electrum.i18n import _
 
-from .util import WindowModalDialog, get_parent_main_window, WWLabel
+from .util import WindowModalDialog, WWLabel, get_parent_main_window
 
 
 class QRCodeWidget(QWidget):
-
-    def __init__(self, data = None, fixedSize=False):
+    def __init__(self, data=None, fixedSize=False):
         QWidget.__init__(self)
         self.data = None
         self.qr = None
-        self.fixedSize=fixedSize
+        self.fixedSize = fixedSize
         if fixedSize:
             self.setFixedSize(fixedSize, fixedSize)
         self.setData(data)
-
 
     def setData(self, data):
         if self.data != data:
@@ -37,12 +39,11 @@ class QRCodeWidget(QWidget):
             self.qr.add_data(self.data)
             if not self.fixedSize:
                 k = len(self.qr.get_matrix())
-                self.setMinimumSize(k*5,k*5)
+                self.setMinimumSize(k * 5, k * 5)
         else:
             self.qr = None
 
         self.update()
-
 
     def paintEvent(self, e):
         if not self.data:
@@ -71,10 +72,10 @@ class QRCodeWidget(QWidget):
 
         margin = 10
         framesize = min(r.width(), r.height())
-        boxsize = int( (framesize - 2*margin)/k )
-        size = k*boxsize
-        left = (framesize - size)/2
-        top = (framesize - size)/2
+        boxsize = int((framesize - 2 * margin) / k)
+        size = k * boxsize
+        left = (framesize - size) / 2
+        top = (framesize - size) / 2
         # Draw white background with margin
         qp.setBrush(white)
         qp.setPen(white)
@@ -85,23 +86,25 @@ class QRCodeWidget(QWidget):
         for r in range(k):
             for c in range(k):
                 if matrix[r][c]:
-                    qp.drawRect(int(left+c*boxsize), int(top+r*boxsize),
-                                boxsize - 1, boxsize - 1)
+                    qp.drawRect(
+                        int(left + c * boxsize),
+                        int(top + r * boxsize),
+                        boxsize - 1,
+                        boxsize - 1,
+                    )
         qp.end()
 
 
-
 class QRDialog(WindowModalDialog):
-
     def __init__(
-            self,
-            data,
-            parent=None,
-            title="",
-            show_text=False,
-            *,
-            help_text=None,
-            show_copy_text_btn=False,
+        self,
+        data,
+        parent=None,
+        title="",
+        show_text=False,
+        *,
+        help_text=None,
+        show_copy_text_btn=False,
     ):
         WindowModalDialog.__init__(self, parent, title)
 
@@ -119,13 +122,17 @@ class QRDialog(WindowModalDialog):
         def print_qr():
             main_window = get_parent_main_window(self)
             if main_window:
-                filename = main_window.getSaveFileName(_("Select where to save file"), "qrcode.png")
+                filename = main_window.getSaveFileName(
+                    _("Select where to save file"), "qrcode.png"
+                )
             else:
-                filename, __ = QFileDialog.getSaveFileName(self, _("Select where to save file"), "qrcode.png")
+                filename, __ = QFileDialog.getSaveFileName(
+                    self, _("Select where to save file"), "qrcode.png"
+                )
             if not filename:
                 return
             p = qrw.grab()  # FIXME also grabs neutral colored padding
-            p.save(filename, 'png')
+            p.save(filename, "png")
             self.show_message(_("QR code saved to file") + " " + filename)
 
         def copy_image_to_clipboard():

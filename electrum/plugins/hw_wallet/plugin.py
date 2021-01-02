@@ -24,31 +24,38 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import TYPE_CHECKING, Dict, List, Union, Tuple, Sequence, Optional, Type
 from functools import partial
+from typing import TYPE_CHECKING, Dict, List, Optional, Sequence, Tuple, Type, Union
 
-from electrum.plugin import BasePlugin, hook, Device, DeviceMgr, DeviceInfo
-from electrum.i18n import _
-from electrum.bitcoin import is_address, opcodes
-from electrum.util import bfh, versiontuple, UserFacingException
-from electrum.transaction import TxOutput, Transaction, PartialTransaction, PartialTxInput, PartialTxOutput
 from electrum.bip32 import BIP32Node
+from electrum.bitcoin import is_address, opcodes
+from electrum.i18n import _
+from electrum.keystore import Hardware_KeyStore, Xpub
+from electrum.plugin import BasePlugin, Device, DeviceInfo, DeviceMgr, hook
 from electrum.storage import get_derivation_used_for_hw_device_encryption
-from electrum.keystore import Xpub, Hardware_KeyStore
+from electrum.transaction import (
+    PartialTransaction,
+    PartialTxInput,
+    PartialTxOutput,
+    Transaction,
+    TxOutput,
+)
+from electrum.util import UserFacingException, bfh, versiontuple
 
 if TYPE_CHECKING:
     import threading
-    from electrum.wallet import Abstract_Wallet
+
     from electrum.base_wizard import BaseWizard
+    from electrum.wallet import Abstract_Wallet
 
 
 class HW_PluginBase(BasePlugin):
-    keystore_class: Type['Hardware_KeyStore']
+    keystore_class: Type["Hardware_KeyStore"]
     libraries_available: bool
 
     # define supported library versions:  minimum_library <= x < maximum_library
-    minimum_library = (0, )
-    maximum_library = (float('inf'), )
+    minimum_library = (0,)
+    maximum_library = (float("inf"),)
 
     def __init__(self, parent, config, name):
         BasePlugin.__init__(self, parent, config, name)
@@ -59,44 +66,54 @@ class HW_PluginBase(BasePlugin):
     def is_enabled(self):
         return True
 
-    def device_manager(self) -> 'DeviceMgr':
+    def device_manager(self) -> "DeviceMgr":
         return self.parent.device_manager
 
-    def create_device_from_hid_enumeration(self, d: dict, *, product_key) -> 'Device':
+    def create_device_from_hid_enumeration(self, d: dict, *, product_key) -> "Device":
         # Older versions of hid don't provide interface_number
-        interface_number = d.get('interface_number', -1)
-        usage_page = d['usage_page']
-        id_ = d['serial_number']
+        interface_number = d.get("interface_number", -1)
+        usage_page = d["usage_page"]
+        id_ = d["serial_number"]
         if len(id_) == 0:
-            id_ = str(d['path'])
+            id_ = str(d["path"])
         id_ += str(interface_number) + str(usage_page)
-        device = Device(path=d['path'],
-                        interface_number=interface_number,
-                        id_=id_,
-                        product_key=product_key,
-                        usage_page=usage_page,
-                        transport_ui_string='hid')
+        device = Device(
+            path=d["path"],
+            interface_number=interface_number,
+            id_=id_,
+            product_key=product_key,
+            usage_page=usage_page,
+            transport_ui_string="hid",
+        )
         return device
 
     @hook
-    def close_wallet(self, wallet: 'Abstract_Wallet'):
+    def close_wallet(self, wallet: "Abstract_Wallet"):
         for keystore in wallet.get_keystores():
             if isinstance(keystore, self.keystore_class):
                 self.device_manager().unpair_xpub(keystore.xpub)
                 if keystore.thread:
                     keystore.thread.stop()
 
-    def scan_and_create_client_for_device(self, *, device_id: str, wizard: 'BaseWizard') -> 'HardwareClientBase':
+    def scan_and_create_client_for_device(
+        self, *, device_id: str, wizard: "BaseWizard"
+    ) -> "HardwareClientBase":
         devmgr = self.device_manager()
         client = wizard.run_task_without_blocking_gui(
-            task=partial(devmgr.client_by_id, device_id))
+            task=partial(devmgr.client_by_id, device_id)
+        )
         if client is None:
-            raise UserFacingException(_('Failed to create a client for this device.') + '\n' +
-                                      _('Make sure it is in the correct state.'))
+            raise UserFacingException(
+                _("Failed to create a client for this device.")
+                + "\n"
+                + _("Make sure it is in the correct state.")
+            )
         client.handler = self.create_handler(wizard)
         return client
 
-    def setup_device(self, device_info: DeviceInfo, wizard: 'BaseWizard', purpose) -> 'HardwareClientBase':
+    def setup_device(
+        self, device_info: DeviceInfo, wizard: "BaseWizard", purpose
+    ) -> "HardwareClientBase":
         """Called when creating a new wallet or when using the device to decrypt
         an existing wallet. Select the device to use.  If the device is
         uninitialized, go through the initialization process.
@@ -105,27 +122,39 @@ class HW_PluginBase(BasePlugin):
         """
         raise NotImplementedError()
 
-    def get_client(self, keystore: 'Hardware_KeyStore', force_pair: bool = True, *,
-                   devices: Sequence['Device'] = None,
-                   allow_user_interaction: bool = True) -> Optional['HardwareClientBase']:
+    def get_client(
+        self,
+        keystore: "Hardware_KeyStore",
+        force_pair: bool = True,
+        *,
+        devices: Sequence["Device"] = None,
+        allow_user_interaction: bool = True,
+    ) -> Optional["HardwareClientBase"]:
         devmgr = self.device_manager()
         handler = keystore.handler
-        client = devmgr.client_for_keystore(self, handler, keystore, force_pair,
-                                            devices=devices,
-                                            allow_user_interaction=allow_user_interaction)
+        client = devmgr.client_for_keystore(
+            self,
+            handler,
+            keystore,
+            force_pair,
+            devices=devices,
+            allow_user_interaction=allow_user_interaction,
+        )
         return client
 
-    def show_address(self, wallet: 'Abstract_Wallet', address, keystore: 'Hardware_KeyStore' = None):
+    def show_address(
+        self, wallet: "Abstract_Wallet", address, keystore: "Hardware_KeyStore" = None
+    ):
         pass  # implemented in child classes
 
     def show_address_helper(self, wallet, address, keystore=None):
         if keystore is None:
             keystore = wallet.get_keystore()
         if not is_address(address):
-            keystore.handler.show_error(_('Invalid Bitcoin Address'))
+            keystore.handler.show_error(_("Invalid Bitcoin Address"))
             return False
         if not wallet.is_mine(address):
-            keystore.handler.show_error(_('Address not in wallet.'))
+            keystore.handler.show_error(_("Address not in wallet."))
             return False
         if type(keystore) != self.keystore_class:
             return False
@@ -149,29 +178,34 @@ class HW_PluginBase(BasePlugin):
             # this might raise ImportError or LibraryFoundButUnusable
             library_version = self.get_library_version()
             # if no exception so far, we might still raise LibraryFoundButUnusable
-            if (library_version == 'unknown'
-                    or versiontuple(library_version) < self.minimum_library
-                    or versiontuple(library_version) >= self.maximum_library):
+            if (
+                library_version == "unknown"
+                or versiontuple(library_version) < self.minimum_library
+                or versiontuple(library_version) >= self.maximum_library
+            ):
                 raise LibraryFoundButUnusable(library_version=library_version)
         except ImportError:
             return False
         except LibraryFoundButUnusable as e:
             library_version = e.library_version
-            self.libraries_available_message = (
-                    _("Library version for '{}' is incompatible.").format(self.name)
-                    + '\nInstalled: {}, Needed: {} <= x < {}'
-                    .format(library_version, version_str(self.minimum_library), version_str(self.maximum_library)))
+            self.libraries_available_message = _(
+                "Library version for '{}' is incompatible."
+            ).format(self.name) + "\nInstalled: {}, Needed: {} <= x < {}".format(
+                library_version,
+                version_str(self.minimum_library),
+                version_str(self.maximum_library),
+            )
             self.logger.warning(self.libraries_available_message)
             return False
 
         return True
 
     def get_library_not_available_message(self) -> str:
-        if hasattr(self, 'libraries_available_message'):
+        if hasattr(self, "libraries_available_message"):
             message = self.libraries_available_message
         else:
             message = _("Missing libraries for {}.").format(self.name)
-        message += '\n' + _("Make sure you install it with python3")
+        message += "\n" + _("Make sure you install it with python3")
         return message
 
     def set_ignore_outdated_fw(self):
@@ -180,14 +214,17 @@ class HW_PluginBase(BasePlugin):
     def is_outdated_fw_ignored(self) -> bool:
         return self._ignore_outdated_fw
 
-    def create_client(self, device: 'Device',
-                      handler: Optional['HardwareHandlerBase']) -> Optional['HardwareClientBase']:
+    def create_client(
+        self, device: "Device", handler: Optional["HardwareHandlerBase"]
+    ) -> Optional["HardwareClientBase"]:
         raise NotImplementedError()
 
-    def get_xpub(self, device_id: str, derivation: str, xtype, wizard: 'BaseWizard') -> str:
+    def get_xpub(
+        self, device_id: str, derivation: str, xtype, wizard: "BaseWizard"
+    ) -> str:
         raise NotImplementedError()
 
-    def create_handler(self, window) -> 'HardwareHandlerBase':
+    def create_handler(self, window) -> "HardwareHandlerBase":
         # note: in Qt GUI, 'window' is either an ElectrumWindow or an InstallWizard
         raise NotImplementedError()
 
@@ -196,10 +233,10 @@ class HardwareClientBase:
 
     handler = None  # type: Optional['HardwareHandlerBase']
 
-    def __init__(self, *, plugin: 'HW_PluginBase'):
+    def __init__(self, *, plugin: "HW_PluginBase"):
         self.plugin = plugin
 
-    def device_manager(self) -> 'DeviceMgr':
+    def device_manager(self) -> "DeviceMgr":
         return self.plugin.device_manager()
 
     def is_pairable(self) -> bool:
@@ -245,8 +282,10 @@ class HardwareClientBase:
     def request_root_fingerprint_from_device(self) -> str:
         # digitalbitbox (at least) does not reveal xpubs corresponding to unhardened paths
         # so ask for a direct child, and read out fingerprint from that:
-        child_of_root_xpub = self.get_xpub("m/0'", xtype='standard')
-        root_fingerprint = BIP32Node.from_xkey(child_of_root_xpub).fingerprint.hex().lower()
+        child_of_root_xpub = self.get_xpub("m/0'", xtype="standard")
+        root_fingerprint = (
+            BIP32Node.from_xkey(child_of_root_xpub).fingerprint.hex().lower()
+        )
         return root_fingerprint
 
     def get_password_for_storage_encryption(self) -> str:
@@ -265,17 +304,18 @@ class HardwareClientBase:
 
 class HardwareHandlerBase:
     """An interface between the GUI and the device handling logic for handling I/O."""
+
     win = None
     device: str
 
-    def get_wallet(self) -> Optional['Abstract_Wallet']:
+    def get_wallet(self) -> Optional["Abstract_Wallet"]:
         if self.win is not None:
-            if hasattr(self.win, 'wallet'):
+            if hasattr(self.win, "wallet"):
                 return self.win.wallet
 
-    def get_gui_thread(self) -> Optional['threading.Thread']:
+    def get_gui_thread(self) -> Optional["threading.Thread"]:
         if self.win is not None:
-            if hasattr(self.win, 'gui_thread'):
+            if hasattr(self.win, "gui_thread"):
                 return self.win.gui_thread
 
     def update_status(self, paired: bool) -> None:
@@ -313,9 +353,14 @@ def is_any_tx_output_on_change_branch(tx: PartialTransaction) -> bool:
 def trezor_validate_op_return_output_and_get_data(output: TxOutput) -> bytes:
     validate_op_return_output(output)
     script = output.scriptpubkey
-    if not (script[0] == opcodes.OP_RETURN and
-            script[1] == len(script) - 2 and script[1] <= 75):
-        raise UserFacingException(_("Only OP_RETURN scripts, with one constant push, are supported."))
+    if not (
+        script[0] == opcodes.OP_RETURN
+        and script[1] == len(script) - 2
+        and script[1] <= 75
+    ):
+        raise UserFacingException(
+            _("Only OP_RETURN scripts, with one constant push, are supported.")
+        )
     return script[2:]
 
 
@@ -324,27 +369,35 @@ def validate_op_return_output(output: TxOutput, *, max_size: int = None) -> None
     if script[0] != opcodes.OP_RETURN:
         raise UserFacingException(_("Only OP_RETURN scripts are supported."))
     if max_size is not None and len(script) > max_size:
-        raise UserFacingException(_("OP_RETURN payload too large." + "\n"
-                                  + f"(scriptpubkey size {len(script)} > {max_size})"))
+        raise UserFacingException(
+            _(
+                "OP_RETURN payload too large."
+                + "\n"
+                + f"(scriptpubkey size {len(script)} > {max_size})"
+            )
+        )
     if output.value != 0:
         raise UserFacingException(_("Amount for OP_RETURN output must be zero."))
 
 
-def get_xpubs_and_der_suffixes_from_txinout(tx: PartialTransaction,
-                                            txinout: Union[PartialTxInput, PartialTxOutput]) \
-        -> List[Tuple[str, List[int]]]:
-    xfp_to_xpub_map = {xfp: bip32node for bip32node, (xfp, path)
-                       in tx.xpubs.items()}  # type: Dict[bytes, BIP32Node]
+def get_xpubs_and_der_suffixes_from_txinout(
+    tx: PartialTransaction, txinout: Union[PartialTxInput, PartialTxOutput]
+) -> List[Tuple[str, List[int]]]:
+    xfp_to_xpub_map = {
+        xfp: bip32node for bip32node, (xfp, path) in tx.xpubs.items()
+    }  # type: Dict[bytes, BIP32Node]
     xfps = [txinout.bip32_paths[pubkey][0] for pubkey in txinout.pubkeys]
     try:
         xpubs = [xfp_to_xpub_map[xfp] for xfp in xfps]
     except KeyError as e:
-        raise Exception(f"Partial transaction is missing global xpub for "
-                        f"fingerprint ({str(e)}) in input/output") from e
+        raise Exception(
+            f"Partial transaction is missing global xpub for "
+            f"fingerprint ({str(e)}) in input/output"
+        ) from e
     xpubs_and_deriv_suffixes = []
     for bip32node, pubkey in zip(xpubs, txinout.pubkeys):
         xfp, path = txinout.bip32_paths[pubkey]
-        der_suffix = list(path)[bip32node.depth:]
+        der_suffix = list(path)[bip32node.depth :]
         xpubs_and_deriv_suffixes.append((bip32node.to_xpub(), der_suffix))
     return xpubs_and_deriv_suffixes
 
@@ -352,24 +405,30 @@ def get_xpubs_and_der_suffixes_from_txinout(tx: PartialTransaction,
 def only_hook_if_libraries_available(func):
     # note: this decorator must wrap @hook, not the other way around,
     # as 'hook' uses the name of the function it wraps
-    def wrapper(self: 'HW_PluginBase', *args, **kwargs):
-        if not self.libraries_available: return None
+    def wrapper(self: "HW_PluginBase", *args, **kwargs):
+        if not self.libraries_available:
+            return None
         return func(self, *args, **kwargs)
+
     return wrapper
 
 
 class LibraryFoundButUnusable(Exception):
-    def __init__(self, library_version='unknown'):
+    def __init__(self, library_version="unknown"):
         self.library_version = library_version
 
 
 class OutdatedHwFirmwareException(UserFacingException):
-
     def text_ignore_old_fw_and_continue(self) -> str:
-        suffix = (_("The firmware of your hardware device is too old. "
-                    "If possible, you should upgrade it. "
-                    "You can ignore this error and try to continue, however things are likely to break.") + "\n\n" +
-                  _("Ignore and continue?"))
+        suffix = (
+            _(
+                "The firmware of your hardware device is too old. "
+                "If possible, you should upgrade it. "
+                "You can ignore this error and try to continue, however things are likely to break."
+            )
+            + "\n\n"
+            + _("Ignore and continue?")
+        )
         if str(self):
             return str(self) + "\n\n" + suffix
         else:

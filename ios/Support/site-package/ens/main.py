@@ -1,37 +1,8 @@
-from typing import (
-    TYPE_CHECKING,
-    Optional,
-    Sequence,
-    Tuple,
-    Union,
-    cast,
-)
-
-from eth_typing import (
-    Address,
-    ChecksumAddress,
-    HexAddress,
-)
-from eth_utils import (
-    is_binary_address,
-    is_checksum_address,
-    to_checksum_address,
-)
-from hexbytes import (
-    HexBytes,
-)
+from typing import TYPE_CHECKING, Optional, Sequence, Tuple, Union, cast
 
 from ens import abis
-from ens.constants import (
-    EMPTY_ADDR_HEX,
-    ENS_MAINNET_ADDR,
-    REVERSE_REGISTRAR_DOMAIN,
-)
-from ens.exceptions import (
-    AddressMismatch,
-    UnauthorizedError,
-    UnownedName,
-)
+from ens.constants import EMPTY_ADDR_HEX, ENS_MAINNET_ADDR, REVERSE_REGISTRAR_DOMAIN
+from ens.exceptions import AddressMismatch, UnauthorizedError, UnownedName
 from ens.utils import (
     address_in,
     address_to_reverse_domain,
@@ -45,18 +16,15 @@ from ens.utils import (
     normalize_name,
     raw_name_to_hash,
 )
+from eth_typing import Address, ChecksumAddress, HexAddress
+from eth_utils import is_binary_address, is_checksum_address, to_checksum_address
+from hexbytes import HexBytes
 
 if TYPE_CHECKING:
     from web3 import Web3  # noqa: F401
-    from web3.contract import (  # noqa: F401
-        Contract,
-    )
-    from web3.providers import (  # noqa: F401
-        BaseProvider,
-    )
-    from web3.types import (  # noqa: F401
-        TxParams,
-    )
+    from web3.contract import Contract  # noqa: F401
+    from web3.providers import BaseProvider  # noqa: F401
+    from web3.types import TxParams  # noqa: F401
 
 
 class ENS:
@@ -76,7 +44,9 @@ class ENS:
     reverse_domain = staticmethod(address_to_reverse_domain)
 
     def __init__(
-        self, provider: 'BaseProvider' = cast('BaseProvider', default), addr: ChecksumAddress = None
+        self,
+        provider: "BaseProvider" = cast("BaseProvider", default),
+        addr: ChecksumAddress = None,
     ) -> None:
         """
         :param provider: a single provider used to connect to Ethereum
@@ -91,7 +61,7 @@ class ENS:
         self._resolverContract = self.web3.eth.contract(abi=abis.RESOLVER)
 
     @classmethod
-    def fromWeb3(cls, web3: 'Web3', addr: ChecksumAddress = None) -> 'ENS':
+    def fromWeb3(cls, web3: "Web3", addr: ChecksumAddress = None) -> "ENS":
         """
         Generate an ENS instance with web3
 
@@ -108,7 +78,7 @@ class ENS:
         :param str name: an ENS name to look up
         :raises InvalidName: if `name` has invalid syntax
         """
-        return cast(ChecksumAddress, self.resolve(name, 'addr'))
+        return cast(ChecksumAddress, self.resolve(name, "addr"))
 
     def name(self, address: ChecksumAddress) -> Optional[str]:
         """
@@ -119,14 +89,16 @@ class ENS:
         :type address: hex-string
         """
         reversed_domain = address_to_reverse_domain(address)
-        return self.resolve(reversed_domain, get='name')
+        return self.resolve(reversed_domain, get="name")
 
     @dict_copy
     def setup_address(
         self,
         name: str,
-        address: Union[Address, ChecksumAddress, HexAddress] = cast(ChecksumAddress, default),
-        transact: "TxParams" = {}
+        address: Union[Address, ChecksumAddress, HexAddress] = cast(
+            ChecksumAddress, default
+        ),
+        transact: "TxParams" = {},
     ) -> HexBytes:
         """
         Set up the name to point to the supplied address.
@@ -159,9 +131,11 @@ class ENS:
             return None
         if address is None:
             address = EMPTY_ADDR_HEX
-        transact['from'] = owner
-        resolver: 'Contract' = self._set_resolver(name, transact=transact)
-        return resolver.functions.setAddr(raw_name_to_hash(name), address).transact(transact)
+        transact["from"] = owner
+        resolver: "Contract" = self._set_resolver(name, transact=transact)
+        return resolver.functions.setAddr(raw_name_to_hash(name), address).transact(
+            transact
+        )
 
     @dict_copy
     def setup_name(
@@ -182,7 +156,7 @@ class ENS:
         :raises UnownedName: if no one owns `name`
         """
         if not name:
-            self._assert_control(address, 'the reverse record')
+            self._assert_control(address, "the reverse record")
             return self._setup_reverse(None, address, transact=transact)
         else:
             resolved = self.address(name)
@@ -191,9 +165,8 @@ class ENS:
             elif resolved and address != resolved and resolved != EMPTY_ADDR_HEX:
                 raise AddressMismatch(
                     "Could not set address %r to point to name, because the name resolves to %r. "
-                    "To change the name for an existing address, call setup_address() first." % (
-                        address, resolved
-                    )
+                    "To change the name for an existing address, call setup_address() first."
+                    % (address, resolved)
                 )
             if is_none_or_zero_address(address):
                 address = self.owner(name)
@@ -208,7 +181,9 @@ class ENS:
                 self.setup_address(name, address, transact=transact)
             return self._setup_reverse(name, address, transact=transact)
 
-    def resolve(self, name: str, get: str = 'addr') -> Optional[Union[ChecksumAddress, str]]:
+    def resolve(
+        self, name: str, get: str = "addr"
+    ) -> Optional[Union[ChecksumAddress, str]]:
         normal_name = normalize_name(name)
         resolver = self.resolver(normal_name)
         if resolver:
@@ -221,13 +196,13 @@ class ENS:
         else:
             return None
 
-    def resolver(self, normal_name: str) -> Optional['Contract']:
+    def resolver(self, normal_name: str) -> Optional["Contract"]:
         resolver_addr = self.ens.caller.resolver(normal_name_to_hash(normal_name))
         if is_none_or_zero_address(resolver_addr):
             return None
         return self._resolverContract(address=resolver_addr)
 
-    def reverser(self, target_address: ChecksumAddress) -> Optional['Contract']:
+    def reverser(self, target_address: ChecksumAddress) -> Optional["Contract"]:
         reversed_domain = address_to_reverse_domain(target_address)
         return self.resolver(reversed_domain)
 
@@ -250,7 +225,7 @@ class ENS:
         self,
         name: str,
         new_owner: ChecksumAddress = cast(ChecksumAddress, default),
-        transact: "TxParams" = {}
+        transact: "TxParams" = {},
     ) -> ChecksumAddress:
         """
         Set the owner of the supplied name to `new_owner`.
@@ -289,19 +264,23 @@ class ENS:
             return current_owner
         else:
             self._assert_control(super_owner, name, owned)
-            self._claim_ownership(new_owner, unowned, owned, super_owner, transact=transact)
+            self._claim_ownership(
+                new_owner, unowned, owned, super_owner, transact=transact
+            )
             return new_owner
 
-    def _assert_control(self, account: ChecksumAddress, name: str,
-                        parent_owned: Optional[str] = None) -> None:
+    def _assert_control(
+        self, account: ChecksumAddress, name: str, parent_owned: Optional[str] = None
+    ) -> None:
         if not address_in(account, self.web3.eth.accounts):
             raise UnauthorizedError(
-                "in order to modify %r, you must control account %r, which owns %r" % (
-                    name, account, parent_owned or name
-                )
+                "in order to modify %r, you must control account %r, which owns %r"
+                % (name, account, parent_owned or name)
             )
 
-    def _first_owner(self, name: str) -> Tuple[Optional[ChecksumAddress], Sequence[str], str]:
+    def _first_owner(
+        self, name: str
+    ) -> Tuple[Optional[ChecksumAddress], Sequence[str], str]:
         """
         Takes a name, and returns the owner of the deepest subdomain that has an owner
 
@@ -309,9 +288,9 @@ class ENS:
         """
         owner = None
         unowned = []
-        pieces = normalize_name(name).split('.')
+        pieces = normalize_name(name).split(".")
         while pieces and is_none_or_zero_address(owner):
-            name = '.'.join(pieces)
+            name = ".".join(pieces)
             owner = self.owner(name)
             if is_none_or_zero_address(owner):
                 unowned.append(pieces.pop(0))
@@ -324,29 +303,27 @@ class ENS:
         unowned: Sequence[str],
         owned: str,
         old_owner: ChecksumAddress = None,
-        transact: "TxParams" = {}
+        transact: "TxParams" = {},
     ) -> None:
-        transact['from'] = old_owner or owner
+        transact["from"] = old_owner or owner
         for label in reversed(unowned):
             self.ens.functions.setSubnodeOwner(
-                raw_name_to_hash(owned),
-                label_to_hash(label),
-                owner
+                raw_name_to_hash(owned), label_to_hash(label), owner
             ).transact(transact)
             owned = "%s.%s" % (label, owned)
 
     @dict_copy
     def _set_resolver(
-        self, name: str, resolver_addr: ChecksumAddress = None, transact: "TxParams" = {}
-    ) -> 'Contract':
+        self,
+        name: str,
+        resolver_addr: ChecksumAddress = None,
+        transact: "TxParams" = {},
+    ) -> "Contract":
         if is_none_or_zero_address(resolver_addr):
-            resolver_addr = self.address('resolver.eth')
+            resolver_addr = self.address("resolver.eth")
         namehash = raw_name_to_hash(name)
         if self.ens.caller.resolver(namehash) != resolver_addr:
-            self.ens.functions.setResolver(
-                namehash,
-                resolver_addr
-            ).transact(transact)
+            self.ens.functions.setResolver(namehash, resolver_addr).transact(transact)
         return self._resolverContract(address=resolver_addr)
 
     @dict_copy
@@ -356,10 +333,10 @@ class ENS:
         if name:
             name = normalize_name(name)
         else:
-            name = ''
-        transact['from'] = address
+            name = ""
+        transact["from"] = address
         return self._reverse_registrar().functions.setName(name).transact(transact)
 
-    def _reverse_registrar(self) -> 'Contract':
+    def _reverse_registrar(self) -> "Contract":
         addr = self.ens.caller.owner(normal_name_to_hash(REVERSE_REGISTRAR_DOMAIN))
         return self.web3.eth.contract(address=addr, abi=abis.REVERSE_REGISTRAR)

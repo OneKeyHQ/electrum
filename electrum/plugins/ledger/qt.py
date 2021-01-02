@@ -1,16 +1,16 @@
 from functools import partial
 
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QInputDialog, QLabel, QVBoxLayout, QLineEdit
+from PyQt5.QtWidgets import QInputDialog, QLabel, QLineEdit, QVBoxLayout
 
+from electrum.gui.qt.util import WindowModalDialog
 from electrum.i18n import _
 from electrum.plugin import hook
 from electrum.wallet import Standard_Wallet
-from electrum.gui.qt.util import WindowModalDialog
 
-from .ledger import LedgerPlugin
-from ..hw_wallet.qt import QtHandlerBase, QtPluginBase
 from ..hw_wallet.plugin import only_hook_if_libraries_available
+from ..hw_wallet.qt import QtHandlerBase, QtPluginBase
+from .ledger import LedgerPlugin
 
 
 class Plugin(LedgerPlugin, QtPluginBase):
@@ -27,21 +27,29 @@ class Plugin(LedgerPlugin, QtPluginBase):
             return
         keystore = wallet.get_keystore()
         if type(keystore) == self.keystore_class and len(addrs) == 1:
+
             def show_address():
                 keystore.thread.add(partial(self.show_address, wallet, addrs[0]))
+
             menu.addAction(_("Show on Ledger"), show_address)
+
 
 class Ledger_Handler(QtHandlerBase):
     setup_signal = pyqtSignal()
     auth_signal = pyqtSignal(object)
 
     def __init__(self, win):
-        super(Ledger_Handler, self).__init__(win, 'Ledger')
+        super(Ledger_Handler, self).__init__(win, "Ledger")
         self.setup_signal.connect(self.setup_dialog)
         self.auth_signal.connect(self.auth_dialog)
 
     def word_dialog(self, msg):
-        response = QInputDialog.getText(self.top_level_window(), "Ledger Wallet Authentication", msg, QLineEdit.Password)
+        response = QInputDialog.getText(
+            self.top_level_window(),
+            "Ledger Wallet Authentication",
+            msg,
+            QLineEdit.Password,
+        )
         if not response[1]:
             self.word = None
         else:
@@ -50,7 +58,9 @@ class Ledger_Handler(QtHandlerBase):
 
     def message_dialog(self, msg):
         self.clear_dialog()
-        self.dialog = dialog = WindowModalDialog(self.top_level_window(), _("Ledger Status"))
+        self.dialog = dialog = WindowModalDialog(
+            self.top_level_window(), _("Ledger Status")
+        )
         l = QLabel(msg)
         vbox = QVBoxLayout(dialog)
         vbox.addWidget(l)
@@ -80,4 +90,4 @@ class Ledger_Handler(QtHandlerBase):
         return
 
     def setup_dialog(self):
-        self.show_error(_('Initialization of Ledger HW devices is currently disabled.'))
+        self.show_error(_("Initialization of Ledger HW devices is currently disabled."))

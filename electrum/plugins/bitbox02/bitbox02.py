@@ -2,39 +2,38 @@
 # BitBox02 Electrum plugin code.
 #
 
-import hid
-from typing import TYPE_CHECKING, Dict, Tuple, Optional, List, Any, Callable
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple
 
-from electrum import bip32, constants
-from electrum.i18n import _
-from electrum.keystore import Hardware_KeyStore
-from electrum.transaction import PartialTransaction
-from electrum.wallet import Standard_Wallet, Multisig_Wallet, Deterministic_Wallet
-from electrum.util import bh2u, UserFacingException
-from electrum.base_wizard import ScriptTypeNotSupported, BaseWizard
-from electrum.logging import get_logger
-from electrum.plugin import Device, DeviceInfo
-from electrum.simple_config import SimpleConfig
-from electrum.json_db import StoredDict
-from electrum.storage import get_derivation_used_for_hw_device_encryption
-from electrum.bitcoin import OnchainOutputType
+import hid
 
 import electrum.bitcoin as bitcoin
 import electrum.ecc as ecc
+from electrum import bip32, constants
+from electrum.base_wizard import BaseWizard, ScriptTypeNotSupported
+from electrum.bitcoin import OnchainOutputType
+from electrum.i18n import _
+from electrum.json_db import StoredDict
+from electrum.keystore import Hardware_KeyStore
+from electrum.logging import get_logger
+from electrum.plugin import Device, DeviceInfo
+from electrum.simple_config import SimpleConfig
+from electrum.storage import get_derivation_used_for_hw_device_encryption
+from electrum.transaction import PartialTransaction
+from electrum.util import UserFacingException, bh2u
+from electrum.wallet import Deterministic_Wallet, Multisig_Wallet, Standard_Wallet
 
-from ..hw_wallet import HW_PluginBase, HardwareClientBase
-
+from ..hw_wallet import HardwareClientBase, HW_PluginBase
 
 try:
-    from bitbox02 import bitbox02
-    from bitbox02 import util
+    from bitbox02 import bitbox02, util
     from bitbox02.communication import (
-        devices,
         HARDENED,
-        u2fhid,
-        bitbox_api_protocol,
         FirmwareVersionOutdatedException,
+        bitbox_api_protocol,
+        devices,
+        u2fhid,
     )
+
     requirements_ok = True
 except ImportError:
     requirements_ok = False
@@ -45,7 +44,14 @@ _logger = get_logger(__name__)
 
 class BitBox02Client(HardwareClientBase):
     # handler is a BitBox02_Handler, importing it would lead to a circular dependency
-    def __init__(self, handler: Any, device: Device, config: SimpleConfig, *, plugin: HW_PluginBase):
+    def __init__(
+        self,
+        handler: Any,
+        device: Device,
+        config: SimpleConfig,
+        *,
+        plugin: HW_PluginBase
+    ):
         HardwareClientBase.__init__(self, plugin=plugin)
         self.bitbox02_device = None  # type: Optional[bitbox02.BitBox02]
         self.handler = handler
@@ -87,7 +93,9 @@ class BitBox02Client(HardwareClientBase):
 
     def pairing_dialog(self, wizard: bool = True):
         def pairing_step(code: str, device_response: Callable[[], bool]) -> bool:
-            msg = "Please compare and confirm the pairing code on your BitBox02:\n" + code
+            msg = (
+                "Please compare and confirm the pairing code on your BitBox02:\n" + code
+            )
             self.handler.show_message(msg)
             try:
                 res = device_response()
@@ -132,13 +140,15 @@ class BitBox02Client(HardwareClientBase):
         def attestation_warning() -> None:
             self.handler.show_error(
                 "The BitBox02 attestation failed.\nTry reconnecting the BitBox02.\nWarning: The device might not be genuine, if the\n problem persists please contact Shift support.",
-                blocking=True
+                blocking=True,
             )
 
         class NoiseConfig(bitbox_api_protocol.BitBoxNoiseConfig):
             """NoiseConfig extends BitBoxNoiseConfig"""
 
-            def show_pairing(self, code: str, device_response: Callable[[], bool]) -> bool:
+            def show_pairing(
+                self, code: str, device_response: Callable[[], bool]
+            ) -> bool:
                 return pairing_step(code, device_response)
 
             def attestation_check(self, result: bool) -> None:
@@ -161,7 +171,6 @@ class BitBox02Client(HardwareClientBase):
             with self.device_manager().hid_lock:
                 hid_device = hid.device()
                 hid_device.open_path(self.bitbox_hid_info["path"])
-
 
             bitbox02_device = bitbox02.BitBox02(
                 transport=u2fhid.U2FHid(hid_device),
@@ -192,7 +201,9 @@ class BitBox02Client(HardwareClientBase):
         derivation = get_derivation_used_for_hw_device_encryption()
         derivation_list = bip32.convert_bip32_path_to_list_of_uint32(derivation)
         xpub = self.bitbox02_device.electrum_encryption_key(derivation_list)
-        node = bip32.BIP32Node.from_xkey(xpub, net = constants.BitcoinMainnet()).subkey_at_public_derivation(())
+        node = bip32.BIP32Node.from_xkey(
+            xpub, net=constants.BitcoinMainnet()
+        ).subkey_at_public_derivation(())
         return node.eckey.get_public_key_bytes(compressed=True).hex()
 
     def get_xpub(self, bip32_path: str, xtype: str, *, display: bool = False) -> str:
@@ -248,9 +259,7 @@ class BitBox02Client(HardwareClientBase):
             return False
         return True
 
-    def btc_multisig_config(
-        self, coin, bip32_path: List[int], wallet: Multisig_Wallet
-    ):
+    def btc_multisig_config(self, coin, bip32_path: List[int], wallet: Multisig_Wallet):
         """
         Set and get a multisig config with the current device and some other arbitrary xpubs.
         Registers it on the device if not already registered.
@@ -290,7 +299,9 @@ class BitBox02Client(HardwareClientBase):
             except bitbox02.DuplicateEntryException:
                 raise
             except:
-                raise UserFacingException("Failed to register multisig\naccount configuration on BitBox02")
+                raise UserFacingException(
+                    "Failed to register multisig\naccount configuration on BitBox02"
+                )
         return multisig_config
 
     def show_address(
@@ -366,7 +377,7 @@ class BitBox02Client(HardwareClientBase):
 
             prev_tx = txin.utxo
             if prev_tx is None:
-                raise UserFacingException(_('Missing previous tx.'))
+                raise UserFacingException(_("Missing previous tx."))
 
             prev_inputs: List[bitbox02.BTCPrevTxInputType] = []
             prev_outputs: List[bitbox02.BTCPrevTxOutputType] = []
@@ -435,10 +446,14 @@ class BitBox02Client(HardwareClientBase):
             assert txout.address
             # check for change
             if txout.is_change:
-                my_pubkey, change_pubkey_path = keystore.find_my_pubkey_in_txinout(txout)
+                my_pubkey, change_pubkey_path = keystore.find_my_pubkey_in_txinout(
+                    txout
+                )
                 outputs.append(
                     bitbox02.BTCOutputInternal(
-                        keypath=change_pubkey_path, value=txout.value, script_config_index=0,
+                        keypath=change_pubkey_path,
+                        value=txout.value,
+                        script_config_index=0,
                     )
                 )
             else:
@@ -476,10 +491,11 @@ class BitBox02Client(HardwareClientBase):
 
         sigs = self.bitbox02_device.btc_sign(
             coin,
-            [bitbox02.btc.BTCScriptConfigWithKeypath(
-                script_config=tx_script_type,
-                keypath=keypath_account,
-            )],
+            [
+                bitbox02.btc.BTCScriptConfigWithKeypath(
+                    script_config=tx_script_type, keypath=keypath_account,
+                )
+            ],
             inputs=inputs,
             outputs=outputs,
             locktime=tx.locktime,
@@ -566,6 +582,7 @@ class BitBox02_KeyStore(Hardware_KeyStore):
             self.logger.exception("")
             self.handler.show_error(e)
 
+
 class BitBox02Plugin(HW_PluginBase):
     keystore_class = BitBox02_KeyStore
     minimum_library = (4, 0, 0)
@@ -584,6 +601,7 @@ class BitBox02Plugin(HW_PluginBase):
     def get_library_version(self):
         try:
             from bitbox02 import bitbox02
+
             version = bitbox02.__version__
         except:
             version = "unknown"
@@ -598,26 +616,27 @@ class BitBox02Plugin(HW_PluginBase):
             self.handler = handler
         return BitBox02Client(handler, device, self.config, plugin=self)
 
-    def setup_device(
-        self, device_info: DeviceInfo, wizard: BaseWizard, purpose: int
-    ):
+    def setup_device(self, device_info: DeviceInfo, wizard: BaseWizard, purpose: int):
         device_id = device_info.device.id_
-        client = self.scan_and_create_client_for_device(device_id=device_id, wizard=wizard)
+        client = self.scan_and_create_client_for_device(
+            device_id=device_id, wizard=wizard
+        )
         assert isinstance(client, BitBox02Client)
         if client.bitbox02_device is None:
             wizard.run_task_without_blocking_gui(
-                task=lambda client=client: client.pairing_dialog())
+                task=lambda client=client: client.pairing_dialog()
+            )
         client.fail_if_not_initialized()
         return client
 
-    def get_xpub(
-        self, device_id: str, derivation: str, xtype: str, wizard: BaseWizard
-    ):
+    def get_xpub(self, device_id: str, derivation: str, xtype: str, wizard: BaseWizard):
         if xtype not in self.SUPPORTED_XTYPES:
             raise ScriptTypeNotSupported(
                 _("This type of script is not supported with {}.").format(self.device)
             )
-        client = self.scan_and_create_client_for_device(device_id=device_id, wizard=wizard)
+        client = self.scan_and_create_client_for_device(
+            device_id=device_id, wizard=wizard
+        )
         assert isinstance(client, BitBox02Client)
         assert client.bitbox02_device is not None
         return client.get_xpub(derivation, xtype)
@@ -644,9 +663,9 @@ class BitBox02Plugin(HW_PluginBase):
         xtype = keystore.get_bip32_node_for_xpub().xtype
         client.get_xpub(derivation, xtype, display=True)
 
-    def create_device_from_hid_enumeration(self, d: dict, *, product_key) -> 'Device':
+    def create_device_from_hid_enumeration(self, d: dict, *, product_key) -> "Device":
         device = super().create_device_from_hid_enumeration(d, product_key=product_key)
         # The BitBox02's product_id is not unique per device, thus use the path instead to
         # distinguish devices.
-        id_ = str(d['path'])
+        id_ = str(d["path"])
         return device._replace(id_=id_)

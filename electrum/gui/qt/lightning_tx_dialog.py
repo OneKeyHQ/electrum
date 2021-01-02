@@ -23,42 +23,54 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import TYPE_CHECKING
-from decimal import Decimal
 import datetime
+from decimal import Decimal
+from typing import TYPE_CHECKING
 
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QVBoxLayout, QLabel, QGridLayout
+from PyQt5.QtWidgets import QGridLayout, QLabel, QVBoxLayout
 
 from electrum.i18n import _
-from .util import WindowModalDialog, ButtonsLineEdit, ColorScheme, Buttons, CloseButton, MONOSPACE_FONT
+
+from .util import (
+    MONOSPACE_FONT,
+    Buttons,
+    ButtonsLineEdit,
+    CloseButton,
+    ColorScheme,
+    WindowModalDialog,
+)
 
 if TYPE_CHECKING:
     from .main_window import ElectrumWindow
 
 
-
 class LightningTxDialog(WindowModalDialog):
-
-    def __init__(self, parent: 'ElectrumWindow', tx_item: dict):
+    def __init__(self, parent: "ElectrumWindow", tx_item: dict):
         WindowModalDialog.__init__(self, parent, _("Lightning Payment"))
         self.parent = parent
-        self.is_sent = bool(tx_item['direction'] == 'sent')
-        self.label = tx_item['label']
-        self.timestamp = tx_item['timestamp']
-        self.amount = Decimal(tx_item['amount_msat']) / 1000
-        self.payment_hash = tx_item['payment_hash']
-        self.preimage = tx_item['preimage']
+        self.is_sent = bool(tx_item["direction"] == "sent")
+        self.label = tx_item["label"]
+        self.timestamp = tx_item["timestamp"]
+        self.amount = Decimal(tx_item["amount_msat"]) / 1000
+        self.payment_hash = tx_item["payment_hash"]
+        self.preimage = tx_item["preimage"]
         self.setMinimumWidth(700)
         vbox = QVBoxLayout()
         self.setLayout(vbox)
 
         # FIXME fiat values here are using today's FX rate instead of historical
-        vbox.addWidget(QLabel(_("Amount") + ": " + self.parent.format_amount_and_units(self.amount)))
+        vbox.addWidget(
+            QLabel(
+                _("Amount") + ": " + self.parent.format_amount_and_units(self.amount)
+            )
+        )
         if self.is_sent:
-            fee = Decimal(tx_item['fee_msat']) / 1000
-            vbox.addWidget(QLabel(_("Fee") + ": " + self.parent.format_amount_and_units(fee)))
-        time_str = datetime.datetime.fromtimestamp(self.timestamp).isoformat(' ')[:-3]
+            fee = Decimal(tx_item["fee_msat"]) / 1000
+            vbox.addWidget(
+                QLabel(_("Fee") + ": " + self.parent.format_amount_and_units(fee))
+            )
+        time_str = datetime.datetime.fromtimestamp(self.timestamp).isoformat(" ")[:-3]
         vbox.addWidget(QLabel(_("Date") + ": " + time_str))
 
         qr_icon = "qrcode_white.png" if ColorScheme.dark_scheme else "qrcode.png"
@@ -66,9 +78,9 @@ class LightningTxDialog(WindowModalDialog):
         vbox.addWidget(QLabel(_("Payment hash") + ":"))
         self.hash_e = ButtonsLineEdit(self.payment_hash)
         self.hash_e.addCopyButton(self.parent.app)
-        self.hash_e.addButton(qr_icon,
-                              self.show_qr(self.hash_e, _("Payment hash")),
-                              _("Show QR Code"))
+        self.hash_e.addButton(
+            qr_icon, self.show_qr(self.hash_e, _("Payment hash")), _("Show QR Code")
+        )
         self.hash_e.setReadOnly(True)
         self.hash_e.setFont(QFont(MONOSPACE_FONT))
         vbox.addWidget(self.hash_e)
@@ -76,20 +88,21 @@ class LightningTxDialog(WindowModalDialog):
         vbox.addWidget(QLabel(_("Preimage") + ":"))
         self.preimage_e = ButtonsLineEdit(self.preimage)
         self.preimage_e.addCopyButton(self.parent.app)
-        self.preimage_e.addButton(qr_icon,
-                                  self.show_qr(self.preimage_e, _("Preimage")),
-                                  _("Show QR Code"))
+        self.preimage_e.addButton(
+            qr_icon, self.show_qr(self.preimage_e, _("Preimage")), _("Show QR Code")
+        )
         self.preimage_e.setReadOnly(True)
         self.preimage_e.setFont(QFont(MONOSPACE_FONT))
         vbox.addWidget(self.preimage_e)
 
         vbox.addLayout(Buttons(CloseButton(self)))
 
-    def show_qr(self, line_edit, title=''):
+    def show_qr(self, line_edit, title=""):
         def f():
             text = line_edit.text()
             try:
                 self.parent.show_qrcode(text, title, parent=self)
             except Exception as e:
                 self.show_message(repr(e))
+
         return f

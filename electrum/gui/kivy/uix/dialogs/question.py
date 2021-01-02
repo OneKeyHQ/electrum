@@ -1,14 +1,15 @@
 from kivy.app import App
 from kivy.factory import Factory
-from kivy.properties import ObjectProperty
 from kivy.lang import Builder
+from kivy.properties import ObjectProperty
 from kivy.uix.checkbox import CheckBox
 from kivy.uix.label import Label
 from kivy.uix.widget import Widget
 
 from electrum.gui.kivy.i18n import _
 
-Builder.load_string('''
+Builder.load_string(
+    """
 <Question@Popup>
     id: popup
     title: ''
@@ -42,18 +43,23 @@ Builder.load_string('''
                 on_release:
                     root.callback(True)
                     popup.dismiss()
-''')
-
+"""
+)
 
 
 class Question(Factory.Popup):
-
-    def __init__(self, msg, callback, *,
-                 yes_str: str = None, no_str: str = None,
-                 title: str = None):
+    def __init__(
+        self,
+        msg,
+        callback,
+        *,
+        yes_str: str = None,
+        no_str: str = None,
+        title: str = None
+    ):
         Factory.Popup.__init__(self)
-        self.yes_str = yes_str or _('Yes')
-        self.no_str = no_str or _('No')
-        self.title = title or _('Question')
+        self.yes_str = yes_str or _("Yes")
+        self.no_str = no_str or _("No")
+        self.title = title or _("Question")
         self.message = msg
         self.callback = callback

@@ -1,20 +1,27 @@
 from typing import TYPE_CHECKING
 
-from kivy.factory import Factory
-from kivy.lang import Builder
-from kivy.core.clipboard import Clipboard
 from kivy.app import App
 from kivy.clock import Clock
+from kivy.core.clipboard import Clipboard
+from kivy.factory import Factory
+from kivy.lang import Builder
 
 from electrum.gui.kivy.i18n import _
-from electrum.invoices import pr_tooltips, pr_color
-from electrum.invoices import PR_UNKNOWN, PR_UNPAID, PR_FAILED, PR_TYPE_LN
+from electrum.invoices import (
+    PR_FAILED,
+    PR_TYPE_LN,
+    PR_UNKNOWN,
+    PR_UNPAID,
+    pr_color,
+    pr_tooltips,
+)
 
 if TYPE_CHECKING:
     from electrum.gui.kivy.main_window import ElectrumWindow
 
 
-Builder.load_string('''
+Builder.load_string(
+    """
 <InvoiceDialog@Popup>
     id: popup
     amount_str: ''
@@ -81,10 +88,11 @@ Builder.load_string('''
                     text: _('Pay')
                     on_release: root.do_pay()
                     disabled: not root.can_pay
-''')
+"""
+)
+
 
 class InvoiceDialog(Factory.Popup):
-
     def __init__(self, title, data, key):
         self.status = PR_UNKNOWN
         Factory.Popup.__init__(self)
@@ -107,15 +115,24 @@ class InvoiceDialog(Factory.Popup):
         self.status_color = pr_color[self.status]
         self.can_pay = self.status in [PR_UNPAID, PR_FAILED]
         if self.can_pay and self.is_lightning and self.app.wallet.lnworker:
-            if self.amount_sat and self.amount_sat > self.app.wallet.lnworker.num_sats_can_send():
-                self.warning = _('Warning') + ': ' + _('This amount exceeds the maximum you can currently send with your channels')
+            if (
+                self.amount_sat
+                and self.amount_sat > self.app.wallet.lnworker.num_sats_can_send()
+            ):
+                self.warning = (
+                    _("Warning")
+                    + ": "
+                    + _(
+                        "This amount exceeds the maximum you can currently send with your channels"
+                    )
+                )
 
     def on_dismiss(self):
         self.app.request_popup = None
 
     def copy_to_clipboard(self):
         Clipboard.copy(self.data)
-        msg = _('Text copied to clipboard.')
+        msg = _("Text copied to clipboard.")
         Clock.schedule_once(lambda dt: self.app.show_info(msg))
 
     def do_share(self):
@@ -129,18 +146,20 @@ class InvoiceDialog(Factory.Popup):
 
     def delete_dialog(self):
         from .question import Question
+
         def cb(result):
             if result:
                 self.app.wallet.delete_invoice(self.key)
                 self.dismiss()
                 self.app.send_screen.update()
-        d = Question(_('Delete invoice?'), cb)
+
+        d = Question(_("Delete invoice?"), cb)
         d.open()
 
     def show_log(self):
         if self.log:
-            log_str = _('Payment log:') + '\n\n'
+            log_str = _("Payment log:") + "\n\n"
             for payment_attempt_log in self.log:
                 route_str, chan_str, message = payment_attempt_log.formatted_tuple()
-                log_str += chan_str + '  ---  ' + message + '\n'
+                log_str += chan_str + "  ---  " + message + "\n"
             self.app.show_info(log_str)

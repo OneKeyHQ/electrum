@@ -29,8 +29,9 @@
 # ===================================================================
 
 import Cryptodome.Util.number
-from Cryptodome.Util.number import ceil_div, bytes_to_long, long_to_bytes
-from Cryptodome.Util.asn1 import DerSequence, DerNull, DerOctetString, DerObjectId
+from Cryptodome.Util.asn1 import DerNull, DerObjectId, DerOctetString, DerSequence
+from Cryptodome.Util.number import bytes_to_long, ceil_div, long_to_bytes
+
 
 class PKCS115_SigScheme:
     """A signature object for ``RSASSA-PKCS1-v1_5``.
@@ -71,7 +72,7 @@ class PKCS115_SigScheme:
 
         # See 8.2.1 in RFC3447
         modBits = Cryptodome.Util.number.size(self._key.n)
-        k = ceil_div(modBits,8) # Convert from bits to bytes
+        k = ceil_div(modBits, 8)  # Convert from bits to bytes
 
         # Step 1
         em = _EMSA_PKCS1_V1_5_ENCODE(msg_hash, k)
@@ -104,7 +105,7 @@ class PKCS115_SigScheme:
 
         # See 8.2.2 in RFC3447
         modBits = Cryptodome.Util.number.size(self._key.n)
-        k = ceil_div(modBits, 8) # Convert from bits to bytes
+        k = ceil_div(modBits, 8)  # Convert from bits to bytes
 
         # Step 1
         if len(signature) != k:
@@ -117,11 +118,11 @@ class PKCS115_SigScheme:
         em1 = long_to_bytes(em_int, k)
         # Step 3
         try:
-            possible_em1 = [ _EMSA_PKCS1_V1_5_ENCODE(msg_hash, k, True) ]
+            possible_em1 = [_EMSA_PKCS1_V1_5_ENCODE(msg_hash, k, True)]
             # MD2/4/5 hashes always require NULL params in AlgorithmIdentifier.
             # For all others, it is optional.
             try:
-                algorithm_is_md = msg_hash.oid.startswith('1.2.840.113549.2.')
+                algorithm_is_md = msg_hash.oid.startswith("1.2.840.113549.2.")
             except AttributeError:
                 algorithm_is_md = False
             if not algorithm_is_md:  # MD2/MD4/MD5
@@ -188,23 +189,23 @@ def _EMSA_PKCS1_V1_5_ENCODE(msg_hash, emLen, with_hash_parameters=True):
     # should be omitted. They may be present, but when they are, they shall
     # have NULL value.
 
-    digestAlgo = DerSequence([ DerObjectId(msg_hash.oid).encode() ])
+    digestAlgo = DerSequence([DerObjectId(msg_hash.oid).encode()])
 
     if with_hash_parameters:
         digestAlgo.append(DerNull().encode())
 
-    digest      = DerOctetString(msg_hash.digest())
-    digestInfo  = DerSequence([
-                    digestAlgo.encode(),
-                    digest.encode()
-                    ]).encode()
+    digest = DerOctetString(msg_hash.digest())
+    digestInfo = DerSequence([digestAlgo.encode(), digest.encode()]).encode()
 
     # We need at least 11 bytes for the remaining data: 3 fixed bytes and
     # at least 8 bytes of padding).
-    if emLen<len(digestInfo)+11:
-        raise TypeError("Selected hash algorith has a too long digest (%d bytes)." % len(digest))
-    PS = b'\xFF' * (emLen - len(digestInfo) - 3)
-    return b'\x00\x01' + PS + b'\x00' + digestInfo
+    if emLen < len(digestInfo) + 11:
+        raise TypeError(
+            "Selected hash algorith has a too long digest (%d bytes)." % len(digest)
+        )
+    PS = b"\xFF" * (emLen - len(digestInfo) - 3)
+    return b"\x00\x01" + PS + b"\x00" + digestInfo
+
 
 def new(rsa_key):
     """Create a signature object for creating
@@ -219,4 +220,3 @@ def new(rsa_key):
     :return: a :class:`PKCS115_SigScheme` signature object
     """
     return PKCS115_SigScheme(rsa_key)
-
