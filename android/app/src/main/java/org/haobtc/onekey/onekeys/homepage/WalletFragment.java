@@ -60,6 +60,7 @@ import org.haobtc.onekey.ui.base.BaseFragment;
 import org.haobtc.onekey.ui.dialog.BackupDialog;
 import org.haobtc.onekey.utils.Daemon;
 import org.haobtc.onekey.utils.NavUtils;
+import org.haobtc.onekey.viewmodel.NetworkViewModel;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -153,6 +154,7 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
     private String bleMac;
     private boolean isRecovery;
     private boolean isAddHd;
+    private NetworkViewModel mNetworkViewModel;
 
     /**
      * init views
@@ -161,10 +163,12 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
      */
     @Override
     public void init(View view) {
+        mNetworkViewModel = getApplicationViewModel(NetworkViewModel.class);
         rxPermissions = new RxPermissions(this);
         preferences = requireActivity().getSharedPreferences("Preferences", Context.MODE_PRIVATE);
         edit = preferences.edit();
         tetAmount.addTextChangedListener(this);
+        initViewModelValue();
     }
 
     /***
@@ -180,6 +184,14 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
     public void onResume() {
         super.onResume();
         initdata();
+    }
+
+    private void initViewModelValue(){
+        mNetworkViewModel.haveNet().observe(this, state -> {
+            if(state){
+                getWalletBalance();
+            }
+        });
     }
 
     /**

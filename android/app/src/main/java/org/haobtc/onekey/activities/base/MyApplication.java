@@ -5,7 +5,10 @@ import android.os.Looper;
 import android.text.TextUtils;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.ProcessLifecycleOwner;
+import androidx.lifecycle.ViewModelStore;
+import androidx.lifecycle.ViewModelStoreOwner;
 
 import com.chaquo.python.Python;
 import com.chaquo.python.android.AndroidPlatform;
@@ -27,7 +30,7 @@ import cn.com.heaton.blelibrary.ble.Ble;
 /**
  * @author liyan
  */
-public class MyApplication extends Application {
+public class MyApplication extends Application implements ViewModelStoreOwner {
 
     private static volatile MyApplication mInstance;
     private static final String BUGLY_APPID = "91260a7fcb";
@@ -35,6 +38,7 @@ public class MyApplication extends Application {
     private static final String WRITE_CHARACTERISTIC = "00000002-0000-1000-8000-00805f9b34fb";
     private static final String READ_CHARACTERISTIC = "00000003-0000-1000-8000-00805f9b34fb";
     private static final Handler S_HANDLER = new Handler(Looper.myLooper());
+    private final ViewModelStore mViewModelStore = new ViewModelStore();
 
     @Override
     public void onCreate() {
@@ -116,4 +120,9 @@ public class MyApplication extends Application {
         S_HANDLER.post(() -> Toast.makeText(MyApplication.this,info,Toast.LENGTH_SHORT).show());
     }
 
+    @NonNull
+    @Override
+    public ViewModelStore getViewModelStore() {
+        return mViewModelStore;
+    }
 }

@@ -18,6 +18,8 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.common.base.Strings;
 
@@ -314,5 +316,13 @@ public abstract class BaseActivity extends AppCompatActivity {
         NumberFormat format = NumberFormat.getCurrencyInstance(Locale.CHINA);
         // Return the string type of the converted currency 
         return format.format(numDouble);
+    }
+
+    public <T extends ViewModel> T getApplicationViewModel(Class<T> clazz) {
+        return new ViewModelProvider(((MyApplication) getApplicationContext())).get(clazz);
+    }
+
+    public <T extends ViewModel> T getActivityViewModel(Class<T> clazz) {
+        return new ViewModelProvider(this).get(clazz);
     }
 }

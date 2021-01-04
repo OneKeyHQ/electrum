@@ -11,8 +11,11 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 
 import org.greenrobot.eventbus.EventBus;
+import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.utils.EventBusUtils;
 import org.haobtc.onekey.utils.LanguageUtils;
 
@@ -88,5 +91,17 @@ public abstract class BaseFragment extends Fragment implements IBaseView {
 
     public boolean needEvents() {
         return false;
+    }
+
+    public <T extends ViewModel> T getApplicationViewModel(Class<T> clazz) {
+        return new ViewModelProvider(((MyApplication) requireContext().getApplicationContext())).get(clazz);
+    }
+
+    public <T extends ViewModel> T getActivityViewModel(Class<T> clazz) {
+        return new ViewModelProvider(requireActivity()).get(clazz);
+    }
+
+    public <T extends ViewModel> T getFragmentViewModel(Class<T> clazz) {
+        return new ViewModelProvider(this).get(clazz);
     }
 }
