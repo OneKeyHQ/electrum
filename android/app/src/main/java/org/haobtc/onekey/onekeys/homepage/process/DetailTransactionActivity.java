@@ -30,6 +30,11 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.ObservableOnSubscribe;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class DetailTransactionActivity extends BaseActivity {
 
@@ -59,6 +64,7 @@ public class DetailTransactionActivity extends BaseActivity {
     private String hashDetail;
     private String txTime;
     private String txid;
+    private Disposable mLoadTxDetailDisposable;
 
     @Override
     public int getLayoutId() {
@@ -87,33 +93,44 @@ public class DetailTransactionActivity extends BaseActivity {
     }
 
     private void getTxDetail() {
-        PyObject infoFromRaw = null;
-        if (!TextUtils.isEmpty(tx)) {
-            try {
-                infoFromRaw = Daemon.commands.callAttr("get_tx_info_from_raw", tx);
-            } catch (Exception e) {
-                e.printStackTrace();
-                mToast(e.getMessage().replace("BaseException:", ""));
-                return;
-            }
-            if (!TextUtils.isEmpty(infoFromRaw.toString())) {
-                String nowDatetime = mGetNowDatetime();
-                textTxTime.setText(nowDatetime);
-                jsonDetailData(infoFromRaw.toString());
-            }
-        } else {
-            try {
-                infoFromRaw = Daemon.commands.callAttr("get_tx_info", hashDetail);
-            } catch (Exception e) {
-                e.printStackTrace();
-                mToast(e.getMessage());
-                return;
-            }
-            if (!TextUtils.isEmpty(infoFromRaw.toString())) {
-                textTxTime.setText(txTime);
-                jsonDetailData(infoFromRaw.toString());
-            }
+        if (mLoadTxDetailDisposable != null && !mLoadTxDetailDisposable.isDisposed()) {
+            mLoadTxDetailDisposable.dispose();
         }
+        mLoadTxDetailDisposable = Observable
+                .create((ObservableOnSubscribe<PyObject>) emitter -> {
+                    try {
+                        PyObject infoFromRaw;
+                        if (!TextUtils.isEmpty(tx)) {
+                            infoFromRaw = Daemon.commands.callAttr("get_tx_info_from_raw", tx);
+                        } else {
+                            infoFromRaw = Daemon.commands.callAttr("get_tx_info", hashDetail);
+                        }
+                        emitter.onNext(infoFromRaw);
+                        emitter.onComplete();
+                    } catch (Exception e) {
+                        emitter.onError(e);
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .map(txInfo -> {
+                    String txInfoStr = txInfo.toString();
+                    if (!TextUtils.isEmpty(txInfoStr)) {
+                        if (!TextUtils.isEmpty(tx)) {
+                            String nowDatetime = mGetNowDatetime();
+                            textTxTime.setText(nowDatetime);
+                        } else {
+                            textTxTime.setText(txTime);
+                        }
+                    }
+                    return txInfoStr;
+                })
+                .subscribeOn(Schedulers.io())
+                .subscribe(this::jsonDetailData, e -> {
+                    e.printStackTrace();
+                    if (e.getMessage() != null) {
+                        mToast(e.getMessage().replace("BaseException:", ""));
+                    }
+                });
     }
 
     private @DrawableRes
@@ -224,6 +241,14 @@ public class DetailTransactionActivity extends BaseActivity {
                 intent1.putExtra("checkTxid", txid);
                 startActivity(intent1);
                 break;
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (!mLoadTxDetailDisposable.isDisposed()) {
+            mLoadTxDetailDisposable.dispose();
         }
     }
 }
