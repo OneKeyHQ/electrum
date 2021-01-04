@@ -757,7 +757,9 @@ public final class PyEnv {
             context.startActivity(new Intent(context, HomeOneKeyActivity.class));
         } catch (Exception e) {
             EventBus.getDefault().post(new ExitEvent());
-            MyApplication.getInstance().toastErr(e);
+            if (e.getMessage() != null) {
+                MyApplication.getInstance().toastErr(e);
+            }
             e.printStackTrace();
         }
     }

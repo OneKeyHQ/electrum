@@ -105,7 +105,9 @@ public class ImportPrivateKeyActivity extends BaseActivity implements TextWatche
         try {
             Daemon.commands.callAttr("verify_legality", editInputPrivate.getText().toString(), new Kwarg("flag", "private"));
         } catch (Exception e) {
-            mToast(e.getMessage().replace("BaseException:", ""));
+            if (e.getMessage() != null) {
+                mToast(e.getMessage().replace("BaseException:", ""));
+            }
             e.printStackTrace();
             return;
         }

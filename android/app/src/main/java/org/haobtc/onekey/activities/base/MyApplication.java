@@ -110,10 +110,15 @@ public class MyApplication extends Application implements ViewModelStoreOwner {
 
 
     public void toastErr(Exception e){
-        if(e == null){
+        if(e == null || e.getMessage() == null){
             return;
         }
-        String info = e.toString();
+        String info;
+        if (e.getMessage().contains("BaseException:")) {
+            info = e.getMessage().replace("BaseException:", "");
+        } else {
+            info = e.toString();
+        }
         if(TextUtils.isEmpty(info)){
             return;
         }
