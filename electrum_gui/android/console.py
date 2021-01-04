@@ -836,10 +836,11 @@ class AndroidCommands(commands.Commands):
         outputs_addrs = []
         for key in all_output_add:
             for address, amount in key.items():
-                outputs_addrs.append(PartialTxOutput.from_address_and_value(address, self.get_amount(
-                    amount) if amount != "!" else amount))
-                print("console.mktx[%s] wallet_type = %s use_change=%s add = %s" % (
-                    self.wallet, self.wallet.wallet_type, self.wallet.use_change, self.wallet.get_addresses()))
+                if amount != "!":
+                    amount = self.get_amount(amount)
+                    if amount <= 546:
+                        raise BaseException(_("dust tx"))
+                outputs_addrs.append(PartialTxOutput.from_address_and_value(address, amount))
         return outputs_addrs
 
     def get_coins(self, coins_info):
@@ -885,7 +886,8 @@ class AndroidCommands(commands.Commands):
         try:
             fee_info_list = self.get_block_info()
             my_change_addr_size = Transaction.estimated_output_size(self.wallet.get_addresses()[0])
-            out_size_p2pkh = 34 + my_change_addr_size
+            #out_size_p2pkh = 34 + my_change_addr_size
+            out_size_p2pkh = 141
             out_info = {}
             if feerate is None:
                 for block, feerate in fee_info_list.items():
