@@ -53,6 +53,7 @@ import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.event.GetFeeEvent;
 import org.haobtc.onekey.event.GotPassEvent;
 import org.haobtc.onekey.event.SecondEvent;
+import org.haobtc.onekey.manager.MySPManager;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.ui.activity.SoftPassActivity;
 import org.haobtc.onekey.ui.activity.VerifyPinActivity;
@@ -351,12 +352,18 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                     bundle.putDouble(Constant.CUSTOMIZE_FEE_RATE_MIN, currentFeeDetails.getSlow().getFeerate());
                     bundle.putDouble(Constant.CUSTOMIZE_FEE_RATE_MAX, currentFeeDetails.getFast().getFeerate() * 20);
                     bundle.putInt(Constant.TAG_TX_SIZE, transactionSize);
-                    if (selectFlag == RECOMMENDED_FEE_RATE) {
-                        bundle.putDouble(Constant.FEE_RATE, normalRate);
-                    } else if (selectFlag == SLOW_FEE_RATE) {
-                        bundle.putDouble(Constant.FEE_RATE, slowRate);
-                    } else if (selectFlag == FAST_FEE_RATE) {
-                        bundle.putDouble(Constant.FEE_RATE, fastRate);
+                    bundle.putString(Constant.HDWALLET_NAME, hdWalletName);
+                    String customFeeRemember = (String) MySPManager.getInstance().get(hdWalletName, "");
+                    if (!Strings.isNullOrEmpty(customFeeRemember)) {
+                        bundle.putDouble(Constant.FEE_RATE, Double.parseDouble(customFeeRemember));
+                    } else {
+                        if (selectFlag == RECOMMENDED_FEE_RATE) {
+                            bundle.putDouble(Constant.FEE_RATE, normalRate);
+                        } else if (selectFlag == SLOW_FEE_RATE) {
+                            bundle.putDouble(Constant.FEE_RATE, slowRate);
+                        } else if (selectFlag == FAST_FEE_RATE) {
+                            bundle.putDouble(Constant.FEE_RATE, fastRate);
+                        }
                     }
                     feeDialog = new CustomizeFeeDialog();
                     feeDialog.setArguments(bundle);

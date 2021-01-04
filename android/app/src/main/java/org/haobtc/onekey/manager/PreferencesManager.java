@@ -3,6 +3,8 @@ package org.haobtc.onekey.manager;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import org.haobtc.onekey.constant.Constant;
+
 import java.util.Map;
 
 /**
@@ -23,6 +25,15 @@ public class PreferencesManager {
     public static SharedPreferences getSharedPreferences(Context context, String name) {
         return context.getSharedPreferences(name,
                 Context.MODE_PRIVATE);
+    }
+
+    /**
+     *  获取本地 MySharePreference
+     * @param context
+     * @return
+     */
+    public static SharedPreferences getMySharePreference(Context context){
+        return context.getSharedPreferences(Constant.myPreferences,Context.MODE_PRIVATE);
     }
 
     /**
