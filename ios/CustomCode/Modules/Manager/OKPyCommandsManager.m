@@ -346,11 +346,13 @@ static dispatch_once_t once;
             result = PyObject_Call(myobject_method, args, kwargs);
         }
         
-        
-        
     }else if([method isEqualToString:kInterfaceBroadcast_tx]){
         NSString *tx = [parameter safeStringForKey:@"tx"];
         result = PyObject_CallMethod(self.pyInstance, [kInterfaceBroadcast_tx UTF8String], "(s)", [tx UTF8String]);
+        
+    }else if([method isEqualToString:kInterfaceget_feature]){
+        NSString *path  = [parameter safeStringForKey:@"path"];
+        result = PyObject_CallMethod(self.pyInstance, [kInterfaceget_feature UTF8String], "(s)",[path UTF8String]);
     }
   
     if (result == NULL) {

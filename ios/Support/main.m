@@ -12,7 +12,7 @@
 // 😁 loading cryptodomex dynamic dependencies _cffi_backend.cpython-38-darwin.so , created by sweepmonkli
 void  loading_cffi_backend() {
     void *_cffi_backend = NULL;
-    NSString *fileStr = [NSString stringWithFormat:@"%@/Library/Application Support/so.onekey.one.OneKey/app/OneKey/CFFI/_cffi_backend.cpython-38-darwin.so", [[NSBundle mainBundle] resourcePath]];
+    NSString *fileStr = [NSString stringWithFormat:@"%@/Frameworks/_cffi_backend.framework/_cffi_backend.cpython-38-darwin.so", [[NSBundle mainBundle] resourcePath]];
     if ([NSURL fileURLWithPath:(fileStr) isDirectory: NO]) {
         NSURL *file = [NSURL fileURLWithPath:fileStr];
         void *handle;
@@ -51,7 +51,7 @@ void bitarray_importer() {
 
 void loading_lru() {
     void *lru = NULL;
-    NSString *fileStr = [NSString stringWithFormat:@"%@/Library/Application Support/so.onekey.one.OneKey/app/OneKey/LRU/lru.cpython-38-darwin.so", [[NSBundle mainBundle] resourcePath]];
+    NSString *fileStr = [NSString stringWithFormat:@"%@/Frameworks/lru.framework/lru.cpython-38-darwin.so", [[NSBundle mainBundle] resourcePath]];
     if ([NSURL fileURLWithPath:(fileStr) isDirectory: NO]) {
         NSURL *file = [NSURL fileURLWithPath:fileStr];
         void *handle;
@@ -68,7 +68,7 @@ void loading_lru() {
 
 void loading_bitarray_bitarray() {
     void *_bitarray = NULL;
-    NSString *fileStr = [NSString stringWithFormat:@"%@/Library/Application Support/so.onekey.one.OneKey/app/OneKey/bitarray/_bitarray.cpython-38-darwin.so", [[NSBundle mainBundle] resourcePath]];
+    NSString *fileStr = [NSString stringWithFormat:@"%@/Frameworks/_bitarray.framework/_bitarray.cpython-38-darwin.so", [[NSBundle mainBundle] resourcePath]];
     if ([NSURL fileURLWithPath:(fileStr) isDirectory: NO]) {
         NSURL *file = [NSURL fileURLWithPath:fileStr];
         void *handle;
@@ -85,7 +85,7 @@ void loading_bitarray_bitarray() {
 
 void  loading_bitarray_util() {
     void *_util = NULL;
-    NSString *fileStr = [NSString stringWithFormat:@"%@/Library/Application Support/so.onekey.one.OneKey/app/OneKey/bitarray/_util.cpython-38-darwin.so", [[NSBundle mainBundle] resourcePath]];
+    NSString *fileStr = [NSString stringWithFormat:@"%@/Frameworks/_util.framework/_util.cpython-38-darwin.so", [[NSBundle mainBundle] resourcePath]];
     if ([NSURL fileURLWithPath:(fileStr) isDirectory: NO]) {
         NSURL *file = [NSURL fileURLWithPath:fileStr];
         void *handle;
@@ -127,11 +127,14 @@ int main(int argc, char *argv[]) {
         putenv((char *)[python_path UTF8String]);
         NSString *documentPath = [NSString stringWithFormat:@"iOS_DATA=%@",[OKStorageManager getDocumentDirectoryPath]];
         putenv((char *)[documentPath UTF8String]);
+           
+        NSString *DYLIB_PATH = [NSString stringWithFormat:@"DYLIB_PATH=%@/Frameworks",resourcePath];
+        putenv((char *)[DYLIB_PATH UTF8String]);
         // iOS provides a specific directory for temp files.
         tmp_path = [NSString stringWithFormat:@"TMP=%@/tmp", resourcePath, nil];
         putenv((char *)[tmp_path UTF8String]);
         NSLog(@"Initializing Python runtime...");
-        loading_cffi_backend();
+//        loading_cffi_backend();
         loading_lru();
         loading_bitarray_bitarray();
         loading_bitarray_util();

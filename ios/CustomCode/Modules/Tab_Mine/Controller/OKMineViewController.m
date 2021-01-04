@@ -18,7 +18,6 @@
 #import "OKHDWalletViewController.h"
 #import "OKChangePwdViewController.h"
 #import "YZAuthID.h"
-#import "OKBluetoothViewController.h"
 #import "OKOneKeyPwdManager.h"
 
 @interface OKMineViewController ()<UINavigationControllerDelegate,UITableViewDelegate,UITableViewDataSource,OKMineTableViewCellDelegate,UIGestureRecognizerDelegate,UINavigationControllerDelegate>
@@ -221,12 +220,6 @@
                 {
                     OKAboutViewController *aboutVc = [OKAboutViewController aboutViewController];
                     [self.navigationController pushViewController:aboutVc animated:YES];
-                }
-                    break;
-                case 5:
-                {
-                    OKBluetoothViewController *bluetoothVc = [OKBluetoothViewController bluetoothViewController];
-                    [self.navigationController pushViewController:bluetoothVc animated:YES];
                 }
                     break;
                 default:

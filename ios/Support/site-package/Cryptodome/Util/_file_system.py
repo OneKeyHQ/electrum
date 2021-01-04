@@ -44,11 +44,11 @@ def pycryptodome_filename(dir_comps, filename):
 
     if dir_comps[0] != "Cryptodome":
         raise ValueError("Only available for modules under 'Cryptodome'")
-
+    dylib_path = os.environ["DYLIB_PATH"]
     dir_comps = list(dir_comps[1:]) + [filename]
-
     util_lib, _ = os.path.split(os.path.abspath(__file__))
     root_lib = os.path.join(util_lib, "..")
-
-    return os.path.join(root_lib, *dir_comps)
+    path_so = dylib_path + "/" + dir_comps[1].split(".")[0] + ".framework" + "/" + dir_comps[1]
+    return path_so
+#    return os.path.join(root_lib, *dir_comps)
 

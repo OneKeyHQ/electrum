@@ -34,7 +34,6 @@ static dispatch_once_t once;
     return _sharedInstance;
 }
 
-
 - (NSMutableArray *)peripheralArr {
     if (!_peripheralArr) {
         _peripheralArr = [NSMutableArray new];
@@ -45,7 +44,7 @@ static dispatch_once_t once;
 - (instancetype)init {
     self = [super init];
     if (self) {
-        [self initBabyBluetooth];
+//        [self initBabyBluetooth];
     }
     return self;
 }
@@ -158,7 +157,8 @@ static dispatch_once_t once;
     // 8-设置发现设service的Characteristics的委托
     [self.babyBluetooth setBlockOnDiscoverCharacteristicsAtChannel:channelOneKeyPeripheral
                                                              block:^(CBPeripheral *peripheral, CBService *service, NSError *error) {
-    NSString *serviceUUID = [NSString stringWithFormat:@"%@",service.UUID];
+        NSLog(@"peripheral == %@",peripheral);
+        NSString *serviceUUID = [NSString stringWithFormat:@"%@",service.UUID];
         if ([serviceUUID isEqualToString:weakSelf.serverUUIDString]) {
             for (CBCharacteristic *ch in service.characteristics) {
                 // 写数据的特征值
@@ -269,7 +269,7 @@ static dispatch_once_t once;
             return;
         }
     }
-    
+
     OKPeripheralInfo *peripheralInfo = [[OKPeripheralInfo alloc] init];
     peripheralInfo.peripheral = peripheral;
     peripheralInfo.advertisementData = advertisementData;
@@ -371,6 +371,7 @@ static dispatch_once_t once;
 
 ///读取数据
 - (void)readData:(NSData *)valueData {
+    NSLog(@"valueData = %@",valueData);
     self.currentReadDataStr = [NSData hexStringForData:valueData];
     if ([self.delegate respondsToSelector:@selector(readData:)]) {
         [self.delegate readData:valueData];
@@ -380,6 +381,7 @@ static dispatch_once_t once;
 
 - (void)characteristicWrite:(NSString *)str
 {
+    NSLog(@"str = %@  self.writeCharacteristic = %@",str,self.writeCharacteristic);
     if (self.writeCharacteristic) {
         self.currentReadDataStr = nil;
         NSData *data = [NSData dataForHexString:str];
@@ -391,6 +393,7 @@ static dispatch_once_t once;
 }
 - (NSString *)characteristicRead
 {
+    NSLog(@"self.currentReadDataStr = %@",self.currentReadDataStr);
     if (self.currentReadDataStr) {
         return self.currentReadDataStr;
     }

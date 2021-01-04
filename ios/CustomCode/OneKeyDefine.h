@@ -11,7 +11,9 @@
 
 #define kTheServiceAgreement        @"https://onekey.zendesk.com/hc/articles/360002014776"
 #define kPrivacyAgreement           @"https://onekey.zendesk.com/hc/articles/360002003315"
-
 #define kSavedUUIDForLastBlueTooth  @"kSavedUUIDForLastBlueTooth"
+
+#define NetTypeMain                     @"set_mainnet"
+#define NetTypeTest                     @"set_testnet"
 
 #endif /* OneKeyDefine_h */

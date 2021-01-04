@@ -7,7 +7,6 @@
 //
 
 #import "OKMatchingInCirclesViewController.h"
-#import "OKBluetoothViewController.h"
 #import "OKBluetoothViewCell.h"
 #import "OKBluetoothViewCellModel.h"
 #import "OKActivateDeviceSelectViewController.h"
@@ -26,7 +25,6 @@
 @property (nonatomic,strong)NSMutableArray *dataSource;
 @property (nonatomic,strong)NSTimer *terminalTimer;
 @property (nonatomic,assign)NSInteger count;
-
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *completeCons;
 @property (weak, nonatomic) IBOutlet UILabel *completetitleLabel;
 @property (weak, nonatomic) IBOutlet UILabel *completetipsLabel;
@@ -126,15 +124,15 @@
 - (void)refreshBtnClick
 {
     
-    OKSetDeviceNameViewController *setDeviceNameVc = [OKSetDeviceNameViewController setDeviceNameViewController];
-    [self.navigationController pushViewController:setDeviceNameVc animated:YES];
+//    OKSetDeviceNameViewController *setDeviceNameVc = [OKSetDeviceNameViewController setDeviceNameViewController];
+//    [self.navigationController pushViewController:setDeviceNameVc animated:YES];
     
     
 //    OKActivateDeviceSelectViewController *vc = [OKActivateDeviceSelectViewController activateDeviceSelectViewController];
 //    [self.navigationController pushViewController:vc animated:YES];
     
     
-    //[kOKBlueManager startScanPeripheral];
+    [kOKBlueManager startScanPeripheral];
 }
 - (void)stupUI
 {
@@ -192,7 +190,9 @@
     kOKBlueManager.serverUUIDString = kPRIMARY_SERVICE;
     kOKBlueManager.writeUUIDString = kWRITE_CHARACTERISTIC;
     kOKBlueManager.readUUIDString = kREAD_CHARACTERISTIC;
-    [kOKBlueManager write:[NSData dataForHexString:@"3f2323000000000000"]];
+    NSDictionary *json =  [kPyCommandsManager callInterface:kInterfaceget_feature parameter:@{@"path":@"bluetooth_ios"}];
+    NSLog(@"json == %@",json);
+    
 }
 - (void)readData:(NSData *)valueData {
     // 获取到蓝牙设备发来的数据
