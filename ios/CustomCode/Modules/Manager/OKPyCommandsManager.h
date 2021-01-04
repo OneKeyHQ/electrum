@@ -91,17 +91,8 @@
 
 #define kInterfaceverify_legality        @"verify_legality"  //验证格式
 
-
-
 //硬件相关
-
 #define kInterfaceget_feature            @"get_feature"    //获取设备信息
-
-
-
-
-
-
 
 #define kPyCommandsManager (OKPyCommandsManager.sharedInstance)
 NS_ASSUME_NONNULL_BEGIN

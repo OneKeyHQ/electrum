@@ -26,7 +26,6 @@
 #import "OKFindFollowingWalletController.h"
 #import "OKCreateResultModel.h"
 #import "OKCreateResultWalletInfoModel.h"
-//#import "OKMatchingInCirclesViewController.h"
 #import "OKTakeCareMnemonicViewController.h"
 
 

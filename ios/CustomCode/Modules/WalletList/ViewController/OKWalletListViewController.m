@@ -26,7 +26,6 @@
 #import "OKBiologicalViewController.h"
 #import "OKCreateResultModel.h"
 #import "OKCreateResultWalletInfoModel.h"
-//#import "OKMatchingInCirclesViewController.h"
 
 
 #define kDefaultType  @"HD"

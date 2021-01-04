@@ -134,7 +134,6 @@ int main(int argc, char *argv[]) {
         tmp_path = [NSString stringWithFormat:@"TMP=%@/tmp", resourcePath, nil];
         putenv((char *)[tmp_path UTF8String]);
         NSLog(@"Initializing Python runtime...");
-//        loading_cffi_backend();
         loading_lru();
         loading_bitarray_bitarray();
         loading_bitarray_util();

@@ -44,7 +44,6 @@ static dispatch_once_t once;
 - (instancetype)init {
     self = [super init];
     if (self) {
-//        [self initBabyBluetooth];
     }
     return self;
 }

@@ -132,7 +132,7 @@ if [ -f "${infoplist}" ]; then
 	# Camera Usage key -- required!
 	plutil -insert "NSCameraUsageDescription" -string "The camera is needed to scan QR codes" -- ${infoplist}
 	# Bluetooth Usage key -- required!! added by sweepmonkli
-   plutil -insert "NSBluetoothAlwaysUsageDescription" -string "The Bluetooth is needed to communication with our hardware." -- ${infoplist}
+    plutil -insert "NSBluetoothAlwaysUsageDescription" -string "The Bluetooth is needed to communication with our hardware." -- ${infoplist}
     plutil -insert "NSBluetoothPeripheralUsageDescription" -string "The Bluetooth Peripheral is needed to communication with our hardware." -- ${infoplist}
 	# Stuff related to being able to open .txn and .txt files (open transaction from context menu in other apps)
 	plutil -insert "CFBundleDocumentTypes" -xml '<array><dict><key>CFBundleTypeIconFiles</key><array/><key>CFBundleTypeName</key><string>Transaction</string><key>LSItemContentTypes</key><array><string>public.plain-text</string></array><key>LSHandlerRank</key><string>Owner</string></dict></array>' -- ${infoplist}

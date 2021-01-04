@@ -123,15 +123,6 @@
 }
 - (void)refreshBtnClick
 {
-    
-//    OKSetDeviceNameViewController *setDeviceNameVc = [OKSetDeviceNameViewController setDeviceNameViewController];
-//    [self.navigationController pushViewController:setDeviceNameVc animated:YES];
-    
-    
-//    OKActivateDeviceSelectViewController *vc = [OKActivateDeviceSelectViewController activateDeviceSelectViewController];
-//    [self.navigationController pushViewController:vc animated:YES];
-    
-    
     [kOKBlueManager startScanPeripheral];
 }
 - (void)stupUI
