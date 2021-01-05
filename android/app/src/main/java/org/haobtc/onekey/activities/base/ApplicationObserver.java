@@ -35,6 +35,7 @@ public class ApplicationObserver implements LifecycleObserver {
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     public void onResume() {
+        MyApplication.getInstance().getHandler().removeCallbacks(this::disConnectDevices);
         Log.d(TAG, "Lifecycle.Event.ON_RESUME");
     }
 
@@ -47,12 +48,15 @@ public class ApplicationObserver implements LifecycleObserver {
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     public void onStop() {
-        Optional.ofNullable(Ble.getInstance().getConnetedDevices()).ifPresent((bleDevices) -> Ble.getInstance().disconnectAll());
+        MyApplication.getInstance().getHandler().postDelayed(this::disConnectDevices, 60*1000L);
         Log.d(TAG, "Lifecycle.Event.ON_STOP");
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     public void onDestroy() {
         Log.d(TAG, "Lifecycle.Event.ON_DESTROY");
+    }
+    private void disConnectDevices() {
+        Optional.ofNullable(Ble.getInstance().getConnetedDevices()).ifPresent((bleDevices) -> Ble.getInstance().disconnectAll());
     }
 }

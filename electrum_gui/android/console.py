@@ -1627,19 +1627,22 @@ class AndroidCommands(commands.Commands):
         except Exception as e:
             raise BaseException(e)
 
-    def read_tx_from_file(self, path):
-        '''
+    def read_tx_from_file(self, path: str, is_tx=True) -> str:
+        """
         Import tx info from path
+        :param is_tx: if True psbt tx else message
         :param path: path as str
-        :return:
-        '''
+        :return: serialized tx or file content
+        """
         try:
-            with open(path, "rb") as f:
+            with open(path, "rb" if is_tx else "r") as f:
                 file_content = f.read()
+                if is_tx:
+                    tx = tx_from_any(file_content)
         except (ValueError, IOError, os.error) as reason:
             raise BaseException(_("Failed to open file."))
-        tx = tx_from_any(file_content)
-        return tx
+        else:
+            return tx if is_tx else file_content
 
     ##Analyze QR data
     def parse_address(self, data):

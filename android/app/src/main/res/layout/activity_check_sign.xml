@@ -74,11 +74,12 @@
                 <EditText
                     android:id="@+id/edit_message"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="62dp"
                     android:background="@null"
-                    android:ellipsize="end"
                     android:hint="@string/input_msg"
-                    android:padding="@dimen/dp_20"
+                    android:layout_marginTop="@dimen/dp_20"
+                    android:gravity="start|top"
+                    android:layout_marginHorizontal="@dimen/dp_20"
                     android:textSize="@dimen/text_size" />
 
                 <ImageView
@@ -128,11 +129,12 @@
                 <EditText
                     android:id="@+id/edit_address"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="62dp"
                     android:background="@null"
-                    android:gravity="top"
+                    android:gravity="start|top"
+                    android:layout_marginTop="@dimen/dp_20"
+                    android:layout_marginHorizontal="@dimen/dp_20"
                     android:hint="@string/inputPublickey"
-                    android:padding="@dimen/dp_20"
                     android:textColor="@color/set_txt"
                     android:textSize="@dimen/sp_15" />
 
@@ -183,11 +185,12 @@
                 <EditText
                     android:id="@+id/edit_signature"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="62dp"
                     android:background="@null"
-                    android:gravity="top"
+                    android:gravity="start|top"
+                    android:layout_marginHorizontal="@dimen/dp_20"
+                    android:layout_marginTop="@dimen/dp_20"
                     android:hint="@string/input_signed_msg"
-                    android:padding="@dimen/dp_20"
                     android:textColor="@color/text_color"
                     android:textSize="@dimen/sp_15" />
 

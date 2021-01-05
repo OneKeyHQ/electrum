@@ -3,6 +3,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -24,9 +25,12 @@ import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.utils.ClipboardUtils;
 
+import java.util.Optional;
+
 import butterknife.BindView;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
+import io.reactivex.disposables.Disposable;
 
 /**
  * @author xiaomin
@@ -58,12 +62,16 @@ public class CheckSignActivity extends BaseActivity {
     private static final int REQUEST_CODE_PUBLIC = 1;
     private static final int REQUEST_CODE_SIGNED = 2;
     private Bundle bundle;
+    private Disposable subscriber;
 
     /**
      * init
      */
     @Override
     public void init() {
+        editRawMessage.setMovementMethod(ScrollingMovementMethod.getInstance());
+        editAddress.setMovementMethod(ScrollingMovementMethod.getInstance());
+        editSignature.setMovementMethod(ScrollingMovementMethod.getInstance());
         rxPermissions = new RxPermissions(this);
         getCurrentAddress();
         bundle = getIntent().getBundleExtra(org.haobtc.onekey.constant.Constant.VERIFY_DETAIL);
@@ -169,7 +177,7 @@ public class CheckSignActivity extends BaseActivity {
 
 
     private void scan(int code) {
-        rxPermissions
+        subscriber = rxPermissions
                 .request(Manifest.permission.CAMERA)
                 .subscribe(granted -> {
                     if (granted) { // Always true pre-M
@@ -203,6 +211,12 @@ public class CheckSignActivity extends BaseActivity {
         } else {
             showToast(errors);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Optional.ofNullable(subscriber).ifPresent(Disposable::dispose);
     }
 
     @Override

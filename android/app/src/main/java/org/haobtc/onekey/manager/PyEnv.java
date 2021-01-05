@@ -434,7 +434,8 @@ public final class PyEnv {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                MyApplication.getInstance().toastErr(e);
+                Exception exception = HardWareExceptions.exceptionConvert(e);
+                MyApplication.getInstance().toastErr(exception);
                 EventBus.getDefault().post(new ExitEvent());
             }
         });
@@ -482,7 +483,8 @@ public final class PyEnv {
             sCommands.callAttr(PyConstant.FIRMWARE_UPDATE, path, MyApplication.getInstance().getDeviceWay());
         } catch (Exception e) {
             e.printStackTrace();
-            response.setErrors(e.getMessage());
+            Exception exception = HardWareExceptions.exceptionConvert(e);
+            response.setErrors(exception.getMessage());
         }
         return response;
     }
@@ -498,7 +500,8 @@ public final class PyEnv {
             String txData = sCommands.callAttr(PyConstant.ANALYZE_TX, rawTx).toString();
             response.setResult(txData);
         } catch (Exception e) {
-            response.setErrors(e.getMessage());
+            Exception exception = HardWareExceptions.exceptionConvert(e);
+            response.setErrors(exception.getMessage());
             e.printStackTrace();
         }
         return response;
@@ -514,7 +517,8 @@ public final class PyEnv {
             response.setResult(info);
         } catch (Exception e) {
             e.printStackTrace();
-            response.setErrors(e.getMessage());
+            Exception exception = HardWareExceptions.exceptionConvert(e);
+            response.setErrors(exception.getMessage());
         }
         return response;
     }
@@ -530,7 +534,8 @@ public final class PyEnv {
             response.setResult(info);
         } catch (Exception e) {
             e.printStackTrace();
-            response.setErrors(e.getMessage());
+            Exception exception = HardWareExceptions.exceptionConvert(e);
+            response.setErrors(exception.getMessage());
         }
         return response;
     }
@@ -555,7 +560,8 @@ public final class PyEnv {
             response.setResult(temporaryTxInfo);
         } catch (Exception e) {
             e.printStackTrace();
-            response.setErrors(e.getMessage());
+            Exception exception = HardWareExceptions.exceptionConvert(e);
+            response.setErrors(exception.getMessage());
         }
         return response;
     }
@@ -573,7 +579,8 @@ public final class PyEnv {
             String rawTx = MakeTxResponseBean.objectFromData(result).getTx();
             response.setResult(rawTx);
         } catch (Exception e) {
-            response.setErrors(e.getMessage());
+            Exception exception = HardWareExceptions.exceptionConvert(e);
+            response.setErrors(exception.getMessage());
             e.printStackTrace();
         }
         return response;
@@ -591,7 +598,8 @@ public final class PyEnv {
             String result = sCommands.callAttr(PyConstant.EXCHANGE_RATE_CONVERSION, "base", value).toString();
             response.setResult(result);
         } catch (Exception e) {
-            response.setErrors(e.getMessage());
+            Exception exception = HardWareExceptions.exceptionConvert(e);
+            response.setErrors(exception.getMessage());
             e.printStackTrace();
         }
         return response;
@@ -607,7 +615,8 @@ public final class PyEnv {
         try {
             sCommands.callAttr(PyConstant.BROADCAST_TX, signedTx);
         } catch (Exception e) {
-            response.setErrors(e.getMessage());
+            Exception exception = HardWareExceptions.exceptionConvert(e);
+            response.setErrors(exception.getMessage());
             e.printStackTrace();
         }
         return response;
@@ -626,7 +635,8 @@ public final class PyEnv {
             TransactionInfoBean txInfo = TransactionInfoBean.objectFromData(result);
             response.setResult(txInfo);
         } catch (Exception e) {
-            response.setErrors(e.getMessage());
+            Exception exception = HardWareExceptions.exceptionConvert(e);
+            response.setErrors(exception.getMessage());
             e.printStackTrace();
         }
         return response;
@@ -642,7 +652,8 @@ public final class PyEnv {
             CurrentAddressDetail txInfo = CurrentAddressDetail.objectFromData(result);
             response.setResult(txInfo);
         } catch (Exception e) {
-            response.setErrors(e.getMessage());
+            Exception exception = HardWareExceptions.exceptionConvert(e);
+            response.setErrors(exception.getMessage());
             e.printStackTrace();
         }
         return response;
@@ -661,7 +672,8 @@ public final class PyEnv {
             boolean verified = sCommands.callAttr(PyConstant.VERIFY_MESSAGE_SIGNATURE, address, message, signature).toBoolean();
             response.setResult(verified);
         } catch (Exception e) {
-            response.setErrors(e.getMessage());
+            Exception exception = HardWareExceptions.exceptionConvert(e);
+            response.setErrors(exception.getMessage());
             e.printStackTrace();
         }
         return response;
@@ -677,7 +689,8 @@ public final class PyEnv {
         try {
             sCommands.callAttr(PyConstant.CLEAR_BACK_FLAGS, name);
         } catch (Exception e) {
-            response.setErrors(e.getMessage());
+            Exception exception = HardWareExceptions.exceptionConvert(e);
+            response.setErrors(exception.getMessage());
             e.printStackTrace();
         }
         return response;
@@ -694,7 +707,8 @@ public final class PyEnv {
             sCommands.callAttr(PyConstant.VERIFY_SOFT_PASS, passwd);
         } catch (Exception e) {
             System.out.println("verify xxxxxxx");
-            response.setErrors(e.getMessage());
+            Exception exception = HardWareExceptions.exceptionConvert(e);
+            response.setErrors(exception.getMessage());
             e.printStackTrace();
         }
         return response;
@@ -711,7 +725,8 @@ public final class PyEnv {
         try {
             sCommands.callAttr(PyConstant.CHANGE_SOFT_PASS, passwdOrigin, passwdNew);
         } catch (Exception e) {
-            response.setErrors(e.getMessage());
+            Exception exception = HardWareExceptions.exceptionConvert(e);
+            response.setErrors(exception.getMessage());
             e.printStackTrace();
         }
         return response;
@@ -728,7 +743,8 @@ public final class PyEnv {
             String result = sCommands.callAttr(PyConstant.EXPORT_MNEMONICS, password, null).toString();
             response.setResult(result);
         } catch (Exception e) {
-            response.setErrors(e.getMessage());
+            Exception exception = HardWareExceptions.exceptionConvert(e);
+            response.setErrors(exception.getMessage());
             e.printStackTrace();
         }
         return response;
@@ -773,7 +789,8 @@ public final class PyEnv {
         try {
             sCommands.callAttr(PyConstant.DELETE_WALLET, password, new Kwarg("name", walletName));
         } catch (Exception e) {
-            response.setErrors(e.getMessage());
+            Exception exception = HardWareExceptions.exceptionConvert(e);
+            response.setErrors(exception.getMessage());
             e.printStackTrace();
         }
         return response;
@@ -793,8 +810,8 @@ public final class PyEnv {
             CreateWalletBean createWalletBean = CreateWalletBean.objectFromData(result);
             EventBus.getDefault().post(new CreateSuccessEvent(createWalletBean.getWalletInfo().get(0).getName()));
         } catch (Exception e) {
-            response.setErrors(e.getMessage());
-            e.printStackTrace();
+            Exception exception = HardWareExceptions.exceptionConvert(e);
+            response.setErrors(exception.getMessage());            e.printStackTrace();
         }
         return response;
     }
@@ -810,8 +827,8 @@ public final class PyEnv {
             String result = sCommands.callAttr(PyConstant.EXPORT_PRIVATE_KEY, password).toString();
             response.setResult(result);
         } catch (Exception e) {
-            response.setErrors(e.getMessage());
-            e.printStackTrace();
+            Exception exception = HardWareExceptions.exceptionConvert(e);
+            response.setErrors(exception.getMessage());            e.printStackTrace();
         }
         return response;
     }
@@ -828,7 +845,8 @@ public final class PyEnv {
             String res = sCommands.callAttr(PyConstant.GET_DEVIRED_NUM, coin).toString();
             response.setResult(res);
         } catch (Exception e) {
-            response.setErrors(e.getMessage());
+            Exception exception = HardWareExceptions.exceptionConvert(e);
+            response.setErrors(exception.getMessage());
         }
         return response;
     }

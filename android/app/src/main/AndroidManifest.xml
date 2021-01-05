@@ -173,7 +173,11 @@
             android:name=".onekeys.HomeOneKeyActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            tools:ignore="LockedOrientationActivity" />
+            tools:ignore="LockedOrientationActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".onekeys.GuidanceActivity"
             android:screenOrientation="portrait"

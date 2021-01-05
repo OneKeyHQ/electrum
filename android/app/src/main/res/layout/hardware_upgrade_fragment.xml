@@ -35,7 +35,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/dp_6"
-                    android:text="v1.8.7" />
+                    tools:text="v1.8.7" />
             </LinearLayout>
 
             <LinearLayout
@@ -53,7 +53,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/dp_6"
-                    android:text="v1.8.7" />
+                    tools:text="v1.8.7" />
             </LinearLayout>
 
             <TextView

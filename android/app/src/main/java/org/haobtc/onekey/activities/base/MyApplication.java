@@ -37,8 +37,8 @@ public class MyApplication extends Application implements ViewModelStoreOwner {
     private static final String PRIMARY_SERVICE = "00000001-0000-1000-8000-00805f9b34fb";
     private static final String WRITE_CHARACTERISTIC = "00000002-0000-1000-8000-00805f9b34fb";
     private static final String READ_CHARACTERISTIC = "00000003-0000-1000-8000-00805f9b34fb";
-    private static final Handler S_HANDLER = new Handler(Looper.myLooper());
     private final ViewModelStore mViewModelStore = new ViewModelStore();
+    private final Handler S_HANDLER = new Handler(Looper.myLooper());
 
     @Override
     public void onCreate() {
@@ -108,6 +108,9 @@ public class MyApplication extends Application implements ViewModelStoreOwner {
                 , Constant.WAY, Constant.WAY_MODE_BLE);
     }
 
+    public Handler getHandler() {
+        return S_HANDLER;
+    }
 
     public void toastErr(Exception e){
         if(e == null){

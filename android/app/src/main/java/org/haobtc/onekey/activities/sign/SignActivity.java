@@ -485,7 +485,7 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
             String strPath = substring.substring(0, substring.length() - 1);
             try {
                 //read file
-                PyObject txFromFile = Daemon.commands.callAttr("read_tx_from_file", strPath);
+                PyObject txFromFile = Daemon.commands.callAttr("read_tx_from_file", strPath, new Kwarg("is_tx", signTransaction.isChecked()));
                 if (txFromFile != null) {
                     String readFile = txFromFile.toString();
                     editTransactionText.setText(readFile);
