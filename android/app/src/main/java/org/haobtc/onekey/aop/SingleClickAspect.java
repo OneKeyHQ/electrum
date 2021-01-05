@@ -21,7 +21,7 @@ public class SingleClickAspect {
     /**
      * define the method that was annotated with @SingleClick as joinPoint
      * */
-    @Pointcut("execution(@org.haobtc.onekey.aop.SingleClick * *(..))")
+    @Pointcut("call(@org.haobtc.onekey.aop.SingleClick * *(..))")
     public void methodAnnotated() {}
 
     @Around("methodAnnotated()")
