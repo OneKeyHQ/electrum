@@ -27,9 +27,6 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-# C extensions
-*.so
-
 # Distribution / packaging
 .Python
 env/
@@ -58,7 +55,8 @@ var/
 .idea_modules/
 
 # Briefcase build directories
-iOS/
+iOS/app_packages/
+iOS/app/
 macOS/
 windows/
 android/
