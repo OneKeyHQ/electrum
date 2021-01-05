@@ -189,12 +189,16 @@ public class AboutActivity extends BaseActivity implements OnDownloadListener {
 
     @Override
     public void start() {
-        updateDialog.progressBar.setIndeterminate(false);
+        if(updateDialog.progressBar != null) {
+            updateDialog.progressBar.setIndeterminate(false);
+        }
     }
 
     @Override
     public void downloading(int max, int progress) {
-        updateDialog.progressBar.setProgress((int)(((float)progress/max)*100));
+        if(updateDialog.progressBar != null) {
+            updateDialog.progressBar.setProgress((int) (((float) progress / max) * 100));
+        }
     }
 
     @Override
