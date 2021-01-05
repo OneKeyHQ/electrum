@@ -179,9 +179,12 @@ typedef enum {
     }
     if ([self.longPwdFirstTextField.text containsChinese]) {
         [kTools tipMessage:MyLocalizedString(@"The password cannot contain Chinese", nil)];
+        self.longPwdFirstTextField.text = @"";
         return;
     }
     [self validationPwd:self.longPwdFirstTextField.text];
+    self.longPwdFirstTextField.text = @"";
+
 }
 
 - (void)validationPwd:(NSString *)pwd
