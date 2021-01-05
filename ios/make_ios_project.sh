@@ -83,9 +83,12 @@ echo "Building Briefcase-Based iOS Project..."
 echo ""
 
 # workround for Python-iOS-template not support python3.8
+if [ ! -e ${HOME}/.cookiecutters ];then
 git clone --single-branch --branch 3.7 https://github.com/beeware/Python-iOS-template $HOME/.cookiecutters/Python-iOS-template
-
-mkdir ${HOME}/.briefcase
+fi
+if [ ! -e ${HOME}/.briefcase ];then
+ mkdir ${HOME}/.briefcase
+fi
 curl -C - -L "https://briefcase-support.org/python?platform=iOS&version=3.8" -o ${HOME}/.briefcase/Python-3.8-iOS-support.b3.tar
 
 python3.8 setup.py ios --support-pkg=${HOME}/.briefcase/Python-3.8-iOS-support.b3.tar
@@ -191,23 +194,18 @@ if [ "$?" != 0 ]; then
 	exit 1
 fi
 
-resources=Resources/*
-if [ -n "$resources" ]; then
-	echo ""
-	echo "Adding Resurces/ and CustomCode/ to project..."
-	echo ""
-	cp -fRa Resources CustomCode podfile iOS/
-	(cd iOS && python3.8 -m pbxproj folder -t "${xcode_target}" -r -i "${xcode_file}" Resources)
+	cp -fRa podfile iOS/
+	(cd iOS && python3.8 -m pbxproj folder -t "${xcode_target}" -r -i "${xcode_file}" ../Resources)
 	if [ "$?" != 0 ]; then
 		echo "Error adding Resources to iOS/$xcode_file... aborting."
 		exit 1
 	fi
-	(cd iOS && python3.8 -m pbxproj folder -t "${xcode_target}" -r -i "${xcode_file}" CustomCode)
+	(cd iOS && python3.8 -m pbxproj folder -t "${xcode_target}" -r -i "${xcode_file}" ../CustomCode)
 	if [ "$?" != 0 ]; then
 		echo "Error adding CustomCode to iOS/$xcode_file... aborting."
 		exit 1
 	fi
-fi
+#fi
 
 so_crap=`find iOS/app_packages -iname \*.so -print`
 if [ -n "$so_crap" ]; then
@@ -259,9 +257,6 @@ if [ ! -d iOS/Support ]; then
 fi
 
 mv iOS/BZip2 iOS/OpenSSL iOS/Python iOS/XZ iOS/VERSIONS iOS/Support/
-cp -fa  Support/CFFI  iOS/app/${compact_name}/CFFI
-cp -fa  Support/bitarray  iOS/app/${compact_name}/bitarray
-cp -fa  Support/LRU  iOS/app/${compact_name}/LRU
 cp -fRa Support/site-package/ iOS/app_packages/
 cp -fRa ../electrum/lnwire  iOS/app/${compact_name}/electrum
 
