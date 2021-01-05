@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.haobtc.onekey.R;
+import org.haobtc.onekey.adapter.ChoosePayAddressAdapter;
 import org.haobtc.onekey.bean.BalanceInfo;
 
 import java.util.HashMap;
@@ -26,6 +27,7 @@ public class OnceWalletAdapter extends RecyclerView.Adapter<OnceWalletAdapter.Vi
     private Context context;
     private List<BalanceInfo> walletList;
     private Map<String, CheckBox> selectMap;
+    private OnItemClickListener mOnItemClickListener;
 
     public OnceWalletAdapter(Context context, List<BalanceInfo> walletList) {
         this.context = context;
@@ -35,6 +37,10 @@ public class OnceWalletAdapter extends RecyclerView.Adapter<OnceWalletAdapter.Vi
 
     public Map<String, CheckBox> getSelectMap() {
         return selectMap;
+    }
+
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.mOnItemClickListener = onItemClickListener;
     }
 
     @NonNull
@@ -59,6 +65,12 @@ public class OnceWalletAdapter extends RecyclerView.Adapter<OnceWalletAdapter.Vi
                 }
                 Toast.makeText(context, R.string.not_allow_un_check, Toast.LENGTH_SHORT).show();
             }));
+        } else {
+            holder.checkbox.setOnCheckedChangeListener(((buttonView, isChecked) -> {
+                if (mOnItemClickListener != null) {
+                    mOnItemClickListener.onItemClick(position);
+                }
+            }));
         }
         selectMap.put(walletList.get(position).getName(), holder.checkbox);
     }
@@ -78,5 +90,9 @@ public class OnceWalletAdapter extends RecyclerView.Adapter<OnceWalletAdapter.Vi
             textWalletBalance = itemView.findViewById(R.id.text_wallet_balance);
             checkbox = itemView.findViewById(R.id.check_wallet);
         }
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(int position);
     }
 }

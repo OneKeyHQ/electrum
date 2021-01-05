@@ -23,6 +23,7 @@ import org.haobtc.onekey.ui.base.BaseFragment;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -76,6 +77,12 @@ public class RecoveryWalletFromHdFragment extends BaseFragment {
             adapter = new OnceWalletAdapter(getContext(), event.getWallets());
             walletRec.setAdapter(adapter);
             walletRec.setLayoutManager(new LinearLayoutManager(getContext()));
+            adapter.setOnItemClickListener(new OnceWalletAdapter.OnItemClickListener() {
+                @Override
+                public void onItemClick(int position) {
+                    refreshButton();
+                }
+            });
             adapter.notifyDataSetChanged();
         }
     }
@@ -87,6 +94,16 @@ public class RecoveryWalletFromHdFragment extends BaseFragment {
     @Override
     public int getContentViewId() {
         return R.layout.looking_for_once_wallet;
+    }
+
+    private void refreshButton() {
+        AtomicReference<Boolean> isChecked = new AtomicReference<>(false);
+        adapter.getSelectMap().entrySet().forEach((entry) -> {
+            if (entry.getValue().isChecked()) {
+                isChecked.set(true);
+            }
+        });
+        recovery.setEnabled(isChecked.get());
     }
 
     @OnClick(R.id.recovery)
