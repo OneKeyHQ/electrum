@@ -1845,13 +1845,14 @@ class AndroidCommands(commands.Commands):
             raise e
 
     ###############
-    def sign_eth_tx(self, to_addr, value, path='android_usb', password=None, symbol=None, gasprice=None):
+    def sign_eth_tx(self, to_addr, value, path='android_usb', password=None, contract_addr=None, gasprice=None):
         checksum_from_address = self.pywalib.web3.toChecksumAddress(self.wallet.get_addresses()[0])
-        if symbol is None:
+        if contract_addr is None:
             tx_dict = self.pywalib.get_transaction(checksum_from_address, to_addr, value, gasprice=gasprice)
         else:
-            con_addr = self.wallet.get_contract_token(symbol)
-            tx_dict = self.pywalib.get_transaction(checksum_from_address, to_addr, value, contract=con_addr,
+            contract_addr = self.pywalib.web3.toChecksumAddress(contract_addr)
+            assert self.wallet.get_contract_token(contract_addr) is not None
+            tx_dict = self.pywalib.get_transaction(checksum_from_address, to_addr, value, contract=contract_addr,
                                                    gasprice=gasprice)
         if isinstance(self.wallet.get_keystore(), Hardware_KeyStore):
             if path:
@@ -1860,7 +1861,7 @@ class AndroidCommands(commands.Commands):
 
                 (v, r, s) = client.sign_eth_tx(address_n=address_n, nonce=tx_dict.nonce, gas_price=tx_dict.gas_price,
                                                gas=tx_dict.gas,
-                                               value=tx_dict.value, data=(tx_dict.data if symbol is not None else None),
+                                               value=tx_dict.value, data=(tx_dict.data if contract_addr is not None else None),
                                                to=tx_dict.to_address, chain_id=tx_dict.chain_id)
                 return self.pywalib.serialize_and_send_tx(tx_dict, vrs=(v, r, s))
         else:

@@ -184,7 +184,7 @@ class Abstract_Eth_Wallet(ABC):
         balance_info['%s' %self.wallet_type[0:3]] = balance
         balance_info['fiat'] = balance * Decimal(last_price)
         eth_info['%s' %self.wallet_type[0:3]] = balance_info
-        for symbol, contract in self.contacts.items():
+        for _, contract in self.contacts.items():
             symbol, balance = PyWalib.get_balance(wallet_address, contract)
             last_price = PyWalib.get_coin_price(symbol)
             balance_info = {}
@@ -196,13 +196,13 @@ class Abstract_Eth_Wallet(ABC):
 
     def add_contract_token(self, contract_symbol, contract_address):
         contract = Eth_Contract(contract_symbol, contract_address)
-        self.contacts[contract_symbol] = contract
+        self.contacts[contract_address] = contract
 
-    def get_contract_token(self, contract_symbol):
-        return self.contacts[contract_symbol]
+    def get_contract_token(self, contract_address) -> Eth_Contract:
+        return self.contacts.get(contract_address)
 
-    def delete_contract_token(self, contract_symbol):
-        del self.contacts[contract_symbol]
+    def delete_contract_token(self, contract_address):
+        self.contacts.pop(contract_address, None)
 
     def load_and_cleanup(self):
         self.load_keystore()
@@ -748,15 +748,15 @@ class Imported_Eth_Wallet(Simple_Eth_Wallet):
         good_addr = []  # type: List[str]
         bad_addr = []  # type: List[Tuple[str, str]]
         for address in addresses:
-            if not PyWalib.get_web3().isChecksumAddress(address):
+            if not address or not PyWalib.get_web3().isAddress(address):
                 bad_addr.append((address, _('invalid address')))
                 continue
+
             if self.db.has_imported_address(address):
                 bad_addr.append((address, _('address already in wallet')))
                 continue
             good_addr.append(address)
             self.db.add_imported_address(address, {})
-            #self.add_address(address)
         if write_to_disk:
             self.save_db()
         return good_addr, bad_addr
