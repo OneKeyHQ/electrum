@@ -3686,7 +3686,7 @@ class AndroidCommands(commands.Commands):
         except BaseException as e:
             raise e
 
-    def delete_wallet(self, password, name, hd=None):
+    def delete_wallet(self, password="", name="", hd=None):
         """Delete a wallet"""
         try:
             wallet = self.daemon._wallets[self._wallet_path(name)]

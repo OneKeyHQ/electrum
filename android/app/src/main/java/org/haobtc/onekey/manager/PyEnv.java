@@ -58,6 +58,7 @@ import java.util.function.Consumer;
 import cn.com.heaton.blelibrary.ble.Ble;
 import cn.com.heaton.blelibrary.ble.callback.BleWriteCallback;
 import cn.com.heaton.blelibrary.ble.model.BleDevice;
+import dr.android.utils.LogUtil;
 
 import static org.haobtc.onekey.activities.service.CommunicationModeSelector.protocol;
 
@@ -790,10 +791,14 @@ public final class PyEnv {
     public static PyResponse<Void> deleteWallet(String password, String walletName,boolean allDelete) {
         PyResponse<Void> response = new PyResponse<>();
         try {
-            if (allDelete){
-                sCommands.callAttr(PyConstant.DELETE_WALLET, password, new Kwarg("name", walletName),new Kwarg("hd", true));
-            }else {
-                sCommands.callAttr(PyConstant.DELETE_WALLET, password, new Kwarg("name", walletName));
+            if (Strings.isNullOrEmpty(password)) {
+                sCommands.callAttr(PyConstant.DELETE_WALLET, new Kwarg("name", walletName));
+            } else {
+                if (allDelete) {
+                    sCommands.callAttr(PyConstant.DELETE_WALLET, password, new Kwarg("name", walletName), new Kwarg("hd", true));
+                } else {
+                    sCommands.callAttr(PyConstant.DELETE_WALLET, password, new Kwarg("name", walletName));
+                }
             }
         } catch (Exception e) {
             Exception exception = HardWareExceptions.exceptionConvert(e);

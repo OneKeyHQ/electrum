@@ -1,11 +1,9 @@
 package org.haobtc.onekey.ui.dialog;
-
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.chaquo.python.Kwarg;
 import com.google.common.base.Strings;
 
 import org.greenrobot.eventbus.EventBus;
@@ -13,11 +11,9 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.LoadOtherWalletEvent;
-import org.haobtc.onekey.event.SecondEvent;
 import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.ui.base.BaseDialogFragment;
-import org.haobtc.onekey.utils.Daemon;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -65,7 +61,7 @@ public class DeleteWalletTipsDialog extends BaseDialogFragment {
     }
     private void deleteWatchWallet() {
         String keyName = PreferencesManager.get(requireActivity(), "Preferences", Constant.CURRENT_SELECTED_WALLET_NAME, "").toString();
-        PyResponse<Void> response = PyEnv.deleteWallet("111111", keyName,false);
+        PyResponse<Void> response = PyEnv.deleteWallet("", keyName, false);
         String error = response.getErrors();
         if (Strings.isNullOrEmpty(error)) {
             PreferencesManager.remove(getContext(), Constant.WALLETS, keyName);

@@ -219,14 +219,7 @@ public final class PyConstant {
      * */
     public static final String CANCEL_RECOVERY = "_set_recovery_flag";
 
-    /**
-     * 获取交易历史
-     * */
-    public static final String GET_TX_HISTORY = "get_all_tx_list";
 
-    /**
-     * 取消恢复
-     * */
-    public static final String CANCEL_RECOVERY = "_set_recovery_flag";
+
 
 }

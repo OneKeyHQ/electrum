@@ -122,7 +122,6 @@ public class HdWalletDetailActivity extends BaseActivity {
             linHdWalletShow.setVisibility(View.VISIBLE);
             linSingleShow.setVisibility(View.GONE);
             deleteTV.setText(R.string.delete_wallet_single);
-            mDeleteLayout.setVisibility(View.GONE);
         } else if (showWalletType.contains(StringConstant.HW)) {
             textHdWallet.setText(getString(R.string.hardware_wallet));
             linSingleShow.setVisibility(View.VISIBLE);
@@ -215,7 +214,7 @@ public class HdWalletDetailActivity extends BaseActivity {
         }
     }
 
-    private void showDeleteDialog (int mode) {
+    private void showDeleteDialog () {
         new XPopup.Builder(mContext)
                 .dismissOnTouchOutside(false)
                 .isDestroyOnDismiss(true)
