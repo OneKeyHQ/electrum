@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Wallet ScanVC-->
+        <scene sceneID="APE-Ci-Q38">
+            <objects>
+                <viewController storyboardIdentifier="OKWalletScanVC" hidesBottomBarWhenPushed="YES" id="t4j-Xp-130" customClass="OKWalletScanVC" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="IsJ-vj-qRb">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rar-LS-ZQ0" customClass="OKScanView">
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8EX-Gg-m8u" userLabel="borderView">
+                                        <rect key="frame" x="60" y="301" width="294" height="294"/>
+                                        <subviews>
+                                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="QRCode_Corner" translatesAutoresizingMaskIntoConstraints="NO" id="nAG-j9-0WZ">
+                                                <rect key="frame" x="0.0" y="0.0" width="294" height="294"/>
+                                            </imageView>
+                                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="QRCode_Line2" translatesAutoresizingMaskIntoConstraints="NO" id="wPs-xW-fLd">
+                                                <rect key="frame" x="0.0" y="-90" width="294" height="90"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="90" id="v5z-Iv-oSk"/>
+                                                </constraints>
+                                            </imageView>
+                                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XYr-8d-Ky9">
+                                                <rect key="frame" x="139" y="221" width="16" height="25"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="25" id="3DK-HU-h3h"/>
+                                                    <constraint firstAttribute="width" constant="16" id="PhB-bz-lis"/>
+                                                </constraints>
+                                                <state key="normal" image="QRCode_Light"/>
+                                                <connections>
+                                                    <action selector="lightBtnAction:" destination="rar-LS-ZQ0" eventType="touchUpInside" id="yR9-Zm-7Cw"/>
+                                                </connections>
+                                            </button>
+                                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="u8n-E6-Kaq">
+                                                <rect key="frame" x="118" y="254" width="58" height="15"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="15" id="Woy-CJ-w6c"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <state key="normal" title="轻触照亮">
+                                                    <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                                </state>
+                                                <connections>
+                                                    <action selector="lightBtnAction:" destination="rar-LS-ZQ0" eventType="touchUpInside" id="wde-YA-Yc2"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        <constraints>
+                                            <constraint firstItem="u8n-E6-Kaq" firstAttribute="top" secondItem="XYr-8d-Ky9" secondAttribute="bottom" constant="8" id="0OQ-Dc-9uw"/>
+                                            <constraint firstAttribute="bottom" secondItem="nAG-j9-0WZ" secondAttribute="bottom" id="4RA-mf-bds"/>
+                                            <constraint firstAttribute="width" secondItem="8EX-Gg-m8u" secondAttribute="height" multiplier="1:1" id="9fw-Zg-wiL"/>
+                                            <constraint firstItem="u8n-E6-Kaq" firstAttribute="centerX" secondItem="8EX-Gg-m8u" secondAttribute="centerX" id="A1h-ej-De8"/>
+                                            <constraint firstItem="wPs-xW-fLd" firstAttribute="top" secondItem="8EX-Gg-m8u" secondAttribute="top" constant="-90" id="JIq-ef-Nk2"/>
+                                            <constraint firstAttribute="trailing" secondItem="wPs-xW-fLd" secondAttribute="trailing" id="OGt-w1-rqC"/>
+                                            <constraint firstAttribute="bottom" secondItem="u8n-E6-Kaq" secondAttribute="bottom" constant="25" id="U8h-Fl-y7f"/>
+                                            <constraint firstItem="wPs-xW-fLd" firstAttribute="leading" secondItem="8EX-Gg-m8u" secondAttribute="leading" id="crR-QG-qgr"/>
+                                            <constraint firstItem="nAG-j9-0WZ" firstAttribute="top" secondItem="8EX-Gg-m8u" secondAttribute="top" id="llt-RG-Y8M"/>
+                                            <constraint firstItem="XYr-8d-Ky9" firstAttribute="centerX" secondItem="8EX-Gg-m8u" secondAttribute="centerX" id="oiG-7U-SME"/>
+                                            <constraint firstAttribute="trailing" secondItem="nAG-j9-0WZ" secondAttribute="trailing" id="yYn-Iq-bZO"/>
+                                            <constraint firstItem="nAG-j9-0WZ" firstAttribute="leading" secondItem="8EX-Gg-m8u" secondAttribute="leading" id="yfr-OZ-nZB"/>
+                                        </constraints>
+                                    </view>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kpi-zn-50Y" userLabel="topView">
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="301"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="将二维码/条码放入框内，即可自动扫描" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" minimumFontSize="12" translatesAutoresizingMaskIntoConstraints="NO" id="6y2-9J-vk3">
+                                                <rect key="frame" x="16" y="256" width="382" height="17"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" priority="250" constant="40" id="bt3-iG-Ap6"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                        </subviews>
+                                        <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.40000000000000002" colorSpace="calibratedRGB"/>
+                                        <constraints>
+                                            <constraint firstAttribute="trailing" secondItem="6y2-9J-vk3" secondAttribute="trailing" constant="16" id="1BI-lg-Xa1"/>
+                                            <constraint firstItem="6y2-9J-vk3" firstAttribute="leading" secondItem="kpi-zn-50Y" secondAttribute="leading" constant="16" id="ht0-2s-vlA"/>
+                                            <constraint firstAttribute="bottom" secondItem="6y2-9J-vk3" secondAttribute="bottom" constant="28" id="wHB-I2-odP"/>
+                                        </constraints>
+                                    </view>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="I2c-Pk-XmJ" userLabel="bottomView">
+                                        <rect key="frame" x="0.0" y="595" width="414" height="301"/>
+                                        <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.40000000000000002" colorSpace="calibratedRGB"/>
+                                    </view>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aij-Wq-qls" userLabel="leftView">
+                                        <rect key="frame" x="0.0" y="301" width="60" height="294"/>
+                                        <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.40000000000000002" colorSpace="calibratedRGB"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="60" id="JaY-yB-ggT"/>
+                                        </constraints>
+                                    </view>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ohT-42-1o4" userLabel="rightView">
+                                        <rect key="frame" x="354" y="301" width="60" height="294"/>
+                                        <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.40000000000000002" colorSpace="calibratedRGB"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="60" id="fOm-BA-0Gs"/>
+                                        </constraints>
+                                    </view>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="I2c-Pk-XmJ" firstAttribute="top" secondItem="8EX-Gg-m8u" secondAttribute="bottom" id="4Ph-Zh-q9V"/>
+                                    <constraint firstAttribute="trailing" secondItem="ohT-42-1o4" secondAttribute="trailing" id="A5f-Mc-CfV"/>
+                                    <constraint firstItem="8EX-Gg-m8u" firstAttribute="leading" secondItem="rar-LS-ZQ0" secondAttribute="leading" constant="60" id="DnL-Ql-a4t"/>
+                                    <constraint firstItem="8EX-Gg-m8u" firstAttribute="top" secondItem="kpi-zn-50Y" secondAttribute="bottom" id="Ebz-b6-rhQ"/>
+                                    <constraint firstItem="I2c-Pk-XmJ" firstAttribute="top" secondItem="ohT-42-1o4" secondAttribute="bottom" id="Fd0-5G-lOQ"/>
+                                    <constraint firstItem="kpi-zn-50Y" firstAttribute="leading" secondItem="rar-LS-ZQ0" secondAttribute="leading" id="NMS-tW-Kjd"/>
+                                    <constraint firstItem="I2c-Pk-XmJ" firstAttribute="leading" secondItem="rar-LS-ZQ0" secondAttribute="leading" id="XTP-C0-akZ"/>
+                                    <constraint firstAttribute="bottom" secondItem="I2c-Pk-XmJ" secondAttribute="bottom" id="aDR-mU-RCU"/>
+                                    <constraint firstItem="aij-Wq-qls" firstAttribute="leading" secondItem="rar-LS-ZQ0" secondAttribute="leading" id="b9i-Gd-vDb"/>
+                                    <constraint firstAttribute="trailing" secondItem="8EX-Gg-m8u" secondAttribute="trailing" constant="60" id="d22-L0-PZN"/>
+                                    <constraint firstItem="aij-Wq-qls" firstAttribute="top" secondItem="kpi-zn-50Y" secondAttribute="bottom" id="hv0-jW-wL6"/>
+                                    <constraint firstItem="I2c-Pk-XmJ" firstAttribute="top" secondItem="aij-Wq-qls" secondAttribute="bottom" id="nZo-Vc-rbc"/>
+                                    <constraint firstItem="ohT-42-1o4" firstAttribute="top" secondItem="kpi-zn-50Y" secondAttribute="bottom" id="nwz-ZF-w1h"/>
+                                    <constraint firstAttribute="trailing" secondItem="I2c-Pk-XmJ" secondAttribute="trailing" id="oDY-pp-xHb"/>
+                                    <constraint firstItem="kpi-zn-50Y" firstAttribute="top" secondItem="rar-LS-ZQ0" secondAttribute="top" id="olD-In-dby"/>
+                                    <constraint firstAttribute="trailing" secondItem="kpi-zn-50Y" secondAttribute="trailing" id="so3-Dg-gBq"/>
+                                    <constraint firstItem="kpi-zn-50Y" firstAttribute="height" secondItem="I2c-Pk-XmJ" secondAttribute="height" id="zwL-TB-hWn"/>
+                                </constraints>
+                                <connections>
+                                    <outlet property="borderView" destination="8EX-Gg-m8u" id="mD0-xo-Wgi"/>
+                                    <outlet property="lightDownBtn" destination="u8n-E6-Kaq" id="PI9-fp-7HI"/>
+                                    <outlet property="lightUpBtn" destination="XYr-8d-Ky9" id="q2U-ky-qxL"/>
+                                    <outlet property="scanBorderImageView" destination="nAG-j9-0WZ" id="onP-RY-Fzp"/>
+                                    <outlet property="scanningIV" destination="wPs-xW-fLd" id="VgG-9Y-JMk"/>
+                                    <outlet property="scanningIVTopConstraint" destination="JIq-ef-Nk2" id="dw3-DE-Qxn"/>
+                                </connections>
+                            </view>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="fw9-gB-1pg"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="rar-LS-ZQ0" firstAttribute="top" secondItem="IsJ-vj-qRb" secondAttribute="top" id="A1H-iN-mO3"/>
+                            <constraint firstAttribute="bottom" secondItem="rar-LS-ZQ0" secondAttribute="bottom" id="IOx-9n-F86"/>
+                            <constraint firstItem="rar-LS-ZQ0" firstAttribute="leading" secondItem="fw9-gB-1pg" secondAttribute="leading" id="SCp-pW-Td9"/>
+                            <constraint firstItem="fw9-gB-1pg" firstAttribute="trailing" secondItem="rar-LS-ZQ0" secondAttribute="trailing" id="YIm-Pc-evF"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="scanDescriptionLabel" destination="6y2-9J-vk3" id="ToT-Fy-MH6"/>
+                        <outlet property="scanView" destination="rar-LS-ZQ0" id="jrX-Oi-L86"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="keV-V6-gJz" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="5374" y="129"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="QRCode_Corner" width="280" height="280"/>
+        <image name="QRCode_Light" width="16" height="25"/>
+        <image name="QRCode_Line2" width="233" height="90"/>
+    </resources>
+</document>

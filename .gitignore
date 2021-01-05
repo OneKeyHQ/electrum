@@ -5,7 +5,6 @@ build/
 dist/
 *.egg/
 Electrum.egg-info/
-ios/iOS/
 .devlocaltmp/
 *_trial_temp
 packages

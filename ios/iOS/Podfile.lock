@@ -1,0 +1,66 @@
+PODS:
+  - AFNetworking (4.0.1):
+    - AFNetworking/NSURLSession (= 4.0.1)
+    - AFNetworking/Reachability (= 4.0.1)
+    - AFNetworking/Security (= 4.0.1)
+    - AFNetworking/Serialization (= 4.0.1)
+    - AFNetworking/UIKit (= 4.0.1)
+  - AFNetworking/NSURLSession (4.0.1):
+    - AFNetworking/Reachability
+    - AFNetworking/Security
+    - AFNetworking/Serialization
+  - AFNetworking/Reachability (4.0.1)
+  - AFNetworking/Security (4.0.1)
+  - AFNetworking/Serialization (4.0.1)
+  - AFNetworking/UIKit (4.0.1):
+    - AFNetworking/NSURLSession
+  - BabyBluetooth (0.7.0)
+  - FMDB (2.7.5):
+    - FMDB/standard (= 2.7.5)
+  - FMDB/standard (2.7.5)
+  - HMSegmentedControl (1.5.6)
+  - IQKeyboardManager (6.5.6)
+  - Masonry (1.1.0)
+  - MJExtension (3.0.17)
+  - SDWebImage (5.8.4):
+    - SDWebImage/Core (= 5.8.4)
+  - SDWebImage/Core (5.8.4)
+  - TYAttributedLabel (2.6.9)
+
+DEPENDENCIES:
+  - AFNetworking (~> 4.0)
+  - BabyBluetooth (~> 0.7.0)
+  - FMDB (~> 2.7.2)
+  - HMSegmentedControl (~> 1.5.4)
+  - IQKeyboardManager (~> 6.5.5)
+  - Masonry (~> 1.1.0)
+  - MJExtension (~> 3.0.13)
+  - SDWebImage (~> 5.8.1)
+  - TYAttributedLabel (~> 2.6.2)
+
+SPEC REPOS:
+  trunk:
+    - AFNetworking
+    - BabyBluetooth
+    - FMDB
+    - HMSegmentedControl
+    - IQKeyboardManager
+    - Masonry
+    - MJExtension
+    - SDWebImage
+    - TYAttributedLabel
+
+SPEC CHECKSUMS:
+  AFNetworking: 7864c38297c79aaca1500c33288e429c3451fdce
+  BabyBluetooth: d50758aecf24d4a0ab9271d69f0f116d6bee51c9
+  FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
+  HMSegmentedControl: 34c1f54d822d8308e7b24f5d901ec674dfa31352
+  IQKeyboardManager: 2a6e97afdafc7becf0cb17a9a8d795e3a980717f
+  Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
+  MJExtension: 74ec83124a68891619fb7ba9c5c811bbf1691076
+  SDWebImage: cf6922231e95550934da2ada0f20f2becf2ceba9
+  TYAttributedLabel: 566d7503cf9e5460f409bb5d4c14690d25088972
+
+PODFILE CHECKSUM: 19b170f1db37232689abc1ed096f1ce7ae9c93ec
+
+COCOAPODS: 1.9.3
