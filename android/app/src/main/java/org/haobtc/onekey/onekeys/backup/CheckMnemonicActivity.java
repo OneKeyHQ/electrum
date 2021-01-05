@@ -184,7 +184,6 @@ public class CheckMnemonicActivity extends BaseActivity {
         textWordOne.setText(String.format("%s %s %s", getString(R.string.chooseword_left), listPos.get(0), getString(R.string.chooseword_right)));
         textWordTwo.setText(String.format("%s %s %s", getString(R.string.chooseword_left), listPos.get(1), getString(R.string.chooseword_right)));
         textWordThree.setText(String.format("%s %s %s", getString(R.string.chooseword_left), listPos.get(2), getString(R.string.chooseword_right)));
-
         List<String> list1 = new ArrayList();
         for (int i = 0; i < 3; i++) {
             int num = rand.nextInt(12);
@@ -205,7 +204,6 @@ public class CheckMnemonicActivity extends BaseActivity {
             }
         }
         Collections.shuffle(list1);
-
         oneLine1.setText(list1.get(0));
         oneLine2.setText(list1.get(1));
         oneLine3.setText(list1.get(2));
@@ -229,7 +227,6 @@ public class CheckMnemonicActivity extends BaseActivity {
             }
         }
         Collections.shuffle(list2);
-
         twoLine1.setText(list2.get(0));
         twoLine2.setText(list2.get(1));
         twoLine3.setText(list2.get(2));
@@ -253,11 +250,9 @@ public class CheckMnemonicActivity extends BaseActivity {
             }
         }
         Collections.shuffle(list3);
-
         threeLine1.setText(list3.get(0));
         threeLine2.setText(list3.get(1));
         threeLine3.setText(list3.get(2));
-
     }
 
     @SingleClick(value = 1000)
@@ -306,7 +301,6 @@ public class CheckMnemonicActivity extends BaseActivity {
         window.setWindowAnimations(R.style.AnimBottom);
         dialogBtoms.setCanceledOnTouchOutside(true);
         dialogBtoms.show();
-
     }
 
 }

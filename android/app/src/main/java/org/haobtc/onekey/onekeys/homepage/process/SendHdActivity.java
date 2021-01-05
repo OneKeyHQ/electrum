@@ -757,6 +757,10 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                 default:
                     return false;
             }
+        } else {
+            if (type == FAST_FEE_RATE) {
+                showToast(errors);
+            }
         }
         return false;
     }
@@ -1019,8 +1023,8 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
             if (!isCustom) {
                 refreshOther();
             }
-            changeButton();
         }
+        changeButton();
     }
 
     private boolean isCanRefresh() {
