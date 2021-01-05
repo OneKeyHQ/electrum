@@ -843,7 +843,7 @@ class AndroidCommands(commands.Commands):
                 if amount != "!":
                     amount = self.get_amount(amount)
                     if amount <= 546:
-                        raise BaseException(_("dust tx"))
+                        raise BaseException(_("Dust transaction"))
                 outputs_addrs.append(PartialTxOutput.from_address_and_value(address, amount))
         return outputs_addrs
 
@@ -1323,14 +1323,21 @@ class AndroidCommands(commands.Commands):
                     show_fee = self.get_fee_from_server(tx_details.txid)
                     if show_fee != "":
                         self.txdb.add_received_tx_fee_info(tx_details.txid, show_fee)
+        if block_height == -2:
+            status = _("Unconfirmed")
+            can_broadcast = False
+        else:
+            status = tx_details.status
+            can_broadcast = tx_details.can_broadcast
+
         ret_data = {
             'txid': tx_details.txid,
-            'can_broadcast': tx_details.can_broadcast,
+            'can_broadcast': can_broadcast,
             'amount': amount_str,
             'fee': show_fee,
             # 'description': self.wallet.get_label(tx_details.txid) if 44 != int(self.wallet.keystore.get_derivation_prefix().split('/')[COIN_POS].split('\'')[0]) else "",
             'description': "",
-            'tx_status': tx_details.status,
+            'tx_status': status,
             'sign_status': [s, r],
             'output_addr': out_list,
             'input_addr': in_list,
@@ -1338,7 +1345,7 @@ class AndroidCommands(commands.Commands):
             'cosigner': [x.xpub if not isinstance(x, Imported_KeyStore) else "" for x in self.wallet.get_keystores()],
             'tx': str(tx),
             'show_status': [1, _("Unconfirmed")] if (
-                        block_height == 0 or (block_height < 0 and not tx_details.can_broadcast)) else [3, _(
+                        block_height == 0 or (block_height < 0 and not can_broadcast)) else [3, _(
                 "Confirmed")] if block_height > 0 else [2, _("Sending failure")]
         }
         json_data = json.dumps(ret_data)
