@@ -113,6 +113,7 @@
             if (self.text.length == self.configure.passwordNum) {
                 if ([self.delegate respondsToSelector:@selector(passwordInputViewCompleteInput:)]) {
                     [self.delegate passwordInputViewCompleteInput:self];
+                    [self clearTextField];
                 }
             }
             [self setNeedsDisplay];
@@ -130,6 +131,16 @@
         [self.delegate passwordInputViewDidDeleteBackward:self];
     }
     [self setNeedsDisplay];
+}
+
+- (void)clearTextField {
+    if (!self.configure.clearTextFieldWhenFinish || !self.text.length) {
+        return;
+    }
+    [self.text setString:@""];
+    if ([self.delegate respondsToSelector:@selector(passwordInputViewDidChange:)]) {
+        [self.delegate passwordInputViewDidChange:self];
+    }
 }
 
 -(void)layoutSubviews {

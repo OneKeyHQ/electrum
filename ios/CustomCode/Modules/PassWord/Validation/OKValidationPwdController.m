@@ -94,6 +94,7 @@ typedef enum {
         configure.rectBackgroundColor = HexColor(0xF2F2F2);
         configure.backgroundColor = [UIColor whiteColor];
         configure.threePartyKeyboard = NO;
+        configure.clearTextFieldWhenFinish = YES;
     }];
 }
 

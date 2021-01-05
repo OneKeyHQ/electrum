@@ -53,6 +53,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) UIColor *backgroundColor;
 /**是否允许三方键盘，默认NO*/
 @property (nonatomic, assign) BOOL threePartyKeyboard;
+/**完成输入密码后清空密码 TextField*/
+@property (nonatomic, assign) BOOL clearTextFieldWhenFinish;
 
 @end
 
