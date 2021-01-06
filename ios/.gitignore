@@ -27,9 +27,6 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-# C extensions
-*.so
-
 # Distribution / packaging
 .Python
 env/
