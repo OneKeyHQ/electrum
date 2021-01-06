@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageView;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 
 import androidx.annotation.IdRes;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.chaquo.python.PyObject;
@@ -32,16 +34,16 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.sign.SignActivity;
 import org.haobtc.onekey.aop.SingleClick;
-import org.haobtc.onekey.bean.BalanceInfo;
 import org.haobtc.onekey.bean.HardwareFeatures;
 import org.haobtc.onekey.bean.LocalWalletInfo;
 import org.haobtc.onekey.bean.MainSweepcodeBean;
+import org.haobtc.onekey.business.wallet.SystemConfigManager;
+import org.haobtc.onekey.event.BackupCompleteEvent;
 import org.haobtc.onekey.event.BackupEvent;
 import org.haobtc.onekey.event.BleConnectedEvent;
 import org.haobtc.onekey.event.BleConnectionEx;
 import org.haobtc.onekey.event.FixWalletNameEvent;
 import org.haobtc.onekey.event.GotPassEvent;
-import org.haobtc.onekey.event.LoadOtherWalletEvent;
 import org.haobtc.onekey.event.RefreshEvent;
 import org.haobtc.onekey.event.SecondEvent;
 import org.haobtc.onekey.manager.BleManager;
@@ -60,12 +62,10 @@ import org.haobtc.onekey.ui.base.BaseFragment;
 import org.haobtc.onekey.ui.dialog.BackupDialog;
 import org.haobtc.onekey.utils.Daemon;
 import org.haobtc.onekey.utils.NavUtils;
+import org.haobtc.onekey.viewmodel.AppWalletViewModel;
 import org.haobtc.onekey.viewmodel.NetworkViewModel;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.Map;
-import java.util.Optional;
 
 import butterknife.BindView;
 import butterknife.OnCheckedChanged;
@@ -75,9 +75,6 @@ import io.reactivex.functions.Consumer;
 import static android.app.Activity.RESULT_OK;
 import static org.haobtc.onekey.constant.Constant.CURRENT_CURRENCY_GRAPHIC_SYMBOL;
 import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
-import static org.haobtc.onekey.constant.Constant.NEED_POP_BACKUP_DIALOG;
-import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE;
-import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE_SHORT;
 import static org.haobtc.onekey.constant.Constant.WALLET_BALANCE;
 
 /**
@@ -155,6 +152,9 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
     private boolean isRecovery;
     private boolean isAddHd;
     private NetworkViewModel mNetworkViewModel;
+    private AppWalletViewModel mAppWalletViewModel;
+    private SystemConfigManager mSystemConfigManager;
+    private BackupDialog mBackupDialog;
 
     /**
      * init views
@@ -164,6 +164,9 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
     @Override
     public void init(View view) {
         mNetworkViewModel = getApplicationViewModel(NetworkViewModel.class);
+        mAppWalletViewModel = getApplicationViewModel(AppWalletViewModel.class);
+        mSystemConfigManager = new SystemConfigManager(requireContext());
+
         rxPermissions = new RxPermissions(this);
         preferences = requireActivity().getSharedPreferences("Preferences", Context.MODE_PRIVATE);
         edit = preferences.edit();
@@ -180,100 +183,57 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
         return R.layout.fragment_wallet;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        initdata();
-    }
-
-    private void initViewModelValue(){
+    private void initViewModelValue() {
         mNetworkViewModel.haveNet().observe(this, state -> {
-            if(state){
-                getWalletBalance();
+            if (state) {
+                mAppWalletViewModel.refresh();
             }
         });
-    }
-
-    /**
-     * 填充页面信息
-     */
-    private void initdata() {
-        if (PreferencesManager.hasWallet(getContext())) {
-            //have wallet
-            linearNoWallet.setVisibility(View.GONE);
-            imgBottom.setVisibility(View.GONE);
-            linearHaveWallet.setVisibility(View.VISIBLE);
-            linearWalletList.setVisibility(View.VISIBLE);
-            imgScan.setVisibility(View.VISIBLE);
-            //get wallet balance
-            getWalletBalance();
-            // get wallet list save wallet type
-        } else {
-            //no wallet
-            try {
-                Daemon.commands.callAttr("set_currency", "CNY");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            imgType.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.loco_round));
-            linearNoWallet.setVisibility(View.VISIBLE);
-            imgBottom.setVisibility(View.VISIBLE);
-            linearHaveWallet.setVisibility(View.GONE);
-            linearWalletList.setVisibility(View.GONE);
-            imgScan.setVisibility(View.GONE);
-            relNowBackUp.setVisibility(View.GONE);
-            PreferencesManager.put(getContext(), "Preferences", org.haobtc.onekey.constant.Constant.HAS_LOCAL_HD, false);
-            textWalletName.setText(R.string.no_use_wallet);
-        }
-    }
-
-
-    private void getWalletBalance() {
-        //Get current wallet name
-        String loadWalletName = preferences.getString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME, "");
-        try {
-            if (!Strings.isNullOrEmpty(loadWalletName)) {
-                BalanceInfo balanceInfo = PyEnv.selectWallet(loadWalletName);
-                if (balanceInfo != null) {
-                    String balance = balanceInfo.getBalance();
-                    name = balanceInfo.getName();
-                    LocalWalletInfo localWalletInfo;
-                    String str = PreferencesManager.get(getContext(), org.haobtc.onekey.constant.Constant.WALLETS, name, "").toString();
-                    if (!Strings.isNullOrEmpty(str)) {
-                        localWalletInfo = LocalWalletInfo.objectFromData(str);
-                        textWalletName.setText(localWalletInfo.getLabel());
-                        showTypeInfo(localWalletInfo);
-                    }
-                    num = balance.substring(0, balance.indexOf(" "));
-                    changeBalance = num;
-                    String strCny = balance.substring(balance.indexOf("(") + 1, balance.indexOf(")"));
-                    if (strCny.contains(" ")) {
-                        String cash = strCny.substring(0, strCny.indexOf(" "));
-                        String currencySymbol = preferences.getString(CURRENT_CURRENCY_GRAPHIC_SYMBOL, "¥");
-                        tetAmount.setText(String.format("%s %s", (Strings.isNullOrEmpty(strCny)) ? getString(R.string.zero) : currencySymbol, cash));
-                        textBtcAmount.setText(num);
-                        textDollar.setText(String.format("≈ %s %s", currencySymbol, cash));
-                    }
-                    whetherBackup();
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void getCny(String changeBalance, String currencySymbol) {
-        try {
-            PyObject money = Daemon.commands.callAttr("get_exchange_currency", "base", changeBalance);
-            if (!TextUtils.isEmpty(money.toString())) {
-                tetAmount.setText(String.format("%s %s", currencySymbol, money.toString()));
+        mAppWalletViewModel.existsWallet.observe(this, exists -> {
+            if (exists) {
+                //have wallet
+                linearNoWallet.setVisibility(View.GONE);
+                imgBottom.setVisibility(View.GONE);
+                linearHaveWallet.setVisibility(View.VISIBLE);
+                linearWalletList.setVisibility(View.VISIBLE);
+                imgScan.setVisibility(View.VISIBLE);
             } else {
-                tetAmount.setText(String.format("%s %s", currencySymbol, getString(R.string.zero)));
+                //no wallet
+                try {
+                    Daemon.commands.callAttr("set_currency", "CNY");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                imgType.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.loco_round));
+                linearNoWallet.setVisibility(View.VISIBLE);
+                imgBottom.setVisibility(View.VISIBLE);
+                linearHaveWallet.setVisibility(View.GONE);
+                linearWalletList.setVisibility(View.GONE);
+                imgScan.setVisibility(View.GONE);
+                relNowBackUp.setVisibility(View.GONE);
+                PreferencesManager.put(getContext(), "Preferences", org.haobtc.onekey.constant.Constant.HAS_LOCAL_HD, false);
+                textWalletName.setText(R.string.no_use_wallet);
+                mSystemConfigManager.setNeedPopBackUpDialog(true);
             }
-        } catch (Exception e) {
-            Toast.makeText(getActivity(), e.getMessage().replace("BaseException:", ""), Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        }
+        });
+        mAppWalletViewModel.currentWalletInfo.observe(this, localWalletInfo -> {
+            if (localWalletInfo != null) {
+                textWalletName.setText(localWalletInfo.getLabel());
+                showTypeInfo(localWalletInfo);
+                whetherBackup();
+            }
+
+            mAppWalletViewModel.refreshBalance();
+            mAppWalletViewModel.refreshExistsWallet();
+        });
+        mAppWalletViewModel.currentWalletBalance.observe(this, balance -> {
+            textBtcAmount.setText(balance);
+        });
+        mAppWalletViewModel.currentWalletFiatBalance.observe(this, balance -> {
+            String currencySymbol = preferences.getString(CURRENT_CURRENCY_GRAPHIC_SYMBOL, "¥");
+            tetAmount.setText(String.format("%s %s", currencySymbol, Strings.isNullOrEmpty(balance) ? getString(R.string.zero) : balance));
+            textDollar.setText(String.format("≈ %s %s", currencySymbol, Strings.isNullOrEmpty(balance) ? getString(R.string.zero) : balance));
+        });
     }
 
     private void showTypeInfo(LocalWalletInfo localWalletInfo) {
@@ -321,14 +281,25 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
             } else {
                 //no back up
                 relNowBackUp.setVisibility(View.VISIBLE);
-                //whether to pop backup dialog
-                if (preferences.getBoolean(NEED_POP_BACKUP_DIALOG, true)) {
-                    new BackupDialog().show(getChildFragmentManager(), "backup");
-                }
+                whetherBackupDialog();
             }
         } catch (Exception e) {
             e.printStackTrace();
             relNowBackUp.setVisibility(View.GONE);
+        }
+    }
+
+    /**
+     * 判断备份提示弹窗是否需要出现
+     */
+    private void whetherBackupDialog() {
+        //whether to pop backup dialog
+        if (mSystemConfigManager.getNeedPopBackUpDialog()) {
+            if (mBackupDialog != null && !mBackupDialog.isDetached()) {
+                mBackupDialog.dismiss();
+            }
+            mBackupDialog = new BackupDialog();
+            mBackupDialog.show(getChildFragmentManager(), "backup");
         }
     }
 
@@ -417,39 +388,9 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
         }
     }
 
-    /**
-     * 删除钱包后选择其他钱包
-     */
-    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
-    public void event(LoadOtherWalletEvent event) {
-        //load other wallet
-        if (PreferencesManager.hasWallet(getContext())) {
-            Optional<? extends Map.Entry<String, ?>> entry = PreferencesManager.getAll(getContext(), org.haobtc.onekey.constant.Constant.WALLETS).entrySet().stream().findFirst();
-            LocalWalletInfo info = LocalWalletInfo.objectFromData(entry.get().getValue().toString());
-            edit.putString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME, info.getName());
-            edit.putString(CURRENT_SELECTED_WALLET_TYPE, info.getType());
-            edit.apply();
-            //get wallet balance
-            getWalletBalance();
-        } else {
-            edit.putString(SOFT_HD_PASS_TYPE, SOFT_HD_PASS_TYPE_SHORT);
-            edit.putBoolean(NEED_POP_BACKUP_DIALOG, true);
-            edit.apply();
-            textWalletName.setText(getString(R.string.no_use_wallet));
-            linearNoWallet.setVisibility(View.VISIBLE);
-            imgBottom.setVisibility(View.VISIBLE);
-            linearHaveWallet.setVisibility(View.GONE);
-            linearWalletList.setVisibility(View.GONE);
-            imgType.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.loco_round));
-            isBackup = true;
-            relNowBackUp.setVisibility(View.GONE);
-            PreferencesManager.put(getContext(), "Preferences", org.haobtc.onekey.constant.Constant.HAS_LOCAL_HD, false);
-        }
-    }
-
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void fixName(FixWalletNameEvent event) {
-        textWalletName.setText(event.getNewName());
+        mAppWalletViewModel.refreshWalletInfo();
     }
 
     public void setValue(String msgVote) {
@@ -459,22 +400,19 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
                 String fiat = jsonObject.getString("fiat");
                 changeBalance = jsonObject.getString("balance");
                 if (changeBalance != null) {
-                    textBtcAmount.setText(changeBalance);
+                    mAppWalletViewModel.currentWalletBalance.postValue(changeBalance);
                 }
                 if (!TextUtils.isEmpty(fiat)) {
                     String[] currencyArray = getResources().getStringArray(R.array.currency);
-                    String[] currencySymbolArray = getResources().getStringArray(R.array.currency_symbol);
                     for (int i = 0; i < currencyArray.length; i++) {
                         if (fiat.contains(currencyArray[i])) {
                             String cny = fiat.substring(0, fiat.indexOf(" "));
-                            tetAmount.setText(String.format("%s %s", currencySymbolArray[i], cny));
-                            textDollar.setText(String.format("≈ %s %s", currencySymbolArray[i], cny));
+                            mAppWalletViewModel.currentWalletFiatBalance.postValue(cny);
+                            return;
                         }
                     }
                 } else {
-                    String currencySymbol = preferences.getString(CURRENT_CURRENCY_GRAPHIC_SYMBOL, "¥");
-                    tetAmount.setText(String.format("%s %s", currencySymbol, "0.00"));
-                    textDollar.setText(String.format("≈ %s %s", currencySymbol, getString(R.string.zero)));
+                    mAppWalletViewModel.currentWalletFiatBalance.postValue(null);
                 }
             }
         } catch (JSONException e) {
@@ -636,6 +574,7 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
     public void onGotPass(GotPassEvent event) {
         if (shouldResponsePassEvent()) {
             if (event.fromType == 0) {
+                mSystemConfigManager.setNeedPopBackUpDialog(true);
                 PyEnv.createLocalHd(event.getPassword(), null);
             }
         }
@@ -644,8 +583,13 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onRefresh(RefreshEvent refreshEvent) {
         if (shouldResponsePassEvent()) {
-            initdata();
+            mAppWalletViewModel.refresh();
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onBackupCompleteEvent(BackupCompleteEvent event) {
+        whetherBackup();
     }
 
     /**

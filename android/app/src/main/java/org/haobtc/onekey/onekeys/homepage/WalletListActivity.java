@@ -1,4 +1,5 @@
 package org.haobtc.onekey.onekeys.homepage;
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -36,6 +37,7 @@ import org.haobtc.onekey.ui.activity.SoftPassActivity;
 import org.haobtc.onekey.ui.dialog.CreateWalletWaySelectorDialog;
 import org.haobtc.onekey.ui.dialog.HdWalletIntroductionDialog;
 import org.haobtc.onekey.utils.NavUtils;
+import org.haobtc.onekey.viewmodel.AppWalletViewModel;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -81,6 +83,7 @@ public class WalletListActivity extends BaseActivity {
     private SharedPreferences.Editor edit;
     private SharedPreferences preferences;
     private boolean isAddHd;
+    private AppWalletViewModel mAppWalletViewModel;
 
     @Override
     public int getLayoutId() {
@@ -91,6 +94,7 @@ public class WalletListActivity extends BaseActivity {
     public void initView() {
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
+        mAppWalletViewModel = getApplicationViewModel(AppWalletViewModel.class);
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         edit = preferences.edit();
     }
@@ -157,8 +161,7 @@ public class WalletListActivity extends BaseActivity {
                         @Override
                         public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                             String name = hdWalletList.get(position).getName();
-                            edit.putString(Constant.CURRENT_SELECTED_WALLET_NAME, name);
-                            edit.apply();
+                            mAppWalletViewModel.changeCurrentWallet(name);
                             mIntent(HomeOneKeyActivity.class);
                         }
                     });
@@ -192,8 +195,7 @@ public class WalletListActivity extends BaseActivity {
                         @Override
                         public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                             String name = btcList.get(position).getName();
-                            edit.putString(Constant.CURRENT_SELECTED_WALLET_NAME, name);
-                            edit.apply();
+                            mAppWalletViewModel.changeCurrentWallet(name);
                             mIntent(HomeOneKeyActivity.class);
                         }
                     });
@@ -223,8 +225,7 @@ public class WalletListActivity extends BaseActivity {
                         @Override
                         public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                             String name = ethList.get(position).getName();
-                            edit.putString(Constant.CURRENT_SELECTED_WALLET_NAME, name);
-                            edit.apply();
+                            mAppWalletViewModel.changeCurrentWallet(name);
                             mIntent(HomeOneKeyActivity.class);
                         }
                     });
@@ -315,8 +316,7 @@ public class WalletListActivity extends BaseActivity {
                     @Override
                     public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                         String name = hdWalletList.get(position).getName();
-                        edit.putString(Constant.CURRENT_SELECTED_WALLET_NAME, name);
-                        edit.apply();
+                        mAppWalletViewModel.changeCurrentWallet(name);
                         mIntent(HomeOneKeyActivity.class);
                     }
                 });

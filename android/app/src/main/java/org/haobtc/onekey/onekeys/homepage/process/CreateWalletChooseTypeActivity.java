@@ -13,6 +13,7 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.PyResponse;
+import org.haobtc.onekey.business.wallet.SystemConfigManager;
 import org.haobtc.onekey.event.GotPassEvent;
 import org.haobtc.onekey.event.NameSettedEvent;
 import org.haobtc.onekey.manager.PyEnv;

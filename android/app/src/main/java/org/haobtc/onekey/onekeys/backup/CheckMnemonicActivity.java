@@ -14,9 +14,11 @@ import android.widget.TextView;
 
 import androidx.annotation.LayoutRes;
 
+import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.aop.SingleClick;
+import org.haobtc.onekey.event.BackupCompleteEvent;
 import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.utils.Daemon;
 
@@ -277,6 +279,7 @@ public class CheckMnemonicActivity extends BaseActivity {
                         mToast(e.getMessage().replace("BaseException:", ""));
                         return;
                     }
+                    EventBus.getDefault().post(new BackupCompleteEvent());
                     mIntent(BackupCheckSuccessActivity.class);
                 } else {
                     checkMnemonicFail(CheckMnemonicActivity.this, R.layout.check_mnemonic_fail);

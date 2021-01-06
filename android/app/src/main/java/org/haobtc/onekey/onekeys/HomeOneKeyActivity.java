@@ -7,6 +7,8 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import androidx.lifecycle.ViewModelProvider;
+
 import com.azhon.appupdate.config.UpdateConfiguration;
 import com.azhon.appupdate.listener.OnDownloadListener;
 import com.azhon.appupdate.manager.DownloadManager;
@@ -19,6 +21,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.BuildConfig;
 import org.haobtc.onekey.R;
+import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.bean.UpdateInfo;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.CreateSuccessEvent;
@@ -30,6 +33,7 @@ import org.haobtc.onekey.onekeys.homepage.MindFragment;
 import org.haobtc.onekey.onekeys.homepage.WalletFragment;
 import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.ui.dialog.AppUpdateDialog;
+import org.haobtc.onekey.viewmodel.AppWalletViewModel;
 
 import java.io.File;
 import java.io.IOException;
@@ -62,6 +66,7 @@ public class HomeOneKeyActivity extends BaseActivity implements RadioGroup.OnChe
     private WalletFragment walletFragment;
     private MindFragment mindFragment;
     private DiscoverFragment discoverFragment;
+    private AppWalletViewModel mAppWalletViewModel;
 
     /***
      * init layout
@@ -97,7 +102,7 @@ public class HomeOneKeyActivity extends BaseActivity implements RadioGroup.OnChe
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onCreateWalletSuccess(CreateSuccessEvent event) {
         PyEnv.loadLocalWalletInfo(this);
-        PreferencesManager.put(this, "Preferences", Constant.CURRENT_SELECTED_WALLET_NAME, event.getName());
+        mAppWalletViewModel.changeCurrentWallet(event.getName());
     }
 
     /**
@@ -105,6 +110,7 @@ public class HomeOneKeyActivity extends BaseActivity implements RadioGroup.OnChe
      */
     @Override
     public void init() {
+        mAppWalletViewModel = new ViewModelProvider(MyApplication.getInstance()).get(AppWalletViewModel.class);
         HardwareCallbackHandler callbackHandler = HardwareCallbackHandler.getInstance(this);
         PyEnv.setHandle(callbackHandler);
         // init as singleInstance to avoid some baffling issue
