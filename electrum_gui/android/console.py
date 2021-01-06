@@ -1846,13 +1846,14 @@ class AndroidCommands(commands.Commands):
 
     ###############
     def sign_eth_tx(self, to_addr, value, path='android_usb', password=None, contract_addr=None, gasprice=None):
-        checksum_from_address = self.pywalib.web3.toChecksumAddress(self.wallet.get_addresses()[0])
+        from_address = self.wallet.get_addresses()[0]
         if contract_addr is None:
-            tx_dict = self.pywalib.get_transaction(checksum_from_address, to_addr, value, gasprice=gasprice)
+            tx_dict = self.pywalib.get_transaction(from_address, to_addr, value, gasprice=gasprice)
         else:
             contract_addr = self.pywalib.web3.toChecksumAddress(contract_addr)
-            assert self.wallet.get_contract_token(contract_addr) is not None
-            tx_dict = self.pywalib.get_transaction(checksum_from_address, to_addr, value, contract=contract_addr,
+            contract = self.wallet.get_contract_token(contract_addr)
+            assert contract is not None
+            tx_dict = self.pywalib.get_transaction(from_address, to_addr, value, contract=contract,
                                                    gasprice=gasprice)
         if isinstance(self.wallet.get_keystore(), Hardware_KeyStore):
             if path:
@@ -1865,7 +1866,7 @@ class AndroidCommands(commands.Commands):
                                                to=tx_dict.to_address, chain_id=tx_dict.chain_id)
                 return self.pywalib.serialize_and_send_tx(tx_dict, vrs=(v, r, s))
         else:
-            return self.pywalib.sign_and_send_tx(self.wallet.get_account(checksum_from_address, password), tx_dict)
+            return self.pywalib.sign_and_send_tx(self.wallet.get_account(from_address, password), tx_dict)
 
     def sign_tx(self, tx, path=None, password=None):
         '''

@@ -23,7 +23,7 @@ eth_servers = {}
 ETHERSCAN_API_KEY = "R796P9T31MEA24P8FNDZBCA88UHW8YCNVW"
 INFURA_PROJECT_ID = "f001ce716b6e4a33a557f74df6fe8eff"
 ROUND_DIGITS = 3
-DEFAULT_GAS_PRICE_GWEI = 4
+DEFAULT_GAS_PRICE_WEI = int(20 * 1e9)
 DEFAULT_GAS_LIMIT = 21000
 GWEI_BASE = 1000000000
 DEFAULT_GAS_SPEED = 1
@@ -295,97 +295,77 @@ class PyWalib:
         gas = gas_price * DEFAULT_GAS_LIMIT
         return self.web3.fromWei(gas * GWEI_BASE, 'ether')
 
-    def get_transaction(self, from_address, to_address, value, contract=None, gasprice = DEFAULT_GAS_PRICE_GWEI):
+    def get_transaction(self, from_address, to_address, value,
+                        contract=None, gasprice=None, none=None):
+        if (
+            not self.web3.isAddress(from_address)
+            or not self.web3.isAddress(to_address)
+            or (contract and not self.web3.isAddress(contract.get_address()))
+        ):
+            raise InvalidAddress()
+
         try:
-            float(value)
-        except ValueError:
+            value = int(value)  # wei
+            gasprice = DEFAULT_GAS_PRICE_WEI if gasprice is None else int(gasprice)  # wei
+
+            assert value > 0
+            assert gasprice > 0
+        except (ValueError, AssertionError, TypeError):
             raise InvalidValueException()
+
+        nonce = (self.web3.eth.getTransactionCount(from_address)
+                 if none is None else int(none))
 
         if contract is None:  # create ETH transaction dictionary
             tx_dict = Eth_Transaction.build_transaction(
-                to_address=self.web3.toChecksumAddress(to_address),
-                value=self.web3.toWei(value, "ether"),
-                gas=DEFAULT_GAS_LIMIT,  # fixed gasLimit to transfer ether from one EOA to another EOA (doesn't include contracts)
-                #gas_price=self.web3.eth.gasPrice * gas_price_speed,
-                gas_price=self.web3.toWei(gasprice, "gwei"),
-                # be careful about sending more transactions in row, nonce will be duplicated
-                nonce=self.web3.eth.getTransactionCount(self.web3.toChecksumAddress(from_address)),
+                to_address=to_address,
+                value=value,
+                gas=DEFAULT_GAS_LIMIT,
+                gas_price=gasprice,
+                nonce=nonce,
                 chain_id=int(PyWalib.chain_id)
             )
         else:  # create ERC20 contract transaction dictionary
-            erc20_decimals = contract.get_decimals()
-            # token_amount = int(float(value) * (10 ** erc20_decimals))
-            token_amount = int(float(value))
-            data_for_contract = Eth_Transaction.get_tx_erc20_data_field(to_address, token_amount)
+            data_for_contract = Eth_Transaction.get_tx_erc20_data_field(to_address, value)
 
             # check whether there is sufficient ERC20 token balance
-            _, erc20_balance = self.get_balance(self.web3.toChecksumAddress(from_address), contract)
-            if float(value) > erc20_balance:
+            _, erc20_balance = self.get_balance(from_address, contract)
+            if value > erc20_balance:
                 raise InsufficientERC20FundsException()
 
-            addr = self.web3.toChecksumAddress(contract.get_address())
-            #calculate how much gas I need, unused gas is returned to the wallet
+            # calculate how much gas I need, unused gas is returned to the wallet
             estimated_gas = self.web3.eth.estimateGas(
                 {'to': contract.get_address(),
-                 'from': self.web3.toChecksumAddress(from_address),
+                 'from': from_address,
                  'data': data_for_contract
                  })
+            estimated_gas = int(estimated_gas * 1.2)
 
             tx_dict = Eth_Transaction.build_transaction(
-                to_address=contract.get_address(),  # receiver address is defined in data field for this contract
-                value=0,  # amount of tokens to send is defined in data field for contract
+                to_address=contract.get_address(),
+                value=0,
                 gas=estimated_gas,
-                gas_price=self.web3.toWei(gasprice, "gwei"),
-                # be careful about sending more transactions in row, nonce will be duplicated
-                nonce=self.web3.eth.getTransactionCount(self.web3.toChecksumAddress(from_address)),
+                gas_price=gasprice,
+                nonce=nonce,
                 chain_id=int(PyWalib.chain_id),
                 data=data_for_contract
             )
 
-        # check whether to address is valid checksum address
-        if not self.web3.isChecksumAddress(self.web3.toChecksumAddress(to_address)):
-            raise InvalidAddress()
-
         # check whether there is sufficient eth balance for this transaction
-        #_, balance = self.get_balance(from_address)
-        balance = self.web3.fromWei(self.web3.eth.getBalance(self.web3.toChecksumAddress(from_address)), 'ether')
-        transaction_const_wei = tx_dict['gas'] * tx_dict['gasPrice']
-        transaction_const_eth = self.web3.fromWei(transaction_const_wei, 'ether')
-        if contract is None:
-            if (transaction_const_eth + Decimal(value)) > balance:
-                raise InsufficientFundsException()
-        else:
-            if transaction_const_eth > balance:
-                raise InsufficientFundsException()
+        balance = self.web3.eth.getBalance(from_address)
+        fee_cost = int(tx_dict['gas'] * tx_dict['gasPrice'])
+        eth_required = fee_cost + (value if not contract else 0)
+
+        if eth_required > balance:
+            raise InsufficientFundsException()
+
         return tx_dict
 
     def sign_and_send_tx(self, account, tx_dict):
-        tx_hash = Eth_Transaction.send_transaction(account, self.web3, tx_dict)
-        print('Pending', end='', flush=True)
-        while True:
-            tx_receipt = self.web3.eth.getTransactionReceipt(tx_hash)
-            if tx_receipt is None:
-                print('.', end='', flush=True)
-                import time
-                time.sleep(1)
-            else:
-                print('\nTransaction mined!')
-                break
-
-        return tx_hash
+        return Eth_Transaction.send_transaction(account, self.web3, tx_dict).hex()
 
     def serialize_and_send_tx(self, tx_dict, vrs):
-        tx_hash = Eth_Transaction.serialize_and_send_tx(self.web3, tx_dict, vrs)
-        print('Pending', end='', flush=True)
-        while True:
-            tx_receipt = self.web3.eth.getTransactionReceipt(tx_hash)
-            if tx_receipt is None:
-                print('.', end='', flush=True)
-                import time
-                time.sleep(1)
-            else:
-                print('\nTransaction mined!')
-                break
+        return Eth_Transaction.serialize_and_send_tx(self.web3, tx_dict, vrs).hex()
 
     @staticmethod
     def get_balance(wallet_address, contract=None):
