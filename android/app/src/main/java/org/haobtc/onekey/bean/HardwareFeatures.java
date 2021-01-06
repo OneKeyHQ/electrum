@@ -43,6 +43,7 @@ public class HardwareFeatures {
      * se_version: ""
      * auto_lock_delay_ms: 600000
      * backup_only: false
+     * onekey_version: ""
      * backup_message: ""
      * is_verify: false
      */
@@ -111,6 +112,8 @@ public class HardwareFeatures {
     private BigInteger autoLock;
     @SerializedName("is_verify")
     private boolean isVerify;
+    @SerializedName("onekey_version")
+    private String oneKeyVersion;
 
     public static HardwareFeatures objectFromData(String str) {
 
@@ -364,6 +367,14 @@ public class HardwareFeatures {
 
     public void setVerify(boolean verify) {
         isVerify = verify;
+    }
+
+    public String getOneKeyVersion() {
+        return oneKeyVersion;
+    }
+
+    public void setOneKeyVersion(String oneKeyVersion) {
+        this.oneKeyVersion = oneKeyVersion;
     }
 
     @NonNull

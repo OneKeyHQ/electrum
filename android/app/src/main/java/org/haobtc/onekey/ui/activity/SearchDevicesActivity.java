@@ -241,7 +241,7 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
         features = response.getResult();
         runOnUiThread(() -> {
             if (Strings.isNullOrEmpty(errors) && features != null) {
-                if (((features.getMajorVersion() == 1) && (features.getMinorVersion() == 9) && (features.getPatchVersion() <= 7)) || features.isBootloaderMode()) {
+                if (Strings.isNullOrEmpty(features.getOneKeyVersion()) || features.isBootloaderMode()) {
                     update(features);
                     finish();
                     return;

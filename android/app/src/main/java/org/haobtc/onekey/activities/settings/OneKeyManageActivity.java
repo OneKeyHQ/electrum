@@ -26,6 +26,7 @@ import org.haobtc.onekey.event.FixBixinkeyNameEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -82,7 +83,7 @@ public class OneKeyManageActivity extends BaseActivity {
                 @Override
                 public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
                     if (view.getId() == R.id.relativeLayout_bixinkey) {
-                        String firmwareVersion = deviceValue.get(position).getMajorVersion() + "." + deviceValue.get(position).getMinorVersion() + "." + deviceValue.get(position).getPatchVersion();
+                        String firmwareVersion = Optional.ofNullable(deviceValue.get(position).getOneKeyVersion()).orElse(deviceValue.get(position).getMajorVersion() + "." + deviceValue.get(position).getMinorVersion() + "." + deviceValue.get(position).getPatchVersion());
                         String nrfVersion = deviceValue.get(position).getBleVer();
                         String label = Strings.isNullOrEmpty(deviceValue.get(position).getLabel()) ?
                                 deviceValue.get(position).getBleName() : deviceValue.get(position).getLabel();

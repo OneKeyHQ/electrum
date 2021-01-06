@@ -354,9 +354,7 @@ public class HardwareUpgradeActivity extends BaseActivity {
         String features = devices.getString(deviceId, "");
         if (!Strings.isNullOrEmpty(features)) {
             HardwareFeatures features1 = HardwareFeatures.objectFromData(features);
-            features1.setMajorVersion(newFirmwareVersion.charAt(0)-48);
-            features1.setMinorVersion(newFirmwareVersion.charAt(2)-48);
-            features1.setPatchVersion(newFirmwareVersion.charAt(4)-48);
+            features1.setOneKeyVersion(newFirmwareVersion);
             devices.edit().putString(deviceId, features1.toString()).apply();
         }
     }
