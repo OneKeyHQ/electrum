@@ -36,7 +36,6 @@
             android:layout_height="180dp"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="@dimen/dp_82"
-            android:contentDescription="@string/active_prompt"
             android:src="@drawable/wallet_unactive" />
 
         <TextView
@@ -46,7 +45,6 @@
             android:layout_below="@id/picture"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="25dp"
-            android:text="@string/active_prompt"
             android:textColor="@color/text"
             android:textSize="@dimen/sp_18"
             android:textStyle="bold" />

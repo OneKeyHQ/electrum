@@ -36,7 +36,6 @@
             android:layout_height="180dp"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="@dimen/dp_82"
-            android:contentDescription="@string/active_prompt"
             android:src="@drawable/wallet_unactive" />
 
         <TextView
