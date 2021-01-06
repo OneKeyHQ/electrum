@@ -739,10 +739,10 @@ public final class PyEnv {
      *
      * @param password APP主密码
      */
-    public static PyResponse<String> exportMnemonics(String password) {
+    public static PyResponse<String> exportMnemonics (String password, String name) {
         PyResponse<String> response = new PyResponse<>();
         try {
-            String result = sCommands.callAttr(PyConstant.EXPORT_MNEMONICS, password, null).toString();
+            String result = sCommands.callAttr(PyConstant.EXPORT_MNEMONICS, password, new Kwarg("name", name)).toString();
             response.setResult(result);
         } catch (Exception e) {
             Exception exception = HardWareExceptions.exceptionConvert(e);

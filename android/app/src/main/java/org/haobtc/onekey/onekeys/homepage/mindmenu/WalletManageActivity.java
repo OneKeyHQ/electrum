@@ -75,7 +75,7 @@ public class WalletManageActivity extends BaseActivity {
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGotPass(GotPassEvent event) {
-        PyResponse<String> response = PyEnv.exportMnemonics(event.getPassword());
+        PyResponse<String> response = PyEnv.exportMnemonics(event.getPassword(), deleteHdWalletName);
         String errors = response.getErrors();
         if (Strings.isNullOrEmpty(errors)) {
             Intent intent = new Intent(this, BackupGuideActivity.class);

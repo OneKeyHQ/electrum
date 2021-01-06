@@ -16,7 +16,7 @@ import dr.android.utils.LogUtil;
 public class ActivityLifeCycleCallback implements Application.ActivityLifecycleCallbacks {
     @Override
     public void onActivityCreated (@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
-        LogUtil.d("OnKey", "页面 onCreate：" + activity.getClass().getName());
+        LogUtil.d("OneKey", "页面 onCreate：" + activity.getClass().getName());
         LanguageUtils.changeLanguage(activity);
     }
 

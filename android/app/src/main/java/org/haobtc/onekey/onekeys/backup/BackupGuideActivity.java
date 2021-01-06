@@ -29,6 +29,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME;
 import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
 
 /**
@@ -114,8 +115,8 @@ public class BackupGuideActivity extends BaseActivity {
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGotPass(GotPassEvent event) {
-        PyResponse<String> response = PyEnv.exportMnemonics(event.getPassword());
-       String errors = response.getErrors();
+        PyResponse<String> response = PyEnv.exportMnemonics(event.getPassword(), preferences.getString(CURRENT_SELECTED_WALLET_NAME, ""));
+        String errors = response.getErrors();
        if (Strings.isNullOrEmpty(errors)) {
             switch (destination) {
                 case 0:

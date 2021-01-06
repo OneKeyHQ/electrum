@@ -442,7 +442,7 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
         bundle.putString(Constant.TAG_FIRMWARE_VERSION_NEW, versionStm32);
         bundle.putString(Constant.TAG_FIRMWARE_UPDATE_DES, descriptionStm32);
         // todo: 此处的判定条件在版本号出现2位数以上时会有问题
-        if (versionNrf.compareTo(curNrfVersion) > 0 ) {
+        if (!Strings.isNullOrEmpty(curNrfVersion) && !Strings.isNullOrEmpty(versionNrf) && versionNrf.compareTo(curNrfVersion) > 0) {
             bundle.putString(Constant.TAG_NRF_DOWNLOAD_URL, urlPrefix + urlNrf);
             bundle.putString(Constant.TAG_NRF_VERSION_NEW, versionNrf);
             bundle.putString(Constant.TAG_NRF_UPDATE_DES, descriptionNrf);

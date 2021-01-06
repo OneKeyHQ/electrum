@@ -18,7 +18,6 @@ import org.haobtc.onekey.bean.LocalWalletInfo;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.LoadWalletlistEvent;
 import org.haobtc.onekey.manager.PreferencesManager;
-import org.haobtc.onekey.onekeys.homepage.process.CreateDeriveChooseTypeActivity;
 import org.haobtc.onekey.ui.dialog.HdWalletIntroductionDialog;
 import org.haobtc.onekey.utils.NavUtils;
 
@@ -28,8 +27,6 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-
-import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
 
 public class HDWalletActivity extends BaseActivity {
 
@@ -71,7 +68,7 @@ public class HDWalletActivity extends BaseActivity {
     }
 
     @SingleClick
-    @OnClick({R.id.img_back, R.id.text_manage, R.id.recl_add_wallet, R.id.img_what_hd})
+    @OnClick({R.id.img_back, R.id.text_manage, R.id.recl_add_wallet, R.id.img_what_hd, R.id.recl_add_hd_wallet, R.id.recl_recovery_wallet})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
@@ -89,6 +86,10 @@ public class HDWalletActivity extends BaseActivity {
                 break;
             case R.id.img_what_hd:
                 new HdWalletIntroductionDialog().show(getSupportFragmentManager(), "");
+                break;
+            case R.id.recl_add_hd_wallet:
+                break;
+            case R.id.recl_recovery_wallet:
                 break;
         }
     }

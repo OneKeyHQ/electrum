@@ -23,6 +23,7 @@ import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
 import com.google.common.base.Strings;
 import com.lxj.xpopup.XPopup;
+import com.orhanobut.logger.Logger;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -127,10 +128,6 @@ public class HdWalletDetailActivity extends BaseActivity {
             linSingleShow.setVisibility(View.VISIBLE);
             linSingle.setVisibility(View.GONE);
             deleteTV.setText(R.string.delete_wallet_single);
-//            linHardware.setVisibility(View.VISIBLE);
-//            type = showWalletType.substring(showWalletType.indexOf("hw-") + 3);
-//            textSign.setText(String.format("%s %s", type, getString(R.string.sign_num)));
-//            textContentType.setText(getString(R.string.sign_num_tip));
         } else if (showWalletType.contains(StringConstant.Watch)) {
             textHdWallet.setText(getString(R.string.watch_wallet));
             deleteTV.setText(R.string.delete_wallet_single);
@@ -324,12 +321,12 @@ public class HdWalletDetailActivity extends BaseActivity {
     public void onGotPass(GotPassEvent event) {
         switch (currentOperation) {
             case R.id.rel_export_word:
-                PyResponse<String> response = PyEnv.exportMnemonics(event.getPassword());
+                PyResponse<String> response = PyEnv.exportMnemonics(event.getPassword(), preferences.getString(CURRENT_SELECTED_WALLET_NAME, ""));
                 String errors = response.getErrors();
                 if (Strings.isNullOrEmpty(errors)) {
                     Intent intent = new Intent(this, BackupGuideActivity.class);
                     intent.putExtra("exportWord", response.getResult());
-                    intent.putExtra("importHdword", "exportWord");
+                    intent.putExtra("importHdword", "exportHdword");
                     startActivity(intent);
                     finish();
                 } else {
