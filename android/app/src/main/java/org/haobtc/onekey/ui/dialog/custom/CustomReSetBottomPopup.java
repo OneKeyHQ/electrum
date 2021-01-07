@@ -9,7 +9,10 @@ import com.lxj.xpopup.core.BottomPopupView;
 
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.ui.widget.SuperTextView;
-
+/**
+ * @Description: 可以复用的相同布局的弹窗
+ * @Author: peter Qin
+ */
 public class CustomReSetBottomPopup extends BottomPopupView {
     private onClick onClick;
     private SuperTextView confirmBtn, cancelBtn;
@@ -17,7 +20,7 @@ public class CustomReSetBottomPopup extends BottomPopupView {
     private int mode;
     public static final int resetApp = 0;
     public static final int deleteHdChildren = 1;
-    public static final int deleteHdRoot =2;
+    public static final int deleteHdRoot = 2;
 
     public CustomReSetBottomPopup (@NonNull Context context, onClick onClick, int mode) {
         super(context);
@@ -53,7 +56,6 @@ public class CustomReSetBottomPopup extends BottomPopupView {
         }
         confirmBtn.setOnClickListener(v -> {
             onClick.onConfirm();
-            dismiss();
         });
         cancelBtn.setOnClickListener(v -> dismiss());
     }

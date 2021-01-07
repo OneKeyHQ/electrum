@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <string name="line">--</string>
     <string name="select_mutisig">Select multi-sig wallet</string>
     <string name="prompt_message">Please confirm info below on OneKey before tapping "OK" button</string>
@@ -153,7 +153,7 @@
     <string name="transaction_setting">Transaction Settings</string>
     <string name="service_online">Online Service</string>
     <string name="about">About (Terms of Agreement)</string>
-    <string name="zh_simple">中文（简体）</string>
+    <string name="zh_simple">Chinese (Simplified)</string>
     <string name="zh_traditional">Traditional Chinese</string>
     <string name="en">English</string>
     <string name="korean">Korean</string>
@@ -517,7 +517,7 @@
     <string name="connection_success">Device connection successful</string>
     <string name="sign_success">Anti-Forgery signature obtained</string>
     <string name="submit_verification">Verification being submitted</string>
-    <string name="verifying_pass">Verification passed</string>
+    <string name="verifying_pass">Pass</string>
     <string name="verifying_fail">Verification failed</string>
     <string name="verifying_overtime">Verification timed out</string>
     <string name="verifying_retry">Verification timed out, please try again</string>
@@ -765,7 +765,7 @@
     <string name="onekey_user2">and <font color="#00B812"> Privacy Policy</font></string>
     <string name="begin_use">Getting Started</string>
     <string name="find">Discover</string>
-    <string name="mind">Mind</string>
+    <string name="mind">Mine</string>
     <string name="no_use_wallet">No wallet available</string>
     <string name="creat_hd">Create HD wallet</string>
     <string name="not_num">Multi-chain, Simple and Secure</string>
@@ -798,7 +798,7 @@
     <string name="system_set">System Setting</string>
     <string name="hb_unit">Currency</string>
     <string name="internet">Network</string>
-    <string name="transaction_set">Transaction settings (Advanced)</string>
+    <string name="transaction_set">Transaction Settings (Advanced)</string>
     <string name="mind_tip">Privacy Policy, Usage Agreement, and Open Source Software.</string>
     <string name="recovery_hd__tip"><b>Once imported, mnemonic is encrypted and stored on your local device for safekeeping. </b>OneKey does not store any private data and cannot retrieve it for you.</string>
     <string name="hd_tip1">- Don\'t uninstall the OneKey App so easily</string>
@@ -826,7 +826,7 @@
     <string name="add_wallet_">Add Wallet</string>
     <string name="detail">Detail</string>
     <string name="create_">Create</string>
-    <string name="collection">Receiver Address</string>
+    <string name="collection">Receiver</string>
     <string name="input_and_paste">Enter or paste the address</string>
     <string name="input_out">Enter the transfer out amount </string>
     <string name="max">Max</string>
@@ -847,7 +847,7 @@
     <string name="all_device">All Devices</string>
     <string name="connect_method_">Connection Method</string>
     <string name="send_">Send</string>
-    <string name="input_number">Please enter receiver address</string>
+    <string name="input_number">Enter receiver address</string>
     <string name="input_out_number">Please enter the transfer out amount </string>
     <string name="forword">Send</string>
     <string name="collect">Receive</string>
@@ -1023,7 +1023,7 @@
     <string name="public_greater_sign">Number of co-managers needed >= Number of signatures</string>
     <string name="public_key">Determine how many people are involved in wallet management</string>
     <string name="tet_tips">Refers to the number of signatures required to access the wallet\'s funds.</string>
-    <string name="add_public_tip">Supports OneKey (including Bixin Limited Edition), or you can directly enter the public key to complete the binding.</string>
+    <string name="add_public_tip">OneKey (including Bixin Limited Edition), or you can directly enter the public key to complete the binding.</string>
     <string name="band_pub">Number of bound co-owners.</string>
     <string name="band_pub_tip">The co-management wallet can only be activated after all participants have completed their bindings.</string>
     <string name="choose_add_method">Select Add Method</string>
@@ -1043,7 +1043,7 @@
     <string name="input_msg">Enter the original message</string>
     <string name="agreement_msg_no">Signature information does not match public key/original information</string>
     <string name="check_word_tip">Check again to make sure that you have copied all the mnemonic, and that they are in the same order as the words.</string>
-    <string name="chooseword_left">Select No.    you just copied</string>
+    <string name="chooseword_left">Choose the word you just copied down, # </string>
     <string name="chooseword_right">Single Word</string>
     <string name="check_it">Let\'s check</string>
     <string name="backup_success_tip">Everything seems to be in place! \We don\'t have anything else to remind you. \Anyway, remember to keep your mnemonic safe, and no one can help you get it back if you lose it. \Have fun in the world of blockchain ❤️!</string>
@@ -1124,7 +1124,7 @@
     <string name="verify_promote">Prepare hardware wallet for address verification</string>
     <string name="verifying">Hardware wallet reconciliation in progress</string>
     <string name="set_device_name">Set device name</string>
-    <string name="support_bixinkey">Support OneKey (including Bixin Limited Edition)</string>
+    <string name="support_bixinkey">OneKey (including Bixin Limited Edition)</string>
     <string name="hardware_import_tip">When the factory settings are restored: 1. your private key or passphrase stored in this hardware wallet will be erased; 2. the account you created with this wallet in the OneKey App will still exist, but you will not be able to access the assets on it because the private key is missing. Unless you have previously backed up the helper or private key, you can use it to restore the hardware wallet and regain control of the account.</string>
     <string name="pin_input_wrong">Incorrect PIN code entered</string>
     <string name="updating">Firmware installation in progress</string>
@@ -1212,7 +1212,7 @@
     <string name="native_segwit">Native SegWit</string>
     <string name="native_segwit_infor">Starts with bc1, advanced, lowest transfer fees</string>
     <string name="normal_segwit">Legacy</string>
-    <string name="normal_segwit_info">>Starts with 1, universally accepted, medium transfer fees</string>
+    <string name="normal_segwit_info">Starts with 1, universally accepted, medium transfer fees</string>
     <string name="recovery_hardware_wallet">You have used hardware devices to create these wallets, select the one you want to recover.</string>
     <string name="multi_signature">Multi-Signature XPub</string>
     <string name="receive_unbackup_tip">This wallet has not been backed up. For the safety of your funds, please complete the backup before initiating a transfer using this address.</string>
@@ -1248,17 +1248,20 @@
     <string name="unknown">Unknown</string>
     <string name="empty_help_words">The mnemonic is empty</string>
     <string name="accuracy_num">Accuracy should not exceed 8 decimal places</string>
-    <string name="use_cold_sign">Use cold wallet for code scanning signatures</string>
-    <string name="watch_wallet_tip">For the current purpose of observing the wallet, the initiated transfer shall be signed by scanning the code with the cold wallet holding the private key.</string>
+    <string name="use_cold_sign">Use Cold Wallet for sweep signatures</string>
+    <string name="watch_wallet_tip">Currently it is a watch wallet, and initiated transfers need to be swept and signed using the cold wallet that holds the private key.</string>
     <string name="qr_exception">The transaction amount is too large to generate a QR code</string>
     <string name="home_tip">HD Wallet is the most advanced wallet format to date. With root seed phrase, it can derive unlimited wallets of all kinds. It is easy to remember, easy to use, easy to manage and very secure.</string>
-    <string name="already_has_local_hd">HD wallet already exists in the local area. The hardware wallet in backup mode cannot be connected</string>
-    <string name="watch_wallet_receive_tip">Are you sure you want to use the address of the wallet to initiate a collection in order to view the wallet?</string>
-    <string name="connecting_1">Connecting…</string>
-    <string name="ble_connect_error">Ble connect error</string>
-    <string name="feerate_failure">费率获取失败，请重试</string>
-    <string name="updates">Update</string>
-    <string name="now_update">立即更新</string>
-    <string name="loading_wait">新版下载中，请稍后 …</string>
+    <string name="already_has_local_hd">The HD wallet already exists locally and cannot be connected to the hardware wallet in backup mode</string>
+    <string name="watch_wallet_receive_tip">Currently it is an observation wallet，sure you want to initiate receiving using the wallet\'s address?</string>
+    <string name="connecting_1">Connecting...</string>
+    <string name="ble_connect_error">Bluetooth connection abnormal</string>
+    <string name="feerate_failure">Rate acquisition failed, please try again</string>
+    <string name="updates">Upgrade</string>
+    <string name="now_update">Update Now</string>
+    <string name="loading_wait">The new version is being downloaded, please wait ...</string>
     <string name="connectting">Connecting Devices</string>
+    <string name="delete_watch_tip">检测到本地已存在关联的观察钱包，继续导入，观察钱包 "\"%s\"" 将被覆盖。别担心，删除观察钱包不会影响您的资金安全。</string>
+    <string name="delete_watch">确定删除观察钱包？</string>
+    <string name="cover_watch">覆盖观察钱包</string>
 </resources>

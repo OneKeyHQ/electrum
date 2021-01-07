@@ -23,7 +23,6 @@ import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
 import com.google.common.base.Strings;
 import com.lxj.xpopup.XPopup;
-import com.orhanobut.logger.Logger;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -90,6 +89,10 @@ public class HdWalletDetailActivity extends BaseActivity {
     TextView deleteTV;
     @BindView(R.id.delete_ll)
     LinearLayout mDeleteLayout;
+    @BindView(R.id.rel_export_private_key)
+    RelativeLayout exportPrivateLayout;
+    @BindView(R.id.rel_export_word)
+    RelativeLayout exportWordLayout;
     private String type;
     private boolean isBackup;
     private SharedPreferences preferences;
@@ -126,17 +129,26 @@ public class HdWalletDetailActivity extends BaseActivity {
         } else if (showWalletType.contains(StringConstant.HW)) {
             textHdWallet.setText(getString(R.string.hardware_wallet));
             linSingleShow.setVisibility(View.VISIBLE);
+            //硬件 导出私钥和助记词不可见
             linSingle.setVisibility(View.GONE);
             deleteTV.setText(R.string.delete_wallet_single);
         } else if (showWalletType.contains(StringConstant.Watch)) {
             textHdWallet.setText(getString(R.string.watch_wallet));
             deleteTV.setText(R.string.delete_wallet_single);
+            // 观察钱包 导出私钥和助记词不可见
             linSingle.setVisibility(View.GONE);
         } else if (StringConstant.Btc_Standard.equals(showWalletType) || StringConstant.Btc_Private_Standard.equals(showWalletType)) {
             //Independent Wallet
             linHdWalletShow.setVisibility(View.GONE);
             linSingleShow.setVisibility(View.VISIBLE);
             textHdWallet.setText(getString(R.string.single_wallet));
+            if (StringConstant.Btc_Private_Standard.equals(showWalletType)) {
+                exportWordLayout.setVisibility(View.GONE);
+                exportPrivateLayout.setVisibility(View.VISIBLE);
+            } else {
+                exportPrivateLayout.setVisibility(View.GONE);
+                exportWordLayout.setVisibility(View.VISIBLE);
+            }
         }
     }
 
@@ -203,10 +215,6 @@ public class HdWalletDetailActivity extends BaseActivity {
                 }
                 break;
             case R.id.text_sign:
-//                Intent intent1 = new Intent(HdWalletDetailActivity.this, SignActivity.class);
-//                intent1.putExtra("personceType", type);
-//                startActivity(intent1);
-//                break;
             default:
         }
     }

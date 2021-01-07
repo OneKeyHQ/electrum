@@ -1,5 +1,4 @@
 package org.haobtc.onekey.onekeys.dialog.recovery;
-
 import android.content.Intent;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -8,14 +7,20 @@ import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
+import com.lxj.xpopup.XPopup;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.CreateWalletBean;
+import org.haobtc.onekey.bean.LocalWalletInfo;
+import org.haobtc.onekey.bean.PyResponse;
+import org.haobtc.onekey.business.wallet.AccountManager;
+import org.haobtc.onekey.constant.StringConstant;
 import org.haobtc.onekey.event.CreateSuccessEvent;
 import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.event.GotPassEvent;
@@ -28,6 +33,7 @@ import org.haobtc.onekey.onekeys.dialog.recovery.importmethod.ImportMnemonicActi
 import org.haobtc.onekey.onekeys.dialog.recovery.importmethod.ImportPrivateKeyActivity;
 import org.haobtc.onekey.onekeys.dialog.recovery.importmethod.WatchWalletActivity;
 import org.haobtc.onekey.ui.activity.SoftPassActivity;
+import org.haobtc.onekey.ui.dialog.custom.CustomCoverWatchPopup;
 import org.haobtc.onekey.utils.Daemon;
 
 import butterknife.BindView;
@@ -35,21 +41,22 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class ChooseImportMethodActivity extends BaseActivity {
-
     @BindView(R.id.rel_import_keystore)
     RelativeLayout relImportKeystore;
     private String name;
     private String data;
     private int currentAction;
     private int purpose;
+    private String walletName;
+    private AccountManager accountManager;
 
     @Override
-    public int getLayoutId() {
+    public int getLayoutId () {
         return R.layout.activity_choose_import_method;
     }
 
     @Override
-    public void initView() {
+    public void initView () {
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
         String importType = getIntent().getStringExtra("importType");
@@ -63,7 +70,7 @@ public class ChooseImportMethodActivity extends BaseActivity {
 
     @Override
     public void initData() {
-
+        accountManager = new AccountManager(MyApplication.getInstance());
     }
 
     @SingleClick(value = 1000)
@@ -127,7 +134,24 @@ public class ChooseImportMethodActivity extends BaseActivity {
     }
     @Subscribe
     public void onFinish(ExitEvent exitEvent) {
-        finish();
+        if (exitEvent.message.contains(StringConstant.REPLACE_ERROR)) {
+            String watchName = "";
+            PyResponse<String> response = PyEnv.replaceWatchOnlyWallet(true);
+            if (Strings.isNullOrEmpty(response.getErrors())) {
+                LocalWalletInfo localWalletByName = accountManager.getLocalWalletByName(response.getResult());
+                watchName = localWalletByName.getLabel();
+                CustomCoverWatchPopup popup = new CustomCoverWatchPopup(mContext, () -> {
+                    EventBus.getDefault().post(new CreateSuccessEvent(response.getResult()));
+                    mContext.startActivity(new Intent(mContext, HomeOneKeyActivity.class));
+                }, CustomCoverWatchPopup.deleteWatch);
+                popup.setWalletName(watchName);
+                new XPopup.Builder(mContext).asCustom(popup).show();
+            } else {
+                mToast(response.getErrors());
+            }
+        } else {
+            finish();
+        }
     }
     private void importWallet() {
         try {

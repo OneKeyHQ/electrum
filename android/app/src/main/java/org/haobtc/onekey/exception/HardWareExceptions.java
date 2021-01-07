@@ -27,14 +27,21 @@ public enum HardWareExceptions {
       this.code = code;
    }
 
-   public int getCode() {
+   public int getCode () {
       return code;
    }
 
-   public String getMessage() {
+   public String getMessage () {
       return message;
    }
-   public static Exception exceptionConvert(Exception e) {
+
+   /**
+    * 统一 replace "BaseException: "
+    *
+    * @param e  异常
+    * @return
+    */
+   public static Exception exceptionConvert (Exception e) {
       if (Objects.requireNonNull(e.getMessage()).startsWith(BASE_EXCEPTION_PREFIX)) {
          return new Exception(e.getMessage().replaceFirst(BASE_EXCEPTION_PREFIX, ""));
       }

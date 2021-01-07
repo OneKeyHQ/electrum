@@ -15,9 +15,10 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/dp_32"
+        android:gravity="center"
+        android:text="@string/confirm_do_this"
         android:textColor="@color/color_142A3B"
-        android:textSize="@dimen/sp_18"
-        android:gravity="center"/>
+        android:textSize="@dimen/sp_18" />
 
     <TextView
         android:id="@+id/content"
@@ -26,6 +27,7 @@
         android:layout_marginStart="@dimen/dp_24"
         android:layout_marginTop="@dimen/dp_16"
         android:layout_marginEnd="@dimen/dp_24"
+        android:text="@string/reset_tip"
         android:textColor="@color/color_142A3B"
         android:textSize="@dimen/sp_14" />
 
@@ -38,10 +40,11 @@
         android:layout_marginTop="@dimen/dp_14"
         android:layout_marginEnd="@dimen/dp_25"
         android:gravity="center"
-        app:corner="20dp"
-        app:solid="@color/color_EB5757"
+        android:text="@string/confirm_reset"
+        android:textColor="@color/defaultColor"
         android:textSize="@dimen/sp_16"
-        android:textColor="@color/defaultColor"/>
+        app:corner="20dp"
+        app:solid="@color/onekey" />
 
     <org.haobtc.onekey.ui.widget.SuperTextView
         android:id="@+id/cancel_button"
@@ -50,14 +53,14 @@
         android:layout_marginStart="@dimen/dp_25"
         android:layout_marginTop="@dimen/dp_20"
         android:layout_marginEnd="@dimen/dp_25"
+        android:layout_marginBottom="@dimen/dp_30"
         android:background="@color/defaultColor"
         android:gravity="center"
         android:text="@string/cancel"
-        app:corner="20dp"
-        android:textSize="@dimen/sp_16"
         android:textColor="@color/color_142A3B"
+        android:textSize="@dimen/sp_16"
+        app:corner="20dp"
         app:stroke_color="@color/color_BDBDBD"
-        app:stroke_width="1px"
-        android:layout_marginBottom="@dimen/dp_30"/>
+        app:stroke_width="1px" />
 
 </LinearLayout>

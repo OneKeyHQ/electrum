@@ -112,7 +112,7 @@ public class WalletListActivity extends BaseActivity {
         getHomeWalletList();
     }
 
-    @SingleClick(value = 6000L)
+    @SingleClick
     @SuppressLint("UseCompatLoadingForDrawables")
     @OnClick({R.id.img_close, R.id.recl_wallet_detail, R.id.lin_pair_wallet, R.id.lin_add_wallet, R.id.view_all, R.id.view_btc, R.id.view_eth, R.id.recl_add_wallet, R.id.img_add, R.id.img_w, R.id.recl_add_hd_wallet, R.id.recl_recovery_wallet})
     public void onViewClicked(View view) {

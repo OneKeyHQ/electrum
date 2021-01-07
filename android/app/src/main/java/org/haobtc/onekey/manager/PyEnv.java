@@ -35,6 +35,7 @@ import org.haobtc.onekey.bean.TemporaryTxInfo;
 import org.haobtc.onekey.bean.TransactionInfoBean;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.PyConstant;
+import org.haobtc.onekey.constant.StringConstant;
 import org.haobtc.onekey.event.CreateSuccessEvent;
 import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.event.RefreshEvent;
@@ -774,9 +775,13 @@ public final class PyEnv {
             EventBus.getDefault().post(new CreateSuccessEvent(createWalletBean.getWalletInfo().get(0).getName()));
             context.startActivity(new Intent(context, HomeOneKeyActivity.class));
         } catch (Exception e) {
-            EventBus.getDefault().post(new ExitEvent());
+            ExitEvent exitEvent = new ExitEvent();
+            exitEvent.message = e.getMessage();
+            EventBus.getDefault().post(exitEvent);
             if (e.getMessage() != null) {
-                MyApplication.getInstance().toastErr(e);
+                if (!e.getMessage().contains(StringConstant.REPLACE_ERROR)) {
+                    MyApplication.getInstance().toastErr(e);
+                }
             }
             e.printStackTrace();
         }
@@ -862,4 +867,23 @@ public final class PyEnv {
         }
         return response;
     }
+
+    /**
+     * 覆盖观察钱包
+     *
+     * @param replace true
+     * @return
+     */
+    public static PyResponse<String> replaceWatchOnlyWallet (boolean replace) {
+        PyResponse<String> response = new PyResponse<>();
+        try {
+            String res = sCommands.callAttr(PyConstant.REP_WATCH_ONLY_WALLET, replace).toString();
+            response.setResult(res);
+        } catch (Exception e) {
+            Exception exception = HardWareExceptions.exceptionConvert(e);
+            response.setErrors(exception.getMessage());
+        }
+        return response;
+    }
+
 }

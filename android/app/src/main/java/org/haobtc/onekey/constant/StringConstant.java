@@ -20,4 +20,5 @@ public class StringConstant {
     public static final String USER_URL="https://onekey.zendesk.com/hc/articles/360002014776";
     public static final String POLICY_URL = "https://onekey.zendesk.com/hc/articles/360002003315";
     public static final String FROM = "from";
+    public static final String REPLACE_ERROR = "Replace Watch-olny wallet";
 }

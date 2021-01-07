@@ -212,14 +212,15 @@ public final class PyConstant {
     public static final String GET_DEVIRED_NUM = "get_devired_num";
     /**
      * 获取交易历史
-     * */
+     */
     public static final String GET_TX_HISTORY = "get_all_tx_list";
     /**
      * 取消恢复
-     * */
+     */
     public static final String CANCEL_RECOVERY = "_set_recovery_flag";
-
-
-
+    /**
+     * 覆盖观察钱包
+     */
+    public static final String REP_WATCH_ONLY_WALLET = "replace_watch_only_wallet";
 
 }
