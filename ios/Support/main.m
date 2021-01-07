@@ -122,7 +122,7 @@ int main(int argc, char *argv[]) {
         wpython_home = Py_DecodeLocale([python_home UTF8String], NULL);
         Py_SetPythonHome(wpython_home);
         // Set the PYTHONPATH
-        python_path = [NSString stringWithFormat:@"PYTHONPATH=%@/Library/Application Support/so.onekey.one.OneKey/app:%@/Library/Application Support/so.onekey.one.OneKey/app_packages:%@/Library/Application Support/so.onekey.one.OneKey/app/OneKey", resourcePath, resourcePath, resourcePath, nil];
+        python_path = [NSString stringWithFormat:@"PYTHONPATH=%@/:%@/trezor/python-trezor/src:%@/Library/Application Support/so.onekey.one.OneKey/app_packages", resourcePath, resourcePath, resourcePath, nil];
         NSLog(@"PYTHONPATH is: %@", python_path);
         putenv((char *)[python_path UTF8String]);
         NSString *documentPath = [NSString stringWithFormat:@"iOS_DATA=%@",[OKStorageManager getDocumentDirectoryPath]];
