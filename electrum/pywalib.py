@@ -23,7 +23,7 @@ eth_servers = {}
 ETHERSCAN_API_KEY = "R796P9T31MEA24P8FNDZBCA88UHW8YCNVW"
 INFURA_PROJECT_ID = "f001ce716b6e4a33a557f74df6fe8eff"
 ROUND_DIGITS = 3
-DEFAULT_GAS_PRICE_WEI = int(20 * 1e9)
+DEFAULT_GAS_PRICE_GWEI = 20
 DEFAULT_GAS_LIMIT = 21000
 GWEI_BASE = 1000000000
 DEFAULT_GAS_SPEED = 1
@@ -305,8 +305,13 @@ class PyWalib:
             raise InvalidAddress()
 
         try:
-            value = int(value)  # wei
-            gasprice = DEFAULT_GAS_PRICE_WEI if gasprice is None else int(gasprice)  # wei
+            if contract:
+                decimal = contract.get_decimals()
+                value = int(Decimal(value) * pow(10, decimal))
+            else:
+                value = self.web3.toWei(value, "ether")
+
+            gasprice = DEFAULT_GAS_PRICE_GWEI if gasprice is None else self.web3.toWei(gasprice, "gwei")
 
             assert value > 0
             assert gasprice > 0
@@ -318,7 +323,7 @@ class PyWalib:
 
         if contract is None:  # create ETH transaction dictionary
             tx_dict = Eth_Transaction.build_transaction(
-                to_address=to_address,
+                to_address=self.web3.toChecksumAddress(to_address),
                 value=value,
                 gas=DEFAULT_GAS_LIMIT,
                 gas_price=gasprice,
@@ -342,7 +347,7 @@ class PyWalib:
             estimated_gas = int(estimated_gas * 1.2)
 
             tx_dict = Eth_Transaction.build_transaction(
-                to_address=contract.get_address(),
+                to_address=self.web3.toChecksumAddress(contract.get_address()),
                 value=0,
                 gas=estimated_gas,
                 gas_price=gasprice,
