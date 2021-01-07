@@ -352,16 +352,6 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
-    public void event(SecondEvent updataHint) {
-        if (requireActivity().hasWindowFocus()) {
-            String msgVote = updataHint.getMsg();
-            if (!TextUtils.isEmpty(msgVote) && msgVote.length() != 2 && msgVote.contains("{")) {
-                setValue(msgVote);
-            }
-        }
-    }
-
     /**
      * 备份钱包响应
      */
@@ -391,33 +381,6 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void fixName(FixWalletNameEvent event) {
         mAppWalletViewModel.refreshWalletInfo();
-    }
-
-    public void setValue(String msgVote) {
-        try {
-            JSONObject jsonObject = new JSONObject(msgVote);
-            if (msgVote.contains("fiat")) {
-                String fiat = jsonObject.getString("fiat");
-                changeBalance = jsonObject.getString("balance");
-                if (changeBalance != null) {
-                    mAppWalletViewModel.currentWalletBalance.postValue(changeBalance);
-                }
-                if (!TextUtils.isEmpty(fiat)) {
-                    String[] currencyArray = getResources().getStringArray(R.array.currency);
-                    for (int i = 0; i < currencyArray.length; i++) {
-                        if (fiat.contains(currencyArray[i])) {
-                            String cny = fiat.substring(0, fiat.indexOf(" "));
-                            mAppWalletViewModel.currentWalletFiatBalance.postValue(cny);
-                            return;
-                        }
-                    }
-                } else {
-                    mAppWalletViewModel.currentWalletFiatBalance.postValue(null);
-                }
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
@@ -486,7 +449,7 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
         }
     }
 
-    @SingleClick(value = 6000L)
+    @SingleClick(value = 1000L)
     @OnClick({R.id.rel_check_wallet, R.id.img_scan, R.id.img_Add, R.id.rel_create_hd, R.id.rel_recovery_hd, R.id.rel_pair_hard, R.id.rel_wallet_detail, R.id.linear_send, R.id.linear_receive, R.id.linear_sign, R.id.rel_now_back_up, R.id.rel_bi_detail})
     public void onViewClicked(View view) {
         switch (view.getId()) {

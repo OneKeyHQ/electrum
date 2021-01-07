@@ -30,6 +30,7 @@ import org.haobtc.onekey.event.BleConnectedEvent;
 import org.haobtc.onekey.manager.BleManager;
 import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
 import org.haobtc.onekey.utils.Daemon;
+import org.haobtc.onekey.viewmodel.AppWalletViewModel;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,6 +47,7 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
+import static org.haobtc.onekey.constant.Constant.CURRENT_CURRENCY_GRAPHIC_SYMBOL;
 import static org.haobtc.onekey.constant.Constant.WALLET_BALANCE;
 
 public class TransactionDetailWalletActivity extends BaseActivity {
@@ -71,6 +73,8 @@ public class TransactionDetailWalletActivity extends BaseActivity {
     private String bleMac;
     private int currentAction;
     private Disposable mLoadTxListDisposable;
+    private AppWalletViewModel mAppWalletViewModel;
+    private SharedPreferences preferences;
 
     @Override
     public int getLayoutId() {
@@ -81,14 +85,22 @@ public class TransactionDetailWalletActivity extends BaseActivity {
     public void initView() {
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
-        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-        walletBalance = getIntent().getStringExtra("walletBalance");
-        String walletDollar = getIntent().getStringExtra("walletDollar");
+        preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
+        mAppWalletViewModel = getApplicationViewModel(AppWalletViewModel.class);
         hdWalletName = getIntent().getStringExtra("hdWalletName");
-        textWalletAmount.setText(String.format("%s%s", walletBalance, preferences.getString("base_unit", "")));
-        textWalletDollar.setText(walletDollar);
         bleMac = getIntent().getStringExtra(Constant.BLE_MAC);
+        listenerViewModel();
+    }
 
+    private void listenerViewModel() {
+        mAppWalletViewModel.currentWalletBalance.observe(this, balance -> {
+            walletBalance = balance;
+            textWalletAmount.setText(String.format("%s%s", balance, preferences.getString("base_unit", "")));
+        });
+        mAppWalletViewModel.currentWalletFiatBalance.observe(this, balance -> {
+            String currencySymbol = preferences.getString(CURRENT_CURRENCY_GRAPHIC_SYMBOL, "¥");
+            textWalletDollar.setText(String.format("≈ %s %s", currencySymbol, Strings.isNullOrEmpty(balance) ? getString(R.string.zero) : balance));
+        });
     }
 
     @Override
@@ -168,6 +180,8 @@ public class TransactionDetailWalletActivity extends BaseActivity {
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
+                .doOnSubscribe(s -> showProgress())
+                .doFinally(this::dismissProgress)
                 .subscribe(o -> {
                     if (null != onekeyTxListAdapter) {
                         onekeyTxListAdapter.notifyDataSetChanged();
@@ -180,7 +194,10 @@ public class TransactionDetailWalletActivity extends BaseActivity {
                     }
                 }, e -> {
                     e.printStackTrace();
-                    mToast(e.getMessage());
+                    String message = e.getMessage();
+                    if (message != null && !message.contains("SQLite")) {
+                        mToast(e.getMessage());
+                    }
                     if (null != reclTransactionList) {
                         reclTransactionList.setVisibility(View.GONE);
                     }

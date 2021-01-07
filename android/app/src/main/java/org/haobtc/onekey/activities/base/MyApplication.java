@@ -26,6 +26,7 @@ import org.haobtc.onekey.utils.Global;
 import java.util.UUID;
 
 import cn.com.heaton.blelibrary.ble.Ble;
+import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 
 /**
  * @author liyan
@@ -57,6 +58,8 @@ public class MyApplication extends Application implements ViewModelStoreOwner {
                 return BuildConfig.DEBUG;
             }
         });
+        // Error message after unsubscribing,It crashes if you don't handle it.
+        RxJavaPlugins.setErrorHandler(Throwable::printStackTrace);
     }
 
     public static MyApplication getInstance () {

@@ -1,6 +1,5 @@
 package org.haobtc.onekey.viewmodel;
 
-import android.util.Log;
 import android.util.Pair;
 
 import androidx.lifecycle.MediatorLiveData;
@@ -11,12 +10,12 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.activities.base.MyApplication;
-import org.haobtc.onekey.bean.Event;
 import org.haobtc.onekey.bean.LocalWalletInfo;
 import org.haobtc.onekey.business.wallet.AccountManager;
 import org.haobtc.onekey.business.wallet.BalanceManager;
 import org.haobtc.onekey.business.wallet.SystemConfigManager;
 import org.haobtc.onekey.event.LoadOtherWalletEvent;
+import org.haobtc.onekey.event.SecondEvent;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
@@ -110,6 +109,13 @@ public class AppWalletViewModel extends ViewModel {
             mSystemConfigManager.setPassWordType(SystemConfigManager.SoftHdPassType.SHORT);
         }
         currentWalletInfo.postValue(localWalletInfo);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
+    public void event(SecondEvent event) {
+        Pair<String, String> balancePair = mBalanceManager.decodePythonBalanceNotice(event.getMsg());
+        currentWalletBalance.postValue(balancePair.first);
+        currentWalletFiatBalance.postValue(balancePair.second);
     }
 
     @Override

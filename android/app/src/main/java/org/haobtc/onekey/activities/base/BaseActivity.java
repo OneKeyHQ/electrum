@@ -26,6 +26,7 @@ import com.google.common.base.Strings;
 import org.haobtc.onekey.activities.service.CommunicationModeSelector;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.manager.ActivityManager;
+import org.haobtc.onekey.utils.MyDialog;
 import org.haobtc.onekey.utils.NfcUtils;
 
 import java.io.UnsupportedEncodingException;
@@ -50,6 +51,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     private String filed1utf;
     private Unbinder bind;
     public Context mContext;
+    private MyDialog mProgressDialog;
 
     @SuppressLint("SourceLockedOrientationActivity")
     @Override
@@ -144,6 +146,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
+        dismissProgress();
         NfcUtils.mNfcAdapter = null;
         bind.unbind();
     }
@@ -324,5 +327,23 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     public <T extends ViewModel> T getActivityViewModel(Class<T> clazz) {
         return new ViewModelProvider(this).get(clazz);
+    }
+
+    public void showProgress() {
+        runOnUiThread(() -> {
+            dismissProgress();
+            mProgressDialog = MyDialog.showDialog(this);
+            mProgressDialog.show();
+            mProgressDialog.onTouchOutside(false);
+        });
+    }
+
+    public void dismissProgress() {
+        runOnUiThread(() -> {
+            if (mProgressDialog != null && mProgressDialog.isShowing()) {
+                mProgressDialog.dismiss();
+                mProgressDialog = null;
+            }
+        });
     }
 }

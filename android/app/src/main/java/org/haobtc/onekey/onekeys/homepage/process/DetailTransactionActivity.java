@@ -24,6 +24,7 @@ import org.haobtc.onekey.activities.transaction.CheckChainDetailWebActivity;
 import org.haobtc.onekey.bean.TransactionInfoBean;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.utils.Daemon;
+import org.haobtc.onekey.utils.MyDialog;
 
 import java.util.Objects;
 
@@ -125,6 +126,8 @@ public class DetailTransactionActivity extends BaseActivity {
                     return txInfoStr;
                 })
                 .subscribeOn(Schedulers.io())
+                .doOnSubscribe(disposable -> showProgress())
+                .doFinally(this::dismissProgress)
                 .subscribe(this::jsonDetailData, e -> {
                     e.printStackTrace();
                     if (e.getMessage() != null) {
@@ -159,7 +162,7 @@ public class DetailTransactionActivity extends BaseActivity {
         String showStatus;
         int showStatusType;
         try {
-            showStatus = listBean.getShowStatus().get(1).toString();
+            showStatus = listBean.getShowStatus().get(1).toString().replace("。", "");
             showStatusType = ((Number) listBean.getShowStatus().get(0)).intValue();
         } catch (Exception e) {
             showStatus = getString(R.string.unknown);
@@ -247,7 +250,7 @@ public class DetailTransactionActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (!mLoadTxDetailDisposable.isDisposed()) {
+        if (mLoadTxDetailDisposable != null && !mLoadTxDetailDisposable.isDisposed()) {
             mLoadTxDetailDisposable.dispose();
         }
     }
