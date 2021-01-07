@@ -10,14 +10,20 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.adapter.WalletListAdapter;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.LocalWalletInfo;
 import org.haobtc.onekey.constant.Constant;
+import org.haobtc.onekey.event.CreateSuccessEvent;
+import org.haobtc.onekey.event.GotPassEvent;
 import org.haobtc.onekey.event.LoadWalletlistEvent;
 import org.haobtc.onekey.manager.PreferencesManager;
+import org.haobtc.onekey.manager.PyEnv;
+import org.haobtc.onekey.onekeys.dialog.RecoverHdWalletActivity;
+import org.haobtc.onekey.ui.activity.SoftPassActivity;
 import org.haobtc.onekey.ui.dialog.HdWalletIntroductionDialog;
 import org.haobtc.onekey.utils.NavUtils;
 
@@ -60,7 +66,6 @@ public class HDWalletActivity extends BaseActivity {
     @Override
     public void initData() {
         reclWalletList.setNestedScrollingEnabled(false);
-        //wallet name and balance list
         hdWalletList = new ArrayList<>();
         walletListAdapter = new WalletListAdapter(hdWalletList);
         reclWalletList.setAdapter(walletListAdapter);
@@ -88,8 +93,11 @@ public class HDWalletActivity extends BaseActivity {
                 new HdWalletIntroductionDialog().show(getSupportFragmentManager(), "");
                 break;
             case R.id.recl_add_hd_wallet:
+                NavUtils.gotoSoftPassActivity(mContext, SoftPassActivity.SET, 2);
                 break;
             case R.id.recl_recovery_wallet:
+                Intent intent2 = new Intent(HDWalletActivity.this, RecoverHdWalletActivity.class);
+                startActivity(intent2);
                 break;
         }
     }
@@ -116,12 +124,29 @@ public class HDWalletActivity extends BaseActivity {
             textWalletNum.setText(String.valueOf(hdWalletList.size()));
             if (hdWalletList != null && hdWalletList.size() > 0) {
                 walletListAdapter.notifyDataSetChanged();
+                reclAddWallet.setVisibility(View.VISIBLE);
+                linNotWallet.setVisibility(View.GONE);
+                textManage.setVisibility(View.VISIBLE);
             } else {
                 reclAddWallet.setVisibility(View.GONE);
                 linNotWallet.setVisibility(View.VISIBLE);
                 textManage.setVisibility(View.GONE);
             }
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onGotPass (GotPassEvent event) {
+        if (event.fromType == 2) {
+            PyEnv.createLocalHd(event.getPassword(), null);
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onCreateWalletSuccess (CreateSuccessEvent event) {
+        PyEnv.loadLocalWalletInfo(this);
+        PreferencesManager.put(this, "Preferences", Constant.CURRENT_SELECTED_WALLET_NAME, event.getName());
+        getHomeWalletList();
     }
 
     @Subscribe
