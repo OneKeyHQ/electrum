@@ -1,5 +1,4 @@
 package org.haobtc.onekey.onekeys.homepage.process;
-
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -22,6 +21,7 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.common.base.Strings;
 import com.lxj.xpopup.XPopup;
@@ -65,6 +65,7 @@ import org.haobtc.onekey.ui.dialog.custom.CustomCenterDialog;
 import org.haobtc.onekey.ui.dialog.custom.CustomWatchWalletDialog;
 import org.haobtc.onekey.ui.widget.PointLengthFilter;
 import org.haobtc.onekey.utils.ClipboardUtils;
+import org.haobtc.onekey.viewmodel.AppWalletViewModel;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -221,25 +222,21 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     private double slowRate;
     private double normalRate;
     private double fastRate;
-
+    private AppWalletViewModel mAppWalletViewModel;
     private static final int REQUEST_SCAN_CODE = 0;
-    private boolean signClickable =true;
+    private boolean signClickable = true;
     io.reactivex.disposables.Disposable subscribe;
-
     private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
 
     /**
      * init
      */
     @Override
-    public void init() {
+    public void init () {
+        mAppWalletViewModel = new ViewModelProvider(MyApplication.getInstance()).get(AppWalletViewModel.class);
         rxPermissions = new RxPermissions(this);
         hdWalletName = getIntent().getStringExtra(EXT_WALLET_NAME);
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-        balance = getIntent().getStringExtra(WALLET_BALANCE);
-        if (!Strings.isNullOrEmpty(balance)) {
-            decimalBalance = BigDecimal.valueOf(Double.parseDouble(balance));
-        }
         showWalletType = preferences.getString(CURRENT_SELECTED_WALLET_TYPE, "");
         baseUnit = preferences.getString("base_unit", "");
         currencySymbols = preferences.getString(CURRENT_CURRENCY_GRAPHIC_SYMBOL, "¥");
@@ -285,8 +282,14 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         if (Constant.BTC_WATCH.equals(showWalletType)) {
             showWatchTipDialog();
         }
-        textBalance.setText(String.format("%s%s", balance, preferences.getString("base_unit", "")));
         registerLayoutChangeListener();
+        mAppWalletViewModel.currentWalletBalance.observe(this, mBalance -> {
+            balance = mBalance;
+            if (!Strings.isNullOrEmpty(balance)) {
+                decimalBalance = BigDecimal.valueOf(Double.parseDouble(balance));
+            }
+            textBalance.setText(String.format("%s%s", balance, baseUnit));
+        });
     }
 
     private void showWatchTipDialog() {
