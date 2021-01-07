@@ -2377,7 +2377,7 @@ class Deterministic_Wallet(Abstract_Wallet):
     def __init__(self, db, storage, *, config):
         self._ephemeral_addr_to_addr_index = {}  # type: Dict[str, Sequence[int]]
         Abstract_Wallet.__init__(self, db, storage, config=config)
-        self.gap_limit = db.get('gap_limit', 3)
+        self.gap_limit = db.get('gap_limit', 1)
         # generate addresses now. note that without libsecp this might block
         # for a few seconds!
         self.synchronize()

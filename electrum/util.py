@@ -115,6 +115,13 @@ class MultipleSpendMaxTxOutputs(Exception):
     def __str__(self):
         return BaseException(_('At most one output can be set to spend max'))
 
+class ReplaceWatchonlyWallet(Exception):
+    message = ""
+    def __init__(self, message):
+        ReplaceWatchonlyWallet.message = message
+
+    def __str__(self):
+        return BaseException(_("Replace watch-only wallet."))
 
 class NotEnoughFundsStr(Exception):
     def __str__(self):

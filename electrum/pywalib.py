@@ -476,9 +476,8 @@ class PyWalib:
             txs = response_json['txs']
             return response_json['txids'] if txs != 0 else []
         except BaseException as e:
-            print(f"get_tx_flag ...errr{e}")
-            pass
             return []
+
 
     def get_tx_from_trezor(address, url):
         url += f'/address/{address}'
@@ -544,6 +543,15 @@ class PyWalib:
                 else:
                     print(f"get_transaction history from trezor....{address, url}")
                     tx_list = PyWalib.get_tx_from_trezor(address, url)
+                if len(tx_list) == 0:
+                    etherscan_speed_list = PyWalib.tx_list_ping(recovery=False)
+                    for ether_server_key, ether_url in etherscan_speed_list.items():
+                        tx_list = PyWalib.get_tx_from_etherscan(address, ether_url)
+                        if len(tx_list) == 0:
+                            time.sleep(0.5)
+                            continue
+                        else:
+                            return tx_list
             elif -1 != server_key.find("etherscan"):
                 print(f"get_transaction history from etherscan....{address, url}")
                 tx_list = PyWalib.get_tx_from_etherscan(address, url)
