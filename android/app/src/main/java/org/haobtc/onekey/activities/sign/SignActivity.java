@@ -275,7 +275,11 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
             if (Strings.isNullOrEmpty(errors)) {
                 infoBean = TransactionInfoBean.objectFromData(response.getResult());
             } else {
-                showToast(errors);
+                if (errors.contains("failed to recognize transaction encoding")) {
+                    showToast(getString(R.string.transaction_wrong));
+                } else {
+                    showToast(errors);
+                }
                 return;
             }
             switch (showWalletType) {
