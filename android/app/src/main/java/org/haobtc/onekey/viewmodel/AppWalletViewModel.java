@@ -2,6 +2,8 @@ package org.haobtc.onekey.viewmodel;
 
 import android.util.Pair;
 
+import androidx.annotation.Nullable;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -34,8 +36,8 @@ public class AppWalletViewModel extends ViewModel {
 
     public MutableLiveData<Boolean> existsWallet = new MutableLiveData<>();
     public MutableLiveData<LocalWalletInfo> currentWalletInfo = new MutableLiveData<>();
-    public MutableLiveData<String> currentWalletBalance = new MediatorLiveData<>();
-    public MutableLiveData<String> currentWalletFiatBalance = new MutableLiveData<>();
+    public LiveData<String> currentWalletBalance = new MutableLiveData<>();
+    public LiveData<String> currentWalletFiatBalance = new MutableLiveData<>();
 
     private final BalanceManager mBalanceManager = new BalanceManager();
     private final AccountManager mAccountManager = new AccountManager(MyApplication.getInstance());
@@ -72,17 +74,17 @@ public class AppWalletViewModel extends ViewModel {
     public void refreshBalance() {
         LocalWalletInfo localWalletInfo = currentWalletInfo.getValue();
         if (localWalletInfo == null) {
-            currentWalletBalance.postValue(null);
-            currentWalletFiatBalance.postValue(null);
+            setCurrentWalletBalance(null);
+            setCurrentWalletFiatBalance(null);
             return;
         }
         Pair<String, String> balancePair = mBalanceManager.getBalanceByWalletName(localWalletInfo.getName());
         if (balancePair == null) {
-            currentWalletBalance.postValue(null);
-            currentWalletFiatBalance.postValue(null);
+            setCurrentWalletBalance(null);
+            setCurrentWalletFiatBalance(null);
         } else {
-            currentWalletBalance.postValue(balancePair.first);
-            currentWalletFiatBalance.postValue(balancePair.second);
+            setCurrentWalletBalance(balancePair.first);
+            setCurrentWalletFiatBalance(balancePair.second);
         }
     }
 
@@ -114,8 +116,8 @@ public class AppWalletViewModel extends ViewModel {
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     public void event(SecondEvent event) {
         Pair<String, String> balancePair = mBalanceManager.decodePythonBalanceNotice(event.getMsg());
-        currentWalletBalance.postValue(balancePair.first);
-        currentWalletFiatBalance.postValue(balancePair.second);
+        setCurrentWalletBalance(balancePair.first);
+        setCurrentWalletFiatBalance(balancePair.second);
     }
 
     @Override
@@ -123,5 +125,24 @@ public class AppWalletViewModel extends ViewModel {
         super.onCleared();
         mCompositeDisposable.dispose();
         EventBus.getDefault().unregister(this);
+    }
+
+    private void setCurrentWalletBalance(@Nullable String balance) {
+        checkRepeatAssignment(((MutableLiveData<String>) currentWalletBalance), balance);
+    }
+
+    private void setCurrentWalletFiatBalance(@Nullable String balance) {
+        checkRepeatAssignment(((MutableLiveData<String>) currentWalletFiatBalance), balance);
+    }
+
+    private <T> void checkRepeatAssignment(MutableLiveData<T> liveData, @Nullable T value) {
+        if (value == null && liveData.getValue() != null) {
+            liveData.postValue(null);
+        } else if ((value != null && liveData.getValue() == null) ||
+                (value != null && liveData.getValue() != null && !value.equals(liveData.getValue())) ||
+                (value != null && liveData.getValue() != null && value instanceof Number && value != liveData.getValue())
+        ) {
+            liveData.postValue(value);
+        }
     }
 }
