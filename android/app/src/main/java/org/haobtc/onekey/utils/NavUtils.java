@@ -1,7 +1,6 @@
 package org.haobtc.onekey.utils;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 
 import org.haobtc.onekey.activities.ResetAppActivity;
 import org.haobtc.onekey.activities.base.LunchActivity;
@@ -16,9 +15,6 @@ import org.haobtc.onekey.ui.activity.SoftPassActivity;
  * @Description: 页面跳转的管理类
  * @Author: peter Qin
  * @CreateDate: 2020/12/16$ 4:12 PM$
- * @UpdateUser: 更新者：
- * @UpdateDate: 2020/12/16$ 4:12 PM$
- * @UpdateRemark: 更新说明：
  */
 public class NavUtils {
     // 跳转重置app 页面
@@ -57,23 +53,6 @@ public class NavUtils {
 
     public static void gotoCreateDeriveChooseTypeActivity (Context context, boolean finish) {
         CreateDeriveChooseTypeActivity.gotoCreateDeriveChooseTypeActivity(context, finish);
-    }
-
-
-    /**
-     * 重启app
-     * @param context
-     */
-    public static void restartApp(Context context) {
-        PackageManager packageManager = context.getPackageManager();
-        if (null == packageManager) {
-            return;
-        }
-        final Intent intent = packageManager.getLaunchIntentForPackage(context.getPackageName());
-        if (intent != null) {
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            context.startActivity(intent);
-        }
     }
 
     /**

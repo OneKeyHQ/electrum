@@ -216,7 +216,6 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     private boolean isSetBig;
     private String balance;
     private BigDecimal maxAmount;
-    // 保存当前的选中位置，默认是推荐
     private int selectFlag = 0;
     private boolean isResume;
     private double slowRate;
@@ -639,7 +638,6 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         String errors = response.getErrors();
         if (!Strings.isNullOrEmpty(errors)) {
             showToast(errors);
-//            showToast(R.string.transaction_parse_error);
             return;
         }
         TransactionInfoBean info = TransactionInfoBean.objectFromData(response.getResult());
@@ -668,7 +666,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
             broadcastTx(info.getTx());
         } else if (Constant.BTC_WATCH.equals(showWalletType)) {
             showWatchQrDialog();
-        } else { // TODO: 2020/12/23
+        } else {
             // 获取主密码
             startActivity(new Intent(this, SoftPassActivity.class));
         }
@@ -712,7 +710,6 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                     if (Strings.isNullOrEmpty(errors0)) {
                         textFeeInCash0.setText(String.format(Locale.ENGLISH, "%s %s", currencySymbols, response0.getResult()));
                     } else {
-//                        showToast(errors0);
                         return false;
                     }
                     if (selectFlag == SLOW_FEE_RATE) {
@@ -728,7 +725,6 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                     if (Strings.isNullOrEmpty(errors2)) {
                         textFeeInCash2.setText(String.format(Locale.ENGLISH, "%s %s", currencySymbols, response2.getResult()));
                     } else {
-//                        showToast(errors2);
                         return false;
                     }
                     if (selectFlag == FAST_FEE_RATE) {
@@ -747,12 +743,12 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                     String errors3 = response3.getErrors();
                     if (Strings.isNullOrEmpty(errors3)) {
                         String string = String.format(Locale.ENGLISH, "%s %s", currencySymbols, response3.getResult());
-                        textFeeCustomizeInCash.setText(String.format(Locale.ENGLISH, "%s %s", currencySymbols, response3.getResult()));
                         if (feeDialog.isVisible()) {
                             feeDialog.getTextFeeInCash().setText(String.format(Locale.ENGLISH, "%s %s", currencySymbols, response3.getResult()));
+                        } else {
+                            textFeeCustomizeInCash.setText(String.format(Locale.ENGLISH, "%s %s", currencySymbols, response3.getResult()));
                         }
                     } else {
-//                        showToast(errors3);
                         return false;
                     }
                     currentTempTransaction = temp;
@@ -793,8 +789,6 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         textFeeCustomizeInBtc.setText(String.format(Locale.ENGLISH, "%s %s", event.getFee(), preferences.getString("base_unit", "")));
         textFeeCustomizeInCash.setText(String.format(Locale.ENGLISH, "%s %s", preferences.getString(CURRENT_CURRENCY_GRAPHIC_SYMBOL, "¥"), event.getCash()));
         textCustomizeSpendTime.setText(String.format("%s%s%s", getString(R.string.about_), event.getTime(), getString(R.string.minute)));
-//        previousTempTransaction = currentTempTransaction;
-//        currentTempTransaction = tempCustomizeTransaction;
     }
 
     /**

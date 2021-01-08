@@ -96,7 +96,7 @@ public class SoftPassActivity extends BaseActivity implements ViewHeightStatusDe
     private boolean isLongPass;
     private String pinInputFirst;
     private String pinOrigin;
-    private int fromType;
+    private int fromType = -1;
 
     public static void gotoSoftPassActivity(Context context, int type, int from) {
         Intent intent = new Intent(context, SoftPassActivity.class);
