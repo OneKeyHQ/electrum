@@ -3,75 +3,36 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@android:color/white"
     tools:context="org.haobtc.onekey.onekeys.HomeOneKeyActivity">
-    <FrameLayout
-        android:id="@+id/container"
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="@dimen/dp_20"
         android:orientation="vertical">
 
-    </FrameLayout>
-
-    <View
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="65dp"
-        android:background="@color/line_color"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/line_hight"/>
-
-    <RadioGroup
-        android:id="@+id/sj_radiogroup"
-        android:layout_width="match_parent"
-        android:layout_height="65dp"
-        android:layout_alignParentBottom="true"
-        android:background="#ffffff"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <RadioButton
-            android:id="@+id/radio_one"
+        <org.haobtc.onekey.ui.widget.NoScrollViewPager
+            android:id="@+id/scrollView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:button="@null"
-            android:drawableTop="@drawable/home_wallet"
-            android:drawablePadding="@dimen/dp_5"
-            android:gravity="center_horizontal"
-            android:paddingTop="@dimen/dp_7"
-            android:text="@string/wallet"
-            android:textColor="@drawable/home_text_color"
-            android:textSize="@dimen/sp_10" />
+            android:layout_height="0dp"
+            android:layout_weight="1" />
 
-        <RadioButton
-            android:id="@+id/radio_two"
+        <View
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:button="@null"
-            android:visibility="gone"
-            android:drawableTop="@drawable/dh_yanyi"
-            android:drawablePadding="@dimen/dp_7"
-            android:gravity="center_horizontal"
-            android:paddingTop="7dp"
-            android:text="@string/find"
-            android:textColor="@drawable/home_text_color"
-            android:textSize="@dimen/sp_10" />
+            android:layout_height="@dimen/line_hight"
+            android:background="@color/line_color" />
 
-        <RadioButton
-            android:id="@+id/radio_three"
+        <org.haobtc.onekey.ui.widget.tablayout.CommonTabLayout
+            android:id="@+id/common_tab"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:button="@null"
-            android:drawableTop="@drawable/dh_mine"
-            android:drawablePadding="@dimen/dp_7"
-            android:gravity="center_horizontal"
-            android:paddingTop="@dimen/dp_5"
-            android:text="@string/mind"
-            android:textColor="@drawable/home_text_color"
-            android:textSize="@dimen/sp_10" />
-
-    </RadioGroup>
+            android:layout_height="69dp"
+            android:background="@color/defaultColor"
+            app:tl_iconGravity="TOP"
+            app:tl_iconHeight="@dimen/dp_20"
+            app:tl_iconWidth="@dimen/dp_20"
+            app:tl_textSelectColor="@color/onekey"
+            app:tl_textUnselectColor="@color/text_color_one"
+            app:tl_textsize="@dimen/sp_10" />
+    </LinearLayout>
 </RelativeLayout>

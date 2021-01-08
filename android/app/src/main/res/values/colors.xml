@@ -83,5 +83,7 @@
     <color name="color_333333">#333333</color>
     <color name="color_white">#FFFFFF</color>
     <color name="color_dddddd">#DDDDDD</color>
+    <color name="color_4B6A87">#4B6A87</color>
+    <color name="color_AAffffff">#AAffffff</color>
 
 </resources>

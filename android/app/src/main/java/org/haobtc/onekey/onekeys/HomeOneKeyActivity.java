@@ -1,10 +1,6 @@
 package org.haobtc.onekey.onekeys;
-import android.content.Intent;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.widget.FrameLayout;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import androidx.lifecycle.ViewModelProvider;
@@ -22,21 +18,25 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.BuildConfig;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.MyApplication;
+import org.haobtc.onekey.adapter.FragmentMainAdapter;
+import org.haobtc.onekey.bean.TabEntity;
 import org.haobtc.onekey.bean.UpdateInfo;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.CreateSuccessEvent;
 import org.haobtc.onekey.manager.HardwareCallbackHandler;
 import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
-import org.haobtc.onekey.onekeys.homepage.DiscoverFragment;
-import org.haobtc.onekey.onekeys.homepage.MindFragment;
-import org.haobtc.onekey.onekeys.homepage.WalletFragment;
 import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.ui.dialog.AppUpdateDialog;
+import org.haobtc.onekey.ui.widget.NoScrollViewPager;
+import org.haobtc.onekey.ui.widget.tablayout.CommonTabLayout;
+import org.haobtc.onekey.ui.widget.tablayout.CustomTabEntity;
+import org.haobtc.onekey.ui.widget.tablayout.OnTabSelectListener;
 import org.haobtc.onekey.viewmodel.AppWalletViewModel;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import okhttp3.Call;
@@ -54,26 +54,28 @@ import static org.haobtc.onekey.constant.Constant.ONE_KEY_WEBSITE;
 /**
  * @author liyan
  */
-public class HomeOneKeyActivity extends BaseActivity implements RadioGroup.OnCheckedChangeListener, OnDownloadListener {
+public class HomeOneKeyActivity extends BaseActivity implements OnDownloadListener {
 
-    @BindView(R.id.container)
-    FrameLayout linearMains;
-    @BindView(R.id.sj_radiogroup)
-    RadioGroup sjRadiogroup;
+    @BindView(R.id.scrollView)
+    NoScrollViewPager scrollViewPager;
+    @BindView(R.id.common_tab)
+    CommonTabLayout tabLayout;
     private long firstTime = 0;
     private DownloadManager manager;
     private AppUpdateDialog updateDialog;
-    private WalletFragment walletFragment;
-    private MindFragment mindFragment;
-    private DiscoverFragment discoverFragment;
     private AppWalletViewModel mAppWalletViewModel;
+    private String[] mTitles;
+    private int[] mIconUnSelectIds = {R.drawable.wallet_normal, R.mipmap.mindno};
+    private int[] mIconSelectIds = {R.drawable.wallet_highlight, R.mipmap.mindyes};
+    private FragmentMainAdapter fragmentMainAdapter;
+    private ArrayList<CustomTabEntity> mTabEntities;
 
     /***
      * init layout
      * @return
      */
     @Override
-    public int getContentViewId() {
+    public int getContentViewId () {
         return R.layout.activity_home_onekey;
     }
 
@@ -81,22 +83,6 @@ public class HomeOneKeyActivity extends BaseActivity implements RadioGroup.OnChe
     @Override
     public boolean needEvents() {
         return true;
-    }
-
-
-    @Override
-    public void onCheckedChanged(RadioGroup group, int checkedId) {
-        switch (checkedId) {
-            case R.id.radio_one:
-                startFragment(walletFragment);
-                break;
-            case R.id.radio_two:
-                startFragment(discoverFragment);
-                break;
-            case R.id.radio_three:
-                startFragment(mindFragment);
-                break;
-        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -109,27 +95,34 @@ public class HomeOneKeyActivity extends BaseActivity implements RadioGroup.OnChe
      * init
      */
     @Override
-    public void init() {
+    public void init () {
         mAppWalletViewModel = new ViewModelProvider(MyApplication.getInstance()).get(AppWalletViewModel.class);
         HardwareCallbackHandler callbackHandler = HardwareCallbackHandler.getInstance(this);
         PyEnv.setHandle(callbackHandler);
-        // init as singleInstance to avoid some baffling issue
-        walletFragment = new WalletFragment();
-        mindFragment = new MindFragment();
+        initPage();
         getUpdateInfo();
-        refreshView();
     }
 
-    private void refreshView() {
-        // 默认让主页被选中
-        startFragment(walletFragment);
-        // radiobutton长度
-        RadioButton[] radioButton = new RadioButton[sjRadiogroup.getChildCount()];
-        for (int i = 0; i < radioButton.length; i++) {
-            radioButton[i] = (RadioButton) sjRadiogroup.getChildAt(i);
+    private void initPage () {
+        mTitles = new String[]{getString(R.string.wallet), getString(R.string.mind)};
+        mTabEntities = new ArrayList<>();
+        fragmentMainAdapter = new FragmentMainAdapter(getSupportFragmentManager(), mTitles);
+        for (int i = 0; i < mTitles.length; i++) {
+            mTabEntities.add(new TabEntity(mTitles[i], mIconSelectIds[i], mIconUnSelectIds[i]));
         }
-        radioButton[0].setChecked(true);
-        sjRadiogroup.setOnCheckedChangeListener(this);
+        scrollViewPager.setAdapter(fragmentMainAdapter);
+        scrollViewPager.setOffscreenPageLimit(mTitles.length);
+        tabLayout.setTabData(mTabEntities);
+        tabLayout.setOnTabSelectListener(new OnTabSelectListener() {
+            @Override
+            public void onTabSelect (int position) {
+                scrollViewPager.setCurrentItem(position);
+            }
+
+            @Override
+            public void onTabReselect (int position) {
+            }
+        });
     }
 
     @Override

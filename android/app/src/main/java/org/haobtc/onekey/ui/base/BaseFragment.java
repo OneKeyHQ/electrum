@@ -1,5 +1,4 @@
 package org.haobtc.onekey.ui.base;
-
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,7 +13,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.utils.EventBusUtils;
 import org.haobtc.onekey.utils.LanguageUtils;
@@ -75,10 +73,10 @@ public abstract class BaseFragment extends Fragment implements IBaseView {
         super.onDestroyView();
         if (unbinder != null) {
             unbinder.unbind();
-        } else if (needEvents()) {
+        }
+        if (needEvents()) {
             EventBusUtils.unRegister(this);
         }
-
     }
 
     @Override

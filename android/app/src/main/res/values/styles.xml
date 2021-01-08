@@ -66,4 +66,76 @@
         <item name="android:paddingLeft">5dip</item>
     </style>
 
+    <declare-styleable name="CommonTabLayout">
+        <!-- indicator -->
+        <attr name="tl_indicator_color" format="integer"/>
+        <attr name="tl_indicator_height" format="dimension"/>
+        <attr name="tl_indicator_width" format="dimension"/>
+        <attr name="tl_indicator_margin_left" format="dimension"/>
+        <attr name="tl_indicator_margin_top" format="dimension"/>
+        <attr name="tl_indicator_margin_right" format="dimension"/>
+        <attr name="tl_indicator_margin_bottom" format="dimension"/>
+        <attr name="tl_indicator_corner_radius" format="dimension"/>
+        <attr name="tl_indicator_gravity" format="integer"/>
+        <attr name="tl_indicator_style" format="integer"/>
+        <attr name="tl_indicator_anim_enable" format="boolean"/>
+        <attr name="tl_indicator_anim_duration" format="integer"/>
+        <attr name="tl_indicator_bounce_enable" format="boolean"/>
+
+        <!-- underline -->
+        <attr name="tl_underline_color" format="integer"/>
+        <attr name="tl_underline_height" format="dimension"/>
+        <attr name="tl_underline_gravity" format="integer"/>
+
+        <!-- divider -->
+        <attr name="tl_divider_color" format="dimension"/>
+        <attr name="tl_divider_width" format="dimension"/>
+        <attr name="tl_divider_padding" format="dimension"/>
+
+        <!-- tab -->
+        <attr name="tl_tab_padding" format="dimension"/>
+        <attr name="tl_tab_space_equal" format="dimension"/>
+        <attr name="tl_tab_width" format="dimension"/>
+
+        <!-- title -->
+        <attr name="tl_textsize" format="dimension"/>
+        <attr name="tl_textSelectColor" format="integer"/>
+        <attr name="tl_textUnselectColor" format="integer"/>
+        <attr name="tl_textBold" format="integer"/>
+        <attr name="tl_textAllCaps" format="boolean"/>
+
+        <!-- icon -->
+        <!-- 设置icon宽度 -->
+        <attr name="tl_iconWidth" format="dimension"/>
+        <!-- 设置icon高度 -->
+        <attr name="tl_iconHeight" format="dimension"/>
+        <!-- 设置icon是否可见 -->
+        <attr name="tl_iconVisible" format="boolean"/>
+        <!-- 设置icon显示位置,对应Gravity中常量值 -->
+        <attr name="tl_iconGravity" format="enum">
+            <enum name="LEFT" value="3"/>
+            <enum name="TOP" value="48"/>
+            <enum name="RIGHT" value="5"/>
+            <enum name="BOTTOM" value="80"/>
+        </attr>
+        <!-- 设置icon与文字间距 -->
+        <attr name="tl_iconMargin" format="dimension"/>
+
+    </declare-styleable>
+
+    <declare-styleable name="MsgView">
+        <!-- 圆角矩形背景色 -->
+        <attr name="mv_backgroundColor" format="color"/>
+        <!-- 圆角弧度,单位dp-->
+        <attr name="mv_cornerRadius" format="dimension"/>
+        <!-- 圆角弧度,单位dp-->
+        <attr name="mv_strokeWidth" format="dimension"/>
+        <!-- 圆角边框颜色-->
+        <attr name="mv_strokeColor" format="color"/>
+        <!-- 圆角弧度是高度一半-->
+        <attr name="mv_isRadiusHalfHeight" format="boolean"/>
+        <!-- 圆角矩形宽高相等,取较宽高中大值-->
+        <attr name="mv_isWidthHeightEqual" format="boolean"/>
+    </declare-styleable>
+
 </resources>
