@@ -2507,6 +2507,8 @@ class AndroidCommands(commands.Commands):
         backup_flag = True
         try:
             wallet = self.get_wallet_by_name(name)
+            if wallet.is_watching_only():
+                return True
             xpub = self.get_xpub_by_name(name, wallet)
             if wallet.has_seed():
                 if self.backup_info.__contains__(xpub):
