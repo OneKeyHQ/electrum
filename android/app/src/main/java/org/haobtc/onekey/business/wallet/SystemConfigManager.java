@@ -2,9 +2,15 @@ package org.haobtc.onekey.business.wallet;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.text.TextUtils;
 
 import androidx.annotation.StringDef;
 
+import org.haobtc.onekey.bean.FiatUnitSymbolBean;
+import org.haobtc.onekey.utils.Daemon;
+
+import static org.haobtc.onekey.constant.Constant.CURRENT_CURRENCY_GRAPHIC_SYMBOL;
+import static org.haobtc.onekey.constant.Constant.CURRENT_CURRENCY_SYMBOL;
 import static org.haobtc.onekey.constant.Constant.NEED_POP_BACKUP_DIALOG;
 import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE;
 
@@ -15,10 +21,10 @@ import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE;
  * @create 2021-01-06 3:15 PM
  */
 public class SystemConfigManager {
-    private SharedPreferences mPreferencesSharedPreferences;
+    private final SharedPreferences mPreferencesSharedPreferences;
 
     public SystemConfigManager(Context context) {
-        mPreferencesSharedPreferences = context.getSharedPreferences("Preferences", Context.MODE_PRIVATE);
+        mPreferencesSharedPreferences = context.getApplicationContext().getSharedPreferences("Preferences", Context.MODE_PRIVATE);
     }
 
     @StringDef({SoftHdPassType.LONG, SoftHdPassType.SHORT})
@@ -68,5 +74,70 @@ public class SystemConfigManager {
      */
     public boolean getNeedPopBackUpDialog() {
         return mPreferencesSharedPreferences.getBoolean(NEED_POP_BACKUP_DIALOG, true);
+    }
+
+    /**
+     * 获取当前法币的符号与单位
+     *
+     * @return 法币符号与单位
+     */
+    public FiatUnitSymbolBean getCurrentFiatUnitSymbol() {
+        String unit = mPreferencesSharedPreferences.getString(CURRENT_CURRENCY_SYMBOL, "CNY");
+        String symbol = mPreferencesSharedPreferences.getString(CURRENT_CURRENCY_GRAPHIC_SYMBOL, "¥");
+        int position = mPreferencesSharedPreferences.getInt("cny_unit", 0);
+        return new FiatUnitSymbolBean(unit, symbol, position);
+    }
+
+    /**
+     * 设置当前法币的符号与单位
+     *
+     * @param symbol 法币符号与单位
+     * @return 是否保存成功
+     */
+    public boolean setCurrentFiatUnitSymbol(FiatUnitSymbolBean symbol) {
+        if (TextUtils.isEmpty(symbol.getSymbol()) || TextUtils.isEmpty(symbol.getUnit())) {
+            return false;
+        }
+        try {
+            Daemon.commands.callAttr("set_currency", symbol.getUnit());
+            mPreferencesSharedPreferences.edit()
+                    .putString(CURRENT_CURRENCY_SYMBOL, symbol.getUnit())
+                    .putString(CURRENT_CURRENCY_GRAPHIC_SYMBOL, symbol.getSymbol())
+                    .putInt("cny_unit", 0)
+                    .apply();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 获取数字货币单位
+     *
+     * @return 数字货币单位
+     */
+    public String getCurrentBaseUnit() {
+        return mPreferencesSharedPreferences.getString("base_unit", "BTC");
+    }
+
+    /**
+     * 设置数字货币单位
+     *
+     * @param unit 数字货币单位
+     * @return 是否存储成功
+     */
+    public boolean setCurrentBaseUnit(String unit) {
+        if (TextUtils.isEmpty(unit)) {
+            return false;
+        }
+        try {
+            Daemon.commands.callAttr("set_base_uint", unit);
+            mPreferencesSharedPreferences.edit().putString("base_unit", unit).apply();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 }

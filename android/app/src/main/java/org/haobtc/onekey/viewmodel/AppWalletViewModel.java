@@ -1,7 +1,9 @@
 package org.haobtc.onekey.viewmodel;
 
+import android.text.TextUtils;
 import android.util.Pair;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
@@ -12,12 +14,18 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.activities.base.MyApplication;
+import org.haobtc.onekey.bean.FiatUnitSymbolBean;
 import org.haobtc.onekey.bean.LocalWalletInfo;
+import org.haobtc.onekey.bean.WalletBalanceFiatVo;
+import org.haobtc.onekey.bean.WalletBalanceVo;
 import org.haobtc.onekey.business.wallet.AccountManager;
 import org.haobtc.onekey.business.wallet.BalanceManager;
 import org.haobtc.onekey.business.wallet.SystemConfigManager;
 import org.haobtc.onekey.event.LoadOtherWalletEvent;
 import org.haobtc.onekey.event.SecondEvent;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
@@ -32,12 +40,12 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
  * @create 2021-01-06 11:09 AM
  */
 public class AppWalletViewModel extends ViewModel {
-    private final CompositeDisposable mCompositeDisposable = new CompositeDisposable();
+    private final ExecutorService mExecutorService = Executors.newSingleThreadExecutor();
 
     public MutableLiveData<Boolean> existsWallet = new MutableLiveData<>();
     public MutableLiveData<LocalWalletInfo> currentWalletInfo = new MutableLiveData<>();
-    public LiveData<String> currentWalletBalance = new MutableLiveData<>();
-    public LiveData<String> currentWalletFiatBalance = new MutableLiveData<>();
+    public LiveData<WalletBalanceVo> currentWalletBalance = new MutableLiveData<>(new WalletBalanceVo("0", "BTC"));
+    public LiveData<WalletBalanceFiatVo> currentWalletFiatBalance = new MutableLiveData<>(new WalletBalanceFiatVo("0", "CNY", "¥"));
 
     private final BalanceManager mBalanceManager = new BalanceManager();
     private final AccountManager mAccountManager = new AccountManager(MyApplication.getInstance());
@@ -49,43 +57,61 @@ public class AppWalletViewModel extends ViewModel {
     }
 
     public void refresh() {
-        mCompositeDisposable.add(Observable
-                .create((ObservableOnSubscribe<String>) emitter -> {
-                    refreshExistsWallet();
-                    refreshWalletInfo();
-                    emitter.onNext("");
-                    emitter.onComplete();
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread()).subscribe(s -> {
-                }, throwable -> {
-                }));
+        refreshExistsWallet();
+        refreshWalletInfo();
     }
 
     public void refreshExistsWallet() {
-        existsWallet.postValue(mAccountManager.existsWallets());
+        mExecutorService.execute(() -> {
+            existsWallet.postValue(mAccountManager.existsWallets());
+        });
     }
 
     public void refreshWalletInfo() {
-        String currentWalletName = mAccountManager.getCurrentWalletName();
-        currentWalletInfo.postValue(mAccountManager.getLocalWalletByName(currentWalletName));
+        mExecutorService.execute(() -> {
+            String currentWalletName = mAccountManager.getCurrentWalletName();
+            currentWalletInfo.postValue(mAccountManager.getLocalWalletByName(currentWalletName));
+        });
     }
 
     public void refreshBalance() {
-        LocalWalletInfo localWalletInfo = currentWalletInfo.getValue();
-        if (localWalletInfo == null) {
-            setCurrentWalletBalance(null);
-            setCurrentWalletFiatBalance(null);
-            return;
-        }
-        Pair<String, String> balancePair = mBalanceManager.getBalanceByWalletName(localWalletInfo.getName());
-        if (balancePair == null) {
-            setCurrentWalletBalance(null);
-            setCurrentWalletFiatBalance(null);
-        } else {
-            setCurrentWalletBalance(balancePair.first);
-            setCurrentWalletFiatBalance(balancePair.second);
-        }
+        mExecutorService.execute(() -> {
+            LocalWalletInfo localWalletInfo = currentWalletInfo.getValue();
+            String currentBaseUnit = mSystemConfigManager.getCurrentBaseUnit();
+            FiatUnitSymbolBean currentFiatUnitSymbol = mSystemConfigManager.getCurrentFiatUnitSymbol();
+            if (localWalletInfo == null) {
+                setCurrentWalletBalance(new WalletBalanceVo("0", currentBaseUnit));
+                setCurrentWalletFiatBalance(
+                        new WalletBalanceFiatVo(
+                                "0",
+                                currentFiatUnitSymbol.getUnit(),
+                                currentFiatUnitSymbol.getSymbol())
+                );
+                return;
+            }
+            Pair<String, String> balancePair = mBalanceManager.getBalanceByWalletName(localWalletInfo.getName());
+            if (balancePair == null) {
+                setCurrentWalletBalance(new WalletBalanceVo("0", currentBaseUnit));
+                setCurrentWalletFiatBalance(
+                        new WalletBalanceFiatVo(
+                                "0",
+                                currentFiatUnitSymbol.getUnit(),
+                                currentFiatUnitSymbol.getSymbol())
+                );
+            } else {
+                setCurrentWalletBalance(
+                        new WalletBalanceVo(
+                                TextUtils.isEmpty(balancePair.first) ? "0" : balancePair.first,
+                                currentBaseUnit)
+                );
+                setCurrentWalletFiatBalance(
+                        new WalletBalanceFiatVo(
+                                TextUtils.isEmpty(balancePair.second) ? "0" : balancePair.second,
+                                currentFiatUnitSymbol.getUnit(),
+                                currentFiatUnitSymbol.getSymbol())
+                );
+            }
+        });
     }
 
     /**
@@ -94,11 +120,13 @@ public class AppWalletViewModel extends ViewModel {
      * @param name 钱包名称
      */
     public void changeCurrentWallet(String name) {
-        LocalWalletInfo localWalletInfo = mAccountManager.selectWallet(name);
-        if (localWalletInfo == null) {
-            mSystemConfigManager.setPassWordType(SystemConfigManager.SoftHdPassType.SHORT);
-        }
-        currentWalletInfo.postValue(localWalletInfo);
+        mExecutorService.execute(() -> {
+            LocalWalletInfo localWalletInfo = mAccountManager.selectWallet(name);
+            if (localWalletInfo == null) {
+                mSystemConfigManager.setPassWordType(SystemConfigManager.SoftHdPassType.SHORT);
+            }
+            currentWalletInfo.postValue(localWalletInfo);
+        });
     }
 
     /**
@@ -106,33 +134,47 @@ public class AppWalletViewModel extends ViewModel {
      */
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     public void event(LoadOtherWalletEvent event) {
-        LocalWalletInfo localWalletInfo = mAccountManager.autoSelectNextWallet();
-        if (localWalletInfo == null) {
-            mSystemConfigManager.setPassWordType(SystemConfigManager.SoftHdPassType.SHORT);
-        }
-        currentWalletInfo.postValue(localWalletInfo);
+        mExecutorService.execute(() -> {
+            LocalWalletInfo localWalletInfo = mAccountManager.autoSelectNextWallet();
+            if (localWalletInfo == null) {
+                mSystemConfigManager.setPassWordType(SystemConfigManager.SoftHdPassType.SHORT);
+            }
+            currentWalletInfo.postValue(localWalletInfo);
+        });
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     public void event(SecondEvent event) {
-        Pair<String, String> balancePair = mBalanceManager.decodePythonBalanceNotice(event.getMsg());
-        setCurrentWalletBalance(balancePair.first);
-        setCurrentWalletFiatBalance(balancePair.second);
+        mExecutorService.execute(() -> {
+            Pair<String, String> balancePair = mBalanceManager.decodePythonBalanceNotice(event.getMsg());
+            String currentBaseUnit = mSystemConfigManager.getCurrentBaseUnit();
+            FiatUnitSymbolBean currentFiatUnitSymbol = mSystemConfigManager.getCurrentFiatUnitSymbol();
+            setCurrentWalletBalance(
+                    new WalletBalanceVo(
+                            TextUtils.isEmpty(balancePair.first) ? "0" : balancePair.first,
+                            currentBaseUnit)
+            );
+            setCurrentWalletFiatBalance(
+                    new WalletBalanceFiatVo(TextUtils.isEmpty(balancePair.second) ? "0" : balancePair.second,
+                            currentFiatUnitSymbol.getUnit(),
+                            currentFiatUnitSymbol.getSymbol())
+            );
+        });
     }
 
     @Override
     protected void onCleared() {
         super.onCleared();
-        mCompositeDisposable.dispose();
         EventBus.getDefault().unregister(this);
+        mExecutorService.shutdown();
     }
 
-    private void setCurrentWalletBalance(@Nullable String balance) {
-        checkRepeatAssignment(((MutableLiveData<String>) currentWalletBalance), balance);
+    private void setCurrentWalletBalance(@NonNull WalletBalanceVo balance) {
+        checkRepeatAssignment(((MutableLiveData<WalletBalanceVo>) currentWalletBalance), balance);
     }
 
-    private void setCurrentWalletFiatBalance(@Nullable String balance) {
-        checkRepeatAssignment(((MutableLiveData<String>) currentWalletFiatBalance), balance);
+    private void setCurrentWalletFiatBalance(@NonNull WalletBalanceFiatVo balance) {
+        checkRepeatAssignment(((MutableLiveData<WalletBalanceFiatVo>) currentWalletFiatBalance), balance);
     }
 
     private <T> void checkRepeatAssignment(MutableLiveData<T> liveData, @Nullable T value) {

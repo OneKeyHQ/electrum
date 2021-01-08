@@ -227,12 +227,11 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
             mAppWalletViewModel.refreshExistsWallet();
         });
         mAppWalletViewModel.currentWalletBalance.observe(this, balance -> {
-            textBtcAmount.setText(balance);
+            textBtcAmount.setText(balance.getBalance());
         });
         mAppWalletViewModel.currentWalletFiatBalance.observe(this, balance -> {
-            String currencySymbol = preferences.getString(CURRENT_CURRENCY_GRAPHIC_SYMBOL, "¥");
-            tetAmount.setText(String.format("%s %s", currencySymbol, Strings.isNullOrEmpty(balance) ? getString(R.string.zero) : balance));
-            textDollar.setText(String.format("≈ %s %s", currencySymbol, Strings.isNullOrEmpty(balance) ? getString(R.string.zero) : balance));
+            tetAmount.setText(String.format("%s %s", balance.getSymbol(), Strings.isNullOrEmpty(balance.getBalance()) ? getString(R.string.zero) : balance.getBalance()));
+            textDollar.setText(String.format("≈ %s %s", balance.getSymbol(), Strings.isNullOrEmpty(balance.getBalance()) ? getString(R.string.zero) : balance.getBalance()));
         });
     }
 

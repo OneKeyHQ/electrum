@@ -94,12 +94,11 @@ public class TransactionDetailWalletActivity extends BaseActivity {
 
     private void listenerViewModel() {
         mAppWalletViewModel.currentWalletBalance.observe(this, balance -> {
-            walletBalance = balance;
-            textWalletAmount.setText(String.format("%s%s", balance, preferences.getString("base_unit", "")));
+            walletBalance = balance.getBalance();
+            textWalletAmount.setText(String.format("%s%s", balance.getBalance(), balance.getUnit()));
         });
         mAppWalletViewModel.currentWalletFiatBalance.observe(this, balance -> {
-            String currencySymbol = preferences.getString(CURRENT_CURRENCY_GRAPHIC_SYMBOL, "¥");
-            textWalletDollar.setText(String.format("≈ %s %s", currencySymbol, Strings.isNullOrEmpty(balance) ? getString(R.string.zero) : balance));
+            textWalletDollar.setText(String.format("≈ %s %s", balance.getSymbol(), Strings.isNullOrEmpty(balance.getBalance()) ? getString(R.string.zero) : balance.getBalance()));
         });
     }
 

@@ -284,7 +284,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         }
         registerLayoutChangeListener();
         mAppWalletViewModel.currentWalletBalance.observe(this, mBalance -> {
-            balance = mBalance;
+            balance = mBalance.getBalance();
             if (!Strings.isNullOrEmpty(balance)) {
                 decimalBalance = BigDecimal.valueOf(Double.parseDouble(balance));
             }
