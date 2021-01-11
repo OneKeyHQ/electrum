@@ -35,6 +35,7 @@ import org.haobtc.onekey.asynctask.BusinessAsyncTask;
 import org.haobtc.onekey.bean.CurrentAddressDetail;
 import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.bean.TransactionInfoBean;
+import org.haobtc.onekey.business.wallet.SystemConfigManager;
 import org.haobtc.onekey.constant.PyConstant;
 import org.haobtc.onekey.entries.FsActivity;
 import org.haobtc.onekey.event.ButtonRequestConfirmedEvent;
@@ -43,7 +44,6 @@ import org.haobtc.onekey.event.ChangePinEvent;
 import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.event.FirstEvent;
 import org.haobtc.onekey.event.GotPassEvent;
-import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.homepage.process.TransactionCompletion;
 import org.haobtc.onekey.ui.activity.VerifyPinActivity;
@@ -106,12 +106,14 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
     private String signedTx;
     private String signature;
     private String amounts;
+    private SystemConfigManager mSystemConfigManager;
 
     /**
      * init
      */
     @Override
     public void init() {
+        mSystemConfigManager = new SystemConfigManager(this);
         Intent intent = getIntent();
         hidePhrass = intent.getStringExtra("hide_phrass");
         walletLabel = intent.getStringExtra(org.haobtc.onekey.constant.Constant.WALLET_LABEL);
@@ -250,7 +252,7 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
     public void popupDialog(TransactionInfoBean info) {
         String sender = info.getInputAddr().get(0).getAddress();
         String receiver = info.getOutputAddr().get(0).getAddr();
-        String amount = String.format("%s%s", info.getAmount(), PreferencesManager.get(this, "Preferences", "base_unit", ""));
+        String amount = String.format("%s%s", info.getAmount(), mSystemConfigManager.getCurrentBaseUnit());
         String fee = info.getFee();
         Bundle bundle = new Bundle();
         bundle.putString(org.haobtc.onekey.constant.Constant.TRANSACTION_SENDER, sender);

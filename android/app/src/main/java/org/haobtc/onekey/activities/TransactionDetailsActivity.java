@@ -41,6 +41,7 @@ import org.haobtc.onekey.bean.AddspeedNewtrsactionBean;
 import org.haobtc.onekey.bean.TransactionInfoBean;
 import org.haobtc.onekey.bean.HardwareFeatures;
 import org.haobtc.onekey.bean.ScanCheckDetailBean;
+import org.haobtc.onekey.business.wallet.SystemConfigManager;
 import org.haobtc.onekey.event.CheckReceiveAddress;
 import org.haobtc.onekey.event.FirstEvent;
 import org.haobtc.onekey.event.HandlerEvent;
@@ -163,6 +164,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     private String txStatus;
     private String listTxStatus = "";
     private float feeForChild;
+    private SystemConfigManager mSystemConfigManager;
 
 
     @Override
@@ -174,6 +176,7 @@ public class TransactionDetailsActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        mSystemConfigManager = new SystemConfigManager(this);
         EventBus.getDefault().register(this);
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         edit = preferences.edit();
@@ -766,7 +769,7 @@ public class TransactionDetailsActivity extends BaseActivity {
                 seekBar.setProgress(noeRecommendPro * 10000);
                 testChangeFee.setText(feeRateForChild);
 
-                String baseUnit = preferences.getString("base_unit", "mBTC");
+                String baseUnit = mSystemConfigManager.getCurrentBaseUnit();
                 if ("BTC".equals(baseUnit)) {
                     feeForChild = Float.parseFloat(feeForChildReceive) * 100000000;
                 } else if ("mBTC".equals(baseUnit)) {
@@ -839,7 +842,7 @@ public class TransactionDetailsActivity extends BaseActivity {
             try {
                 JSONObject jsonObject = new JSONObject(strContent);
                 feeForChildReceive = jsonObject.getString("fee_for_child");
-                String baseUnit = preferences.getString("base_unit", "mBTC");
+                String baseUnit = mSystemConfigManager.getCurrentBaseUnit();
                 if ("BTC".equals(baseUnit)) {
                     feeForChild = Float.parseFloat(feeForChildReceive) * 100000000;
                 } else if ("mBTC".equals(baseUnit)) {
