@@ -15,6 +15,7 @@ import org.haobtc.onekey.asynctask.BusinessAsyncTask;
 import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.PyConstant;
+import org.haobtc.onekey.event.BackupCompleteEvent;
 import org.haobtc.onekey.event.BackupFinishEvent;
 import org.haobtc.onekey.event.ButtonRequestConfirmedEvent;
 import org.haobtc.onekey.event.ButtonRequestEvent;
@@ -200,6 +201,7 @@ public class ActivateColdWalletActivity extends BaseActivity implements Business
                                 showToast(errors);
                             }
                         }
+                        EventBus.getDefault().post(new BackupCompleteEvent());
                         startFragment(new NormalActiveSuccessfulFragment(name, R.string.import_success_description, R.string.success_1));
                         break;
                     default:
