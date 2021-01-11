@@ -20,6 +20,7 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.adapter.HdWalletAssetAdapter;
 import org.haobtc.onekey.bean.HdWalletAllAssetBean;
+import org.haobtc.onekey.business.wallet.SystemConfigManager;
 import org.haobtc.onekey.utils.Daemon;
 
 import java.text.DecimalFormat;
@@ -29,8 +30,6 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-
-import static org.haobtc.onekey.constant.Constant.CURRENT_CURRENCY_GRAPHIC_SYMBOL;
 
 public class AllAssetsActivity extends BaseActivity implements TextWatcher {
 
@@ -45,7 +44,7 @@ public class AllAssetsActivity extends BaseActivity implements TextWatcher {
     private List<HdWalletAllAssetBean.WalletInfoBean> walletInfo;
     private ArrayList<HdWalletAllAssetBean.WalletInfoBean> searchList;
     private SharedPreferences preferences;
-
+    private SystemConfigManager mSystemConfigManager;
 
     @Override
     public int getLayoutId() {
@@ -55,6 +54,7 @@ public class AllAssetsActivity extends BaseActivity implements TextWatcher {
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        mSystemConfigManager = new SystemConfigManager(this);
         preferences = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
         editSearch.addTextChangedListener(this);
     }
@@ -81,7 +81,7 @@ public class AllAssetsActivity extends BaseActivity implements TextWatcher {
                 float f = Float.parseFloat(fiat);
                 DecimalFormat decimalFormat = new DecimalFormat("0.00");//构造方法的字符格式这里如果小数不足2位,会以0补足.
                 String money = decimalFormat.format(f);
-                String currencySymbol = preferences.getString(CURRENT_CURRENCY_GRAPHIC_SYMBOL, "¥");
+                String currencySymbol = mSystemConfigManager.getCurrentFiatSymbol();
                 testAllAssets.setText(String.format("%s %s", currencySymbol, money));
                 walletInfo = hdWalletAllAssetBean.getWalletInfo();
                 HdWalletAssetAdapter hdWalletAssetAdapter = new HdWalletAssetAdapter(walletInfo);

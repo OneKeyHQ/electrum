@@ -77,15 +77,32 @@ public class SystemConfigManager {
     }
 
     /**
+     * 获取当前法币的单位
+     *
+     * @return 法币单位
+     */
+    public String getCurrentFiatUnit() {
+        return mPreferencesSharedPreferences.getString(CURRENT_CURRENCY_SYMBOL, "CNY");
+    }
+
+    /**
+     * 获取当前法币的符号
+     *
+     * @return 法币符号
+     */
+    public String getCurrentFiatSymbol() {
+        return mPreferencesSharedPreferences.getString(CURRENT_CURRENCY_GRAPHIC_SYMBOL, "¥");
+    }
+
+    /**
      * 获取当前法币的符号与单位
      *
      * @return 法币符号与单位
      */
     public FiatUnitSymbolBean getCurrentFiatUnitSymbol() {
-        String unit = mPreferencesSharedPreferences.getString(CURRENT_CURRENCY_SYMBOL, "CNY");
-        String symbol = mPreferencesSharedPreferences.getString(CURRENT_CURRENCY_GRAPHIC_SYMBOL, "¥");
-        int position = mPreferencesSharedPreferences.getInt("cny_unit", 0);
-        return new FiatUnitSymbolBean(unit, symbol, position);
+        String unit = getCurrentFiatUnit();
+        String symbol = getCurrentFiatSymbol();
+        return new FiatUnitSymbolBean(unit, symbol);
     }
 
     /**
@@ -103,7 +120,6 @@ public class SystemConfigManager {
             mPreferencesSharedPreferences.edit()
                     .putString(CURRENT_CURRENCY_SYMBOL, symbol.getUnit())
                     .putString(CURRENT_CURRENCY_GRAPHIC_SYMBOL, symbol.getSymbol())
-                    .putInt("cny_unit", 0)
                     .apply();
         } catch (Exception e) {
             e.printStackTrace();

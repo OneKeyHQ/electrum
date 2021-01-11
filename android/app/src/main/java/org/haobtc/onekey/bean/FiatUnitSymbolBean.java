@@ -9,11 +9,9 @@ package org.haobtc.onekey.bean;
 public class FiatUnitSymbolBean {
     private String unit;
     private String symbol;
-    private int position;
 
-    public FiatUnitSymbolBean(String name, String symbol, int position) {
-        this.unit = name;
-        this.position = position;
+    public FiatUnitSymbolBean(String unit, String symbol) {
+        this.unit = unit;
         this.symbol = symbol;
     }
 
@@ -31,13 +29,5 @@ public class FiatUnitSymbolBean {
 
     public void setSymbol(String symbol) {
         this.symbol = symbol;
-    }
-
-    public int getPosition() {
-        return position;
-    }
-
-    public void setPosition(int position) {
-        this.position = position;
     }
 }

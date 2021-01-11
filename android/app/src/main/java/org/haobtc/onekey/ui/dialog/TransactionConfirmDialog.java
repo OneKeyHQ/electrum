@@ -10,15 +10,13 @@ import android.widget.TextView;
 
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
+import org.haobtc.onekey.business.wallet.SystemConfigManager;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.ButtonRequestConfirmedEvent;
-import org.haobtc.onekey.event.NextFragmentEvent;
 import org.haobtc.onekey.ui.base.BaseDialogFragment;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-
-import static org.haobtc.onekey.constant.Constant.CURRENT_CURRENCY_GRAPHIC_SYMBOL;
 
 /**
  * @author liyan
@@ -41,6 +39,7 @@ public class TransactionConfirmDialog extends BaseDialogFragment {
     TextView textTxFee;
     @BindView(R.id.btn_confirm_pay)
     Button btnConfirmPay;
+    private SystemConfigManager mSystemConfigManager;
 
     /***
      * init layout
@@ -53,7 +52,7 @@ public class TransactionConfirmDialog extends BaseDialogFragment {
 
     @Override
     public void init() {
-        SharedPreferences preferences = getActivity().getSharedPreferences("Preferences", Context.MODE_PRIVATE);
+        mSystemConfigManager = new SystemConfigManager(requireContext());
         Bundle bundle = getArguments();
         int type = bundle.getInt(Constant.WALLET_TYPE);
         String sender = bundle.getString(Constant.TRANSACTION_SENDER);
@@ -75,7 +74,7 @@ public class TransactionConfirmDialog extends BaseDialogFragment {
             String feeAmount = fee.substring(0, fee.indexOf("("));
             String strCny = fee.substring(fee.indexOf("(") + 1, fee.indexOf(")"));
             String cny = strCny.substring(0, strCny.indexOf(" "));
-            textTxFee.setText(String.format("%s ≈ %s %s", feeAmount, preferences.getString(CURRENT_CURRENCY_GRAPHIC_SYMBOL, "¥"), cny));
+            textTxFee.setText(String.format("%s ≈ %s %s", feeAmount, mSystemConfigManager.getCurrentFiatSymbol(), cny));
         } else {
             textTxFee.setText(fee);
         }

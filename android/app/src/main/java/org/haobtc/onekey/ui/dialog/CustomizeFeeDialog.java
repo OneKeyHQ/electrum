@@ -13,11 +13,11 @@ import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.bean.CustomFeeInfo;
 import org.haobtc.onekey.bean.PyResponse;
+import org.haobtc.onekey.business.wallet.SystemConfigManager;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.CustomizeFeeRateEvent;
 import org.haobtc.onekey.event.GetFeeEvent;
 import org.haobtc.onekey.manager.MySPManager;
-import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.ui.base.BaseDialogFragment;
 
@@ -27,7 +27,6 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import butterknife.OnTextChanged;
 
-import static org.haobtc.onekey.constant.Constant.CURRENT_CURRENCY_GRAPHIC_SYMBOL;
 
 /**
  * @author liyan
@@ -57,6 +56,7 @@ public class CustomizeFeeDialog extends BaseDialogFragment {
     private String fee;
     private String fiat;
     private String hdWalletName;
+    private SystemConfigManager mSystemConfigManager;
 
     /***
      * init layout
@@ -69,6 +69,7 @@ public class CustomizeFeeDialog extends BaseDialogFragment {
 
     @Override
     public void init() {
+        mSystemConfigManager = new SystemConfigManager(requireContext());
         Bundle bundle = getArguments();
         assert bundle != null;
         size = bundle.getInt(Constant.TAG_TX_SIZE, 0);
@@ -132,10 +133,10 @@ public class CustomizeFeeDialog extends BaseDialogFragment {
                 fiat = customer.getFiat();
                 fee = customer.getFee();
                 textTime.setText(String.format("%s%s%s", getString(R.string.about_), time, getString(R.string.minute)));
-                textFeeInBtc.setText(String.format(Locale.ENGLISH, "%s %s", fee, PreferencesManager.getMySharePreference(getActivity()).getString("base_unit", "")));
+                textFeeInBtc.setText(String.format(Locale.ENGLISH, "%s %s", fee, mSystemConfigManager.getCurrentBaseUnit()));
                 textSize.setText(String.valueOf(customer.getSize()));
                 textFeeInCash.setVisibility(View.VISIBLE);
-                textFeeInCash.setText(String.format(Locale.ENGLISH, "≈ %s %s", PreferencesManager.getMySharePreference(getActivity()).getString(CURRENT_CURRENCY_GRAPHIC_SYMBOL, "¥"), customer.getFiat()));
+                textFeeInCash.setText(String.format(Locale.ENGLISH, "≈ %s %s", mSystemConfigManager.getCurrentFiatSymbol(), customer.getFiat()));
             } else {
                 Toast.makeText(getActivity(), errors, Toast.LENGTH_SHORT).show();
             }

@@ -5,18 +5,12 @@ import android.util.Pair;
 
 import androidx.annotation.Nullable;
 
-import com.google.common.base.Strings;
-
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.bean.BalanceInfo;
-import org.haobtc.onekey.bean.LocalWalletInfo;
-import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import static org.haobtc.onekey.constant.Constant.CURRENT_CURRENCY_GRAPHIC_SYMBOL;
 
 /**
  * 账户余额管理

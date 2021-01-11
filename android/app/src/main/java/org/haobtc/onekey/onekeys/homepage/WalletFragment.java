@@ -73,7 +73,6 @@ import butterknife.OnClick;
 import io.reactivex.functions.Consumer;
 
 import static android.app.Activity.RESULT_OK;
-import static org.haobtc.onekey.constant.Constant.CURRENT_CURRENCY_GRAPHIC_SYMBOL;
 import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
 import static org.haobtc.onekey.constant.Constant.WALLET_BALANCE;
 

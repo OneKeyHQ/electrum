@@ -43,6 +43,7 @@ import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.bean.TemporaryTxInfo;
 import org.haobtc.onekey.bean.TransactionInfoBean;
 import org.haobtc.onekey.business.qrdecode.QRDecode;
+import org.haobtc.onekey.business.wallet.SystemConfigManager;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.PyConstant;
 import org.haobtc.onekey.event.ButtonRequestConfirmedEvent;
@@ -84,7 +85,6 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
-import static org.haobtc.onekey.constant.Constant.CURRENT_CURRENCY_GRAPHIC_SYMBOL;
 import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
 import static org.haobtc.onekey.constant.Constant.WALLET_BALANCE;
 
@@ -225,7 +225,8 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     private static final int REQUEST_SCAN_CODE = 0;
     private boolean signClickable = true;
     io.reactivex.disposables.Disposable subscribe;
-    private CompositeDisposable mCompositeDisposable = new CompositeDisposable();
+    private final CompositeDisposable mCompositeDisposable = new CompositeDisposable();
+    private SystemConfigManager mSystemConfigManager;
 
     /**
      * init
@@ -233,12 +234,13 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     @Override
     public void init () {
         mAppWalletViewModel = new ViewModelProvider(MyApplication.getInstance()).get(AppWalletViewModel.class);
+        mSystemConfigManager = new SystemConfigManager(this);
         rxPermissions = new RxPermissions(this);
         hdWalletName = getIntent().getStringExtra(EXT_WALLET_NAME);
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         showWalletType = preferences.getString(CURRENT_SELECTED_WALLET_TYPE, "");
-        baseUnit = preferences.getString("base_unit", "");
-        currencySymbols = preferences.getString(CURRENT_CURRENCY_GRAPHIC_SYMBOL, "¥");
+        baseUnit = mSystemConfigManager.getCurrentBaseUnit();
+        currencySymbols = mSystemConfigManager.getCurrentFiatSymbol();
         getDefaultFee();
         setMinAmount();
         editAmount.setFilters(new InputFilter[]{new PointLengthFilter(8, new PointLengthFilter.onMaxListener() {
@@ -786,8 +788,8 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         linearCustomize.setVisibility(View.VISIBLE);
         previousFeeRate = currentFeeRate;
         currentFeeRate = Double.parseDouble(event.getFeeRate());
-        textFeeCustomizeInBtc.setText(String.format(Locale.ENGLISH, "%s %s", event.getFee(), preferences.getString("base_unit", "")));
-        textFeeCustomizeInCash.setText(String.format(Locale.ENGLISH, "%s %s", preferences.getString(CURRENT_CURRENCY_GRAPHIC_SYMBOL, "¥"), event.getCash()));
+        textFeeCustomizeInBtc.setText(String.format(Locale.ENGLISH, "%s %s", event.getFee(), mSystemConfigManager.getCurrentBaseUnit()));
+        textFeeCustomizeInCash.setText(String.format(Locale.ENGLISH, "%s %s", mSystemConfigManager.getCurrentFiatSymbol(), event.getCash()));
         textCustomizeSpendTime.setText(String.format("%s%s%s", getString(R.string.about_), event.getTime(), getString(R.string.minute)));
     }
 
