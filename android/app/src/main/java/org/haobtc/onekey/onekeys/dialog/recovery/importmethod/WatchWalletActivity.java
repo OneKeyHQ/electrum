@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
 
 import com.chaquo.python.Kwarg;
 import com.tbruyelle.rxpermissions2.RxPermissions;
@@ -23,12 +24,21 @@ import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.aop.SingleClick;
+import org.haobtc.onekey.bean.MainSweepcodeBean;
+import org.haobtc.onekey.business.qrdecode.QRDecode;
 import org.haobtc.onekey.event.ResultEvent;
 import org.haobtc.onekey.utils.Daemon;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.annotations.NonNull;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.ObservableEmitter;
+import io.reactivex.rxjava3.core.ObservableOnSubscribe;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class WatchWalletActivity extends BaseActivity implements TextWatcher {
 
@@ -38,7 +48,7 @@ public class WatchWalletActivity extends BaseActivity implements TextWatcher {
     Button btnImport;
     private RxPermissions rxPermissions;
     private static final int REQUEST_CODE = 0;
-    private SharedPreferences.Editor edit;
+    private Disposable mHandlerScanCodeDisposable;
 
     @Override
     public int getLayoutId() {
@@ -49,7 +59,6 @@ public class WatchWalletActivity extends BaseActivity implements TextWatcher {
     public void initView() {
         ButterKnife.bind(this);
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-        edit = preferences.edit();
         rxPermissions = new RxPermissions(this);
         editAddress.addTextChangedListener(this);
     }
@@ -96,7 +105,9 @@ public class WatchWalletActivity extends BaseActivity implements TextWatcher {
         try {
             Daemon.commands.callAttr("verify_legality", editAddress.getText().toString(), new Kwarg("flag", "address"));
         } catch (Exception e) {
-            mToast(e.getMessage().replace("BaseException:", ""));
+            if (e.getMessage() != null) {
+                mToast(e.getMessage().replace("BaseException:", ""));
+            }
             e.printStackTrace();
             return;
         }
@@ -112,9 +123,43 @@ public class WatchWalletActivity extends BaseActivity implements TextWatcher {
         if (requestCode == 0 && resultCode == RESULT_OK) {
             if (data != null) {
                 String content = data.getStringExtra(Constant.CODED_CONTENT);
-                editAddress.setText(content);
+                handleScanCode(content);
             }
         }
+    }
+
+    /**
+     * 处理并解析二维码中的比特币地址
+     *
+     * @param content 二维码内容
+     */
+    private void handleScanCode(String content) {
+        if (mHandlerScanCodeDisposable != null && !mHandlerScanCodeDisposable.isDisposed()) {
+            mHandlerScanCodeDisposable.dispose();
+        }
+        mHandlerScanCodeDisposable = Observable
+                .create((ObservableOnSubscribe<String>) emitter -> {
+                    MainSweepcodeBean.DataBean dataBean = new QRDecode().decodeAddress(content);
+                    if (null == dataBean) {
+                        emitter.onError(new RuntimeException("Parse failure"));
+                    } else {
+                        emitter.onNext(dataBean.getAddress());
+                        emitter.onComplete();
+                    }
+                })
+                .doOnSubscribe((s) -> showProgress())
+                .doFinally(this::dismissProgress)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(address -> {
+                    if (editAddress != null) {
+                        editAddress.setText(address);
+                    }
+                }, throwable -> {
+                    if (editAddress != null) {
+                        editAddress.setText(content);
+                    }
+                });
     }
 
     @Override
@@ -126,9 +171,9 @@ public class WatchWalletActivity extends BaseActivity implements TextWatcher {
         // 禁止EditText输入空格
         if (s.toString().contains(" ")) {
             String[] str = s.toString().split(" ");
-            StringBuffer sb = new StringBuffer();
-            for (int i = 0; i < str.length; i++) {
-                sb.append(str[i]);
+            StringBuilder sb = new StringBuilder();
+            for (String value : str) {
+                sb.append(value);
             }
             editAddress.setText(sb.toString());
             editAddress.setSelection(start);
@@ -139,10 +184,18 @@ public class WatchWalletActivity extends BaseActivity implements TextWatcher {
     public void afterTextChanged(Editable s) {
         if (!TextUtils.isEmpty(s.toString())) {
             btnImport.setEnabled(true);
-            btnImport.setBackground(getDrawable(R.drawable.btn_checked));
+            btnImport.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.btn_checked, null));
         } else {
             btnImport.setEnabled(false);
-            btnImport.setBackground(getDrawable(R.drawable.btn_no_check));
+            btnImport.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.btn_no_check, null));
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mHandlerScanCodeDisposable != null && !mHandlerScanCodeDisposable.isDisposed()) {
+            mHandlerScanCodeDisposable.dispose();
         }
     }
 }

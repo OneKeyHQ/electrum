@@ -137,7 +137,9 @@ public class ChooseImportMethodActivity extends BaseActivity {
             mIntent(HomeOneKeyActivity.class);
         } catch (Exception e) {
             e.printStackTrace();
-            mToast(e.getMessage().replace("BaseException:", ""));
+            if (e.getMessage() != null) {
+                mToast(e.getMessage().replace("BaseException:", ""));
+            }
         }
     }
 
