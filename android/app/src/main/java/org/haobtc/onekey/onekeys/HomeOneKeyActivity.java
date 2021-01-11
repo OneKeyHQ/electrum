@@ -63,7 +63,6 @@ public class HomeOneKeyActivity extends BaseActivity implements OnDownloadListen
     private long firstTime = 0;
     private DownloadManager manager;
     private AppUpdateDialog updateDialog;
-    private AppWalletViewModel mAppWalletViewModel;
     private String[] mTitles;
     private int[] mIconUnSelectIds = {R.drawable.wallet_normal, R.mipmap.mindno};
     private int[] mIconSelectIds = {R.drawable.wallet_highlight, R.mipmap.mindyes};
@@ -82,13 +81,7 @@ public class HomeOneKeyActivity extends BaseActivity implements OnDownloadListen
 
     @Override
     public boolean needEvents() {
-        return true;
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onCreateWalletSuccess(CreateSuccessEvent event) {
-        PyEnv.loadLocalWalletInfo(this);
-        mAppWalletViewModel.changeCurrentWallet(event.getName());
+        return false;
     }
 
     /**
@@ -96,7 +89,6 @@ public class HomeOneKeyActivity extends BaseActivity implements OnDownloadListen
      */
     @Override
     public void init () {
-        mAppWalletViewModel = new ViewModelProvider(MyApplication.getInstance()).get(AppWalletViewModel.class);
         HardwareCallbackHandler callbackHandler = HardwareCallbackHandler.getInstance(this);
         PyEnv.setHandle(callbackHandler);
         initPage();

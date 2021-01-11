@@ -79,10 +79,16 @@ public class RecoveryChooseWalletActivity extends BaseActivity {
                 finish();
             } else {
                 listDates.clear();
+                boolean hasSelectorWallet = false;
                 Map<Integer, Boolean> map = recoveryWalletAdapter.getMap();
                 for (int i = 0; i < walletList.size(); i++) {
                     if (map.get(i)) {
-                        listDates.add(walletList.get(i).getName());
+                        String name = walletList.get(i).getName();
+                        if (!hasSelectorWallet) {
+                            this.name = name;
+                            hasSelectorWallet = true;
+                        }
+                        listDates.add(name);
                     }
                 }
                 String recoveryName = new Gson().toJson(listDates);

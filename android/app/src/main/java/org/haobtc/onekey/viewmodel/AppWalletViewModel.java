@@ -21,8 +21,10 @@ import org.haobtc.onekey.bean.WalletBalanceVo;
 import org.haobtc.onekey.business.wallet.AccountManager;
 import org.haobtc.onekey.business.wallet.BalanceManager;
 import org.haobtc.onekey.business.wallet.SystemConfigManager;
+import org.haobtc.onekey.event.CreateSuccessEvent;
 import org.haobtc.onekey.event.LoadOtherWalletEvent;
 import org.haobtc.onekey.event.SecondEvent;
+import org.haobtc.onekey.manager.PyEnv;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -70,7 +72,12 @@ public class AppWalletViewModel extends ViewModel {
     public void refreshWalletInfo() {
         mExecutorService.execute(() -> {
             String currentWalletName = mAccountManager.getCurrentWalletName();
-            currentWalletInfo.postValue(mAccountManager.getLocalWalletByName(currentWalletName));
+            LocalWalletInfo localWallet = mAccountManager.getLocalWalletByName(currentWalletName);
+            if (localWallet == null) {
+                // 容错处理：如果本地信息存储错误，则随机选择一下钱包账户。
+                localWallet = mAccountManager.autoSelectNextWallet();
+            }
+            currentWalletInfo.postValue(localWallet);
         });
     }
 
@@ -119,9 +126,22 @@ public class AppWalletViewModel extends ViewModel {
      *
      * @param name 钱包名称
      */
-    public void changeCurrentWallet(String name) {
+    public void changeCurrentWallet(@NonNull String name) {
         mExecutorService.execute(() -> {
             LocalWalletInfo localWalletInfo = mAccountManager.selectWallet(name);
+            if (localWalletInfo == null) {
+                mSystemConfigManager.setPassWordType(SystemConfigManager.SoftHdPassType.SHORT);
+            }
+            currentWalletInfo.postValue(localWalletInfo);
+        });
+    }
+
+    /**
+     * 自动选择并切换一个钱包
+     */
+    public void autoSelectWallet() {
+        mExecutorService.execute(() -> {
+            LocalWalletInfo localWalletInfo = mAccountManager.autoSelectNextWallet();
             if (localWalletInfo == null) {
                 mSystemConfigManager.setPassWordType(SystemConfigManager.SoftHdPassType.SHORT);
             }
@@ -160,6 +180,17 @@ public class AppWalletViewModel extends ViewModel {
                             currentFiatUnitSymbol.getSymbol())
             );
         });
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onCreateWalletSuccess(CreateSuccessEvent event) {
+        PyEnv.loadLocalWalletInfo(MyApplication.getInstance());
+        if (TextUtils.isEmpty(event.getName())) {
+            // 容错处理：如果有人发送一个空的名字，则随机选择一下钱包账户。
+            autoSelectWallet();
+        } else {
+            changeCurrentWallet(event.getName());
+        }
     }
 
     @Override
