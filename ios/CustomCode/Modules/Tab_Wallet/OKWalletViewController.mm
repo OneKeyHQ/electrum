@@ -27,6 +27,7 @@
 #import "OKCreateResultModel.h"
 #import "OKCreateResultWalletInfoModel.h"
 #import "OKTakeCareMnemonicViewController.h"
+#import "OKSignatureViewController.h"
 
 
 @interface OKWalletViewController ()<UITableViewDelegate,UITableViewDataSource,UINavigationControllerDelegate,UIGestureRecognizerDelegate>
@@ -63,6 +64,8 @@
 @property (weak, nonatomic) IBOutlet UIButton *receiveBtn;
 - (IBAction)receiveBtnClick:(UIButton *)sender;
 
+@property (weak, nonatomic) IBOutlet UIButton *signatureBtn;
+- (IBAction)signatureBtnClick:(UIButton *)sender;
 @property (weak, nonatomic) IBOutlet UITableView *assetTableView;
 
 
@@ -191,7 +194,7 @@
 
 - (void)updateStatus:(NSDictionary *)dict
 {
-    NSLog(@"dict = %@",dict);
+//    NSLog(@"dict = %@",dict);
     self.model.balance = [dict safeStringForKey:@"balance"];
     self.model.coinType = kWalletManager.currentWalletInfo.coinType;
     self.model.iconImage = [NSString stringWithFormat:@"token_%@",[kWalletManager.currentWalletInfo.coinType lowercaseString]];
@@ -703,4 +706,12 @@
 {
     return self.isCanSideBack;
 }
+
+- (IBAction)signatureBtnClick:(UIButton *)sender {
+    
+    OKSignatureViewController *signatureVc = [OKSignatureViewController signatureViewController];
+    [self.navigationController pushViewController:signatureVc animated:YES];
+
+}
+
 @end

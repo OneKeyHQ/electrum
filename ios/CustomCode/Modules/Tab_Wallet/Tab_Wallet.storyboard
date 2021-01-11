@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -284,39 +284,53 @@
                                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="58H-N6-nII">
                                                                     <rect key="frame" x="0.0" y="168" width="374" height="68"/>
                                                                     <subviews>
-                                                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dHn-lC-0gP">
-                                                                            <rect key="frame" x="0.0" y="0.0" width="187" height="68"/>
-                                                                            <inset key="titleEdgeInsets" minX="16" minY="0.0" maxX="0.0" maxY="0.0"/>
-                                                                            <state key="normal" title="转账" image="sendcoin">
-                                                                                <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                                            </state>
-                                                                            <connections>
-                                                                                <action selector="sendBtnClick:" destination="3u4-Ro-UNt" eventType="touchUpInside" id="tIQ-vu-w2h"/>
-                                                                            </connections>
-                                                                        </button>
-                                                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="I3j-y6-PYA">
-                                                                            <rect key="frame" x="187" y="0.0" width="187" height="68"/>
-                                                                            <inset key="titleEdgeInsets" minX="16" minY="0.0" maxX="0.0" maxY="0.0"/>
-                                                                            <state key="normal" title="收款" image="recivecoin">
-                                                                                <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                                            </state>
-                                                                            <connections>
-                                                                                <action selector="receiveBtnClick:" destination="3u4-Ro-UNt" eventType="touchUpInside" id="Jcr-wC-IE5"/>
-                                                                            </connections>
-                                                                        </button>
+                                                                        <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="SJ3-60-b7s">
+                                                                            <rect key="frame" x="0.0" y="0.0" width="374" height="68"/>
+                                                                            <subviews>
+                                                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dHn-lC-0gP">
+                                                                                    <rect key="frame" x="0.0" y="0.0" width="124.5" height="68"/>
+                                                                                    <inset key="titleEdgeInsets" minX="16" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                                                                    <state key="normal" title="转账" image="sendcoin">
+                                                                                        <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                                    </state>
+                                                                                    <connections>
+                                                                                        <action selector="sendBtnClick:" destination="3u4-Ro-UNt" eventType="touchUpInside" id="tIQ-vu-w2h"/>
+                                                                                    </connections>
+                                                                                </button>
+                                                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="I3j-y6-PYA">
+                                                                                    <rect key="frame" x="124.5" y="0.0" width="125" height="68"/>
+                                                                                    <inset key="titleEdgeInsets" minX="16" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                                                                    <state key="normal" title="收款" image="recivecoin">
+                                                                                        <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                                    </state>
+                                                                                    <connections>
+                                                                                        <action selector="receiveBtnClick:" destination="3u4-Ro-UNt" eventType="touchUpInside" id="Jcr-wC-IE5"/>
+                                                                                    </connections>
+                                                                                </button>
+                                                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yeB-HF-GM4" customClass="OKButton">
+                                                                                    <rect key="frame" x="249.5" y="0.0" width="124.5" height="68"/>
+                                                                                    <inset key="titleEdgeInsets" minX="16" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                                                                    <state key="normal" title="The signature" image="feather">
+                                                                                        <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                                    </state>
+                                                                                    <connections>
+                                                                                        <action selector="signatureBtnClick:" destination="3u4-Ro-UNt" eventType="touchUpInside" id="lQF-hr-cSC"/>
+                                                                                    </connections>
+                                                                                </button>
+                                                                            </subviews>
+                                                                            <constraints>
+                                                                                <constraint firstItem="I3j-y6-PYA" firstAttribute="width" secondItem="dHn-lC-0gP" secondAttribute="width" id="A3M-Ue-1He"/>
+                                                                                <constraint firstItem="yeB-HF-GM4" firstAttribute="width" secondItem="dHn-lC-0gP" secondAttribute="width" id="dq2-0U-dvB"/>
+                                                                            </constraints>
+                                                                        </stackView>
                                                                     </subviews>
                                                                     <color key="backgroundColor" red="0.0047869756819999996" green="0.63295108079999995" blue="0.066284589470000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                                     <constraints>
-                                                                        <constraint firstItem="I3j-y6-PYA" firstAttribute="leading" secondItem="dHn-lC-0gP" secondAttribute="trailing" id="2W7-dt-Pzt"/>
-                                                                        <constraint firstItem="dHn-lC-0gP" firstAttribute="top" secondItem="58H-N6-nII" secondAttribute="top" id="B3f-iF-02t"/>
-                                                                        <constraint firstAttribute="bottom" secondItem="I3j-y6-PYA" secondAttribute="bottom" id="EJW-00-BRY"/>
-                                                                        <constraint firstItem="I3j-y6-PYA" firstAttribute="leading" secondItem="dHn-lC-0gP" secondAttribute="trailing" id="Ens-Cq-K1j"/>
-                                                                        <constraint firstItem="I3j-y6-PYA" firstAttribute="top" secondItem="58H-N6-nII" secondAttribute="top" id="LcO-C1-51i"/>
-                                                                        <constraint firstItem="I3j-y6-PYA" firstAttribute="width" secondItem="dHn-lC-0gP" secondAttribute="width" id="PFl-mV-Tck"/>
+                                                                        <constraint firstItem="SJ3-60-b7s" firstAttribute="top" secondItem="58H-N6-nII" secondAttribute="top" id="0Dx-7D-AQT"/>
+                                                                        <constraint firstAttribute="bottom" secondItem="SJ3-60-b7s" secondAttribute="bottom" id="Nzw-OP-wSa"/>
                                                                         <constraint firstAttribute="height" constant="68" id="Th4-4E-6HG"/>
-                                                                        <constraint firstItem="dHn-lC-0gP" firstAttribute="leading" secondItem="58H-N6-nII" secondAttribute="leading" id="W5h-ew-CSX"/>
-                                                                        <constraint firstAttribute="trailing" secondItem="I3j-y6-PYA" secondAttribute="trailing" id="lSi-TQ-OyE"/>
-                                                                        <constraint firstAttribute="bottom" secondItem="dHn-lC-0gP" secondAttribute="bottom" id="y4d-LJ-aRt"/>
+                                                                        <constraint firstItem="SJ3-60-b7s" firstAttribute="leading" secondItem="58H-N6-nII" secondAttribute="leading" id="l17-dS-dYd"/>
+                                                                        <constraint firstAttribute="trailing" secondItem="SJ3-60-b7s" secondAttribute="trailing" id="mkS-qE-Oba"/>
                                                                     </constraints>
                                                                 </view>
                                                             </subviews>
@@ -632,6 +646,7 @@
                         <outlet property="scanBtn" destination="Wsi-F6-euz" id="x50-H5-dMU"/>
                         <outlet property="selectCreateTableView" destination="iTE-Qb-wim" id="tOf-d0-z0o"/>
                         <outlet property="sendBtn" destination="dHn-lC-0gP" id="wHt-Ic-dUQ"/>
+                        <outlet property="signatureBtn" destination="yeB-HF-GM4" id="0hM-Xn-lwz"/>
                         <outlet property="srBgView" destination="58H-N6-nII" id="GzY-oM-1ol"/>
                         <outlet property="stackView" destination="4fS-Cg-39T" id="Yby-op-wkd"/>
                         <outlet property="tableViewHeaderAddBtn" destination="0ar-BV-Aay" id="NWA-kJ-w7r"/>
@@ -3399,6 +3414,7 @@
         <image name="downarrow" width="24" height="24"/>
         <image name="edit" width="20" height="20"/>
         <image name="eyehome" width="19" height="14"/>
+        <image name="feather" width="17" height="17"/>
         <image name="loco_round" width="36" height="36"/>
         <image name="logokeywhite" width="20" height="38"/>
         <image name="logowhite" width="87.5" height="27.5"/>
