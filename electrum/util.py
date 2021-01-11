@@ -121,7 +121,7 @@ class ReplaceWatchonlyWallet(Exception):
         ReplaceWatchonlyWallet.message = message
 
     def __str__(self):
-        return BaseException(_("Replace watch-only wallet."))
+        return BaseException(("Replace watch-only wallet."))
 
 class NotEnoughFundsStr(Exception):
     def __str__(self):

@@ -1772,7 +1772,7 @@ class AndroidCommands(commands.Commands):
         #          self.callbackIntent.onCallback(Status.broadcast, msg)
         else:
             self.txdb.add_tx_time_info(tx.txid())
-            raise BaseException(_('Cannot broadcast transaction Not connected'))
+            raise BaseException(_('Cannot broadcast transaction due to network connected exceptions'))
 
 
     def set_use_change(self, status_change):
@@ -1915,6 +1915,7 @@ class AndroidCommands(commands.Commands):
             return None
         except BaseException as e:
             raise e
+
 
     ##connection with terzorlib#########################
     def hardware_verify(self, msg, path='android_usb'):
@@ -2847,7 +2848,7 @@ class AndroidCommands(commands.Commands):
         except BaseException as e:
             raise e
         try:
-            self.create_new_wallet_update(name=name, password=password, wallet=wallet, coin=coin, \
+            self.create_new_wallet_update(name=name, seed=seed, password=password, wallet=wallet, coin=coin, \
                                           wallet_type=wallet_type, derived_flag=derived_flag, bip39_derivation=bip39_derivation)
         except BaseException as e:
             raise e
@@ -3227,7 +3228,8 @@ class AndroidCommands(commands.Commands):
         except BaseException as e:
             raise e
         if int(bip39_derivation.split('/')[ACCOUNT_POS].split('\'')[0]) == 0:
-            return
+            if int(bip39_derivation.split('/')[PURPOSE_POS].split('\'')[0]) == 49:
+                return
         temp_path = self.get_temp_file()
         path = self._wallet_path(temp_path)
         if exists(path):
@@ -3684,8 +3686,34 @@ class AndroidCommands(commands.Commands):
         except BaseException as e:
             raise BaseException(e)
 
-    def list_wallets(self):
-        """List available wallets"""
+    def sort_list(self, wallet_infos, type=None):
+        try:
+            from sort_wallet_list import SortWalletList
+            if len(wallet_infos) == 0:
+                return wallet_infos
+            sorted_wallet = SortWalletList(wallet_infos)
+            if type is None:
+                return wallet_infos
+            if type == 'hd':
+                return sorted_wallet.get_wallets_by_hd()
+            else:
+                return sorted_wallet.get_wallets_by_coin(coin=type)
+        except BaseException as e:
+            raise e
+
+    def list_wallets(self, type=None):
+        '''
+        List available wallets
+        :param type: None/hd/btc/eth
+        :return:
+        exp:
+            all_list = testcommond.list_wallets()
+            hd_list = testcommond.list_wallets(type='hd')
+            btc_list = testcommond.list_wallets(type='btc')
+            eth_list = testcommond.list_wallets(type='eth')
+
+        '''
+
         name_wallets = sorted([name for name in os.listdir(self._wallet_path())])
         name_info = {}
         for name in name_wallets:
@@ -3704,7 +3732,8 @@ class AndroidCommands(commands.Commands):
                            "name": self.get_unique_path(wallet), "label": wallet.get_name(), "device_id": device_id}
             temp[key] = wallet_info
             wallet_infos.append(temp)
-        return json.dumps(wallet_infos)
+        sort_info = self.sort_list(wallet_infos, type=type)
+        return json.dumps(sort_info)
 
     def delete_wallet_from_deamon(self, name):
         try:

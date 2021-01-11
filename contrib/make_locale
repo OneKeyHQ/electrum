@@ -21,6 +21,7 @@ code_directories = [
     'electrum',
     'electrum/plugins',
     'electrum_gui',
+    'trezor',
 ]
 cmd = "find {} -type f -name '*.py' -o -name '*.kv'".format(" ".join(code_directories))
 
