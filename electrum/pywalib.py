@@ -132,7 +132,7 @@ def handle_etherscan_response(response):
 
 def requests_get(url):
     try:
-        return requests.get(url, timeout=2, verify=False)
+        return requests.get(url, headers=headers, timeout=2, verify=False)
     except BaseException as e:
         raise e
 
@@ -265,7 +265,7 @@ class PyWalib:
                 PyWalib.config.set_key("symbol_list", PyWalib.symbols_price)
                 return symbol_price
         except BaseException as e:
-            raise e
+            return '0'
 
     def get_gas_price(self):
         try:
@@ -422,6 +422,7 @@ class PyWalib:
         except BaseException as e:
             raise e
 
+    @staticmethod
     def get_tx_from_etherscan(address, url):
         url += (
             '?module=account&action=txlist'
@@ -467,6 +468,7 @@ class PyWalib:
         out_len = 10 if len(out_tx_list) >= 10 else len(out_tx_list)
         return out_tx_list[:out_len]
 
+    @staticmethod
     def get_recovery_flag_from_trezor(address, url):
         try:
             url += f'/address/{address}'
@@ -478,7 +480,7 @@ class PyWalib:
         except BaseException as e:
             return []
 
-
+    @staticmethod
     def get_tx_from_trezor(address, url):
         url += f'/address/{address}'
         try:
@@ -528,6 +530,7 @@ class PyWalib:
             out_len = 10 if len(out_tx_list) >= 10 else len(out_tx_list)
             return out_tx_list[:out_len]
 
+    @staticmethod
     def get_transaction_history_fun(address, recovery=False):
         """
         Retrieves the transaction history from server list
