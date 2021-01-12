@@ -43,16 +43,6 @@
         android:background="@color/bk_page"
         android:orientation="vertical">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dp_20"
-            android:layout_marginTop="41dp"
-            android:lineSpacingExtra="@dimen/dp_10"
-            android:text="@string/block_choose_tip"
-            android:textColor="@color/text_six"
-            android:textSize="@dimen/sp_14" />
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recl_Quetation"
             android:layout_width="match_parent"

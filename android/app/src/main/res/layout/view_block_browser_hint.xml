@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_20"
+        android:layout_marginTop="41dp"
+        android:lineSpacingExtra="@dimen/dp_10"
+        android:text="@string/block_choose_tip"
+        android:textColor="@color/text_six"
+        android:textSize="@dimen/sp_14" />
+</LinearLayout>

@@ -51,17 +51,19 @@ public class BlockChooseActivity extends BaseActivity {
             CNYBean cnyBean = new CNYBean(s, false);
             blockList.add(cnyBean);
         }
-        QuetationChooseAdapter quetationChooseAdapter = new QuetationChooseAdapter(BlockChooseActivity.this,blockList,setBlock);
+        QuetationChooseAdapter quetationChooseAdapter = new QuetationChooseAdapter(BlockChooseActivity.this, blockList, setBlock);
+        quetationChooseAdapter.addHeaderView(generateHeadView());
         reclQuetation.setAdapter(quetationChooseAdapter);
-        quetationChooseAdapter.setOnLisennorClick(new QuetationChooseAdapter.onLisennorClick() {
-            @Override
-            public void itemClick(int pos) {
-                edit.putInt("setBlock",pos);
-                edit.putString("blockServerLine",blockList.get(pos).getName());
-                edit.apply();
-                EventBus.getDefault().post(new FirstEvent("block_check"));
-            }
+        quetationChooseAdapter.setOnLisennorClick(pos -> {
+            edit.putInt("setBlock", pos);
+            edit.putString("blockServerLine", blockList.get(pos).getName());
+            edit.apply();
+            EventBus.getDefault().post(new FirstEvent("block_check"));
         });
+    }
+
+    private View generateHeadView() {
+        return View.inflate(this,R.layout.view_block_browser_hint,null);
     }
 
     @SingleClick
