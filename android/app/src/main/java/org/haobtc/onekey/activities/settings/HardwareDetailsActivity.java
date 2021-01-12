@@ -217,7 +217,7 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
                 MyApplication.getInstance().getDeviceWay());
     }
 
-    private void getUpdateInfo() {
+    private void getUpdateInfo(boolean isBootloader) {
         String urlPrefix = "https://onekey.so/";
         String locate = PreferencesManager.get(this, "Preferences", Constant.LANGUAGE, "").toString();
         String info = PreferencesManager.get(this, "Preferences", Constant.UPGRADE_INFO, "").toString();
@@ -225,14 +225,14 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
             showToast(R.string.get_update_info_failed);
             return;
         }
-        Bundle bundle = getBundle(urlPrefix, locate, info);
+        Bundle bundle = getBundle(urlPrefix, locate, info, isBootloader);
         Intent intentVersion = new Intent(this, HardwareUpgradeActivity.class);
         intentVersion.putExtras(bundle);
         startActivity(intentVersion);
     }
 
     @NonNull
-    private Bundle getBundle(String urlPrefix, String locate, String info) {
+    private Bundle getBundle(String urlPrefix, String locate, String info, boolean isBootloader) {
         UpdateInfo updateInfo = UpdateInfo.objectFromData(info);
         String urlNrf = updateInfo.getNrf().getUrl();
         String urlStm32 = updateInfo.getStm32().getUrl();
@@ -257,7 +257,8 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
             bundle.putString(Constant.TAG_FIRMWARE_VERSION_NEW, versionStm32);
             bundle.putString(Constant.TAG_FIRMWARE_UPDATE_DES, descriptionStm32);
         }
-        if (versionNrf.compareTo(nrfVersion) > 0) {
+        boolean showNrf = isBootloader || !Strings.isNullOrEmpty(nrfVersion) && !Strings.isNullOrEmpty(versionNrf) && versionNrf.compareTo(nrfVersion) > 0;
+        if (showNrf) {
             bundle.putString(Constant.TAG_NRF_DOWNLOAD_URL, urlPrefix + urlNrf);
             bundle.putString(Constant.TAG_NRF_VERSION_NEW, versionNrf);
             bundle.putString(Constant.TAG_NRF_UPDATE_DES, descriptionNrf);
@@ -324,7 +325,7 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
                     new Handler().postDelayed(this::verifyHardware, 2000);
                     break;
                 case PyConstant.FIRMWARE_UPDATE:
-                        getUpdateInfo();
+                        getUpdateInfo(features.isBootloaderMode());
                     break;
                 default:
             }

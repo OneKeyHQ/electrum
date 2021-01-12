@@ -410,7 +410,7 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
         String label = features.getLabel();
         String deviceId = features.getDeviceId();
         String bleMac = PreferencesManager.get(this, org.haobtc.onekey.constant.Constant.BLE_INFO, bleName, "").toString();
-        Bundle bundle = getBundle(urlPrefix, locate, info, nrfVersion);
+        Bundle bundle = getBundle(urlPrefix, locate, info, nrfVersion, features.isBootloaderMode());
         bundle.putString(Constant.TAG_FIRMWARE_VERSION, firmwareVersion);
         bundle.putString(Constant.TAG_NRF_VERSION, nrfVersion);
         bundle.putString(Constant.TAG_BLE_NAME, bleName);
@@ -424,7 +424,7 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
     }
 
     @NonNull
-    private Bundle getBundle(String urlPrefix, String locate, String info, String curNrfVersion) {
+    private Bundle getBundle(String urlPrefix, String locate, String info, String curNrfVersion, boolean isBootloader) {
 
         UpdateInfo updateInfo = UpdateInfo.objectFromData(info);
         String urlNrf = updateInfo.getNrf().getUrl();
@@ -442,7 +442,8 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
         bundle.putString(Constant.TAG_FIRMWARE_VERSION_NEW, versionStm32);
         bundle.putString(Constant.TAG_FIRMWARE_UPDATE_DES, descriptionStm32);
         // todo: 此处的判定条件在版本号出现2位数以上时会有问题
-        if (!Strings.isNullOrEmpty(curNrfVersion) && !Strings.isNullOrEmpty(versionNrf) && versionNrf.compareTo(curNrfVersion) > 0) {
+        boolean showNrf = isBootloader || !Strings.isNullOrEmpty(curNrfVersion) && !Strings.isNullOrEmpty(versionNrf) && versionNrf.compareTo(curNrfVersion) > 0;
+        if (showNrf) {
             bundle.putString(Constant.TAG_NRF_DOWNLOAD_URL, urlPrefix + urlNrf);
             bundle.putString(Constant.TAG_NRF_VERSION_NEW, versionNrf);
             bundle.putString(Constant.TAG_NRF_UPDATE_DES, descriptionNrf);
