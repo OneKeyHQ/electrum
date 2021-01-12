@@ -1887,10 +1887,6 @@ class AndroidCommands(commands.Commands):
             sign_tx = self.wallet.sign_transaction(tx, password)
             print("=======sign_tx.serialize=%s" % sign_tx.serialize_as_bytes().hex())
             try:
-                self.do_save(sign_tx)
-            except:
-                pass
-            try:
                 if self.label_flag and self.wallet.wallet_type != "standard":
                     self.label_plugin.push_tx(self.wallet, 'signtx', tx.txid(), str(sign_tx))
             except BaseException as e:
@@ -3228,8 +3224,11 @@ class AndroidCommands(commands.Commands):
         except BaseException as e:
             raise e
         if int(bip39_derivation.split('/')[ACCOUNT_POS].split('\'')[0]) == 0:
-            if int(bip39_derivation.split('/')[PURPOSE_POS].split('\'')[0]) == 49:
+            purpose = int(bip39_derivation.split('/')[PURPOSE_POS].split('\'')[0])
+            if purpose == 49:
                 return
+            else:
+                name = "btc-derived-%s" %purpose
         temp_path = self.get_temp_file()
         path = self._wallet_path(temp_path)
         if exists(path):
