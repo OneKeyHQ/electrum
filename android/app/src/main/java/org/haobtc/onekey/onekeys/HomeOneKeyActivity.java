@@ -55,6 +55,7 @@ import static org.haobtc.onekey.constant.Constant.ONE_KEY_WEBSITE;
  * @author liyan
  */
 public class HomeOneKeyActivity extends BaseActivity implements OnDownloadListener {
+    public static final String EXT_RESTART = "ext_restart";
 
     @BindView(R.id.scrollView)
     NoScrollViewPager scrollViewPager;
@@ -141,6 +142,9 @@ public class HomeOneKeyActivity extends BaseActivity implements OnDownloadListen
     }
 
     private void getUpdateInfo() {
+        if (getIntent().getBooleanExtra(EXT_RESTART, false)){
+            return;
+        }
         // version_testnet.json version_regtest.json
         String appId = BuildConfig.APPLICATION_ID;
         String urlPrefix = ONE_KEY_WEBSITE;

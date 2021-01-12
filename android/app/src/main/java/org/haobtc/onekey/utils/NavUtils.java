@@ -22,12 +22,19 @@ public class NavUtils {
         ResetAppActivity.gotoResetAppActivity(context);
     }
 
-    public static void gotoMainActivityTask (Context context, boolean isNewTask) {
+    public static void gotoMainActivityTask (Context context, boolean isNewTask, boolean reset) {
         Intent intent = new Intent(context, HomeOneKeyActivity.class);
+        if (reset) {
+            intent.putExtra(HomeOneKeyActivity.EXT_RESTART, true);
+        }
         if (isNewTask) {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         }
         context.startActivity(intent);
+    }
+
+    public static void gotoMainActivityTask (Context context, boolean isNewTask) {
+        gotoMainActivityTask(context, isNewTask, false);
     }
 
     public static void gotoLunchActivity (Context context) {
