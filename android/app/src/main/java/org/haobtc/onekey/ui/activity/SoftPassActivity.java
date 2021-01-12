@@ -98,10 +98,9 @@ public class SoftPassActivity extends BaseActivity implements ViewHeightStatusDe
     private String pinOrigin;
     private int fromType = -1;
 
-    public static void gotoSoftPassActivity(Context context, int type, int from) {
+    public static void gotoSoftPassActivity (Context context, int from) {
         Intent intent = new Intent(context, SoftPassActivity.class);
         intent.putExtra(StringConstant.FROM, from);
-        intent.putExtra(Constant.OPERATE_TYPE, type);
         context.startActivity(intent);
     }
 
@@ -138,6 +137,7 @@ public class SoftPassActivity extends BaseActivity implements ViewHeightStatusDe
      * 渲染初始视图
      */
     private void judgeStatus() {
+        // 默认是校验模式，设置模式不需要单独传递
         operationType = getIntent().getIntExtra(Constant.OPERATE_TYPE, 1);
         if (getIntent().hasExtra(StringConstant.FROM)) {
             fromType = getIntent().getIntExtra(StringConstant.FROM, -1);
@@ -236,7 +236,9 @@ public class SoftPassActivity extends BaseActivity implements ViewHeightStatusDe
         String errors = response.getErrors();
         if (Strings.isNullOrEmpty(errors)) {
             hideKeyBroad();
-            EventBus.getDefault().post(new GotPassEvent(password));
+            GotPassEvent gotPassEvent = new GotPassEvent(password);
+            gotPassEvent.fromType = fromType;
+            EventBus.getDefault().post(gotPassEvent);
             finish();
         } else {
             showToast(R.string.pin_origin_invalid);

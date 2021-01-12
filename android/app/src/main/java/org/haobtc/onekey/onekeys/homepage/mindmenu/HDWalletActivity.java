@@ -23,7 +23,6 @@ import org.haobtc.onekey.event.LoadWalletlistEvent;
 import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.dialog.RecoverHdWalletActivity;
-import org.haobtc.onekey.ui.activity.SoftPassActivity;
 import org.haobtc.onekey.ui.dialog.HdWalletIntroductionDialog;
 import org.haobtc.onekey.utils.NavUtils;
 
@@ -93,7 +92,7 @@ public class HDWalletActivity extends BaseActivity {
                 new HdWalletIntroductionDialog().show(getSupportFragmentManager(), "");
                 break;
             case R.id.recl_add_hd_wallet:
-                NavUtils.gotoSoftPassActivity(mContext, SoftPassActivity.SET, 2);
+                NavUtils.gotoSoftPassActivity(mContext, 2);
                 break;
             case R.id.recl_recovery_wallet:
                 Intent intent2 = new Intent(HDWalletActivity.this, RecoverHdWalletActivity.class);

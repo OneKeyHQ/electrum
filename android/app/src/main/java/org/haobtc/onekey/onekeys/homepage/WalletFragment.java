@@ -483,7 +483,7 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
             case R.id.img_Add:
             case R.id.rel_create_hd:
                 isAddHd = true;
-                NavUtils.gotoSoftPassActivity(getActivity(), SoftPassActivity.SET, 0);
+                NavUtils.gotoSoftPassActivity(getActivity(), 0);
                 break;
             case R.id.rel_recovery_hd:
                 isRecovery = true;

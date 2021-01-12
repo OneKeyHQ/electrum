@@ -244,7 +244,7 @@ public class WalletListActivity extends BaseActivity {
                 break;
             case R.id.recl_add_hd_wallet:
                 isAddHd = true;
-                NavUtils.gotoSoftPassActivity(mContext, SoftPassActivity.SET, 1);
+                NavUtils.gotoSoftPassActivity(mContext,  1);
                 break;
             case R.id.recl_recovery_wallet:
                 isAddHd = false;

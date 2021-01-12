@@ -65,8 +65,8 @@ public class NavUtils {
         ImportWalletSetNameActivity.gotoImportWalletSetNameActivity(context, purpose);
     }
 
-    public static void gotoSoftPassActivity (Context context, int type, int from) {
-        SoftPassActivity.gotoSoftPassActivity(context, type, from);
+    public static void gotoSoftPassActivity (Context context,  int from) {
+        SoftPassActivity.gotoSoftPassActivity(context,  from);
     }
 
 }
