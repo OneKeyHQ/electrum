@@ -15,6 +15,10 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Switch;
 
+import androidx.core.content.res.ResourcesCompat;
+
+import com.chaquo.python.PyObject;
+
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
@@ -24,6 +28,11 @@ import org.haobtc.onekey.utils.Daemon;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.ObservableOnSubscribe;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class AnyskServerSetActivity extends BaseActivity {
 
@@ -43,6 +52,7 @@ public class AnyskServerSetActivity extends BaseActivity {
     private boolean open = false;
     private String strAgentIP;
     private String strPort;
+    private Disposable mAnyskServerDisposable;
 
     @Override
     public int getLayoutId() {
@@ -151,16 +161,31 @@ public class AnyskServerSetActivity extends BaseActivity {
     }
 
     private void addAnyskServer(String ip, String port) {
-        try {
-            Daemon.commands.callAttr("set_sync_server_host", ip, port);
-        } catch (Exception e) {
-            if (e.getMessage().contains("No address associated with hostname")){
-                mToast(getString(R.string.invalid_address));
-            }
-            e.printStackTrace();
-            return;
+        if (mAnyskServerDisposable != null && !mAnyskServerDisposable.isDisposed()) {
+            mAnyskServerDisposable.dispose();
         }
-        EventBus.getDefault().post(new FirstEvent("add_anysk_server"));
+        mAnyskServerDisposable = Observable
+                .create((ObservableOnSubscribe<String>) emitter -> {
+                    PyObject result = Daemon.commands.callAttr("set_sync_server_host", ip, port);
+                    if (result == null || result.isEmpty()) {
+                        emitter.onNext("success");
+                        emitter.onComplete();
+                    } else {
+                        emitter.onError(new RuntimeException(result.toString()));
+                    }
+                })
+                .doOnSubscribe(s -> showProgress())
+                .doFinally(this::dismissProgress)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> {
+                    EventBus.getDefault().post(new FirstEvent("add_anysk_server"));
+                }, e -> {
+                    if (e.getMessage() != null && e.getMessage().contains("ErrorConnectingServer")) {
+                        mToast(getString(R.string.invalid_address));
+                    }
+                    e.printStackTrace();
+                });
     }
 
     class TextChange implements TextWatcher {
@@ -188,18 +213,24 @@ public class AnyskServerSetActivity extends BaseActivity {
 
         if (TextUtils.isEmpty(strAgentIP) || TextUtils.isEmpty(strPort)) {
             btnAddServer.setEnabled(false);
-            btnAddServer.setBackground(getDrawable(R.drawable.btn_no_check));
-
+            btnAddServer.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.btn_no_check, null));
         } else {
             if (open) {
                 btnAddServer.setEnabled(true);
-                btnAddServer.setBackground(getDrawable(R.drawable.btn_checked));
+                btnAddServer.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.btn_checked, null));
             } else {
                 btnAddServer.setEnabled(false);
-                btnAddServer.setBackground(getDrawable(R.drawable.btn_no_check));
+                btnAddServer.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.btn_no_check, null));
             }
 
         }
+    }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mAnyskServerDisposable != null && !mAnyskServerDisposable.isDisposed()) {
+            mAnyskServerDisposable.dispose();
+        }
     }
 }
