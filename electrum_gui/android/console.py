@@ -3688,7 +3688,7 @@ class AndroidCommands(commands.Commands):
 
     def sort_list(self, wallet_infos, type=None):
         try:
-            from sort_wallet_list import SortWalletList
+            from .sort_wallet_list import SortWalletList
             if len(wallet_infos) == 0:
                 return wallet_infos
             sorted_wallet = SortWalletList(wallet_infos)
