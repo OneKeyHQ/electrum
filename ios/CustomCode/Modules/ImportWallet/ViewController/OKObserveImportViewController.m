@@ -67,7 +67,7 @@
             [weakself textChange];
         }
     };
-    [vc authorizePushOn:self];;
+    [vc authorizePushOn:self];
 }
 #pragma mark - TextView
 - (void)textViewDidChange:(UITextView *)textView

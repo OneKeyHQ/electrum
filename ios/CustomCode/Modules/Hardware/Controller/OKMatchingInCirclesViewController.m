@@ -12,6 +12,7 @@
 #import "OKActivateDeviceSelectViewController.h"
 #import "OKSetDeviceNameViewController.h"
 #import "OKBlueManager.h"
+#import "OKDeviceInfoModel.h"
 
 @interface OKMatchingInCirclesViewController ()<OKBabyBluetoothManageDelegate,UITableViewDelegate,UITableViewDataSource>
 
@@ -156,7 +157,7 @@
 }
 
 
-//#pragma mark OKBabyBluetoothManageDelegate
+#pragma mark OKBabyBluetoothManageDelegate
 - (void)systemBluetoothClose {
     // 系统蓝牙被关闭、提示用户去开启蓝牙
     NSLog(@"系统蓝牙被关闭、提示用户去开启蓝牙");
@@ -177,13 +178,7 @@
 }
 
 - (void)connectSuccess {
-    // 连接成功 写入UUID值【替换成自己的蓝牙设备UUID值】
-    kOKBlueManager.serverUUIDString = kPRIMARY_SERVICE;
-    kOKBlueManager.writeUUIDString = kWRITE_CHARACTERISTIC;
-    kOKBlueManager.readUUIDString = kREAD_CHARACTERISTIC;
-    NSDictionary *json =  [kPyCommandsManager callInterface:kInterfaceget_feature parameter:@{@"path":@"bluetooth_ios"}];
-    NSLog(@"json == %@",json);
-    
+    NSLog(@"connectSuccess");
 }
 - (void)readData:(NSData *)valueData {
     // 获取到蓝牙设备发来的数据
@@ -193,4 +188,21 @@
 - (void)connectFailed {
     // 连接失败、做连接失败的处理
 }
+- (void)subscribeComplete
+{
+    kOKBlueManager.currentReadDataStr = @"";
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+       NSString *jsonStr =  [kPyCommandsManager callInterface:kInterfaceget_feature parameter:@{@"path":@"bluetooth_ios"}];
+        OKDeviceInfoModel *model = [OKDeviceInfoModel mj_objectWithKeyValues:jsonStr];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if ([model.initialized boolValue]) {
+                OKActivateDeviceSelectViewController *activateDeviceVc = [OKActivateDeviceSelectViewController activateDeviceSelectViewController];
+                [self.navigationController pushViewController:activateDeviceVc animated:YES];
+            }else{
+                
+            }
+        });
+    });
+}
+
 @end

@@ -26,6 +26,7 @@
 #import "OKBiologicalViewController.h"
 #import "OKCreateResultModel.h"
 #import "OKCreateResultWalletInfoModel.h"
+#import "OKMatchingInCirclesViewController.h"
 
 
 #define kDefaultType  @"HD"
@@ -306,9 +307,8 @@
 }
 
 - (IBAction)macthWalletBtnClick:(OKWalletListBottomBtn *)sender {
-    [kTools tipMessage:MyLocalizedString(@"Temporary does not support", nil)];
-//    OKMatchingInCirclesViewController *matchVc = [OKMatchingInCirclesViewController matchingInCirclesViewController];
-//    [self.navigationController pushViewController:matchVc animated:YES];
+    OKMatchingInCirclesViewController *matchVc = [OKMatchingInCirclesViewController matchingInCirclesViewController];
+    [self.navigationController pushViewController:matchVc animated:YES];
 }
 
 - (IBAction)addWalletBtnClick:(OKWalletListBottomBtn *)sender {

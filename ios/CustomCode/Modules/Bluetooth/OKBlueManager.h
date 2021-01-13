@@ -79,6 +79,9 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)readData:(NSData *)valueData;
 
+- (void)subscribeComplete;
+
+
 @end
 
 @interface OKBlueManager : NSObject
@@ -88,6 +91,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *writeUUIDString;
 //外设的读取UUID值
 @property (nonatomic, copy) NSString *readUUIDString;
+
+@property (nonatomic,copy)NSString *currentReadDataStr;
 + (OKBlueManager *)sharedInstance;
 
 - (NSString *)getStrValueInUD;

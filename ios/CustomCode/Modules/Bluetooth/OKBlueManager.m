@@ -7,6 +7,10 @@
 //
 
 #import "OKBlueManager.h"
+#define kLENGTH_FILED_START_OFFSET  10
+#define kLENGTH_FILED_END_OFFSET    18
+#define kHEAD_LENGTH                9
+#define kPRE_OF_DATAPACKAGE         @"3f232300"
 
 @implementation OKPeripheralInfo
 
@@ -20,7 +24,9 @@
 @property (nonatomic,strong)CBCharacteristic *readCharacteristic;
 @property (nonatomic,strong)CBCharacteristic *writeCharacteristic;
 @property (nonatomic, strong)NSMutableArray  *peripheralArr;
-@property (nonatomic,copy)NSString *currentReadDataStr;
+
+
+@property (nonatomic,strong)NSMutableString *buffer;
 
 @end
 
@@ -44,6 +50,7 @@ static dispatch_once_t once;
 - (instancetype)init {
     self = [super init];
     if (self) {
+        [self initBabyBluetooth];
     }
     return self;
 }
@@ -153,25 +160,29 @@ static dispatch_once_t once;
                                                           [rhythm beats];
                                                       }];
     
+    [self.babyBluetooth setBlockOnDiscoverCharacteristics:^(CBPeripheral *peripheral, CBService *service, NSError *error) {
+        //NSLog(@"setBlockOnDiscoverCharacteristics");
+    }];
+    
+    
     // 8-设置发现设service的Characteristics的委托
     [self.babyBluetooth setBlockOnDiscoverCharacteristicsAtChannel:channelOneKeyPeripheral
                                                              block:^(CBPeripheral *peripheral, CBService *service, NSError *error) {
         NSLog(@"peripheral == %@",peripheral);
         NSString *serviceUUID = [NSString stringWithFormat:@"%@",service.UUID];
-        if ([serviceUUID isEqualToString:weakSelf.serverUUIDString]) {
+        if ([serviceUUID isEqualToString:kPRIMARY_SERVICE]) {
             for (CBCharacteristic *ch in service.characteristics) {
                 // 写数据的特征值
                 NSString *chUUID = [NSString stringWithFormat:@"%@",ch.UUID];
-                if ([chUUID isEqualToString:weakSelf.writeUUIDString]) {
+                if ([chUUID isEqualToString:kWRITE_CHARACTERISTIC]) {
                     weakSelf.writeCharacteristic = ch;
                 }
                 // 读数据的特征值
-                if ([chUUID isEqualToString:weakSelf.readUUIDString]) {
+                if ([chUUID isEqualToString:kREAD_CHARACTERISTIC]) {
                     weakSelf.readCharacteristic = ch;
                     [weakSelf.currentPeripheral setNotifyValue:YES
                                              forCharacteristic:weakSelf.readCharacteristic];
                 }
-                                                                         
             }
         }
     }];
@@ -179,18 +190,13 @@ static dispatch_once_t once;
     // 9-设置读取characteristics的委托
     [self.babyBluetooth setBlockOnReadValueForCharacteristicAtChannel:channelOneKeyPeripheral
                                                                 block:^(CBPeripheral *peripheral, CBCharacteristic *characteristics, NSError *error) {
-                                                                    dispatch_async(dispatch_get_main_queue(), ^{
-                                                                        // 从block中取到值，再回到主线程
-                                                                        if ([weakSelf respondsToSelector:@selector(readData:)]) {
-                                                                            [weakSelf readData:characteristics.value];
-                                                                        }
-                                                                    });
+        [weakSelf readData:characteristics.value];
                                                                 }];
     
     // 设置发现characteristics的descriptors的委托
     [self.babyBluetooth setBlockOnDiscoverDescriptorsForCharacteristicAtChannel:channelOneKeyPeripheral
                                                                           block:^(CBPeripheral *peripheral, CBCharacteristic *characteristic, NSError *error) {
-        NSLog(@"setBlockOnDiscoverDescriptorsForCharacteristicAtChannel = %@",characteristic);
+        //NSLog(@"setBlockOnDiscoverDescriptorsForCharacteristicAtChannel = %@",characteristic);
         
     }];
     
@@ -202,7 +208,12 @@ static dispatch_once_t once;
     
     
     [self.babyBluetooth setBlockOnDidUpdateNotificationStateForCharacteristicAtChannel:channelOneKeyPeripheral block:^(CBCharacteristic *characteristic, NSError *error) {
-        NSLog(@"setBlockOnDidUpdateNotificationStateForCharacteristicAtChannel = %@",characteristic);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            // 从block中取到值，再回到主线程
+            if ([weakSelf respondsToSelector:@selector(subscribeToComplete)]) {
+                [weakSelf subscribeToComplete];
+            }
+        });
     }];
     
     
@@ -331,6 +342,14 @@ static dispatch_once_t once;
     return [self.babyBluetooth findConnectedPeripherals];
 }
 
+///订阅完成
+- (void)subscribeToComplete{
+    if ([self.delegate respondsToSelector:@selector(subscribeComplete)]) {
+        [self.delegate subscribeComplete];
+    }
+}
+
+
 
 ///获取设备的服务跟特征值[当已连接成功时]
 - (void)searchServerAndCharacteristicUUID {
@@ -370,8 +389,26 @@ static dispatch_once_t once;
 
 ///读取数据
 - (void)readData:(NSData *)valueData {
-    NSLog(@"valueData = %@",valueData);
-    self.currentReadDataStr = [NSData hexStringForData:valueData];
+    if (valueData == nil || valueData.length == 0) {
+        return;
+    }
+    NSString *valueStr = [NSData hexStringForData:valueData];
+    int fieldNum = 0;
+    if ([valueStr hasPrefix:kPRE_OF_DATAPACKAGE]) {
+        [self.buffer setString:@""];
+    }
+    [self.buffer appendString:valueStr];
+    if (![self.buffer hasPrefix:kPRE_OF_DATAPACKAGE]) {
+        [self.buffer setString:@""];
+    }
+    if (self.buffer.length > (kLENGTH_FILED_END_OFFSET + kLENGTH_FILED_START_OFFSET)) {
+        NSString * fieldStr =  [self.buffer substringWithRange:NSMakeRange(kLENGTH_FILED_START_OFFSET, kLENGTH_FILED_END_OFFSET - kLENGTH_FILED_START_OFFSET)];
+        fieldNum = (int)strtoul([fieldStr UTF8String],0,16);
+    }
+    if (fieldNum + kHEAD_LENGTH == self.buffer.length / 2) {
+        self.currentReadDataStr = [self.buffer copy];
+        [self.buffer setString:@""];
+    }
     if ([self.delegate respondsToSelector:@selector(readData:)]) {
         [self.delegate readData:valueData];
     }
@@ -380,9 +417,8 @@ static dispatch_once_t once;
 
 - (void)characteristicWrite:(NSString *)str
 {
-    NSLog(@"str = %@  self.writeCharacteristic = %@",str,self.writeCharacteristic);
     if (self.writeCharacteristic) {
-        self.currentReadDataStr = nil;
+        self.currentReadDataStr = @"";
         NSData *data = [NSData dataForHexString:str];
         if (data == nil) {
             return;
@@ -390,10 +426,13 @@ static dispatch_once_t once;
         [self.currentPeripheral writeValue:data forCharacteristic:self.writeCharacteristic type:CBCharacteristicWriteWithResponse];
     }
 }
+
 - (NSString *)characteristicRead
 {
-    NSLog(@"self.currentReadDataStr = %@",self.currentReadDataStr);
     if (self.currentReadDataStr) {
+        if (self.currentReadDataStr.length == 0) {
+            return  nil;
+        }
         return self.currentReadDataStr;
     }
     return nil;
@@ -404,17 +443,30 @@ static dispatch_once_t once;
     NSPredicate *numberPre = [NSPredicate predicateWithFormat:@"SELF MATCHES %@",regularStr];
     return [numberPre evaluateWithObject:textString];
 }
+
 - (NSString *)getStrValueInUD
 {
     NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
     return [ud stringForKey:kSavedUUIDForLastBlueTooth];
 }
+
 - (void)saveStrValueInUD:(NSString *)bleUUID
 {
     [[NSUserDefaults standardUserDefaults]setObject:bleUUID forKey:kSavedUUIDForLastBlueTooth];
     [[NSUserDefaults standardUserDefaults]synchronize];
 }
+
 - (NSNotificationCenter *) getNotificationCenter {
     return [NSNotificationCenter defaultCenter];
 }
+
+- (NSMutableString *)buffer
+{
+    if (!_buffer) {
+        _buffer = [NSMutableString new];
+    }
+    return _buffer;
+    
+}
+
 @end
