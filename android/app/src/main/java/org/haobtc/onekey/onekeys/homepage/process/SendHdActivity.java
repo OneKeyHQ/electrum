@@ -473,7 +473,19 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         isCustom = false;
         linearRateSelector.setVisibility(View.VISIBLE);
         linearCustomize.setVisibility(View.GONE);
-        currentFeeRate = previousFeeRate;
+        if (selectFlag == RECOMMENDED_FEE_RATE) {
+            if (currentFeeDetails != null && currentFeeDetails.getNormal() != null) {
+                currentFeeRate = currentFeeDetails.getNormal().getFeerate();
+            }
+        } else if (selectFlag == SLOW_FEE_RATE) {
+            if (currentFeeDetails != null && currentFeeDetails.getSlow() != null) {
+                currentFeeRate = currentFeeDetails.getSlow().getFeerate();
+            }
+        } else if (selectFlag == FAST_FEE_RATE) {
+            if (currentFeeDetails != null && currentFeeDetails.getFast() != null) {
+                currentFeeRate = currentFeeDetails.getFast().getFeerate();
+            }
+        }
         keyBoardHideRefresh();
     }
 
@@ -786,11 +798,11 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         isCustom = true;
         linearRateSelector.setVisibility(View.GONE);
         linearCustomize.setVisibility(View.VISIBLE);
-        previousFeeRate = currentFeeRate;
         currentFeeRate = Double.parseDouble(event.getFeeRate());
         textFeeCustomizeInBtc.setText(String.format(Locale.ENGLISH, "%s %s", event.getFee(), mSystemConfigManager.getCurrentBaseUnit()));
         textFeeCustomizeInCash.setText(String.format(Locale.ENGLISH, "%s %s", mSystemConfigManager.getCurrentFiatSymbol(), event.getCash()));
         textCustomizeSpendTime.setText(String.format("%s%s%s", getString(R.string.about_), event.getTime(), getString(R.string.minute)));
+        keyBoardHideRefresh();
     }
 
     /**
