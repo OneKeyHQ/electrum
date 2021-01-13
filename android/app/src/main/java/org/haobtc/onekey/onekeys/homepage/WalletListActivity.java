@@ -80,7 +80,6 @@ public class WalletListActivity extends BaseActivity {
     private ArrayList<LocalWalletInfo> hdWalletList;
     private ArrayList<LocalWalletInfo> btcList;
     private ArrayList<LocalWalletInfo> ethList;
-    private SharedPreferences.Editor edit;
     private SharedPreferences preferences;
     private boolean isAddHd;
     private AppWalletViewModel mAppWalletViewModel;
@@ -96,7 +95,6 @@ public class WalletListActivity extends BaseActivity {
         EventBus.getDefault().register(this);
         mAppWalletViewModel = getApplicationViewModel(AppWalletViewModel.class);
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-        edit = preferences.edit();
     }
 
     @Override

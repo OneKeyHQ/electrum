@@ -42,7 +42,7 @@ public class WalletListAdapter extends BaseQuickAdapter<LocalWalletInfo, BaseVie
             helper.setText(R.id.text_type, "HD");
         } else if (item.getType().contains("hw")) {
             String type = item.getType().substring(item.getType().indexOf("hw-") + 3);
-            helper.setText(R.id.text_type, mContext.getString(R.string.hardwares) + " " + type);
+            helper.setText(R.id.text_type, mContext.getString(R.string.hardwares));
         } else if (item.getType().contains("watch")) {
             helper.getView(R.id.text_type).setVisibility(View.VISIBLE);
             helper.setText(R.id.text_type, mContext.getString(R.string.watch));
