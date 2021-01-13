@@ -1,5 +1,4 @@
 package org.haobtc.onekey.ui.base;
-import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -14,9 +13,7 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import org.haobtc.onekey.activities.base.MyApplication;
-import org.haobtc.onekey.business.language.LanguageManager;
 import org.haobtc.onekey.utils.EventBusUtils;
-import org.haobtc.onekey.utils.LanguageUtils;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -34,11 +31,6 @@ public abstract class BaseFragment extends Fragment implements IBaseView {
         public MyHandler() {
             super(Looper.getMainLooper());
         }
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(LanguageManager.getInstance().attachBaseContext(context));
     }
 
     @Nullable

@@ -1,10 +1,13 @@
 package org.haobtc.onekey.business.language;
 
 import android.content.Context;
+import android.content.res.Configuration;
+import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.FileNameConstant;
 import org.haobtc.onekey.exception.HardWareExceptions;
@@ -39,10 +42,33 @@ public class LanguageManager {
     private LanguageManager() {
     }
 
-    public Context attachBaseContext(Context context) {
+    public Configuration updateConfigurationIfSupported(Configuration config) {
+        // Configuration.getLocales is added after 24 and Configuration.locale is deprecated in 24
+        if (Build.VERSION.SDK_INT >= 24) {
+            if (!config.getLocales().isEmpty()) {
+                return config;
+            }
+        } else {
+            if (config.locale != null) {
+                return config;
+            }
+        }
+
+        Locale customLocale = getCurrentLocale(MyApplication.getInstance());
+        if (customLocale != null) {
+            // Configuration.setLocale is added after 17 and Configuration.locale is deprecated after 24
+            if (Build.VERSION.SDK_INT >= 17) {
+                config.setLocale(customLocale);
+            } else {
+                config.locale = customLocale;
+            }
+        }
+        return config;
+    }
+
+    public Locale getCurrentLocale(Context context) {
         String language = getLocalLanguage(context);
-        Locale newLocale = getLocaleByLanguage(language);
-        return LanguageUtils.userLanguageCustomConfig(context, newLocale);
+        return getLocaleByLanguage(language);
     }
 
     public String getLocalLanguage(Context context) {

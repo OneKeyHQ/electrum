@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -83,18 +82,14 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @Override
     protected void attachBaseContext(Context base) {
-        super.attachBaseContext(LanguageManager.getInstance().attachBaseContext(base));
+        super.attachBaseContext(base);
+        applyOverrideConfiguration(new Configuration());
     }
 
     @Override
-    public Resources getResources() {
-        Resources resources = super.getResources();
-        if (resources.getConfiguration().fontScale > 1) {
-            Configuration configuration = new Configuration();
-            configuration.fontScale = 1f;
-            createConfigurationContext(configuration);
-        }
-        return resources;
+    public void applyOverrideConfiguration(Configuration overrideConfiguration) {
+        Configuration customLanguageConfiguration = LanguageManager.getInstance().updateConfigurationIfSupported(overrideConfiguration);
+        super.applyOverrideConfiguration(customLanguageConfiguration);
     }
 
 

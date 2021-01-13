@@ -220,7 +220,7 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'
     implementation 'com.zhy:okhttputils:2.0.0'
     //autosize
-    implementation 'me.jessyan:autosize:0.9.1'
+    implementation 'me.jessyan:autosize:1.2.1'
     //gson
     implementation 'com.google.code.gson:gson:2.8.6'
     //Eventbus

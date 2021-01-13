@@ -1,6 +1,8 @@
 package org.haobtc.onekey.activities.base;
 import android.app.Application;
 import android.content.Context;
+import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
@@ -20,7 +22,6 @@ import com.tencent.bugly.crashreport.CrashReport;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.BuildConfig;
 import org.haobtc.onekey.MyEventBusIndex;
-import org.haobtc.onekey.business.language.LanguageManager;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.utils.Global;
@@ -29,6 +30,7 @@ import java.util.UUID;
 
 import cn.com.heaton.blelibrary.ble.Ble;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
+import me.jessyan.autosize.AutoSizeConfig;
 
 /**
  * @author liyan
@@ -44,13 +46,11 @@ public class MyApplication extends Application implements ViewModelStoreOwner {
     private final Handler S_HANDLER = new Handler(Looper.myLooper());
 
     @Override
-    protected void attachBaseContext(Context base) {
-        super.attachBaseContext(LanguageManager.getInstance().attachBaseContext(base));
-    }
-
-    @Override
     public void onCreate() {
         super.onCreate();
+        AutoSizeConfig.getInstance()
+                .setExcludeFontScale(true);
+
         // add application lifecycle observer
         ProcessLifecycleOwner.get().getLifecycle().addObserver(new ApplicationObserver());
         // EventBus optimize
