@@ -103,7 +103,7 @@
     <string name="copy_self">复制</string>
     <string name="address_qr">地址二维码</string>
     <string name="attention">注意：该地址仅支持BTC收款，转入其他币种将无法找回</string>
-    <string name="prompt_message">请在币信Key硬件上确认以下信息后，点击”OK”按钮</string>
+    <string name="prompt_message">请在OneKey硬件上确认以下信息后，点击”OK”按钮</string>
     <string name="picture">this is a picture</string>
     <string name="wallet_create_successful">钱包创建成功</string>
     <string name="balance">账户余额</string>
@@ -494,7 +494,6 @@
     <string name="please_change_xpub">此xpub已存在，请更换</string>
     <string name="error_wallet_transaction">此交易与当前钱包无关</string>
     <string name="key_wrong_prompte">读取过程中，请保持手机与OneKey贴合</string>
-    <string name="security_risks">BinKEY存在安全风险</string>
     <string name="official_firmware_suggest">检测到未使用官方固件，请更换官方固件</string>
     <string name="pin_confirm_hardware">请在硬件上确认PIN码</string>
     <string name="communicating">与OneKey通讯中</string>
@@ -522,7 +521,7 @@
     <string name="verifying_pin">正在验证PIN码</string>
     <string name="reading_signature">签名读取中</string>
     <string name="transaction_parse_error">交易解析失败</string>
-    <string name="testnet">币信Key T</string>
+    <string name="testnet">OneKey T</string>
     <string name="regnet">OneKey</string>
     <string name="update_file_not_exist">升级文件不存在</string>
     <string name="tip_connnection">数据传输需要一些时间，请保持连接状态</string>

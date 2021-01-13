@@ -67,7 +67,7 @@
     <string name="update_file_format_error">Upgrade file should end with. zip or .bin</string>
     <string name="addspeed_success">Acceleration completed!</string>
     <string name="key_wrong_prompte">Please keep your phone close to the OneKey during the reading process</string>
-    <string name="security_risks">Security risks exist in BinKEY</string>
+
     <string name="communicating">Communicating with OneKey</string>
     <string name="tip_closer">Data transmissing. Please keep OneKey close to the phone</string>
     <string name="waitting_touch">Pending for OneKey</string>

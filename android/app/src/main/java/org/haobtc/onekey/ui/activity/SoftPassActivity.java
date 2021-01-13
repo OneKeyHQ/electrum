@@ -1,5 +1,4 @@
 package org.haobtc.onekey.ui.activity;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,27 +17,24 @@ import android.widget.TextView;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.common.base.Strings;
 
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
-import org.haobtc.onekey.bean.LocalWalletInfo;
 import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.StringConstant;
 import org.haobtc.onekey.event.GotPassEvent;
-import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.ui.dialog.PassInvalidDialog;
 import org.haobtc.onekey.utils.PwdEditText;
 import org.haobtc.onekey.utils.ViewHeightStatusDetector;
 import org.haobtc.onekey.utils.ViewTouchUtil;
+import org.haobtc.onekey.viewmodel.PassWordViewModel;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -97,7 +93,7 @@ public class SoftPassActivity extends BaseActivity implements ViewHeightStatusDe
     private String pinInputFirst;
     private String pinOrigin;
     private int fromType = -1;
-
+    private PassWordViewModel mPassViewModel;
     public static void gotoSoftPassActivity (Context context, int from) {
         Intent intent = new Intent(context, SoftPassActivity.class);
         intent.putExtra(StringConstant.FROM, from);
@@ -108,6 +104,7 @@ public class SoftPassActivity extends BaseActivity implements ViewHeightStatusDe
     public void init() {
         scheduledExecutorService = Executors.newScheduledThreadPool(1);
         viewHeightStatusListener();
+        mPassViewModel = new ViewModelProvider(this).get(PassWordViewModel.class);
         judgeStatus();
         keyBroad();
         ViewTouchUtil.expandViewTouchDelegate(passTypeSwitch, 12);
@@ -139,41 +136,33 @@ public class SoftPassActivity extends BaseActivity implements ViewHeightStatusDe
     private void judgeStatus() {
         // 默认是校验模式，设置模式不需要单独传递
         operationType = getIntent().getIntExtra(Constant.OPERATE_TYPE, 1);
+        mPassViewModel.checkIsSetType(operationType);
         if (getIntent().hasExtra(StringConstant.FROM)) {
             fromType = getIntent().getIntExtra(StringConstant.FROM, -1);
         }
-        List<String> needPassWallets = new ArrayList<>();
-        Map<String, ?> jsonToMap = PreferencesManager.getAll(this, Constant.WALLETS);
-        jsonToMap.entrySet().forEach(stringEntry -> {
-            LocalWalletInfo info = LocalWalletInfo.objectFromData(stringEntry.getValue().toString());
-            String type = info.getType();
-            String label = info.getLabel();
-            if (!type.contains("hw") && !"btc-watch-standard".equals(type)) {
-                needPassWallets.add(label);
+        mPassViewModel.passSetType.observe(this, type -> {
+            operationType = type;
+            switch (operationType) {
+                case SET:
+                    textPageTitle.setText(R.string.set_you_pass);
+                    break;
+                case VERIFY:
+                    textPassPromote.setText(R.string.input_your_pass);
+                    textTip.setText(R.string.dont_tell);
+                    break;
+                case CHANGE:
+                    textPageTitle.setText(R.string.fix_pass);
+                    textPassPromote.setText(R.string.input_pass_origin);
+                    textTip.setText(R.string.change_pin_warning);
+                    break;
             }
         });
-        if (needPassWallets.isEmpty()) {
-            operationType = SET;
-        }
-        String type = PreferencesManager.get(this, "Preferences", Constant.SOFT_HD_PASS_TYPE, Constant.SOFT_HD_PASS_TYPE_SHORT).toString();
-        if (Constant.SOFT_HD_PASS_TYPE_LONG.equals(type)) {
-            isLongPass = true;
-            showLongPassLayout(true);
-        }
-        switch (operationType) {
-            case SET:
-                textPageTitle.setText(R.string.set_you_pass);
-                break;
-            case VERIFY:
-                textPassPromote.setText(R.string.input_your_pass);
-                textTip.setText(R.string.dont_tell);
-                break;
-            case CHANGE:
-                textPageTitle.setText(R.string.fix_pass);
-                textPassPromote.setText(R.string.input_pass_origin);
-                textTip.setText(R.string.change_pin_warning);
-                break;
-        }
+        mPassViewModel.isLongType.observe(this, isLong -> {
+            isLongPass = isLong;
+            if (isLong) {
+                showLongPassLayout(true);
+            }
+        });
     }
 
     /**
@@ -286,7 +275,7 @@ public class SoftPassActivity extends BaseActivity implements ViewHeightStatusDe
         } else {
             // 第二次输入password
             if (pinInputFirst.equals(pass)) {
-                PreferencesManager.put(this, "Preferences", Constant.SOFT_HD_PASS_TYPE, isLongPass ? Constant.SOFT_HD_PASS_TYPE_LONG : Constant.SOFT_HD_PASS_TYPE_SHORT);
+                mPassViewModel.setPassLengthType(isLongPass);
                 GotPassEvent gotPassEvent = new GotPassEvent(pinInputFirst);
                 gotPassEvent.fromType = fromType;
                 EventBus.getDefault().post(gotPassEvent);
@@ -334,7 +323,7 @@ public class SoftPassActivity extends BaseActivity implements ViewHeightStatusDe
                     String errors = response.getErrors();
                     if (Strings.isNullOrEmpty(errors)) {
                         hideKeyBroad();
-                        PreferencesManager.put(this, "Preferences", Constant.SOFT_HD_PASS_TYPE, isLongPass ? Constant.SOFT_HD_PASS_TYPE_LONG : Constant.SOFT_HD_PASS_TYPE_SHORT);
+                        mPassViewModel.setPassLengthType(isLongPass);
                         showToast(R.string.pass_change_success);
                     } else {
                         showToast(R.string.pass_change_failed);

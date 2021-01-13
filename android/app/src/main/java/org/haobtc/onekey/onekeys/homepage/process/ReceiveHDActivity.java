@@ -291,7 +291,7 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
     @Override
     public void onException(Exception e) {
         EventBus.getDefault().post(new ExitEvent());
-        MyApplication.getInstance().toastErr(e);
+        showToast(e.getMessage());
     }
 
     @Override

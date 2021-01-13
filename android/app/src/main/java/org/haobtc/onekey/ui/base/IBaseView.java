@@ -1,5 +1,4 @@
 package org.haobtc.onekey.ui.base;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -10,13 +9,11 @@ import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
 
 public interface IBaseView {
 
@@ -152,8 +149,11 @@ public interface IBaseView {
         if (id == 0) {
             return;
         }
-        runOnUiThread(() -> Toast.makeText(getActivity(), getActivity().getString(id), Toast.LENGTH_SHORT).show());
-
+        runOnUiThread(() -> {
+            Toast toast = Toast.makeText(getActivity(), null, Toast.LENGTH_SHORT);
+            toast.setText(getActivity().getString(id));
+            toast.show();
+        });
     }
     /**
      * toast
@@ -164,8 +164,13 @@ public interface IBaseView {
         if (TextUtils.isEmpty(info)) {
             return;
         }
-        runOnUiThread(() -> Toast.makeText(getActivity(), info, Toast.LENGTH_SHORT).show());
-
+        runOnUiThread(() ->
+                {
+                    Toast toast = Toast.makeText(getActivity(), null, Toast.LENGTH_SHORT);
+                    toast.setText(info);
+                    toast.show();
+                }
+        );
     }
 
 

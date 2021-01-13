@@ -131,10 +131,16 @@ public class MyApplication extends Application implements ViewModelStoreOwner {
         } else {
             info = e.toString();
         }
-        if(TextUtils.isEmpty(info)){
+        if (TextUtils.isEmpty(info)) {
             return;
         }
-        S_HANDLER.post(() -> Toast.makeText(MyApplication.this,info,Toast.LENGTH_SHORT).show());
+        S_HANDLER.post(() ->
+                {
+                    Toast toast = Toast.makeText(MyApplication.this, null, Toast.LENGTH_SHORT);
+                    toast.setText(info);
+                    toast.show();
+                }
+        );
     }
 
     @NonNull
