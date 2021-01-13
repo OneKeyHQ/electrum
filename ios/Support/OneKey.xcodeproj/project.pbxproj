@@ -242,6 +242,19 @@
 		835C4D7C888441C0026DD242 /* CLPasswordInputView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7CD34B8095BFE38A5382AA7A /* CLPasswordInputView.m */; };
 		84EB4757AE5933F9719262FF /* OKSetWalletNameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 84554A25A49BBF16A3EFA518 /* OKSetWalletNameViewController.m */; };
 		87A74CBFA532C1B568495707 /* OKLocalizableManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 95E542E6926DE9BBCB32B6DF /* OKLocalizableManager.h */; settings = {ATTRIBUTES = (project, ); }; };
+		8859550D25AEFB7F00895478 /* OKSignatureViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8859550425AEFB7F00895478 /* OKSignatureViewController.m */; };
+		8859550E25AEFB7F00895478 /* OKVerifySignatureViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8859550525AEFB7F00895478 /* OKVerifySignatureViewController.m */; };
+		8859550F25AEFB7F00895478 /* OKVerifySignatureResultController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8859550625AEFB7F00895478 /* OKVerifySignatureResultController.m */; };
+		8859551025AEFB7F00895478 /* OKSignatureViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 8859550725AEFB7F00895478 /* OKSignatureViewController.h */; };
+		8859551125AEFB7F00895478 /* Signature.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8859550825AEFB7F00895478 /* Signature.storyboard */; };
+		8859551225AEFB7F00895478 /* OKVerifySignatureViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 8859550925AEFB7F00895478 /* OKVerifySignatureViewController.h */; };
+		8859551325AEFB7F00895478 /* OKVerifySignatureResultController.h in Headers */ = {isa = PBXBuildFile; fileRef = 8859550A25AEFB7F00895478 /* OKVerifySignatureResultController.h */; };
+		8859551825AEFB9E00895478 /* OKDocument.h in Headers */ = {isa = PBXBuildFile; fileRef = 8859551425AEFB9E00895478 /* OKDocument.h */; };
+		8859551925AEFB9E00895478 /* OKiCloudManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 8859551525AEFB9E00895478 /* OKiCloudManager.h */; };
+		8859551A25AEFB9E00895478 /* OKDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 8859551625AEFB9E00895478 /* OKDocument.m */; };
+		8859551B25AEFB9E00895478 /* OKiCloudManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 8859551725AEFB9E00895478 /* OKiCloudManager.m */; };
+		8859551F25AEFBD100895478 /* OKDeviceInfoModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 8859551D25AEFBD100895478 /* OKDeviceInfoModel.m */; };
+		8859552025AEFBD100895478 /* OKDeviceInfoModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 8859551E25AEFBD100895478 /* OKDeviceInfoModel.h */; };
 		88E0460D834224295F43FCA4 /* OKMineTableViewCellModel.h in Headers */ = {isa = PBXBuildFile; fileRef = EAB44118A5C5552F8565A6FE /* OKMineTableViewCellModel.h */; settings = {ATTRIBUTES = (project, ); }; };
 		897B4C4EA383C9D4E1D9D23B /* OKAllAssetsTableViewCellModel.m in Sources */ = {isa = PBXBuildFile; fileRef = C9774EC296BBDA2B931517FA /* OKAllAssetsTableViewCellModel.m */; };
 		89DD4414AB5E922816368031 /* DWKWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = D9D346F584A73FCF993FE89A /* DWKWebView.m */; };
@@ -733,6 +746,19 @@
 		87B745889AEA9656D3112A47 /* Scan.storyboard */ = {isa = PBXFileReference; lastKnownFileType = None; name = Scan.storyboard; path = ../CustomCode/Modules/ScanQR/Scan.storyboard; sourceTree = SOURCE_ROOT; };
 		87D749E99287A8DE886C7007 /* OKBottomCustomBtn.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OKBottomCustomBtn.h; path = ../CustomCode/Modules/Tab_Wallet/View/OKBottomCustomBtn.h; sourceTree = SOURCE_ROOT; };
 		881C49CA9B3FEEE96D160552 /* OKClickTextView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OKClickTextView.h; path = ../CustomCode/CommonView/OKClickTextView.h; sourceTree = SOURCE_ROOT; };
+		8859550425AEFB7F00895478 /* OKSignatureViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKSignatureViewController.m; sourceTree = "<group>"; };
+		8859550525AEFB7F00895478 /* OKVerifySignatureViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKVerifySignatureViewController.m; sourceTree = "<group>"; };
+		8859550625AEFB7F00895478 /* OKVerifySignatureResultController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKVerifySignatureResultController.m; sourceTree = "<group>"; };
+		8859550725AEFB7F00895478 /* OKSignatureViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKSignatureViewController.h; sourceTree = "<group>"; };
+		8859550825AEFB7F00895478 /* Signature.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Signature.storyboard; sourceTree = "<group>"; };
+		8859550925AEFB7F00895478 /* OKVerifySignatureViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKVerifySignatureViewController.h; sourceTree = "<group>"; };
+		8859550A25AEFB7F00895478 /* OKVerifySignatureResultController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKVerifySignatureResultController.h; sourceTree = "<group>"; };
+		8859551425AEFB9E00895478 /* OKDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OKDocument.h; path = ../../../Modules/Manager/OKDocument.h; sourceTree = "<group>"; };
+		8859551525AEFB9E00895478 /* OKiCloudManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OKiCloudManager.h; path = ../../../Modules/Manager/OKiCloudManager.h; sourceTree = "<group>"; };
+		8859551625AEFB9E00895478 /* OKDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OKDocument.m; path = ../../../Modules/Manager/OKDocument.m; sourceTree = "<group>"; };
+		8859551725AEFB9E00895478 /* OKiCloudManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OKiCloudManager.m; path = ../../../Modules/Manager/OKiCloudManager.m; sourceTree = "<group>"; };
+		8859551D25AEFBD100895478 /* OKDeviceInfoModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKDeviceInfoModel.m; sourceTree = "<group>"; };
+		8859551E25AEFBD100895478 /* OKDeviceInfoModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKDeviceInfoModel.h; sourceTree = "<group>"; };
 		88D7404B9FF067F44DABF936 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = None; name = LaunchScreen.storyboard; path = ../Resources/LaunchScreen.storyboard; sourceTree = SOURCE_ROOT; };
 		8A8E40E6AC81E28F202EF37F /* YZAuthID.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = YZAuthID.h; path = ../CustomCode/Modules/PassWord/YZAuthID/YZAuthID.h; sourceTree = SOURCE_ROOT; };
 		8D714FD9A5A85AA754789170 /* OKNetTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = OKNetTableViewCell.m; path = ../CustomCode/Modules/Tab_Mine/NetSeting/OKNetTableViewCell.m; sourceTree = SOURCE_ROOT; };
@@ -1190,6 +1216,7 @@
 		50D1490697B3BB1CF298743F /* Hardware */ = {
 			isa = PBXGroup;
 			children = (
+				8859551C25AEFBD100895478 /* Model */,
 				194542CE96A248B210204C56 /* Controller */,
 				54954076B306DB83A1260BE5 /* View */,
 			);
@@ -1520,6 +1547,10 @@
 				63BD4F05B62E6408A44196BB /* OKPyCommandsManager.m */,
 				1CE540238F3B768D2C60CFC6 /* OKOneKeyPwdManager.m */,
 				FC1D4747B5FE2703FD5F69C0 /* OKStorageManager.m */,
+				8859551425AEFB9E00895478 /* OKDocument.h */,
+				8859551625AEFB9E00895478 /* OKDocument.m */,
+				8859551525AEFB9E00895478 /* OKiCloudManager.h */,
+				8859551725AEFB9E00895478 /* OKiCloudManager.m */,
 			);
 			name = Manager;
 			path = ../CustomCode/Modules/Manager;
@@ -1551,6 +1582,54 @@
 			);
 			name = Model;
 			path = ../CustomCode/Modules/Restore/Model;
+			sourceTree = "<group>";
+		};
+		8859550225AEFB7F00895478 /* Signature */ = {
+			isa = PBXGroup;
+			children = (
+				8859550325AEFB7F00895478 /* Controller */,
+				8859550B25AEFB7F00895478 /* Model */,
+				8859550C25AEFB7F00895478 /* View */,
+			);
+			path = Signature;
+			sourceTree = "<group>";
+		};
+		8859550325AEFB7F00895478 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				8859550425AEFB7F00895478 /* OKSignatureViewController.m */,
+				8859550525AEFB7F00895478 /* OKVerifySignatureViewController.m */,
+				8859550625AEFB7F00895478 /* OKVerifySignatureResultController.m */,
+				8859550725AEFB7F00895478 /* OKSignatureViewController.h */,
+				8859550825AEFB7F00895478 /* Signature.storyboard */,
+				8859550925AEFB7F00895478 /* OKVerifySignatureViewController.h */,
+				8859550A25AEFB7F00895478 /* OKVerifySignatureResultController.h */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		8859550B25AEFB7F00895478 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		8859550C25AEFB7F00895478 /* View */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		8859551C25AEFBD100895478 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				8859551D25AEFBD100895478 /* OKDeviceInfoModel.m */,
+				8859551E25AEFBD100895478 /* OKDeviceInfoModel.h */,
+			);
+			name = Model;
+			path = ../../../Modules/Hardware/Model;
 			sourceTree = "<group>";
 		};
 		897B470BBDFF6189764A28B1 /* CommonView */ = {
@@ -1648,6 +1727,7 @@
 		A1CE431DAA1357F25FB39ED8 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				8859550225AEFB7F00895478 /* Signature */,
 				8B29491FB2D6027524D78582 /* ImportWallet */,
 				83BD42369E1E00831FD8FEA1 /* PassWord */,
 				6E244A7AA21B4FFE82076785 /* Tools */,
@@ -1959,6 +2039,7 @@
 				21224BBB952EA60340FAC92A /* CLPasswordView.h in Headers */,
 				51984F15B5F9487688D308B5 /* OKWalletInfoModel.h in Headers */,
 				8C6C4ACEABB4D1DD5109E591 /* OKValidationPwdController.h in Headers */,
+				8859551825AEFB9E00895478 /* OKDocument.h in Headers */,
 				43FC4C7691B8FD8C520C3FDE /* OKSystemShareView.h in Headers */,
 				0187412892BDF4B1B8F73088 /* OKTools.h in Headers */,
 				8CE349B1910573FE4AE7FC63 /* Sha256.h in Headers */,
@@ -1972,6 +2053,7 @@
 				81BF420984C646DAA66A3D14 /* OKPINCodeViewController.h in Headers */,
 				B3C04914BEBD9E23FF7BCE83 /* OKSetPINPreViewController.h in Headers */,
 				CEFE4F86A9CD30EA48EB5FEE /* OKVerifyOnTheDeviceController.h in Headers */,
+				8859551925AEFB9E00895478 /* OKiCloudManager.h in Headers */,
 				BEE84267ABA094E0102580DD /* OKSetDeviceNameViewController.h in Headers */,
 				9A3D4D4386B87C5022B36AFF /* OK_PassWordView.h in Headers */,
 				23E8410597C80F6E1D22A66B /* OKDiscoverViewController.h in Headers */,
@@ -2019,10 +2101,12 @@
 				41614375B7D9E3CB316AAFBF /* OKElectrumNodeViewController.h in Headers */,
 				9AC24633A8D1AF10D94A6FEE /* OKBrowserBTCTableViewController.h in Headers */,
 				31A34A6391A440A2E28D3422 /* OKProxyServerTableViewController.h in Headers */,
+				8859551225AEFB7F00895478 /* OKVerifySignatureViewController.h in Headers */,
 				CD9D453CBCAED1223D53A2A5 /* OKProxyServerModel.h in Headers */,
 				655346C6B8B6B13E6331D24D /* OKNetTableViewCellModel.h in Headers */,
 				620847C3A9A39A687D34007D /* OKSocketTypeSelectController.h in Headers */,
 				443C4140A189CD998F7885A0 /* OKAboutTableViewCellModel.h in Headers */,
+				8859551025AEFB7F00895478 /* OKSignatureViewController.h in Headers */,
 				88E0460D834224295F43FCA4 /* OKMineTableViewCellModel.h in Headers */,
 				68D84CDEAED708CC0FA9B126 /* OKAllAssetsTableViewCellModel.h in Headers */,
 				2A154ED0A22AA763822F1E60 /* OKTradeSettingViewCellModel.h in Headers */,
@@ -2078,6 +2162,7 @@
 				66A5482193A9F21915225E0F /* OKScanView.h in Headers */,
 				62DC492A891A44227C459EC6 /* OKBackUpViewController.h in Headers */,
 				DBC0462EA390812980852F8C /* OKYouareDoneViewController.h in Headers */,
+				8859552025AEFBD100895478 /* OKDeviceInfoModel.h in Headers */,
 				BB1D4A5C9E07DAC9CBAE833E /* OKTakeCareMnemonicViewController.h in Headers */,
 				15874E659B32EA71B007C591 /* OKWordCheckViewController.h in Headers */,
 				B4044C9D818EE5E6ED9D2243 /* OKBackUpTipsViewController.h in Headers */,
@@ -2114,6 +2199,7 @@
 				5F7F4A148DDDF600A77FA048 /* OKSetWalletNameViewController.h in Headers */,
 				DD46434B8AE78B65AE3E5B1C /* OKTextField.h in Headers */,
 				75D54AC8B82E9F5A2F4B17D8 /* OKButton.h in Headers */,
+				8859551325AEFB7F00895478 /* OKVerifySignatureResultController.h in Headers */,
 				9588401B9B7331C733689F7B /* BaseTableViewController.h in Headers */,
 				DB16462098B0B43DA363EA28 /* BaseNavigationController.h in Headers */,
 				7CFA494E87450E387E8E877D /* BaseViewController.h in Headers */,
@@ -2193,6 +2279,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BA9CB38E25AC7499002DD64A /* trezor in Resources */,
+				8859551125AEFB7F00895478 /* Signature.storyboard in Resources */,
 				BA0B7AC525AC560000F26B0C /* electrum_gui in Resources */,
 				BA0B7AC625AC560000F26B0C /* electrum in Resources */,
 				6380410EBCF844A6CF19397D /* Localizable.strings in Resources */,
@@ -2293,6 +2380,7 @@
 				FD8A490DA5395F6BD54C9E32 /* MainViewController.m in Sources */,
 				DAD34816A1E761DAD4225B06 /* AppDelegate.m in Sources */,
 				FF794BB49BE46A1227E89542 /* OKObserveImportViewController.m in Sources */,
+				8859550D25AEFB7F00895478 /* OKSignatureViewController.m in Sources */,
 				C6D94A4DAE325EC73CC37EAD /* OKPrivateImportViewController.m in Sources */,
 				13884CA1A6C8FCBDA8A88492 /* OKKeystoreImportViewController.m in Sources */,
 				3EA24713B2EE42879B004C87 /* OKMnemonicImportViewController.m in Sources */,
@@ -2371,9 +2459,11 @@
 				9A264C2983A2DC235B6717BB /* OKAboutTableViewCellModel.m in Sources */,
 				897B4C4EA383C9D4E1D9D23B /* OKAllAssetsTableViewCellModel.m in Sources */,
 				076842B8BAB9C786C433FB7F /* OKMineTableViewCellModel.m in Sources */,
+				8859550E25AEFB7F00895478 /* OKVerifySignatureViewController.m in Sources */,
 				805542639748D65659684B9A /* OKMineTableViewCell.m in Sources */,
 				594E45A99B4222F8597210F2 /* OKAllAssetsTableViewCell.m in Sources */,
 				0271436E9F6F480E55A11EB4 /* OKLanguageTableViewCell.m in Sources */,
+				8859551A25AEFB9E00895478 /* OKDocument.m in Sources */,
 				26844BDBA24351FAA9C1F53A /* OKAboutTableViewCell.m in Sources */,
 				E8F24231926C90632070F57C /* OKMoreBtn.m in Sources */,
 				EE4A4798B406B1118630DA28 /* OKUnitTableViewCell.m in Sources */,
@@ -2382,10 +2472,12 @@
 				A3414E7BB84C2355F96E45A4 /* OKTxViewController.m in Sources */,
 				AB964BAC8502D3C69915325F /* OKEditWalletNameViewController.m in Sources */,
 				501441A5BAA86A8BF8A4E747 /* OKTxDetailViewController.m in Sources */,
+				8859550F25AEFB7F00895478 /* OKVerifySignatureResultController.m in Sources */,
 				AA9E43C88A18DA6B2B0C5232 /* OKExportTipsViewController.m in Sources */,
 				82E541118455CC71219E33FD /* OKPrivateKeyExportViewController.m in Sources */,
 				EC0B4832838D7FF0259C4192 /* OKWalletDetailViewController.m in Sources */,
 				6FC141199ED3822638C55FD0 /* OKSendTxPreInfoViewController.m in Sources */,
+				8859551B25AEFB9E00895478 /* OKiCloudManager.m in Sources */,
 				314F4BF5816B66B36461268E /* OKReceiveCoinViewController.m in Sources */,
 				B97E4D779F0C6739F2DA1C3B /* OKDefaultFeeInfoSubModel.m in Sources */,
 				2AF046D8A878B6AAD9128B9D /* OKTxTableViewCellModel.m in Sources */,
@@ -2432,6 +2524,7 @@
 				4E944CDBACED831627BD44C9 /* OKWordImportVC.m in Sources */,
 				801F4C9E9BAC1FD4D09B922E /* OKFindWalletTableViewCellModel.m in Sources */,
 				FF0346F9BFCAB23CAA33D3D4 /* OKWordImportView.m in Sources */,
+				8859551F25AEFBD100895478 /* OKDeviceInfoModel.m in Sources */,
 				4CF04472948D2C92B658D076 /* OKDeleteTextField.m in Sources */,
 				394B45809F4EA5243530C548 /* OKCheckWordView.m in Sources */,
 				A051423CBF90A0ECC9190D61 /* OKFindWalletTableViewCell.m in Sources */,
