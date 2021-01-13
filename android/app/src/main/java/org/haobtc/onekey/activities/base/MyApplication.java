@@ -1,5 +1,6 @@
 package org.haobtc.onekey.activities.base;
 import android.app.Application;
+import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
@@ -19,6 +20,7 @@ import com.tencent.bugly.crashreport.CrashReport;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.BuildConfig;
 import org.haobtc.onekey.MyEventBusIndex;
+import org.haobtc.onekey.business.language.LanguageManager;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.utils.Global;
@@ -42,6 +44,11 @@ public class MyApplication extends Application implements ViewModelStoreOwner {
     private final Handler S_HANDLER = new Handler(Looper.myLooper());
 
     @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(LanguageManager.getInstance().attachBaseContext(base));
+    }
+
+    @Override
     public void onCreate() {
         super.onCreate();
         // add application lifecycle observer
@@ -51,7 +58,6 @@ public class MyApplication extends Application implements ViewModelStoreOwner {
         mInstance = this;
         initBle();
         initChaquo();
-        registerActivityLifecycleCallbacks(new ActivityLifeCycleCallback());
         CrashReport.initCrashReport(getApplicationContext(), BUGLY_APPID, true);
         Logger.addLogAdapter(new AndroidLogAdapter() {
             @Override public boolean isLoggable(int priority, String tag) {

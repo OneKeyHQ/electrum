@@ -21,6 +21,7 @@ import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.activities.transaction.CheckChainDetailWebActivity;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.UpdateInfo;
+import org.haobtc.onekey.business.language.LanguageManager;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.ui.dialog.AppUpdateDialog;
@@ -125,7 +126,7 @@ public class AboutActivity extends BaseActivity implements OnDownloadListener {
                     Log.e("Main", "获取更新信息失败");
                     return;
                 }
-                String locate = PreferencesManager.get(AboutActivity.this, "Preferences", Constant.LANGUAGE, "").toString();
+                String locate = LanguageManager.getInstance().getLocalLanguage(AboutActivity.this);
                 String info = response.body().string();
                 UpdateInfo updateInfo = null;
                 try {

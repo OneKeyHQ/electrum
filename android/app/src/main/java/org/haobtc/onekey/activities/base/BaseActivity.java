@@ -24,6 +24,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.common.base.Strings;
 
 import org.haobtc.onekey.activities.service.CommunicationModeSelector;
+import org.haobtc.onekey.business.language.LanguageManager;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.manager.ActivityManager;
 import org.haobtc.onekey.utils.MyDialog;
@@ -81,13 +82,18 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(LanguageManager.getInstance().attachBaseContext(base));
+    }
+
+    @Override
     public Resources getResources() {
         Resources resources = super.getResources();
-        Configuration configuration = resources.getConfiguration();
-        if (configuration.fontScale > 1) {
+        if (resources.getConfiguration().fontScale > 1) {
+            Configuration configuration = new Configuration();
             configuration.fontScale = 1f;
+            createConfigurationContext(configuration);
         }
-        resources.updateConfiguration(configuration,resources.getDisplayMetrics());
         return resources;
     }
 
@@ -177,24 +183,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     //toast long
     public void mlToast(String str) {
         Toast.makeText(this, str, Toast.LENGTH_LONG).show();
-    }
-
-    //switch Chinese
-    public void mTextChinese() {
-        Locale.setDefault(Locale.CHINESE);
-        Configuration config = getBaseContext().getResources().getConfiguration();
-        config.locale = Locale.CHINESE;
-        getBaseContext().getResources().updateConfiguration(config
-                , getBaseContext().getResources().getDisplayMetrics());
-    }
-
-    //switch English
-    public void mTextEnglish() {
-        Locale.setDefault(Locale.ENGLISH);
-        Configuration config1 = getBaseContext().getResources().getConfiguration();
-        config1.locale = Locale.ENGLISH;
-        getBaseContext().getResources().updateConfiguration(config1
-                , getBaseContext().getResources().getDisplayMetrics());
     }
 
     //UTF-8 to text

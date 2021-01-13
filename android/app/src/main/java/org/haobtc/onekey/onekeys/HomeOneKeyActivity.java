@@ -21,6 +21,7 @@ import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.adapter.FragmentMainAdapter;
 import org.haobtc.onekey.bean.TabEntity;
 import org.haobtc.onekey.bean.UpdateInfo;
+import org.haobtc.onekey.business.language.LanguageManager;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.CreateSuccessEvent;
 import org.haobtc.onekey.manager.HardwareCallbackHandler;
@@ -166,7 +167,7 @@ public class HomeOneKeyActivity extends BaseActivity implements OnDownloadListen
                     Logger.e(response.body().string());
                     return;
                 }
-                String locate = PreferencesManager.get(HomeOneKeyActivity.this, "Preferences", Constant.LANGUAGE, "").toString();
+                String locate = LanguageManager.getInstance().getLocalLanguage(HomeOneKeyActivity.this);
                 String info = response.body().string();
                 UpdateInfo updateInfo = null;
                 try {

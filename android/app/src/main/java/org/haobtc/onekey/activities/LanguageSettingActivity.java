@@ -1,15 +1,17 @@
 package org.haobtc.onekey.activities;
+
 import android.annotation.SuppressLint;
-import android.content.SharedPreferences;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.aop.SingleClick;
+import org.haobtc.onekey.business.language.LanguageManager;
 import org.haobtc.onekey.constant.Constant;
-import org.haobtc.onekey.utils.Daemon;
 import org.haobtc.onekey.utils.NavUtils;
 
 import butterknife.BindView;
@@ -36,8 +38,6 @@ public class LanguageSettingActivity extends BaseActivity {
     ImageView imgEnglish;
     @BindView(R.id.img_system)
     ImageView imgSystem;
-    private SharedPreferences.Editor edit;
-    private String language;
 
     @Override
     public int getLayoutId() {
@@ -48,14 +48,15 @@ public class LanguageSettingActivity extends BaseActivity {
     @SuppressLint("CommitPrefEdits")
     public void initView() {
         ButterKnife.bind(this);
-        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-        language = preferences.getString("language", "Chinese");
-        edit = preferences.edit();
-
     }
 
     @Override
     public void initData() {
+        String language = LanguageManager.getInstance().getLocalLanguage(this);
+        changeLanguageSelect(language);
+    }
+
+    private void changeLanguageSelect(@Nullable String language) {
         if ("English".equals(language)) {
             imgChinese.setVisibility(View.GONE);
             imgEnglish.setVisibility(View.VISIBLE);
@@ -69,7 +70,6 @@ public class LanguageSettingActivity extends BaseActivity {
             imgEnglish.setVisibility(View.GONE);
             imgSystem.setVisibility(View.VISIBLE);
         }
-
     }
 
     @SingleClick
@@ -80,31 +80,15 @@ public class LanguageSettingActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.radio_chineseasy:
-                mTextChinese();
-                setLanguage(Constant.Zh_CN);
-                edit.putString(Constant.LANGUAGE, Constant.Chinese);
-                edit.apply();
-                imgSystem.setVisibility(View.GONE);
-                imgChinese.setVisibility(View.VISIBLE);
-                imgEnglish.setVisibility(View.GONE);
                 changeLanguage(Constant.Chinese);
                 break;
             case R.id.radio_system:
-                edit.putString("language", "");
-                edit.commit();
                 radioSystem.setTextColor(getColor(R.color.onekey));
                 radioEnglish.setTextColor(getColor(R.color.text_color1));
                 radioChineseasy.setTextColor(getColor(R.color.text_color1));
-                NavUtils.reSetApp(mContext);
+                changeLanguage(null);
                 break;
             case R.id.radio_english:
-                mTextEnglish();
-                setLanguage(Constant.En_UK);
-                edit.putString(Constant.LANGUAGE, Constant.English);
-                edit.apply();
-                imgSystem.setVisibility(View.GONE);
-                imgChinese.setVisibility(View.GONE);
-                imgEnglish.setVisibility(View.VISIBLE);
                 changeLanguage(Constant.English);
                 break;
             default:
@@ -112,17 +96,16 @@ public class LanguageSettingActivity extends BaseActivity {
         }
     }
 
-    private void changeLanguage (String language) {
-        NavUtils.gotoMainActivityTask(LanguageSettingActivity.this, true, true);
-    }
-
-    private void setLanguage (String language) {
+    private void changeLanguage(@Nullable String language) {
         try {
-            Daemon.commands.callAttr("set_language", language);
+            changeLanguageSelect(language);
+            LanguageManager.getInstance().changeLanguage(this, language);
+            NavUtils.gotoMainActivityTask(LanguageSettingActivity.this, true, true);
         } catch (Exception e) {
             e.printStackTrace();
-            mToast(e.getMessage().replace("BaseException:", ""));
+            if (e.getMessage() != null) {
+                mToast(e.getMessage());
+            }
         }
     }
-
 }

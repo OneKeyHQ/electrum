@@ -33,8 +33,6 @@ public class LunchActivity extends BaseActivity {
     }
 
     private void init() {
-        String language = PreferencesManager.get(this, "Preferences", Constant.LANGUAGE, "").toString();
-        judgeLanguage(language);
         boolean firstRun = (boolean) PreferencesManager.get(this, "Preferences", Constant.FIRST_RUN, false);
         if (firstRun) {
             Intent intent = new Intent(LunchActivity.this, HomeOneKeyActivity.class);
@@ -42,17 +40,6 @@ public class LunchActivity extends BaseActivity {
             finish();
         } else {
             initGuide();
-        }
-    }
-
-    // switch language
-    private void judgeLanguage(String language) {
-        if (!TextUtils.isEmpty(language)) {
-            if ("English".equals(language)) {
-                mTextEnglish();
-            } else if ("Chinese".equals(language)) {
-                mTextChinese();
-            }
         }
     }
 

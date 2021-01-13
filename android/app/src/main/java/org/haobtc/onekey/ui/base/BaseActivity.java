@@ -21,6 +21,7 @@ import androidx.fragment.app.FragmentTransaction;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.LunchActivity;
+import org.haobtc.onekey.business.language.LanguageManager;
 import org.haobtc.onekey.manager.ActivityManager;
 
 import butterknife.BindView;
@@ -37,6 +38,11 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
     @BindView(R.id.title)
     @Nullable
     protected TextView mTitle;
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(LanguageManager.getInstance().attachBaseContext(base));
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

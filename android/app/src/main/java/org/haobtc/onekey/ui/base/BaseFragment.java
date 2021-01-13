@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import org.haobtc.onekey.activities.base.MyApplication;
+import org.haobtc.onekey.business.language.LanguageManager;
 import org.haobtc.onekey.utils.EventBusUtils;
 import org.haobtc.onekey.utils.LanguageUtils;
 
@@ -37,7 +38,7 @@ public abstract class BaseFragment extends Fragment implements IBaseView {
 
     @Override
     public void onAttach(Context context) {
-        super.onAttach(context);
+        super.onAttach(LanguageManager.getInstance().attachBaseContext(context));
     }
 
     @Nullable
@@ -50,7 +51,6 @@ public abstract class BaseFragment extends Fragment implements IBaseView {
             EventBusUtils.register(this);
         }
         init(view);
-        LanguageUtils.changeLanguage(getContext());
         return view;
     }
 

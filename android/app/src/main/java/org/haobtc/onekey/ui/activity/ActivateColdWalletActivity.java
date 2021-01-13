@@ -13,6 +13,7 @@ import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.asynctask.BusinessAsyncTask;
 import org.haobtc.onekey.bean.PyResponse;
+import org.haobtc.onekey.business.language.LanguageManager;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.PyConstant;
 import org.haobtc.onekey.event.BackupCompleteEvent;
@@ -104,7 +105,7 @@ public class ActivateColdWalletActivity extends BaseActivity implements Business
      * 通过助记词恢复硬件
      * */
     private void activeByRecovery(boolean isNormal) {
-        String language = PreferencesManager.get(this, "Preferences", Constant.LANGUAGE, "").toString();
+        String language = LanguageManager.getInstance().getLocalLanguage(this);
         new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.RECOVER,
                 MyApplication.getInstance().getDeviceWay(),
                 name,
@@ -115,7 +116,7 @@ public class ActivateColdWalletActivity extends BaseActivity implements Business
      * 导入助记词作为备份(没有任何功能)
      * */
     private void activeByImportMnemonic() {
-        String language = PreferencesManager.get(this, "Preferences", Constant.LANGUAGE, "").toString();
+        String language = LanguageManager.getInstance().getLocalLanguage(this);
         new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.IMPORT_MNEMONIC,
                 MyApplication.getInstance().getDeviceWay(),
                 getIntent().getStringExtra(Constant.MNEMONICS),
@@ -127,7 +128,7 @@ public class ActivateColdWalletActivity extends BaseActivity implements Business
      * */
     private void activeByNormal(boolean isNormal) {
         startFragment(new WriteMnemonicOnPaper(isNormal));
-        String language = PreferencesManager.get(this, "Preferences", "language", "").toString();
+        String language = LanguageManager.getInstance().getLocalLanguage(this);
         new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.INIT_DEVICE,
                 MyApplication.getInstance().getDeviceWay(),
                 name,

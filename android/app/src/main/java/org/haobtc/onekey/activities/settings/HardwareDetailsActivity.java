@@ -30,6 +30,7 @@ import org.haobtc.onekey.bean.HardwareFeatures;
 import org.haobtc.onekey.bean.HardwareVerifyResponse;
 import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.bean.UpdateInfo;
+import org.haobtc.onekey.business.language.LanguageManager;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.PyConstant;
 import org.haobtc.onekey.event.BleConnectionEx;
@@ -219,7 +220,7 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
 
     private void getUpdateInfo(boolean isBootloader) {
         String urlPrefix = "https://onekey.so/";
-        String locate = PreferencesManager.get(this, "Preferences", Constant.LANGUAGE, "").toString();
+        String locate = LanguageManager.getInstance().getLocalLanguage(this);
         String info = PreferencesManager.get(this, "Preferences", Constant.UPGRADE_INFO, "").toString();
         if (Strings.isNullOrEmpty(info)) {
             showToast(R.string.get_update_info_failed);
