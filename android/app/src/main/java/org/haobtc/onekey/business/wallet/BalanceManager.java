@@ -24,6 +24,7 @@ public class BalanceManager {
      * 根据钱包名称获取钱包余额
      *
      * @param walletName 钱包名称
+     *
      * @return first 数字货币余额，second 法币余额
      */
     @Nullable
@@ -33,9 +34,9 @@ public class BalanceManager {
             return null;
         }
         String balanceStr = balanceInfo.getBalance();
-        String balance = balanceStr.substring(0, balanceStr.indexOf(" "));
+        String balance = balanceStr == null ? "0" : balanceStr.substring(0, balanceStr.indexOf(" "));
 
-        String cnyStr = balanceStr.substring(balanceStr.indexOf("(") + 1, balanceStr.indexOf(")"));
+        String cnyStr = balanceStr == null ? "CNY" : balanceStr.substring(balanceStr.indexOf("(") + 1, balanceStr.indexOf(")"));
         String cash = "0";
         if (cnyStr.contains(" ")) {
             cash = cnyStr.substring(0, cnyStr.indexOf(" "));
@@ -47,6 +48,7 @@ public class BalanceManager {
      * 解析 Python 轮训放回的信息，取出金额，法币金额。
      *
      * @param msgVote Python 推来的消息
+     *
      * @return first 数字货币余额，second 法币余额
      */
     public Pair<String, String> decodePythonBalanceNotice(String msgVote) {

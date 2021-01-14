@@ -1,4 +1,5 @@
 package org.haobtc.onekey.onekeys.homepage.process;
+
 import android.content.Context;
 import android.content.Intent;
 import android.view.View;
@@ -26,12 +27,12 @@ import org.haobtc.onekey.utils.NavUtils;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import dr.android.utils.LogUtil;
 
 public class CreateDeriveChooseTypeActivity extends BaseActivity {
     private boolean isFinish;
     private String name;
-    private int selectWalletType;
+    private int selectWalletPurpose;
+    private String selectWalletType;
 
     public static void gotoCreateDeriveChooseTypeActivity (Context context, boolean finish) {
         Intent intent = new Intent(context, CreateDeriveChooseTypeActivity.class);
@@ -51,13 +52,13 @@ public class CreateDeriveChooseTypeActivity extends BaseActivity {
     }
 
     @Override
-    public void initData() {
+    public void initData () {
         isFinish = getIntent().getBooleanExtra(Constant.FINISH, false);
     }
 
     @SingleClick
-    @OnClick({R.id.img_back, R.id.rel_type_btc})
-    public void onViewClicked(View view) {
+    @OnClick({R.id.img_back, R.id.rel_type_btc, R.id.rel_type_eth})
+    public void onViewClicked (View view) {
         switch (view.getId()) {
             case R.id.img_back:
                 finish();
@@ -67,6 +68,7 @@ public class CreateDeriveChooseTypeActivity extends BaseActivity {
                         .asCustom(new SelectWalletTypeDialog(mContext, new SelectWalletTypeDialog.onClickListener() {
                             @Override
                             public void onClick (int purpose) {
+                                selectWalletType = Constant.BTC;
                                 Logger.d("purpose  :%s", isFinish);
                                 PreferencesManager.getSharedPreferences(mContext, Constant.myPreferences).edit().putInt(Constant.Wallet_Purpose, purpose).apply();
                                 NavUtils.gotoSoftWalletNameSettingActivity(mContext, purpose);
@@ -76,6 +78,9 @@ public class CreateDeriveChooseTypeActivity extends BaseActivity {
                             }
                         })).show();
                 break;
+            case R.id.rel_type_eth:
+                selectWalletType = Constant.ETH;
+                NavUtils.gotoSoftWalletNameSettingActivity(mContext, SelectWalletTypeDialog.NormalType);
             default:
                 break;
         }
@@ -84,14 +89,14 @@ public class CreateDeriveChooseTypeActivity extends BaseActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGotName (NameSettedEvent event) {
         name = event.getName();
-        selectWalletType = event.type;
-        Logger.d(" 选择钱包类型--》%s", selectWalletType);
+        selectWalletPurpose = event.type;
+        Logger.d(" 选择钱包类型--》%s", selectWalletPurpose);
         startActivity(new Intent(this, SoftPassActivity.class));
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGotPass (GotPassEvent event) {
-        PyResponse<Void> response = PyEnv.createDerivedWallet(name, event.getPassword(), "btc", selectWalletType);
+        PyResponse<Void> response = PyEnv.createDerivedWallet(name, event.getPassword(), selectWalletType, selectWalletPurpose);
         String error = response.getErrors();
         if (Strings.isNullOrEmpty(error)) {
             mIntent(HomeOneKeyActivity.class);
