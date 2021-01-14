@@ -35,7 +35,7 @@ from electrum.keystore import bip44_derivation, purpose48_derivation, Imported_K
 from electrum.plugin import Plugins
 # from electrum.plugins.trezor.clientbase import TrezorClientBase
 from electrum.transaction import PartialTransaction, Transaction, TxOutput, PartialTxOutput, tx_from_any, TxInput, \
-    PartialTxInput
+    PartialTxInput, SerializationError
 from electrum import commands, daemon, keystore, simple_config, storage, util, bitcoin, paymentrequest
 from electrum.util import bfh, Fiat, create_and_start_event_loop, decimal_point_to_base_unit_name, standardize_path, \
     DecimalEncoder
@@ -1361,7 +1361,7 @@ class AndroidCommands(commands.Commands):
                 if show_fee  == "":
                     show_fee = self.get_fee_from_server(tx_details.txid)
                     if show_fee != "":
-                        self.txdb.add_received_tx_fee_info(tx_details.txid, show_fee)
+                        self.txdb.add_received_tx_fee_info(tx_details.txid, show_fee, is_add=True)
         if block_height == -2:
             status = _("Unconfirmed")
             can_broadcast = False
@@ -1819,41 +1819,40 @@ class AndroidCommands(commands.Commands):
 
     def update_local_info(self, txid, address, tx, msg):
         self.remove_local_tx(txid)
-        self.txdb.add_tx_info(address=address, tx_hash=txid, psbt_tx="", raw_tx=tx,
+        self.txdb.add_tx_info(address=address, tx_hash=txid, psbt_tx="", is_add=True, raw_tx=tx,
                               failed_info=msg)
 
-    def broadcast_tx(self, tx):
-        '''
+    def broadcast_tx(self, tx: str) -> str:
+        """
         Broadcast the tx, for btc only
         :param tx: tx as string
-        :return: 'success'/raise except
-        '''
-        if self.network and self.network.is_connected():
-            status = False
-            try:
-                if isinstance(tx, str):
-                    tx = tx_from_any(tx)
-                    tx.deserialize()
-                self.network.run_from_another_thread(self.network.broadcast_transaction(tx))
-            except TxBroadcastError as e:
-                # TODO DB self.delete_tx()
-                msg = e.__str__()
-                self.update_local_info(tx.txid(), self.wallet.get_addresses()[0], tx, msg)
-                raise BaseException(msg)
-            except BestEffortRequestFailed as e:
-                msg = repr(e)
-                raise BaseException(msg)
+        :return: 'success'
+        :raise: BaseException
+        """
+        trans = None
+        try:
+            if isinstance(tx, str):
+                trans = tx_from_any(tx)
+                trans.deserialize()
+            if self.network and self.network.is_connected():
+                self.network.run_from_another_thread(self.network.broadcast_transaction(trans))
             else:
-                print("--------broadcast ok............")
-                return "success"
-            finally:
-                self.txdb.add_tx_time_info(tx.txid())
-                # status, msg = True, tx.txid()
-        #          self.callbackIntent.onCallback(Status.broadcast, msg)
+                self.txdb.add_tx_time_info(trans.txid(), is_add=True)
+                raise BaseException(_('Cannot broadcast transaction due to network connected exceptions'))
+        except SerializationError:
+            raise BaseException(_('Transaction formatter error'))
+        except TxBroadcastError as e:
+            msg = e.get_message_for_gui()
+            self.update_local_info(trans.txid(), self.wallet.get_addresses()[0], tx, msg)
+            raise BaseException(msg)
+        except BestEffortRequestFailed as e:
+            msg = str(e)
+            raise BaseException(msg)
         else:
-            self.txdb.add_tx_time_info(tx.txid())
-            raise BaseException(_('Cannot broadcast transaction due to network connected exceptions'))
-
+            return "success"
+        finally:
+            if trans:
+                self.txdb.add_tx_time_info(trans.txid(), is_add=True)
 
     def set_use_change(self, status_change):
         '''
