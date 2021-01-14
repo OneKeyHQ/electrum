@@ -240,7 +240,7 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
         if (nowType.contains("btc")) {
             imgType.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.token_btc));
             ivTokenType.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.token_btc));
-            tvTokenName.setText(getString(R.string.btc));
+            tvTokenName.setText(getString(R.string.btc_c));
         } else if (nowType.contains("eth")) {
             imgType.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.token_eth));
             ivTokenType.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.token_eth));

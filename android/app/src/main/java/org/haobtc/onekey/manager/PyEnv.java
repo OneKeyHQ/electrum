@@ -421,8 +421,13 @@ public final class PyEnv {
                             String name = walletInfo.getName();
                             BalanceInfo info = PyEnv.selectWallet(name);
                             EventBus.getDefault().post(new CreateSuccessEvent(name));
-                            // 现在的HD钱包的Label是BTC-1
-                            info.setLabel("BTC-1");
+                            if (walletInfo.getCoinType().contains("btc")) {
+                                // 现在的 BTC HD 钱包的 Label 是 BTC-1
+                                info.setLabel("BTC-1");
+                            } else if (walletInfo.getCoinType().contains("eth")) {
+                                // 现在的 ETH HD 钱包的 Label 是 ETH-1
+                                info.setLabel("ETH-1");
+                            }
                             infos.add(info);
                         }));
                     }));
