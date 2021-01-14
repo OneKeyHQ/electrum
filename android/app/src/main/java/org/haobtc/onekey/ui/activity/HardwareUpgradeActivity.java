@@ -129,11 +129,13 @@ public class HardwareUpgradeActivity extends BaseActivity {
         @Override
         public void onProgressChanged(@NonNull String deviceAddress, int percent, float speed, float avgSpeed, int currentPart, int partsTotal) {
             super.onProgressChanged(deviceAddress, percent, speed, avgSpeed, currentPart, partsTotal);
-            if (hardwareUpgradingFragment.getProgressBar().isIndeterminate()) {
-                hardwareUpgradingFragment.getProgressBar().setIndeterminate(false);
-            }
-            // 推送更新进度
-            hardwareUpgradingFragment.getProgressBar().setProgress(percent);
+            Optional.ofNullable(hardwareUpgradingFragment.getProgressBar()).ifPresent((progressBar ->
+            {
+                if (progressBar.isIndeterminate()) {
+                   progressBar.setIndeterminate(false);
+                }
+                progressBar.setProgress(percent);
+            }));
         }
 
         @Override
@@ -233,6 +235,7 @@ public class HardwareUpgradeActivity extends BaseActivity {
         if (task != null && !task.isCancelled()) {
             task.cancel(true);
         }
+        cancelDfu();
         finish();
     }
 
