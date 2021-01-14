@@ -1,5 +1,4 @@
 from __future__ import absolute_import, division, print_function
-
 import asyncio
 import binascii
 import copy
@@ -94,7 +93,6 @@ BTC_BLOCK_INTERVAL_TIME = 10
 DEFAULT_ADDR_TYPE = 49
 ticker = None
 
-
 class Status(Enum):
     net = 1
     broadcast = 2
@@ -165,7 +163,6 @@ def verify_address(address) -> bool:
 
 def verify_xpub(xpub: str) -> bool:
     return keystore.is_bip32_key(xpub)
-
 
 # Adds additional commands which aren't available over JSON RPC.
 class AndroidCommands(commands.Commands):
@@ -546,7 +543,7 @@ class AndroidCommands(commands.Commands):
         '''
         Enable/disable sync server
         :param flag: flag as bool
-        :return:
+        :return: raise except if error
         '''
         try:
             self.label_flag = flag
@@ -624,7 +621,7 @@ class AndroidCommands(commands.Commands):
         Set sync server host/port
         :param ip: the server host (exp..."127.0.0.1")
         :param port: the server port (exp..."port")
-        :return:
+        :return: raise except if error
         '''
         try:
             if self.label_flag:
@@ -637,7 +634,7 @@ class AndroidCommands(commands.Commands):
     def get_sync_server_host(self):
         '''
         Get sync server host,you can pull label/xpubs/tx to server
-        :return:
+        :return: ip+port like "39.105.86.163:8080"
         '''
         try:
             return self.config.get('sync_server_host', "39.105.86.163:8080")
@@ -745,14 +742,16 @@ class AndroidCommands(commands.Commands):
     def import_create_hw_wallet(self, name, m, n, xpubs, hide_type=False, hd=False, path='bluetooth'):
         '''
         Create a wallet
-        :param name: wallet name as str
-        :param m: number of consigner as str
-        :param n: number of signers as str
-        :param xpubs: all xpubs as [xpub1, xpub2....]
+        :param name: wallet name as string
+        :param m: number of consigner as string
+        :param n: number of signers as string
+        :param xpubs: all xpubs as {[xpub1, device_id], [xpub2, device_id],....}
         :param hide_type: whether to create a hidden wallet as bool
         :param hd: whether to create hd wallet as bool
         :param derived: whether to create hd derived wallet as bool
-        :return: the wallet info recovered
+        :return: json like {'seed':''
+                            'wallet_info':''
+                            'derived_info':''}
         '''
         try:
             if hd:
@@ -796,8 +795,8 @@ class AndroidCommands(commands.Commands):
     # #create tx#########################
     def get_default_fee_status(self):
         '''
-        Get default fee,now is ETA
-        :return: the fee info as 180sat/byte
+        Get default fee,now is ETA, for btc only
+        :return: The fee info as 180sat/byte when you set regtest net and the mainnet is obtained in real time
         '''
         try:
             x = 1
@@ -809,8 +808,11 @@ class AndroidCommands(commands.Commands):
 
     def get_eth_gas_price(self):
         '''
-        Get eth gas price
-        :return: json
+        Get eth gas price, for eth only
+        :return: json like {"rapid":{"price":1, "time":"15 Seconds"},
+                            "fast":{"price":1, "time":"1 Minute",
+                            "standard":{"price":1, "time":"3 Minutes",
+                            "timestamp":{"price":1, "time":"> 10 Minutes"}
         '''
         try:
             return self.pywalib.get_gas_price()
@@ -889,6 +891,18 @@ class AndroidCommands(commands.Commands):
         return ret_data
 
     def get_default_fee_info(self, feerate=None):
+        '''
+        Get default fee info for btc
+        :param feerate: Custom rates need to be sapcified as true
+        :return:
+            if feerate is true:
+                return data like {"customer":{"fee":"","feerate":, "time":"", "fiat":"", "size":""}}
+            if feerate is None:
+                return data like {"slow":{"fee":"","feerate":, "time":"", "fiat":"", "size":""},
+                                  "normal":{"fee":"","feerate":, "time":"", "fiat":"", "size":""},
+                                  "fast":{"fee":"","feerate":, "time":"", "fiat":"", "size":""},
+                                  "slowest":{"fee":"","feerate":, "time":"", "fiat":"", "size":""}}
+        '''
         try:
             fee_info_list = self.get_block_info()
             my_change_addr_size = Transaction.estimated_output_size(self.wallet.get_addresses()[0])
@@ -920,12 +934,16 @@ class AndroidCommands(commands.Commands):
 
     def get_fee_by_feerate(self, outputs, message, feerate, customer=None):
         '''
-        Get fee info when transfer
-        :param outputs: outputs info as json [{addr1, value}, ...]
-        :param message: what you want say as sting
-        :param feerate: feerate retruned by get_default_fee_status api
+        Get fee info when Send, for btc only
+        :param outputs: Outputs info as json [{addr1, value}, ...]
+        :param message: What you want say as sting
+        :param feerate: Feerate retruned by get_default_fee_status api
         :param customer: User choose coin as bool
-        :return: json
+        :return: json like {"amount": 0.5 BTC,
+                            "size": 141,
+                            "fee": 0.0003 BTC,
+                            "time": 30,
+                            "tx": ""}
         '''
         try:
             self._assert_wallet_isvalid()
@@ -970,9 +988,9 @@ class AndroidCommands(commands.Commands):
 
     def mktx(self, tx=None):
         '''
-        Confirm to create transaction
+        Confirm to create transaction, for btc only
         :param tx: tx that created by get_fee_by_feerate
-        :return: tx info
+        :return: json like {"tx":""}
         '''
 
         try:
@@ -1008,6 +1026,12 @@ class AndroidCommands(commands.Commands):
             raise BaseException(e)
 
     def eth_max_button_use_gas(self, gas_price, coin=None):
+        '''
+        The gas value when the max button is clicked, for eth only
+        :param gas_price: gas price by coustomer
+        :param coin: eth/bsc
+        :return: gas info as string, unit is ether
+        '''
         from electrum.pywalib import DEFAULT_GAS_LIMIT, GWEI_BASE
         return PyWalib.get_max_use_gas(gas_price)
 
@@ -1051,9 +1075,9 @@ class AndroidCommands(commands.Commands):
     # set use unconfirmed coin
     def set_unconf(self, x):
         '''
-        Enable/disable spend confirmed_only input
+        Enable/disable spend confirmed_only input, for btc only
         :param x: as bool
-        :return:
+        :return:None
         '''
         self.config.set_key('confirmed_only', bool(x))
 
@@ -1085,8 +1109,8 @@ class AndroidCommands(commands.Commands):
     def set_exchange(self, exchange):
         '''
         Set exchange server
-        :param exchange: exchange server name
-        :return:
+        :param exchange: exchange server name as string like "exchanges"
+        :return:None
         '''
         if self.daemon.fx and self.daemon.fx.is_enabled() and exchange and exchange != self.daemon.fx.exchange.name():
             self.daemon.fx.set_exchange(exchange)
@@ -1094,8 +1118,8 @@ class AndroidCommands(commands.Commands):
     def set_currency(self, ccy):
         '''
         Set fiat
-        :param ccy: fiat as str
-        :return:
+        :param ccy: fiat as string like "CNY"
+        :return:None
         '''
         self.daemon.fx.set_enabled(True)
         if ccy != self.ccy:
@@ -1108,14 +1132,15 @@ class AndroidCommands(commands.Commands):
         You can get coin to fiat or get fiat to coin
         :param type: base/fiat as str
         :param amount: value
-        exp:
-            if you want get fiat from coin,like this:
-                get_exchange_currency("base", 1)
-            return: 1,000.34 CNY
+        :return:
+            exp:
+                if you want get fiat from coin,like this:
+                    get_exchange_currency("base", 1)
+                return: 1,000.34 CNY
 
-            if you want get coin from fiat, like this:
-                get_exchange_currency("fiat", 1000)
-            return: 1 mBTC
+                if you want get coin from fiat, like this:
+                    get_exchange_currency("fiat", 1000)
+                return: 1 mBTC
         '''
         text = ""
         rate = self.daemon.fx.exchange_rate() if self.daemon.fx else Decimal('NaN')
@@ -1140,9 +1165,9 @@ class AndroidCommands(commands.Commands):
 
     def set_base_uint(self, base_unit):
         '''
-        Set base unit for(BTC/mBTC/bits/sat)
-        :param base_unit: (BTC or mBTC or bits or sat) as str
-        :return:
+        Set base unit for(BTC/mBTC/bits/sat), for btc only
+        :param base_unit: (BTC or mBTC or bits or sat) as string
+        :return:None
         '''
         self.base_unit = base_unit
         self.decimal_point = util.base_unit_name_to_decimal_point(self.base_unit)
@@ -1164,12 +1189,12 @@ class AndroidCommands(commands.Commands):
     def set_proxy(self, proxy_mode, proxy_host, proxy_port, proxy_user, proxy_password):
         '''
         Set proxy server
-        :param proxy_mode: SOCK4/SOCK5 as str
+        :param proxy_mode: SOCK4/SOCK5 as string
         :param proxy_host: server ip
         :param proxy_port: server port
         :param proxy_user: login user that you registed
         :param proxy_password: login password that you registed
-        :return:
+        :return: raise except if error
         '''
         try:
             net_params = self.network.get_parameters()
@@ -1213,9 +1238,21 @@ class AndroidCommands(commands.Commands):
 
     def get_tx_info_from_raw(self, raw_tx, tx_list=None):
         '''
-        You can get detail info from a raw_tx
-        :param raw_tx: raw tx
-        :return:
+        You can get detail info from a raw_tx, for btc only
+        :param raw_tx: Raw tx as string
+        :return: json like {'txid': ,
+                            'can_broadcast': true,
+                            'amount': "",
+                            'fee': "",
+                            'description': "",
+                            'tx_status': "",
+                            'sign_status': "",
+                            'output_addr': "",
+                            'input_addr': ["addr", ],
+                            'height': 2000,
+                            'cosigner': "",
+                            'tx': "",
+                            'show_status': [1, _("Unconfirmed")]}
         '''
         try:
             print("console:get_tx_info_from_raw:tx===%s" % raw_tx)
@@ -1423,11 +1460,29 @@ class AndroidCommands(commands.Commands):
         addr = tx._outputs[n].address
         return addr
 
-    def get_all_tx_list(self, search_type=None):
+    def get_all_tx_list(self, search_type=None, coin='btc'):
         '''
         Get the histroy list with the wallet that you select
         :param search_type: None/send/receive as str
+        :param coin: btc/eth as string
         :return:
+            exp:
+                if coin is btc, return data like:
+                            [{"type":"",
+                             "tx_status":"",
+                             "date":"",
+                             "tx_hash":"",
+                             "is_mine":"",
+                             "confirmations":"",
+                             "address":"",
+                             "amount":""}, ...]
+                if coin is eth, return data like:
+                           [{'time': "",
+                            'value_eth': "",
+                            'sent': "",
+                            'received': "",
+                            'from_address': "",
+                           ' to_address': ""}, ...]
         '''
         history_data = []
         try:
@@ -1496,11 +1551,29 @@ class AndroidCommands(commands.Commands):
             info['date'] = util.format_time(int(time[0][1]))
         list_info.append(info)
 
-    def get_tx_info(self, tx_hash, tx_list=None):
+    def get_tx_info(self, tx_hash, tx_list=None, coin='btc'):
         '''
         Get detail info by tx_hash
-        :param tx_hash:
+        :param tx_hash: tx_hash as string
+        :param tx_list: Not for app
+        :param coin: btc/eth
         :return:
+            if coin is btc, return data like:
+                    Json like {'txid': ,
+                            'can_broadcast': true,
+                            'amount': "",
+                            'fee': "",
+                            'description': "",
+                            'tx_status': "",
+                            'sign_status': "",
+                            'output_addr': "",
+                            'input_addr': ["addr", ],
+                            'height': 2000,
+                            'cosigner': "",
+                            'tx': "",
+                            'show_status': [1, _("Unconfirmed")]}
+            if coin is eth, return data like:
+                    Need to add(TODO)
         '''
         try:
             self._assert_wallet_isvalid()
@@ -1549,9 +1622,9 @@ class AndroidCommands(commands.Commands):
 
     def get_wallet_address_show_UI(self, next=None):
         '''
-        Get receving address
+        Get receving address, for btc only
         :param next: if you want change address, you can set the param
-        :return:
+        :return: json like {'qr_data':"", "addr":""}
         '''
         try:
             self._assert_wallet_isvalid()
@@ -1575,8 +1648,8 @@ class AndroidCommands(commands.Commands):
 
     def get_all_funded_address(self):
         '''
-        Get a address list of have balance
-        :return:
+        Get a address list of have balance, for btc only
+        :return: json like [{"address":"", "balance":""},...]
         '''
         try:
             self._assert_wallet_isvalid()
@@ -1619,9 +1692,9 @@ class AndroidCommands(commands.Commands):
     def save_tx_to_file(self, path, tx):
         '''
         Save the psbt/tx to path
-        :param path: path as str
-        :param tx: tx as str
-        :return:
+        :param path: path as string
+        :param tx: raw tx as string
+        :return: raise except if error
         '''
         try:
             if tx is None:
@@ -1646,7 +1719,7 @@ class AndroidCommands(commands.Commands):
         """
         Import tx info from path
         :param is_tx: if True psbt tx else message
-        :param path: path as str
+        :param path: path as string
         :return: serialized tx or file content
         """
         try:
@@ -1706,9 +1779,16 @@ class AndroidCommands(commands.Commands):
 
     def parse_pr(self, data):
         '''
-        Parse qr code which generated by address or tx
+        Parse qr code which generated by address or tx, for btc only
         :param data: qr cata as str
         :return:
+            if data is address qr data, return data like:
+                {"type": 1, "data":"bcrt1qzm6y9j0zg9nnludkgtc0pvhet0sf76szjw7fjw"}
+            if data is tx qr data, return data like:
+                {"type": 2, "data":"02000000000103f9f51..."}
+            if data is not address and not tx, return data like:
+                {"type": 3, "data":"parse pr error"}
+
         '''
         add_status_flag = False
         tx_status_flag = False
@@ -1744,8 +1824,8 @@ class AndroidCommands(commands.Commands):
 
     def broadcast_tx(self, tx):
         '''
-        Broadcast the tx
-        :param tx: tx as str
+        Broadcast the tx, for btc only
+        :param tx: tx as string
         :return: 'success'/raise except
         '''
         if self.network and self.network.is_connected():
@@ -1777,9 +1857,9 @@ class AndroidCommands(commands.Commands):
 
     def set_use_change(self, status_change):
         '''
-        Enable/disable change address
+        Enable/disable change address, for btc only
         :param status_change: as bool
-        :return:
+        :return: raise except if error
         '''
         try:
             self._assert_wallet_isvalid()
@@ -1792,11 +1872,12 @@ class AndroidCommands(commands.Commands):
 
     def sign_message(self, address, message, path='android_usb', password=None):
         '''
-        :param address: must bitcoin address, must in current wallet as str
-        :param message: message need be signed as str
+        Sign message, for btc only
+        :param address: must bitcoin address, must in current wallet as string
+        :param message: message need be signed as string
         :param path: NFC/android_usb/bluetooth as str, used by hardware
-        :param password: as str
-        :return:
+        :param password: as string
+        :return: Base64 encrypted as string
         '''
         try:
             if path:
@@ -1821,7 +1902,7 @@ class AndroidCommands(commands.Commands):
 
     def verify_message(self, address, message, signature):
         '''
-        Verify the message that you signed by sign_message
+        Verify the message that you signed by sign_message, for btc only
         :param address: must bitcoin address as str
         :param message: message as str
         :param signature: sign info retured by sign_message api
@@ -1841,13 +1922,40 @@ class AndroidCommands(commands.Commands):
         return verified
 
     def add_token(self, symbol, contract_addr):
+        '''
+        Add token to eth, for eth/bsc only
+        :param symbol: coin symbol
+        :param contract_addr: coin address
+        :return: raise except if error
+        '''
         try:
             self.wallet.add_contract_token(symbol, PyWalib.get_web3().toChecksumAddress(contract_addr))
         except BaseException as e:
             raise e
 
+    # def delete_token(self, contract_addr):
+    #     '''
+    #     Delete token from current wallet, for eth/bsc only
+    #     :param contract_addr: coin address
+    #     :return: raise except if error
+    #     '''
+    #     try:
+    #         self.wallet.add_contract_token(symbol, PyWalib.get_web3().toChecksumAddress(contract_addr))
+    #     except BaseException as e:
+    #         raise e
+
     ###############
     def sign_eth_tx(self, to_addr, value, path='android_usb', password=None, contract_addr=None, gasprice=None):
+        '''
+        Send for eth, for eth/bsc only
+        :param to_addr: as string
+        :param value: amount to send
+        :param path: NFC/android_usb/bluetooth as str, used by hardware
+        :param password: as string
+        :param contract_addr: need if send to contranct
+        :param gasprice: as string, unit is Gwei
+        :return: tx_hash as string
+        '''
         from_address = self.wallet.get_addresses()[0]
         if contract_addr is None:
             tx_dict = self.pywalib.get_transaction(from_address, to_addr, value, gasprice=gasprice)
@@ -1872,7 +1980,7 @@ class AndroidCommands(commands.Commands):
 
     def sign_tx(self, tx, path=None, password=None):
         '''
-        Sign one transaction
+        Sign one transaction, for btc only
         :param tx: tx info as str
         :param path: NFC/android_usb/bluetooth as str, used by hardware
         :param password: password as str
@@ -1916,9 +2024,9 @@ class AndroidCommands(commands.Commands):
     ##connection with terzorlib#########################
     def hardware_verify(self, msg, path='android_usb'):
         '''
-        Anti-counterfeiting verification
+        Anti-counterfeiting verification, used by hardware
         :param msg: msg as str
-        :param path: NFC/android_usb/bluetooth as str, used by hardware
+        :param path: NFC/android_usb/bluetooth as str
         :return: json like {"data":, "cert":, "signature":,}
         '''
         client = self.get_client(path=path)
@@ -1957,9 +2065,9 @@ class AndroidCommands(commands.Commands):
 
     def bixin_backup_device(self, path='android_usb'):
         '''
-        Export seed
-        :param path: NFC/android_usb/bluetooth as str, used by hardware
-        :return:
+        Export seed, used by hardware
+        :param path: NFC/android_usb/bluetooth as str
+        :return: as string
         '''
         client = self.get_client(path=path)
         try:
@@ -1971,10 +2079,10 @@ class AndroidCommands(commands.Commands):
 
     def bixin_load_device(self, path='android_usb', mnemonics=None, language="en-US", label="BIXIN KEY"):
         '''
-        Import seed
-        :param mnemonics: as str
-        :param path: NFC/android_usb/bluetooth as str, used by hardware
-        :return:
+        Import seed, used by hardware
+        :param mnemonics: as string
+        :param path: NFC/android_usb/bluetooth as str
+        :return: raise except if error
         '''
         client = self.get_client(path=path)
         try:
@@ -2031,22 +2139,17 @@ class AndroidCommands(commands.Commands):
 
     def apply_setting(self, path='nfc', **kwargs):
         '''
-        Set the hardware function
-        :param path: NFC/android_usb/bluetooth as str, used by hardware
+        Set the hardware function, used by hardware
+        :param path: NFC/android_usb/bluetooth as str
         :param kwargs:
-            下边罗列的参数 使用哪个传哪个 不用都传
-            label                 钱包名称
-            language              语言
-            use_passphrase        隐藏钱包
-            auto_lock_delay_ms    自动解锁时间
-            fastpay_pin           快捷支付是否需要验PIN
-            use_ble               是否启动蓝牙
-            use_se                是否启动se
-            is_bixinapp           设置是否是币信app
-            fastpay_confirm       快捷支付是否需要摁键确认
-            fastpay_money_limit   快捷支付额度限制
-            fastpay_times         快捷支付次数
-        :return:
+            label="wangls"
+            language="chinese/english"
+            use_passphrase=true/false
+            auto_lock_delay_ms="600"
+            use_ble=true/false
+            use_se=true/false
+            is_bixinapp=true/false
+        :return:0/1
         '''
         client = self.get_client(path=path)
         try:
@@ -2060,13 +2163,13 @@ class AndroidCommands(commands.Commands):
 
     def init(self, path='android_usb', label="BIXIN KEY", language='english', stronger_mnemonic=None, use_se=False):
         '''
-        Activate the device
+        Activate the device, used by hardware
         :param stronger_mnemonic: if not None 256  else 128
-        :param path: NFC/android_usb/bluetooth as str, used by hardware
-        :param label: name as str
-        :param language: as str
+        :param path: NFC/android_usb/bluetooth as str
+        :param label: name as string
+        :param language: as string
         :param use_se: as bool
-        :return:
+        :return:0/1
         '''
         client = self.get_client(path=path)
         strength = 128
@@ -2086,9 +2189,9 @@ class AndroidCommands(commands.Commands):
 
     def reset_pin(self, path='android_usb') -> int:
         '''
-        Reset pin
-        :param path:NFC/android_usb/bluetooth as str, used by hardware
-        :return:
+        Reset pin, used by hardware
+        :param path:NFC/android_usb/bluetooth as str
+        :return:0/1
         '''
         try:
             client = self.get_client(path)
@@ -2106,10 +2209,10 @@ class AndroidCommands(commands.Commands):
 
     def show_address(self, address, path='android_usb') -> str:
         '''
-        Verify address on hardware
+        Verify address on hardware, used by hardware
         :param address: address as str
-        :param path: NFC/android_usb/bluetooth as str, used by hardware
-        :return:
+        :param path: NFC/android_usb/bluetooth as str
+        :return:1/except
         '''
         try:
             plugin = self.plugin.get_plugin("trezor")
@@ -2120,9 +2223,9 @@ class AndroidCommands(commands.Commands):
 
     def wipe_device(self, path='android_usb') -> int:
         '''
-        Reset device
-        :param path: NFC/android_usb/bluetooth as str, used by hardware
-        :return:
+        Reset device, used by hardware
+        :param path: NFC/android_usb/bluetooth as str
+        :return:0/1
         '''
         try:
             client = self.get_client(path)
@@ -2155,9 +2258,55 @@ class AndroidCommands(commands.Commands):
 
     def get_feature(self, path='android_usb'):
         '''
-        Get hardware information
-        :param path: NFC/android_usb/bluetooth as str, used by hardware
-        :return:
+        Get hardware information, used by hardware
+        :param path: NFC/android_usb/bluetooth as str
+        :return: dict like:
+            {capabilities: List[EnumTypeCapability] = None,
+            vendor: str = None,
+            major_version: int = None,  主版本号
+            minor_version: int = None,  次版本号
+            patch_version: int = None,  修订号    硬件的软件版本(俗称固件，在2.0.1 之前使用)
+            bootloader_mode: bool = None,  设备当时是不是在bootloader模式
+            device_id: str = None,  设备唯一标识，设备恢复出厂设置这个值会变
+            pin_protection: bool = None, 是否开启了PIN码保护，
+            passphrase_protection: bool = None, 是否开启了passphrase功能,这个用来支持创建隐藏钱包
+            language: str = None,
+            label: str = None,  激活钱包时，使用的名字
+            initialized: bool = None, 当时设备是否激活
+            revision: bytes = None,
+            bootloader_hash: bytes = None,
+            imported: bool = None,
+            unlocked: bool = None,
+            firmware_present: bool = None,
+            needs_backup: bool = None,
+            flags: int = None,
+            model: str = None,
+            fw_major: int = None,
+            fw_minor: int = None,
+            fw_patch: int = None,
+            fw_vendor: str = None,
+            fw_vendor_keys: bytes = None,
+            unfinished_backup: bool = None,
+            no_backup: bool = None,
+            recovery_mode: bool = None,
+            backup_type: EnumTypeBackupType = None,
+            sd_card_present: bool = None,
+            sd_protection: bool = None,
+            wipe_code_protection: bool = None,
+            session_id: bytes = None,
+            passphrase_always_on_device: bool = None,
+            safety_checks: EnumTypeSafetyCheckLevel = None,
+            auto_lock_delay_ms: int = None, 自动关机时间
+            display_rotation: int = None,
+            experimental_features: bool = None,
+            offset: int = None,  升级时断点续传使用的字段
+            ble_name: str = None,
+            ble_ver: str = None,  蓝牙固件版本
+            ble_enable: bool = None,
+            se_enable: bool = None,
+            se_ver: str = None,  se的版本
+            backup_only: bool = None,  是否是特殊设备，只用来备份，没有额外功能支持
+            onekey_version: str = None,  硬件的软件版本（俗称固件），仅供APP使用（从2.0.1开始加入）}
         '''
         with self.lock:
             client = self.get_client(path=path, clean=True)
@@ -2165,10 +2314,11 @@ class AndroidCommands(commands.Commands):
 
     def get_xpub_from_hw(self, path='android_usb', _type='p2wpkh', is_creating=True, account_id=None, coin='btc'):
         '''
-        Get extended public key from hardware
-        :param path: NFC/android_usb/bluetooth as str, used by hardware
-        :param _type: p2wsh/p2pkh/p2pkh-p2sh as str
-        :return: xpub str
+        Get extended public key from hardware, used by hardware
+        :param path: NFC/android_usb/bluetooth as str
+        :param _type: p2wsh/p2pkh/p2pkh-p2sh as string
+        :coin: btc/eth as string
+        :return: xpub string
         '''
         client = self.get_client(path=path)
         self.hw_info['device_id'] = client.features.device_id
@@ -2205,10 +2355,11 @@ class AndroidCommands(commands.Commands):
 
     def create_hw_derived_wallet(self, path='android_usb', _type='p2wpkh', is_creating=True, coin='btc'):
         '''
-        Create derived wallet by hardware
-        :param path: NFC/android_usb/bluetooth as str, used by hardware
-        :param _type: p2wsh/p2wsh/p2pkh/p2pkh-p2sh as str
-        :return: xpub as str
+        Create derived wallet by hardware, used by hardware
+        :param path: NFC/android_usb/bluetooth as string
+        :param _type: p2wsh/p2wsh/p2pkh/p2pkh-p2sh as string
+        :coin: btc/eth as string
+        :return: xpub as string
         '''
         xpub = self.get_xpub_from_hw(path=path, _type='p2wpkh')
         list_info = self.get_derived_list(xpub)
@@ -2234,8 +2385,11 @@ class AndroidCommands(commands.Commands):
             dry_run=False,
     ):
         '''
-        Upload new firmware to device.
+        Upload new firmware to device.used by hardware
         Note : Device must be in bootloader mode.
+        :param filename: full path to local upgrade file
+        :param path: NFC/android_usb/bluetooth as str
+        :return: None
         '''
         # self.client = None
         # self.path = ''
@@ -2339,14 +2493,14 @@ class AndroidCommands(commands.Commands):
             # self.check_pw_wallet = wallet
             wallet_type = 'eth-hd-standard-hw'
         self.update_local_wallet_info(self.get_unique_path(wallet), wallet_type)
-    
+
     ####################################################
     # app wallet
     def export_keystore(self, password):
         '''
-        Export keystory from eth wallet
-        :param password:
-        :return:
+        Export keystory from eth wallet, for eth only
+        :param password: password as string
+        :return:Keystore info for success/exception info for fuilure
         '''
         try:
             address = self.wallet.get_addresses()[0]
@@ -2358,8 +2512,8 @@ class AndroidCommands(commands.Commands):
     def export_privkey(self, password):
         '''
         Export privkey for the first receiving address
-        :param password: as str
-        :return: priv as str
+        :param password: password as string
+        :return: private as string
 
         .. code-block:: python
             testcommond.load_all_wallet()
@@ -2383,8 +2537,8 @@ class AndroidCommands(commands.Commands):
     def export_seed(self, password, name):
         '''
         Export seed by on-chain wallet
-        :param password: password by str
-        :return: Mnemonic as str
+        :param password: password by string
+        :return: Mnemonic as string
         '''
         try:
             wallet = self.daemon._wallets[self._wallet_path(name)]
@@ -2502,6 +2656,7 @@ class AndroidCommands(commands.Commands):
     def get_backup_info(self, name):
         '''
         Get backup status
+        :param name: Wallet key
         :return: True/False as bool
         '''
         backup_flag = True
@@ -2520,7 +2675,8 @@ class AndroidCommands(commands.Commands):
     def delete_backup_info(self, name):
         '''
         Delete one backup status in the config
-        :return:
+        :param name: Wallet key
+        :return: None
         '''
         try:
             wallet = self.get_wallet_by_name(name)
@@ -2536,11 +2692,11 @@ class AndroidCommands(commands.Commands):
         Create hd wallet
         :param password: password as str
         :param seed: import create hd wallet if seed is not None
-        :param purpose: 84/44/49 used by btc
-        :param strength: num of seed (128/256)
-        :return:
-            will return created derived wallet if seed is not none
-            new Mnemonic if seed is None
+        :param purpose: 84/44/49 only for btc
+        :param strength: Length of the　Mnemonic word as (128/256)
+        :return: json like {'seed':''
+                            'wallet_info':''
+                            'derived_info':''}
         '''
         self._assert_daemon_running()
         new_seed = None
@@ -2597,10 +2753,10 @@ class AndroidCommands(commands.Commands):
     def verify_legality(self, data, flag='', coin='btc', password=None):
         '''
         Verify legality for seed/private/public/address
-        :param data: data as str
+        :param data: data as string
         :param falg: seed/private/public/address as string
         :param coin: btc/eth as string
-        :return:
+        :return: raise except if failed
         '''
         if flag == "seed":
             is_checksum, is_wordlist = keystore.bip39_is_checksum_valid(data)
@@ -2648,7 +2804,7 @@ class AndroidCommands(commands.Commands):
         When a watch-only wallet exists locally and a non-watch-only wallet is created,
         the interface can be called to delete the watch-only wallet and keey the non-watch-only wallet
         :param replace:True/False as bool
-        :return:
+        :return: wallet key as string
         '''
         if replace:
             self.delete_wallet(password=self.replace_wallet_info['password'], name=self.replace_wallet_info['old_key'])
@@ -2699,20 +2855,40 @@ class AndroidCommands(commands.Commands):
                master=None, addresses=None, privkeys=None, hd=False, purpose=84, coin="btc", keystores=None,
                strength=128):
         '''
-            Create or restore a new wallet
-            exp:
-            create by address
-                create("test4", addresses="037f4e0eaf45aa391cd57b44cc48db5a26e0db66402a15a75c8ab2eb793a8823c4")
-                or
-                create("test5", addresses="bcrt1qzm6y9j0zg9nnludkgtc0pvhet0sf76szjw7fjw")
+        Create or restore a new wallet
+        :param name: Wallet name as string
+        :param password: Password ans string
+        :param seed_type: Not for now
+        :param seed: Mnemonic word as string
+        :param passphrase:Customised passwords as string
+        :param bip39_derivation:Not for now
+        :param master:Not for now
+        :param addresses:To create a watch-only wallet you need
+        :param privkeys:To create a wallet with a private key you need
+        :param hd:Not for app
+        :param purpose:BTC address type as (44/49/84), for BTC only
+        :param coin:"btc"/"eth" as string to specify whether to create a BTC/ETH wallet
+        :param keystores:as string for ETH only
+        :param strength:Length of the　Mnemonic word as (128/256)
+        :return: json like {'seed':''
+                            'wallet_info':''
+                            'derived_info':''}
+        .. code-block:: python
+                create a btc wallet by address:
+                    create("test5", addresses="bcrt1qzm6y9j0zg9nnludkgtc0pvhet0sf76szjw7fjw")
+                create a eth wallet by address:
+                    create("test4", addresses="0x....", coin="eth")
 
-            create by privkey
-                create("test3", password=password, privkeys="p2wpkh:cRR5YkkGHTph8RsM1bQv7YSzY27hxBBhoJnVdHjGnuKntY7RgoGw")
-                or
-                create("test3", password=password, privkeys="e6841ceb170becade0a4aa3e157f08871192f9de1c35835de5e1b47fc167d27e")
+                create a btc wallet by privkey:
+                    create("test3", password=password, purpose=84, privkeys="cRR5YkkGHTph8RsM1bQv7YSzY27hxBBhoJnVdHjGnuKntY7RgoGw")
+                create a eth wallet by privkey:
+                    create("test3", password=password, privkeys="0xe6841ceb170becade0a4aa3e157f08871192f9de1c35835de5e1b47fc167d27e", coin="eth")
 
-            create by seed
-                create(name, password, seed='pottery curtain belt canal cart include raise receive sponsor vote embody offer')
+                create a btc wallet by seed:
+                    create(name, password, seed='pottery curtain belt canal cart include raise receive sponsor vote embody offer')
+                create a eth wallet by seed:
+                    create(name, password, seed='pottery curtain belt canal cart include raise receive sponsor vote embody offer', coin="eth")
+
         '''
         print("CREATE in....name = %s" % name)
         try:
@@ -2878,7 +3054,7 @@ class AndroidCommands(commands.Commands):
     def load_all_wallet(self):
         '''
         Load all wallet info
-        :return:
+        :return:None
         '''
         name_wallets = sorted([name for name in os.listdir(self._wallet_path())])
         name_info = {}
@@ -2888,9 +3064,9 @@ class AndroidCommands(commands.Commands):
     def update_wallet_password(self, old_password, new_password):
         '''
         Update password
-        :param old_password: old_password as str
-        :param new_password: new_password as str
-        :return:
+        :param old_password: old_password as string
+        :param new_password: new_password as string
+        :return:None
         '''
         self._assert_daemon_running()
         for name, wallet in self.daemon._wallets.items():
@@ -2919,7 +3095,7 @@ class AndroidCommands(commands.Commands):
         and you need confirm which wallets you want to import
         :param name_list: wallets you want to import as list like [name, name2,...]
         :param hw: True if you recovery from hardware
-        :return:
+        :return:None
         '''
         name_list = json.loads(name_list)
         if len(name_list) != 0:
@@ -3156,20 +3332,7 @@ class AndroidCommands(commands.Commands):
             xpub = self.get_hd_wallet_encode_seed(seed=seed, coin='btc')
             self.recovery_wallet(seed, password, passphrase, xpub=xpub, hw=hw)
 
-            # for coin, info in self.coins.items():
-            #     xpub = self.get_hd_wallet_encode_seed(seed=seed, coin=coin)
-            #     PyWalib.set_server(info)
-            #     self.recovery_wallet(seed, password, passphrase, coin=coin, xpub=xpub, hw=hw)
-
-        recovery_list = self.filter_wallet()
-        out_info = []
-        if wallet_data is not None:
-            for info in wallet_data:
-                out_info.append(info["wallet_info"][0])
-        out = self.get_create_info_by_json(wallet_info=out_info, derived_info=recovery_list)
-        return json.dumps(out)
-
-    def get_derivat_path(self, purpose=84, coin=constants.net.BIP44_COIN_TYPE):
+    def get_derivat_path(self, purpose=84, coin=None):
         '''
         Get derivation path
         :param coin_type: 44/49/84 as int
@@ -3186,7 +3349,11 @@ class AndroidCommands(commands.Commands):
         :param name: name as str
         :param password: password as str
         :param coin: btc/eth as str
-        :return:
+        :param purpose: (44/84/49) for btc only
+        :param strength: Length of the　Mnemonic word as (128/256)
+        :return: json like {'seed':''
+                            'wallet_info':''
+                            'derived_info':''}
         '''
 
         self._assert_coin_isvalid(coin)
@@ -3260,7 +3427,7 @@ class AndroidCommands(commands.Commands):
         '''
         Get devired HD num by app
         :param coin:btc/eth as string
-        :return:
+        :return: num as int
         '''
         xpub = self.get_hd_wallet_encode_seed(coin=coin)
         if self.derived_info.__contains__(xpub):
@@ -3308,6 +3475,7 @@ class AndroidCommands(commands.Commands):
     def get_all_mnemonic(self):
         '''
         Get all mnemonic, num is 2048
+        :return: json like "[job, ...]"
         '''
         return json.dumps(Wordlist.from_file('english.txt'))
 
@@ -3315,6 +3483,9 @@ class AndroidCommands(commands.Commands):
         '''
         Get all wallet balances
         :return:
+            {"all_balance":"21,233.46 CNY",
+            "wallet_info":[{"name":"", "btc":"0.005 BTC", "fiat":"1,333.55"},
+                           {"name":"", "wallets":[{"eth":"", "fiat":""}, {"eos":"", "fiat":""} ...]}
         '''
         out = {}
         try:
@@ -3581,7 +3752,7 @@ class AndroidCommands(commands.Commands):
         Custom server
         :param host: host as str
         :param port: port as str
-        :return:
+        :return: raise except if error
         '''
         try:
             self._assert_daemon_running()
@@ -3612,9 +3783,9 @@ class AndroidCommands(commands.Commands):
     def rename_wallet(self, old_name, new_name):
         '''
         Rename the wallet
-        :param old_name: old name as str
-        :param new_name: new name as str
-        :return:
+        :param old_name: old name as string
+        :param new_name: new name as string
+        :return: raise except if error
         '''
         try:
             self._assert_daemon_running()
@@ -3645,8 +3816,8 @@ class AndroidCommands(commands.Commands):
     def select_wallet(self, name):
         '''
         Select wallet by name
-        :param name: name as str
-        :return:
+        :param name: name as string
+        :return: json like {"balance":"", "name":"", "label":""}
         '''
         try:
             self._assert_daemon_running()
@@ -3707,7 +3878,7 @@ class AndroidCommands(commands.Commands):
         '''
         List available wallets
         :param type: None/hd/btc/eth
-        :return:
+        :return: json like "[{"wallet_key":{'type':"", "addr":"", "name":"", "label":"", "device_id": ""}}, ...]"
         exp:
             all_list = testcommond.list_wallets()
             hd_list = testcommond.list_wallets(type='hd')
@@ -3766,6 +3937,10 @@ class AndroidCommands(commands.Commands):
         self.config.set_key("show_addr_info", {})
 
     def reset_wallet_info(self):
+        '''
+        Reset all wallet info when Reset App
+        :return: raise except if error
+        '''
         try:
             util.delete_file(self._wallet_path())
             util.delete_file(self._tx_list_path())
@@ -3777,7 +3952,14 @@ class AndroidCommands(commands.Commands):
             raise e
 
     def delete_wallet(self, password="", name="", hd=None):
-        """Delete a wallet"""
+        '''
+        Delete (a/all hd) wallet
+        :param password: Password as string
+        :param name: Wallet key
+        :param hd: True if you want to delete all hd wallet
+        :return: None
+        '''
+
         try:
             wallet = self.daemon._wallets[self._wallet_path(name)]
             if self.local_wallet_info.__contains__(name):
@@ -3843,7 +4025,6 @@ class AndroidCommands(commands.Commands):
         util.make_dir(wallets_dir)
         return util.standardize_path(join(wallets_dir, name))
 
-
 all_commands = commands.known_commands.copy()
 for name, func in vars(AndroidCommands).items():
     if not name.startswith("_"):
@@ -3855,3 +4036,4 @@ SP_SET_METHODS = {
     int: "putLong",
     str: "putString",
 }
+
