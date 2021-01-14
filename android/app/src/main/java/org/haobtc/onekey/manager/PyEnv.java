@@ -775,12 +775,13 @@ public final class PyEnv {
             EventBus.getDefault().post(new CreateSuccessEvent(createWalletBean.getWalletInfo().get(0).getName()));
             context.startActivity(new Intent(context, HomeOneKeyActivity.class));
         } catch (Exception e) {
+            Exception exception = HardWareExceptions.exceptionConvert(e);
             ExitEvent exitEvent = new ExitEvent();
-            exitEvent.message = e.getMessage();
+            exitEvent.message = exception.getMessage();
             EventBus.getDefault().post(exitEvent);
-            if (e.getMessage() != null) {
-                if (!e.getMessage().contains(StringConstant.REPLACE_ERROR)) {
-                    MyApplication.getInstance().toastErr(e);
+            if (exception.getMessage() != null) {
+                if (!exception.getMessage().contains(StringConstant.REPLACE_ERROR)) {
+                    MyApplication.getInstance().toastErr(exception);
                 }
             }
             e.printStackTrace();

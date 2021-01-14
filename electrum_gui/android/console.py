@@ -3019,7 +3019,7 @@ class AndroidCommands(commands.Commands):
             self.update_replace_info(str(ReplaceWatchonlyWallet.message), wallet, name=name, seed=seed,\
                                      password=password, coin=coin, wallet_type=wallet_type, derived_flag=derived_flag, \
                                      bip39_derivation=bip39_derivation)
-            raise BaseException("Replace Watch-olny wallet")
+            raise BaseException("Replace Watch-olny wallet:%s" %new_name)
         except BaseException as e:
             raise e
         try:

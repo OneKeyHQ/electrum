@@ -15,7 +15,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_36"
-            android:layout_marginTop="@dimen/dp_50">
+            android:layout_marginTop="@dimen/dp_30">
 
             <RelativeLayout
                 android:id="@+id/rel_check_wallet"

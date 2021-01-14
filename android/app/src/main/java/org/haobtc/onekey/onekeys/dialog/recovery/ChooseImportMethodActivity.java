@@ -135,20 +135,19 @@ public class ChooseImportMethodActivity extends BaseActivity {
     @Subscribe
     public void onFinish(ExitEvent exitEvent) {
         if (exitEvent.message.contains(StringConstant.REPLACE_ERROR)) {
-            String watchName = "";
-            PyResponse<String> response = PyEnv.replaceWatchOnlyWallet(true);
-            if (Strings.isNullOrEmpty(response.getErrors())) {
-                LocalWalletInfo localWalletByName = accountManager.getLocalWalletByName(response.getResult());
-                watchName = localWalletByName.getLabel();
-                CustomCoverWatchPopup popup = new CustomCoverWatchPopup(mContext, () -> {
+            String watchName = exitEvent.message.substring(exitEvent.message.indexOf(":") + 1);
+            LocalWalletInfo localWalletByName = accountManager.getLocalWalletByName(watchName);
+            CustomCoverWatchPopup popup = new CustomCoverWatchPopup(mContext, () -> {
+                PyResponse<String> response = PyEnv.replaceWatchOnlyWallet(true);
+                if (Strings.isNullOrEmpty(response.getErrors())) {
                     EventBus.getDefault().post(new CreateSuccessEvent(response.getResult()));
                     mContext.startActivity(new Intent(mContext, HomeOneKeyActivity.class));
-                }, CustomCoverWatchPopup.deleteWatch);
-                popup.setWalletName(watchName);
-                new XPopup.Builder(mContext).asCustom(popup).show();
-            } else {
-                mToast(response.getErrors());
-            }
+                } else {
+                    mToast(response.getErrors());
+                }
+            }, CustomCoverWatchPopup.deleteWatch);
+            popup.setWalletName(localWalletByName.getLabel());
+            new XPopup.Builder(mContext).asCustom(popup).show();
         } else {
             finish();
         }
