@@ -134,6 +134,11 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
     RecyclerView reclHdList;
     @BindView(R.id.lin_wallet_list)
     LinearLayout linearWalletList;
+    @BindView(R.id.iv_token_type)
+    ImageView ivTokenType;
+    @BindView(R.id.tv_token_name)
+    TextView tvTokenName;
+
     private SharedPreferences preferences;
     private String num;
     private String changeBalance;
@@ -234,8 +239,12 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
         preferences.edit().putString(CURRENT_SELECTED_WALLET_TYPE, nowType).apply();
         if (nowType.contains("btc")) {
             imgType.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.token_btc));
+            ivTokenType.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.token_btc));
+            tvTokenName.setText(getString(R.string.btc));
         } else if (nowType.contains("eth")) {
             imgType.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.token_eth));
+            ivTokenType.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.token_eth));
+            tvTokenName.setText(getString(R.string.eth));
         } else {
             imgType.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.loco_round));
         }
