@@ -36,7 +36,7 @@ public class BalanceManager {
         String balanceStr = balanceInfo.getBalance();
         String balance = balanceStr == null ? "0" : balanceStr.substring(0, balanceStr.indexOf(" "));
 
-        String cnyStr = balanceStr == null ? "CNY" : balanceStr.substring(balanceStr.indexOf("(") + 1, balanceStr.indexOf(")"));
+        String cnyStr = balanceStr == null ? "" : balanceStr.substring(balanceStr.indexOf("(") + 1, balanceStr.indexOf(")"));
         String cash = "0";
         if (cnyStr.contains(" ")) {
             cash = cnyStr.substring(0, cnyStr.indexOf(" "));

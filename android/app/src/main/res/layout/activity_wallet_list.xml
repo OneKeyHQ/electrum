@@ -86,8 +86,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_36"
             android:layout_marginTop="27dp"
-            android:src="@drawable/eth_icon_gray"
-            android:visibility="gone" />
+            android:src="@drawable/eth_icon_gray" />
 
     </LinearLayout>
 
