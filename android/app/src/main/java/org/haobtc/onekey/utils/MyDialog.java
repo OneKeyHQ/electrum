@@ -44,8 +44,6 @@ public class MyDialog extends Dialog {
         super.onWindowFocusChanged(hasFocus);
         if (hasFocus && dialog != null) {
             ivProgress = (ImageView) dialog.findViewById(R.id.ivProgress);
-            Animation animation = AnimationUtils.loadAnimation(context, R.anim.dialog_progress_anim);
-            ivProgress.startAnimation(animation);
         }
     }
 }
