@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+
+    <Toolbar
+        android:id="@+id/toolbar_base"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="@color/defaultColor"
+        android:contentInsetStartWithNavigation="@dimen/dp_0"
+        android:navigationIcon="@mipmap/left_back"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/left_tv"
+            style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black_0"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/right_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginEnd="@dimen/dp_15"
+            android:gravity="center"
+            android:textColor="@color/black_0"
+            android:textSize="17sp" />
+    </Toolbar>
+
+    <FrameLayout
+        android:id="@+id/fl_activity_child_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</LinearLayout>

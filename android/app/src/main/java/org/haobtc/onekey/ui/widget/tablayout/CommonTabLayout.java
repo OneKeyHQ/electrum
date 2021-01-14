@@ -30,6 +30,7 @@ import org.haobtc.onekey.ui.widget.MsgView;
 import org.haobtc.onekey.utils.UnreadMsgUtils;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 /** 没有继承HorizontalScrollView不能滑动,对于ViewPager无依赖 */
 public class CommonTabLayout extends FrameLayout implements ValueAnimator.AnimatorUpdateListener {
@@ -268,7 +269,7 @@ public class CommonTabLayout extends FrameLayout implements ValueAnimator.Animat
             tv_tab_title.setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextsize);
 //            tv_tab_title.setPadding((int) mTabPadding, 0, (int) mTabPadding, 0);
             if (mTextAllCaps) {
-                tv_tab_title.setText(tv_tab_title.getText().toString().toUpperCase());
+                tv_tab_title.setText(tv_tab_title.getText().toString().toUpperCase(Locale.getDefault()));
             }
 
             if (mTextBold == TEXT_BOLD_BOTH) {

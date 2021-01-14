@@ -5,11 +5,15 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.Toolbar;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,13 +34,14 @@ import butterknife.ButterKnife;
  * @author liyan
  */
 public abstract class BaseActivity extends AppCompatActivity implements IBaseView {
-
     public Fragment mCurrentFragment;
     public Context mContext;
-
     @BindView(R.id.title)
     @Nullable
     protected TextView mTitle;
+    public Toolbar toolbar;
+    public TextView leftTitle;
+    public TextView rightTitle;
 
     @Override
     protected void attachBaseContext(Context base) {
@@ -48,10 +53,11 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
     public void applyOverrideConfiguration(Configuration overrideConfiguration) {
         Configuration customLanguageConfiguration = LanguageManager.getInstance().updateConfigurationIfSupported(overrideConfiguration);
         super.applyOverrideConfiguration(customLanguageConfiguration);
+
     }
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate (@Nullable Bundle savedInstanceState) {
         setCustomDensity();
         super.onCreate(savedInstanceState);
         ActivityManager.getInstance().addActivity(this);
@@ -61,7 +67,13 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
             startActivity(intent);
         }
         mContext = this;
-        setContentView(getContentViewId());
+        setContentView(R.layout.ac_base_fit_layout);
+        initDefaultView(getContentViewId());
+        if (showToolBar()) {
+            toolbar.setVisibility(View.VISIBLE);
+        } else {
+            toolbar.setVisibility(View.GONE);
+        }
         ButterKnife.bind(this);
         if (requireSecure()) {
             requestSecure();
@@ -73,20 +85,28 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
         }
     }
 
+    private void initDefaultView (int contentViewId) {
+        toolbar = findViewById(R.id.toolbar_base);
+        leftTitle = findViewById(R.id.left_tv);
+        rightTitle = findViewById(R.id.right_tv);
+        FrameLayout container = findViewById(R.id.fl_activity_child_container);
+        toolbar.setNavigationOnClickListener(view -> leftBackCLicked());
+        View childView = LayoutInflater.from(this).inflate(contentViewId, null);
+        container.addView(childView);
+    }
+
     /**
      * init
      */
-    public abstract void init();
-
+    public abstract void init ();
 
     @Override
-    public Activity getActivity() {
+    public Activity getActivity () {
         return this;
     }
 
-
     @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
+    public boolean dispatchTouchEvent (MotionEvent ev) {
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {
             View v = getCurrentFocus();
             if (isShouldHideInput(v, ev)) {
@@ -96,7 +116,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
         return super.dispatchTouchEvent(ev);
     }
 
-    public void startFragment(Fragment fragment) {
+    public void startFragment (Fragment fragment) {
         hideKeyboard();
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager
@@ -120,7 +140,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
     /**
      * Set transparent immersion bar : white backgrand black text
      */
-    public void diyWindow() {
+    public void diyWindow () {
         //other one write
         Window window = getWindow();
         if (keepScreenOn()) {
@@ -131,8 +151,16 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
                 | View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR);
     }
 
+    // 修改顶部系统导航栏颜色
+    public void setStatusBarColor (int colorId) {
+        //other one write
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+        getWindow().setStatusBarColor(colorId);
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+    }
+
     @Override
-    protected void onDestroy() {
+    protected void onDestroy () {
         super.onDestroy();
         if (needEvents()) {
             EventBus.getDefault().unregister(this);
@@ -142,7 +170,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
     /**
      * 修改标题
      */
-    public void updateTitle(int title) {
+    public void updateTitle (int title) {
         runOnUiThread(() -> {
             if (mTitle != null) {
                 mTitle.setText(title);
@@ -153,29 +181,66 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
     /**
      * 禁止录屏和截图
      */
-    private void requestSecure() {
+    private void requestSecure () {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
     }
 
     /**
      * 获取页面隐私属性的钩子
      */
-    public boolean requireSecure() {
+    public boolean requireSecure () {
         return false;
     }
 
     /**
      * 是否注册eventBus的钩子函数
      */
-    public boolean needEvents() {
+    public boolean needEvents () {
         return false;
     }
 
     /**
      * 是否保持屏幕常亮的钩子
      */
-    public boolean keepScreenOn() {
+    public boolean keepScreenOn () {
         return false;
+    }
+
+    //toast short
+    public void mToast (String str) {
+        Toast toast = Toast.makeText(this, str, Toast.LENGTH_SHORT);
+        toast.setText(str);
+        toast.show();
+    }
+
+    //toast long
+    public void mlToast (String str) {
+        Toast toast = Toast.makeText(this, str, Toast.LENGTH_LONG);
+        toast.setText(str);
+        toast.show();
+    }
+
+    //  返回true 就可以复用 Base的 ToolBar了
+    protected boolean showToolBar () {
+        return false;
+    }
+
+    //动态设置tooBar 左边的标题
+    public void setLeftTitle (String titleText) {
+        if (leftTitle != null) {
+            leftTitle.setText(titleText);
+        }
+    }
+
+    //动态设置tooBar 最右边的标题
+    public void setRightTitle (String titleText) {
+        if (rightTitle != null) {
+            rightTitle.setText(titleText);
+        }
+    }
+    // 使用BaseActivity公用的ToolBar销毁页面的回调，需要做额外操作可以复写此方法
+    protected void leftBackCLicked () {
+        finish();
     }
 
 }

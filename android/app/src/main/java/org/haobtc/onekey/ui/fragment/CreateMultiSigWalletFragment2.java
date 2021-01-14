@@ -105,7 +105,7 @@ public class CreateMultiSigWalletFragment2 extends BaseFragment {
         //bixinKEY
         AddedXpubAdapter addedXpubAdapter = new AddedXpubAdapter(addedXpubList);
         xpubRec.setAdapter(addedXpubAdapter);
-        stateAdd.setText(String.format("%d/%d", addedXpubList.size(), cosignerNum));
+        stateAdd.setText(String.format(Locale.getDefault(),"%d/%d", addedXpubList.size(), cosignerNum));
 
         if (addedXpubList.size() == cosignerNum) {
             bnCompleteAddCosigner.setEnabled(true);
@@ -117,7 +117,7 @@ public class CreateMultiSigWalletFragment2 extends BaseFragment {
                 addedXpubList.remove(position);
                 addedXpubAdapter.notifyDataSetChanged();
                 addXpub.setVisibility(View.VISIBLE);
-                stateAdd.setText(String.format("%d/%d", addedXpubList.size(), cosignerNum));
+                stateAdd.setText(String.format(Locale.getDefault(),"%d/%d", addedXpubList.size(), cosignerNum));
                 bnCompleteAddCosigner.setEnabled(false);
                 bnCompleteAddCosigner.setBackground(getContext().getDrawable(R.drawable.btn_no_check));
             } else {

@@ -36,7 +36,7 @@ public class GuidanceActivity extends BaseActivity implements CompoundButton.OnC
     Button btnBegin;
     @BindView(R.id.text_user1)
     TextView userTV;
-    private SharedPreferences.Editor edit;
+    private SharedPreferences preferences;
 
     @Override
     public int getLayoutId () {
@@ -46,8 +46,7 @@ public class GuidanceActivity extends BaseActivity implements CompoundButton.OnC
     @Override
     public void initView () {
         ButterKnife.bind(this);
-        SharedPreferences preferences = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
-        edit = preferences.edit();
+        preferences = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
         inits();
     }
 
@@ -104,37 +103,32 @@ public class GuidanceActivity extends BaseActivity implements CompoundButton.OnC
     }
 
     private void set () {
-        edit.putBoolean("bluetoothStatus", true);//open bluetooth
-        edit.apply();
+        preferences.edit().putBoolean("bluetoothStatus", true).apply();//open bluetooth
         try {
             Daemon.commands.callAttr("set_currency", "CNY");
             Daemon.commands.callAttr("set_base_uint", "BTC");
-            edit.putString("base_unit", "BTC");
-            edit.apply();
+            preferences.edit().putString("base_unit", "BTC").apply();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         try {
             Daemon.commands.callAttr("set_rbf", true);
-            edit.putBoolean("set_rbf", true);
-            edit.apply();
+            preferences.edit().putBoolean("set_rbf", true).apply();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         try {
             Daemon.commands.callAttr("set_unconf", false);
-            edit.putBoolean("set_unconf", true);
-            edit.apply();
+            preferences.edit().putBoolean("set_unconf", true).apply();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         try {
             Daemon.commands.callAttr("set_syn_server", true);
-            edit.putBoolean("set_syn_server", true);//setting synchronize server
-            edit.apply();
+            preferences.edit().putBoolean("set_syn_server", true).apply();//setting synchronize server
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -143,16 +137,14 @@ public class GuidanceActivity extends BaseActivity implements CompoundButton.OnC
         } catch (Exception e) {
             e.printStackTrace();
         }
-        edit.putBoolean("set_prevent_dust", false);
-        edit.apply();
+        preferences.edit().putBoolean("set_prevent_dust", false).apply();
     }
 
     @OnClick({R.id.btn_begin})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.btn_begin:
-                edit.putBoolean("is_first_run", true);
-                edit.apply();
+                preferences.edit().putBoolean("is_first_run", true).apply();
                 mIntent(HomeOneKeyActivity.class);
                 finish();
                 break;

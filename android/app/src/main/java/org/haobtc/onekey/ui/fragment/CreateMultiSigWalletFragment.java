@@ -1,5 +1,4 @@
 package org.haobtc.onekey.ui.fragment;
-
 import android.text.Editable;
 import android.text.TextUtils;
 import android.view.View;

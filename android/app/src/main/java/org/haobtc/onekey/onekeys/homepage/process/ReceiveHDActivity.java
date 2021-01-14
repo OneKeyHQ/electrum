@@ -49,9 +49,11 @@ import org.haobtc.onekey.utils.ImageUtils;
 import java.io.File;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import io.reactivex.disposables.Disposable;
 
 /**
  * @author liyan
@@ -97,12 +99,14 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
     private Bitmap bitmap;
     private int walletType;
     private String address;
+    private Disposable subscriber;
 
     /**
      * init
      */
     @Override
     public void init() {
+        setStatusBarColor(getResources().getColor(R.color.onekey));
         walletType = getIntent().getIntExtra(Constant.WALLET_TYPE, 0);
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         String showWalletType = preferences.getString(Constant.CURRENT_SELECTED_WALLET_TYPE, "");
@@ -209,7 +213,7 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
                 break;
             case R.id.linear_share:
                 try {
-                    rxPermissions
+                    subscriber= rxPermissions
                             .request(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                             .subscribe(granted -> {
                                 if (granted) { // Always true pre-M
@@ -322,5 +326,6 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
+        Optional.ofNullable(subscriber).ifPresent(Disposable::dispose);
     }
 }

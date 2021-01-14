@@ -1,5 +1,4 @@
 package org.haobtc.onekey.onekeys.homepage;
-
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -7,7 +6,6 @@ import android.content.SharedPreferences;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageView;
@@ -18,7 +16,6 @@ import android.widget.Toast;
 
 import androidx.annotation.IdRes;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.chaquo.python.PyObject;
@@ -45,7 +42,6 @@ import org.haobtc.onekey.event.BleConnectionEx;
 import org.haobtc.onekey.event.FixWalletNameEvent;
 import org.haobtc.onekey.event.GotPassEvent;
 import org.haobtc.onekey.event.RefreshEvent;
-import org.haobtc.onekey.event.SecondEvent;
 import org.haobtc.onekey.manager.BleManager;
 import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
@@ -57,7 +53,6 @@ import org.haobtc.onekey.onekeys.homepage.process.ReceiveHDActivity;
 import org.haobtc.onekey.onekeys.homepage.process.SendHdActivity;
 import org.haobtc.onekey.onekeys.homepage.process.TransactionDetailWalletActivity;
 import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
-import org.haobtc.onekey.ui.activity.SoftPassActivity;
 import org.haobtc.onekey.ui.base.BaseFragment;
 import org.haobtc.onekey.ui.dialog.BackupDialog;
 import org.haobtc.onekey.utils.Daemon;
@@ -143,7 +138,6 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
     private String num;
     private String changeBalance;
     private String name;
-    private SharedPreferences.Editor edit;
     private RxPermissions rxPermissions;
     private String nowType;
     private boolean isBackup;
@@ -165,10 +159,8 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
         mNetworkViewModel = getApplicationViewModel(NetworkViewModel.class);
         mAppWalletViewModel = getApplicationViewModel(AppWalletViewModel.class);
         mSystemConfigManager = new SystemConfigManager(requireContext());
-
         rxPermissions = new RxPermissions(this);
         preferences = requireActivity().getSharedPreferences("Preferences", Context.MODE_PRIVATE);
-        edit = preferences.edit();
         tetAmount.addTextChangedListener(this);
         initViewModelValue();
     }
@@ -239,8 +231,7 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
         if (org.haobtc.onekey.constant.Constant.Btc_Derived_Standard.equals(nowType)) {
             PreferencesManager.put(getContext(), "Preferences", org.haobtc.onekey.constant.Constant.HAS_LOCAL_HD, true);
         }
-        edit.putString(CURRENT_SELECTED_WALLET_TYPE, nowType);
-        edit.apply();
+        preferences.edit().putString(CURRENT_SELECTED_WALLET_TYPE, nowType).apply();
         if (nowType.contains("btc")) {
             imgType.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.token_btc));
         } else if (nowType.contains("eth")) {

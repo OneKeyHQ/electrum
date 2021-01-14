@@ -1,12 +1,9 @@
 package org.haobtc.onekey.onekeys.dialog.recovery.importmethod;
-
 import android.Manifest;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -30,9 +27,12 @@ import org.haobtc.onekey.ui.dialog.custom.SelectWalletTypeDialog;
 import org.haobtc.onekey.utils.Daemon;
 import org.haobtc.onekey.utils.NavUtils;
 
+import java.util.Optional;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.disposables.Disposable;
 
 public class ImportPrivateKeyActivity extends BaseActivity implements TextWatcher {
 
@@ -40,10 +40,9 @@ public class ImportPrivateKeyActivity extends BaseActivity implements TextWatche
     EditText editInputPrivate;
     @BindView(R.id.btn_import)
     Button btnImport;
-    private SharedPreferences.Editor edit;
     private RxPermissions rxPermissions;
     private static final int REQUEST_CODE = 0;
-
+    private Disposable subscriber;
     @Override
     public int getLayoutId() {
         return R.layout.activity_import_private_key;
@@ -53,8 +52,6 @@ public class ImportPrivateKeyActivity extends BaseActivity implements TextWatche
     public void initView() {
         ButterKnife.bind(this);
         rxPermissions = new RxPermissions(this);
-        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-        edit = preferences.edit();
         editInputPrivate.addTextChangedListener(this);
     }
 
@@ -75,7 +72,7 @@ public class ImportPrivateKeyActivity extends BaseActivity implements TextWatche
                 finish();
                 break;
             case R.id.img_scan:
-                rxPermissions
+                subscriber = rxPermissions
                         .request(Manifest.permission.CAMERA)
                         .subscribe(granted -> {
                             if (granted) { // Always true pre-M
@@ -164,4 +161,11 @@ public class ImportPrivateKeyActivity extends BaseActivity implements TextWatche
             btnImport.setBackground(getDrawable(R.drawable.btn_no_check));
         }
     }
+
+    @Override
+    protected void onDestroy () {
+        super.onDestroy();
+        Optional.ofNullable(subscriber).ifPresent(Disposable::dispose);
+    }
+
 }

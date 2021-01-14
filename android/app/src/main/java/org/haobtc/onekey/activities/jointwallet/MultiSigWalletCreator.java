@@ -1,5 +1,4 @@
 package org.haobtc.onekey.activities.jointwallet;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -50,8 +49,8 @@ import org.haobtc.onekey.event.DeviceSearchEvent;
 import org.haobtc.onekey.event.FirstEvent;
 import org.haobtc.onekey.event.GetXpubEvent;
 import org.haobtc.onekey.manager.PyEnv;
-import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
+import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.ui.dialog.ChooseAddXpubWayDialog;
 import org.haobtc.onekey.ui.dialog.ValidateXpubDialog;
 import org.haobtc.onekey.ui.fragment.DevicePINFragment;
@@ -122,7 +121,6 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
     private ArrayList<XpubItem> addEventsDatas;
     private MyDialog myDialog;
     private PyObject walletAddressShowUi;
-    private SharedPreferences.Editor edit;
     private int walletNameNum;
     private Bitmap bitmap;
     private SharedPreferences preferences;
@@ -138,10 +136,8 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
      */
     @Override
     public void init() {
-
         preferences = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
         int defaultName = preferences.getInt("defaultName", 0);
-        edit = preferences.edit();
         editWalletname.addTextChangedListener(this);
         walletNameNum = defaultName + 1;
         editWalletname.setText(String.format("钱包%s", String.valueOf(walletNameNum)));
@@ -352,18 +348,17 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
                 bnCompleteAddCosigner.setBackground(getDrawable(R.drawable.btn_checked));
                 bnAddKey.setVisibility(View.GONE);
             }
-            edit.putInt("defaultKeyNum", defaultKeyNameNum);
-            edit.apply();
-            addedXpubAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
-                @Override
-                public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
-                    cosignerNum = Integer.parseInt(publicNum);
-                    if (view.getId() == R.id.img_deleteKey) {
-                        try {
-                            Daemon.commands.callAttr("delete_xpub", xpub);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            if (e.getMessage().contains("the xpub to be delete not in keystore")) {
+        preferences.edit().putInt("defaultKeyNum", defaultKeyNameNum).apply();
+        addedXpubAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
+            @Override
+            public void onItemChildClick (BaseQuickAdapter adapter, View view, int position) {
+                cosignerNum = Integer.parseInt(publicNum);
+                if (view.getId() == R.id.img_deleteKey) {
+                    try {
+                        Daemon.commands.callAttr("delete_xpub", xpub);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        if (e.getMessage().contains("the xpub to be delete not in keystore")) {
                                 showToast(getString(R.string.no_delete_xpub));
                             }
                         }
@@ -569,8 +564,7 @@ public class MultiSigWalletCreator extends BaseActivity implements TextWatcher, 
                 }
                 page = 2;
                 EventBus.getDefault().post(new FirstEvent("11"));
-                edit.putInt("defaultName", walletNameNum);
-                edit.apply();
+                preferences.edit().putInt("defaultName", walletNameNum).apply();
                 myDialog.dismiss();
                 cardViewOne.setVisibility(View.GONE);
                 button.setVisibility(View.GONE);

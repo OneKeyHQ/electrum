@@ -18,6 +18,7 @@ import org.haobtc.onekey.event.ConnectingEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import cn.com.heaton.blelibrary.ble.model.BleDevice;
@@ -38,7 +39,7 @@ public class BleDeviceRecyclerViewAdapter extends RecyclerView.Adapter<BleDevice
     public void add(BleDevice device) {
         mValues.add(device);
         mValues = mValues.stream().distinct().
-                filter(bleDevice -> bleDevice.getBleName() != null && (bleDevice.getBleName().toLowerCase().startsWith(BLE_NAME_PREFIX.toLowerCase()))).collect(Collectors.toList());
+                filter(bleDevice -> bleDevice.getBleName() != null && (bleDevice.getBleName().toLowerCase(Locale.getDefault()).startsWith(BLE_NAME_PREFIX.toLowerCase(Locale.getDefault())))).collect(Collectors.toList());
         notifyDataSetChanged();
     }
 

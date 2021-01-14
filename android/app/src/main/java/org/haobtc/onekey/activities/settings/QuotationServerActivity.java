@@ -33,8 +33,8 @@ public class QuotationServerActivity extends BaseActivity {
     @BindView(R.id.recl_Quetation)
     RecyclerView reclQuetation;
     private ArrayList<CNYBean> exchangeList;
-    private SharedPreferences.Editor edit;
     private int exChange;
+    private SharedPreferences preferences;
 
     @Override
     public int getLayoutId() {
@@ -44,8 +44,7 @@ public class QuotationServerActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
-        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-        edit = preferences.edit();
+         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         exChange = preferences.getInt("exChange", 0);
 
     }
@@ -90,9 +89,8 @@ public class QuotationServerActivity extends BaseActivity {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                edit.putInt("exChange", pos);
-                edit.putString("exchangeName", exchangeName);
-                edit.apply();
+                preferences.edit().putInt("exChange", pos).apply();
+                preferences.edit().putString("exchangeName", exchangeName).apply();
                 EventBus.getDefault().post(new FirstEvent("defaultServer"));
             }
         });

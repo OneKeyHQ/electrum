@@ -1,12 +1,10 @@
 package org.haobtc.onekey.activities;
-
 import android.content.Intent;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.azhon.appupdate.config.UpdateConfiguration;
 import com.azhon.appupdate.listener.OnDownloadListener;
@@ -17,20 +15,19 @@ import com.google.gson.JsonSyntaxException;
 
 import org.haobtc.onekey.BuildConfig;
 import org.haobtc.onekey.R;
-import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.activities.transaction.CheckChainDetailWebActivity;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.UpdateInfo;
 import org.haobtc.onekey.business.language.LanguageManager;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.manager.PreferencesManager;
+import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.ui.dialog.AppUpdateDialog;
 
 import java.io.File;
 import java.io.IOException;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -60,22 +57,6 @@ public class AboutActivity extends BaseActivity implements OnDownloadListener {
     private DownloadManager manager;
     private AppUpdateDialog updateDialog;
 
-    @Override
-    public int getLayoutId() {
-        return R.layout.activity_about;
-    }
-
-    @Override
-    public void initView() {
-        ButterKnife.bind(this);
-    }
-
-    @Override
-    public void initData() {
-        String versionName = ApkUtil.getVersionName(this);
-        updateVersion.setText(String.format("V%s", versionName));
-    }
-
     @SingleClick(value = 5000)
     @OnClick({R.id.img_back, R.id.attempt_update, R.id.tet_s5})
     public void onViewClicked(View view) {
@@ -87,14 +68,11 @@ public class AboutActivity extends BaseActivity implements OnDownloadListener {
                 getUpdateInfo();
                 break;
             case R.id.tet_s5:
-//                mIntent(UserAgreementActivity.class);
                 Intent intent = new Intent(AboutActivity.this, CheckChainDetailWebActivity.class);
                 intent.putExtra("loadWhere", "userAgreement");
                 intent.putExtra("loadUrl","https://onekey.zendesk.com/hc/articles/360002014776");
                 startActivity(intent);
                 break;
-            default:
-                throw new IllegalStateException("Unexpected value: " + view.getId());
         }
     }
 
@@ -209,10 +187,22 @@ public class AboutActivity extends BaseActivity implements OnDownloadListener {
     }
 
     @Override
-    public void cancel() {
+    public void cancel () {
     }
 
     @Override
-    public void error(Exception e) {
+    public void error (Exception e) {
     }
+
+    @Override
+    public void init () {
+        String versionName = ApkUtil.getVersionName(this);
+        updateVersion.setText(String.format("V%s", versionName));
+    }
+
+    @Override
+    public int getContentViewId () {
+        return R.layout.activity_about;
+    }
+
 }

@@ -3,8 +3,6 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.Toast;
 
-import androidx.lifecycle.ViewModelProvider;
-
 import com.azhon.appupdate.config.UpdateConfiguration;
 import com.azhon.appupdate.listener.OnDownloadListener;
 import com.azhon.appupdate.manager.DownloadManager;
@@ -13,17 +11,13 @@ import com.google.common.base.Strings;
 import com.google.gson.JsonSyntaxException;
 import com.orhanobut.logger.Logger;
 
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.BuildConfig;
 import org.haobtc.onekey.R;
-import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.adapter.FragmentMainAdapter;
 import org.haobtc.onekey.bean.TabEntity;
 import org.haobtc.onekey.bean.UpdateInfo;
 import org.haobtc.onekey.business.language.LanguageManager;
 import org.haobtc.onekey.constant.Constant;
-import org.haobtc.onekey.event.CreateSuccessEvent;
 import org.haobtc.onekey.manager.HardwareCallbackHandler;
 import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
@@ -33,7 +27,6 @@ import org.haobtc.onekey.ui.widget.NoScrollViewPager;
 import org.haobtc.onekey.ui.widget.tablayout.CommonTabLayout;
 import org.haobtc.onekey.ui.widget.tablayout.CustomTabEntity;
 import org.haobtc.onekey.ui.widget.tablayout.OnTabSelectListener;
-import org.haobtc.onekey.viewmodel.AppWalletViewModel;
 
 import java.io.File;
 import java.io.IOException;

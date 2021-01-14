@@ -18,6 +18,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class OpenFileDialog {
@@ -52,7 +53,7 @@ public class OpenFileDialog {
 		public FileSelectView(Context context, int dialogid, CallbackBundle callback, String suffix, Map<String, Integer> images) {
 			super(context);
 			this.imagemap = images;
-			this.suffix = suffix==null?"":suffix.toLowerCase();
+			this.suffix = suffix == null ? "" : suffix.toLowerCase(Locale.getDefault());
 			this.callback = callback;
 			this.dialogid = dialogid;
 			this.setOnItemClickListener(this);
@@ -137,7 +138,7 @@ public class OpenFileDialog {
 				}
 				else if(file.isFile()){
 					// 添加文件
-					String sf = getSuffix(file.getName()).toLowerCase();
+					String sf = getSuffix(file.getName()).toLowerCase(Locale.getDefault());
 					if(suffix == null || suffix.length()==0 || (sf.length()>0 && suffix.indexOf("."+sf+";")>=0)){
 						Map<String, Object> map = new HashMap<String, Object>();
 						map.put("name", file.getName());

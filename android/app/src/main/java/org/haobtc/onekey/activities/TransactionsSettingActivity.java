@@ -42,7 +42,6 @@ public class TransactionsSettingActivity extends BaseActivity {
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     @BindView(R.id.switch_usdt)
     Switch switchUsdt;
-    private SharedPreferences.Editor edit;
     private SharedPreferences preferences;
     private MyDialog myDialog;
 
@@ -56,7 +55,6 @@ public class TransactionsSettingActivity extends BaseActivity {
         ButterKnife.bind(this);
         myDialog = MyDialog.showDialog(TransactionsSettingActivity.this);
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-        edit = preferences.edit();
         init();
     }
 
@@ -102,8 +100,7 @@ public class TransactionsSettingActivity extends BaseActivity {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                edit.putBoolean("set_rbf", true);
-                edit.apply();
+                preferences.edit().putBoolean("set_rbf", true).apply();
                 mToast(getString(R.string.set_success));
             } else {
                 try {
@@ -111,8 +108,7 @@ public class TransactionsSettingActivity extends BaseActivity {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                edit.putBoolean("set_rbf", false);
-                edit.apply();
+                preferences.edit().putBoolean("set_rbf", false).apply();
             }
         });
         //pay unConfirmed income
@@ -123,8 +119,7 @@ public class TransactionsSettingActivity extends BaseActivity {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                edit.putBoolean("set_unconf", true);
-                edit.apply();
+                preferences.edit().putBoolean("set_unconf", true).apply();
                 mToast(getString(R.string.set_success));
             } else {
                 try {
@@ -132,8 +127,7 @@ public class TransactionsSettingActivity extends BaseActivity {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                edit.putBoolean("set_unconf", false);
-                edit.apply();
+                preferences.edit().putBoolean("set_unconf", false).apply();
             }
         });
         //use Give change adrress
@@ -144,8 +138,7 @@ public class TransactionsSettingActivity extends BaseActivity {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                edit.putBoolean("set_use_change", true);
-                edit.apply();
+                preferences.edit().putBoolean("set_use_change", true).apply();
                 mToast(getString(R.string.set_success));
             } else {
                 try {
@@ -153,8 +146,7 @@ public class TransactionsSettingActivity extends BaseActivity {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                edit.putBoolean("set_use_change", false);
-                edit.apply();
+                preferences.edit().putBoolean("set_use_change", false).apply();
             }
         });
         //Prevent dust attack
@@ -165,8 +157,7 @@ public class TransactionsSettingActivity extends BaseActivity {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                edit.putBoolean("set_prevent_dust", true);
-                edit.apply();
+                preferences.edit().putBoolean("set_prevent_dust", true).apply();
                 mToast(getString(R.string.set_success));
             } else {
                 try {
@@ -174,8 +165,7 @@ public class TransactionsSettingActivity extends BaseActivity {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                edit.putBoolean("set_prevent_dust", false);
-                edit.apply();
+                preferences.edit().putBoolean("set_prevent_dust", false).apply();
             }
         });
 
@@ -219,11 +209,8 @@ public class TransactionsSettingActivity extends BaseActivity {
             myDialog.dismiss();
             return;
         }
-        edit.putBoolean("set_rbf", true);
-//        edit.putBoolean("set_use_change", false);
-        edit.putBoolean("set_unconf", true);
-//        edit.putBoolean("set_prevent_dust", false);
-        edit.apply();
+        preferences.edit().putBoolean("set_rbf", true).apply();
+        preferences.edit().putBoolean("set_unconf", true).apply();
         switchRbf.setChecked(true);
         switchNoConfirm.setChecked(true);
         switchFind.setChecked(false);

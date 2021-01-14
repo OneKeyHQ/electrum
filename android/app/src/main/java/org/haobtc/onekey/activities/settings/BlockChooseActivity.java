@@ -26,7 +26,7 @@ public class BlockChooseActivity extends BaseActivity {
     ImageView imgBack;
     @BindView(R.id.recl_Quetation)
     RecyclerView reclQuetation;
-    private SharedPreferences.Editor edit;
+    private SharedPreferences preferences;
     private int setBlock;
 
 
@@ -38,8 +38,7 @@ public class BlockChooseActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
-        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-        edit = preferences.edit();
+        preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         setBlock = preferences.getInt("setBlock", 0);
     }
 
@@ -55,9 +54,8 @@ public class BlockChooseActivity extends BaseActivity {
         quetationChooseAdapter.addHeaderView(generateHeadView());
         reclQuetation.setAdapter(quetationChooseAdapter);
         quetationChooseAdapter.setOnLisennorClick(pos -> {
-            edit.putInt("setBlock", pos);
-            edit.putString("blockServerLine", blockList.get(pos).getName());
-            edit.apply();
+            preferences.edit().putInt("setBlock", pos).apply();
+            preferences.edit().putString("blockServerLine", blockList.get(pos).getName()).apply();
             EventBus.getDefault().post(new FirstEvent("block_check"));
         });
     }
