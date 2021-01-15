@@ -756,12 +756,14 @@
     <string name="import_keystore">Keystore 导入</string>
     <string name="import_private_key">导入私钥</string>
     <string name="imput_private_tip">输入私钥或扫描其二维码（注意大小写）</string>
+    <string name="imput_private_eth_tip">输入私钥或扫描其二维码</string>
     <string name="import_hd_tip"><b>私钥一旦导入，就会经过加密存储在您的本地设备中并妥当保管。</b>OneKey 不存储任何私密数据，也无法帮您找回。</string>
     <string name="imports">导入</string>
     <string name="imput_keystore_tip">复制粘贴 Keystore 文件内容，或者通过扫描 Keystore 二维码导入</string>
     <string name="input_keystore_pass">输入 Keystore 文件密码</string>
     <string name="import_keystore_tip"><b>Keystore 中的私钥一旦导入，就会经过加密存储在您的本地设备中并妥当保管。</b>OneKey 不存储任何私密数据，也无法帮您找回。</string>
     <string name="watch_tip">请输入地址或公钥，支持 xPub，或者扫描 二维码导入</string>
+    <string name="watch_eth_tip">请输入地址或公钥或者扫描 二维码导入</string>
     <string name="watch_only_tip">观察钱包不需要导入私钥或助记词，只需要地址或公钥，您可以用来追踪日常交易记录或接收收发币的通知。</string>
     <string name="watch_wallet">观察钱包</string>
     <string name="add_wallet_">添加钱包</string>

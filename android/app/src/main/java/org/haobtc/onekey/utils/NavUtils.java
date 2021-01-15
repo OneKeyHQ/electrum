@@ -54,8 +54,8 @@ public class NavUtils {
         CheckChainDetailWebActivity.gotoCheckChainDetailWebActivity(context, loadWhere, loadUrl);
     }
 
-    public static void gotoSoftWalletNameSettingActivity (Context context, int purpose,String type) {
-        SoftWalletNameSettingActivity.gotoSoftWalletNameSettingActivity(context,purpose, type);
+    public static void gotoSoftWalletNameSettingActivity (Context context, int purpose, String type) {
+        SoftWalletNameSettingActivity.start(context, purpose, type);
     }
 
     public static void gotoCreateDeriveChooseTypeActivity (Context context, boolean finish) {
@@ -73,7 +73,7 @@ public class NavUtils {
     }
 
     public static void gotoSoftPassActivity (Context context,  int from) {
-        SoftPassActivity.gotoSoftPassActivity(context,  from);
+        SoftPassActivity.start(context,  from);
     }
 
 }

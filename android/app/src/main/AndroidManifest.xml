@@ -675,6 +675,15 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activity.InputPinOnHardware"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".onekeys.walletprocess.createsoft.CreateSoftWalletActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".onekeys.walletprocess.createfasthd.CreateFastHDSoftWalletActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".onekeys.walletprocess.importsoft.ImportSoftWalletActivity"
             android:screenOrientation="portrait" />
     </application>
 
