@@ -351,7 +351,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                 }
                 break;
             case R.id.text_customize_fee_rate:
-                if (currentFeeDetails.getSlow() != null) {
+                if (currentFeeDetails != null && currentFeeDetails.getSlow() != null) {
                     Bundle bundle = new Bundle();
                     bundle.putDouble(Constant.CUSTOMIZE_FEE_RATE_MIN, currentFeeDetails.getSlow().getFeerate());
                     bundle.putDouble(Constant.CUSTOMIZE_FEE_RATE_MAX, currentFeeDetails.getFast().getFeerate() * 20);
