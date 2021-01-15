@@ -49,7 +49,7 @@ public class WalletListTypeAdapter extends BaseMultiItemQuickAdapter<WalletInfo,
                     view.setBackground(mContext.getDrawable(R.drawable.eth_blue_back));
                     imgType.setImageDrawable(mContext.getDrawable(R.drawable.token_trans_eth_list));
                 }
-                if ("btc-derived-standard".equals(item.type)) {
+                if (item.type.contains("derived-standard")) {
                     helper.getView(R.id.text_type).setVisibility(View.VISIBLE);
                     helper.setText(R.id.text_type, "HD");
                 } else if (item.type.contains("hw")) {

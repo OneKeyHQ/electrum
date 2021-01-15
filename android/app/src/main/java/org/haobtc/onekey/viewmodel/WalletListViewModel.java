@@ -32,7 +32,7 @@ public class WalletListViewModel extends AndroidViewModel {
 
     public WalletListViewModel(@NonNull Application application) {
         super(application);
-        getAllWallets("");
+        getAllWallets(Constant.HD);
         getBtcWallets(Constant.BTC);
         getEthWallets(Constant.ETH);
     }
@@ -52,7 +52,7 @@ public class WalletListViewModel extends AndroidViewModel {
         PyResponse<List<WalletInfo>> response = PyEnv.loadWalletByType(type);
         if (Strings.isNullOrEmpty(response.getErrors())) {
             List<WalletInfo> list = response.getResult();
-            if (Strings.isNullOrEmpty(type)) {
+            if (type.equals(Constant.HD)) {
                 if (list.size() == 0) {
                     WalletInfo walletInfo = new WalletInfo();
                     walletInfo.itemType = WalletListTypeAdapter.NoWallet;

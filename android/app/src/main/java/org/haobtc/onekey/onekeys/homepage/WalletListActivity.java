@@ -152,6 +152,7 @@ public class WalletListActivity extends BaseActivity implements BaseQuickAdapter
                 textWalletNum.setText(String.valueOf(btcList.size()));
                 reclWalletDetail.setVisibility(View.GONE);
                 imgW.setVisibility(View.GONE);
+                imgAdd.setVisibility(View.VISIBLE);
                 mAdapter.setNewData(btcList);
                 break;
             case R.id.view_eth:
