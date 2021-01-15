@@ -56,7 +56,7 @@ public class TransactionListFragment extends BaseLazyFragment implements OnRefre
 
     private static final String EXT_TYPE = "ext_type";
 
-    public static TransactionListFragment getInstance (@TransactionListType String type) {
+    public static TransactionListFragment getInstance(@TransactionListType String type) {
         TransactionListFragment transactionListFragment = new TransactionListFragment();
         Bundle bundle = new Bundle();
         bundle.putString(EXT_TYPE, type);
@@ -85,7 +85,7 @@ public class TransactionListFragment extends BaseLazyFragment implements OnRefre
     private Animation mAnimation;
 
     @Override
-    public void onAttach (@NotNull Context context) {
+    public void onAttach(@NotNull Context context) {
         super.onAttach(context);
         if (context instanceof SchedulerProvide) {
             mSchedulerProvide = ((SchedulerProvide) context);
@@ -93,7 +93,7 @@ public class TransactionListFragment extends BaseLazyFragment implements OnRefre
     }
 
     @Override
-    public void init (View view) {
+    public void init(View view) {
         mAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.dialog_progress_anim);
         mType = getArguments().getString(EXT_TYPE, TransactionListType.ALL);
         listBeans = new ArrayList<>();
@@ -102,27 +102,27 @@ public class TransactionListFragment extends BaseLazyFragment implements OnRefre
     }
 
     @Override
-    public int getContentViewId () {
+    public int getContentViewId() {
         return R.layout.fragment_transaction_list;
     }
 
     @Override
-    protected void onLazy () {
+    protected void onLazy() {
         super.onLazy();
         getTxList(mType);
     }
 
     @Override
-    public void onRefresh (@NonNull RefreshLayout refreshLayout) {
+    public void onRefresh(@NonNull RefreshLayout refreshLayout) {
         getTxList(mType);
     }
 
     @Override
-    public void onLoadMore (@NonNull RefreshLayout refreshLayout) {
+    public void onLoadMore(@NonNull RefreshLayout refreshLayout) {
         refreshLayout.finishLoadMore();
     }
 
-    private void getTxList (String status) {
+    private void getTxList(String status) {
         if (mLoadTxListDisposable != null && !mLoadTxListDisposable.isDisposed()) {
             mLoadTxListDisposable.dispose();
         }
@@ -218,29 +218,33 @@ public class TransactionListFragment extends BaseLazyFragment implements OnRefre
     }
 
     @Override
-    public void onDestroy () {
+    public void onDestroy() {
         super.onDestroy();
         if (mLoadTxListDisposable != null && !mLoadTxListDisposable.isDisposed()) {
             mLoadTxListDisposable.dispose();
         }
     }
 
-    private void showProgress () {
+    private void showProgress() {
         runOnUiThread(() -> {
-            ivProgress.startAnimation(mAnimation);
-            mAnimation.startNow();
-            mLoadProgress.setVisibility(View.VISIBLE);
+            if (ivProgress != null && mLoadProgress != null) {
+                ivProgress.startAnimation(mAnimation);
+                mAnimation.startNow();
+                mLoadProgress.setVisibility(View.VISIBLE);
+            }
         });
     }
 
-    private void dismissProgress () {
+    private void dismissProgress() {
         runOnUiThread(() -> {
-            mLoadProgress.setVisibility(View.GONE);
-            mAnimation.cancel();
+            if (mLoadProgress != null) {
+                mLoadProgress.setVisibility(View.GONE);
+                mAnimation.cancel();
+            }
         });
     }
 
-    private Scheduler getLoadWorkScheduler () {
+    private Scheduler getLoadWorkScheduler() {
         if (mSchedulerProvide != null) {
             return mSchedulerProvide.getScheduler();
         } else {
@@ -250,6 +254,6 @@ public class TransactionListFragment extends BaseLazyFragment implements OnRefre
 
     interface SchedulerProvide {
         @NonNull
-        Scheduler getScheduler ();
+        Scheduler getScheduler();
     }
 }
