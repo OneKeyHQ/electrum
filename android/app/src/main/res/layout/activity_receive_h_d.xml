@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/onekey"
+    android:fitsSystemWindows="true"
     tools:context="org.haobtc.onekey.onekeys.homepage.process.ReceiveHDActivity">
     <!--    分享布局-->
     <LinearLayout

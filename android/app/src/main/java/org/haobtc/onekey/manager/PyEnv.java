@@ -1,11 +1,11 @@
 package org.haobtc.onekey.manager;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 
 import androidx.annotation.NonNull;
 
+import com.alibaba.fastjson.JSON;
 import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
 import com.google.common.base.Strings;
@@ -17,6 +17,7 @@ import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.orhanobut.logger.Logger;
 
@@ -33,6 +34,7 @@ import org.haobtc.onekey.bean.MakeTxResponseBean;
 import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.bean.TemporaryTxInfo;
 import org.haobtc.onekey.bean.TransactionInfoBean;
+import org.haobtc.onekey.bean.WalletInfo;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.PyConstant;
 import org.haobtc.onekey.constant.StringConstant;
@@ -880,11 +882,46 @@ public final class PyEnv {
      * @param replace true
      * @return
      */
-    public static PyResponse<String> replaceWatchOnlyWallet (boolean replace) {
+    public static PyResponse<String> replaceWatchOnlyWallet(boolean replace) {
         PyResponse<String> response = new PyResponse<>();
         try {
             String res = sCommands.callAttr(PyConstant.REP_WATCH_ONLY_WALLET, replace).toString();
             response.setResult(res);
+        } catch (Exception e) {
+            Exception exception = HardWareExceptions.exceptionConvert(e);
+            response.setErrors(exception.getMessage());
+        }
+        return response;
+    }
+
+    /**
+     * 加载对应类型的钱包信息
+     *
+     * @param type "hd","btc","eth"，为空加载所有钱包类型
+     */
+    public static PyResponse<List<WalletInfo>> loadWalletByType(String type) {
+        PyResponse<List<WalletInfo>> response = new PyResponse<>();
+        try {
+            String walletsInfo;
+            if (Strings.isNullOrEmpty(type)) {
+                walletsInfo = sCommands.callAttr(PyConstant.GET_WALLETS_INFO).toString();
+            } else {
+                walletsInfo = sCommands.callAttr(PyConstant.GET_WALLETS_INFO, type).toString();
+            }
+            List<WalletInfo> list = new ArrayList<>();
+            if (!Strings.isNullOrEmpty(walletsInfo)) {
+                JsonArray wallets = JsonParser.parseString(walletsInfo).getAsJsonArray();
+                wallets.forEach((wallet) -> {
+                    wallet.getAsJsonObject().keySet().forEach((walletName) ->
+                            {
+                                JsonElement jsonElement = wallet.getAsJsonObject().get(walletName);
+                                WalletInfo localWalletInfo = JSON.parseObject(jsonElement.toString(), WalletInfo.class);
+                                list.add(localWalletInfo);
+                            }
+                    );
+                });
+                response.setResult(list);
+            }
         } catch (Exception e) {
             Exception exception = HardWareExceptions.exceptionConvert(e);
             response.setErrors(exception.getMessage());

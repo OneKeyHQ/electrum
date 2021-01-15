@@ -67,11 +67,14 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
             startActivity(intent);
         }
         mContext = this;
-        setContentView(R.layout.ac_base_fit_layout);
-        initDefaultView(getContentViewId());
+
         if (showToolBar()) {
+            setContentView(R.layout.ac_base_fit_layout);
+            initDefaultView(getContentViewId());
             toolbar.setVisibility(View.VISIBLE);
         } else {
+            setContentView(R.layout.ac_base_not_fit_layout);
+            initDefaultView(getContentViewId());
             toolbar.setVisibility(View.GONE);
         }
         ButterKnife.bind(this);

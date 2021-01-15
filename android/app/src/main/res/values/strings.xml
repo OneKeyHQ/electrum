@@ -4,24 +4,24 @@
     <string name="select_mutisig">Select multi-sig wallet</string>
     <string name="prompt_message">Please confirm info below on OneKey before tapping "OK" button</string>
     <string name="multi_type" translatable="false">2-3</string>
-    <string name="set_PIN">Please set PIN code according to demonstrations on OneKey</string>
+    <string name="set_PIN">Please set the PIN code against the OneKey display</string>
     <string name="creat_bixinkey">Needs to bind 3 OneKeys, and any of the 3 devices can be used for transactions</string>
-    <string name="bixinkey_walt">OneKey hardware wallet</string>
+    <string name="bixinkey_walt">OneKey Hardware Wallet</string>
     <string name="set_bixinkey">Set number of OneKeys</string>
     <string name="have_bixinkey">Mutual managers do not own OneKey?</string>
-    <string name="bixinkey_backups">OneKey backup &#038; restore</string>
-    <string name="bixinkey_manage">OneKey management</string>
-    <string name="input_bixinkey_text">Enter OneKey\'s backup text</string>
+    <string name="bixinkey_backups">OneKey backup recovery</string>
+    <string name="bixinkey_manage">OneKey Management</string>
+    <string name="input_bixinkey_text">Enter the OneKey backup text</string>
     <string name="bixinkey_fit">Make phone touch OneKey closely</string>
     <string name="please_backups">Please backup OneKey</string>
-    <string name="backuped_key">OneKey with backup</string>
+    <string name="backuped_key">Backed up OneKey</string>
     <string name="backup_bixinkey">Back up OneKey</string>
-    <string name="key_qrspr">OneKey-QRSPR backup info</string>
-    <string name="bixinkey_backup">Recover from OneKey backup</string>
+    <string name="key_qrspr">OneKey-QRSPR backup information</string>
+    <string name="bixinkey_backup">Restoring from a OneKey Backup</string>
     <string name="duizhao_pin">Please refer to PIN code backed up by OneKey</string>
     <string name="bixinkey_import">Please import through OneKey</string>
     <string name="import_tips1">1. Public information of a wallet can be obtained by searching the public key associated with the wallet saved in OneKey on Bixin\'s server</string>
-    <string name="import_tips">3. Wallet imported needs to be used along with OneKey</string>
+    <string name="import_tips">3. The imported wallet needs to be used with OneKey.</string>
     <string name="one_one">1–1</string>
     <string name="_1_0_0">1.0.0</string>
     <string name="lnbcdfd4fdsk">aksdhkjdakjldkajsliieihdihsdkjsjda</string>
@@ -47,21 +47,21 @@
     <string name="cosinger_number_min">2</string>
     <string name="signature_need_max">15</string>
     <string name="number_1">1</string>
-    <string name="use_bluetooth_line">Using Bluetooth to connect to OneKey</string>
-    <string name="bluetooth_tips">On status, can use Bluetooth to communicate with OneKey</string>
+    <string name="use_bluetooth_line">Connecting to OneKey using Bluetooth</string>
+    <string name="bluetooth_tips">Once Bluetooth is turned off, the hardware wallet will not support Bluetooth access and must be turned on again via usb/nfc.</string>
     <string name="key_backup">OneKey backup &#38; restore</string>
-    <string name="band_bixinkey">Binded OneKey</string>
-    <string name="backup_message">OneKey-QWE backup info</string>
-    <string name="fit_key">Please put OneKey device and phone together</string>
+    <string name="band_bixinkey">Bound OneKey</string>
+    <string name="backup_message">OneKey-QWE Backup Information</string>
+    <string name="fit_key">Please fit the OneKey hardware to your phone</string>
     <string name="fit_key_warning">Don\'t take away your phone during OneKey\'s upgrade</string>
     <string name="please_confirmKEY">Please confirm new PIN code on OneKey</string>
     <string name="set_to_Bixinkey">Set to OneKey</string>
     <string name="_0_0">0/0</string>
-    <string name="key_check">Found wallets of OneKey\'s public keys. Please select and import</string>
-    <string name="verifying_firmware">OneKey is powered by Bixin, installed with Bixin\'s official firmware</string>
-    <string name="contact_service">OneKey may have been compromised. Please contact sales staff</string>
-    <string name="hide_wallet_know_tips">Hidden wallet does not record any data in the App. To use hiden wallet, connect to OneKey and enter special PIN code to unlock</string>
-    <string name="create_hide_wallet_tips">To create hidden wallet, activated OneKey is needed</string>
+    <string name="key_check">Wallets containing OneKey public keys have been searched by OneKey, please select and import</string>
+    <string name="verifying_firmware">OneKey is the official firmware of OneKey.</string>
+    <string name="contact_service">OneKey may have been tampered with, please contact the seller to deal with it</string>
+    <string name="hide_wallet_know_tips">The hidden wallet does not record any data in the app and requires a OneKey connection and a special PIN code to unlock it when using it</string>
+    <string name="create_hide_wallet_tips">To create a hidden wallet, use an activated OneKey</string>
     <string name="default_key">Key</string>
     <string name="promote_message">Please confirm the  pin code on the hardware \n 2. Please remember the password displayed by OneKey</string>
     <string name="update_file_format_error">Upgrade file should end with. zip or .bin</string>
@@ -85,47 +85,27 @@
     <string name="_0_16">0/16</string>
     <string name="reset_device_failed">OneKey failed to restore factory settings</string>
     <string name="ip_port">39.105.86.163:8080</string>
-    <string name="input_key_pass">Please enter the password of the OneKey backup</string>
+    <string name="input_key_pass">Please enter the password for the backup is OneKey display</string>
     <string name="set_pin_confirm">Please confirm the new PIN on OneKey</string>
     <string name="BixinKey">OneKey</string>
-    <string name="check_key_name">OneKey name:</string>
-    <string name="input_history_wallet">History wallets that have been created with OneKey and can be <font color="#6182F5"> import Now</font></string>
+    <string name="check_key_name">OneKey Name:</string>
+    <string name="input_history_wallet">History wallets that have been created with OneKey and can be <font color="#6182F5"> import immediately</font></string>
     <string name="star">****</string>
     <string name="band_key">OneKeys. Use any one of them to authorize transactions. Setting multiple OneKeys as backup will keep your assets from being lost due to losing the only OneKey</string>
     <string name="confirm_finish">Please confirm and complete the operation on OneKey</string>
-    <string name="reset_device_successful">Please confirm and complete the remaining process on OneKey</string>
-    <string name="backup_finish_tips">OneKey private key seed has been saved to the phone with pin code encryption. Please remember the current pin code.</string>
-    <string name="backup_content">To save the pin by other means:
-        \n 1. View and save the backup file to other devices through [set OneKey backup];
-        \n 2.Back up to the new OneKey so that multiple OneKey have the same private key.</string>
-    <string name="bixinkey_lite">Backup to OneKey Lite</string>
+    <string name="reset_device_successful">Please confirm and complete the rest of the process on OneKey</string>
     <string name="cny_star">≈****</string>
-    <string name="prompt_backup_pin">OneKey activation set pin code and use after backup</string>
-    <string name="confirm_backup_prompt">Please confirm the pin code on OneKey \n backup OneKey after confirmation</string>
-    <string name="recovery_new_key">Restore to new OneKey</string>
-    <string name="key_lite">Fit the phone with OneKey Lite</string>
-    <string name="from_key_lite">Restore from OneKey Lite</string>
+    <string name="recovery_new_key">Restore to the new OneKey</string>
+    <string name="key_lite">Fitting the phone to the OneKey Lite</string>
+    <string name="backup_finish_tips">OneKey private key seed has been encrypted with PIN code and saved to local machine, please check in 【Settings - OneKey Backup】; please remember the current PIN code.</string>
+    <string name="backup_content">Saving PIN code by other means.
+\n 1. View and save the backup file to other devices through 【Settings - OneKey Backup】.
+\n 2. Back up to a new OneKey so that multiple OneKeys have the same private key.</string>
+    <string name="bixinkey_lite">Backing up to OneKey Lite</string>
     <string name="nfc">NFC</string>
-    <string name="card_pin">Enter the PIN code of OneKey Lite</string>
-    <string name="backup2lite">Backup to OneKey Lite</string>
-    <string name="backup2lite_finish">Backup to OneKey Lite</string>
-    <string name="receive_tip">Please check the OneKey display address with the app display address</string>
-    <string name="backup_tip">Please don\'t keep backup data on APP for long periods, move it to offline device or recovery to a new OneKey</string>
-    <string name="have_not_key">No OneKey?</string>
     <string name="sat_byte">sat/byte</string>
     <string name="key">OneKey</string>
     <string name="zero">0</string>
-    <string name="step_one">First step，touch OneKey Lite with phone</string>
-    <string name="step_two">Second step，touch OneKey Lite with phone</string>
-    <string name="step_three">Third step，touch OneKey Lite with phone</string>
-    <string name="step_four">Fourth step，touch OneKey Lite with phone</string>
-    <string name="nfc_only">OneKey Lite only supported by NFC</string>
-    <string name="need_active">OneKey is not active yet，please retry after active</string>
-    <string name="need_reset">OneKey is already active, please retry after reset</string>
-    <string name="old_se_version">The version of current OneKey\'s SE is too old to support OneKeyLite</string>
-    <string name="bixinkey_backup_tips">In order to protect your BTC assets，before you use OneKey, you should backup your OneKey\'s seed information firstly </string>
-    <string name="bixinkey_backup_hints">There are some ways to backup the seed of your OneKey ：\n 1、Backup OneKey locally，you can recovery your OneKey at your will  \n 2、Backup your OneKey directly to another different OneKey，then those OneKey will be all the same  \n 3、Backup to OneKey Lite, you can recovery your OneKey at your will from OneKey Lite</string>
-    <string name="bixin_keylite_pin">Please set a PIN for your OneKey Lite</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="_0">￥ 0.00</string>
@@ -140,7 +120,7 @@
     <string name="_0_dollar">$0</string>
     <string name="coin_eos">EOS</string>
     <string name="usb">USB</string>
-    <string name="use_center">At least among people</string>
+    <string name="use_center">At least one of the people</string>
     <string name="limited_edition">OneKey - Bixin Limited Edition</string>
     <string name="rule_password">0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ`¬!"£$%^*()~=#{}[];':,./?/*-_+ " &#139; &#155; &#64; &#38;</string>
     <string name="lable">lable</string>
@@ -150,7 +130,7 @@
     <string name="message_manager">Message Manager</string>
     <string name="language">Language</string>
     <string name="server_setting">Network</string>
-    <string name="transaction_setting">Transaction Settings</string>
+    <string name="transaction_setting">Trading Setup</string>
     <string name="service_online">Online Service</string>
     <string name="about">About (Terms of Agreement)</string>
     <string name="zh_simple">Chinese (Simplified)</string>
@@ -252,6 +232,7 @@
     <string name="wallet_create_successful">Wallet Creation Succeed</string>
     <string name="balance">Account Balance</string>
     <string name="close">Close</string>
+    <string name="from_key_lite">Recovering from OneKey Lite</string>
     <string name="wallet_list">Wallet List</string>
     <string name="add_">Add</string>
     <string name="no_records">No record</string>
@@ -790,7 +771,6 @@
     <string name="assets">Assets</string>
     <string name="search">Search</string>
     <string name="all_assets">All Crypto</string>
-    <string name="hd_wallet">HD Derived Wallet</string>
     <string name="hardwares">Hardware</string>
     <string name="safe">Security</string>
     <string name="face_discern">Facial Recognition</string>
@@ -798,7 +778,6 @@
     <string name="system_set">System Setting</string>
     <string name="hb_unit">Currency</string>
     <string name="internet">Network</string>
-    <string name="transaction_set">Transaction Settings (Advanced)</string>
     <string name="mind_tip">Privacy Policy, Usage Agreement, and Open Source Software.</string>
     <string name="recovery_hd__tip"><b>Once imported, mnemonic is encrypted and stored on your local device for safekeeping. </b>OneKey does not store any private data and cannot retrieve it for you.</string>
     <string name="hd_tip1">- Don\'t uninstall the OneKey App so easily</string>
@@ -810,7 +789,6 @@
     <string name="import_single">Import single-currency wallet</string>
     <string name="choose_amount">Choose Crypto</string>
     <string name="choose_method">Choose your import method</string>
-    <string name="import_private">Import Private Key ( Enter directly or scan the code ）</string>
     <string name="import_word">Import Mnemonic</string>
     <string name="import_keystore">Import Keystore</string>
     <string name="import_private_key">Import Private Key</string>
@@ -1158,8 +1136,8 @@
     <string name="current_stm32_version">Current firmware version</string>
     <string name="current_ble_version">Current bluetooth firmware version</string>
     <string name="update_warning">Be sure to back up your wallet before upgrading the firmware, as this may result in loss of assets.</string>
-    <string name="new_firmware_usable">New system firmware available</string>
-    <string name="new_ble_version_usable">New bluetooth firmware available</string>
+    <string name="new_firmware_usable">System firmware available</string>
+    <string name="new_ble_version_usable">Bluetooth firmware available</string>
     <string name="newest">The device firmware is already the latest version.</string>
     <string name="pin_origin">Please enter the original PIN</string>
     <string name="find_device_promote">Find the following wallets</string>
@@ -1261,7 +1239,32 @@
     <string name="now_update">Update Now</string>
     <string name="loading_wait">The new version is being downloaded, please wait ...</string>
     <string name="connectting">Connecting Devices</string>
-    <string name="delete_watch_tip">检测到本地已存在关联的观察钱包，继续导入，观察钱包 "\"%s\"" 将被覆盖。别担心，删除观察钱包不会影响您的资金安全。</string>
-    <string name="delete_watch">确定删除观察钱包？</string>
-    <string name="cover_watch">覆盖观察钱包</string>
+    <string name="delete_watch">Remove the Observation Wallet?</string>
+    <string name="cover_watch">Covered the Observation Wallet</string>
+    <string name="delete_watch_tip">An associated Watch Wallet is detected locally, continue importing and the Watch Wallet \"\"%s\"\" will be overwritten. Don\'t worry, deleting the Observation Wallet will not affect the security of your funds.</string>
+
+    <string name="prompt_backup_pin">OneKey activation Set PIN and backup for use</string>
+    <string name="confirm_backup_prompt">Please confirm the PIN code on the OneKey \n after confirmation, please backup the OneKey</string>
+    <string name="card_pin">Enter the PIN code for OneKey Lite</string>
+    <string name="backup2lite">Backing up to OneKey Lite</string>
+    <string name="backup2lite_finish">Backup to OneKey Lite complete</string>
+    <string name="receive_tip">Please check the OneKey display address with the App display address</string>
+    <string name="backup_tip">Please try not to keep the backup information on the phone for a long time, you can move the backup information to a safe offline device or import it to another OneKey</string>
+    <string name="have_not_key">Don\'t have OneKey yet?</string>
+    <string name="step_one">Step 1: Fit the phone to the OneKey Lite</string>
+    <string name="step_two">Step 2: Attach the phone to the OneKey</string>
+    <string name="step_three">Step 3: Fit the phone to the OneKey Lite</string>
+    <string name="step_four">Step 4: Fit the phone to the OneKey Lite</string>
+    <string name="nfc_only">OneKey Lite supports NFC only</string>
+    <string name="need_active">OneKey is not activated, please activate and try again</string>
+    <string name="need_reset">OneKey is activated, please restore factory settings and try again</string>
+    <string name="old_se_version">The current version of OneKey\'s security chip is too low and does not support backup cards</string>
+    <string name="bixinkey_backup_tips">For the safety of your BTC assets, you need to back up your OneKey Seed information before you can use OneKey to store your BTC assets.</string>
+    <string name="bixinkey_backup_hints">OneKey private key seeds can be backed up in the following ways: \n 1. Back up the seeds encrypted to your phone, and you can use the backup file to restore OneKey at any time \n 2. Import the seeds to a new OneKey, and you will get two OneKeys with identical seeds \n 3. Back up the seeds to OneKey Lite, and restore them from OneKey Lite when you need them</string>
+    <string name="bixin_keylite_pin">Setting the PIN for OneKey Lite</string>
+    <string name="hd_wallet">HD Wallet</string>
+    <string name="transaction_set">Trading Setup (Advanced)</string>
+    <string name="import_private">Import Private Key ( Enter or scan code ）</string>
+
+
 </resources>

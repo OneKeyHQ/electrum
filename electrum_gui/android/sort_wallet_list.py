@@ -20,42 +20,48 @@ class SortWalletList():
                     self.bsc_list[key] = info
 
     def sort_wallet_by_hd(self, wallets_info):
-        hd_wallets = {}
+        hd_wallets = []
 
         for key, info in wallets_info.items():
             if -1 != info['type'].find('derived'):
-                hd_wallets[key] = info
+                temp = {}
+                temp[key] = info
+                hd_wallets.append(temp)
         return hd_wallets
 
     def get_wallets_by_hd(self):
-        hd_wallets_btc = {}
-        hd_wallets_eth = {}
-        hd_wallets_bsc = {}
+        hd_wallets_btc = []
+        hd_wallets_eth = []
+        hd_wallets_bsc = []
 
         hd_wallets_btc = self.sort_wallet_by_hd(self.btc_list)
         hd_wallets_eth = self.sort_wallet_by_hd(self.eth_list)
         hd_wallets_bsc = self.sort_wallet_by_hd(self.bsc_list)
 
-        return {**hd_wallets_btc, **hd_wallets_eth, **hd_wallets_bsc}
+        return hd_wallets_btc + hd_wallets_eth + hd_wallets_bsc
+        #return {**hd_wallets_btc, **hd_wallets_eth, **hd_wallets_bsc}
 
     def sort_wallet_by_coin(self, wallets_info):
-        hd_wallets = {}
-        standalone_wallets = {}
-        hw_wallets = {}
-        import_walletw = {}
-        watchonly_wallets = {}
+        hd_wallets = []
+        standalone_wallets = []
+        hw_wallets = []
+        import_walletw = []
+        watchonly_wallets = []
         for key, info in wallets_info.items():
+            temp = {}
+            temp[key] = info
             if -1 != info['type'].find('hw'):
-                hw_wallets[key] = info
+                hw_wallets.append(temp)
             elif -1 != info['type'].find('private'):
-                import_walletw[key] = info
+                import_walletw.append(temp)
             elif -1 != info['type'].find('derived'):
-                hd_wallets[key] = info
+                hd_wallets.append(temp)
             elif -1 != info['type'].find('watch'):
-                watchonly_wallets[key] = info
+                watchonly_wallets.append(temp)
             else:
-                standalone_wallets[key] = info
-        return {**hd_wallets, **standalone_wallets, **import_walletw, **hw_wallets, **watchonly_wallets}
+                standalone_wallets.append(temp)
+        return hd_wallets + standalone_wallets + import_walletw + hw_wallets + watchonly_wallets
+        #return {**hd_wallets, **standalone_wallets, **import_walletw, **hw_wallets, **watchonly_wallets}
 
 
     def get_wallets_by_coin(self, coin):

@@ -29,6 +29,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.CurrentAddressDetail;
 import org.haobtc.onekey.bean.LocalWalletInfo;
@@ -427,7 +428,7 @@ public class HdWalletDetailActivity extends BaseActivity {
                 return;
             }
             mToast(getString(R.string.fix_success));
-            PyEnv.loadLocalWalletInfo(this);
+            PyEnv.loadLocalWalletInfo(MyApplication.getInstance());
             textWalletName.setText(walletName.getText().toString());
             EventBus.getDefault().post(new FixWalletNameEvent(walletName.getText().toString()));
             dialogBtoms.dismiss();

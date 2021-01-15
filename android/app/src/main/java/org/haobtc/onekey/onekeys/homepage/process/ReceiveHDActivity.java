@@ -106,7 +106,6 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
      */
     @Override
     public void init() {
-        setStatusBarColor(getResources().getColor(R.color.onekey));
         walletType = getIntent().getIntExtra(Constant.WALLET_TYPE, 0);
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         String showWalletType = preferences.getString(Constant.CURRENT_SELECTED_WALLET_TYPE, "");

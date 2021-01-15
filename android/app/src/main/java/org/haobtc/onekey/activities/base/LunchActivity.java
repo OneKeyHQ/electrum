@@ -51,7 +51,7 @@ public class LunchActivity extends BaseActivity {
 
     @Override
     public void initData() {
-        PyEnv.init(this);
+        PyEnv.init(MyApplication.getInstance());
         init();
     }
 
