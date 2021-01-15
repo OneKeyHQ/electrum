@@ -2,7 +2,6 @@ package org.haobtc.onekey.onekeys.homepage;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -23,7 +22,6 @@ import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.WalletInfo;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.GotPassEvent;
-import org.haobtc.onekey.event.LoadWalletlistEvent;
 import org.haobtc.onekey.event.RefreshEvent;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.HomeOneKeyActivity;

@@ -13,7 +13,6 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.PyResponse;
-import org.haobtc.onekey.business.wallet.SystemConfigManager;
 import org.haobtc.onekey.event.GotPassEvent;
 import org.haobtc.onekey.event.NameSettedEvent;
 import org.haobtc.onekey.manager.PyEnv;
@@ -31,7 +30,8 @@ public class CreateWalletChooseTypeActivity extends BaseActivity {
     RelativeLayout relDeriveHd;
     private String name;
     private int type;
-    private int selectWalletType;
+    private int addressPurpose;
+    private String walletType;
 
     @Override
     public int getLayoutId() {
@@ -83,11 +83,11 @@ public class CreateWalletChooseTypeActivity extends BaseActivity {
     public void onGotPass(GotPassEvent event) {
        switch (type) {
            case R.id.rel_single_wallet:
-               PyEnv.createWallet(this, name, event.getPassword(), null, null, selectWalletType);
+               PyEnv.createWallet(this, name, event.getPassword(), null, null, addressPurpose);
                finish();
                break;
            case R.id.rel_derive_hd:
-               PyResponse<Void> response = PyEnv.createDerivedWallet(name, event.getPassword(), "btc", selectWalletType);
+               PyResponse<Void> response = PyEnv.createDerivedWallet(name, event.getPassword(), walletType, addressPurpose);
                String error = response.getErrors();
                if (Strings.isNullOrEmpty(error)) {
                    mIntent(HomeOneKeyActivity.class);
@@ -101,7 +101,8 @@ public class CreateWalletChooseTypeActivity extends BaseActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGotName(NameSettedEvent event) {
         name = event.getName();
-        selectWalletType = event.type;
+        addressPurpose = event.addressPurpose;
+        walletType = event.walletType;
         startActivity(new Intent(this, SoftPassActivity.class));
     }
     @Override

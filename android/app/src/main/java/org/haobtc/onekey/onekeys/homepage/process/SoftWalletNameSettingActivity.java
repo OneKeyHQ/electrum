@@ -24,16 +24,18 @@ public class SoftWalletNameSettingActivity extends BaseActivity implements TextW
     EditText editSetWalletName;
     @BindView(R.id.btn_import)
     Button btnImport;
-    private int type;
+    private int purpose;
+    private String walletType;
 
-    public static void gotoSoftWalletNameSettingActivity (Context context, int type) {
+    public static void gotoSoftWalletNameSettingActivity(Context context, int purpose, String type) {
         Intent intent = new Intent(context, SoftWalletNameSettingActivity.class);
+        intent.putExtra(Constant.WALLET_PUR, purpose);
         intent.putExtra(Constant.WALLET_TYPE, type);
         context.startActivity(intent);
     }
 
     @Override
-    public int getLayoutId () {
+    public int getLayoutId() {
         return R.layout.activity_set_derive_wallet_name;
     }
 
@@ -44,7 +46,8 @@ public class SoftWalletNameSettingActivity extends BaseActivity implements TextW
 
     @Override
     public void initData() {
-        type = getIntent().getIntExtra(Constant.WALLET_TYPE, 0);
+        purpose = getIntent().getIntExtra(Constant.WALLET_PUR, 0);
+        walletType = getIntent().getStringExtra(Constant.WALLET_TYPE);
         editSetWalletName.addTextChangedListener(this);
     }
 
@@ -61,7 +64,8 @@ public class SoftWalletNameSettingActivity extends BaseActivity implements TextW
                     return;
                 }
                 NameSettedEvent nameSettedEvent = new NameSettedEvent(editSetWalletName.getText().toString());
-                nameSettedEvent.type = type;
+                nameSettedEvent.addressPurpose = purpose;
+                nameSettedEvent.walletType = walletType;
                 EventBus.getDefault().post(nameSettedEvent);
                 finish();
                 break;

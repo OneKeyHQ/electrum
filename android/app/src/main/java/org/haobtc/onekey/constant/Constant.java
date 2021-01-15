@@ -205,6 +205,7 @@ public final class Constant {
      * 钱包类型TAG
      */
     public static final String WALLET_TYPE = "wallet_type";
+    public static final String WALLET_PUR = "wallet_purpose";
     public static final String TAG_HARDWARE_TYPE_PROMOTE_ID = "update_promote_id";
     public static final String DEVICE_NOT_BOND = "DFU DEVICE NOT BONDED";
     /**

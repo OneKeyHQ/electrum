@@ -110,7 +110,7 @@ public class ChooseImportMethodActivity extends BaseActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGotName(NameSettedEvent event) {
         name = event.getName();
-        purpose = event.type;
+        purpose = event.addressPurpose;
         if (currentAction == R.id.rel_watch) {
             importWallet();
         } else {

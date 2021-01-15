@@ -25,7 +25,6 @@ import org.haobtc.onekey.ui.activity.SoftPassActivity;
 import org.haobtc.onekey.ui.dialog.custom.SelectWalletTypeDialog;
 import org.haobtc.onekey.utils.NavUtils;
 
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class CreateDeriveChooseTypeActivity extends BaseActivity {
@@ -47,7 +46,6 @@ public class CreateDeriveChooseTypeActivity extends BaseActivity {
 
     @Override
     public void initView () {
-        ButterKnife.bind(this);
         EventBus.getDefault().register(this);
     }
 
@@ -71,7 +69,7 @@ public class CreateDeriveChooseTypeActivity extends BaseActivity {
                                 selectWalletType = Constant.BTC;
                                 Logger.d("purpose  :%s", isFinish);
                                 PreferencesManager.getSharedPreferences(mContext, Constant.myPreferences).edit().putInt(Constant.Wallet_Purpose, purpose).apply();
-                                NavUtils.gotoSoftWalletNameSettingActivity(mContext, purpose);
+                                NavUtils.gotoSoftWalletNameSettingActivity(mContext, purpose, Constant.BTC);
                                 if (isFinish) {
                                     finish();
                                 }
@@ -80,7 +78,10 @@ public class CreateDeriveChooseTypeActivity extends BaseActivity {
                 break;
             case R.id.rel_type_eth:
                 selectWalletType = Constant.ETH;
-                NavUtils.gotoSoftWalletNameSettingActivity(mContext, SelectWalletTypeDialog.NormalType);
+                NavUtils.gotoSoftWalletNameSettingActivity(mContext, SelectWalletTypeDialog.NormalType, Constant.ETH);
+                if (isFinish) {
+                    finish();
+                }
             default:
                 break;
         }
@@ -89,11 +90,10 @@ public class CreateDeriveChooseTypeActivity extends BaseActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGotName (NameSettedEvent event) {
         name = event.getName();
-        selectWalletPurpose = event.type;
+        selectWalletPurpose = event.addressPurpose;
         Logger.d(" 选择钱包类型--》%s", selectWalletPurpose);
         startActivity(new Intent(this, SoftPassActivity.class));
     }
-
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGotPass (GotPassEvent event) {
         PyResponse<Void> response = PyEnv.createDerivedWallet(name, event.getPassword(), selectWalletType, selectWalletPurpose);

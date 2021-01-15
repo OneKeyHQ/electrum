@@ -1,8 +1,6 @@
 package org.haobtc.onekey.activities.base;
+
 import android.app.Application;
-import android.content.Context;
-import android.content.res.Configuration;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
@@ -53,6 +51,7 @@ public class MyApplication extends Application implements ViewModelStoreOwner {
 
         // add application lifecycle observer
         ProcessLifecycleOwner.get().getLifecycle().addObserver(new ApplicationObserver());
+        registerActivityLifecycleCallbacks(new ActivityLifeCycleCallback());
         // EventBus optimize
         EventBus.builder().addIndex(new MyEventBusIndex()).installDefaultEventBus();
         mInstance = this;

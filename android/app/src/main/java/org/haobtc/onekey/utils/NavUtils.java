@@ -54,8 +54,8 @@ public class NavUtils {
         CheckChainDetailWebActivity.gotoCheckChainDetailWebActivity(context, loadWhere, loadUrl);
     }
 
-    public static void gotoSoftWalletNameSettingActivity (Context context, int type) {
-        SoftWalletNameSettingActivity.gotoSoftWalletNameSettingActivity(context, type);
+    public static void gotoSoftWalletNameSettingActivity (Context context, int purpose,String type) {
+        SoftWalletNameSettingActivity.gotoSoftWalletNameSettingActivity(context,purpose, type);
     }
 
     public static void gotoCreateDeriveChooseTypeActivity (Context context, boolean finish) {

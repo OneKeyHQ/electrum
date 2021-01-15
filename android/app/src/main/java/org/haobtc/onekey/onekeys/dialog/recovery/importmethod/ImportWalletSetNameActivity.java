@@ -65,7 +65,7 @@ public class ImportWalletSetNameActivity extends BaseActivity implements TextWat
                 }
                 NameSettedEvent nameSettedEvent = new NameSettedEvent(editSetWalletName.getText().toString());
                 if (purpose > -1) {
-                    nameSettedEvent.type = purpose;
+                    nameSettedEvent.addressPurpose = purpose;
                 }
                 EventBus.getDefault().post(nameSettedEvent);
                 finish();
