@@ -21,6 +21,7 @@ static dispatch_once_t once;
 
 - (void)hwPushNoti:(NSNotification*)noti
 {
+    NSLog(@"hwPushNoti");
     if ([self.delegate respondsToSelector:@selector(hwNotiManagerDekegate:type:)]) {
         NSInteger type = [noti.object integerValue];
         [self.delegate hwNotiManagerDekegate:self type:type];

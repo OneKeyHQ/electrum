@@ -12,8 +12,8 @@
 #import "OKBiologicalViewController.h"
 
 @interface OKFindFollowingWalletController ()<UITableViewDelegate,UITableViewDataSource>
-@property (weak, nonatomic) IBOutlet UITableView *tableView;
 
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet UILabel *titleLabel;
 @property (weak, nonatomic) IBOutlet UIView *tableViewBgView;
 @property (weak, nonatomic) IBOutlet UITableView *tbaleView;

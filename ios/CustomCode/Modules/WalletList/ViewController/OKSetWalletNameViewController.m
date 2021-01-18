@@ -150,7 +150,7 @@
                NSString *xpub = [kPyCommandsManager callInterface:kInterfacecreate_hw_derived_wallet parameter:@{}];
                 NSArray *array = @[@[xpub,kOKBlueManager.model.device_id]];
                 NSString *xpubs = [array mj_JSONString];
-                create = [kPyCommandsManager callInterface:kInterfaceimport_create_hw_wallet parameter:@{@"name":name,@"m":@"1",@"n":@"1",@"xpubs":xpubs}];
+                create = [kPyCommandsManager callInterface:kInterfaceimport_create_hw_wallet parameter:@{@"name":name,@"m":@"1",@"n":@"1",@"xpubs":xpubs,@"hd":@"0"}];
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [weakself createComplete:create isInit:isInit pwd:pwd isHw:YES];
                 });

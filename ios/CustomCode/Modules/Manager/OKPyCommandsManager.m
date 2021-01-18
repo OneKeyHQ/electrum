@@ -382,10 +382,11 @@ static dispatch_once_t once;
         NSString *m  = [parameter safeStringForKey:@"m"];
         NSString *n = [parameter safeStringForKey:@"n"];
         NSString *xpubs = [parameter safeStringForKey:@"xpubs"];
+        BOOL hd = [[parameter safeStringForKey:@"hd"] boolValue];
         NSString *path = kBluetooth_iOS;
         PyObject *args =  Py_BuildValue("(s)", [name UTF8String]);
         PyObject *kwargs;
-        kwargs = Py_BuildValue("{s:i,s:i,s:s,s:s}", "m", [m integerValue],"n",[n integerValue],"path",[path UTF8String],"xpubs",[xpubs UTF8String]);
+        kwargs = Py_BuildValue("{s:i,s:i,s:s,s:s,s:i}", "m", [m integerValue],"n",[n integerValue],"path",[path UTF8String],"xpubs",[xpubs UTF8String],"hd",hd);
         PyObject *myobject_method = PyObject_GetAttrString(self.pyInstance, [kInterfaceimport_create_hw_wallet UTF8String]);
         result = PyObject_Call(myobject_method, args, kwargs);
     }else if ([method isEqualToString:kInterfaceset_pin]){

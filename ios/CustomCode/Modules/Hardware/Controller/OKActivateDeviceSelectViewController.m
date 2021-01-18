@@ -11,6 +11,7 @@
 #import "OKCreateSelectWalletTypeModel.h"
 #import "OKPINCodeViewController.h"
 #import "OKSelectCoinTypeViewController.h"
+#import "OKHWRestoreViewController.h"
 
 @interface OKActivateDeviceSelectViewController ()
 @property (weak, nonatomic) IBOutlet UILabel *titleLabel;
@@ -58,16 +59,14 @@
             break;
         case OKAddTypeRestoredHWWallet:
         {
-            
+            OKHWRestoreViewController *restoreVc = [OKHWRestoreViewController restoreViewController];
+            [self.navigationController pushViewController:restoreVc animated:YES];
         }
             break;
         default:
             break;
     }
-    
-
 }
-
 
 - (NSArray *)walletTypeListArray
 {
@@ -90,7 +89,7 @@
         model2.iconName = @"multi-sig";
         model2.tipsString = MyLocalizedString(@"At least 2 devices are required to cooperate. Before adding, make sure that all hardware devices that want to participate in the public pipe are activated", nil);
         
-        _walletTypeListArray = @[model,model1,model2];
+        _walletTypeListArray = @[model,model1];
     }
     return _walletTypeListArray;
 }
