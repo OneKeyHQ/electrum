@@ -6,12 +6,22 @@ import android.content.SharedPreferences;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
+import com.chaquo.python.Kwarg;
+import com.chaquo.python.PyObject;
 import com.google.common.base.Strings;
+import com.google.gson.Gson;
 
 import org.haobtc.onekey.bean.LocalWalletInfo;
 import org.haobtc.onekey.constant.Constant;
+import org.greenrobot.eventbus.EventBus;
+import org.haobtc.onekey.bean.CreateWalletBean;
+import org.haobtc.onekey.constant.Vm;
+import org.haobtc.onekey.event.CreateSuccessEvent;
+import org.haobtc.onekey.exception.AccountException;
+import org.haobtc.onekey.exception.HardWareExceptions;
 import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
+import org.haobtc.onekey.utils.Daemon;
 
 import java.util.Map;
 import java.util.Optional;
@@ -37,6 +47,26 @@ public class AccountManager {
         return PreferencesManager.hasWallet(mContext);
     }
 
+    /**
+     * 本地是否存在 HD 钱包
+     *
+     * @return true: 存在
+     */
+    public boolean existsLocalHD() {
+        return mPreferencesSharedPreferences.getBoolean(Constant.HAS_LOCAL_HD, false);
+    }
+
+    /**
+     * 设置本地是否存在 HD 钱包
+     * 应该由软件进行逻辑判断，不应该人为设置。
+     *
+     * @param exists 是否存在
+     */
+    @Deprecated
+    public void setExistsLocalHD(boolean exists) {
+        mPreferencesSharedPreferences.edit().putBoolean(Constant.HAS_LOCAL_HD, exists).apply();
+    }
+
     public String getCurrentWalletName() {
         return mPreferencesSharedPreferences.getString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME, "");
     }
@@ -45,6 +75,7 @@ public class AccountManager {
      * 在本地存储的账户信息中查找钱包账户信息
      *
      * @param walletName 需要查找的钱包名称
+     *
      * @return 返回钱包账户，如果找不到则返回 null
      */
     @WorkerThread
@@ -115,5 +146,102 @@ public class AccountManager {
      */
     public boolean getWalletBackup() {
         return PyEnv.hasBackup(mContext);
+    }
+
+    /**
+     * 派生 HD 钱包
+     *
+     * @param coinType       钱包类型
+     * @param walletName     钱包名称
+     * @param walletPassword 钱包密码
+     * @param purpose        派生规则
+     *
+     * @return
+     */
+    public CreateWalletBean deriveHdWallet(Vm.CoinType coinType, String walletName, String walletPassword, int purpose) throws AccountException.DeriveException {
+        try {
+            String result = Daemon.commands.callAttr("create_derived_wallet", walletName, walletPassword, coinType.name, purpose).toString();
+            CreateWalletBean createWalletBean = CreateWalletBean.objectFromData(result);
+            EventBus.getDefault().post(new CreateSuccessEvent(createWalletBean.getWalletInfo().get(0).getName()));
+            return createWalletBean;
+        } catch (Exception e) {
+            Exception exception = HardWareExceptions.exceptionConvert(e);
+            e.printStackTrace();
+            throw new AccountException.DeriveException(exception.getMessage());
+        }
+    }
+
+    /**
+     * 创建一个新的独立钱包
+     *
+     * @param coinType       钱包类型
+     * @param walletName     钱包名称
+     * @param walletPassword 钱包密码
+     * @param purpose        派生规则
+     *
+     * @return 创建的钱包
+     */
+    public CreateWalletBean createNewSingleWallet(Vm.CoinType coinType, String walletName, String walletPassword, int purpose) throws AccountException.CreateException {
+        return PyEnv.createWallet(walletName, walletPassword, coinType, null, null, null, null, purpose);
+    }
+
+    /**
+     * 创建独立钱包
+     *
+     * @param coinType       钱包类型
+     * @param walletName     钱包名称
+     * @param walletPassword 钱包密码
+     * @param privateKey     私钥
+     * @param purpose        派生规则
+     *
+     * @return 创建的钱包
+     */
+    public CreateWalletBean createSingleWalletByPrivteKey(Vm.CoinType coinType, String walletName, String walletPassword, String privateKey, int purpose) throws AccountException.CreateException {
+        return PyEnv.createWallet(walletName, walletPassword, coinType, privateKey, null, null, null, purpose);
+    }
+
+    /**
+     * 创建独立钱包
+     *
+     * @param coinType       钱包类型
+     * @param walletName     钱包名称
+     * @param walletPassword 钱包密码
+     * @param mnemonics      助记词
+     * @param purpose        派生规则
+     *
+     * @return 创建的钱包
+     */
+    public CreateWalletBean createSingleWalletByMnemonic(Vm.CoinType coinType, String walletName, String walletPassword, String mnemonics, int purpose) throws AccountException.CreateException {
+        return PyEnv.createWallet(walletName, walletPassword, coinType, null, mnemonics, null, null, purpose);
+    }
+
+    /**
+     * 创建独立钱包
+     *
+     * @param coinType       钱包类型
+     * @param walletName     钱包名称
+     * @param walletPassword 钱包密码
+     * @param keystore       Keystore 文件
+     * @param keystorePass   Keystore 文件密码
+     * @param purpose        派生规则
+     *
+     * @return 创建的钱包
+     */
+    public CreateWalletBean createSingleWalletByKeystore(Vm.CoinType coinType, String walletName, String walletPassword, String keystore, String keystorePass, int purpose) throws AccountException.CreateException {
+        return PyEnv.createWallet(walletName, walletPassword, coinType, null, null, keystore, keystorePass, purpose);
+    }
+
+    /**
+     * 创建观察钱包
+     *
+     * @param coinType   钱包类型
+     * @param walletName 钱包名称
+     * @param address    钱包地址
+     *
+     * @return 创建的观察钱包
+     */
+    public CreateWalletBean createWatchWallet(Vm.CoinType coinType, String walletName, String address) {
+        PyObject pyObject = Daemon.commands.callAttr("create", walletName, new Kwarg("addresses", address));
+        return new Gson().fromJson(pyObject.toString(), CreateWalletBean.class);
     }
 }

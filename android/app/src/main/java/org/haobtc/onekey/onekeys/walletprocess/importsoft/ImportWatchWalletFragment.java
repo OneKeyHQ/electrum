@@ -34,6 +34,9 @@ import org.haobtc.onekey.onekeys.walletprocess.OnFinishViewCallBack;
 import org.haobtc.onekey.ui.base.BaseFragment;
 import org.haobtc.onekey.utils.Daemon;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.ObservableOnSubscribe;
@@ -152,7 +155,12 @@ public class ImportWatchWalletFragment extends BaseFragment implements TextWatch
     private void addressIsRight() {
         String watchAddress = mBinding.editAddress.getText().toString().trim();
         try {
-            Daemon.commands.callAttr("verify_legality", watchAddress, new Kwarg("flag", "address"));
+            List<Kwarg> argList = new ArrayList<>();
+            if (mImportSoftWalletProvider != null && mImportSoftWalletProvider.currentCoinType() != null) {
+                argList.add(new Kwarg("coin", mImportSoftWalletProvider.currentCoinType().name));
+            }
+            argList.add(new Kwarg("flag", "address"));
+            Daemon.commands.callAttr("verify_legality", watchAddress, argList);
         } catch (Exception e) {
             if (e.getMessage() != null) {
                 showToast(e.getMessage().replace("BaseException:", ""));

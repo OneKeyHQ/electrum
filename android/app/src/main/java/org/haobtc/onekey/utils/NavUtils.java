@@ -7,7 +7,6 @@ import org.haobtc.onekey.activities.base.LunchActivity;
 import org.haobtc.onekey.activities.transaction.CheckChainDetailWebActivity;
 import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
 import org.haobtc.onekey.onekeys.dialog.recovery.importmethod.ImportWalletSetNameActivity;
-import org.haobtc.onekey.onekeys.homepage.process.CreateDeriveChooseTypeActivity;
 import org.haobtc.onekey.onekeys.homepage.process.SoftWalletNameSettingActivity;
 import org.haobtc.onekey.ui.activity.SoftPassActivity;
 
@@ -56,10 +55,6 @@ public class NavUtils {
 
     public static void gotoSoftWalletNameSettingActivity (Context context, int purpose, String type) {
         SoftWalletNameSettingActivity.start(context, purpose, type);
-    }
-
-    public static void gotoCreateDeriveChooseTypeActivity (Context context, boolean finish) {
-        CreateDeriveChooseTypeActivity.gotoCreateDeriveChooseTypeActivity(context, finish);
     }
 
     /**

@@ -6,6 +6,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.core.content.res.ResourcesCompat;
+
 import com.chad.library.adapter.base.BaseMultiItemQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 
@@ -24,7 +26,7 @@ public class WalletListTypeAdapter extends BaseMultiItemQuickAdapter<WalletInfo,
     public static final int WalletNorMal = 1;
     public static final int AddWallet = 2;
 
-    public WalletListTypeAdapter (List<WalletInfo> data) {
+    public WalletListTypeAdapter(List<WalletInfo> data) {
         super(data);
         addItemType(NoWallet, R.layout.item_no_wallet);
         addItemType(WalletNorMal, R.layout.hd_wallet_item);
@@ -32,7 +34,7 @@ public class WalletListTypeAdapter extends BaseMultiItemQuickAdapter<WalletInfo,
     }
 
     @Override
-    protected void convert (BaseViewHolder helper, WalletInfo item) {
+    protected void convert(BaseViewHolder helper, WalletInfo item) {
         switch (item.itemType) {
             case NoWallet:
                 helper.addOnClickListener(R.id.recl_add_hd_wallet);
@@ -43,11 +45,11 @@ public class WalletListTypeAdapter extends BaseMultiItemQuickAdapter<WalletInfo,
                 RelativeLayout view = helper.getView(R.id.rel_background);
                 ImageView imgType = helper.getView(R.id.img_type);
                 if (item.type.contains("btc")) {
-                    view.setBackground(mContext.getDrawable(R.drawable.orange_back));
-                    imgType.setImageDrawable(mContext.getDrawable(R.drawable.token_trans_btc_list));
+                    view.setBackground(ResourcesCompat.getDrawable(helper.itemView.getResources(), R.drawable.orange_back, null));
+                    imgType.setImageDrawable(ResourcesCompat.getDrawable(helper.itemView.getResources(), R.drawable.token_trans_btc_list, null));
                 } else if (item.type.contains("eth")) {
-                    view.setBackground(mContext.getDrawable(R.drawable.eth_blue_back));
-                    imgType.setImageDrawable(mContext.getDrawable(R.drawable.token_trans_eth_list));
+                    view.setBackground(ResourcesCompat.getDrawable(helper.itemView.getResources(), R.drawable.eth_blue_back, null));
+                    imgType.setImageDrawable(ResourcesCompat.getDrawable(helper.itemView.getResources(), R.drawable.token_trans_eth_list, null));
                 }
                 if (item.type.contains("derived-standard")) {
                     helper.getView(R.id.text_type).setVisibility(View.VISIBLE);
@@ -73,7 +75,7 @@ public class WalletListTypeAdapter extends BaseMultiItemQuickAdapter<WalletInfo,
                 ImageView chooseView = helper.getView(R.id.img_choose);
                 if (loadWalletName.equals(item.name)) {
                     chooseView.setVisibility(View.VISIBLE);
-                }else {
+                } else {
                     chooseView.setVisibility(View.GONE);
                 }
                 copyAddr.setOnClickListener(v -> {

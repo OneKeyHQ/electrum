@@ -31,6 +31,8 @@ import org.haobtc.onekey.onekeys.walletprocess.OnFinishViewCallBack;
 import org.haobtc.onekey.ui.base.BaseFragment;
 import org.haobtc.onekey.utils.Daemon;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import io.reactivex.disposables.Disposable;
@@ -143,7 +145,12 @@ public class ImportPrivateKeyFragment extends BaseFragment implements View.OnCli
     private void isRightPrivate() {
         String privateKey = mBinding.editInputPrivate.getText().toString().trim();
         try {
-            Daemon.commands.callAttr("verify_legality", privateKey, new Kwarg("flag", "private"));
+            List<Kwarg> argList = new ArrayList<>();
+            if (mImportSoftWalletProvider != null && mImportSoftWalletProvider.currentCoinType() != null) {
+                argList.add(new Kwarg("coin", mImportSoftWalletProvider.currentCoinType().name));
+            }
+            argList.add(new Kwarg("flag", "private"));
+            Daemon.commands.callAttr("verify_legality", privateKey, argList);
         } catch (Exception e) {
             if (e.getMessage() != null) {
                 showToast(e.getMessage().replace("BaseException:", ""));

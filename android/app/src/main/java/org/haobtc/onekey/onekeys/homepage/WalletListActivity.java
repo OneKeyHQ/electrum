@@ -27,7 +27,8 @@ import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
 import org.haobtc.onekey.onekeys.dialog.RecoverHdWalletActivity;
 import org.haobtc.onekey.onekeys.homepage.mindmenu.HDWalletActivity;
-import org.haobtc.onekey.onekeys.homepage.process.CreateWalletChooseTypeActivity;
+import org.haobtc.onekey.onekeys.walletprocess.createfasthd.CreateFastHDSoftWalletActivity;
+import org.haobtc.onekey.onekeys.walletprocess.createsoft.CreateSoftWalletActivity;
 import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
 import org.haobtc.onekey.ui.dialog.CreateWalletWaySelectorDialog;
 import org.haobtc.onekey.ui.dialog.HdWalletIntroductionDialog;
@@ -101,7 +102,7 @@ public class WalletListActivity extends BaseActivity implements BaseQuickAdapter
         });
         mWalletModel.mBtcWallets.observe(this, mBtcList -> btcList.addAll(mBtcList));
         mWalletModel.mEthWallets.observe(this, mEthList -> ethList.addAll(mEthList));
-        mAdapter.setOnItemChildClickListener(this::onItemChildClick);
+        mAdapter.setOnItemChildClickListener(this);
     }
 
 
@@ -167,9 +168,7 @@ public class WalletListActivity extends BaseActivity implements BaseQuickAdapter
                 mAdapter.setNewData(ethList);
                 break;
             case R.id.img_add:
-                Intent intent00 = new Intent(this, CreateWalletChooseTypeActivity.class);
-                intent00.putExtra("ifHaveHd", !mAllList.isEmpty());
-                startActivity(intent00);
+                CreateSoftWalletActivity.start(this);
                 break;
             case R.id.img_w:
                 new HdWalletIntroductionDialog().show(getSupportFragmentManager(), "hd_introduction");
@@ -214,7 +213,7 @@ public class WalletListActivity extends BaseActivity implements BaseQuickAdapter
             Intent intent2 = new Intent(mContext, RecoverHdWalletActivity.class);
             startActivity(intent2);
         } else if (id == R.id.recl_add_wallet) {
-            NavUtils.gotoCreateDeriveChooseTypeActivity(mContext, false);
+            CreateFastHDSoftWalletActivity.start(this);
         } else if (id == R.id.rel_background) {
             WalletInfo data = (WalletInfo) adapter.getItem(position);
             String name = data.name;

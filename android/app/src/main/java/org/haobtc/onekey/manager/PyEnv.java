@@ -1,7 +1,9 @@
 package org.haobtc.onekey.manager;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 
@@ -38,9 +40,11 @@ import org.haobtc.onekey.bean.WalletInfo;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.PyConstant;
 import org.haobtc.onekey.constant.StringConstant;
+import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.event.CreateSuccessEvent;
 import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.event.RefreshEvent;
+import org.haobtc.onekey.exception.AccountException;
 import org.haobtc.onekey.exception.HardWareExceptions;
 import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
 import org.haobtc.onekey.ui.base.BaseActivity;
@@ -49,6 +53,7 @@ import org.haobtc.onekey.utils.Global;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -72,9 +77,9 @@ public final class PyEnv {
 
     public static PyObject sBle, sCustomerUI, sNfc, sUsb, sBleHandler, sNfcHandler, sBleTransport,
             sNfcTransport, sUsbTransport, sProtocol, sCommands;
-    private static ScheduledThreadPoolExecutor scheduledThreadPoolExecutor =  new ScheduledThreadPoolExecutor(1,
+    private static ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(1,
             new ThreadFactoryBuilder().setNameFormat("PyEnv-schedule-%d").build(), new ThreadPoolExecutor.DiscardPolicy());
-    public static ListeningScheduledExecutorService  mExecutorService = MoreExecutors.listeningDecorator(scheduledThreadPoolExecutor);
+    public static ListeningScheduledExecutorService mExecutorService = MoreExecutors.listeningDecorator(scheduledThreadPoolExecutor);
 
     static {
         sNfc = Global.py.getModule(PyConstant.TREZORLIB_TRANSPORT_NFC);
@@ -748,7 +753,7 @@ public final class PyEnv {
      *
      * @param password APP主密码
      */
-    public static PyResponse<String> exportMnemonics (String password, String name) {
+    public static PyResponse<String> exportMnemonics(String password, String name) {
         PyResponse<String> response = new PyResponse<>();
         try {
             String result = sCommands.callAttr(PyConstant.EXPORT_MNEMONICS, password, new Kwarg("name", name)).toString();
@@ -764,13 +769,61 @@ public final class PyEnv {
     /**
      * 创建钱包
      *
+     * @param walletName 钱包名称
+     * @param password   APP主密码
+     * @param coinType   钱包类型
+     * @param privateKey 私钥 optional
+     * @param mnemonics  助记词 optional
+     * @param purpose    地址类型 optional 可以传 -1
+     *
+     * @return 创建的钱包
+     */
+    public static CreateWalletBean createWallet(String walletName, String password, Vm.CoinType coinType, String privateKey, String mnemonics, String keyStore, String keyStorePass, int purpose) throws AccountException.CreateException {
+        try {
+            List<Kwarg> argList = new LinkedList<>();
+            if (!TextUtils.isEmpty(privateKey)) {
+                argList.add(new Kwarg("privkeys", privateKey));
+            }
+            if (!TextUtils.isEmpty(mnemonics)) {
+                argList.add(new Kwarg("seed", mnemonics));
+            }
+            if (!TextUtils.isEmpty(keyStore) && !TextUtils.isEmpty(keyStorePass)) {
+                argList.add(new Kwarg("keystores", mnemonics));
+                argList.add(new Kwarg("keystoresPass", keyStorePass));
+            }
+            if (purpose != 0 || purpose != -1) {
+                argList.add(new Kwarg("purpose", purpose));
+            }
+
+            argList.add(new Kwarg("coin", coinType.name));
+
+            String result = sCommands.callAttr(PyConstant.CREATE_WALLET, walletName, password, argList).toString();
+            CreateWalletBean createWalletBean = CreateWalletBean.objectFromData(result);
+            EventBus.getDefault().post(new CreateSuccessEvent(createWalletBean.getWalletInfo().get(0).getName()));
+            return createWalletBean;
+        } catch (Exception e) {
+            Exception exception = HardWareExceptions.exceptionConvert(e);
+            String message = "";
+            if (exception.getMessage() != null) {
+                if (!exception.getMessage().contains(StringConstant.REPLACE_ERROR)) {
+                    message = exception.getMessage();
+                }
+            }
+            e.printStackTrace();
+            throw new AccountException.CreateException(message);
+        }
+    }
+
+    /**
+     * 创建钱包
+     *
      * @param context
      * @param password   APP主密码
      * @param walletName 钱包名称
      * @param mnemonics  助记词 optional
      * @param privateKey 私钥 optional
      */
-
+    @Deprecated
     public static void createWallet(Context context, String walletName, String password, String privateKey, String mnemonics, int purpose) {
         try {
             String result = "";
@@ -802,7 +855,7 @@ public final class PyEnv {
      * @param password   APP 主密码
      * @param walletName 要删除的钱包名称
      */
-    public static PyResponse<Void> deleteWallet(String password, String walletName,boolean allDelete) {
+    public static PyResponse<Void> deleteWallet(String password, String walletName, boolean allDelete) {
         PyResponse<Void> response = new PyResponse<>();
         try {
             if (Strings.isNullOrEmpty(password)) {
@@ -829,6 +882,7 @@ public final class PyEnv {
      * @param password     APP 主密码
      * @param currencyType 币种类型
      */
+    @Deprecated
     public static PyResponse<Void> createDerivedWallet(String walletName, String password, String currencyType, int purpose) {
         PyResponse<Void> response = new PyResponse<>();
         try {
@@ -837,7 +891,8 @@ public final class PyEnv {
             EventBus.getDefault().post(new CreateSuccessEvent(createWalletBean.getWalletInfo().get(0).getName()));
         } catch (Exception e) {
             Exception exception = HardWareExceptions.exceptionConvert(e);
-            response.setErrors(exception.getMessage());            e.printStackTrace();
+            response.setErrors(exception.getMessage());
+            e.printStackTrace();
         }
         return response;
     }
@@ -854,7 +909,8 @@ public final class PyEnv {
             response.setResult(result);
         } catch (Exception e) {
             Exception exception = HardWareExceptions.exceptionConvert(e);
-            response.setErrors(exception.getMessage());            e.printStackTrace();
+            response.setErrors(exception.getMessage());
+            e.printStackTrace();
         }
         return response;
     }

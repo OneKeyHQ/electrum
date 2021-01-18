@@ -91,7 +91,7 @@ public class SelectBitcoinAddressTypeDialogFragment extends DialogFragment imple
     }
 
     @IntDef
-    @interface BitcoinAddressType {
+    public @interface BitcoinAddressType {
         int RecommendType = 49;
         int NativeType = 84;
         int NormalType = 44;

@@ -3,6 +3,7 @@ package org.haobtc.onekey.onekeys.walletprocess.importsoft;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 import androidx.navigation.NavController;
@@ -10,11 +11,14 @@ import androidx.navigation.NavGraph;
 import androidx.navigation.NavInflater;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.orhanobut.logger.Logger;
-
+import org.haobtc.onekey.BuildConfig;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.activities.base.MyApplication;
+import org.haobtc.onekey.bean.CreateWalletBean;
+import org.haobtc.onekey.business.wallet.AccountManager;
 import org.haobtc.onekey.constant.Vm;
+import org.haobtc.onekey.exception.AccountException;
 import org.haobtc.onekey.onekeys.walletprocess.OnFinishViewCallBack;
 import org.haobtc.onekey.onekeys.walletprocess.SelectBitcoinAddressTypeDialogFragment.OnSelectBitcoinAddressTypeCallback;
 import org.haobtc.onekey.onekeys.walletprocess.SelectChainCoinFragment.OnSelectCoinTypeCallback;
@@ -26,6 +30,13 @@ import org.haobtc.onekey.onekeys.walletprocess.importsoft.ImportMnemonicFragment
 import org.haobtc.onekey.onekeys.walletprocess.importsoft.ImportPrivateKeyFragment.OnImportPrivateKeyCallback;
 import org.haobtc.onekey.onekeys.walletprocess.importsoft.ImportWatchWalletFragment.OnImportWatchAddressCallback;
 import org.haobtc.onekey.ui.activity.SoftPassActivity;
+import org.haobtc.onekey.utils.NavUtils;
+
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.ObservableOnSubscribe;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 /**
  * 导入软件钱包流程
@@ -59,6 +70,9 @@ public class ImportSoftWalletActivity extends BaseActivity
     private String mWalletName;
     private String mWalletPassword;
 
+    private AccountManager mAccountManager;
+    private Disposable mImportDisposable;
+
     @Override
     public int getLayoutId() {
         return R.layout.activity_import_soft_wallet;
@@ -74,7 +88,7 @@ public class ImportSoftWalletActivity extends BaseActivity
 
     @Override
     public void initData() {
-
+        mAccountManager = new AccountManager(getApplicationContext());
     }
 
     private NavController getNavController() {
@@ -84,7 +98,7 @@ public class ImportSoftWalletActivity extends BaseActivity
 
     @Override
     public boolean existsHDWallet() {
-        return false;
+        return mAccountManager.existsLocalHD();
     }
 
     @Override
@@ -174,7 +188,7 @@ public class ImportSoftWalletActivity extends BaseActivity
     public void onSetWalletName(String name) {
         mWalletName = name;
         if (mWalletImportMode == SoftWalletImportMode.Watch) {
-            printData();
+            handleWalletImport();
         } else {
             SoftPassActivity.startForResult(this, REQUEST_SET_PWD, -1);
         }
@@ -188,7 +202,7 @@ public class ImportSoftWalletActivity extends BaseActivity
                 case REQUEST_SET_PWD:
                     SoftPassActivity.ResultDataBean resultDataBean1 = SoftPassActivity.decodeResultData(data);
                     mWalletPassword = resultDataBean1.password;
-                    printData();
+                    handleWalletImport();
                     break;
             }
         }
@@ -201,8 +215,76 @@ public class ImportSoftWalletActivity extends BaseActivity
         }
     }
 
-    private void printData() {
-        Logger.e(mCoinType.name + "  " + mWalletName + "   " + mWalletPassword);
+    private void handleWalletImport() {
+        if (mImportDisposable != null && !mImportDisposable.isDisposed()) {
+            mImportDisposable.dispose();
+        }
+        mImportDisposable = Observable
+                .create((ObservableOnSubscribe<CreateWalletBean>) emitter -> {
+                    assertX(!TextUtils.isEmpty(mWalletName), "mWalletName Assertion failed");
+
+                    CreateWalletBean walletBean;
+                    switch (mWalletImportMode) {
+                        case SoftWalletImportMode.Watch:
+                            assertX(!TextUtils.isEmpty(mImportWatchAddress), "mImportWatchAddress Assertion failed");
+                            walletBean = mAccountManager.createWatchWallet(mCoinType, mWalletName, mImportWatchAddress);
+                            break;
+                        case SoftWalletImportMode.Mnemonic:
+                            assertX(!TextUtils.isEmpty(mWalletPassword), "mWalletPassword Assertion failed");
+                            assertX(!TextUtils.isEmpty(mImportMnemonic), "mImportMnemonic Assertion failed");
+                            assertX(mBitcoinAddressPurpose != 0, "mBitcoinAddressPurpose Assertion failed");
+
+                            walletBean = mAccountManager.createSingleWalletByMnemonic(mCoinType, mWalletName, mWalletPassword, mImportMnemonic, mBitcoinAddressPurpose);
+                            break;
+                        case SoftWalletImportMode.Keystore:
+                            assertX(!TextUtils.isEmpty(mWalletPassword), "mWalletPassword Assertion failed");
+                            assertX(!TextUtils.isEmpty(mImportKeystoreContent), "mImportKeystoreContent Assertion failed");
+                            assertX(!TextUtils.isEmpty(mImportKeystorePassword), "mImportKeystorePassword Assertion failed");
+                            assertX(mBitcoinAddressPurpose != 0, "mBitcoinAddressPurpose Assertion failed");
+
+                            walletBean = mAccountManager.createSingleWalletByKeystore(mCoinType, mWalletName, mWalletPassword, mImportKeystoreContent, mImportKeystorePassword, mBitcoinAddressPurpose);
+                            break;
+                        case SoftWalletImportMode.Private:
+                            assertX(!TextUtils.isEmpty(mWalletPassword), "mWalletPassword Assertion failed");
+                            assertX(!TextUtils.isEmpty(mImportPrivateKey), "mImportPrivateKey Assertion failed");
+                            assertX(mBitcoinAddressPurpose != 0, "mBitcoinAddressPurpose Assertion failed");
+
+                            walletBean = mAccountManager.createSingleWalletByPrivteKey(mCoinType, mWalletName, mWalletPassword, mImportPrivateKey, mBitcoinAddressPurpose);
+                            break;
+                        default:
+                            walletBean = null;
+                    }
+                    emitter.onNext(walletBean);
+                    emitter.onComplete();
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe(disposable -> {
+                    showProgress();
+                })
+                .doFinally(this::dismissProgress)
+                .subscribe(createWalletBean -> {
+                    NavUtils.gotoMainActivityTask(this, false);
+                    finish();
+                }, e -> {
+                    if (e instanceof Exception) {
+                        MyApplication.getInstance().toastErr((Exception) e);
+                    }
+                    e.printStackTrace();
+                });
     }
 
+    private void assertX(boolean b, String message) {
+        if (!b && BuildConfig.DEBUG) {
+            throw new AssertionError(message);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mImportDisposable != null && !mImportDisposable.isDisposed()) {
+            mImportDisposable.dispose();
+        }
+    }
 }

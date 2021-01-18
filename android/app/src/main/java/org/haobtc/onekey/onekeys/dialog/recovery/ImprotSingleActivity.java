@@ -10,6 +10,7 @@ import org.haobtc.onekey.aop.SingleClick;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+@Deprecated
 public class ImprotSingleActivity extends BaseActivity {
 
     @Override
