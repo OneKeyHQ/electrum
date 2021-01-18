@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-07 22:59-0800\n"
+"POT-Creation-Date: 2021-01-15 03:02-0800\n"
 "PO-Revision-Date: 2020-12-08 08:51+0000\n"
 "Last-Translator: JINGHUA SHAO <shaohanchu@bixin.com>, 2021\n"
 "Language-Team: Chinese (China) (https://www.transifex.com/onekey/teams/113632/zh_CN/)\n"
@@ -609,7 +609,7 @@ msgstr "已保存备份:"
 #: electrum/gui/qt/address_list.py:126 electrum/gui/qt/address_list.py:127
 #: electrum/gui/qt/history_list.py:409 electrum/gui/qt/main_window.py:964
 #: electrum/gui/stdio.py:112 electrum/gui/stdio.py:124
-#: electrum_gui/android/console.py:343
+#: electrum_gui/android/console.py:340
 msgid "Balance"
 msgstr "余额"
 
@@ -677,7 +677,7 @@ msgstr "区块高度"
 msgid "Blockchain"
 msgstr "区块链"
 
-#: trezor/python-trezor/src/trezorlib/transport/bluetooth_ios.py:34
+#: trezor/python-trezor/src/trezorlib/transport/bluetooth_ios.py:30
 #: trezor/python-trezor/src/trezorlib/transport/bluetooth.py:35
 msgid "Bluetooth device not available"
 msgstr "蓝牙设备不可用"
@@ -729,7 +729,7 @@ msgstr "追加手续费"
 msgid "CLTV expiry"
 msgstr "CLTV过期"
 
-#: electrum_gui/android/console.py:3485
+#: electrum_gui/android/console.py:3689
 msgid ""
 "CPFP(Child Pays For Parent) fails because it does not get the fee "
 "intormation of the original transaction."
@@ -792,7 +792,8 @@ msgstr "不能添加此联署人："
 msgid "Cannot broadcast transaction"
 msgstr "无法广播交易"
 
-#: electrum_gui/android/console.py:1775
+#: electrum_gui/android/console.py:1856
+#: electrum_gui/android/console_doc.py:1707
 msgid "Cannot broadcast transaction due to network connected exceptions"
 msgstr "由于网络连接异常，无法广播交易。"
 
@@ -1293,7 +1294,7 @@ msgstr "在您的 {} 设备上确认交易输出"
 msgid "Confirm wallet address on your {} device"
 msgstr "在您的 {} 设备确认钱包地址"
 
-#: electrum_gui/android/console.py:1351
+#: electrum_gui/android/console.py:1394
 msgid "Confirmed"
 msgstr "已确认。"
 
@@ -1477,7 +1478,8 @@ msgstr "当前版本：{}"
 msgid "Current wallet does not support exporting Mnemonic."
 msgstr "当前钱包不支持导出助记词。"
 
-#: electrum_gui/android/console.py:1815
+#: electrum_gui/android/console.py:1910
+#: electrum_gui/android/console_doc.py:1748
 msgid "Current wallet does not support signature message:{}"
 msgstr "当前钱包不支持对交易信息签名:{}"
 
@@ -1694,7 +1696,7 @@ msgstr "要显示您的密语种子吗？"
 msgid "Distributed by Electrum Technologies GmbH"
 msgstr "由Electrum Technologies GmbH分发"
 
-#: electrum_gui/android/console.py:124
+#: electrum_gui/android/console.py:122
 msgid ""
 "Do not enter code here that you don't understand. Executing the wrong code "
 "could lead to your coins being irreversibly lost."
@@ -1772,7 +1774,7 @@ msgid ""
 "as newer versions or other software."
 msgstr "旧版本的Electrum存在一个Bug，不会创建与新版本或其他软件相同的钱包。"
 
-#: electrum_gui/android/console.py:848
+#: electrum_gui/android/console.py:837
 msgid "Dust transaction"
 msgstr "尘埃交易"
 
@@ -2274,7 +2276,7 @@ msgstr "世界语"
 msgid "Estimate"
 msgstr "估计"
 
-#: electrum_gui/android/console.py:3524
+#: electrum_gui/android/console.py:3728
 msgid "Exceeding the Maximum fee limit."
 msgstr "超出手续费上限"
 
@@ -2378,7 +2380,8 @@ msgstr "无法显示二维码。"
 msgid "Failed to export to file."
 msgstr "导出文件失败。"
 
-#: electrum_gui/android/console.py:1515
+#: electrum_gui/android/console.py:1603
+#: electrum_gui/android/console_doc.py:1440
 msgid "Failed to get transaction details."
 msgstr "获取交易信息失败"
 
@@ -2391,11 +2394,12 @@ msgid "Failed to import from file."
 msgstr "导入文件失败。"
 
 #. (_("Your {} were successfully imported").format(title))
-#: electrum_gui/android/console.py:509
+#: electrum_gui/android/console.py:506
 msgid "Failed to load file {}"
 msgstr "读取文件失败 {}"
 
-#: electrum_gui/android/console.py:1658
+#: electrum_gui/android/console.py:1746
+#: electrum_gui/android/console_doc.py:1583
 msgid "Failed to open file."
 msgstr "打开文件失败"
 
@@ -2474,7 +2478,8 @@ msgstr "查找"
 msgid "Firmware Version"
 msgstr "固件版本"
 
-#: electrum_gui/android/console.py:2289
+#: electrum_gui/android/console.py:2454
+#: electrum_gui/android/console_doc.py:2294
 msgid "Firmware not compatible with your equipment, Aborting."
 msgstr "固件与您当前设备不匹配，请检查。"
 
@@ -2967,7 +2972,8 @@ msgstr "即将到账的付款"
 msgid "Incorrect Bip39 mnemonic format."
 msgstr "这似乎不是正确的 BIP39 助记词格式"
 
-#: electrum_gui/android/console.py:2742
+#: electrum_gui/android/console.py:2934
+#: electrum_gui/android/console_doc.py:2776
 msgid "Incorrect address or pubkey."
 msgstr "地址或公钥错误"
 
@@ -2979,11 +2985,13 @@ msgstr "比特币地址错误"
 msgid "Incorrect eth address."
 msgstr "以太坊地址错误"
 
-#: electrum_gui/android/console.py:2636
+#: electrum_gui/android/console.py:2805
+#: electrum_gui/android/console_doc.py:2650
 msgid "Incorrect eth keystore."
 msgstr "以太坊 Keystore 文件格式不正确"
 
-#: electrum_gui/android/console.py:2609
+#: electrum_gui/android/console.py:2778
+#: electrum_gui/android/console_doc.py:2623
 msgid "Incorrect mnemonic format."
 msgstr "助记词格式有误"
 
@@ -3623,7 +3631,8 @@ msgstr "无说明"
 msgid "No Wallet"
 msgstr "无钱包"
 
-#: electrum_gui/android/console.py:2758
+#: electrum_gui/android/console.py:2950
+#: electrum_gui/android/console_doc.py:2792
 msgid "No address available."
 msgstr "无可用地址"
 
@@ -3671,7 +3680,8 @@ msgstr "无此输出"
 msgid "No path found"
 msgstr "找不到路径"
 
-#: electrum_gui/android/console.py:2793
+#: electrum_gui/android/console.py:2985
+#: electrum_gui/android/console_doc.py:2827
 msgid "No private key available."
 msgstr "无可用私钥"
 
@@ -3697,7 +3707,7 @@ msgid "Nodes"
 msgstr "节点"
 
 #: electrum/gui/kivy/main_window.py:134 electrum/gui/qt/settings_dialog.py:353
-#: electrum/gui/qt/history_list.py:475 electrum_gui/android/console.py:419
+#: electrum/gui/qt/history_list.py:475 electrum_gui/android/console.py:416
 msgid "None"
 msgstr "无"
 
@@ -3818,7 +3828,7 @@ msgid "OR"
 msgstr "或者"
 
 #: electrum/gui/text.py:146 electrum/gui/kivy/main_window.py:889
-#: electrum/gui/qt/main_window.py:944 electrum_gui/android/console.py:330
+#: electrum/gui/qt/main_window.py:944 electrum_gui/android/console.py:327
 msgid "Offline"
 msgstr "离线"
 
@@ -4282,7 +4292,7 @@ msgstr "请在这儿输入。"
 msgid "Please type your seed phrase using the virtual keyboard."
 msgstr "请用虚拟键盘输入你的密语种子。"
 
-#: electrum_gui/android/console.py:940
+#: electrum_gui/android/console.py:958 electrum_gui/android/console_doc.py:801
 msgid "Please use unconfirmed utxo."
 msgstr "请使用未确认的 UTXO"
 
@@ -4464,7 +4474,7 @@ msgstr "退出"
 msgid "R/W error accessing path"
 msgstr "读/写 访问路径错误"
 
-#: electrum_gui/android/console.py:3398
+#: electrum_gui/android/console.py:3602
 msgid ""
 "RBF(Replace-By-Fee) fails because it does not get the fee intormation of the"
 " original transaction."
@@ -4921,7 +4931,8 @@ msgstr "正在发送"
 msgid "Sending crash report..."
 msgstr "正在发送崩溃报告……"
 
-#: electrum_gui/android/console.py:1351 electrum_gui/android/console.py:1463
+#: electrum_gui/android/console.py:1394 electrum_gui/android/console.py:1494
+#: electrum_gui/android/console_doc.py:1370
 msgid "Sending failure"
 msgstr "发送失败"
 
@@ -4953,7 +4964,7 @@ msgid "Server hosting your email account"
 msgstr "托管您电子邮件帐户的服务器"
 
 #: electrum/gui/kivy/main_window.py:899 electrum/gui/qt/main_window.py:960
-#: electrum_gui/android/console.py:340
+#: electrum_gui/android/console.py:337
 msgid "Server is lagging ({} blocks)"
 msgstr "服务器滞后 ( {} 个区块)"
 
@@ -5237,7 +5248,7 @@ msgstr "状态:"
 msgid "Step {}/24.  Enter seed word as explained on your {}:"
 msgstr "步骤{}/24。按照{}中的说明输入密语种子："
 
-#: electrum_gui/android/console.py:3522
+#: electrum_gui/android/console.py:3726
 msgid "Sub-transaction fee error."
 msgstr "子交易费用出错"
 
@@ -5290,13 +5301,14 @@ msgstr "扫入钱包"
 msgid "Sweep private keys"
 msgstr "将私钥上保存的币转入钱包"
 
-#: electrum_gui/android/console.py:2254
+#: electrum_gui/android/console.py:2419
+#: electrum_gui/android/console_doc.py:2259
 msgid "Switch the device to bootloader mode."
 msgstr "请您将设备切换至 bootloader 模式"
 
 #: electrum/gui/text.py:149 electrum/gui/kivy/main_window.py:897
 #: electrum/gui/qt/main_window.py:957 electrum/gui/stdio.py:121
-#: electrum_gui/android/console.py:338
+#: electrum_gui/android/console.py:335
 msgid "Synchronizing..."
 msgstr "同步中..."
 
@@ -5377,7 +5389,8 @@ msgid ""
 "fingerprint passed in with the --serverfingerprint option."
 msgstr "主服务器提供的SSL证书与--serverfingerprint选项传入的指纹不符。"
 
-#: electrum_gui/android/console.py:1812
+#: electrum_gui/android/console.py:1907
+#: electrum_gui/android/console_doc.py:1745
 msgid "The address is not in the current wallet."
 msgstr "该地址在当前钱包中不存在"
 
@@ -5393,7 +5406,7 @@ msgid ""
 "wallet."
 msgstr "如果您的钱包资金不足，金额会被显示为红色。"
 
-#: electrum_gui/android/console.py:3774
+#: electrum_gui/android/console.py:4016
 msgid ""
 "The background process does not start and it is recommended to restart the "
 "application."
@@ -5637,7 +5650,8 @@ msgid "This is a watching-only wallet"
 msgstr "这是一个仅供监视的钱包"
 
 #: electrum/gui/qt/main_window.py:2471 electrum/gui/qt/main_window.py:2551
-#: electrum_gui/android/console.py:1810
+#: electrum_gui/android/console.py:1905
+#: electrum_gui/android/console_doc.py:1743
 msgid "This is a watching-only wallet."
 msgstr "这是一个仅供监视的钱包。"
 
@@ -5914,6 +5928,10 @@ msgstr "交易无法保存。"
 msgid "Transaction exported successfully"
 msgstr "成功导出交易"
 
+#: electrum_gui/android/console.py:1858
+msgid "Transaction formatter error"
+msgstr "交易格式错误"
+
 #: electrum/gui/qt/transaction_dialog.py:301
 msgid "Transaction is too large in size."
 msgstr "交易字节数太多。"
@@ -5922,7 +5940,7 @@ msgstr "交易字节数太多。"
 msgid "Transaction is unrelated to this wallet."
 msgstr "与这个钱包无关交易。"
 
-#: electrum_gui/android/console.py:1311
+#: electrum_gui/android/console.py:1354
 msgid "Transaction not related to the current wallet."
 msgstr "交易与当前钱包无关联"
 
@@ -6069,7 +6087,7 @@ msgid "Unavailable xpub"
 msgstr "Xpub 不可用"
 
 #: electrum/wallet.py:88 electrum/wallet.py:590
-#: electrum_gui/android/console.py:1329 electrum_gui/android/console.py:1349
+#: electrum_gui/android/console.py:1372 electrum_gui/android/console.py:1392
 msgid "Unconfirmed"
 msgstr "未确认"
 
@@ -6139,6 +6157,10 @@ msgstr "未实现的收益"
 msgid "Unsigned"
 msgstr "未签名"
 
+#: electrum_gui/android/sort_wallet_list.py:75
+msgid "Unsupported coin types"
+msgstr "不支持的货币类型"
+
 #: electrum/crypto.py:175
 msgid "Unsupported password hash version"
 msgstr "不支持的密码哈希版本"
@@ -6156,7 +6178,8 @@ msgstr "更新检查"
 msgid "Update check failed"
 msgstr "检查更新失败"
 
-#: electrum_gui/android/console.py:2310
+#: electrum_gui/android/console.py:2475
+#: electrum_gui/android/console_doc.py:2315
 msgid "Update failed: {}"
 msgstr "升级失败: {}"
 
@@ -6315,7 +6338,7 @@ msgstr "使用区块浏览器查看"
 msgid "WARNING"
 msgstr "警告"
 
-#: electrum_gui/android/console.py:123
+#: electrum_gui/android/console.py:121
 msgid "WARNING!"
 msgstr "警告！"
 
@@ -6344,6 +6367,10 @@ msgstr "WIF私钥在Electrum钱包里是有不同的类别之分的，不同的�
 #: electrum/plugins/trustedcoin/qt.py:75
 msgid "Waiting for TrustedCoin server to sign transaction..."
 msgstr "等待TrustedCoin服务器签名交易..."
+
+#: trezor/python-trezor/src/trezorlib/transport/bluetooth.py:52
+msgid "Waiting for send timeout"
+msgstr "发送超时，等待中"
 
 #: electrum/gui/qt/installwizard.py:204
 msgid "Wallet"
@@ -6614,7 +6641,7 @@ msgid ""
 " your passphrase."
 msgstr "您的密码开头或结尾含有空格，或者含有多个连续的空格。"
 
-#: electrum_gui/android/console.py:3784
+#: electrum_gui/android/console.py:4026
 msgid "You haven't chosen a wallet yet."
 msgstr "您尚未选择钱包"
 
@@ -6659,7 +6686,8 @@ msgid ""
 msgstr ""
 "您需要给每一个不同的附加密码创建一个独立的Electrum钱包，每个钱包都对应不同的一组地址。修改附加密码不会导致原有钱包丢失，只要使用原有附加密码就可以找回与之对应的钱包。"
 
-#: electrum_gui/android/console.py:2284
+#: electrum_gui/android/console.py:2449
+#: electrum_gui/android/console_doc.py:2289
 msgid "You need to upgrade the bootloader immediately."
 msgstr "您需要尽快升级 bootloader。"
 
@@ -6736,7 +6764,8 @@ msgstr "设备固件版本太旧"
 msgid "Your device might not have support for this functionality."
 msgstr "您的设备可能不支持此功能。"
 
-#: electrum_gui/android/console.py:2282
+#: electrum_gui/android/console.py:2447
+#: electrum_gui/android/console_doc.py:2287
 msgid "Your device's firmware version is too low. Aborting."
 msgstr "您设备中运行的固件版本过低，操作中断。"
 
