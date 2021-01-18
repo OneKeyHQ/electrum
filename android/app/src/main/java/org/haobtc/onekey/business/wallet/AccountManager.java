@@ -15,6 +15,7 @@ import org.haobtc.onekey.bean.LocalWalletInfo;
 import org.haobtc.onekey.constant.Constant;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.bean.CreateWalletBean;
+import org.haobtc.onekey.constant.PyConstant;
 import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.event.CreateSuccessEvent;
 import org.haobtc.onekey.exception.AccountException;
@@ -241,7 +242,9 @@ public class AccountManager {
      * @return 创建的观察钱包
      */
     public CreateWalletBean createWatchWallet(Vm.CoinType coinType, String walletName, String address) {
-        PyObject pyObject = Daemon.commands.callAttr("create", walletName, new Kwarg("addresses", address));
-        return new Gson().fromJson(pyObject.toString(), CreateWalletBean.class);
+        PyObject pyObject = Daemon.commands.callAttr(PyConstant.CREATE_WALLET, walletName, new Kwarg("addresses", address), new Kwarg("coin", coinType.name));
+        CreateWalletBean walletBean = new Gson().fromJson(pyObject.toString(), CreateWalletBean.class);
+        EventBus.getDefault().post(new CreateSuccessEvent(walletBean.getWalletInfo().get(0).getName()));
+        return walletBean;
     }
 }

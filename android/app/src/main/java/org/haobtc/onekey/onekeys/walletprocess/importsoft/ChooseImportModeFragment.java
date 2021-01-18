@@ -66,7 +66,8 @@ public class ChooseImportModeFragment extends BaseFragment implements View.OnCli
         if (mImportSoftWalletProvider != null
                 && mImportSoftWalletProvider.currentCoinType() == Vm.CoinType.ETH
                 && Vm.CoinType.ETH.enable) {
-            mBinding.relImportKeystore.setVisibility(View.VISIBLE);
+            // todo 等待接口完成
+            // mBinding.relImportKeystore.setVisibility(View.VISIBLE);
         }
     }
 
