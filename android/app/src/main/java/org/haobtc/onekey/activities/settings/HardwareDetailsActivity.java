@@ -370,7 +370,6 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
                 break;
             case PyConstant.BUTTON_REQUEST_6:
                 if (BusinessAsyncTask.WIPE_DEVICE.equals(currentMethod)) {
-                    PyEnv.cancelAll();
                     Intent intent1 = new Intent(this, ConfirmOnHardWareActivity.class);
                     intent1.setAction(BusinessAsyncTask.WIPE_DEVICE);
                     startActivity(intent1);

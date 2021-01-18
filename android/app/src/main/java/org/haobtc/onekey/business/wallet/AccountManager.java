@@ -8,8 +8,8 @@ import androidx.annotation.WorkerThread;
 
 import com.google.common.base.Strings;
 
-import org.haobtc.onekey.bean.BalanceInfo;
 import org.haobtc.onekey.bean.LocalWalletInfo;
+import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
 
@@ -97,5 +97,23 @@ public class AccountManager {
                 .putString(CURRENT_SELECTED_WALLET_TYPE, info.getType())
                 .apply();
         return info;
+    }
+
+    /**
+     * 获取当前钱包的类型
+     *
+     * @return
+     */
+    public String getCurrentWalletType() {
+        return mPreferencesSharedPreferences.getString(Constant.CURRENT_SELECTED_WALLET_TYPE, "");
+    }
+
+    /**
+     * 判断当前钱包是否备份
+     *
+     * @return
+     */
+    public boolean getWalletBackup() {
+        return PyEnv.hasBackup(mContext);
     }
 }

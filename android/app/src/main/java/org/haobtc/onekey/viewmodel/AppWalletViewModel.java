@@ -6,7 +6,6 @@ import android.util.Pair;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -29,12 +28,6 @@ import org.haobtc.onekey.manager.PyEnv;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.ObservableOnSubscribe;
-import io.reactivex.rxjava3.disposables.CompositeDisposable;
-import io.reactivex.rxjava3.schedulers.Schedulers;
-
 /**
  * 存放 App 当前余额，钱包类型，Application 生命周期的 ViewModel
  *
@@ -48,7 +41,6 @@ public class AppWalletViewModel extends ViewModel {
     public MutableLiveData<LocalWalletInfo> currentWalletInfo = new MutableLiveData<>();
     public LiveData<WalletBalanceVo> currentWalletBalance = new MutableLiveData<>(new WalletBalanceVo("0", "BTC"));
     public LiveData<WalletBalanceFiatVo> currentWalletFiatBalance = new MutableLiveData<>(new WalletBalanceFiatVo("0", "CNY", "¥"));
-
     private final BalanceManager mBalanceManager = new BalanceManager();
     private final AccountManager mAccountManager = new AccountManager(MyApplication.getInstance());
     private final SystemConfigManager mSystemConfigManager = new SystemConfigManager(MyApplication.getInstance());

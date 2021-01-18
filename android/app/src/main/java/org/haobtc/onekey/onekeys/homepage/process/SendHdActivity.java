@@ -1,4 +1,5 @@
 package org.haobtc.onekey.onekeys.homepage.process;
+
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -43,6 +44,7 @@ import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.bean.TemporaryTxInfo;
 import org.haobtc.onekey.bean.TransactionInfoBean;
 import org.haobtc.onekey.business.qrdecode.QRDecode;
+import org.haobtc.onekey.business.wallet.AccountManager;
 import org.haobtc.onekey.business.wallet.SystemConfigManager;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.PyConstant;
@@ -67,6 +69,7 @@ import org.haobtc.onekey.ui.dialog.custom.CustomWatchWalletDialog;
 import org.haobtc.onekey.ui.widget.PointLengthFilter;
 import org.haobtc.onekey.utils.ClipboardUtils;
 import org.haobtc.onekey.viewmodel.AppWalletViewModel;
+import org.haobtc.onekey.viewmodel.SendHDViewModel;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -85,7 +88,6 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
-import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
 import static org.haobtc.onekey.constant.Constant.WALLET_BALANCE;
 
 /**
@@ -195,7 +197,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     private String signedTx;
     private String rawTx;
     private TransactionConfirmDialog confirmDialog;
-    private CurrentFeeDetails currentFeeDetails;
+    private CurrentFeeDetails mCurrentFeeDetails;
     private String currentTempTransaction;
     private String tempFastTransaction;
     private String tempSlowTransaction;
@@ -227,28 +229,27 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     io.reactivex.disposables.Disposable subscribe;
     private final CompositeDisposable mCompositeDisposable = new CompositeDisposable();
     private SystemConfigManager mSystemConfigManager;
+    private AccountManager mAccountManager;
+    private SendHDViewModel mSendHDViewModel;
 
     /**
      * init
      */
     @Override
-    public void init () {
+    public void init() {
         mAppWalletViewModel = new ViewModelProvider(MyApplication.getInstance()).get(AppWalletViewModel.class);
+        mSendHDViewModel = new ViewModelProvider(MyApplication.getInstance()).get(SendHDViewModel.class);
+        mAccountManager = new AccountManager(mContext);
         mSystemConfigManager = new SystemConfigManager(this);
         rxPermissions = new RxPermissions(this);
         hdWalletName = getIntent().getStringExtra(EXT_WALLET_NAME);
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-        showWalletType = preferences.getString(CURRENT_SELECTED_WALLET_TYPE, "");
+        showWalletType = mAccountManager.getCurrentWalletType();
         baseUnit = mSystemConfigManager.getCurrentBaseUnit();
         currencySymbols = mSystemConfigManager.getCurrentFiatSymbol();
         getDefaultFee();
         setMinAmount();
-        editAmount.setFilters(new InputFilter[]{new PointLengthFilter(8, new PointLengthFilter.onMaxListener() {
-            @Override
-            public void onMax(int maxNum) {
-                showToast(R.string.accuracy_num);
-            }
-        })});
+        editAmount.setFilters(new InputFilter[]{new PointLengthFilter(8, maxNum -> showToast(R.string.accuracy_num))});
         String addressScan = getIntent().getStringExtra(EXT_SCAN_ADDRESS);
         if (!TextUtils.isEmpty(addressScan)) {
             editReceiverAddress.setText(addressScan);
@@ -263,21 +264,17 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
             }
         } else {
             //whether backup
-            try {
-                boolean isBackup = PyEnv.hasBackup(getActivity());
-                if (!isBackup) {
-                    new XPopup.Builder(mContext)
-                            .dismissOnTouchOutside(false)
-                            .isDestroyOnDismiss(true)
-                            .asCustom(new UnBackupTipDialog(mContext, getString(R.string.receive_unbackup_tip), new UnBackupTipDialog.onClick() {
-                                @Override
-                                public void onBack() {
-                                    finish();
-                                }
-                            })).show();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+            boolean walletBackup = mAccountManager.getWalletBackup();
+            if (!walletBackup) {
+                new XPopup.Builder(mContext)
+                        .dismissOnTouchOutside(false)
+                        .isDestroyOnDismiss(true)
+                        .asCustom(new UnBackupTipDialog(mContext, getString(R.string.receive_unbackup_tip), new UnBackupTipDialog.onClick() {
+                            @Override
+                            public void onBack() {
+                                finish();
+                            }
+                        })).show();
             }
         }
         if (Constant.BTC_WATCH.equals(showWalletType)) {
@@ -351,10 +348,10 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                 }
                 break;
             case R.id.text_customize_fee_rate:
-                if (currentFeeDetails != null && currentFeeDetails.getSlow() != null) {
+                if (mCurrentFeeDetails != null && mCurrentFeeDetails.getSlow() != null) {
                     Bundle bundle = new Bundle();
-                    bundle.putDouble(Constant.CUSTOMIZE_FEE_RATE_MIN, currentFeeDetails.getSlow().getFeerate());
-                    bundle.putDouble(Constant.CUSTOMIZE_FEE_RATE_MAX, currentFeeDetails.getFast().getFeerate() * 20);
+                    bundle.putDouble(Constant.CUSTOMIZE_FEE_RATE_MIN, mCurrentFeeDetails.getSlow().getFeerate());
+                    bundle.putDouble(Constant.CUSTOMIZE_FEE_RATE_MAX, mCurrentFeeDetails.getFast().getFeerate() * 20);
                     bundle.putInt(Constant.TAG_TX_SIZE, transactionSize);
                     bundle.putString(Constant.HDWALLET_NAME, hdWalletName);
                     String customFeeRemember = (String) MySPManager.getInstance().get(hdWalletName, "");
@@ -383,8 +380,8 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                 checkboxSlow.setVisibility(View.VISIBLE);
                 checkboxRecommend.setVisibility(View.GONE);
                 checkboxFast.setVisibility(View.GONE);
-                if (currentFeeDetails != null && currentFeeDetails.getSlow() != null) {
-                    currentFeeRate = currentFeeDetails.getSlow().getFeerate();
+                if (mCurrentFeeDetails != null && mCurrentFeeDetails.getSlow() != null) {
+                    currentFeeRate = mCurrentFeeDetails.getSlow().getFeerate();
                     currentTempTransaction = tempSlowTransaction;
                     selectFlag = SLOW_FEE_RATE;
                     keyBoardHideRefresh();
@@ -394,13 +391,13 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                 break;
             case R.id.linear_recommend:
                 viewSlow.setVisibility(View.GONE);
-                    viewRecommend.setVisibility(View.VISIBLE);
-                    viewFast.setVisibility(View.GONE);
-                    checkboxSlow.setVisibility(View.GONE);
-                    checkboxRecommend.setVisibility(View.VISIBLE);
-                    checkboxFast.setVisibility(View.GONE);
-                if (currentFeeDetails != null && currentFeeDetails.getNormal() != null) {
-                    currentFeeRate = currentFeeDetails.getNormal().getFeerate();
+                viewRecommend.setVisibility(View.VISIBLE);
+                viewFast.setVisibility(View.GONE);
+                checkboxSlow.setVisibility(View.GONE);
+                checkboxRecommend.setVisibility(View.VISIBLE);
+                checkboxFast.setVisibility(View.GONE);
+                if (mCurrentFeeDetails != null && mCurrentFeeDetails.getNormal() != null) {
+                    currentFeeRate = mCurrentFeeDetails.getNormal().getFeerate();
                     currentTempTransaction = tempRecommendTransaction;
                     selectFlag = RECOMMENDED_FEE_RATE;
                     keyBoardHideRefresh();
@@ -411,12 +408,12 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
             case R.id.linear_fast:
                 viewSlow.setVisibility(View.GONE);
                 viewRecommend.setVisibility(View.GONE);
-                    viewFast.setVisibility(View.VISIBLE);
-                    checkboxSlow.setVisibility(View.GONE);
-                    checkboxRecommend.setVisibility(View.GONE);
-                    checkboxFast.setVisibility(View.VISIBLE);
-                if (currentFeeDetails != null && currentFeeDetails.getFast() != null) {
-                    currentFeeRate = currentFeeDetails.getFast().getFeerate();
+                viewFast.setVisibility(View.VISIBLE);
+                checkboxSlow.setVisibility(View.GONE);
+                checkboxRecommend.setVisibility(View.GONE);
+                checkboxFast.setVisibility(View.VISIBLE);
+                if (mCurrentFeeDetails != null && mCurrentFeeDetails.getFast() != null) {
+                    currentFeeRate = mCurrentFeeDetails.getFast().getFeerate();
                     currentTempTransaction = tempFastTransaction;
                     selectFlag = FAST_FEE_RATE;
                     keyBoardHideRefresh();
@@ -474,16 +471,16 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         linearRateSelector.setVisibility(View.VISIBLE);
         linearCustomize.setVisibility(View.GONE);
         if (selectFlag == RECOMMENDED_FEE_RATE) {
-            if (currentFeeDetails != null && currentFeeDetails.getNormal() != null) {
-                currentFeeRate = currentFeeDetails.getNormal().getFeerate();
+            if (mCurrentFeeDetails != null && mCurrentFeeDetails.getNormal() != null) {
+                currentFeeRate = mCurrentFeeDetails.getNormal().getFeerate();
             }
         } else if (selectFlag == SLOW_FEE_RATE) {
-            if (currentFeeDetails != null && currentFeeDetails.getSlow() != null) {
-                currentFeeRate = currentFeeDetails.getSlow().getFeerate();
+            if (mCurrentFeeDetails != null && mCurrentFeeDetails.getSlow() != null) {
+                currentFeeRate = mCurrentFeeDetails.getSlow().getFeerate();
             }
         } else if (selectFlag == FAST_FEE_RATE) {
-            if (currentFeeDetails != null && currentFeeDetails.getFast() != null) {
-                currentFeeRate = currentFeeDetails.getFast().getFeerate();
+            if (mCurrentFeeDetails != null && mCurrentFeeDetails.getFast() != null) {
+                currentFeeRate = mCurrentFeeDetails.getFast().getFeerate();
             }
         }
         keyBoardHideRefresh();
@@ -513,13 +510,13 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
             String errors = response.getErrors();
             if (Strings.isNullOrEmpty(errors)) {
                 Logger.json(response.getResult());
-                currentFeeDetails = CurrentFeeDetails.objectFromDate(response.getResult());
-                transactionSize = currentFeeDetails.getFast().getSize();
+                mCurrentFeeDetails = CurrentFeeDetails.objectFromDate(response.getResult());
+                transactionSize = mCurrentFeeDetails.getFast().getSize();
                 initFeeSelectorStatus();
             } else {
                 showToast(R.string.get_fee_info_failed);
             }
-            currentFeeRate = currentFeeDetails.getFast().getFeerate();
+            currentFeeRate = mCurrentFeeDetails.getFast().getFeerate();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -530,29 +527,29 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
      */
     private void initFeeSelectorStatus() {
         try {
-            textSpendTime0.setText(String.format("%s %s %s", getString(R.string.about_), currentFeeDetails == null ? 0 : currentFeeDetails.getSlow().getTime(), getString(R.string.minute)));
-            customSize = currentFeeDetails.getSlow().getSize();
-            textFeeInBtc0.setText(String.format(Locale.ENGLISH, "%s %s", currentFeeDetails.getSlow().getFee(), baseUnit));
-            slowRate = currentFeeDetails.getSlow().getFeerate();
-            PyResponse<String> response0 = PyEnv.exchange(currentFeeDetails.getSlow().getFee());
+            textSpendTime0.setText(String.format("%s %s %s", getString(R.string.about_), mCurrentFeeDetails == null ? 0 : mCurrentFeeDetails.getSlow().getTime(), getString(R.string.minute)));
+            customSize = mCurrentFeeDetails.getSlow().getSize();
+            textFeeInBtc0.setText(String.format(Locale.ENGLISH, "%s %s", mCurrentFeeDetails.getSlow().getFee(), baseUnit));
+            slowRate = mCurrentFeeDetails.getSlow().getFeerate();
+            PyResponse<String> response0 = PyEnv.exchange(mCurrentFeeDetails.getSlow().getFee());
             String errors0 = response0.getErrors();
             if (Strings.isNullOrEmpty(errors0)) {
                 textFeeInCash0.setText(String.format(Locale.ENGLISH, "%s %s", currencySymbols, response0.getResult()));
             } else {
                 showToast(errors0);
             }
-            textSpendTime1.setText(String.format("%s %s %s", getString(R.string.about_), currentFeeDetails == null ? 0 : currentFeeDetails.getNormal().getTime(), getString(R.string.minute)));
-            textFeeInBtc1.setText(String.format(Locale.ENGLISH, "%s %s", currentFeeDetails.getNormal().getFee(), baseUnit));
-            normalRate = currentFeeDetails.getNormal().getFeerate();
-            PyResponse<String> response1 = PyEnv.exchange(currentFeeDetails.getNormal().getFee());
+            textSpendTime1.setText(String.format("%s %s %s", getString(R.string.about_), mCurrentFeeDetails == null ? 0 : mCurrentFeeDetails.getNormal().getTime(), getString(R.string.minute)));
+            textFeeInBtc1.setText(String.format(Locale.ENGLISH, "%s %s", mCurrentFeeDetails.getNormal().getFee(), baseUnit));
+            normalRate = mCurrentFeeDetails.getNormal().getFeerate();
+            PyResponse<String> response1 = PyEnv.exchange(mCurrentFeeDetails.getNormal().getFee());
             String errors1 = response1.getErrors();
             if (Strings.isNullOrEmpty(errors1)) {
                 textFeeInCash1.setText(String.format(Locale.ENGLISH, "%s %s", currencySymbols, response1.getResult()));
             }
-            textSpendTime2.setText(String.format("%s %s %s", getString(R.string.about_), currentFeeDetails == null ? 0 : currentFeeDetails.getFast().getTime(), getString(R.string.minute)));
-            textFeeInBtc2.setText(String.format(Locale.ENGLISH, "%s %s", currentFeeDetails.getFast().getFee(), baseUnit));
-            fastRate = currentFeeDetails.getFast().getFeerate();
-            PyResponse<String> response2 = PyEnv.exchange(currentFeeDetails.getFast().getFee());
+            textSpendTime2.setText(String.format("%s %s %s", getString(R.string.about_), mCurrentFeeDetails == null ? 0 : mCurrentFeeDetails.getFast().getTime(), getString(R.string.minute)));
+            textFeeInBtc2.setText(String.format(Locale.ENGLISH, "%s %s", mCurrentFeeDetails.getFast().getFee(), baseUnit));
+            fastRate = mCurrentFeeDetails.getFast().getFeerate();
+            PyResponse<String> response2 = PyEnv.exchange(mCurrentFeeDetails.getFast().getFee());
             String errors2 = response2.getErrors();
             if (Strings.isNullOrEmpty(errors2)) {
                 textFeeInCash2.setText(String.format(Locale.ENGLISH, "%s %s", currencySymbols, response2.getResult()));
@@ -822,9 +819,6 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         getWindowManager().getDefaultDisplay().getMetrics(metric);
         screenHeight = metric.heightPixels;
         mIsSoftKeyboardShowing = false;
-        //Determine the size of window visible area
-        //If the difference between screen height and window visible area height is greater than 1 / 3 of the whole screen height, it means that the soft keyboard is in display, otherwise, the soft keyboard is hidden.
-        // If the status of the soft keyboard was previously displayed, it is now closed, or it was previously closed, it is now displayed, it means that the status of the soft keyboard has changed
         ViewTreeObserver.OnGlobalLayoutListener mLayoutChangeListener = () -> {
             //Determine the size of window visible area
             Rect r = new Rect();
@@ -1044,8 +1038,8 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
             return getFee(String.valueOf(currentFeeRate), CUSTOMIZE_FEE_RATE);
         } else {
             try {
-                if (currentFeeDetails != null) {
-                    double fast = currentFeeDetails.getFast().getFeerate();
+                if (mCurrentFeeDetails != null) {
+                    double fast = mCurrentFeeDetails.getFast().getFeerate();
                     return getFee(Double.toString(fast), FAST_FEE_RATE);
                 }
             } catch (Exception e) {
@@ -1056,7 +1050,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     }
 
     private void refreshOther() {
-        Optional.ofNullable(currentFeeDetails).ifPresent((currentFeeDetails1 -> {
+        Optional.ofNullable(mCurrentFeeDetails).ifPresent((currentFeeDetails1 -> {
             if (sendReady()) {
                 synchronized (SendHdActivity.class) {
                     double normal = currentFeeDetails1.getNormal().getFeerate();

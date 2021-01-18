@@ -524,6 +524,7 @@ public final class PyEnv {
         PyResponse<String> response = new PyResponse<>();
         try {
             String info = sCommands.callAttr(PyConstant.GET_DEFAULT_FEE_DETAILS).toString();
+            Logger.json(info);
             response.setResult(info);
         } catch (Exception e) {
             e.printStackTrace();
@@ -928,5 +929,4 @@ public final class PyEnv {
         }
         return response;
     }
-
 }

@@ -222,5 +222,9 @@ public final class PyConstant {
      * 覆盖观察钱包
      */
     public static final String REP_WATCH_ONLY_WALLET = "replace_watch_only_wallet";
+    /**
+     * Get eth gas price, for eth only
+     */
+    public static final String GET_ETH_GAS_PRICE = "get_eth_gas_price";
 
 }
