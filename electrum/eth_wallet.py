@@ -177,22 +177,23 @@ class Abstract_Eth_Wallet(ABC):
         if len(self.total_balance) != 0:
             if len(self.total_balance['balance_info']) != 0 and (time.time() - self.total_balance['time'] > 10):
                 return self.total_balance['balance_info']
-        eth_info = {}
-        last_price = PyWalib.get_coin_price(from_coin)
+
+        last_price = PyWalib.get_coin_price(from_coin) or "0"
         eth, balance = PyWalib.get_balance(wallet_address)
-        balance_info = {}
-        balance_info['%s' %self.wallet_type[0:3]] = balance
-        balance_info['fiat'] = balance * Decimal(last_price)
-        eth_info['%s' %self.wallet_type[0:3]] = balance_info
+
+        balance_info = {
+            self.wallet_type[0:3]: {'balance': Decimal(balance), 'fiat': Decimal(balance) * Decimal(last_price)}
+        }
         for _, contract in self.contacts.items():
             symbol, balance = PyWalib.get_balance(wallet_address, contract)
-            last_price = PyWalib.get_coin_price(symbol)
-            balance_info = {}
-            balance_info[symbol] = balance
-            balance_info['fiat'] = balance * last_price
-            eth_info[symbol] = balance_info
-        self.set_total_balance(eth_info)
-        return eth_info
+            last_price = PyWalib.get_coin_price(symbol) or "0"
+            balance_info[symbol.lower()] = {
+                'balance': Decimal(balance),
+                'fiat': Decimal(balance) * Decimal(last_price)
+            }
+
+        self.set_total_balance(balance_info)
+        return balance_info
 
     def add_contract_token(self, contract_symbol, contract_address):
         contract = Eth_Contract(contract_symbol, contract_address)

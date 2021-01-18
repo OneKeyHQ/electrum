@@ -166,7 +166,7 @@ def verify_xpub(xpub: str) -> bool:
 
 # Adds additional commands which aren't available over JSON RPC.
 class AndroidCommands(commands.Commands):
-    def __init__(self, android_id=None, config=None, user_dir=None, callback=None):
+    def __init__(self, android_id=None, config=None, user_dir=None, callback=None, chain_type="mainnet"):
         self.asyncio_loop, self._stop_loop, self._loop_thread = create_and_start_event_loop()  # TODO:close loop
         self.config = self.init_config(config=config)
         if user_dir is None:
@@ -182,7 +182,7 @@ class AndroidCommands(commands.Commands):
         # its callback before the daemon threads start.
         self.daemon = daemon.Daemon(self.config, fd)
         self.coins = read_json('eth_servers.json', {})
-        self.pywalib = PyWalib(self.config, chain_type="mainnet", path=self._tx_list_path(name="tx_info.db"))
+        self.pywalib = PyWalib(self.config, chain_type=chain_type, path=self._tx_list_path(name="tx_info.db"))
         self.txdb = TxDb(path=self._tx_list_path(name="tx_info.db"))
         self.pywalib.set_server(self.coins["eth"])
         self.network = self.daemon.network
@@ -3510,40 +3510,66 @@ class AndroidCommands(commands.Commands):
         '''
         Get all wallet balances
         :return:
-            {"all_balance":"21,233.46 CNY",
-            "wallet_info":[{"name":"", "btc":"0.005 BTC", "fiat":"1,333.55"},
-                           {"name":"", "wallets":[{"eth":"", "fiat":""}, {"eos":"", "fiat":""} ...]}
+        {
+          "all_balance": "21,233.46 CNY",
+          "wallet_info": [
+            {
+              "name": "",
+              "btc": "0.005 BTC",
+              "fiat": "1,333.55",
+              "wallets": {
+                "btc": {
+                  "balance": "",
+                  "fiat": ""
+                }
+              }
+            },
+            {
+              "name": "",
+              "wallets": {
+                "eth": {
+                  "balance": "",
+                  "fiat": ""
+                },
+                "usdt": {
+                  "balance": "",
+                  "fiat": ""
+                }
+              }
+            }
+          ]
+        }
         '''
         out = {}
         try:
-            all_balance = float(0)
+            all_balance = Decimal('0')
             all_wallet_info = []
-            for name, wallet in self.daemon._wallets.items():
-                wallet_info = {}
-                name = name.split('/')[-1]
-                wallet_info['name'] = wallet.get_name()
+            for wallet in self.daemon.get_wallets().values():
+                wallet_info = {'name': wallet.get_name()}
                 if self.coins.__contains__(wallet.wallet_type[0:3]):
                     checksum_from_address = self.pywalib.web3.toChecksumAddress(wallet.get_addresses()[0])
                     balances_info = wallet.get_all_balance(checksum_from_address,
                                                            self.coins[wallet.wallet_type[0:3]]['symbol'])
                     for symbol, info in balances_info.items():
-                        info['fiat'] = self.daemon.fx.format_amount_and_units(
-                            self.get_amount(info['fiat'])) if self.daemon.fx else None
-                        fiat = float(info['fiat'].split()[0].replace(',', ""))
+                        info['fiat'] = self.daemon.fx.format_amount_and_units(info['fiat'] * COIN) or "0"
+                        fiat = Decimal(info['fiat'].split()[0].replace(',', ""))
                         all_balance += fiat
+
                     wallet_info['wallets'] = balances_info
                     all_wallet_info.append(wallet_info)
                 else:
                     c, u, x = wallet.get_balance()
-                    balance = self.daemon.fx.format_amount_and_units(c + u) if self.daemon.fx else None
-                    fiat = float(balance.split()[0].replace(',', ""))
+                    balance = self.daemon.fx.format_amount_and_units(c + u) or "0"
+                    fiat = Decimal(balance.split()[0].replace(',', ""))
                     all_balance += fiat
-                    wallet_info['btc'] = self.format_amount(c + u)
-                    wallet_info['fiat'] = balance
+                    wallet_info['btc'] = self.format_amount(c + u)  # fixme deprecated field
+                    wallet_info['fiat'] = balance  # fixme deprecated field
+                    wallet_info['wallets'] = {"btc": {"balance": wallet_info['btc'], "fiat": wallet_info['fiat']}}
                     all_wallet_info.append(wallet_info)
+
             out['all_balance'] = ('%s %s' % (all_balance, self.ccy))
             out['wallet_info'] = all_wallet_info
-            return json.dumps(out)
+            return json.dumps(out, cls=DecimalEncoder)
         except BaseException as e:
             raise e
 
@@ -3844,7 +3870,15 @@ class AndroidCommands(commands.Commands):
         '''
         Select wallet by name
         :param name: name as string
-        :return: json like {"balance":"", "name":"", "label":""}
+        :return: json like
+        {
+          "name": "",
+          "label": "",
+          "wallets": {
+            "eth": {"balance": "", "fiat": ""},
+            "usdt": {"balance": "", "fiat": ""}
+          }
+        }
         '''
         try:
             self._assert_daemon_running()
@@ -3859,12 +3893,19 @@ class AndroidCommands(commands.Commands):
                 PyWalib.set_server(self.coins[self.wallet.wallet_type[0:3]])
                 addrs = self.wallet.get_addresses()
                 checksum_from_address = self.pywalib.web3.toChecksumAddress(addrs[0])
-                all_balance = self.wallet.get_all_balance(checksum_from_address,
+                balance_info = self.wallet.get_all_balance(checksum_from_address,
                                                           self.coins[self.wallet.wallet_type[0:3]]['symbol'])
-                for symbol, info in all_balance.items():
-                    info['fiat'] = self.daemon.fx.format_amount_and_units(
-                        self.get_amount(info['fiat'])) if self.daemon.fx else None
-                return json.dumps(info, cls=DecimalEncoder if info is not None else '')
+
+                balance_info = {key: {
+                    **val,
+                    "fiat": self.daemon.fx.format_amount_and_units(val['fiat'] * COIN) or "0"
+                } for key, val in balance_info.items()}
+                info = {
+                    "name": name,
+                    "label": self.wallet.get_name(),
+                    "wallets": balance_info
+                }
+                return json.dumps(info, cls=DecimalEncoder)
             else:
                 c, u, x = self.wallet.get_balance()
                 print("console.select_wallet %s %s %s==============" % (c, u, x))
@@ -3874,15 +3915,20 @@ class AndroidCommands(commands.Commands):
                     self.wallet.get_addresses()))
                 util.trigger_callback("wallet_updated", self.wallet)
 
-                fait = self.daemon.fx.format_amount_and_units(c + u) if self.daemon.fx else None
+                balance = c + u
+                fait = self.daemon.fx.format_amount_and_units(balance) if self.daemon.fx else None
+                fait = fait or "0"
                 info = {
-                    "balance": self.format_amount(c + u) + ' (%s)' % fait,
+                    "balance": self.format_amount(balance) + ' (%s)' % fait,  # fixme deprecated field
                     "name": name,
-                    "label": self.wallet.get_name()
+                    "label": self.wallet.get_name(),
+                    "wallets": {
+                        "btc": {'balance': Decimal(balance), 'fiat': fait}
+                    }
                 }
                 if self.label_flag and self.wallet.wallet_type != "standard":
                     self.label_plugin.load_wallet(self.wallet)
-                return json.dumps(info)
+                return json.dumps(info, cls=DecimalEncoder)
         except BaseException as e:
             raise BaseException(e)
 
