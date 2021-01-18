@@ -9,6 +9,8 @@
 #import "OKPyCommandsManager.h"
 @interface OKPyCommandsManager()
 @property (nonatomic,assign)PyObject *pyClass;
+//硬件实例
+@property (nonatomic,assign)PyObject *pyHwClass;
 @end
 
 @implementation OKPyCommandsManager
@@ -36,6 +38,22 @@ static dispatch_once_t once;
             PyErr_Print();
         }
         _sharedInstance.pyInstance = pIns;
+        
+        
+        
+        PyObject *pHwModule = PyImport_ImportModule([@"trezorlib.customer_ui" UTF8String]);//导入模块
+        if (pHwModule == NULL) {
+               PyErr_Print();
+        }
+        PyObject *pyHwClass = PyObject_GetAttrString(pHwModule, [@"CustomerUI" UTF8String]);//获取类
+        _sharedInstance.pyHwClass = pyHwClass;
+        PyObject *pyHwConstract = PyInstanceMethod_New(pyHwClass);
+        PyObject* pHwIns = PyObject_CallObject(pyHwConstract, NULL);//创建实例
+        if (pHwIns == NULL) {
+            PyErr_Print();
+        }
+        _sharedInstance.pyHwInstance = pHwIns;
+
         PyGILState_Release(state);
     });
     return _sharedInstance;
@@ -353,6 +371,34 @@ static dispatch_once_t once;
     }else if([method isEqualToString:kInterfaceget_feature]){
         NSString *path  = [parameter safeStringForKey:@"path"];
         result = PyObject_CallMethod(self.pyInstance, [kInterfaceget_feature UTF8String], "(s)",[path UTF8String]);
+        
+        
+    }else if([method isEqualToString:kInterfacecreate_hw_derived_wallet]){
+        NSString *path = kBluetooth_iOS;
+        result = PyObject_CallMethod(self.pyInstance, [kInterfacecreate_hw_derived_wallet UTF8String], "(s)",[path UTF8String]);
+        
+    }else if ([method isEqualToString:kInterfaceimport_create_hw_wallet]){
+        NSString *name = [parameter safeStringForKey:@"name"];
+        NSString *m  = [parameter safeStringForKey:@"m"];
+        NSString *n = [parameter safeStringForKey:@"n"];
+        NSString *xpubs = [parameter safeStringForKey:@"xpubs"];
+        NSString *path = kBluetooth_iOS;
+        PyObject *args =  Py_BuildValue("(s)", [name UTF8String]);
+        PyObject *kwargs;
+        kwargs = Py_BuildValue("{s:i,s:i,s:s,s:s}", "m", [m integerValue],"n",[n integerValue],"path",[path UTF8String],"xpubs",[xpubs UTF8String]);
+        PyObject *myobject_method = PyObject_GetAttrString(self.pyInstance, [kInterfaceimport_create_hw_wallet UTF8String]);
+        result = PyObject_Call(myobject_method, args, kwargs);
+    }else if ([method isEqualToString:kInterfaceset_pin]){
+        NSString *pin = [parameter safeStringForKey:@"pin"];
+        result = PyObject_CallMethod(self.pyHwInstance, [kInterfaceset_pin UTF8String], "(s)",[pin UTF8String]);
+    }else if ([method isEqualToString:kInterfaceinit]){
+        NSString *path = kBluetooth_iOS;
+        NSString *label = [parameter safeStringForKey:@"label"];
+        PyObject *args =  Py_BuildValue("(s)", [path UTF8String]);
+        PyObject *kwargs;
+        kwargs = Py_BuildValue("{s:s}", "label", [label UTF8String]);
+        PyObject *myobject_method = PyObject_GetAttrString(self.pyInstance, [kInterfaceinit UTF8String]);
+        result = PyObject_Call(myobject_method, args, kwargs);
     }
   
     if (result == NULL) {

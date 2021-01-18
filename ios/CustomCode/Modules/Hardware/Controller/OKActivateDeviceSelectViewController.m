@@ -10,6 +10,7 @@
 #import "OKCreateSelectWalletTypeCell.h"
 #import "OKCreateSelectWalletTypeModel.h"
 #import "OKPINCodeViewController.h"
+#import "OKSelectCoinTypeViewController.h"
 
 @interface OKActivateDeviceSelectViewController ()
 @property (weak, nonatomic) IBOutlet UILabel *titleLabel;
@@ -47,10 +48,24 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     OKCreateSelectWalletTypeModel *model = self.walletTypeListArray[indexPath.row];
-   
-    NSLog(@"didSelectRowAtIndexPath %@",model.tipsString);
-    OKPINCodeViewController *pinCodeVc = [OKPINCodeViewController PINCodeViewController];
-    [self.navigationController pushViewController:pinCodeVc animated:YES];
+    switch (model.addtype) {
+        case OKAddTypeCreateHWDerived:
+        {
+            OKSelectCoinTypeViewController *selectCoinTypeVc = [OKSelectCoinTypeViewController selectCoinTypeViewController];
+            selectCoinTypeVc.addType =  model.addtype;
+            [self.navigationController pushViewController:selectCoinTypeVc animated:YES];
+        }
+            break;
+        case OKAddTypeRestoredHWWallet:
+        {
+            
+        }
+            break;
+        default:
+            break;
+    }
+    
+
 }
 
 
@@ -62,13 +77,13 @@
         model.createWalletType = MyLocalizedString(@"Add a new wallet (recommended)", nil);
         model.iconName = @"new_device";
         model.tipsString = MyLocalizedString(@"Up to 20 derived wallets can be created, as needed", nil);
-        //model.addtype = OKAddTypeCreateHDDerived;
+        model.addtype = OKAddTypeCreateHWDerived;
         
         OKCreateSelectWalletTypeModel *model1 = [OKCreateSelectWalletTypeModel new];
         model1.createWalletType = MyLocalizedString(@"Restore the wallet that was created from this hardware device", nil);
         model1.iconName = @"recover_device";
         model1.tipsString = MyLocalizedString(@"If you have ever deleted a wallet created by the device on your phone, you can recover it this way.", nil);
-        //model1.addtype = OKAddTypeCreateSolo;
+        model1.addtype = OKAddTypeRestoredHWWallet;
         
         OKCreateSelectWalletTypeModel *model2 = [OKCreateSelectWalletTypeModel new];
         model2.createWalletType = MyLocalizedString(@"Create a Condominium wallet (Advanced)", nil);

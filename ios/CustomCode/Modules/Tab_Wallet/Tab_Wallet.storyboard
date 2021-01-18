@@ -269,11 +269,40 @@
                                                                                 <action selector="assetListBtnClick:" destination="3u4-Ro-UNt" eventType="touchUpInside" id="4Lv-My-dfw"/>
                                                                             </connections>
                                                                         </button>
+                                                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hQh-jZ-Rtj">
+                                                                            <rect key="frame" x="15" y="15" width="79.5" height="30"/>
+                                                                            <subviews>
+                                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nYd-rp-Gf7">
+                                                                                    <rect key="frame" x="36" y="6.5" width="35.5" height="17"/>
+                                                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                                                    <color key="textColor" red="0.72958463429999998" green="0.92859303950000005" blue="0.74507308009999995" alpha="0.70208154965753422" colorSpace="custom" customColorSpace="displayP3"/>
+                                                                                    <nil key="highlightedColor"/>
+                                                                                </label>
+                                                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="Group 271" translatesAutoresizingMaskIntoConstraints="NO" id="xLK-HE-edh">
+                                                                                    <rect key="frame" x="8" y="0.0" width="16" height="22"/>
+                                                                                    <constraints>
+                                                                                        <constraint firstAttribute="height" constant="22" id="XpS-KK-5UA"/>
+                                                                                        <constraint firstAttribute="width" constant="16" id="s0n-At-yDF"/>
+                                                                                    </constraints>
+                                                                                </imageView>
+                                                                            </subviews>
+                                                                            <color key="backgroundColor" red="0.72958463429999998" green="0.92859303950000005" blue="0.74507308009999995" alpha="0.10116117294520548" colorSpace="custom" customColorSpace="displayP3"/>
+                                                                            <constraints>
+                                                                                <constraint firstItem="xLK-HE-edh" firstAttribute="centerY" secondItem="hQh-jZ-Rtj" secondAttribute="centerY" id="HFi-IT-Zgh"/>
+                                                                                <constraint firstItem="xLK-HE-edh" firstAttribute="leading" secondItem="hQh-jZ-Rtj" secondAttribute="leading" constant="12" id="KjS-9d-1oP"/>
+                                                                                <constraint firstAttribute="trailing" secondItem="nYd-rp-Gf7" secondAttribute="trailing" constant="8" id="Sof-89-PK9"/>
+                                                                                <constraint firstItem="nYd-rp-Gf7" firstAttribute="centerY" secondItem="hQh-jZ-Rtj" secondAttribute="centerY" id="bjm-hA-vgj"/>
+                                                                                <constraint firstItem="nYd-rp-Gf7" firstAttribute="leading" secondItem="xLK-HE-edh" secondAttribute="trailing" constant="8" id="dod-or-9XE"/>
+                                                                                <constraint firstAttribute="height" constant="30" id="pV1-Xq-BrV"/>
+                                                                            </constraints>
+                                                                        </view>
                                                                     </subviews>
                                                                     <color key="backgroundColor" red="0.0010134851330000001" green="0.7278487682" blue="0.070087678730000005" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                                     <constraints>
+                                                                        <constraint firstItem="hQh-jZ-Rtj" firstAttribute="top" secondItem="aJy-mb-K58" secondAttribute="top" constant="15" id="0bZ-WA-9BC"/>
                                                                         <constraint firstItem="IbA-1A-mzJ" firstAttribute="centerX" secondItem="aJy-mb-K58" secondAttribute="centerX" id="L93-L5-aP2"/>
                                                                         <constraint firstAttribute="trailing" secondItem="pSf-Xc-NsH" secondAttribute="trailing" constant="24" id="QoG-XW-B36"/>
+                                                                        <constraint firstItem="hQh-jZ-Rtj" firstAttribute="leading" secondItem="aJy-mb-K58" secondAttribute="leading" constant="15" id="UeQ-en-PMR"/>
                                                                         <constraint firstItem="IbA-1A-mzJ" firstAttribute="top" secondItem="aJy-mb-K58" secondAttribute="top" constant="67" id="WCR-Qv-3Jj"/>
                                                                         <constraint firstItem="vX3-GM-BL7" firstAttribute="centerX" secondItem="aJy-mb-K58" secondAttribute="centerX" id="abb-FU-NcS"/>
                                                                         <constraint firstItem="vX3-GM-BL7" firstAttribute="top" secondItem="IbA-1A-mzJ" secondAttribute="bottom" constant="20" id="gNl-gh-kO4"/>
@@ -639,6 +668,8 @@
                         <outlet property="createBgView" destination="ljV-Vh-7zm" id="fim-aI-hBl"/>
                         <outlet property="eyeBtn" destination="lXi-2k-wlM" id="QsI-bp-tlc"/>
                         <outlet property="eyebgView" destination="vX3-GM-BL7" id="YXG-Fy-cnz"/>
+                        <outlet property="hwBgView" destination="hQh-jZ-Rtj" id="YnH-pG-bGo"/>
+                        <outlet property="hwWalletNameLabel" destination="nYd-rp-Gf7" id="Bxu-x6-vW2"/>
                         <outlet property="leftView" destination="xDh-8G-gfu" id="vee-2K-6TU"/>
                         <outlet property="leftViewBg" destination="UrB-oa-QaB" id="RHI-vY-kpV"/>
                         <outlet property="myassetLabel" destination="C70-wg-3jZ" id="FJB-fr-lqm"/>
@@ -662,7 +693,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="T2n-R2-tGT" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-812" y="21"/>
+            <point key="canvasLocation" x="-813.04347826086962" y="20.758928571428569"/>
         </scene>
         <!--Wallet Detail View Controller-->
         <scene sceneID="uZq-4z-eif">
@@ -803,7 +834,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="w1D-Jh-6aZ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-49.275362318840585" y="24.776785714285712"/>
+            <point key="canvasLocation" x="-33" y="21"/>
         </scene>
         <!--Tx List View Controller-->
         <scene sceneID="aa4-v4-WgI">
@@ -3398,6 +3429,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="Group 271" width="16" height="22"/>
         <image name="Group 80" width="338" height="323"/>
         <image name="Restore_the_default" width="15" height="15"/>
         <image name="Vector 1" width="766" height="1155"/>

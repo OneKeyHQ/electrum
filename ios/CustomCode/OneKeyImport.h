@@ -57,5 +57,7 @@
 #import "OKOneKeyPwdManager.h"
 #import "AESCrypt.h"
 #import "TYAttributedLabel.h"
+#import "OKBlueManager.h"
+#import "OKHwNotiManager.h"
 
 #endif /* OneKeyImport_h */

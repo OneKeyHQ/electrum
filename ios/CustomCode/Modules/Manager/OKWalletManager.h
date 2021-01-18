@@ -73,7 +73,10 @@ typedef enum {
     OKAddTypeImportAddresses,
     OKAddTypeImportKeystore,
     OKAddTypeImportXpub,
-    OKAddTypeImport
+    OKAddTypeImport,
+    OKAddTypeCreateHWDerived,
+    OKAddTypeRestoredHWWallet,
+    OKAddTypeActivationHWWallet
 }OKAddType;
 
 //创建钱包跳转类型
@@ -90,8 +93,11 @@ typedef enum {
     OKWhereToDeleteTypeAPP
 }OKWhereToDeleteType;
 
-
-
+//助记词长度类型
+typedef enum{
+    OKMnemonicLengthType12,
+    OKMnemonicLengthType24
+}OKMnemonicLengthType;
 
 
 @interface OKWalletManager : NSObject

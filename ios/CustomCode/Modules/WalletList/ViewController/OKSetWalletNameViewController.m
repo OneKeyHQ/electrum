@@ -12,9 +12,10 @@
 #import "OKCreateResultModel.h"
 #import "OKCreateResultWalletInfoModel.h"
 #import "OKBiologicalViewController.h"
+#import "OKPINCodeViewController.h"
 
 
-@interface OKSetWalletNameViewController ()<UITextFieldDelegate>
+@interface OKSetWalletNameViewController ()<UITextFieldDelegate,OKHwNotiManagerDekegate>
 @property (weak, nonatomic) IBOutlet UILabel *seWalletNameLabel;
 @property (weak, nonatomic) IBOutlet UILabel *descLabel;
 @property (weak, nonatomic) IBOutlet UITextField *walletNameTextfield;
@@ -81,6 +82,10 @@
         }
         return;
     }
+    if (self.addType == OKAddTypeCreateHWDerived) {
+        [self importWallet:nil isInit:NO];
+        return;
+    }
     if ([kWalletManager checkIsHavePwd]) {
         if (kWalletManager.isOpenAuthBiological) {
            [[YZAuthID sharedInstance]yz_showAuthIDWithDescribe:MyLocalizedString(@"OenKey request enabled", nil) BlockState:^(YZAuthIDState state, NSError *error) {
@@ -110,31 +115,56 @@
 - (void)importWallet:(NSString *)pwd isInit:(BOOL)isInit
 {
     OKWeakSelf(self)
-    NSDictionary* create = nil;
+    __block NSDictionary* create = nil;
     switch (weakself.addType) {
         case OKAddTypeCreateHDDerived:
         {
             create = [kPyCommandsManager callInterface:kInterfaceCreate_derived_wallet parameter:@{@"name":self.walletNameTextfield.text,@"password":pwd,@"coin":[self.coinType lowercaseString]}];
+            [weakself createComplete:create isInit:isInit pwd:pwd isHw:NO];
         }
             break;
         case OKAddTypeCreateSolo:
         {
             create = [kPyCommandsManager callInterface:kInterfaceCreate_create parameter:@{@"name":self.walletNameTextfield.text,@"password":pwd}];
+            [weakself createComplete:create isInit:isInit pwd:pwd isHw:NO];
         }
             break;
         case OKAddTypeImportPrivkeys:
         {
             create = [kPyCommandsManager callInterface:kInterfaceImport_Privkeys parameter:@{@"name":self.walletNameTextfield.text,@"password":pwd,@"privkeys":self.privkeys}];
+            [weakself createComplete:create isInit:isInit pwd:pwd isHw:NO];
         }
             break;
         case OKAddTypeImportSeed:
         {
             create =  [kPyCommandsManager callInterface:kInterfaceImport_Seed parameter:@{@"name":self.walletNameTextfield.text,@"password":pwd,@"seed":self.seed}];
+            [weakself createComplete:create isInit:isInit pwd:pwd isHw:NO];
+        }
+            break;
+        case OKAddTypeCreateHWDerived:
+        {
+            __block NSString *name = self.walletNameTextfield.text;
+            [OKHwNotiManager  sharedInstance].delegate = self;
+            //[[[OKBlueManager sharedInstance]getNotificationCenter] postNotificationName:@"1" object:nil];
+            dispatch_async(dispatch_get_global_queue(0, 0), ^{
+               NSString *xpub = [kPyCommandsManager callInterface:kInterfacecreate_hw_derived_wallet parameter:@{}];
+                NSArray *array = @[@[xpub,kOKBlueManager.model.device_id]];
+                NSString *xpubs = [array mj_JSONString];
+                create = [kPyCommandsManager callInterface:kInterfaceimport_create_hw_wallet parameter:@{@"name":name,@"m":@"1",@"n":@"1",@"xpubs":xpubs}];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [weakself createComplete:create isInit:isInit pwd:pwd isHw:YES];
+                });
+            });
         }
             break;
         default:
             break;
     }
+}
+
+- (void)createComplete:(NSDictionary *)create isInit:(BOOL)isInit pwd:(NSString *)pwd isHw:(BOOL)isHw
+{
+    OKWeakSelf(self)
     if (create != nil) {
         OKCreateResultModel *createResultModel = [OKCreateResultModel mj_objectWithKeyValues:create];
         OKCreateResultWalletInfoModel *walletInfoModel = [createResultModel.wallet_info firstObject];
@@ -184,11 +214,16 @@
                     [kTools tipMessage:MyLocalizedString(@"Import success", nil)];
                 }
                     break;
+                case OKAddTypeCreateHWDerived:
+                {
+                    [kTools tipMessage:MyLocalizedString(@"Creating successful", nil)];
+                }
+                    break;
                 default:
                     break;
             }
-            
-            if (!kWalletManager.isOpenAuthBiological && isInit && weakself.addType != OKAddTypeImportAddresses) {
+
+            if (!kWalletManager.isOpenAuthBiological && isInit && weakself.addType != OKAddTypeImportAddresses && weakself.addType != OKAddTypeCreateHWDerived) {
                 OKBiologicalViewController *biologicalVc = [OKBiologicalViewController biologicalViewController:@"OKWalletViewController" pwd:pwd biologicalViewBlock:^{
                     [weakself completeImport];
                 }];
@@ -199,6 +234,7 @@
         }
     }
 }
+
 - (void)completeImport
 {
     OKWeakSelf(self)
@@ -218,6 +254,20 @@
         [weakself.OK_TopViewController dismissToViewControllerWithClassName:@"OKWalletViewController" animated:NO complete:^{
         }];
     }
+}
+
+#pragma mark - OKHwNotiManagerDekegate
+- (void)hwNotiManagerDekegate:(OKHwNotiManager *)hwNoti type:(OKHWNotiType)type
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        OKPINCodeViewController *pinCode = [OKPINCodeViewController PINCodeViewController:^(NSString * _Nonnull pin) {
+            NSLog(@"pinCode = %@",pin);
+            dispatch_async(dispatch_get_global_queue(0, 0), ^{
+                [kPyCommandsManager callInterface:kInterfaceset_pin parameter:@{@"pin":pin}];
+            });
+        }];
+        [self.navigationController presentViewController:pinCode animated:YES completion:nil];
+    });
 }
 
 #pragma mark - UITextFieldDelegate

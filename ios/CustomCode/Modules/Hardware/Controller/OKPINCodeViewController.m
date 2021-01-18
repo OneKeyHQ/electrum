@@ -10,6 +10,7 @@
 #import "OK_PassWordView.h"
 
 @interface OKPINCodeViewController ()
+
 @property (weak, nonatomic) IBOutlet UIScrollView *scrollView;
 @property (weak, nonatomic) IBOutlet UIView *bgView;
 @property (weak, nonatomic) IBOutlet UILabel *titleLabel;
@@ -23,12 +24,16 @@
 
 @property (nonatomic, strong)OK_PassWordView *pwdView;
 
+@property (nonatomic, copy)PINCodeComplete complete;
+
 @end
 
 @implementation OKPINCodeViewController
-+ (instancetype)PINCodeViewController
++ (instancetype)PINCodeViewController:(PINCodeComplete)complete
 {
-    return [[UIStoryboard storyboardWithName:@"Hardware" bundle:nil]instantiateViewControllerWithIdentifier:@"OKPINCodeViewController"];
+    OKPINCodeViewController *pinCodeVc = [[UIStoryboard storyboardWithName:@"Hardware" bundle:nil]instantiateViewControllerWithIdentifier:@"OKPINCodeViewController"];
+    pinCodeVc.complete = complete;
+    return pinCodeVc;
 }
 
 - (void)viewDidLoad {
@@ -73,7 +78,9 @@
             newStr = [oldStr substringToIndex:0];
         }
     }else if (sender.tag == 1011){
-        NSLog(@"确定");
+        if (self.complete && oldStr.length == 6) {
+            self.complete(oldStr);
+        }
     }else{
         [oldStr appendString:[NSString stringWithFormat:@"%zd",sender.tag - 1000]];
         newStr = oldStr;

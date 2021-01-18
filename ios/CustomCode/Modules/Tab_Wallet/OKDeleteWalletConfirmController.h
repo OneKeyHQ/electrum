@@ -10,7 +10,8 @@
 
 typedef enum {
     OKDeleteTipsTypeWallet,
-    OKDeleteTipsTypeAPP
+    OKDeleteTipsTypeAPP,
+    OKDeleteTipsTypeHW
 }OKDeleteTipsType;
 
 typedef void (^ConfirmBtnClick)(void);

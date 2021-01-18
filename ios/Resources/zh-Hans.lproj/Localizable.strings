@@ -365,3 +365,16 @@
 "The signature information is consistent with the public key/original informatio" = "签名信息与公钥/原始信息一致";
 "The signature information does not match the public key/original information" = "签名信息与公钥/原始信息不符";
 "return" = "返回";
+"This action will delete the wallet's data stored in the App, but you can still recover from the hardware wallet that knows its mnemonic words. Are you sure you want to continue?" = "此操作将会删除 App 中存储的该钱包的数据，但您仍可通过掌握其助记词的硬件钱包恢复。确定要继续此操作吗？";
+"The wallet's private key or mnemonic has been securely stored on the hardware device. If you need to export a mnemonic for your hardware wallet, please go to [My Hardware] to find your device to export." = "该钱包的私钥或助记词已经妥善的保管在硬件设备中。如果您需要导出硬件钱包的助记词，请前往「我的 ➡️ 硬件 ➡ 全部设备」查找您要导出的设备。";
+"Discover a new device you can..." = "🎉 发现一个新设备 您可以...";
+"Activated as a new device" = "作为新设备激活（推荐）";
+"Activate the hardware wallet" = "激活硬件钱包";
+"The hardware wallet will generate 12-digit mnemonic words for you" = "硬件钱包将为你生成 12 位助记词";
+"The hardware wallet will generate 24-digit mnemonic words for you" = "硬件钱包将为你生成 24 位助记词";
+"Use 12-digit mnemonic words" = "使用 12 位助记词";
+"Use 24-digit mnemonic words" = "使用 24 位助记词";
+"It is suitable for the vast majority of first-time users of the hardware wallet" = "适合于绝大多数首次使用硬件钱包的用户";
+"12" = "12位";
+"24" = "24位";
+"Select the number of mnemonic words" = "选择助记词位数";

@@ -185,6 +185,10 @@
                     [weakself.navigationController pushViewController:deleteVc animated:YES];
                     
                 }else{
+                    OKDeleteTipsType type = OKDeleteTipsTypeWallet;
+                    if (self.walletType == OKWalletTypeHardware) {
+                        type = OKDeleteTipsTypeHW;
+                    }
                     OKDeleteWalletConfirmController *deleteVc = [OKDeleteWalletConfirmController deleteWalletConfirmController:^{
                         if (weakself.walletType == OKWalletTypeObserve) {
                             [weakself deleteWalletPwd:@""];
@@ -207,7 +211,7 @@
                                 }];
                             }
                         }
-                    } type:OKDeleteTipsTypeWallet];
+                    } type:type];
                     deleteVc.modalPresentationStyle = UIModalPresentationOverFullScreen;
                     [self.OK_TopViewController presentViewController:deleteVc animated:NO completion:nil];
                 }
@@ -300,7 +304,12 @@
         if (_walletType == OKWalletTypeHardware || _walletType == OKWalletTypeHD){
             OKWalletDetailModel *model3 = [OKWalletDetailModel new];
             model3.titleStr = @"";
-            model3.rightLabelStr = MyLocalizedString(@"All subwallets derived from the ROOT mnemonic of HD wallet can be recovered with the root mnemonic, so there is no need to export mnemonic words for a single wallet. If you want to get the HD purse the root word mnemonic, please go to my assets HD wallet", nil);
+            if (_walletType == OKWalletTypeHardware) {
+                model3.rightLabelStr = MyLocalizedString(@"The wallet's private key or mnemonic has been securely stored on the hardware device. If you need to export a mnemonic for your hardware wallet, please go to [My Hardware] to find your device to export.", nil);
+            }else{
+                model3.rightLabelStr = MyLocalizedString(@"All subwallets derived from the ROOT mnemonic of HD wallet can be recovered with the root mnemonic, so there is no need to export mnemonic words for a single wallet. If you want to get the HD purse the root word mnemonic, please go to my assets HD wallet", nil);
+            }
+            
             model3.isShowCopy = NO;
             model3.isShowSerialNumber = NO;
             model3.isShowArrow = NO;

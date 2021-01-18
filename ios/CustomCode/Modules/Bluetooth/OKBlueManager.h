@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "BabyBluetooth.h"
+#import "OKDeviceInfoModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -18,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 #define kPRIMARY_SERVICE        @"0001"
 #define kWRITE_CHARACTERISTIC   @"0002"
 #define kREAD_CHARACTERISTIC    @"0003"
+
 
 @interface OKPeripheralInfo : NSObject
 
@@ -98,6 +100,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)getStrValueInUD;
 - (void)saveStrValueInUD:(NSString *)bleUUID;
 
+@property (nonatomic,strong)OKDeviceInfoModel *model;
 @property (nonatomic, weak) id<OKBabyBluetoothManageDelegate> delegate;
 
 

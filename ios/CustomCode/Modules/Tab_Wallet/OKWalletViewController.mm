@@ -68,6 +68,11 @@
 - (IBAction)signatureBtnClick:(UIButton *)sender;
 @property (weak, nonatomic) IBOutlet UITableView *assetTableView;
 
+@property (weak, nonatomic) IBOutlet UIView *hwBgView;
+@property (weak, nonatomic) IBOutlet UILabel *hwWalletNameLabel;
+
+
+
 
 //备份提醒
 @property (weak, nonatomic) IBOutlet UIView *backupBgView;
@@ -228,6 +233,7 @@
     [self.topView setLayerDefaultRadius];
     [self.bottomView setLayerDefaultRadius];
     [self.leftViewBg setLayerRadius:14];
+    [self.hwBgView setLayerRadius:15];
     [self.scanBtn addTarget:self action:@selector(scanBtnClick) forControlEvents:UIControlEventTouchUpInside];
     UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapGestureClick)];
     [self.leftView addGestureRecognizer:tapGesture];
@@ -247,6 +253,8 @@
     } else {
         // Fallback on earlier versions
     }
+    
+    
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(backUpBgClick)];
     [self.backupBgView addGestureRecognizer:tap];
     self.assetTableView.tableFooterView = [UIView new];
@@ -303,6 +311,15 @@
         self.tableViewHeaderView.frame = CGRectMake(0, 0, SCREEN_WIDTH, 490);
         [self.assetTableView setTableHeaderView:self.tableViewHeaderView];
         self.backupBgView.hidden = NO;
+    }
+    
+    if ([kWalletManager getWalletDetailType] == OKWalletTypeHardware) {
+        self.signatureBtn.hidden = NO;
+        self.hwBgView.hidden = NO;
+        self.hwWalletNameLabel.text = @"设备信息 从保存的数据库中取";
+    }else{
+        self.signatureBtn.hidden = YES;
+        self.hwBgView.hidden = YES;
     }
 }
 

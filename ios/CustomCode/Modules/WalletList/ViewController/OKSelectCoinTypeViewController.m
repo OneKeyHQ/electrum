@@ -71,7 +71,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSString *coinType = self.coinTypeListArray[indexPath.row];
-    if (_addType == OKAddTypeCreateHDDerived || _addType == OKAddTypeCreateSolo) {
+    if (_addType == OKAddTypeCreateHDDerived || _addType == OKAddTypeCreateSolo || _addType == OKAddTypeCreateHWDerived) {
         OKSetWalletNameViewController *setWalletNameVc = [OKSetWalletNameViewController setWalletNameViewController];
         setWalletNameVc.addType = _addType;
         setWalletNameVc.coinType = coinType;

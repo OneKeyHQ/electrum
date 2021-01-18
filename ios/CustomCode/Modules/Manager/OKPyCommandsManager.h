@@ -92,8 +92,12 @@
 #define kInterfaceverify_legality        @"verify_legality"  //验证格式
 
 //硬件相关
+#define kBluetooth_iOS                   @"bluetooth_ios"
 #define kInterfaceget_feature            @"get_feature"    //获取设备信息
-
+#define kInterfaceimport_create_hw_wallet @"import_create_hw_wallet" //创建硬件派生钱包
+#define kInterfacecreate_hw_derived_wallet @"create_hw_derived_wallet" //获取xpub
+#define kInterfaceset_pin                  @"set_pin"       //设置PIN码
+#define kInterfaceinit                     @"init"          //激活设备
 #define kPyCommandsManager (OKPyCommandsManager.sharedInstance)
 NS_ASSUME_NONNULL_BEGIN
 @interface OKPyCommandsManager : NSObject
@@ -101,6 +105,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setNetwork;
 - (id)callInterface:(NSString *)method parameter:(NSDictionary *)parameter;
 @property (nonatomic,assign)PyObject *pyInstance;
+//硬件实例
+@property (nonatomic,assign)PyObject *pyHwInstance;
 @end
 
 NS_ASSUME_NONNULL_END

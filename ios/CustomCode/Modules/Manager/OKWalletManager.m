@@ -121,11 +121,11 @@ static dispatch_once_t once;
         return OKWalletTypeIndependent;
     }else if ([type isEqualToString:[NSString stringWithFormat:@"%@-derived-standard",coinType]]){
         return OKWalletTypeHD;
-    }else if ([type isEqualToString:@"btc-hw-m-n"]){
+    }else if ([type isEqualToString:[NSString stringWithFormat:@"%@-hw-m-n",coinType]]){
         return OKWalletTypeMultipleSignature;
-    }else if ([type isEqualToString:@"btc-hd-hw-1-1"]){
+    }else if ([type isEqualToString:[NSString stringWithFormat:@"%@-hd-hw-1-1",coinType]]){
         return OKWalletTypeHardware;
-    }else if([type isEqualToString:@"btc-hw-derived-m-n"]){
+    }else if([type isEqualToString:[NSString stringWithFormat:@"%@-hw-derived-1-1",coinType]]){
         return OKWalletTypeHardware;
     }else if([type isEqualToString:[NSString stringWithFormat:@"%@-watch-standard",coinType]]){
         return OKWalletTypeObserve;
@@ -167,19 +167,21 @@ static dispatch_once_t once;
  */
 - (NSString *)getWalletTypeShowStr:(NSString *)type
 {
-    if ([type isEqualToString:@"btc-hd-standard"]) {
+    NSRange range = [type rangeOfString:@"-"];
+    NSString *walletTypeStr = [type substringFromIndex:range.location + range.length];
+    if ([walletTypeStr isEqualToString:@"hd-standard"]) {
         return @"HD";
-    }else if ([type isEqualToString:@"btc-standard"]){
+    }else if ([walletTypeStr isEqualToString:@"standard"]){
         return @"";
-    }else if ([type isEqualToString:@"btc-derived-standard"]){
+    }else if ([walletTypeStr isEqualToString:@"derived-standard"]){
         return @"HD";
-    }else if ([type isEqualToString:@"btc-hw-m-n"]){
-        return @"";
-    }else if ([type isEqualToString:@"btc-hd-hw-1-1"]){
-        return MyLocalizedString(@"Hardware recovery for HD Wallet", nil);
-    }else if([type isEqualToString:@"btc-hw-derived-m-n"]){
-        return MyLocalizedString(@"Hardware derived", nil);
-    }else if ([type isEqualToString:@"btc-watch-standard"]){
+    }else if ([walletTypeStr isEqualToString:@"hw-1-1"]){
+        return MyLocalizedString(@"hardware", nil);
+    }else if ([walletTypeStr isEqualToString:@"hd-hw-1-1"]){
+        return MyLocalizedString(@"hardware", nil);
+    }else if([walletTypeStr isEqualToString:@"hw-derived-1-1"]){
+        return MyLocalizedString(@"hardware", nil);
+    }else if ([walletTypeStr isEqualToString:@"watch-standard"]){
         return MyLocalizedString(@"To observe the", nil);
     }else{
         return @"";

@@ -389,6 +389,7 @@ static dispatch_once_t once;
 
 ///读取数据
 - (void)readData:(NSData *)valueData {
+    NSLog(@"valueData == %@",valueData);
     if (valueData == nil || valueData.length == 0) {
         return;
     }
@@ -401,11 +402,12 @@ static dispatch_once_t once;
     if (![self.buffer hasPrefix:kPRE_OF_DATAPACKAGE]) {
         [self.buffer setString:@""];
     }
-    if (self.buffer.length > (kLENGTH_FILED_END_OFFSET + kLENGTH_FILED_START_OFFSET)) {
+    if (self.buffer.length >= kLENGTH_FILED_END_OFFSET) {
         NSString * fieldStr =  [self.buffer substringWithRange:NSMakeRange(kLENGTH_FILED_START_OFFSET, kLENGTH_FILED_END_OFFSET - kLENGTH_FILED_START_OFFSET)];
         fieldNum = (int)strtoul([fieldStr UTF8String],0,16);
     }
     if (fieldNum + kHEAD_LENGTH == self.buffer.length / 2) {
+        NSLog(@"self.currentReadDataStr = %@",self.currentReadDataStr);
         self.currentReadDataStr = [self.buffer copy];
         [self.buffer setString:@""];
     }
@@ -429,6 +431,7 @@ static dispatch_once_t once;
 
 - (NSString *)characteristicRead
 {
+    NSLog(@"self.currentReadDataStr == %@",self.currentReadDataStr);
     if (self.currentReadDataStr) {
         if (self.currentReadDataStr.length == 0) {
             return  nil;
