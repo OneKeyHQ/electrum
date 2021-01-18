@@ -261,7 +261,8 @@
             tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".activities.settings.UpgradeBixinKEYActivity"
-            android:noHistory="false" />
+            android:noHistory="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activities.personalwallet.mnemonic_word.CreateInputHelpWordWalletSuccseActivity"
             android:screenOrientation="portrait"
@@ -613,21 +614,45 @@
         <activity
             android:name=".card.BackupHelper"
             android:theme="@style/dialog" />
-        <activity android:name=".ui.activity.FindNormalDeviceActivity"
-            android:launchMode="singleTask"/>
-        <activity android:name=".ui.activity.CreatePersonalWalletActivity" />
-        <activity android:name=".ui.activity.CreateMultiSigWalletActivity" />
-        <activity android:name=".ui.activity.VerifyPinActivity" />
-        <activity android:name=".ui.activity.PinNewActivity" />
-        <activity android:name=".ui.activity.ConfirmOnHardWareActivity" />
-        <activity android:name=".ui.activity.CheckXpubActivity" />
-        <activity android:name=".ui.activity.ResetDevicePromoteActivity" />
-        <activity android:name=".ui.activity.VerifyHardwareActivity" />
-        <activity android:name=".ui.activity.RecoveryHardwareOnceWallet" />
-        <activity android:name=".ui.activity.HardwareUpgradeActivity" />
-        <activity android:name=".ui.activity.SoftPassActivity"
+        <activity
+            android:name=".ui.activity.FindNormalDeviceActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask" />
+        <activity
+            android:name=".ui.activity.CreatePersonalWalletActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.CreateMultiSigWalletActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.VerifyPinActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.PinNewActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.ConfirmOnHardWareActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.CheckXpubActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.ResetDevicePromoteActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.VerifyHardwareActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.RecoveryHardwareOnceWallet"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.HardwareUpgradeActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.SoftPassActivity"
             android:noHistory="true"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"/>
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
 
         <meta-data
             android:name="design_width_in_dp"
@@ -645,8 +670,12 @@
         <activity
             android:name=".activities.ResetAppActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".ui.activity.PinVerifyWaySelector" />
-        <activity android:name=".ui.activity.InputPinOnHardware" />
+        <activity
+            android:name=".ui.activity.PinVerifyWaySelector"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.activity.InputPinOnHardware"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>
