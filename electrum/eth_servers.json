@@ -16,6 +16,7 @@
       {"customer": "http://127.0.0.1:8545", "chainid": "11"}
     ],
     "TxliServer": [
+         {"onekey-mainnet": "https://eth1.onekey.so/api/v2/"},
          {"etherscan-mainnet": "https://api-cn.etherscan.com/api"},
          {"etherscan-testnet": "https://api-ropsten.etherscan.io/api"},
          {"trezor-mainnet": "https://eth1.trezor.io/api/v2/"},

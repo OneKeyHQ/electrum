@@ -23,7 +23,7 @@ class SortWalletList():
         hd_wallets = []
 
         for key, info in wallets_info.items():
-            if -1 != info['type'].find('derived'):
+            if -1 != info['type'].find('derived') and -1 == info['type'].find('-hw-'):
                 temp = {}
                 temp[key] = info
                 hd_wallets.append(temp)

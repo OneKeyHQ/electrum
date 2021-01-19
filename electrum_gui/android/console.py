@@ -182,6 +182,10 @@ class AndroidCommands(commands.Commands):
         # its callback before the daemon threads start.
         self.daemon = daemon.Daemon(self.config, fd)
         self.coins = read_json('eth_servers.json', {})
+        if constants.net.NET == "Bitcoin":
+            chain_type = "mainnet"
+        else:
+            chain_type = "testnet"
         self.pywalib = PyWalib(self.config, chain_type=chain_type, path=self._tx_list_path(name="tx_info.db"))
         self.txdb = TxDb(path=self._tx_list_path(name="tx_info.db"))
         self.pywalib.set_server(self.coins["eth"])
@@ -914,7 +918,7 @@ class AndroidCommands(commands.Commands):
         :return: json like {"rapid":{"price":1, "time":"15 Seconds"},
                             "fast":{"price":1, "time":"1 Minute",
                             "standard":{"price":1, "time":"3 Minutes",
-                            "timestamp":{"price":1, "time":"> 10 Minutes"}
+                            "timestamp":{"price":1, "time":"10 Minutes"}
         '''
         try:
             return self.pywalib.get_gas_price()
@@ -2701,13 +2705,14 @@ class AndroidCommands(commands.Commands):
         except BaseException as e:
             raise e
 
-    def create_hd_wallet(self, password, seed=None, passphrase="", purpose=84, strength=128):
+    def create_hd_wallet(self, password, seed=None, passphrase="", purpose=84, strength=128, create_coin=json.dumps(['btc'])):
         '''
         Create hd wallet
         :param password: password as str
         :param seed: import create hd wallet if seed is not None
         :param purpose: 84/44/49 only for btc
         :param strength: Length of the　Mnemonic word as (128/256)
+        :param create_coin: List of wallet types to be created like "["btc","eth"]"
         :return: json like {'seed':''
                             'wallet_info':''
                             'derived_info':''}
@@ -2724,16 +2729,19 @@ class AndroidCommands(commands.Commands):
             print("seed type = %s" % type(seed))
 
         ##create BTC-1
-        wallet_info = self.create("BTC-1", password, seed=seed, passphrase=passphrase,
+        create_coin_list = json.loads(create_coin)
+        if ("btc" in create_coin_list):
+            wallet_info = self.create("BTC-1", password, seed=seed, passphrase=passphrase,
                                   bip39_derivation=bip44_derivation(0, purpose),
                                   hd=True)
-        wallet_data.append(json.loads(wallet_info))
+            wallet_data.append(json.loads(wallet_info))
 
         for coin, info in self.coins.items():
-            name = "%s-1" % coin.upper()
-            bip39_derivation = bip44_derivation(0, info['addressType'], info['coinId'])
-            wallet_info = self.create(name, password, seed=seed, passphrase=passphrase, bip39_derivation=bip39_derivation, hd=True, coin=coin)
-            wallet_data.append(json.loads(wallet_info))
+            if coin in create_coin_list:
+                name = "%s-1" % coin.upper()
+                bip39_derivation = bip44_derivation(0, info['addressType'], info['coinId'])
+                wallet_info = self.create(name, password, seed=seed, passphrase=passphrase, bip39_derivation=bip39_derivation, hd=True, coin=coin)
+                wallet_data.append(json.loads(wallet_info))
 
         if new_seed is None:
             return self.recovery_hd_derived_wallet(password, seed, passphrase, wallet_data=wallet_data)
@@ -2768,7 +2776,7 @@ class AndroidCommands(commands.Commands):
         '''
         Verify legality for seed/private/public/address
         :param data: data as string
-        :param falg: seed/private/public/address as string
+        :param falg: seed/private/public/address/keystore as string
         :param coin: btc/eth as string
         :return: raise except if failed
         '''
@@ -2810,7 +2818,7 @@ class AndroidCommands(commands.Commands):
                 except:
                     raise BaseException(UnavailablePublicKey())
             elif flag == "address":
-                if not self.pywalib.web3.isChecksumAddress(self.pywalib.web3.toChecksumAddress(data)):
+                if not self.pywalib.web3.isAddress(data):
                     raise BaseException(UnavailableEthAddr())
 
     def replace_watch_only_wallet(self, replace=True):
@@ -2866,7 +2874,7 @@ class AndroidCommands(commands.Commands):
             raise e
 
     def create(self, name, password=None, seed_type="segwit", seed=None, passphrase="", bip39_derivation=None,
-               master=None, addresses=None, privkeys=None, hd=False, purpose=84, coin="btc", keystores=None,
+               master=None, addresses=None, privkeys=None, hd=False, purpose=84, coin="btc", keystores=None, keystore_password=None,
                strength=128):
         '''
         Create or restore a new wallet
@@ -2971,9 +2979,9 @@ class AndroidCommands(commands.Commands):
                 if keystores is not None:
                     try:
                         from eth_account import Account
-                        privkeys = Account.decrypt(keystores, password).hex()
+                        privkeys = Account.decrypt(keystores, keystore_password).hex()
                     except ValueError:
-                        raise InvalidPasswordException()
+                        raise BaseException(str(InvalidPassword()))
                 k = keystore.Imported_KeyStore({})
                 db.put('keystore', k.dump())
                 wallet = Imported_Eth_Wallet(db, storage, config=self.config)

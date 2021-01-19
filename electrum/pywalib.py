@@ -285,7 +285,7 @@ class PyWalib:
                         elif type == "standard":
                             fee_info['time'] = "3 Minutes"
                         elif type == "timestamp":
-                            fee_info['time'] = "> 10 Minutes"
+                            fee_info['time'] = "10 Minutes"
                         out[type] = fee_info
                 return json.dumps(out)
         except BaseException as ex:
@@ -412,7 +412,7 @@ class PyWalib:
                             continue
                         else:
                             if recovery:
-                                if -1 == key.find("trezor"):
+                                if -1 == key.find("onekey"):
                                     continue
                         speed_list[key] = value
                         return speed_list
@@ -539,7 +539,7 @@ class PyWalib:
         tx_list = []
         speed_list = PyWalib.tx_list_ping(recovery=recovery)
         for server_key, url in speed_list.items():
-            if -1 != server_key.find("trezor"):
+            if -1 != server_key.find("onekey"):
                 if recovery:
                     print(f"get_transaction history from trezor to recovery....{address, url}")
                     tx_list = PyWalib.get_recovery_flag_from_trezor(address, url)
