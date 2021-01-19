@@ -232,7 +232,6 @@ public class ImportSoftWalletActivity extends BaseActivity
                         case SoftWalletImportMode.Mnemonic:
                             assertX(!TextUtils.isEmpty(mWalletPassword), "mWalletPassword Assertion failed");
                             assertX(!TextUtils.isEmpty(mImportMnemonic), "mImportMnemonic Assertion failed");
-                            assertX(mBitcoinAddressPurpose != 0, "mBitcoinAddressPurpose Assertion failed");
 
                             walletBean = mAccountManager.createSingleWalletByMnemonic(mCoinType, mWalletName, mWalletPassword, mImportMnemonic, mBitcoinAddressPurpose);
                             break;
@@ -240,14 +239,12 @@ public class ImportSoftWalletActivity extends BaseActivity
                             assertX(!TextUtils.isEmpty(mWalletPassword), "mWalletPassword Assertion failed");
                             assertX(!TextUtils.isEmpty(mImportKeystoreContent), "mImportKeystoreContent Assertion failed");
                             assertX(!TextUtils.isEmpty(mImportKeystorePassword), "mImportKeystorePassword Assertion failed");
-                            assertX(mBitcoinAddressPurpose != 0, "mBitcoinAddressPurpose Assertion failed");
 
                             walletBean = mAccountManager.createSingleWalletByKeystore(mCoinType, mWalletName, mWalletPassword, mImportKeystoreContent, mImportKeystorePassword, mBitcoinAddressPurpose);
                             break;
                         case SoftWalletImportMode.Private:
                             assertX(!TextUtils.isEmpty(mWalletPassword), "mWalletPassword Assertion failed");
                             assertX(!TextUtils.isEmpty(mImportPrivateKey), "mImportPrivateKey Assertion failed");
-                            assertX(mBitcoinAddressPurpose != 0, "mBitcoinAddressPurpose Assertion failed");
 
                             walletBean = mAccountManager.createSingleWalletByPrivteKey(mCoinType, mWalletName, mWalletPassword, mImportPrivateKey, mBitcoinAddressPurpose);
                             break;

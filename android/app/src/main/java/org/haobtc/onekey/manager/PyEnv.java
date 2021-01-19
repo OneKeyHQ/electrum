@@ -562,6 +562,7 @@ public final class PyEnv {
      * @param receiver 发送方
      * @param amount   发送金额
      * @param feeRate  当前费率
+     *
      * @return 临时交易
      */
     public static PyResponse<TemporaryTxInfo> getFeeByFeeRate(@NonNull String receiver, @NonNull String amount, @NonNull String feeRate) {
@@ -586,6 +587,7 @@ public final class PyEnv {
      * 构建交易
      *
      * @param tempTx 临时交易
+     *
      * @return rawTx 待签名的交易
      */
     public static PyResponse<String> makeTx(String tempTx) {
@@ -606,6 +608,7 @@ public final class PyEnv {
      * 汇率转换
      *
      * @param value value in btc
+     *
      * @return string value in cash
      */
     public static PyResponse<String> exchange(String value) {
@@ -642,6 +645,7 @@ public final class PyEnv {
      * 签名交易
      *
      * @param rawTx 未签名的交易
+     *
      * @return 签名后的交易详情
      */
     public static PyResponse<TransactionInfoBean> signTx(String rawTx, String password) {
@@ -781,6 +785,10 @@ public final class PyEnv {
     public static CreateWalletBean createWallet(String walletName, String password, Vm.CoinType coinType, String privateKey, String mnemonics, String keyStore, String keyStorePass, int purpose) throws AccountException.CreateException {
         try {
             List<Kwarg> argList = new LinkedList<>();
+            argList.add(new Kwarg("name", walletName));
+            argList.add(new Kwarg("password", password));
+            argList.add(new Kwarg("coin", coinType.name));
+
             if (!TextUtils.isEmpty(privateKey)) {
                 argList.add(new Kwarg("privkeys", privateKey));
             }
@@ -795,9 +803,7 @@ public final class PyEnv {
                 argList.add(new Kwarg("purpose", purpose));
             }
 
-            argList.add(new Kwarg("coin", coinType.name));
-
-            String result = sCommands.callAttr(PyConstant.CREATE_WALLET, walletName, password, argList).toString();
+            String result = sCommands.callAttr(PyConstant.CREATE_WALLET, argList.toArray(new Object[0])).toString();
             CreateWalletBean createWalletBean = CreateWalletBean.objectFromData(result);
             EventBus.getDefault().post(new CreateSuccessEvent(createWalletBean.getWalletInfo().get(0).getName()));
             return createWalletBean;
@@ -919,6 +925,7 @@ public final class PyEnv {
      * 获取派生HD钱包的个数
      *
      * @param coin
+     *
      * @return
      */
     public static PyResponse<String> getDerivedNum(String coin) {
@@ -937,6 +944,7 @@ public final class PyEnv {
      * 覆盖观察钱包
      *
      * @param replace true
+     *
      * @return
      */
     public static PyResponse<String> replaceWatchOnlyWallet(boolean replace) {

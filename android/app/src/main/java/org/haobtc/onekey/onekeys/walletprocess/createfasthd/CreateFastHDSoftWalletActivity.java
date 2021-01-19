@@ -151,7 +151,6 @@ public class CreateFastHDSoftWalletActivity extends BaseActivity
                         assertX(mCoinType != null, "mCoinType Assertion failed");
                         assertX(!TextUtils.isEmpty(mWalletName), "mWalletName Assertion failed");
                         assertX(!TextUtils.isEmpty(mWalletPassword), "mWalletPassword Assertion failed");
-                        assertX(mBitcoinAddressPurpose != 0, "mBitcoinAddressPurpose Assertion failed");
 
                         // 创建 HD 钱包
                         CreateWalletBean walletBean = mAccountManager.deriveHdWallet(mCoinType, mWalletName, mWalletPassword, mBitcoinAddressPurpose);
