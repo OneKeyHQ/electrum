@@ -358,8 +358,8 @@ class AndroidCommands(commands.Commands):
                 # append fiat balance and price
                 if self.daemon.fx.is_enabled():
                     text += self.daemon.fx.get_fiat_status_text(c + u + x, self.base_unit, self.decimal_point) or ''
-            # print("update_statue out = %s" % (out))
-            self.callbackIntent.onCallback("update_status=%s" % json.dumps(out))
+            print("update_statue out = %s" % (out))
+            #self.callbackIntent.onCallback("update_status=%s" % json.dumps(out))
 
     def get_remove_flag(self, tx_hash):
         height = self.wallet.get_tx_height(tx_hash).height
@@ -666,7 +666,7 @@ class AndroidCommands(commands.Commands):
             raise BaseException(e)
         if storage:
             wallet = Wallet(db, storage, config=self.config)
-            self.check_exist_file(wallet.get_addresses()[0], wallet)
+            self.check_exist_file(wallet)
             wallet.status_flag = ("btc-hw-%s-%s" % (self.m, self.n))
             wallet.hide_type = hide_type
             wallet.set_name(name)
@@ -2498,7 +2498,7 @@ class AndroidCommands(commands.Commands):
         # FIXME tell user about bad_inputs
         if not good_inputs:
             raise BaseException(UnavailablePublicKey())
-        self.check_exist_file(wallet.get_addresses()[0], wallet)
+        self.check_exist_file(wallet)
         wallet.update_password(old_pw=None, new_pw=password, str_pw=self.android_id, encrypt_storage=True)
         wallet.set_name(name)
         wallet.save_db()
@@ -2720,8 +2720,9 @@ class AndroidCommands(commands.Commands):
         self._assert_daemon_running()
         new_seed = None
         wallet_data = []
-        # if seed is not None:
-        #     return self.recovery_hd_derived_wallet(password, seed, passphrase, wallet_data=wallet_data)
+        if seed is not None:
+            return self.recovery_hd_derived_wallet(password, seed, passphrase)
+
         if seed is None:
             seed = Mnemonic("english").generate(strength=strength)
             new_seed = seed
@@ -2742,12 +2743,8 @@ class AndroidCommands(commands.Commands):
                 bip39_derivation = bip44_derivation(0, info['addressType'], info['coinId'])
                 wallet_info = self.create(name, password, seed=seed, passphrase=passphrase, bip39_derivation=bip39_derivation, hd=True, coin=coin)
                 wallet_data.append(json.loads(wallet_info))
-
-        if new_seed is None:
-            return self.recovery_hd_derived_wallet(password, seed, passphrase, wallet_data=wallet_data)
-        else:
-            key = self.get_hd_wallet_encode_seed(seed=seed)
-            self.update_backup_info(key)
+        key = self.get_hd_wallet_encode_seed(seed=seed)
+        self.update_backup_info(key)
 
         out_info = []
         for info in wallet_data:
@@ -2874,7 +2871,7 @@ class AndroidCommands(commands.Commands):
             raise e
 
     def create(self, name, password=None, seed_type="segwit", seed=None, passphrase="", bip39_derivation=None,
-               master=None, addresses=None, privkeys=None, hd=False, purpose=84, coin="btc", keystores=None, keystore_password=None,
+               master=None, addresses=None, privkeys=None, hd=False, purpose=49, coin="btc", keystores=None, keystore_password=None,
                strength=128):
         '''
         Create or restore a new wallet
@@ -3036,7 +3033,7 @@ class AndroidCommands(commands.Commands):
         new_name = self.get_unique_path(wallet)
         wallet.storage.set_path(self._wallet_path(new_name))
         try:
-            self.check_exist_file(addr, wallet)
+            self.check_exist_file(wallet)
         except ReplaceWatchonlyWallet:
             self.update_replace_info(str(ReplaceWatchonlyWallet.message), wallet, name=name, seed=seed,\
                                      password=password, coin=coin, wallet_type=wallet_type, derived_flag=derived_flag, \
@@ -3179,17 +3176,21 @@ class AndroidCommands(commands.Commands):
                 # # value = wallets.values()[0]
                 # return wallets[key]
 
-    def update_recover_list(self, recovery_list, balance, name, label, coin):
+    def update_recover_list(self, recovery_list, balance, wallet_obj, label, coin):
         show_info = {}
         show_info['coin'] = coin
         show_info['blance'] = str(balance)
-        show_info['name'] = name
+        show_info['name'] = str(wallet_obj)
         show_info['label'] = label
+        try:
+            self.check_exist_file(wallet_obj)
+            show_info['exist'] = "0"
+        except:
+            show_info['exist'] = "1"
         recovery_list.append(show_info)
 
     def filter_wallet(self):
         recovery_list = []
-        ##TODO:fileter eth
         for name, wallet_info in self.recovery_wallets.items():
             try:
                 wallet = wallet_info['wallet']
@@ -3198,14 +3199,15 @@ class AndroidCommands(commands.Commands):
                     address = wallet.get_addresses()[0]
                     tx_list = PyWalib.get_transaction_history(address, recovery=True)
                     if len(tx_list) != 0:
-                        self.update_recover_list(recovery_list, wallet.get_all_balance(address, coin), str(wallet),
+                        self.update_recover_list(recovery_list, wallet.get_all_balance(address, coin), wallet,
                                                  wallet.get_name(), coin)
                         continue
                 else:
+                    addr = wallet.get_addresses()[0]
                     history = reversed(wallet.get_history())
                     for item in history:
                         c, u, _ = wallet.get_balance()
-                        self.update_recover_list(recovery_list, self.format_amount_and_units(c + u), str(wallet),
+                        self.update_recover_list(recovery_list, self.format_amount_and_units(c + u), wallet,
                                                  wallet.get_name(), "btc")
                         break
             except BaseException as e:
@@ -3346,7 +3348,25 @@ class AndroidCommands(commands.Commands):
         '''
         cls._recovery_flag = flag
 
-    def recovery_hd_derived_wallet(self, password=None, seed=None, passphrase='', xpub=None, hw=False, wallet_data=None,
+    def filter_wallet_with_account_is_zero(self):
+        wallet_list = []
+        for name, wallet_info in self.recovery_wallets.items():
+            try:
+                wallet = wallet_info['wallet']
+                coin = wallet.wallet_type[0:3]
+                derivation = wallet.keystore.get_derivation_prefix()
+                account_id = int(derivation.split('/')[ACCOUNT_POS].split('\'')[0])
+                purpose = int(derivation.split('/')[PURPOSE_POS].split('\'')[0])
+                if account_id is not 0:
+                    continue
+                if self.coins.__contains__(coin) or purpose is 49:
+                    wallet_info = CreateWalletInfo.create_wallet_info(coin_type="btc" if purpose is 49 else coin, name=str(wallet))
+                    wallet_list.append(wallet_info)
+            except BaseException as e:
+                raise e
+        return wallet_list
+
+    def recovery_hd_derived_wallet(self, password=None, seed=None, passphrase='', xpub=None, hw=False,
                                    path='bluetooth'):
         if hw:
             self.recovery_wallet(xpub=xpub, hw=hw, path=path)
@@ -3360,11 +3380,8 @@ class AndroidCommands(commands.Commands):
                 #     self.recovery_wallet(seed, password, passphrase, coin=coin, xpub=xpub, hw=hw)
 
         recovery_list = self.filter_wallet()
-        out_info = []
-        if wallet_data is not None:
-            for info in wallet_data:
-                out_info.append(info["wallet_info"][0])
-        out = self.get_create_info_by_json(wallet_info=out_info, derived_info=recovery_list)
+        wallet_data = self.filter_wallet_with_account_is_zero()
+        out = self.get_create_info_by_json(wallet_info=wallet_data, derived_info=recovery_list)
         return json.dumps(out)
 
     def get_derivat_path(self, purpose=84, coin=None):
@@ -3431,7 +3448,9 @@ class AndroidCommands(commands.Commands):
         if int(bip39_derivation.split('/')[ACCOUNT_POS].split('\'')[0]) == 0:
             purpose = int(bip39_derivation.split('/')[PURPOSE_POS].split('\'')[0])
             if purpose == 49:
-                return
+                name = "BTC-1"
+            elif self.coins.__contains__(coin):
+                name = "%s-1" %coin.upper()
             else:
                 name = "btc-derived-%s" %purpose
         temp_path = self.get_temp_file()
@@ -3578,9 +3597,9 @@ class AndroidCommands(commands.Commands):
         except BaseException as e:
             raise e
 
-    def check_exist_file(self, addr, wallet_obj):
+    def check_exist_file(self, wallet_obj):
         for _, exist_wallet in self.daemon._wallets.items():
-            if addr in exist_wallet.get_addresses()[0]:
+            if wallet_obj.get_addresses()[0] in exist_wallet.get_addresses()[0]:
                 if exist_wallet.is_watching_only() and not wallet_obj.is_watching_only():
                     raise ReplaceWatchonlyWallet(exist_wallet)
                 else:
