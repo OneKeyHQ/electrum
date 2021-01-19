@@ -62,7 +62,7 @@ public class HardwareCallbackHandler extends Handler {
         switch (msg.what) {
             case PIN_CURRENT:
             case PIN_NEW_FIRST:
-                boolean isVerifyPinOnHardware = (boolean)PreferencesManager.get(fragmentActivity, "Preferences", Constant.PIN_VERIFY_ON_HARDWARE, false);
+                boolean isVerifyPinOnHardware = (boolean) PreferencesManager.get(fragmentActivity, "Preferences", Constant.PIN_VERIFY_ON_HARDWARE, true);
                 if (isVerifyPinOnHardware) {
                    fragmentActivity.startActivity(new Intent(fragmentActivity, InputPinOnHardware.class));
                    PyEnv.setPin(Constant.PIN_INVALID);

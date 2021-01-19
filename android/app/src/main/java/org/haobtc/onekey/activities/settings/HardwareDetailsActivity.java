@@ -59,7 +59,6 @@ import org.haobtc.onekey.ui.activity.VerifyPinActivity;
 import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.ui.dialog.DeleteLocalDeviceDialog;
 import org.haobtc.onekey.ui.dialog.InvalidDeviceIdWarningDialog;
-import org.haobtc.onekey.ui.dialog.UnBackupTipDialog;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -258,7 +257,7 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
             bundle.putString(Constant.TAG_FIRMWARE_VERSION_NEW, versionStm32);
             bundle.putString(Constant.TAG_FIRMWARE_UPDATE_DES, descriptionStm32);
         }
-        boolean showNrf = isBootloader || !Strings.isNullOrEmpty(nrfVersion) && !Strings.isNullOrEmpty(versionNrf) && versionNrf.compareTo(nrfVersion) > 0;
+        boolean showNrf = getShowNrf(isBootloader, versionNrf);
         if (showNrf) {
             bundle.putString(Constant.TAG_NRF_DOWNLOAD_URL, urlPrefix + urlNrf);
             bundle.putString(Constant.TAG_NRF_VERSION_NEW, versionNrf);
@@ -271,6 +270,24 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
         bundle.putString(Constant.TAG_LABEL, label);
         bundle.putString(Constant.DEVICE_ID, deviceId);
         return bundle;
+    }
+
+    /**
+     * @param isBootloader 如果是 Bootloader 模式就直接显示升级，否则去校验版本升级
+     * @param versionNrf
+     *
+     * @return
+     */
+    private boolean getShowNrf(boolean isBootloader, String versionNrf) {
+        if (isBootloader) {
+            return true;
+        } else {
+            if (!Strings.isNullOrEmpty(nrfVersion) && !Strings.isNullOrEmpty(versionNrf)) {
+                return versionNrf.compareTo(nrfVersion) > 0 || Objects.equals(nrfVersion, Constant.BLE_OLDEST_VER);
+            } else {
+                return false;
+            }
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

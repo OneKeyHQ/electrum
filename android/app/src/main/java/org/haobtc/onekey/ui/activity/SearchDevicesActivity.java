@@ -443,14 +443,34 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
         bundle.putString(Constant.TAG_FIRMWARE_VERSION_NEW, versionStm32);
         bundle.putString(Constant.TAG_FIRMWARE_UPDATE_DES, descriptionStm32);
         // todo: 此处的判定条件在版本号出现2位数以上时会有问题
-        boolean showNrf = isBootloader || !Strings.isNullOrEmpty(curNrfVersion) && !Strings.isNullOrEmpty(versionNrf) && versionNrf.compareTo(curNrfVersion) > 0;
-        if (showNrf) {
+//        boolean showNrf = isBootloader || !Strings.isNullOrEmpty(curNrfVersion) && !Strings.isNullOrEmpty(versionNrf) && (versionNrf.compareTo(curNrfVersion) > 0 || Objects.equal(curNrfVersion, Constant.BLE_OLDEST_VER));
+        boolean show = getShowNrf(isBootloader, curNrfVersion, versionNrf);
+        if (show) {
             bundle.putString(Constant.TAG_NRF_DOWNLOAD_URL, urlPrefix + urlNrf);
             bundle.putString(Constant.TAG_NRF_VERSION_NEW, versionNrf);
             bundle.putString(Constant.TAG_NRF_UPDATE_DES, descriptionNrf);
         }
         return bundle;
     }
+
+    /**
+     * @param isBootloader 如果是 Bootloader 模式就直接显示升级，否则去校验版本
+     * @param versionNrf
+     *
+     * @return
+     */
+    private boolean getShowNrf(boolean isBootloader, String curNrfVersion, String versionNrf) {
+        if (isBootloader) {
+            return true;
+        } else {
+            if (!Strings.isNullOrEmpty(curNrfVersion) && !Strings.isNullOrEmpty(versionNrf)) {
+                return versionNrf.compareTo(curNrfVersion) > 0 || java.util.Objects.equals(curNrfVersion, Constant.BLE_OLDEST_VER);
+            } else {
+                return false;
+            }
+        }
+    }
+
 
     /**
      * 初始化蓝牙前检查权限，为后续在 BleManager 抽离 Activity 作准备，BleManager 持有 Activity 此处会发生内存泄漏。

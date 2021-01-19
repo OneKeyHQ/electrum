@@ -381,7 +381,11 @@ public final class Constant {
     public static final String WALLET_NAME = "walletName";
     public static final String FINISH = "finish";
     public static final String BTC_WATCH = "btc-watch-standard";
-    public static final String CUSTOM_FEERATE="custom_feerate";
-    public static final String HDWALLET_NAME="hdWalletName";
+    public static final String CUSTOM_FEERATE = "custom_feerate";
+    public static final String HDWALLET_NAME = "hdWalletName";
+    /**
+     * 蓝牙最早版本号
+     */
+    public static final String BLE_OLDEST_VER = "s132_";
 
 }
