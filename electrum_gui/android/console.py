@@ -3517,25 +3517,16 @@ class AndroidCommands(commands.Commands):
               "name": "",
               "btc": "0.005 BTC",
               "fiat": "1,333.55",
-              "wallets": {
-                "btc": {
-                  "balance": "",
-                  "fiat": ""
-                }
-              }
+              "wallets": [
+                {"coin": "btc", "balance": "", "fiat": ""}
+              ]
             },
             {
               "name": "",
-              "wallets": {
-                "eth": {
-                  "balance": "",
-                  "fiat": ""
-                },
-                "usdt": {
-                  "balance": "",
-                  "fiat": ""
-                }
-              }
+              "wallets": [
+                { "coin": "btc", "balance": "", "fiat": ""},
+                { "coin": "usdt", "balance": "", "fiat": ""}
+              ]
             }
           ]
         }
@@ -3550,21 +3541,27 @@ class AndroidCommands(commands.Commands):
                     checksum_from_address = self.pywalib.web3.toChecksumAddress(wallet.get_addresses()[0])
                     balances_info = wallet.get_all_balance(checksum_from_address,
                                                            self.coins[wallet.wallet_type[0:3]]['symbol'])
+                    wallet_balances = []
                     for symbol, info in balances_info.items():
-                        info['fiat'] = self.daemon.fx.format_amount_and_units(info['fiat'] * COIN) or "0"
-                        fiat = Decimal(info['fiat'].split()[0].replace(',', ""))
+                        copied_info = dict(info)
+                        copied_info['fiat'] = self.daemon.fx.format_amount_and_units(copied_info['fiat'] * COIN) or f"0 {self.ccy}"
+                        wallet_balances.append({
+                            "coin": symbol,
+                            **copied_info,
+                        })
+                        fiat = Decimal(copied_info['fiat'].split()[0].replace(',', ""))
                         all_balance += fiat
 
-                    wallet_info['wallets'] = balances_info
+                    wallet_info['wallets'] = wallet_balances
                     all_wallet_info.append(wallet_info)
                 else:
                     c, u, x = wallet.get_balance()
-                    balance = self.daemon.fx.format_amount_and_units(c + u) or "0"
+                    balance = self.daemon.fx.format_amount_and_units(c + u) or f"0 {self.ccy}"
                     fiat = Decimal(balance.split()[0].replace(',', ""))
                     all_balance += fiat
                     wallet_info['btc'] = self.format_amount(c + u)  # fixme deprecated field
                     wallet_info['fiat'] = balance  # fixme deprecated field
-                    wallet_info['wallets'] = {"btc": {"balance": wallet_info['btc'], "fiat": wallet_info['fiat']}}
+                    wallet_info['wallets'] = [{"coin": "btc", "balance": wallet_info['btc'], "fiat": wallet_info['fiat']}]
                     all_wallet_info.append(wallet_info)
 
             out['all_balance'] = ('%s %s' % (all_balance, self.ccy))
@@ -3874,10 +3871,10 @@ class AndroidCommands(commands.Commands):
         {
           "name": "",
           "label": "",
-          "wallets": {
-            "eth": {"balance": "", "fiat": ""},
-            "usdt": {"balance": "", "fiat": ""}
-          }
+          "wallets": [
+            {"coin": "eth", "balance": "", "fiat": ""},
+            {"coin": "usdt", "balance": "", "fiat": ""}
+          ]
         }
         '''
         try:
@@ -3896,14 +3893,18 @@ class AndroidCommands(commands.Commands):
                 balance_info = self.wallet.get_all_balance(checksum_from_address,
                                                           self.coins[self.wallet.wallet_type[0:3]]['symbol'])
 
-                balance_info = {key: {
-                    **val,
-                    "fiat": self.daemon.fx.format_amount_and_units(val['fiat'] * COIN) or "0"
-                } for key, val in balance_info.items()}
+                wallet_balances = [
+                    {
+                        "coin": key,
+                        **val,
+                        "fiat": self.daemon.fx.format_amount_and_units(val['fiat'] * COIN) or f"0 {self.ccy}"
+                    }
+                    for key, val in balance_info.items()
+                ]
                 info = {
                     "name": name,
                     "label": self.wallet.get_name(),
-                    "wallets": balance_info
+                    "wallets": wallet_balances
                 }
                 return json.dumps(info, cls=DecimalEncoder)
             else:
@@ -3917,14 +3918,14 @@ class AndroidCommands(commands.Commands):
 
                 balance = c + u
                 fait = self.daemon.fx.format_amount_and_units(balance) if self.daemon.fx else None
-                fait = fait or "0"
+                fait = fait or f"0 {self.ccy}"
                 info = {
                     "balance": self.format_amount(balance) + ' (%s)' % fait,  # fixme deprecated field
                     "name": name,
                     "label": self.wallet.get_name(),
-                    "wallets": {
-                        "btc": {'balance': Decimal(balance), 'fiat': fait}
-                    }
+                    "wallets": [
+                        {"coin": "btc", "balance": Decimal(balance), "fiat": fait}
+                    ]
                 }
                 if self.label_flag and self.wallet.wallet_type != "standard":
                     self.label_plugin.load_wallet(self.wallet)
