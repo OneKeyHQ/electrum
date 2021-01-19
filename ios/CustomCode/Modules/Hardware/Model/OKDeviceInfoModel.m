@@ -10,4 +10,11 @@
 
 @implementation OKDeviceInfoModel
 
+- (NSString *)deviceSysVersion {
+    if (!_deviceSysVersion) {
+        _deviceSysVersion = [NSString stringWithFormat:@"%li.%li.%li", (long)self.major_version, (long)self.minor_version, (long)self.patch_version];
+    }
+    return _deviceSysVersion;
+}
+
 @end

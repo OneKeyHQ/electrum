@@ -197,7 +197,7 @@
         OKDeviceInfoModel *model = [OKDeviceInfoModel mj_objectWithKeyValues:jsonStr];
         kOKBlueManager.model = model;
         dispatch_async(dispatch_get_main_queue(), ^{
-            if ([model.initialized boolValue]) {
+            if (model.initialized ) {
                 OKActivateDeviceSelectViewController *activateDeviceVc = [OKActivateDeviceSelectViewController activateDeviceSelectViewController];
                 [self.navigationController pushViewController:activateDeviceVc animated:YES];
             }else{

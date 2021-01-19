@@ -378,3 +378,72 @@
 "12" = "12位";
 "24" = "24位";
 "Select the number of mnemonic words" = "选择助记词位数";
+
+"general" = "通用";
+"advanced" = "高级";
+"done" = "完成";
+// Hardware Wallet Associated - start
+"hardwareWallet.devices" = "设备";
+
+// 升级固件
+"hardwareWallet.update" = "升级固件";
+"hardwareWallet.update.title" = "固件升级";
+"hardwareWallet.update.update" = "升级";
+"hardwareWallet.update.currentDesc" = "当前系统固件版本 <frameworkVersion> \n当前蓝牙固件版本 <bluetoothVersion> \n升级固件前务必备份好钱包，否则可能造成资产损失";
+"hardwareWallet.update.newSysAvailable" = "新系统固件可用";
+"hardwareWallet.update.newBluetoothAvailable" = "新蓝牙固件可用";
+"hardwareWallet.update.uptodate" = "设备固件及蓝牙版本已经是最新版本。";
+"hardwareWallet.update.sysUpdating" = "正在升级系统固件";
+"hardwareWallet.update.bluetoothUpdating" = "正在升级蓝牙固件";
+"hardwareWallet.update.downloading" = "固件下载中，请耐心等待";
+"hardwareWallet.update.installing" = "固件安装中";
+"hardwareWallet.update.installed" = "固件升级完成";
+
+"hardwareWallet.lanuage.desc" = "选择硬件钱包的显示语言";
+
+"hardwareWallet.info" = "设备信息";
+"hardwareWallet.info.id" = "设备ID";
+"hardwareWallet.info.buletoothName" = "蓝牙名称";
+"hardwareWallet.info.sysVersion" = "系统固件版本";
+"hardwareWallet.info.buletoothVersion" = "蓝牙固件版本";
+
+"hardwareWallet.autoOff" = "自动关机";
+"hardwareWallet.autoOff.desc" = "设置自动关机时间，到点自动关闭设备以节省电量";
+"hardwareWallet.autoOff.timeout" = "定时";
+"hardwareWallet.autoOff.second" = "秒";
+
+"hardwareWallet.verify" = "防伪校验";
+"hardwareWallet.verify.connecting" = "正在连接设备";
+"hardwareWallet.verify.connectingTip" = "数据传输需要一定时间，\n把您的设备放在手机旁边。";
+"hardwareWallet.verify.processing" = "正在处理...";
+"hardwareWallet.verify.connectingDevice" = "连接设备";
+"hardwareWallet.verify.getSign" = "获取防伪签名";
+"hardwareWallet.verify.submitting" = "提交防伪验证信息";
+"hardwareWallet.verify.pass" = "验证通过";
+"hardwareWallet.verify.fail" = "验证失败";
+"hardwareWallet.verify.passDesc" = "这是 OneKey 官方出品\n内置官方固件\n请放心使用";
+"hardwareWallet.verify.failDesc" = "这台设备并未运行官方固件\n可能被篡改\n如果这不是您自己的行为\n请联系销售方处理";
+"hardwareWallet.verify.return" = "返回设备";
+
+"hardwareWallet.pin" = "修改 PIN 码";
+"hardwareWallet.pin.title" = "修改设备 PIN 码";
+"hardwareWallet.pin.inputPinTip" = "输入设备原 PIN 码\n以继续";
+"hardwareWallet.pin.newPinTip" = "干的好，继续根据设备\n上的 PIN 码位置\n设置您的新6位 PIN 码";
+"hardwareWallet.pin.keyboardTip" = "手机上的数字键位每次都会随机改变。\nPIN 码忘记不可找回，您务必要牢记。";
+"hardwareWallet.pin.comfirm" = "最终确认";
+"hardwareWallet.pin.comfirmTip" = "在您的设备上确认新的 PIN 码，\n这是最后一步。";
+
+"hardwareWallet.recover.title" = "恢复出厂设置";
+"hardwareWallet.recover.tip" = "恢复出厂设置后：\n\n1. 您存储在这个硬件钱包中的私钥或助记词将被抹除；\n\n2. 您在 OneKey App 中用这个钱包创建的账户依然存在，但因为缺少私钥，无法动用其上的资产。除非您在此之前就备份了助记词或私钥，使用它们恢复硬件钱包，从而重新掌控相关账户。 ";
+
+
+"hardwareWallet.xpub" = "查看多重签名扩展公钥（xPub）";
+"hardwareWallet.xpub.xpub" = "扩展公钥";
+"hardwareWallet.xpub.title" = "多重签名扩展公钥";
+"hardwareWallet.xpub.tip" = "「扩展公钥」，也被称为XPUB。是比特币标准(BIP32)的一部分，不包含任何私钥。 \n您在创建或加入共管（多重签名）钱包时，会用到下方显示的扩展公钥。";
+
+"hardwareWallet.delete" = "删除设备";
+"hardwareWallet.delete.tip" = "这个硬件钱包会在您的设备列表消失。您用这个硬件钱包创建的账户依然可以正常显示，下次您使用的时候会重新配对并恢复。";
+"hardwareWallet.delete.cancel" = "撤回";
+
+// Hardware Wallet Associated - end

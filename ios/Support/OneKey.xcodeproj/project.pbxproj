@@ -437,6 +437,43 @@
 		A27C452B9C4F198A51666502 /* lru.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F0444273AE5FE13617678202 /* lru.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		AA3E43ADB13FEEECDE4E2D42 /* OKClickTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E69481895D9636B448B1235 /* OKClickTextView.m */; };
 		AB3F4EEE868AEEB2FD3E7365 /* UIImage+OneKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 1DA841F082704F0871382A1F /* UIImage+OneKey.m */; };
+		B058D8A325B55662000EB27C /* OKResetDeviceWarningViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B058D88225B55662000EB27C /* OKResetDeviceWarningViewController.m */; };
+		B058D8A425B55663000EB27C /* OKDeviceListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B058D88425B55662000EB27C /* OKDeviceListViewController.m */; };
+		B058D8A525B55663000EB27C /* OKDeviceListCellModel.h in Headers */ = {isa = PBXBuildFile; fileRef = B058D88525B55662000EB27C /* OKDeviceListCellModel.h */; };
+		B058D8A625B55663000EB27C /* OKDeviceListCellModel.m in Sources */ = {isa = PBXBuildFile; fileRef = B058D88625B55662000EB27C /* OKDeviceListCellModel.m */; };
+		B058D8A725B55663000EB27C /* OKDeviceListViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = B058D88725B55662000EB27C /* OKDeviceListViewController.h */; };
+		B058D8A825B55663000EB27C /* OKDeviceDeleteController.h in Headers */ = {isa = PBXBuildFile; fileRef = B058D88825B55662000EB27C /* OKDeviceDeleteController.h */; };
+		B058D8A925B55663000EB27C /* OKDeviceOffController.m in Sources */ = {isa = PBXBuildFile; fileRef = B058D88925B55662000EB27C /* OKDeviceOffController.m */; };
+		B058D8AA25B55663000EB27C /* OKDeviceLanguageViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = B058D88A25B55662000EB27C /* OKDeviceLanguageViewController.h */; };
+		B058D8AB25B55663000EB27C /* OKDeviceInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B058D88B25B55662000EB27C /* OKDeviceInfoViewController.m */; };
+		B058D8AC25B55663000EB27C /* HardwareSetting.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B058D88C25B55662000EB27C /* HardwareSetting.storyboard */; };
+		B058D8AD25B55663000EB27C /* OKDeviceVerifyResultController.h in Headers */ = {isa = PBXBuildFile; fileRef = B058D88E25B55662000EB27C /* OKDeviceVerifyResultController.h */; };
+		B058D8AE25B55663000EB27C /* OKDeviceVerifyController.m in Sources */ = {isa = PBXBuildFile; fileRef = B058D88F25B55662000EB27C /* OKDeviceVerifyController.m */; };
+		B058D8AF25B55663000EB27C /* OKDeviceVerifyResultController.m in Sources */ = {isa = PBXBuildFile; fileRef = B058D89025B55662000EB27C /* OKDeviceVerifyResultController.m */; };
+		B058D8B025B55663000EB27C /* OKDeviceVerifyController.h in Headers */ = {isa = PBXBuildFile; fileRef = B058D89125B55662000EB27C /* OKDeviceVerifyController.h */; };
+		B058D8B125B55663000EB27C /* OKDeviceUpdateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B058D89325B55662000EB27C /* OKDeviceUpdateViewController.m */; };
+		B058D8B225B55663000EB27C /* OKDeviceUpdateInstallController.m in Sources */ = {isa = PBXBuildFile; fileRef = B058D89425B55662000EB27C /* OKDeviceUpdateInstallController.m */; };
+		B058D8B325B55663000EB27C /* OKDeviceUpdateModel.m in Sources */ = {isa = PBXBuildFile; fileRef = B058D89525B55662000EB27C /* OKDeviceUpdateModel.m */; };
+		B058D8B425B55663000EB27C /* OKDeviceUpdateViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = B058D89625B55662000EB27C /* OKDeviceUpdateViewController.h */; };
+		B058D8B525B55663000EB27C /* OKDeviceUpdateInstallController.h in Headers */ = {isa = PBXBuildFile; fileRef = B058D89725B55662000EB27C /* OKDeviceUpdateInstallController.h */; };
+		B058D8B625B55663000EB27C /* OKDeviceUpdateModel.h in Headers */ = {isa = PBXBuildFile; fileRef = B058D89825B55662000EB27C /* OKDeviceUpdateModel.h */; };
+		B058D8B725B55663000EB27C /* OKResetDeviceWarningViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = B058D89925B55662000EB27C /* OKResetDeviceWarningViewController.h */; };
+		B058D8B825B55663000EB27C /* OKDeviceOffController.h in Headers */ = {isa = PBXBuildFile; fileRef = B058D89A25B55662000EB27C /* OKDeviceOffController.h */; };
+		B058D8B925B55663000EB27C /* OKHardwareListBaseCell.h in Headers */ = {isa = PBXBuildFile; fileRef = B058D89C25B55662000EB27C /* OKHardwareListBaseCell.h */; };
+		B058D8BA25B55663000EB27C /* OKDeviceSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B058D89D25B55662000EB27C /* OKDeviceSettingsViewController.m */; };
+		B058D8BB25B55663000EB27C /* OKHardwareListBaseCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B058D89E25B55662000EB27C /* OKHardwareListBaseCell.m */; };
+		B058D8BC25B55663000EB27C /* OKDeviceSettingsViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = B058D89F25B55662000EB27C /* OKDeviceSettingsViewController.h */; };
+		B058D8BD25B55663000EB27C /* OKDeviceDeleteController.m in Sources */ = {isa = PBXBuildFile; fileRef = B058D8A025B55662000EB27C /* OKDeviceDeleteController.m */; };
+		B058D8BE25B55663000EB27C /* OKDeviceInfoViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = B058D8A125B55662000EB27C /* OKDeviceInfoViewController.h */; };
+		B058D8BF25B55663000EB27C /* OKDeviceLanguageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B058D8A225B55662000EB27C /* OKDeviceLanguageViewController.m */; };
+		B058D8C425B5567B000EB27C /* NSDictionary+OKKeyPath.m in Sources */ = {isa = PBXBuildFile; fileRef = B058D8C025B5567A000EB27C /* NSDictionary+OKKeyPath.m */; };
+		B058D8C525B5567B000EB27C /* NSArray+OKKeyPath.h in Headers */ = {isa = PBXBuildFile; fileRef = B058D8C125B5567A000EB27C /* NSArray+OKKeyPath.h */; };
+		B058D8C625B5567B000EB27C /* NSDictionary+OKKeyPath.h in Headers */ = {isa = PBXBuildFile; fileRef = B058D8C225B5567B000EB27C /* NSDictionary+OKKeyPath.h */; };
+		B058D8C725B5567B000EB27C /* NSArray+OKKeyPath.m in Sources */ = {isa = PBXBuildFile; fileRef = B058D8C325B5567B000EB27C /* NSArray+OKKeyPath.m */; };
+		B058D8CA25B572C7000EB27C /* OKDevicesManager.h in Headers */ = {isa = PBXBuildFile; fileRef = B058D8C825B572C7000EB27C /* OKDevicesManager.h */; };
+		B058D8CB25B572C7000EB27C /* OKDevicesManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B058D8C925B572C7000EB27C /* OKDevicesManager.m */; };
+		B058D8CE25B5A64F000EB27C /* OKDeviceModel.h in Headers */ = {isa = PBXBuildFile; fileRef = B058D8CC25B5A64F000EB27C /* OKDeviceModel.h */; };
+		B058D8CF25B5A64F000EB27C /* OKDeviceModel.m in Sources */ = {isa = PBXBuildFile; fileRef = B058D8CD25B5A64F000EB27C /* OKDeviceModel.m */; };
 		B1224B57B4D99A578C974400 /* _raw_cbc.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 55E241F594223A4D0246CAB6 /* _raw_cbc.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B29C483197B6698004570F27 /* OKNSObject.h in Headers */ = {isa = PBXBuildFile; fileRef = A911430B96FB9633A857ACAD /* OKNSObject.h */; settings = {ATTRIBUTES = (project, ); }; };
 		B2EE47BDB57AA751FFE38EF0 /* _raw_ecb.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1A4144F991D1C48D86723572 /* _raw_ecb.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -948,6 +985,43 @@
 		A911430B96FB9633A857ACAD /* OKNSObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OKNSObject.h; path = ../CustomCode/OKNSObject.h; sourceTree = SOURCE_ROOT; };
 		ADE84D3B8618BCED31CD7B34 /* _ghash_portable.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = _ghash_portable.framework; path = ../Resources/Dylib/_ghash_portable.framework; sourceTree = SOURCE_ROOT; };
 		AEDA460185C8F9419C9E3D4C /* UIView+YCExtension.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "UIView+YCExtension.m"; path = "../CustomCode/Categories/UIView+YCExtension.m"; sourceTree = SOURCE_ROOT; };
+		B058D88225B55662000EB27C /* OKResetDeviceWarningViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKResetDeviceWarningViewController.m; sourceTree = "<group>"; };
+		B058D88425B55662000EB27C /* OKDeviceListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKDeviceListViewController.m; sourceTree = "<group>"; };
+		B058D88525B55662000EB27C /* OKDeviceListCellModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKDeviceListCellModel.h; sourceTree = "<group>"; };
+		B058D88625B55662000EB27C /* OKDeviceListCellModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKDeviceListCellModel.m; sourceTree = "<group>"; };
+		B058D88725B55662000EB27C /* OKDeviceListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKDeviceListViewController.h; sourceTree = "<group>"; };
+		B058D88825B55662000EB27C /* OKDeviceDeleteController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKDeviceDeleteController.h; sourceTree = "<group>"; };
+		B058D88925B55662000EB27C /* OKDeviceOffController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKDeviceOffController.m; sourceTree = "<group>"; };
+		B058D88A25B55662000EB27C /* OKDeviceLanguageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKDeviceLanguageViewController.h; sourceTree = "<group>"; };
+		B058D88B25B55662000EB27C /* OKDeviceInfoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKDeviceInfoViewController.m; sourceTree = "<group>"; };
+		B058D88C25B55662000EB27C /* HardwareSetting.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = HardwareSetting.storyboard; sourceTree = "<group>"; };
+		B058D88E25B55662000EB27C /* OKDeviceVerifyResultController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKDeviceVerifyResultController.h; sourceTree = "<group>"; };
+		B058D88F25B55662000EB27C /* OKDeviceVerifyController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKDeviceVerifyController.m; sourceTree = "<group>"; };
+		B058D89025B55662000EB27C /* OKDeviceVerifyResultController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKDeviceVerifyResultController.m; sourceTree = "<group>"; };
+		B058D89125B55662000EB27C /* OKDeviceVerifyController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKDeviceVerifyController.h; sourceTree = "<group>"; };
+		B058D89325B55662000EB27C /* OKDeviceUpdateViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKDeviceUpdateViewController.m; sourceTree = "<group>"; };
+		B058D89425B55662000EB27C /* OKDeviceUpdateInstallController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKDeviceUpdateInstallController.m; sourceTree = "<group>"; };
+		B058D89525B55662000EB27C /* OKDeviceUpdateModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKDeviceUpdateModel.m; sourceTree = "<group>"; };
+		B058D89625B55662000EB27C /* OKDeviceUpdateViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKDeviceUpdateViewController.h; sourceTree = "<group>"; };
+		B058D89725B55662000EB27C /* OKDeviceUpdateInstallController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKDeviceUpdateInstallController.h; sourceTree = "<group>"; };
+		B058D89825B55662000EB27C /* OKDeviceUpdateModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKDeviceUpdateModel.h; sourceTree = "<group>"; };
+		B058D89925B55662000EB27C /* OKResetDeviceWarningViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKResetDeviceWarningViewController.h; sourceTree = "<group>"; };
+		B058D89A25B55662000EB27C /* OKDeviceOffController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKDeviceOffController.h; sourceTree = "<group>"; };
+		B058D89C25B55662000EB27C /* OKHardwareListBaseCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKHardwareListBaseCell.h; sourceTree = "<group>"; };
+		B058D89D25B55662000EB27C /* OKDeviceSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKDeviceSettingsViewController.m; sourceTree = "<group>"; };
+		B058D89E25B55662000EB27C /* OKHardwareListBaseCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKHardwareListBaseCell.m; sourceTree = "<group>"; };
+		B058D89F25B55662000EB27C /* OKDeviceSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKDeviceSettingsViewController.h; sourceTree = "<group>"; };
+		B058D8A025B55662000EB27C /* OKDeviceDeleteController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKDeviceDeleteController.m; sourceTree = "<group>"; };
+		B058D8A125B55662000EB27C /* OKDeviceInfoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKDeviceInfoViewController.h; sourceTree = "<group>"; };
+		B058D8A225B55662000EB27C /* OKDeviceLanguageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKDeviceLanguageViewController.m; sourceTree = "<group>"; };
+		B058D8C025B5567A000EB27C /* NSDictionary+OKKeyPath.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+OKKeyPath.m"; sourceTree = "<group>"; };
+		B058D8C125B5567A000EB27C /* NSArray+OKKeyPath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+OKKeyPath.h"; sourceTree = "<group>"; };
+		B058D8C225B5567B000EB27C /* NSDictionary+OKKeyPath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDictionary+OKKeyPath.h"; sourceTree = "<group>"; };
+		B058D8C325B5567B000EB27C /* NSArray+OKKeyPath.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+OKKeyPath.m"; sourceTree = "<group>"; };
+		B058D8C825B572C7000EB27C /* OKDevicesManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKDevicesManager.h; sourceTree = "<group>"; };
+		B058D8C925B572C7000EB27C /* OKDevicesManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKDevicesManager.m; sourceTree = "<group>"; };
+		B058D8CC25B5A64F000EB27C /* OKDeviceModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKDeviceModel.h; sourceTree = "<group>"; };
+		B058D8CD25B5A64F000EB27C /* OKDeviceModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKDeviceModel.m; sourceTree = "<group>"; };
 		B0D7435FBD7BF7C736F29F8F /* OKColors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OKColors.h; path = ../CustomCode/OKColors.h; sourceTree = SOURCE_ROOT; };
 		B73C4F1B98EDFBC9B4F96E3E /* _chacha20.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = _chacha20.framework; path = ../Resources/Dylib/_chacha20.framework; sourceTree = SOURCE_ROOT; };
 		B7414DFCA31369C5738DFF3D /* _cpuid_c.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = _cpuid_c.framework; path = ../Resources/Dylib/_cpuid_c.framework; sourceTree = SOURCE_ROOT; };
@@ -1272,27 +1346,27 @@
 		881422BB25B18EA900961668 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
-				881422BC25B18EA900961668 /* OKMatchingInCirclesViewController.m */,
-				881422BD25B18EA900961668 /* OKSetPINPreViewController.m */,
-				881422BE25B18EA900961668 /* OKPINCodeViewController.m */,
-				881422BF25B18EA900961668 /* OKActivateDeviceSelectViewController.h */,
-				881422C025B18EA900961668 /* OKVerifyOnTheDeviceController.m */,
-				881422C125B18EA900961668 /* OKDeviceSuccessViewController.h */,
 				881422C225B18EA900961668 /* Hardware.storyboard */,
+				881422BF25B18EA900961668 /* OKActivateDeviceSelectViewController.h */,
+				881422C525B18EA900961668 /* OKActivateDeviceSelectViewController.m */,
 				881425A725B302E500961668 /* OKChangeMnemonicLenController.h */,
 				881425A825B302E500961668 /* OKChangeMnemonicLenController.m */,
 				881425A325B2E44100961668 /* OKDeviceReadyToStartViewController.h */,
 				881425A425B2E44100961668 /* OKDeviceReadyToStartViewController.m */,
+				881422C125B18EA900961668 /* OKDeviceSuccessViewController.h */,
+				881422C825B18EA900961668 /* OKDeviceSuccessViewController.m */,
 				8814259F25B2DF7200961668 /* OKDiscoverNewDeviceViewController.h */,
 				881425A025B2DF7200961668 /* OKDiscoverNewDeviceViewController.m */,
-				881422C325B18EA900961668 /* OKSetDeviceNameViewController.m */,
 				881422C425B18EA900961668 /* OKMatchingInCirclesViewController.h */,
-				881422C525B18EA900961668 /* OKActivateDeviceSelectViewController.m */,
+				881422BC25B18EA900961668 /* OKMatchingInCirclesViewController.m */,
 				881422C625B18EA900961668 /* OKPINCodeViewController.h */,
-				881422C725B18EA900961668 /* OKSetPINPreViewController.h */,
-				881422C825B18EA900961668 /* OKDeviceSuccessViewController.m */,
-				881422C925B18EA900961668 /* OKVerifyOnTheDeviceController.h */,
+				881422BE25B18EA900961668 /* OKPINCodeViewController.m */,
 				881422CA25B18EA900961668 /* OKSetDeviceNameViewController.h */,
+				881422C325B18EA900961668 /* OKSetDeviceNameViewController.m */,
+				881422C725B18EA900961668 /* OKSetPINPreViewController.h */,
+				881422BD25B18EA900961668 /* OKSetPINPreViewController.m */,
+				881422C925B18EA900961668 /* OKVerifyOnTheDeviceController.h */,
+				881422C025B18EA900961668 /* OKVerifyOnTheDeviceController.m */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -1300,8 +1374,8 @@
 		881422CB25B18EA900961668 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				881422CC25B18EA900961668 /* OKDeviceInfoModel.m */,
 				881422CD25B18EA900961668 /* OKDeviceInfoModel.h */,
+				881422CC25B18EA900961668 /* OKDeviceInfoModel.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -1464,6 +1538,7 @@
 		8814231325B18EA900961668 /* Tab_Mine */ = {
 			isa = PBXGroup;
 			children = (
+				B058D88125B55662000EB27C /* HardwareSetting */,
 				8814231425B18EA900961668 /* Controller */,
 				8814233225B18EA900961668 /* NetSeting */,
 				8814234A25B18EA900961668 /* Model */,
@@ -1912,6 +1987,10 @@
 			isa = PBXGroup;
 			children = (
 				72FF4539A963089D04591408 /* NSString+OKAdd.m */,
+				B058D8C125B5567A000EB27C /* NSArray+OKKeyPath.h */,
+				B058D8C325B5567B000EB27C /* NSArray+OKKeyPath.m */,
+				B058D8C225B5567B000EB27C /* NSDictionary+OKKeyPath.h */,
+				B058D8C025B5567A000EB27C /* NSDictionary+OKKeyPath.m */,
 				9F9A4247AB8A2B51FBFA4D67 /* UIButton+OneKey.m */,
 				8340442285C2533BDEF0F385 /* NSTimer+TimerBlock.m */,
 				E5934BE097D42F2211A29E44 /* UIView+YCExtension.h */,
@@ -1940,6 +2019,78 @@
 			);
 			name = Categories;
 			path = ../CustomCode/Categories;
+			sourceTree = "<group>";
+		};
+		B058D88125B55662000EB27C /* HardwareSetting */ = {
+			isa = PBXGroup;
+			children = (
+				B058D88325B55662000EB27C /* DeviceList */,
+				B058D89B25B55662000EB27C /* DeviceSettingHome */,
+				B058D89225B55662000EB27C /* DeviceUpdate */,
+				B058D88D25B55662000EB27C /* DeviceVerify */,
+				B058D88C25B55662000EB27C /* HardwareSetting.storyboard */,
+				B058D88825B55662000EB27C /* OKDeviceDeleteController.h */,
+				B058D8A025B55662000EB27C /* OKDeviceDeleteController.m */,
+				B058D8A125B55662000EB27C /* OKDeviceInfoViewController.h */,
+				B058D88B25B55662000EB27C /* OKDeviceInfoViewController.m */,
+				B058D88A25B55662000EB27C /* OKDeviceLanguageViewController.h */,
+				B058D8A225B55662000EB27C /* OKDeviceLanguageViewController.m */,
+				B058D89A25B55662000EB27C /* OKDeviceOffController.h */,
+				B058D88925B55662000EB27C /* OKDeviceOffController.m */,
+				B058D89925B55662000EB27C /* OKResetDeviceWarningViewController.h */,
+				B058D88225B55662000EB27C /* OKResetDeviceWarningViewController.m */,
+			);
+			path = HardwareSetting;
+			sourceTree = "<group>";
+		};
+		B058D88325B55662000EB27C /* DeviceList */ = {
+			isa = PBXGroup;
+			children = (
+				B058D88525B55662000EB27C /* OKDeviceListCellModel.h */,
+				B058D88625B55662000EB27C /* OKDeviceListCellModel.m */,
+				B058D88725B55662000EB27C /* OKDeviceListViewController.h */,
+				B058D88425B55662000EB27C /* OKDeviceListViewController.m */,
+				B058D8C825B572C7000EB27C /* OKDevicesManager.h */,
+				B058D8C925B572C7000EB27C /* OKDevicesManager.m */,
+				B058D8CC25B5A64F000EB27C /* OKDeviceModel.h */,
+				B058D8CD25B5A64F000EB27C /* OKDeviceModel.m */,
+			);
+			path = DeviceList;
+			sourceTree = "<group>";
+		};
+		B058D88D25B55662000EB27C /* DeviceVerify */ = {
+			isa = PBXGroup;
+			children = (
+				B058D88E25B55662000EB27C /* OKDeviceVerifyResultController.h */,
+				B058D88F25B55662000EB27C /* OKDeviceVerifyController.m */,
+				B058D89025B55662000EB27C /* OKDeviceVerifyResultController.m */,
+				B058D89125B55662000EB27C /* OKDeviceVerifyController.h */,
+			);
+			path = DeviceVerify;
+			sourceTree = "<group>";
+		};
+		B058D89225B55662000EB27C /* DeviceUpdate */ = {
+			isa = PBXGroup;
+			children = (
+				B058D89325B55662000EB27C /* OKDeviceUpdateViewController.m */,
+				B058D89425B55662000EB27C /* OKDeviceUpdateInstallController.m */,
+				B058D89525B55662000EB27C /* OKDeviceUpdateModel.m */,
+				B058D89625B55662000EB27C /* OKDeviceUpdateViewController.h */,
+				B058D89725B55662000EB27C /* OKDeviceUpdateInstallController.h */,
+				B058D89825B55662000EB27C /* OKDeviceUpdateModel.h */,
+			);
+			path = DeviceUpdate;
+			sourceTree = "<group>";
+		};
+		B058D89B25B55662000EB27C /* DeviceSettingHome */ = {
+			isa = PBXGroup;
+			children = (
+				B058D89F25B55662000EB27C /* OKDeviceSettingsViewController.h */,
+				B058D89D25B55662000EB27C /* OKDeviceSettingsViewController.m */,
+				B058D89C25B55662000EB27C /* OKHardwareListBaseCell.h */,
+				B058D89E25B55662000EB27C /* OKHardwareListBaseCell.m */,
+			);
+			path = DeviceSettingHome;
 			sourceTree = "<group>";
 		};
 		CBB14A08A299E78F0950E8FA /* CustomCode */ = {
@@ -1998,6 +2149,7 @@
 			files = (
 				8814248C25B18EAA00961668 /* mask.h in Headers */,
 				881424CB25B18EAA00961668 /* OKProxyServerModel.h in Headers */,
+				B058D8B625B55663000EB27C /* OKDeviceUpdateModel.h in Headers */,
 				8814242A25B18EAA00961668 /* OKMnemonicImportViewController.h in Headers */,
 				8814255D25B18EAA00961668 /* OKFindWalletTableViewCellModel.h in Headers */,
 				881424F925B18EAA00961668 /* OKTxViewController.h in Headers */,
@@ -2017,6 +2169,7 @@
 				881424FE25B18EAA00961668 /* OKWalletDetailModel.h in Headers */,
 				FE0B4D48BF081F3373C7B27F /* OKComMarco.h in Headers */,
 				8814257C25B18EAA00961668 /* OKSelectTableViewCell.h in Headers */,
+				B058D8A725B55663000EB27C /* OKDeviceListViewController.h in Headers */,
 				8814256D25B18EAA00961668 /* OKSelectCoinTypeTableViewCellModel.h in Headers */,
 				8814258225B18EAA00961668 /* OKAddBottomViewController.h in Headers */,
 				8814258E25B18EAA00961668 /* OKSetWalletNameViewController.h in Headers */,
@@ -2034,12 +2187,15 @@
 				881424C125B18EAA00961668 /* OKElectrumNodeTableViewCell.h in Headers */,
 				8814247125B18EAA00961668 /* dsbridge.h in Headers */,
 				8814251825B18EAA00961668 /* OKEditWalletNameViewController.h in Headers */,
+				B058D8CA25B572C7000EB27C /* OKDevicesManager.h in Headers */,
 				8814243C25B18EAA00961668 /* OKCreateResultWalletInfoModel.h in Headers */,
 				881424EB25B18EAA00961668 /* OKReceiveCoinViewController.h in Headers */,
 				881424C625B18EAA00961668 /* OKElectrumNodeViewController.h in Headers */,
 				8814252E25B18EAA00961668 /* OKWalletManager.h in Headers */,
 				881424E525B18EAA00961668 /* OKAboutTableViewCell.h in Headers */,
+				B058D8CE25B5A64F000EB27C /* OKDeviceModel.h in Headers */,
 				8814246625B18EAA00961668 /* OK_PassWordView.h in Headers */,
+				B058D8B025B55663000EB27C /* OKDeviceVerifyController.h in Headers */,
 				E12D4A14BF50FED2434A0F7D /* OKColors.h in Headers */,
 				8814249C25B18EAA00961668 /* KeyChainSaveUUID.h in Headers */,
 				881424D925B18EAA00961668 /* OKLanguageCellModel.h in Headers */,
@@ -2089,6 +2245,7 @@
 				6BDF47D5862FBD1B0521C6EA /* UIImage+OneKey.h in Headers */,
 				8814252525B18EAA00961668 /* OKOneKeyPwdManager.h in Headers */,
 				C8574A30A933FF1860B9ECE8 /* UIView+Helper.h in Headers */,
+				B058D8C625B5567B000EB27C /* NSDictionary+OKKeyPath.h in Headers */,
 				8814250225B18EAA00961668 /* OKAssetTableViewCellModel.h in Headers */,
 				F0434C49BA3E8F6C13F64025 /* NSData+StringToData.h in Headers */,
 				8814244725B18EAA00961668 /* Sha256.h in Headers */,
@@ -2108,11 +2265,13 @@
 				881425A125B2DF7200961668 /* OKDiscoverNewDeviceViewController.h in Headers */,
 				8814253D25B18EAA00961668 /* OKAppAuthorityManager.h in Headers */,
 				8814257B25B18EAA00961668 /* OKWalletListBottomBtn.h in Headers */,
+				B058D8B825B55663000EB27C /* OKDeviceOffController.h in Headers */,
 				8814243525B18EAA00961668 /* OKCreateResultModel.h in Headers */,
 				8814246F25B18EAA00961668 /* OKVerifySignatureViewController.h in Headers */,
 				8814247725B18EAA00961668 /* DSCallInfo.h in Headers */,
 				881424F525B18EAA00961668 /* OKTxListViewController.h in Headers */,
 				881424E925B18EAA00961668 /* OKUnitTableViewCell.h in Headers */,
+				B058D8AA25B55663000EB27C /* OKDeviceLanguageViewController.h in Headers */,
 				8814258C25B18EAA00961668 /* OKWalletListViewController.h in Headers */,
 				8814249025B18EAA00961668 /* qrspec.h in Headers */,
 				8814252D25B18EAA00961668 /* OKDocument.h in Headers */,
@@ -2131,12 +2290,16 @@
 				8814258F25B18EAA00961668 /* OKTextField.h in Headers */,
 				881424FD25B18EAA00961668 /* OKTxDetailViewController.h in Headers */,
 				881424E725B18EAA00961668 /* OKAllAssetsTableViewCell.h in Headers */,
+				B058D8A825B55663000EB27C /* OKDeviceDeleteController.h in Headers */,
+				B058D8B725B55663000EB27C /* OKResetDeviceWarningViewController.h in Headers */,
 				8814243F25B18EAA00961668 /* CLPasswordView.h in Headers */,
+				B058D8B425B55663000EB27C /* OKDeviceUpdateViewController.h in Headers */,
 				8814244D25B18EAA00961668 /* AESCrypt.h in Headers */,
 				8814256B25B18EAA00961668 /* OKSelectCellModel.h in Headers */,
 				881424D825B18EAA00961668 /* OKTradeSettingViewCellModel.h in Headers */,
 				881424A925B18EAA00961668 /* OKManagerHDViewController.h in Headers */,
 				D50C4AB38DB4B2AD6D02C262 /* UIButton+OneKey.h in Headers */,
+				B058D8B925B55663000EB27C /* OKHardwareListBaseCell.h in Headers */,
 				8814252625B18EAA00961668 /* OKiCloudManager.h in Headers */,
 				8814254925B18EAA00961668 /* OKTakeCareMnemonicViewController.h in Headers */,
 				8814249525B18EAA00961668 /* bitstream.h in Headers */,
@@ -2151,11 +2314,13 @@
 				8814248D25B18EAA00961668 /* qrinput.h in Headers */,
 				8814254625B18EAA00961668 /* OKScanView.h in Headers */,
 				8814257D25B18EAA00961668 /* OKCreateSelectWalletTypeCell.h in Headers */,
+				B058D8BC25B55663000EB27C /* OKDeviceSettingsViewController.h in Headers */,
 				8814259D25B1900600961668 /* OKHwNotiManager.h in Headers */,
 				881424B425B18EAA00961668 /* OKMonetaryUnitViewController.h in Headers */,
 				8814255425B18EAA00961668 /* OKScreenshotsTipsController.h in Headers */,
 				881424A025B18EAA00961668 /* OKHDWalletViewController.h in Headers */,
 				F6994A4E9A519CE1B696A034 /* NSString+OKAdd.h in Headers */,
+				B058D8AD25B55663000EB27C /* OKDeviceVerifyResultController.h in Headers */,
 				8814253325B18EAA00961668 /* OKShareView.h in Headers */,
 				8814253725B18EAA00961668 /* OKBluetoothViewCellModel.h in Headers */,
 				8814253625B18EAA00961668 /* OKBlueManager.h in Headers */,
@@ -2167,6 +2332,7 @@
 				8814251925B18EAA00961668 /* OKWalletDetailViewController.h in Headers */,
 				8814250E25B18EAA00961668 /* OKBottomCustomBtn.h in Headers */,
 				8814244325B18EAA00961668 /* OKValidationPwdController.h in Headers */,
+				B058D8A525B55663000EB27C /* OKDeviceListCellModel.h in Headers */,
 				8814254C25B18EAA00961668 /* OKFindFollowingWalletController.h in Headers */,
 				8814248725B18EAA00961668 /* MLMSegmentHead.h in Headers */,
 				881424C925B18EAA00961668 /* OKProxyServerTableViewController.h in Headers */,
@@ -2183,8 +2349,10 @@
 				8814249225B18EAA00961668 /* rscode.h in Headers */,
 				881424AB25B18EAA00961668 /* OKDontScreenshotTipsViewController.h in Headers */,
 				8814250D25B18EAA00961668 /* OKWalletInputFeeView.h in Headers */,
+				B058D8BE25B55663000EB27C /* OKDeviceInfoViewController.h in Headers */,
 				8814250F25B18EAA00961668 /* OKWalletDetailTableViewCell.h in Headers */,
 				8814250825B18EAA00961668 /* OKSendTxPreModel.h in Headers */,
+				B058D8C525B5567B000EB27C /* NSArray+OKKeyPath.h in Headers */,
 				8814254825B18EAA00961668 /* OKYouareDoneViewController.h in Headers */,
 				8814253E25B18EAA00961668 /* OKQRCodeGenerateManager.h in Headers */,
 				8814243E25B18EAA00961668 /* CLPasswordInputView.h in Headers */,
@@ -2198,6 +2366,7 @@
 				8814259625B18EAA00961668 /* BaseTableViewController.h in Headers */,
 				8814244125B18EAA00961668 /* OKWalletInfoModel.h in Headers */,
 				8814246125B18EAA00961668 /* OKVerifyOnTheDeviceController.h in Headers */,
+				B058D8B525B55663000EB27C /* OKDeviceUpdateInstallController.h in Headers */,
 				95AC401EBD351386F061C3F1 /* UIBarButtonItem+CustomBarButtonItem.h in Headers */,
 				8814245E25B18EAA00961668 /* OKPINCodeViewController.h in Headers */,
 			);
@@ -2289,6 +2458,7 @@
 				BA578E2F25ACA68700EFE0AA /* Images.xcassets in Resources */,
 				BA578E2B25ACA43D00EFE0AA /* OneKey-Info.plist in Resources */,
 				8814254225B18EAA00961668 /* Scan.storyboard in Resources */,
+				B058D8AC25B55663000EB27C /* HardwareSetting.storyboard in Resources */,
 				8814251025B18EAA00961668 /* OKWalletInputFeeView.xib in Resources */,
 				8814254E25B18EAA00961668 /* importWords.storyboard in Resources */,
 			);
@@ -2361,7 +2531,9 @@
 				8814256125B18EAA00961668 /* OKWordImportView.m in Sources */,
 				8814253925B18EAA00961668 /* OKBluetoothViewCell.m in Sources */,
 				881424AE25B18EAA00961668 /* OKFiatSelectViewController.m in Sources */,
+				B058D8AF25B55663000EB27C /* OKDeviceVerifyResultController.m in Sources */,
 				8814243225B18EAA00961668 /* OKCreateResultWalletInfoModel.m in Sources */,
+				B058D8B325B55663000EB27C /* OKDeviceUpdateModel.m in Sources */,
 				8814256325B18EAA00961668 /* OKCheckWordView.m in Sources */,
 				02F741609824FB47EF141ABE /* OKNSObject.m in Sources */,
 				8814242B25B18EAA00961668 /* OKPrivateImportViewController.m in Sources */,
@@ -2372,6 +2544,7 @@
 				8814255525B18EAA00961668 /* OKTakeCareMnemonicViewController.m in Sources */,
 				881424DD25B18EAA00961668 /* OKMineTableViewCell.m in Sources */,
 				881424B125B18EAA00961668 /* OKDeleteWalletTipsViewController.m in Sources */,
+				B058D8C725B5567B000EB27C /* NSArray+OKKeyPath.m in Sources */,
 				8814249B25B18EAA00961668 /* rscode.c in Sources */,
 				8814245325B18EAA00961668 /* OKTools.m in Sources */,
 				881424C725B18EAA00961668 /* OKNetSetingViewController.m in Sources */,
@@ -2384,6 +2557,7 @@
 				8814251C25B18EAA00961668 /* OKFirstUseViewController.m in Sources */,
 				881424E225B18EAA00961668 /* OKUnitTableViewCell.m in Sources */,
 				881424AC25B18EAA00961668 /* OKHDWalletViewController.m in Sources */,
+				B058D8BD25B55663000EB27C /* OKDeviceDeleteController.m in Sources */,
 				8814251125B18EAA00961668 /* OKTxTableViewCell.m in Sources */,
 				8814252825B18EAA00961668 /* OKWalletManager.m in Sources */,
 				FD8A490DA5395F6BD54C9E32 /* MainViewController.m in Sources */,
@@ -2398,6 +2572,7 @@
 				8814244F25B18EAA00961668 /* NSData+CommonCrypto.m in Sources */,
 				881425AA25B302E500961668 /* OKChangeMnemonicLenController.m in Sources */,
 				8814246025B18EAA00961668 /* OKDeviceSuccessViewController.m in Sources */,
+				B058D8BA25B55663000EB27C /* OKDeviceSettingsViewController.m in Sources */,
 				8814244225B18EAA00961668 /* OKCreateResultModel.m in Sources */,
 				8814252425B18EAA00961668 /* OKUserSettingManager.m in Sources */,
 				8814245425B18EAA00961668 /* OKMatchingInCirclesViewController.m in Sources */,
@@ -2405,10 +2580,12 @@
 				8814259325B18EAA00961668 /* BaseNavigationController.m in Sources */,
 				8814257425B18EAA00961668 /* OKWalletListNoHDTableViewCell.m in Sources */,
 				8814257125B18EAA00961668 /* OKWalletListNoHDTableViewCellModel.m in Sources */,
+				B058D8CF25B5A64F000EB27C /* OKDeviceModel.m in Sources */,
 				881424D725B18EAA00961668 /* OKAboutTableViewCellModel.m in Sources */,
 				8814248125B18EAA00961668 /* MLMSegmentManager.m in Sources */,
 				8814249425B18EAA00961668 /* qrinput.c in Sources */,
 				DAD34816A1E761DAD4225B06 /* AppDelegate.m in Sources */,
+				B058D8B125B55663000EB27C /* OKDeviceUpdateViewController.m in Sources */,
 				8814257825B18EAA00961668 /* OKSelectCoinTypeTableViewCell.m in Sources */,
 				8814252A25B18EAA00961668 /* OKLocalizableManager.m in Sources */,
 				8814257525B18EAA00961668 /* OKCreateSelectWalletTypeCell.m in Sources */,
@@ -2423,6 +2600,7 @@
 				8814256625B18EAA00961668 /* OKSelectCoinTypeTableViewCellModel.m in Sources */,
 				8814255325B18EAA00961668 /* OKYouareDoneViewController.m in Sources */,
 				8814251F25B18EAA00961668 /* OKLookWalletTipsViewController.m in Sources */,
+				B058D8AE25B55663000EB27C /* OKDeviceVerifyController.m in Sources */,
 				49ED4D5CBEE7C1D01849C28E /* NSString+OKAdd.m in Sources */,
 				8814244025B18EAA00961668 /* CLPasswordInputView.m in Sources */,
 				F8F74ADABAA564E2152418DA /* UIButton+OneKey.m in Sources */,
@@ -2447,7 +2625,9 @@
 				E0ED4DD8A9FD5798013881F1 /* UIBarButtonItem+CustomBarButtonItem.m in Sources */,
 				8814258725B18EAA00961668 /* OKSetWalletNameViewController.m in Sources */,
 				8814252325B18EAA00961668 /* OKDocument.m in Sources */,
+				B058D8A625B55663000EB27C /* OKDeviceListCellModel.m in Sources */,
 				8814246325B18EAA00961668 /* OKDeviceInfoModel.m in Sources */,
+				B058D8BF25B55663000EB27C /* OKDeviceLanguageViewController.m in Sources */,
 				8814259E25B1900600961668 /* OKHwNotiManager.m in Sources */,
 				8814246725B18EAA00961668 /* OKDiscoverViewController.m in Sources */,
 				8814248325B18EAA00961668 /* UIView+ViewController.m in Sources */,
@@ -2461,6 +2641,7 @@
 				8814246A25B18EAA00961668 /* OKSignatureViewController.m in Sources */,
 				8814245625B18EAA00961668 /* OKPINCodeViewController.m in Sources */,
 				8814256F25B18EAA00961668 /* OKSelectCellModel.m in Sources */,
+				B058D8CB25B572C7000EB27C /* OKDevicesManager.m in Sources */,
 				881424B525B18EAA00961668 /* OKAllAssetsViewController.m in Sources */,
 				881424B325B18EAA00961668 /* OKNetworkViewController.m in Sources */,
 				8814245525B18EAA00961668 /* OKSetPINPreViewController.m in Sources */,
@@ -2497,6 +2678,7 @@
 				8814254F25B18EAA00961668 /* OKWordWrongViewController.m in Sources */,
 				8814249725B18EAA00961668 /* qrspec.c in Sources */,
 				8814250725B18EAA00961668 /* OKDefaultFeeInfoModel.m in Sources */,
+				B058D8BB25B55663000EB27C /* OKHardwareListBaseCell.m in Sources */,
 				8814257325B18EAA00961668 /* OKWalletListBottomBtn.m in Sources */,
 				8814251425B18EAA00961668 /* OKBottomCustomBtn.m in Sources */,
 				8814254025B18EAA00961668 /* OKScanView.m in Sources */,
@@ -2509,8 +2691,11 @@
 				8814247B25B18EAA00961668 /* DWKWebView.m in Sources */,
 				8814246C25B18EAA00961668 /* OKVerifySignatureResultController.m in Sources */,
 				8814249325B18EAA00961668 /* QRCodeGenerator.m in Sources */,
+				B058D8C425B5567B000EB27C /* NSDictionary+OKKeyPath.m in Sources */,
 				8814255825B18EAA00961668 /* OKFindFollowingWalletController.m in Sources */,
 				8814256825B18EAA00961668 /* OKWalletListCollectionViewCellModel.m in Sources */,
+				B058D8A925B55663000EB27C /* OKDeviceOffController.m in Sources */,
+				B058D8A425B55663000EB27C /* OKDeviceListViewController.m in Sources */,
 				8814254125B18EAA00961668 /* OKWalletScanVC.m in Sources */,
 				881425A225B2DF7200961668 /* OKDiscoverNewDeviceViewController.m in Sources */,
 				8814258D25B18EAA00961668 /* OKAddBottomViewController.m in Sources */,
@@ -2525,6 +2710,7 @@
 				881424E125B18EAA00961668 /* OKMoreBtn.m in Sources */,
 				881424F025B18EAA00961668 /* OKTxDetailViewController.m in Sources */,
 				8814251225B18EAA00961668 /* OKCreateHDCell.m in Sources */,
+				B058D8B225B55663000EB27C /* OKDeviceUpdateInstallController.m in Sources */,
 				8814249F25B18EAA00961668 /* OKMineViewController.m in Sources */,
 				8814257025B18EAA00961668 /* OKWalletListTableViewCellModel.m in Sources */,
 				8814248E25B18EAA00961668 /* bitstream.c in Sources */,
@@ -2534,6 +2720,7 @@
 				8814257725B18EAA00961668 /* OKWalletListTableViewCell.m in Sources */,
 				881424B625B18EAA00961668 /* OKManagerHDViewController.m in Sources */,
 				8814249625B18EAA00961668 /* mask.c in Sources */,
+				B058D8A325B55662000EB27C /* OKResetDeviceWarningViewController.m in Sources */,
 				8814253B25B18EAA00961668 /* OKBlueManager.m in Sources */,
 				8814254525B18EAA00961668 /* OKAppAuthorityManager.m in Sources */,
 				8814251325B18EAA00961668 /* OKAssetTableViewCell.m in Sources */,
@@ -2548,6 +2735,7 @@
 				8814242925B18EAA00961668 /* OKObserveImportViewController.m in Sources */,
 				8814243B25B18EAA00961668 /* OKBiologicalViewController.m in Sources */,
 				8814243325B18EAA00961668 /* YZAuthID.m in Sources */,
+				B058D8AB25B55663000EB27C /* OKDeviceInfoViewController.m in Sources */,
 				881424DE25B18EAA00961668 /* OKAllAssetsTableViewCell.m in Sources */,
 				881424DF25B18EAA00961668 /* OKLanguageTableViewCell.m in Sources */,
 				881424CF25B18EAA00961668 /* OKElectrumNodeTableViewCell.m in Sources */,

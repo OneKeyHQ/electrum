@@ -19,6 +19,7 @@
 #import "OKChangePwdViewController.h"
 #import "YZAuthID.h"
 #import "OKOneKeyPwdManager.h"
+#import "OKDeviceListViewController.h"
 
 @interface OKMineViewController ()<UINavigationControllerDelegate,UITableViewDelegate,UITableViewDataSource,OKMineTableViewCellDelegate,UIGestureRecognizerDelegate,UINavigationControllerDelegate>
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
@@ -117,13 +118,13 @@
         case 0:
             label.text = MyLocalizedString(@"assets", nil);
             break;
-//        case 1:
-//            label.text = MyLocalizedString(@"hardware", nil);
-//            break;
         case 1:
-            label.text = MyLocalizedString(@"security", nil);
+            label.text = MyLocalizedString(@"hardware", nil);
             break;
         case 2:
+            label.text = MyLocalizedString(@"security", nil);
+            break;
+        case 3:
             label.text = MyLocalizedString(@"System Settings", nil);
             break;
         default:
@@ -163,7 +164,23 @@
             }
         }
             break;
-        case 1: //安全
+        case 1: //硬件
+        {
+            switch (indexPath.row) {
+                case 0: //全部设备
+                {
+                    UIViewController *devicesListVC = [OKDeviceListViewController deviceListController];
+                    [self.navigationController pushViewController:devicesListVC animated:YES];
+
+                }
+                    break;
+                    
+                default:
+                    break;
+            }
+        }
+            break;
+        case 2: //安全
         {
             switch (indexPath.row) {
                 case 0: //密码
@@ -189,7 +206,7 @@
             }
         }
             break;
-        case 2:
+        case 3:
         {
             switch (indexPath.row) {
                 case 0:
@@ -297,6 +314,11 @@
         model12.imageName = @"c-question 4";
         model12.isAuth = NO;
         
+        OKMineTableViewCellModel *allDeviceModel = [OKMineTableViewCellModel new];
+        allDeviceModel.menuName = MyLocalizedString(@"All the equipment", nil);
+        allDeviceModel.imageName = @"device_link";
+        allDeviceModel.isAuth = NO;
+    
         __block NSArray *biologicaArray = [NSArray array];
         [YZAuthID biologicalRecognitionResult:^(YZAuthenticationType type) {
             switch (type) {
@@ -317,7 +339,7 @@
                         break;
             }
         }];
-    _allMenuData = @[@[model1,model2],biologicaArray,@[model8,model9,model10,model11,model12]];
+    _allMenuData = @[@[model1,model2],@[allDeviceModel],biologicaArray,@[model8,model9,model10,model11,model12]];
     return _allMenuData;
 }
 #pragma mark - UINavigationControllerDelegate
