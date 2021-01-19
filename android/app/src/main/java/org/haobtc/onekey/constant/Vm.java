@@ -2,6 +2,8 @@ package org.haobtc.onekey.constant;
 
 import androidx.annotation.StringDef;
 
+import org.haobtc.onekey.BuildConfig;
+
 /**
  * 存放钱包运行时状态
  *
@@ -18,6 +20,21 @@ public class Vm {
         CoinType(String name, boolean enable) {
             this.name = name;
             this.enable = enable;
+        }
+    }
+
+    @StringDef
+    public @interface PyenvETHNetworkType {
+        String MainNet = "mainnet";
+        String TestNet = "testnet";
+    }
+
+    @PyenvETHNetworkType
+    public static String getEthNetwork() {
+        if (BuildConfig.net_type.equals("MainNet")) {
+            return PyenvETHNetworkType.MainNet;
+        } else {
+            return PyenvETHNetworkType.TestNet;
         }
     }
 }
