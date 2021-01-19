@@ -23,7 +23,7 @@ class SortWalletList():
         hd_wallets = []
 
         for key, info in wallets_info.items():
-            if -1 != info['type'].find('derived') and -1 == info['type'].find('-hw-'):
+            if "derived" in info['type'] and "-hw-" not in info['type']:
                 temp = {}
                 temp[key] = info
                 hd_wallets.append(temp)
@@ -39,7 +39,6 @@ class SortWalletList():
         hd_wallets_bsc = self.sort_wallet_by_hd(self.bsc_list)
 
         return hd_wallets_btc + hd_wallets_eth + hd_wallets_bsc
-        #return {**hd_wallets_btc, **hd_wallets_eth, **hd_wallets_bsc}
 
     def sort_wallet_by_coin(self, wallets_info):
         hd_wallets = []
@@ -61,7 +60,6 @@ class SortWalletList():
             else:
                 standalone_wallets.append(temp)
         return hd_wallets + standalone_wallets + import_walletw + hw_wallets + watchonly_wallets
-        #return {**hd_wallets, **standalone_wallets, **import_walletw, **hw_wallets, **watchonly_wallets}
 
 
     def get_wallets_by_coin(self, coin):
@@ -73,3 +71,24 @@ class SortWalletList():
             return self.sort_wallet_by_coin(wallets_info=self.bsc_list)
         else:
             raise BaseException(_("Unsupported coin types"))
+
+    def sort_wallet_by_hw(self, wallets_info):
+        hw_wallets = []
+
+        for key, info in wallets_info.items():
+            if "-hw-" in info['type']:
+                temp = {}
+                temp[key] = info
+                hw_wallets.append(temp)
+        return hw_wallets
+
+    def get_wallets_by_hw(self):
+        hw_wallets_btc = []
+        hw_wallets_eth = []
+        hw_wallets_bsc = []
+
+        hw_wallets_btc = self.sort_wallet_by_hw(self.btc_list)
+        hw_wallets_eth = self.sort_wallet_by_hw(self.eth_list)
+        hw_wallets_bsc = self.sort_wallet_by_hw(self.bsc_list)
+
+        return hw_wallets_btc + hw_wallets_eth + hw_wallets_bsc

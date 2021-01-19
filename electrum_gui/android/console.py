@@ -2730,7 +2730,7 @@ class AndroidCommands(commands.Commands):
 
         ##create BTC-1
         create_coin_list = json.loads(create_coin)
-        if ("btc" in create_coin_list):
+        if "btc" in create_coin_list:
             wallet_info = self.create("BTC-1", password, seed=seed, passphrase=passphrase,
                                   bip39_derivation=bip44_derivation(0, purpose),
                                   hd=True)
@@ -3951,6 +3951,8 @@ class AndroidCommands(commands.Commands):
                 return wallet_infos
             if type == 'hd':
                 return sorted_wallet.get_wallets_by_hd()
+            if type == 'hw':
+                return sorted_wallet.get_wallets_by_hw()
             else:
                 return sorted_wallet.get_wallets_by_coin(coin=type)
         except BaseException as e:
@@ -3964,6 +3966,7 @@ class AndroidCommands(commands.Commands):
         exp:
             all_list = testcommond.list_wallets()
             hd_list = testcommond.list_wallets(type='hd')
+            hw_list = testcommond.list_wallets(type='hw')
             btc_list = testcommond.list_wallets(type='btc')
             eth_list = testcommond.list_wallets(type='eth')
 
