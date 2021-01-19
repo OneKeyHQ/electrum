@@ -161,7 +161,7 @@ public class AccountManager {
      */
     public CreateWalletBean deriveHdWallet(Vm.CoinType coinType, String walletName, String walletPassword, int purpose) throws AccountException.DeriveException {
         try {
-            String result = Daemon.commands.callAttr("create_derived_wallet", walletName, walletPassword, coinType.name, purpose).toString();
+            String result = Daemon.commands.callAttr("create_derived_wallet", walletName, walletPassword, coinType.coinName, purpose).toString();
             CreateWalletBean createWalletBean = CreateWalletBean.objectFromData(result);
             EventBus.getDefault().post(new CreateSuccessEvent(createWalletBean.getWalletInfo().get(0).getName()));
             return createWalletBean;
@@ -242,7 +242,7 @@ public class AccountManager {
      * @return 创建的观察钱包
      */
     public CreateWalletBean createWatchWallet(Vm.CoinType coinType, String walletName, String address) {
-        PyObject pyObject = Daemon.commands.callAttr(PyConstant.CREATE_WALLET, walletName, new Kwarg("addresses", address), new Kwarg("coin", coinType.name));
+        PyObject pyObject = Daemon.commands.callAttr(PyConstant.CREATE_WALLET, walletName, new Kwarg("addresses", address), new Kwarg("coin", coinType.coinName));
         CreateWalletBean walletBean = new Gson().fromJson(pyObject.toString(), CreateWalletBean.class);
         EventBus.getDefault().post(new CreateSuccessEvent(walletBean.getWalletInfo().get(0).getName()));
         return walletBean;

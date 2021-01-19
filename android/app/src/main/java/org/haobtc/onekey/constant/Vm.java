@@ -14,12 +14,21 @@ public class Vm {
     public enum CoinType {
         BTC("btc", true), ETH("eth", true);
 
-        public final String name;
+        public final String coinName;
         public final boolean enable;
 
-        CoinType(String name, boolean enable) {
-            this.name = name;
+        CoinType(String coinName, boolean enable) {
+            this.coinName = coinName;
             this.enable = enable;
+        }
+
+        public static CoinType convert(String coinName) {
+            for (CoinType item : CoinType.values()) {
+                if (item.coinName.equals(coinName)) {
+                    return item;
+                }
+            }
+            return CoinType.BTC;
         }
     }
 

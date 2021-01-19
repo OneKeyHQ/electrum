@@ -1,4 +1,5 @@
 package org.haobtc.onekey.onekeys.homepage;
+
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -35,6 +36,7 @@ import org.haobtc.onekey.bean.HardwareFeatures;
 import org.haobtc.onekey.bean.LocalWalletInfo;
 import org.haobtc.onekey.bean.MainSweepcodeBean;
 import org.haobtc.onekey.business.wallet.SystemConfigManager;
+import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.event.BackupCompleteEvent;
 import org.haobtc.onekey.event.BackupEvent;
 import org.haobtc.onekey.event.BleConnectedEvent;
@@ -512,14 +514,22 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
                 break;
             case R.id.rel_bi_detail:
                 if (!TextUtils.isEmpty(nowType)) {
-                    Intent intent5 = new Intent(getActivity(), TransactionDetailWalletActivity.class);
-                    if (nowType.contains("hw")) {
-                        intent5.putExtra(org.haobtc.onekey.constant.Constant.BLE_MAC, bleMac);
+                    String coinType = null;
+                    if (nowType.contains("btc")) {
+                        coinType = Vm.CoinType.BTC.coinName;
+                    } else if (nowType.contains("eth")) {
+                        coinType = Vm.CoinType.ETH.coinName;
+                    } else {
+                        coinType = Vm.CoinType.BTC.coinName;
                     }
-                    intent5.putExtra("walletBalance", changeBalance);
-                    intent5.putExtra("walletDollar", textDollar.getText().toString());
-                    intent5.putExtra("hdWalletName", textWalletName.getText().toString());
-                    startActivity(intent5);
+                    String ble = null;
+                    if (nowType.contains("hw")) {
+                        ble = bleMac;
+                    }
+                    TransactionDetailWalletActivity.start(getContext(), changeBalance,
+                            textDollar.getText().toString().trim(), textWalletName.getText().toString(),
+                            coinType, ble
+                    );
                 }
                 break;
             default:

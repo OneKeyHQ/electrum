@@ -787,7 +787,7 @@ public final class PyEnv {
             List<Kwarg> argList = new LinkedList<>();
             argList.add(new Kwarg("name", walletName));
             argList.add(new Kwarg("password", password));
-            argList.add(new Kwarg("coin", coinType.name));
+            argList.add(new Kwarg("coin", coinType.coinName));
 
             if (!TextUtils.isEmpty(privateKey)) {
                 argList.add(new Kwarg("privkeys", privateKey));

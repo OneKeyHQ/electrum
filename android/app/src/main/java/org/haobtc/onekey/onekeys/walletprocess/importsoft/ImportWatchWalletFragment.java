@@ -157,7 +157,7 @@ public class ImportWatchWalletFragment extends BaseFragment implements TextWatch
         try {
             List<Kwarg> argList = new ArrayList<>();
             if (mImportSoftWalletProvider != null && mImportSoftWalletProvider.currentCoinType() != null) {
-                argList.add(new Kwarg("coin", mImportSoftWalletProvider.currentCoinType().name));
+                argList.add(new Kwarg("coin", mImportSoftWalletProvider.currentCoinType().coinName));
             }
             argList.add(new Kwarg("flag", "address"));
             Daemon.commands.callAttr("verify_legality", watchAddress, argList);
