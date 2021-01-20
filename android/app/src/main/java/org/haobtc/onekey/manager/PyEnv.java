@@ -27,6 +27,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.BuildConfig;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.MyApplication;
+import org.haobtc.onekey.bean.BalanceCoinInfo;
 import org.haobtc.onekey.bean.BalanceInfo;
 import org.haobtc.onekey.bean.CreateWalletBean;
 import org.haobtc.onekey.bean.CurrentAddressDetail;
@@ -77,7 +78,7 @@ public final class PyEnv {
 
     public static PyObject sBle, sCustomerUI, sNfc, sUsb, sBleHandler, sNfcHandler, sBleTransport,
             sNfcTransport, sUsbTransport, sProtocol, sCommands;
-    private static ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(1,
+    private static final ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(1,
             new ThreadFactoryBuilder().setNameFormat("PyEnv-schedule-%d").build(), new ThreadPoolExecutor.DiscardPolicy());
     public static ListeningScheduledExecutorService mExecutorService = MoreExecutors.listeningDecorator(scheduledThreadPoolExecutor);
 
@@ -317,9 +318,26 @@ public final class PyEnv {
                 }
                 CreateWalletBean.objectFromData(walletsInfo).getDerivedInfo().forEach(derivedInfoBean -> {
                     BalanceInfo info = new BalanceInfo();
-                    info.setBalance(derivedInfoBean.getBlance());
                     info.setLabel(derivedInfoBean.getLabel());
                     info.setName(derivedInfoBean.getName());
+                    ArrayList<BalanceCoinInfo> coinInfos = new ArrayList<>();
+                    BalanceCoinInfo balanceCoinInfo = new BalanceCoinInfo();
+                    balanceCoinInfo.setCoin(derivedInfoBean.getCoin());
+                    String blance = "0.00 BTC";
+                    String blanceFiat = "0.00 CNY";
+                    try {
+                        String balanceStr = derivedInfoBean.getBlance();
+                        blance = balanceStr.substring(0, balanceStr.indexOf("(")).trim();
+                        blanceFiat = balanceStr.substring(balanceStr.indexOf("(")).replace(")", "").trim();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    balanceCoinInfo.setBalance(blance);
+                    balanceCoinInfo.setFiat(blanceFiat);
+
+                    coinInfos.add(balanceCoinInfo);
+                    info.setWallets(coinInfos);
+
                     // 去除本地存在的钱包
                     String wallet = PreferencesManager.get(activity, Constant.WALLETS, derivedInfoBean.getName(), "").toString();
                     if (Strings.isNullOrEmpty(wallet)) {
@@ -440,9 +458,25 @@ public final class PyEnv {
                     }));
                     walletBean.getDerivedInfo().forEach(derivedInfoBean -> {
                         BalanceInfo info = new BalanceInfo();
-                        info.setBalance(derivedInfoBean.getBlance());
                         info.setLabel(derivedInfoBean.getLabel());
                         info.setName(derivedInfoBean.getName());
+                        ArrayList<BalanceCoinInfo> coinInfos = new ArrayList<>();
+                        BalanceCoinInfo balanceCoinInfo = new BalanceCoinInfo();
+                        balanceCoinInfo.setCoin(derivedInfoBean.getCoin());
+                        String blance = "0.00 BTC";
+                        String blanceFiat = "0.00 CNY";
+                        try {
+                            String blanceStr = derivedInfoBean.getBlance();
+                            blance = blanceStr.substring(0, blanceStr.indexOf("(")).trim();
+                            blanceFiat = blanceStr.substring(blanceStr.indexOf("(")).replace(")", "").trim();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        balanceCoinInfo.setBalance(blance);
+                        balanceCoinInfo.setFiat(blanceFiat);
+
+                        coinInfos.add(balanceCoinInfo);
+                        info.setWallets(coinInfos);
                         infos.add(info);
                     });
                     EventBus.getDefault().post(new FindOnceWalletEvent<>(infos));

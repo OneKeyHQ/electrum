@@ -20,11 +20,13 @@ import org.haobtc.onekey.bean.WalletBalanceVo;
 import org.haobtc.onekey.business.wallet.AccountManager;
 import org.haobtc.onekey.business.wallet.BalanceManager;
 import org.haobtc.onekey.business.wallet.SystemConfigManager;
+import org.haobtc.onekey.business.wallet.bean.WalletBalanceBean;
 import org.haobtc.onekey.event.CreateSuccessEvent;
 import org.haobtc.onekey.event.LoadOtherWalletEvent;
 import org.haobtc.onekey.event.SecondEvent;
 import org.haobtc.onekey.manager.PyEnv;
 
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -76,36 +78,37 @@ public class AppWalletViewModel extends ViewModel {
     public void refreshBalance() {
         mExecutorService.execute(() -> {
             LocalWalletInfo localWalletInfo = currentWalletInfo.getValue();
-            String currentBaseUnit = mSystemConfigManager.getCurrentBaseUnit();
+            String currentBaseUnit;
+            if (localWalletInfo != null) {
+                currentBaseUnit = mSystemConfigManager.getCurrentBaseUnit(localWalletInfo.getCoinType());
+            } else {
+                currentBaseUnit = mSystemConfigManager.getCurrentBaseUnit();
+            }
+
             FiatUnitSymbolBean currentFiatUnitSymbol = mSystemConfigManager.getCurrentFiatUnitSymbol();
+
+            // 防止网络请求慢，先恢复一下初始状态。
+            setCurrentWalletBalance(new WalletBalanceVo("0", currentBaseUnit));
+            setCurrentWalletFiatBalance(
+                    new WalletBalanceFiatVo(
+                            "0",
+                            currentFiatUnitSymbol.getUnit(),
+                            currentFiatUnitSymbol.getSymbol())
+            );
+
             if (localWalletInfo == null) {
-                setCurrentWalletBalance(new WalletBalanceVo("0", currentBaseUnit));
-                setCurrentWalletFiatBalance(
-                        new WalletBalanceFiatVo(
-                                "0",
-                                currentFiatUnitSymbol.getUnit(),
-                                currentFiatUnitSymbol.getSymbol())
-                );
                 return;
             }
-            Pair<String, String> balancePair = mBalanceManager.getBalanceByWalletName(localWalletInfo.getName());
-            if (balancePair == null) {
-                setCurrentWalletBalance(new WalletBalanceVo("0", currentBaseUnit));
-                setCurrentWalletFiatBalance(
-                        new WalletBalanceFiatVo(
-                                "0",
-                                currentFiatUnitSymbol.getUnit(),
-                                currentFiatUnitSymbol.getSymbol())
-                );
-            } else {
+            WalletBalanceBean balance = mBalanceManager.getBalanceByWalletName(localWalletInfo.getName());
+            if (balance != null) {
                 setCurrentWalletBalance(
                         new WalletBalanceVo(
-                                TextUtils.isEmpty(balancePair.first) ? "0" : balancePair.first,
+                                TextUtils.isEmpty(balance.getBalance()) ? "0" : balance.getBalance(),
                                 currentBaseUnit)
                 );
                 setCurrentWalletFiatBalance(
                         new WalletBalanceFiatVo(
-                                TextUtils.isEmpty(balancePair.second) ? "0" : balancePair.second,
+                                TextUtils.isEmpty(balance.getBalanceFiat()) ? "0" : balance.getBalanceFiat(),
                                 currentFiatUnitSymbol.getUnit(),
                                 currentFiatUnitSymbol.getSymbol())
                 );

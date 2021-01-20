@@ -5,12 +5,22 @@ import android.util.Pair;
 
 import androidx.annotation.Nullable;
 
+import com.orhanobut.logger.Logger;
+
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.MyApplication;
+import org.haobtc.onekey.bean.BalanceCoinInfo;
 import org.haobtc.onekey.bean.BalanceInfo;
+import org.haobtc.onekey.business.wallet.bean.ETHTokenBalanceBean;
+import org.haobtc.onekey.business.wallet.bean.TokenBalanceBean;
+import org.haobtc.onekey.business.wallet.bean.WalletBalanceBean;
+import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.manager.PyEnv;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 账户余额管理
@@ -25,23 +35,38 @@ public class BalanceManager {
      *
      * @param walletName 钱包名称
      *
-     * @return first 数字货币余额，second 法币余额
+     * @return WalletBalanceBean
      */
     @Nullable
-    public Pair<String, String> getBalanceByWalletName(String walletName) {
+    public WalletBalanceBean getBalanceByWalletName(String walletName) {
         BalanceInfo balanceInfo = PyEnv.selectWallet(walletName);
         if (balanceInfo == null) {
             return null;
         }
-        String balanceStr = balanceInfo.getBalance();
-        String balance = balanceStr == null ? "0" : balanceStr.substring(0, balanceStr.indexOf(" "));
+        WalletBalanceBean walletBalanceBean = null;
+        List<TokenBalanceBean> tokenBalanceBeans = new ArrayList<>();
+        for (int i = 0; i < balanceInfo.getWallets().size(); i++) {
+            BalanceCoinInfo item = balanceInfo.getWallets().get(i);
+            String balance = item.getBalance().trim();
+            String[] cnySplit = item.getFiat().trim().split(" ");
+            String fiatBalance = null;
+            String fiatUnit = null;
+            try {
+                fiatBalance = cnySplit[0].trim();
+                fiatUnit = cnySplit[1].trim();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
-        String cnyStr = balanceStr == null ? "" : balanceStr.substring(balanceStr.indexOf("(") + 1, balanceStr.indexOf(")"));
-        String cash = "0";
-        if (cnyStr.contains(" ")) {
-            cash = cnyStr.substring(0, cnyStr.indexOf(" "));
+            if (i == 0) {
+                walletBalanceBean = new WalletBalanceBean(Vm.CoinType.convert(item.getCoin()), balance, fiatBalance, fiatUnit, new ArrayList<>());
+            } else {
+                tokenBalanceBeans.add(new ETHTokenBalanceBean("", item.getCoin(), balance, fiatBalance, fiatUnit));
+            }
         }
-        return new Pair<>(balance, cash);
+
+        walletBalanceBean.getTokens().addAll(tokenBalanceBeans);
+        return walletBalanceBean;
     }
 
     /**

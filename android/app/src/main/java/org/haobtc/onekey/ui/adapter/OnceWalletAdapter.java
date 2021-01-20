@@ -53,8 +53,16 @@ public class OnceWalletAdapter extends RecyclerView.Adapter<OnceWalletAdapter.Vi
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.tetWalletName.setText(walletList.get(position).getLabel());
-        holder.textWalletBalance.setText(walletList.get(position).getBalance());
+        BalanceInfo item = walletList.get(position);
+        String strBalance;
+        if (item.getWallets().size() > 0) {
+            strBalance = item.getWallets().get(0).getBalance();
+        } else {
+            strBalance = "0";
+        }
+
+        holder.tetWalletName.setText(item.getLabel());
+        holder.textWalletBalance.setText(strBalance);
         if ("BTC-1".equals(walletList.get(position).getLabel())) {
             holder.checkbox.setBackground(ContextCompat.getDrawable(context, R.drawable.gray_not_check));
             holder.checkbox.setChecked(true);
