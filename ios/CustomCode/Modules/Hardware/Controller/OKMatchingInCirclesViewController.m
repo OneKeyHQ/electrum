@@ -14,6 +14,7 @@
 #import "OKBlueManager.h"
 #import "OKDeviceInfoModel.h"
 #import "OKDiscoverNewDeviceViewController.h"
+#import "OKSetDeviceNameViewController.h"
 
 @interface OKMatchingInCirclesViewController ()<OKBabyBluetoothManageDelegate,UITableViewDelegate,UITableViewDataSource>
 
@@ -191,20 +192,37 @@
 }
 - (void)subscribeComplete
 {
-    kOKBlueManager.currentReadDataStr = @"";
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
-       NSString *jsonStr =  [kPyCommandsManager callInterface:kInterfaceget_feature parameter:@{@"path":kBluetooth_iOS}];
-        OKDeviceInfoModel *model = [OKDeviceInfoModel mj_objectWithKeyValues:jsonStr];
-        kOKBlueManager.model = model;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (model.initialized ) {
-                OKActivateDeviceSelectViewController *activateDeviceVc = [OKActivateDeviceSelectViewController activateDeviceSelectViewController];
-                [self.navigationController pushViewController:activateDeviceVc animated:YES];
-            }else{
-                OKDiscoverNewDeviceViewController *discoverNewDeviceVc = [OKDiscoverNewDeviceViewController discoverNewDeviceViewController];
-                [self.navigationController pushViewController:discoverNewDeviceVc animated:YES];
-            }
-        });
-    });
+    switch (_type) {
+        case OKMatchingTypeNone:
+        {
+            kOKBlueManager.currentReadDataStr = @"";
+            dispatch_async(dispatch_get_global_queue(0, 0), ^{
+               NSString *jsonStr =  [kPyCommandsManager callInterface:kInterfaceget_feature parameter:@{@"path":kBluetooth_iOS}];
+                OKDeviceInfoModel *model = [OKDeviceInfoModel mj_objectWithKeyValues:jsonStr];
+                kOKBlueManager.model = model;
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (model.initialized ) {
+                        OKActivateDeviceSelectViewController *activateDeviceVc = [OKActivateDeviceSelectViewController activateDeviceSelectViewController];
+                        [self.navigationController pushViewController:activateDeviceVc animated:YES];
+                    }else{
+                        OKDiscoverNewDeviceViewController *discoverNewDeviceVc = [OKDiscoverNewDeviceViewController discoverNewDeviceViewController];
+                        [self.navigationController pushViewController:discoverNewDeviceVc animated:YES];
+                    }
+                });
+            });
+        }
+            break;
+        case OKMatchingTypeBackup2Hw:
+        {
+            OKSetDeviceNameViewController *setDeviceNameVc = [OKSetDeviceNameViewController setDeviceNameViewController];
+            setDeviceNameVc.type = OKMatchingTypeBackup2Hw;
+            setDeviceNameVc.words = self.words;
+            NSLog(@"self.words == %@",self.words);
+            [self.navigationController pushViewController:setDeviceNameVc animated:YES];
+        }
+            break;
+        default:
+            break;
+    }
 }
 @end

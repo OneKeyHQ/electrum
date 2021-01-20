@@ -10,9 +10,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef enum{
+    OKDeviceSuccessActivate,
+    OKDeviceSuccessHwBackup
+}OKDeviceSuccessType;
+
 @interface OKDeviceSuccessViewController : BaseViewController
 
-+ (instancetype)deviceSuccessViewController;
++ (instancetype)deviceSuccessViewController:(OKDeviceSuccessType)type deviceName:(NSString *)deviceName;
 
 @end
 

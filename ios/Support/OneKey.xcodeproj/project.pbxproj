@@ -428,6 +428,11 @@
 		881425A625B2E44100961668 /* OKDeviceReadyToStartViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 881425A425B2E44100961668 /* OKDeviceReadyToStartViewController.m */; };
 		881425A925B302E500961668 /* OKChangeMnemonicLenController.h in Headers */ = {isa = PBXBuildFile; fileRef = 881425A725B302E500961668 /* OKChangeMnemonicLenController.h */; };
 		881425AA25B302E500961668 /* OKChangeMnemonicLenController.m in Sources */ = {isa = PBXBuildFile; fileRef = 881425A825B302E500961668 /* OKChangeMnemonicLenController.m */; };
+		881425AD25B55FE100961668 /* OKHWRestoreViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 881425AB25B55FE100961668 /* OKHWRestoreViewController.h */; };
+		881425AE25B55FE100961668 /* OKHWRestoreViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 881425AC25B55FE100961668 /* OKHWRestoreViewController.m */; };
+		881425B125B5BD2C00961668 /* OKHWCompleteCopyViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 881425AF25B5BD2C00961668 /* OKHWCompleteCopyViewController.h */; };
+		881425B225B5BD2C00961668 /* OKHWCompleteCopyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 881425B025B5BD2C00961668 /* OKHWCompleteCopyViewController.m */; };
+		881425B725B6AEBD00961668 /* _keccak.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 881425B525B6AE4F00961668 /* _keccak.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8BA64C7EB8F197124BEFC4B9 /* BTCBrowser.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2B8A43CE94718C2C5184C2DC /* BTCBrowser.plist */; };
 		92534669BFCAE1EF0EC2F024 /* UIViewController+Extension.m in Sources */ = {isa = PBXBuildFile; fileRef = 468549E8AF41F4FF1257667D /* UIViewController+Extension.m */; };
 		95AC401EBD351386F061C3F1 /* UIBarButtonItem+CustomBarButtonItem.h in Headers */ = {isa = PBXBuildFile; fileRef = A7AC4065BEBD7FBEB713225D /* UIBarButtonItem+CustomBarButtonItem.h */; settings = {ATTRIBUTES = (project, ); }; };
@@ -517,6 +522,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				881425B725B6AEBD00961668 /* _keccak.framework in Embed Frameworks */,
 				B81C4E0CBA74DE460FA9B246 /* _BLAKE2s.framework in Embed Frameworks */,
 				800A421FA74DC8051D7EEADB /* _MD5.framework in Embed Frameworks */,
 				B1224B57B4D99A578C974400 /* _raw_cbc.framework in Embed Frameworks */,
@@ -973,6 +979,11 @@
 		881425A425B2E44100961668 /* OKDeviceReadyToStartViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKDeviceReadyToStartViewController.m; sourceTree = "<group>"; };
 		881425A725B302E500961668 /* OKChangeMnemonicLenController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKChangeMnemonicLenController.h; sourceTree = "<group>"; };
 		881425A825B302E500961668 /* OKChangeMnemonicLenController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKChangeMnemonicLenController.m; sourceTree = "<group>"; };
+		881425AB25B55FE100961668 /* OKHWRestoreViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKHWRestoreViewController.h; sourceTree = "<group>"; };
+		881425AC25B55FE100961668 /* OKHWRestoreViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKHWRestoreViewController.m; sourceTree = "<group>"; };
+		881425AF25B5BD2C00961668 /* OKHWCompleteCopyViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKHWCompleteCopyViewController.h; sourceTree = "<group>"; };
+		881425B025B5BD2C00961668 /* OKHWCompleteCopyViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKHWCompleteCopyViewController.m; sourceTree = "<group>"; };
+		881425B525B6AE4F00961668 /* _keccak.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = _keccak.framework; sourceTree = "<group>"; };
 		881C49CA9B3FEEE96D160552 /* OKClickTextView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OKClickTextView.h; path = ../CustomCode/CommonView/OKClickTextView.h; sourceTree = SOURCE_ROOT; };
 		88D7404B9FF067F44DABF936 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = None; name = LaunchScreen.storyboard; path = ../Resources/LaunchScreen.storyboard; sourceTree = SOURCE_ROOT; };
 		90BF4B77B7BC2B3709FC7726 /* NSString+OKAdd.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "NSString+OKAdd.h"; path = "../CustomCode/Categories/NSString+OKAdd.h"; sourceTree = SOURCE_ROOT; };
@@ -1079,6 +1090,7 @@
 		26BE4677ACE54545EAE9C2BB /* Dylib */ = {
 			isa = PBXGroup;
 			children = (
+				881425B525B6AE4F00961668 /* _keccak.framework */,
 				81C14718ACB5BC8BC2048FF5 /* _BLAKE2s.framework */,
 				16A14785A32A3A5F24ACBFF6 /* _MD5.framework */,
 				55E241F594223A4D0246CAB6 /* _raw_cbc.framework */,
@@ -1346,27 +1358,31 @@
 		881422BB25B18EA900961668 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
-				881422C225B18EA900961668 /* Hardware.storyboard */,
+				881422BC25B18EA900961668 /* OKMatchingInCirclesViewController.m */,
+				881422BD25B18EA900961668 /* OKSetPINPreViewController.m */,
+				881422BE25B18EA900961668 /* OKPINCodeViewController.m */,
 				881422BF25B18EA900961668 /* OKActivateDeviceSelectViewController.h */,
-				881422C525B18EA900961668 /* OKActivateDeviceSelectViewController.m */,
+				881422C125B18EA900961668 /* OKDeviceSuccessViewController.h */,
+				881422C225B18EA900961668 /* Hardware.storyboard */,
+				881425AF25B5BD2C00961668 /* OKHWCompleteCopyViewController.h */,
+				881425B025B5BD2C00961668 /* OKHWCompleteCopyViewController.m */,
 				881425A725B302E500961668 /* OKChangeMnemonicLenController.h */,
 				881425A825B302E500961668 /* OKChangeMnemonicLenController.m */,
 				881425A325B2E44100961668 /* OKDeviceReadyToStartViewController.h */,
 				881425A425B2E44100961668 /* OKDeviceReadyToStartViewController.m */,
-				881422C125B18EA900961668 /* OKDeviceSuccessViewController.h */,
-				881422C825B18EA900961668 /* OKDeviceSuccessViewController.m */,
 				8814259F25B2DF7200961668 /* OKDiscoverNewDeviceViewController.h */,
 				881425A025B2DF7200961668 /* OKDiscoverNewDeviceViewController.m */,
-				881422C425B18EA900961668 /* OKMatchingInCirclesViewController.h */,
-				881422BC25B18EA900961668 /* OKMatchingInCirclesViewController.m */,
-				881422C625B18EA900961668 /* OKPINCodeViewController.h */,
-				881422BE25B18EA900961668 /* OKPINCodeViewController.m */,
-				881422CA25B18EA900961668 /* OKSetDeviceNameViewController.h */,
 				881422C325B18EA900961668 /* OKSetDeviceNameViewController.m */,
+				881422C425B18EA900961668 /* OKMatchingInCirclesViewController.h */,
+				881422C525B18EA900961668 /* OKActivateDeviceSelectViewController.m */,
+				881422C625B18EA900961668 /* OKPINCodeViewController.h */,
 				881422C725B18EA900961668 /* OKSetPINPreViewController.h */,
-				881422BD25B18EA900961668 /* OKSetPINPreViewController.m */,
+				881422C825B18EA900961668 /* OKDeviceSuccessViewController.m */,
 				881422C925B18EA900961668 /* OKVerifyOnTheDeviceController.h */,
 				881422C025B18EA900961668 /* OKVerifyOnTheDeviceController.m */,
+				881422CA25B18EA900961668 /* OKSetDeviceNameViewController.h */,
+				881425AB25B55FE100961668 /* OKHWRestoreViewController.h */,
+				881425AC25B55FE100961668 /* OKHWRestoreViewController.m */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -1374,8 +1390,8 @@
 		881422CB25B18EA900961668 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				881422CD25B18EA900961668 /* OKDeviceInfoModel.h */,
 				881422CC25B18EA900961668 /* OKDeviceInfoModel.m */,
+				881422CD25B18EA900961668 /* OKDeviceInfoModel.h */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -2214,6 +2230,7 @@
 				8814255F25B18EAA00961668 /* OKCheckWordView.h in Headers */,
 				881424EF25B18EAA00961668 /* OKDeleteWalletConfirmController.h in Headers */,
 				BA578E2C25ACA43D00EFE0AA /* OneKey-Prefix.pch in Headers */,
+				881425B125B5BD2C00961668 /* OKHWCompleteCopyViewController.h in Headers */,
 				8814254A25B18EAA00961668 /* OKWordCheckViewController.h in Headers */,
 				881424E825B18EAA00961668 /* OKMineTableViewCell.h in Headers */,
 				8814258625B18EAA00961668 /* OKSelectCoinTypeViewController.h in Headers */,
@@ -2336,6 +2353,7 @@
 				8814254C25B18EAA00961668 /* OKFindFollowingWalletController.h in Headers */,
 				8814248725B18EAA00961668 /* MLMSegmentHead.h in Headers */,
 				881424C925B18EAA00961668 /* OKProxyServerTableViewController.h in Headers */,
+				881425AD25B55FE100961668 /* OKHWRestoreViewController.h in Headers */,
 				8814255125B18EAA00961668 /* OKWordImportVC.h in Headers */,
 				881424D125B18EAA00961668 /* OKAboutTableViewCellModel.h in Headers */,
 				8814258525B18EAA00961668 /* OKTipsViewController.h in Headers */,
@@ -2698,6 +2716,7 @@
 				B058D8A425B55663000EB27C /* OKDeviceListViewController.m in Sources */,
 				8814254125B18EAA00961668 /* OKWalletScanVC.m in Sources */,
 				881425A225B2DF7200961668 /* OKDiscoverNewDeviceViewController.m in Sources */,
+				881425B225B5BD2C00961668 /* OKHWCompleteCopyViewController.m in Sources */,
 				8814258D25B18EAA00961668 /* OKAddBottomViewController.m in Sources */,
 				881424D225B18EAA00961668 /* OKTradeSettingViewCellModel.m in Sources */,
 				881424A725B18EAA00961668 /* OKLanguageViewController.m in Sources */,
@@ -2741,6 +2760,7 @@
 				881424CF25B18EAA00961668 /* OKElectrumNodeTableViewCell.m in Sources */,
 				8814254425B18EAA00961668 /* OKQRCodeGenerateManager.m in Sources */,
 				8814245125B18EAA00961668 /* OKSystemShareView.m in Sources */,
+				881425AE25B55FE100961668 /* OKHWRestoreViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

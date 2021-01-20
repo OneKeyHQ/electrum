@@ -399,6 +399,18 @@ static dispatch_once_t once;
         kwargs = Py_BuildValue("{s:s}", "label", [label UTF8String]);
         PyObject *myobject_method = PyObject_GetAttrString(self.pyInstance, [kInterfaceinit UTF8String]);
         result = PyObject_Call(myobject_method, args, kwargs);
+    }else if ([method isEqualToString:kInterfacereset_pin]){
+        NSString *path  = kBluetooth_iOS;
+        result = PyObject_CallMethod(self.pyInstance, [kInterfacereset_pin UTF8String], "(s)",[path UTF8String]);
+    }else if([method isEqualToString:kInterfacebixin_load_device]){
+        NSString *path = kBluetooth_iOS;
+        NSString *mnemonics = [parameter safeStringForKey:@"mnemonics"];
+        NSString *label = [parameter safeStringForKey:@"label"];
+        PyObject *args =  Py_BuildValue("(s)", [path UTF8String]);
+        PyObject *kwargs;
+        kwargs = Py_BuildValue("{s:s,s:s}", "label", [label UTF8String],"mnemonics",[mnemonics UTF8String]);
+        PyObject *myobject_method = PyObject_GetAttrString(self.pyInstance, [kInterfacebixin_load_device UTF8String]);
+        result = PyObject_Call(myobject_method, args, kwargs);
     }
   
     if (result == NULL) {

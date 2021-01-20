@@ -98,6 +98,8 @@
 #define kInterfacecreate_hw_derived_wallet @"create_hw_derived_wallet" //获取xpub
 #define kInterfaceset_pin                  @"set_pin"       //设置PIN码
 #define kInterfaceinit                     @"init"          //激活设备
+#define kInterfacereset_pin                @"reset_pin"     //重置PIN
+#define kInterfacebixin_load_device        @"bixin_load_device" //备份钱包到硬件
 #define kPyCommandsManager (OKPyCommandsManager.sharedInstance)
 NS_ASSUME_NONNULL_BEGIN
 @interface OKPyCommandsManager : NSObject

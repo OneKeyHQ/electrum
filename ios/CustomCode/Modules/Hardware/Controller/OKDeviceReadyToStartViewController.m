@@ -8,6 +8,7 @@
 
 #import "OKDeviceReadyToStartViewController.h"
 #import "OKChangeMnemonicLenController.h"
+#import "OKHWCompleteCopyViewController.h"
 
 @interface OKDeviceReadyToStartViewController ()
 @property (weak, nonatomic) IBOutlet UILabel *tips1Label;
@@ -67,9 +68,10 @@
 }
 
 - (IBAction)startBtnClick:(UIButton *)sender {
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        [kPyCommandsManager callInterface:kInterfaceinit parameter:@{@"label":self.deviceName}];
-    });
+    OKHWCompleteCopyViewController *hwCompleteCopyVc = [OKHWCompleteCopyViewController hwCompleteCopyViewController];
+    hwCompleteCopyVc.type = self.type;
+    hwCompleteCopyVc.deviceName = self.deviceName;
+    [self.navigationController pushViewController:hwCompleteCopyVc animated:YES];
 }
 
 - (void)changeMnemonicLength
