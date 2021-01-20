@@ -66,6 +66,7 @@ import org.haobtc.onekey.ui.dialog.TransactionConfirmDialog;
 import org.haobtc.onekey.ui.dialog.UnBackupTipDialog;
 import org.haobtc.onekey.ui.dialog.custom.CustomCenterDialog;
 import org.haobtc.onekey.ui.dialog.custom.CustomWatchWalletDialog;
+import org.haobtc.onekey.ui.widget.PasteEditText;
 import org.haobtc.onekey.ui.widget.PointLengthFilter;
 import org.haobtc.onekey.utils.ClipboardUtils;
 import org.haobtc.onekey.viewmodel.AppWalletViewModel;
@@ -93,7 +94,7 @@ import static org.haobtc.onekey.constant.Constant.WALLET_BALANCE;
 /**
  * @author liyan
  */
-public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.Helper {
+public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.Helper, PasteEditText.OnPasteCallback {
 
     private static final String EXT_BALANCE = WALLET_BALANCE;
     private static final String EXT_WALLET_NAME = "hdWalletName";
@@ -137,7 +138,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     @BindView(R.id.img_back)
     ImageView imgBack;
     @BindView(R.id.edit_receiver_address)
-    EditText editReceiverAddress;
+    PasteEditText editReceiverAddress;
     @BindView(R.id.paste_address)
     TextView pasteAddress;
     @BindView(R.id.switch_coin_type)
@@ -231,6 +232,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     private SystemConfigManager mSystemConfigManager;
     private AccountManager mAccountManager;
     private SendHDViewModel mSendHDViewModel;
+    private boolean isClickPaste;
 
     /**
      * init
@@ -288,6 +290,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
             }
             textBalance.setText(String.format("%s%s", balance, baseUnit));
         });
+        editReceiverAddress.setOnPasteCallback(this);
     }
 
     private void showWatchTipDialog() {
@@ -994,6 +997,14 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         }
     }
 
+    @OnTextChanged(value = R.id.edit_receiver_address, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
+    public void onAddress(CharSequence sequence) {
+        if (isClickPaste) {
+            isClickPaste = false;
+            keyBoardHideRefresh();
+        }
+    }
+
     @OnFocusChange(value = R.id.edit_receiver_address)
     public void onFocusChanged(boolean focused) {
         if (!focused) {
@@ -1151,5 +1162,10 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         if (Objects.nonNull(subscribe)) {
             subscribe.dispose();
         }
+    }
+
+    @Override
+    public void onPaste() {
+        isClickPaste = true;
     }
 }
