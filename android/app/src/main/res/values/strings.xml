@@ -901,6 +901,7 @@
     <string name="delete_hd_wallet">Delete HD Wallet</string>
     <string name="risk_tip">⚠️ Risk Warning</string>
     <string name="risk_tip_1">Once deleted:</string>
+    <string name="delete_risk_tip_1">Once deleted:</string>
     <string name="risk_tip_2">1. All HD wallets will be erased.</string>
     <string name="risk_tip_3">2. Please make sure that the root mnemonic of the HD wallet is copied and stored before you delete it, you can use it to recover all HD wallets and thus retrieve the assets.</string>
     <string name="i_know_danger">I understand risks involved</string>
@@ -1104,7 +1105,7 @@
     <string name="verify_promote">Prepare hardware wallet for address verification</string>
     <string name="verifying">Hardware wallet reconciliation in progress</string>
     <string name="set_device_name">Set device name</string>
-    <string name="support_bixinkey">OneKey (including Bixin Limited Edition)</string>
+    <string name="support_bixinkey">OneKey</string>
     <string name="hardware_import_tip">When the factory settings are restored: 1. your private key or passphrase stored in this hardware wallet will be erased; 2. the account you created with this wallet in the OneKey App will still exist, but you will not be able to access the assets on it because the private key is missing. Unless you have previously backed up the helper or private key, you can use it to restore the hardware wallet and regain control of the account.</string>
     <string name="pin_input_wrong">Incorrect PIN code entered</string>
     <string name="updating">Firmware installation in progress</string>
@@ -1267,6 +1268,11 @@
     <string name="hd_wallet">HD Wallet</string>
     <string name="transaction_set">Trading Setup (Advanced)</string>
     <string name="import_private">Import Private Key ( Enter or scan code ）</string>
-
+    <string name="erase">抹除</string>
+    <string name="hd_wallet_account">主钱包账户</string>
+    <string name="single">独立</string>
+    <string name="create_new">创建新账户</string>
+    <string name="match_hard">配对硬件设备</string>
+    <string name="choose_account_type">选择账户类型</string>
 
 </resources>

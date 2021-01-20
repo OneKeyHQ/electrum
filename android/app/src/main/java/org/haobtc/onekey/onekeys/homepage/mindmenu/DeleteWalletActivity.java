@@ -50,6 +50,8 @@ public class DeleteWalletActivity extends BaseActivity implements CompoundButton
     TextView deleteWalletTip1;
     @BindView(R.id.delete_wallet_tip2)
     TextView deleteWalletTip2;
+    @BindView(R.id.once_tv)
+    TextView onceTV;
     private String deleteHdWalletName;
     private String importHdword;
     private String walletName;
@@ -78,9 +80,11 @@ public class DeleteWalletActivity extends BaseActivity implements CompoundButton
         deleteWalletType = getIntent().getStringExtra("delete_wallet_type");
         Log.i("deleteWalletType", "initView: " + deleteWalletType);
         if ("deleteSingleWallet".equals(importHdword)) {
+            onceTV.setText(R.string.delete_risk_tip_1);
             textTitle.setText(getString(R.string.delete_single_wallet));
             deleteWalletTip1.setText(getString(R.string.delele_tip1));
             deleteWalletTip2.setText(getString(R.string.delete_tip2));
+            btnForward.setText(R.string.delete);
         }
     }
 

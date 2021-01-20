@@ -122,7 +122,7 @@ public class HdWalletDetailActivity extends BaseActivity {
         isBackup = getIntent().getBooleanExtra("isBackup", false);
         textWalletName.setText(hdWalletName);
         if (StringConstant.Btc_Derived_Standard.equals(showWalletType)) {
-            textHdWallet.setText(getString(R.string.hd_wallet));
+            textHdWallet.setText(getString(R.string.hd_wallet_account));
             //HD wallet detail and derive wallet
             linHdWalletShow.setVisibility(View.VISIBLE);
             linSingleShow.setVisibility(View.GONE);
@@ -142,7 +142,7 @@ public class HdWalletDetailActivity extends BaseActivity {
             //Independent Wallet
             linHdWalletShow.setVisibility(View.GONE);
             linSingleShow.setVisibility(View.VISIBLE);
-            textHdWallet.setText(getString(R.string.single_wallet));
+            textHdWallet.setText(getString(R.string.single));
             if (StringConstant.Btc_Private_Standard.equals(showWalletType)) {
                 exportWordLayout.setVisibility(View.GONE);
                 exportPrivateLayout.setVisibility(View.VISIBLE);
@@ -222,7 +222,7 @@ public class HdWalletDetailActivity extends BaseActivity {
 
     private void showDeleteDialog () {
         new XPopup.Builder(mContext)
-                .dismissOnTouchOutside(false)
+                .dismissOnTouchOutside(true)
                 .isDestroyOnDismiss(true)
                 .asCustom(new CustomReSetBottomPopup(mContext, new CustomReSetBottomPopup.onClick() {
                     @Override
@@ -256,7 +256,7 @@ public class HdWalletDetailActivity extends BaseActivity {
 
     private void showDeleteHDRootWallet () {
         new XPopup.Builder(mContext)
-                .dismissOnTouchOutside(false)
+                .dismissOnTouchOutside(true)
                 .isDestroyOnDismiss(true)
                 .asCustom(new CustomReSetBottomPopup(mContext, new CustomReSetBottomPopup.onClick() {
                     @Override

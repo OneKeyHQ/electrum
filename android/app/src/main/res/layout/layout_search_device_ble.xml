@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/layout_logo"
     android:background="@android:color/white"
     android:orientation="vertical">
@@ -15,18 +16,26 @@
         android:gravity="center_horizontal"
         android:layout_marginLeft="@dimen/dp_20"
         android:layout_marginRight="@dimen/dp_20"
-        android:textColor="#142A3B"/>
+        android:textColor="#142A3B" />
 
-    <TextView
+    <org.haobtc.onekey.ui.widget.SuperTextView
         android:id="@+id/hind"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
+        android:layout_marginLeft="@dimen/dp_61"
+        android:layout_marginRight="@dimen/dp_61"
         android:layout_marginTop="@dimen/dp_10"
-        android:textColor="#00B812"
+        android:gravity="center"
+        android:paddingStart="@dimen/dp_10"
+        android:paddingTop="@dimen/dp_5"
+        android:paddingEnd="@dimen/dp_10"
+        android:paddingBottom="@dimen/dp_5"
+        android:text=""
+        android:textColor="@color/onekey"
         android:textSize="@dimen/sp_14"
-        android:layout_marginLeft="@dimen/dp_20"
-        android:layout_marginRight="@dimen/dp_20"/>
+        app:corner="@dimen/dp_36"
+        app:solid="@color/color_26CF02" />
+
     <TextView
         android:id="@+id/action"
         android:layout_width="match_parent"

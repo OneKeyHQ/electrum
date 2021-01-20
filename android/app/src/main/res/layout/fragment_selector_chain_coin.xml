@@ -42,7 +42,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="@dimen/dp_12"
-        android:text="@string/choose_amount"
+        android:text="@string/select_coin_type"
         android:textColor="@color/text"
         android:textSize="27sp"
         android:textStyle="bold" />

@@ -96,7 +96,6 @@ public class WalletListActivity extends BaseActivity implements BaseQuickAdapter
         reclWalletList.setAdapter(mAdapter);
         mWalletModel.mAllWallets.observe(this, mAllData -> {
             mAllNum = mAllData.validShowNum;
-            textWalletNum.setText(String.valueOf(mAllData.validShowNum));
             mAllList.addAll(mAllData.wallets);
             mAdapter.setNewData(mAllData.wallets);
         });
@@ -139,8 +138,8 @@ public class WalletListActivity extends BaseActivity implements BaseQuickAdapter
                 viewAll.setImageDrawable(getDrawable(R.drawable.hd_wallet_1));
                 viewBtc.setImageDrawable(getDrawable(R.drawable.token_trans_btc));
                 viewEth.setImageDrawable(getDrawable(R.drawable.eth_icon_gray));
-                textWalletNum.setText(String.valueOf(mAllNum));
                 reclWalletDetail.setVisibility(View.VISIBLE);
+                textWalletNum.setVisibility(View.GONE);
                 imgAdd.setVisibility(View.GONE);
                 imgW.setVisibility(View.VISIBLE);
                 mAdapter.setNewData(mAllList);
@@ -150,6 +149,7 @@ public class WalletListActivity extends BaseActivity implements BaseQuickAdapter
                 viewAll.setImageDrawable(getDrawable(R.drawable.id_wallet_icon));
                 viewBtc.setImageDrawable(getDrawable(R.drawable.token_btc));
                 viewEth.setImageDrawable(getDrawable(R.drawable.eth_icon_gray));
+                textWalletNum.setVisibility(View.VISIBLE);
                 textWalletNum.setText(String.valueOf(btcList.size()));
                 reclWalletDetail.setVisibility(View.GONE);
                 imgW.setVisibility(View.GONE);
@@ -161,6 +161,7 @@ public class WalletListActivity extends BaseActivity implements BaseQuickAdapter
                 viewAll.setImageDrawable(getDrawable(R.drawable.id_wallet_icon));
                 viewBtc.setImageDrawable(getDrawable(R.drawable.token_trans_btc));
                 viewEth.setImageDrawable(getDrawable(R.drawable.token_eth));
+                textWalletNum.setVisibility(View.VISIBLE);
                 textWalletNum.setText(String.valueOf(ethList.size()));
                 reclWalletDetail.setVisibility(View.GONE);
                 imgAdd.setVisibility(View.VISIBLE);

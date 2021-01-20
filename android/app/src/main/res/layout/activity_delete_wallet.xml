@@ -52,6 +52,7 @@
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/once_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_25"
@@ -118,7 +119,7 @@
         android:layout_marginBottom="122dp"
         android:background="@drawable/delete_wallet_no"
         android:enabled="false"
-        android:text="@string/delete_hd_wallet"
+        android:text="@string/erase"
         android:textAllCaps="false"
         android:textColor="@android:color/white"
         android:textSize="@dimen/sp_16" />
