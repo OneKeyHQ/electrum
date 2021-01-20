@@ -358,8 +358,8 @@ class AndroidCommands(commands.Commands):
                 # append fiat balance and price
                 if self.daemon.fx.is_enabled():
                     text += self.daemon.fx.get_fiat_status_text(c + u + x, self.base_unit, self.decimal_point) or ''
-            print("update_statue out = %s" % (out))
-            #self.callbackIntent.onCallback("update_status=%s" % json.dumps(out))
+            #print("update_statue out = %s" % (out))
+            self.callbackIntent.onCallback("update_status=%s" % json.dumps(out))
 
     def get_remove_flag(self, tx_hash):
         height = self.wallet.get_tx_height(tx_hash).height
@@ -3357,11 +3357,11 @@ class AndroidCommands(commands.Commands):
                 derivation = wallet.keystore.get_derivation_prefix()
                 account_id = int(derivation.split('/')[ACCOUNT_POS].split('\'')[0])
                 purpose = int(derivation.split('/')[PURPOSE_POS].split('\'')[0])
-                if account_id is not 0:
+                if account_id == 0:
                     continue
-                if self.coins.__contains__(coin) or purpose is 49:
-                    wallet_info = CreateWalletInfo.create_wallet_info(coin_type="btc" if purpose is 49 else coin, name=str(wallet))
-                    wallet_list.append(wallet_info)
+                if self.coins.__contains__(coin) or purpose == 49:
+                    wallet_info = CreateWalletInfo.create_wallet_info(coin_type="btc" if purpose == 49 else coin, name=str(wallet))
+                    wallet_list.append(wallet_info[0])
             except BaseException as e:
                 raise e
         return wallet_list
