@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.alibaba.fastjson.JSON;
 import com.chaquo.python.Kwarg;
@@ -27,8 +28,9 @@ import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.BuildConfig;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.MyApplication;
+import org.haobtc.onekey.bean.AllWalletBalanceInfoDTO;
 import org.haobtc.onekey.bean.BalanceCoinInfo;
-import org.haobtc.onekey.bean.BalanceInfo;
+import org.haobtc.onekey.bean.BalanceInfoDTO;
 import org.haobtc.onekey.bean.CreateWalletBean;
 import org.haobtc.onekey.bean.CurrentAddressDetail;
 import org.haobtc.onekey.bean.FindOnceWalletEvent;
@@ -307,7 +309,7 @@ public final class PyEnv {
      * 通过xpub恢复钱包
      */
     public static void recoveryWallet(BaseActivity activity, String xPubs, boolean hd) {
-        List<BalanceInfo> infos = new ArrayList<>();
+        List<BalanceInfoDTO> infos = new ArrayList<>();
         try {
             mExecutorService.execute(() -> {
                 String walletsInfo = null;
@@ -317,7 +319,7 @@ public final class PyEnv {
                     return;
                 }
                 CreateWalletBean.objectFromData(walletsInfo).getDerivedInfo().forEach(derivedInfoBean -> {
-                    BalanceInfo info = new BalanceInfo();
+                    BalanceInfoDTO info = new BalanceInfoDTO();
                     info.setLabel(derivedInfoBean.getLabel());
                     info.setName(derivedInfoBean.getName());
                     ArrayList<BalanceCoinInfo> coinInfos = new ArrayList<>();
@@ -377,10 +379,24 @@ public final class PyEnv {
      *
      * @param name 钱包名称
      */
-    public static BalanceInfo selectWallet(@NonNull String name) {
+    public static BalanceInfoDTO selectWallet(@NonNull String name) {
         try {
             String info = sCommands.callAttr(PyConstant.GET_BALANCE, name).toString();
-            return BalanceInfo.objectFromData(info);
+            return BalanceInfoDTO.objectFromData(info);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * 获取所有钱包的余额
+     */
+    @Nullable
+    public static AllWalletBalanceInfoDTO getAllWalletBalance() {
+        try {
+            String info = sCommands.callAttr("get_all_wallet_balance").toString();
+            return new Gson().fromJson(info, AllWalletBalanceInfoDTO.class);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -433,7 +449,7 @@ public final class PyEnv {
     public static void createLocalHd(String passwd, String mnemonics) {
         mExecutorService.execute(() -> {
             try {
-                List<BalanceInfo> infos = new ArrayList<>();
+                List<BalanceInfoDTO> infos = new ArrayList<>();
                 String walletsInfo = sCommands.callAttr(PyConstant.CREATE_HD_WALLET, passwd, mnemonics, new Kwarg(Constant.Purpose, 49)).toString();
                 CreateWalletBean walletBean = CreateWalletBean.objectFromData(walletsInfo);
                 if (Strings.isNullOrEmpty(mnemonics)) {
@@ -444,7 +460,7 @@ public final class PyEnv {
                     Optional.ofNullable(walletBean.getWalletInfo()).ifPresent((walletInfos -> {
                         walletInfos.forEach((walletInfo -> {
                             String name = walletInfo.getName();
-                            BalanceInfo info = PyEnv.selectWallet(name);
+                            BalanceInfoDTO info = PyEnv.selectWallet(name);
                             EventBus.getDefault().post(new CreateSuccessEvent(name));
                             if (walletInfo.getCoinType().contains("btc")) {
                                 // 现在的 BTC HD 钱包的 Label 是 BTC-1
@@ -457,7 +473,7 @@ public final class PyEnv {
                         }));
                     }));
                     walletBean.getDerivedInfo().forEach(derivedInfoBean -> {
-                        BalanceInfo info = new BalanceInfo();
+                        BalanceInfoDTO info = new BalanceInfoDTO();
                         info.setLabel(derivedInfoBean.getLabel());
                         info.setName(derivedInfoBean.getName());
                         ArrayList<BalanceCoinInfo> coinInfos = new ArrayList<>();

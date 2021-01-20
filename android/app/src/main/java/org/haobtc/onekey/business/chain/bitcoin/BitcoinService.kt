@@ -4,6 +4,7 @@ import androidx.annotation.WorkerThread
 import com.chaquo.python.Kwarg
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.orhanobut.logger.Logger
 import org.haobtc.onekey.bean.MaintrsactionlistEvent
 import org.haobtc.onekey.bean.TransactionSummaryVo
 import org.haobtc.onekey.business.chain.TransactionListType

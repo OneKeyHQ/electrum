@@ -1,6 +1,5 @@
 package org.haobtc.onekey.onekeys.dialog.recovery;
 
-import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -19,7 +18,7 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.adapter.RecoveryWalletAdapter;
 import org.haobtc.onekey.aop.SingleClick;
-import org.haobtc.onekey.bean.BalanceInfo;
+import org.haobtc.onekey.bean.BalanceInfoDTO;
 import org.haobtc.onekey.bean.FindOnceWalletEvent;
 import org.haobtc.onekey.event.CreateSuccessEvent;
 import org.haobtc.onekey.manager.PyEnv;
@@ -47,7 +46,7 @@ public class RecoveryChooseWalletActivity extends BaseActivity {
     private RecoveryWalletAdapter recoveryWalletAdapter;
     private ArrayList<String> listDates;
     private String name;
-    private List<BalanceInfo> walletList;
+    private List<BalanceInfoDTO> walletList;
 
     @Override
     public int getLayoutId() {
@@ -112,7 +111,7 @@ public class RecoveryChooseWalletActivity extends BaseActivity {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onFind(FindOnceWalletEvent<BalanceInfo> event) {
+    public void onFind(FindOnceWalletEvent<BalanceInfoDTO> event) {
         if (loadedWallet == null) {
             return;
         }

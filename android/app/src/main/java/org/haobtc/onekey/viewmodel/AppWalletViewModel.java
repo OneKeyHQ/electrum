@@ -1,5 +1,7 @@
 package org.haobtc.onekey.viewmodel;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Pair;
 
@@ -26,7 +28,6 @@ import org.haobtc.onekey.event.LoadOtherWalletEvent;
 import org.haobtc.onekey.event.SecondEvent;
 import org.haobtc.onekey.manager.PyEnv;
 
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -38,6 +39,7 @@ import java.util.concurrent.Executors;
  */
 public class AppWalletViewModel extends ViewModel {
     private final ExecutorService mExecutorService = Executors.newSingleThreadExecutor();
+    private final Handler mMainHandler = new Handler(Looper.getMainLooper());
 
     public MutableLiveData<Boolean> existsWallet = new MutableLiveData<>();
     public MutableLiveData<LocalWalletInfo> currentWalletInfo = new MutableLiveData<>();
@@ -205,12 +207,12 @@ public class AppWalletViewModel extends ViewModel {
 
     private <T> void checkRepeatAssignment(MutableLiveData<T> liveData, @Nullable T value) {
         if (value == null && liveData.getValue() != null) {
-            liveData.postValue(null);
+            mMainHandler.post(() -> liveData.setValue(null));
         } else if ((value != null && liveData.getValue() == null) ||
                 (value != null && liveData.getValue() != null && !value.equals(liveData.getValue())) ||
                 (value != null && liveData.getValue() != null && value instanceof Number && value != liveData.getValue())
         ) {
-            liveData.postValue(value);
+            mMainHandler.post(() -> liveData.setValue(value));
         }
     }
 }

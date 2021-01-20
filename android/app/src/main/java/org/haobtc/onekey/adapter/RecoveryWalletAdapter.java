@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.common.base.Strings;
 
 import org.haobtc.onekey.R;
-import org.haobtc.onekey.bean.BalanceInfo;
+import org.haobtc.onekey.bean.BalanceInfoDTO;
 
 import java.util.HashMap;
 import java.util.List;
@@ -27,10 +27,10 @@ import java.util.Map;
  */
 public class RecoveryWalletAdapter extends RecyclerView.Adapter<RecoveryWalletAdapter.myViewHolder> {
     private Context context;
-    private List<BalanceInfo> walletList;
+    private List<BalanceInfoDTO> walletList;
     private Map<Integer, Boolean> checkStatus;
 
-    public RecoveryWalletAdapter(Context context, List<BalanceInfo> walletList) {
+    public RecoveryWalletAdapter(Context context, List<BalanceInfoDTO> walletList) {
         this.context = context;
         this.walletList = walletList;
         initData();
@@ -69,7 +69,7 @@ public class RecoveryWalletAdapter extends RecyclerView.Adapter<RecoveryWalletAd
 
     @Override
     public void onBindViewHolder(@NonNull myViewHolder holder, int position) {
-        BalanceInfo item = walletList.get(position);
+        BalanceInfoDTO item = walletList.get(position);
         holder.tetWalletName.setText(item.getLabel());
         String strBalance;
         if (item.getWallets().size() > 0) {

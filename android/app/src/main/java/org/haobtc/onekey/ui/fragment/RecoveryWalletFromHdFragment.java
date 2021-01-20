@@ -14,7 +14,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
-import org.haobtc.onekey.bean.BalanceInfo;
+import org.haobtc.onekey.bean.BalanceInfoDTO;
 import org.haobtc.onekey.bean.FindOnceWalletEvent;
 import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.event.SelectedEvent;
@@ -63,7 +63,7 @@ public class RecoveryWalletFromHdFragment extends BaseFragment {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
-    public void onFind(FindOnceWalletEvent<BalanceInfo> event) {
+    public void onFind(FindOnceWalletEvent<BalanceInfoDTO> event) {
         // avoid eventBus' needless deliver
         if (loadedWallet == null) {
             return;

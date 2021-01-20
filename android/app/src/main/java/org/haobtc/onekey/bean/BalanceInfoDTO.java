@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * @author liyan
  */
-public class BalanceInfo implements Serializable {
+public class BalanceInfoDTO implements Serializable {
 
     /**
      * balance : 0 ()
@@ -22,10 +22,10 @@ public class BalanceInfo implements Serializable {
     @SerializedName("name")
     private String name;
     @SerializedName("label")
-    private String label;
+    private String label = "";
 
-    public static BalanceInfo objectFromData(String str) {
-        return new Gson().fromJson(str, BalanceInfo.class);
+    public static BalanceInfoDTO objectFromData(String str) {
+        return new Gson().fromJson(str, BalanceInfoDTO.class);
     }
 
     public List<BalanceCoinInfo> getWallets() {

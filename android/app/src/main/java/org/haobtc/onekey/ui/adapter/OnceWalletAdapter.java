@@ -13,8 +13,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.haobtc.onekey.R;
-import org.haobtc.onekey.adapter.ChoosePayAddressAdapter;
-import org.haobtc.onekey.bean.BalanceInfo;
+import org.haobtc.onekey.bean.BalanceInfoDTO;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,11 +24,11 @@ import java.util.Map;
  */
 public class OnceWalletAdapter extends RecyclerView.Adapter<OnceWalletAdapter.ViewHolder> {
     private Context context;
-    private List<BalanceInfo> walletList;
+    private List<BalanceInfoDTO> walletList;
     private Map<String, CheckBox> selectMap;
     private OnItemClickListener mOnItemClickListener;
 
-    public OnceWalletAdapter(Context context, List<BalanceInfo> walletList) {
+    public OnceWalletAdapter(Context context, List<BalanceInfoDTO> walletList) {
         this.context = context;
         this.walletList = walletList;
         this.selectMap = new HashMap<>();
@@ -53,7 +52,7 @@ public class OnceWalletAdapter extends RecyclerView.Adapter<OnceWalletAdapter.Vi
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        BalanceInfo item = walletList.get(position);
+        BalanceInfoDTO item = walletList.get(position);
         String strBalance;
         if (item.getWallets().size() > 0) {
             strBalance = item.getWallets().get(0).getBalance();
