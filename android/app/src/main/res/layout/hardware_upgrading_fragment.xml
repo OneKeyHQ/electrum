@@ -23,7 +23,7 @@
         app:layout_constraintTop_toBottomOf="@id/promote"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:contentDescription="@string/update" />
+        android:contentDescription="@string/hint_update" />
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="0dp"

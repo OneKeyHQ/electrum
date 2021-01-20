@@ -43,12 +43,12 @@ jobs:
         working-directory: android
       - uses: yutailang0119/action-android-lint@v1.0.2
         with:
-          xml_path: android/app/build/reports/lint-results-RegTestDebug.xml
+          xml_path: android/app/build/reports/lint-results-RegTestOnekeyDebug.xml
       - name: Archive lint artifacts
         uses: actions/upload-artifact@v2
         if: success()
         with:
           name: OneKey-android-lint-${{ github.sha }}
           path: |
-            android/app/build/reports/lint-results-RegTestDebug.xml
-            android/app/build/reports/lint-results-RegTestDebug.html
+            android/app/build/reports/lint-results-RegTestOnekeyDebug.xml
+            android/app/build/reports/lint-results-RegTestOnekeyDebug.html

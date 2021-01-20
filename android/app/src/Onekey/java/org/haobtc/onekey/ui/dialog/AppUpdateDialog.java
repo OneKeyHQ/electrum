@@ -1,5 +1,6 @@
 package org.haobtc.onekey.ui.dialog;
 
+import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.Button;
@@ -7,6 +8,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.azhon.appupdate.manager.DownloadManager;
 
@@ -53,6 +57,16 @@ public class AppUpdateDialog extends BaseDialogFragment {
         updateDescription.setText(description);
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        if (manager.isDownloading()) {
+            progressBarLayout.setVisibility(View.VISIBLE);
+            update.setVisibility(View.GONE);
+            progressBar.setIndeterminate(false);
+        }
+    }
+
     /***
      * init layout
      * @return
@@ -65,6 +79,7 @@ public class AppUpdateDialog extends BaseDialogFragment {
     public ProgressBar getProgressBar() {
         return progressBar;
     }
+
     @SingleClick
     @OnClick({R.id.update, R.id.close})
     public void onViewClicked(View view) {
@@ -73,7 +88,11 @@ public class AppUpdateDialog extends BaseDialogFragment {
                 progressBarLayout.setVisibility(View.VISIBLE);
                 update.setVisibility(View.GONE);
                 progressBar.setIndeterminate(true);
-                manager.download();
+                try {
+                    manager.download();
+                } catch (Exception e) {
+                    dismiss();
+                }
                 break;
             case R.id.close:
                 dismiss();

@@ -1276,5 +1276,6 @@
     <string name="choose_account_type">选择账户类型</string>
     <string name="hint_backup_keystore">Keystore 是你独有的、用于签署交易的以太坊私钥的加密文件。请确认无误后将其放置在只有您知道的安全地方。</string>
     <string name="keystore_export">Keystore 导出</string>
+    <string name="hint_update"></string>
 
 </resources>

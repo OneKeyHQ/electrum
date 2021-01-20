@@ -34,10 +34,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
-import com.azhon.appupdate.config.UpdateConfiguration;
-import com.azhon.appupdate.listener.OnButtonClickListener;
-import com.azhon.appupdate.listener.OnDownloadListener;
-import com.azhon.appupdate.manager.DownloadManager;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
@@ -113,7 +109,7 @@ import static org.haobtc.onekey.constant.Constant.BITCOIN_NETWORK_TYPE_2;
 import static org.haobtc.onekey.constant.Constant.ONE_KEY_WEBSITE;
 
 
-public class MainActivity extends BaseActivity implements View.OnClickListener, OnRefreshListener, OnButtonClickListener, OnDownloadListener {
+public class MainActivity extends BaseActivity implements View.OnClickListener, OnRefreshListener {
 
     @BindView(R.id.recl_un_backup)
     RecyclerView reclUnBackup;
@@ -138,7 +134,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private String strType;
     private int scrollPos = 0;//scrollPos --> recyclerview position != The last one || second to last
     PyObject getWalletsListInfo = null;
-    private DownloadManager manager;
     private SharedPreferences.Editor edit;
     public static boolean isBacked;
     private CardView cardBuyKey;
@@ -736,52 +731,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 String size = updateInfo.getAPK().getSize().replace("M", "");
                 String description = "English".equals(locate) ? updateInfo.getAPK().getChangelogEn() : updateInfo.getAPK().getChangelogCn();
                 boolean force = updateInfo.getAPK().getForceUpdate();
-                runOnUiThread(() -> attemptUpdate(url, versionName, versionCode, size, description, force));
             }
         });
     }
 
-    private void attemptUpdate(String uri, String versionName, int versionCode, String
-            size, String description, boolean forceUpdate) {
-        String url;
-        if (uri.startsWith("https")) {
-            url = uri;
-        } else {
-            url = ONE_KEY_WEBSITE + uri;
-        }
-        UpdateConfiguration configuration = new UpdateConfiguration()
-                .setEnableLog(true)
-                //.setHttpManager()
-                .setJumpInstallPage(true)
-                .setDialogButtonTextColor(Color.WHITE)
-                .setDialogButtonColor(getColor(R.color.button_bk))
-                .setDialogImage(R.drawable.update)
-                .setShowNotification(true)
-                .setShowBgdToast(true)
-                .setForcedUpgrade(forceUpdate)
-                .setButtonClickListener(this)
-                .setOnDownloadListener(this);
-
-        manager = DownloadManager.getInstance(this);
-        manager.setApkName("BixinKEY.apk")
-                .setApkUrl(url)
-                .setSmallIcon(R.drawable.logo_square)
-                .setShowNewerToast(false)
-                .setConfiguration(configuration)
-                .setApkVersionCode(versionCode)
-                .setApkVersionName(versionName)
-                .setApkSize(size)
-                .setApkDescription(description)
-                .download();
-    }
 
     @Override
     public void onDestroy() {
         unregisterReceiver(languageReceiver);
         super.onDestroy();
-        if (manager != null) {
-            manager.release();
-        }
         EventBus.getDefault().unregister(this);
     }
 
@@ -929,34 +887,4 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             }
         }
     };
-
-    @Override
-    public void onButtonClick(int id) {
-
-    }
-
-    @Override
-    public void start() {
-
-    }
-
-    @Override
-    public void downloading(int max, int progress) {
-
-    }
-
-    @Override
-    public void done(File apk) {
-        manager.release();
-    }
-
-    @Override
-    public void cancel() {
-        manager.release();
-    }
-
-    @Override
-    public void error(Exception e) {
-        manager.release();
-    }
 }

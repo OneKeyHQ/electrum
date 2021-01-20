@@ -30,20 +30,14 @@ android {
         def TRAVIS_BUILD_NUMBER = System.getenv("TRAVIS_BUILD_NUMBER") ?: null
         if (TRAVIS_BUILD_NUMBER == null) {
             if (versionPropsFile.canRead()) {
-                def Properties versionProps = new Properties()
-
+                Properties versionProps = new Properties()
                 versionProps.load(new FileInputStream(versionPropsFile))
-
                 BUILD_NUM = versionProps['VERSION_CODE'].toInteger() + 1
-
-                versionProps['VERSION_CODE'] = BUILD_NUM.toString()
-                versionProps.store(versionPropsFile.newWriter(), null)
             } else {
                 throw new GradleException("Could not read version.properties!")
-            } 
-        }
-        else {
-           BUILD_NUM = TRAVIS_BUILD_NUMBER.toInteger() 
+            }
+        } else {
+            BUILD_NUM = TRAVIS_BUILD_NUMBER.toInteger()
         }
         def verParsed = ecVersion.split(/\./).collect { Integer.parseInt(it) }
         versionCode = (verParsed[0] * 1000000) + (verParsed[1] * 10000) + BUILD_NUM
@@ -83,19 +77,31 @@ android {
             }
         }
     }
-    flavorDimensions "version"
+    flavorDimensions "version", "appstore"
     productFlavors {
+        Onekey {
+            dimension "appstore"
+            buildConfigField "String", "appStore", "\"Onekey\""
+        }
+        GooglePlay {
+            dimension "appstore"
+            buildConfigField "String", "appStore", "\"GooglePlay\""
+        }
+
         MainNet {
+            dimension "version"
             buildConfigField "String", "net_type", "\"MainNet\""
             applicationId "com.bixin.wallet.mainnet"
             manifestPlaceholders = [app_name: "@string/app_name", allow_backup: false,  app_icon: "@drawable/logo_app"]
         }
         TestNet {
+            dimension "version"
             buildConfigField "String", "net_type", "\"TestNet\""
             applicationId "com.bixin.wallet.testnet"
             manifestPlaceholders = [app_name: "@string/testnet", allow_backup: true,  app_icon: "@drawable/onekey_testnet_icon"]
         }
         RegTest {
+            dimension "version"
             buildConfigField "String", "net_type", "\"RegTest\""
             applicationId "com.bixin.wallet.regnet"
             manifestPlaceholders = [app_name: "@string/regnet", allow_backup: true, app_icon: "@drawable/onekey_testnet_icon"]
@@ -145,11 +151,41 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
- 
+
+    // 过滤 Google Play 测试版编译体。
+    variantFilter { variant ->
+        def names = variant.flavors*.name
+        if (names.contains("GooglePlay") && !names.contains("MainNet")) {
+            setIgnore(true)
+        }
+    }
 
     applicationVariants.all { variant ->
         variant.outputs.all {
-            outputFileName = "bixin-${variant.versionCode}-${variant.productFlavors[0].name}-${variant.buildType.name}.apk"
+            outputFileName = "bixin-${variant.versionCode}-${variant.productFlavors[0].name}-${variant.productFlavors[1].name}-${variant.buildType.name}.apk"
+        }
+
+        // release 自增 version.properties
+        def obj
+        if (variant.hasProperty('assembleProvider')) {
+            obj = variant.assembleProvider.get()
+        } else {
+            obj = variant.assemble
+        }
+        obj.doLast { assemble ->
+            if (assemble.name.toLowerCase().contains("release")) {
+                println("release: version.properties increment")
+                File versionPropsFile = file('version.properties')
+                if (versionPropsFile.canRead()) {
+                    Properties versionProps = new Properties()
+                    versionProps.load(new FileInputStream(versionPropsFile))
+                    int version = versionProps['VERSION_CODE'].toInteger() + 1
+                    versionProps['VERSION_CODE'] = version.toString()
+                    versionProps.store(versionPropsFile.newWriter(), null)
+                } else {
+                    throw new GradleException("Could not read version.properties!")
+                }
+            }
         }
     }
 }
@@ -246,7 +282,7 @@ dependencies {
     //alibaba json
     implementation 'com.alibaba:fastjson:1.1.70.android'
     // app internal update
-    implementation 'com.azhon:appupdateX:2.9.0'
+    OnekeyImplementation('com.azhon:appupdateX:2.9.0')
     // dfu
 //    implementation 'no.nordicsemi.android:dfu:1.10.1'
     implementation project(':dfu')
@@ -266,6 +302,9 @@ dependencies {
     implementation 'com.orhanobut:logger:2.2.0'
 
 }
+
+// 为 lint 任务设置别名
+task lintRegTestDebug(dependsOn: "lintRegTestOnekeyDebug")
 
 repositories {
     mavenCentral()

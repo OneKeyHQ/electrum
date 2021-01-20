@@ -189,7 +189,7 @@
                             android:layout_alignParentEnd="true"
                             android:layout_marginEnd="@dimen/dp_20"
                             android:background="@drawable/btn_checked"
-                            android:text="@string/update"
+                            android:text="@string/hint_update"
                             android:textColor="@android:color/white"
                             android:textSize="@dimen/sp_13" />
                     </RelativeLayout>

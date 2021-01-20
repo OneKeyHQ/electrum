@@ -3,6 +3,8 @@ package org.haobtc.onekey.activities;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -10,7 +12,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.azhon.appupdate.utils.ApkUtil;
 import com.google.common.base.Strings;
 
 import org.greenrobot.eventbus.EventBus;
@@ -86,7 +87,15 @@ public class SettingActivity extends BaseActivity {
 
     @Override
     public void initData() {
-        String versionName = ApkUtil.getVersionName(this);
+        String versionName;
+        try {
+            PackageManager packageManager = getPackageManager();
+            PackageInfo packageInfo = packageManager.getPackageInfo(getPackageName(), 0);
+            versionName = packageInfo.versionName;
+        } catch (Exception e) {
+            e.printStackTrace();
+            versionName = "1.0.0";
+        }
         tetVerson.setText(String.format("%s", versionName));
     }
 
