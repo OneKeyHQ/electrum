@@ -44,6 +44,8 @@
 @property (nonatomic,strong)NSArray *allCoinTypeArray;
 @property (nonatomic,strong)NSArray* walletListArray;
 @property (nonatomic,strong)NSArray *showList;
+@property (weak, nonatomic) IBOutlet OKWalletListBottomBtn *pairHDWallet;
+@property (weak, nonatomic) IBOutlet OKWalletListBottomBtn *addWallet;
 
 @property (nonatomic,strong)NSArray *NoHDArray;
 
@@ -100,6 +102,8 @@
     [self.countBgView setLayerRadius:10];
     [self.footBgView setLayerDefaultRadius];
     [self.footBgView setLayerBoarderColor:HexColorA(0x546370, 0.3) width:1 radius:20];
+    self.pairHDWallet.titleLabel.text = MyLocalizedString(@"Paired hardware", nil);
+    self.addWallet.titleLabel.text = MyLocalizedString(@"Add wallet", nil);
 }
 
 - (void)viewWillAppear:(BOOL)animated
