@@ -7,8 +7,13 @@ import android.os.Message;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
+import com.alibaba.fastjson.JSON;
+import com.google.common.base.Strings;
+import com.orhanobut.logger.Logger;
+
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.activities.service.CommunicationModeSelector;
+import org.haobtc.onekey.bean.HardwareFeatures;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.ButtonRequestEvent;
 import org.haobtc.onekey.ui.activity.InputPinOnHardware;
@@ -62,10 +67,11 @@ public class HardwareCallbackHandler extends Handler {
         switch (msg.what) {
             case PIN_CURRENT:
             case PIN_NEW_FIRST:
-                boolean isVerifyPinOnHardware = (boolean) PreferencesManager.get(fragmentActivity, "Preferences", Constant.PIN_VERIFY_ON_HARDWARE, true);
-                if (isVerifyPinOnHardware) {
-                   fragmentActivity.startActivity(new Intent(fragmentActivity, InputPinOnHardware.class));
-                   PyEnv.setPin(Constant.PIN_INVALID);
+                // 获取用户设置的是否在硬件上输入Pin，默认是在硬件
+                boolean isVerifyPinOnHardwareSp = (boolean) PreferencesManager.get(fragmentActivity, "Preferences", Constant.PIN_VERIFY_ON_HARDWARE, true);
+                if (isVerifyPinOnHardwareSp && getBleMajorVersion()) {
+                    fragmentActivity.startActivity(new Intent(fragmentActivity, InputPinOnHardware.class));
+                    PyEnv.setPin(Constant.PIN_INVALID);
                 } else {
                     EventBus.getDefault().post(new ButtonRequestEvent(msg.what));
                 }
@@ -81,5 +87,22 @@ public class HardwareCallbackHandler extends Handler {
                 break;
             default:
         }
+    }
+
+    /**
+     * 兼容低版本不支持在硬件上输入Pin，只能让用户去App上输入
+     * 用当前设备信息 major_version  低版本的 onekey_version 为空，并且 major_version >1 就不支持在硬件上输入Pin
+     */
+    private boolean getBleMajorVersion() {
+        HardwareFeatures hardwareFeatures = BleManager.getInstance(fragmentActivity).getHardwareFeatures();
+        Logger.json(JSON.toJSONString(hardwareFeatures));
+        if (hardwareFeatures != null) {
+            if (Strings.isNullOrEmpty(hardwareFeatures.getOneKeyVersion())) {
+                return hardwareFeatures.getMajorVersion() > 1;
+            } else {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -12,12 +12,12 @@ import android.widget.Toast;
 import androidx.fragment.app.FragmentActivity;
 
 import com.lxj.xpopup.XPopup;
-import com.lxj.xpopup.core.CenterPopupView;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.MyApplication;
+import org.haobtc.onekey.bean.HardwareFeatures;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.PyConstant;
 import org.haobtc.onekey.event.BleConnectionEx;
@@ -55,6 +55,7 @@ public final class BleManager {
     private volatile boolean connecting;
     private String currentAddress;
     public static String currentBleName;
+    private HardwareFeatures mHardwareFeatures;
 
 
     private BleManager(FragmentActivity fragmentActivity) {
@@ -134,6 +135,18 @@ public final class BleManager {
         if (mBle != null) {
             mBle.turnOnBlueTooth(fragmentActivity);
         }
+    }
+
+    /**
+     * 将连接的硬件信息保存在单例中
+     * @param hardwareFeatures  硬件信息的Bean
+     */
+    public void setHardwareFeatures(HardwareFeatures hardwareFeatures) {
+        this.mHardwareFeatures = hardwareFeatures;
+    }
+
+    public HardwareFeatures getHardwareFeatures() {
+        return mHardwareFeatures;
     }
 
     /**

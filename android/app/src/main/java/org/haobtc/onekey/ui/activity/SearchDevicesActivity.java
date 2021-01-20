@@ -240,6 +240,7 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
         HardwareFeatures features;
         String errors = response.getErrors();
         features = response.getResult();
+        bleManager.setHardwareFeatures(features);
         runOnUiThread(() -> {
             if (Strings.isNullOrEmpty(errors) && features != null) {
                 if (Strings.isNullOrEmpty(features.getOneKeyVersion()) || features.isBootloaderMode()) {
