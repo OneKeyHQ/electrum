@@ -120,15 +120,17 @@ public class MyApplication extends Application implements ViewModelStoreOwner {
         return S_HANDLER;
     }
 
-    public void toastErr(Exception e){
-        if(e == null || e.getMessage() == null){
+    public void toastErr(Exception e) {
+        if (e == null || e.getMessage() == null) {
             return;
         }
         String info;
         if (e.getMessage().contains("BaseException:")) {
             info = e.getMessage().replace("BaseException:", "");
+        } else if (e.getMessage().contains("InvalidPassword:")) {
+            info = e.getMessage().replace("InvalidPassword:", "");
         } else {
-            info = e.toString();
+            info = e.getMessage();
         }
         if (TextUtils.isEmpty(info)) {
             return;

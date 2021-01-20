@@ -1,14 +1,25 @@
 package org.haobtc.onekey.bean;
 
+import com.google.gson.annotations.SerializedName;
+
 public class MaintrsactionlistEvent {
+    @SerializedName("tx_hash")
     private String txHash;
+    @SerializedName("date")
     private String date;
+    @SerializedName("amount")
     private String amount;
+    @SerializedName("is_mine")
     private boolean isMine;
+    @SerializedName("confirmations")
     private String confirmations;
+    @SerializedName("type")
     private String type;
+    @SerializedName("tx_status")
     private String txStatus;
+    @SerializedName("invoice_id")
     private String invoiceId;
+    @SerializedName("address")
     private String address;
 
     public String getInvoiceId() {
