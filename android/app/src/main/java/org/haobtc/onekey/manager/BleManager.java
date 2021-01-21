@@ -168,7 +168,7 @@ public final class BleManager {
 
         @Override
         public void onWriteSuccess(BleDevice device, BluetoothGattCharacteristic characteristic) {
-            PyEnv.sBle.put(PyConstant.WRITE_SUCCESS, true);
+            PyEnv.notifyWriteSuccess();
         }
     };
 

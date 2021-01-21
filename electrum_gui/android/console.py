@@ -75,6 +75,7 @@ from trezorlib import (
     device,
 )
 from trezorlib.cli import trezorctl
+
 from electrum.bip32 import get_uncompressed_key
 from electrum.wallet_db import WalletDB
 from enum import Enum
@@ -83,9 +84,10 @@ from electrum import constants
 from electrum.constants import read_json
 from .derived_info import DerivedInfo
 from electrum.util import Ticker
-
+IS_ANDROID = True
 if "iOS_DATA" in os.environ:
     from .ioscallback import CallHandler
+    IS_ANDROID = False
 
 PURPOSE_POS = 1
 ACCOUNT_POS = 3
@@ -241,13 +243,12 @@ class AndroidCommands(commands.Commands):
         global ticker
         ticker = Ticker(5.0, self.ticker_action)
         ticker.start()
-
-        if 'iOS_DATA' in os.environ:
-            self.my_handler = CallHandler.alloc().init()
-            self.set_callback_fun(self.my_handler)
-        elif 'ANDROID_DATA' in os.environ:
+        if IS_ANDROID:
             if callback is not None:
                 self.set_callback_fun(callback)
+        else:
+            self.my_handler = CallHandler.alloc().init()
+            self.set_callback_fun(self.my_handler)
         self.start_daemon()
         self.get_block_info()
     _recovery_flag = True

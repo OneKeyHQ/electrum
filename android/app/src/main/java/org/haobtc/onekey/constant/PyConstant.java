@@ -26,7 +26,6 @@ public final class PyConstant {
     public static final String ANDROID_USB_TRANSPORT = "AndroidUsbTransport";
 
     public static final String WRITE_SUCCESS = "WRITE_SUCCESS";
-    public static final String RESPONSE = "RESPONSE";
     public static final String ENABLED = "ENABLED";
     public static final String BLE = "BLE";
     public static final String BLE_DEVICE = "BLE_DEVICE";
@@ -38,8 +37,7 @@ public final class PyConstant {
     public static final String CALLBACK_HISTORY = "update_history";
     public static final String CALLBACK_STATUS = "update_status";
     public static final String ELECTRUM_GUI_ANDROID_CONSOLE = "electrum_gui.android.console";
-    public static final String USER_CANCEL = "user_cancel";
-    public static final String PIN = "pin";
+    public static final String USER_CANCEL = "set_user_cancel";
     public static final String NOTIFICATION = "notify";
     public static final String IS_CANCEL = "IS_CANCEL";
     public static final String SET_TEST_NETWORK = "set_testnet";
@@ -103,7 +101,22 @@ public final class PyConstant {
     public static final String ADDRESS_TYPE_P2SH_P2WPKH = "p2wpkh-p2sh";
 
 // ============================= Python api name======================
-
+    /***
+     * 回写PIN
+     * */
+    public static final String SET_PIN = "set_pin";
+    /**
+     * 回写收到的蓝牙数据
+     * */
+    public static final String SET_BLE_RESPONSE = "set_response";
+    /**
+     * 设置通讯取消标志
+     * */
+    public static final String CANCEL_CURRENT_COMM = "set_cancel_flag";
+    /**
+     * 设置蓝牙写成功的标志
+     * */
+    public static final String SET_BLE_WRITE_SUCCESS_FLAG = "set_write_success_flag";
     /**
      * 加载所有创建的钱包
      */

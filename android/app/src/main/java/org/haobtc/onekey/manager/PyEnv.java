@@ -71,8 +71,6 @@ import cn.com.heaton.blelibrary.ble.callback.BleWriteCallback;
 import cn.com.heaton.blelibrary.ble.model.BleDevice;
 import dr.android.utils.LogUtil;
 
-import static org.haobtc.onekey.activities.service.CommunicationModeSelector.protocol;
-
 /**
  * @author liyan
  */
@@ -111,7 +109,7 @@ public final class PyEnv {
     }
 
     public static void cancelPinInput() {
-        sCustomerUI.put(PyConstant.USER_CANCEL, 1);
+        sCustomerUI.callAttr(PyConstant.USER_CANCEL);
     }
 
     /**
@@ -145,9 +143,11 @@ public final class PyEnv {
     public static void sNotify() {
         sProtocol.callAttr(PyConstant.NOTIFICATION);
     }
-
+    /**
+     * 结束当前的蓝牙通信
+     * **/
     public static void bleCancel() {
-        sBle.put(PyConstant.IS_CANCEL, true);
+        sBleHandler.callAttr(PyConstant.CANCEL_CURRENT_COMM);
     }
 
     public static void nfcCancel() {
@@ -157,11 +157,19 @@ public final class PyEnv {
     public static void usbCancel() {
         sUsb.put(PyConstant.IS_CANCEL, true);
     }
-
+    /**
+     * 给Python回写蓝牙返回数据
+     * @param response 蓝牙回调的数据
+     * */
     public static void bleReWriteResponse(String response) {
-        sBleHandler.put(PyConstant.RESPONSE, response);
+        sBleHandler.callAttr(PyConstant.SET_BLE_RESPONSE, response);
     }
-
+    /**
+     * 通知Python蓝牙数据已发送成功，可以继续
+     * */
+    public static void notifyWriteSuccess() {
+        sBleHandler.callAttr(PyConstant.SET_BLE_WRITE_SUCCESS_FLAG);
+    }
     /**
      * 启用蓝牙，并做相关初始化准备
      */
@@ -207,7 +215,7 @@ public final class PyEnv {
      * 回传PIN码
      */
     public static void setPin(String pin) {
-        sCustomerUI.put(PyConstant.PIN, pin);
+        sCustomerUI.callAttr(PyConstant.SET_PIN, pin);
     }
 
     public static void cancelRecovery() {
@@ -532,9 +540,9 @@ public final class PyEnv {
      * 重置固件断点续传的状态
      */
     public static void clearUpdateStatus() {
-        protocol.put(PyConstant.HTTP, false);
-        protocol.put(PyConstant.OFFSET, 0);
-        protocol.put(PyConstant.PROCESS_REPORTER, null);
+        sProtocol.put(PyConstant.HTTP, false);
+        sProtocol.put(PyConstant.OFFSET, 0);
+        sProtocol.put(PyConstant.PROCESS_REPORTER, null);
     }
 
     /**
