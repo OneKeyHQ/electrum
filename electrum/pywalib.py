@@ -288,6 +288,9 @@ class PyWalib:
                         for key, price in obj["data"].items() if key in estimated_time
                     })
 
+                if "standard" in out:
+                    out["normal"] = out["standard"]
+                    out.pop("standard")
                 return out
         except BaseException as ex:
             raise ex

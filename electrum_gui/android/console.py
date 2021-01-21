@@ -886,7 +886,7 @@ class AndroidCommands(commands.Commands):
         Get default fee info for btc
         :param feerate: Custom rates need to be sapcified as true
         :param coin: btc or eth, btc default
-        :param eth_tx_info: optional, dict contains one of: to_address, contract_address, value, data, gas_price, gas_limit
+        :param eth_tx_info: optional, dict contains one of: to_address, contract_address, value, data
         :return:
         if coin is "btc":
             if feerate is true:
@@ -897,32 +897,31 @@ class AndroidCommands(commands.Commands):
                                   "fast":{"fee":"","feerate":, "time":"", "fiat":"", "size":""},
                                   "slowest":{"fee":"","feerate":, "time":"", "fiat":"", "size":""}}
         else:
-            if not eth_tx_info.to_address:
-                return data like
-                {"customer": {"gas_price": 110, "time": 0.25, "gas_limit": 36015, "fee": "0.00396165", "fiat": "5.43 USD"}}
-            else:
-                return data like
-                {"rapid": {"gas_price": 87, "time": 0.25, "gas_limit": 40000, "fee": "0.00348", "fiat": "4.77 USD"},
-                "fast": {"gas_price": 86, "time": 1, "gas_limit": 40000, "fee": "0.00344", "fiat": "4.71 USD"},
-                "standard": {"gas_price": 79, "time": 3, "gas_limit": 40000, "fee": "0.00316", "fiat": "4.33 USD"},
-                "slow": {"gas_price": 72, "time": 10, "gas_limit": 40000, "fee": "0.00288", "fiat": "3.95 USD"}}
+            return data like
+            {"rapid": {"gas_price": 87, "time": 0.25, "gas_limit": 40000, "fee": "0.00348", "fiat": "4.77 USD"},
+            "fast": {"gas_price": 86, "time": 1, "gas_limit": 40000, "fee": "0.00344", "fiat": "4.71 USD"},
+            "normal": {"gas_price": 79, "time": 3, "gas_limit": 40000, "fee": "0.00316", "fiat": "4.33 USD"},
+            "slow": {"gas_price": 72, "time": 10, "gas_limit": 40000, "fee": "0.00288", "fiat": "3.95 USD"}}
         '''
-        if coin == "btc":
-            fee_info_list = self.get_block_info()
-            out_size_p2pkh = 141
-            out_info = {}
-            if feerate is None:
-                for block, feerate in fee_info_list.items():
-                    if block == 2 or block == 5 or block == 10:
-                        key = "slow" if block == 10 else "normal" if block == 5 else "fast" if block == 2 else "slowest"
-                        out_info[key] = self.format_return_data(feerate, out_size_p2pkh, block)
-            else:
-                block = self.get_best_block_by_feerate(float(feerate) * 1000, fee_info_list)
-                out_info["customer"] = self.format_return_data(float(feerate) * 1000, out_size_p2pkh, block)
-            return json.dumps(out_info)
-        else:
+        if coin == "eth":
             eth_tx_info = eth_tx_info or {}
-            return self.eth_estimate_fee(self.wallet.get_addresses()[0], **eth_tx_info)
+            eth_tx_info.pop("gas_price", None)
+            eth_tx_info.pop("gas_limit", None)
+            fee = self.eth_estimate_fee(self.wallet.get_addresses()[0], **eth_tx_info)
+            return json.dumps(fee, cls=DecimalEncoder)
+
+        fee_info_list = self.get_block_info()
+        out_size_p2pkh = 141
+        out_info = {}
+        if feerate is None:
+            for block, feerate in fee_info_list.items():
+                if block == 2 or block == 5 or block == 10:
+                    key = "slow" if block == 10 else "normal" if block == 5 else "fast" if block == 2 else "slowest"
+                    out_info[key] = self.format_return_data(feerate, out_size_p2pkh, block)
+        else:
+            block = self.get_best_block_by_feerate(float(feerate) * 1000, fee_info_list)
+            out_info["customer"] = self.format_return_data(float(feerate) * 1000, out_size_p2pkh, block)
+        return json.dumps(out_info)
 
     def eth_estimate_fee(self, from_address, to_address="", contract_address=None, value="0", data="", gas_price=None, gas_limit=None):
         estimate_gas_prices = self.pywalib.get_gas_price()
@@ -942,7 +941,7 @@ class AndroidCommands(commands.Commands):
             val["fiat"] = Decimal(val["fee"]) * Decimal(last_price)
             val["fiat"] = self.daemon.fx.format_amount_and_units(val['fiat'] * COIN) or f"0 {self.ccy}"
 
-        return json.dumps(estimate_gas_prices, cls=DecimalEncoder)
+        return estimate_gas_prices
 
     def get_block_info(self):
         fee_info_list = self.config.get_block_fee_info()
@@ -955,19 +954,32 @@ class AndroidCommands(commands.Commands):
                 fee_info_list = fee_info['feerate_info']
         return fee_info_list
 
-    def get_fee_by_feerate(self, outputs, message, feerate, customer=None):
+    def get_fee_by_feerate(self, coin="btc", outputs=None, message=None, feerate=None, customer=None, eth_tx_info=None):
         '''
         Get fee info when Send, for btc only
+        :param coin: btc or eth, btc default
         :param outputs: Outputs info as json [{addr1, value}, ...]
         :param message: What you want say as sting
         :param feerate: Feerate retruned by get_default_fee_status api
         :param customer: User choose coin as bool
-        :return: json like {"amount": 0.5 BTC,
+        :param eth_tx_info: optional, dict contains one of: to_address, contract_address, value, data, gas_price, gas_limit
+        :return:
+        if coin is "btc"
+        json like {"amount": 0.5 BTC,
                             "size": 141,
                             "fee": 0.0003 BTC,
                             "time": 30,
                             "tx": ""}
+        else if coin is "eth":
+        json like {"gas_price": 110, "time": 0.25, "gas_limit": 36015, "fee": "0.00396165", "fiat": "5.43 USD"}
         '''
+        if coin == "eth":
+            if not eth_tx_info or not eth_tx_info.get("gas_price"):
+                raise InvalidValueException()
+            fee = self.eth_estimate_fee(self.wallet.get_addresses()[0], **eth_tx_info)
+            fee = fee.get("customer")
+            return json.dumps(fee, cls=DecimalEncoder)
+
         try:
             self._assert_wallet_isvalid()
             outputs_addrs = self.parse_output(outputs)
