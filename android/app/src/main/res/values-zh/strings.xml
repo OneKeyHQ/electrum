@@ -1217,4 +1217,6 @@
     <string name="delete_watch">确定删除观察钱包？</string>
     <string name="cover_watch">覆盖观察钱包</string>
     <string name="delete_watch_tip">检测到本地已存在关联的观察钱包，继续导入，观察钱包 "\"%s\"" 将被覆盖。别担心，删除观察钱包不会影响您的资金安全。</string>
+    <string name="hint_backup_keystore">Keystore 是你独有的、用于签署交易的以太坊私钥的加密文件。请确认无误后将其放置在只有您知道的安全地方。</string>
+    <string name="keystore_export">Keystore 导出</string>
 </resources>

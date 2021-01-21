@@ -201,6 +201,7 @@ public final class PyConstant {
     public static final String DELETE_WALLET = "delete_wallet";
     public static final String CREATE_WALLET = "create";
     public static final String EXPORT_PRIVATE_KEY = "export_privkey";
+    public static final String EXPORT_KEYSTORE = "export_keystore";
     public static final String HD_DERIVED = "create_derived_wallet";
     /**
      * 重置App 接口

@@ -972,6 +972,24 @@ public final class PyEnv {
     }
 
     /**
+     * 导出 ETH keyStore
+     *
+     * @param password APP主密码
+     */
+    public static PyResponse<String> exportKeystore(String password) {
+        PyResponse<String> response = new PyResponse<>();
+        try {
+            String result = sCommands.callAttr(PyConstant.EXPORT_KEYSTORE, password).toString();
+            response.setResult(result);
+        } catch (Exception e) {
+            Exception exception = HardWareExceptions.exceptionConvert(e);
+            response.setErrors(exception.getMessage());
+            e.printStackTrace();
+        }
+        return response;
+    }
+
+    /**
      * 获取派生HD钱包的个数
      *
      * @param coin

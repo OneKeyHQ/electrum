@@ -13,16 +13,20 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.LayoutRes;
+import androidx.core.content.res.ResourcesCompat;
 
 import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
 import com.google.common.base.Strings;
 import com.lxj.xpopup.XPopup;
+import com.orhanobut.logger.Logger;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -36,6 +40,7 @@ import org.haobtc.onekey.bean.LocalWalletInfo;
 import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.StringConstant;
+import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.event.FixWalletNameEvent;
 import org.haobtc.onekey.event.GotPassEvent;
 import org.haobtc.onekey.event.LoadOtherWalletEvent;
@@ -58,12 +63,19 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.core.SingleOnSubscribe;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME;
 import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
 
 public class HdWalletDetailActivity extends BaseActivity {
 
+    @BindView(R.id.img_token_logo)
+    ImageView mImageTokenLogo;
     @BindView(R.id.text_wallet_name)
     TextView textWalletName;
     @BindView(R.id.text_address)
@@ -94,6 +106,8 @@ public class HdWalletDetailActivity extends BaseActivity {
     RelativeLayout exportPrivateLayout;
     @BindView(R.id.rel_export_word)
     RelativeLayout exportWordLayout;
+    @BindView(R.id.rel_export_keystore)
+    View exportKeystoreLayout;
     private String type;
     private boolean isBackup;
     private SharedPreferences preferences;
@@ -103,16 +117,70 @@ public class HdWalletDetailActivity extends BaseActivity {
     private String deleteHdWalletName;
     private static final int DELETE_HD_DERIVED = 100;
 
+    private Disposable mDisposable;
+
     @Override
-    public int getLayoutId () {
+    public int getLayoutId() {
         return R.layout.activity_hd_wallet_detail;
     }
 
     @Override
-    public void initView () {
+    public void initView() {
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
         inits();
+    }
+
+    @IntDef({WalletType.MAIN, WalletType.STANDARD, WalletType.IMPORT_WATCH, WalletType.IMPORT_PRIVATE, WalletType.HARDWARE})
+    @interface WalletType {
+        /**
+         * HD 派生钱包
+         */
+        int MAIN = 0;
+        /**
+         * 创建的独立钱包，助记词导入的钱包。
+         */
+        int STANDARD = 1;
+        /**
+         * 通过地址导入的观察钱包
+         */
+        int IMPORT_WATCH = 2;
+        /**
+         * 通过私钥导入的钱包
+         */
+        int IMPORT_PRIVATE = 3;
+
+        /**
+         * 硬件钱包
+         */
+        int HARDWARE = 4;
+    }
+
+    @WalletType
+    private int convertWalletType(String type) {
+        if (type.contains("derived-standard")) {
+            return WalletType.MAIN;
+        } else if (type.contains("private-standard")) {
+            return WalletType.IMPORT_PRIVATE;
+        } else if (type.contains("watch-standard")) {
+            return WalletType.IMPORT_WATCH;
+        } else if (type.contains("hw-derived")) {
+            return WalletType.HARDWARE;
+        } else if (type.contains("standard")) {
+            return WalletType.STANDARD;
+        } else {
+            return WalletType.STANDARD;
+        }
+    }
+
+    private Vm.CoinType convertCoinType(String type) {
+        if (type.contains("btc")) {
+            return Vm.CoinType.BTC;
+        } else if (type.contains("eth")) {
+            return Vm.CoinType.ETH;
+        } else {
+            return Vm.CoinType.BTC;
+        }
     }
 
     private void inits() {
@@ -120,36 +188,71 @@ public class HdWalletDetailActivity extends BaseActivity {
         showWalletType = preferences.getString(CURRENT_SELECTED_WALLET_TYPE, "");
         String hdWalletName = getIntent().getStringExtra("hdWalletName");
         isBackup = getIntent().getBooleanExtra("isBackup", false);
+
+        Vm.CoinType coinType = convertCoinType(showWalletType);
+        @WalletType int walletType = convertWalletType(showWalletType);
+
+        switch (coinType) {
+            default:
+            case BTC:
+                mImageTokenLogo.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.token_btc, null));
+                break;
+            case ETH:
+                mImageTokenLogo.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.token_eth, null));
+                break;
+        }
+
+        Logger.e(showWalletType);
         textWalletName.setText(hdWalletName);
-        if (StringConstant.Btc_Derived_Standard.equals(showWalletType)) {
-            textHdWallet.setText(getString(R.string.hd_wallet_account));
-            //HD wallet detail and derive wallet
-            linHdWalletShow.setVisibility(View.VISIBLE);
-            linSingleShow.setVisibility(View.GONE);
-            deleteTV.setText(R.string.delete_wallet_single);
-        } else if (showWalletType.contains(StringConstant.HW)) {
-            textHdWallet.setText(getString(R.string.hardware_wallet));
-            linSingleShow.setVisibility(View.VISIBLE);
-            //硬件 导出私钥和助记词不可见
-            linSingle.setVisibility(View.GONE);
-            deleteTV.setText(R.string.delete_wallet_single);
-        } else if (showWalletType.contains(StringConstant.Watch)) {
-            textHdWallet.setText(getString(R.string.watch_wallet));
-            deleteTV.setText(R.string.delete_wallet_single);
-            // 观察钱包 导出私钥和助记词不可见
-            linSingle.setVisibility(View.GONE);
-        } else if (StringConstant.Btc_Standard.equals(showWalletType) || StringConstant.Btc_Private_Standard.equals(showWalletType)) {
-            //Independent Wallet
-            linHdWalletShow.setVisibility(View.GONE);
-            linSingleShow.setVisibility(View.VISIBLE);
-            textHdWallet.setText(getString(R.string.single));
-            if (StringConstant.Btc_Private_Standard.equals(showWalletType)) {
-                exportWordLayout.setVisibility(View.GONE);
-                exportPrivateLayout.setVisibility(View.VISIBLE);
-            } else {
-                exportPrivateLayout.setVisibility(View.GONE);
-                exportWordLayout.setVisibility(View.VISIBLE);
-            }
+
+        switch (walletType) {
+            case WalletType.MAIN:
+                textHdWallet.setText(getString(R.string.hd_wallet_account));
+                //HD wallet detail and derive wallet
+                linHdWalletShow.setVisibility(View.VISIBLE);
+                linSingleShow.setVisibility(View.GONE);
+                deleteTV.setText(R.string.delete_wallet_single);
+                break;
+            case WalletType.HARDWARE:
+                textHdWallet.setText(getString(R.string.hardware_wallet));
+                linSingleShow.setVisibility(View.VISIBLE);
+                //硬件 导出私钥和助记词不可见
+                linSingle.setVisibility(View.GONE);
+                deleteTV.setText(R.string.delete_wallet_single);
+                break;
+            case WalletType.IMPORT_WATCH:
+                textHdWallet.setText(getString(R.string.watch_wallet));
+                deleteTV.setText(R.string.delete_wallet_single);
+                // 观察钱包 导出私钥和助记词不可见
+                linSingle.setVisibility(View.GONE);
+                break;
+            case WalletType.IMPORT_PRIVATE:
+                switch (coinType) {
+                    case BTC:
+                        exportWordLayout.setVisibility(View.GONE);
+                        exportPrivateLayout.setVisibility(View.VISIBLE);
+                        break;
+                    default:
+                    case ETH:
+                        exportPrivateLayout.setVisibility(View.GONE);
+                        exportWordLayout.setVisibility(View.VISIBLE);
+                        break;
+                }
+            case WalletType.STANDARD:
+                linHdWalletShow.setVisibility(View.GONE);
+                linSingleShow.setVisibility(View.VISIBLE);
+                textHdWallet.setText(getString(R.string.single));
+
+                switch (coinType) {
+                    default:
+                    case BTC:
+                        exportKeystoreLayout.setVisibility(View.GONE);
+                        break;
+                    case ETH:
+                        exportKeystoreLayout.setVisibility(View.VISIBLE);
+                        break;
+                }
+                break;
         }
     }
 
@@ -328,43 +431,76 @@ public class HdWalletDetailActivity extends BaseActivity {
 
     @Subscribe
     public void onGotPass(GotPassEvent event) {
+        Single<String> single = null;
         switch (currentOperation) {
             case R.id.rel_export_word:
-                PyResponse<String> response = PyEnv.exportMnemonics(event.getPassword(), preferences.getString(CURRENT_SELECTED_WALLET_NAME, ""));
-                String errors = response.getErrors();
-                if (Strings.isNullOrEmpty(errors)) {
-                    Intent intent = new Intent(this, BackupGuideActivity.class);
-                    intent.putExtra("exportWord", response.getResult());
-                    intent.putExtra("importHdword", "exportHdword");
-                    startActivity(intent);
-                    finish();
-                } else {
-                    mlToast(errors);
-                }
+                single = Single.create((SingleOnSubscribe<String>) emitter -> {
+                    PyResponse<String> response = PyEnv.exportMnemonics(event.getPassword(), preferences.getString(CURRENT_SELECTED_WALLET_NAME, ""));
+                    String errors = response.getErrors();
+                    if (Strings.isNullOrEmpty(errors)) {
+                        Intent intent = new Intent(HdWalletDetailActivity.this, BackupGuideActivity.class);
+                        intent.putExtra("exportWord", response.getResult());
+                        intent.putExtra("importHdword", "exportHdword");
+                        startActivity(intent);
+                        emitter.onSuccess("");
+                    } else {
+                        emitter.onError(new RuntimeException(errors));
+                    }
+                });
+
                 break;
             case R.id.rel_export_private_key:
-                PyResponse<String> response1 = PyEnv.exportPrivateKey(event.getPassword());
-                String error = response1.getErrors();
-                if (Strings.isNullOrEmpty(error)) {
-                    Intent intent = new Intent(this, ExportPrivateActivity.class);
-                    intent.putExtra("privateKey", response1.getResult());
-                    startActivity(intent);
-                    finish();
-                } else {
-                    mToast(error);
-                }
+                single = Single.create((SingleOnSubscribe<String>) emitter -> {
+                    PyResponse<String> response = PyEnv.exportPrivateKey(event.getPassword());
+                    String errors = response.getErrors();
+                    if (Strings.isNullOrEmpty(errors)) {
+                        Intent intent = new Intent(this, ExportPrivateActivity.class);
+                        intent.putExtra("privateKey", response.getResult());
+                        startActivity(intent);
+                        emitter.onSuccess("");
+                    } else {
+                        emitter.onError(new RuntimeException(errors));
+                    }
+                });
+
                 break;
             case R.id.rel_export_keystore:
+                single = Single.create((SingleOnSubscribe<String>) emitter -> {
+                    PyResponse<String> response = PyEnv.exportKeystore(event.getPassword());
+                    String errors = response.getErrors();
+                    if (Strings.isNullOrEmpty(errors)) {
+                        ExportKeystoreActivity.start(this, response.getResult());
+                        emitter.onSuccess("");
+                    } else {
+                        emitter.onError(new RuntimeException(errors));
+                    }
+                });
                 break;
             case DELETE_HD_DERIVED:
                 deleteSingleWallet(event.getPassword());
                 break;
         }
+
+        if (single != null) {
+            if (mDisposable != null && !mDisposable.isDisposed()) {
+                mDisposable.dispose();
+            }
+            mDisposable = single
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnSubscribe(disposable -> showProgress())
+                    .doFinally(this::dismissProgress)
+                    .subscribe(success -> {
+                        finish();
+                    }, throwable -> {
+                        mToast(throwable.getMessage());
+                    });
+        }
     }
 
-    private void deleteSingleWallet (String password) {
+    private void deleteSingleWallet(String password) {
         String keyName = PreferencesManager.get(this, "Preferences", Constant.CURRENT_SELECTED_WALLET_NAME, "").toString();
-        PyResponse<Void> response = PyEnv.deleteWallet(password, keyName,false);
+        PyResponse<Void> response = PyEnv.deleteWallet(password, keyName, false);
         String errors = response.getErrors();
         if (Strings.isNullOrEmpty(errors)) {
             onDeleteSuccess(keyName);
@@ -452,6 +588,9 @@ public class HdWalletDetailActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
+        if (mDisposable != null && !mDisposable.isDisposed()) {
+            mDisposable.dispose();
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

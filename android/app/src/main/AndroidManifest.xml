@@ -677,6 +677,9 @@
         <activity
             android:name=".onekeys.walletprocess.importsoft.ImportSoftWalletActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".onekeys.homepage.process.ExportKeystoreActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>
