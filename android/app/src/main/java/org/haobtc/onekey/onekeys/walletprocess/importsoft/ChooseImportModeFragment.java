@@ -1,5 +1,6 @@
 package org.haobtc.onekey.onekeys.walletprocess.importsoft;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -66,8 +67,7 @@ public class ChooseImportModeFragment extends BaseFragment implements View.OnCli
         if (mImportSoftWalletProvider != null
                 && mImportSoftWalletProvider.currentCoinType() == Vm.CoinType.ETH
                 && Vm.CoinType.ETH.enable) {
-            // todo 等待接口完成
-            // mBinding.relImportKeystore.setVisibility(View.VISIBLE);
+            mBinding.relImportKeystore.setVisibility(View.VISIBLE);
         }
     }
 

@@ -149,8 +149,9 @@ public class ImportPrivateKeyFragment extends BaseFragment implements View.OnCli
             if (mImportSoftWalletProvider != null && mImportSoftWalletProvider.currentCoinType() != null) {
                 argList.add(new Kwarg("coin", mImportSoftWalletProvider.currentCoinType().coinName));
             }
+            argList.add(new Kwarg("data", privateKey));
             argList.add(new Kwarg("flag", "private"));
-            Daemon.commands.callAttr("verify_legality", privateKey, argList);
+            Daemon.commands.callAttr("verify_legality", argList.toArray(new Object[0]));
         } catch (Exception e) {
             if (e.getMessage() != null) {
                 showToast(e.getMessage().replace("BaseException:", ""));

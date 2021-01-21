@@ -229,11 +229,11 @@ public class HdWalletDetailActivity extends BaseActivity {
             case WalletType.IMPORT_PRIVATE:
                 switch (coinType) {
                     case BTC:
+                    case ETH:
                         exportWordLayout.setVisibility(View.GONE);
                         exportPrivateLayout.setVisibility(View.VISIBLE);
                         break;
                     default:
-                    case ETH:
                         exportPrivateLayout.setVisibility(View.GONE);
                         exportWordLayout.setVisibility(View.VISIBLE);
                         break;
@@ -429,7 +429,7 @@ public class HdWalletDetailActivity extends BaseActivity {
         new ExportTipsDialog().show(getSupportFragmentManager(), "export");
     }
 
-    @Subscribe
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGotPass(GotPassEvent event) {
         Single<String> single = null;
         switch (currentOperation) {

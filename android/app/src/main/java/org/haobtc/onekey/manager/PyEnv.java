@@ -846,8 +846,8 @@ public final class PyEnv {
                 argList.add(new Kwarg("seed", mnemonics));
             }
             if (!TextUtils.isEmpty(keyStore) && !TextUtils.isEmpty(keyStorePass)) {
-                argList.add(new Kwarg("keystores", mnemonics));
-                argList.add(new Kwarg("keystoresPass", keyStorePass));
+                argList.add(new Kwarg("keystores", keyStore.replace("'", "\"")));
+                argList.add(new Kwarg("keystore_password", keyStorePass));
             }
             if (purpose != 0 || purpose != -1) {
                 argList.add(new Kwarg("purpose", purpose));
