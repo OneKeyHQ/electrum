@@ -48,19 +48,6 @@ class ExplorerInterface(ABC):
         except TransactionNotFound:
             return TransactionStatus.UNKNOWN
 
-    # def get_block_header_by_ref(self, block_ref: Union[int, str]) -> Optional[BlockHeader]:
-    #     """
-    #     Get block header by block hash or block number
-    #     :param block_ref: block hash or block number
-    #     :return: BlockHeader
-    #     """
-    #     if isinstance(block_ref, int):
-    #         return self.get_block_header_by_number(block_ref)
-    #     elif isinstance(block_ref, str):
-    #         return self.get_block_header_by_hash(block_ref)
-    #     else:
-    #         return None
-
     @abstractmethod
     def search_txs_by_address(self, address: str) -> List[Transaction]:
         """
