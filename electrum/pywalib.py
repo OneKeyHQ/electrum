@@ -13,6 +13,12 @@ import requests
 from eth_keyfile import keyfile
 from eth_utils import to_checksum_address
 from web3 import HTTPProvider, Web3
+
+from .i18n import _
+from electrum_gui.common.explorer.clients import TrezorETH, Etherscan
+from electrum_gui.common.explorer.data.enums import TransactionStatus
+from electrum_gui.common.explorer.data.interfaces import ExplorerInterface
+from . import util
 from .eth_transaction import Eth_Transaction
 from decimal import Decimal
 import sqlite3
@@ -447,15 +453,64 @@ class PyWalib:
     #     balance_eth = round(balance_eth, ROUND_DIGITS)
     #     return balance_eth
 
-    @staticmethod
-    def get_transaction_history(address, recovery=False):
-        tx_list = PyWalib.get_transaction_history_fun(address, recovery=recovery)
-        if len(tx_list) == 0 and not recovery:
-            PyWalib.cursor.execute("SELECT * FROM txlist WHERE address=? ORDER BY time DESC Limit 10", (address,))
-            result = PyWalib.cursor.fetchall()
-            for info in result:
-                tx_list.append(info)
-        return tx_list
+    @classmethod
+    def get_explorer(cls) -> ExplorerInterface:
+        cache_name = "__explorer__"
+        explorer = getattr(cls, cache_name, None)
+
+        if explorer is None:
+            servers = {list(i.keys())[0]: list(i.values())[0] for i in cls.tx_list_server}
+            explorer = (
+                TrezorETH(
+                    servers.get("onekey-mainnet")
+                    or servers.get("trezor-mainnet")
+                )
+                if cls.chain_type == "mainnet"
+                else Etherscan(servers.get("etherscan-testnet"), ETHERSCAN_API_KEY)
+            )
+            setattr(cls, cache_name, explorer)
+
+        return explorer
+
+    @classmethod
+    def get_transaction_history(cls, address, search_type=None):
+        address = address.lower()
+        txs = cls.get_explorer().search_txs_by_address(address)
+        if search_type == "send":
+            txs = [i for i in txs if i.source and i.source.lower() == address]
+        elif search_type == "receive":
+            txs = [i for i in txs if i.target and i.target.lower() == address]
+
+        output_txs = []
+        last_price = Decimal(cls.get_coin_price("eth") or "0")
+
+        for tx in txs:
+            block_header = tx.block_header
+            target_address = tx.target
+            amount = Decimal(cls.web3.fromWei(tx.value, "ether"))
+            fiat = amount * last_price
+            tx_status = _("Unconfirmed")
+            if tx.status == TransactionStatus.CONFIRMED:
+                tx_status = (
+                    _("{} confirmations").format(tx.block_header.confirmations)
+                    if block_header and block_header.confirmations > 0
+                    else _("Confirmed")
+                )
+
+            output_tx = {
+                "type": "history",
+                "tx_status": tx_status,
+                "date": util.format_time(block_header.block_time) if block_header else _("Unknown"),
+                "tx_hash": tx.txid,
+                "is_mine": tx.source.lower() == address,
+                "confirmations": block_header.confirmations if block_header else 0,
+                "address": f"{target_address[:6]}...{target_address[-6:]}",
+                "amount": amount,
+                "fiat": fiat
+            }
+            output_txs.append(output_tx)
+
+        return output_txs
 
     @classmethod
     def tx_list_ping(cls, recovery=False):

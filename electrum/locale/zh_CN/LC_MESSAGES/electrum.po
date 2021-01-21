@@ -1296,7 +1296,7 @@ msgstr "在您的 {} 设备确认钱包地址"
 
 #: electrum_gui/android/console.py:1394
 msgid "Confirmed"
-msgstr "已确认。"
+msgstr "已确认"
 
 #: electrum/plugins/ledger/ledger.py:486 electrum/plugins/ledger/ledger.py:512
 msgid "Confirmed. Signing Transaction..."

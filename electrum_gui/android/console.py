@@ -1549,11 +1549,17 @@ class AndroidCommands(commands.Commands):
             return json.dumps(all_data)
 
     ##get history
-    def get_eth_tx_list(self):
-        try:
-            return PyWalib.get_transaction_history(self.wallet.get_addresses()[0])
-        except BaseException as e:
-            raise e
+    def get_eth_tx_list(self, search_type=None):
+        txs = PyWalib.get_transaction_history(self.wallet.get_addresses()[0], search_type=search_type)
+        for tx in txs:
+            fiat = tx["fiat"]
+            fiat = self.daemon.fx.format_amount_and_units(fiat * COIN) or f"0 {self.ccy}"
+            amount = tx["amount"]
+            amount = f"{amount} ETH ({fiat})"
+            tx["amount"] = amount
+            tx.pop("fiat", None)
+
+        return txs
 
     def get_all_tx_list(self, search_type=None, coin='btc'):
         '''
@@ -1562,28 +1568,20 @@ class AndroidCommands(commands.Commands):
         :param coin: btc/eth as string
         :return:
             exp:
-                if coin is btc, return data like:
-                            [{"type":"",
-                             "tx_status":"",
-                             "date":"",
-                             "tx_hash":"",
-                             "is_mine":"",
-                             "confirmations":"",
-                             "address":"",
-                             "amount":""}, ...]
-                if coin is eth, return data like:
-                           [{'time': "",
-                            'value_eth': "",
-                            'sent': "",
-                            'received': "",
-                            'from_address': "",
-                           ' to_address': ""}, ...]
+                [{"type":"",
+                 "tx_status":"",
+                 "date":"",
+                 "tx_hash":"",
+                 "is_mine":"",
+                 "confirmations":"",
+                 "address":"",
+                 "amount":""}, ...]
         '''
         try:
             if coin == "btc":
                 return self.get_btc_tx_list(search_type=search_type)
             else:
-                return self.get_eth_tx_list()
+                return self.get_eth_tx_list(search_type=search_type)
         except BaseException as e:
             raise e
 
@@ -3230,7 +3228,7 @@ class AndroidCommands(commands.Commands):
                 coin = wallet.wallet_type[0:3]
                 if self.coins.__contains__(wallet.wallet_type[0:3]):
                     address = wallet.get_addresses()[0]
-                    tx_list = PyWalib.get_transaction_history(address, recovery=True)
+                    tx_list = self.get_eth_tx_list(address)
                     if len(tx_list) != 0:
                         self.update_recover_list(recovery_list, wallet.get_all_balance(address, coin), wallet,
                                                  wallet.get_name(), coin)
