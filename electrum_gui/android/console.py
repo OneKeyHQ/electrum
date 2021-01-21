@@ -228,7 +228,8 @@ class AndroidCommands(commands.Commands):
         for k, v in util.base_units_inverse.items():
             if k == self.decimal_point:
                 self.base_unit = v
-
+        self.old_history_len = 0
+        self.old_hisotry_info = {}
         self.num_zeros = int(self.config.get('num_zeros', 0))
         self.config.set_key('log_to_file', True, save=True)
         self.rbf = self.config.get("use_rbf", True)
@@ -1321,7 +1322,7 @@ class AndroidCommands(commands.Commands):
             input_info['address'] = addr
             input_list.append(input_info)
             self.txdb.add_received_tx_input_info(tx.txid(), json.dumps(input_list))
-        return input_list
+            return input_list
 
     def get_fee_from_server(self, txid):
         """Retrieve a transaction. """
@@ -1495,13 +1496,19 @@ class AndroidCommands(commands.Commands):
         addr = tx._outputs[n].address
         return addr
 
-    def get_btc_tx_list(self, search_type=None):
+    def get_btc_tx_list(self, start, end, search_type=None):
         history_data = []
         try:
             history_info = self.get_history_tx()
         except BaseException as e:
             raise e
+
         history_dict = json.loads(history_info)
+        update_len = len(history_dict)
+        if update_len == self.old_history_len:
+            return json.dumps(self.old_hisotry_info[start, end])
+
+        self.old_history_len = update_len
         if search_type is None:
             history_data = history_dict
         elif search_type == 'send':
@@ -1515,11 +1522,12 @@ class AndroidCommands(commands.Commands):
 
         all_data = []
         if search_type == "receive":
-            for info in history_data:
-                self.get_history_show_info(info, all_data)
+            for pos, info in enumerate(history_data):
+                if pos >= start and pos <= end:
+                    self.get_history_show_info(info, all_data)
             return json.dumps(all_data)
         else:
-            for info in history_data:
+            for pos, info in enumerate(history_data):
                 self.get_history_show_info(info, all_data)
 
             local_tx = self.txdb.get_tx_info(self.wallet.get_addresses()[0])
@@ -1547,7 +1555,8 @@ class AndroidCommands(commands.Commands):
                 all_data.append(i)
 
             all_data.sort(reverse=True, key=lambda info: info['date'])
-            return json.dumps(all_data)
+            self.old_hisotry_info = all_data
+            return json.dumps(all_data[start, end])
 
     ##get history
     def get_eth_tx_list(self):
@@ -1556,9 +1565,11 @@ class AndroidCommands(commands.Commands):
         except BaseException as e:
             raise e
 
-    def get_all_tx_list(self, search_type=None, coin='btc'):
+    def get_all_tx_list(self, start, end, search_type=None, coin='btc'):
         '''
         Get the histroy list with the wallet that you select
+        :param start: start position as int
+        :param end: end position as int
         :param search_type: None/send/receive as str
         :param coin: btc/eth as string
         :return:
@@ -1582,7 +1593,7 @@ class AndroidCommands(commands.Commands):
         '''
         try:
             if coin == "btc":
-                return self.get_btc_tx_list(search_type=search_type)
+                return self.get_btc_tx_list(start, end,search_type=search_type)
             else:
                 return self.get_eth_tx_list()
         except BaseException as e:
