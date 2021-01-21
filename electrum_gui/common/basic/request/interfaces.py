@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Union, Any
 
 from electrum_gui.common.basic.request.enums import Method
-from packages.requests import Response
+from requests import Response
 
 
 class RestfulInterface(ABC):
