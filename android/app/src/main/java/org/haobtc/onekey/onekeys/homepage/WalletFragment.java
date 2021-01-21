@@ -220,9 +220,6 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
                 showTypeInfo(localWalletInfo);
                 whetherBackup();
             }
-
-            mAppWalletViewModel.refreshBalance();
-            mAppWalletViewModel.refreshExistsWallet();
         });
         mAppWalletViewModel.currentWalletBalance.observe(this, balance -> {
             textBtcAmount.setText(balance.getBalance());
