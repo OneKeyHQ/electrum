@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OKDeviceVerifyResultController : BaseViewController
 @property (nonatomic, assign) BOOL isPassed;
 @property (nonatomic, copy) void(^doneCallback)(void);
++ (instancetype)controllerWithStoryboard;
 @end
 
 NS_ASSUME_NONNULL_END

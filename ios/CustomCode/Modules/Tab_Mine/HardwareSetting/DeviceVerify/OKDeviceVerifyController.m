@@ -7,6 +7,7 @@
 //
 
 #import "OKDeviceVerifyController.h"
+#import "OKDeviceVerifyResultController.h"
 
 @interface OKDeviceVerifyController ()
 @property (weak, nonatomic) IBOutlet UILabel *titleLabel;
@@ -32,7 +33,9 @@
     [super viewDidLoad];
     self.title = MyLocalizedString(@"hardwareWallet.verify", nil);
     self.titleLabel.text = MyLocalizedString(@"hardwareWallet.verify.connecting", nil);
-    self.descLabel.text = MyLocalizedString(@"hardwareWallet.verify.connectingTip", nil);
+    NSString *descLabelTtext = MyLocalizedString(@"hardwareWallet.verify.connectingTip", nil);
+    self.descLabel.attributedText = [NSString lineSpacing:8 content:descLabelTtext];
+    self.descLabel.textAlignment = NSTextAlignmentCenter;
     self.processLabel.text = MyLocalizedString(@"hardwareWallet.verify.processing", nil);
     self.stage1Label.text = MyLocalizedString(@"hardwareWallet.verify.connectingDevice", nil);
     self.stage2Label.text = MyLocalizedString(@"hardwareWallet.verify.getSign", nil);
@@ -43,12 +46,60 @@
     [self.stage1ImageView.layer addAnimation:self.rotationAnimation forKey:@"rotationAnimation"];
     [self.stage2ImageView.layer addAnimation:self.rotationAnimation forKey:@"rotationAnimation"];
     [self.stage3ImageView.layer addAnimation:self.rotationAnimation forKey:@"rotationAnimation"];
+    self.phase = OKDeviceVerifyPhaseConnecting;
+
+    [self verifyHardware];
+}
+
+- (void)verifyHardware {
+
+    self.phase = OKDeviceVerifyPhaseFetching;
+
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+
+        id json = [kPyCommandsManager callInterface:kInterfacehardware_verify parameter:@{@"msg":[NSUUID UUID].UUIDString}];
+        if (json) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.phase = OKDeviceVerifyPhaseSubmitting;
+            });
+            NSURLSession *session = [NSURLSession sharedSession];
+            NSURL *url = [NSURL URLWithString:@"https://key.bixin.com/lengqian.bo"];
+            NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+            request.HTTPMethod = @"POST";
+            NSData *data = [NSJSONSerialization dataWithJSONObject:json options:NSJSONWritingPrettyPrinted error:nil];
+            request.HTTPBody = [NSData dataWithData:data];
+            
+            NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+
+                NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:nil];
+                BOOL is_bixinkey = [[dict objectForKey:@"is_bixinkey"] boolValue];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self showResult:is_bixinkey];
+                });
+
+              }];
+
+          [dataTask resume];
+        }
+    });
+
+}
+
+- (void)showResult:(BOOL)isPassed {
+    self.phase = OKDeviceVerifyPhaseDone;
+    OKDeviceVerifyResultController *vc = [OKDeviceVerifyResultController controllerWithStoryboard];
+    vc.isPassed = isPassed;
+    vc.doneCallback = ^{
+        [self.navigationController popViewControllerAnimated:YES];
+        [self.navigationController popViewControllerAnimated:YES];
+    };
+    [self.navigationController pushViewController:vc animated:YES];
 }
 
 - (CABasicAnimation *)rotationAnimation {
     if (!_rotationAnimation) {
         _rotationAnimation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
-        _rotationAnimation.toValue = [NSNumber numberWithFloat: M_PI * 2.0 ];
+        _rotationAnimation.toValue = [NSNumber numberWithFloat: M_PI * 2.0];
         _rotationAnimation.duration = 0.5;
         _rotationAnimation.cumulative = YES;
         _rotationAnimation.repeatCount = MAXFLOAT;
@@ -57,6 +108,7 @@
 }
 
 - (void)setPhase:(OKDeviceVerifyPhase)phase {
+
     _phase = phase;
     if (phase == OKDeviceVerifyPhaseConnecting) {
         

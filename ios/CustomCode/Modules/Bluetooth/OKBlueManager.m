@@ -10,7 +10,7 @@
 #define kLENGTH_FILED_START_OFFSET  10
 #define kLENGTH_FILED_END_OFFSET    18
 #define kHEAD_LENGTH                9
-#define kPRE_OF_DATAPACKAGE         @"3f232300"
+#define kPRE_OF_DATAPACKAGE         @"3f2323"
 
 @implementation OKPeripheralInfo
 
@@ -417,11 +417,11 @@ static dispatch_once_t once;
 }
 
 
-- (void)characteristicWrite:(NSString *)str
+
+- (void)characteristicWrite:(NSData *)data
 {
     if (self.writeCharacteristic) {
         self.currentReadDataStr = @"";
-        NSData *data = [NSData dataForHexString:str];
         if (data == nil) {
             return;
         }

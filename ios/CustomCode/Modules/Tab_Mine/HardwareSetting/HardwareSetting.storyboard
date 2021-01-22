@@ -1170,16 +1170,23 @@ hahah</string>
                                     <constraint firstItem="ZsC-0f-DHn" firstAttribute="centerY" secondItem="W9a-O2-mOw" secondAttribute="centerY" id="zvb-ZS-cIm"/>
                                 </constraints>
                             </view>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="link_via_ble" translatesAutoresizingMaskIntoConstraints="NO" id="Ipf-DS-QdQ">
-                                <rect key="frame" x="20" y="235.5" width="374" height="284"/>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="link_via_ble2" translatesAutoresizingMaskIntoConstraints="NO" id="Ipf-DS-QdQ">
+                                <rect key="frame" x="20" y="233.5" width="374" height="284"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="Ipf-DS-QdQ" secondAttribute="height" multiplier="79:60" id="1ra-pp-0Aw"/>
                                 </constraints>
                             </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="固件下载中，请耐心固件下载中，请耐心" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jQR-Ie-1Ot">
-                                <rect key="frame" x="100" y="177" width="214" height="33.5"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <color key="textColor" red="0.078431372549019607" green="0.16470588235294117" blue="0.23137254901960785" alpha="1" colorSpace="calibratedRGB"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jQR-Ie-1Ot">
+                                <rect key="frame" x="100" y="177" width="214" height="31.5"/>
+                                <attributedString key="attributedText">
+                                    <fragment content="固件下载中，请耐心固件下载中，请耐心">
+                                        <attributes>
+                                            <color key="NSColor" red="0.078431372549019607" green="0.16470588235294117" blue="0.23137254901960785" alpha="1" colorSpace="calibratedRGB"/>
+                                            <font key="NSFont" size="14" name=".PingFangSC-Regular"/>
+                                            <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
@@ -1253,7 +1260,7 @@ hahah</string>
                                     <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </state>
                                 <connections>
-                                    <action selector="nextBtnClick:" destination="UqE-Zd-J5V" eventType="touchUpInside" id="S4z-LY-7em"/>
+                                    <action selector="doneClick:" destination="UqE-Zd-J5V" eventType="touchUpInside" id="Xda-Ga-to1"/>
                                 </connections>
                             </button>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="KF0-Er-dvU">
@@ -1275,13 +1282,51 @@ hahah</string>
                                     <constraint firstItem="IbC-yg-tOH" firstAttribute="centerY" secondItem="KF0-Er-dvU" secondAttribute="centerY" id="tCy-Lj-gCE"/>
                                 </constraints>
                             </view>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2aq-oP-IAa">
-                                <rect key="frame" x="20" y="383" width="374" height="50.5"/>
-                                <string key="text">固件下载中，请耐心
-固件下载中，请耐心
-固件下载中，请耐心</string>
-                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <color key="textColor" red="0.3294117647" green="0.38823529410000002" blue="0.43921568630000002" alpha="1" colorSpace="calibratedRGB"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2aq-oP-IAa">
+                                <rect key="frame" x="20" y="383" width="374" height="47"/>
+                                <attributedString key="attributedText">
+                                    <fragment content="固件下载中，请耐心">
+                                        <attributes>
+                                            <color key="NSColor" red="0.3294117647" green="0.38823529410000002" blue="0.43921568630000002" alpha="1" colorSpace="calibratedRGB"/>
+                                            <font key="NSFont" size="14" name=".PingFangSC-Regular"/>
+                                            <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                        </attributes>
+                                    </fragment>
+                                    <fragment>
+                                        <string key="content" base64-UTF8="YES">
+Cg
+</string>
+                                        <attributes>
+                                            <color key="NSColor" red="0.3294117647" green="0.38823529410000002" blue="0.43921568630000002" alpha="1" colorSpace="calibratedRGB"/>
+                                            <font key="NSFont" metaFont="system" size="14"/>
+                                            <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                        </attributes>
+                                    </fragment>
+                                    <fragment content="固件下载中，请耐心">
+                                        <attributes>
+                                            <color key="NSColor" red="0.3294117647" green="0.38823529410000002" blue="0.43921568630000002" alpha="1" colorSpace="calibratedRGB"/>
+                                            <font key="NSFont" size="14" name=".PingFangSC-Regular"/>
+                                            <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                        </attributes>
+                                    </fragment>
+                                    <fragment>
+                                        <string key="content" base64-UTF8="YES">
+Cg
+</string>
+                                        <attributes>
+                                            <color key="NSColor" red="0.3294117647" green="0.38823529410000002" blue="0.43921568630000002" alpha="1" colorSpace="calibratedRGB"/>
+                                            <font key="NSFont" metaFont="system" size="14"/>
+                                            <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                        </attributes>
+                                    </fragment>
+                                    <fragment content="固件下载中，请耐心">
+                                        <attributes>
+                                            <color key="NSColor" red="0.3294117647" green="0.38823529410000002" blue="0.43921568630000002" alpha="1" colorSpace="calibratedRGB"/>
+                                            <font key="NSFont" size="14" name=".PingFangSC-Regular"/>
+                                            <paragraphStyle key="NSParagraphStyle" alignment="center" lineBreakMode="wordWrapping" baseWritingDirection="natural" tighteningFactorForTruncation="0.0"/>
+                                        </attributes>
+                                    </fragment>
+                                </attributedString>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
@@ -1309,11 +1354,9 @@ hahah</string>
                         <outlet property="descLabel" destination="2aq-oP-IAa" id="w1X-hg-gBU"/>
                         <outlet property="deviceImageView" destination="aG1-df-K25" id="itB-D6-Opv"/>
                         <outlet property="doneButton" destination="k2b-2u-ucU" id="hsx-wA-q9n"/>
-                        <outlet property="nextBtn" destination="k2b-2u-ucU" id="OHb-27-cfZ"/>
                         <outlet property="resultLabel" destination="lvy-ei-wY5" id="eeN-QE-hqB"/>
                         <outlet property="tagLabel" destination="IbC-yg-tOH" id="Rao-yS-vRS"/>
                         <outlet property="tagView" destination="KF0-Er-dvU" id="0Mb-I9-EPz"/>
-                        <outlet property="titleLabel" destination="lvy-ei-wY5" id="VvT-Zp-0cO"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="m0g-QP-t3Q" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -1428,7 +1471,7 @@ hahah</string>
         <image name="device_failed" width="66" height="141"/>
         <image name="edit" width="20" height="20"/>
         <image name="isselected" width="16" height="16"/>
-        <image name="link_via_ble" width="363.5" height="306"/>
+        <image name="link_via_ble2" width="269.5" height="306"/>
         <image name="notselected" width="16" height="16"/>
         <image name="quanquan" width="60" height="60"/>
         <image name="right_arrow_small" width="24" height="24"/>

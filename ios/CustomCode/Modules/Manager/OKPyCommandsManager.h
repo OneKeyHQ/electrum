@@ -100,6 +100,8 @@
 #define kInterfaceinit                     @"init"          //激活设备
 #define kInterfacereset_pin                @"reset_pin"     //重置PIN
 #define kInterfacebixin_load_device        @"bixin_load_device" //备份钱包到硬件
+#define kInterfacehardware_verify           @"hardware_verify" // 硬件验证信息获取
+
 #define kPyCommandsManager (OKPyCommandsManager.sharedInstance)
 NS_ASSUME_NONNULL_BEGIN
 @interface OKPyCommandsManager : NSObject
