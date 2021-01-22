@@ -309,52 +309,52 @@ public final class PyEnv {
 
     /**
      * 通过xpub恢复钱包
+     *
+     * @return 找到的钱包
      */
-    public static void recoveryWallet(BaseActivity activity, String xPubs, boolean hd) {
+    @WorkerThread
+    public static List<BalanceInfoDTO> recoveryWallet(BaseActivity activity, String xPubs, boolean hd) throws Exception {
         List<BalanceInfoDTO> infos = new ArrayList<>();
         try {
-            mExecutorService.execute(() -> {
-                String walletsInfo = null;
+            String walletsInfo = null;
+            try {
+                walletsInfo = sCommands.callAttr(PyConstant.CREATE_WALLET_BY_XPUB, "", 1, 1, xPubs, new Kwarg("hd", hd)).toString();
+            } catch (Exception ignored) {
+                return infos;
+            }
+            CreateWalletBean.objectFromData(walletsInfo).getDerivedInfo().forEach(derivedInfoBean -> {
+                BalanceInfoDTO info = new BalanceInfoDTO();
+                info.setLabel(derivedInfoBean.getLabel());
+                info.setName(derivedInfoBean.getName());
+                ArrayList<BalanceCoinInfo> coinInfos = new ArrayList<>();
+                BalanceCoinInfo balanceCoinInfo = new BalanceCoinInfo();
+                balanceCoinInfo.setCoin(derivedInfoBean.getCoin());
+                String blance = "0.00 BTC";
+                String blanceFiat = "0.00 CNY";
                 try {
-                    walletsInfo = sCommands.callAttr(PyConstant.CREATE_WALLET_BY_XPUB, "", 1, 1, xPubs, new Kwarg("hd", hd)).toString();
-                } catch (Exception ignored) {
-                    return;
+                    String balanceStr = derivedInfoBean.getBlance();
+                    blance = balanceStr.substring(0, balanceStr.indexOf("(")).trim();
+                    blanceFiat = balanceStr.substring(balanceStr.indexOf("(")).replace(")", "").trim();
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                CreateWalletBean.objectFromData(walletsInfo).getDerivedInfo().forEach(derivedInfoBean -> {
-                    BalanceInfoDTO info = new BalanceInfoDTO();
-                    info.setLabel(derivedInfoBean.getLabel());
-                    info.setName(derivedInfoBean.getName());
-                    ArrayList<BalanceCoinInfo> coinInfos = new ArrayList<>();
-                    BalanceCoinInfo balanceCoinInfo = new BalanceCoinInfo();
-                    balanceCoinInfo.setCoin(derivedInfoBean.getCoin());
-                    String blance = "0.00 BTC";
-                    String blanceFiat = "0.00 CNY";
-                    try {
-                        String balanceStr = derivedInfoBean.getBlance();
-                        blance = balanceStr.substring(0, balanceStr.indexOf("(")).trim();
-                        blanceFiat = balanceStr.substring(balanceStr.indexOf("(")).replace(")", "").trim();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    balanceCoinInfo.setBalance(blance);
-                    balanceCoinInfo.setFiat(blanceFiat);
+                balanceCoinInfo.setBalance(blance);
+                balanceCoinInfo.setFiat(blanceFiat);
 
-                    coinInfos.add(balanceCoinInfo);
-                    info.setWallets(coinInfos);
+                coinInfos.add(balanceCoinInfo);
+                info.setWallets(coinInfos);
 
-                    // 去除本地存在的钱包
-                    String wallet = PreferencesManager.get(activity, Constant.WALLETS, derivedInfoBean.getName(), "").toString();
-                    if (Strings.isNullOrEmpty(wallet)) {
-                        infos.add(info);
-                    }
-                });
-                EventBus.getDefault().post(new FindOnceWalletEvent<>(infos));
+                // 去除本地存在的钱包
+                String wallet = PreferencesManager.get(activity, Constant.WALLETS, derivedInfoBean.getName(), "").toString();
+                if (Strings.isNullOrEmpty(wallet)) {
+                    infos.add(info);
+                }
             });
+
         } catch (Exception e) {
-            activity.showToast(e.getMessage());
-            EventBus.getDefault().post(new ExitEvent());
-            e.printStackTrace();
+            throw HardWareExceptions.exceptionConvert(e);
         }
+        return infos;
     }
 
     /**

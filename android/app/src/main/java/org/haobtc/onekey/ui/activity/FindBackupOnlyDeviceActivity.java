@@ -11,6 +11,7 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.asynctask.BusinessAsyncTask;
+import org.haobtc.onekey.bean.BalanceInfoDTO;
 import org.haobtc.onekey.constant.PyConstant;
 import org.haobtc.onekey.event.ButtonRequestEvent;
 import org.haobtc.onekey.event.ChangePinEvent;
@@ -25,21 +26,33 @@ import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.ui.fragment.DevicePINFragment;
 import org.haobtc.onekey.ui.fragment.FindBackupOnlyDeviceFragment;
 import org.haobtc.onekey.ui.fragment.RecoveryWalletFromHdFragment;
+import org.haobtc.onekey.ui.fragment.RecoveryWalletFromHdFragment.OnFindWalletInfoCallback;
+import org.haobtc.onekey.ui.fragment.RecoveryWalletFromHdFragment.OnFindWalletInfoProvider;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.core.SingleOnSubscribe;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 /**
  * @author liyan
- *
- *BackupOnlyDevice: is a hardware which is inited only as an backup
+ * <p>
+ * BackupOnlyDevice: is a hardware which is inited only as an backup
  */
-public class FindBackupOnlyDeviceActivity extends BaseActivity implements BusinessAsyncTask.Helper{
+public class FindBackupOnlyDeviceActivity extends BaseActivity implements BusinessAsyncTask.Helper, OnFindWalletInfoProvider {
 
     @BindView(R.id.img_back)
     ImageView imgBack;
     private RecoveryWalletFromHdFragment fromHdFragment;
     private String mnemonics;
+    private OnFindWalletInfoCallback mOnFindWalletInfoCallback = null;
+    private Disposable mDisposable;
+
     @Override
     public void init() {
         updateTitle(R.string.pair);
@@ -63,22 +76,38 @@ public class FindBackupOnlyDeviceActivity extends BaseActivity implements Busine
         new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.READ_MNEMONIC_FROM_HARDWARE,
                 MyApplication.getInstance().getDeviceWay());
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onRecoveryLocalHd(RecoveryLocalHDEvent event) {
-       updateTitle(R.string.recovery_wallet);
-       readMnemonicFromHardWare();
-       startFragment(fromHdFragment);
+        updateTitle(R.string.recovery_wallet);
+        readMnemonicFromHardWare();
+        startFragment(fromHdFragment);
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     public void onGotPassEvent(GotPassEvent event) {
-        PyEnv.createLocalHd(event.getPassword(), mnemonics);
+        if (mDisposable != null && !mDisposable.isDisposed()) {
+            mDisposable.dispose();
+        }
+        mDisposable = Single.create((SingleOnSubscribe<List<BalanceInfoDTO>>) emitter -> {
+            List<BalanceInfoDTO> balanceInfos = PyEnv.restoreLocalHDWallet(event.getPassword(), mnemonics);
+            emitter.onSuccess(balanceInfos);
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(balanceInfos -> {
+            if (mOnFindWalletInfoCallback != null) {
+                mOnFindWalletInfoCallback.onFindWallet(balanceInfos);
+            }
+        }, throwable -> {
+            mToast(throwable.getMessage());
+        });
     }
+
     @Subscribe
     public void onFinish(ExitEvent exitEvent) {
         if (hasWindowFocus()) {
             finish();
         }
     }
+
     @Override
     public void onPreExecute() {
 
@@ -141,8 +170,22 @@ public class FindBackupOnlyDeviceActivity extends BaseActivity implements Busine
         }
         finish();
     }
+
     @Override
     public boolean needEvents() {
         return true;
+    }
+
+    @Override
+    public void setOnFindWalletCallback(OnFindWalletInfoCallback callback) {
+        mOnFindWalletInfoCallback = callback;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mDisposable != null && !mDisposable.isDisposed()) {
+            mDisposable.dispose();
+        }
     }
 }

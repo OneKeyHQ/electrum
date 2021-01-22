@@ -11,6 +11,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.asynctask.BusinessAsyncTask;
+import org.haobtc.onekey.bean.BalanceInfoDTO;
 import org.haobtc.onekey.constant.PyConstant;
 import org.haobtc.onekey.event.ButtonRequestEvent;
 import org.haobtc.onekey.event.ChangePinEvent;
@@ -22,20 +23,31 @@ import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
 import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.ui.fragment.DevicePINFragment;
 import org.haobtc.onekey.ui.fragment.RecoveryWalletFromHdFragment;
+import org.haobtc.onekey.ui.fragment.RecoveryWalletFromHdFragment.OnFindWalletInfoCallback;
+import org.haobtc.onekey.ui.fragment.RecoveryWalletFromHdFragment.OnFindWalletInfoProvider;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.core.SingleOnSubscribe;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 /**
  * @author liyan
  * @date 12/2/20
  */
 
-public class RecoveryHardwareOnceWallet extends BaseActivity implements BusinessAsyncTask.Helper {
+public class RecoveryHardwareOnceWallet extends BaseActivity implements BusinessAsyncTask.Helper, OnFindWalletInfoProvider {
 
     @BindView(R.id.img_back)
     ImageView imgBack;
     private RecoveryWalletFromHdFragment fromHdFragment;
+    private OnFindWalletInfoCallback mOnFindWalletInfoCallback = null;
+    private Disposable mDisposable;
 
     /**
      * init
@@ -93,6 +105,7 @@ public class RecoveryHardwareOnceWallet extends BaseActivity implements Business
         }
         finish();
     }
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
@@ -127,7 +140,20 @@ public class RecoveryHardwareOnceWallet extends BaseActivity implements Business
             EventBus.getDefault().post(new ExitEvent());
         }
         String xpubs = "[[\"" + s + "\", \"" + FindNormalDeviceActivity.deviceId + "\"]]";
-        PyEnv.recoveryWallet(this, xpubs, true);
+        if (mDisposable != null && !mDisposable.isDisposed()) {
+            mDisposable.dispose();
+        }
+        mDisposable = Single.create((SingleOnSubscribe<List<BalanceInfoDTO>>) emitter -> {
+            List<BalanceInfoDTO> balanceInfos = PyEnv.recoveryWallet(this, xpubs, true);
+            emitter.onSuccess(balanceInfos);
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(balanceInfos -> {
+            if (mOnFindWalletInfoCallback != null) {
+                mOnFindWalletInfoCallback.onFindWallet(balanceInfos);
+            }
+        }, throwable -> {
+            mToast(throwable.getMessage());
+            EventBus.getDefault().post(new ExitEvent());
+        });
     }
 
     @Override
@@ -151,5 +177,18 @@ public class RecoveryHardwareOnceWallet extends BaseActivity implements Business
         PyEnv.cancelPinInput();
         PyEnv.cancelAll();
         finish();
+    }
+
+    @Override
+    public void setOnFindWalletCallback(OnFindWalletInfoCallback callback) {
+        mOnFindWalletInfoCallback = callback;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mDisposable != null && !mDisposable.isDisposed()) {
+            mDisposable.dispose();
+        }
     }
 }

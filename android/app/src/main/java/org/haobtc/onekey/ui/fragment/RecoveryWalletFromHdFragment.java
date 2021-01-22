@@ -1,21 +1,20 @@
 package org.haobtc.onekey.ui.fragment;
 
+import android.content.Context;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.Group;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.bean.BalanceInfoDTO;
-import org.haobtc.onekey.bean.FindOnceWalletEvent;
 import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.event.SelectedEvent;
 import org.haobtc.onekey.ui.adapter.OnceWalletAdapter;
@@ -51,6 +50,15 @@ public class RecoveryWalletFromHdFragment extends BaseFragment {
     Group walletGroup;
     private OnceWalletAdapter adapter;
     private List<String> nameList;
+    private OnFindWalletInfoProvider mProvider;
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof OnFindWalletInfoProvider) {
+            mProvider = (OnFindWalletInfoProvider) context;
+        }
+    }
 
     /**
      * init views
@@ -60,31 +68,28 @@ public class RecoveryWalletFromHdFragment extends BaseFragment {
     @Override
     public void init(View view) {
         nameList = new ArrayList<>();
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
-    public void onFind(FindOnceWalletEvent<BalanceInfoDTO> event) {
-        // avoid eventBus' needless deliver
-        if (loadedWallet == null) {
-            return;
-        }
-        loadedWallet.setVisibility(View.GONE);
-        walletGroup.setVisibility(View.VISIBLE);
-        if (event.getWallets().isEmpty()) {
-            recovery.setText(R.string.back);
-            findResultPromote.setText(R.string.not_found_once_wallet);
-        } else {
-            adapter = new OnceWalletAdapter(getContext(), event.getWallets());
-            walletRec.setAdapter(adapter);
-            walletRec.setLayoutManager(new LinearLayoutManager(getContext()));
-            adapter.setOnItemClickListener(new OnceWalletAdapter.OnItemClickListener() {
-                @Override
-                public void onItemClick(int position) {
-                    refreshButton();
-                }
-            });
-            adapter.notifyDataSetChanged();
-        }
+        mProvider.setOnFindWalletCallback(balanceInfo -> {
+            if (loadedWallet == null) {
+                return;
+            }
+            loadedWallet.setVisibility(View.GONE);
+            walletGroup.setVisibility(View.VISIBLE);
+            if (balanceInfo.isEmpty()) {
+                recovery.setText(R.string.back);
+                findResultPromote.setText(R.string.not_found_once_wallet);
+            } else {
+                adapter = new OnceWalletAdapter(getContext(), balanceInfo);
+                walletRec.setAdapter(adapter);
+                walletRec.setLayoutManager(new LinearLayoutManager(getContext()));
+                adapter.setOnItemClickListener(new OnceWalletAdapter.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(int position) {
+                        refreshButton();
+                    }
+                });
+                adapter.notifyDataSetChanged();
+            }
+        });
     }
 
     /***
@@ -126,6 +131,14 @@ public class RecoveryWalletFromHdFragment extends BaseFragment {
 
     @Override
     public boolean needEvents() {
-        return true;
+        return false;
+    }
+
+    public interface OnFindWalletInfoProvider {
+        void setOnFindWalletCallback(OnFindWalletInfoCallback callback);
+    }
+
+    public interface OnFindWalletInfoCallback {
+        void onFindWallet(List<BalanceInfoDTO> balanceInfos);
     }
 }
