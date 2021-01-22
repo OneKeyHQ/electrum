@@ -417,6 +417,13 @@ static dispatch_once_t once;
         NSString *path = kBluetooth_iOS;
         result = PyObject_CallMethod(self.pyInstance, [kInterfacehardware_verify UTF8String], "(s,s)",[msg UTF8String],[path UTF8String]);
 
+    }else if ([method isEqualToString:kInterface_set_response]){
+        NSString *data = [parameter safeStringForKey:@"data"];
+        PyObject *b = PyObject_GetAttrString(PyImport_ImportModule("trezorlib.transport.bluetooth_ios"), "BlueToothIosHandler");
+        PyObject_CallMethod(b, [kInterface_set_response UTF8String], "(s)", [data UTF8String]);
+    }else if ([method isEqualToString:kInterface_set_write_success_flag]){
+        PyObject *b = PyObject_GetAttrString(PyImport_ImportModule("trezorlib.transport.bluetooth_ios"), "BlueToothIosHandler");
+        PyObject_CallMethod(b, [kInterface_set_write_success_flag UTF8String], "()", NULL);
     }
     if (result == NULL) {
         if (PyErr_Occurred()) {

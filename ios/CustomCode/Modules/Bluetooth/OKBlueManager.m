@@ -50,6 +50,7 @@ static dispatch_once_t once;
 - (instancetype)init {
     self = [super init];
     if (self) {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didWriteValueForCharacteristic:) name:BabyNotificationAtDidWriteValueForCharacteristic object:nil];
         [self initBabyBluetooth];
     }
     return self;
@@ -383,7 +384,7 @@ static dispatch_once_t once;
     //则会进入setBlockOnDidWriteValueForCharacteristic委托
     [self.currentPeripheral writeValue:msgData
                      forCharacteristic:self.writeCharacteristic
-                                  type:CBCharacteristicWriteWithoutResponse];
+                                  type:CBCharacteristicWriteWithResponse];
 }
 
 
@@ -408,7 +409,7 @@ static dispatch_once_t once;
     }
     if (fieldNum + kHEAD_LENGTH == self.buffer.length / 2) {
         NSLog(@"self.currentReadDataStr = %@",self.currentReadDataStr);
-        self.currentReadDataStr = [self.buffer copy];
+        [kPyCommandsManager callInterface:kInterface_set_response parameter:@{@"data": [self.buffer copy]}];
         [self.buffer setString:@""];
     }
     if ([self.delegate respondsToSelector:@selector(readData:)]) {
@@ -416,7 +417,15 @@ static dispatch_once_t once;
     }
 }
 
-
+- (void)didWriteValueForCharacteristic:(NSNotification *)noti {
+    NSDictionary *data = noti.object;
+    id err = [data objectForKey:@"error"];
+    if (err && [err isKindOfClass:[NSError class]]) {
+        NSAssert(0, err);
+        return;
+    }
+    [[OKPyCommandsManager sharedInstance] callInterface:kInterface_set_write_success_flag parameter:@{}];
+}
 
 - (void)characteristicWrite:(NSData *)data
 {
