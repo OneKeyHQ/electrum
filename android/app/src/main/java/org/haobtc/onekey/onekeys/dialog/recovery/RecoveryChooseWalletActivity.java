@@ -1,5 +1,6 @@
 package org.haobtc.onekey.onekeys.dialog.recovery;
 
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -12,14 +13,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.gson.Gson;
 
 import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.adapter.RecoveryWalletAdapter;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.BalanceInfoDTO;
-import org.haobtc.onekey.bean.FindOnceWalletEvent;
 import org.haobtc.onekey.event.CreateSuccessEvent;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
@@ -32,6 +30,11 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.core.SingleOnSubscribe;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class RecoveryChooseWalletActivity extends BaseActivity {
 
@@ -47,6 +50,7 @@ public class RecoveryChooseWalletActivity extends BaseActivity {
     private ArrayList<String> listDates;
     private String name;
     private List<BalanceInfoDTO> walletList;
+    private Disposable mDisposable;
 
     @Override
     public int getLayoutId() {
@@ -56,18 +60,41 @@ public class RecoveryChooseWalletActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
-        EventBus.getDefault().register(this);
     }
 
     @Override
     public void initData() {
-        String password = getIntent().getStringExtra("password");
-        String recoverySeed = getIntent().getStringExtra("recoverySeed");
-        //recovery mnemonic wallet
-        PyEnv.createLocalHd(password, recoverySeed);
         //choose wallet data list
         listDates = new ArrayList<>();
         reclWalletList.setNestedScrollingEnabled(false);
+        if (mDisposable != null && !mDisposable.isDisposed()) {
+            mDisposable.dispose();
+        }
+        mDisposable = Single.create((SingleOnSubscribe<List<BalanceInfoDTO>>) emitter -> {
+            String password = getIntent().getStringExtra("password");
+            String recoverySeed = getIntent().getStringExtra("recoverySeed");
+            if (password == null || recoverySeed == null) {
+                Log.e("RecoveryChooseWalletActivity", "启动 RecoveryChooseWalletActivity 需要 password recoverySeed 参数.");
+                throw new RuntimeException("");
+            }
+            List<BalanceInfoDTO> balanceInfoDTOS = PyEnv.restoreLocalHDWallet(password, recoverySeed);
+            emitter.onSuccess(balanceInfoDTOS);
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(walletBalances -> {
+            if (loadedWallet == null) {
+                return;
+            }
+            loadedWallet.setVisibility(View.GONE);
+            btnRecovery.setVisibility(View.VISIBLE);
+            scrollWallet.setVisibility(View.VISIBLE);
+            walletList = walletBalances;
+            recoveryWalletAdapter = new RecoveryWalletAdapter(this, walletList);
+            reclWalletList.setAdapter(recoveryWalletAdapter);
+        }, throwable -> {
+            if (!TextUtils.isEmpty(throwable.getMessage())) {
+                mToast(throwable.getMessage());
+            }
+            finish();
+        });
     }
 
     @SingleClick
@@ -110,19 +137,6 @@ public class RecoveryChooseWalletActivity extends BaseActivity {
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onFind(FindOnceWalletEvent<BalanceInfoDTO> event) {
-        if (loadedWallet == null) {
-            return;
-        }
-        loadedWallet.setVisibility(View.GONE);
-        btnRecovery.setVisibility(View.VISIBLE);
-        scrollWallet.setVisibility(View.VISIBLE);
-        walletList = event.getWallets();
-        recoveryWalletAdapter = new RecoveryWalletAdapter(this, walletList);
-        reclWalletList.setAdapter(recoveryWalletAdapter);
-    }
-
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
@@ -134,6 +148,8 @@ public class RecoveryChooseWalletActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        EventBus.getDefault().unregister(this);
+        if (mDisposable != null && !mDisposable.isDisposed()) {
+            mDisposable.dispose();
+        }
     }
 }

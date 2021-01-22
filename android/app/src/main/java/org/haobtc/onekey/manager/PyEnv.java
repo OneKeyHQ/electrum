@@ -7,6 +7,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 
 import com.alibaba.fastjson.JSON;
 import com.chaquo.python.Kwarg;
@@ -53,6 +54,7 @@ import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
 import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.utils.Daemon;
 import org.haobtc.onekey.utils.Global;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -379,6 +381,7 @@ public final class PyEnv {
      *
      * @param name 钱包名称
      */
+    @Nullable
     public static BalanceInfoDTO selectWallet(@NonNull String name) {
         try {
             String info = sCommands.callAttr(PyConstant.GET_BALANCE, name).toString();
@@ -441,11 +444,80 @@ public final class PyEnv {
     }
 
     /**
+     * 助记词恢复钱包
+     *
+     * @param password  密码
+     * @param mnemonics 助记词
+     *
+     * @return 钱包信息
+     *
+     * @throws Exception 错误的提示信息
+     */
+    @WorkerThread
+    public static List<BalanceInfoDTO> restoreLocalHDWallet(@NotNull String password, @NotNull String mnemonics) throws Exception {
+        try {
+            List<BalanceInfoDTO> infos = new ArrayList<>();
+            String walletsInfo = sCommands.callAttr(PyConstant.CREATE_HD_WALLET, password, mnemonics, new Kwarg(Constant.Purpose, 49)).toString();
+            CreateWalletBean walletBean = CreateWalletBean.objectFromData(walletsInfo);
+            Logger.e("====" + walletsInfo);
+            // HD 根钱包
+            Optional.ofNullable(walletBean.getWalletInfo()).ifPresent((walletInfos -> {
+                for (CreateWalletBean.WalletInfoBean walletInfo : walletInfos) {
+                    String name = walletInfo.getName();
+                    BalanceInfoDTO info = PyEnv.selectWallet(name);
+                    if (info == null) {
+                        continue;
+                    }
+                    EventBus.getDefault().post(new CreateSuccessEvent(name));
+                    if (walletInfo.getCoinType().contains("btc")) {
+                        // 现在的 BTC HD 钱包的 Label 是 BTC-1
+                        info.setLabel("BTC-1");
+                    } else if (walletInfo.getCoinType().contains("eth")) {
+                        // 现在的 ETH HD 钱包的 Label 是 ETH-1
+                        info.setLabel("ETH-1");
+                    }
+                    infos.add(info);
+                }
+            }));
+            walletBean.getDerivedInfo().forEach(derivedInfoBean -> {
+                BalanceInfoDTO info = new BalanceInfoDTO();
+                info.setLabel(derivedInfoBean.getLabel());
+                info.setName(derivedInfoBean.getName());
+                ArrayList<BalanceCoinInfo> coinInfos = new ArrayList<>();
+                BalanceCoinInfo balanceCoinInfo = new BalanceCoinInfo();
+                balanceCoinInfo.setCoin(derivedInfoBean.getCoin());
+                String blance = "0.00 BTC";
+                String blanceFiat = "0.00 CNY";
+                try {
+                    String blanceStr = derivedInfoBean.getBlance();
+                    blance = blanceStr.substring(0, blanceStr.indexOf("(")).trim();
+                    blanceFiat = blanceStr.substring(blanceStr.indexOf("(")).replace(")", "").trim();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                balanceCoinInfo.setBalance(blance);
+                balanceCoinInfo.setFiat(blanceFiat);
+
+                coinInfos.add(balanceCoinInfo);
+                info.setWallets(coinInfos);
+                infos.add(info);
+            });
+            return infos;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw HardWareExceptions.exceptionConvert(e);
+        }
+    }
+
+    /**
      * 创建HD钱包
      *
      * @param passwd    APP主密码
      * @param mnemonics 助记词
+     *
+     * @deprecated 后面拆分成两个方法，导入和恢复。使用回调方法或直接返回，去掉 EventBus。
      */
+    @Deprecated
     public static void createLocalHd(String passwd, String mnemonics) {
         mExecutorService.execute(() -> {
             try {

@@ -271,7 +271,7 @@ public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocu
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     public void onGotPass(GotPassEvent event) {
         Intent intent = new Intent(this, RecoveryChooseWalletActivity.class);
         intent.putExtra("password", event.getPassword());
