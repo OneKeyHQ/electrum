@@ -3,7 +3,7 @@ from dataclasses import replace, asdict, fields
 from typing import Set
 from decimal import Decimal
 
-from electrum_gui.common.basic.functional.decimal_encoder import DecimalEncoder
+from electrum.util import DecimalEncoder
 
 
 class DataClassMixin(object):

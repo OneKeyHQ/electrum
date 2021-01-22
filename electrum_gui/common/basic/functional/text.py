@@ -1,3 +1,6 @@
+# Copyright (c) Django Software Foundation and individual contributors.
+# All rights reserved.
+
 import datetime
 from decimal import Decimal
 
