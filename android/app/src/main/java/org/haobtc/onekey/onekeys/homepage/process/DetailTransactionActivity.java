@@ -8,9 +8,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.DrawableRes;
 import androidx.core.content.res.ResourcesCompat;
@@ -24,7 +22,6 @@ import org.haobtc.onekey.activities.transaction.CheckChainDetailWebActivity;
 import org.haobtc.onekey.bean.TransactionInfoBean;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.utils.Daemon;
-import org.haobtc.onekey.utils.MyDialog;
 
 import java.util.Objects;
 

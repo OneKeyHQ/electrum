@@ -4,11 +4,14 @@ import androidx.annotation.WorkerThread
 import com.chaquo.python.Kwarg
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.tencent.bugly.crashreport.CrashReport
+import org.haobtc.onekey.activities.base.MyApplication
 import org.haobtc.onekey.bean.MaintrsactionlistEvent
 import org.haobtc.onekey.bean.TransactionSummaryVo
 import org.haobtc.onekey.business.chain.TransactionListType
 import org.haobtc.onekey.constant.Vm
 import org.haobtc.onekey.utils.Daemon
+import org.haobtc.onekey.utils.internet.NetUtil
 import java.lang.Exception
 import java.text.DecimalFormat
 
@@ -19,11 +22,11 @@ class EthService {
 
   @WorkerThread
   fun getTxList(@TransactionListType status: String = TransactionListType.ALL): List<TransactionSummaryVo> {
-    val historyTx = when (status) {
-      TransactionListType.ALL -> Daemon.commands.callAttr("get_all_tx_list", Kwarg("coin", Vm.CoinType.ETH.coinName))
-      else -> Daemon.commands.callAttr("get_all_tx_list", status, Vm.CoinType.ETH.coinName)
-    }
     return try {
+      val historyTx = when (status) {
+        TransactionListType.ALL -> Daemon.commands.callAttr("get_all_tx_list", Kwarg("coin", Vm.CoinType.ETH.coinName))
+        else -> Daemon.commands.callAttr("get_all_tx_list", status, Vm.CoinType.ETH.coinName)
+      }
       historyTx?.toString()?.let {
         val listBeans: ArrayList<TransactionSummaryVo> = ArrayList(10)
 
@@ -64,6 +67,10 @@ class EthService {
       } ?: arrayListOf()
     } catch (e: Exception) {
       e.printStackTrace()
+      if (e.message?.contains("ConnectionError") == true && NetUtil.getNetStatus(MyApplication.getInstance())) {
+        // 及时上报 eth 区块浏览器获取交易记录不可用的信息
+        CrashReport.postCatchedException(e)
+      }
       arrayListOf()
     }
   }

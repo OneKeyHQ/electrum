@@ -165,12 +165,12 @@ public class TransactionListFragment extends BaseLazyFragment implements OnRefre
                                 }
                                 summaryVoList = mBitcoinService.getTxList(status);
                                 break;
-//                            case ETH:
-//                                if (mEthService == null) {
-//                                    mEthService = new EthService();
-//                                }
-//                                summaryVoList = mEthService.getTxList(status);
-//                                break;
+                            case ETH:
+                                if (mEthService == null) {
+                                    mEthService = new EthService();
+                                }
+                                summaryVoList = mEthService.getTxList(status);
+                                break;
                         }
                         emitter.onNext(summaryVoList);
                         emitter.onComplete();
