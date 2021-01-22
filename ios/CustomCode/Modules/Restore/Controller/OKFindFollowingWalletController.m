@@ -93,9 +93,9 @@
             [arrayM addObject:model.name];
         }
     }
-    [kPyCommandsManager callInterface:kInterfacerecovery_confirmed parameter:@{@"name_list":arrayM}];
     OKCreateResultWalletInfoModel *createResultWalletInfoModel = [self.createResultModel.wallet_info firstObject];
     OKWalletInfoModel *infoModel = [kWalletManager getCurrentWalletAddress:createResultWalletInfoModel.name];
+    [kPyCommandsManager callInterface:kInterfacerecovery_confirmed parameter:@{@"name_list":arrayM}];
     [kWalletManager setCurrentWalletInfo:infoModel];
     if (kUserSettingManager.currentSelectPwdType.length > 0 && kUserSettingManager.currentSelectPwdType !=  nil) {
         [kUserSettingManager setIsLongPwd:[kUserSettingManager.currentSelectPwdType boolValue]];

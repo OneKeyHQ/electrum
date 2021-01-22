@@ -100,6 +100,7 @@
 #define kInterfaceinit                     @"init"          //激活设备
 #define kInterfacereset_pin                @"reset_pin"     //重置PIN
 #define kInterfacebixin_load_device        @"bixin_load_device" //备份钱包到硬件
+#define kInterfacebixin_backup_device      @"bixin_backup_device" //从硬件恢复HD
 #define kInterfacehardware_verify           @"hardware_verify" // 硬件验证信息获取
 
 #define kInterface_set_write_success_flag         @"set_write_success_flag" // 在蓝牙收到写入成功的回调时，需要调用

@@ -412,6 +412,9 @@ static dispatch_once_t once;
         kwargs = Py_BuildValue("{s:s,s:s}", "label", [label UTF8String],"mnemonics",[mnemonics UTF8String]);
         PyObject *myobject_method = PyObject_GetAttrString(self.pyInstance, [kInterfacebixin_load_device UTF8String]);
         result = PyObject_Call(myobject_method, args, kwargs);
+    }else if ([method isEqualToString:kInterfacebixin_backup_device]){
+        NSString *path  = kBluetooth_iOS;
+        result = PyObject_CallMethod(self.pyInstance, [kInterfacebixin_backup_device UTF8String], "(s)",[path UTF8String]);
     }else if ([method isEqualToString:kInterfacehardware_verify]){
         NSString *msg = [parameter safeStringForKey:@"msg"];
         NSString *path = kBluetooth_iOS;

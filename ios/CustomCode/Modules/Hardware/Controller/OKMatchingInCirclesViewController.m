@@ -15,6 +15,7 @@
 #import "OKDeviceInfoModel.h"
 #import "OKDiscoverNewDeviceViewController.h"
 #import "OKSetDeviceNameViewController.h"
+#import "OKSpecialEquipmentViewController.h"
 
 @interface OKMatchingInCirclesViewController ()<OKBabyBluetoothManageDelegate,UITableViewDelegate,UITableViewDataSource>
 
@@ -198,17 +199,26 @@
             kOKBlueManager.currentReadDataStr = @"";
             dispatch_async(dispatch_get_global_queue(0, 0), ^{
                NSString *jsonStr =  [kPyCommandsManager callInterface:kInterfaceget_feature parameter:@{@"path":kBluetooth_iOS}];
-                OKDeviceInfoModel *model = [OKDeviceInfoModel mj_objectWithKeyValues:jsonStr];
-                kOKBlueManager.model = model;
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    if (model.initialized ) {
-                        OKActivateDeviceSelectViewController *activateDeviceVc = [OKActivateDeviceSelectViewController activateDeviceSelectViewController];
-                        [self.navigationController pushViewController:activateDeviceVc animated:YES];
-                    }else{
-                        OKDiscoverNewDeviceViewController *discoverNewDeviceVc = [OKDiscoverNewDeviceViewController discoverNewDeviceViewController];
-                        [self.navigationController pushViewController:discoverNewDeviceVc animated:YES];
-                    }
-                });
+                if (jsonStr != nil) {
+                    OKDeviceInfoModel *model = [OKDeviceInfoModel mj_objectWithKeyValues:jsonStr];
+                    kOKBlueManager.model = model;
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if (model.initialized ) {
+                            if (model.backup_only) {
+                                OKSpecialEquipmentViewController *SpecialEquipmentVc = [OKSpecialEquipmentViewController specialEquipmentViewController];
+                                [self.navigationController pushViewController:SpecialEquipmentVc animated:YES];
+                            }else{
+                                OKActivateDeviceSelectViewController *activateDeviceVc = [OKActivateDeviceSelectViewController activateDeviceSelectViewController];
+                                [self.navigationController pushViewController:activateDeviceVc animated:YES];
+                            }
+                        }else{
+                            OKDiscoverNewDeviceViewController *discoverNewDeviceVc = [OKDiscoverNewDeviceViewController discoverNewDeviceViewController];
+                            [self.navigationController pushViewController:discoverNewDeviceVc animated:YES];
+                        }
+                    });
+                }else{
+                    
+                }
             });
         }
             break;
