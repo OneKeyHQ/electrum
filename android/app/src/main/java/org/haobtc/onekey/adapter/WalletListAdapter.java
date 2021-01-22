@@ -19,6 +19,12 @@ import org.haobtc.onekey.utils.ClipboardUtils;
 
 import java.util.List;
 
+import static org.haobtc.onekey.constant.Vm.WalletType.HARDWARE;
+import static org.haobtc.onekey.constant.Vm.WalletType.IMPORT_PRIVATE;
+import static org.haobtc.onekey.constant.Vm.WalletType.IMPORT_WATCH;
+import static org.haobtc.onekey.constant.Vm.WalletType.MAIN;
+import static org.haobtc.onekey.constant.Vm.WalletType.STANDARD;
+
 public class WalletListAdapter extends BaseQuickAdapter<LocalWalletInfo, BaseViewHolder> {
     public WalletListAdapter(@Nullable List<LocalWalletInfo> data) {
         super(R.layout.hd_wallet_item, data);
@@ -30,25 +36,37 @@ public class WalletListAdapter extends BaseQuickAdapter<LocalWalletInfo, BaseVie
         helper.setText(R.id.text_name, item.getLabel());
         RelativeLayout view = helper.getView(R.id.rel_background);
         ImageView imgType = helper.getView(R.id.img_type);
-        if (item.getType().contains("btc")) {
-            view.setBackground(mContext.getDrawable(R.drawable.orange_back));
-            imgType.setImageDrawable(mContext.getDrawable(R.drawable.token_trans_btc_list));
-        } else if (item.getType().contains("eth")) {
-            view.setBackground(mContext.getDrawable(R.drawable.eth_blue_back));
-            imgType.setImageDrawable(mContext.getDrawable(R.drawable.token_trans_eth_list));
+        switch (item.getCoinType()) {
+            case ETH:
+                view.setBackground(mContext.getDrawable(R.drawable.eth_blue_back));
+                imgType.setImageDrawable(mContext.getDrawable(R.drawable.token_trans_eth_list));
+                break;
+            default:
+            case BTC:
+                view.setBackground(mContext.getDrawable(R.drawable.orange_back));
+                imgType.setImageDrawable(mContext.getDrawable(R.drawable.token_trans_btc_list));
+                break;
         }
-        if ( "btc-derived-standard".equals(item.getType())) {
-            helper.getView(R.id.text_type).setVisibility(View.VISIBLE);
-            helper.setText(R.id.text_type, "HD");
-        } else if (item.getType().contains("hw")) {
-            String type = item.getType().substring(item.getType().indexOf("hw-") + 3);
-            helper.setText(R.id.text_type, mContext.getString(R.string.hardwares));
-        } else if (item.getType().contains("watch")) {
-            helper.getView(R.id.text_type).setVisibility(View.VISIBLE);
-            helper.setText(R.id.text_type, mContext.getString(R.string.watch));
-        } else {
-            helper.getView(R.id.text_type).setVisibility(View.INVISIBLE);
+
+        switch (item.getWalletType()) {
+            case MAIN:
+                helper.getView(R.id.text_type).setVisibility(View.VISIBLE);
+                helper.setText(R.id.text_type, "HD");
+                break;
+            case HARDWARE:
+                String type = item.getType().substring(item.getType().indexOf("hw-") + 3);
+                helper.setText(R.id.text_type, mContext.getString(R.string.hardwares));
+                break;
+            case IMPORT_WATCH:
+                helper.getView(R.id.text_type).setVisibility(View.VISIBLE);
+                helper.setText(R.id.text_type, mContext.getString(R.string.watch));
+                break;
+            case IMPORT_PRIVATE:
+            case STANDARD:
+                helper.getView(R.id.text_type).setVisibility(View.INVISIBLE);
+                break;
         }
+
         TextView textAddr = helper.getView(R.id.text_addr);
         String address = item.getAddr();
         String front6 = address.substring(0, 6);
