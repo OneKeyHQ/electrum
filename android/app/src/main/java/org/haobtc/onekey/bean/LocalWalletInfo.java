@@ -81,12 +81,11 @@ public class LocalWalletInfo {
     }
 
     public Vm.CoinType getCoinType() {
-        if (type.contains("btc")) {
-            return Vm.CoinType.BTC;
-        } else if (type.contains("eth")) {
-            return Vm.CoinType.ETH;
-        } else {
-            return Vm.CoinType.BTC;
-        }
+        return Vm.convertCoinType(type);
+    }
+
+    @Vm.WalletType
+    public int getWalletType() {
+        return Vm.convertWalletType(type);
     }
 }

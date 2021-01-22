@@ -41,6 +41,7 @@ import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.StringConstant;
 import org.haobtc.onekey.constant.Vm;
+import org.haobtc.onekey.constant.Vm.WalletType;
 import org.haobtc.onekey.event.FixWalletNameEvent;
 import org.haobtc.onekey.event.GotPassEvent;
 import org.haobtc.onekey.event.LoadOtherWalletEvent;
@@ -131,66 +132,14 @@ public class HdWalletDetailActivity extends BaseActivity {
         inits();
     }
 
-    @IntDef({WalletType.MAIN, WalletType.STANDARD, WalletType.IMPORT_WATCH, WalletType.IMPORT_PRIVATE, WalletType.HARDWARE})
-    @interface WalletType {
-        /**
-         * HD 派生钱包
-         */
-        int MAIN = 0;
-        /**
-         * 创建的独立钱包，助记词导入的钱包。
-         */
-        int STANDARD = 1;
-        /**
-         * 通过地址导入的观察钱包
-         */
-        int IMPORT_WATCH = 2;
-        /**
-         * 通过私钥导入的钱包
-         */
-        int IMPORT_PRIVATE = 3;
-
-        /**
-         * 硬件钱包
-         */
-        int HARDWARE = 4;
-    }
-
-    @WalletType
-    private int convertWalletType(String type) {
-        if (type.contains("derived-standard")) {
-            return WalletType.MAIN;
-        } else if (type.contains("private-standard")) {
-            return WalletType.IMPORT_PRIVATE;
-        } else if (type.contains("watch-standard")) {
-            return WalletType.IMPORT_WATCH;
-        } else if (type.contains("hw-derived")) {
-            return WalletType.HARDWARE;
-        } else if (type.contains("standard")) {
-            return WalletType.STANDARD;
-        } else {
-            return WalletType.STANDARD;
-        }
-    }
-
-    private Vm.CoinType convertCoinType(String type) {
-        if (type.contains("btc")) {
-            return Vm.CoinType.BTC;
-        } else if (type.contains("eth")) {
-            return Vm.CoinType.ETH;
-        } else {
-            return Vm.CoinType.BTC;
-        }
-    }
-
     private void inits() {
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         showWalletType = preferences.getString(CURRENT_SELECTED_WALLET_TYPE, "");
         String hdWalletName = getIntent().getStringExtra("hdWalletName");
         isBackup = getIntent().getBooleanExtra("isBackup", false);
 
-        Vm.CoinType coinType = convertCoinType(showWalletType);
-        @WalletType int walletType = convertWalletType(showWalletType);
+        Vm.CoinType coinType = Vm.convertCoinType(showWalletType);
+        @WalletType int walletType = Vm.convertWalletType(showWalletType);
 
         switch (coinType) {
             default:

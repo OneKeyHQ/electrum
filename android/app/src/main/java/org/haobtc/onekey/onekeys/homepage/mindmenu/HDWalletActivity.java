@@ -1,5 +1,7 @@
 package org.haobtc.onekey.onekeys.homepage.mindmenu;
+
 import android.content.Intent;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -18,6 +20,7 @@ import org.haobtc.onekey.adapter.WalletListAdapter;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.LocalWalletInfo;
 import org.haobtc.onekey.constant.Constant;
+import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.event.CreateSuccessEvent;
 import org.haobtc.onekey.event.GotPassEvent;
 import org.haobtc.onekey.event.LoadWalletlistEvent;
@@ -114,13 +117,11 @@ public class HDWalletActivity extends BaseActivity {
         } else {
             wallets.entrySet().forEach(stringEntry -> {
                 LocalWalletInfo info = LocalWalletInfo.objectFromData(stringEntry.getValue().toString());
-                String type = info.getType();
                 String name = info.getName();
-                if ( "btc-derived-standard".equals(type)) {
+                if (info.getWalletType() == Vm.WalletType.MAIN) {
                     hdWalletList.add(info);
                     deleteHdWalletName = name;
                 }
-
             });
             textWalletNum.setText(String.valueOf(hdWalletList.size()));
             if (hdWalletList != null && hdWalletList.size() > 0) {
@@ -137,26 +138,26 @@ public class HDWalletActivity extends BaseActivity {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onGotPass (GotPassEvent event) {
+    public void onGotPass(GotPassEvent event) {
         if (event.fromType == 2) {
             PyEnv.createLocalHd(event.getPassword(), null);
         }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onCreateWalletSuccess (CreateSuccessEvent event) {
+    public void onCreateWalletSuccess(CreateSuccessEvent event) {
         PyEnv.loadLocalWalletInfo(MyApplication.getInstance());
         PreferencesManager.put(this, "Preferences", Constant.CURRENT_SELECTED_WALLET_NAME, event.getName());
         getHomeWalletList();
     }
 
     @Subscribe
-    public void onLoad (LoadWalletlistEvent event) {
+    public void onLoad(LoadWalletlistEvent event) {
         getHomeWalletList();
     }
 
     @Override
-    protected void onDestroy () {
+    protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
     }
