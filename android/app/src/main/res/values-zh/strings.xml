@@ -1221,4 +1221,8 @@
     <string name="keystore_export">Keystore 导出</string>
     <string name="hint_update">升级</string>
     <string name="action_continue">继续</string>
+    <string name="gas_limit_tip">Gas Limit 不应大于 %d 不应小于 %d</string>
+    <string name="gas_price_tip">Gas Price 不应大于 %s 不应小于 %s</string>
+
+
 </resources>

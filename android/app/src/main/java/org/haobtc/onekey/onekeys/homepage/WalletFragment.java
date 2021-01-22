@@ -35,6 +35,7 @@ import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.HardwareFeatures;
 import org.haobtc.onekey.bean.LocalWalletInfo;
 import org.haobtc.onekey.bean.MainSweepcodeBean;
+import org.haobtc.onekey.business.wallet.AccountManager;
 import org.haobtc.onekey.business.wallet.SystemConfigManager;
 import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.event.BackupCompleteEvent;
@@ -52,6 +53,7 @@ import org.haobtc.onekey.onekeys.dialog.RecoverHdWalletActivity;
 import org.haobtc.onekey.onekeys.homepage.process.DetailTransactionActivity;
 import org.haobtc.onekey.onekeys.homepage.process.HdWalletDetailActivity;
 import org.haobtc.onekey.onekeys.homepage.process.ReceiveHDActivity;
+import org.haobtc.onekey.onekeys.homepage.process.SendEthActivity;
 import org.haobtc.onekey.onekeys.homepage.process.SendHdActivity;
 import org.haobtc.onekey.onekeys.homepage.process.TransactionDetailWalletActivity;
 import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
@@ -155,6 +157,7 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
     private AppWalletViewModel mAppWalletViewModel;
     private SystemConfigManager mSystemConfigManager;
     private BackupDialog mBackupDialog;
+    private AccountManager mAccountManager;
 
     /**
      * init views
@@ -167,6 +170,7 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
         mAppWalletViewModel = getApplicationViewModel(AppWalletViewModel.class);
         mSystemConfigManager = new SystemConfigManager(requireContext());
         rxPermissions = new RxPermissions(this);
+        mAccountManager = new AccountManager(getActivity());
         preferences = requireActivity().getSharedPreferences("Preferences", Context.MODE_PRIVATE);
         tetAmount.addTextChangedListener(this);
         initViewModelValue();
@@ -328,10 +332,15 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
     private void toNext(int id) {
         switch (id) {
             case R.id.linear_send:
-                Intent intent2 = new Intent(getActivity(), SendHdActivity.class);
-                intent2.putExtra(WALLET_BALANCE, changeBalance);
-                intent2.putExtra("hdWalletName", textWalletName.getText().toString());
-                startActivity(intent2);
+                Intent intent;
+                if (mAccountManager.getCurWalletType().contains(org.haobtc.onekey.constant.Constant.BTC)) {
+                    intent = new Intent(getActivity(), SendHdActivity.class);
+                } else {
+                    intent = new Intent(getActivity(), SendEthActivity.class);
+                }
+                intent.putExtra(WALLET_BALANCE, changeBalance);
+                intent.putExtra("hdWalletName", textWalletName.getText().toString());
+                startActivity(intent);
                 break;
             case R.id.linear_receive:
                 Intent intent3 = new Intent(getActivity(), ReceiveHDActivity.class);
@@ -411,7 +420,11 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
                                 MainSweepcodeBean mainSweepcodeBean = gson.fromJson(strParse, MainSweepcodeBean.class);
                                 MainSweepcodeBean.DataBean listData = mainSweepcodeBean.getData();
                                 String address = listData.getAddress();
-                                SendHdActivity.start(getActivity(), changeBalance, textWalletName.getText().toString(), address, listData.getAmount());
+                                if (mAccountManager.getCurWalletType().contains(org.haobtc.onekey.constant.Constant.BTC)) {
+                                    SendHdActivity.start(getActivity(), changeBalance, textWalletName.getText().toString(), address, listData.getAmount());
+                                } else {
+                                    SendEthActivity.start(getActivity(), changeBalance, textWalletName.getText().toString(), address, listData.getAmount());
+                                }
                             } else if (type == 2) {
                                 Intent intent = new Intent(getActivity(), DetailTransactionActivity.class);
                                 intent.putExtra("scanDetail", detailScan);

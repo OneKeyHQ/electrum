@@ -1,5 +1,6 @@
 package org.haobtc.onekey.onekeys.homepage.process;
 
+import android.content.Context;
 import android.content.Intent;
 import android.view.View;
 import android.widget.Button;
@@ -19,6 +20,14 @@ public class TransactionCompletion extends BaseActivity {
     @BindView(R.id.btn_next)
     Button btnNext;
     private String txDetail;
+
+
+    public static void start(Context context,String signedTx,String amounts){
+        Intent intent = new Intent(context, TransactionCompletion.class);
+        intent.putExtra("txDetail", signedTx);
+        intent.putExtra("amounts", amounts);
+        context.startActivity(intent);
+    }
 
     @Override
     public int getLayoutId() {

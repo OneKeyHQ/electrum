@@ -135,7 +135,6 @@
                     android:drawableEnd="@drawable/right_arrow_small"
                     android:drawablePadding="@dimen/dp_5"
                     android:gravity="center_vertical|end"
-                    android:text="@string/btc_c"
                     android:textColor="@color/graytext_color"
                     tools:ignore="UseCompatTextViewDrawableXml" />
 

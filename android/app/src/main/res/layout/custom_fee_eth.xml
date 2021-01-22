@@ -62,8 +62,8 @@
                     android:layout_height="@dimen/dp_60"
                     android:layout_marginTop="@dimen/dp_9"
                     android:background="@drawable/gray_broken"
-                    android:numeric="integer"
-                    android:maxLength="3"
+                    android:inputType="numberDecimal"
+                    android:maxLength="8"
                     android:maxLines="1"
                     android:paddingStart="@dimen/dp_20"
                     android:paddingEnd="@dimen/dp_20"
@@ -116,11 +116,11 @@
                     android:layout_marginTop="@dimen/dp_9"
                     android:background="@drawable/gray_tuo_broken"
                     android:gravity="center_vertical"
+                    android:maxLines="1"
+                    android:numeric="integer"
                     android:paddingStart="@dimen/dp_20"
                     android:paddingEnd="@dimen/dp_20"
                     android:singleLine="true"
-                    android:maxLines="1"
-                    android:numeric="integer"
                     android:textColor="@color/text_six"
                     android:textSize="@dimen/sp_18" />
 
@@ -150,11 +150,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/dp_5"
-                    android:visibility="gone"
                     android:text="@string/line"
                     android:textColor="@color/text_six"
                     android:textSize="@dimen/sp_10"
-                    android:textStyle="normal" />
+                    android:textStyle="normal"
+                    android:visibility="gone" />
             </LinearLayout>
         </LinearLayout>
 

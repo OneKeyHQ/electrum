@@ -241,4 +241,11 @@ public final class PyConstant {
      */
     public static final String GET_ETH_GAS_PRICE = "get_eth_gas_price";
 
+    /**
+     * 校验接口
+     */
+    public static final String VERIFY_LEGALITY = "verify_legality";
+
+    public static final String SIGN_ETH_TX="sign_eth_tx";
+
 }

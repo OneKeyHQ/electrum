@@ -26,6 +26,7 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.LunchActivity;
 import org.haobtc.onekey.business.language.LanguageManager;
 import org.haobtc.onekey.manager.ActivityManager;
+import org.haobtc.onekey.utils.MyDialog;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -42,6 +43,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
     public Toolbar toolbar;
     public TextView leftTitle;
     public TextView rightTitle;
+    private MyDialog mProgressDialog;
 
     @Override
     protected void attachBaseContext(Context base) {
@@ -244,6 +246,24 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
     // 使用BaseActivity公用的ToolBar销毁页面的回调，需要做额外操作可以复写此方法
     protected void leftBackCLicked () {
         finish();
+    }
+
+    public void showProgress() {
+        runOnUiThread(() -> {
+            dismissProgress();
+            mProgressDialog = MyDialog.showDialog(this);
+            mProgressDialog.show();
+            mProgressDialog.onTouchOutside(false);
+        });
+    }
+
+    public void dismissProgress() {
+        runOnUiThread(() -> {
+            if (mProgressDialog != null && mProgressDialog.isShowing()) {
+                mProgressDialog.dismiss();
+                mProgressDialog = null;
+            }
+        });
     }
 
 }

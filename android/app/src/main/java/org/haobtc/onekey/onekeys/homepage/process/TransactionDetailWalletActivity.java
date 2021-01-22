@@ -3,8 +3,6 @@ package org.haobtc.onekey.onekeys.homepage.process;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -31,7 +29,6 @@ import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.event.BleConnectedEvent;
 import org.haobtc.onekey.manager.BleManager;
-import org.haobtc.onekey.onekeys.homepage.WalletFragment;
 import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
 import org.haobtc.onekey.viewmodel.AppWalletViewModel;
 import org.jetbrains.annotations.NotNull;
@@ -203,10 +200,21 @@ public class TransactionDetailWalletActivity extends BaseActivity implements Tra
     private void toNext(int id) {
         switch (id) {
             case R.id.btn_forward:
-                Intent intent2 = new Intent(this, SendHdActivity.class);
-                intent2.putExtra(WALLET_BALANCE, walletBalance);
-                intent2.putExtra("hdWalletName", hdWalletName);
-                startActivity(intent2);
+                switch (mCoinType) {
+                    case BTC:
+                        Intent intent2 = new Intent(this, SendHdActivity.class);
+                        intent2.putExtra(WALLET_BALANCE, walletBalance);
+                        intent2.putExtra("hdWalletName", hdWalletName);
+                        startActivity(intent2);
+                        break;
+                    case ETH:
+                        Intent intent = new Intent(this, SendEthActivity.class);
+                        intent.putExtra(WALLET_BALANCE, walletBalance);
+                        intent.putExtra("hdWalletName", hdWalletName);
+                        startActivity(intent);
+                        break;
+                }
+
                 break;
             case R.id.btn_collect:
                 Intent intent3 = new Intent(this, ReceiveHDActivity.class);

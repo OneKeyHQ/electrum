@@ -117,6 +117,7 @@
     <string name="fee_per_byte_sat_b">Fee per byte (sat/b)</string>
     <string name="size_byte">Size(byte)</string>
     <string name="_0_00_btc">0.00 BTC</string>
+    <string name="_0_00_eth">0.00 ETH</string>
     <string name="_0_dollar">$0</string>
     <string name="coin_eos">EOS</string>
     <string name="usb">USB</string>
@@ -1268,6 +1269,8 @@
     <string name="hd_wallet">HD Wallet</string>
     <string name="transaction_set">Trading Setup (Advanced)</string>
     <string name="import_private">Import Private Key ( Enter or scan code ）</string>
+    <string name="eth_gas_fee">Gas Price (gwei)</string>
+    <string name="eth_gas_limit">Gas Limit (gas)</string>
     <string name="erase">抹除</string>
     <string name="hd_wallet_account">主钱包账户</string>
     <string name="single">独立</string>
@@ -1278,5 +1281,7 @@
     <string name="keystore_export">Keystore 导出</string>
     <string name="hint_update"></string>
     <string name="action_continue">Continue</string>
+    <string name="gas_limit_tip">Gas Limit 不应大于 %d 不应小于 %d</string>
+    <string name="gas_price_tip">Gas Price 不应大于 %s 不应小于 %s</string>
 
 </resources>

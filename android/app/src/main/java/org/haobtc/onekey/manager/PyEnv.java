@@ -653,12 +653,25 @@ public final class PyEnv {
     }
 
     /**
-     * 获取费率详情
+     * @param type ："btc","eth"
+     *
+     * @description 获取费率详情
      */
-    public static PyResponse<String> getFeeInfo() {
+    public static PyResponse<String> getFeeInfo(@Nullable boolean isDefault, @Nullable String type, String receiver, String amount, String feeRate) {
         PyResponse<String> response = new PyResponse<>();
         try {
-            String info = sCommands.callAttr(PyConstant.GET_DEFAULT_FEE_DETAILS).toString();
+
+            String info;
+            if (!isDefault) {
+                Map<String, String> map = new HashMap<>();
+                if (!Strings.isNullOrEmpty(receiver))
+                    map.put("to_address", receiver);
+                if (!Strings.isNullOrEmpty(amount))
+                    map.put("value", amount);
+                info = sCommands.callAttr(PyConstant.GET_DEFAULT_FEE_DETAILS, new Kwarg("coin", type), new Kwarg("eth_tx_info", new Gson().toJson(map))).toString();
+            } else {
+                info = sCommands.callAttr(PyConstant.GET_DEFAULT_FEE_DETAILS, new Kwarg("coin", type)).toString();
+            }
             Logger.json(info);
             response.setResult(info);
         } catch (Exception e) {
@@ -689,20 +702,23 @@ public final class PyEnv {
     /**
      * 获取交易费
      *
-     * @param receiver 发送方
+     * @param coin     "btc","eth"
+     * @param receiver 接收方
      * @param amount   发送金额
      * @param feeRate  当前费率
      *
      * @return 临时交易
      */
-    public static PyResponse<TemporaryTxInfo> getFeeByFeeRate(@NonNull String receiver, @NonNull String amount, @NonNull String feeRate) {
+    public static PyResponse<TemporaryTxInfo> getBtcFeeByFeeRate(@Nullable String coin,
+                                                                 @NonNull String receiver, @NonNull String amount, @NonNull String feeRate) {
         PyResponse<TemporaryTxInfo> response = new PyResponse<>();
-        ArrayList<Map<String, String>> arrayList = new ArrayList<>();
-        Map<String, String> params = new HashMap<>(1);
-        params.put(receiver, amount);
-        arrayList.add(params);
         try {
-            String result = Daemon.commands.callAttr(PyConstant.CALCULATE_FEE, new Gson().toJson(arrayList), "", feeRate).toString();
+            ArrayList<Map<String, String>> arrayList = new ArrayList<>();
+            Map<String, String> params = new HashMap<>(1);
+            params.put(receiver, amount);
+            arrayList.add(params);
+            String result = Daemon.commands.callAttr(PyConstant.CALCULATE_FEE, coin, new Gson().toJson(arrayList), "", feeRate).toString();
+            Logger.json(result);
             TemporaryTxInfo temporaryTxInfo = TemporaryTxInfo.objectFromData(result);
             response.setResult(temporaryTxInfo);
         } catch (Exception e) {
@@ -712,6 +728,43 @@ public final class PyEnv {
         }
         return response;
     }
+
+
+    /**
+     * 获取交易费
+     *
+     * @param coin     "btc","eth"
+     * @param receiver 接收方
+     * @param amount   发送金额
+     * @param feeRate  当前费率
+     * @param gasLimit 当前gasLimit
+     *
+     * @return PyResponse
+     */
+    public static PyResponse<TemporaryTxInfo> getEthFeeByFeeRate(@Nullable String coin,
+                                                                 @NonNull String receiver, @NonNull String amount, @NonNull String feeRate, String gasLimit) {
+        PyResponse<TemporaryTxInfo> response = new PyResponse<>();
+        ArrayList<Map<String, String>> arrayList = new ArrayList<>();
+        Map<String, Object> params = new HashMap<>();
+        if (!Strings.isNullOrEmpty(receiver))
+            params.put("to_address", receiver);
+        if (!Strings.isNullOrEmpty(amount))
+            params.put("value", amount);
+        params.put("gas_price", feeRate);
+        params.put("gas_limit", String.valueOf(gasLimit));
+        try {
+            String result = Daemon.commands.callAttr(PyConstant.CALCULATE_FEE, coin, new Kwarg("eth_tx_info", new Gson().toJson(params))).toString();
+            Logger.json(result);
+            TemporaryTxInfo temporaryTxInfo = TemporaryTxInfo.objectFromData(result);
+            response.setResult(temporaryTxInfo);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Exception exception = HardWareExceptions.exceptionConvert(e);
+            response.setErrors(exception.getMessage());
+        }
+        return response;
+    }
+
 
     /**
      * 构建交易
@@ -1138,6 +1191,58 @@ public final class PyEnv {
         } catch (Exception e) {
             Exception exception = HardWareExceptions.exceptionConvert(e);
             response.setErrors(exception.getMessage());
+        }
+        return response;
+    }
+
+    /**
+     * 校验接口
+     *
+     * @param data     string
+     * @param flag     seed/private/public/address/keystore as string
+     * @param coinType btc/eth as string
+     *
+     * @return
+     */
+    public static PyResponse<Void> VerifyLegality(String data, String flag, String coinType) {
+        PyResponse<Void> response = new PyResponse<>();
+        try {
+            sCommands.callAttr(PyConstant.VERIFY_LEGALITY, data, flag, coinType);
+        } catch (Exception e) {
+            Exception exception = HardWareExceptions.exceptionConvert(e);
+            response.setErrors(exception.getMessage());
+            e.printStackTrace();
+        }
+        return response;
+    }
+
+    /**
+     * eth 签名
+     *
+     * @param to_addr  发送的地址
+     * @param value    数量
+     * @param path     NFC/android_usb/bluetooth as str, used by hardware，软件不需要此参数
+     * @param pass     密码
+     * @param gasPrice gas_price
+     * @param gasLimit gas_limit
+     *
+     * @return
+     */
+    public static PyResponse<String> signEthTX(@NotNull String to_addr, @NotNull String value, String path, @NotNull String pass, @NotNull String gasPrice, @NotNull String gasLimit) {
+        PyResponse<String> response = new PyResponse<>();
+        try {
+            String res;
+            if (Strings.isNullOrEmpty(path)) {
+                res = sCommands.callAttr(PyConstant.SIGN_ETH_TX, to_addr, value, new Kwarg("password", pass), new Kwarg("gas_price", gasPrice), new Kwarg("gas_limit", gasLimit)).toString();
+            } else {
+                res = sCommands.callAttr(PyConstant.SIGN_ETH_TX, to_addr, value, pass, new Kwarg("password", pass), new Kwarg("gas_price", gasPrice), new Kwarg("gas_limit", gasLimit)).toString();
+            }
+            Logger.json(res);
+            response.setResult(res);
+        } catch (Exception e) {
+            Exception exception = HardWareExceptions.exceptionConvert(e);
+            response.setErrors(exception.getMessage());
+            e.printStackTrace();
         }
         return response;
     }
