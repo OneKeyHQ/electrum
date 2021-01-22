@@ -47,7 +47,7 @@
         {
             self.titleLabel.text = MyLocalizedString(@"To delete the wallet", nil);
             self.descLabel.text = MyLocalizedString(@"This action will delete all data for the wallet, please make sure the wallet is backed up before deleting", nil);
-            [self.confirmDeleteBtn setTitle:MyLocalizedString(@"Confirm to delete the wallet", nil) forState:UIControlStateNormal];
+            [self.confirmDeleteBtn setTitle:MyLocalizedString(@"delete", nil) forState:UIControlStateNormal];
             [self.cancleBtn setTitle:MyLocalizedString(@"cancel", nil) forState:UIControlStateNormal];
         }
             break;
@@ -63,7 +63,7 @@
         {
             self.titleLabel.text = MyLocalizedString(@"To delete the wallet", nil);
             self.descLabel.text = MyLocalizedString(@"This action will delete the wallet's data stored in the App, but you can still recover from the hardware wallet that knows its mnemonic words. Are you sure you want to continue?", nil);
-            [self.confirmDeleteBtn setTitle:MyLocalizedString(@"Confirm to delete the wallet", nil) forState:UIControlStateNormal];
+            [self.confirmDeleteBtn setTitle:MyLocalizedString(@"delete", nil) forState:UIControlStateNormal];
             [self.cancleBtn setTitle:MyLocalizedString(@"cancel", nil) forState:UIControlStateNormal];
         }
         default:

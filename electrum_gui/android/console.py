@@ -881,11 +881,14 @@ class AndroidCommands(commands.Commands):
         }
         return ret_data
 
-    def get_default_fee_info(self, feerate=None):
+    def get_default_fee_info(self, feerate=None, coin="btc", eth_tx_info=None):
         '''
         Get default fee info for btc
         :param feerate: Custom rates need to be sapcified as true
+        :param coin: btc or eth, btc default
+        :param eth_tx_info: optional, dict contains one of: to_address, contract_address, value, data
         :return:
+        if coin is "btc":
             if feerate is true:
                 return data like {"customer":{"fee":"","feerate":, "time":"", "fiat":"", "size":""}}
             if feerate is None:
@@ -893,37 +896,52 @@ class AndroidCommands(commands.Commands):
                                   "normal":{"fee":"","feerate":, "time":"", "fiat":"", "size":""},
                                   "fast":{"fee":"","feerate":, "time":"", "fiat":"", "size":""},
                                   "slowest":{"fee":"","feerate":, "time":"", "fiat":"", "size":""}}
+        else:
+            return data like
+            {"rapid": {"gas_price": 87, "time": 0.25, "gas_limit": 40000, "fee": "0.00348", "fiat": "4.77 USD"},
+            "fast": {"gas_price": 86, "time": 1, "gas_limit": 40000, "fee": "0.00344", "fiat": "4.71 USD"},
+            "normal": {"gas_price": 79, "time": 3, "gas_limit": 40000, "fee": "0.00316", "fiat": "4.33 USD"},
+            "slow": {"gas_price": 72, "time": 10, "gas_limit": 40000, "fee": "0.00288", "fiat": "3.95 USD"}}
         '''
-        try:
-            fee_info_list = self.get_block_info()
-            my_change_addr_size = Transaction.estimated_output_size(self.wallet.get_addresses()[0])
-            #out_size_p2pkh = 34 + my_change_addr_size
-            out_size_p2pkh = 141
-            out_info = {}
-            if feerate is None:
-                for block, feerate in fee_info_list.items():
-                    if block == 2 or block == 5 or block == 10:
-                        key = "slow" if block == 10 else "normal" if block == 5 else "fast" if block == 2 else "slowest"
-                        out_info[key] = self.format_return_data(feerate, out_size_p2pkh, block)
-            else:
-                block = self.get_best_block_by_feerate(float(feerate) * 1000, fee_info_list)
-                out_info["customer"] = self.format_return_data(float(feerate) * 1000, out_size_p2pkh, block)
-            return json.dumps(out_info)
-        except BaseException as e:
-            raise e
+        if coin == "eth":
+            eth_tx_info = eth_tx_info or {}
+            eth_tx_info.pop("gas_price", None)
+            eth_tx_info.pop("gas_limit", None)
+            fee = self.eth_estimate_fee(self.wallet.get_addresses()[0], **eth_tx_info)
+            return json.dumps(fee, cls=DecimalEncoder)
 
-    def get_eth_gas_price(self):
-        '''
-        Get eth gas price, for eth only
-        :return: json like {"rapid":{"price":1, "time":"15 Seconds"},
-                            "fast":{"price":1, "time":"1 Minute",
-                            "standard":{"price":1, "time":"3 Minutes",
-                            "timestamp":{"price":1, "time":"10 Minutes"}
-        '''
-        try:
-            return self.pywalib.get_gas_price()
-        except BaseException as e:
-            raise e
+        fee_info_list = self.get_block_info()
+        out_size_p2pkh = 141
+        out_info = {}
+        if feerate is None:
+            for block, feerate in fee_info_list.items():
+                if block == 2 or block == 5 or block == 10:
+                    key = "slow" if block == 10 else "normal" if block == 5 else "fast" if block == 2 else "slowest"
+                    out_info[key] = self.format_return_data(feerate, out_size_p2pkh, block)
+        else:
+            block = self.get_best_block_by_feerate(float(feerate) * 1000, fee_info_list)
+            out_info["customer"] = self.format_return_data(float(feerate) * 1000, out_size_p2pkh, block)
+        return json.dumps(out_info)
+
+    def eth_estimate_fee(self, from_address, to_address="", contract_address=None, value="0", data="", gas_price=None, gas_limit=None):
+        estimate_gas_prices = self.pywalib.get_gas_price()
+        if gas_price:
+            best_time = self.pywalib.get_best_time_by_gas_price(gas_price, estimate_gas_prices)
+            estimate_gas_prices = {"customer": {"gas_price": gas_price, "time": best_time}}
+
+        if not gas_limit:
+            gas_limit = self.pywalib.estimate_gas_limit(from_address, to_address, self.wallet.get_contract_token(contract_address), value, data)
+
+        gas_limit = int(gas_limit)
+        last_price = PyWalib.get_coin_price("eth") or "0"
+
+        for val in estimate_gas_prices.values():
+            val["gas_limit"] = gas_limit
+            val["fee"] = self.pywalib.web3.fromWei(gas_limit * self.pywalib.web3.toWei(val["gas_price"], "gwei"), "ether")
+            val["fiat"] = Decimal(val["fee"]) * Decimal(last_price)
+            val["fiat"] = self.daemon.fx.format_amount_and_units(val['fiat'] * COIN) or f"0 {self.ccy}"
+
+        return estimate_gas_prices
 
     def get_block_info(self):
         fee_info_list = self.config.get_block_fee_info()
@@ -936,19 +954,32 @@ class AndroidCommands(commands.Commands):
                 fee_info_list = fee_info['feerate_info']
         return fee_info_list
 
-    def get_fee_by_feerate(self, outputs, message, feerate, customer=None):
+    def get_fee_by_feerate(self, coin="btc", outputs=None, message=None, feerate=None, customer=None, eth_tx_info=None):
         '''
         Get fee info when Send, for btc only
+        :param coin: btc or eth, btc default
         :param outputs: Outputs info as json [{addr1, value}, ...]
         :param message: What you want say as sting
         :param feerate: Feerate retruned by get_default_fee_status api
         :param customer: User choose coin as bool
-        :return: json like {"amount": 0.5 BTC,
+        :param eth_tx_info: optional, dict contains one of: to_address, contract_address, value, data, gas_price, gas_limit
+        :return:
+        if coin is "btc"
+        json like {"amount": 0.5 BTC,
                             "size": 141,
                             "fee": 0.0003 BTC,
                             "time": 30,
                             "tx": ""}
+        else if coin is "eth":
+        json like {"gas_price": 110, "time": 0.25, "gas_limit": 36015, "fee": "0.00396165", "fiat": "5.43 USD"}
         '''
+        if coin == "eth":
+            if not eth_tx_info or not eth_tx_info.get("gas_price"):
+                raise InvalidValueException()
+            fee = self.eth_estimate_fee(self.wallet.get_addresses()[0], **eth_tx_info)
+            fee = fee.get("customer")
+            return json.dumps(fee, cls=DecimalEncoder)
+
         try:
             self._assert_wallet_isvalid()
             outputs_addrs = self.parse_output(outputs)
@@ -1963,7 +1994,7 @@ class AndroidCommands(commands.Commands):
             raise e
 
     ###############
-    def sign_eth_tx(self, to_addr, value, path='android_usb', password=None, contract_addr=None, gasprice=None):
+    def sign_eth_tx(self, to_addr, value, path='android_usb', password=None, contract_addr=None, gas_price=None, gas_limit=None, data=None):
         '''
         Send for eth, for eth/bsc only
         :param to_addr: as string
@@ -1971,18 +2002,20 @@ class AndroidCommands(commands.Commands):
         :param path: NFC/android_usb/bluetooth as str, used by hardware
         :param password: as string
         :param contract_addr: need if send to contranct
-        :param gasprice: as string, unit is Gwei
+        :param gas_price: as string, unit is Gwei
+        :param gas_limit: as string
+        :param data: eth tx custom data, as hex string
         :return: tx_hash as string
         '''
         from_address = self.wallet.get_addresses()[0]
         if contract_addr is None:
-            tx_dict = self.pywalib.get_transaction(from_address, to_addr, value, gasprice=gasprice)
+            tx_dict = self.pywalib.get_transaction(from_address, to_addr, value, gas_price=gas_price, gas_limit=gas_limit, data=data)
         else:
             contract_addr = self.pywalib.web3.toChecksumAddress(contract_addr)
             contract = self.wallet.get_contract_token(contract_addr)
             assert contract is not None
             tx_dict = self.pywalib.get_transaction(from_address, to_addr, value, contract=contract,
-                                                   gasprice=gasprice)
+                                                   gas_price=gas_price, gas_limit=gas_limit, data=data)
         if isinstance(self.wallet.get_keystore(), Hardware_KeyStore):
             if path:
                 client = self.get_client(path=path)

@@ -37,7 +37,7 @@
             self.title = MyLocalizedString(@"Delete HD Wallet", nil);
             self.descLabel.text = MyLocalizedString(@"Once deleted: 1. All HD wallets will be erased. 2. Please make sure that the root mnemonic of HD Wallet has been copied and kept before deletion. You can use it to recover all HD Wallets and retrieve assets.", nil);
             [self.titleLabel setTitle:MyLocalizedString(@"⚠️ risk warning", nil) forState:UIControlStateNormal];
-            [self.deleteBtn setTitle:MyLocalizedString(@"Delete HD Wallet", nil) forState:UIControlStateNormal];
+            [self.deleteBtn setTitle:MyLocalizedString(@"Wipe", nil) forState:UIControlStateNormal];
         }
             break;
         case OKWhereToDeleteTypeDetail:
@@ -45,7 +45,7 @@
             self.title = MyLocalizedString(@"Delete a separate wallet", nil);
             self.descLabel.text = MyLocalizedString(@"Once deleted: 1. The wallet will be erased from the App. 2. Please make sure that the mnemonic of the independent wallet has been copied and kept before deletion. You can use it to recover the wallet, so as to recover the assets.", nil);
             [self.titleLabel setTitle:MyLocalizedString(@"⚠️ risk warning", nil) forState:UIControlStateNormal];
-            [self.deleteBtn setTitle:MyLocalizedString(@"To delete the wallet", nil) forState:UIControlStateNormal];
+            [self.deleteBtn setTitle:MyLocalizedString(@"delete", nil) forState:UIControlStateNormal];
         }
             break;
         case OKWhereToDeleteTypeAPP:

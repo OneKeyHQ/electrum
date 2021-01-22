@@ -267,27 +267,31 @@ class PyWalib:
         except BaseException as e:
             return '0'
 
-    def get_gas_price(self):
+    def get_gas_price(self) -> dict:
         try:
-            #response = requests.get(eth_servers['GasServer'], headers=headers)
             if PyWalib.gas_server is not None:
                 response = requests.get(PyWalib.gas_server, headers=headers)
                 obj = response.json()
                 out = dict()
                 if obj['code'] == 200:
-                    for type, wei in obj['data'].items():
-                        fee_info = dict()
-                        fee_info['price'] = int(self.web3.fromWei(wei, "gwei"))
-                        if type == "rapid":
-                            fee_info['time'] = "15 Seconds"
-                        elif type == "fast":
-                            fee_info['time'] = "1 Minute"
-                        elif type == "standard":
-                            fee_info['time'] = "3 Minutes"
-                        elif type == "timestamp":
-                            fee_info['time'] = "10 Minutes"
-                        out[type] = fee_info
-                return json.dumps(out)
+                    estimated_time = {
+                        "rapid": 0.25,
+                        "fast": 1,
+                        "standard": 3,
+                        "slow": 10
+                    }
+                    out.update({
+                        key: {
+                            "gas_price": int(self.web3.fromWei(price, "gwei")),
+                            "time": estimated_time[key]
+                        }
+                        for key, price in obj["data"].items() if key in estimated_time
+                    })
+
+                if "standard" in out:
+                    out["normal"] = out["standard"]
+                    out.pop("standard")
+                return out
         except BaseException as ex:
             raise ex
 
@@ -295,14 +299,63 @@ class PyWalib:
         gas = gas_price * DEFAULT_GAS_LIMIT
         return self.web3.fromWei(gas * GWEI_BASE, 'ether')
 
+
+    @classmethod
+    def get_best_time_by_gas_price(cls, gas_price: float, estimate_gas_prices: dict) -> float:
+        if "rapid" in estimate_gas_prices and gas_price >= estimate_gas_prices["rapid"]["gas_price"]:
+            return estimate_gas_prices["rapid"]["time"]
+        elif "fast" in estimate_gas_prices and gas_price >= estimate_gas_prices["fast"]["gas_price"]:
+            return estimate_gas_prices["fast"]["time"]
+        elif "standard" in estimate_gas_prices and gas_price >= estimate_gas_prices["standard"]["gas_price"]:
+            return estimate_gas_prices["standard"]["time"]
+        else:
+            return 10
+
+    def estimate_gas_limit(self, from_address, to_address=None, contract=None, value="0", data=None) -> int:
+        try:
+            if not to_address:
+                return 40000
+
+            estimate_payload = {}
+            to_address = self.web3.toChecksumAddress(to_address)
+
+            if contract:
+                data = Eth_Transaction.get_tx_erc20_data_field(to_address,
+                                                               int(Decimal(value) * pow(10, contract.get_decimals())))
+                estimate_payload.update({
+                    "to": contract.get_address(),
+                    "data": data,
+                    "value": 0
+                })
+            elif data or self.is_contract(to_address):
+                estimate_payload.update({
+                    "to": to_address,
+                    "value": self.web3.toWei(value, "ether"),
+                })
+                if data:
+                    estimate_payload["data"] = data
+
+            if not estimate_payload:
+                return DEFAULT_GAS_LIMIT
+
+            estimate_payload.update({"from": from_address})
+            gas_limit = self.web3.eth.estimateGas(estimate_payload)
+            gas_limit = int(gas_limit * 1.2)
+            return gas_limit
+        except Exception as e:
+            return 40000
+
     def get_transaction(self, from_address, to_address, value,
-                        contract=None, gasprice=None, none=None):
+                        contract=None, gas_price=None, none=None, gas_limit=None, data=None):
         if (
             not self.web3.isAddress(from_address)
             or not self.web3.isAddress(to_address)
             or (contract and not self.web3.isAddress(contract.get_address()))
         ):
             raise InvalidAddress()
+
+        from_address = self.web3.toChecksumAddress(from_address)
+        to_address = self.web3.toChecksumAddress(to_address)
 
         try:
             if contract:
@@ -311,50 +364,50 @@ class PyWalib:
             else:
                 value = self.web3.toWei(value, "ether")
 
-            gasprice = DEFAULT_GAS_PRICE_GWEI if gasprice is None else self.web3.toWei(gasprice, "gwei")
+            gas_price = DEFAULT_GAS_PRICE_GWEI if gas_price is None else self.web3.toWei(gas_price, "gwei")
 
             assert value > 0
-            assert gasprice > 0
+            assert gas_price > 0
+
+            if gas_limit:
+                gas_limit = int(gas_limit)
+                assert gas_limit > 0
         except (ValueError, AssertionError, TypeError):
             raise InvalidValueException()
 
-        nonce = (self.web3.eth.getTransactionCount(from_address)
-                 if none is None else int(none))
-
-        if contract is None:  # create ETH transaction dictionary
-            tx_dict = Eth_Transaction.build_transaction(
-                to_address=self.web3.toChecksumAddress(to_address),
-                value=value,
-                gas=DEFAULT_GAS_LIMIT,
-                gas_price=gasprice,
-                nonce=nonce,
-                chain_id=int(PyWalib.chain_id)
-            )
-        else:  # create ERC20 contract transaction dictionary
-            data_for_contract = Eth_Transaction.get_tx_erc20_data_field(to_address, value)
-
+        if contract:
             # check whether there is sufficient ERC20 token balance
             _, erc20_balance = self.get_balance(from_address, contract)
             if value > erc20_balance:
                 raise InsufficientERC20FundsException()
 
-            # calculate how much gas I need, unused gas is returned to the wallet
-            estimated_gas = self.web3.eth.estimateGas(
-                {'to': contract.get_address(),
-                 'from': from_address,
-                 'data': data_for_contract
-                 })
-            estimated_gas = int(estimated_gas * 1.2)
+        nonce = self.web3.eth.getTransactionCount(from_address) if none is None else int(none)
 
-            tx_dict = Eth_Transaction.build_transaction(
-                to_address=self.web3.toChecksumAddress(contract.get_address()),
-                value=0,
-                gas=estimated_gas,
-                gas_price=gasprice,
-                nonce=nonce,
-                chain_id=int(PyWalib.chain_id),
-                data=data_for_contract
-            )
+        tx_payload = dict(chain_id=int(PyWalib.chain_id), gas_price=gas_price, nonce=nonce,
+                          to_address=contract.get_address() if contract else to_address,
+                          value=0 if contract else value)
+
+        if not data and contract:
+            data = Eth_Transaction.get_tx_erc20_data_field(to_address, value)
+        if data:
+            tx_payload["data"] = data
+
+        if not gas_limit:
+            if not contract and not self.is_contract(to_address):
+                gas_limit = DEFAULT_GAS_LIMIT
+            else:
+                params = {
+                    "from": from_address,
+                    "to": tx_payload["to_address"],
+                    "value": tx_payload["value"],
+                }
+                if tx_payload.get("data"):
+                    params["data"] = tx_payload["data"]
+
+                gas_limit = self.web3.eth.estimateGas(params)
+
+        tx_payload["gas"] = gas_limit
+        tx_dict = Eth_Transaction.build_transaction(**tx_payload)
 
         # check whether there is sufficient eth balance for this transaction
         balance = self.web3.eth.getBalance(from_address)
@@ -365,6 +418,9 @@ class PyWalib:
             raise InsufficientFundsException()
 
         return tx_dict
+
+    def is_contract(self, address) -> bool:
+        return len(self.web3.eth.getCode(self.web3.toChecksumAddress(address))) > 0
 
     def sign_and_send_tx(self, account, tx_dict):
         return Eth_Transaction.send_transaction(account, self.web3, tx_dict).hex()
