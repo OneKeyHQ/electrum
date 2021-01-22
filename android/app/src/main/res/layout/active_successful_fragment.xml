@@ -37,9 +37,9 @@
         android:background="@drawable/green_bacj"
         android:gravity="center"
         android:paddingHorizontal="@dimen/dp_15"
-        android:textColor="@color/onekey"
         android:paddingVertical="@dimen/dp_5"
         android:text="@string/label"
+        android:textColor="@color/onekey"
         android:textSize="@dimen/sp_18" />
 
 
@@ -61,10 +61,21 @@
         android:layout_width="300dp"
         android:layout_height="50dp"
         android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="48dp"
         android:background="@drawable/btn_enable_selector"
-        android:text="@string/back_wallet"
+        android:text="@string/action_continue"
         android:textColor="@android:color/white"
-        android:textSize="@dimen/sp_14" />
+        android:textSize="@dimen/sp_20" />
+
+    <TextView
+        android:id="@+id/tv_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="18dp"
+        android:padding="6dp"
+        android:text="@string/back"
+        android:textColor="@color/onekey"
+        android:textSize="@dimen/sp_16" />
 
 </LinearLayout>

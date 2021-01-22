@@ -1,5 +1,6 @@
 package org.haobtc.onekey.ui.fragment;
 
+import android.content.Intent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -9,6 +10,7 @@ import androidx.annotation.StringRes;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.event.ExitEvent;
+import org.haobtc.onekey.ui.activity.FindNormalDeviceActivity;
 import org.haobtc.onekey.ui.base.BaseFragment;
 
 import butterknife.BindView;
@@ -64,8 +66,17 @@ public class NormalActiveSuccessfulFragment extends BaseFragment {
         return R.layout.active_successful_fragment;
     }
 
-    @OnClick(R.id.back_wallet)
+    @OnClick({R.id.back_wallet, R.id.tv_back})
     public void onViewClicked(View view) {
-        EventBus.getDefault().post(new ExitEvent());
+        switch (view.getId()) {
+            case R.id.back_wallet:
+                Intent intent = new Intent(getContext(), FindNormalDeviceActivity.class);
+                startActivity(intent);
+                getActivity().finish();
+                break;
+            case R.id.tv_back:
+                EventBus.getDefault().post(new ExitEvent());
+                break;
+        }
     }
 }
