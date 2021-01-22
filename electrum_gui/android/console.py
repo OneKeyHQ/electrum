@@ -229,7 +229,7 @@ class AndroidCommands(commands.Commands):
             if k == self.decimal_point:
                 self.base_unit = v
         self.old_history_len = 0
-        self.old_hisotry_info = {}
+        self.old_history_info = []
         self.num_zeros = int(self.config.get('num_zeros', 0))
         self.config.set_key('log_to_file', True, save=True)
         self.rbf = self.config.get("use_rbf", True)
@@ -958,7 +958,7 @@ class AndroidCommands(commands.Commands):
 
     def get_fee_by_feerate(self, coin="btc", outputs=None, message=None, feerate=None, customer=None, eth_tx_info=None):
         '''
-        Get fee info when Send, for btc only
+        Get fee info when Send
         :param coin: btc or eth, btc default
         :param outputs: Outputs info as json [{addr1, value}, ...]
         :param message: What you want say as sting
@@ -1480,7 +1480,7 @@ class AndroidCommands(commands.Commands):
             raise BaseException(e)
         history = reversed(self.wallet.get_history())
         all_data = [self.get_card(*item) for item in history]
-        return json.dumps(all_data)
+        return all_data
 
     # get input address for receive tx
     async def gettransaction(self, txid, n):
@@ -1496,27 +1496,34 @@ class AndroidCommands(commands.Commands):
         addr = tx._outputs[n].address
         return addr
 
-    def get_btc_tx_list(self, start, end, search_type=None):
+    def get_btc_tx_list(self, start=None, end=None, search_type=None):
         history_data = []
         try:
             history_info = self.get_history_tx()
+            local_tx = self.txdb.get_tx_info(self.wallet.get_addresses()[0])
         except BaseException as e:
             raise e
 
-        history_dict = json.loads(history_info)
-        update_len = len(history_dict)
-        if update_len == self.old_history_len:
-            return json.dumps(self.old_hisotry_info[start, end])
+        history_len = len(history_info)
+        local_len = len(local_tx)
+        all_tx_len = history_len + local_len
+        if start is None or end is None:
+            start = 0
+            if search_type is 'receive':
+                end = history_len
+            else:
+                end = all_tx_len
+        if (search_type is None or 'send' in search_type) and all_tx_len == self.old_history_len:
+            return json.dumps(self.old_history_info[start:end])
 
-        self.old_history_len = update_len
         if search_type is None:
-            history_data = history_dict
+            history_data = history_info
         elif search_type == 'send':
-            for info in history_dict:
+            for info in history_info:
                 if info['is_mine']:
                     history_data.append(info)
         elif search_type == 'receive':
-            for info in history_dict:
+            for info in history_info:
                 if not info['is_mine']:
                     history_data.append(info)
 
@@ -1527,10 +1534,11 @@ class AndroidCommands(commands.Commands):
                     self.get_history_show_info(info, all_data)
             return json.dumps(all_data)
         else:
-            for pos, info in enumerate(history_data):
+            self.old_history_len = all_tx_len
+            for info in history_data:
                 self.get_history_show_info(info, all_data)
 
-            local_tx = self.txdb.get_tx_info(self.wallet.get_addresses()[0])
+           # local_tx = self.txdb.get_tx_info(self.wallet.get_addresses()[0])
             for info in local_tx:
                 i = {}
                 i['type'] = 'history'
@@ -1555,8 +1563,8 @@ class AndroidCommands(commands.Commands):
                 all_data.append(i)
 
             all_data.sort(reverse=True, key=lambda info: info['date'])
-            self.old_hisotry_info = all_data
-            return json.dumps(all_data[start, end])
+            self.old_history_info = all_data
+            return json.dumps(all_data[start:end])
 
     ##get history
     def get_eth_tx_list(self):
@@ -1565,7 +1573,7 @@ class AndroidCommands(commands.Commands):
         except BaseException as e:
             raise e
 
-    def get_all_tx_list(self, start, end, search_type=None, coin='btc'):
+    def get_all_tx_list(self, search_type=None, coin='btc', start=None, end=None):
         '''
         Get the histroy list with the wallet that you select
         :param start: start position as int
@@ -1593,7 +1601,7 @@ class AndroidCommands(commands.Commands):
         '''
         try:
             if coin == "btc":
-                return self.get_btc_tx_list(start, end,search_type=search_type)
+                return self.get_btc_tx_list(start=start, end=end, search_type=search_type)
             else:
                 return self.get_eth_tx_list()
         except BaseException as e:
@@ -2568,7 +2576,7 @@ class AndroidCommands(commands.Commands):
         try:
             address = self.wallet.get_addresses()[0]
             keystore = self.wallet.export_keystore(address, password=password)
-            return keystore
+            return json.dumps(keystore)
         except BaseException as e:
             raise e
 
@@ -2725,7 +2733,7 @@ class AndroidCommands(commands.Commands):
         backup_flag = True
         try:
             wallet = self.get_wallet_by_name(name)
-            if isinstance(wallet, Imported_Wallet):
+            if isinstance(wallet, Imported_Wallet) or isinstance(wallet, Imported_Eth_Wallet):
                 return True
             xpub = self.get_xpub_by_name(name, wallet)
             if wallet.has_seed():
@@ -3402,7 +3410,7 @@ class AndroidCommands(commands.Commands):
                 derivation = wallet.keystore.get_derivation_prefix()
                 account_id = int(derivation.split('/')[ACCOUNT_POS].split('\'')[0])
                 purpose = int(derivation.split('/')[PURPOSE_POS].split('\'')[0])
-                if account_id == 0:
+                if account_id != 0:
                     continue
                 if self.coins.__contains__(coin) or purpose == 49:
                     wallet_info = CreateWalletInfo.create_wallet_info(coin_type="btc" if purpose == 49 else coin, name=str(wallet))
