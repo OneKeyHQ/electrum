@@ -20,7 +20,7 @@ typedef NS_ENUM(NSInteger,OKHWNotiType) {
 NS_ASSUME_NONNULL_BEGIN
 @class OKHwNotiManager;
 
-@protocol  OKHwNotiManagerDekegate <NSObject>
+@protocol  OKHwNotiManagerDelegate <NSObject>
 @optional
 - (void)hwNotiManagerDekegate:(OKHwNotiManager *)hwNoti type:(OKHWNotiType)type;
 

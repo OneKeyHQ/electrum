@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OKSetPINPreViewController : BaseViewController
 + (instancetype)setPINPreViewController;
+@property (nonatomic,copy)NSString *deviceName;
 @end
 
 NS_ASSUME_NONNULL_END

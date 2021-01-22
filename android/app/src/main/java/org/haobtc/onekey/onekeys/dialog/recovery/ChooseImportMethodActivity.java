@@ -40,6 +40,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+@Deprecated
 public class ChooseImportMethodActivity extends BaseActivity {
     @BindView(R.id.rel_import_keystore)
     RelativeLayout relImportKeystore;

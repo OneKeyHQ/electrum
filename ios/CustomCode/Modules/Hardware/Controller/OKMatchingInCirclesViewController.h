@@ -8,10 +8,13 @@
 
 #import "BaseViewController.h"
 
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OKMatchingInCirclesViewController : BaseViewController
 + (instancetype)matchingInCirclesViewController;
+@property (nonatomic,assign)OKMatchingType type;
+@property (nonatomic,copy)NSString *words;
 @end
 
 NS_ASSUME_NONNULL_END

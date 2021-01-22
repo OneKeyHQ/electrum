@@ -1,12 +1,13 @@
 package org.haobtc.onekey.viewmodel;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Pair;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -21,6 +22,7 @@ import org.haobtc.onekey.bean.WalletBalanceVo;
 import org.haobtc.onekey.business.wallet.AccountManager;
 import org.haobtc.onekey.business.wallet.BalanceManager;
 import org.haobtc.onekey.business.wallet.SystemConfigManager;
+import org.haobtc.onekey.business.wallet.bean.WalletBalanceBean;
 import org.haobtc.onekey.event.CreateSuccessEvent;
 import org.haobtc.onekey.event.LoadOtherWalletEvent;
 import org.haobtc.onekey.event.SecondEvent;
@@ -28,12 +30,6 @@ import org.haobtc.onekey.manager.PyEnv;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.ObservableOnSubscribe;
-import io.reactivex.rxjava3.disposables.CompositeDisposable;
-import io.reactivex.rxjava3.schedulers.Schedulers;
 
 /**
  * 存放 App 当前余额，钱包类型，Application 生命周期的 ViewModel
@@ -43,12 +39,12 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
  */
 public class AppWalletViewModel extends ViewModel {
     private final ExecutorService mExecutorService = Executors.newSingleThreadExecutor();
+    private final Handler mMainHandler = new Handler(Looper.getMainLooper());
 
     public MutableLiveData<Boolean> existsWallet = new MutableLiveData<>();
     public MutableLiveData<LocalWalletInfo> currentWalletInfo = new MutableLiveData<>();
     public LiveData<WalletBalanceVo> currentWalletBalance = new MutableLiveData<>(new WalletBalanceVo("0", "BTC"));
     public LiveData<WalletBalanceFiatVo> currentWalletFiatBalance = new MutableLiveData<>(new WalletBalanceFiatVo("0", "CNY", "¥"));
-
     private final BalanceManager mBalanceManager = new BalanceManager();
     private final AccountManager mAccountManager = new AccountManager(MyApplication.getInstance());
     private final SystemConfigManager mSystemConfigManager = new SystemConfigManager(MyApplication.getInstance());
@@ -84,36 +80,37 @@ public class AppWalletViewModel extends ViewModel {
     public void refreshBalance() {
         mExecutorService.execute(() -> {
             LocalWalletInfo localWalletInfo = currentWalletInfo.getValue();
-            String currentBaseUnit = mSystemConfigManager.getCurrentBaseUnit();
+            String currentBaseUnit;
+            if (localWalletInfo != null) {
+                currentBaseUnit = mSystemConfigManager.getCurrentBaseUnit(localWalletInfo.getCoinType());
+            } else {
+                currentBaseUnit = mSystemConfigManager.getCurrentBaseUnit();
+            }
+
             FiatUnitSymbolBean currentFiatUnitSymbol = mSystemConfigManager.getCurrentFiatUnitSymbol();
+
+            // 防止网络请求慢，先恢复一下初始状态。
+            setCurrentWalletBalance(new WalletBalanceVo("0", currentBaseUnit));
+            setCurrentWalletFiatBalance(
+                    new WalletBalanceFiatVo(
+                            "0",
+                            currentFiatUnitSymbol.getUnit(),
+                            currentFiatUnitSymbol.getSymbol())
+            );
+
             if (localWalletInfo == null) {
-                setCurrentWalletBalance(new WalletBalanceVo("0", currentBaseUnit));
-                setCurrentWalletFiatBalance(
-                        new WalletBalanceFiatVo(
-                                "0",
-                                currentFiatUnitSymbol.getUnit(),
-                                currentFiatUnitSymbol.getSymbol())
-                );
                 return;
             }
-            Pair<String, String> balancePair = mBalanceManager.getBalanceByWalletName(localWalletInfo.getName());
-            if (balancePair == null) {
-                setCurrentWalletBalance(new WalletBalanceVo("0", currentBaseUnit));
-                setCurrentWalletFiatBalance(
-                        new WalletBalanceFiatVo(
-                                "0",
-                                currentFiatUnitSymbol.getUnit(),
-                                currentFiatUnitSymbol.getSymbol())
-                );
-            } else {
+            WalletBalanceBean balance = mBalanceManager.getBalanceByWalletName(localWalletInfo.getName());
+            if (balance != null) {
                 setCurrentWalletBalance(
                         new WalletBalanceVo(
-                                TextUtils.isEmpty(balancePair.first) ? "0" : balancePair.first,
+                                TextUtils.isEmpty(balance.getBalance()) ? "0" : balance.getBalance(),
                                 currentBaseUnit)
                 );
                 setCurrentWalletFiatBalance(
                         new WalletBalanceFiatVo(
-                                TextUtils.isEmpty(balancePair.second) ? "0" : balancePair.second,
+                                TextUtils.isEmpty(balance.getBalanceFiat()) ? "0" : balance.getBalanceFiat(),
                                 currentFiatUnitSymbol.getUnit(),
                                 currentFiatUnitSymbol.getSymbol())
                 );
@@ -210,12 +207,12 @@ public class AppWalletViewModel extends ViewModel {
 
     private <T> void checkRepeatAssignment(MutableLiveData<T> liveData, @Nullable T value) {
         if (value == null && liveData.getValue() != null) {
-            liveData.postValue(null);
+            mMainHandler.post(() -> liveData.setValue(null));
         } else if ((value != null && liveData.getValue() == null) ||
                 (value != null && liveData.getValue() != null && !value.equals(liveData.getValue())) ||
                 (value != null && liveData.getValue() != null && value instanceof Number && value != liveData.getValue())
         ) {
-            liveData.postValue(value);
+            mMainHandler.post(() -> liveData.setValue(value));
         }
     }
 }

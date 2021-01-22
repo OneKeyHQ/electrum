@@ -35,7 +35,7 @@ public class PinVerifyWaySelector extends BaseActivity {
      */
     @Override
     public void init() {
-        boolean isVerifyOnHardware = (boolean)PreferencesManager.get(this, "Preferences", Constant.PIN_VERIFY_ON_HARDWARE, false);
+        boolean isVerifyOnHardware = (boolean)PreferencesManager.get(this, "Preferences", Constant.PIN_VERIFY_ON_HARDWARE, true);
         if (isVerifyOnHardware) {
             onHardware.setChecked(true);
             onApp.setChecked(false);

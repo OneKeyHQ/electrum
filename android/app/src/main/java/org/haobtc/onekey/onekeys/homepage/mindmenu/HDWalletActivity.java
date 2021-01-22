@@ -24,6 +24,7 @@ import org.haobtc.onekey.event.LoadWalletlistEvent;
 import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.dialog.RecoverHdWalletActivity;
+import org.haobtc.onekey.onekeys.walletprocess.createfasthd.CreateFastHDSoftWalletActivity;
 import org.haobtc.onekey.ui.dialog.HdWalletIntroductionDialog;
 import org.haobtc.onekey.utils.NavUtils;
 
@@ -87,7 +88,7 @@ public class HDWalletActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.recl_add_wallet:
-                NavUtils.gotoCreateDeriveChooseTypeActivity(mContext, false);
+                CreateFastHDSoftWalletActivity.start(this);
                 break;
             case R.id.img_what_hd:
                 new HdWalletIntroductionDialog().show(getSupportFragmentManager(), "");

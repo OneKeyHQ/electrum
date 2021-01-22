@@ -1,7 +1,12 @@
 package org.haobtc.onekey.bean;
 
+import androidx.core.content.res.ResourcesCompat;
+
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
+
+import org.haobtc.onekey.R;
+import org.haobtc.onekey.constant.Vm;
 
 /**
  * @author liyan
@@ -73,5 +78,15 @@ public class LocalWalletInfo {
 
     public void setDeviceId(String deviceId) {
         this.deviceId = deviceId;
+    }
+
+    public Vm.CoinType getCoinType() {
+        if (type.contains("btc")) {
+            return Vm.CoinType.BTC;
+        } else if (type.contains("eth")) {
+            return Vm.CoinType.ETH;
+        } else {
+            return Vm.CoinType.BTC;
+        }
     }
 }

@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.common.base.Strings;
 
 import org.haobtc.onekey.R;
-import org.haobtc.onekey.bean.BalanceInfo;
+import org.haobtc.onekey.bean.BalanceInfoDTO;
 
 import java.util.HashMap;
 import java.util.List;
@@ -27,10 +27,10 @@ import java.util.Map;
  */
 public class RecoveryWalletAdapter extends RecyclerView.Adapter<RecoveryWalletAdapter.myViewHolder> {
     private Context context;
-    private List<BalanceInfo> walletList;
+    private List<BalanceInfoDTO> walletList;
     private Map<Integer, Boolean> checkStatus;
 
-    public RecoveryWalletAdapter(Context context, List<BalanceInfo> walletList) {
+    public RecoveryWalletAdapter(Context context, List<BalanceInfoDTO> walletList) {
         this.context = context;
         this.walletList = walletList;
         initData();
@@ -69,15 +69,23 @@ public class RecoveryWalletAdapter extends RecyclerView.Adapter<RecoveryWalletAd
 
     @Override
     public void onBindViewHolder(@NonNull myViewHolder holder, int position) {
-        holder.tetWalletName.setText(walletList.get(position).getLabel());
-        String strBalance = walletList.get(position).getBalance();
-        String label = walletList.get(position).getLabel();
+        BalanceInfoDTO item = walletList.get(position);
+        holder.tetWalletName.setText(item.getLabel());
+        String strBalance;
+        if (item.getWallets().size() > 0) {
+            strBalance = item.getWallets().get(0).getBalance();
+        } else {
+            strBalance = "0";
+        }
+
+        String label = item.getLabel();
         if (!Strings.isNullOrEmpty(strBalance) && strBalance.contains("(")) {
             String balance = strBalance.substring(0, strBalance.indexOf("("));
             holder.textWalletBalance.setText(balance);
         } else {
-            holder.textWalletBalance.setText(walletList.get(position).getBalance());
+            holder.textWalletBalance.setText(strBalance);
         }
+
         if ("BTC-1".equals(label) || "ETH-1".equals(label)) {
             holder.checkbox.setBackground(ContextCompat.getDrawable(context, R.drawable.gray_not_check));
             holder.checkbox.setChecked(true);

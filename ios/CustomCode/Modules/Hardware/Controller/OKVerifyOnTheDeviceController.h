@@ -8,10 +8,17 @@
 
 #import "BaseViewController.h"
 
+typedef enum {
+    OKVerifyOnTheDeviceTypeSetPin,
+    OKVerifyOnTheDeviceTypeBackupActiveSuccess
+}OKVerifyOnTheDeviceType;
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OKVerifyOnTheDeviceController : BaseViewController
-+ (instancetype)verifyOnTheDeviceController;
++ (instancetype)verifyOnTheDeviceController:(OKVerifyOnTheDeviceType)type;
+@property (nonatomic,copy)NSString *deviceName;
+@property (nonatomic,copy)NSString *words;
 @end
 
 NS_ASSUME_NONNULL_END

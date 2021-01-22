@@ -8,8 +8,9 @@
 
 #import "OKSetPINPreViewController.h"
 #import "OKDeviceSuccessViewController.h"
+#import "OKPINCodeViewController.h"
 
-@interface OKSetPINPreViewController ()
+@interface OKSetPINPreViewController ()<OKHwNotiManagerDelegate>
 @property (weak, nonatomic) IBOutlet UILabel *titleLabel;
 @property (weak, nonatomic) IBOutlet UILabel *descLabel;
 @property (weak, nonatomic) IBOutlet UIImageView *iconImageView;
@@ -39,8 +40,33 @@
 
 
 - (IBAction)nextBtnClick:(UIButton *)sender {
-    OKDeviceSuccessViewController *devicevc = [OKDeviceSuccessViewController deviceSuccessViewController];
-    [self.navigationController pushViewController:devicevc animated:YES];
+    OKWeakSelf(self)
+    kHwNotiManager.delegate = self;
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        id result =  [kPyCommandsManager callInterface:kInterfacereset_pin parameter:@{}];
+        if (result != nil) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                OKDeviceSuccessViewController *devicevc = [OKDeviceSuccessViewController deviceSuccessViewController:OKDeviceSuccessActivate deviceName:self.deviceName];
+                [weakself.navigationController pushViewController:devicevc animated:YES];
+            });
+        }
+    });
+}
 
+#pragma mark - OKHwNotiManagerDekegate
+- (void)hwNotiManagerDekegate:(OKHwNotiManager *)hwNoti type:(OKHWNotiType)type
+{
+    OKWeakSelf(self)
+    if (OKHWNotiTypePin_New_First == type) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            OKPINCodeViewController *pinCode = [OKPINCodeViewController PINCodeViewController:^(NSString * _Nonnull pin) {
+                NSLog(@"pinCode = %@",pin);
+                dispatch_async(dispatch_get_global_queue(0, 0), ^{
+                    [kPyCommandsManager callInterface:kInterfaceset_pin parameter:@{@"pin":pin}];
+                });
+            }];
+           [weakself.navigationController pushViewController:pinCode animated:YES];
+        });
+    }
 }
 @end

@@ -8,6 +8,7 @@ import com.chaquo.python.PyObject;
 
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.constant.PyConstant;
+import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.event.FirstEvent;
 import org.haobtc.onekey.event.SecondEvent;
 
@@ -34,8 +35,11 @@ public class Daemon {
         if (commands == null) {
             Global.guiConsole = Global.py.getModule(PyConstant.ELECTRUM_GUI_ANDROID_CONSOLE);
             try {
-                commands = Global.guiConsole.callAttr(PyConstant.ANDROID_COMMANDS, new Kwarg(PyConstant.ANDROID_ID, "112233")
-                        , new Kwarg(PyConstant.CALLBACK, getInstance()));
+                String ethNetwork = Vm.getEthNetwork();
+                commands = Global.guiConsole.callAttr(PyConstant.ANDROID_COMMANDS,
+                        new Kwarg("chain_type", ethNetwork),
+                        new Kwarg(PyConstant.ANDROID_ID, "112233"),
+                        new Kwarg(PyConstant.CALLBACK, getInstance()));
             } catch (Exception ignored) {
                 ignored.printStackTrace();
             }

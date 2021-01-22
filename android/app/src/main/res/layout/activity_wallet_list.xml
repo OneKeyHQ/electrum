@@ -126,7 +126,8 @@
             android:gravity="center"
             android:text="@string/zero"
             android:textColor="@color/text_two"
-            android:textSize="@dimen/sp_12" />
+            android:textSize="@dimen/sp_12"
+            android:visibility="gone"/>
 
         <View
             android:layout_width="0dp"
@@ -251,6 +252,4 @@
 
         </LinearLayout>
     </LinearLayout>
-
-
 </RelativeLayout>

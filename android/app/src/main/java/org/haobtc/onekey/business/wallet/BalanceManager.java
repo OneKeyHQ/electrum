@@ -5,12 +5,25 @@ import android.util.Pair;
 
 import androidx.annotation.Nullable;
 
+import com.orhanobut.logger.Logger;
+
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.MyApplication;
-import org.haobtc.onekey.bean.BalanceInfo;
+import org.haobtc.onekey.bean.AllWalletBalanceBean;
+import org.haobtc.onekey.bean.AllWalletBalanceInfoDTO;
+import org.haobtc.onekey.bean.BalanceCoinInfo;
+import org.haobtc.onekey.bean.BalanceInfoDTO;
+import org.haobtc.onekey.business.wallet.bean.ETHTokenBalanceBean;
+import org.haobtc.onekey.business.wallet.bean.TokenBalanceBean;
+import org.haobtc.onekey.business.wallet.bean.WalletBalanceBean;
+import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.manager.PyEnv;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * 账户余额管理
@@ -25,23 +38,36 @@ public class BalanceManager {
      *
      * @param walletName 钱包名称
      *
-     * @return first 数字货币余额，second 法币余额
+     * @return WalletBalanceBean
      */
     @Nullable
-    public Pair<String, String> getBalanceByWalletName(String walletName) {
-        BalanceInfo balanceInfo = PyEnv.selectWallet(walletName);
-        if (balanceInfo == null) {
+    public WalletBalanceBean getBalanceByWalletName(String walletName) {
+        BalanceInfoDTO balanceInfoDTO = PyEnv.selectWallet(walletName);
+        if (balanceInfoDTO == null) {
             return null;
         }
-        String balanceStr = balanceInfo.getBalance();
-        String balance = balanceStr == null ? "0" : balanceStr.substring(0, balanceStr.indexOf(" "));
+        return convert(balanceInfoDTO);
+    }
 
-        String cnyStr = balanceStr == null ? "" : balanceStr.substring(balanceStr.indexOf("(") + 1, balanceStr.indexOf(")"));
-        String cash = "0";
-        if (cnyStr.contains(" ")) {
-            cash = cnyStr.substring(0, cnyStr.indexOf(" "));
+    /**
+     * 获取所有钱包的金额
+     *
+     * @return 钱包金额
+     */
+    public AllWalletBalanceBean getAllWalletBalances() {
+        AllWalletBalanceInfoDTO allWalletBalance = PyEnv.getAllWalletBalance();
+        if (allWalletBalance == null) {
+            return null;
         }
-        return new Pair<>(balance, cash);
+
+        List<WalletBalanceBean> walletBalanceBean = new ArrayList<>(allWalletBalance.getWalletInfo().size());
+        allWalletBalance.getWalletInfo().forEach(new Consumer<BalanceInfoDTO>() {
+            @Override
+            public void accept(BalanceInfoDTO balanceInfoDTO) {
+                walletBalanceBean.add(convert(balanceInfoDTO));
+            }
+        });
+        return new AllWalletBalanceBean(allWalletBalance.getAllBalance(), walletBalanceBean);
     }
 
     /**
@@ -80,5 +106,31 @@ public class BalanceManager {
             e.printStackTrace();
         }
         return new Pair<>(balance, balanceFiat);
+    }
+
+    private WalletBalanceBean convert(BalanceInfoDTO balanceInfoDTO) {
+        WalletBalanceBean walletBalanceBean = null;
+        List<TokenBalanceBean> tokenBalanceBeans = new ArrayList<>();
+        for (int i = 0; i < balanceInfoDTO.getWallets().size(); i++) {
+            BalanceCoinInfo item = balanceInfoDTO.getWallets().get(i);
+            String balance = item.getBalance().trim();
+            String[] cnySplit = item.getFiat().trim().split(" ");
+            String fiatBalance = null;
+            String fiatUnit = null;
+            try {
+                fiatBalance = cnySplit[0].trim();
+                fiatUnit = cnySplit[1].trim();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if (i == 0) {
+                walletBalanceBean = new WalletBalanceBean(Vm.CoinType.convert(item.getCoin()), balance, fiatBalance, fiatUnit, new ArrayList<>(), balanceInfoDTO.getName());
+            } else {
+                tokenBalanceBeans.add(new ETHTokenBalanceBean("", item.getCoin(), balance, fiatBalance, fiatUnit));
+            }
+        }
+
+        walletBalanceBean.getTokens().addAll(tokenBalanceBeans);
+        return walletBalanceBean;
     }
 }

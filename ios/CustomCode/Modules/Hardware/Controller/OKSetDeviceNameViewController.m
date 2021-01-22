@@ -8,6 +8,7 @@
 
 #import "OKSetDeviceNameViewController.h"
 #import "OKDeviceReadyToStartViewController.h"
+#import "OKVerifyOnTheDeviceController.h"
 
 @interface OKSetDeviceNameViewController ()
 @property (weak, nonatomic) IBOutlet UILabel *setDeviceNameLabel;
@@ -33,8 +34,24 @@
 
 - (IBAction)createBtnClick:(UIButton *)sender
 {
-    OKDeviceReadyToStartViewController *deviceReadyToStartVc = [OKDeviceReadyToStartViewController deviceReadyToStartViewController];
-    deviceReadyToStartVc.deviceName = self.deviceNameTextfield.text;
-    [self.navigationController pushViewController:deviceReadyToStartVc animated:YES];
+    switch (_type) {
+        case OKMatchingTypeActivation:
+        {
+            OKDeviceReadyToStartViewController *deviceReadyToStartVc = [OKDeviceReadyToStartViewController deviceReadyToStartViewController];
+            deviceReadyToStartVc.deviceName = self.deviceNameTextfield.text;
+            [self.navigationController pushViewController:deviceReadyToStartVc animated:YES];
+        }
+            break;
+        case OKMatchingTypeBackup2Hw:
+        {
+            OKVerifyOnTheDeviceController *verifyOnTheDevice = [OKVerifyOnTheDeviceController verifyOnTheDeviceController:OKVerifyOnTheDeviceTypeSetPin];
+            verifyOnTheDevice.deviceName = self.deviceNameTextfield.text;
+            verifyOnTheDevice.words = self.words;
+            [self.navigationController pushViewController:verifyOnTheDevice animated:YES];
+        }
+            break;
+        default:
+            break;
+    }
 }
 @end

@@ -40,7 +40,7 @@
             android:layout_marginTop="92dp"
             android:layout_marginEnd="@dimen/dp_25"
             android:background="@drawable/btn_checked"
-            android:text="@string/create_"
+            android:text="@string/add_"
             android:textAllCaps="false"
             android:textColor="@android:color/white"
             android:textSize="@dimen/sp_16" />

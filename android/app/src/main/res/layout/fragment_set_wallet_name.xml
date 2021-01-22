@@ -33,26 +33,27 @@
         android:id="@+id/device_name"
         android:layout_width="@dimen/dp_300"
         android:layout_height="@dimen/dp_60"
-        android:maxLength="15"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="34dp"
-        android:background="@drawable/edit_text_bg"
+        android:background="@drawable/gray_broken"
         android:hint="@string/please_input_walletname"
-        android:paddingHorizontal="@dimen/dp_24"/>
+        android:maxLength="15"
+        android:paddingHorizontal="@dimen/dp_24"
+        android:textSize="@dimen/sp_16" />
 
 
     <Button
         android:id="@+id/btn_create"
         android:layout_width="300dp"
-        android:layout_height="50dp"
+        android:layout_height="@dimen/dp_60"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/dp_25"
         android:layout_marginBottom="@dimen/dp_30"
-        android:enabled="false"
         android:background="@drawable/btn_enable_selector"
+        android:enabled="false"
         android:text="@string/create_"
         android:textAllCaps="false"
         android:textColor="@android:color/white"
-        android:textSize="@dimen/sp_14" />
+        android:textSize="@dimen/sp_20" />
 
 </LinearLayout>

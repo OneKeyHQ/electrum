@@ -9,6 +9,7 @@
 #import "OKReadyToStartViewController.h"
 #import "OKBackUpViewController.h"
 #import "OKDontScreenshotTipsViewController.h"
+#import "OKMatchingInCirclesViewController.h"
 
 @interface OKReadyToStartViewController ()
 @property (weak, nonatomic) IBOutlet UILabel *tips1Label;
@@ -91,7 +92,10 @@
 
 - (void)backUpToHardwareClick
 {
-    NSLog(@"备份到硬件钱包");
+    OKMatchingInCirclesViewController *matchingInCirclesVc = [OKMatchingInCirclesViewController matchingInCirclesViewController];
+    matchingInCirclesVc.type = OKMatchingTypeBackup2Hw;
+    matchingInCirclesVc.words = self.words;
+    [self.navigationController pushViewController:matchingInCirclesVc animated:YES];
 }
 
 @end

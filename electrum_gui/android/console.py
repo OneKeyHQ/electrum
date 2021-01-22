@@ -75,6 +75,7 @@ from trezorlib import (
     device,
 )
 from trezorlib.cli import trezorctl
+
 from electrum.bip32 import get_uncompressed_key
 from electrum.wallet_db import WalletDB
 from enum import Enum
@@ -83,9 +84,10 @@ from electrum import constants
 from electrum.constants import read_json
 from .derived_info import DerivedInfo
 from electrum.util import Ticker
-
+IS_ANDROID = True
 if "iOS_DATA" in os.environ:
     from .ioscallback import CallHandler
+    IS_ANDROID = False
 
 PURPOSE_POS = 1
 ACCOUNT_POS = 3
@@ -166,7 +168,7 @@ def verify_xpub(xpub: str) -> bool:
 
 # Adds additional commands which aren't available over JSON RPC.
 class AndroidCommands(commands.Commands):
-    def __init__(self, android_id=None, config=None, user_dir=None, callback=None):
+    def __init__(self, android_id=None, config=None, user_dir=None, callback=None, chain_type="mainnet"):
         self.asyncio_loop, self._stop_loop, self._loop_thread = create_and_start_event_loop()  # TODO:close loop
         self.config = self.init_config(config=config)
         if user_dir is None:
@@ -182,7 +184,11 @@ class AndroidCommands(commands.Commands):
         # its callback before the daemon threads start.
         self.daemon = daemon.Daemon(self.config, fd)
         self.coins = read_json('eth_servers.json', {})
-        self.pywalib = PyWalib(self.config, chain_type="mainnet", path=self._tx_list_path(name="tx_info.db"))
+        if constants.net.NET == "Bitcoin":
+            chain_type = "mainnet"
+        else:
+            chain_type = "testnet"
+        self.pywalib = PyWalib(self.config, chain_type=chain_type, path=self._tx_list_path(name="tx_info.db"))
         self.txdb = TxDb(path=self._tx_list_path(name="tx_info.db"))
         self.pywalib.set_server(self.coins["eth"])
         self.network = self.daemon.network
@@ -237,13 +243,12 @@ class AndroidCommands(commands.Commands):
         global ticker
         ticker = Ticker(5.0, self.ticker_action)
         ticker.start()
-
-        if 'iOS_DATA' in os.environ:
-            self.my_handler = CallHandler.alloc().init()
-            self.set_callback_fun(self.my_handler)
-        elif 'ANDROID_DATA' in os.environ:
+        if IS_ANDROID:
             if callback is not None:
                 self.set_callback_fun(callback)
+        else:
+            self.my_handler = CallHandler.alloc().init()
+            self.set_callback_fun(self.my_handler)
         self.start_daemon()
         self.get_block_info()
     _recovery_flag = True
@@ -354,7 +359,7 @@ class AndroidCommands(commands.Commands):
                 # append fiat balance and price
                 if self.daemon.fx.is_enabled():
                     text += self.daemon.fx.get_fiat_status_text(c + u + x, self.base_unit, self.decimal_point) or ''
-            # print("update_statue out = %s" % (out))
+            #print("update_statue out = %s" % (out))
             self.callbackIntent.onCallback("update_status=%s" % json.dumps(out))
 
     def get_remove_flag(self, tx_hash):
@@ -662,7 +667,7 @@ class AndroidCommands(commands.Commands):
             raise BaseException(e)
         if storage:
             wallet = Wallet(db, storage, config=self.config)
-            self.check_exist_file(wallet.get_addresses()[0], wallet)
+            self.check_exist_file(wallet)
             wallet.status_flag = ("btc-hw-%s-%s" % (self.m, self.n))
             wallet.hide_type = hide_type
             wallet.set_name(name)
@@ -877,11 +882,14 @@ class AndroidCommands(commands.Commands):
         }
         return ret_data
 
-    def get_default_fee_info(self, feerate=None):
+    def get_default_fee_info(self, feerate=None, coin="btc", eth_tx_info=None):
         '''
         Get default fee info for btc
         :param feerate: Custom rates need to be sapcified as true
+        :param coin: btc or eth, btc default
+        :param eth_tx_info: optional, dict contains one of: to_address, contract_address, value, data
         :return:
+        if coin is "btc":
             if feerate is true:
                 return data like {"customer":{"fee":"","feerate":, "time":"", "fiat":"", "size":""}}
             if feerate is None:
@@ -889,37 +897,52 @@ class AndroidCommands(commands.Commands):
                                   "normal":{"fee":"","feerate":, "time":"", "fiat":"", "size":""},
                                   "fast":{"fee":"","feerate":, "time":"", "fiat":"", "size":""},
                                   "slowest":{"fee":"","feerate":, "time":"", "fiat":"", "size":""}}
+        else:
+            return data like
+            {"rapid": {"gas_price": 87, "time": 0.25, "gas_limit": 40000, "fee": "0.00348", "fiat": "4.77 USD"},
+            "fast": {"gas_price": 86, "time": 1, "gas_limit": 40000, "fee": "0.00344", "fiat": "4.71 USD"},
+            "normal": {"gas_price": 79, "time": 3, "gas_limit": 40000, "fee": "0.00316", "fiat": "4.33 USD"},
+            "slow": {"gas_price": 72, "time": 10, "gas_limit": 40000, "fee": "0.00288", "fiat": "3.95 USD"}}
         '''
-        try:
-            fee_info_list = self.get_block_info()
-            my_change_addr_size = Transaction.estimated_output_size(self.wallet.get_addresses()[0])
-            #out_size_p2pkh = 34 + my_change_addr_size
-            out_size_p2pkh = 141
-            out_info = {}
-            if feerate is None:
-                for block, feerate in fee_info_list.items():
-                    if block == 2 or block == 5 or block == 10:
-                        key = "slow" if block == 10 else "normal" if block == 5 else "fast" if block == 2 else "slowest"
-                        out_info[key] = self.format_return_data(feerate, out_size_p2pkh, block)
-            else:
-                block = self.get_best_block_by_feerate(float(feerate) * 1000, fee_info_list)
-                out_info["customer"] = self.format_return_data(float(feerate) * 1000, out_size_p2pkh, block)
-            return json.dumps(out_info)
-        except BaseException as e:
-            raise e
+        if coin == "eth":
+            eth_tx_info = eth_tx_info or {}
+            eth_tx_info.pop("gas_price", None)
+            eth_tx_info.pop("gas_limit", None)
+            fee = self.eth_estimate_fee(self.wallet.get_addresses()[0], **eth_tx_info)
+            return json.dumps(fee, cls=DecimalEncoder)
 
-    def get_eth_gas_price(self):
-        '''
-        Get eth gas price, for eth only
-        :return: json like {"rapid":{"price":1, "time":"15 Seconds"},
-                            "fast":{"price":1, "time":"1 Minute",
-                            "standard":{"price":1, "time":"3 Minutes",
-                            "timestamp":{"price":1, "time":"> 10 Minutes"}
-        '''
-        try:
-            return self.pywalib.get_gas_price()
-        except BaseException as e:
-            raise e
+        fee_info_list = self.get_block_info()
+        out_size_p2pkh = 141
+        out_info = {}
+        if feerate is None:
+            for block, feerate in fee_info_list.items():
+                if block == 2 or block == 5 or block == 10:
+                    key = "slow" if block == 10 else "normal" if block == 5 else "fast" if block == 2 else "slowest"
+                    out_info[key] = self.format_return_data(feerate, out_size_p2pkh, block)
+        else:
+            block = self.get_best_block_by_feerate(float(feerate) * 1000, fee_info_list)
+            out_info["customer"] = self.format_return_data(float(feerate) * 1000, out_size_p2pkh, block)
+        return json.dumps(out_info)
+
+    def eth_estimate_fee(self, from_address, to_address="", contract_address=None, value="0", data="", gas_price=None, gas_limit=None):
+        estimate_gas_prices = self.pywalib.get_gas_price()
+        if gas_price:
+            best_time = self.pywalib.get_best_time_by_gas_price(gas_price, estimate_gas_prices)
+            estimate_gas_prices = {"customer": {"gas_price": gas_price, "time": best_time}}
+
+        if not gas_limit:
+            gas_limit = self.pywalib.estimate_gas_limit(from_address, to_address, self.wallet.get_contract_token(contract_address), value, data)
+
+        gas_limit = int(gas_limit)
+        last_price = PyWalib.get_coin_price("eth") or "0"
+
+        for val in estimate_gas_prices.values():
+            val["gas_limit"] = gas_limit
+            val["fee"] = self.pywalib.web3.fromWei(gas_limit * self.pywalib.web3.toWei(val["gas_price"], "gwei"), "ether")
+            val["fiat"] = Decimal(val["fee"]) * Decimal(last_price)
+            val["fiat"] = self.daemon.fx.format_amount_and_units(val['fiat'] * COIN) or f"0 {self.ccy}"
+
+        return estimate_gas_prices
 
     def get_block_info(self):
         fee_info_list = self.config.get_block_fee_info()
@@ -932,19 +955,32 @@ class AndroidCommands(commands.Commands):
                 fee_info_list = fee_info['feerate_info']
         return fee_info_list
 
-    def get_fee_by_feerate(self, outputs, message, feerate, customer=None):
+    def get_fee_by_feerate(self, coin="btc", outputs=None, message=None, feerate=None, customer=None, eth_tx_info=None):
         '''
         Get fee info when Send, for btc only
+        :param coin: btc or eth, btc default
         :param outputs: Outputs info as json [{addr1, value}, ...]
         :param message: What you want say as sting
         :param feerate: Feerate retruned by get_default_fee_status api
         :param customer: User choose coin as bool
-        :return: json like {"amount": 0.5 BTC,
+        :param eth_tx_info: optional, dict contains one of: to_address, contract_address, value, data, gas_price, gas_limit
+        :return:
+        if coin is "btc"
+        json like {"amount": 0.5 BTC,
                             "size": 141,
                             "fee": 0.0003 BTC,
                             "time": 30,
                             "tx": ""}
+        else if coin is "eth":
+        json like {"gas_price": 110, "time": 0.25, "gas_limit": 36015, "fee": "0.00396165", "fiat": "5.43 USD"}
         '''
+        if coin == "eth":
+            if not eth_tx_info or not eth_tx_info.get("gas_price"):
+                raise InvalidValueException()
+            fee = self.eth_estimate_fee(self.wallet.get_addresses()[0], **eth_tx_info)
+            fee = fee.get("customer")
+            return json.dumps(fee, cls=DecimalEncoder)
+
         try:
             self._assert_wallet_isvalid()
             outputs_addrs = self.parse_output(outputs)
@@ -1959,7 +1995,7 @@ class AndroidCommands(commands.Commands):
             raise e
 
     ###############
-    def sign_eth_tx(self, to_addr, value, path='android_usb', password=None, contract_addr=None, gasprice=None):
+    def sign_eth_tx(self, to_addr, value, path='android_usb', password=None, contract_addr=None, gas_price=None, gas_limit=None, data=None):
         '''
         Send for eth, for eth/bsc only
         :param to_addr: as string
@@ -1967,18 +2003,20 @@ class AndroidCommands(commands.Commands):
         :param path: NFC/android_usb/bluetooth as str, used by hardware
         :param password: as string
         :param contract_addr: need if send to contranct
-        :param gasprice: as string, unit is Gwei
+        :param gas_price: as string, unit is Gwei
+        :param gas_limit: as string
+        :param data: eth tx custom data, as hex string
         :return: tx_hash as string
         '''
         from_address = self.wallet.get_addresses()[0]
         if contract_addr is None:
-            tx_dict = self.pywalib.get_transaction(from_address, to_addr, value, gasprice=gasprice)
+            tx_dict = self.pywalib.get_transaction(from_address, to_addr, value, gas_price=gas_price, gas_limit=gas_limit, data=data)
         else:
             contract_addr = self.pywalib.web3.toChecksumAddress(contract_addr)
             contract = self.wallet.get_contract_token(contract_addr)
             assert contract is not None
             tx_dict = self.pywalib.get_transaction(from_address, to_addr, value, contract=contract,
-                                                   gasprice=gasprice)
+                                                   gas_price=gas_price, gas_limit=gas_limit, data=data)
         if isinstance(self.wallet.get_keystore(), Hardware_KeyStore):
             if path:
                 client = self.get_client(path=path)
@@ -2494,7 +2532,7 @@ class AndroidCommands(commands.Commands):
         # FIXME tell user about bad_inputs
         if not good_inputs:
             raise BaseException(UnavailablePublicKey())
-        self.check_exist_file(wallet.get_addresses()[0], wallet)
+        self.check_exist_file(wallet)
         wallet.update_password(old_pw=None, new_pw=password, str_pw=self.android_id, encrypt_storage=True)
         wallet.set_name(name)
         wallet.save_db()
@@ -2701,13 +2739,14 @@ class AndroidCommands(commands.Commands):
         except BaseException as e:
             raise e
 
-    def create_hd_wallet(self, password, seed=None, passphrase="", purpose=84, strength=128):
+    def create_hd_wallet(self, password, seed=None, passphrase="", purpose=84, strength=128, create_coin=json.dumps(['btc'])):
         '''
         Create hd wallet
         :param password: password as str
         :param seed: import create hd wallet if seed is not None
         :param purpose: 84/44/49 only for btc
         :param strength: Length of the　Mnemonic word as (128/256)
+        :param create_coin: List of wallet types to be created like "["btc","eth"]"
         :return: json like {'seed':''
                             'wallet_info':''
                             'derived_info':''}
@@ -2715,8 +2754,9 @@ class AndroidCommands(commands.Commands):
         self._assert_daemon_running()
         new_seed = None
         wallet_data = []
-        # if seed is not None:
-        #     return self.recovery_hd_derived_wallet(password, seed, passphrase, wallet_data=wallet_data)
+        if seed is not None:
+            return self.recovery_hd_derived_wallet(password, seed, passphrase)
+
         if seed is None:
             seed = Mnemonic("english").generate(strength=strength)
             new_seed = seed
@@ -2724,22 +2764,21 @@ class AndroidCommands(commands.Commands):
             print("seed type = %s" % type(seed))
 
         ##create BTC-1
-        wallet_info = self.create("BTC-1", password, seed=seed, passphrase=passphrase,
+        create_coin_list = json.loads(create_coin)
+        if "btc" in create_coin_list:
+            wallet_info = self.create("BTC-1", password, seed=seed, passphrase=passphrase,
                                   bip39_derivation=bip44_derivation(0, purpose),
                                   hd=True)
-        wallet_data.append(json.loads(wallet_info))
-
-        for coin, info in self.coins.items():
-            name = "%s-1" % coin.upper()
-            bip39_derivation = bip44_derivation(0, info['addressType'], info['coinId'])
-            wallet_info = self.create(name, password, seed=seed, passphrase=passphrase, bip39_derivation=bip39_derivation, hd=True, coin=coin)
             wallet_data.append(json.loads(wallet_info))
 
-        if new_seed is None:
-            return self.recovery_hd_derived_wallet(password, seed, passphrase, wallet_data=wallet_data)
-        else:
-            key = self.get_hd_wallet_encode_seed(seed=seed)
-            self.update_backup_info(key)
+        for coin, info in self.coins.items():
+            if coin in create_coin_list:
+                name = "%s-1" % coin.upper()
+                bip39_derivation = bip44_derivation(0, info['addressType'], info['coinId'])
+                wallet_info = self.create(name, password, seed=seed, passphrase=passphrase, bip39_derivation=bip39_derivation, hd=True, coin=coin)
+                wallet_data.append(json.loads(wallet_info))
+        key = self.get_hd_wallet_encode_seed(seed=seed)
+        self.update_backup_info(key)
 
         out_info = []
         for info in wallet_data:
@@ -2768,7 +2807,7 @@ class AndroidCommands(commands.Commands):
         '''
         Verify legality for seed/private/public/address
         :param data: data as string
-        :param falg: seed/private/public/address as string
+        :param falg: seed/private/public/address/keystore as string
         :param coin: btc/eth as string
         :return: raise except if failed
         '''
@@ -2810,7 +2849,7 @@ class AndroidCommands(commands.Commands):
                 except:
                     raise BaseException(UnavailablePublicKey())
             elif flag == "address":
-                if not self.pywalib.web3.isChecksumAddress(self.pywalib.web3.toChecksumAddress(data)):
+                if not self.pywalib.web3.isAddress(data):
                     raise BaseException(UnavailableEthAddr())
 
     def replace_watch_only_wallet(self, replace=True):
@@ -2866,7 +2905,7 @@ class AndroidCommands(commands.Commands):
             raise e
 
     def create(self, name, password=None, seed_type="segwit", seed=None, passphrase="", bip39_derivation=None,
-               master=None, addresses=None, privkeys=None, hd=False, purpose=84, coin="btc", keystores=None,
+               master=None, addresses=None, privkeys=None, hd=False, purpose=49, coin="btc", keystores=None, keystore_password=None,
                strength=128):
         '''
         Create or restore a new wallet
@@ -2971,9 +3010,9 @@ class AndroidCommands(commands.Commands):
                 if keystores is not None:
                     try:
                         from eth_account import Account
-                        privkeys = Account.decrypt(keystores, password).hex()
+                        privkeys = Account.decrypt(keystores, keystore_password).hex()
                     except ValueError:
-                        raise InvalidPasswordException()
+                        raise BaseException(str(InvalidPassword()))
                 k = keystore.Imported_KeyStore({})
                 db.put('keystore', k.dump())
                 wallet = Imported_Eth_Wallet(db, storage, config=self.config)
@@ -3028,7 +3067,7 @@ class AndroidCommands(commands.Commands):
         new_name = self.get_unique_path(wallet)
         wallet.storage.set_path(self._wallet_path(new_name))
         try:
-            self.check_exist_file(addr, wallet)
+            self.check_exist_file(wallet)
         except ReplaceWatchonlyWallet:
             self.update_replace_info(str(ReplaceWatchonlyWallet.message), wallet, name=name, seed=seed,\
                                      password=password, coin=coin, wallet_type=wallet_type, derived_flag=derived_flag, \
@@ -3171,17 +3210,21 @@ class AndroidCommands(commands.Commands):
                 # # value = wallets.values()[0]
                 # return wallets[key]
 
-    def update_recover_list(self, recovery_list, balance, name, label, coin):
+    def update_recover_list(self, recovery_list, balance, wallet_obj, label, coin):
         show_info = {}
         show_info['coin'] = coin
         show_info['blance'] = str(balance)
-        show_info['name'] = name
+        show_info['name'] = str(wallet_obj)
         show_info['label'] = label
+        try:
+            self.check_exist_file(wallet_obj)
+            show_info['exist'] = "0"
+        except:
+            show_info['exist'] = "1"
         recovery_list.append(show_info)
 
     def filter_wallet(self):
         recovery_list = []
-        ##TODO:fileter eth
         for name, wallet_info in self.recovery_wallets.items():
             try:
                 wallet = wallet_info['wallet']
@@ -3190,14 +3233,15 @@ class AndroidCommands(commands.Commands):
                     address = wallet.get_addresses()[0]
                     tx_list = PyWalib.get_transaction_history(address, recovery=True)
                     if len(tx_list) != 0:
-                        self.update_recover_list(recovery_list, wallet.get_all_balance(address, coin), str(wallet),
+                        self.update_recover_list(recovery_list, wallet.get_all_balance(address, coin), wallet,
                                                  wallet.get_name(), coin)
                         continue
                 else:
+                    addr = wallet.get_addresses()[0]
                     history = reversed(wallet.get_history())
                     for item in history:
                         c, u, _ = wallet.get_balance()
-                        self.update_recover_list(recovery_list, self.format_amount_and_units(c + u), str(wallet),
+                        self.update_recover_list(recovery_list, self.format_amount_and_units(c + u), wallet,
                                                  wallet.get_name(), "btc")
                         break
             except BaseException as e:
@@ -3338,7 +3382,25 @@ class AndroidCommands(commands.Commands):
         '''
         cls._recovery_flag = flag
 
-    def recovery_hd_derived_wallet(self, password=None, seed=None, passphrase='', xpub=None, hw=False, wallet_data=None,
+    def filter_wallet_with_account_is_zero(self):
+        wallet_list = []
+        for name, wallet_info in self.recovery_wallets.items():
+            try:
+                wallet = wallet_info['wallet']
+                coin = wallet.wallet_type[0:3]
+                derivation = wallet.keystore.get_derivation_prefix()
+                account_id = int(derivation.split('/')[ACCOUNT_POS].split('\'')[0])
+                purpose = int(derivation.split('/')[PURPOSE_POS].split('\'')[0])
+                if account_id == 0:
+                    continue
+                if self.coins.__contains__(coin) or purpose == 49:
+                    wallet_info = CreateWalletInfo.create_wallet_info(coin_type="btc" if purpose == 49 else coin, name=str(wallet))
+                    wallet_list.append(wallet_info[0])
+            except BaseException as e:
+                raise e
+        return wallet_list
+
+    def recovery_hd_derived_wallet(self, password=None, seed=None, passphrase='', xpub=None, hw=False,
                                    path='bluetooth'):
         if hw:
             self.recovery_wallet(xpub=xpub, hw=hw, path=path)
@@ -3352,11 +3414,8 @@ class AndroidCommands(commands.Commands):
                 #     self.recovery_wallet(seed, password, passphrase, coin=coin, xpub=xpub, hw=hw)
 
         recovery_list = self.filter_wallet()
-        out_info = []
-        if wallet_data is not None:
-            for info in wallet_data:
-                out_info.append(info["wallet_info"][0])
-        out = self.get_create_info_by_json(wallet_info=out_info, derived_info=recovery_list)
+        wallet_data = self.filter_wallet_with_account_is_zero()
+        out = self.get_create_info_by_json(wallet_info=wallet_data, derived_info=recovery_list)
         return json.dumps(out)
 
     def get_derivat_path(self, purpose=84, coin=None):
@@ -3423,7 +3482,9 @@ class AndroidCommands(commands.Commands):
         if int(bip39_derivation.split('/')[ACCOUNT_POS].split('\'')[0]) == 0:
             purpose = int(bip39_derivation.split('/')[PURPOSE_POS].split('\'')[0])
             if purpose == 49:
-                return
+                name = "BTC-1"
+            elif self.coins.__contains__(coin):
+                name = "%s-1" %coin.upper()
             else:
                 name = "btc-derived-%s" %purpose
         temp_path = self.get_temp_file()
@@ -3510,46 +3571,69 @@ class AndroidCommands(commands.Commands):
         '''
         Get all wallet balances
         :return:
-            {"all_balance":"21,233.46 CNY",
-            "wallet_info":[{"name":"", "btc":"0.005 BTC", "fiat":"1,333.55"},
-                           {"name":"", "wallets":[{"eth":"", "fiat":""}, {"eos":"", "fiat":""} ...]}
+        {
+          "all_balance": "21,233.46 CNY",
+          "wallet_info": [
+            {
+              "name": "",
+              "btc": "0.005 BTC",
+              "fiat": "1,333.55",
+              "wallets": [
+                {"coin": "btc", "balance": "", "fiat": ""}
+              ]
+            },
+            {
+              "name": "",
+              "wallets": [
+                { "coin": "btc", "balance": "", "fiat": ""},
+                { "coin": "usdt", "balance": "", "fiat": ""}
+              ]
+            }
+          ]
+        }
         '''
         out = {}
         try:
-            all_balance = float(0)
+            all_balance = Decimal('0')
             all_wallet_info = []
-            for name, wallet in self.daemon._wallets.items():
-                wallet_info = {}
-                name = name.split('/')[-1]
-                wallet_info['name'] = wallet.get_name()
+            for wallet in self.daemon.get_wallets().values():
+                wallet_info = {'name': wallet.get_name()}
                 if self.coins.__contains__(wallet.wallet_type[0:3]):
                     checksum_from_address = self.pywalib.web3.toChecksumAddress(wallet.get_addresses()[0])
                     balances_info = wallet.get_all_balance(checksum_from_address,
                                                            self.coins[wallet.wallet_type[0:3]]['symbol'])
+                    wallet_balances = []
                     for symbol, info in balances_info.items():
-                        info['fiat'] = self.daemon.fx.format_amount_and_units(
-                            self.get_amount(info['fiat'])) if self.daemon.fx else None
-                        fiat = float(info['fiat'].split()[0].replace(',', ""))
+                        copied_info = dict(info)
+                        copied_info['fiat'] = self.daemon.fx.format_amount_and_units(copied_info['fiat'] * COIN) or f"0 {self.ccy}"
+                        wallet_balances.append({
+                            "coin": symbol,
+                            **copied_info,
+                        })
+                        fiat = Decimal(copied_info['fiat'].split()[0].replace(',', ""))
                         all_balance += fiat
-                    wallet_info['wallets'] = balances_info
+
+                    wallet_info['wallets'] = wallet_balances
                     all_wallet_info.append(wallet_info)
                 else:
                     c, u, x = wallet.get_balance()
-                    balance = self.daemon.fx.format_amount_and_units(c + u) if self.daemon.fx else None
-                    fiat = float(balance.split()[0].replace(',', ""))
+                    balance = self.daemon.fx.format_amount_and_units(c + u) or f"0 {self.ccy}"
+                    fiat = Decimal(balance.split()[0].replace(',', ""))
                     all_balance += fiat
-                    wallet_info['btc'] = self.format_amount(c + u)
-                    wallet_info['fiat'] = balance
+                    wallet_info['btc'] = self.format_amount(c + u)  # fixme deprecated field
+                    wallet_info['fiat'] = balance  # fixme deprecated field
+                    wallet_info['wallets'] = [{"coin": "btc", "balance": wallet_info['btc'], "fiat": wallet_info['fiat']}]
                     all_wallet_info.append(wallet_info)
+
             out['all_balance'] = ('%s %s' % (all_balance, self.ccy))
             out['wallet_info'] = all_wallet_info
-            return json.dumps(out)
+            return json.dumps(out, cls=DecimalEncoder)
         except BaseException as e:
             raise e
 
-    def check_exist_file(self, addr, wallet_obj):
+    def check_exist_file(self, wallet_obj):
         for _, exist_wallet in self.daemon._wallets.items():
-            if addr in exist_wallet.get_addresses()[0]:
+            if wallet_obj.get_addresses()[0] in exist_wallet.get_addresses()[0]:
                 if exist_wallet.is_watching_only() and not wallet_obj.is_watching_only():
                     raise ReplaceWatchonlyWallet(exist_wallet)
                 else:
@@ -3844,7 +3928,15 @@ class AndroidCommands(commands.Commands):
         '''
         Select wallet by name
         :param name: name as string
-        :return: json like {"balance":"", "name":"", "label":""}
+        :return: json like
+        {
+          "name": "",
+          "label": "",
+          "wallets": [
+            {"coin": "eth", "balance": "", "fiat": ""},
+            {"coin": "usdt", "balance": "", "fiat": ""}
+          ]
+        }
         '''
         try:
             self._assert_daemon_running()
@@ -3859,12 +3951,23 @@ class AndroidCommands(commands.Commands):
                 PyWalib.set_server(self.coins[self.wallet.wallet_type[0:3]])
                 addrs = self.wallet.get_addresses()
                 checksum_from_address = self.pywalib.web3.toChecksumAddress(addrs[0])
-                all_balance = self.wallet.get_all_balance(checksum_from_address,
+                balance_info = self.wallet.get_all_balance(checksum_from_address,
                                                           self.coins[self.wallet.wallet_type[0:3]]['symbol'])
-                for symbol, info in all_balance.items():
-                    info['fiat'] = self.daemon.fx.format_amount_and_units(
-                        self.get_amount(info['fiat'])) if self.daemon.fx else None
-                return json.dumps(info, cls=DecimalEncoder if info is not None else '')
+
+                wallet_balances = [
+                    {
+                        "coin": key,
+                        **val,
+                        "fiat": self.daemon.fx.format_amount_and_units(val['fiat'] * COIN) or f"0 {self.ccy}"
+                    }
+                    for key, val in balance_info.items()
+                ]
+                info = {
+                    "name": name,
+                    "label": self.wallet.get_name(),
+                    "wallets": wallet_balances
+                }
+                return json.dumps(info, cls=DecimalEncoder)
             else:
                 c, u, x = self.wallet.get_balance()
                 print("console.select_wallet %s %s %s==============" % (c, u, x))
@@ -3874,15 +3977,20 @@ class AndroidCommands(commands.Commands):
                     self.wallet.get_addresses()))
                 util.trigger_callback("wallet_updated", self.wallet)
 
-                fait = self.daemon.fx.format_amount_and_units(c + u) if self.daemon.fx else None
+                balance = c + u
+                fait = self.daemon.fx.format_amount_and_units(balance) if self.daemon.fx else None
+                fait = fait or f"0 {self.ccy}"
                 info = {
-                    "balance": self.format_amount(c + u) + ' (%s)' % fait,
+                    "balance": self.format_amount(balance) + ' (%s)' % fait,  # fixme deprecated field
                     "name": name,
-                    "label": self.wallet.get_name()
+                    "label": self.wallet.get_name(),
+                    "wallets": [
+                        {"coin": "btc", "balance": Decimal(balance), "fiat": fait}
+                    ]
                 }
                 if self.label_flag and self.wallet.wallet_type != "standard":
                     self.label_plugin.load_wallet(self.wallet)
-                return json.dumps(info)
+                return json.dumps(info, cls=DecimalEncoder)
         except BaseException as e:
             raise BaseException(e)
 
@@ -3896,6 +4004,8 @@ class AndroidCommands(commands.Commands):
                 return wallet_infos
             if type == 'hd':
                 return sorted_wallet.get_wallets_by_hd()
+            if type == 'hw':
+                return sorted_wallet.get_wallets_by_hw()
             else:
                 return sorted_wallet.get_wallets_by_coin(coin=type)
         except BaseException as e:
@@ -3909,6 +4019,7 @@ class AndroidCommands(commands.Commands):
         exp:
             all_list = testcommond.list_wallets()
             hd_list = testcommond.list_wallets(type='hd')
+            hw_list = testcommond.list_wallets(type='hw')
             btc_list = testcommond.list_wallets(type='btc')
             eth_list = testcommond.list_wallets(type='eth')
 

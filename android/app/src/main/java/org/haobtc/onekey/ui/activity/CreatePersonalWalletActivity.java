@@ -49,7 +49,7 @@ public class CreatePersonalWalletActivity extends BaseActivity implements Busine
      */
     @Override
     public void init() {
-        updateTitle(R.string.create_new_walt);
+        updateTitle(R.string.choose_amount);
         startFragment(new AddAssetFragment());
     }
 

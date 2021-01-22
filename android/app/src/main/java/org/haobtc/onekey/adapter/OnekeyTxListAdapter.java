@@ -8,67 +8,48 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.bean.MaintrsactionlistEvent;
+import org.haobtc.onekey.bean.TransactionSummaryVo;
 
 import java.text.DecimalFormat;
 import java.util.List;
 
-public class OnekeyTxListAdapter extends BaseQuickAdapter<MaintrsactionlistEvent, BaseViewHolder> {
-    private String amountFinal;
+public class OnekeyTxListAdapter extends BaseQuickAdapter<TransactionSummaryVo, BaseViewHolder> {
 
-    public OnekeyTxListAdapter(@Nullable List<MaintrsactionlistEvent> data) {
+    public OnekeyTxListAdapter(@Nullable List<TransactionSummaryVo> data) {
         super(R.layout.btc_detail_item, data);
     }
 
-    @SuppressLint("UseCompatLoadingForDrawables")
     @Override
-    protected void convert(BaseViewHolder helper, MaintrsactionlistEvent item) {
-        String amount = "";
-        if (item.getAmount().contains("(")) {
-            amount = item.getAmount().substring(0, item.getAmount().indexOf("("));
-        } else {
-            amount = item.getAmount();
-        }
+    protected void convert(BaseViewHolder helper, TransactionSummaryVo item) {
         helper.setText(R.id.text_address, item.getAddress());
         String date = item.getDate();
-        if (date.contains("-")) {
-            String str = date.substring(5);
-            String strs = str.substring(0, str.length() - 3);
-            String time = strs.replace("-", "/");
-            helper.setText(R.id.text_time, time);
-        } else {
-            helper.setText(R.id.text_time, date);
-        }
+        helper.setText(R.id.text_time, date);
         TextView tetAmount = helper.getView(R.id.text_send_amount);
         ImageView imgStatus = helper.getView(R.id.imageView);
-        String substring = amount.substring(0, amount.indexOf(" "));
-        String amountFix = substring.substring(substring.indexOf(".") + 1);
-        if (amountFix.length() > 8) {
-            DecimalFormat dfs = new DecimalFormat("0.00000000");
-            amountFinal = dfs.format(amountFix);
-        } else {
-            amountFinal = amount;
-        }
+
+        String amount = item.getAmount() + " " + item.getAmountUnit();
         if (item.isMine()) {
             //send
             tetAmount.setTextColor(mContext.getColor(R.color.text_eight));
-            helper.setText(R.id.text_send_amount, "-" + amountFinal);
-            imgStatus.setImageDrawable(mContext.getDrawable(R.drawable.send_));
+            helper.setText(R.id.text_send_amount, "-" + amount);
+            imgStatus.setImageDrawable(ResourcesCompat.getDrawable(helper.itemView.getResources(), R.drawable.send_, null));
         } else {
             //get
             tetAmount.setTextColor(mContext.getColor(R.color.onekey));
-            helper.setText(R.id.text_send_amount, "+" + amountFinal);
-            imgStatus.setImageDrawable(mContext.getDrawable(R.drawable.receive_));
+            helper.setText(R.id.text_send_amount, "+" + amount);
+            imgStatus.setImageDrawable(ResourcesCompat.getDrawable(helper.itemView.getResources(), R.drawable.receive_, null));
         }
         TextView sendStatus = helper.getView(R.id.text_send_status);
-        if (!TextUtils.isEmpty(item.getTxStatus())) {
+        if (!TextUtils.isEmpty(item.getStatus())) {
             sendStatus.setTextColor(mContext.getColor(R.color.text_six));
-            sendStatus.setText(item.getTxStatus());
+            sendStatus.setText(item.getStatus());
         } else {
             sendStatus.setVisibility(View.GONE);
         }

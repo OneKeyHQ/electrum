@@ -24,6 +24,7 @@ import com.chaquo.python.PyObject;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.haobtc.onekey.BuildConfig;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.adapter.SearchMnemonicAdapter;
@@ -247,7 +248,9 @@ public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocu
                 finish();
                 break;
             case R.id.img_copy_test:
-//                pasteSeed();
+                if (BuildConfig.DEBUG) {
+                    pasteSeed();
+                }
                 break;
         }
     }

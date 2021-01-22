@@ -9,10 +9,13 @@ import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
+import com.orhanobut.logger.Logger;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnLoadMoreListener;
@@ -21,6 +24,10 @@ import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.adapter.OnekeyTxListAdapter;
 import org.haobtc.onekey.bean.MaintrsactionlistEvent;
+import org.haobtc.onekey.bean.TransactionSummaryVo;
+import org.haobtc.onekey.business.chain.bitcoin.BitcoinService;
+import org.haobtc.onekey.business.chain.ethereum.EthService;
+import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.ui.base.BaseLazyFragment;
 import org.haobtc.onekey.utils.Daemon;
 import org.haobtc.onekey.utils.MyDialog;
@@ -30,6 +37,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
@@ -75,20 +83,28 @@ public class TransactionListFragment extends BaseLazyFragment implements OnRefre
     @BindView(R.id.ivProgress)
     View ivProgress;
 
-    private ArrayList<MaintrsactionlistEvent> listBeans;
+    private List<TransactionSummaryVo> listBeans;
     private OnekeyTxListAdapter onekeyTxListAdapter;
     private Disposable mLoadTxListDisposable;
     @TransactionListType
     private String mType = TransactionListType.ALL;
     private SchedulerProvide mSchedulerProvide = null;
+    private CoinTypeProvider mCoinTypeProvider = null;
+
+    private BitcoinService mBitcoinService = null;
+    private EthService mEthService = null;
 
     private Animation mAnimation;
+    private Vm.CoinType mCoinType;
 
     @Override
     public void onAttach(@NotNull Context context) {
         super.onAttach(context);
         if (context instanceof SchedulerProvide) {
             mSchedulerProvide = ((SchedulerProvide) context);
+        }
+        if (context instanceof CoinTypeProvider) {
+            mCoinTypeProvider = ((CoinTypeProvider) context);
         }
     }
 
@@ -104,6 +120,17 @@ public class TransactionListFragment extends BaseLazyFragment implements OnRefre
     @Override
     public int getContentViewId() {
         return R.layout.fragment_transaction_list;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        if (mCoinTypeProvider != null) {
+            mCoinType = mCoinTypeProvider.getCurrentCoinType();
+        } else {
+            mCoinType = Vm.CoinType.BTC;
+        }
     }
 
     @Override
@@ -127,16 +154,25 @@ public class TransactionListFragment extends BaseLazyFragment implements OnRefre
             mLoadTxListDisposable.dispose();
         }
         mLoadTxListDisposable = Observable
-                .create((ObservableOnSubscribe<PyObject>) emitter -> {
+                .create((ObservableOnSubscribe<List<TransactionSummaryVo>>) emitter -> {
                     try {
-                        PyObject getHistoryTx;
-                        //get transaction json
-                        if ("all".equals(status)) {
-                            getHistoryTx = Daemon.commands.callAttr("get_all_tx_list");
-                        } else {
-                            getHistoryTx = Daemon.commands.callAttr("get_all_tx_list", status);
+                        List<TransactionSummaryVo> summaryVoList;
+                        switch (mCoinType) {
+                            default:
+                            case BTC:
+                                if (mBitcoinService == null) {
+                                    mBitcoinService = new BitcoinService();
+                                }
+                                summaryVoList = mBitcoinService.getTxList(status);
+                                break;
+//                            case ETH:
+//                                if (mEthService == null) {
+//                                    mEthService = new EthService();
+//                                }
+//                                summaryVoList = mEthService.getTxList(status);
+//                                break;
                         }
-                        emitter.onNext(getHistoryTx);
+                        emitter.onNext(summaryVoList);
                         emitter.onComplete();
                     } catch (Exception e) {
                         emitter.onError(e);
@@ -145,7 +181,7 @@ public class TransactionListFragment extends BaseLazyFragment implements OnRefre
                 .observeOn(AndroidSchedulers.mainThread())
                 .map(historyTx -> {
                     refreshLayout.finishRefresh();
-                    if (historyTx.toString().length() > 2) {
+                    if (historyTx.size() > 0) {
                         reclTransactionList.setVisibility(View.VISIBLE);
                         tetNone.setVisibility(View.GONE);
                     } else {
@@ -156,36 +192,7 @@ public class TransactionListFragment extends BaseLazyFragment implements OnRefre
                 })
                 .observeOn(Schedulers.io())
                 .map(historyTx -> {
-                    try {
-                        JSONArray jsonArray = new JSONArray(historyTx.toString());
-                        for (int i = 0; i < jsonArray.length(); i++) {
-                            JSONObject jsonObject = jsonArray.getJSONObject(i);
-                            MaintrsactionlistEvent maintrsactionlistEvent = new MaintrsactionlistEvent();
-                            String type = jsonObject.getString("type");
-                            String txHash = jsonObject.getString("tx_hash");
-                            String address = jsonObject.getString("address");
-                            String amount = jsonObject.getString("amount");
-                            //false ->get   true ->push
-                            boolean isMine = jsonObject.getBoolean("is_mine");
-                            String date = jsonObject.getString("date");
-                            String txStatus = jsonObject.getString("tx_status");
-                            if ("history".equals(type)) {
-                                String confirmations = jsonObject.getString("confirmations");
-                                //add attribute
-                                maintrsactionlistEvent.setTxHash(txHash);
-                                maintrsactionlistEvent.setDate(date);
-                                maintrsactionlistEvent.setAmount(amount);
-                                maintrsactionlistEvent.setMine(isMine);
-                                maintrsactionlistEvent.setAddress(address);
-                                maintrsactionlistEvent.setConfirmations(confirmations);
-                                maintrsactionlistEvent.setType(type);
-                                maintrsactionlistEvent.setTxStatus(txStatus);
-                                listBeans.add(maintrsactionlistEvent);
-                            }
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+                    listBeans.addAll(historyTx);
                     return historyTx;
                 })
                 .observeOn(AndroidSchedulers.mainThread())
@@ -197,7 +204,7 @@ public class TransactionListFragment extends BaseLazyFragment implements OnRefre
                         onekeyTxListAdapter.notifyDataSetChanged();
                         onekeyTxListAdapter.setOnItemClickListener((adapter, view, position) -> {
                             Intent intent = new Intent(requireContext(), DetailTransactionActivity.class);
-                            intent.putExtra("hashDetail", listBeans.get(position).getTxHash());
+                            intent.putExtra("hashDetail", listBeans.get(position).getTxId());
                             intent.putExtra("txTime", listBeans.get(position).getDate());
                             startActivity(intent);
                         });
@@ -255,5 +262,10 @@ public class TransactionListFragment extends BaseLazyFragment implements OnRefre
     interface SchedulerProvide {
         @NonNull
         Scheduler getScheduler();
+    }
+
+
+    public interface CoinTypeProvider {
+        Vm.CoinType getCurrentCoinType();
     }
 }

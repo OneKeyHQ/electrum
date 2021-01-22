@@ -1,38 +1,62 @@
 package org.haobtc.onekey.onekeys.homepage.process;
+
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.text.Editable;
-import android.text.TextUtils;
-import android.text.TextWatcher;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
-import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.NameSettedEvent;
+import org.haobtc.onekey.onekeys.walletprocess.OnFinishViewCallBack;
+import org.haobtc.onekey.onekeys.walletprocess.SoftWalletNameSettingFragment;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
+public class SoftWalletNameSettingActivity extends BaseActivity implements OnFinishViewCallBack,
+        SoftWalletNameSettingFragment.OnSetWalletNameCallback {
+    private static final String EXT_WALLET_PURPOSE = Constant.WALLET_PURPOSE;
+    private static final String EXT_WALLET_TYPE = Constant.WALLET_TYPE;
 
-public class SoftWalletNameSettingActivity extends BaseActivity implements TextWatcher {
-    @BindView(R.id.edit_set_wallet_name)
-    EditText editSetWalletName;
-    @BindView(R.id.btn_import)
-    Button btnImport;
-    private int purpose;
-    private String walletType;
+    private static final String EXT_RESULT_WALLET_PURPOSE = Constant.WALLET_PURPOSE;
+    private static final String EXT_RESULT_WALLET_TYPE = Constant.WALLET_TYPE;
+    private static final String EXT_RESULT_WALLET_NAME = "wallet_name";
 
-    public static void gotoSoftWalletNameSettingActivity(Context context, int purpose, String type) {
+    private static Intent obtainIntent(Context context, int purpose, String type) {
         Intent intent = new Intent(context, SoftWalletNameSettingActivity.class);
-        intent.putExtra(Constant.WALLET_PUR, purpose);
-        intent.putExtra(Constant.WALLET_TYPE, type);
-        context.startActivity(intent);
+        intent.putExtra(EXT_WALLET_PURPOSE, purpose);
+        intent.putExtra(EXT_WALLET_TYPE, type);
+        return intent;
     }
+
+    public static void start(Context context, int purpose, String type) {
+        context.startActivity(obtainIntent(context, purpose, type));
+    }
+
+    public static void startForResult(Activity activity, int requestCode, int purpose, String type) {
+        activity.startActivityForResult(obtainIntent(activity.getBaseContext(), purpose, type), requestCode);
+    }
+
+    public static ResultDataBean decodeResultData(Intent intent) {
+        int purpose = intent.getIntExtra(EXT_RESULT_WALLET_PURPOSE, 44);
+        String type = intent.getStringExtra(EXT_RESULT_WALLET_TYPE);
+        String name = intent.getStringExtra(EXT_RESULT_WALLET_NAME);
+        return new ResultDataBean(purpose, type, name);
+    }
+
+    public static class ResultDataBean {
+        public final int purpose;
+        public final String walletType;
+        public final String name;
+
+        public ResultDataBean(int purpose, String walletType, String name) {
+            this.purpose = purpose;
+            this.walletType = walletType;
+            this.name = name;
+        }
+    }
+
+    private int mPurpose;
+    private String mWalletType;
 
     @Override
     public int getLayoutId() {
@@ -40,66 +64,33 @@ public class SoftWalletNameSettingActivity extends BaseActivity implements TextW
     }
 
     @Override
-    public void initView () {
-        ButterKnife.bind(this);
+    public void initView() {
     }
 
     @Override
     public void initData() {
-        purpose = getIntent().getIntExtra(Constant.WALLET_PUR, 0);
-        walletType = getIntent().getStringExtra(Constant.WALLET_TYPE);
-        editSetWalletName.addTextChangedListener(this);
-    }
-
-    @SingleClick
-    @OnClick({R.id.img_back, R.id.btn_import})
-    public void onViewClicked(View view) {
-        switch (view.getId()) {
-            case R.id.img_back:
-                finish();
-                break;
-            case R.id.btn_import:
-                if (TextUtils.isEmpty(editSetWalletName.getText().toString())) {
-                    mToast(getString(R.string.please_input_walletname));
-                    return;
-                }
-                NameSettedEvent nameSettedEvent = new NameSettedEvent(editSetWalletName.getText().toString());
-                nameSettedEvent.addressPurpose = purpose;
-                nameSettedEvent.walletType = walletType;
-                EventBus.getDefault().post(nameSettedEvent);
-                finish();
-                break;
-        }
-    }
-    @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        mPurpose = getIntent().getIntExtra(EXT_WALLET_PURPOSE, 0);
+        mWalletType = getIntent().getStringExtra(EXT_WALLET_TYPE);
     }
 
     @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {
-        // 禁止EditText输入空格
-        if (s.toString().contains(" ")) {
-            String[] str = s.toString().split(" ");
-            StringBuffer sb = new StringBuffer();
-            for (int i = 0; i < str.length; i++) {
-                sb.append(str[i]);
-            }
-            editSetWalletName.setText(sb.toString());
-            editSetWalletName.setSelection(start);
-        }
+    public void onSetWalletName(String name) {
+        NameSettedEvent nameSettedEvent = new NameSettedEvent(name);
+        EventBus.getDefault().post(nameSettedEvent);
+
+        nameSettedEvent.addressPurpose = mPurpose;
+        nameSettedEvent.walletType = mWalletType;
+        Intent intent = new Intent();
+        intent.putExtra(EXT_RESULT_WALLET_PURPOSE, mPurpose);
+        intent.putExtra(EXT_RESULT_WALLET_TYPE, mWalletType);
+        intent.putExtra(EXT_RESULT_WALLET_NAME, name);
+        setResult(Activity.RESULT_OK, intent);
+
+        finish();
     }
 
     @Override
-    public void afterTextChanged(Editable s) {
-        String text = s.toString().replace(" ", "");
-        if (!TextUtils.isEmpty(text)) {
-            btnImport.setEnabled(true);
-            if (s.length() > 14) {
-                mToast(getString(R.string.name_lenth));
-            }
-        } else {
-            btnImport.setEnabled(false);
-        }
+    public void onFinishView() {
+        finish();
     }
-
 }

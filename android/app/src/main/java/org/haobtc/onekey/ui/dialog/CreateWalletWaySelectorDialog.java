@@ -1,27 +1,23 @@
 package org.haobtc.onekey.ui.dialog;
 
-import android.content.Intent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
-import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
-import org.haobtc.onekey.constant.Constant;
-import org.haobtc.onekey.event.ExitEvent;
-import org.haobtc.onekey.manager.PreferencesManager;
-import org.haobtc.onekey.onekeys.dialog.recovery.ImprotSingleActivity;
-import org.haobtc.onekey.onekeys.homepage.process.CreateWalletChooseTypeActivity;
+import org.haobtc.onekey.onekeys.walletprocess.createsoft.CreateSoftWalletActivity;
+import org.haobtc.onekey.onekeys.walletprocess.importsoft.ImportSoftWalletActivity;
 import org.haobtc.onekey.ui.base.BaseDialogFragment;
 
 import butterknife.BindView;
 import butterknife.OnClick;
 
 /**
+ * 选择导入钱包还是创建钱包的弹窗
+ *
  * @author liyan
  * @date 12/18/20
  */
-
 public class CreateWalletWaySelectorDialog extends BaseDialogFragment {
     @BindView(R.id.img_cancel)
     ImageView imgCancel;
@@ -46,14 +42,11 @@ public class CreateWalletWaySelectorDialog extends BaseDialogFragment {
                 dismiss();
                 break;
             case R.id.btn_create:
-                Intent intent = new Intent(getContext(), CreateWalletChooseTypeActivity.class);
-                intent.putExtra("ifHaveHd", (boolean)PreferencesManager.get(getContext(), "Preferences", Constant.HAS_LOCAL_HD, false));
-                startActivity(intent);
+                CreateSoftWalletActivity.start(getContext());
                 dismiss();
                 break;
             case R.id.btn_import:
-                Intent intent1 = new Intent(getContext(), ImprotSingleActivity.class);
-                startActivity(intent1);
+                ImportSoftWalletActivity.start(getContext());
                 dismiss();
                 break;
         }

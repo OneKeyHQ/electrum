@@ -93,7 +93,7 @@
                         android:id="@+id/rel_create_hd"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/home_bg_up">
+                        android:background="@drawable/wallet_empty_shape">
 
                         <ImageView
                             android:id="@+id/img_Add"
@@ -126,27 +126,14 @@
                             android:text="@string/not_num"
                             android:textColor="@color/text_one"
                             android:textSize="@dimen/sp_12"
+                            android:layout_marginBottom="@dimen/dp_18"
                             android:textStyle="bold" />
-
-                        <!-- Text -->
-                        <TextView
-                            android:id="@+id/text"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@+id/textView2"
-                            android:layout_marginStart="@dimen/dp_24"
-                            android:layout_marginTop="@dimen/dp_5"
-                            android:layout_marginEnd="@dimen/dp_52"
-                            android:layout_marginBottom="@dimen/dp_20"
-                            android:text="@string/home_tip"
-                            android:textColor="@color/button_bk_ddake"
-                            android:textSize="@dimen/sp_14" />
 
                         <ImageView
                             android:layout_width="@dimen/dp_12"
                             android:layout_height="@dimen/dp_12"
                             android:layout_alignParentEnd="true"
-                            android:layout_centerVertical="true"
+                            android:layout_marginTop="@dimen/dp_52"
                             android:layout_marginEnd="@dimen/dp_24"
                             android:src="@drawable/right_white" />
 
@@ -232,7 +219,7 @@
                                 android:layout_marginTop="@dimen/dp_15"
                                 android:layout_toEndOf="@+id/imageView2"
                                 android:gravity="center_vertical"
-                                android:text="@string/pair_hard"
+                                android:text="@string/match_hard"
                                 android:textColor="@color/button_bk_ddake"
                                 android:textSize="@dimen/sp_16" />
 

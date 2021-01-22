@@ -16,14 +16,10 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
 /**
- * @Description: java类作用描述
+ * @Description: 需要备份的弹框
  * @Author: peter Qin
- * @CreateDate: 2020/12/18$ 10:54 AM$
- * @UpdateUser: 更新者：
- * @UpdateDate: 2020/12/18$ 10:54 AM$
- * @UpdateRemark: 更新说明：
  */
-@SuppressLint("ViewConstructor")
+
 public class CustomBackupDialog extends BottomPopupView {
     private Unbinder bind;
     @BindView(R.id.btn_back)

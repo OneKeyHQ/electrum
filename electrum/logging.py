@@ -66,6 +66,10 @@ root_logger.setLevel(logging.WARNING)
 console_stderr_handler = logging.StreamHandler(sys.stderr)
 console_stderr_handler.setFormatter(console_formatter)
 console_stderr_handler.setLevel(logging.WARNING)
+if 'ANDROID_DATA' in os.environ:
+    from org.haobtc.onekey import BuildConfig
+    if bool(BuildConfig.DEBUG):
+        console_stderr_handler.setLevel(logging.INFO)
 root_logger.addHandler(console_stderr_handler)
 
 # creates a logger specifically for electrum library

@@ -40,7 +40,7 @@
         android:layout_marginEnd="@dimen/dp_25"
         app:solid="@color/color_EB5757"
         android:gravity="center"
-        android:text="@string/delete_this_wallet"
+        android:text="@string/delete"
         app:corner="20dp"
         android:textSize="@dimen/sp_16"
         android:textColor="@color/defaultColor"/>

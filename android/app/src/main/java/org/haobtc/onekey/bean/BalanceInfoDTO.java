@@ -4,11 +4,12 @@ import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author liyan
  */
-public class BalanceInfo implements Serializable {
+public class BalanceInfoDTO implements Serializable {
 
     /**
      * balance : 0 ()
@@ -16,22 +17,23 @@ public class BalanceInfo implements Serializable {
      */
     private static final long serialVersionUID = 2L;
 
-    @SerializedName("balance")
-    private String balance;
+    @SerializedName("wallets")
+    private List<BalanceCoinInfo> wallets;
     @SerializedName("name")
     private String name;
     @SerializedName("label")
-    private String label;
+    private String label = "";
 
-    public static BalanceInfo objectFromData(String str) {
-        return new Gson().fromJson(str, BalanceInfo.class);
-    }
-    public String getBalance() {
-        return balance;
+    public static BalanceInfoDTO objectFromData(String str) {
+        return new Gson().fromJson(str, BalanceInfoDTO.class);
     }
 
-    public void setBalance(String balance) {
-        this.balance = balance;
+    public List<BalanceCoinInfo> getWallets() {
+        return wallets;
+    }
+
+    public void setWallets(List<BalanceCoinInfo> wallets) {
+        this.wallets = wallets;
     }
 
     public String getName() {

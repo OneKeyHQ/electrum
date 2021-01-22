@@ -27,7 +27,8 @@ import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
 import org.haobtc.onekey.onekeys.dialog.RecoverHdWalletActivity;
 import org.haobtc.onekey.onekeys.homepage.mindmenu.HDWalletActivity;
-import org.haobtc.onekey.onekeys.homepage.process.CreateWalletChooseTypeActivity;
+import org.haobtc.onekey.onekeys.walletprocess.createfasthd.CreateFastHDSoftWalletActivity;
+import org.haobtc.onekey.onekeys.walletprocess.createsoft.CreateSoftWalletActivity;
 import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
 import org.haobtc.onekey.ui.dialog.CreateWalletWaySelectorDialog;
 import org.haobtc.onekey.ui.dialog.HdWalletIntroductionDialog;
@@ -95,13 +96,12 @@ public class WalletListActivity extends BaseActivity implements BaseQuickAdapter
         reclWalletList.setAdapter(mAdapter);
         mWalletModel.mAllWallets.observe(this, mAllData -> {
             mAllNum = mAllData.validShowNum;
-            textWalletNum.setText(String.valueOf(mAllData.validShowNum));
             mAllList.addAll(mAllData.wallets);
             mAdapter.setNewData(mAllData.wallets);
         });
         mWalletModel.mBtcWallets.observe(this, mBtcList -> btcList.addAll(mBtcList));
         mWalletModel.mEthWallets.observe(this, mEthList -> ethList.addAll(mEthList));
-        mAdapter.setOnItemChildClickListener(this::onItemChildClick);
+        mAdapter.setOnItemChildClickListener(this);
     }
 
 
@@ -138,8 +138,8 @@ public class WalletListActivity extends BaseActivity implements BaseQuickAdapter
                 viewAll.setImageDrawable(getDrawable(R.drawable.hd_wallet_1));
                 viewBtc.setImageDrawable(getDrawable(R.drawable.token_trans_btc));
                 viewEth.setImageDrawable(getDrawable(R.drawable.eth_icon_gray));
-                textWalletNum.setText(String.valueOf(mAllNum));
                 reclWalletDetail.setVisibility(View.VISIBLE);
+                textWalletNum.setVisibility(View.GONE);
                 imgAdd.setVisibility(View.GONE);
                 imgW.setVisibility(View.VISIBLE);
                 mAdapter.setNewData(mAllList);
@@ -149,6 +149,7 @@ public class WalletListActivity extends BaseActivity implements BaseQuickAdapter
                 viewAll.setImageDrawable(getDrawable(R.drawable.id_wallet_icon));
                 viewBtc.setImageDrawable(getDrawable(R.drawable.token_btc));
                 viewEth.setImageDrawable(getDrawable(R.drawable.eth_icon_gray));
+                textWalletNum.setVisibility(View.VISIBLE);
                 textWalletNum.setText(String.valueOf(btcList.size()));
                 reclWalletDetail.setVisibility(View.GONE);
                 imgW.setVisibility(View.GONE);
@@ -160,6 +161,7 @@ public class WalletListActivity extends BaseActivity implements BaseQuickAdapter
                 viewAll.setImageDrawable(getDrawable(R.drawable.id_wallet_icon));
                 viewBtc.setImageDrawable(getDrawable(R.drawable.token_trans_btc));
                 viewEth.setImageDrawable(getDrawable(R.drawable.token_eth));
+                textWalletNum.setVisibility(View.VISIBLE);
                 textWalletNum.setText(String.valueOf(ethList.size()));
                 reclWalletDetail.setVisibility(View.GONE);
                 imgAdd.setVisibility(View.VISIBLE);
@@ -167,9 +169,7 @@ public class WalletListActivity extends BaseActivity implements BaseQuickAdapter
                 mAdapter.setNewData(ethList);
                 break;
             case R.id.img_add:
-                Intent intent00 = new Intent(this, CreateWalletChooseTypeActivity.class);
-                intent00.putExtra("ifHaveHd", !mAllList.isEmpty());
-                startActivity(intent00);
+                CreateSoftWalletActivity.start(this);
                 break;
             case R.id.img_w:
                 new HdWalletIntroductionDialog().show(getSupportFragmentManager(), "hd_introduction");
@@ -214,7 +214,7 @@ public class WalletListActivity extends BaseActivity implements BaseQuickAdapter
             Intent intent2 = new Intent(mContext, RecoverHdWalletActivity.class);
             startActivity(intent2);
         } else if (id == R.id.recl_add_wallet) {
-            NavUtils.gotoCreateDeriveChooseTypeActivity(mContext, false);
+            CreateFastHDSoftWalletActivity.start(this);
         } else if (id == R.id.rel_background) {
             WalletInfo data = (WalletInfo) adapter.getItem(position);
             String name = data.name;

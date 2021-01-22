@@ -1,4 +1,6 @@
 package org.haobtc.onekey.ui.activity;
+
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.lifecycle.ViewModelProvider;
@@ -28,12 +31,14 @@ import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.StringConstant;
 import org.haobtc.onekey.event.GotPassEvent;
 import org.haobtc.onekey.manager.PyEnv;
+import org.haobtc.onekey.onekeys.homepage.process.SoftWalletNameSettingActivity;
 import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.ui.dialog.PassInvalidDialog;
 import org.haobtc.onekey.utils.PwdEditText;
 import org.haobtc.onekey.utils.ViewHeightStatusDetector;
 import org.haobtc.onekey.utils.ViewTouchUtil;
 import org.haobtc.onekey.viewmodel.PassWordViewModel;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -56,6 +61,41 @@ public class SoftPassActivity extends BaseActivity implements ViewHeightStatusDe
     public static final int SET = 0;
     public static final int VERIFY = 1;
     public static final int CHANGE = 2;
+
+    private static final String EXT_FROM_TYPE = StringConstant.FROM;
+    private static final String EXT_RESULT_FROM_TYPE = "from_type";
+    private static final String EXT_RESULT_PWD = "wallet_pwd";
+
+    private static Intent obtainIntent(Context context, int from) {
+        Intent intent = new Intent(context, SoftPassActivity.class);
+        intent.putExtra(EXT_FROM_TYPE, from);
+        return intent;
+    }
+
+    public static void start(Context context, int from) {
+        context.startActivity(obtainIntent(context, from));
+    }
+
+    public static void startForResult(Activity activity, int resultCode, int from) {
+        activity.startActivityForResult(obtainIntent(activity.getBaseContext(), from), resultCode);
+    }
+
+    public static class ResultDataBean {
+        public final String password;
+        public final int fromType;
+
+        public ResultDataBean(String password, int fromType) {
+            this.password = password;
+            this.fromType = fromType;
+        }
+    }
+
+    public static ResultDataBean decodeResultData(Intent intent) {
+        int from = intent.getIntExtra(EXT_RESULT_FROM_TYPE, 44);
+        String pwd = intent.getStringExtra(EXT_RESULT_PWD);
+        return new ResultDataBean(pwd, from);
+    }
+
     private ViewHeightStatusDetector mViewHeightStatusDetector;
     private ConstraintSet mConstraintSetTipShow, mConstraintSetTipHidden;
 
@@ -94,11 +134,7 @@ public class SoftPassActivity extends BaseActivity implements ViewHeightStatusDe
     private String pinOrigin;
     private int fromType = -1;
     private PassWordViewModel mPassViewModel;
-    public static void gotoSoftPassActivity (Context context, int from) {
-        Intent intent = new Intent(context, SoftPassActivity.class);
-        intent.putExtra(StringConstant.FROM, from);
-        context.startActivity(intent);
-    }
+
 
     @Override
     public void init() {
@@ -228,6 +264,8 @@ public class SoftPassActivity extends BaseActivity implements ViewHeightStatusDe
             GotPassEvent gotPassEvent = new GotPassEvent(password);
             gotPassEvent.fromType = fromType;
             EventBus.getDefault().post(gotPassEvent);
+
+            setResult(password, fromType);
             finish();
         } else {
             showToast(R.string.pin_origin_invalid);
@@ -279,6 +317,8 @@ public class SoftPassActivity extends BaseActivity implements ViewHeightStatusDe
                 GotPassEvent gotPassEvent = new GotPassEvent(pinInputFirst);
                 gotPassEvent.fromType = fromType;
                 EventBus.getDefault().post(gotPassEvent);
+
+                setResult(pinInputFirst, fromType);
                 finish();
                 return;
             } else {
@@ -415,5 +455,12 @@ public class SoftPassActivity extends BaseActivity implements ViewHeightStatusDe
     protected void onDestroy() {
         super.onDestroy();
         mViewHeightStatusDetector.unregister(this);
+    }
+
+    private void setResult(@NotNull String pwd, int fromType) {
+        Intent intent = new Intent();
+        intent.putExtra(EXT_RESULT_PWD, pwd);
+        intent.putExtra(EXT_RESULT_FROM_TYPE, fromType);
+        setResult(RESULT_OK, intent);
     }
 }

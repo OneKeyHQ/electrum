@@ -19,8 +19,11 @@ import com.google.gson.Gson;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.adapter.HdWalletAssetAdapter;
+import org.haobtc.onekey.bean.AllWalletBalanceBean;
 import org.haobtc.onekey.bean.HdWalletAllAssetBean;
+import org.haobtc.onekey.business.wallet.BalanceManager;
 import org.haobtc.onekey.business.wallet.SystemConfigManager;
+import org.haobtc.onekey.business.wallet.bean.WalletBalanceBean;
 import org.haobtc.onekey.utils.Daemon;
 
 import java.text.DecimalFormat;
@@ -30,6 +33,13 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.annotations.NonNull;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.ObservableEmitter;
+import io.reactivex.rxjava3.core.ObservableOnSubscribe;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class AllAssetsActivity extends BaseActivity implements TextWatcher {
 
@@ -41,10 +51,11 @@ public class AllAssetsActivity extends BaseActivity implements TextWatcher {
     RecyclerView reclAssets;
     @BindView(R.id.tet_None)
     TextView tetNone;
-    private List<HdWalletAllAssetBean.WalletInfoBean> walletInfo;
-    private ArrayList<HdWalletAllAssetBean.WalletInfoBean> searchList;
-    private SharedPreferences preferences;
+    private List<WalletBalanceBean> walletInfo;
+    private ArrayList<WalletBalanceBean> searchList;
     private SystemConfigManager mSystemConfigManager;
+    private BalanceManager mBalanceManager;
+    private Disposable mLoadDisposable;
 
     @Override
     public int getLayoutId() {
@@ -55,7 +66,7 @@ public class AllAssetsActivity extends BaseActivity implements TextWatcher {
     public void initView() {
         ButterKnife.bind(this);
         mSystemConfigManager = new SystemConfigManager(this);
-        preferences = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
+        mBalanceManager = new BalanceManager();
         editSearch.addTextChangedListener(this);
     }
 
@@ -68,33 +79,41 @@ public class AllAssetsActivity extends BaseActivity implements TextWatcher {
     }
 
     private void getAllWalletList() {
-        //wallet list
-        try {
-            PyObject allWalletBalance = Daemon.commands.callAttr("get_all_wallet_balance");
-            if (allWalletBalance.toString().length() > 2) {
-                tetNone.setVisibility(View.GONE);
-                Log.i("mWheelplanting", "toStrings: " + allWalletBalance.toString());
-                Gson gson = new Gson();
-                HdWalletAllAssetBean hdWalletAllAssetBean = gson.fromJson(allWalletBalance.toString(), HdWalletAllAssetBean.class);
-                String allBalance = hdWalletAllAssetBean.getAllBalance();
-                String fiat = allBalance.substring(0, allBalance.indexOf(" "));
-                float f = Float.parseFloat(fiat);
-                DecimalFormat decimalFormat = new DecimalFormat("0.00");//构造方法的字符格式这里如果小数不足2位,会以0补足.
-                String money = decimalFormat.format(f);
-                String currencySymbol = mSystemConfigManager.getCurrentFiatSymbol();
-                testAllAssets.setText(String.format("%s %s", currencySymbol, money));
-                walletInfo = hdWalletAllAssetBean.getWalletInfo();
-                HdWalletAssetAdapter hdWalletAssetAdapter = new HdWalletAssetAdapter(walletInfo);
-                reclAssets.setAdapter(hdWalletAssetAdapter);
-            } else {
-                tetNone.setVisibility(View.VISIBLE);
-            }
-        } catch (Exception e) {
-            tetNone.setVisibility(View.VISIBLE);
-            mToast(e.getMessage().replace("BaseException:", ""));
-            e.printStackTrace();
-            return;
+        if (mLoadDisposable != null && !mLoadDisposable.isDisposed()) {
+            mLoadDisposable.dispose();
         }
+        mLoadDisposable = Observable
+                .create((ObservableOnSubscribe<AllWalletBalanceBean>) emitter -> {
+                    AllWalletBalanceBean allWalletBalance = mBalanceManager.getAllWalletBalances();
+                    emitter.onNext(allWalletBalance);
+                    emitter.onComplete();
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe(disposable -> showProgress())
+                .doFinally(this::dismissProgress)
+                .subscribe(allWalletBalance -> {
+                    if (allWalletBalance != null && allWalletBalance.getWalletInfo().size() > 0) {
+                        tetNone.setVisibility(View.GONE);
+
+                        String allBalance = allWalletBalance.getAllBalance();
+                        String fiat = allBalance.substring(0, allBalance.indexOf(" "));
+                        float f = Float.parseFloat(fiat);
+                        DecimalFormat decimalFormat = new DecimalFormat("0.00");//构造方法的字符格式这里如果小数不足2位,会以0补足.
+                        String money = decimalFormat.format(f);
+                        String currencySymbol = mSystemConfigManager.getCurrentFiatSymbol();
+                        testAllAssets.setText(String.format("%s %s", currencySymbol, money));
+                        walletInfo = allWalletBalance.getWalletInfo();
+                        HdWalletAssetAdapter hdWalletAssetAdapter = new HdWalletAssetAdapter(getBaseContext(), walletInfo);
+                        reclAssets.setAdapter(hdWalletAssetAdapter);
+                    } else {
+                        tetNone.setVisibility(View.VISIBLE);
+                    }
+                }, e -> {
+                    tetNone.setVisibility(View.VISIBLE);
+                    mToast(e.getMessage().replace("BaseException:", ""));
+                    e.printStackTrace();
+                });
     }
 
     @OnClick({R.id.img_back})
@@ -123,11 +142,19 @@ public class AllAssetsActivity extends BaseActivity implements TextWatcher {
                     searchList.add(walletInfo.get(i));
                 }
             }
-            HdWalletAssetAdapter hdWalletAssetAdapter = new HdWalletAssetAdapter(searchList);
+            HdWalletAssetAdapter hdWalletAssetAdapter = new HdWalletAssetAdapter(getBaseContext(), searchList);
             reclAssets.setAdapter(hdWalletAssetAdapter);
         } else {
-            HdWalletAssetAdapter hdWalletAssetAdapter = new HdWalletAssetAdapter(walletInfo);
+            HdWalletAssetAdapter hdWalletAssetAdapter = new HdWalletAssetAdapter(getBaseContext(), walletInfo);
             reclAssets.setAdapter(hdWalletAssetAdapter);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mLoadDisposable != null && !mLoadDisposable.isDisposed()) {
+            mLoadDisposable.dispose();
         }
     }
 }

@@ -73,7 +73,8 @@
             android:background="@color/button_bk_ddake"
             android:orientation="horizontal"
             android:paddingStart="@dimen/dp_20"
-            android:paddingEnd="@dimen/dp_20">
+            android:paddingEnd="@dimen/dp_20"
+            android:visibility="gone">
 
             <TextView
                 android:layout_width="0dp"
@@ -195,7 +196,5 @@
                 android:track="@drawable/switch_custom_track_selector"
                 tools:ignore="UseSwitchCompatOrMaterialXml" />
         </LinearLayout>
-
     </LinearLayout>
-
 </LinearLayout>

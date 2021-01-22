@@ -12,6 +12,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+
+typedef enum {
+    OKMatchingTypeNone, //其它
+    OKMatchingTypeActivation, //激活
+    OKMatchingTypeBackup2Hw  //备份到硬件
+}OKMatchingType;
+
 #define kOKBlueManager (OKBlueManager.sharedInstance)
 
 // 设置蓝牙的channel值【开发者可不做修改】

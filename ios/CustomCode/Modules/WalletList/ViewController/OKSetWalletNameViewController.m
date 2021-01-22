@@ -15,7 +15,7 @@
 #import "OKPINCodeViewController.h"
 
 
-@interface OKSetWalletNameViewController ()<UITextFieldDelegate,OKHwNotiManagerDekegate>
+@interface OKSetWalletNameViewController ()<UITextFieldDelegate,OKHwNotiManagerDelegate>
 @property (weak, nonatomic) IBOutlet UILabel *seWalletNameLabel;
 @property (weak, nonatomic) IBOutlet UILabel *descLabel;
 @property (weak, nonatomic) IBOutlet UITextField *walletNameTextfield;

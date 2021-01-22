@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import androidx.annotation.StringDef;
 
 import org.haobtc.onekey.bean.FiatUnitSymbolBean;
+import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.utils.Daemon;
 
 import static org.haobtc.onekey.constant.Constant.CURRENT_CURRENCY_GRAPHIC_SYMBOL;
@@ -109,6 +110,7 @@ public class SystemConfigManager {
      * 设置当前法币的符号与单位
      *
      * @param symbol 法币符号与单位
+     *
      * @return 是否保存成功
      */
     public boolean setCurrentFiatUnitSymbol(FiatUnitSymbolBean symbol) {
@@ -137,10 +139,21 @@ public class SystemConfigManager {
         return mPreferencesSharedPreferences.getString("base_unit", "BTC");
     }
 
+    public String getCurrentBaseUnit(Vm.CoinType coinType) {
+        switch (coinType) {
+            case ETH:
+                return "ETH";
+            default:
+            case BTC:
+                return getCurrentBaseUnit();
+        }
+    }
+
     /**
      * 设置数字货币单位
      *
      * @param unit 数字货币单位
+     *
      * @return 是否存储成功
      */
     public boolean setCurrentBaseUnit(String unit) {

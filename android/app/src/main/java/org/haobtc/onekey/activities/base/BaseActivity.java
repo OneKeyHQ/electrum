@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
@@ -59,13 +60,23 @@ public abstract class BaseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         ActivityManager.getInstance().addActivity(this);
         if (!isSplash()) {
-            setContentView(getLayoutId());
+            if (enableViewBinding()) {
+                View layoutView = getLayoutView();
+                if (layoutView == null) {
+                    throw new RuntimeException("需要重写 getLayoutView 方法。");
+                }
+                setContentView(layoutView);
+            } else {
+                setContentView(getLayoutId());
+            }
         }
         if (requireSecure()) {
             requestSecure();
         }
         mContext = this;
-        bind = ButterKnife.bind(this);
+        if (!enableViewBinding()) {
+            bind = ButterKnife.bind(this);
+        }
         mBinitState();
         initView();
         initData();
@@ -109,6 +120,15 @@ public abstract class BaseActivity extends AppCompatActivity {
      */
     public abstract int getLayoutId();
 
+    public boolean enableViewBinding() {
+        return false;
+    }
+
+    @Nullable
+    public View getLayoutView() {
+        return null;
+    }
+
     public abstract void initView();
 
     public abstract void initData();
@@ -149,7 +169,9 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         dismissProgress();
         NfcUtils.mNfcAdapter = null;
-        bind.unbind();
+        if (bind != null) {
+            bind.unbind();
+        }
     }
 
     @Override

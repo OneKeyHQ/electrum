@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_host"
+    app:startDestination="@id/selectWalletTypeFragment">
+
+    <fragment
+        android:id="@+id/selectWalletTypeFragment"
+        android:name="org.haobtc.onekey.onekeys.walletprocess.SelectWalletTypeFragment"
+        android:label="SelectWalletTypeFragment">
+        <action
+            android:id="@+id/action_selectorWalletTypeFragment_to_selectorChainCoinFragment"
+            app:destination="@id/selectChainCoinFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/selectChainCoinFragment"
+        android:name="org.haobtc.onekey.onekeys.walletprocess.SelectChainCoinFragment"
+        android:label="SelectChainCoinFragment">
+        <action
+            android:id="@+id/action_selectChainCoinFragment_to_selectBitcoinAddressTypeDialogFragment"
+            app:destination="@id/selectBitcoinAddressTypeDialogFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_selectChainCoinFragment_to_softWalletNameSettingFragment"
+            app:destination="@id/softWalletNameSettingFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_selectChainCoinFragment_to_chooseImportModeFragment"
+            app:destination="@id/chooseImportModeFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+    </fragment>
+
+    <dialog
+        android:id="@+id/selectBitcoinAddressTypeDialogFragment"
+        android:name="org.haobtc.onekey.onekeys.walletprocess.SelectBitcoinAddressTypeDialogFragment"
+        android:label="SelectBitcoinAddressTypeDialogFragment">
+        <action
+            android:id="@+id/action_selectBitcoinAddressTypeDialogFragment_to_softWalletNameSettingFragment"
+            app:destination="@id/softWalletNameSettingFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+    </dialog>
+
+    <fragment
+        android:id="@+id/softWalletNameSettingFragment"
+        android:name="org.haobtc.onekey.onekeys.walletprocess.SoftWalletNameSettingFragment"
+        android:label="SoftWalletNameSettingFragment" />
+
+    <fragment
+        android:id="@+id/chooseImportModeFragment"
+        android:name="org.haobtc.onekey.onekeys.walletprocess.importsoft.ChooseImportModeFragment"
+        android:label="ChooseImportModeFragment">
+        <action
+            android:id="@+id/action_chooseImportModeFragment_to_importPrivateKeyFragment"
+            app:destination="@id/importPrivateKeyFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_chooseImportModeFragment_to_importWatchWalletFragment"
+            app:destination="@id/importWatchWalletFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_chooseImportModeFragment_to_importKeystoreFragment"
+            app:destination="@id/importKeystoreFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_chooseImportModeFragment_to_importMnemonicFragment"
+            app:destination="@id/importMnemonicFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/importPrivateKeyFragment"
+        android:name="org.haobtc.onekey.onekeys.walletprocess.importsoft.ImportPrivateKeyFragment"
+        android:label="ImportPrivateKeyFragment">
+        <action
+            android:id="@+id/action_importPrivateKeyFragment_to_selectBitcoinAddressTypeDialogFragment"
+            app:destination="@id/selectBitcoinAddressTypeDialogFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_importPrivateKeyFragment_to_softWalletNameSettingFragment"
+            app:destination="@id/softWalletNameSettingFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/importWatchWalletFragment"
+        android:name="org.haobtc.onekey.onekeys.walletprocess.importsoft.ImportWatchWalletFragment"
+        android:label="ImportWatchWalletFragment">
+        <action
+            android:id="@+id/action_importWatchWalletFragment_to_softWalletNameSettingFragment"
+            app:destination="@id/softWalletNameSettingFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/importKeystoreFragment"
+        android:name="org.haobtc.onekey.onekeys.walletprocess.importsoft.ImportKeystoreFragment"
+        android:label="ImportKeystoreFragment">
+        <action
+            android:id="@+id/action_importKeystoreFragment_to_softWalletNameSettingFragment"
+            app:destination="@id/softWalletNameSettingFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/importMnemonicFragment"
+        android:name="org.haobtc.onekey.onekeys.walletprocess.importsoft.ImportMnemonicFragment"
+        android:label="ImportMnemonicFragment">
+        <action
+            android:id="@+id/action_importMnemonicFragment_to_softWalletNameSettingFragment"
+            app:destination="@id/softWalletNameSettingFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_importMnemonicFragment_to_selectBitcoinAddressTypeDialogFragment"
+            app:destination="@id/selectBitcoinAddressTypeDialogFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+    </fragment>
+</navigation>

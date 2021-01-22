@@ -26,6 +26,7 @@ public class QRDecode {
      * 在 Python 返回的金额字符串中截取 BTC 金额
      *
      * @param resultAmount Python 返回的金额字符串
+     *
      * @return 实际的 BTC 金额
      */
     @Nullable
@@ -42,6 +43,7 @@ public class QRDecode {
      * support: bip72、bip21
      *
      * @param content 要解析的字符串
+     *
      * @return BTC 地址，如果解析的地址格式不正确，返回 null。
      */
     @WorkerThread
@@ -66,6 +68,8 @@ public class QRDecode {
                             String amountByPythonResultAmount = getAmountByPythonResultAmount(resultBean.getAmount());
                             resultBean.setAmount(amountByPythonResultAmount);
                         }
+                    } else if (type == 3) {
+                        resultBean = null;
                     } else {
                         resultBean.setAddress(detailScan);
                     }
@@ -74,7 +78,6 @@ public class QRDecode {
                 e.printStackTrace();
             }
         }
-
         return resultBean;
     }
 }

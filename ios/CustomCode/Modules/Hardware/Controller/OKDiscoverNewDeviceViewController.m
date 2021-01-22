@@ -47,6 +47,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     OKSetDeviceNameViewController *setDeviceNameVc = [OKSetDeviceNameViewController setDeviceNameViewController];
+    setDeviceNameVc.type = OKMatchingTypeActivation;
     [self.navigationController pushViewController:setDeviceNameVc animated:YES];
 }
 

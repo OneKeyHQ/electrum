@@ -10,25 +10,14 @@ import android.widget.ImageView;
 
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.onekeys.walletprocess.OnFinishViewCallBack;
+import org.haobtc.onekey.onekeys.walletprocess.importsoft.ImportKeystoreFragment;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class ImportKeystoreActivity extends BaseActivity {
-
-    @BindView(R.id.edit_keystore_content)
-    EditText editKeystoreContent;
-    @BindView(R.id.edit_keystore_pass)
-    EditText editKeystorePass;
-    @BindView(R.id.img_eye_yes)
-    ImageView imgEyeYes;
-    @BindView(R.id.img_eye_no)
-    ImageView imgEyeNo;
-    @BindView(R.id.edit_set_wallet_name)
-    EditText editSetWalletName;
-    @BindView(R.id.btn_import)
-    Button btnImport;
+public class ImportKeystoreActivity extends BaseActivity implements ImportKeystoreFragment.OnImportKeystoreCallback, OnFinishViewCallBack {
 
     @Override
     public int getLayoutId() {
@@ -37,7 +26,7 @@ public class ImportKeystoreActivity extends BaseActivity {
 
     @Override
     public void initView() {
-        ButterKnife.bind(this);
+
     }
 
     @Override
@@ -50,26 +39,13 @@ public class ImportKeystoreActivity extends BaseActivity {
         return true;
     }
 
-    @OnClick({R.id.img_back, R.id.img_scan, R.id.img_eye_yes, R.id.img_eye_no, R.id.btn_import})
-    public void onViewClicked(View view) {
-        switch (view.getId()) {
-            case R.id.img_back:
-                finish();
-                break;
-            case R.id.img_scan:
-                break;
-            case R.id.img_eye_yes:
-                imgEyeYes.setVisibility(View.GONE);
-                imgEyeNo.setVisibility(View.VISIBLE);
-                editKeystorePass.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-                break;
-            case R.id.img_eye_no:
-                imgEyeYes.setVisibility(View.VISIBLE);
-                imgEyeNo.setVisibility(View.GONE);
-                editKeystorePass.setTransformationMethod(PasswordTransformationMethod.getInstance());
-                break;
-            case R.id.btn_import:
-                break;
-        }
+    @Override
+    public void onImportKeystore(String keystore, String password) {
+
+    }
+
+    @Override
+    public void onFinishView() {
+        finish();
     }
 }
