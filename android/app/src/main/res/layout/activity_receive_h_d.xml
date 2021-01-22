@@ -154,11 +154,13 @@
                 android:layout_marginTop="@dimen/dp_20">
 
                 <ImageView
+                    android:id="@+id/iv_show_token_logo"
                     android:layout_width="@dimen/dp_21"
                     android:layout_height="@dimen/dp_21"
                     android:src="@drawable/token_btc" />
 
                 <TextView
+                    android:id="@+id/tv_show_swipe_hint"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/dp_6"

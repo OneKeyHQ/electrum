@@ -784,6 +784,7 @@
     <string name="minute">分钟</string>
     <string name="fast">快</string>
     <string name="scan_input">扫一扫 转入BTC</string>
+    <string name="scan_input_eth">扫一扫 转入ETH</string>
     <string name="wallet_address">钱包地址</string>
     <string name="copy_">复制</string>
     <string name="check_">核对</string>

@@ -1,9 +1,11 @@
 package org.haobtc.onekey.onekeys.homepage.process;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -16,10 +18,13 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.core.content.res.ResourcesCompat;
+
 import com.chaquo.python.PyObject;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.lxj.xpopup.XPopup;
+import com.orhanobut.logger.Logger;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.encode.CodeCreator;
 
@@ -63,6 +68,10 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
 
     @BindView(R.id.img_type)
     ImageView imgType;
+    @BindView(R.id.iv_show_token_logo)
+    ImageView imgShowTokenLogo;
+    @BindView(R.id.tv_show_swipe_hint)
+    TextView tvShowSwipeHint;
     @BindView(R.id.text_send_type)
     TextView textSendType;
     @BindView(R.id.img_share_qrcode)
@@ -111,7 +120,11 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
         String showWalletType = preferences.getString(Constant.CURRENT_SELECTED_WALLET_TYPE, "");
         rxPermissions = new RxPermissions(this);
         if (showWalletType.contains("eth")) {
-            imgType.setImageDrawable(getDrawable(R.drawable.token_eth));
+            Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.drawable.token_eth, null);
+            imgType.setImageDrawable(drawable);
+            tvShowSwipeHint.setText(R.string.scan_input_eth);
+
+            imgShowTokenLogo.setImageDrawable(drawable);
             textSendType.setText(String.format("%s ETH", getString(R.string.scan_send)));
             textWalletAddressText.setText(String.format("ETH %s", getString(R.string.wallet_address)));
         } else {
@@ -142,10 +155,10 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
         mGeneratecode();
     }
 
-    private void showWatchTipDialog () {
+    private void showWatchTipDialog() {
         CustomCenterDialog centerDialog = new CustomCenterDialog(mContext, new CustomCenterDialog.onConfirmClick() {
             @Override
-            public void onConfirm () {
+            public void onConfirm() {
                 finish();
             }
         });
@@ -158,7 +171,7 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
      * @return
      */
     @Override
-    public int getContentViewId () {
+    public int getContentViewId() {
         return R.layout.activity_receive_h_d;
     }
 
@@ -212,7 +225,7 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
                 break;
             case R.id.linear_share:
                 try {
-                    subscriber= rxPermissions
+                    subscriber = rxPermissions
                             .request(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                             .subscribe(granted -> {
                                 if (granted) { // Always true pre-M

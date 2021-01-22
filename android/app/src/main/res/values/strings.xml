@@ -819,6 +819,7 @@
     <string name="minute">Minute</string>
     <string name="fast">Quick</string>
     <string name="scan_input">Swipe and  transfer to BTC</string>
+    <string name="scan_input_eth">Swipe and  transfer to ETH</string>
     <string name="wallet_address">Wallet Address</string>
     <string name="copy_">Copy</string>
     <string name="check_">Check</string>
