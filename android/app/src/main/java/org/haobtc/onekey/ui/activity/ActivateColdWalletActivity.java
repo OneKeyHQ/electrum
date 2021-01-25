@@ -28,6 +28,7 @@ import org.haobtc.onekey.event.NextFragmentEvent;
 import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.ui.base.BaseActivity;
+import org.haobtc.onekey.ui.fragment.BackUpActiveSuccessfulFragment;
 import org.haobtc.onekey.ui.fragment.ConfirmOnHardwareFragment;
 import org.haobtc.onekey.ui.fragment.DeviceNameSettingFragment;
 import org.haobtc.onekey.ui.fragment.DevicePINFragment;
@@ -203,7 +204,7 @@ public class ActivateColdWalletActivity extends BaseActivity implements Business
                             }
                         }
                         EventBus.getDefault().post(new BackupCompleteEvent());
-                        startFragment(new NormalActiveSuccessfulFragment(name, R.string.import_success_description, R.string.success_1));
+                        startFragment( BackUpActiveSuccessfulFragment.getInstance(name, R.string.import_success_description, R.string.success_1));
                         break;
                     default:
                         startFragment(new NormalActiveSuccessfulFragment(name, 0, 0));
