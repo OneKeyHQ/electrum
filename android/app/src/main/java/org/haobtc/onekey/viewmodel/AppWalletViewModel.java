@@ -74,6 +74,9 @@ public class AppWalletViewModel extends ViewModel {
                 localWallet = mAccountManager.autoSelectNextWallet();
             }
             currentWalletInfo.postValue(localWallet);
+            mMainHandler.post(() -> {
+                refreshBalance();
+            });
         });
     }
 
