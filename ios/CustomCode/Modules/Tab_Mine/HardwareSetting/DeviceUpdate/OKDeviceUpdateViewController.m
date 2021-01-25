@@ -10,6 +10,7 @@
 #import "NSDictionary+OKKeyPath.h"
 #import "OKDeviceUpdateInstallController.h"
 #import "OKDeviceUpdateModel.h"
+#import "OKDevicesManager.h"
 
 #define kLocalizedString(key) \
 MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil)
@@ -73,6 +74,7 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
 @property (weak, nonatomic) IBOutlet UILabel *currentVersionLabel;
 @property (strong, nonatomic) OKDeviceUpdateModel *updateModel;
 @property (strong, nonatomic) NSArray <NSDictionary *> *cellsData;
+@property (strong, nonatomic) UIView *loadingView;
 @end
 
 @implementation OKDeviceUpdateViewController
@@ -87,6 +89,21 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
     [self checkAvailableUpdate];
 }
 
+- (UIView *)loadingView {
+    if (!_loadingView) {
+        _loadingView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 80, 80)];
+        _loadingView.backgroundColor = HexColorA(0x444444, 0.7);
+        _loadingView.center = self.view.center;
+        [_loadingView setLayerRadius:10];
+        
+        UIActivityIndicatorView *actView = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(0, 0, 80, 80)];
+        actView.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhiteLarge;
+        [actView startAnimating];
+        [_loadingView addSubview:actView];
+    }
+    return _loadingView;
+}
+
 - (void)checkAvailableUpdate {
     NSURLSession *session = [NSURLSession sharedSession];
     NSURL *url = [NSURL URLWithString:@"https://data.onekey.so/version.json"];
@@ -97,6 +114,7 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
         id json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:nil];
         if ([json isKindOfClass:[NSDictionary class]]) {
             dispatch_async(dispatch_get_main_queue(), ^{
+                self.loadingView.hidden = YES;
                 self.updateModel = [[OKDeviceUpdateModel alloc] initWithDict:json];
                 [self updateCellModel];
             });
@@ -111,13 +129,20 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
     self.tableView.allowsSelection = NO;
 
     NSString *versionText = kLocalizedString(@"currentDesc");
+    NSString *frameworkVersionStr = @"Unknown";
+    NSString *bluetoothVersionStr = @"Unknown";
     
-    // TODO: get from device.
-    NSString *frameworkVersionStr = @"9.9.9";
-    NSString *bluetoothVersionStr = @"1.1.1";
+    OKDeviceModel *deviceModel = [[OKDevicesManager sharedInstance] getDeviceModelWithID:self.deviceId];
+    if (!self.bootloaderMode && deviceModel) {
+        frameworkVersionStr = deviceModel.deviceInfo.deviceSysVersion;
+        bluetoothVersionStr = deviceModel.deviceInfo.ble_ver;
+    }
     versionText = [versionText stringByReplacingOccurrencesOfString:@"<frameworkVersion>" withString:frameworkVersionStr];
     versionText = [versionText stringByReplacingOccurrencesOfString:@"<bluetoothVersion>" withString:bluetoothVersionStr];
     self.currentVersionLabel.text = versionText;
+    
+    [self.view addSubview:self.loadingView];
+    self.loadingView.hidden = NO;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -146,6 +171,9 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
         OKDeviceUpdateInstallController *vc = [OKDeviceUpdateInstallController controllerWithStoryboard];
         vc.framewareDownloadURL = url;
         vc.type = type;
+        vc.doneCallback = ^(BOOL sucess) {
+            [self.navigationController popViewControllerAnimated:YES];
+        };
         BaseNavigationController *nav = [[BaseNavigationController alloc]initWithRootViewController:vc];
         [self presentViewController:nav animated:YES completion:nil];
     };
@@ -159,7 +187,7 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
 - (void)updateCellModel {
     
     NSMutableArray *cellsData = [[NSMutableArray alloc] initWithCapacity:2];
-    if ([self.updateModel systemFirmwareNeedUpdate:@"0.0.0"]) {
+    if (self.bootloaderMode || [self.updateModel systemFirmwareNeedUpdate:@"0.0.0"]) {
         NSString *version = self.updateModel.systemFirmwareVersion;
         NSString *versionDesc = [kLocalizedString(@"newSysAvailable") stringByAppendingString:version];
         NSString *updateDesc = ([OKLocalizableManager getCurrentLanguageType] == AppLanguageTypeZh_Hans) ? self.updateModel.systemFirmwareChangeLogCN : self.updateModel.systemFirmwareChangeLogEN;
@@ -172,18 +200,18 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
         }];
     }
     
-    if ([self.updateModel bluetoothFirmwareNeedUpdate:@"3.0.0"]) {
-        NSString *version = self.updateModel.bluetoothFirmwareVersion;
-        NSString *versionDesc = [kLocalizedString(@"newBluetoothAvailable") stringByAppendingString:version];
-        NSString *updateDesc = ([OKLocalizableManager getCurrentLanguageType] == AppLanguageTypeZh_Hans) ? self.updateModel.bluetoothFirmwareChangeLogCN : self.updateModel.bluetoothFirmwareChangeLogEN;
-        NSString *url = self.updateModel.bluetoothFirmwareUrl;
-        [cellsData addObject:@{
-            @"updateType": @(OKDeviceUpdateTypeBluetooth),
-            @"versionDesc": versionDesc,
-            @"updateDesc": updateDesc,
-            @"url": url
-        }];
-    }
+//    if ([self.updateModel bluetoothFirmwareNeedUpdate:@"3.0.0"]) {
+//        NSString *version = self.updateModel.bluetoothFirmwareVersion;
+//        NSString *versionDesc = [kLocalizedString(@"newBluetoothAvailable") stringByAppendingString:version];
+//        NSString *updateDesc = ([OKLocalizableManager getCurrentLanguageType] == AppLanguageTypeZh_Hans) ? self.updateModel.bluetoothFirmwareChangeLogCN : self.updateModel.bluetoothFirmwareChangeLogEN;
+//        NSString *url = self.updateModel.bluetoothFirmwareUrl;
+//        [cellsData addObject:@{
+//            @"updateType": @(OKDeviceUpdateTypeBluetooth),
+//            @"versionDesc": versionDesc,
+//            @"updateDesc": updateDesc,
+//            @"url": url
+//        }];
+//    }
     
     self.cellsData = cellsData;
     [self.tableView reloadData];

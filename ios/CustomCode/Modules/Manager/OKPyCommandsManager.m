@@ -369,7 +369,7 @@ static dispatch_once_t once;
         result = PyObject_CallMethod(self.pyInstance, [kInterfaceBroadcast_tx UTF8String], "(s)", [tx UTF8String]);
         
     }else if([method isEqualToString:kInterfaceget_feature]){
-        NSString *path  = [parameter safeStringForKey:@"path"];
+        NSString *path = kBluetooth_iOS;
         result = PyObject_CallMethod(self.pyInstance, [kInterfaceget_feature UTF8String], "(s)",[path UTF8String]);
         
         
@@ -431,6 +431,21 @@ static dispatch_once_t once;
         NSString *address = [parameter safeStringForKey:@"address"];
         NSString *path = kBluetooth_iOS;
         result = PyObject_CallMethod(self.pyInstance, [kInterfaceshow_address UTF8String], "(s,s)",[address UTF8String],[path UTF8String]);
+    }else if ([method isEqualToString: kInterfacefirmware_update]){
+        NSString *filename = [parameter safeStringForKey:@"filename"];
+        NSString *path = kBluetooth_iOS;
+        result = PyObject_CallMethod(self.pyInstance, [kInterfacefirmware_update UTF8String], "(s,s)",[filename UTF8String],[path UTF8String]);
+    }else if ([method isEqualToString:kInterface_wipe_device]){
+        NSString *path = kBluetooth_iOS;
+        result = PyObject_CallMethod(self.pyInstance, [kInterface_wipe_device UTF8String], "(s)", [path UTF8String]);
+    }else if ([method isEqualToString:kInterface_get_xpub_from_hw]){
+        NSString *path = kBluetooth_iOS;
+        result = PyObject_CallMethod(self.pyInstance, [kInterface_get_xpub_from_hw UTF8String], "(s)", [path UTF8String]);
+    }else if ([method isEqualToString:kInterface_set_cancel_flag]){
+        PyObject *b = PyObject_GetAttrString(PyImport_ImportModule("trezorlib.transport.bluetooth_ios"), "BlueToothIosHandler");
+        PyObject_CallMethod(b, [kInterface_set_cancel_flag UTF8String], "()", NULL);
+    }else if ([method isEqualToString:kInterface_set_user_cancel]){
+        result = PyObject_CallMethod(self.pyHwInstance, [kInterface_set_user_cancel UTF8String], "()", NULL);
     }
     if (result == NULL) {
         if (PyErr_Occurred()) {
@@ -514,8 +529,13 @@ static dispatch_once_t once;
     return @"";
 }
 
+- (void)cancel {
+    [self callInterface:kInterface_set_cancel_flag parameter:@{}];
+}
 
-
+- (void)cancelPIN {
+    [self callInterface:kInterface_set_user_cancel parameter:@{}];
+}
 //数组等过于复杂的类型  传递json字符串
 //else if ([tp_name isEqualToString:@"list"]){ //数组
 //    for (int i = 0; i < PyList_Size(result); i++) {

@@ -423,6 +423,8 @@
 "hardwareWallet.verify.return" = "返回设备";
 
 "hardwareWallet.pin" = "修改 PIN 码";
+"hardwareWallet.pin.success" = "修改 PIN 码成功";
+"hardwareWallet.pin.fail" = "修改 PIN 码失败";
 "hardwareWallet.pin.title" = "修改设备 PIN 码";
 "hardwareWallet.pin.inputPinTip" = "输入设备原 PIN 码\n以继续";
 "hardwareWallet.pin.newPinTip" = "干的好，继续根据设备\n上的 PIN 码位置\n设置您的新6位 PIN 码";
@@ -437,13 +439,18 @@
 "hardwareWallet.xpub" = "查看多重签名扩展公钥（xPub）";
 "hardwareWallet.xpub.xpub" = "扩展公钥";
 "hardwareWallet.xpub.title" = "多重签名扩展公钥";
+"hardwareWallet.xpub.copy" = "已复制到剪贴板";
 "hardwareWallet.xpub.tip" = "「扩展公钥」，也被称为XPUB。是比特币标准(BIP32)的一部分，不包含任何私钥。 \n您在创建或加入共管（多重签名）钱包时，会用到下方显示的扩展公钥。";
 
 "hardwareWallet.delete" = "删除设备";
 "hardwareWallet.delete.tip" = "这个硬件设备会在您的设备列表消失。您用这个硬件设备创建的账户依然可以正常显示，下次您使用的时候会重新配对并恢复。";
 "hardwareWallet.delete.cancel" = "撤回";
 
+"hardwareWallet.id_not_match" = "设备 ID 不一致";
+
 // Hardware Wallet Associated - end
+"success" = "成功";
+"fail" = "失败";
 
 "Search your wallet..." = "搜寻钱包中...";
 "You have created these wallets for this App, select which you want to restore" = "您曾在此 App 创建这些钱包，选择您要恢复的。";

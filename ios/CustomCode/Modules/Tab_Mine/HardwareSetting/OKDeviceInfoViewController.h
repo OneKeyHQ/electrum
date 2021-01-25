@@ -12,7 +12,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OKDeviceInfoViewController : BaseViewController
-@property (nonatomic, strong) OKDeviceModel* deviceModel;
+@property (nonatomic, strong) NSString* deviceId;
+
 + (instancetype)controllerWithStoryboard;
 @end
 

@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
+extern NSString *const OKDeviceListReloadNotificationKey;
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OKDeviceListViewController : BaseViewController

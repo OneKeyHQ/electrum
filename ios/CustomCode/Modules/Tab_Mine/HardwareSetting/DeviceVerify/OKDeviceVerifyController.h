@@ -21,6 +21,7 @@ typedef NS_ENUM(NSUInteger, OKDeviceVerifyPhase) {
 @interface OKDeviceVerifyController : BaseViewController
 + (instancetype)controllerWithStoryboard;
 @property (nonatomic, assign) OKDeviceVerifyPhase phase;
+@property (nonatomic, strong) NSString *deviceId;
 @end
 
 NS_ASSUME_NONNULL_END

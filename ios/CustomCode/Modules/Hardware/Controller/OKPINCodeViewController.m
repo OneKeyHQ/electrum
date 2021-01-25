@@ -47,7 +47,11 @@
 {
     self.title = MyLocalizedString(@"Check the PIN code", nil);
     self.iconImageView.image = [UIImage imageNamed:@"Rectangle"];
-    self.titleLabel.text = MyLocalizedString(@"Enter your 6-digit password according to the PIN code location comparison table displayed on the device", nil);
+    if (self.titleLabelText) {
+        self.titleLabel.text = self.titleLabelText;
+    } else {
+        self.titleLabel.text = MyLocalizedString(@"Enter your 6-digit password according to the PIN code location comparison table displayed on the device", nil);
+    }
     self.descLabel.text = MyLocalizedString(@"The number keys on the phone change randomly every time. The PIN number is not retrievable. You must keep it in mind", nil);
     [self.confirmBtn setTitle:MyLocalizedString(@"confirm", nil) forState:UIControlStateNormal];
     self.pwdView.userInteractionEnabled = NO;

@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (OKDevicesManager *)sharedInstance;
 
 - (void)addDevices:(OKDeviceModel *)device;
+- (void)updateDevices:(OKDeviceModel *)device;
 - (void)removeDevice:(NSString *)deviceID;
 - (nullable OKDeviceModel *)getDeviceModelWithID:(NSString *)ID;
 @end

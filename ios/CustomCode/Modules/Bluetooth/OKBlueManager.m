@@ -302,6 +302,7 @@ static dispatch_once_t once;
 }
 
 
+
 /// 停止扫描
 - (void)stopScanPeripheral {
     [self.peripheralArr removeAllObjects];
@@ -334,7 +335,9 @@ static dispatch_once_t once;
 /// 连接失败[由block回主线程]
 - (void)connectFailed {
     if (self.needConnectName.length > 0) {
-        self.connectedComplete(NO);
+        if (self.connectedComplete) {
+            self.connectedComplete(NO);
+        }
         self.needConnectName = @"";
     }
     if ([self.delegate respondsToSelector:@selector(connectFailed)]) {
@@ -366,11 +369,15 @@ static dispatch_once_t once;
                  OKDeviceModel *deviceModel  = [[OKDeviceModel alloc]initWithJson:jsonDict];
                  self.currentConnectModel = deviceModel.deviceInfo;
                  [[OKDevicesManager sharedInstance]addDevices:deviceModel];
-                 self.connectedComplete(YES);
+                 if (self.connectedComplete) {
+                     self.connectedComplete(YES);
+                 }
                  self.needConnectName = @"";
              }else{
                  [self disconnectAllPeripherals];
-                 self.connectedComplete(NO);
+                 if (self.connectedComplete) {
+                     self.connectedComplete(NO);
+                 }
                  self.needConnectName = @"";
              }
          }else{
@@ -460,10 +467,11 @@ static dispatch_once_t once;
 {
     if (self.writeCharacteristic) {
         self.currentReadDataStr = @"";
-        if (data == nil) {
+        if (!data) {
+            NSLog(@"OKBlueManager: characteristicWrite Empty data");
             return;
         }
-        [self.currentPeripheral writeValue:data forCharacteristic:self.writeCharacteristic type:CBCharacteristicWriteWithResponse];
+        [self.currentPeripheral writeValue:data forCharacteristic:self.writeCharacteristic type:CBCharacteristicWriteWithResponse]; 
     }
 }
 
@@ -534,6 +542,12 @@ static dispatch_once_t once;
         self.needConnectName = name;
         [self startScanPeripheral];
     }
+    
+    // 临时超时措施
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        self.connectedComplete = nil;
+        complete(NO);
+    });
 }
 
 @end

@@ -57,6 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong)NSArray *capabilities;
 
 @property (nonatomic, copy) NSString *deviceSysVersion; // 合成的系统固件版本号 i.e. @"1.2.3"
+@property (nonatomic, assign) BOOL verifiedDevice;
 @end
 
 NS_ASSUME_NONNULL_END

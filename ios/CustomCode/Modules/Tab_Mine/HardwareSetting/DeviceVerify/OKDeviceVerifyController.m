@@ -10,6 +10,7 @@
 #import "OKDeviceVerifyResultController.h"
 
 @interface OKDeviceVerifyController ()
+@property (weak, nonatomic) IBOutlet UILabel *nameLabel;
 @property (weak, nonatomic) IBOutlet UILabel *titleLabel;
 @property (weak, nonatomic) IBOutlet UIView *tagLabel;
 @property (weak, nonatomic) IBOutlet UILabel *descLabel;
@@ -47,7 +48,10 @@
     [self.stage2ImageView.layer addAnimation:self.rotationAnimation forKey:@"rotationAnimation"];
     [self.stage3ImageView.layer addAnimation:self.rotationAnimation forKey:@"rotationAnimation"];
     self.phase = OKDeviceVerifyPhaseConnecting;
-
+    OKDeviceModel *deviceModel = [[OKDevicesManager sharedInstance] getDeviceModelWithID:self.deviceId];
+    if (deviceModel.deviceInfo.ble_name) {
+        self.nameLabel.text = deviceModel.deviceInfo.ble_name;
+    }
     [self verifyHardware];
 }
 
@@ -89,6 +93,7 @@
     self.phase = OKDeviceVerifyPhaseDone;
     OKDeviceVerifyResultController *vc = [OKDeviceVerifyResultController controllerWithStoryboard];
     vc.isPassed = isPassed;
+    vc.name = self.nameLabel.text;
     vc.doneCallback = ^{
         [self.navigationController popViewControllerAnimated:YES];
         [self.navigationController popViewControllerAnimated:YES];
