@@ -2856,7 +2856,7 @@ class AndroidCommands(commands.Commands):
                     raise BaseException(UnavailablePrivateKey())
             elif flag == "keystore":
                 try:
-                    Account.decrypt(data, password).hex()
+                    Account.decrypt(json.loads(data), password).hex()
                 except BaseException as e:
                     raise BaseException(_("Incorrect eth keystore."))
             elif flag == "public":
