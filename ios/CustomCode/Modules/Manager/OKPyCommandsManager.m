@@ -427,6 +427,10 @@ static dispatch_once_t once;
     }else if ([method isEqualToString:kInterface_set_write_success_flag]){
         PyObject *b = PyObject_GetAttrString(PyImport_ImportModule("trezorlib.transport.bluetooth_ios"), "BlueToothIosHandler");
         PyObject_CallMethod(b, [kInterface_set_write_success_flag UTF8String], "()", NULL);
+    }else if ([method isEqualToString:kInterfaceshow_address]){
+        NSString *address = [parameter safeStringForKey:@"address"];
+        NSString *path = kBluetooth_iOS;
+        result = PyObject_CallMethod(self.pyInstance, [kInterfaceshow_address UTF8String], "(s,s)",[address UTF8String],[path UTF8String]);
     }
     if (result == NULL) {
         if (PyErr_Occurred()) {

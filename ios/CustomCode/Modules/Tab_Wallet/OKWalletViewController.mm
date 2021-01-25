@@ -630,6 +630,7 @@
 - (IBAction)receiveBtnClick:(UIButton *)sender {
     OKReceiveCoinViewController *receiveCoinVc = [OKReceiveCoinViewController receiveCoinViewController];
     receiveCoinVc.coinType = kWalletManager.currentWalletInfo.coinType;
+    receiveCoinVc.walletType = [kWalletManager getWalletDetailType];
     [self.navigationController pushViewController:receiveCoinVc animated:YES];
 }
 #pragma mark - 钱包详情

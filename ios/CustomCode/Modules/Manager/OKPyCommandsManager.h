@@ -102,7 +102,7 @@
 #define kInterfacebixin_load_device        @"bixin_load_device" //备份钱包到硬件
 #define kInterfacebixin_backup_device      @"bixin_backup_device" //从硬件恢复HD
 #define kInterfacehardware_verify           @"hardware_verify" // 硬件验证信息获取
-
+#define kInterfaceshow_address              @"show_address" //硬件钱包核对地址
 #define kInterface_set_write_success_flag         @"set_write_success_flag" // 在蓝牙收到写入成功的回调时，需要调用
 #define kInterface_set_response        @"set_response" // 返回数据，唯一参数为response，表示 组装好的蓝牙数据
 

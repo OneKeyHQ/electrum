@@ -457,3 +457,5 @@
 "Restore your HD wallet completely. Any wallet derived from the original HD mnemonic will be restored" = "完整恢复您的 HD 钱包，任何由原 HD 助记词派生的钱包都将获得复原。";
 "This is a special device that stores HD wallet mnemonic words. You can..." = "🔑 这是一台存储了 HD 钱包助记词的特殊设备，您可以...";
 "Restore the phone HD wallet" = "恢复手机 HD 钱包";
+"Have to check" = "已核对";
+"Hardware wallet checking" = "硬件钱包核对中";
