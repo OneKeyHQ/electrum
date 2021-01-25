@@ -29,7 +29,7 @@ from electrum.invoices import (PR_TYPE_ONCHAIN, PR_TYPE_LN, PR_DEFAULT_EXPIRATIO
                                LNInvoice, pr_expiration_values, Invoice, OnchainInvoice)
 from electrum import bitcoin, constants
 from electrum.transaction import Transaction, tx_from_any, PartialTransaction, PartialTxOutput
-from electrum.util import parse_URI, InvalidBitcoinURI, TxMinedInfo, maybe_extract_bolt11_invoice
+from electrum.util import parse_URI, InvalidAddressURI, TxMinedInfo, maybe_extract_bolt11_invoice
 from electrum.plugin import run_hook
 from electrum.wallet import InternalAddressCorruption
 from electrum import simple_config
@@ -184,7 +184,7 @@ class SendScreen(CScreen):
             return
         try:
             uri = parse_URI(text, self.app.on_pr, loop=self.app.asyncio_loop)
-        except InvalidBitcoinURI as e:
+        except InvalidAddressURI as e:
             self.app.show_info(_("Error parsing URI") + f":\n{e}")
             return
         self.parsed_URI = uri

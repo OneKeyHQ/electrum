@@ -904,93 +904,100 @@ def block_explorer_URL(config: 'SimpleConfig', kind: str, item: str) -> Optional
 #_ud = re.compile('%([0-9a-hA-H]{2})', re.MULTILINE)
 #urldecode = lambda x: _ud.sub(lambda m: chr(int(m.group(1), 16)), x)
 
-class InvalidBitcoinURI(Exception): pass
+
+class InvalidAddressURI(Exception):
+    pass
 
 
-# TODO rename to parse_bip21_uri or similar
 def parse_URI(uri: str, on_pr: Callable = None, *, loop=None) -> dict:
     """Raises InvalidBitcoinURI on malformed URI."""
     from . import bitcoin
     from .bitcoin import COIN
+    from .pywalib import PyWalib
 
     if not isinstance(uri, str):
-        raise InvalidBitcoinURI(f"expected string, not {repr(uri)}")
-
-    if ':' not in uri:
-        if not bitcoin.is_address(uri):
-            raise InvalidBitcoinURI("Not a bitcoin address")
-        return {'address': uri}
+        raise InvalidAddressURI(f"expected string, not {repr(uri)}")
 
     u = urllib.parse.urlparse(uri)
-    if u.scheme != 'bitcoin':
-        raise InvalidBitcoinURI("Not a bitcoin URI")
     address = u.path
 
     # python for android fails to parse query
-    if address.find('?') > 0:
-        address, query = u.path.split('?')
-        pq = urllib.parse.parse_qs(query)
+    if "?" in address:
+        address, query = address.split("?")
     else:
-        pq = urllib.parse.parse_qs(u.query)
+        query = u.query
 
-    for k, v in pq.items():
-        if len(v) != 1:
-            raise InvalidBitcoinURI(f'Duplicate Key: {repr(k)}')
+    if not address:
+        raise InvalidAddressURI(f"Address not found. uri: {address}")
 
-    out = {k: v[0] for k, v in pq.items()}
-    if address:
-        if not bitcoin.is_address(address):
-            raise InvalidBitcoinURI(f"Invalid bitcoin address: {address}")
-        out['address'] = address
-    if 'amount' in out:
-        am = out['amount']
+    res = dict(address=address)
+
+    if bitcoin.is_address(address):
+        res["coin"] = "btc"
+    elif PyWalib.web3.isAddress(address):
+        res["coin"] = "eth"
+
+    qs = {k: v[0] for k, v in urllib.parse.parse_qs(query).items() if k and v}
+
+    if 'amount' in qs: # bip-0021
         try:
+            am = qs['amount']
             m = re.match(r'([0-9.]+)X([0-9])', am)
             if m:
                 k = int(m.group(2)) - 8
-                amount = Decimal(m.group(1)) * pow(  Decimal(10) , k)
+                amount = Decimal(m.group(1)) * pow(10, Decimal(k)) / COIN
             else:
-                amount = Decimal(am) * COIN
-            out['amount'] = int(amount)
-        except Exception as e:
-            raise InvalidBitcoinURI(f"failed to parse 'amount' field: {repr(e)}") from e
-    if 'message' in out:
-        out['message'] = out['message']
-        out['memo'] = out['message']
-    if 'time' in out:
-        try:
-            out['time'] = int(out['time'])
-        except Exception as e:
-            raise InvalidBitcoinURI(f"failed to parse 'time' field: {repr(e)}") from e
-    if 'exp' in out:
-        try:
-            out['exp'] = int(out['exp'])
-        except Exception as e:
-            raise InvalidBitcoinURI(f"failed to parse 'exp' field: {repr(e)}") from e
-    if 'sig' in out:
-        try:
-            out['sig'] = bh2u(bitcoin.base_decode(out['sig'], base=58))
-        except Exception as e:
-            raise InvalidBitcoinURI(f"failed to parse 'sig' field: {repr(e)}") from e
+                amount = Decimal(am)
 
-    r = out.get('r')
-    sig = out.get('sig')
-    name = out.get('name')
+            res['amount'] = amount
+        except Exception:
+            pass
+
+    if "value" in qs:
+        try:
+            amount = Decimal(qs["value"]) / pow(10, Decimal(qs.get("decimal", 0)))
+            res["amount"] = amount
+        except Exception:
+            pass
+
+    if "message" in qs:
+        res["message"] = res["message"]
+        res["memo"] = qs["message"]
+
+    def safe_convert(src: dict, dest: dict, key: str, convert: Callable):
+        if key in src:
+            try:
+                dest[key] = convert(src[key])
+            except Exception:
+                pass
+
+    safe_convert(qs, res, "time", int)
+    safe_convert(qs, res, "exp", int)
+
+    safe_convert(qs, res, "r", str)
+    safe_convert(qs, res, "sig", lambda v: bh2u(bitcoin.base_decode(v, base=58)))
+    safe_convert(qs, res, "name", str)
+
+    r = res.get('r')
+    sig = res.get('sig')
+    name = res.get('name')
+
     if on_pr and (r or (name and sig)):
         @log_exceptions
         async def get_payment_request():
             from . import paymentrequest as pr
             if name and sig:
-                s = pr.serialize_request(out).SerializeToString()
+                s = pr.serialize_request(res).SerializeToString()
                 request = pr.PaymentRequest(s)
             else:
                 request = await pr.get_payment_request(r)
             if on_pr:
                 on_pr(request)
+
         loop = loop or asyncio.get_event_loop()
         asyncio.run_coroutine_threadsafe(get_payment_request(), loop)
 
-    return out
+    return res
 
 
 def create_bip21_uri(addr, amount_sat: Optional[int], message: Optional[str],
