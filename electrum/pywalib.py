@@ -513,6 +513,39 @@ class PyWalib:
         return output_txs
 
     @classmethod
+    def get_transaction_info(cls, txid) -> dict:
+        tx = cls.get_explorer().get_transaction_by_txid(txid)
+        last_price = Decimal(cls.get_coin_price("eth") or "0")
+        amount = Decimal(cls.web3.fromWei(tx.value, "ether"))
+        fiat = last_price * amount
+        fee = Decimal(cls.web3.fromWei(tx.fee.usage * tx.fee.price_per_unit, "ether"))
+        fee_fiat = last_price * fee
+        tx_status = _("Unconfirmed")
+        if tx.status == TransactionStatus.CONFIRMED:
+            tx_status = (
+                _("{} confirmations").format(tx.block_header.confirmations)
+                if tx.block_header and tx.block_header.confirmations > 0
+                else _("Confirmed")
+            )
+
+        return {
+            'txid': txid,
+            'can_broadcast': False,
+            'amount': amount,
+            "fiat": fiat,
+            'fee': fee,
+            'fee_fiat': fee_fiat,
+            'description': "",
+            'tx_status': tx_status,
+            'sign_status': None,
+            'output_addr': [tx.target],
+            'input_addr': [tx.source],
+            'height': tx.block_header.block_number,
+            'cosigner': [],
+            'tx': tx.raw_tx,
+        }
+
+    @classmethod
     def tx_list_ping(cls, recovery=False):
         try:
             speed_list = {}

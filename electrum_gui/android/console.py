@@ -1619,34 +1619,35 @@ class AndroidCommands(commands.Commands):
             info['date'] = util.format_time(int(time[0][1]))
         list_info.append(info)
 
-    def get_tx_info(self, tx_hash, tx_list=None, coin='btc'):
+    def get_tx_info(self, tx_hash, coin="btc", tx_list=None):
         '''
         Get detail info by tx_hash
         :param tx_hash: tx_hash as string
         :param tx_list: Not for app
         :param coin: btc/eth
         :return:
-            if coin is btc, return data like:
-                    Json like {'txid': ,
-                            'can_broadcast': true,
-                            'amount': "",
-                            'fee': "",
-                            'description': "",
-                            'tx_status': "",
-                            'sign_status': "",
-                            'output_addr': "",
-                            'input_addr': ["addr", ],
-                            'height': 2000,
-                            'cosigner': "",
-                            'tx': "",
-                            'show_status': [1, _("Unconfirmed")]}
-            if coin is eth, return data like:
-                    Need to add(TODO)
+            Json like {'txid': ,
+                    'can_broadcast': true,
+                    'amount': "",
+                    'fee': "",
+                    'description': "",
+                    'tx_status': "",
+                    'sign_status': "",
+                    'output_addr': "",
+                    'input_addr': ["addr", ],
+                    'height': 2000,
+                    'cosigner': "",
+                    'tx': "",
+                    'show_status': [1, _("Unconfirmed")]}
         '''
         try:
             self._assert_wallet_isvalid()
         except Exception as e:
             raise BaseException(e)
+
+        if coin == "eth":
+            return self.get_eth_tx_info(tx_hash)
+
         tx = self.wallet.db.get_transaction(tx_hash)
         if not tx:
             local_tx = self.txdb.get_tx_info(self.wallet.get_addresses()[0])
@@ -1663,6 +1664,15 @@ class AndroidCommands(commands.Commands):
             raise e
         tx.add_info_from_wallet(self.wallet)
         return self.get_details_info(tx, tx_list=tx_list)
+
+    def get_eth_tx_info(self, tx_hash) -> str:
+        tx = self.pywalib.get_transaction_info(tx_hash)
+        fiat = self.daemon.fx.format_amount_and_units(tx.pop("fiat") * COIN) or f"0 {self.ccy}"
+        fee_fiat = self.daemon.fx.format_amount_and_units(tx.pop("fee_fiat") * COIN) or f"0 {self.ccy}"
+        tx["amount"] = f"{tx['amount']} ETH ({fiat})"
+        tx["fee"] = f"{tx['fee']} ETH ({fee_fiat})"
+
+        return json.dumps(tx, cls=DecimalEncoder)
 
     def get_card(self, tx_hash, tx_mined_status, delta, fee, balance):
         try:
