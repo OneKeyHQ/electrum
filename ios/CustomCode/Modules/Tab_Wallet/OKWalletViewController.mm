@@ -316,7 +316,14 @@
     if ([kWalletManager getWalletDetailType] == OKWalletTypeHardware) {
         self.signatureBtn.hidden = NO;
         self.hwBgView.hidden = NO;
-        self.hwWalletNameLabel.text = @"设备信息 从保存的数据库中取";
+        OKDeviceModel *deviceModel = [[OKDevicesManager sharedInstance]getDeviceModelWithID:kWalletManager.currentWalletInfo.device_id];
+        if (deviceModel.deviceInfo.label.length > 0 && deviceModel.deviceInfo.label != nil) {
+            self.hwWalletNameLabel.text = deviceModel.deviceInfo.label;
+        }else if (deviceModel.deviceInfo.ble_name.length > 0 && deviceModel.deviceInfo.ble_name != nil){
+            self.hwWalletNameLabel.text = deviceModel.deviceInfo.ble_name;
+        }else{
+            self.hwWalletNameLabel.text = deviceModel.deviceInfo.device_id;
+        }
     }else{
         self.signatureBtn.hidden = YES;
         self.hwBgView.hidden = YES;

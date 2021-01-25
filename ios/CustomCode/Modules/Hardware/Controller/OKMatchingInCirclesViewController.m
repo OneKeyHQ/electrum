@@ -79,6 +79,14 @@
         [weakself.terminalTimer invalidate];
         weakself.terminalTimer = nil;
         weakself.completeCons.constant = - (SCREEN_HEIGHT - 170);
+        
+//        for (OKPeripheralInfo *infoModel in self.self.dataSource) {
+//            if ([kOKBlueManager.currentConnectModel.ble_name isEqualToString:infoModel.peripheral.name]) {
+//                [kOKBlueManager connectPeripheral:infoModel.peripheral];
+//                return;
+//            }
+//        }
+        
         [weakself changeToListBgView];
         [weakself.tableView reloadData];
         [UIView animateWithDuration:0.5 animations:^{
@@ -172,6 +180,8 @@
 }
 
 - (void)getScanResultPeripherals:(NSArray *)peripheralInfoArr {
+    NSLog(@"peripheralInfoArr == %@",peripheralInfoArr);
+    
     OKWeakSelf(self)
     // 这里获取到扫描到的蓝牙外设数组、添加至数据源中
     if (self.dataSource.count>0) {
@@ -191,20 +201,19 @@
 - (void)connectFailed {
     // 连接失败、做连接失败的处理
 }
-- (void)subscribeComplete
+- (void)subscribeComplete:(NSDictionary *)jsonDict
 {
     switch (_type) {
         case OKMatchingTypeNone:
         {
             kOKBlueManager.currentReadDataStr = @"";
-            dispatch_async(dispatch_get_global_queue(0, 0), ^{
-               NSString *jsonStr =  [kPyCommandsManager callInterface:kInterfaceget_feature parameter:@{@"path":kBluetooth_iOS}];
-                if (jsonStr != nil) {
-                    OKDeviceInfoModel *model = [OKDeviceInfoModel mj_objectWithKeyValues:jsonStr];
-                    kOKBlueManager.model = model;
+                if (jsonDict != nil) {
+                    OKDeviceModel *deviceModel  = [[OKDeviceModel alloc]initWithJson:jsonDict];
+                    kOKBlueManager.currentConnectModel = deviceModel.deviceInfo;
+                    [[OKDevicesManager sharedInstance]addDevices:deviceModel];
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        if (model.initialized ) {
-                            if (model.backup_only) {
+                        if (deviceModel.deviceInfo.initialized ) {
+                            if (deviceModel.deviceInfo.backup_only) {
                                 OKSpecialEquipmentViewController *SpecialEquipmentVc = [OKSpecialEquipmentViewController specialEquipmentViewController];
                                 [self.navigationController pushViewController:SpecialEquipmentVc animated:YES];
                             }else{
@@ -216,10 +225,7 @@
                             [self.navigationController pushViewController:discoverNewDeviceVc animated:YES];
                         }
                     });
-                }else{
-                    
                 }
-            });
         }
             break;
         case OKMatchingTypeBackup2Hw:

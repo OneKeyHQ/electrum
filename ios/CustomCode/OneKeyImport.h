@@ -59,5 +59,6 @@
 #import "TYAttributedLabel.h"
 #import "OKBlueManager.h"
 #import "OKHwNotiManager.h"
+#import "OKDevicesManager.h"
 
 #endif /* OneKeyImport_h */

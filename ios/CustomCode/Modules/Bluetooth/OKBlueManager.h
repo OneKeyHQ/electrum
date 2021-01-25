@@ -88,10 +88,12 @@ typedef enum {
  */
 - (void)readData:(NSData *)valueData;
 
-- (void)subscribeComplete;
+- (void)subscribeComplete:(NSDictionary *)jsonDict;
 
 
 @end
+
+typedef void(^ConnectedComplete)(BOOL isSuccess);
 
 @interface OKBlueManager : NSObject
 //外设的服务UUID值
@@ -106,8 +108,9 @@ typedef enum {
 
 - (NSString *)getStrValueInUD;
 - (void)saveStrValueInUD:(NSString *)bleUUID;
-
-@property (nonatomic,strong)OKDeviceInfoModel *model;
+- (BOOL)isConnectedCurrentDevice;
+- (void)startScanAndConnectWithName:(NSString *)name complete:(ConnectedComplete)complete;
+@property (nonatomic,strong)OKDeviceInfoModel *currentConnectModel;
 @property (nonatomic, weak) id<OKBabyBluetoothManageDelegate> delegate;
 
 
