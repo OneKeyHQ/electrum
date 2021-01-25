@@ -9,6 +9,7 @@ import androidx.annotation.StringRes;
 
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
+import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.ui.activity.FindNormalDeviceActivity;
 import org.haobtc.onekey.ui.base.BaseFragment;
@@ -71,6 +72,7 @@ public class NormalActiveSuccessfulFragment extends BaseFragment {
         switch (view.getId()) {
             case R.id.back_wallet:
                 Intent intent = new Intent(getContext(), FindNormalDeviceActivity.class);
+                intent.putExtra(Constant.DEVICE_ID, FindNormalDeviceActivity.deviceId);
                 startActivity(intent);
                 getActivity().finish();
                 break;

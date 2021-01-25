@@ -312,6 +312,10 @@ public class SearchDevicesActivity extends BaseActivity implements BleDeviceAdap
                 default:
                     // 配对过来的逻辑
                     if (!features.isInitialized()) {
+                        Logger.e(features.toString());
+                        // todo 重构硬件连接
+                        // 要删除的，不能这么写。为了解决激活后再继续创建钱包，硬件 ID 为空。
+                        FindNormalDeviceActivity.deviceId = features.getDeviceId();
                         startActivity(new Intent(this, FindUnInitDeviceActivity.class));
                         finish();
                     } else if (features.isBackupOnly()) {

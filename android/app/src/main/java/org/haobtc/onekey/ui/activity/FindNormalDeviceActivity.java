@@ -30,6 +30,7 @@ public class FindNormalDeviceActivity extends BaseActivity {
     TextView recoveryUsedWallet;
     @BindView(R.id.multi_sig_wallet)
     TextView multiSigWallet;
+    @Deprecated
     public static String deviceId;
     @Override
     public void init() {
