@@ -44,6 +44,7 @@ import java.util.regex.Pattern;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
 
 import static java.util.regex.Pattern.compile;
 
@@ -53,6 +54,8 @@ public abstract class BaseActivity extends AppCompatActivity {
     private Unbinder bind;
     public Context mContext;
     private MyDialog mProgressDialog;
+    protected final CompositeDisposable mCompositeDisposable=new CompositeDisposable();
+
 
     @SuppressLint("SourceLockedOrientationActivity")
     @Override
@@ -165,6 +168,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        mCompositeDisposable.dispose();
         super.onDestroy();
 
         dismissProgress();

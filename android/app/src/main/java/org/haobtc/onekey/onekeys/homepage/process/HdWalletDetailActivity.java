@@ -18,12 +18,9 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.LayoutRes;
 import androidx.core.content.res.ResourcesCompat;
 
-import com.chaquo.python.Kwarg;
-import com.chaquo.python.PyObject;
 import com.google.common.base.Strings;
 import com.lxj.xpopup.XPopup;
 import com.orhanobut.logger.Logger;
@@ -39,7 +36,6 @@ import org.haobtc.onekey.bean.CurrentAddressDetail;
 import org.haobtc.onekey.bean.LocalWalletInfo;
 import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.constant.Constant;
-import org.haobtc.onekey.constant.StringConstant;
 import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.constant.Vm.WalletType;
 import org.haobtc.onekey.event.FixWalletNameEvent;
@@ -59,15 +55,20 @@ import org.haobtc.onekey.ui.dialog.custom.CustomReSetBottomPopup;
 import org.haobtc.onekey.utils.ClipboardUtils;
 import org.haobtc.onekey.utils.Daemon;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.core.SingleEmitter;
 import io.reactivex.rxjava3.core.SingleOnSubscribe;
 import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME;
@@ -109,8 +110,6 @@ public class HdWalletDetailActivity extends BaseActivity {
     RelativeLayout exportWordLayout;
     @BindView(R.id.rel_export_keystore)
     View exportKeystoreLayout;
-    private String type;
-    private boolean isBackup;
     private SharedPreferences preferences;
     private String showWalletType;
     private int currentOperation;
@@ -136,7 +135,6 @@ public class HdWalletDetailActivity extends BaseActivity {
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         showWalletType = preferences.getString(CURRENT_SELECTED_WALLET_TYPE, "");
         String hdWalletName = getIntent().getStringExtra("hdWalletName");
-        isBackup = getIntent().getBooleanExtra("isBackup", false);
 
         Vm.CoinType coinType = Vm.convertCoinType(showWalletType);
         @WalletType int walletType = Vm.convertWalletType(showWalletType);
@@ -246,12 +244,14 @@ public class HdWalletDetailActivity extends BaseActivity {
                 export(view.getId());
                 break;
             case R.id.rel_delete_wallet:
-                if (StringConstant.Btc_Derived_Standard.equals(showWalletType)) {
-                    showDeleteDialog();
+                boolean hasBackup = PyEnv.hasBackup(HdWalletDetailActivity.this);
+                int walletType = Vm.convertWalletType(showWalletType);
+                if (walletType == WalletType.MAIN) {
+                    showDeleteDialog(hasBackup);
                 } else {
-                    if (showWalletType.contains(StringConstant.HW) || showWalletType.contains(StringConstant.Watch)) {
+                    if (walletType == WalletType.HARDWARE || walletType == WalletType.IMPORT_WATCH) {
                         DeleteWalletTipsDialog dialog = new DeleteWalletTipsDialog();
-                        if (showWalletType.contains(StringConstant.Watch)) {
+                        if (walletType == WalletType.IMPORT_WATCH) {
                             Bundle bundle = new Bundle();
                             bundle.putInt(Constant.WALLET_TYPE, 1);
                             dialog.setArguments(bundle);
@@ -261,7 +261,7 @@ public class HdWalletDetailActivity extends BaseActivity {
                         Intent intent = new Intent(HdWalletDetailActivity.this, DeleteWalletActivity.class);
                         intent.putExtra("importHdword", "deleteSingleWallet");
                         intent.putExtra("walletName", textWalletName.getText().toString());
-                        intent.putExtra("isBackup", isBackup);
+                        intent.putExtra("isBackup", hasBackup);
                         intent.putExtra("delete_wallet_type", showWalletType);
                         startActivity(intent);
                     }
@@ -272,14 +272,19 @@ public class HdWalletDetailActivity extends BaseActivity {
         }
     }
 
-    private void showDeleteDialog () {
+    /**
+     * 删除主钱包的警告弹窗
+     *
+     * @param hasBackup 是否备份
+     */
+    private void showDeleteDialog(boolean hasBackup) {
         new XPopup.Builder(mContext)
                 .dismissOnTouchOutside(true)
                 .isDestroyOnDismiss(true)
                 .asCustom(new CustomReSetBottomPopup(mContext, new CustomReSetBottomPopup.onClick() {
                     @Override
-                    public void onConfirm () {
-                        if (!isBackup) {
+                    public void onConfirm() {
+                        if (!hasBackup) {
                             showBackDialog();
                         } else {
                             doSelect();
@@ -288,31 +293,50 @@ public class HdWalletDetailActivity extends BaseActivity {
                 }, CustomReSetBottomPopup.deleteHdChildren)).show();
     }
 
-    private void doSelect () {
-        PyResponse<String> response = PyEnv.getDerivedNum("btc");
-        if (Strings.isNullOrEmpty(response.getErrors())) {
-            int coinNum = Integer.parseInt(response.getResult());
-            if (coinNum <= 1) {
-                showDeleteHDRootWallet();
-            } else {
-                showDeleteHdDeriveWallet();
-            }
-        }
+    private void doSelect() {
+        mCompositeDisposable.add(Single
+                .create((SingleOnSubscribe<Long>) emitter -> {
+                    long count = 0L;
+                    for (Vm.CoinType coinType : Vm.CoinType.values()) {
+                        if (!coinType.enable) {
+                            continue;
+                        }
+
+                        try {
+                            PyResponse<String> response = PyEnv.getDerivedNum(coinType);
+                            if (Strings.isNullOrEmpty(response.getErrors())) {
+                                count += Long.parseLong(response.getResult());
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    emitter.onSuccess(count);
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(coinNum -> {
+                    if (coinNum <= 1) {
+                        showDeleteHDRootWallet();
+                    } else {
+                        showDeleteHdDeriveWallet();
+                    }
+                }));
     }
 
-    private void showDeleteHdDeriveWallet () {
+    private void showDeleteHdDeriveWallet() {
         currentOperation = DELETE_HD_DERIVED;
         startActivity(new Intent(this, SoftPassActivity.class));
     }
 
 
-    private void showDeleteHDRootWallet () {
+    private void showDeleteHDRootWallet() {
         new XPopup.Builder(mContext)
                 .dismissOnTouchOutside(true)
                 .isDestroyOnDismiss(true)
                 .asCustom(new CustomReSetBottomPopup(mContext, new CustomReSetBottomPopup.onClick() {
                     @Override
-                    public void onConfirm () {
+                    public void onConfirm() {
                         deleteHdRoot();
                     }
                 }, CustomReSetBottomPopup.deleteHdRoot)).show();
@@ -331,11 +355,10 @@ public class HdWalletDetailActivity extends BaseActivity {
         hdWalletIsBackup();
     }
 
-    private void hdWalletIsBackup () {
+    private void hdWalletIsBackup() {
         Log.i("deleteHdWalletNamejxm", "hdWalletIsBackup: " + deleteHdWalletName);
         try {
-            PyObject data = Daemon.commands.callAttr("get_backup_info", new Kwarg("name", deleteHdWalletName));
-            boolean isBackup = data.toBoolean();
+            boolean isBackup = PyEnv.hasBackup(HdWalletDetailActivity.this);
             if (isBackup) {
                 Intent intent = new Intent(mContext, DeleteWalletActivity.class);
                 intent.putExtra("deleteHdWalletName", deleteHdWalletName);
@@ -481,9 +504,9 @@ public class HdWalletDetailActivity extends BaseActivity {
                 // 禁止EditText输入空格
                 if (s.toString().contains(" ")) {
                     String[] str = s.toString().split(" ");
-                    StringBuffer sb = new StringBuffer();
-                    for (int i = 0; i < str.length; i++) {
-                        sb.append(str[i]);
+                    StringBuilder sb = new StringBuilder();
+                    for (String value : str) {
+                        sb.append(value);
                     }
                     walletName.setText(sb.toString());
                     walletName.setSelection(start);

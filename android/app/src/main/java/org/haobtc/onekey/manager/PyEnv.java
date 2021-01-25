@@ -1076,10 +1076,10 @@ public final class PyEnv {
      *
      * @return
      */
-    public static PyResponse<String> getDerivedNum(String coin) {
+    public static PyResponse<String> getDerivedNum(Vm.CoinType coinType) {
         PyResponse<String> response = new PyResponse<>();
         try {
-            String res = sCommands.callAttr(PyConstant.GET_DEVIRED_NUM, coin).toString();
+            String res = sCommands.callAttr(PyConstant.GET_DEVIRED_NUM, coinType.name()).toString();
             response.setResult(res);
         } catch (Exception e) {
             Exception exception = HardWareExceptions.exceptionConvert(e);
