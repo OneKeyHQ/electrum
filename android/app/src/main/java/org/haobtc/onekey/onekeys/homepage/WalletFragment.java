@@ -31,12 +31,14 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.sign.SignActivity;
+import org.haobtc.onekey.activities.transaction.CheckChainDetailWebActivity;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.HardwareFeatures;
 import org.haobtc.onekey.bean.LocalWalletInfo;
 import org.haobtc.onekey.bean.MainSweepcodeBean;
 import org.haobtc.onekey.business.wallet.AccountManager;
 import org.haobtc.onekey.business.wallet.SystemConfigManager;
+import org.haobtc.onekey.constant.StringConstant;
 import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.event.BackupCompleteEvent;
 import org.haobtc.onekey.event.BackupEvent;
@@ -463,7 +465,8 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
     }
 
     @SingleClick(value = 1000L)
-    @OnClick({R.id.rel_check_wallet, R.id.img_scan, R.id.img_Add, R.id.rel_create_hd, R.id.rel_recovery_hd, R.id.rel_pair_hard, R.id.rel_wallet_detail, R.id.linear_send, R.id.linear_receive, R.id.linear_sign, R.id.rel_now_back_up, R.id.rel_bi_detail})
+    @OnClick({R.id.rel_check_wallet, R.id.img_scan, R.id.img_Add, R.id.rel_create_hd, R.id.rel_recovery_hd, R.id.rel_pair_hard,
+            R.id.rel_wallet_detail, R.id.linear_send, R.id.linear_receive, R.id.linear_sign, R.id.rel_now_back_up, R.id.rel_bi_detail, R.id.img_bottom})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.rel_check_wallet:
@@ -544,6 +547,9 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
                             coinType, ble
                     );
                 }
+                break;
+            case R.id.img_bottom:
+                CheckChainDetailWebActivity.start(getActivity(), StringConstant.NEW_GUIDE, StringConstant.NEW_GUIDE_URL);
                 break;
             default:
                 break;
