@@ -1509,7 +1509,7 @@ class AndroidCommands(commands.Commands):
         all_tx_len = history_len + local_len
         if start is None or end is None:
             start = 0
-            if search_type is 'receive':
+            if search_type == 'receive':
                 end = history_len
             else:
                 end = all_tx_len
