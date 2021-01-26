@@ -44,6 +44,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *walletName;
 @property (weak, nonatomic) IBOutlet UITableView *selectCreateTableView;
 @property (weak, nonatomic) IBOutlet UIButton *scanBtn;
+@property (weak, nonatomic) IBOutlet UIImageView *bannerImageView;
 
 @property (weak, nonatomic) IBOutlet UIView *leftView;
 @property (weak, nonatomic) IBOutlet UIView *leftViewBg;
@@ -268,6 +269,10 @@
     self.eyeBtn.userInteractionEnabled = YES;
     [self.eyebgView addGestureRecognizer:tapeye];
     [self changeEye];
+    
+    UITapGestureRecognizer *tapBanner = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapBanner)];
+    self.bannerImageView.userInteractionEnabled = YES;
+    [self.bannerImageView addGestureRecognizer:tapBanner];
 }
 #pragma mark - 检查钱包状态并重置UI
 - (void)checkWalletResetUI
@@ -401,6 +406,12 @@
     }else{
         self.eyeBtn.image = [UIImage imageNamed:@"hide_on"];
     }
+}
+
+- (void)tapBanner {
+    NSString *url = @"https://onekey.zendesk.com/hc/zh-cn/articles/360002182556-App-%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B%E6%95%99%E7%A8%8B";
+    WebViewVC * webVC = [WebViewVC loadWebViewControllerWithTitle:nil url:url];
+    [self.navigationController pushViewController:webVC animated:YES];
 }
 
 #pragma mark - 切换钱包

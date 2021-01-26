@@ -120,6 +120,9 @@ typedef NS_ENUM(NSInteger, WebViewLoadType) {
     if (_webTag != WebViewTagNativeDiscover) {
         //添加进度条
         [self.view addSubview:self.progressView];
+        if (self.navigationController.navigationBar) {
+            self.progressView.y = [UIApplication sharedApplication].statusBarFrame.size.height + self.navigationController.navigationBar.height;
+        }
     }
     
     if (@available(iOS 11.0, *)) { // 解决UIScrollView自动预留空白问题

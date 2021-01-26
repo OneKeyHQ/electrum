@@ -175,13 +175,12 @@
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="NEY-pw-BZ3">
                                         <rect key="frame" x="0.0" y="445" width="414" height="421"/>
                                         <subviews>
-                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Group 80" translatesAutoresizingMaskIntoConstraints="NO" id="Jjk-Zq-dVa">
-                                                <rect key="frame" x="20" y="45" width="374" height="376"/>
+                                            <imageView clipsSubviews="YES" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="home_banner" translatesAutoresizingMaskIntoConstraints="NO" id="Jjk-Zq-dVa">
+                                                <rect key="frame" x="20" y="45" width="374" height="355"/>
                                             </imageView>
                                         </subviews>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
-                                            <constraint firstAttribute="bottom" secondItem="Jjk-Zq-dVa" secondAttribute="bottom" id="8CB-as-MDG"/>
                                             <constraint firstItem="Jjk-Zq-dVa" firstAttribute="top" secondItem="NEY-pw-BZ3" secondAttribute="top" constant="45" id="BN0-Kx-oZu"/>
                                             <constraint firstAttribute="trailing" secondItem="Jjk-Zq-dVa" secondAttribute="trailing" constant="20" id="G4D-Fu-dKY"/>
                                             <constraint firstItem="Jjk-Zq-dVa" firstAttribute="leading" secondItem="NEY-pw-BZ3" secondAttribute="leading" constant="20" id="xJd-Q3-22A"/>
@@ -663,6 +662,7 @@
                         <outlet property="backupDescLabel" destination="BDn-LK-cwy" id="htM-vE-jxP"/>
                         <outlet property="backupTitleLabel" destination="xim-L3-bCe" id="Gcg-Pc-VHx"/>
                         <outlet property="balance" destination="IbA-1A-mzJ" id="i6a-OZ-sS5"/>
+                        <outlet property="bannerImageView" destination="Jjk-Zq-dVa" id="vis-tj-6kF"/>
                         <outlet property="bottomView" destination="NEY-pw-BZ3" id="LY8-s9-BMS"/>
                         <outlet property="coinImage" destination="kfF-95-bbg" id="apO-mv-woe"/>
                         <outlet property="createBgView" destination="ljV-Vh-7zm" id="fim-aI-hBl"/>
@@ -3458,7 +3458,6 @@
     </scenes>
     <resources>
         <image name="Group 271" width="16" height="22"/>
-        <image name="Group 80" width="338" height="323"/>
         <image name="Restore_the_default" width="15" height="15"/>
         <image name="Vector 1" width="766" height="1155"/>
         <image name="Vectorerrow" width="6" height="10"/>
@@ -3475,6 +3474,7 @@
         <image name="edit" width="20" height="20"/>
         <image name="eyehome" width="19" height="14"/>
         <image name="feather" width="17" height="17"/>
+        <image name="home_banner" width="336" height="355"/>
         <image name="loco_round" width="36" height="36"/>
         <image name="logokeywhite" width="20" height="38"/>
         <image name="logowhite" width="87.5" height="27.5"/>
