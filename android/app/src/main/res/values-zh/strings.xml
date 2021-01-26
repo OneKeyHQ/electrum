@@ -1223,5 +1223,6 @@
     <string name="gas_limit_tip">Gas Limit 不应大于 %d 不应小于 %d</string>
     <string name="gas_price_tip">Gas Price 不应大于 %s 不应小于 %s</string>
     <string name="new_guide_tip">App 快速上手教程</string>
+    <string name="hint_temp_scan_inconformity">扫描的二维码与当前选择的币种不一致。</string>
 
 </resources>

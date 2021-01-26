@@ -373,7 +373,15 @@ public final class Constant {
      */
     public static final String UN_BACKUP_TIP = "un_backup_tip";
     public static final String Purpose = "purpose";
+    /**
+     * with the {@link org.haobtc.onekey.constant.Vm.CoinType} API.
+     */
+    @Deprecated
     public static final String BTC = "btc";
+    /**
+     * with the {@link org.haobtc.onekey.constant.Vm.CoinType} API.
+     */
+    @Deprecated
     public static final String ETH = "eth";
     public static final String HD = "hd";
     public static final String DELETE_SINGLE = "deleteSingleWallet";

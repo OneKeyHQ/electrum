@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.chaquo.python.PyObject;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
+import com.orhanobut.logger.Logger;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.bean.ZxingConfig;
@@ -419,10 +420,17 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
                                 MainSweepcodeBean mainSweepcodeBean = gson.fromJson(strParse, MainSweepcodeBean.class);
                                 MainSweepcodeBean.DataBean listData = mainSweepcodeBean.getData();
                                 String address = listData.getAddress();
-                                if (mAccountManager.getCurWalletType().contains(org.haobtc.onekey.constant.Constant.BTC)) {
-                                    SendHdActivity.start(getActivity(), changeBalance, textWalletName.getText().toString(), address, listData.getAmount());
-                                } else {
-                                    SendEthActivity.start(getActivity(), changeBalance, textWalletName.getText().toString(), address, listData.getAmount());
+                                if (!mAccountManager.getCurWalletType().equalsIgnoreCase(listData.getCoin().coinName)) {
+                                    showToast(R.string.hint_temp_scan_inconformity);
+                                    return;
+                                }
+                                switch (listData.getCoin()){
+                                    case BTC:
+                                        SendHdActivity.start(getActivity(), changeBalance, textWalletName.getText().toString(), address, listData.getAmount());
+                                        break;
+                                    case ETH:
+                                        SendEthActivity.start(getActivity(), changeBalance, textWalletName.getText().toString(), address, listData.getAmount());
+                                        break;
                                 }
                             } else if (type == 2) {
                                 Intent intent = new Intent(getActivity(), DetailTransactionActivity.class);
@@ -430,11 +438,11 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
                                 intent.putExtra("detailType", "homeScanDetail");
                                 startActivity(intent);
                             } else {
-                                Toast.makeText(getActivity(), getString(R.string.address_wrong), Toast.LENGTH_SHORT).show();
+                                showToast(R.string.address_wrong);
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
-                            Toast.makeText(getActivity(), getString(R.string.address_wrong), Toast.LENGTH_SHORT).show();
+                            showToast(R.string.address_wrong);
                         }
                     }
                 }

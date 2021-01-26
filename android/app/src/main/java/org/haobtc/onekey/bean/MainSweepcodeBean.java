@@ -2,6 +2,8 @@ package org.haobtc.onekey.bean;
 
 import com.google.gson.annotations.SerializedName;
 
+import org.haobtc.onekey.constant.Vm;
+
 public class MainSweepcodeBean {
 
 
@@ -39,7 +41,8 @@ public class MainSweepcodeBean {
          * address : bcrt1q82vs5lafxtr305utt62s8875s7df30vfnwnrjldtwsys8yjdtx2qslvf49
          * memo : bcrt1qkhu5zfx7s5rms08efr0gfapty47h5dakl2twru3qn99yhck7g4hs0x3xrr
          */
-
+        @SerializedName("coin")
+        private String coin;
         @SerializedName("amount")
         private String amount;
         @SerializedName("message")
@@ -89,6 +92,14 @@ public class MainSweepcodeBean {
 
         public void setMemo(String memo) {
             this.memo = memo;
+        }
+
+        public Vm.CoinType getCoin() {
+            return Vm.convertCoinType(coin);
+        }
+
+        public void setCoin(String coin) {
+            this.coin = coin;
         }
     }
 }
