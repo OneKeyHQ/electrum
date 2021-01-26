@@ -9,7 +9,7 @@ import android.graphics.Bitmap
 import android.text.method.ScrollingMovementMethod
 import android.view.View
 import android.widget.Toast
-import com.scwang.smartrefresh.layout.util.DensityUtil
+import com.scwang.smartrefresh.layout.util.SmartUtil
 import com.yzq.zxinglibrary.encode.CodeCreator
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
@@ -43,7 +43,7 @@ class ExportKeystoreActivity : BaseActivity() {
 
     Single
         .create<Bitmap> {
-          val bitmap = CodeCreator.createQRCode(keystoreExtra, DensityUtil.dp2px(180F), DensityUtil.dp2px(180F), null)
+          val bitmap = CodeCreator.createQRCode(keystoreExtra, SmartUtil.dp2px(180F), SmartUtil.dp2px(180F), null)
           it.onSuccess(bitmap)
         }.subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())

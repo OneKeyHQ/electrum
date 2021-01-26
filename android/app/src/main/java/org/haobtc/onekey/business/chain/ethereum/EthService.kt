@@ -2,6 +2,7 @@ package org.haobtc.onekey.business.chain.ethereum
 
 import androidx.annotation.WorkerThread
 import com.chaquo.python.Kwarg
+import com.chaquo.python.PyObject
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.tencent.bugly.crashreport.CrashReport
@@ -20,15 +21,20 @@ class EthService {
     Gson()
   }
 
+  private fun request(@TransactionListType status: String = TransactionListType.ALL, position: Int = 0, limit: Int = 10): PyObject? {
+    return when (status) {
+      TransactionListType.ALL ->
+        Daemon.commands.callAttr("get_all_tx_list", Kwarg("coin", Vm.CoinType.ETH.coinName))
+      else -> Daemon.commands.callAttr("get_all_tx_list", status, Vm.CoinType.ETH.coinName)
+    }
+  }
+
   @WorkerThread
-  fun getTxList(@TransactionListType status: String = TransactionListType.ALL): List<TransactionSummaryVo> {
+  fun getTxList(@TransactionListType status: String = TransactionListType.ALL, position: Int = 0, limit: Int = 10): List<TransactionSummaryVo> {
     return try {
-      val historyTx = when (status) {
-        TransactionListType.ALL -> Daemon.commands.callAttr("get_all_tx_list", Kwarg("coin", Vm.CoinType.ETH.coinName))
-        else -> Daemon.commands.callAttr("get_all_tx_list", status, Vm.CoinType.ETH.coinName)
-      }
+      val historyTx = request(status, position, limit)
       historyTx?.toString()?.let {
-        val listBeans: ArrayList<TransactionSummaryVo> = ArrayList(10)
+        val listBeans: ArrayList<TransactionSummaryVo> = ArrayList(limit)
 
         mGson.fromJson<List<MaintrsactionlistEvent>>(it, object : TypeToken<List<MaintrsactionlistEvent>>() {}.type).forEach {
           if ("history" == it.type) {
@@ -53,7 +59,7 @@ class EthService {
               }
             } ?: "0"
 
-            val amountUnit = amountSplit.getOrNull(1)?.trim() ?: "BTC"
+            val amountUnit = amountSplit.getOrNull(1)?.trim() ?: "ETH"
 
             val amountFiat = amountSplit.getOrNull(2)?.trim()?.replace("(", "") ?: "0.00"
 

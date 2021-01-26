@@ -2,6 +2,7 @@ package org.haobtc.onekey.business.chain.bitcoin
 
 import androidx.annotation.WorkerThread
 import com.chaquo.python.Kwarg
+import com.chaquo.python.PyObject
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.orhanobut.logger.Logger
@@ -20,15 +21,24 @@ class BitcoinService {
     Gson()
   }
 
+  private fun request(@TransactionListType status: String = TransactionListType.ALL, position: Int = 0, limit: Int = 10): PyObject? {
+    return when (status) {
+      TransactionListType.ALL ->
+        Daemon.commands.callAttr("get_all_tx_list",
+            Kwarg("coin", Vm.CoinType.BTC.coinName),
+            Kwarg("start", position),
+            Kwarg("end", position + limit))
+      else ->
+        Daemon.commands.callAttr("get_all_tx_list", status, Vm.CoinType.BTC.coinName, position, position + limit)
+    }
+  }
+
   @WorkerThread
-  fun getTxList(@TransactionListType status: String = TransactionListType.ALL): List<TransactionSummaryVo> {
+  fun getTxList(@TransactionListType status: String = TransactionListType.ALL, position: Int = 0, limit: Int = 10): List<TransactionSummaryVo> {
     return try {
-      val historyTx = when (status) {
-        TransactionListType.ALL -> Daemon.commands.callAttr("get_all_tx_list", Kwarg("coin", Vm.CoinType.BTC.coinName))
-        else -> Daemon.commands.callAttr("get_all_tx_list", status, Vm.CoinType.BTC.coinName)
-      }
+      val historyTx = request(status, position, limit)
       historyTx?.toString()?.let {
-        val listBeans: ArrayList<TransactionSummaryVo> = ArrayList(10)
+        val listBeans: ArrayList<TransactionSummaryVo> = ArrayList(limit)
         mGson.fromJson<List<MaintrsactionlistEvent>>(it, object : TypeToken<List<MaintrsactionlistEvent>>() {}.type).forEach {
           if ("history" == it.type) {
             // format date

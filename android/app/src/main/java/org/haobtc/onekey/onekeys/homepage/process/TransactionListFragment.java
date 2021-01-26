@@ -13,8 +13,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.chaquo.python.Kwarg;
-import com.chaquo.python.PyObject;
 import com.orhanobut.logger.Logger;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
@@ -23,18 +21,12 @@ import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.adapter.OnekeyTxListAdapter;
-import org.haobtc.onekey.bean.MaintrsactionlistEvent;
 import org.haobtc.onekey.bean.TransactionSummaryVo;
 import org.haobtc.onekey.business.chain.bitcoin.BitcoinService;
 import org.haobtc.onekey.business.chain.ethereum.EthService;
 import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.ui.base.BaseLazyFragment;
-import org.haobtc.onekey.utils.Daemon;
-import org.haobtc.onekey.utils.MyDialog;
 import org.jetbrains.annotations.NotNull;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,6 +55,7 @@ public class TransactionListFragment extends BaseLazyFragment implements OnRefre
     }
 
     private static final String EXT_TYPE = "ext_type";
+    private static final int PAGE_SIZE = 10;
 
     public static TransactionListFragment getInstance(@TransactionListType String type) {
         TransactionListFragment transactionListFragment = new TransactionListFragment();
@@ -83,7 +76,9 @@ public class TransactionListFragment extends BaseLazyFragment implements OnRefre
     @BindView(R.id.ivProgress)
     View ivProgress;
 
-    private List<TransactionSummaryVo> listBeans;
+    View mFooterMore;
+
+    private List<TransactionSummaryVo> listBeans = new ArrayList<>(PAGE_SIZE);
     private OnekeyTxListAdapter onekeyTxListAdapter;
     private Disposable mLoadTxListDisposable;
     @TransactionListType
@@ -96,6 +91,7 @@ public class TransactionListFragment extends BaseLazyFragment implements OnRefre
 
     private Animation mAnimation;
     private Vm.CoinType mCoinType;
+    private int mTotalCount = 0;
 
     @Override
     public void onAttach(@NotNull Context context) {
@@ -112,9 +108,14 @@ public class TransactionListFragment extends BaseLazyFragment implements OnRefre
     public void init(View view) {
         mAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.dialog_progress_anim);
         mType = getArguments().getString(EXT_TYPE, TransactionListType.ALL);
-        listBeans = new ArrayList<>();
         onekeyTxListAdapter = new OnekeyTxListAdapter(listBeans);
         reclTransactionList.setAdapter(onekeyTxListAdapter);
+        onekeyTxListAdapter.setOnItemClickListener((adapter, itemView, position) -> {
+            Intent intent = new Intent(requireContext(), DetailTransactionActivity.class);
+            intent.putExtra("hashDetail", listBeans.get(position).getTxId());
+            intent.putExtra("txTime", listBeans.get(position).getDate());
+            startActivity(intent);
+        });
     }
 
     @Override
@@ -131,6 +132,21 @@ public class TransactionListFragment extends BaseLazyFragment implements OnRefre
         } else {
             mCoinType = Vm.CoinType.BTC;
         }
+
+        if (mCoinType == Vm.CoinType.ETH) {
+            refreshLayout.setOnRefreshListener(this);
+            refreshLayout.setEnableLoadMore(false);
+        } else {
+            refreshLayout.setEnableLoadMore(true);
+            refreshLayout.setOnRefreshListener(this);
+            refreshLayout.setOnLoadMoreListener(this);
+        }
+        mFooterMore = View.inflate(getContext(), R.layout.view_transaction_list_footer, null);
+        mFooterMore.setVisibility(View.GONE);
+        onekeyTxListAdapter.addFooterView(mFooterMore);
+        mFooterMore.setOnClickListener(v -> {
+            showToast("Todo jump block browser");
+        });
     }
 
     @Override
@@ -141,12 +157,17 @@ public class TransactionListFragment extends BaseLazyFragment implements OnRefre
 
     @Override
     public void onRefresh(@NonNull RefreshLayout refreshLayout) {
+        mTotalCount = 0;
+        if (mCoinType != Vm.CoinType.ETH) {
+            refreshLayout.setEnableLoadMore(true);
+        }
         getTxList(mType);
+        mFooterMore.setVisibility(View.GONE);
     }
 
     @Override
     public void onLoadMore(@NonNull RefreshLayout refreshLayout) {
-        refreshLayout.finishLoadMore();
+        getTxList(mType);
     }
 
     private void getTxList(String status) {
@@ -163,13 +184,13 @@ public class TransactionListFragment extends BaseLazyFragment implements OnRefre
                                 if (mBitcoinService == null) {
                                     mBitcoinService = new BitcoinService();
                                 }
-                                summaryVoList = mBitcoinService.getTxList(status);
+                                summaryVoList = mBitcoinService.getTxList(status, mTotalCount, PAGE_SIZE);
                                 break;
                             case ETH:
                                 if (mEthService == null) {
                                     mEthService = new EthService();
                                 }
-                                summaryVoList = mEthService.getTxList(status);
+                                summaryVoList = mEthService.getTxList(status, mTotalCount, PAGE_SIZE);
                                 break;
                         }
                         emitter.onNext(summaryVoList);
@@ -181,7 +202,7 @@ public class TransactionListFragment extends BaseLazyFragment implements OnRefre
                 .observeOn(AndroidSchedulers.mainThread())
                 .map(historyTx -> {
                     refreshLayout.finishRefresh();
-                    if (historyTx.size() > 0) {
+                    if (mTotalCount > 0 || historyTx.size() > 0) {
                         reclTransactionList.setVisibility(View.VISIBLE);
                         tetNone.setVisibility(View.GONE);
                     } else {
@@ -190,9 +211,22 @@ public class TransactionListFragment extends BaseLazyFragment implements OnRefre
                     }
                     return historyTx;
                 })
-                .observeOn(Schedulers.io())
                 .map(historyTx -> {
+                    if (mTotalCount == 0) {
+                        listBeans.clear();
+                    }
                     listBeans.addAll(historyTx);
+                    // 没有数据可以加载
+                    if (mCoinType == Vm.CoinType.ETH
+                            || (mTotalCount != 0 && mTotalCount == listBeans.size())
+                            || (mTotalCount == 0 && listBeans.size() < PAGE_SIZE)) {
+                        mFooterMore.setVisibility(View.VISIBLE);
+                        refreshLayout.finishLoadMore();
+                        refreshLayout.setEnableLoadMore(false);
+                    } else {
+                        refreshLayout.finishLoadMore();
+                    }
+                    mTotalCount = listBeans.size();
                     return historyTx;
                 })
                 .observeOn(AndroidSchedulers.mainThread())
@@ -202,12 +236,6 @@ public class TransactionListFragment extends BaseLazyFragment implements OnRefre
                 .subscribe(o -> {
                     if (null != onekeyTxListAdapter) {
                         onekeyTxListAdapter.notifyDataSetChanged();
-                        onekeyTxListAdapter.setOnItemClickListener((adapter, view, position) -> {
-                            Intent intent = new Intent(requireContext(), DetailTransactionActivity.class);
-                            intent.putExtra("hashDetail", listBeans.get(position).getTxId());
-                            intent.putExtra("txTime", listBeans.get(position).getDate());
-                            startActivity(intent);
-                        });
                     }
                 }, e -> {
                     e.printStackTrace();
@@ -215,10 +243,10 @@ public class TransactionListFragment extends BaseLazyFragment implements OnRefre
                     if (message != null && !message.contains("SQLite")) {
                         showToast(e.getMessage());
                     }
-                    if (null != reclTransactionList) {
+                    if (mTotalCount == 0 && null != reclTransactionList) {
                         reclTransactionList.setVisibility(View.GONE);
                     }
-                    if (null != tetNone) {
+                    if (mTotalCount == 0 && null != tetNone) {
                         tetNone.setVisibility(View.VISIBLE);
                     }
                 });
