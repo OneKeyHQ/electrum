@@ -1654,7 +1654,7 @@ class AndroidCommands(commands.Commands):
         except Exception as e:
             raise BaseException(e)
 
-        if coin == "eth":
+        if coin in ("eth", "bsc", "heco"):
             return self.get_eth_tx_info(tx_hash)
 
         tx = self.wallet.db.get_transaction(tx_hash)
