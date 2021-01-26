@@ -2,14 +2,8 @@ from abc import ABC, abstractmethod
 from typing import List
 
 from electrum_gui.common.explorer.data.enums import TransactionStatus
-from electrum_gui.common.explorer.data.objects import (
-    Address,
-    Transaction,
-    ExplorerInfo,
-)
-from electrum_gui.common.explorer.data.exceptions import (
-    TransactionNotFound,
-)
+from electrum_gui.common.explorer.data.exceptions import TransactionNotFound
+from electrum_gui.common.explorer.data.objects import Address, ExplorerInfo, Transaction
 
 
 class ExplorerInterface(ABC):

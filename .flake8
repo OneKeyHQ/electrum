@@ -1,0 +1,12 @@
+[flake8]
+exclude = .git
+ignore = E203, E501, W503
+; E203: Whitespace before ':'
+;       - Conflict with black
+; W503: Line break occurred before a binary operator
+;       - Conflict with black
+; E501: Line too long
+;       - Conflict with black
+max-line-length = 88
+max-complexity = 18
+select = B,C,E,F,W,T4,B9
