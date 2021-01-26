@@ -65,7 +65,7 @@ class EthService {
 
             val amountFiatUnit = amountSplit.getOrNull(3)?.trim()?.replace(")", "") ?: "CNY"
 
-            val item = TransactionSummaryVo(Vm.CoinType.BTC, it.txHash, it.isMine, it.type, it.address, formatDate, it.txStatus, amountStr, amountUnit, amountFiat, amountFiatUnit)
+            val item = TransactionSummaryVo(Vm.CoinType.ETH, it.txHash, it.isMine, it.type, it.address, formatDate, it.txStatus, amountStr, amountUnit, amountFiat, amountFiatUnit)
             listBeans.add(item)
           }
         }

@@ -111,10 +111,19 @@ public class TransactionListFragment extends BaseLazyFragment implements OnRefre
         onekeyTxListAdapter = new OnekeyTxListAdapter(listBeans);
         reclTransactionList.setAdapter(onekeyTxListAdapter);
         onekeyTxListAdapter.setOnItemClickListener((adapter, itemView, position) -> {
-            Intent intent = new Intent(requireContext(), DetailTransactionActivity.class);
-            intent.putExtra("hashDetail", listBeans.get(position).getTxId());
-            intent.putExtra("txTime", listBeans.get(position).getDate());
-            startActivity(intent);
+
+            TransactionSummaryVo item = listBeans.get(position);
+            switch (item.getCoinType()) {
+                case BTC:
+                    Intent intent = new Intent(requireContext(), DetailTransactionActivity.class);
+                    intent.putExtra("hashDetail", item.getTxId());
+                    intent.putExtra("txTime", item.getDate());
+                    startActivity(intent);
+                    break;
+                case ETH:
+                    DetailETHTransactionActivity.start(requireContext(), item.getTxId(), item.getDate());
+                    break;
+            }
         });
     }
 

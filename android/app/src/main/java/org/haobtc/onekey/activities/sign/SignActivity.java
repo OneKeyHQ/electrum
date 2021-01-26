@@ -347,7 +347,7 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
 
     @Override
     public void onException(Exception e) {
-        if (Objects.requireNonNull(e.getMessage()).trim().isEmpty()) {
+        if (!Objects.requireNonNull(e.getMessage()).trim().isEmpty()) {
             showToast(e.getMessage());
         }
     }

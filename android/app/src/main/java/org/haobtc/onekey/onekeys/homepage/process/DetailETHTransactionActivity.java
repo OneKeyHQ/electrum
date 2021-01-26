@@ -20,8 +20,9 @@ import com.google.gson.Gson;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.activities.transaction.CheckChainDetailWebActivity;
-import org.haobtc.onekey.bean.TransactionInfoBean;
 import org.haobtc.onekey.aop.SingleClick;
+import org.haobtc.onekey.bean.TransactionETHInfoBean;
+import org.haobtc.onekey.bean.TransactionInfoBean;
 import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.utils.Daemon;
 
@@ -36,7 +37,17 @@ import io.reactivex.rxjava3.core.ObservableOnSubscribe;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
-public class DetailTransactionActivity extends BaseActivity {
+public class DetailETHTransactionActivity extends BaseActivity {
+
+    private static final String EXT_TX_ID = "tx_id";
+    private static final String EXT_TX_TIME = "tx_time";
+
+    public static void start(Context context, String txid, String txTime) {
+        Intent intent = new Intent(context, DetailETHTransactionActivity.class);
+        intent.putExtra(EXT_TX_ID, txid);
+        intent.putExtra(EXT_TX_TIME, txTime);
+        context.startActivity(intent);
+    }
 
     @BindView(R.id.text_tx_amount)
     TextView textTxAmount;
@@ -60,7 +71,6 @@ public class DetailTransactionActivity extends BaseActivity {
     TextView textBlockHigh;
     @BindView(R.id.text_tx_num)
     TextView textTxNum;
-    private String tx;
     private String hashDetail;
     private String txTime;
     private String txid;
@@ -68,28 +78,19 @@ public class DetailTransactionActivity extends BaseActivity {
 
     @Override
     public int getLayoutId() {
-        return R.layout.activity_detail_transaction;
+        return R.layout.activity_detail_eth_transaction;
     }
 
     @Override
     public void initView() {
         ButterKnife.bind(this);
-        tx = getIntent().getStringExtra("txDetail");
-        hashDetail = getIntent().getStringExtra("hashDetail");
-        txTime = getIntent().getStringExtra("txTime");
+        hashDetail = getIntent().getStringExtra(EXT_TX_ID);
+        txTime = getIntent().getStringExtra(EXT_TX_TIME);
     }
 
     @Override
     public void initData() {
-        String detailType = getIntent().getStringExtra("detailType");
-        if ("homeScanDetail".equals(detailType)) {
-            String nowDatetime = mGetNowDatetime();
-            textTxTime.setText(nowDatetime);
-            String scanDetail = getIntent().getStringExtra("scanDetail");
-            jsonDetailData(scanDetail);
-        } else {
-            getTxDetail();
-        }
+        getTxDetail();
     }
 
     private void getTxDetail() {
@@ -99,12 +100,8 @@ public class DetailTransactionActivity extends BaseActivity {
         mLoadTxDetailDisposable = Observable
                 .create((ObservableOnSubscribe<PyObject>) emitter -> {
                     try {
-                        PyObject infoFromRaw;
-                        if (!TextUtils.isEmpty(tx)) {
-                            infoFromRaw = Daemon.commands.callAttr("get_tx_info_from_raw", tx);
-                        } else {
-                            infoFromRaw = Daemon.commands.callAttr("get_tx_info", hashDetail, new Kwarg("coin", Vm.CoinType.BTC.coinName));
-                        }
+                        PyObject infoFromRaw = Daemon.commands.callAttr("get_tx_info", hashDetail,
+                                new Kwarg("coin", Vm.CoinType.ETH.coinName));
                         emitter.onNext(infoFromRaw);
                         emitter.onComplete();
                     } catch (Exception e) {
@@ -115,12 +112,7 @@ public class DetailTransactionActivity extends BaseActivity {
                 .map(txInfo -> {
                     String txInfoStr = txInfo.toString();
                     if (!TextUtils.isEmpty(txInfoStr)) {
-                        if (!TextUtils.isEmpty(tx)) {
-                            String nowDatetime = mGetNowDatetime();
-                            textTxTime.setText(nowDatetime);
-                        } else {
-                            textTxTime.setText(txTime);
-                        }
+                        textTxTime.setText(txTime);
                     }
                     return txInfoStr;
                 })
@@ -157,7 +149,7 @@ public class DetailTransactionActivity extends BaseActivity {
     private void jsonDetailData(String detailMsg) {
         Log.i("detailMsg====", "jsonDetailData--: " + detailMsg);
         Gson gson = new Gson();
-        TransactionInfoBean listBean = gson.fromJson(detailMsg, TransactionInfoBean.class);
+        TransactionETHInfoBean listBean = gson.fromJson(detailMsg, TransactionETHInfoBean.class);
         String showStatus;
         int showStatusType;
         try {
@@ -171,7 +163,7 @@ public class DetailTransactionActivity extends BaseActivity {
         imgTxStatus.setImageDrawable(ResourcesCompat.getDrawable(getResources(), getTxStatusImage(showStatusType), getTheme()));
         String amount = listBean.getAmount();
         if (listBean.getInputAddr() != null && listBean.getInputAddr().size() != 0) {
-            String address = listBean.getInputAddr().get(0).getAddress();
+            String address = listBean.getInputAddr().get(0);
             if (!TextUtils.isEmpty(address)) {
                 textSendAddress.setText(address);
             } else {
@@ -179,7 +171,7 @@ public class DetailTransactionActivity extends BaseActivity {
             }
         }
         if (listBean.getOutputAddr() != null && listBean.getOutputAddr().size() != 0) {
-            String outputAddr = listBean.getOutputAddr().get(0).getAddr();
+            String outputAddr = listBean.getOutputAddr().get(0);
             textReceiveAddress.setText(outputAddr);
         }
         String txStatus = listBean.getTxStatus();
