@@ -1518,7 +1518,7 @@ class AndroidCommands(commands.Commands):
         all_tx_len = history_len + local_len
         if start is None or end is None:
             start = 0
-            if search_type is 'receive':
+            if 'receive' in search_type:
                 end = history_len
             else:
                 end = all_tx_len
@@ -3230,7 +3230,7 @@ class AndroidCommands(commands.Commands):
     def get_check_wallet(self):
         wallets = self.daemon.get_wallets()
         for key, wallet in wallets.items():
-            if not isinstance(wallet.keystore, Hardware_KeyStore):
+            if not isinstance(wallet.keystore, Hardware_KeyStore) and not wallet.is_watching_only():
                 return wallet
                 # key = sorted(wallets.keys())[0]
                 # # value = wallets.values()[0]
