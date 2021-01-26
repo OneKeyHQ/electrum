@@ -994,9 +994,7 @@ public final class PyEnv {
             Exception exception = HardWareExceptions.exceptionConvert(e);
             String message = "";
             if (exception.getMessage() != null) {
-                if (!exception.getMessage().contains(StringConstant.REPLACE_ERROR)) {
-                    message = exception.getMessage();
-                }
+                message = exception.getMessage();
             }
             e.printStackTrace();
             throw new AccountException.CreateException(message);

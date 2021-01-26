@@ -11,16 +11,24 @@ import androidx.navigation.NavGraph;
 import androidx.navigation.NavInflater;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.google.common.base.Strings;
+import com.lxj.xpopup.XPopup;
 import com.orhanobut.logger.Logger;
 
+import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.BuildConfig;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.bean.CreateWalletBean;
+import org.haobtc.onekey.bean.LocalWalletInfo;
+import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.business.wallet.AccountManager;
+import org.haobtc.onekey.constant.StringConstant;
 import org.haobtc.onekey.constant.Vm;
-import org.haobtc.onekey.exception.AccountException;
+import org.haobtc.onekey.event.CreateSuccessEvent;
+import org.haobtc.onekey.manager.PyEnv;
+import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
 import org.haobtc.onekey.onekeys.walletprocess.OnFinishViewCallBack;
 import org.haobtc.onekey.onekeys.walletprocess.SelectBitcoinAddressTypeDialogFragment.OnSelectBitcoinAddressTypeCallback;
 import org.haobtc.onekey.onekeys.walletprocess.SelectChainCoinFragment.OnSelectCoinTypeCallback;
@@ -32,11 +40,12 @@ import org.haobtc.onekey.onekeys.walletprocess.importsoft.ImportMnemonicFragment
 import org.haobtc.onekey.onekeys.walletprocess.importsoft.ImportPrivateKeyFragment.OnImportPrivateKeyCallback;
 import org.haobtc.onekey.onekeys.walletprocess.importsoft.ImportWatchWalletFragment.OnImportWatchAddressCallback;
 import org.haobtc.onekey.ui.activity.SoftPassActivity;
+import org.haobtc.onekey.ui.dialog.custom.CustomCoverWatchPopup;
 import org.haobtc.onekey.utils.NavUtils;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.ObservableOnSubscribe;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.core.SingleOnSubscribe;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
@@ -221,8 +230,8 @@ public class ImportSoftWalletActivity extends BaseActivity
         if (mImportDisposable != null && !mImportDisposable.isDisposed()) {
             mImportDisposable.dispose();
         }
-        mImportDisposable = Observable
-                .create((ObservableOnSubscribe<CreateWalletBean>) emitter -> {
+        mImportDisposable = Single
+                .create((SingleOnSubscribe<CreateWalletBean>) emitter -> {
                     assertX(!TextUtils.isEmpty(mWalletName), "mWalletName Assertion failed");
 
                     CreateWalletBean walletBean;
@@ -253,8 +262,7 @@ public class ImportSoftWalletActivity extends BaseActivity
                         default:
                             walletBean = null;
                     }
-                    emitter.onNext(walletBean);
-                    emitter.onComplete();
+                    emitter.onSuccess(walletBean);
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -266,8 +274,31 @@ public class ImportSoftWalletActivity extends BaseActivity
                     NavUtils.gotoMainActivityTask(this, false);
                     finish();
                 }, e -> {
-                    if (e instanceof Exception) {
-                        MyApplication.getInstance().toastErr((Exception) e);
+                    // 处理覆盖观察钱包的问题
+                    String message = e.getMessage();
+                    if (!TextUtils.isEmpty(message) || message.contains(StringConstant.REPLACE_ERROR)) {
+                        String watchName = message.substring(message.indexOf(":") + 1);
+                        LocalWalletInfo localWalletByName = mAccountManager.getLocalWalletByName(watchName);
+                        CustomCoverWatchPopup popup = new CustomCoverWatchPopup(mContext, () -> {
+                            PyResponse<String> response = PyEnv.replaceWatchOnlyWallet(true);
+                            if (Strings.isNullOrEmpty(response.getErrors())) {
+                                EventBus.getDefault().post(new CreateSuccessEvent(response.getResult()));
+                                mContext.startActivity(new Intent(mContext, HomeOneKeyActivity.class));
+                            } else {
+                                mToast(response.getErrors());
+                            }
+                        }, CustomCoverWatchPopup.deleteWatch);
+                        if (localWalletByName != null && !TextUtils.isEmpty(localWalletByName.getLabel())) {
+                            popup.setWalletName(localWalletByName.getLabel());
+                        } else {
+                            popup.setWalletName(localWalletByName.getLabel());
+                        }
+                        new XPopup.Builder(mContext).asCustom(popup).show();
+                    } else {
+                        // 其他异常处理
+                        if (e instanceof Exception) {
+                            MyApplication.getInstance().toastErr((Exception) e);
+                        }
                     }
                     e.printStackTrace();
                 });
