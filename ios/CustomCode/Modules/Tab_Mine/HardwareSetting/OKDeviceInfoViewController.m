@@ -7,7 +7,7 @@
 //
 
 #import "OKDeviceInfoViewController.h"
-#import "OKDeviceModel.h"
+#import "OKDevicesManager.h"
 
 @interface OKDeviceInfoViewController()
 @property (weak, nonatomic) IBOutlet UILabel *modelNameLabel;
@@ -40,7 +40,7 @@
 }
 
 - (void)setupUI {
-    OKDeviceInfoModel *deviceInfo = self.deviceModel.deviceInfo;
+    OKDeviceInfoModel *deviceInfo = [[OKDevicesManager sharedInstance] getDeviceModelWithID:self.deviceId].deviceInfo;
     self.deviceIDLabel.text = MyLocalizedString(@"hardwareWallet.info.id", nil);
     self.bluetoothNameLabel.text = MyLocalizedString(@"hardwareWallet.info.buletoothName", nil);
     self.sysVersionLabel.text = MyLocalizedString(@"hardwareWallet.info.sysVersion", nil);

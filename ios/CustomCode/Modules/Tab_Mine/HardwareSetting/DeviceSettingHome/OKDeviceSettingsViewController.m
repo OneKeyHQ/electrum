@@ -15,7 +15,10 @@
 #import "OKDeviceVerifyController.h"
 #import "OKResetDeviceWarningViewController.h"
 #import "OKDeviceLanguageViewController.h"
-#import "OKDeviceModel.h"
+#import "OKDevicesManager.h"
+#import "OKDeviceChangePINController.h"
+#import "OKDeviceShowXPUBController.h"
+#import "OKDeviceListViewController.h"
 
 static const NSUInteger backgroundColor = 0xF5F6F7;
 static const NSUInteger sectionTitleColor = 0x546370;
@@ -29,6 +32,8 @@ static const NSUInteger titleColorRed = 0xeb5757;
 @interface OKDeviceSettingsViewController () <UITableViewDelegate, UITableViewDataSource>
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic, strong) NSArray<OKDeviceSettingsModel *>* listData;
+@property (strong, nonatomic) NSString *deviceId;
+@property (strong, nonatomic) UIView *loadingView;
 @end
 
 @implementation OKDeviceSettingsViewController
@@ -43,6 +48,9 @@ static const NSUInteger titleColorRed = 0xeb5757;
     self.tableView.backgroundColor = HexColor(backgroundColor);
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.title = self.deviceModel.deviceInfo.label;
+    self.deviceId = self.deviceModel.deviceInfo.device_id;
+    [self.view addSubview:self.loadingView];
+    self.loadingView.hidden = YES;
     [self reloadListData];
 }
 
@@ -62,47 +70,59 @@ static const NSUInteger titleColorRed = 0xeb5757;
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    UIViewController *vc = [OKDeviceInfoViewController controllerWithStoryboard];
-    
-    switch ([self cellModelForIndexPath:indexPath].cellType) {
+    OKHardwareListBaseCellType type = [self cellModelForIndexPath:indexPath].cellType;
+    switch (type) {
         case OKHardwareListBaseCellTypeDeviceInfo: {
             OKDeviceInfoViewController *vc = [OKDeviceInfoViewController controllerWithStoryboard];
-            vc.deviceModel = self.deviceModel;
-            [self.navigationController pushViewController:vc animated:YES];
-        } break;
-            
-        case OKHardwareListBaseCellTypeDeviceLanguage: {
-            vc = [OKDeviceLanguageViewController controllerWithStoryboard];
+            vc.deviceId = self.deviceId;
             [self.navigationController pushViewController:vc animated:YES];
         } break;
         
         case OKHardwareListBaseCellTypeDeviceUpdate: {
-            vc = [OKDeviceUpdateViewController controllerWithStoryboard];
-            [self.navigationController pushViewController:vc animated:YES];
+            [self ensureDeviceMatch:^{
+                OKDeviceUpdateViewController *vc = [OKDeviceUpdateViewController controllerWithStoryboard];
+                vc.deviceId = self.deviceId;
+                [self.navigationController pushViewController:vc animated:YES];
+            }];
         } break;
-            
-        case OKHardwareListBaseCellTypeDeviceAutoOff: {
-            vc = [OKDeviceOffController controllerWithStoryboard];
-            [self.navigationController pushViewController:vc animated:YES];
-        } break;
-            
+
         case OKHardwareListBaseCellTypeDeviceVerify: {
-            vc = [OKDeviceVerifyController controllerWithStoryboard];
-            [self.navigationController pushViewController:vc animated:YES];
+            [self ensureDeviceMatch:^{
+                OKDeviceVerifyController *vc = [OKDeviceVerifyController controllerWithStoryboard];
+                vc.deviceId = self.deviceId;
+                [self.navigationController pushViewController:vc animated:YES];
+            }];
         } break;
             
         case OKHardwareListBaseCellTypeDeviceChangePIN: {
-        } break;
-        case OKHardwareListBaseCellTypeDeviceShowXPUB: {
+            [self ensureDeviceMatch:^{
+                UIViewController *vc = [[OKDeviceChangePINController alloc] init];
+                BaseNavigationController *nav = [[BaseNavigationController alloc] initWithRootViewController:vc];
+                [self presentViewController:nav animated:YES completion:nil];
+            }];
         } break;
             
-        case OKHardwareListBaseCellTypeDeviceRecover: {
-            vc = [OKResetDeviceWarningViewController controllerWithStoryboard];
-            [self.navigationController pushViewController:vc animated:YES];
+        case OKHardwareListBaseCellTypeDeviceShowXPUB: {
+            [self ensureDeviceMatch:^{
+                UIViewController *vc = [OKDeviceShowXPUBController controllerWithStoryboard];
+                [self.navigationController pushViewController:vc animated:YES];
+            }];
+        } break;
+            
+        case OKHardwareListBaseCellTypeDeviceReset: {
+            [self ensureDeviceMatch:^{
+                UIViewController *vc = [OKResetDeviceWarningViewController controllerWithStoryboard];
+                [self.navigationController pushViewController:vc animated:YES];
+            }];
         } break;
             
         case OKHardwareListBaseCellTypeDeviceDelete: {
-            vc = [OKDeviceDeleteController controllerWithStoryboard];
+            OKDeviceDeleteController *vc = [OKDeviceDeleteController controllerWithStoryboard];
+            vc.deleteDeviceCallback = ^{
+                [[OKDevicesManager sharedInstance] removeDevice:self.deviceId];
+                [[NSNotificationCenter defaultCenter] postNotificationName:OKDeviceListReloadNotificationKey object:nil];
+                [self.navigationController popViewControllerAnimated:YES];
+            };
             [self presentViewController:vc animated:YES completion:nil];
         } break;
 
@@ -110,11 +130,58 @@ static const NSUInteger titleColorRed = 0xeb5757;
             break;
     }
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    
+}
+
+- (void)ensureDeviceMatch:(void(^)(void))callback {
+    if (!callback || !self.deviceId) {
+        return;
+    }
+    self.loadingView.hidden = NO;
+    OKWeakSelf(self)
+    [kOKBlueManager startScanAndConnectWithName:self.deviceModel.deviceInfo.ble_name complete:^(BOOL isSuccess) {
+        if (!isSuccess) {
+            [kTools tipMessage:@"蓝牙连接超时"];
+            self.loadingView.hidden = YES;
+            return;
+        }
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            [kPyCommandsManager cancel];
+            NSDictionary *json =  [kPyCommandsManager callInterface:kInterfaceget_feature parameter:@{}];
+            if (!json) {
+                return;
+            }
+            OKDeviceModel *device = [[OKDeviceModel alloc] initWithJson:json];
+            NSString *currentDeviceId = device.deviceInfo.device_id;
+            [[OKDevicesManager sharedInstance] addDevices:device];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.loadingView.hidden = YES;
+                if ([currentDeviceId isEqualToString:weakself.deviceId]) {
+                    callback();
+                    return;
+                } else {
+                    [kTools tipMessage:MyLocalizedString(@"hardwareWallet.id_not_match", nil)];
+                }
+            });
+        });
+    }];
+}
+
+- (UIView *)loadingView {
+    if (!_loadingView) {
+        _loadingView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 80, 80)];
+        _loadingView.backgroundColor = HexColorA(0x444444, 0.7);
+        _loadingView.center = self.view.center;
+        [_loadingView setLayerRadius:10];
+        
+        UIActivityIndicatorView *actView = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(0, 0, 80, 80)];
+        actView.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhiteLarge;
+        [actView startAnimating];
+        [_loadingView addSubview:actView];
+    }
+    return _loadingView;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
 
     static NSString *cellID = @"OKHardwareListBaseCell";
     OKHardwareListBaseCell *cell = [tableView dequeueReusableCellWithIdentifier:cellID];
@@ -155,11 +222,11 @@ static const NSUInteger titleColorRed = 0xeb5757;
     deviceInfoCellModel.details = @"";
     deviceInfoCellModel.cellType = OKHardwareListBaseCellTypeDeviceInfo;
 
-    OKHardwareListBaseCellModel *devicelanguageCellModel = [[OKHardwareListBaseCellModel alloc] init];
-    devicelanguageCellModel.title = MyLocalizedString(@"language", nil);//@"语言";
-    devicelanguageCellModel.imageName = @"language";
-    devicelanguageCellModel.details = @"中文";
-    devicelanguageCellModel.cellType = OKHardwareListBaseCellTypeDeviceLanguage;
+//    OKHardwareListBaseCellModel *devicelanguageCellModel = [[OKHardwareListBaseCellModel alloc] init];
+//    devicelanguageCellModel.title = MyLocalizedString(@"language", nil);//@"语言";
+//    devicelanguageCellModel.imageName = @"language";
+//    devicelanguageCellModel.details = @"中文";
+//    devicelanguageCellModel.cellType = OKHardwareListBaseCellTypeDeviceLanguage;
 
     OKHardwareListBaseCellModel *deviceUpdateCellModel = [[OKHardwareListBaseCellModel alloc] init];
     deviceUpdateCellModel.title = MyLocalizedString(@"hardwareWallet.update", nil);//@"升级固件";
@@ -167,11 +234,11 @@ static const NSUInteger titleColorRed = 0xeb5757;
     deviceUpdateCellModel.details = @"";
     deviceUpdateCellModel.cellType = OKHardwareListBaseCellTypeDeviceUpdate;
 
-    OKHardwareListBaseCellModel *deviceAutoOffCellModel = [[OKHardwareListBaseCellModel alloc] init];
-    deviceAutoOffCellModel.title = MyLocalizedString(@"hardwareWallet.autoOff", nil);//@"自动关机";
-    deviceAutoOffCellModel.imageName = @"engine-start 1";
-    deviceAutoOffCellModel.details = @"600s";
-    deviceAutoOffCellModel.cellType = OKHardwareListBaseCellTypeDeviceAutoOff;
+//    OKHardwareListBaseCellModel *deviceAutoOffCellModel = [[OKHardwareListBaseCellModel alloc] init];
+//    deviceAutoOffCellModel.title = MyLocalizedString(@"hardwareWallet.autoOff", nil);//@"自动关机";
+//    deviceAutoOffCellModel.imageName = @"engine-start 1";
+//    deviceAutoOffCellModel.details = @"600s";
+//    deviceAutoOffCellModel.cellType = OKHardwareListBaseCellTypeDeviceAutoOff;
 
     OKHardwareListBaseCellModel *deviceVerifyCellModel = [[OKHardwareListBaseCellModel alloc] init];
     deviceVerifyCellModel.title = MyLocalizedString(@"hardwareWallet.verify", nil);
@@ -183,9 +250,9 @@ static const NSUInteger titleColorRed = 0xeb5757;
     generalSettings.sectionTitle = MyLocalizedString(@"general", nil);//@"通用";
     generalSettings.cellModel = @[
         deviceInfoCellModel,
-        devicelanguageCellModel,
+//        devicelanguageCellModel,
         deviceUpdateCellModel,
-        deviceAutoOffCellModel,
+//        deviceAutoOffCellModel,
         deviceVerifyCellModel
     ];
     
@@ -228,7 +295,7 @@ static const NSUInteger titleColorRed = 0xeb5757;
     OKHardwareListBaseCellModel *recoverDeviceCellModel = [[OKHardwareListBaseCellModel alloc] init];
     recoverDeviceCellModel.title = MyLocalizedString(@"hardwareWallet.recover.title", nil);//@"恢复出厂设置";
     recoverDeviceCellModel.titleColor = titleColorRed;
-    recoverDeviceCellModel.cellType = OKHardwareListBaseCellTypeDeviceRecover;
+    recoverDeviceCellModel.cellType = OKHardwareListBaseCellTypeDeviceReset;
 
     OKHardwareListBaseCellModel *removeDeviceCellModel = [[OKHardwareListBaseCellModel alloc] init];
     removeDeviceCellModel.title = MyLocalizedString(@"hardwareWallet.delete", nil);//@"删除设备";

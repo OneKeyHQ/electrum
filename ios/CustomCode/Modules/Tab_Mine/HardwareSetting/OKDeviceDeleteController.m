@@ -54,6 +54,7 @@
 - (void)deleteDevice {
     if (self.deleteDeviceCallback) {
         self.deleteDeviceCallback();
+        [self dismissViewControllerAnimated:YES completion:nil];
     }
 }
 

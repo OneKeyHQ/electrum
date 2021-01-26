@@ -10,7 +10,7 @@
 
 @interface OKDeviceVerifyResultController ()
 @property (weak, nonatomic) IBOutlet UILabel *resultLabel;
-@property (weak, nonatomic) IBOutlet UIView *tagLabel;
+@property (weak, nonatomic) IBOutlet UILabel *tagLabel;
 @property (weak, nonatomic) IBOutlet UIView *tagView;
 @property (weak, nonatomic) IBOutlet UILabel *descLabel;
 @property (weak, nonatomic) IBOutlet UIButton *doneButton;
@@ -45,6 +45,7 @@
     self.descLabel.attributedText = [NSString lineSpacing:16 content:descLabelText];
     self.descLabel.textAlignment = NSTextAlignmentCenter;
 
+    self.tagLabel.text = self.name;
     [self.tagView setLayerRadius:self.tagView.height * 0.5];
     self.doneButton.titleLabel.text = MyLocalizedString(@"hardwareWallet.verify.return", nil);
     [self.doneButton setLayerRadius:20];

@@ -100,10 +100,16 @@
 #define kInterfaceinit                     @"init"          //激活设备
 #define kInterfacereset_pin                @"reset_pin"     //重置PIN
 #define kInterfacebixin_load_device        @"bixin_load_device" //备份钱包到硬件
+#define kInterfacebixin_backup_device      @"bixin_backup_device" //从硬件恢复HD
 #define kInterfacehardware_verify           @"hardware_verify" // 硬件验证信息获取
-
+#define kInterfaceshow_address              @"show_address" //硬件钱包核对地址
 #define kInterface_set_write_success_flag         @"set_write_success_flag" // 在蓝牙收到写入成功的回调时，需要调用
 #define kInterface_set_response        @"set_response" // 返回数据，唯一参数为response，表示 组装好的蓝牙数据
+#define kInterfacefirmware_update                    @"firmware_update"    //升级固件
+#define kInterface_wipe_device          @"wipe_device" // 重设硬件
+#define kInterface_get_xpub_from_hw        @"get_xpub_from_hw" // 获取xpub
+#define kInterface_set_cancel_flag       @"set_cancel_flag" // 取消上一个操作，让其立即返回, 可以重复调用
+#define kInterface_set_user_cancel     @"set_user_cancel" // 取消输入PIN操作
 
 #define kPyCommandsManager (OKPyCommandsManager.sharedInstance)
 NS_ASSUME_NONNULL_BEGIN
@@ -111,6 +117,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (OKPyCommandsManager *)sharedInstance;
 + (void)setNetwork;
 - (id)callInterface:(NSString *)method parameter:(NSDictionary *)parameter;
+- (void)cancel; // 取消上一个操作，让其立即返回, 可以重复调用
+- (void)cancelPIN; // 取消输入PIN操作
 @property (nonatomic,assign)PyObject *pyInstance;
 //硬件实例
 @property (nonatomic,assign)PyObject *pyHwInstance;

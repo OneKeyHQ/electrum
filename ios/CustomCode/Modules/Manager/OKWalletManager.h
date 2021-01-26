@@ -66,17 +66,18 @@ typedef enum {
 
 //创建和导入的钱包类型
 typedef enum {
-    OKAddTypeCreateHDDerived,
-    OKAddTypeCreateSolo,
-    OKAddTypeImportSeed,
-    OKAddTypeImportPrivkeys,
-    OKAddTypeImportAddresses,
-    OKAddTypeImportKeystore,
-    OKAddTypeImportXpub,
-    OKAddTypeImport,
-    OKAddTypeCreateHWDerived,
-    OKAddTypeRestoredHWWallet,
-    OKAddTypeActivationHWWallet
+    OKAddTypeCreateHDDerived,  //创建HD派生
+    OKAddTypeCreateSolo,       //创建独立钱包
+    OKAddTypeImportSeed,       //导出助记词
+    OKAddTypeImportPrivkeys,   //导入私钥
+    OKAddTypeImportAddresses,  //导入地址
+    OKAddTypeImportKeystore,   //导入KeyStore
+    OKAddTypeImportXpub,       //导入Xpub
+    OKAddTypeImport,           //导入
+    OKAddTypeCreateHWDerived,  //创建硬件派生钱包
+    OKAddTypeRestoredHWWallet, //恢复硬件钱包
+    OKAddTypeActivationHWWallet,//激活硬件钱包
+    OKAddTypeSpecialEquipmentHw //从特殊设备恢复HD钱包
 }OKAddType;
 
 //创建钱包跳转类型

@@ -2,7 +2,6 @@ package org.haobtc.onekey.bean;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
-import com.orhanobut.logger.Logger;
 
 /**
  * @author jinxiaomin
@@ -17,55 +16,59 @@ public class CurrentFeeDetails {
      */
 
     @SerializedName("slow")
-    private SlowBean slow;
+    private DetailBean slow;
     @SerializedName("normal")
-    private NormalBean normal;
+    private DetailBean normal;
     @SerializedName("slowest")
-    private SlowestBean slowest;
+    private DetailBean slowest;
     @SerializedName("fast")
-    private FastBean fast;
+    private DetailBean fast;
+
     public static CurrentFeeDetails objectFromDate(String str) {
         return new Gson().fromJson(str, CurrentFeeDetails.class);
     }
-    public SlowBean getSlow() {
+
+    public DetailBean getSlow() {
         return slow;
     }
 
-    public void setSlow(SlowBean slow) {
+    public void setSlow(DetailBean slow) {
         this.slow = slow;
     }
 
-    public NormalBean getNormal() {
+    public DetailBean getNormal() {
         return normal;
     }
 
-    public void setNormal(NormalBean normal) {
+    public void setNormal(DetailBean normal) {
         this.normal = normal;
     }
 
-    public SlowestBean getSlowest() {
+    public DetailBean getSlowest() {
         return slowest;
     }
 
-    public void setSlowest(SlowestBean slowest) {
+    public void setSlowest(DetailBean slowest) {
         this.slowest = slowest;
     }
 
-    public FastBean getFast() {
+    public DetailBean getFast() {
         return fast;
     }
 
-    public void setFast(FastBean fast) {
+    public void setFast(DetailBean fast) {
         this.fast = fast;
     }
 
-    public static class SlowBean {
+    public static class DetailBean {
         /**
          * size : 65
          * feerate : 20.01
          * fiat : 1.52 CNY
          * time : 100
          * fee : 0.00001301
+         * gas_price : 42,
+         * gas_limit : 40000,
          */
 
         @SerializedName("size")
@@ -78,189 +81,26 @@ public class CurrentFeeDetails {
         private int time;
         @SerializedName("fee")
         private String fee;
+        @SerializedName("gas_price")
+        private double gasPrice;
+        @SerializedName("gas_limit")
+        private int gasLimit;
 
-        public int getSize() {
-            return size;
+        public double getGasPrice() {
+            return gasPrice;
         }
 
-        public void setSize(int size) {
-            this.size = size;
+        public void setGasPrice(double gasPrice) {
+            this.gasPrice = gasPrice;
         }
 
-        public double getFeerate() {
-            return feerate;
+        public int getGasLimit() {
+            return gasLimit;
         }
 
-        public void setFeerate(double feerate) {
-            this.feerate = feerate;
+        public void setGasLimit(int gasLimit) {
+            this.gasLimit = gasLimit;
         }
-
-        public String getFiat() {
-            return fiat;
-        }
-
-        public void setFiat(String fiat) {
-            this.fiat = fiat;
-        }
-
-        public int getTime() {
-            return time;
-        }
-
-        public void setTime(int time) {
-            this.time = time;
-        }
-
-        public String getFee() {
-            return fee;
-        }
-
-        public void setFee(String fee) {
-            this.fee = fee;
-        }
-    }
-
-    public static class NormalBean {
-        /**
-         * size : 65
-         * feerate : 20.01
-         * fiat : 1.52 CNY
-         * time : 50
-         * fee : 0.00001301
-         */
-
-        @SerializedName("size")
-        private int size;
-        @SerializedName("feerate")
-        private double feerate;
-        @SerializedName("fiat")
-        private String fiat;
-        @SerializedName("time")
-        private int time;
-        @SerializedName("fee")
-        private String fee;
-
-        public int getSize() {
-            return size;
-        }
-
-        public void setSize(int size) {
-            this.size = size;
-        }
-
-        public double getFeerate() {
-            return feerate;
-        }
-
-        public void setFeerate(double feerate) {
-            this.feerate = feerate;
-        }
-
-        public String getFiat() {
-            return fiat;
-        }
-
-        public void setFiat(String fiat) {
-            this.fiat = fiat;
-        }
-
-        public int getTime() {
-            return time;
-        }
-
-        public void setTime(int time) {
-            this.time = time;
-        }
-
-        public String getFee() {
-            return fee;
-        }
-
-        public void setFee(String fee) {
-            this.fee = fee;
-        }
-    }
-
-    public static class SlowestBean {
-        /**
-         * size : 65
-         * feerate : 20.01
-         * fiat : 1.52 CNY
-         * time : 250
-         * fee : 0.00001301
-         */
-
-        @SerializedName("size")
-        private int size;
-        @SerializedName("feerate")
-        private double feerate;
-        @SerializedName("fiat")
-        private String fiat;
-        @SerializedName("time")
-        private int time;
-        @SerializedName("fee")
-        private String fee;
-
-        public int getSize() {
-            return size;
-        }
-
-        public void setSize(int size) {
-            this.size = size;
-        }
-
-        public double getFeerate() {
-            return feerate;
-        }
-
-        public void setFeerate(double feerate) {
-            this.feerate = feerate;
-        }
-
-        public String getFiat() {
-            return fiat;
-        }
-
-        public void setFiat(String fiat) {
-            this.fiat = fiat;
-        }
-
-        public int getTime() {
-            return time;
-        }
-
-        public void setTime(int time) {
-            this.time = time;
-        }
-
-        public String getFee() {
-            return fee;
-        }
-
-        public void setFee(String fee) {
-            this.fee = fee;
-        }
-    }
-
-    public static class FastBean {
-        /**
-         * size : 65
-         * feerate : 20.01
-         * fiat : 1.52 CNY
-         * time : 20
-         * fee : 0.00001301
-         */
-
-        @SerializedName("size")
-        private int size;
-        @SerializedName("feerate")
-        private double feerate;
-        @SerializedName("fiat")
-        private String fiat;
-        @SerializedName("time")
-        private int time;
-        @SerializedName("fee")
-        private String fee;
 
         public int getSize() {
             return size;

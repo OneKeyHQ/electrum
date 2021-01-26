@@ -423,6 +423,8 @@
 "hardwareWallet.verify.return" = "返回设备";
 
 "hardwareWallet.pin" = "修改 PIN 码";
+"hardwareWallet.pin.success" = "修改 PIN 码成功";
+"hardwareWallet.pin.fail" = "修改 PIN 码失败";
 "hardwareWallet.pin.title" = "修改设备 PIN 码";
 "hardwareWallet.pin.inputPinTip" = "输入设备原 PIN 码\n以继续";
 "hardwareWallet.pin.newPinTip" = "干的好，继续根据设备\n上的 PIN 码位置\n设置您的新6位 PIN 码";
@@ -437,13 +439,18 @@
 "hardwareWallet.xpub" = "查看多重签名扩展公钥（xPub）";
 "hardwareWallet.xpub.xpub" = "扩展公钥";
 "hardwareWallet.xpub.title" = "多重签名扩展公钥";
+"hardwareWallet.xpub.copy" = "已复制到剪贴板";
 "hardwareWallet.xpub.tip" = "「扩展公钥」，也被称为XPUB。是比特币标准(BIP32)的一部分，不包含任何私钥。 \n您在创建或加入共管（多重签名）钱包时，会用到下方显示的扩展公钥。";
 
 "hardwareWallet.delete" = "删除设备";
 "hardwareWallet.delete.tip" = "这个硬件设备会在您的设备列表消失。您用这个硬件设备创建的账户依然可以正常显示，下次您使用的时候会重新配对并恢复。";
 "hardwareWallet.delete.cancel" = "撤回";
 
+"hardwareWallet.id_not_match" = "设备 ID 不一致";
+
 // Hardware Wallet Associated - end
+"success" = "成功";
+"fail" = "失败";
 
 "Search your wallet..." = "搜寻钱包中...";
 "You have created these wallets for this App, select which you want to restore" = "您曾在此 App 创建这些钱包，选择您要恢复的。";
@@ -454,3 +461,8 @@
 "Please copy your 24 - digit mnemonic words" = "请抄写你的 24 位助记词";
 "1. Copy carefully with paper and pen, and keep it properly after reconfirming. 2. OneKey does not store private data for you, and mnemonic words once lost cannot be retrieved." = "1. 备好纸笔认真抄写，再次确认无误后请妥善保管。 \n2. OneKey 不会为您存储私密数据，助记词一旦丢失将无法找回。";
 "Your mnemonic has been successfully backed up to this device, and we have nothing more to remind you of. In a word, remember to take good care of it, lost no one can help you find it. Have fun in the world of blockchain." = "您的助记词已经成功备份到这台设备， 我们也没什么可提醒您的了。 总之，切记保管好它， 搞丢了没有任何人可以帮您找回来。 祝您在区块链的世界玩儿开心❤️。";
+"Restore your HD wallet completely. Any wallet derived from the original HD mnemonic will be restored" = "完整恢复您的 HD 钱包，任何由原 HD 助记词派生的钱包都将获得复原。";
+"This is a special device that stores HD wallet mnemonic words. You can..." = "🔑 这是一台存储了 HD 钱包助记词的特殊设备，您可以...";
+"Restore the phone HD wallet" = "恢复手机 HD 钱包";
+"Have to check" = "已核对";
+"Hardware wallet checking" = "硬件钱包核对中";

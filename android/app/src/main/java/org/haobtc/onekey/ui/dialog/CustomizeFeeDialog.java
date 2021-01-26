@@ -1,5 +1,7 @@
 package org.haobtc.onekey.ui.dialog;
 import android.os.Bundle;
+import android.text.InputFilter;
+import android.text.InputType;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -42,7 +44,7 @@ public class CustomizeFeeDialog extends BaseDialogFragment {
     @BindView(R.id.text_time)
     TextView textTime;
     @BindView(R.id.text_size)
-    TextView textSize;
+    EditText textSize;
     @BindView(R.id.text_fee_in_btc)
     TextView textFeeInBtc;
     @BindView(R.id.text_fee_in_cash)
@@ -70,6 +72,7 @@ public class CustomizeFeeDialog extends BaseDialogFragment {
     @Override
     public void init() {
         mSystemConfigManager = new SystemConfigManager(requireContext());
+        textSize.setEnabled(false);
         Bundle bundle = getArguments();
         assert bundle != null;
         size = bundle.getInt(Constant.TAG_TX_SIZE, 0);

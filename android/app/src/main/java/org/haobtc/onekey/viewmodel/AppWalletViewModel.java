@@ -38,7 +38,7 @@ import java.util.concurrent.Executors;
  * @create 2021-01-06 11:09 AM
  */
 public class AppWalletViewModel extends ViewModel {
-    private final ExecutorService mExecutorService = Executors.newSingleThreadExecutor();
+    private final ExecutorService mExecutorService = Executors.newFixedThreadPool(4);
     private final Handler mMainHandler = new Handler(Looper.getMainLooper());
 
     public MutableLiveData<Boolean> existsWallet = new MutableLiveData<>();
@@ -129,7 +129,11 @@ public class AppWalletViewModel extends ViewModel {
             if (localWalletInfo == null) {
                 mSystemConfigManager.setPassWordType(SystemConfigManager.SoftHdPassType.SHORT);
             }
-            currentWalletInfo.postValue(localWalletInfo);
+            mMainHandler.post(() -> {
+                currentWalletInfo.setValue(localWalletInfo);
+                refreshExistsWallet();
+                refreshBalance();
+            });
         });
     }
 

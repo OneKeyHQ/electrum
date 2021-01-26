@@ -13,9 +13,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OKDeviceModel : NSObject
 @property (nonatomic, strong) OKDeviceInfoModel *deviceInfo;
-@property (nonatomic, strong) NSDictionary *json;
+@property (nonatomic, strong) NSMutableDictionary *json;
+@property (nonatomic, assign) BOOL verifiedDevice;
 
 - (instancetype)initWithJson:(NSDictionary *)json;
+- (BOOL)updateWithDict:(NSDictionary *)newDict; // 如果不同用 newDict 更新原来对象，返回 YES，如果相同不需要改变返回 NO
 @end
 
 NS_ASSUME_NONNULL_END

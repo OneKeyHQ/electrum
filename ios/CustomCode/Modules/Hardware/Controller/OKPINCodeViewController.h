@@ -11,6 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 typedef void(^PINCodeComplete)(NSString *pin);
 @interface OKPINCodeViewController : BaseViewController
+@property (nonatomic, copy) NSString *titleLabelText;
 + (instancetype)PINCodeViewController:(PINCodeComplete)complete;
 @end
 

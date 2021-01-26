@@ -3,8 +3,6 @@ package org.haobtc.onekey.bean;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
-import java.math.BigInteger;
-
 /**
  * @author liyan
  */
@@ -25,13 +23,20 @@ public class TemporaryTxInfo {
     @SerializedName("fee")
     private double fee;
     @SerializedName("time")
-    private int time;
+    private double time;
     @SerializedName("tx")
     private String tx;
+    @SerializedName("gas_limit")
+    private int gasLimit;
+    @SerializedName("gas_price")
+    private double gasPrice;
+    @SerializedName("fiat")
+    private String fiat;
 
     public static TemporaryTxInfo objectFromData(String str) {
         return new Gson().fromJson(str, TemporaryTxInfo.class);
     }
+
     public double getAmount() {
         return amount;
     }
@@ -56,11 +61,11 @@ public class TemporaryTxInfo {
         this.fee = fee;
     }
 
-    public int getTime() {
+    public double getTime() {
         return time;
     }
 
-    public void setTime(int time) {
+    public void setTime(double time) {
         this.time = time;
     }
 
@@ -70,5 +75,29 @@ public class TemporaryTxInfo {
 
     public void setTx(String tx) {
         this.tx = tx;
+    }
+
+    public int getGasLimit() {
+        return gasLimit;
+    }
+
+    public void setGasLimit(int gasLimit) {
+        this.gasLimit = gasLimit;
+    }
+
+    public double getGasPrice() {
+        return gasPrice;
+    }
+
+    public void setGasPrice(int gasPrice) {
+        this.gasPrice = gasPrice;
+    }
+
+    public String getFiat() {
+        return fiat;
+    }
+
+    public void setFiat(String fiat) {
+        this.fiat = fiat;
     }
 }

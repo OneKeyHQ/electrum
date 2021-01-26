@@ -1,7 +1,5 @@
 package org.haobtc.onekey.ui.dialog;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -63,12 +61,16 @@ public class TransactionConfirmDialog extends BaseDialogFragment {
         textSendName.setText(name);
         textSendAddress.setText(sender);
         textReceiveAddress.setText(receiver);
-        String amounts = amount.replace("-", "");
-        if (amounts.contains("(")) {
-            String btcAmount = amounts.substring(0, amounts.indexOf("("));
-            textTxAmount.setText(btcAmount);
+        if (amount.contains("-")) {
+            String amounts = amount.replace("-", "");
+            if (amounts.contains("(")) {
+                String btcAmount = amounts.substring(0, amounts.indexOf("("));
+                textTxAmount.setText(btcAmount);
+            } else {
+                textTxAmount.setText(amounts);
+            }
         } else {
-            textTxAmount.setText(amounts);
+            textTxAmount.setText(amount);
         }
         if (fee.contains("(")) {
             String feeAmount = fee.substring(0, fee.indexOf("("));

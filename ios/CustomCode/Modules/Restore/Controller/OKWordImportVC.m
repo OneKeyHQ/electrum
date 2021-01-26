@@ -82,7 +82,7 @@
 
 - (IBAction)next:(id)sender {
     OKWeakSelf(self)
-    if (_wordInputView.wordsArr.count == 12 || _wordInputView.wordsArr.count == 24) {
+    if (_wordInputView.wordsArr.count == 12 || _wordInputView.wordsArr.count == 24 || _wordInputView.wordsArr.count == 18) {
         __block NSString *mnemonicStr = [_wordInputView.wordsArr componentsJoinedByString:@" "];
         id result =  [kPyCommandsManager callInterface:kInterfaceverify_legality parameter:@{@"data":mnemonicStr,@"flag":@"seed"}];
         if (result != nil) {

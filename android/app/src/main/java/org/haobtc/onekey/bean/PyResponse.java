@@ -2,12 +2,14 @@ package org.haobtc.onekey.bean;
 
 import org.haobtc.onekey.exception.HardWareExceptions;
 
+import java.util.Objects;
+
 /**
  * @author liyan
  * @date 12/4/20
  */
 
-public class PyResponse<T> {
+public class PyResponse<T>  {
     private T result;
     private String errors;
 

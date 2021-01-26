@@ -28,7 +28,11 @@
 - (void)setupForinit {
     self.devices = [[NSMutableDictionary alloc] init];
     self.devicesInfoPath = [[OKStorageManager getDocumentDirectoryPath] stringByAppendingPathComponent:@"OK_DEVICES_INFO"];
-    [self reloadDevicesInfoFromLocalStorage];
+    if (![[NSFileManager defaultManager] fileExistsAtPath:self.devicesInfoPath]) {
+        [[NSFileManager defaultManager] createDirectoryAtPath:self.devicesInfoPath withIntermediateDirectories:YES attributes:nil error:nil];
+    } else {
+        [self reloadDevicesInfoFromLocalStorage];
+    }
 }
 
 - (void)reloadDevicesInfoFromLocalStorage {
@@ -37,8 +41,9 @@
 
     NSArray *names = [manager contentsOfDirectoryAtPath:self.devicesInfoPath error:&error];
     if (error) {
-        NSLog(@"%@", error);
+        NSLog(@"__ERROR__: reloadDevicesInfoFromLocalStorage %@", error);
         assert(0);
+        return;
     }
     
     for (NSString *name in names) {
@@ -51,16 +56,35 @@
 }
 
 - (void)addDevices:(OKDeviceModel *)deviceModel {
+    if (!deviceModel.deviceInfo.device_id) {
+        NSAssert(0, @"OKDeviceModel addDevices error");
+        return;
+    }
     OKDeviceModel *oldDeviceModel = [self.devices objectForKey:deviceModel.deviceInfo.device_id];
-    if (!oldDeviceModel || ![oldDeviceModel.json isEqualToDictionary:deviceModel.json]) {
+    if (!oldDeviceModel) {
         [self.devices setObject:deviceModel forKey:deviceModel.deviceInfo.device_id];
         [self saveToLocalStorage:deviceModel];
+    } else {
+        [self updateDevices:deviceModel];
+    }
+}
+
+- (void)updateDevices:(OKDeviceModel *)deviceModel {
+    if (!deviceModel.deviceInfo.device_id) {
+        NSAssert(0, @"OKDeviceModel updateDevices error");
+        return;
+    }
+    OKDeviceModel *oldDeviceModel = [self.devices objectForKey:deviceModel.deviceInfo.device_id];
+    if (!oldDeviceModel) { return; }
+    BOOL changed = [oldDeviceModel updateWithDict:deviceModel.json];
+    if (changed) {
+        [self saveToLocalStorage:oldDeviceModel];
     }
 }
 
 - (void)removeDevice:(NSString *)deviceID {
     if (![self.devices objectForKey:deviceID]) {
-        NSLog(@"OKDevicesManager: Device id %@ not found.", deviceID);
+        NSLog(@"__ERROR__: OKDevicesManager: Device id %@ not found.", deviceID);
         return;
     }
     [self.devices removeObjectForKey:deviceID];
@@ -74,7 +98,12 @@
     }
 
     NSString *filePath = [self.devicesInfoPath stringByAppendingPathComponent:deviceModel.deviceInfo.device_id];
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:deviceModel.json options:NSJSONWritingPrettyPrinted error:nil];
+    NSError *serializationError;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:deviceModel.json options:NSJSONWritingPrettyPrinted error:&serializationError];
+    if (serializationError) {
+        NSLog(@"__ERROR__: saveToLocalStorage serializationError: %@", serializationError);
+        return;
+    }
     [jsonData writeToFile:filePath atomically:YES];
 }
 
@@ -87,7 +116,7 @@
     NSFileManager *fileManager = [NSFileManager defaultManager];
     BOOL isDelete = [fileManager removeItemAtPath:filePath error:nil];
     if (!isDelete) {
-        NSLog(@"OKDevicesManager: Device id %@ removal failed.", deviceID);
+        NSLog(@"__ERROR__: OKDevicesManager: Device id %@ removal failed.", deviceID);
     }
 }
 
