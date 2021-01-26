@@ -1,4 +1,5 @@
 package org.haobtc.onekey.activities.sign;
+
 import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -346,7 +347,9 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
 
     @Override
     public void onException(Exception e) {
-        showToast(e.getMessage());
+        if (Objects.requireNonNull(e.getMessage()).trim().isEmpty()) {
+            showToast(e.getMessage());
+        }
     }
 
     @Override
