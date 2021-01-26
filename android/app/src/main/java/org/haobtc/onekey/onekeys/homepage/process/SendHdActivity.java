@@ -70,7 +70,6 @@ import org.haobtc.onekey.ui.widget.PasteEditText;
 import org.haobtc.onekey.ui.widget.PointLengthFilter;
 import org.haobtc.onekey.utils.ClipboardUtils;
 import org.haobtc.onekey.viewmodel.AppWalletViewModel;
-import org.haobtc.onekey.viewmodel.SendHDViewModel;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -231,8 +230,8 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     private final CompositeDisposable mCompositeDisposable = new CompositeDisposable();
     private SystemConfigManager mSystemConfigManager;
     private AccountManager mAccountManager;
-    private SendHDViewModel mSendHDViewModel;
     private boolean isClickPaste;
+    private String mWalletType;
 
     /**
      * init
@@ -240,18 +239,18 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     @Override
     public void init() {
         mAppWalletViewModel = new ViewModelProvider(MyApplication.getInstance()).get(AppWalletViewModel.class);
-        mSendHDViewModel = new ViewModelProvider(MyApplication.getInstance()).get(SendHDViewModel.class);
         mAccountManager = new AccountManager(mContext);
         mSystemConfigManager = new SystemConfigManager(this);
         rxPermissions = new RxPermissions(this);
         hdWalletName = getIntent().getStringExtra(EXT_WALLET_NAME);
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-        showWalletType = mAccountManager.getCurrentWalletType();
+        showWalletType = mAccountManager.getCurrentWalletAccurateType();
+        mWalletType = mAccountManager.getCurWalletType();
         baseUnit = mSystemConfigManager.getCurrentBaseUnit();
         currencySymbols = mSystemConfigManager.getCurrentFiatSymbol();
         getDefaultFee();
         setMinAmount();
-        editAmount.setFilters(new InputFilter[]{new PointLengthFilter(8, maxNum -> showToast(R.string.accuracy_num))});
+        editAmount.setFilters(new InputFilter[]{new PointLengthFilter(scale, maxNum -> showToast(R.string.accuracy_num))});
         String addressScan = getIntent().getStringExtra(EXT_SCAN_ADDRESS);
         if (!TextUtils.isEmpty(addressScan)) {
             editReceiverAddress.setText(addressScan);
@@ -489,6 +488,14 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         keyBoardHideRefresh();
     }
 
+    private String getTransferTime(double time) {
+        if (time >= 1) {
+            return String.format("%s%s%s", getString(R.string.about_), (int) time + "", getString(R.string.minute));
+        } else {
+            return String.format("%s%s%s", getString(R.string.about_), (int) (time * 60) + "", getString(R.string.second));
+        }
+    }
+
     /**
      * 判断地址和金额是否正确填写完毕
      */
@@ -509,7 +516,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
      */
     private void getDefaultFee() {
         try {
-            PyResponse<String> response = PyEnv.getFeeInfo();
+            PyResponse<String> response = PyEnv.getFeeInfo(true, "", "", "", "");
             String errors = response.getErrors();
             if (Strings.isNullOrEmpty(errors)) {
                 Logger.json(response.getResult());
@@ -567,7 +574,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
      */
 
     private void calculateMaxSpendableAmount() {
-        PyResponse<TemporaryTxInfo> pyResponse = PyEnv.getFeeByFeeRate(editReceiverAddress.getText().toString(), "!", String.valueOf(currentFeeRate));
+        PyResponse<TemporaryTxInfo> pyResponse = PyEnv.getBtcFeeByFeeRate(mWalletType, editReceiverAddress.getText().toString(), "!", String.valueOf(currentFeeRate));
         String errorMsg = pyResponse.getErrors();
         if (Strings.isNullOrEmpty(errorMsg)) {
             TemporaryTxInfo temporaryTxInfo = pyResponse.getResult();
@@ -691,17 +698,18 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     }
 
     private boolean getFee(String feeRate, int type) {
-        PyResponse<TemporaryTxInfo> pyResponse = PyEnv.getFeeByFeeRate(editReceiverAddress.getText().toString(), isSetBig ? "!" : amount, feeRate);
+        PyResponse<TemporaryTxInfo> pyResponse = PyEnv.getBtcFeeByFeeRate(mWalletType, editReceiverAddress.getText().toString(), isSetBig ? "!" : amount, feeRate);
         String errors = pyResponse.getErrors();
         if (Strings.isNullOrEmpty(errors)) {
             TemporaryTxInfo temporaryTxInfo = pyResponse.getResult();
             String fee = BigDecimal.valueOf(temporaryTxInfo.getFee()).toPlainString();
-            int time = temporaryTxInfo.getTime();
+            String time = getTransferTime(temporaryTxInfo.getTime());
+
             String temp = temporaryTxInfo.getTx();
             transactionSize = temporaryTxInfo.getSize();
             switch (type) {
                 case RECOMMENDED_FEE_RATE:
-                    textSpendTime1.setText(String.format("%s%s%s", getString(R.string.about_), time + "", getString(R.string.minute)));
+                    textSpendTime1.setText(time);
                     textFeeInBtc1.setText(String.format(Locale.ENGLISH, "%s %s", fee, baseUnit));
                     PyResponse<String> response1 = PyEnv.exchange(fee);
                     String errors1 = response1.getErrors();
@@ -717,7 +725,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                     }
                     return true;
                 case SLOW_FEE_RATE:
-                    textSpendTime0.setText(String.format("%s%s%s", getString(R.string.about_), time + "", getString(R.string.minute)));
+                    textSpendTime0.setText(time);
                     textFeeInBtc0.setText(String.format(Locale.ENGLISH, "%s %s", fee, baseUnit));
                     PyResponse<String> response0 = PyEnv.exchange(fee);
                     String errors0 = response0.getErrors();
@@ -732,7 +740,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                     tempSlowTransaction = temp;
                     return true;
                 case FAST_FEE_RATE:
-                    textSpendTime2.setText(String.format("%s%s%s", getString(R.string.about_), time + "", getString(R.string.minute)));
+                    textSpendTime2.setText(time);
                     textFeeInBtc2.setText(String.format(Locale.ENGLISH, "%s %s", fee, baseUnit));
                     PyResponse<String> response2 = PyEnv.exchange(fee);
                     String errors2 = response2.getErrors();
@@ -747,7 +755,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
                     tempFastTransaction = temp;
                     return true;
                 case CUSTOMIZE_FEE_RATE:
-                    textCustomizeSpendTime.setText(String.format("%s%s%s", getString(R.string.about_), time + "", getString(R.string.minute)));
+                    textCustomizeSpendTime.setText(time);
                     textFeeCustomizeInBtc.setText(String.format(Locale.ENGLISH, "%s %s", fee, baseUnit));
                     if (feeDialog.isVisible()) {
                         feeDialog.getTextTime().setText(String.format("%s %s", time, getString(R.string.minute)));
@@ -783,8 +791,13 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
      * 改变发送按钮状态
      */
     private void changeButton() {
-        if (addressInvalid && isFeeValid && !Strings.isNullOrEmpty(amount) && Double.parseDouble(amount) > 0) {
-            btnNext.setEnabled(true);
+        if (addressInvalid && isFeeValid && !Strings.isNullOrEmpty(amount)) {
+            BigDecimal decimal = BigDecimal.valueOf(Double.parseDouble(amount));
+            if (decimal.compareTo(minAmount) < 0) {
+                btnNext.setEnabled(false);
+            } else {
+                btnNext.setEnabled(true);
+            }
         } else {
             btnNext.setEnabled(false);
         }
@@ -973,7 +986,12 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
     private void getAddressIsValid() {
         String address = editReceiverAddress.getText().toString();
         if (!Strings.isNullOrEmpty(address)) {
-            addressInvalid = PyEnv.verifyAddress(address);
+            PyResponse<Void> response = PyEnv.VerifyLegality(address, "address", mWalletType);
+            if (Strings.isNullOrEmpty(response.getErrors())) {
+                addressInvalid = true;
+            } else {
+                addressInvalid = false;
+            }
             if (!addressInvalid) {
                 editReceiverAddress.setText("");
                 showToast(R.string.invalid_address);

@@ -1,7 +1,7 @@
 package org.haobtc.onekey.event;
 
 /**
- * @author
+ * @author 自定义费率事件
  * @date 12/11/20
  */
 
@@ -10,6 +10,7 @@ public class CustomizeFeeRateEvent {
     private String fee;
     private String cash;
     private String time;
+    private int gasLimit;
 
     public CustomizeFeeRateEvent(String feeRate, String fee, String cash, String time) {
         this.feeRate = feeRate;
@@ -32,5 +33,13 @@ public class CustomizeFeeRateEvent {
 
     public String getTime() {
         return time;
+    }
+
+    public int getGasLimit() {
+        return gasLimit;
+    }
+
+    public void setGasLimit(int gasLimit) {
+        this.gasLimit = gasLimit;
     }
 }

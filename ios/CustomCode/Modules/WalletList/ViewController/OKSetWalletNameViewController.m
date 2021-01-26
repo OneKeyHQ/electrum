@@ -145,10 +145,9 @@
         {
             __block NSString *name = self.walletNameTextfield.text;
             [OKHwNotiManager  sharedInstance].delegate = self;
-            //[[[OKBlueManager sharedInstance]getNotificationCenter] postNotificationName:@"1" object:nil];
             dispatch_async(dispatch_get_global_queue(0, 0), ^{
                NSString *xpub = [kPyCommandsManager callInterface:kInterfacecreate_hw_derived_wallet parameter:@{}];
-                NSArray *array = @[@[xpub,kOKBlueManager.model.device_id]];
+                NSArray *array = @[@[xpub,kOKBlueManager.currentConnectModel.device_id]];
                 NSString *xpubs = [array mj_JSONString];
                 create = [kPyCommandsManager callInterface:kInterfaceimport_create_hw_wallet parameter:@{@"name":name,@"m":@"1",@"n":@"1",@"xpubs":xpubs,@"hd":@"0"}];
                 dispatch_async(dispatch_get_main_queue(), ^{

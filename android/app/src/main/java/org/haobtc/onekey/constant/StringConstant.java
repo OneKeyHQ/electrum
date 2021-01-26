@@ -20,8 +20,10 @@ public class StringConstant {
     public static final String Btc_Private_Standard = "btc-private-standard";
     public static final String USER_AGREEMENT = "userAgreement";
     public static final String PRI_POLICY = "privacyAgreement";
-    public static final String USER_URL="https://onekey.zendesk.com/hc/articles/360002014776";
+    public static final String USER_URL = "https://onekey.zendesk.com/hc/articles/360002014776";
     public static final String POLICY_URL = "https://onekey.zendesk.com/hc/articles/360002003315";
     public static final String FROM = "from";
     public static final String REPLACE_ERROR = "Replace Watch-olny wallet";
+    public static final String NEW_GUIDE_URL = "https://onekey.zendesk.com/hc/zh-cn/articles/360002182556-App-%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B%E6%95%99%E7%A8%8B";
+    public static final String NEW_GUIDE = "newGuide";
 }

@@ -165,7 +165,8 @@
                 android:id="@+id/rel_link_method"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dp_70"
-                android:background="@color/button_bk_ddake">
+                android:background="@color/button_bk_ddake"
+                android:visibility="gone">
 
                 <ImageView
                     android:id="@+id/link"

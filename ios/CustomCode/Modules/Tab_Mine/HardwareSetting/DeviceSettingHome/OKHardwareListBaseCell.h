@@ -20,7 +20,7 @@ typedef NS_ENUM(NSUInteger, OKHardwareListBaseCellType) {
     OKHardwareListBaseCellTypeDeviceChangePIN,
     OKHardwareListBaseCellTypeDeviceShowXPUB,
     OKHardwareListBaseCellTypeDeviceHidden,
-    OKHardwareListBaseCellTypeDeviceRecover,
+    OKHardwareListBaseCellTypeDeviceReset,
     OKHardwareListBaseCellTypeDeviceDelete,
 };
 

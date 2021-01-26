@@ -19,7 +19,6 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.bean.HardwareFeatures;
 import org.haobtc.onekey.constant.Constant;
-import org.haobtc.onekey.constant.PyConstant;
 import org.haobtc.onekey.event.BleConnectionEx;
 import org.haobtc.onekey.event.BleScanStopEvent;
 import org.haobtc.onekey.event.ExitEvent;

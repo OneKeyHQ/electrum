@@ -48,6 +48,7 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/title1_show"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/fee_per_byte_sat_b"
@@ -100,6 +101,7 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/title2_show"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/size_byte"
@@ -107,7 +109,7 @@
                     android:textSize="@dimen/sp_12"
                     android:textStyle="normal" />
 
-                <TextView
+                <EditText
                     android:id="@+id/text_size"
                     android:layout_width="135dp"
                     android:layout_height="@dimen/dp_60"
@@ -117,6 +119,8 @@
                     android:paddingStart="@dimen/dp_20"
                     android:paddingEnd="@dimen/dp_20"
                     android:singleLine="true"
+                    android:maxLines="1"
+                    android:numeric="integer"
                     android:textColor="@color/text_six"
                     android:textSize="@dimen/sp_18" />
 

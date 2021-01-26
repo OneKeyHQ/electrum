@@ -46,7 +46,7 @@ public class ResetAppActivity extends BaseActivity implements OnCheckedChangeLis
     private RxPermissions rxPermissions;
     private ReStartDialog reStartDialog;
 
-    public static void gotoResetAppActivity (Context context) {
+    public static void start(Context context) {
         context.startActivity(new Intent(context, ResetAppActivity.class));
     }
 

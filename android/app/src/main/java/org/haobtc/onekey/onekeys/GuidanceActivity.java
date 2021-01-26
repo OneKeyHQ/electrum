@@ -1,4 +1,5 @@
 package org.haobtc.onekey.onekeys;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.SpannableString;
@@ -17,9 +18,9 @@ import androidx.annotation.NonNull;
 
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.activities.transaction.CheckChainDetailWebActivity;
 import org.haobtc.onekey.constant.StringConstant;
 import org.haobtc.onekey.utils.Daemon;
-import org.haobtc.onekey.utils.NavUtils;
 import org.haobtc.onekey.utils.ViewTouchUtil;
 
 import butterknife.BindView;
@@ -64,7 +65,7 @@ public class GuidanceActivity extends BaseActivity implements CompoundButton.OnC
         userAgreementSpannable.setSpan(new ClickableSpan() {
             @Override
             public void onClick (@NonNull View widget) {
-                NavUtils.gotoCheckChainDetailWebActivity(mContext, StringConstant.USER_AGREEMENT, StringConstant.USER_URL);
+                CheckChainDetailWebActivity.start(mContext, StringConstant.USER_AGREEMENT, StringConstant.USER_URL);
             }
 
             @Override
@@ -81,7 +82,7 @@ public class GuidanceActivity extends BaseActivity implements CompoundButton.OnC
         privacyPolicySpannable.setSpan(new ClickableSpan() {
             @Override
             public void onClick (@NonNull View widget) {
-                NavUtils.gotoCheckChainDetailWebActivity(mContext, StringConstant.PRI_POLICY, StringConstant.POLICY_URL);
+                CheckChainDetailWebActivity.start(mContext, StringConstant.PRI_POLICY, StringConstant.POLICY_URL);
             }
 
             @Override

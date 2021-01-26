@@ -20,6 +20,7 @@ import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.LocalWalletInfo;
 import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.constant.Constant;
+import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.event.FinishEvent;
 import org.haobtc.onekey.event.GotPassEvent;
 import org.haobtc.onekey.event.LoadOtherWalletEvent;
@@ -160,10 +161,10 @@ public class DeleteWalletActivity extends BaseActivity implements CompoundButton
             });
             onDeleteSuccess(deleteHdWalletName);
         } else {
-//            mToast(getString(R.string.delete_succse));
             mlToast(errors);
         }
     }
+
     @SuppressLint("UseCompatLoadingForDrawables")
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {

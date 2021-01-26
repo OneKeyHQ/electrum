@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.view.View;
 
 import org.haobtc.onekey.R;
+import org.haobtc.onekey.activities.ResetAppActivity;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.LocalWalletInfo;
@@ -64,7 +65,7 @@ public class FixHdPassActivity extends BaseActivity {
                 startActivity(intent);
                 break;
             case R.id.reset_pass:
-                NavUtils.gotoResetAppActivity(this);
+                ResetAppActivity.start(this);
                 break;
             default:
                 break;

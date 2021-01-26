@@ -31,6 +31,8 @@ typedef void(^OKDeviceUpdateCellCallback)(OKDeviceUpdateType type, NSString *url
 @end
 
 @interface OKDeviceUpdateViewController : BaseViewController
+@property (nonatomic, assign) BOOL bootloaderMode; // bootloader 模式安装固件
+@property (nonatomic, strong) NSString *deviceId;
 + (instancetype)controllerWithStoryboard;
 
 @end

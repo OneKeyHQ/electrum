@@ -7,6 +7,8 @@
 //
 
 #import "OKBlueManager.h"
+#import "OKDeviceModel.h"
+
 #define kLENGTH_FILED_START_OFFSET  10
 #define kLENGTH_FILED_END_OFFSET    18
 #define kHEAD_LENGTH                9
@@ -24,9 +26,10 @@
 @property (nonatomic,strong)CBCharacteristic *readCharacteristic;
 @property (nonatomic,strong)CBCharacteristic *writeCharacteristic;
 @property (nonatomic, strong)NSMutableArray  *peripheralArr;
-
-
 @property (nonatomic,strong)NSMutableString *buffer;
+
+@property (nonatomic,copy)NSString *needConnectName;
+@property (nonatomic,copy)ConnectedComplete connectedComplete;
 
 @end
 
@@ -275,6 +278,12 @@ static dispatch_once_t once;
 
 /// 扫描到的设备[由block回主线程]
 - (void)scanResultPeripheral:(CBPeripheral *)peripheral advertisementData:(NSDictionary *)advertisementData rssi:(NSNumber *)RSSI {
+    
+    if ([peripheral.name isEqualToString:self.needConnectName]) {
+        [self connectPeripheral:peripheral];
+        return;
+    }
+    
     for (OKPeripheralInfo *peripheralInfo in self.peripheralArr) {
         if ([peripheralInfo.peripheral.identifier isEqual:peripheral.identifier]) {
             return;
@@ -291,6 +300,7 @@ static dispatch_once_t once;
         [self.delegate getScanResultPeripherals:self.peripheralArr];
     }
 }
+
 
 
 /// 停止扫描
@@ -324,6 +334,12 @@ static dispatch_once_t once;
 
 /// 连接失败[由block回主线程]
 - (void)connectFailed {
+    if (self.needConnectName.length > 0) {
+        if (self.connectedComplete) {
+            self.connectedComplete(NO);
+        }
+        self.needConnectName = @"";
+    }
     if ([self.delegate respondsToSelector:@selector(connectFailed)]) {
         [self.delegate connectFailed];
     }
@@ -345,12 +361,32 @@ static dispatch_once_t once;
 
 ///订阅完成
 - (void)subscribeToComplete{
-    if ([self.delegate respondsToSelector:@selector(subscribeComplete)]) {
-        [self.delegate subscribeComplete];
-    }
+    kOKBlueManager.currentReadDataStr = @"";
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        NSDictionary *jsonDict =  [kPyCommandsManager callInterface:kInterfaceget_feature parameter:@{@"path":kBluetooth_iOS}];
+         if (self.needConnectName.length > 0) {
+             if (jsonDict != nil) {
+                 OKDeviceModel *deviceModel  = [[OKDeviceModel alloc]initWithJson:jsonDict];
+                 self.currentConnectModel = deviceModel.deviceInfo;
+                 [[OKDevicesManager sharedInstance]addDevices:deviceModel];
+                 if (self.connectedComplete) {
+                     self.connectedComplete(YES);
+                 }
+                 self.needConnectName = @"";
+             }else{
+                 [self disconnectAllPeripherals];
+                 if (self.connectedComplete) {
+                     self.connectedComplete(NO);
+                 }
+                 self.needConnectName = @"";
+             }
+         }else{
+             if ([self.delegate respondsToSelector:@selector(subscribeComplete:)]) {
+                 [self.delegate subscribeComplete:jsonDict];
+             }
+         }
+    });
 }
-
-
 
 ///获取设备的服务跟特征值[当已连接成功时]
 - (void)searchServerAndCharacteristicUUID {
@@ -431,10 +467,11 @@ static dispatch_once_t once;
 {
     if (self.writeCharacteristic) {
         self.currentReadDataStr = @"";
-        if (data == nil) {
+        if (!data) {
+            NSLog(@"OKBlueManager: characteristicWrite Empty data");
             return;
         }
-        [self.currentPeripheral writeValue:data forCharacteristic:self.writeCharacteristic type:CBCharacteristicWriteWithResponse];
+        [self.currentPeripheral writeValue:data forCharacteristic:self.writeCharacteristic type:CBCharacteristicWriteWithResponse]; 
     }
 }
 
@@ -479,6 +516,38 @@ static dispatch_once_t once;
     }
     return _buffer;
     
+}
+
+- (BOOL)isConnectedCurrentDevice
+{
+    return [self isConnectedName:self.currentPeripheral.name];
+}
+- (BOOL)isConnectedName:(NSString *)name {
+    CBPeripheral *peripheral = [self.babyBluetooth findConnectedPeripheral:name];
+    if (peripheral != nil) {
+        return YES;
+    }else{
+        return NO;
+    }
+}
+
+- (void)startScanAndConnectWithName:(NSString *)name complete:(ConnectedComplete)complete
+{
+    self.connectedComplete = complete;
+    if ([self isConnectedName:name]) {
+        self.connectedComplete(YES);
+        self.needConnectName = @"";
+        return;
+    }else{
+        self.needConnectName = name;
+        [self startScanPeripheral];
+    }
+    
+    // 临时超时措施
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        self.connectedComplete = nil;
+        complete(NO);
+    });
 }
 
 @end

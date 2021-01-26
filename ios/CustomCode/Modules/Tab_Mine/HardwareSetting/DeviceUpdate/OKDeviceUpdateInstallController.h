@@ -22,6 +22,7 @@ typedef NS_ENUM(NSUInteger, OKDeviceUpdateInstallPhase) {
 @property (nonatomic, copy) NSString* framewareDownloadURL;
 @property (assign, nonatomic) OKDeviceUpdateInstallPhase phase;
 @property (assign, nonatomic) OKDeviceUpdateType type;
+@property (nonatomic, copy) void(^doneCallback)(BOOL sucess); // Optional.
 
 + (instancetype)controllerWithStoryboard;
 

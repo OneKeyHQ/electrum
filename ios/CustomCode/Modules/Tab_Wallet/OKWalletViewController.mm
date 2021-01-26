@@ -316,7 +316,14 @@
     if ([kWalletManager getWalletDetailType] == OKWalletTypeHardware) {
         self.signatureBtn.hidden = NO;
         self.hwBgView.hidden = NO;
-        self.hwWalletNameLabel.text = @"设备信息 从保存的数据库中取";
+        OKDeviceModel *deviceModel = [[OKDevicesManager sharedInstance]getDeviceModelWithID:kWalletManager.currentWalletInfo.device_id];
+        if (deviceModel.deviceInfo.label.length > 0 && deviceModel.deviceInfo.label != nil) {
+            self.hwWalletNameLabel.text = deviceModel.deviceInfo.label;
+        }else if (deviceModel.deviceInfo.ble_name.length > 0 && deviceModel.deviceInfo.ble_name != nil){
+            self.hwWalletNameLabel.text = deviceModel.deviceInfo.ble_name;
+        }else{
+            self.hwWalletNameLabel.text = deviceModel.deviceInfo.device_id;
+        }
     }else{
         self.signatureBtn.hidden = YES;
         self.hwBgView.hidden = YES;
@@ -528,7 +535,9 @@
             BaseNavigationController *baseVc = [[BaseNavigationController alloc]initWithRootViewController:wordImport];
             [weakself.OK_TopViewController presentViewController:baseVc animated:YES completion:nil];
         }else if (model.type == OKSelectCellTypeMatchHD){ //匹配硬件
-            [kTools tipMessage:MyLocalizedString(@"Temporary does not support", nil)];
+//            id json = [kPyCommandsManager callInterface:kInterfacehardware_verify parameter:@{@"msg":[NSUUID UUID].UUIDString}];
+//            NSLog(@"json == %@",json);
+           [kTools tipMessage:MyLocalizedString(@"Temporary does not support", nil)];
 //            OKMatchingInCirclesViewController *matchVc = [OKMatchingInCirclesViewController matchingInCirclesViewController];
 //            [self.navigationController pushViewController:matchVc animated:YES];
         }
@@ -621,6 +630,7 @@
 - (IBAction)receiveBtnClick:(UIButton *)sender {
     OKReceiveCoinViewController *receiveCoinVc = [OKReceiveCoinViewController receiveCoinViewController];
     receiveCoinVc.coinType = kWalletManager.currentWalletInfo.coinType;
+    receiveCoinVc.walletType = [kWalletManager getWalletDetailType];
     [self.navigationController pushViewController:receiveCoinVc animated:YES];
 }
 #pragma mark - 钱包详情

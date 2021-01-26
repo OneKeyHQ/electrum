@@ -11,10 +11,10 @@ import com.chaquo.python.PyObject;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 
-import org.haobtc.onekey.bean.LocalWalletInfo;
-import org.haobtc.onekey.constant.Constant;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.bean.CreateWalletBean;
+import org.haobtc.onekey.bean.LocalWalletInfo;
+import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.PyConstant;
 import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.event.CreateSuccessEvent;
@@ -132,12 +132,22 @@ public class AccountManager {
     }
 
     /**
-     * 获取当前钱包的类型
+     * 获取当前钱包的类型  例如"btc-watch-standard"，"eth-derived-standard"
      *
      * @return
      */
-    public String getCurrentWalletType() {
+    public String getCurrentWalletAccurateType() {
         return mPreferencesSharedPreferences.getString(Constant.CURRENT_SELECTED_WALLET_TYPE, "");
+    }
+
+    /**
+     * 获取钱包的类型：例如"btc","eth"
+     *
+     * @return
+     */
+    public String getCurWalletType() {
+        String string = mPreferencesSharedPreferences.getString(CURRENT_SELECTED_WALLET_TYPE, "");
+        return string.substring(0, string.indexOf("-"));
     }
 
     /**

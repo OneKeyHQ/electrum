@@ -23,6 +23,7 @@ import android.widget.TextView;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.aop.SingleClick;
+import org.haobtc.onekey.constant.StringConstant;
 import org.haobtc.onekey.utils.MyDialog;
 import org.haobtc.onekey.utils.internet.NetBroadcastReceiver;
 
@@ -66,7 +67,7 @@ public class CheckChainDetailWebActivity extends BaseActivity implements NetBroa
     private String keyLink;
     private String loadUrl = "";
 
-    public static void gotoCheckChainDetailWebActivity(Context context, String loadWhere, String loadUrl) {
+    public static void start(Context context, String loadWhere, String loadUrl) {
         Intent intent = new Intent(context, CheckChainDetailWebActivity.class);
         intent.putExtra("loadWhere", loadWhere);
         intent.putExtra("loadUrl", loadUrl);
@@ -88,12 +89,13 @@ public class CheckChainDetailWebActivity extends BaseActivity implements NetBroa
         myDialog.show();
         Intent intent = getIntent();
         String loadWhere = intent.getStringExtra("loadWhere");
-        if ("userAgreement".equals(loadWhere)) {
-            loadUrl = intent.getStringExtra("loadUrl");
+        loadUrl = intent.getStringExtra("loadUrl");
+        if (StringConstant.USER_AGREEMENT.equals(loadWhere)) {
             textTitle.setText(getString(R.string.user_agreement));
-        } else if ("privacyAgreement".equals(loadWhere)) {
-            loadUrl = intent.getStringExtra("loadUrl");
+        } else if (StringConstant.PRI_POLICY.equals(loadWhere)) {
             textTitle.setText(getString(R.string.privacy_agreement));
+        } else if (StringConstant.NEW_GUIDE.equals(loadWhere)) {
+            textTitle.setText(getString(R.string.new_guide_tip));
         } else {
             checkTxid = intent.getStringExtra("checkTxid");
             keyLink = intent.getStringExtra("key_link");

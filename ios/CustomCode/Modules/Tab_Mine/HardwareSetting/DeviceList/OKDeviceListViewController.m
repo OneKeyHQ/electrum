@@ -12,6 +12,8 @@
 #import "OKDeviceListCellModel.h"
 #import "OKDevicesManager.h"
 
+NSString *const OKDeviceListReloadNotificationKey = @"OKDeviceListReloadNotificationKey";
+
 static const NSUInteger backgroundColor = 0xF5F6F7;
 static const NSUInteger sectionTitleColor = 0x546370;
 static const NSUInteger titleColor = 0x14293b;
@@ -30,6 +32,7 @@ static const NSUInteger titleColor = 0x14293b;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadDeviceList) name:OKDeviceListReloadNotificationKey object:nil];
     self.deviceCells = [[NSMutableArray alloc] init];
     self.tableView.backgroundColor = HexColor(backgroundColor);
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
@@ -87,7 +90,8 @@ static const NSUInteger titleColor = 0x14293b;
 }
 
 - (void)reloadDeviceList {
-    
+    [self.deviceCells removeAllObjects];
+
     NSArray <OKDeviceModel *>*devices = [OKDevicesManager sharedInstance].devices.allValues;
     
     for (OKDeviceModel *device in devices) {
@@ -98,6 +102,7 @@ static const NSUInteger titleColor = 0x14293b;
         deviceCell.titleColor = titleColor;
         [self.deviceCells addObject:deviceCell];
     }
+    [self.tableView reloadData];
 }
 
 @end

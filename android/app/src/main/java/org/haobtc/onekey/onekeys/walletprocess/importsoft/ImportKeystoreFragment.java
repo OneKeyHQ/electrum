@@ -155,6 +155,7 @@ public class ImportKeystoreFragment extends BaseFragment implements View.OnClick
                         argList.add(new Kwarg("coin", mImportSoftWalletProvider.currentCoinType().coinName));
                     }
                     argList.add(new Kwarg("data", keystoreContent));
+                    argList.add(new Kwarg("password", keystorePass));
                     argList.add(new Kwarg("flag", "keystore"));
                     Daemon.commands.callAttr("verify_legality", argList.toArray(new Object[0]));
                 } catch (Exception e) {

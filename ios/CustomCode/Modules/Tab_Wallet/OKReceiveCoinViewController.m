@@ -8,8 +8,9 @@
 
 #import "OKReceiveCoinViewController.h"
 #import "OKShareView.h"
+#import "OKMatchingInCirclesViewController.h"
 
-@interface OKReceiveCoinViewController ()
+@interface OKReceiveCoinViewController ()<OKHwNotiManagerDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *coinTypeImageView;
 @property (weak, nonatomic) IBOutlet UILabel *titleLabel;
 @property (weak, nonatomic) IBOutlet UIImageView *QRCodeImageView;
@@ -18,14 +19,9 @@
 
 
 @property (weak, nonatomic) IBOutlet UIButton *verifyBtn;
-@property (weak, nonatomic) IBOutlet UIView *bottomTipsBgView;
-
 
 @property (weak, nonatomic) IBOutlet UIButton *cyBtn;
 @property (weak, nonatomic) IBOutlet UIButton *shareBtn;
-
-//务必在您的硬件钱包上核对地址  提示Label
-@property (weak, nonatomic) IBOutlet UILabel *bottomTipsLabel;
 
 @property (weak, nonatomic) IBOutlet UIView *bgView;
 @property (weak, nonatomic) IBOutlet UIStackView *stackBgView;
@@ -36,6 +32,12 @@
 @property (weak, nonatomic) IBOutlet UILabel *titleNavLabel;
 
 @property (nonatomic,strong)NSDictionary *qrDataDict;
+
+//HW
+@property (weak, nonatomic) IBOutlet UIView *hwBgView;
+@property (weak, nonatomic) IBOutlet UILabel *hwDescLabel;
+@property (weak, nonatomic) IBOutlet UILabel *hwStartCheckLabel;
+@property (weak, nonatomic) IBOutlet UIView *startChekBgView;
 
 @end
 
@@ -59,7 +61,6 @@
             [weakself.navigationController popViewControllerAnimated:YES];
         } vc:weakself conLabel:MyLocalizedString(@"I have known_alert", nil) isOneBtn:NO];
     }
-    
     if ([kWalletManager getWalletDetailType] == OKWalletTypeObserve) {
         OKWeakSelf(self)
         [kTools alertTips:MyLocalizedString(@"prompt", nil) desc:MyLocalizedString(@"Are you sure you want to use the address of the wallet to initiate a collection in order to view the wallet?", nil) confirm:^{} cancel:^{
@@ -76,18 +77,28 @@
     [self.bgView setLayerDefaultRadius];
     [self setNavigationBarBackgroundColorWithClearColor];
     [self backButtonWhiteColor];
-    if (self.walletType == OKWalletTypeHD || self.walletType == OKWalletTypeIndependent) {
-        self.verifyBtn.hidden = YES;
-        self.bottomTipsLabel.hidden = YES;
-    }else if(self.walletType == OKWalletTypeHardware){
+    if(self.walletType == OKWalletTypeHardware){
+        [self.startChekBgView setLayerRadius:14];
+        [self.verifyBtn setTitle:MyLocalizedString(@"Have to check", nil) forState:UIControlStateNormal];
         self.verifyBtn.hidden = NO;
-        self.bottomTipsBgView.hidden = NO;
+        self.hwBgView.hidden = NO;
+        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(startCheckAddress)];
+        [self.hwBgView addGestureRecognizer:tap];
+    }else{
+        self.verifyBtn.hidden = YES;
+        self.hwBgView.hidden = YES;
     }
 }
 
 - (void)refreshUI{
-    self.QRCodeImageView.image = [QRCodeGenerator qrImageForString:[self.qrDataDict safeStringForKey:@"qr_data"] imageSize:207];
-    self.walletAddressLabel.text = [self.qrDataDict safeStringForKey:@"addr"];
+    if (self.walletType == OKWalletTypeHardware) {
+        self.QRCodeImageView.image  = [UIImage imageNamed:@"qrcode_shade"];
+        NSString *address = [self.qrDataDict safeStringForKey:@"addr"];
+        self.walletAddressLabel.text = [NSString stringWithFormat:@"%@...%@",[address substringToIndex:6],[address substringFromIndex:address.length - 6]];
+    }else{
+        self.QRCodeImageView.image = [QRCodeGenerator qrImageForString:[self.qrDataDict safeStringForKey:@"qr_data"] imageSize:207];
+        self.walletAddressLabel.text = [self.qrDataDict safeStringForKey:@"addr"];
+    }
 }
 
 - (IBAction)shareBtnClick:(UIButton *)sender {
@@ -103,7 +114,34 @@
     [kTools pasteboardCopyString:self.walletAddressLabel.text msg:MyLocalizedString(@"Copied", nil)];
 }
 
+- (void)startCheckAddress
+{
+    self.QRCodeImageView.image = [QRCodeGenerator qrImageForString:[self.qrDataDict safeStringForKey:@"qr_data"] imageSize:207];
+    self.walletAddressLabel.text = [self.qrDataDict safeStringForKey:@"addr"];
+    [OKHwNotiManager sharedInstance].delegate = self;
+    OKWeakSelf(self)
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        id result = [kPyCommandsManager callInterface:kInterfaceshow_address parameter:@{@"address":[self.qrDataDict safeStringForKey:@"addr"]}];
+        if (result != nil) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                weakself.hwBgView.hidden = YES;
+                weakself.verifyBtn.hidden = NO;
+            });
+        };
+    });
+}
+
+#pragma mark - OKHwNotiManagerDelegate
+- (void)hwNotiManagerDekegate:(OKHwNotiManager *)hwNoti type:(OKHWNotiType)type
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.startChekBgView.hidden = YES;
+        self.hwDescLabel.text = MyLocalizedString(@"Hardware wallet checking", nil);
+    });
+}
+
+
 - (IBAction)verifyBtnClick:(UIButton *)sender {
-    NSLog(@"点击了硬件");
+    
 }
 @end

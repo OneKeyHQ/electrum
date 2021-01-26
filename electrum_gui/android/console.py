@@ -906,7 +906,11 @@ class AndroidCommands(commands.Commands):
             "slow": {"gas_price": 72, "time": 10, "gas_limit": 40000, "fee": "0.00288", "fiat": "3.95 USD"}}
         '''
         if coin == "eth":
-            eth_tx_info = eth_tx_info or {}
+            if eth_tx_info:
+                eth_tx_info = json.loads(eth_tx_info)
+            else:
+                eth_tx_info = {}
+
             eth_tx_info.pop("gas_price", None)
             eth_tx_info.pop("gas_limit", None)
             fee = self.eth_estimate_fee(self.wallet.get_addresses()[0], **eth_tx_info)
@@ -928,13 +932,14 @@ class AndroidCommands(commands.Commands):
     def eth_estimate_fee(self, from_address, to_address="", contract_address=None, value="0", data="", gas_price=None, gas_limit=None):
         estimate_gas_prices = self.pywalib.get_gas_price()
         if gas_price:
+            gas_price = Decimal(gas_price)
             best_time = self.pywalib.get_best_time_by_gas_price(gas_price, estimate_gas_prices)
             estimate_gas_prices = {"customer": {"gas_price": gas_price, "time": best_time}}
 
         if not gas_limit:
             gas_limit = self.pywalib.estimate_gas_limit(from_address, to_address, self.wallet.get_contract_token(contract_address), value, data)
 
-        gas_limit = int(gas_limit)
+        gas_limit = Decimal(gas_limit)
         last_price = PyWalib.get_coin_price("eth") or "0"
 
         for val in estimate_gas_prices.values():
@@ -976,7 +981,11 @@ class AndroidCommands(commands.Commands):
         json like {"gas_price": 110, "time": 0.25, "gas_limit": 36015, "fee": "0.00396165", "fiat": "5.43 USD"}
         '''
         if coin == "eth":
-            if not eth_tx_info or not eth_tx_info.get("gas_price"):
+            if eth_tx_info:
+                eth_tx_info = json.loads(eth_tx_info)
+            else:
+                eth_tx_info = {}
+            if not eth_tx_info.get("gas_price"):
                 raise InvalidValueException()
             fee = self.eth_estimate_fee(self.wallet.get_addresses()[0], **eth_tx_info)
             fee = fee.get("customer")
@@ -1509,7 +1518,7 @@ class AndroidCommands(commands.Commands):
         all_tx_len = history_len + local_len
         if start is None or end is None:
             start = 0
-            if search_type == 'receive':
+            if 'receive' in search_type:
                 end = history_len
             else:
                 end = all_tx_len
@@ -2866,7 +2875,7 @@ class AndroidCommands(commands.Commands):
                     raise BaseException(UnavailablePrivateKey())
             elif flag == "keystore":
                 try:
-                    Account.decrypt(data, password).hex()
+                    Account.decrypt(json.loads(data), password).hex()
                 except BaseException as e:
                     raise BaseException(_("Incorrect eth keystore."))
             elif flag == "public":
@@ -3231,7 +3240,7 @@ class AndroidCommands(commands.Commands):
     def get_check_wallet(self):
         wallets = self.daemon.get_wallets()
         for key, wallet in wallets.items():
-            if not isinstance(wallet.keystore, Hardware_KeyStore):
+            if not isinstance(wallet.keystore, Hardware_KeyStore) and not wallet.is_watching_only():
                 return wallet
                 # key = sorted(wallets.keys())[0]
                 # # value = wallets.values()[0]
