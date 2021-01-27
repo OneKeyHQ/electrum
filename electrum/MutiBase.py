@@ -106,7 +106,7 @@ class MutiBase(Logger):
         else:
             raise Exception("invaild type of xpub")
 
-    def restore_from_xpub(self, xpub, device_id, account_id=0, type=84):
+    def restore_from_xpub(self, xpub, device_id, account_id=0, type=84, coin='btc', coinid=None):
         from .keystore import hardware_keystore
         print("restore_from_xpub in....")
         is_valid = keystore.is_bip32_key(xpub)
@@ -118,7 +118,10 @@ class MutiBase(Logger):
                     derivation = purpose48_derivation(0, xtype='p2wsh')
                     #derivation = bip44_derivation(0, bip43_purpose=48)
                 else:
-                    derivation = bip44_derivation(account_id, bip43_purpose=type)
+                    if 'btc' == coin:
+                        derivation = bip44_derivation(account_id, bip43_purpose=type)
+                    else:
+                        derivation = bip44_derivation(account_id, bip43_purpose=type, coin=coinid)
                 d = {
                     'type': 'hardware',
                     'hw_type': 'trezor',
@@ -187,7 +190,7 @@ class MutiBase(Logger):
     def get_cosigner_num(self):
         return self.m,self.n
 
-    def create_storage(self,path, password, hide_type=False, encrypt_storage=False, storage_enc_version=None):
+    def create_storage(self,path, password, hide_type=False, encrypt_storage=True, storage_enc_version=None, coin='btc'):
         encrypt_keystore = any(k.may_have_password() for k in self.keystores)
 
         if self.wallet_type == 'standard':
@@ -213,10 +216,12 @@ class MutiBase(Logger):
             raise Exception("args wrong")
 
         storage = WalletStorage(path)
-        if encrypt_storage:
-            storage.set_password(password, enc_version=storage_enc_version)
+        # if encrypt_storage:
+        #     storage.set_password(password, enc_version=storage_enc_version)
         db = WalletDB('', manual_upgrades=False)
-        db.set_keystore_encryption(bool(password) and encrypt_keystore)
+        if coin != 'btc':
+            self.data['wallet_type'] = '%s_standard' %coin
+        #db.set_keystore_encryption(bool(password) and encrypt_keystore)
         for key, value in self.data.items():
             db.put(key, value)
         db.load_plugins()

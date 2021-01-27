@@ -99,6 +99,8 @@ class TrezorKeyStore(Hardware_KeyStore):
 
         self.plugin.sign_transaction(self, tx, prev_tx)
 
+    def sign_eth_tx(self, *args, **kwargs):
+        return self.plugin.sign_eth_tx(self, *args, **kwargs)
 
 class TrezorInitSettings(NamedTuple):
     word_count: int
@@ -380,7 +382,17 @@ class TrezorPlugin(HW_PluginBase):
         tx.update_signatures(signatures)
         raise Exception("sign success")
 
-    def show_address(self, path, ui, wallet, address, keystore=None):
+    def sign_eth_tx(self, keystore, *args, **kwargs):
+        if not self.client:
+            raise Exception("client is None")
+        xpub = keystore.xpub
+        derivation = keystore.get_derivation_prefix()
+        if not self.force_pair_with_xpub(self.client, xpub, derivation):
+            raise Exception("Can't Pair With You Device When Sign tx")
+        signature = self.client.sign_eth_tx(*args, **kwargs)
+        return signature
+
+    def show_address(self, path, ui, wallet, address, keystore=None, coin='btc'):
         if keystore is None:
             keystore = wallet.get_keystore()
         if not self.show_address_helper(wallet, address, keystore):
@@ -388,7 +400,9 @@ class TrezorPlugin(HW_PluginBase):
         deriv_suffix = wallet.get_address_index(address)
         derivation = keystore.get_derivation_prefix()
         address_path = "%s/%d/%d" % (derivation, *deriv_suffix)
-        script_type = self.get_trezor_input_script_type(wallet.txin_type)
+        script_type = None
+        if coin == 'btc':
+            script_type = self.get_trezor_input_script_type(wallet.txin_type)
         # prepare multisig, if available:
         xpubs = wallet.get_master_public_keys()
         if len(xpubs) > 1:
@@ -402,7 +416,7 @@ class TrezorPlugin(HW_PluginBase):
             multisig = None
 
         client = self.get_client(path=path, ui=ui)
-        client.show_address(address_path, script_type, multisig)
+        client.show_address(address_path, script_type, multisig, coin=coin)
 
     def tx_inputs(self, tx: Transaction, *, for_sig=False, keystore: 'TrezorKeyStore' = None):
         inputs = []

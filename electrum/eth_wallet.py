@@ -50,7 +50,9 @@ from .i18n import _
 from .bip32 import convert_bip32_intpath_to_strpath, convert_bip32_path_to_list_of_uint32
 from .util import (profiler,
                    WalletFileException,
-                   InvalidPassword)
+                   InvalidPassword,
+                   UserCancelled,
+                   UserCancel)
 from .util import get_backup_dir
 from .simple_config import SimpleConfig
 from .keystore import load_keystore, Hardware_KeyStore, KeyStore, KeyStoreWithMPK, AddressIndexGeneric
@@ -326,6 +328,29 @@ class Abstract_Eth_Wallet(ABC):
             return Decimal(fiat_value)
         except:
             return
+
+    def sign_transaction(self, *args, **kwargs):
+        if self.is_watching_only():
+            return
+
+        # sign. start with ready keystores.
+        sig_num = 0
+        sign = tuple()
+        for k in sorted(self.get_keystores(), key=lambda ks: ks.ready_to_sign(), reverse=True):
+            try:
+                #if k.can_sign(tmp_tx):
+                sign = k.sign_eth_tx(*args, **kwargs)
+            except BaseException as e:
+                msg = str(e)
+                print(f"wallet:L1510======={e}======")
+                if isinstance(e, UserCancelled):
+                    raise BaseException(UserCancel())
+                if -1 != msg.find("Can't Pair With You Device When Sign tx"):
+                    sig_num += 1
+                    continue
+                raise BaseException(e)
+
+        return sign
 
     def is_mine(self, address) -> bool:
         if not address: return False

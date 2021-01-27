@@ -121,8 +121,9 @@ class HW_PluginBase(BasePlugin):
     def show_address_helper(self, wallet, address, keystore=None):
         if keystore is None:
             keystore = wallet.get_keystore()
-        if not is_address(address):
-            keystore.handler.show_error(_('Invalid Bitcoin Address'))
+        from electrum.pywalib import PyWalib
+        if not is_address(address) and not PyWalib.web3.isAddress(address):
+            keystore.handler.show_error(_('Invalid Bitcoin Address or Invalid Ethernum Address'))
             return False
         if not wallet.is_mine(address):
             keystore.handler.show_error(_('Address not in wallet.'))

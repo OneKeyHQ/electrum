@@ -72,10 +72,9 @@ class Eth_Transaction:
         return tx_hash
 
     @staticmethod
-    def serialize_and_send_tx(self, w3, transaction_dict, vrs=()):
+    def serialize_and_send_tx(w3, transaction_dict, vrs=()):
         unsigned_transaction = serializable_unsigned_transaction_from_dict(transaction_dict)
         encoded_transaction = encode_transaction(unsigned_transaction, vrs=vrs)
-
         tx_hash = w3.eth.sendRawTransaction(HexBytes(encoded_transaction))
         return tx_hash
 
