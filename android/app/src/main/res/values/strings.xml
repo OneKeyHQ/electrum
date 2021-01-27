@@ -1290,4 +1290,7 @@
     <string name="exist">已存在</string>
     <string name="not_cancel">不可取消</string>
 
+    <string name="balance_zero">余额不足</string>
+
+
 </resources>

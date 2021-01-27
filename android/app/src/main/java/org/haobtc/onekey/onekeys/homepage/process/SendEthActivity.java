@@ -54,7 +54,6 @@ import org.haobtc.onekey.event.ButtonRequestEvent;
 import org.haobtc.onekey.event.ChangePinEvent;
 import org.haobtc.onekey.event.CustomizeFeeRateEvent;
 import org.haobtc.onekey.event.ExitEvent;
-import org.haobtc.onekey.event.GetFeeEvent;
 import org.haobtc.onekey.event.GotPassEvent;
 import org.haobtc.onekey.event.SecondEvent;
 import org.haobtc.onekey.manager.PyEnv;
@@ -75,6 +74,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -215,9 +215,6 @@ public class SendEthActivity extends BaseActivity implements BusinessAsyncTask.H
     private BigDecimal maxAmount;
     private int selectFlag = 0;
     private boolean isResume;
-    private double slowRate;
-    private double normalRate;
-    private double fastRate;
     private AppWalletViewModel mAppWalletViewModel;
     private static final int REQUEST_SCAN_CODE = 0;
     private boolean signClickable = true;
@@ -229,11 +226,16 @@ public class SendEthActivity extends BaseActivity implements BusinessAsyncTask.H
     // 钱包类型：btc || eth
     private static final String walletType = Constant.ETH;
     private int mGasLimit = 0;
+    private int mCusGasLimit = 0;
     private CustomEthFeeDialog mCustomEthFeeDialog;
     private String currentWalletName;
     private LocalWalletInfo localWalletByName;
-    private String mCusFee;
     private String mCusFeeRate;
+    // 作为定时轮询的
+    private CompositeDisposable myLoopDisposable;
+    // 当前的Fee
+    private String mCurrentFee;
+    private String mGasPrice;
 
     /**
      * init
@@ -242,11 +244,25 @@ public class SendEthActivity extends BaseActivity implements BusinessAsyncTask.H
     public void init() {
         initData();
         initView();
+        startLoop();
+    }
+
+    // 30秒轮询开启，取最新的fee
+    private void startLoop() {
+        myLoopDisposable = new CompositeDisposable();
+        Disposable mLoopDisposable = Observable.interval(30, TimeUnit.SECONDS)
+                .doOnSubscribe(disposable -> {
+                }).flatMap((Function<Long, ObservableSource<PyResponse<String>>>)
+                        aLong -> getDefaultObservable())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::doDefaultInfo);
+        myLoopDisposable.add(mLoopDisposable);
     }
 
     private void initView() {
         initShowDefaultView();
-        getDefaultFee(true);
+        getDefaultFee();
         editAmount.setFilters(new InputFilter[]{new PointLengthFilter(scale, maxNum -> showToast(R.string.accuracy_num))});
         String addressScan = getIntent().getStringExtra(EXT_SCAN_ADDRESS);
         if (!TextUtils.isEmpty(addressScan)) {
@@ -351,36 +367,18 @@ public class SendEthActivity extends BaseActivity implements BusinessAsyncTask.H
                     showToast(R.string.input_number);
                 } else {
                     // 先取最大值再刷新View
-                    isSetBig = true;
-                    if (isCustom) {
-                        Disposable disposable = getEthFeeRateObservable(String.valueOf(currentFeeRate))
-                                .subscribeOn(Schedulers.io())
-                                .doOnSubscribe(show -> showProgress())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .doOnNext(this::doDealMaxAmount)
-                                .observeOn(Schedulers.io())
-                                .flatMap((Function<PyResponse<TemporaryTxInfo>, ObservableSource<PyResponse<TemporaryTxInfo>>>)
-                                        temporaryTxInfoPyResponse ->
-                                                getEthFeeRateObservable(String.valueOf(currentFeeRate))).observeOn(AndroidSchedulers.mainThread())
-                                .doFinally(this::dismissProgress)
-                                .subscribe(this::dealWithCommonFeeInfo);
-                        mCompositeDisposable.add(disposable);
+                    if (Double.parseDouble(balance) > 0) {
+                        maxAmount = BigDecimal.valueOf(Double.parseDouble(balance)).subtract(BigDecimal.valueOf(Double.parseDouble(mCurrentFee)));
+                        if (maxAmount.compareTo(BigDecimal.ZERO) > 0) {
+                            isSetBig = true;
+                            editAmount.setText(maxAmount.toPlainString());
+                            refreshFeeView();
+                        } else {
+                            mToast(mContext.getString(R.string.balance_zero));
+                        }
                     } else {
-                        Disposable subscribe = getEthFeeRateObservable(String.valueOf(currentFeeRate))
-                                .subscribeOn(Schedulers.io())
-                                .doOnSubscribe(show -> showProgress())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .doOnNext(this::doDealMaxAmount)
-                                .observeOn(Schedulers.io())
-                                .flatMap((Function<PyResponse<TemporaryTxInfo>, ObservableSource<PyResponse<String>>>) temporaryTxInfoPyResponse ->
-                                        getDefaultObservable(false))
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .doFinally(this::dismissProgress)
-                                .subscribe(stringPyResponse ->
-                                        doDefaultInfo(stringPyResponse, false));
-                        mCompositeDisposable.add(subscribe);
+                        mToast(mContext.getString(R.string.balance_zero));
                     }
-
                 }
                 break;
             case R.id.text_customize_fee_rate:
@@ -395,9 +393,7 @@ public class SendEthActivity extends BaseActivity implements BusinessAsyncTask.H
                     }
                     mCustomEthFeeDialog = new CustomEthFeeDialog(mContext, mGasLimit, mCurrentFeeDetails.getFast().getGasPrice() * 10, hdWalletName, feeRate);
                     mCustomEthFeeDialog.setOnCustomInterface(this);
-                    mCustomEthFeeDialog.setSetBig(isSetBig);
-                    mCustomEthFeeDialog.setAddress(editReceiverAddress.getText().toString().trim());
-                    mCustomEthFeeDialog.setSendAmount(amount);
+                    mCustomEthFeeDialog.setCurrentFeeDetails(mCurrentFeeDetails);
                     new XPopup.Builder(mContext).asCustom(mCustomEthFeeDialog).show();
                 } else {
                     showToast(R.string.feerate_failure);
@@ -414,6 +410,8 @@ public class SendEthActivity extends BaseActivity implements BusinessAsyncTask.H
                     currentFeeRate = mCurrentFeeDetails.getSlow().getGasPrice();
                     selectFlag = SLOW_FEE_RATE;
                     mGasLimit = mCurrentFeeDetails.getSlow().getGasLimit();
+                    mCurrentFee = mCurrentFeeDetails.getSlow().getFee();
+                    doDealMaxAmount();
                 } else {
                     showToast(R.string.feerate_failure);
                 }
@@ -429,6 +427,8 @@ public class SendEthActivity extends BaseActivity implements BusinessAsyncTask.H
                     currentFeeRate = mCurrentFeeDetails.getNormal().getGasPrice();
                     selectFlag = RECOMMENDED_FEE_RATE;
                     mGasLimit = mCurrentFeeDetails.getNormal().getGasLimit();
+                    mCurrentFee = mCurrentFeeDetails.getNormal().getFee();
+                    doDealMaxAmount();
                 } else {
                     showToast(R.string.feerate_failure);
                 }
@@ -442,8 +442,10 @@ public class SendEthActivity extends BaseActivity implements BusinessAsyncTask.H
                 checkboxFast.setVisibility(View.VISIBLE);
                 if (mCurrentFeeDetails != null && mCurrentFeeDetails.getFast() != null) {
                     currentFeeRate = mCurrentFeeDetails.getFast().getGasPrice();
+                    mCurrentFee = mCurrentFeeDetails.getFast().getFee();
                     selectFlag = FAST_FEE_RATE;
                     mGasLimit = mCurrentFeeDetails.getFast().getGasLimit();
+                    doDealMaxAmount();
                 } else {
                     showToast(R.string.feerate_failure);
                 }
@@ -490,10 +492,12 @@ public class SendEthActivity extends BaseActivity implements BusinessAsyncTask.H
         }
     }
 
+
     /**
      * 取消自定义费率
      */
     private void turnOffCustomize() {
+        startLoop();
         isCustom = false;
         linearRateSelector.setVisibility(View.VISIBLE);
         linearCustomize.setVisibility(View.GONE);
@@ -532,29 +536,40 @@ public class SendEthActivity extends BaseActivity implements BusinessAsyncTask.H
     }
 
     /**
-     * 获取费率详情
+     * 获取费率详情，首次刷新页面需要loading
      */
-    private void getDefaultFee(boolean isDefault) {
-        Disposable disposable = getDefaultObservable(isDefault)
+    private void getDefaultFee() {
+        Disposable disposable = getDefaultObservable()
                 .doOnSubscribe(show -> showProgress())
                 .doFinally(this::dismissProgress)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(data -> doDefaultInfo(data, isDefault));
+                .subscribe(this::doDefaultInfo
+                );
         mCompositeDisposable.add(disposable);
     }
 
-    private void doDefaultInfo(PyResponse<String> data, boolean isDefault) {
+    private void doDefaultInfo(PyResponse<String> data) {
         String errors = data.getErrors();
         if (Strings.isNullOrEmpty(errors)) {
             mCurrentFeeDetails = CurrentFeeDetails.objectFromDate(data.getResult());
             initFeeSelectorStatus();
-            mGasLimit = mCurrentFeeDetails.getNormal().getGasLimit();
-            currentFeeRate = mCurrentFeeDetails.getNormal().getGasPrice();
-            if (!isDefault) {
-                isFeeValid = true;
-                changeButton();
+            if (selectFlag == RECOMMENDED_FEE_RATE) {
+                mGasLimit = mCurrentFeeDetails.getNormal().getGasLimit();
+                currentFeeRate = mCurrentFeeDetails.getNormal().getGasPrice();
+                mCurrentFee = mCurrentFeeDetails.getNormal().getFee();
+            } else if (selectFlag == SLOW_FEE_RATE) {
+                mGasLimit = mCurrentFeeDetails.getSlow().getGasLimit();
+                currentFeeRate = mCurrentFeeDetails.getSlow().getGasPrice();
+                mCurrentFee = mCurrentFeeDetails.getSlow().getFee();
+            } else if (selectFlag == FAST_FEE_RATE) {
+                mGasLimit = mCurrentFeeDetails.getFast().getGasLimit();
+                currentFeeRate = mCurrentFeeDetails.getFast().getGasPrice();
+                mCurrentFee = mCurrentFeeDetails.getFast().getFee();
             }
+            isFeeValid = true;
+            doDealMaxAmount();
+            changeButton();
         } else {
             mToast(errors);
         }
@@ -566,15 +581,12 @@ public class SendEthActivity extends BaseActivity implements BusinessAsyncTask.H
     private void initFeeSelectorStatus() {
         textSpendTime0.setText(String.format("%s %s %s", getString(R.string.about_), mCurrentFeeDetails == null ? 0 : mCurrentFeeDetails.getSlow().getTime(), getString(R.string.minute)));
         textFeeInBtc0.setText(String.format(Locale.ENGLISH, "%s %s", mCurrentFeeDetails.getSlow().getFee(), baseUnit));
-        slowRate = mCurrentFeeDetails.getSlow().getFeerate();
         textFeeInCash0.setText(String.format(Locale.ENGLISH, "%s %s", currencySymbols, mCurrentFeeDetails.getSlow().getFiat().substring(0, mCurrentFeeDetails.getSlow().getFiat().indexOf(" "))));
         textSpendTime1.setText(String.format("%s %s %s", getString(R.string.about_), mCurrentFeeDetails == null ? 0 : mCurrentFeeDetails.getNormal().getTime(), getString(R.string.minute)));
         textFeeInBtc1.setText(String.format(Locale.ENGLISH, "%s %s", mCurrentFeeDetails.getNormal().getFee(), baseUnit));
-        normalRate = mCurrentFeeDetails.getNormal().getFeerate();
         textFeeInCash1.setText(String.format(Locale.ENGLISH, "%s %s", currencySymbols, mCurrentFeeDetails.getNormal().getFiat().substring(0, mCurrentFeeDetails.getNormal().getFiat().indexOf(" "))));
         textSpendTime2.setText(String.format("%s %s %s", getString(R.string.about_), mCurrentFeeDetails == null ? 0 : mCurrentFeeDetails.getFast().getTime(), getString(R.string.minute)));
         textFeeInBtc2.setText(String.format(Locale.ENGLISH, "%s %s", mCurrentFeeDetails.getFast().getFee(), baseUnit));
-        fastRate = mCurrentFeeDetails.getFast().getFeerate();
         textFeeInCash2.setText(String.format(Locale.ENGLISH, "%s %s", currencySymbols, mCurrentFeeDetails.getFast().getFiat().substring(0, mCurrentFeeDetails.getFast().getFiat().indexOf(" "))));
     }
 
@@ -587,7 +599,7 @@ public class SendEthActivity extends BaseActivity implements BusinessAsyncTask.H
         String fee = "";
 
         if (isCustom) {
-            fee = String.format(Locale.ENGLISH, "%s %s(%s)", mCusFee, baseUnit, mCusFeeRate);
+            fee = String.format(Locale.ENGLISH, "%s %s(%s)", mCurrentFee, baseUnit, mCusFeeRate + " " + mSystemConfigManager.getCurrentFiatUnit());
         } else {
             if (selectFlag == RECOMMENDED_FEE_RATE) {
                 fee = String.format(Locale.ENGLISH, "%s %s(%s)", mCurrentFeeDetails.getNormal().getFee(), baseUnit, mCurrentFeeDetails.getNormal().getFiat());
@@ -700,7 +712,7 @@ public class SendEthActivity extends BaseActivity implements BusinessAsyncTask.H
     private void changeButton() {
         if (addressInvalid && isFeeValid && !Strings.isNullOrEmpty(amount)) {
             BigDecimal decimal = BigDecimal.valueOf(Double.parseDouble(amount));
-            if (decimal.compareTo(minAmount) < 0) {
+            if (decimal.compareTo(minAmount) < 0 || Double.parseDouble(balance) <= 0) {
                 btnNext.setEnabled(false);
             } else {
                 btnNext.setEnabled(true);
@@ -725,14 +737,6 @@ public class SendEthActivity extends BaseActivity implements BusinessAsyncTask.H
         keyBoardHideRefresh();
     }
 
-    /**
-     * 自定义费率监听
-     */
-    @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
-    public void onGetFee(GetFeeEvent event) {
-        String feeRate = event.getFeeRate();
-        getEthFeeRate(feeRate);
-    }
 
     /**
      * 注册全局视图监听器
@@ -939,12 +943,7 @@ public class SendEthActivity extends BaseActivity implements BusinessAsyncTask.H
                     editAmount.setSelection(min.length());
                 } else if (decimal.compareTo(decimalBalance) >= 0) {
                     if (addressInvalid) {
-                        Disposable disposable = getEthFeeRateObservable(String.valueOf(currentFeeRate))
-                                .observeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .doOnSubscribe(show -> showProgress())
-                                .doFinally(this::dismissProgress)
-                                .subscribe(this::doDealMaxAmount);
+                        doDealMaxAmount();
                     }
                 }
             }
@@ -956,51 +955,56 @@ public class SendEthActivity extends BaseActivity implements BusinessAsyncTask.H
      */
     private void refreshFeeView() {
         if (isCustom) {
-            Disposable subscribe = getEthFeeRateObservable(String.valueOf(currentFeeRate))
-                    .doOnSubscribe(show -> showProgress())
-                    .doFinally(this::dismissProgress)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeOn(Schedulers.io())
-                    .doOnNext(this::dealWithCommonFeeInfo)
-                    .subscribe();
-            mCompositeDisposable.add(subscribe);
+            int tempLimit = Math.max(mCusGasLimit, mGasLimit);
+            calculateData(mGasPrice, tempLimit);
         } else {
             // 刷新3个view 并判断最大值
-            Disposable disposable = getDefaultObservable(false)
+            Disposable disposable = getDefaultObservable()
                     .subscribeOn(Schedulers.io())
                     .doOnSubscribe(show -> showProgress())
                     .doFinally(this::dismissProgress)
                     .observeOn(AndroidSchedulers.mainThread())
-                    .doOnNext(stringPyResponse -> doDefaultInfo(stringPyResponse, false))
-                    .observeOn(Schedulers.io())
-                    .flatMap((Function<PyResponse<String>, ObservableSource<PyResponse<TemporaryTxInfo>>>) stringPyResponse
-                            -> getEthFeeRateObservable(String.valueOf(currentFeeRate)))
-                    .subscribeOn(AndroidSchedulers.mainThread())
-                    .subscribe(this::doDealMaxAmount);
+                    .doOnNext(this::doDefaultInfo)
+                    .subscribe();
             mCompositeDisposable.add(disposable);
         }
     }
 
-    /**
-     * 获取Eth FeeRate
-     */
-    private void getEthFeeRate(String feeRate) {
-        Disposable disposable = Observable.create((ObservableOnSubscribe<PyResponse<TemporaryTxInfo>>) emitter -> {
-            PyResponse<TemporaryTxInfo> pyResponse = PyEnv.getEthFeeByFeeRate(walletType, editReceiverAddress.getText().toString(), isSetBig ? "!" : amount, feeRate, String.valueOf(mGasLimit));
-            emitter.onNext(pyResponse);
-            emitter.onComplete();
-        })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::dealWithCommonFeeInfo);
-
-        mCompositeDisposable.add(disposable);
+    private void calculateData(String gasPrice, int gasLimit) {
+        double price = Double.parseDouble(gasPrice);
+        mCurrentFee = BigDecimal.valueOf(price * gasLimit / Math.pow(10, 9)).toPlainString();// 当前Eth的数量
+        double cash = Double.parseDouble(mCurrentFeeDetails.getFast().getFiat().substring(0, mCurrentFeeDetails.getFast().getFiat().indexOf(" ")));
+        double fiatDouble = Double.parseDouble(mCurrentFee) / Double.parseDouble(mCurrentFeeDetails.getFast().getFee()) * cash;
+        BigDecimal bigDecimal = new BigDecimal(Double.parseDouble(mCurrentFee) / Double.parseDouble(mCurrentFeeDetails.getFast().getFee()) * cash);
+        mCusFeeRate = bigDecimal.setScale(2, RoundingMode.DOWN).stripTrailingZeros().toPlainString();// 当前展示的法币
+        int timeTemp;
+        if (Double.parseDouble(mCurrentFee) >= Double.parseDouble(mCurrentFeeDetails.getFast().getFee())) {
+            timeTemp = mCurrentFeeDetails.getFast().getTime();
+        } else if (Double.parseDouble(mCurrentFee) >= Double.parseDouble(mCurrentFeeDetails.getNormal().getFee())) {
+            timeTemp = mCurrentFeeDetails.getNormal().getTime();
+        } else {
+            timeTemp = mCurrentFeeDetails.getSlow().getTime();
+        }
+        String time = String.format("%s %s %s", mContext.getString(R.string.about_), timeTemp, mContext.getString(R.string.minute));
+        textCustomizeSpendTime.setText(time);
+        textFeeCustomizeInBtc.setText(String.format(Locale.ENGLISH, "%s %s", mCurrentFee, baseUnit));
+        textFeeCustomizeInCash.setText(String.format(Locale.ENGLISH, "%s %s", mSystemConfigManager.getCurrentFiatSymbol(), mCusFeeRate));
+        isFeeValid = true;
+        doDealMaxAmount();
+        changeButton();
     }
 
 
+    /**
+     * 刷新自定义View
+     *
+     * @param feeRate
+     *
+     * @return
+     */
     private Observable<PyResponse<TemporaryTxInfo>> getEthFeeRateObservable(String feeRate) {
         return Observable.create(emitter -> {
-            PyResponse<TemporaryTxInfo> pyResponse = PyEnv.getEthFeeByFeeRate(walletType, editReceiverAddress.getText().toString(), isSetBig ? "!" : amount, feeRate, String.valueOf(mGasLimit));
+            PyResponse<TemporaryTxInfo> pyResponse = PyEnv.getEthFeeByFeeRate(walletType, editReceiverAddress.getText().toString(), amount, feeRate, String.valueOf(mGasLimit));
             emitter.onNext(pyResponse);
             emitter.onComplete();
         });
@@ -1008,14 +1012,14 @@ public class SendEthActivity extends BaseActivity implements BusinessAsyncTask.H
 
     /**
      * 获取默认费率 刷新3个view
-     *
-     * @param isDefault 首次刷新：true，地址和数量有值，就刷新 3 个view
+     * <p>
+     * 地址和数量有值，就刷新 3 个view
      *
      * @return
      */
-    private Observable<PyResponse<String>> getDefaultObservable(boolean isDefault) {
+    private Observable<PyResponse<String>> getDefaultObservable() {
         return Observable.create(emitter -> {
-            PyResponse<String> response = PyEnv.getFeeInfo(isDefault, walletType, pasteAddress.getText().toString().trim(), amount, String.valueOf(currentFeeRate));
+            PyResponse<String> response = PyEnv.getFeeInfo(walletType, editReceiverAddress.getText().toString().trim(), amount, String.valueOf(currentFeeRate));
             emitter.onNext(response);
             emitter.onComplete();
         });
@@ -1031,29 +1035,29 @@ public class SendEthActivity extends BaseActivity implements BusinessAsyncTask.H
         String errorMsg = pyResponse.getErrors();
         if (Strings.isNullOrEmpty(errorMsg)) {
             TemporaryTxInfo temporaryTxInfo = pyResponse.getResult();
-            mCusFee = BigDecimal.valueOf(temporaryTxInfo.getFee()).toPlainString();
+            mCurrentFee = BigDecimal.valueOf(temporaryTxInfo.getFee()).toPlainString();
             mCusFeeRate = temporaryTxInfo.getFiat();
             String time = getTransferTime(temporaryTxInfo.getTime());
             String temp = temporaryTxInfo.getTx();
             if (isCustom) {
                 textCustomizeSpendTime.setText(time);
-                textFeeCustomizeInBtc.setText(String.format(Locale.ENGLISH, "%s %s", mCusFee, baseUnit));
+                textFeeCustomizeInBtc.setText(String.format(Locale.ENGLISH, "%s %s", mCurrentFee, baseUnit));
                 textFeeCustomizeInCash.setText(String.format(Locale.ENGLISH, "%s %s", mSystemConfigManager.getCurrentFiatSymbol(), temporaryTxInfo.getFiat().substring(0, temporaryTxInfo.getFiat().indexOf(" "))));
             }
             isFeeValid = true;
-            doDealMaxAmount(pyResponse);
+            doDealMaxAmount();
             changeButton();
         } else {
             showToast(errorMsg);
         }
     }
-
-    private void doDealMaxAmount(PyResponse<TemporaryTxInfo> pyResponse) {
-        String errorMsg = pyResponse.getErrors();
-        if (Strings.isNullOrEmpty(errorMsg)) {
-            TemporaryTxInfo temporaryTxInfo = pyResponse.getResult();
-            // 查看输入的值是否大于最大值
-            maxAmount = BigDecimal.valueOf(Double.parseDouble(balance)).subtract(BigDecimal.valueOf(temporaryTxInfo.getFee()));
+    /**
+     * 如果当前是最大模式，那么需要根据当前选中的费率，计算最大值
+     */
+    private void doDealMaxAmount() {
+        // 查看输入的值是否大于最大值
+        maxAmount = BigDecimal.valueOf(Double.parseDouble(balance)).subtract(BigDecimal.valueOf(Double.parseDouble(mCurrentFee)));
+        if (maxAmount.compareTo(BigDecimal.ZERO) > 0) {
             if (isSetBig) {
                 editAmount.setText(maxAmount.toPlainString());
             } else {
@@ -1067,7 +1071,7 @@ public class SendEthActivity extends BaseActivity implements BusinessAsyncTask.H
             }
             editAmount.setFocusable(true);
         } else {
-            mToast(errorMsg);
+            mToast(mContext.getString(R.string.balance_zero));
         }
     }
 
@@ -1157,6 +1161,7 @@ public class SendEthActivity extends BaseActivity implements BusinessAsyncTask.H
         super.onDestroy();
         EventBus.getDefault().unregister(this);
         mCompositeDisposable.dispose();
+        myLoopDisposable.dispose();
         if (Objects.nonNull(subscribe)) {
             subscribe.dispose();
         }
@@ -1171,16 +1176,17 @@ public class SendEthActivity extends BaseActivity implements BusinessAsyncTask.H
     // 自定义费率完成的回调
     @Override
     public void onCustomComplete(CustomizeFeeRateEvent event) {
+        myLoopDisposable.dispose();
         isCustom = true;
-        mGasLimit = event.getGasLimit();
-        mCusFee = event.getFee();
-        mCusFeeRate = event.getCash();
+        mCusGasLimit = event.getGasLimit();
+        mGasPrice = event.getGasPrice();
+        mCurrentFee = event.getFee();
+        mCusFeeRate = event.getCash() + " " + mSystemConfigManager.getCurrentFiatUnit();
         linearRateSelector.setVisibility(View.GONE);
         linearCustomize.setVisibility(View.VISIBLE);
         currentFeeRate = Double.parseDouble(event.getFeeRate());
         textFeeCustomizeInBtc.setText(String.format(Locale.ENGLISH, "%s %s", event.getFee(), mSystemConfigManager.getCurrentBaseUnit(Vm.convertCoinType(Constant.ETH))));
-        String ss = String.format(Locale.ENGLISH, "%s %s", mSystemConfigManager.getCurrentFiatSymbol(), event.getCash());
-        textFeeCustomizeInCash.setText(String.format(Locale.ENGLISH, "%s %s", mSystemConfigManager.getCurrentFiatSymbol(), event.getCash().substring(0, event.getCash().indexOf(" "))));
+        textFeeCustomizeInCash.setText(String.format(Locale.ENGLISH, "%s %s", mSystemConfigManager.getCurrentFiatSymbol(), event.getCash()));
         textCustomizeSpendTime.setText(event.getTime());
         keyBoardHideRefresh();
     }

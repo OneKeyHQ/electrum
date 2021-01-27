@@ -11,6 +11,15 @@ public class CustomizeFeeRateEvent {
     private String cash;
     private String time;
     private int gasLimit;
+    private String gasPrice;
+
+    public String getGasPrice() {
+        return gasPrice;
+    }
+
+    public void setGasPrice(String gasPrice) {
+        this.gasPrice = gasPrice;
+    }
 
     public CustomizeFeeRateEvent(String feeRate, String fee, String cash, String time) {
         this.feeRate = feeRate;
