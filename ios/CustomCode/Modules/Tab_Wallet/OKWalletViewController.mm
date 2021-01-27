@@ -28,6 +28,7 @@
 #import "OKCreateResultWalletInfoModel.h"
 #import "OKTakeCareMnemonicViewController.h"
 #import "OKSignatureViewController.h"
+#import "OKMatchingInCirclesViewController.h"
 
 
 @interface OKWalletViewController ()<UITableViewDelegate,UITableViewDataSource,UINavigationControllerDelegate,UIGestureRecognizerDelegate>
@@ -119,6 +120,7 @@
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notiUpdate_status:) name:kNotiUpdate_status object:nil];
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notiDeleteWalletComplete) name:kNotiDeleteWalletComplete object:nil];
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notiBackUPWalletComplete) name:kNotiBackUPWalletComplete object:nil];
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notiHwInfoUpdate) name:kNotiHwInfoUpdate object:nil];
     
     [OKPyCommandsManager sharedInstance];
     
@@ -634,15 +636,27 @@
 }
 #pragma mark - 转账
 - (IBAction)sendBtnClick:(UIButton *)sender {
-    OKSendCoinViewController *sendCoinVc = [OKSendCoinViewController sendCoinViewController];
-    [self.navigationController pushViewController:sendCoinVc animated:YES];
+    if ([kWalletManager getWalletDetailType] == OKWalletTypeHardware) {
+        OKMatchingInCirclesViewController *matchingVc = [OKMatchingInCirclesViewController matchingInCirclesViewController];
+        matchingVc.type = OKMatchingTypeTransfer;
+        [self.navigationController pushViewController:matchingVc animated:YES];
+    }else{
+        OKSendCoinViewController *sendCoinVc = [OKSendCoinViewController sendCoinViewController];
+        [self.navigationController pushViewController:sendCoinVc animated:YES];
+    }
 }
 #pragma mark - 收款
 - (IBAction)receiveBtnClick:(UIButton *)sender {
-    OKReceiveCoinViewController *receiveCoinVc = [OKReceiveCoinViewController receiveCoinViewController];
-    receiveCoinVc.coinType = kWalletManager.currentWalletInfo.coinType;
-    receiveCoinVc.walletType = [kWalletManager getWalletDetailType];
-    [self.navigationController pushViewController:receiveCoinVc animated:YES];
+    if ([kWalletManager getWalletDetailType] == OKWalletTypeHardware) {
+        OKMatchingInCirclesViewController *matchingVc = [OKMatchingInCirclesViewController matchingInCirclesViewController];
+        matchingVc.type = OKMatchingTypeReceiveCoin;
+        [self.navigationController pushViewController:matchingVc animated:YES];
+    }else{
+        OKReceiveCoinViewController *receiveCoinVc = [OKReceiveCoinViewController receiveCoinViewController];
+        receiveCoinVc.coinType = kWalletManager.currentWalletInfo.coinType;
+        receiveCoinVc.walletType = [kWalletManager getWalletDetailType];
+        [self.navigationController pushViewController:receiveCoinVc animated:YES];
+    }
 }
 #pragma mark - 钱包详情
 - (IBAction)assetListBtnClick:(UIButton *)sender {
@@ -721,6 +735,16 @@
     [self checkWalletResetUI];
 }
 
+#pragma mark - notiHwInfoUpdate
+- (void)notiHwInfoUpdate
+{
+    NSDictionary *jsonDict =  [kPyCommandsManager callInterface:kInterfaceget_feature parameter:@{@"path":kBluetooth_iOS}];
+    if (jsonDict != nil) {
+        OKDeviceModel *deviceModel  = [[OKDeviceModel alloc]initWithJson:jsonDict];
+        kOKBlueManager.currentDeviceID = deviceModel.deviceInfo.device_id;
+        [[OKDevicesManager sharedInstance]addDevices:deviceModel];
+    }
+}
 
 -(void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];

@@ -169,11 +169,18 @@ static dispatch_once_t once;
     
         
     }else if([method isEqualToString:kInterfaceGet_fee_by_feerate]){
+        NSString *coin = [parameter safeStringForKey:@"coin"];
+        if (coin.length == 0 || coin == nil) {
+            coin = @"btc";
+        }
         NSString *outputs = [parameter safeStringForKey:@"outputs"];
         NSString *message = [parameter safeStringForKey:@"message"];
         NSString *feerate = [parameter safeStringForKey:@"feerate"];
-        result = PyObject_CallMethod(self.pyInstance, [kInterfaceGet_fee_by_feerate UTF8String], "(s,s,i)", [outputs UTF8String],[message UTF8String],[feerate longLongValue]);
-    
+        PyObject *args =  Py_BuildValue("(s)", [coin UTF8String]);
+        PyObject *kwargs;
+        kwargs = Py_BuildValue("{s:s,s:s,s:i}", "outputs", [outputs UTF8String],"message",[message UTF8String],"feerate",[feerate longLongValue]);
+        PyObject *myobject_method = PyObject_GetAttrString(self.pyInstance, [kInterfaceGet_fee_by_feerate UTF8String]);
+        result = PyObject_Call(myobject_method, args, kwargs);
     
     
     }else if([method isEqualToString:kInterfaceMktx]){
@@ -188,9 +195,14 @@ static dispatch_once_t once;
     }else if([method isEqualToString:kInterfaceSign_tx]){
         NSString *tx = [parameter safeStringForKey:@"tx"];
         NSString *password = [parameter safeStringForKey:@"password"];
+        NSString *path = kBluetooth_iOS;
         PyObject *args =  Py_BuildValue("(s)", [tx UTF8String]);
         PyObject *kwargs;
-        kwargs = Py_BuildValue("{s:s}", "password", [password UTF8String]);
+        if (password.length > 0) {
+            kwargs = Py_BuildValue("{s:s}", "password", [password UTF8String]);
+        }else{
+            kwargs = Py_BuildValue("{s:s}","path",[path UTF8String]);
+        }
         PyObject *myobject_method = PyObject_GetAttrString(self.pyInstance, [kInterfaceSign_tx UTF8String]);
         result = PyObject_Call(myobject_method, args, kwargs);
         

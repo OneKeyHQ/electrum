@@ -16,6 +16,8 @@
 #import "OKDiscoverNewDeviceViewController.h"
 #import "OKSetDeviceNameViewController.h"
 #import "OKSpecialEquipmentViewController.h"
+#import "OKReceiveCoinViewController.h"
+#import "OKSendCoinViewController.h"
 
 @interface OKMatchingInCirclesViewController ()<OKBabyBluetoothManageDelegate,UITableViewDelegate,UITableViewDataSource>
 
@@ -56,7 +58,10 @@
     kOKBlueManager.delegate = self;
     self.terminalTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(terminalTimerTickTock) userInfo:nil repeats:YES];
     [[NSRunLoop currentRunLoop] addTimer:self.terminalTimer forMode:NSRunLoopCommonModes];
-    [kOKBlueManager startScanPeripheral];
+    OKDeviceModel *model = [[OKDevicesManager sharedInstance]getDeviceModelWithID:kWalletManager.currentWalletInfo.device_id];
+    if (![kOKBlueManager isConnectedName:model.deviceInfo.ble_name]) {
+        [kOKBlueManager startScanPeripheral];
+    }
     [self.completebgView setLayerRadius:20];
     [self.refreshBtn addTarget:self action:@selector(refreshBtnClick) forControlEvents:UIControlEventTouchUpInside];
     self.tableView.delegate = self;
@@ -78,20 +83,26 @@
         _count = 0;
         [weakself.terminalTimer invalidate];
         weakself.terminalTimer = nil;
-        weakself.completeCons.constant = - (SCREEN_HEIGHT - 170);
-        
-//        for (OKPeripheralInfo *infoModel in self.self.dataSource) {
-//            if ([kOKBlueManager.currentConnectModel.ble_name isEqualToString:infoModel.peripheral.name]) {
-//                [kOKBlueManager connectPeripheral:infoModel.peripheral];
-//                return;
-//            }
-//        }
-        
-        [weakself changeToListBgView];
-        [weakself.tableView reloadData];
-        [UIView animateWithDuration:0.5 animations:^{
-            [weakself.view layoutIfNeeded];
-        }];
+        if (self.type == OKMatchingTypeTransfer || self.type == OKMatchingTypeReceiveCoin) {
+            OKDeviceModel *model = [[OKDevicesManager sharedInstance]getDeviceModelWithID:kWalletManager.currentWalletInfo.device_id];
+            if ([kOKBlueManager isConnectedName:model.deviceInfo.ble_name]) {
+                [self subscribeComplete:@{}];
+            }else{
+                for (OKPeripheralInfo *infoModel in self.dataSource) {
+                    if ([model.deviceInfo.ble_name isEqualToString:infoModel.peripheral.name]) {
+                        [kOKBlueManager connectPeripheral:infoModel.peripheral];
+                        return;
+                    }
+                }
+            }
+        }else{
+            [weakself changeToListBgView];
+            [weakself.tableView reloadData];
+            weakself.completeCons.constant = - (SCREEN_HEIGHT - 170);
+            [UIView animateWithDuration:0.5 animations:^{
+                [weakself.view layoutIfNeeded];
+            }];
+        }
     }
 }
 
@@ -209,7 +220,7 @@
             kOKBlueManager.currentReadDataStr = @"";
                 if (jsonDict != nil) {
                     OKDeviceModel *deviceModel  = [[OKDeviceModel alloc]initWithJson:jsonDict];
-                    kOKBlueManager.currentConnectModel = deviceModel.deviceInfo;
+                    kOKBlueManager.currentDeviceID = deviceModel.deviceInfo.device_id;
                     [[OKDevicesManager sharedInstance]addDevices:deviceModel];
                     dispatch_async(dispatch_get_main_queue(), ^{
                         if (deviceModel.deviceInfo.initialized ) {
@@ -233,8 +244,25 @@
             OKSetDeviceNameViewController *setDeviceNameVc = [OKSetDeviceNameViewController setDeviceNameViewController];
             setDeviceNameVc.type = OKMatchingTypeBackup2Hw;
             setDeviceNameVc.words = self.words;
-            NSLog(@"self.words == %@",self.words);
             [self.navigationController pushViewController:setDeviceNameVc animated:YES];
+        }
+            break;
+        case OKMatchingTypeTransfer:
+        {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                OKSendCoinViewController *sendCoinVc = [OKSendCoinViewController sendCoinViewController];
+                [self.navigationController pushViewController:sendCoinVc animated:YES];
+            });
+        }
+            break;
+        case OKMatchingTypeReceiveCoin:
+        {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                OKReceiveCoinViewController *receiveCoinVc = [OKReceiveCoinViewController receiveCoinViewController];
+                receiveCoinVc.coinType = kWalletManager.currentWalletInfo.coinType;
+                receiveCoinVc.walletType = [kWalletManager getWalletDetailType];
+                [self.navigationController pushViewController:receiveCoinVc animated:YES];
+            });
         }
             break;
         default:

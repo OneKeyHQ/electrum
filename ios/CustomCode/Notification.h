@@ -30,6 +30,10 @@
 
 #define kNotiSelectFiatComplete                 @"kNotiSelectFiatComplete"
 
+//硬件信息更新
+#define kNotiHwInfoUpdate                       @"kNotiHwInfoUpdate"
+#define kNotiHwBroadcastiComplete               @"kNotiHwBroadcastiComplete"
+
 
 #define kUserSetingSysServerComplete            @"kUserSetingSysServerComplete"
 #define kUserSetingBtcBComplete                 @"kUserSetingBtcBComplete"

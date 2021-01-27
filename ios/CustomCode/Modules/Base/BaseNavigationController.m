@@ -23,14 +23,12 @@
     viewController.hidesBottomBarWhenPushed = self.viewControllers.count > 0;
     [super pushViewController:viewController animated:animated];
 }
-/*
-#pragma mark - Navigation
+- (NSArray<__kindof UIViewController *> *)popToRootViewControllerAnimated:(BOOL)animated {
+    if (self.viewControllers.count > 1) {
+        self.topViewController.hidesBottomBarWhenPushed = NO;
+    }
 
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+    return [super popToRootViewControllerAnimated:animated];
 }
-*/
 
 @end

@@ -367,7 +367,7 @@ static dispatch_once_t once;
          if (self.needConnectName.length > 0) {
              if (jsonDict != nil) {
                  OKDeviceModel *deviceModel  = [[OKDeviceModel alloc]initWithJson:jsonDict];
-                 self.currentConnectModel = deviceModel.deviceInfo;
+                 self.currentDeviceID = deviceModel.deviceInfo.device_id;
                  [[OKDevicesManager sharedInstance]addDevices:deviceModel];
                  if (self.connectedComplete) {
                      self.connectedComplete(YES);

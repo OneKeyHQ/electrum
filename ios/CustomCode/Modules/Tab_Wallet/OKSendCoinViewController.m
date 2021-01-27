@@ -20,9 +20,11 @@ typedef enum {
 #import "OKDefaultFeeInfoModel.h"
 #import "OKDefaultFeeInfoSubModel.h"
 #import "OKLookWalletTipsViewController.h"
+#import "OKHwNotiManager.h"
+#import "OKTransferCompleteController.h"
 
 
-@interface OKSendCoinViewController ()<UITextFieldDelegate>
+@interface OKSendCoinViewController ()<UITextFieldDelegate,OKHwNotiManagerDelegate>
 //Top
 @property (weak, nonatomic) IBOutlet UIView *shoukuanLabelBg;
 @property (weak, nonatomic) IBOutlet UILabel *shoukuanLabel;
@@ -118,6 +120,9 @@ typedef enum {
 @property (nonatomic,strong)OKDefaultFeeInfoModel *defaultFeeInfoModel;
 
 @property (nonatomic,strong)NSString *feeBit;
+
+@property (nonatomic,strong)NSDictionary *hwPredata;
+@property (nonatomic,strong)NSDictionary *hwSignData;
 @end
 
 @implementation OKSendCoinViewController
@@ -386,7 +391,26 @@ typedef enum {
         return;
     }
     
-    
+    if ([kWalletManager getWalletDetailType] == OKWalletTypeHardware) {
+        [OKHwNotiManager sharedInstance].delegate = self;
+        self.hwPredata = dict;
+        NSString *feerateTx = [dict safeStringForKey:@"tx"];
+        NSDictionary *dict1 =  [kPyCommandsManager callInterface:kInterfaceMktx parameter:@{@"tx":feerateTx}];
+        NSString *unSignStr = [dict1 safeStringForKey:@"tx"];
+        NSString *tx = unSignStr;
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            NSDictionary *signTxDict =  [kPyCommandsManager callInterface:kInterfaceSign_tx parameter:@{@"tx":tx}];
+            if (signTxDict != nil) {
+                weakself.hwSignData = signTxDict;
+                [[NSNotificationCenter defaultCenter]postNotificationName:kNotiHwBroadcastiComplete object:nil];
+            }
+        });
+        return;
+    }
+    [self showPreInfoView:dict];
+}
+- (void)showPreInfoView:(NSDictionary *)dict
+{
     OKSendTxPreInfoViewController *sendVc = [OKSendTxPreInfoViewController initViewControllerWithStoryboardName:@"Tab_Wallet"];
     OKSendTxPreModel *model = [OKSendTxPreModel new];
     model.amount = self.amountTextField.text;
@@ -397,7 +421,13 @@ typedef enum {
     model.txType = @"";
     model.fee = [NSString stringWithFormat:@"%@ %@",[dict safeStringForKey:@"fee"],[kWalletManager currentBitcoinUnit]];
     sendVc.info = model;
+    OKWeakSelf(self)
     [sendVc showOnWindowWithParentViewController:self block:^(NSString * _Nonnull str) {
+        if ([kWalletManager getWalletDetailType] == OKWalletTypeHardware) {
+            [weakself broadcast_tx:weakself.hwSignData dict:dict];
+            return;
+        }
+        
         if (kWalletManager.isOpenAuthBiological) {
             [[YZAuthID sharedInstance]yz_showAuthIDWithDescribe:MyLocalizedString(@"OenKey request enabled", nil) BlockState:^(YZAuthIDState state, NSError *error) {
                 if (state == YZAuthIDStateNotSupport
@@ -414,7 +444,6 @@ typedef enum {
             [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
                 [weakself sendTxPwd:pwd dict:dict];
             }];
-            
         }
     }];
 }
@@ -426,15 +455,32 @@ typedef enum {
     NSString *tx = unSignStr;
     NSString *password = pwd;
     NSDictionary *signTxDict =  [kPyCommandsManager callInterface:kInterfaceSign_tx parameter:@{@"tx":tx,@"password":password}];
+    [self broadcast_tx:signTxDict dict:dict];
+}
+- (void)broadcast_tx:(NSDictionary *)signTxDict dict:(NSDictionary *)dict
+{
     NSString *signTx = [signTxDict safeStringForKey:@"tx"];
     id result =  [kPyCommandsManager callInterface:kInterfaceBroadcast_tx parameter:@{@"tx":signTx}];
     if (result != nil) {
-        [kTools tipMessage:MyLocalizedString(@"Send a success", nil)];
         [[NSNotificationCenter defaultCenter]postNotificationName:kNotiSendTxComplete object:nil];
-        [self.navigationController popViewControllerAnimated:YES];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            OKTransferCompleteController *transferCompleteVc = [OKTransferCompleteController transferCompleteController:dict block:^{
+                NSLog(@"点击了交易详情");
+            }];
+            [self.navigationController pushViewController:transferCompleteVc animated:YES];
+        });
     }
 }
 
+#pragma mark - OKHwNotiManagerDelegate
+- (void)hwNotiManagerDekegate:(OKHwNotiManager *)hwNoti type:(OKHWNotiType)type
+{
+    if (type == OKHWNotiTypeSendCoinConfirm) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self showPreInfoView:self.hwPredata];
+        });
+    }
+}
 
 
 - (BOOL)loadFee

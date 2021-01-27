@@ -12,11 +12,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-
 typedef enum {
     OKMatchingTypeNone, //其它
     OKMatchingTypeActivation, //激活
-    OKMatchingTypeBackup2Hw  //备份到硬件
+    OKMatchingTypeBackup2Hw,  //备份到硬件
+    OKMatchingTypeTransfer,   //转账
+    OKMatchingTypeReceiveCoin //收款
 }OKMatchingType;
 
 #define kOKBlueManager (OKBlueManager.sharedInstance)
@@ -109,8 +110,10 @@ typedef void(^ConnectedComplete)(BOOL isSuccess);
 - (NSString *)getStrValueInUD;
 - (void)saveStrValueInUD:(NSString *)bleUUID;
 - (BOOL)isConnectedCurrentDevice;
+- (BOOL)isConnectedName:(NSString *)name;
 - (void)startScanAndConnectWithName:(NSString *)name complete:(ConnectedComplete)complete;
-@property (nonatomic,strong)OKDeviceInfoModel *currentConnectModel;
+@property (nonatomic,copy)NSString *currentDeviceID;
+
 @property (nonatomic, weak) id<OKBabyBluetoothManageDelegate> delegate;
 
 

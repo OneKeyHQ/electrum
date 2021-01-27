@@ -63,7 +63,16 @@
     self.rLabel.text = MyLocalizedString(@"The receiving party", nil);
     self.typeLabel.text = MyLocalizedString(@"type", nil);
     self.feeLabel.text = MyLocalizedString(@"Transaction fee", nil);
-    [self.createButton setTitle:MyLocalizedString(@"Confirm the payment", nil) forState:UIControlStateNormal];
+    if ([kWalletManager getWalletDetailType] == OKWalletTypeHardware) {
+        [self.createButton setTitle:MyLocalizedString(@"Confirm at the facility", nil) forState:UIControlStateNormal];
+        self.createButton.userInteractionEnabled = NO;
+        self.createButton.alpha = 0.5;
+        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(changeConfirmBtn) name:kNotiHwBroadcastiComplete object:nil];
+    }else{
+        [self.createButton setTitle:MyLocalizedString(@"Confirm the payment", nil) forState:UIControlStateNormal];
+        self.createButton.userInteractionEnabled = YES;
+        self.createButton.alpha = 1.0;
+    }
     [self.walletNameBgView setLayerRadius:12.5];
     if (self.info.txType.length == 0) {
         self.txTypeBgView.hidden = YES;
@@ -78,7 +87,14 @@
     self.amountLabel.text = [NSString stringWithFormat:@"%@ %@",self.info.amount,self.info.coinType];
     [self.view layoutIfNeeded];
 }
-
+- (void)changeConfirmBtn
+{
+    OKWeakSelf(self)
+    dispatch_async(dispatch_get_main_queue(), ^{
+        weakself.createButton.userInteractionEnabled = YES;
+        weakself.createButton.alpha = 1.0;
+    });
+}
 
 - (IBAction)closeView:(id)sender {
     [self.view removeFromSuperview];
