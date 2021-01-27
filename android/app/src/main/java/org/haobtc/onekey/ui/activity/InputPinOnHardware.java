@@ -3,62 +3,71 @@ package org.haobtc.onekey.ui.activity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-
+import butterknife.BindView;
+import butterknife.OnClick;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
+import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.event.ExitEvent;
+import org.haobtc.onekey.exception.HardWareExceptions;
 import org.haobtc.onekey.ui.base.BaseActivity;
-
-import butterknife.BindView;
-import butterknife.OnClick;
 
 /**
  * @author liyan
  * @date 12/19/20
  */
-
 public class InputPinOnHardware extends BaseActivity {
-    @BindView(R.id.img_back)
-    ImageView imgBack;
-    @BindView(R.id.title)
-    TextView title;
+  @BindView(R.id.img_back)
+  ImageView imgBack;
 
-    /**
-     * init
-     */
-    @Override
-    public void init() {
-        title.setText(R.string.verify_pin_onkey);
-    }
+  @BindView(R.id.title)
+  TextView title;
 
-    /***
-     * init layout
-     * @return
-     */
-    @Override
-    public int getContentViewId() {
-        return R.layout.input_on_hardware;
-    }
+  /** init */
+  @Override
+  public void init() {
+    title.setText(R.string.verify_pin_onkey);
+  }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        finish();
-    }
+  /**
+   * * init layout
+   *
+   * @return
+   */
+  @Override
+  public int getContentViewId() {
+    return R.layout.input_on_hardware;
+  }
 
-    @OnClick(R.id.img_back)
-    public void onViewClicked(View view) {
-       finish();
+  @Override
+  protected void onPause() {
+    super.onPause();
+    finish();
+  }
+
+  @SingleClick
+  @OnClick(R.id.img_back)
+  public void onViewClicked(View view) {
+    finish();
+  }
+
+  @Subscribe(threadMode = ThreadMode.MAIN)
+  public void onFinish(ExitEvent event) {
+    if (hasWindowFocus()) {
+      finish();
     }
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onFinish(ExitEvent event) {
-        if (hasWindowFocus()) {
-            finish();
-        }
+  }
+
+  @Subscribe(threadMode = ThreadMode.MAIN)
+  public void onExit(HardWareExceptions exceptions) {
+    if (hasWindowFocus()) {
+      finish();
     }
-    @Override
-    public boolean needEvents() {
-        return true;
-    }
+  }
+
+  @Override
+  public boolean needEvents() {
+    return true;
+  }
 }

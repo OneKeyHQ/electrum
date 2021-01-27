@@ -84,7 +84,7 @@ public final class PyEnv {
             sCommands;
     private static final ScheduledThreadPoolExecutor scheduledThreadPoolExecutor =
             new ScheduledThreadPoolExecutor(
-                    1,
+                    2,
                     new ThreadFactoryBuilder().setNameFormat("PyEnv-schedule-%d").build(),
                     new ThreadPoolExecutor.DiscardPolicy());
     public static ListeningScheduledExecutorService mExecutorService =
