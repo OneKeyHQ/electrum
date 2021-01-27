@@ -489,8 +489,11 @@ class PyWalib:
             target_address = tx.target
             amount = Decimal(cls.web3.fromWei(tx.value, "ether"))
             fiat = amount * last_price
+
             tx_status = _("Unconfirmed")
-            if tx.status == TransactionStatus.CONFIRMED:
+            if tx.status == TransactionStatus.REVERED:
+                tx_status = _("Sending failure")
+            elif tx.status == TransactionStatus.CONFIRMED:
                 tx_status = (
                     _("{} confirmations").format(tx.block_header.confirmations)
                     if block_header and block_header.confirmations > 0
@@ -520,13 +523,19 @@ class PyWalib:
         fiat = last_price * amount
         fee = Decimal(cls.web3.fromWei(tx.fee.usage * tx.fee.price_per_unit, "ether"))
         fee_fiat = last_price * fee
+
         tx_status = _("Unconfirmed")
-        if tx.status == TransactionStatus.CONFIRMED:
+        show_status = [1, _("Unconfirmed")]
+        if tx.status == TransactionStatus.REVERED:
+            tx_status = _("Sending failure")
+            show_status = [2, _("Sending failure")]
+        elif tx.status == TransactionStatus.CONFIRMED:
             tx_status = (
                 _("{} confirmations").format(tx.block_header.confirmations)
                 if tx.block_header and tx.block_header.confirmations > 0
                 else _("Confirmed")
             )
+            show_status = [3, _("Confirmed")]
 
         return {
             'txid': txid,
@@ -537,6 +546,7 @@ class PyWalib:
             'fee_fiat': fee_fiat,
             'description': "",
             'tx_status': tx_status,
+            "show_status": show_status,
             'sign_status': None,
             'output_addr': [tx.target],
             'input_addr': [tx.source],
