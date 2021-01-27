@@ -2287,7 +2287,7 @@ class AndroidCommands(commands.Commands):
             client = self.get_client(path)
             resp = client.set_pin(False)
         except Exception as e:
-            if isinstance(e, exceptions.PinException):
+            if isinstance(e, exceptions.PinException) or isinstance(e, RuntimeError):
                 return 0
             else:
                 raise BaseException("user cancel")
@@ -2321,10 +2321,10 @@ class AndroidCommands(commands.Commands):
             client = self.get_client(path)
             resp = client.wipe_device()
         except Exception as e:
-            if isinstance(e, exceptions.PinException):
+            if isinstance(e, exceptions.PinException) or isinstance(e, RuntimeError):
                 return 0
             else:
-                raise BaseException(e)
+                raise BaseException(str(e)) from e
         if resp == "Device wiped":
             return 1
         else:
@@ -2906,7 +2906,7 @@ class AndroidCommands(commands.Commands):
                                           coin=self.replace_wallet_info['coin'],
                                           wallet_type=self.replace_wallet_info['wallet_type'],
                                           derived_flag=self.replace_wallet_info['derived_flag'],
-          
+
                                         bip39_derivation=self.replace_wallet_info['bip39_derivation'])
         wallet=self.replace_wallet_info['wallet']
         self.replace_wallet_info = {}
@@ -4212,4 +4212,3 @@ SP_SET_METHODS = {
     int: "putLong",
     str: "putString",
 }
-

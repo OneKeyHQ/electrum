@@ -188,12 +188,13 @@ class TrezorPlugin(HW_PluginBase):
             return self.client
         # plugin = self.plugin.get_plugin("trezor")
         client_list = self.enumerate()
-        print(f"total device====={client_list}")
+        _logger.info(f"total device find====={client_list}=====point device=={path}")
         device = [cli for cli in client_list if cli.path == path or cli.path == 'android_usb']
         assert len(device) != 0, "Not found the point device"
         client = self.create_client(device[0], ui)
         if not client.features.bootloader_mode:
-            if client.features.major_version > 1 or (client.features.minor_version == 9 and client.features.patch_version >=7):
+            if client.features.onekey_version or client.features.major_version > 1 or (
+                    client.features.minor_version == 9 and client.features.patch_version >= 7):
                 client.set_bixin_app(True)
         self.client = client
         self.path = path
