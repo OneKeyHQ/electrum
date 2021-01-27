@@ -896,6 +896,7 @@
     <string name="set_new_pass">设置您的新密码</string>
     <string name="price_quotation">价格行情（只影响 BTC 和 ETH 价格的显示）</string>
     <string name="blockchain_choose">区块浏览器（BTC）</string>
+    <string name="blockchain_eth_choose">区块浏览器（ETH）</string>
     <string name="check_trsaction_msg">使用您喜欢的浏览器查看链上交易信息</string>
     <string name="electrum_tips">使用其开源分布式节点进行交易广播和链上信息获取</string>
     <string name="agent_tips">使用代理服务器，隐藏网络痕迹</string>

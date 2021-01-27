@@ -186,6 +186,53 @@
 
             </RelativeLayout>
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_20"
+                android:layout_marginTop="41dp"
+                android:text="@string/blockchain_eth_choose"
+                android:textColor="@color/text_six"
+                android:textSize="@dimen/sp_14" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_20"
+                android:layout_marginTop="@dimen/dp_10"
+                android:layout_marginEnd="@dimen/dp_20"
+                android:text="@string/check_trsaction_msg"
+                android:textColor="@color/text_six"
+                android:textSize="@dimen/sp_14" />
+
+
+            <RelativeLayout
+                android:id="@+id/rel_eth_blockchoose"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_66"
+                android:layout_marginTop="@dimen/dp_8"
+                android:background="@color/button_bk_ddake">
+
+                <TextView
+                    android:id="@+id/test_eth_blockcheck"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="@dimen/dp_20"
+                    android:textColor="@color/text_two"
+                    android:textSize="@dimen/sp_16"
+                    tools:text="etherscan.io" />
+
+                <ImageView
+                    android:layout_width="@dimen/dp_28"
+                    android:layout_height="@dimen/dp_28"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="@dimen/dp_10"
+                    android:src="@drawable/right_arrow_small" />
+
+            </RelativeLayout>
+
 
             <TextView
                 android:layout_width="wrap_content"

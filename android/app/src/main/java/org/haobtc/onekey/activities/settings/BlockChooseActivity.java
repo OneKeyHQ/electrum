@@ -1,34 +1,41 @@
 package org.haobtc.onekey.activities.settings;
 
-import android.content.SharedPreferences;
+import android.content.Context;
+import android.content.Intent;
 import android.view.View;
 import android.widget.ImageView;
-
 import androidx.recyclerview.widget.RecyclerView;
-
-import org.greenrobot.eventbus.EventBus;
-import org.haobtc.onekey.R;
-import org.haobtc.onekey.activities.base.BaseActivity;
-import org.haobtc.onekey.adapter.QuetationChooseAdapter;
-import org.haobtc.onekey.aop.SingleClick;
-import org.haobtc.onekey.bean.CNYBean;
-import org.haobtc.onekey.event.FirstEvent;
-
-import java.util.ArrayList;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import java.util.ArrayList;
+import java.util.Map;
+import org.greenrobot.eventbus.EventBus;
+import org.haobtc.onekey.R;
+import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.adapter.BlockBrowserChooseAdapter;
+import org.haobtc.onekey.aop.SingleClick;
+import org.haobtc.onekey.business.blockBrowser.BlockBrowser;
+import org.haobtc.onekey.business.blockBrowser.BlockBrowserManager;
+import org.haobtc.onekey.constant.Vm;
+import org.haobtc.onekey.event.FirstEvent;
 
 public class BlockChooseActivity extends BaseActivity {
+    private static final String EXT_COIN_TYPE = "EXT_COIN_TYPE";
+
+    public static void start(Context context, Vm.CoinType coinType) {
+        Intent intent = new Intent(context, BlockChooseActivity.class);
+        intent.putExtra(EXT_COIN_TYPE, coinType.coinName);
+        context.startActivity(intent);
+    }
 
     @BindView(R.id.img_back)
     ImageView imgBack;
+
     @BindView(R.id.recl_Quetation)
     RecyclerView reclQuetation;
-    private SharedPreferences preferences;
-    private int setBlock;
 
+    private Vm.CoinType mCoinType;
 
     @Override
     public int getLayoutId() {
@@ -37,31 +44,43 @@ public class BlockChooseActivity extends BaseActivity {
 
     @Override
     public void initView() {
+        mCoinType = Vm.CoinType.convert(getIntent().getStringExtra(EXT_COIN_TYPE));
         ButterKnife.bind(this);
-        preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-        setBlock = preferences.getInt("setBlock", 0);
     }
 
     @Override
     public void initData() {
-        String[] stringArray = getResources().getStringArray(R.array.blockline);
-        ArrayList<CNYBean> blockList = new ArrayList<>();
-        for (String s : stringArray) {
-            CNYBean cnyBean = new CNYBean(s, false);
-            blockList.add(cnyBean);
-        }
-        QuetationChooseAdapter quetationChooseAdapter = new QuetationChooseAdapter(BlockChooseActivity.this, blockList, setBlock);
+        Map<String, BlockBrowser> blockBrowserList =
+                BlockBrowserManager.INSTANCE.getBlockBrowserList(mCoinType);
+        BlockBrowser currentBlockBrowser =
+                BlockBrowserManager.INSTANCE.getCurrentBlockBrowser(mCoinType);
+
+        BlockBrowserChooseAdapter quetationChooseAdapter =
+                new BlockBrowserChooseAdapter(
+                        BlockChooseActivity.this,
+                        new ArrayList<>(blockBrowserList.values()),
+                        currentBlockBrowser);
         quetationChooseAdapter.addHeaderView(generateHeadView());
         reclQuetation.setAdapter(quetationChooseAdapter);
-        quetationChooseAdapter.setOnLisennorClick(pos -> {
-            preferences.edit().putInt("setBlock", pos).apply();
-            preferences.edit().putString("blockServerLine", blockList.get(pos).getName()).apply();
-            EventBus.getDefault().post(new FirstEvent("block_check"));
-        });
+        quetationChooseAdapter.setOnLisennorClick(
+                (pos, blockBrowser) -> {
+                    BlockBrowserManager.INSTANCE.setBlockBrowser(
+                            mCoinType, blockBrowser.uniqueTag());
+                    switch (mCoinType) {
+                        case ETH:
+                            EventBus.getDefault()
+                                    .post(new FirstEvent(FirstEvent.MSG_SET_ETH_BLOCK));
+                            break;
+                        case BTC:
+                            EventBus.getDefault()
+                                    .post(new FirstEvent(FirstEvent.MSG_SET_BTC_BLOCK));
+                            break;
+                    }
+                });
     }
 
     private View generateHeadView() {
-        return View.inflate(this,R.layout.view_block_browser_hint,null);
+        return View.inflate(this, R.layout.view_block_browser_hint, null);
     }
 
     @SingleClick
@@ -72,8 +91,3 @@ public class BlockChooseActivity extends BaseActivity {
         }
     }
 }
-
-
-
-
-

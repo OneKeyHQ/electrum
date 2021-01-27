@@ -2,7 +2,6 @@ package org.haobtc.onekey.constant;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.StringDef;
-
 import org.haobtc.onekey.BuildConfig;
 
 /**
@@ -13,7 +12,8 @@ import org.haobtc.onekey.BuildConfig;
  */
 public class Vm {
     public enum CoinType {
-        BTC("btc", true), ETH("eth", true);
+        BTC("btc", true),
+        ETH("eth", true);
 
         public final String coinName;
         public final boolean enable;
@@ -48,28 +48,42 @@ public class Vm {
         }
     }
 
-    @IntDef({WalletType.MAIN, WalletType.STANDARD, WalletType.IMPORT_WATCH, WalletType.IMPORT_PRIVATE, WalletType.HARDWARE})
+    @StringDef
+    public @interface BTCNetworkType {
+        String MainNet = "mainnet";
+        String TestNet = "testnet";
+        String RegTest = "regtest";
+    }
+
+    @PyenvETHNetworkType
+    public static String getBTCNetwork() {
+        if (BuildConfig.net_type.equals("MainNet")) {
+            return BTCNetworkType.MainNet;
+        } else if (BuildConfig.net_type.equals("TestNet")) {
+            return BTCNetworkType.TestNet;
+        } else {
+            return BTCNetworkType.RegTest;
+        }
+    }
+
+    @IntDef({
+        WalletType.MAIN,
+        WalletType.STANDARD,
+        WalletType.IMPORT_WATCH,
+        WalletType.IMPORT_PRIVATE,
+        WalletType.HARDWARE
+    })
     public @interface WalletType {
-        /**
-         * HD 派生钱包
-         */
+        /** HD 派生钱包 */
         int MAIN = 0;
-        /**
-         * 创建的独立钱包，助记词导入的钱包。
-         */
+        /** 创建的独立钱包，助记词导入的钱包。 */
         int STANDARD = 1;
-        /**
-         * 通过地址导入的观察钱包
-         */
+        /** 通过地址导入的观察钱包 */
         int IMPORT_WATCH = 2;
-        /**
-         * 通过私钥导入的钱包
-         */
+        /** 通过私钥导入的钱包 */
         int IMPORT_PRIVATE = 3;
 
-        /**
-         * 硬件钱包
-         */
+        /** 硬件钱包 */
         int HARDWARE = 4;
     }
 

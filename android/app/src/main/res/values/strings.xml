@@ -927,6 +927,7 @@
     <string name="set_new_pass">Set your new password</string>
     <string name="price_quotation">Price quotes (only affects the display of BTC and ETH prices)</string>
     <string name="blockchain_choose">Block Browser (BTC)</string>
+    <string name="blockchain_eth_choose">Block Browser (ETH)</string>
     <string name="check_trsaction_msg">Use your favorite browser to view on-chain transaction information</string>
     <string name="electrum_tips">Use its open source distributed nodes for transaction broadcasting and on-chain information acquisition</string>
     <string name="agent_tips">Use a proxy server to hide network traces</string>
