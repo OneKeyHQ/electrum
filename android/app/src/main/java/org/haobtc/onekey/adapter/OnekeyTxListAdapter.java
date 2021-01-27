@@ -1,8 +1,6 @@
 package org.haobtc.onekey.adapter;
 
-import android.annotation.SuppressLint;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -14,10 +12,9 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 
 import org.haobtc.onekey.R;
-import org.haobtc.onekey.bean.MaintrsactionlistEvent;
 import org.haobtc.onekey.bean.TransactionSummaryVo;
+import org.haobtc.onekey.extensions.StringKt;
 
-import java.text.DecimalFormat;
 import java.util.List;
 
 public class OnekeyTxListAdapter extends BaseQuickAdapter<TransactionSummaryVo, BaseViewHolder> {
@@ -34,7 +31,7 @@ public class OnekeyTxListAdapter extends BaseQuickAdapter<TransactionSummaryVo, 
         TextView tetAmount = helper.getView(R.id.text_send_amount);
         ImageView imgStatus = helper.getView(R.id.imageView);
 
-        String amount = item.getAmount() + " " + item.getAmountUnit();
+        String amount = StringKt.interceptDecimal(item.getAmount()) + " " + item.getAmountUnit();
         if (item.isMine()) {
             //send
             tetAmount.setTextColor(mContext.getColor(R.color.text_eight));
