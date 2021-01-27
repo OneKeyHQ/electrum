@@ -10,7 +10,7 @@ repos:
     rev: 95c2f5632710e095220e22cc1a4e1a1451abf75f
     hooks:
     -   id: google-style-java
--   repo: https://github.com/doublify/pre-commit-clang-format
+  - repo: https://github.com/doublify/pre-commit-clang-format
     rev: 62302476d0da01515660132d76902359bed0f782
     hooks:
       - id: clang-format
