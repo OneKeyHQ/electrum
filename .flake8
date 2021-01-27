@@ -7,5 +7,5 @@ ignore = E203, E501, W503
 ;       - Conflict with black
 ; E501: Line too long
 ;       - Conflict with black
-max-line-length = 88
+max-line-length = 120
 max-complexity = 18

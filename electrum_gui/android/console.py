@@ -2906,7 +2906,8 @@ class AndroidCommands(commands.Commands):
                                           coin=self.replace_wallet_info['coin'],
                                           wallet_type=self.replace_wallet_info['wallet_type'],
                                           derived_flag=self.replace_wallet_info['derived_flag'],
-                                          bip39_derivation=self.replace_wallet_info['bip39_derivation'])
+          
+                                        bip39_derivation=self.replace_wallet_info['bip39_derivation'])
         wallet=self.replace_wallet_info['wallet']
         self.replace_wallet_info = {}
         return str(wallet)
@@ -4211,3 +4212,4 @@ SP_SET_METHODS = {
     int: "putLong",
     str: "putString",
 }
+
