@@ -17,7 +17,8 @@ typedef enum {
     OKMatchingTypeActivation, //激活
     OKMatchingTypeBackup2Hw,  //备份到硬件
     OKMatchingTypeTransfer,   //转账
-    OKMatchingTypeReceiveCoin //收款
+    OKMatchingTypeReceiveCoin, //收款
+    OKMatchingTypeSignatureData, //签名数据
 }OKMatchingType;
 
 #define kOKBlueManager (OKBlueManager.sharedInstance)

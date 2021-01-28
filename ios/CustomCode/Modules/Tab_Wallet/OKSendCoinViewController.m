@@ -22,6 +22,7 @@ typedef enum {
 #import "OKLookWalletTipsViewController.h"
 #import "OKHwNotiManager.h"
 #import "OKTransferCompleteController.h"
+#import "OKTxDetailViewController.h"
 
 
 @interface OKSendCoinViewController ()<UITextFieldDelegate,OKHwNotiManagerDelegate>
@@ -462,10 +463,13 @@ typedef enum {
     NSString *signTx = [signTxDict safeStringForKey:@"tx"];
     id result =  [kPyCommandsManager callInterface:kInterfaceBroadcast_tx parameter:@{@"tx":signTx}];
     if (result != nil) {
+        OKWeakSelf(self)
         [[NSNotificationCenter defaultCenter]postNotificationName:kNotiSendTxComplete object:nil];
         dispatch_async(dispatch_get_main_queue(), ^{
             OKTransferCompleteController *transferCompleteVc = [OKTransferCompleteController transferCompleteController:dict block:^{
-                NSLog(@"点击了交易详情");
+                OKTxDetailViewController *txDetailVc = [OKTxDetailViewController txDetailViewController];
+                txDetailVc.tx_hash = [dict safeStringForKey:@"txid"];
+                [weakself.navigationController pushViewController:txDetailVc animated:YES];
             }];
             [self.navigationController pushViewController:transferCompleteVc animated:YES];
         });

@@ -106,14 +106,14 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aqC-0B-ksa" userLabel="CompleteView">
                                 <rect key="frame" x="20" y="896" width="374" height="696"/>
                                 <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="找到以下设备" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Xun-O6-fSU">
-                                        <rect key="frame" x="135" y="16" width="104" height="21"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Locate the following devices" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Xun-O6-fSU" customClass="OKLabel">
+                                        <rect key="frame" x="79.5" y="12" width="215.5" height="21"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xrh-bA-gw5">
-                                        <rect key="frame" x="244" y="4.5" width="44" height="44"/>
+                                        <rect key="frame" x="300" y="0.5" width="44" height="44"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="44" id="7S6-YQ-a4Y"/>
                                             <constraint firstAttribute="height" constant="44" id="eRb-om-J7R"/>
@@ -121,7 +121,7 @@
                                         <state key="normal" image="reload"/>
                                     </button>
                                     <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="DWS-YD-dzL">
-                                        <rect key="frame" x="7" y="58.5" width="360" height="630.5"/>
+                                        <rect key="frame" x="7" y="54.5" width="360" height="634.5"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <prototypes>
                                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="OKBluetoothViewCell" rowHeight="75" id="jsr-oz-fd0" customClass="OKBluetoothViewCell">
@@ -197,7 +197,7 @@
                                     <constraint firstAttribute="bottom" secondItem="DWS-YD-dzL" secondAttribute="bottom" constant="7" id="n4p-R8-YEv"/>
                                     <constraint firstItem="DWS-YD-dzL" firstAttribute="leading" secondItem="aqC-0B-ksa" secondAttribute="leading" constant="7" id="ncg-fu-pXl"/>
                                     <constraint firstItem="xrh-bA-gw5" firstAttribute="leading" secondItem="Xun-O6-fSU" secondAttribute="trailing" constant="5" id="pZp-zt-f1z"/>
-                                    <constraint firstItem="Xun-O6-fSU" firstAttribute="top" secondItem="aqC-0B-ksa" secondAttribute="top" constant="16" id="tfS-qq-nFF"/>
+                                    <constraint firstItem="Xun-O6-fSU" firstAttribute="top" secondItem="aqC-0B-ksa" secondAttribute="top" constant="12" id="tfS-qq-nFF"/>
                                     <constraint firstItem="xrh-bA-gw5" firstAttribute="centerY" secondItem="Xun-O6-fSU" secondAttribute="centerY" id="vQQ-8c-3V7"/>
                                 </constraints>
                             </view>

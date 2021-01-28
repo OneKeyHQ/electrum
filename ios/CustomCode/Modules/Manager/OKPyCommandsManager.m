@@ -155,7 +155,7 @@ static dispatch_once_t once;
     }else if([method isEqualToString:kInterfaceGet_all_tx_list]){
         NSString *search_type = [parameter safeStringForKey:@"search_type"];
         if (search_type == nil || search_type.length == 0) {
-            result = PyObject_CallMethod(self.pyInstance, [kInterfaceGet_all_tx_list UTF8String], "");
+            result = PyObject_CallMethod(self.pyInstance, [kInterfaceGet_all_tx_list UTF8String],"()",NULL);
         }else{
             result = PyObject_CallMethod(self.pyInstance, [kInterfaceGet_all_tx_list UTF8String], "(s)",[search_type UTF8String]);
         }
@@ -458,6 +458,20 @@ static dispatch_once_t once;
         PyObject_CallMethod(b, [kInterface_set_cancel_flag UTF8String], "()", NULL);
     }else if ([method isEqualToString:kInterface_set_user_cancel]){
         result = PyObject_CallMethod(self.pyHwInstance, [kInterface_set_user_cancel UTF8String], "()", NULL);
+    }else if ([method isEqualToString:kInterfacesign_message]){
+        NSString *address = [parameter safeStringForKey:@"address"];
+        NSString *message = [parameter safeStringForKey:@"message"];
+        NSString *path = kBluetooth_iOS;
+        result = PyObject_CallMethod(self.pyInstance, [kInterfacesign_message UTF8String], "(s,s,s)",[address UTF8String],[message UTF8String],[path UTF8String]);
+        
+    }else if ([method isEqualToString:kInterfaceverify_message]){
+        NSString *address = [parameter safeStringForKey:@"address"];
+        NSString *message = [parameter safeStringForKey:@"message"];
+        NSString *signature = [parameter safeStringForKey:@"signature"];
+        result = PyObject_CallMethod(self.pyInstance, [kInterfaceverify_message UTF8String], "(s,s,s)",[address UTF8String],[message UTF8String],[signature UTF8String]);
+    }else if ([method isEqualToString:kInterfaceget_tx_info_from_raw]){
+        NSString *raw_tx = [parameter safeStringForKey:@"raw_tx"];
+        result = PyObject_CallMethod(self.pyInstance, [kInterfaceget_tx_info_from_raw UTF8String], "(s)",[raw_tx UTF8String]);
     }
     if (result == NULL) {
         if (PyErr_Occurred()) {

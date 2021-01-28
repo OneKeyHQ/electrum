@@ -53,11 +53,34 @@
     self.topTextView.delegate = self;
     self.midTextView.delegate = self;
     self.bottomTextView.delegate = self;
+    
+    if (self.signMessageInfo != nil) {
+        self.topTextView.text = [self.signMessageInfo safeStringForKey:@"message"];
+        self.midTextView.text = [self.signMessageInfo safeStringForKey:@"address"];
+        self.bottomTextView.text = [self.signMessageInfo safeStringForKey:@"signature"];
+        self.topTextView.userInteractionEnabled = NO;
+        self.midTextView.userInteractionEnabled = NO;
+        self.bottomTextView.userInteractionEnabled = NO;
+        self.topTextPlaceLabel.hidden = YES;
+        self.midTextPlaceLabel.hidden = YES;
+        self.bottomTextPlaceLabel.hidden = YES;
+    }
+    [self refreshConfirmBtn];
 }
 - (IBAction)confirmBtnClick:(UIButton *)sender {
-    OKVerifySignatureResultController *verifySignatureVc = [OKVerifySignatureResultController initWithStoryboardName:@"Signature" identifier:@"OKVerifySignatureResultController"];
-    verifySignatureVc.type = OKVerifySignatureTypeFailure;
-    [self.navigationController pushViewController:verifySignatureVc animated:YES];
+
+    NSDictionary *dict = [NSDictionary dictionary];
+    if (self.signMessageInfo != nil) {
+        dict = self.signMessageInfo;
+    }else{
+        dict = @{@"message":self.topTextView.text,@"address":self.midTextView.text,@"signature":self.bottomTextView.text};
+    }
+    id result =  [kPyCommandsManager callInterface:kInterfaceverify_message parameter:dict];
+    if (result != nil) {
+        OKVerifySignatureResultController *verifySignatureVc = [OKVerifySignatureResultController initWithStoryboardName:@"Signature" identifier:@"OKVerifySignatureResultController"];
+        verifySignatureVc.type = [result boolValue] == YES ? OKVerifySignatureTypeSuccess : OKVerifySignatureTypeFailure;
+        [self.navigationController pushViewController:verifySignatureVc animated:YES];
+    }
 }
 
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(nonnull NSString *)text {
@@ -94,4 +117,19 @@
     }
     return YES;
 }
+- (void)textViewDidChange:(UITextView *)textView
+{
+    [self refreshConfirmBtn];
+}
+- (void)refreshConfirmBtn
+{
+    if (self.topTextView.text.length > 0 && self.midTextView.text.length > 0 && self.bottomTextView.text.length > 0) {
+        self.confirmBtn.userInteractionEnabled = YES;
+        self.confirmBtn.alpha = 1.0;
+    }else{
+        self.confirmBtn.userInteractionEnabled = NO;
+        self.confirmBtn.alpha = 0.5;
+    }
+}
+
 @end

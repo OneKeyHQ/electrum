@@ -6,22 +6,25 @@
 //  Copyright © 2021 Onekey. All rights reserved.
 //
 typedef enum {
-    OKSegmentTypeMsg,
-    OKSegmentTypeTrad
+    OKSegmentTypeTrad,
+    OKSegmentTypeMsg
 }OKSegmentType;
 
 
 #import "OKSignatureViewController.h"
 #import "MLMSegmentManager.h"
 #import "OKDocument.h"
-#import "OKiCloudManager.h"
 #import "OKVerifySignatureViewController.h"
+#import "OKSendTxPreInfoViewController.h"
+#import "OKSendTxPreModel.h"
+#import "OKTransferCompleteController.h"
+#import "OKTxDetailViewController.h"
 
 #define kBottomBgViewH 100.0
 
-@interface OKSignatureViewController ()<UITextViewDelegate,UIDocumentPickerDelegate>
+@interface OKSignatureViewController ()<UITextViewDelegate,UIDocumentPickerDelegate,OKHwNotiManagerDelegate>
 - (IBAction)confirmBtnClick:(UIButton *)sender;
-@property (unsafe_unretained, nonatomic) IBOutlet UIButton *confirmBtn;
+@property (unsafe_unretained, nonatomic) IBOutlet OKButton *confirmBtn;
 @property (unsafe_unretained, nonatomic) IBOutlet UIView *topBgView;
 @property (unsafe_unretained, nonatomic) IBOutlet UITextView *textView;
 @property (unsafe_unretained, nonatomic) IBOutlet UIView *btnBgView;
@@ -32,6 +35,9 @@ typedef enum {
 @property (nonatomic, assign) NSInteger count;
 @property (nonatomic, strong)NSArray *list;
 @property (nonatomic, assign)OKSegmentType type;
+
+@property (nonatomic,strong)NSDictionary *hwSignData;
+
 @end
 
 @implementation OKSignatureViewController
@@ -44,9 +50,10 @@ typedef enum {
 - (void)viewDidLoad {
     [super viewDidLoad];
     _count = 0;
-    _type = OKSegmentTypeMsg;
+    _type = OKSegmentTypeTrad;
     [self stupUI];
     [self refreshUI];
+    [self textChange];
 }
 
 - (void)stupUI
@@ -71,6 +78,7 @@ typedef enum {
     [self.confirmBtn setLayerRadius:20];
     [self.confirmBtn setTitle:MyLocalizedString(@"determine", nil) forState:UIControlStateNormal];
     [self.textViewBgView setLayerBoarderColor:HexColor(0xDBDEE7) width:1 radius:20];
+    
 }
 
 - (void)viewDidLayoutSubviews
@@ -105,13 +113,16 @@ typedef enum {
     _segHead.bottomLineColor = [UIColor lightGrayColor];
     
     _segHead.slideScale = 0.98;
-    @weakify(self)
+    OKWeakSelf(self)
     [MLMSegmentManager associateHead:_segHead withScroll:nil completion:^{
-        @strongify(self)
-        [self.topBgView addSubview:self.segHead];
+        [weakself.topBgView addSubview:self.segHead];
     } selectEnd:^(NSInteger index) {
-        weak_self.type = (OKSegmentType)index;
-        [weak_self refreshUI];
+        if (index == 0) {
+            weakself.type = OKSegmentTypeTrad;
+        }else{
+            weakself.type = OKSegmentTypeMsg;
+        }
+        [weakself refreshUI];
     }];
 }
 
@@ -148,31 +159,154 @@ typedef enum {
         [self presentViewController:documentPickerViewController animated:YES completion:nil];
 }
 #pragma mark - UIDocumentPickerDelegate
-- (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentAtURL:(NSURL *)url {
-    NSArray *array = [[url absoluteString] componentsSeparatedByString:@"/"];
-    NSString *fileName = [array lastObject];
-    fileName = [fileName stringByRemovingPercentEncoding];
-    if ([OKiCloudManager iCloudEnable]) {
-        [OKiCloudManager downloadWithDocumentURL:url callBack:^(id obj) {
-            NSData *data = obj;
-            NSString *path = [NSHomeDirectory() stringByAppendingString:[NSString stringWithFormat:@"/Documents/%@",fileName]];
-            [data writeToFile:path atomically:YES];
-        }];
+- (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentsAtURLs:(nonnull NSArray<NSURL *> *)urls{
+        NSString *path = [urls firstObject].absoluteString;
+    if ([path hasPrefix:@"file://"]) {
+        path = [path substringFromIndex:6];
+    }
+    NSError *error = nil;
+    NSString *str = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:&error];
+    if (error == nil) {
+        self.textView.text = str;
+        self.placeLabel.hidden = YES;
+        [self textChange];
+    }else{
+        [kTools tipMessage:MyLocalizedString(@"Import failure", nil)];
     }
 }
-
+#pragma mark - 扫描
 - (IBAction)scanBtnClick:(UIButton *)sender {
-    NSLog(@"点击了扫码");
+    OKWeakSelf(self)
+    OKWalletScanVC *vc = [OKWalletScanVC initViewControllerWithStoryboardName:@"Scan"];
+    vc.scanningType = ScanningTypeAll;
+    vc.scanningCompleteBlock = ^(NSString* result) {
+        if (result && result.length > 0) {
+            weakself.textView.text = result;
+            weakself.placeLabel.hidden = YES;
+            [weakself textChange];
+        }
+    };
+    [vc authorizePushOn:self];
+}
+
+#pragma mark - TextView
+- (void)textViewDidChange:(UITextView *)textView
+{
+    [self textChange];
+}
+
+- (void)textChange{
+    if (self.textView.text.length > 0) {
+        [self.confirmBtn status:OKButtonStatusEnabled];
+    }else{
+        [self.confirmBtn status:OKButtonStatusDisabled];
+    }
 }
 - (IBAction)pasteBtnClick:(OKButton *)sender {
     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
     if (pasteboard.string.length > 0) {
         self.textView.text = pasteboard.string;
         self.placeLabel.hidden = YES;
+        [self textChange];
     }
 }
+
 - (IBAction)confirmBtnClick:(UIButton *)sender {
-    NSLog(@"点击了确定按钮");
+    OKWeakSelf(self)
+    switch (_type) {
+        case OKSegmentTypeMsg:
+        {
+            NSString *message = self.textView.text;
+            [OKHwNotiManager sharedInstance].delegate = self;
+            OKWeakSelf(self)
+            dispatch_async(dispatch_get_global_queue(0, 0), ^{
+               id result = [kPyCommandsManager callInterface:kInterfacesign_message parameter:@{@"address":kWalletManager.currentWalletInfo.addr,@"message":message}];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    NSLog(@"dispatch_async");
+                    OKVerifySignatureViewController *verifySignatureVc = [OKVerifySignatureViewController initWithStoryboardName:@"Signature" identifier:@"OKVerifySignatureViewController"];
+                    NSDictionary *dict = @{@"message":weakself.textView.text,@"address":kWalletManager.currentWalletInfo.addr,@"signature":result};
+                    verifySignatureVc.signMessageInfo = dict;
+                    [self.navigationController pushViewController:verifySignatureVc animated:YES];
+                });
+            });
+        }
+            break;
+        case OKSegmentTypeTrad:
+        {
+            NSString *tx = self.textView.text;
+            [OKHwNotiManager sharedInstance].delegate = self;
+            dispatch_async(dispatch_get_global_queue(0, 0), ^{
+                NSDictionary *signTxDict =  [kPyCommandsManager callInterface:kInterfaceSign_tx parameter:@{@"tx":tx}];
+                if (signTxDict != nil) {
+                    weakself.hwSignData = signTxDict;
+                    [[NSNotificationCenter defaultCenter]postNotificationName:kNotiHwBroadcastiComplete object:nil];
+                }
+            });
+        }
+            break;
+        default:
+            break;
+    }
+}
+
+- (void)showPreInfoView:(NSDictionary *)dict
+{
+    OKSendTxPreInfoViewController *sendVc = [OKSendTxPreInfoViewController initViewControllerWithStoryboardName:@"Tab_Wallet"];
+    OKSendTxPreModel *model = [OKSendTxPreModel new];
+    NSArray *arrayAmount = [[dict safeStringForKey:@"amount"]componentsSeparatedByString:@" "];
+    model.amount = [arrayAmount firstObject];
+    model.coinType = [arrayAmount objectAtIndex:1];
+    model.walletName = kWalletManager.currentWalletInfo.label;
+    model.sendAddress = kWalletManager.currentWalletInfo.addr;
+    NSArray *arrayAddr = dict[@"output_addr"];
+    for (NSDictionary *addrDict in arrayAddr) {
+        BOOL is_change = [[addrDict safeStringForKey:@"is_change"] boolValue];
+        if (!is_change) {
+            model.rAddress = [addrDict safeStringForKey:@"addr"];
+            break;
+        }
+    }
+    model.txType = @"";
+    model.fee = [NSString stringWithFormat:@"%@",[dict safeStringForKey:@"fee"]];
+    sendVc.info = model;
+    OKWeakSelf(self)
+    [sendVc showOnWindowWithParentViewController:self block:^(NSString * _Nonnull str) {
+        if ([kWalletManager getWalletDetailType] == OKWalletTypeHardware) {
+            [weakself broadcast_tx:weakself.hwSignData dict:dict];
+            return;
+        }
+    }];
+}
+- (void)broadcast_tx:(NSDictionary *)signTxDict dict:(NSDictionary *)dict
+{
+    NSString *signTx = [signTxDict safeStringForKey:@"tx"];
+    id result =  [kPyCommandsManager callInterface:kInterfaceBroadcast_tx parameter:@{@"tx":signTx}];
+    if (result != nil) {
+        OKWeakSelf(self)
+        [[NSNotificationCenter defaultCenter]postNotificationName:kNotiSendTxComplete object:nil];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            OKTransferCompleteController *transferCompleteVc = [OKTransferCompleteController transferCompleteController:dict block:^{
+                OKTxDetailViewController *txDetailVc = [OKTxDetailViewController txDetailViewController];
+                txDetailVc.tx_hash = [dict safeStringForKey:@"txid"];
+                [weakself.navigationController pushViewController:txDetailVc animated:YES];
+            }];
+            [self.navigationController pushViewController:transferCompleteVc animated:YES];
+        });
+    }
+}
+#pragma mark - OKHwNotiManagerDelegate
+- (void)hwNotiManagerDekegate:(OKHwNotiManager *)hwNoti type:(OKHWNotiType)type
+{
+    if (type == OKHWNotiTypeSendCoinConfirm) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            NSDictionary* result =  [kPyCommandsManager callInterface:kInterfaceget_tx_info_from_raw parameter:@{@"raw_tx":self.textView.text}];
+            if (result != nil) {
+                [self showPreInfoView:result];
+            }
+        });
+    }else if (type == OKHWNotiTypeKeyConfirm) {
+       
+    }
 }
 
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(nonnull NSString *)text {

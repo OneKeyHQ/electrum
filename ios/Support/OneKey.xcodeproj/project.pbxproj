@@ -304,7 +304,6 @@
 		8814252325B18EAA00961668 /* OKDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 881423A225B18EA900961668 /* OKDocument.m */; };
 		8814252425B18EAA00961668 /* OKUserSettingManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 881423A325B18EA900961668 /* OKUserSettingManager.m */; };
 		8814252525B18EAA00961668 /* OKOneKeyPwdManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 881423A425B18EA900961668 /* OKOneKeyPwdManager.h */; };
-		8814252625B18EAA00961668 /* OKiCloudManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 881423A525B18EA900961668 /* OKiCloudManager.h */; };
 		8814252725B18EAA00961668 /* OKPyCommandsManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 881423A625B18EA900961668 /* OKPyCommandsManager.h */; };
 		8814252825B18EAA00961668 /* OKWalletManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 881423A725B18EA900961668 /* OKWalletManager.m */; };
 		8814252925B18EAA00961668 /* OKStorageManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 881423A825B18EA900961668 /* OKStorageManager.h */; };
@@ -313,7 +312,6 @@
 		8814252D25B18EAA00961668 /* OKDocument.h in Headers */ = {isa = PBXBuildFile; fileRef = 881423AC25B18EAA00961668 /* OKDocument.h */; };
 		8814252E25B18EAA00961668 /* OKWalletManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 881423AD25B18EAA00961668 /* OKWalletManager.h */; };
 		8814252F25B18EAA00961668 /* OKPyCommandsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 881423AE25B18EAA00961668 /* OKPyCommandsManager.m */; };
-		8814253025B18EAA00961668 /* OKiCloudManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 881423AF25B18EAA00961668 /* OKiCloudManager.m */; };
 		8814253125B18EAA00961668 /* OKOneKeyPwdManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 881423B025B18EAA00961668 /* OKOneKeyPwdManager.m */; };
 		8814253225B18EAA00961668 /* OKStorageManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 881423B125B18EAA00961668 /* OKStorageManager.m */; };
 		8814253325B18EAA00961668 /* OKShareView.h in Headers */ = {isa = PBXBuildFile; fileRef = 881423B425B18EAA00961668 /* OKShareView.h */; };
@@ -870,7 +868,6 @@
 		881423A225B18EA900961668 /* OKDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKDocument.m; sourceTree = "<group>"; };
 		881423A325B18EA900961668 /* OKUserSettingManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKUserSettingManager.m; sourceTree = "<group>"; };
 		881423A425B18EA900961668 /* OKOneKeyPwdManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKOneKeyPwdManager.h; sourceTree = "<group>"; };
-		881423A525B18EA900961668 /* OKiCloudManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKiCloudManager.h; sourceTree = "<group>"; };
 		881423A625B18EA900961668 /* OKPyCommandsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKPyCommandsManager.h; sourceTree = "<group>"; };
 		881423A725B18EA900961668 /* OKWalletManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKWalletManager.m; sourceTree = "<group>"; };
 		881423A825B18EA900961668 /* OKStorageManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKStorageManager.h; sourceTree = "<group>"; };
@@ -879,7 +876,6 @@
 		881423AC25B18EAA00961668 /* OKDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKDocument.h; sourceTree = "<group>"; };
 		881423AD25B18EAA00961668 /* OKWalletManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKWalletManager.h; sourceTree = "<group>"; };
 		881423AE25B18EAA00961668 /* OKPyCommandsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKPyCommandsManager.m; sourceTree = "<group>"; };
-		881423AF25B18EAA00961668 /* OKiCloudManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKiCloudManager.m; sourceTree = "<group>"; };
 		881423B025B18EAA00961668 /* OKOneKeyPwdManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKOneKeyPwdManager.m; sourceTree = "<group>"; };
 		881423B125B18EAA00961668 /* OKStorageManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKStorageManager.m; sourceTree = "<group>"; };
 		881423B425B18EAA00961668 /* OKShareView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKShareView.h; sourceTree = "<group>"; };
@@ -1790,7 +1786,6 @@
 				881423A225B18EA900961668 /* OKDocument.m */,
 				881423A325B18EA900961668 /* OKUserSettingManager.m */,
 				881423A425B18EA900961668 /* OKOneKeyPwdManager.h */,
-				881423A525B18EA900961668 /* OKiCloudManager.h */,
 				881423A625B18EA900961668 /* OKPyCommandsManager.h */,
 				881423AE25B18EAA00961668 /* OKPyCommandsManager.m */,
 				881423A725B18EA900961668 /* OKWalletManager.m */,
@@ -1799,7 +1794,6 @@
 				881423AB25B18EA900961668 /* OKUserSettingManager.h */,
 				881423AC25B18EAA00961668 /* OKDocument.h */,
 				881423AD25B18EAA00961668 /* OKWalletManager.h */,
-				881423AF25B18EAA00961668 /* OKiCloudManager.m */,
 				881423B025B18EAA00961668 /* OKOneKeyPwdManager.m */,
 				881423B125B18EAA00961668 /* OKStorageManager.m */,
 				8814259B25B1900600961668 /* OKHwNotiManager.h */,
@@ -2375,7 +2369,6 @@
 				881424A925B18EAA00961668 /* OKManagerHDViewController.h in Headers */,
 				D50C4AB38DB4B2AD6D02C262 /* UIButton+OneKey.h in Headers */,
 				B058D8B925B55663000EB27C /* OKHardwareListBaseCell.h in Headers */,
-				8814252625B18EAA00961668 /* OKiCloudManager.h in Headers */,
 				8814254925B18EAA00961668 /* OKTakeCareMnemonicViewController.h in Headers */,
 				8814249525B18EAA00961668 /* bitstream.h in Headers */,
 				881424E325B18EAA00961668 /* OKTradeSettingViewCell.h in Headers */,
@@ -2789,7 +2782,6 @@
 				97B84B989EEFF9FA6E446899 /* UIView+Helper.m in Sources */,
 				8814259425B18EAA00961668 /* OKLabel.m in Sources */,
 				B01CB1D525C12F9A0099F931 /* WKWebView+Bypass.m in Sources */,
-				8814253025B18EAA00961668 /* OKiCloudManager.m in Sources */,
 				8814258825B18EAA00961668 /* OKSelectImportTypeViewController.m in Sources */,
 				881424D325B18EAA00961668 /* OKLanguageCellModel.m in Sources */,
 				881424A225B18EAA00961668 /* OKMonetaryUnitViewController.m in Sources */,

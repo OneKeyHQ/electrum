@@ -18,6 +18,7 @@
 #import "OKSpecialEquipmentViewController.h"
 #import "OKReceiveCoinViewController.h"
 #import "OKSendCoinViewController.h"
+#import "OKSignatureViewController.h"
 
 @interface OKMatchingInCirclesViewController ()<OKBabyBluetoothManageDelegate,UITableViewDelegate,UITableViewDataSource>
 
@@ -58,10 +59,7 @@
     kOKBlueManager.delegate = self;
     self.terminalTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(terminalTimerTickTock) userInfo:nil repeats:YES];
     [[NSRunLoop currentRunLoop] addTimer:self.terminalTimer forMode:NSRunLoopCommonModes];
-    OKDeviceModel *model = [[OKDevicesManager sharedInstance]getDeviceModelWithID:kWalletManager.currentWalletInfo.device_id];
-    if (![kOKBlueManager isConnectedName:model.deviceInfo.ble_name]) {
-        [kOKBlueManager startScanPeripheral];
-    }
+    [self refreshBtnClick];
     [self.completebgView setLayerRadius:20];
     [self.refreshBtn addTarget:self action:@selector(refreshBtnClick) forControlEvents:UIControlEventTouchUpInside];
     self.tableView.delegate = self;
@@ -83,25 +81,36 @@
         _count = 0;
         [weakself.terminalTimer invalidate];
         weakself.terminalTimer = nil;
-        if (self.type == OKMatchingTypeTransfer || self.type == OKMatchingTypeReceiveCoin) {
+        if (self.type == OKMatchingTypeTransfer || self.type == OKMatchingTypeReceiveCoin || self.type == OKMatchingTypeSignatureData ) {
             OKDeviceModel *model = [[OKDevicesManager sharedInstance]getDeviceModelWithID:kWalletManager.currentWalletInfo.device_id];
             if ([kOKBlueManager isConnectedName:model.deviceInfo.ble_name]) {
                 [self subscribeComplete:@{}];
             }else{
+                CBPeripheral *temp;
                 for (OKPeripheralInfo *infoModel in self.dataSource) {
                     if ([model.deviceInfo.ble_name isEqualToString:infoModel.peripheral.name]) {
-                        [kOKBlueManager connectPeripheral:infoModel.peripheral];
-                        return;
+                        temp = infoModel.peripheral;
                     }
+                }
+                if (temp != nil) {
+                    [kOKBlueManager connectPeripheral:temp];
+                }else{
+                    [kTools tipMessage:MyLocalizedString(@"Time out for connecting Bluetooth device. Please make sure your device has Bluetooth enabled and is at your side", nil)];
+                    [self.navigationController popViewControllerAnimated:YES];
                 }
             }
         }else{
-            [weakself changeToListBgView];
-            [weakself.tableView reloadData];
-            weakself.completeCons.constant = - (SCREEN_HEIGHT - 170);
-            [UIView animateWithDuration:0.5 animations:^{
-                [weakself.view layoutIfNeeded];
-            }];
+            if ([kOKBlueManager isConnectedCurrentDevice]) {
+                NSDictionary *dict = [[[OKDevicesManager sharedInstance]getDeviceModelWithID:kOKBlueManager.currentDeviceID]json];
+                [self subscribeComplete:dict];
+            }else{
+                [weakself changeToListBgView];
+                [weakself.tableView reloadData];
+                weakself.completeCons.constant = - (SCREEN_HEIGHT - 170);
+                [UIView animateWithDuration:0.5 animations:^{
+                    [weakself.view layoutIfNeeded];
+                }];
+            }
         }
     }
 }
@@ -141,11 +150,18 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    OKPeripheralInfo *peripheralInfo = self.dataSource[indexPath.row];
-    [kOKBlueManager connectPeripheral:peripheralInfo.peripheral];
+    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+        // Do something...
+        OKPeripheralInfo *peripheralInfo = self.dataSource[indexPath.row];
+        [kOKBlueManager connectPeripheral:peripheralInfo.peripheral];
+    });
 }
 - (void)refreshBtnClick
 {
+    [kOKBlueManager stopScanPeripheral];
+    [self.dataSource removeAllObjects];
+    [self.tableView reloadData];
     [kOKBlueManager startScanPeripheral];
 }
 - (void)stupUI
@@ -199,6 +215,7 @@
         [weakself.dataSource removeAllObjects];
     }
     [weakself.dataSource addObjectsFromArray:peripheralInfoArr];
+    [weakself.tableView reloadData];
 }
 
 - (void)connectSuccess {
@@ -223,6 +240,7 @@
                     kOKBlueManager.currentDeviceID = deviceModel.deviceInfo.device_id;
                     [[OKDevicesManager sharedInstance]addDevices:deviceModel];
                     dispatch_async(dispatch_get_main_queue(), ^{
+                        [MBProgressHUD hideHUDForView:self.view animated:YES];
                         if (deviceModel.deviceInfo.initialized ) {
                             if (deviceModel.deviceInfo.backup_only) {
                                 OKSpecialEquipmentViewController *SpecialEquipmentVc = [OKSpecialEquipmentViewController specialEquipmentViewController];
@@ -241,15 +259,19 @@
             break;
         case OKMatchingTypeBackup2Hw:
         {
-            OKSetDeviceNameViewController *setDeviceNameVc = [OKSetDeviceNameViewController setDeviceNameViewController];
-            setDeviceNameVc.type = OKMatchingTypeBackup2Hw;
-            setDeviceNameVc.words = self.words;
-            [self.navigationController pushViewController:setDeviceNameVc animated:YES];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [MBProgressHUD hideHUDForView:self.view animated:YES];
+                OKSetDeviceNameViewController *setDeviceNameVc = [OKSetDeviceNameViewController setDeviceNameViewController];
+                setDeviceNameVc.type = OKMatchingTypeBackup2Hw;
+                setDeviceNameVc.words = self.words;
+                [self.navigationController pushViewController:setDeviceNameVc animated:YES];
+            });
         }
             break;
         case OKMatchingTypeTransfer:
         {
             dispatch_async(dispatch_get_main_queue(), ^{
+                [MBProgressHUD hideHUDForView:self.view animated:YES];
                 OKSendCoinViewController *sendCoinVc = [OKSendCoinViewController sendCoinViewController];
                 [self.navigationController pushViewController:sendCoinVc animated:YES];
             });
@@ -258,10 +280,20 @@
         case OKMatchingTypeReceiveCoin:
         {
             dispatch_async(dispatch_get_main_queue(), ^{
+                [MBProgressHUD hideHUDForView:self.view animated:YES];
                 OKReceiveCoinViewController *receiveCoinVc = [OKReceiveCoinViewController receiveCoinViewController];
                 receiveCoinVc.coinType = kWalletManager.currentWalletInfo.coinType;
                 receiveCoinVc.walletType = [kWalletManager getWalletDetailType];
                 [self.navigationController pushViewController:receiveCoinVc animated:YES];
+            });
+        }
+            break;
+        case OKMatchingTypeSignatureData:
+        {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [MBProgressHUD hideHUDForView:self.view animated:YES];
+                OKSignatureViewController *signatureVc = [OKSignatureViewController signatureViewController];
+                [self.navigationController pushViewController:signatureVc animated:YES];
             });
         }
             break;

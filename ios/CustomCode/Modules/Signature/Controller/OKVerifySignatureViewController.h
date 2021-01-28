@@ -11,7 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OKVerifySignatureViewController : BaseViewController
-
+@property (nonatomic,strong)NSDictionary *signMessageInfo;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -347,8 +347,8 @@
 "The signature" = "签名";
 "trading" = "交易";
 "The message" = "消息";
-"Enter the transaction message" = "输入待签名消息";
-"Enter the message to be signed" = "输入交易报文";
+"Enter the transaction message" = "输入交易报文";
+"Enter the message to be signed" = "输入待签名消息";
 "Verify the signature" = "验证签名";
 "Enter the original message" = "输入原始消息";
 "Enter the public key" = "输入公钥";
@@ -470,3 +470,5 @@
 "The deal" = "交易完成";
 "View Transaction Details" = "查看交易详情";
 "Trade Confirmation" = "交易确认中";
+"Time out for connecting Bluetooth device. Please make sure your device has Bluetooth enabled and is at your side" = "连接蓝牙设备超时，请确认您的设备已经开启蓝牙并且在您的身边";
+"Import failure" = "导入失败";

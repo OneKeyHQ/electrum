@@ -12,12 +12,11 @@
 
 - (void)status:(OKButtonStatusType)type{
     if (type == OKButtonStatusEnabled) {
-        self.enabled = true;
-        [self setBackgroundColor:HexColor(0x01BA12)];
-    }
-    else if (type == OKButtonStatusDisabled) {
-        self.enabled = false;
-        self.backgroundColor = UIColorFromRGBALPHA(0x01BA12, 0.3);
+        self.userInteractionEnabled = YES;
+        self.alpha = 1.0;
+    }else if (type == OKButtonStatusDisabled) {
+        self.userInteractionEnabled = NO;
+        self.alpha = 0.5;
     }
 }
 

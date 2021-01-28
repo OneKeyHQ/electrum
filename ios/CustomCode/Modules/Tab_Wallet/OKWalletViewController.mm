@@ -27,7 +27,6 @@
 #import "OKCreateResultModel.h"
 #import "OKCreateResultWalletInfoModel.h"
 #import "OKTakeCareMnemonicViewController.h"
-#import "OKSignatureViewController.h"
 #import "OKMatchingInCirclesViewController.h"
 
 #import "OKURLSchemeHandler.h"
@@ -658,6 +657,12 @@
         [self.navigationController pushViewController:receiveCoinVc animated:YES];
     }
 }
+#pragma mark - 签名
+- (IBAction)signatureBtnClick:(UIButton *)sender {
+    OKMatchingInCirclesViewController *matchingVc = [OKMatchingInCirclesViewController matchingInCirclesViewController];
+    matchingVc.type = OKMatchingTypeSignatureData;
+    [self.navigationController pushViewController:matchingVc animated:YES];
+}
 #pragma mark - 钱包详情
 - (IBAction)assetListBtnClick:(UIButton *)sender {
     OKWalletDetailViewController *walletDetailVc = [OKWalletDetailViewController walletDetailViewController];
@@ -767,13 +772,6 @@
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer
 {
     return self.isCanSideBack;
-}
-
-- (IBAction)signatureBtnClick:(UIButton *)sender {
-    
-    OKSignatureViewController *signatureVc = [OKSignatureViewController signatureViewController];
-    [self.navigationController pushViewController:signatureVc animated:YES];
-
 }
 
 @end

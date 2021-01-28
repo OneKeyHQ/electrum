@@ -60,5 +60,6 @@
 #import "OKBlueManager.h"
 #import "OKHwNotiManager.h"
 #import "OKDevicesManager.h"
+#import "MBProgressHUD.h"
 
 #endif /* OneKeyImport_h */

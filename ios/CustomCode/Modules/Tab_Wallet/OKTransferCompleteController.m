@@ -45,7 +45,8 @@
     [self.showDetailBgView setLayerRadius:15];
     self.showDetailLabel.text = MyLocalizedString(@"View Transaction Details", nil);
     [self.completeBtn setLayerRadius:30];
-    self.amountLabel.text = [NSString stringWithFormat:@"%@ %@",[_dict safeStringForKey:@"amount"],[kWalletManager.currentWalletInfo.coinType uppercaseString]];
+    NSArray *arrayAmount = [[_dict safeStringForKey:@"amount"]componentsSeparatedByString:@" "];
+    self.amountLabel.text = [NSString stringWithFormat:@"%@ %@",[arrayAmount firstObject],[kWalletManager.currentWalletInfo.coinType uppercaseString]];
 }
 - (void)viewTransactionDetails
 {

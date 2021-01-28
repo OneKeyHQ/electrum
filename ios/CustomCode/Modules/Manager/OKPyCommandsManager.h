@@ -110,6 +110,9 @@
 #define kInterface_get_xpub_from_hw        @"get_xpub_from_hw" // 获取xpub
 #define kInterface_set_cancel_flag       @"set_cancel_flag" // 取消上一个操作，让其立即返回, 可以重复调用
 #define kInterface_set_user_cancel     @"set_user_cancel" // 取消输入PIN操作
+#define kInterfacesign_message         @"sign_message" //签名信息
+#define kInterfaceverify_message       @"verify_message" //验证签名信息
+#define kInterfaceget_tx_info_from_raw  @"get_tx_info_from_raw" //获取签名信息的原始信息
 
 #define kPyCommandsManager (OKPyCommandsManager.sharedInstance)
 NS_ASSUME_NONNULL_BEGIN
