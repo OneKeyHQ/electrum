@@ -1,4 +1,5 @@
 package org.haobtc.onekey.activities.transaction;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -19,48 +20,59 @@ import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.constant.StringConstant;
 import org.haobtc.onekey.utils.MyDialog;
+import org.haobtc.onekey.utils.WebViewPxoxyUtils;
 import org.haobtc.onekey.utils.internet.NetBroadcastReceiver;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-
-public class CheckChainDetailWebActivity extends BaseActivity implements NetBroadcastReceiver.NetStatusMonitor {
+public class CheckChainDetailWebActivity extends BaseActivity
+        implements NetBroadcastReceiver.NetStatusMonitor {
+    private static final String HOST = "cdn.onekey.so:";
+    private static final int PORT = 443;
+    private static final String USER_NAME = "onekey";
+    private static final String PASS = "libbitcoinconsensus";
 
     @BindView(R.id.img_back)
     ImageView imgBack;
+
     @BindView(R.id.web_heckChain)
     WebView webHeckChain;
+
     @BindView(R.id.lin_Nonet)
     LinearLayout linNonet;
+
     @BindView(R.id.text_title)
     TextView textTitle;
+
     private String checkTxid;
     private int nets = 2;
     private boolean netStatus;
+
     @SuppressLint("HandlerLeak")
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            if (msg.what == 99) {
-                nets = 2;
-                webHeckChain.setVisibility(View.VISIBLE);
-                linNonet.setVisibility(View.GONE);
-            } else {
-                mToast(getString(R.string.net_dont_use));
-                nets = 4;
-                webHeckChain.setVisibility(View.GONE);
-                linNonet.setVisibility(View.VISIBLE);
-            }
-        }
-    };
+    private Handler handler =
+            new Handler() {
+                @Override
+                public void handleMessage(Message msg) {
+                    super.handleMessage(msg);
+                    if (msg.what == 99) {
+                        nets = 2;
+                        webHeckChain.setVisibility(View.VISIBLE);
+                        linNonet.setVisibility(View.GONE);
+                    } else {
+                        mToast(getString(R.string.net_dont_use));
+                        nets = 4;
+                        webHeckChain.setVisibility(View.GONE);
+                        linNonet.setVisibility(View.VISIBLE);
+                    }
+                }
+            };
+
     private MyDialog myDialog;
     private NetBroadcastReceiver netBroadcastReceiver;
     private String blockServerLine;
@@ -112,33 +124,42 @@ public class CheckChainDetailWebActivity extends BaseActivity implements NetBroa
         webHeckChain.getSettings().setDomStorageEnabled(true);
         webHeckChain.setWebChromeClient(new WebChromeClient());
         webHeckChain.getSettings().setAllowFileAccess(false);
-        webHeckChain.setWebViewClient(new WebViewClient() {
-            @Override
-            public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                super.onPageStarted(view, url, favicon);
-                if (myDialog != null && !CheckChainDetailWebActivity.this.isFinishing()) {
-                    myDialog.show();
-                }
-            }
+        webHeckChain.setWebViewClient(
+                new WebViewClient() {
+                    @Override
+                    public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                        super.onPageStarted(view, url, favicon);
+                        if (myDialog != null && !CheckChainDetailWebActivity.this.isFinishing()) {
+                            myDialog.show();
+                        }
+                    }
 
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                super.onPageFinished(view, url);
-                if (myDialog != null && !CheckChainDetailWebActivity.this.isFinishing()) {
-                    myDialog.dismiss();
-                }
-            }
+                    @Override
+                    public void onPageFinished(WebView view, String url) {
+                        super.onPageFinished(view, url);
+                        if (myDialog != null && !CheckChainDetailWebActivity.this.isFinishing()) {
+                            myDialog.dismiss();
+                        }
+                    }
 
-            @Override
-            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-                super.onReceivedError(view, request, error);
-                if (myDialog != null && !CheckChainDetailWebActivity.this.isFinishing()) {
-                    myDialog.dismiss();
-                }
-            }
-        });
+                    @Override
+                    public void onReceivedError(
+                            WebView view, WebResourceRequest request, WebResourceError error) {
+                        super.onReceivedError(view, request, error);
+                        if (myDialog != null && !CheckChainDetailWebActivity.this.isFinishing()) {
+                            myDialog.dismiss();
+                        }
+                    }
+                });
         if (nets == 2) {
             if (!TextUtils.isEmpty(loadUrl)) {
+                WebViewPxoxyUtils.setProxy(
+                        webHeckChain,
+                        HOST,
+                        PORT,
+                        mContext.getApplicationInfo().className,
+                        USER_NAME,
+                        PASS);
                 webHeckChain.loadUrl(loadUrl);
             } else {
                 if (!TextUtils.isEmpty(keyLink)) {
@@ -150,7 +171,6 @@ public class CheckChainDetailWebActivity extends BaseActivity implements NetBroa
             }
         }
     }
-
 
     @SingleClick
     @OnClick({R.id.img_back})
@@ -176,7 +196,6 @@ public class CheckChainDetailWebActivity extends BaseActivity implements NetBroa
         }
     }
 
-
     @Override
     public void onNetChange(boolean netStatus) {
         this.netStatus = netStatus;
@@ -196,8 +215,7 @@ public class CheckChainDetailWebActivity extends BaseActivity implements NetBroa
     }
 
     @Override
-    public void onPointerCaptureChanged(boolean hasCapture) {
-    }
+    public void onPointerCaptureChanged(boolean hasCapture) {}
 
     @Override
     protected void onDestroy() {
@@ -209,5 +227,6 @@ public class CheckChainDetailWebActivity extends BaseActivity implements NetBroa
         if (netBroadcastReceiver != null) {
             unregisterReceiver(netBroadcastReceiver);
         }
+        WebViewPxoxyUtils.revertBackProxy(webHeckChain, mContext.getApplicationInfo().className);
     }
 }

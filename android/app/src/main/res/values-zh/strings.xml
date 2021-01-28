@@ -509,7 +509,7 @@
     <string name="name_setting">设置名称</string>
     <string name="label">设置OneKey的专属名称</string>
     <string name="use_se">使用安全芯片存储私钥和进行签名</string>
-    <string name="recovery">从备份恢复</string>
+    <string name="recovery">恢复</string>
     <string name="random">由OneKey随机生成钱包私钥</string>
     <string name="recovery_promote">从OneKey备份恢复已有钱包</string>
     <string name="pin_original">请输入原PIN码</string>
@@ -1226,5 +1226,9 @@
     <string name="new_guide_tip">App 快速上手教程</string>
     <string name="hint_temp_scan_inconformity">扫描的二维码与当前选择的币种不一致。</string>
     <string name="hint_view_more_record">查看更多记录</string>
+    <string name="balance_zero">余额不足</string>
+    <string name="not_find_wallet">没有找到有交易记录的钱包，您可以选择创建新钱包</string>
+    <string name="exist">已存在</string>
+    <string name="not_cancel">不可取消</string>
 
 </resources>

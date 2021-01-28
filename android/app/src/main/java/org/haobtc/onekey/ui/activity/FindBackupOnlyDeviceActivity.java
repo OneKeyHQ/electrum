@@ -3,7 +3,14 @@ package org.haobtc.onekey.ui.activity;
 import android.content.Intent;
 import android.view.View;
 import android.widget.ImageView;
-
+import butterknife.BindView;
+import butterknife.OnClick;
+import com.google.common.base.Strings;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.ObservableOnSubscribe;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -11,14 +18,14 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.asynctask.BusinessAsyncTask;
-import org.haobtc.onekey.bean.BalanceInfoDTO;
+import org.haobtc.onekey.bean.CreateWalletBean;
+import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.constant.PyConstant;
 import org.haobtc.onekey.event.ButtonRequestEvent;
 import org.haobtc.onekey.event.ChangePinEvent;
 import org.haobtc.onekey.event.CreateSuccessEvent;
 import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.event.GotPassEvent;
-import org.haobtc.onekey.event.RecoveryLocalHDEvent;
 import org.haobtc.onekey.event.SelectedEvent;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
@@ -29,25 +36,16 @@ import org.haobtc.onekey.ui.fragment.RecoveryWalletFromHdFragment;
 import org.haobtc.onekey.ui.fragment.RecoveryWalletFromHdFragment.OnFindWalletInfoCallback;
 import org.haobtc.onekey.ui.fragment.RecoveryWalletFromHdFragment.OnFindWalletInfoProvider;
 
-import java.util.List;
-
-import butterknife.BindView;
-import butterknife.OnClick;
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.core.Single;
-import io.reactivex.rxjava3.core.SingleOnSubscribe;
-import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.schedulers.Schedulers;
-
 /**
  * @author liyan
- * <p>
- * BackupOnlyDevice: is a hardware which is inited only as an backup
+ *     <p>BackupOnlyDevice: is a hardware which is inited only as an backup
  */
-public class FindBackupOnlyDeviceActivity extends BaseActivity implements BusinessAsyncTask.Helper, OnFindWalletInfoProvider {
+public class FindBackupOnlyDeviceActivity extends BaseActivity
+        implements BusinessAsyncTask.Helper, OnFindWalletInfoProvider {
 
     @BindView(R.id.img_back)
     ImageView imgBack;
+
     private RecoveryWalletFromHdFragment fromHdFragment;
     private String mnemonics;
     private OnFindWalletInfoCallback mOnFindWalletInfoCallback = null;
@@ -73,12 +71,14 @@ public class FindBackupOnlyDeviceActivity extends BaseActivity implements Busine
     }
 
     private void readMnemonicFromHardWare() {
-        new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.READ_MNEMONIC_FROM_HARDWARE,
-                MyApplication.getInstance().getDeviceWay());
+        new BusinessAsyncTask()
+                .setHelper(this)
+                .execute(
+                        BusinessAsyncTask.READ_MNEMONIC_FROM_HARDWARE,
+                        MyApplication.getInstance().getDeviceWay());
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onRecoveryLocalHd(RecoveryLocalHDEvent event) {
+    public void onClickRecoveryLocalHD() {
         updateTitle(R.string.recovery_wallet);
         readMnemonicFromHardWare();
         startFragment(fromHdFragment);
@@ -89,16 +89,30 @@ public class FindBackupOnlyDeviceActivity extends BaseActivity implements Busine
         if (mDisposable != null && !mDisposable.isDisposed()) {
             mDisposable.dispose();
         }
-        mDisposable = Single.create((SingleOnSubscribe<List<BalanceInfoDTO>>) emitter -> {
-            List<BalanceInfoDTO> balanceInfos = PyEnv.restoreLocalHDWallet(event.getPassword(), mnemonics);
-            emitter.onSuccess(balanceInfos);
-        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(balanceInfos -> {
-            if (mOnFindWalletInfoCallback != null) {
-                mOnFindWalletInfoCallback.onFindWallet(balanceInfos);
-            }
-        }, throwable -> {
-            mToast(throwable.getMessage());
-        });
+        mDisposable =
+                Observable.create(
+                                (ObservableOnSubscribe<PyResponse<CreateWalletBean>>)
+                                        emitter -> {
+                                            PyResponse<CreateWalletBean> createWallet =
+                                                    PyEnv.restoreLocalWallet(
+                                                            event.getPassword(), mnemonics);
+                                            emitter.onNext(createWallet);
+                                            emitter.onComplete();
+                                        })
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                response -> {
+                                    if (Strings.isNullOrEmpty(response.getErrors())) {
+                                        CreateWalletBean createWalletBean = response.getResult();
+                                        if (fromHdFragment != null) {
+                                            fromHdFragment.setDate(createWalletBean);
+                                        }
+                                    } else {
+                                        mToast(response.getErrors());
+                                    }
+                                });
+        mCompositeDisposable.add(mDisposable);
     }
 
     @Subscribe
@@ -109,9 +123,7 @@ public class FindBackupOnlyDeviceActivity extends BaseActivity implements Busine
     }
 
     @Override
-    public void onPreExecute() {
-
-    }
+    public void onPreExecute() {}
 
     @Override
     public void onException(Exception e) {
@@ -129,26 +141,19 @@ public class FindBackupOnlyDeviceActivity extends BaseActivity implements Busine
     }
 
     @Override
-    public void onCancelled() {
-
-    }
+    public void onCancelled() {}
 
     @Override
-    public void currentMethod(String methodName) {
+    public void currentMethod(String methodName) {}
 
-    }
-    /**
-     * 硬件按键确认响应
-     * */
+    /** 硬件按键确认响应 */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onButtonRequest(ButtonRequestEvent event) {
         if (PyConstant.PIN_CURRENT == event.getType()) {
             startFragment(new DevicePINFragment(PyConstant.PIN_CURRENT));
         }
     }
-    /**
-     * 回写PIN码事件的响应
-     * */
+    /** 回写PIN码事件的响应 */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onChangePin(ChangePinEvent event) {
         startFragment(fromHdFragment);
@@ -156,9 +161,7 @@ public class FindBackupOnlyDeviceActivity extends BaseActivity implements Busine
         PyEnv.setPin(event.toString());
     }
 
-    /**
-     * 恢复指定钱包
-     * */
+    /** 恢复指定钱包 */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onRecovery(SelectedEvent event) {
         boolean success = PyEnv.recoveryConfirm(event.getNameList(), false);

@@ -516,7 +516,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
      */
     private void getDefaultFee() {
         try {
-            PyResponse<String> response = PyEnv.getFeeInfo(true, "", "", "", "");
+            PyResponse<String> response = PyEnv.getFeeInfo( "", "", "", "");
             String errors = response.getErrors();
             if (Strings.isNullOrEmpty(errors)) {
                 Logger.json(response.getResult());

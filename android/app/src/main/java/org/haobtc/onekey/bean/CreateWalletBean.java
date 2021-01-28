@@ -2,26 +2,26 @@ package org.haobtc.onekey.bean;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
-
 import java.util.List;
 
-import dr.android.utils.LogUtil;
-
-/**
- * @author liyan
- */
+/** @author liyan */
 public class CreateWalletBean {
 
     /**
-     * seed :
-     * wallet_info : [{"coin_type":"btc","name":"6a2e85db92b2d44f77602a65f0d1cdfa564c22eb3baab8fb4ab8bddb1f8c96f5"}]
-     * derived_info : [{"label":"btc_derived_1","blance":"0.004474 BTC (540.15 CNY)","coin":"sta","name":"PWQxSq2M.unique.file"},{"label":"btc_derived_2","blance":"0.00073 BTC (88.13 CNY)","coin":"sta","name":"Ff1ojIC4.unique.file"},{"label":"btc_derived_3","blance":"0.0008 BTC (96.59 CNY)","coin":"sta","name":"KBGqDbY8.unique.file"}]
+     * seed : wallet_info :
+     * [{"coin_type":"btc","name":"6a2e85db92b2d44f77602a65f0d1cdfa564c22eb3baab8fb4ab8bddb1f8c96f5"}]
+     * derived_info : [{"label":"btc_derived_1","blance":"0.004474 BTC (540.15
+     * CNY)","coin":"sta","name":"PWQxSq2M.unique.file"},{"label":"btc_derived_2","blance":"0.00073
+     * BTC (88.13
+     * CNY)","coin":"sta","name":"Ff1ojIC4.unique.file"},{"label":"btc_derived_3","blance":"0.0008
+     * BTC (96.59 CNY)","coin":"sta","name":"KBGqDbY8.unique.file"}]
      */
-
     @SerializedName("seed")
     private String seed;
+
     @SerializedName("wallet_info")
     private List<WalletInfoBean> walletInfo;
+
     @SerializedName("derived_info")
     private List<DerivedInfoBean> derivedInfo;
 
@@ -55,12 +55,11 @@ public class CreateWalletBean {
 
     public static class WalletInfoBean {
         /**
-         * coin_type : btc
-         * name : 6a2e85db92b2d44f77602a65f0d1cdfa564c22eb3baab8fb4ab8bddb1f8c96f5
+         * coin_type : btc name : 6a2e85db92b2d44f77602a65f0d1cdfa564c22eb3baab8fb4ab8bddb1f8c96f5
          */
-
         @SerializedName("coin_type")
         private String coinType;
+
         @SerializedName("name")
         private String name;
 
@@ -88,20 +87,31 @@ public class CreateWalletBean {
 
     public static class DerivedInfoBean {
         /**
-         * label : btc_derived_1
-         * blance : 0.004474 BTC (540.15 CNY)
-         * coin : sta
-         * name : PWQxSq2M.unique.file
+         * label : btc_derived_1 blance : 0.004474 BTC (540.15 CNY) coin : sta name :
+         * PWQxSq2M.unique.file
          */
-
         @SerializedName("label")
         private String label;
+
         @SerializedName("blance")
         private String blance;
+
         @SerializedName("coin")
         private String coin;
+
         @SerializedName("name")
         private String name;
+
+        @SerializedName("exist")
+        private String exist;
+
+        public String getExist() {
+            return exist;
+        }
+
+        public void setExist(String exist) {
+            this.exist = exist;
+        }
 
         public static DerivedInfoBean objectFromData(String str) {
 

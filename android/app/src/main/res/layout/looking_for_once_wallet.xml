@@ -19,12 +19,12 @@
 
     <RelativeLayout
         android:id="@+id/loaded_wallet"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="@dimen/dp_28"
+        android:layout_marginTop="@dimen/dp_50"
         android:layout_marginEnd="20dp"
-        android:layout_marginBottom="27dp"
+        android:layout_marginBottom="@dimen/dp_50"
         android:background="@drawable/dark_bg"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -101,10 +101,11 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/wallet_card" />
+
     <androidx.constraintlayout.widget.Group
         android:id="@+id/wallet_group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        app:constraint_referenced_ids="recovery, wallet_card"/>
+        app:constraint_referenced_ids="recovery, wallet_card" />
 </androidx.constraintlayout.widget.ConstraintLayout>

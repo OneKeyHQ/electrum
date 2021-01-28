@@ -4,54 +4,75 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_70"
-        android:layout_marginBottom="@dimen/dp_20"
-        android:background="@drawable/white_stoken">
+        android:background="@drawable/white_stoken"
+        android:orientation="horizontal">
 
-        <ImageView
-            android:id="@+id/token_btc"
-            android:layout_width="@dimen/dp_40"
-            android:layout_height="@dimen/dp_40"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="@dimen/dp_16"
-            android:src="@drawable/token_btc" />
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="@dimen/dp_70"
+            android:layout_marginBottom="@dimen/dp_20"
+            android:layout_weight="1">
 
-        <TextView
-            android:id="@+id/text_wallet_name"
+            <ImageView
+                android:id="@+id/token_btc"
+                android:layout_width="@dimen/dp_40"
+                android:layout_height="@dimen/dp_40"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="@dimen/dp_16"
+                android:src="@drawable/token_btc" />
+
+            <TextView
+                android:id="@+id/text_wallet_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_20"
+                android:layout_marginTop="@dimen/dp_14"
+                android:layout_toEndOf="@+id/token_btc"
+                android:text="@string/btc_c"
+                android:textColor="@color/text_two"
+                android:textSize="@dimen/sp_16" />
+
+            <TextView
+                android:id="@+id/text_wallet_balance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/text_wallet_name"
+                android:layout_marginStart="@dimen/dp_20"
+                android:layout_marginTop="@dimen/dp_7"
+                android:layout_toEndOf="@+id/token_btc"
+                android:textColor="@color/text_three"
+                android:textSize="@dimen/sp_12"
+                tools:text="0.124 BTC" />
+        </RelativeLayout>
+
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/dp_20"
-            android:layout_marginTop="@dimen/dp_14"
-            android:layout_toEndOf="@+id/token_btc"
-            android:text="@string/btc_c"
-            android:textColor="@color/text_two"
-            android:textSize="@dimen/sp_16" />
+            android:layout_height="@dimen/dp_70"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/text_wallet_balance"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/text_wallet_name"
-            android:layout_marginStart="@dimen/dp_20"
-            android:layout_marginTop="@dimen/dp_7"
-            android:layout_toEndOf="@+id/token_btc"
-            android:textColor="@color/text_three"
-            android:textSize="@dimen/sp_12"
-            tools:text="0.124 BTC" />
+            <TextView
+                android:id="@+id/exist_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:text="@string/exist"
+                android:textColor="@color/text_two"
+                android:textSize="@dimen/sp_12"
+                android:visibility="gone" />
 
-        <CheckBox
-            android:id="@+id/check_wallet"
-            android:layout_width="@dimen/dp_24"
-            android:layout_height="@dimen/dp_24"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="@dimen/dp_21"
-            android:button="@null"
-            android:checked="true"
-            android:background="@drawable/checkbox_selector_onkey"/>
-    </RelativeLayout>
+            <CheckBox
+                android:id="@+id/check_wallet"
+                android:layout_width="@dimen/dp_24"
+                android:layout_height="@dimen/dp_24"
+                android:layout_marginEnd="@dimen/dp_21"
+                android:background="@drawable/checkbox_selector_onkey"
+                android:button="@null"
+                android:checked="true" />
+        </LinearLayout>
+    </LinearLayout>
 
 </RelativeLayout>
-

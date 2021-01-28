@@ -590,7 +590,7 @@
     <string name="order_sending_successful">Activation command sent successfully</string>
     <string name="name_setting">Set Name</string>
     <string name="use_se">Private key storage and signing using a secure chip</string>
-    <string name="recovery">Restore from backup</string>
+    <string name="recovery">Backup</string>
     <string name="pin_original">Please enter the original PIN</string>
     <string name="new_pin">Please enter a new PIN</string>
     <string name="transaction_loading">Transaction processing</string>
@@ -1285,5 +1285,9 @@
     <string name="new_guide_tip">App 快速上手教程</string>
     <string name="hint_temp_scan_inconformity">扫描的二维码与当前选择的币种不一致。</string>
     <string name="hint_view_more_record">查看更多记录</string>
+    <string name="balance_zero">余额不足</string>
+    <string name="not_find_wallet">没有找到有交易记录的钱包，您可以选择创建新钱包</string>
+    <string name="exist">已存在</string>
+    <string name="not_cancel">不可取消</string>
 
 </resources>

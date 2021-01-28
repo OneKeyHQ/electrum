@@ -4,14 +4,22 @@ import android.content.Intent;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
-
+import butterknife.BindView;
+import butterknife.OnClick;
+import com.google.common.base.Strings;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.ObservableOnSubscribe;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.asynctask.BusinessAsyncTask;
-import org.haobtc.onekey.bean.BalanceInfoDTO;
+import org.haobtc.onekey.bean.CreateWalletBean;
+import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.constant.PyConstant;
 import org.haobtc.onekey.event.ButtonRequestEvent;
 import org.haobtc.onekey.event.ChangePinEvent;
@@ -26,32 +34,21 @@ import org.haobtc.onekey.ui.fragment.RecoveryWalletFromHdFragment;
 import org.haobtc.onekey.ui.fragment.RecoveryWalletFromHdFragment.OnFindWalletInfoCallback;
 import org.haobtc.onekey.ui.fragment.RecoveryWalletFromHdFragment.OnFindWalletInfoProvider;
 
-import java.util.List;
-
-import butterknife.BindView;
-import butterknife.OnClick;
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.core.Single;
-import io.reactivex.rxjava3.core.SingleOnSubscribe;
-import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.schedulers.Schedulers;
-
 /**
  * @author liyan
  * @date 12/2/20
  */
-
-public class RecoveryHardwareOnceWallet extends BaseActivity implements BusinessAsyncTask.Helper, OnFindWalletInfoProvider {
+public class RecoveryHardwareOnceWallet extends BaseActivity
+        implements BusinessAsyncTask.Helper, OnFindWalletInfoProvider {
 
     @BindView(R.id.img_back)
     ImageView imgBack;
+
     private RecoveryWalletFromHdFragment fromHdFragment;
     private OnFindWalletInfoCallback mOnFindWalletInfoCallback = null;
     private Disposable mDisposable;
 
-    /**
-     * init
-     */
+    /** init */
     @Override
     public void init() {
         updateTitle(R.string.recovery_only);
@@ -60,8 +57,9 @@ public class RecoveryHardwareOnceWallet extends BaseActivity implements Business
         startFragment(fromHdFragment);
     }
 
-    /***
-     * init layout
+    /**
+     * * init layout
+     *
      * @return
      */
     @Override
@@ -69,12 +67,14 @@ public class RecoveryHardwareOnceWallet extends BaseActivity implements Business
         return R.layout.activity_title_container;
     }
 
-    /**
-     * 获取用于个人钱包的扩展公钥
-     */
+    /** 获取用于个人钱包的扩展公钥 */
     private void getXpubP2wpkh() {
-        new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY_PERSONAL,
-                MyApplication.getInstance().getDeviceWay(), PyConstant.ADDRESS_TYPE_P2WPKH);
+        new BusinessAsyncTask()
+                .setHelper(this)
+                .execute(
+                        BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY_PERSONAL,
+                        MyApplication.getInstance().getDeviceWay(),
+                        PyConstant.ADDRESS_TYPE_P2WPKH);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -91,9 +91,7 @@ public class RecoveryHardwareOnceWallet extends BaseActivity implements Business
         }
     }
 
-    /**
-     * 恢复指定钱包
-     */
+    /** 恢复指定钱包 */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onRecovery(SelectedEvent event) {
         boolean success = PyEnv.recoveryConfirm(event.getNameList(), true);
@@ -113,6 +111,7 @@ public class RecoveryHardwareOnceWallet extends BaseActivity implements Business
         }
         return super.onKeyDown(keyCode, event);
     }
+
     @Subscribe
     public void onFinish(ExitEvent exitEvent) {
         if (hasWindowFocus()) {
@@ -121,9 +120,7 @@ public class RecoveryHardwareOnceWallet extends BaseActivity implements Business
     }
 
     @Override
-    public void onPreExecute() {
-
-    }
+    public void onPreExecute() {}
 
     @Override
     public void onException(Exception e) {
@@ -143,28 +140,36 @@ public class RecoveryHardwareOnceWallet extends BaseActivity implements Business
         if (mDisposable != null && !mDisposable.isDisposed()) {
             mDisposable.dispose();
         }
-        mDisposable = Single.create((SingleOnSubscribe<List<BalanceInfoDTO>>) emitter -> {
-            List<BalanceInfoDTO> balanceInfos = PyEnv.recoveryWallet(this, xpubs, true);
-            emitter.onSuccess(balanceInfos);
-        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(balanceInfos -> {
-            if (mOnFindWalletInfoCallback != null) {
-                mOnFindWalletInfoCallback.onFindWallet(balanceInfos);
-            }
-        }, throwable -> {
-            mToast(throwable.getMessage());
-            EventBus.getDefault().post(new ExitEvent());
-        });
+        mDisposable =
+                Observable.create(
+                                (ObservableOnSubscribe<PyResponse<CreateWalletBean>>)
+                                        emitter -> {
+                                            PyResponse<CreateWalletBean> response =
+                                                    PyEnv.recoveryXpubWallet(xpubs, true);
+                                            emitter.onNext(response);
+                                            emitter.onComplete();
+                                        })
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                response -> {
+                                    if (Strings.isNullOrEmpty(response.getErrors())) {
+                                        CreateWalletBean createWalletBean = response.getResult();
+                                        if (fromHdFragment != null) {
+                                            fromHdFragment.setDate(createWalletBean);
+                                        }
+                                    } else {
+                                        mToast(response.getErrors());
+                                    }
+                                });
+        mCompositeDisposable.add(mDisposable);
     }
 
     @Override
-    public void onCancelled() {
-
-    }
+    public void onCancelled() {}
 
     @Override
-    public void currentMethod(String methodName) {
-
-    }
+    public void currentMethod(String methodName) {}
 
     @Override
     public boolean needEvents() {
