@@ -452,6 +452,11 @@
 		B016510925BFE0810037C6B4 /* OKDeviceShowXPUBController.h in Headers */ = {isa = PBXBuildFile; fileRef = B016510325BFE0810037C6B4 /* OKDeviceShowXPUBController.h */; };
 		B016510A25BFE0810037C6B4 /* OKDeviceConfirmController.m in Sources */ = {isa = PBXBuildFile; fileRef = B016510425BFE0810037C6B4 /* OKDeviceConfirmController.m */; };
 		B016510B25BFE0810037C6B4 /* OKDeviceChangePINController.h in Headers */ = {isa = PBXBuildFile; fileRef = B016510525BFE0810037C6B4 /* OKDeviceChangePINController.h */; };
+		B016517325C057920037C6B4 /* OKURLSchemeHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = B016517125C057920037C6B4 /* OKURLSchemeHandler.h */; };
+		B016517425C057920037C6B4 /* OKURLSchemeHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = B016517225C057920037C6B4 /* OKURLSchemeHandler.m */; };
+		B01CB1C625C1141C0099F931 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B01CB1C525C1141B0099F931 /* CFNetwork.framework */; };
+		B01CB1D425C12F9A0099F931 /* WKWebView+Bypass.h in Headers */ = {isa = PBXBuildFile; fileRef = B01CB1D225C12F9A0099F931 /* WKWebView+Bypass.h */; };
+		B01CB1D525C12F9A0099F931 /* WKWebView+Bypass.m in Sources */ = {isa = PBXBuildFile; fileRef = B01CB1D325C12F9A0099F931 /* WKWebView+Bypass.m */; };
 		B058D8A325B55662000EB27C /* OKResetDeviceWarningViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B058D88225B55662000EB27C /* OKResetDeviceWarningViewController.m */; };
 		B058D8A425B55663000EB27C /* OKDeviceListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B058D88425B55662000EB27C /* OKDeviceListViewController.m */; };
 		B058D8A525B55663000EB27C /* OKDeviceListCellModel.h in Headers */ = {isa = PBXBuildFile; fileRef = B058D88525B55662000EB27C /* OKDeviceListCellModel.h */; };
@@ -1016,6 +1021,11 @@
 		B016510325BFE0810037C6B4 /* OKDeviceShowXPUBController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKDeviceShowXPUBController.h; sourceTree = "<group>"; };
 		B016510425BFE0810037C6B4 /* OKDeviceConfirmController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKDeviceConfirmController.m; sourceTree = "<group>"; };
 		B016510525BFE0810037C6B4 /* OKDeviceChangePINController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKDeviceChangePINController.h; sourceTree = "<group>"; };
+		B016517125C057920037C6B4 /* OKURLSchemeHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKURLSchemeHandler.h; sourceTree = "<group>"; };
+		B016517225C057920037C6B4 /* OKURLSchemeHandler.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKURLSchemeHandler.m; sourceTree = "<group>"; };
+		B01CB1C525C1141B0099F931 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		B01CB1D225C12F9A0099F931 /* WKWebView+Bypass.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "WKWebView+Bypass.h"; sourceTree = "<group>"; };
+		B01CB1D325C12F9A0099F931 /* WKWebView+Bypass.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "WKWebView+Bypass.m"; sourceTree = "<group>"; };
 		B058D88225B55662000EB27C /* OKResetDeviceWarningViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKResetDeviceWarningViewController.m; sourceTree = "<group>"; };
 		B058D88425B55662000EB27C /* OKDeviceListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKDeviceListViewController.m; sourceTree = "<group>"; };
 		B058D88525B55662000EB27C /* OKDeviceListCellModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKDeviceListCellModel.h; sourceTree = "<group>"; };
@@ -1094,6 +1104,7 @@
 				60A942572010133C00659F51 /* libxz.a in Frameworks */,
 				60A94253201012FE00659F51 /* libPython.a in Frameworks */,
 				6023B23F1C27D218006F2562 /* libz.tbd in Frameworks */,
+				B01CB1C625C1141C0099F931 /* CFNetwork.framework in Frameworks */,
 				6023B23D1C27D20F006F2562 /* libsqlite3.tbd in Frameworks */,
 				60796F39191CDBBA00A9926B /* CoreFoundation.framework in Frameworks */,
 				60796EE819190F4100A9926B /* CoreGraphics.framework in Frameworks */,
@@ -1174,6 +1185,7 @@
 		60796EE419190F4100A9926B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B01CB1C525C1141B0099F931 /* CFNetwork.framework */,
 				60A942582010134500659F51 /* libbzip2.a */,
 				60A942542010133100659F51 /* libOpenSSL.a */,
 				60A942562010133C00659F51 /* libxz.a */,
@@ -1478,6 +1490,7 @@
 		881422E025B18EA900961668 /* Web */ = {
 			isa = PBXGroup;
 			children = (
+				B016517025C02F5C0037C6B4 /* Proxy */,
 				881422E125B18EA900961668 /* dsbridge */,
 				881422ED25B18EA900961668 /* WebViewVC.m */,
 				881422EE25B18EA900961668 /* WebViewVC.h */,
@@ -2061,6 +2074,17 @@
 			path = ../CustomCode/Categories;
 			sourceTree = "<group>";
 		};
+		B016517025C02F5C0037C6B4 /* Proxy */ = {
+			isa = PBXGroup;
+			children = (
+				B016517125C057920037C6B4 /* OKURLSchemeHandler.h */,
+				B016517225C057920037C6B4 /* OKURLSchemeHandler.m */,
+				B01CB1D225C12F9A0099F931 /* WKWebView+Bypass.h */,
+				B01CB1D325C12F9A0099F931 /* WKWebView+Bypass.m */,
+			);
+			path = Proxy;
+			sourceTree = "<group>";
+		};
 		B058D88125B55662000EB27C /* HardwareSetting */ = {
 			isa = PBXGroup;
 			children = (
@@ -2244,6 +2268,7 @@
 				B058D8CE25B5A64F000EB27C /* OKDeviceModel.h in Headers */,
 				8814246625B18EAA00961668 /* OK_PassWordView.h in Headers */,
 				B058D8B025B55663000EB27C /* OKDeviceVerifyController.h in Headers */,
+				B01CB1D425C12F9A0099F931 /* WKWebView+Bypass.h in Headers */,
 				E12D4A14BF50FED2434A0F7D /* OKColors.h in Headers */,
 				8814249C25B18EAA00961668 /* KeyChainSaveUUID.h in Headers */,
 				881424D925B18EAA00961668 /* OKLanguageCellModel.h in Headers */,
@@ -2391,6 +2416,7 @@
 				881424D125B18EAA00961668 /* OKAboutTableViewCellModel.h in Headers */,
 				8814258525B18EAA00961668 /* OKTipsViewController.h in Headers */,
 				028F483C9A0714BD3300A383 /* UIViewController+Extension.h in Headers */,
+				B016517325C057920037C6B4 /* OKURLSchemeHandler.h in Headers */,
 				881424BD25B18EAA00961668 /* OKNetTableViewCell.h in Headers */,
 				8814258125B18EAA00961668 /* OKSelectImportTypeViewController.h in Headers */,
 				B016510925BFE0810037C6B4 /* OKDeviceShowXPUBController.h in Headers */,
@@ -2641,6 +2667,7 @@
 				B058D8B125B55663000EB27C /* OKDeviceUpdateViewController.m in Sources */,
 				8814257825B18EAA00961668 /* OKSelectCoinTypeTableViewCell.m in Sources */,
 				8814252A25B18EAA00961668 /* OKLocalizableManager.m in Sources */,
+				B016517425C057920037C6B4 /* OKURLSchemeHandler.m in Sources */,
 				8814257525B18EAA00961668 /* OKCreateSelectWalletTypeCell.m in Sources */,
 				BA578E2D25ACA43D00EFE0AA /* main.m in Sources */,
 				8814243A25B18EAA00961668 /* OKPwdViewController.m in Sources */,
@@ -2761,6 +2788,7 @@
 				881424A725B18EAA00961668 /* OKLanguageViewController.m in Sources */,
 				97B84B989EEFF9FA6E446899 /* UIView+Helper.m in Sources */,
 				8814259425B18EAA00961668 /* OKLabel.m in Sources */,
+				B01CB1D525C12F9A0099F931 /* WKWebView+Bypass.m in Sources */,
 				8814253025B18EAA00961668 /* OKiCloudManager.m in Sources */,
 				8814258825B18EAA00961668 /* OKSelectImportTypeViewController.m in Sources */,
 				881424D325B18EAA00961668 /* OKLanguageCellModel.m in Sources */,

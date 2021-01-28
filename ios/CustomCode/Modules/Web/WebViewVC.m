@@ -10,6 +10,7 @@
 #import "UIBarButtonItem+CustomBarButtonItem.h"
 #import <WebKit/WKWebView.h>
 #import <WebKit/WebKit.h>
+#import "OKURLSchemeHandler.h"
 
 typedef NS_ENUM(NSInteger, WebViewLoadType) {
     WebViewLoadTypeURL = 0,
@@ -369,6 +370,11 @@ typedef NS_ENUM(NSInteger, WebViewLoadType) {
         [userContentController addUserScript:dsbridgeJs];
         
         config.userContentController = userContentController;
+        
+        if (self.useProxy) {
+            [config setURLSchemeHandler:[OKURLSchemeHandler new] forURLScheme:@"https"];
+            [config setURLSchemeHandler:[OKURLSchemeHandler new] forURLScheme:@"http"];
+        }
 
         CGFloat height = SCREEN_HEIGHT - APP_STATUSBAR_AND_NAVIGATIONBAR_HEIGHT - KDevice_SafeArea_Bottom;
         _wkWebView = [[DWKWebView alloc] initWithFrame:CGRectMake(0, APP_STATUSBAR_AND_NAVIGATIONBAR_HEIGHT, SCREEN_WIDTH, height) configuration:config];
