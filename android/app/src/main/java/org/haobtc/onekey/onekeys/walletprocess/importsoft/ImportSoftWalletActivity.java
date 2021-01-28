@@ -4,17 +4,18 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
-
 import androidx.annotation.Nullable;
 import androidx.navigation.NavController;
 import androidx.navigation.NavGraph;
 import androidx.navigation.NavInflater;
 import androidx.navigation.fragment.NavHostFragment;
-
 import com.google.common.base.Strings;
 import com.lxj.xpopup.XPopup;
-import com.orhanobut.logger.Logger;
-
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.core.SingleOnSubscribe;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.BuildConfig;
 import org.haobtc.onekey.R;
@@ -24,9 +25,9 @@ import org.haobtc.onekey.bean.CreateWalletBean;
 import org.haobtc.onekey.bean.LocalWalletInfo;
 import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.business.wallet.AccountManager;
-import org.haobtc.onekey.constant.StringConstant;
 import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.event.CreateSuccessEvent;
+import org.haobtc.onekey.exception.AccountException;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
 import org.haobtc.onekey.onekeys.walletprocess.OnFinishViewCallBack;
@@ -43,12 +44,6 @@ import org.haobtc.onekey.ui.activity.SoftPassActivity;
 import org.haobtc.onekey.ui.dialog.custom.CustomCoverWatchPopup;
 import org.haobtc.onekey.utils.NavUtils;
 
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.core.Single;
-import io.reactivex.rxjava3.core.SingleOnSubscribe;
-import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.schedulers.Schedulers;
-
 /**
  * 导入软件钱包流程
  *
@@ -56,9 +51,16 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
  * @create 2021-01-16 5:02 PM
  */
 public class ImportSoftWalletActivity extends BaseActivity
-        implements ImportSoftWalletProvider, OnSelectCoinTypeCallback, OnSelectBitcoinAddressTypeCallback,
-        OnFinishViewCallBack, OnChooseImportModeCallback, OnSetWalletNameCallback,
-        OnImportPrivateKeyCallback, OnImportKeystoreCallback, OnImportWatchAddressCallback, OnImportMnemonicCallback {
+        implements ImportSoftWalletProvider,
+                OnSelectCoinTypeCallback,
+                OnSelectBitcoinAddressTypeCallback,
+                OnFinishViewCallBack,
+                OnChooseImportModeCallback,
+                OnSetWalletNameCallback,
+                OnImportPrivateKeyCallback,
+                OnImportKeystoreCallback,
+                OnImportWatchAddressCallback,
+                OnImportMnemonicCallback {
 
     private static final int REQUEST_SET_PWD = 2;
 
@@ -68,8 +70,7 @@ public class ImportSoftWalletActivity extends BaseActivity
     }
 
     private Vm.CoinType mCoinType = Vm.CoinType.BTC;
-    @SoftWalletImportMode
-    private int mWalletImportMode;
+    @SoftWalletImportMode private int mWalletImportMode;
 
     private String mImportPrivateKey;
     private String mImportKeystoreContent;
@@ -103,7 +104,10 @@ public class ImportSoftWalletActivity extends BaseActivity
     }
 
     private NavController getNavController() {
-        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_import_soft_wallet_fragment);
+        NavHostFragment navHostFragment =
+                (NavHostFragment)
+                        getSupportFragmentManager()
+                                .findFragmentById(R.id.nav_import_soft_wallet_fragment);
         return navHostFragment.getNavController();
     }
 
@@ -130,7 +134,8 @@ public class ImportSoftWalletActivity extends BaseActivity
     @Override
     public void onSelectCoinType(Vm.CoinType coinType) {
         mCoinType = coinType;
-        getNavController().navigate(R.id.action_selectChainCoinFragment_to_chooseImportModeFragment);
+        getNavController()
+                .navigate(R.id.action_selectChainCoinFragment_to_chooseImportModeFragment);
     }
 
     @Override
@@ -138,16 +143,21 @@ public class ImportSoftWalletActivity extends BaseActivity
         mWalletImportMode = mode;
         switch (mode) {
             case SoftWalletImportMode.Private:
-                getNavController().navigate(R.id.action_chooseImportModeFragment_to_importPrivateKeyFragment);
+                getNavController()
+                        .navigate(R.id.action_chooseImportModeFragment_to_importPrivateKeyFragment);
                 break;
             case SoftWalletImportMode.Mnemonic:
-                getNavController().navigate(R.id.action_chooseImportModeFragment_to_importMnemonicFragment);
+                getNavController()
+                        .navigate(R.id.action_chooseImportModeFragment_to_importMnemonicFragment);
                 break;
             case SoftWalletImportMode.Keystore:
-                getNavController().navigate(R.id.action_chooseImportModeFragment_to_importKeystoreFragment);
+                getNavController()
+                        .navigate(R.id.action_chooseImportModeFragment_to_importKeystoreFragment);
                 break;
             case SoftWalletImportMode.Watch:
-                getNavController().navigate(R.id.action_chooseImportModeFragment_to_importWatchWalletFragment);
+                getNavController()
+                        .navigate(
+                                R.id.action_chooseImportModeFragment_to_importWatchWalletFragment);
                 break;
         }
     }
@@ -158,9 +168,13 @@ public class ImportSoftWalletActivity extends BaseActivity
     public void onImportPrivateKey(String privateKey) {
         mImportPrivateKey = privateKey;
         if (currentCoinType() == Vm.CoinType.BTC) {
-            getNavController().navigate(R.id.action_importPrivateKeyFragment_to_selectBitcoinAddressTypeDialogFragment);
+            getNavController()
+                    .navigate(
+                            R.id.action_importPrivateKeyFragment_to_selectBitcoinAddressTypeDialogFragment);
         } else {
-            getNavController().navigate(R.id.action_importPrivateKeyFragment_to_softWalletNameSettingFragment);
+            getNavController()
+                    .navigate(
+                            R.id.action_importPrivateKeyFragment_to_softWalletNameSettingFragment);
         }
     }
 
@@ -168,23 +182,28 @@ public class ImportSoftWalletActivity extends BaseActivity
     public void onImportMnemonic(String mnemonic) {
         mImportMnemonic = mnemonic;
         if (currentCoinType() == Vm.CoinType.BTC) {
-            getNavController().navigate(R.id.action_importMnemonicFragment_to_selectBitcoinAddressTypeDialogFragment);
+            getNavController()
+                    .navigate(
+                            R.id.action_importMnemonicFragment_to_selectBitcoinAddressTypeDialogFragment);
         } else {
-            getNavController().navigate(R.id.action_importMnemonicFragment_to_softWalletNameSettingFragment);
+            getNavController()
+                    .navigate(R.id.action_importMnemonicFragment_to_softWalletNameSettingFragment);
         }
     }
 
     @Override
     public void onImportWatchAddress(String watchAddress) {
         mImportWatchAddress = watchAddress;
-        getNavController().navigate(R.id.action_importWatchWalletFragment_to_softWalletNameSettingFragment);
+        getNavController()
+                .navigate(R.id.action_importWatchWalletFragment_to_softWalletNameSettingFragment);
     }
 
     @Override
     public void onImportKeystore(String keystore, String password) {
         mImportKeystoreContent = keystore;
         mImportKeystorePassword = password;
-        getNavController().navigate(R.id.action_importKeystoreFragment_to_softWalletNameSettingFragment);
+        getNavController()
+                .navigate(R.id.action_importKeystoreFragment_to_softWalletNameSettingFragment);
     }
 
     // endregion
@@ -192,7 +211,9 @@ public class ImportSoftWalletActivity extends BaseActivity
     @Override
     public void onSelectBitcoinAddressType(int purpose) {
         mBitcoinAddressPurpose = purpose;
-        getNavController().navigate(R.id.action_selectBitcoinAddressTypeDialogFragment_to_softWalletNameSettingFragment);
+        getNavController()
+                .navigate(
+                        R.id.action_selectBitcoinAddressTypeDialogFragment_to_softWalletNameSettingFragment);
     }
 
     @Override
@@ -211,7 +232,8 @@ public class ImportSoftWalletActivity extends BaseActivity
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
                 case REQUEST_SET_PWD:
-                    SoftPassActivity.ResultDataBean resultDataBean1 = SoftPassActivity.decodeResultData(data);
+                    SoftPassActivity.ResultDataBean resultDataBean1 =
+                            SoftPassActivity.decodeResultData(data);
                     mWalletPassword = resultDataBean1.password;
                     handleWalletImport();
                     break;
@@ -230,78 +252,147 @@ public class ImportSoftWalletActivity extends BaseActivity
         if (mImportDisposable != null && !mImportDisposable.isDisposed()) {
             mImportDisposable.dispose();
         }
-        mImportDisposable = Single
-                .create((SingleOnSubscribe<CreateWalletBean>) emitter -> {
-                    assertX(!TextUtils.isEmpty(mWalletName), "mWalletName Assertion failed");
+        mImportDisposable =
+                Single.create(
+                                (SingleOnSubscribe<CreateWalletBean>)
+                                        emitter -> {
+                                            assertX(
+                                                    !TextUtils.isEmpty(mWalletName),
+                                                    "mWalletName Assertion failed");
 
-                    CreateWalletBean walletBean;
-                    switch (mWalletImportMode) {
-                        case SoftWalletImportMode.Watch:
-                            assertX(!TextUtils.isEmpty(mImportWatchAddress), "mImportWatchAddress Assertion failed");
-                            walletBean = mAccountManager.createWatchWallet(mCoinType, mWalletName, mImportWatchAddress);
-                            break;
-                        case SoftWalletImportMode.Mnemonic:
-                            assertX(!TextUtils.isEmpty(mWalletPassword), "mWalletPassword Assertion failed");
-                            assertX(!TextUtils.isEmpty(mImportMnemonic), "mImportMnemonic Assertion failed");
+                                            CreateWalletBean walletBean;
+                                            switch (mWalletImportMode) {
+                                                case SoftWalletImportMode.Watch:
+                                                    assertX(
+                                                            !TextUtils.isEmpty(mImportWatchAddress),
+                                                            "mImportWatchAddress Assertion failed");
+                                                    walletBean =
+                                                            mAccountManager.createWatchWallet(
+                                                                    mCoinType,
+                                                                    mWalletName,
+                                                                    mImportWatchAddress);
+                                                    break;
+                                                case SoftWalletImportMode.Mnemonic:
+                                                    assertX(
+                                                            !TextUtils.isEmpty(mWalletPassword),
+                                                            "mWalletPassword Assertion failed");
+                                                    assertX(
+                                                            !TextUtils.isEmpty(mImportMnemonic),
+                                                            "mImportMnemonic Assertion failed");
 
-                            walletBean = mAccountManager.createSingleWalletByMnemonic(mCoinType, mWalletName, mWalletPassword, mImportMnemonic, mBitcoinAddressPurpose);
-                            break;
-                        case SoftWalletImportMode.Keystore:
-                            assertX(!TextUtils.isEmpty(mWalletPassword), "mWalletPassword Assertion failed");
-                            assertX(!TextUtils.isEmpty(mImportKeystoreContent), "mImportKeystoreContent Assertion failed");
-                            assertX(!TextUtils.isEmpty(mImportKeystorePassword), "mImportKeystorePassword Assertion failed");
+                                                    walletBean =
+                                                            mAccountManager
+                                                                    .createSingleWalletByMnemonic(
+                                                                            mCoinType,
+                                                                            mWalletName,
+                                                                            mWalletPassword,
+                                                                            mImportMnemonic,
+                                                                            mBitcoinAddressPurpose);
+                                                    break;
+                                                case SoftWalletImportMode.Keystore:
+                                                    assertX(
+                                                            !TextUtils.isEmpty(mWalletPassword),
+                                                            "mWalletPassword Assertion failed");
+                                                    assertX(
+                                                            !TextUtils.isEmpty(
+                                                                    mImportKeystoreContent),
+                                                            "mImportKeystoreContent Assertion failed");
+                                                    assertX(
+                                                            !TextUtils.isEmpty(
+                                                                    mImportKeystorePassword),
+                                                            "mImportKeystorePassword Assertion failed");
 
-                            walletBean = mAccountManager.createSingleWalletByKeystore(mCoinType, mWalletName, mWalletPassword, mImportKeystoreContent, mImportKeystorePassword, mBitcoinAddressPurpose);
-                            break;
-                        case SoftWalletImportMode.Private:
-                            assertX(!TextUtils.isEmpty(mWalletPassword), "mWalletPassword Assertion failed");
-                            assertX(!TextUtils.isEmpty(mImportPrivateKey), "mImportPrivateKey Assertion failed");
+                                                    walletBean =
+                                                            mAccountManager
+                                                                    .createSingleWalletByKeystore(
+                                                                            mCoinType,
+                                                                            mWalletName,
+                                                                            mWalletPassword,
+                                                                            mImportKeystoreContent,
+                                                                            mImportKeystorePassword,
+                                                                            mBitcoinAddressPurpose);
+                                                    break;
+                                                case SoftWalletImportMode.Private:
+                                                    assertX(
+                                                            !TextUtils.isEmpty(mWalletPassword),
+                                                            "mWalletPassword Assertion failed");
+                                                    assertX(
+                                                            !TextUtils.isEmpty(mImportPrivateKey),
+                                                            "mImportPrivateKey Assertion failed");
 
-                            walletBean = mAccountManager.createSingleWalletByPrivteKey(mCoinType, mWalletName, mWalletPassword, mImportPrivateKey, mBitcoinAddressPurpose);
-                            break;
-                        default:
-                            walletBean = null;
-                    }
-                    emitter.onSuccess(walletBean);
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe(disposable -> {
-                    showProgress();
-                })
-                .doFinally(this::dismissProgress)
-                .subscribe(createWalletBean -> {
-                    NavUtils.gotoMainActivityTask(this, false);
-                    finish();
-                }, e -> {
-                    // 处理覆盖观察钱包的问题
-                    String message = e.getMessage();
-                    if (!TextUtils.isEmpty(message) || message.contains(StringConstant.REPLACE_ERROR)) {
-                        String watchName = message.substring(message.indexOf(":") + 1);
-                        LocalWalletInfo localWalletByName = mAccountManager.getLocalWalletByName(watchName);
-                        CustomCoverWatchPopup popup = new CustomCoverWatchPopup(mContext, () -> {
+                                                    walletBean =
+                                                            mAccountManager
+                                                                    .createSingleWalletByPrivteKey(
+                                                                            mCoinType,
+                                                                            mWalletName,
+                                                                            mWalletPassword,
+                                                                            mImportPrivateKey,
+                                                                            mBitcoinAddressPurpose);
+                                                    break;
+                                                default:
+                                                    walletBean = null;
+                                            }
+                                            emitter.onSuccess(walletBean);
+                                        })
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .doOnSubscribe(
+                                disposable -> {
+                                    showProgress();
+                                })
+                        .doFinally(this::dismissProgress)
+                        .subscribe(
+                                createWalletBean -> {
+                                    NavUtils.gotoMainActivityTask(this, false);
+                                    finish();
+                                },
+                                e -> {
+                                    // 处理覆盖观察钱包的问题
+                                    if (e
+                                            instanceof
+                                            AccountException.WalletWatchAlreadyExistsException) {
+                                        String watchName =
+                                                ((AccountException
+                                                                        .WalletWatchAlreadyExistsException)
+                                                                e)
+                                                        .walletName;
+                                        coverReadOnlyWallet(watchName);
+                                    } else if (e
+                                            instanceof
+                                            AccountException.WalletAlreadyExistsException) {
+                                        mToast(getString(R.string.hint_wallet_existence));
+                                        finish();
+                                    } else if (e instanceof Exception) {
+                                        // 其他异常处理
+                                        MyApplication.getInstance().toastErr((Exception) e);
+                                    }
+                                    e.printStackTrace();
+                                });
+    }
+
+    private void coverReadOnlyWallet(String watchName) {
+        LocalWalletInfo localWalletByName = mAccountManager.getLocalWalletByName(watchName);
+        CustomCoverWatchPopup popup =
+                new CustomCoverWatchPopup(
+                        mContext,
+                        () -> {
                             PyResponse<String> response = PyEnv.replaceWatchOnlyWallet(true);
                             if (Strings.isNullOrEmpty(response.getErrors())) {
-                                EventBus.getDefault().post(new CreateSuccessEvent(response.getResult()));
-                                mContext.startActivity(new Intent(mContext, HomeOneKeyActivity.class));
+                                EventBus.getDefault()
+                                        .post(new CreateSuccessEvent(response.getResult()));
+                                mContext.startActivity(
+                                        new Intent(mContext, HomeOneKeyActivity.class));
                             } else {
                                 mToast(response.getErrors());
                             }
-                        }, CustomCoverWatchPopup.deleteWatch);
-                        if (localWalletByName != null && !TextUtils.isEmpty(localWalletByName.getLabel())) {
-                            popup.setWalletName(localWalletByName.getLabel());
-                        } else {
-                            popup.setWalletName(localWalletByName.getLabel());
-                        }
-                        new XPopup.Builder(mContext).asCustom(popup).show();
-                    } else {
-                        // 其他异常处理
-                        if (e instanceof Exception) {
-                            MyApplication.getInstance().toastErr((Exception) e);
-                        }
-                    }
-                    e.printStackTrace();
-                });
+                        },
+                        CustomCoverWatchPopup.deleteWatch);
+        if (localWalletByName != null && !TextUtils.isEmpty(localWalletByName.getLabel())) {
+            popup.setWalletName(localWalletByName.getLabel());
+        } else {
+            popup.setWalletName(localWalletByName.getLabel());
+        }
+        new XPopup.Builder(mContext).asCustom(popup).show();
     }
 
     private void assertX(boolean b, String message) {

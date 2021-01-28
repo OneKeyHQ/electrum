@@ -4,20 +4,31 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
-
 import androidx.annotation.Nullable;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
-
+import com.google.common.base.Strings;
+import com.lxj.xpopup.XPopup;
 import com.orhanobut.logger.Logger;
-
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.core.SingleOnSubscribe;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.BuildConfig;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.bean.CreateWalletBean;
+import org.haobtc.onekey.bean.LocalWalletInfo;
+import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.business.wallet.AccountManager;
 import org.haobtc.onekey.constant.Vm;
+import org.haobtc.onekey.event.CreateSuccessEvent;
+import org.haobtc.onekey.exception.AccountException;
+import org.haobtc.onekey.manager.PyEnv;
+import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
 import org.haobtc.onekey.onekeys.walletprocess.OnFinishViewCallBack;
 import org.haobtc.onekey.onekeys.walletprocess.SelectBitcoinAddressTypeDialogFragment.BitcoinAddressType;
 import org.haobtc.onekey.onekeys.walletprocess.SelectBitcoinAddressTypeDialogFragment.OnSelectBitcoinAddressTypeCallback;
@@ -26,15 +37,8 @@ import org.haobtc.onekey.onekeys.walletprocess.SelectWalletTypeFragment.OnSelect
 import org.haobtc.onekey.onekeys.walletprocess.SelectWalletTypeFragment.SoftWalletType;
 import org.haobtc.onekey.onekeys.walletprocess.SoftWalletNameSettingFragment.OnSetWalletNameCallback;
 import org.haobtc.onekey.ui.activity.SoftPassActivity;
+import org.haobtc.onekey.ui.dialog.custom.CustomCoverWatchPopup;
 import org.haobtc.onekey.utils.NavUtils;
-
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.annotations.NonNull;
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.ObservableEmitter;
-import io.reactivex.rxjava3.core.ObservableOnSubscribe;
-import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.schedulers.Schedulers;
 
 /**
  * 创建软件钱包流程
@@ -43,8 +47,12 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
  * @create 2021-01-16 5:02 PM
  */
 public class CreateSoftWalletActivity extends BaseActivity
-        implements CreateSoftWalletProvider, OnSelectWalletTypeCallback, OnSelectCoinTypeCallback,
-        OnSelectBitcoinAddressTypeCallback, OnSetWalletNameCallback, OnFinishViewCallBack {
+        implements CreateSoftWalletProvider,
+                OnSelectWalletTypeCallback,
+                OnSelectCoinTypeCallback,
+                OnSelectBitcoinAddressTypeCallback,
+                OnSetWalletNameCallback,
+                OnFinishViewCallBack {
 
     private static final int REQUEST_SET_PWD = 1;
 
@@ -53,11 +61,9 @@ public class CreateSoftWalletActivity extends BaseActivity
         context.startActivity(intent);
     }
 
-    @SoftWalletType
-    private int mSoftWalletType = SoftWalletType.HD_WALLET;
+    @SoftWalletType private int mSoftWalletType = SoftWalletType.HD_WALLET;
     private Vm.CoinType mCoinType;
-    @BitcoinAddressType
-    private int mBitcoinAddressPurpose = BitcoinAddressType.NormalType;
+    @BitcoinAddressType private int mBitcoinAddressPurpose = BitcoinAddressType.NormalType;
     private String mWalletName;
     private String mWalletPassword;
 
@@ -70,8 +76,7 @@ public class CreateSoftWalletActivity extends BaseActivity
     }
 
     @Override
-    public void initView() {
-    }
+    public void initView() {}
 
     @Override
     public void initData() {
@@ -79,7 +84,10 @@ public class CreateSoftWalletActivity extends BaseActivity
     }
 
     private NavController getNavController() {
-        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_create_soft_wallet_fragment);
+        NavHostFragment navHostFragment =
+                (NavHostFragment)
+                        getSupportFragmentManager()
+                                .findFragmentById(R.id.nav_create_soft_wallet_fragment);
         return navHostFragment.getNavController();
     }
 
@@ -101,23 +109,29 @@ public class CreateSoftWalletActivity extends BaseActivity
     @Override
     public void onSelectSoftWalletType(@SoftWalletType int type) {
         mSoftWalletType = type;
-        getNavController().navigate(R.id.action_selectorWalletTypeFragment_to_selectorChainCoinFragment);
+        getNavController()
+                .navigate(R.id.action_selectorWalletTypeFragment_to_selectorChainCoinFragment);
     }
 
     @Override
     public void onSelectCoinType(Vm.CoinType coinType) {
         mCoinType = coinType;
         if (coinType == Vm.CoinType.BTC) {
-            getNavController().navigate(R.id.action_selectChainCoinFragment_to_selectBitcoinAddressTypeDialogFragment);
+            getNavController()
+                    .navigate(
+                            R.id.action_selectChainCoinFragment_to_selectBitcoinAddressTypeDialogFragment);
         } else {
-            getNavController().navigate(R.id.action_selectChainCoinFragment_to_softWalletNameSettingFragment);
+            getNavController()
+                    .navigate(R.id.action_selectChainCoinFragment_to_softWalletNameSettingFragment);
         }
     }
 
     @Override
     public void onSelectBitcoinAddressType(@BitcoinAddressType int purpose) {
         mBitcoinAddressPurpose = purpose;
-        getNavController().navigate(R.id.action_selectBitcoinAddressTypeDialogFragment_to_softWalletNameSettingFragment);
+        getNavController()
+                .navigate(
+                        R.id.action_selectBitcoinAddressTypeDialogFragment_to_softWalletNameSettingFragment);
     }
 
     @Override
@@ -132,7 +146,8 @@ public class CreateSoftWalletActivity extends BaseActivity
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
                 case REQUEST_SET_PWD:
-                    SoftPassActivity.ResultDataBean resultDataBean1 = SoftPassActivity.decodeResultData(data);
+                    SoftPassActivity.ResultDataBean resultDataBean1 =
+                            SoftPassActivity.decodeResultData(data);
                     mWalletPassword = resultDataBean1.password;
                     handleWalletCreate();
                     break;
@@ -151,45 +166,103 @@ public class CreateSoftWalletActivity extends BaseActivity
         if (mCreateDisposable != null && !mCreateDisposable.isDisposed()) {
             mCreateDisposable.dispose();
         }
-        mCreateDisposable = Observable
-                .create(new ObservableOnSubscribe<CreateWalletBean>() {
-                    @Override
-                    public void subscribe(@NonNull ObservableEmitter<CreateWalletBean> emitter) throws Throwable {
-                        assertX(mCoinType != null, "mCoinType Assertion failed");
-                        assertX(!TextUtils.isEmpty(mWalletName), "mWalletName Assertion failed");
-                        assertX(!TextUtils.isEmpty(mWalletPassword), "mWalletPassword Assertion failed");
+        mCreateDisposable =
+                Single.create(
+                                (SingleOnSubscribe<CreateWalletBean>)
+                                        emitter -> {
+                                            assertX(
+                                                    mCoinType != null,
+                                                    "mCoinType Assertion failed");
+                                            assertX(
+                                                    !TextUtils.isEmpty(mWalletName),
+                                                    "mWalletName Assertion failed");
+                                            assertX(
+                                                    !TextUtils.isEmpty(mWalletPassword),
+                                                    "mWalletPassword Assertion failed");
 
-                        CreateWalletBean walletBean;
-                        if (mSoftWalletType == SoftWalletType.HD_WALLET) {
-                            // 创建 HD 钱包
-                            walletBean = mAccountManager.deriveHdWallet(mCoinType, mWalletName, mWalletPassword, mBitcoinAddressPurpose);
-                        } else if (mSoftWalletType == SoftWalletType.SINGLE) {
-                            // 创建独立钱包
-                            walletBean = mAccountManager.createNewSingleWallet(mCoinType, mWalletName, mWalletPassword, mBitcoinAddressPurpose);
-                        } else {
-                            // 暂不支持
-                            Logger.d("暂不支持的钱包类型：" + mSoftWalletType);
-                            walletBean = null;
-                        }
-                        emitter.onNext(walletBean);
-                        emitter.onComplete();
-                    }
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe(disposable -> {
-                    showProgress();
-                })
-                .doFinally(this::dismissProgress)
-                .subscribe(s -> {
-                    NavUtils.gotoMainActivityTask(this, false);
-                    finish();
-                }, e -> {
-                    if (e instanceof Exception) {
-                        MyApplication.getInstance().toastErr((Exception) e);
-                    }
-                    e.printStackTrace();
-                });
+                                            CreateWalletBean walletBean;
+                                            if (mSoftWalletType == SoftWalletType.HD_WALLET) {
+                                                // 创建 HD 钱包
+                                                walletBean =
+                                                        mAccountManager.deriveHdWallet(
+                                                                mCoinType,
+                                                                mWalletName,
+                                                                mWalletPassword,
+                                                                mBitcoinAddressPurpose);
+                                            } else if (mSoftWalletType == SoftWalletType.SINGLE) {
+                                                // 创建独立钱包
+                                                walletBean =
+                                                        mAccountManager.createNewSingleWallet(
+                                                                mCoinType,
+                                                                mWalletName,
+                                                                mWalletPassword,
+                                                                mBitcoinAddressPurpose);
+                                            } else {
+                                                // 暂不支持
+                                                Logger.d("暂不支持的钱包类型：" + mSoftWalletType);
+                                                walletBean = null;
+                                            }
+                                            emitter.onSuccess(walletBean);
+                                        })
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .doOnSubscribe(
+                                disposable -> {
+                                    showProgress();
+                                })
+                        .doFinally(this::dismissProgress)
+                        .subscribe(
+                                s -> {
+                                    NavUtils.gotoMainActivityTask(this, false);
+                                    finish();
+                                },
+                                e -> {
+                                    // 处理覆盖观察钱包的问题
+                                    if (e
+                                            instanceof
+                                            AccountException.WalletWatchAlreadyExistsException) {
+                                        String watchName =
+                                                ((AccountException
+                                                                        .WalletWatchAlreadyExistsException)
+                                                                e)
+                                                        .walletName;
+                                        coverReadOnlyWallet(watchName);
+                                    } else if (e
+                                            instanceof
+                                            AccountException.WalletAlreadyExistsException) {
+                                        mToast(getString(R.string.hint_wallet_existence));
+                                        finish();
+                                    } else if (e instanceof Exception) {
+                                        // 其他异常处理
+                                        MyApplication.getInstance().toastErr((Exception) e);
+                                    }
+                                    e.printStackTrace();
+                                });
+    }
+
+    private void coverReadOnlyWallet(String watchName) {
+        LocalWalletInfo localWalletByName = mAccountManager.getLocalWalletByName(watchName);
+        CustomCoverWatchPopup popup =
+                new CustomCoverWatchPopup(
+                        mContext,
+                        () -> {
+                            PyResponse<String> response = PyEnv.replaceWatchOnlyWallet(true);
+                            if (Strings.isNullOrEmpty(response.getErrors())) {
+                                EventBus.getDefault()
+                                        .post(new CreateSuccessEvent(response.getResult()));
+                                mContext.startActivity(
+                                        new Intent(mContext, HomeOneKeyActivity.class));
+                            } else {
+                                mToast(response.getErrors());
+                            }
+                        },
+                        CustomCoverWatchPopup.deleteWatch);
+        if (localWalletByName != null && !TextUtils.isEmpty(localWalletByName.getLabel())) {
+            popup.setWalletName(localWalletByName.getLabel());
+        } else {
+            popup.setWalletName(localWalletByName.getLabel());
+        }
+        new XPopup.Builder(mContext).asCustom(popup).show();
     }
 
     private void assertX(boolean b, String message) {

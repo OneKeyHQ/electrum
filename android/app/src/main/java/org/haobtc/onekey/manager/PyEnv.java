@@ -144,7 +144,8 @@ public final class PyEnv {
     public static void sNotify() {
         sProtocol.callAttr(PyConstant.NOTIFICATION);
     }
-    /** 结束当前的蓝牙通信 * */
+
+    /** 结束当前的蓝牙通信 */
     public static void bleCancel() {
         sBleHandler.callAttr(PyConstant.CANCEL_CURRENT_COMM);
     }
@@ -156,6 +157,7 @@ public final class PyEnv {
     public static void usbCancel() {
         sUsb.put(PyConstant.IS_CANCEL, true);
     }
+
     /**
      * 给Python回写蓝牙返回数据
      *
@@ -164,10 +166,12 @@ public final class PyEnv {
     public static void bleReWriteResponse(String response) {
         sBleHandler.callAttr(PyConstant.SET_BLE_RESPONSE, response);
     }
+
     /** 通知Python蓝牙数据已发送成功，可以继续 */
     public static void notifyWriteSuccess() {
         sBleHandler.callAttr(PyConstant.SET_BLE_WRITE_SUCCESS_FLAG);
     }
+
     /** 启用蓝牙，并做相关初始化准备 */
     public static void bleEnable(BleDevice device, BleWriteCallback<BleDevice> mWriteCallBack) {
         sBleTransport.put(PyConstant.ENABLED, true);
@@ -1151,7 +1155,7 @@ public final class PyEnv {
             String keyStore,
             String keyStorePass,
             int purpose)
-            throws AccountException.CreateException {
+            throws AccountException {
         try {
             List<Kwarg> argList = new LinkedList<>();
             argList.add(new Kwarg("name", walletName));
@@ -1187,6 +1191,13 @@ public final class PyEnv {
             String message = "";
             if (exception.getMessage() != null) {
                 message = exception.getMessage();
+            }
+            if (message.contains("文件已存在") || message.contains("File already exists.")) {
+                throw new AccountException.WalletAlreadyExistsException(message);
+            }
+            if (!TextUtils.isEmpty(message) || message.contains(StringConstant.REPLACE_ERROR)) {
+                String watchName = message.substring(message.indexOf(":") + 1);
+                throw new AccountException.WalletWatchAlreadyExistsException(message, watchName);
             }
             e.printStackTrace();
             throw new AccountException.CreateException(message);

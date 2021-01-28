@@ -20,6 +20,21 @@ public class AccountException extends Exception {
         }
     }
 
+    public static class WalletAlreadyExistsException extends AccountException {
+        public WalletAlreadyExistsException(String message) {
+            super(message);
+        }
+    }
+
+    public static class WalletWatchAlreadyExistsException extends AccountException {
+        public final String walletName;
+
+        public WalletWatchAlreadyExistsException(String message, String walletName) {
+            super(message);
+            this.walletName = walletName;
+        }
+    }
+
     public static class DeriveException extends AccountException {
         public DeriveException(String message) {
             super(message);
