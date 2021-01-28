@@ -21,16 +21,16 @@ abstract class BlockBrowserEthMain(val url: String) : ETHBlockBrowser {
   abstract fun blockBrowserTag(): String
 
   class EtherScanCN : BlockBrowserEthMain("https://cn.etherscan.com/") {
-    override fun browseAddressUrl(address: String) = "${url()}tx/$address"
-    override fun browseTransactionDetailsUrl(txHash: String) = "${url()}address/$txHash"
+    override fun browseAddressUrl(address: String) = "${url()}address/$address"
+    override fun browseTransactionDetailsUrl(txHash: String) = "${url()}tx/$txHash"
     override fun browseBlockUrl(block: String) = "${url()}block/$block"
     override fun uniqueTag() = BlockBrowserManager.BLOCK_BROWSER_DEFAULT
     override fun blockBrowserTag() = "EtherScanCN"
   }
 
   class EtherScan : BlockBrowserEthMain("https://etherscan.io/") {
-    override fun browseAddressUrl(address: String) = "${url()}tx/$address"
-    override fun browseTransactionDetailsUrl(txHash: String) = "${url()}address/$txHash"
+    override fun browseAddressUrl(address: String) = "${url()}address/$address"
+    override fun browseTransactionDetailsUrl(txHash: String) = "${url()}tx/$txHash"
     override fun browseBlockUrl(block: String) = "${url()}block/$block"
     override fun blockBrowserTag() = "EtherScan"
   }

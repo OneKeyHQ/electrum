@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.os.Handler;
@@ -32,11 +31,20 @@ import org.haobtc.onekey.utils.WebViewPxoxyUtils;
 import org.haobtc.onekey.utils.internet.NetBroadcastReceiver;
 
 public class CheckChainDetailWebActivity extends BaseActivity
-        implements NetBroadcastReceiver.NetStatusMonitor {
+        implements NetBroadcastReceiver.NetStatusMonitor, Handler.Callback {
     private static final String HOST = "cdn.onekey.so:";
     private static final int PORT = 443;
     private static final String USER_NAME = "onekey";
     private static final String PASS = "libbitcoinconsensus";
+
+    private static final String EXT_WEB_TITLE = "ext_web_title";
+    private static final String EXT_WEB_LOAD_URL = "ext_web_load_url";
+
+    private static final int OPT_MESSAGE_NOT_NETWORK = 100;
+    private static final int OPT_MESSAGE_HAVE_NETWORK = 99;
+
+    private static final int HAVE_NETWORK = 2;
+    private static final int NOT_NETWORK = 4;
 
     @BindView(R.id.img_back)
     ImageView imgBack;
@@ -50,32 +58,13 @@ public class CheckChainDetailWebActivity extends BaseActivity
     @BindView(R.id.text_title)
     TextView textTitle;
 
-    private String checkTxid;
-    private int nets = 2;
-    private boolean netStatus;
+    private int mCurrentNetStatus = HAVE_NETWORK;
+    private boolean mTempNetStatus;
 
-    @SuppressLint("HandlerLeak")
-    private Handler handler =
-            new Handler() {
-                @Override
-                public void handleMessage(Message msg) {
-                    super.handleMessage(msg);
-                    if (msg.what == 99) {
-                        nets = 2;
-                        webHeckChain.setVisibility(View.VISIBLE);
-                        linNonet.setVisibility(View.GONE);
-                    } else {
-                        mToast(getString(R.string.net_dont_use));
-                        nets = 4;
-                        webHeckChain.setVisibility(View.GONE);
-                        linNonet.setVisibility(View.VISIBLE);
-                    }
-                }
-            };
+    private final Handler mHandler = new Handler(this);
 
     private MyDialog myDialog;
     private NetBroadcastReceiver netBroadcastReceiver;
-    private String blockServerLine;
     private String keyLink;
     private String loadUrl = "";
 
@@ -86,6 +75,28 @@ public class CheckChainDetailWebActivity extends BaseActivity
         context.startActivity(intent);
     }
 
+    public static void startWebUrl(Context context, String title, String loadUrl) {
+        Intent intent = new Intent(context, CheckChainDetailWebActivity.class);
+        intent.putExtra(EXT_WEB_TITLE, title);
+        intent.putExtra(EXT_WEB_LOAD_URL, loadUrl);
+        context.startActivity(intent);
+    }
+
+    @Override
+    public boolean handleMessage(Message msg) {
+        if (msg.what == OPT_MESSAGE_HAVE_NETWORK) {
+            mCurrentNetStatus = HAVE_NETWORK;
+            webHeckChain.setVisibility(View.VISIBLE);
+            linNonet.setVisibility(View.GONE);
+        } else {
+            mToast(getString(R.string.net_dont_use));
+            mCurrentNetStatus = NOT_NETWORK;
+            webHeckChain.setVisibility(View.GONE);
+            linNonet.setVisibility(View.VISIBLE);
+        }
+        return true;
+    }
+
     @Override
     public int getLayoutId() {
         return R.layout.activity_check_chain_detail_web;
@@ -94,12 +105,13 @@ public class CheckChainDetailWebActivity extends BaseActivity
     @Override
     public void initView() {
         ButterKnife.bind(this);
-        SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-        blockServerLine = preferences.getString("blockServerLine", "https://btc.com/");
+
         myDialog = MyDialog.showDialog(CheckChainDetailWebActivity.this);
         myDialog.onTouchOutside(true);
         myDialog.show();
         Intent intent = getIntent();
+        String customLoadUrl = intent.getStringExtra(EXT_WEB_LOAD_URL);
+
         String loadWhere = intent.getStringExtra("loadWhere");
         loadUrl = intent.getStringExtra("loadUrl");
         if (StringConstant.USER_AGREEMENT.equals(loadWhere)) {
@@ -108,8 +120,10 @@ public class CheckChainDetailWebActivity extends BaseActivity
             textTitle.setText(getString(R.string.privacy_agreement));
         } else if (StringConstant.NEW_GUIDE.equals(loadWhere)) {
             textTitle.setText(getString(R.string.new_guide_tip));
+        } else if (!TextUtils.isEmpty(customLoadUrl)) {
+            textTitle.setText(intent.getStringExtra(EXT_WEB_TITLE));
+            loadUrl = customLoadUrl;
         } else {
-            checkTxid = intent.getStringExtra("checkTxid");
             keyLink = intent.getStringExtra("key_link");
         }
     }
@@ -151,7 +165,7 @@ public class CheckChainDetailWebActivity extends BaseActivity
                         }
                     }
                 });
-        if (nets == 2) {
+        if (mCurrentNetStatus == HAVE_NETWORK) {
             if (!TextUtils.isEmpty(loadUrl)) {
                 WebViewPxoxyUtils.setProxy(
                         webHeckChain,
@@ -165,8 +179,6 @@ public class CheckChainDetailWebActivity extends BaseActivity
                 if (!TextUtils.isEmpty(keyLink)) {
                     textTitle.setText(getString(R.string.key));
                     webHeckChain.loadUrl(keyLink);
-                } else {
-                    webHeckChain.loadUrl(blockServerLine + checkTxid);
                 }
             }
         }
@@ -198,19 +210,19 @@ public class CheckChainDetailWebActivity extends BaseActivity
 
     @Override
     public void onNetChange(boolean netStatus) {
-        this.netStatus = netStatus;
+        this.mTempNetStatus = netStatus;
         isNetConnect();
     }
 
     private void isNetConnect() {
         Message message = new Message();
-        if (netStatus) {
-            message.what = 99;
-            handler.sendMessage(message);
+        if (mTempNetStatus) {
+            message.what = OPT_MESSAGE_HAVE_NETWORK;
+            mHandler.sendMessage(message);
         } else {
             mToast(getString(R.string.net_dont_use));
-            message.what = 100;
-            handler.sendMessage(message);
+            message.what = OPT_MESSAGE_NOT_NETWORK;
+            mHandler.sendMessage(message);
         }
     }
 

@@ -24,8 +24,8 @@ abstract class BlockBrowserEthRopsten(val url: String) : ETHBlockBrowser {
   }
 
   class EtherScan : BlockBrowserEthRopsten("https://ropsten.etherscan.io/") {
-    override fun browseAddressUrl(address: String) = "${url()}tx/$address"
-    override fun browseTransactionDetailsUrl(txHash: String) = "${url()}address/$txHash"
+    override fun browseAddressUrl(address: String) = "${url()}address/$address"
+    override fun browseTransactionDetailsUrl(txHash: String) = "${url()}tx/$txHash"
     override fun browseBlockUrl(block: String) = "${url()}block/$block"
     override fun blockBrowserTag() = "EtherScan"
   }
