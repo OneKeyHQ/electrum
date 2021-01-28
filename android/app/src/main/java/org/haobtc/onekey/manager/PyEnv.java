@@ -1500,7 +1500,7 @@ public final class PyEnv {
                                         new Kwarg("gas_limit", gasLimit))
                                 .toString();
             }
-            Logger.json(res);
+            Logger.d(res);
             response.setResult(res);
         } catch (Exception e) {
             Exception exception = HardWareExceptions.exceptionConvert(e);
