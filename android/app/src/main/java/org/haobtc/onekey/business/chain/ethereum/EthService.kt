@@ -5,6 +5,7 @@ import com.chaquo.python.Kwarg
 import com.chaquo.python.PyObject
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.orhanobut.logger.Logger
 import com.tencent.bugly.crashreport.CrashReport
 import org.haobtc.onekey.activities.base.MyApplication
 import org.haobtc.onekey.bean.MaintrsactionlistEvent
@@ -14,6 +15,8 @@ import org.haobtc.onekey.constant.Vm
 import org.haobtc.onekey.utils.Daemon
 import org.haobtc.onekey.utils.internet.NetUtil
 import java.lang.Exception
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.text.DecimalFormat
 
 class EthService {
@@ -50,13 +53,7 @@ class EthService {
             // format amount 0.012029 BTC (2,904.02 CNY)
             val amountSplit = it.amount.split(" ")
             val amountStr = amountSplit.getOrNull(0)?.let {
-              val amountFix = it.trim().substring(it.trim().indexOf(".") + 1)
-              if (amountFix.length > 8) {
-                val dfs = DecimalFormat("0.00000000")
-                dfs.format(amountFix)
-              } else {
-                it
-              }
+              BigDecimal(it).setScale(8, RoundingMode.DOWN).stripTrailingZeros().toPlainString()
             } ?: "0"
 
             val amountUnit = amountSplit.getOrNull(1)?.trim() ?: "ETH"
@@ -65,7 +62,7 @@ class EthService {
 
             val amountFiatUnit = amountSplit.getOrNull(3)?.trim()?.replace(")", "") ?: "CNY"
 
-            val item = TransactionSummaryVo(Vm.CoinType.ETH, it.txHash, it.isMine, it.type, it.address, formatDate, it.txStatus, amountStr, amountUnit, amountFiat, amountFiatUnit)
+            val item = TransactionSummaryVo(Vm.CoinType.ETH, it.txHash, it.isMine, it.type, it.address, formatDate, it.txStatus.replace("。",""), amountStr, amountUnit, amountFiat, amountFiatUnit)
             listBeans.add(item)
           }
         }

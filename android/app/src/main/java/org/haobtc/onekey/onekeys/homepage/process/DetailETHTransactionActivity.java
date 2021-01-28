@@ -22,6 +22,7 @@ import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.ObservableOnSubscribe;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
+import java.math.BigDecimal;
 import java.util.Objects;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
@@ -175,7 +176,7 @@ public class DetailETHTransactionActivity extends BaseActivity {
             showStatus = getString(R.string.unknown);
             showStatusType = 1;
         }
-        textTxStatus.setText(showStatus);
+        textTxStatus.setText(showStatus.replace("。", ""));
         imgTxStatus.setImageDrawable(
                 ResourcesCompat.getDrawable(
                         getResources(), getTxStatusImage(showStatusType), getTheme()));
@@ -198,19 +199,42 @@ public class DetailETHTransactionActivity extends BaseActivity {
         String description = listBean.getDescription();
         if (amount.contains(" (")) {
             String txAmount = amount.substring(0, amount.indexOf(" ("));
-            textTxAmount.setText(txAmount);
+            try {
+                String[] amountSplit = txAmount.split(" ");
+                textTxAmount.setText(
+                        String.format(
+                                "%s %s",
+                                new BigDecimal(amountSplit[0].trim())
+                                        .stripTrailingZeros()
+                                        .toPlainString(),
+                                amountSplit[1]));
+            } catch (Exception e) {
+                textTxAmount.setText(txAmount);
+            }
         } else {
             textTxAmount.setText(amount);
         }
         if (txStatus.contains("confirmations")) {
-            String confirms = txStatus.substring(0, txStatus.indexOf(" "));
+            String confirms = txStatus.substring(0, txStatus.indexOf(" ")).replace("。", "");
             textConfirmNum.setText(confirms);
         } else {
-            textConfirmNum.setText(txStatus);
+            textConfirmNum.setText(txStatus.replace("。", ""));
         }
         textTxNum.setText(txid);
         if (fee.contains(" (")) {
             String txFee = fee.substring(0, fee.indexOf(" ("));
+            try {
+                String[] txFeeSplit = txFee.split(" ");
+                textFee.setText(
+                        String.format(
+                                "%s %s",
+                                new BigDecimal(txFeeSplit[0].trim())
+                                        .stripTrailingZeros()
+                                        .toPlainString(),
+                                txFeeSplit[1]));
+            } catch (Exception e) {
+                textFee.setText(txFee);
+            }
             textFee.setText(txFee);
         }
         if (!TextUtils.isEmpty(description)) {

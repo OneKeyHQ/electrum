@@ -14,6 +14,8 @@ import org.haobtc.onekey.business.chain.TransactionListType
 import org.haobtc.onekey.constant.Vm
 import org.haobtc.onekey.utils.Daemon
 import org.haobtc.onekey.utils.internet.NetUtil
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.text.DecimalFormat
 
 class BitcoinService {
@@ -39,7 +41,7 @@ class BitcoinService {
       val historyTx = request(status, position, limit)
       historyTx?.toString()?.let {
         val listBeans: ArrayList<TransactionSummaryVo> = ArrayList(limit)
-        mGson.fromJson<List<MaintrsactionlistEvent>>(it, object : TypeToken<List<MaintrsactionlistEvent>>() {}.type).forEach {
+        mGson.fromJson<List<MaintrsactionlistEvent>>(it, object : TypeToken<List<MaintrsactionlistEvent>>() {}.type).forEach { it ->
           if ("history" == it.type) {
             // format date
             val formatDate = if (it.date.contains("-")) {
@@ -52,14 +54,8 @@ class BitcoinService {
 
             // format amount 0.012029 BTC (2,904.02 CNY)
             val amountSplit = it.amount.split(" ")
-            val amountStr = amountSplit.getOrNull(0)?.let {
-              val amountFix = it.trim().substring(it.trim().indexOf(".") + 1)
-              if (amountFix.length > 8) {
-                val dfs = DecimalFormat("0.00000000")
-                dfs.format(amountFix)
-              } else {
-                it
-              }
+            val amountStr = amountSplit.getOrNull(0)?.let { amount ->
+              BigDecimal(amount).setScale(8, RoundingMode.DOWN).stripTrailingZeros().toPlainString()
             } ?: "0"
 
             val amountUnit = amountSplit.getOrNull(1)?.trim() ?: "BTC"
@@ -68,7 +64,7 @@ class BitcoinService {
 
             val amountFiatUnit = amountSplit.getOrNull(3)?.trim()?.replace(")", "") ?: "CNY"
 
-            val item = TransactionSummaryVo(Vm.CoinType.BTC, it.txHash, it.isMine, it.type, it.address, formatDate, it.txStatus, amountStr, amountUnit, amountFiat, amountFiatUnit)
+            val item = TransactionSummaryVo(Vm.CoinType.BTC, it.txHash, it.isMine, it.type, it.address, formatDate, it.txStatus.replace("。", ""), amountStr, amountUnit, amountFiat, amountFiatUnit)
             listBeans.add(item)
           }
         }
