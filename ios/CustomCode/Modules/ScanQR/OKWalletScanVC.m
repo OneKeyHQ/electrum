@@ -22,7 +22,6 @@
 
 @property (nonatomic, strong) OKQRCodeScanManager *scanManager;
 @property (weak, nonatomic) IBOutlet OKScanView *scanView;
-@property (weak, nonatomic) IBOutlet UILabel *scanDescriptionLabel;
 
 @end
 
@@ -32,7 +31,7 @@
     [super viewDidLoad];
     self.navigationItem.title = MyLocalizedString(@"Scan QR Code", nil);
     self.navigationItem.rightBarButtonItem = [UIBarButtonItem barButtonItemWithTitle:MyLocalizedString(@"Photo Album", nil) bounds:CGSizeMake(100, 30) size:15 titleColor:[UIColor whiteColor] backgroundColor:[UIColor clearColor] isSetLayer:NO target:self selector:@selector(toPhotoLibrary)];
-    self.scanDescriptionLabel.text = MyLocalizedString(@"Put QR code in the frame. Scan it.", nil);
+
     [self backButtonWhiteColor];
 
     _navigationBarBackgroundImage = [self.navigationController.navigationBar backgroundImageForBarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
@@ -48,7 +47,6 @@
             [weakSelf.scanManager torchOff];
         }
     };
-    [self.scanView createTimer];
     NSString *mediaType = AVMediaTypeVideo;//读取媒体类型
     [AVCaptureDevice requestAccessForMediaType:mediaType completionHandler:^(BOOL granted) {
             if (granted) {

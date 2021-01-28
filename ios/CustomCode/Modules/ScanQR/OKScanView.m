@@ -12,11 +12,9 @@
 @interface OKScanView ()
 
 @property (weak, nonatomic) IBOutlet UIView *borderView;
-@property (weak, nonatomic) IBOutlet UIImageView *scanningIV;
 @property (weak, nonatomic) IBOutlet UIImageView *scanBorderImageView;
 @property (weak, nonatomic) IBOutlet UIButton *lightUpBtn;
 @property (weak, nonatomic) IBOutlet UIButton *lightDownBtn;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *scanningIVTopConstraint;
 @property (nonatomic, strong) UIImage *lightBtnImage;
 
 @end
@@ -35,7 +33,6 @@
     self.borderView.clipsToBounds = YES;
     self.borderView.layer.borderWidth = 1;
     self.borderView.layer.borderColor = [UIColor clearColor].CGColor;
-    self.scanBorderImageView.image = [self.scanBorderImageView.image imageWithColor:[UIColor whiteColor]];
 }
 
 // 光源开关
@@ -51,24 +48,6 @@
     if (self.lightBtnEventBlocks) {
         self.lightBtnEventBlocks(self.lightUpBtn.selected);
     }
-}
-
-#pragma mark - 定时器
-- (void)createTimer {
-    __weak typeof(self) wSelf = self;
-    [NSTimer scheduledTimerWithTimeInterval:2 TimerDo:^{
-        [wSelf timerAction];
-    }];
-}
-
-- (void)timerAction {
-    self.scanningIVTopConstraint.constant = -(self.scanningIV.height);
-    [self layoutIfNeeded];
-    [UIView animateWithDuration:2 animations:^{
-        self.scanningIVTopConstraint.constant = self.borderView.bounds.size.height;
-        [self layoutIfNeeded];
-    } completion:^(BOOL finished) {
-    }];
 }
 
 - (void)showTorch {

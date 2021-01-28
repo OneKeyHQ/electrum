@@ -460,7 +460,8 @@
 "You have created these wallets for this App, select which you want to restore" = "您曾在此 App 创建这些钱包，选择您要恢复的。";
 "No wallet" = "没有钱包";
 "Restore success" = "恢复成功";
-
+"Touch Light" = "轻触照亮";
+"Touch Off" = "轻触关闭闪光灯";
 "Please copy your 12 - digit mnemonic words" = "请抄写你的 12 位助记词";
 "Please copy your 24 - digit mnemonic words" = "请抄写你的 24 位助记词";
 "1. Copy carefully with paper and pen, and keep it properly after reconfirming. 2. OneKey does not store private data for you, and mnemonic words once lost cannot be retrieved." = "1. 备好纸笔认真抄写，再次确认无误后请妥善保管。 \n2. OneKey 不会为您存储私密数据，助记词一旦丢失将无法找回。";

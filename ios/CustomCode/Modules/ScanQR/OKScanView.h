@@ -15,7 +15,6 @@ typedef void(^LightBtnEventBlocks)(BOOL selected);
 @property (nonatomic, copy) LightBtnEventBlocks lightBtnEventBlocks;
 @property (nonatomic) BOOL lightBtnIsShowing; // 背光灯开关显示中
 
-- (void)createTimer;
 - (void)showTorch;
 - (void)hideTorch;
 

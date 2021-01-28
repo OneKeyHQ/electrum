@@ -1,17 +1,16 @@
 {
   "images" : [
     {
-      "filename" : "Group 80.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "Group 80@2x.png",
+      "filename" : "QRCode_finder@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "Group 80@3x.png",
+      "filename" : "QRCode_finder@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
