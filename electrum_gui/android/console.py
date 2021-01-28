@@ -670,7 +670,7 @@ class AndroidCommands(commands.Commands):
         except Exception as e:
             raise BaseException(e)
         if storage:
-            if coin == 'btc':
+            if 'btc' == coin:
                 wallet = Wallet(db, storage, config=self.config)
             else:
                 wallet = Eth_Wallet(db, storage, config=self.config)
@@ -1321,7 +1321,7 @@ class AndroidCommands(commands.Commands):
         data = self.get_details_info(tx, tx_list=tx_list)
         return data
 
-    def get_input_info(self, tx):
+    def get_input_info(self, tx, all=None):
         input_list = []
         local_addr = self.txdb.get_received_tx_input_info(tx.txid())
         if len(local_addr) != 0:
@@ -1341,8 +1341,10 @@ class AndroidCommands(commands.Commands):
                     addr = ''
             input_info['address'] = addr
             input_list.append(input_info)
-            self.txdb.add_received_tx_input_info(tx.txid(), json.dumps(input_list))
-            return input_list
+            if all is None:
+                break
+        self.txdb.add_received_tx_input_info(tx.txid(), json.dumps(input_list))
+        return input_list
 
     def get_fee_from_server(self, txid):
         """Retrieve a transaction. """
@@ -1524,18 +1526,6 @@ class AndroidCommands(commands.Commands):
         except BaseException as e:
             raise e
 
-        history_len = len(history_info)
-        local_len = len(local_tx)
-        all_tx_len = history_len + local_len
-        if start is None or end is None:
-            start = 0
-            if 'receive' in search_type:
-                end = history_len
-            else:
-                end = all_tx_len
-        if (search_type is None or 'send' in search_type) and all_tx_len == self.old_history_len:
-            return json.dumps(self.old_history_info[start:end])
-
         if search_type is None:
             history_data = history_info
         elif search_type == 'send':
@@ -1546,6 +1536,18 @@ class AndroidCommands(commands.Commands):
             for info in history_info:
                 if not info['is_mine']:
                     history_data.append(info)
+
+        history_len = len(history_data)
+        local_len = len(local_tx)
+        all_tx_len = history_len + local_len
+        if start is None or end is None:
+            start = 0
+            if 'receive' == search_type:
+                end = history_len
+            else:
+                end = all_tx_len
+        if (search_type is None or 'send' in search_type) and all_tx_len == self.old_history_len:
+            return json.dumps(self.old_history_info[start:end])
 
         all_data = []
         if search_type == "receive":
@@ -1587,8 +1589,8 @@ class AndroidCommands(commands.Commands):
             return json.dumps(all_data[start:end])
 
     ##get history
-    def get_eth_tx_list(self, search_type=None):
-        txs = PyWalib.get_transaction_history(self.wallet.get_addresses()[0], search_type=search_type)
+    def get_eth_tx_list(self, wallet_obj, search_type=None):
+        txs = PyWalib.get_transaction_history(wallet_obj.get_addresses()[0], search_type=search_type)
         for tx in txs:
             fiat = tx["fiat"]
             fiat = self.daemon.fx.format_amount_and_units(fiat * COIN) or f"0 {self.ccy}"
@@ -1598,6 +1600,27 @@ class AndroidCommands(commands.Commands):
             tx.pop("fiat", None)
 
         return txs
+
+    def get_detail_tx_info_by_hash(self, tx_hash):
+        try:
+            self._assert_wallet_isvalid()
+            tx = self.get_btc_raw_tx(tx_hash)
+            tx_details = self.wallet.get_tx_info(tx)
+            in_list = self.get_input_info(tx, all=True)
+            out_list = []
+            for index, o in enumerate(tx.outputs()):
+                address, value = o.address, o.value
+                out_info = {}
+                out_info['addr'] = address
+                out_info['amount'] = self.format_amount_and_units(value)
+                out_list.append(out_info)
+            out = {
+                "input_list" : in_list,
+                "output_list" : out_list
+            }
+            return json.dumps(out)
+        except BaseException as e:
+            raise e
 
     def get_all_tx_list(self, search_type=None, coin='btc', start=None, end=None):
         '''
@@ -1621,7 +1644,7 @@ class AndroidCommands(commands.Commands):
             if coin == "btc":
                 return self.get_btc_tx_list(start=start, end=end, search_type=search_type)
             else:
-                return self.get_eth_tx_list(search_type=search_type)
+                return self.get_eth_tx_list(self.wallet, search_type=search_type)
         except BaseException as e:
             raise e
 
@@ -1638,6 +1661,28 @@ class AndroidCommands(commands.Commands):
         if len(time) != 0:
             info['date'] = util.format_time(int(time[0][1]))
         list_info.append(info)
+ 
+    def get_btc_raw_tx(self, tx_hash):
+        try:
+            self._assert_wallet_isvalid()
+        except Exception as e:
+            raise BaseException(e)
+        tx = self.wallet.db.get_transaction(tx_hash)
+        if not tx:
+            local_tx = self.txdb.get_tx_info(self.wallet.get_addresses()[0])
+            for temp_tx in local_tx:
+                if temp_tx[0] == tx_hash:
+                    return self.get_tx_info_from_raw(temp_tx[3])
+            raise BaseException(_('Failed to get transaction details.'))
+        # tx = PartialTransaction.from_tx(tx)
+        label = self.wallet.get_label(tx_hash) or None
+        tx = copy.deepcopy(tx)
+        try:
+            tx.deserialize()
+        except Exception as e:
+            raise e
+        tx.add_info_from_wallet(self.wallet)
+        return tx
 
     def get_tx_info(self, tx_hash, coin="btc", tx_list=None):
         '''
@@ -1665,24 +1710,10 @@ class AndroidCommands(commands.Commands):
         except Exception as e:
             raise BaseException(e)
 
-        if coin in ("eth", "bsc", "heco"):
+        if coin in self.coins:
             return self.get_eth_tx_info(tx_hash)
 
-        tx = self.wallet.db.get_transaction(tx_hash)
-        if not tx:
-            local_tx = self.txdb.get_tx_info(self.wallet.get_addresses()[0])
-            for temp_tx in local_tx:
-                if temp_tx[0] == tx_hash:
-                    return self.get_tx_info_from_raw(temp_tx[3])
-            raise BaseException(_('Failed to get transaction details.'))
-        # tx = PartialTransaction.from_tx(tx)
-        label = self.wallet.get_label(tx_hash) or None
-        tx = copy.deepcopy(tx)
-        try:
-            tx.deserialize()
-        except Exception as e:
-            raise e
-        tx.add_info_from_wallet(self.wallet)
+        tx = self.get_btc_raw_tx(tx_hash)
         return self.get_details_info(tx, tx_list=tx_list)
 
     def get_eth_tx_info(self, tx_hash) -> str:
@@ -3255,7 +3286,7 @@ class AndroidCommands(commands.Commands):
                 coin = wallet.wallet_type[0:3]
                 if self.coins.__contains__(wallet.wallet_type[0:3]):
                     address = wallet.get_addresses()[0]
-                    tx_list = self.get_eth_tx_list(address)
+                    tx_list = self.get_eth_tx_list(wallet, address)
                     if len(tx_list) != 0:
                         self.update_recover_list(recovery_list, wallet.get_all_balance(address, coin), wallet,
                                                  wallet.get_name(), coin)
@@ -3314,7 +3345,7 @@ class AndroidCommands(commands.Commands):
                     wallet.storage.set_path(self._wallet_path(new_name))
                     wallet.update_password(old_pw=None, new_pw=None, str_pw=self.android_id, encrypt_storage=True)
                     wallet.start_network(self.daemon.network)
-                    self.recovery_wallets[new_name] = self.update_recovery_wallet(xpubs[0], wallet,
+                    self.recovery_wallets[new_name] = self.update_recovery_wallet(xpubs, wallet,
                                                                                   self.get_coin_derived_path(i, coin),
                                                                                   name)
                     self.wizard = None
@@ -3433,10 +3464,10 @@ class AndroidCommands(commands.Commands):
             xpub = self.get_hd_wallet_encode_seed(seed=seed, coin='btc')
             self.recovery_wallet(seed, password, passphrase, xpub=xpub, hw=hw)
 
-            # for coin, info in self.coins.items():
-            #     xpub = self.get_hd_wallet_encode_seed(seed=seed, coin=coin)
-            #     PyWalib.set_server(info)
-            #     self.recovery_wallet(seed, password, passphrase, coin=coin, xpub=xpub, hw=hw)
+            for coin, info in self.coins.items():
+                xpub = self.get_hd_wallet_encode_seed(seed=seed, coin=coin)
+                PyWalib.set_server(info)
+                self.recovery_wallet(seed, password, passphrase, coin=coin, xpub=xpub, hw=hw)
 
         recovery_list = self.filter_wallet()
         wallet_data = self.filter_wallet_with_account_is_zero()
