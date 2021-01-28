@@ -12,10 +12,11 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
+import butterknife.BindView;
+import butterknife.OnClick;
+import butterknife.OnTextChanged;
 import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
 import com.google.common.base.Strings;
@@ -24,7 +25,10 @@ import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.bean.ZxingConfig;
 import com.yzq.zxinglibrary.common.Constant;
-
+import dr.android.fileselector.FileSelectConstant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -54,44 +58,45 @@ import org.haobtc.onekey.ui.dialog.TransactionConfirmDialog;
 import org.haobtc.onekey.utils.ClipboardUtils;
 import org.haobtc.onekey.utils.Daemon;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
-import butterknife.BindView;
-import butterknife.OnClick;
-import butterknife.OnTextChanged;
-import dr.android.fileselector.FileSelectConstant;
-
-/**
- * @author liyan
- */
-public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedChangeListener, BusinessAsyncTask.Helper {
+/** @author liyan */
+public class SignActivity extends BaseActivity
+        implements RadioGroup.OnCheckedChangeListener, BusinessAsyncTask.Helper {
 
     public static final String TAG = SignActivity.class.getSimpleName();
     public static final String TAG1 = "SIGN_MESSAGE";
     public static final String TAG2 = "HARDWARE_SIGN_TRANSACTION";
     public static final String TAG3 = "HARDWARE_SIGN_MESSAGE";
+
     @BindView(R.id.img_back)
     ImageView imgBack;
+
     @BindView(R.id.verify_signature)
     TextView verifySignature;
+
     @BindView(R.id.sign_transaction)
     RadioButton signTransaction;
+
     @BindView(R.id.sign_message)
     RadioButton signMessage;
+
     @BindView(R.id.radio_group)
     RadioGroup radioGroup;
+
     @BindView(R.id.edit_transaction_text)
     EditText editTransactionText;
+
     @BindView(R.id.btn_import_file)
     Button btnImportFile;
+
     @BindView(R.id.btn_scan)
     Button btnScan;
+
     @BindView(R.id.btn_parse)
     Button btnParse;
+
     @BindView(R.id.btn_confirm)
     Button btnConfirm;
+
     private RxPermissions rxPermissions;
     private static final int REQUEST_CODE = 0;
     private String strSoftMsg;
@@ -109,9 +114,7 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
     private String amounts;
     private SystemConfigManager mSystemConfigManager;
 
-    /**
-     * init
-     */
+    /** init */
     @Override
     public void init() {
         mSystemConfigManager = new SystemConfigManager(this);
@@ -121,7 +124,11 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
         rxPermissions = new RxPermissions(this);
         radioGroup.setOnCheckedChangeListener(this);
         SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-        showWalletType = getIntent().getIntExtra(org.haobtc.onekey.constant.Constant.WALLET_TYPE, org.haobtc.onekey.constant.Constant.WALLET_TYPE_SOFTWARE);
+        showWalletType =
+                getIntent()
+                        .getIntExtra(
+                                org.haobtc.onekey.constant.Constant.WALLET_TYPE,
+                                org.haobtc.onekey.constant.Constant.WALLET_TYPE_SOFTWARE);
         getAddress();
         switch (showWalletType) {
             case org.haobtc.onekey.constant.Constant.WALLET_TYPE_SOFTWARE:
@@ -133,8 +140,9 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
         }
     }
 
-    /***
-     * init layout
+    /**
+     * * init layout
+     *
      * @return
      */
     @Override
@@ -143,7 +151,14 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
     }
 
     @SingleClick
-    @OnClick({R.id.img_back, R.id.verify_signature, R.id.btn_import_file, R.id.btn_scan, R.id.btn_parse, R.id.btn_confirm})
+    @OnClick({
+        R.id.img_back,
+        R.id.verify_signature,
+        R.id.btn_import_file,
+        R.id.btn_scan,
+        R.id.btn_parse,
+        R.id.btn_confirm
+    })
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
@@ -156,26 +171,32 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
                 importTxFromFile();
                 break;
             case R.id.btn_scan:
-                //扫描二维码
+                // 扫描二维码
                 rxPermissions
                         .request(Manifest.permission.CAMERA)
-                        .subscribe(granted -> {
-                            if (granted) {
-                                // If you have already authorized it, you can directly jump to the QR code scanning interface
-                                Intent intent2 = new Intent(this, CaptureActivity.class);
-                                ZxingConfig config = new ZxingConfig();
-                                config.setPlayBeep(true);
-                                config.setShake(true);
-                                config.setDecodeBarCode(false);
-                                config.setFullScreenScan(true);
-                                config.setShowAlbum(false);
-                                config.setShowbottomLayout(false);
-                                intent2.putExtra(Constant.INTENT_ZXING_CONFIG, config);
-                                startActivityForResult(intent2, REQUEST_CODE);
-                            } else {
-                                Toast.makeText(this, getString(R.string.photopersion), Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                        .subscribe(
+                                granted -> {
+                                    if (granted) {
+                                        // If you have already authorized it, you can directly jump
+                                        // to the QR code scanning interface
+                                        Intent intent2 = new Intent(this, CaptureActivity.class);
+                                        ZxingConfig config = new ZxingConfig();
+                                        config.setPlayBeep(true);
+                                        config.setShake(true);
+                                        config.setDecodeBarCode(false);
+                                        config.setFullScreenScan(true);
+                                        config.setShowAlbum(false);
+                                        config.setShowbottomLayout(false);
+                                        intent2.putExtra(Constant.INTENT_ZXING_CONFIG, config);
+                                        startActivityForResult(intent2, REQUEST_CODE);
+                                    } else {
+                                        Toast.makeText(
+                                                        this,
+                                                        getString(R.string.photopersion),
+                                                        Toast.LENGTH_SHORT)
+                                                .show();
+                                    }
+                                });
                 break;
             case R.id.btn_parse:
                 editTransactionText.setText(ClipboardUtils.pasteText(this));
@@ -239,9 +260,7 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
         }
     }
 
-    /**
-     * 跳转到验证界面
-     */
+    /** 跳转到验证界面 */
     public void toVerifyActivity(Bundle bundle) {
         Intent intent = new Intent(this, CheckSignActivity.class);
         if (bundle != null) {
@@ -253,7 +272,8 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
     public void popupDialog(TransactionInfoBean info) {
         String sender = info.getInputAddr().get(0).getAddress();
         String receiver = info.getOutputAddr().get(0).getAddr();
-        String amount = String.format("%s%s", info.getAmount(), mSystemConfigManager.getCurrentBaseUnit());
+        String amount =
+                String.format("%s%s", info.getAmount(), mSystemConfigManager.getCurrentBaseUnit());
         String fee = info.getFee();
         Bundle bundle = new Bundle();
         bundle.putString(org.haobtc.onekey.constant.Constant.TRANSACTION_SENDER, sender);
@@ -267,9 +287,7 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
         confirmDialog.show(getSupportFragmentManager(), "confirm");
     }
 
-    /**
-     * 签名逻辑处理
-     */
+    /** 签名逻辑处理 */
     private void dealSign(@NonNull String rawMessage) {
         if (signTransaction.isChecked()) {
             // sign transaction
@@ -287,9 +305,12 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
             }
             switch (showWalletType) {
                 case org.haobtc.onekey.constant.Constant.WALLET_TYPE_HARDWARE_PERSONAL:
-                    new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.SIGN_TX,
-                            infoBean.getTx(),
-                            MyApplication.getInstance().getDeviceWay());
+                    new BusinessAsyncTask()
+                            .setHelper(this)
+                            .execute(
+                                    BusinessAsyncTask.SIGN_TX,
+                                    infoBean.getTx(),
+                                    MyApplication.getInstance().getDeviceWay());
                     break;
                 case org.haobtc.onekey.constant.Constant.WALLET_TYPE_SOFTWARE:
                     PassInputDialog passInputDialog = new PassInputDialog();
@@ -302,10 +323,13 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
             // sign message
             switch (showWalletType) {
                 case org.haobtc.onekey.constant.Constant.WALLET_TYPE_HARDWARE_PERSONAL:
-                    new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.SIGN_MESSAGE,
-                            strinputAddress,
-                            rawMessage,
-                            MyApplication.getInstance().getDeviceWay());
+                    new BusinessAsyncTask()
+                            .setHelper(this)
+                            .execute(
+                                    BusinessAsyncTask.SIGN_MESSAGE,
+                                    strinputAddress,
+                                    rawMessage,
+                                    MyApplication.getInstance().getDeviceWay());
                     break;
                 case org.haobtc.onekey.constant.Constant.WALLET_TYPE_SOFTWARE:
                     PassInputDialog passInputDialog = new PassInputDialog();
@@ -324,9 +348,7 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
         broadcastTx(info.getTx());
     }
 
-    /**
-     * 广播交易
-     */
+    /** 广播交易 */
     private void broadcastTx(String signedTx) {
         PyResponse<Void> response = PyEnv.broadcast(signedTx);
         String errors = response.getErrors();
@@ -342,12 +364,14 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
     }
 
     @Override
-    public void onPreExecute() {
-    }
+    public void onPreExecute() {}
 
     @Override
     public void onException(Exception e) {
-        if (!Objects.requireNonNull(e.getMessage()).trim().isEmpty()) {
+        if (e.getMessage().equals(" ")) {
+            // 硬件按钮点击取消
+            showToast(getString(R.string.hint_hardware_signature_cancelled));
+        } else if (!Objects.requireNonNull(e.getMessage()).isEmpty()) {
             showToast(e.getMessage());
         }
     }
@@ -365,7 +389,9 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
                 case BusinessAsyncTask.SIGN_MESSAGE:
                     signature = s;
                     Bundle bundle = new Bundle();
-                    bundle.putString(org.haobtc.onekey.constant.Constant.RAW_MESSAGE, editTransactionText.getText().toString());
+                    bundle.putString(
+                            org.haobtc.onekey.constant.Constant.RAW_MESSAGE,
+                            editTransactionText.getText().toString());
                     bundle.putString(org.haobtc.onekey.constant.Constant.SIGNATURE, signature);
                     toVerifyActivity(bundle);
                     break;
@@ -376,8 +402,7 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
     }
 
     @Override
-    public void onCancelled() {
-    }
+    public void onCancelled() {}
 
     @Override
     public void currentMethod(String methodName) {
@@ -389,9 +414,7 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
         return true;
     }
 
-    /**
-     * 获取地址
-     */
+    /** 获取地址 */
     private void getAddress() {
         PyObject walletAddressShowUi = null;
         try {
@@ -403,14 +426,13 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
         if (walletAddressShowUi != null) {
             String strCode = walletAddressShowUi.toString();
             Gson gson = new Gson();
-            CurrentAddressDetail currentAddressDetail = gson.fromJson(strCode, CurrentAddressDetail.class);
+            CurrentAddressDetail currentAddressDetail =
+                    gson.fromJson(strCode, CurrentAddressDetail.class);
             strinputAddress = currentAddressDetail.getAddr();
         }
     }
 
-    /**
-     * 软件签名处理
-     */
+    /** 软件签名处理 */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGotPass(GotPassEvent event) {
         String password = event.getPassword();
@@ -418,11 +440,16 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
             // sign transaction
             String signedTx = null;
             try {
-                signedTx = Daemon.commands.callAttr("sign_tx", strSoftMsg, "", new Kwarg("password", password)).toString();
+                signedTx =
+                        Daemon.commands
+                                .callAttr(
+                                        "sign_tx", strSoftMsg, "", new Kwarg("password", password))
+                                .toString();
             } catch (Exception e) {
                 if (e.getMessage().contains("Incorrect password")) {
                     showToast(getString(R.string.wrong_pass));
-                } else if (e.getMessage().contains("failed to recognize transaction encoding for txt")) {
+                } else if (e.getMessage()
+                        .contains("failed to recognize transaction encoding for txt")) {
                     showToast(getString(R.string.transaction_wrong));
                 }
                 e.printStackTrace();
@@ -438,7 +465,15 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
             // sign Message
             String signedMessage = null;
             try {
-                signedMessage = Daemon.commands.callAttr("sign_message", strinputAddress, strSoftMsg, "", new Kwarg("password", password)).toString();
+                signedMessage =
+                        Daemon.commands
+                                .callAttr(
+                                        "sign_message",
+                                        strinputAddress,
+                                        strSoftMsg,
+                                        "",
+                                        new Kwarg("password", password))
+                                .toString();
             } catch (Exception e) {
                 if (Objects.requireNonNull(e.getMessage()).contains("Incorrect password")) {
                     showToast(getString(R.string.wrong_pass));
@@ -454,26 +489,33 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
         }
     }
 
-    /**
-     * 从文件系统读取交易文件
-     */
+    /** 从文件系统读取交易文件 */
     private void importTxFromFile() {
         rxPermissions
-                .request(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                .subscribe(granted -> {
-                    if (granted) {
-                        Intent intent1 = new Intent();
-                        intent1.setClass(getApplicationContext(), FsActivity.class);
-                        intent1.putExtra(FileSelectConstant.SELECTOR_REQUEST_CODE_KEY, FileSelectConstant.SELECTOR_MODE_FILE);
-                        intent1.addCategory(Intent.CATEGORY_OPENABLE);
-                        intent1.putExtra("keyFile", "1");
-                        startActivityForResult(intent1, 1);
-                    } else {
-                        Toast.makeText(this, R.string.reservatpion_photo, Toast.LENGTH_SHORT).show();
-                    }
-                }).dispose();
+                .request(
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                .subscribe(
+                        granted -> {
+                            if (granted) {
+                                Intent intent1 = new Intent();
+                                intent1.setClass(getApplicationContext(), FsActivity.class);
+                                intent1.putExtra(
+                                        FileSelectConstant.SELECTOR_REQUEST_CODE_KEY,
+                                        FileSelectConstant.SELECTOR_MODE_FILE);
+                                intent1.addCategory(Intent.CATEGORY_OPENABLE);
+                                intent1.putExtra("keyFile", "1");
+                                startActivityForResult(intent1, 1);
+                            } else {
+                                Toast.makeText(
+                                                this,
+                                                R.string.reservatpion_photo,
+                                                Toast.LENGTH_SHORT)
+                                        .show();
+                            }
+                        })
+                .dispose();
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -487,21 +529,27 @@ public class SignActivity extends BaseActivity implements RadioGroup.OnCheckedCh
         } else if (requestCode == 1 && resultCode == RESULT_OK) {
             // import file
             assert data != null;
-            ArrayList<String> listExtra = data.getStringArrayListExtra(FileSelectConstant.SELECTOR_BUNDLE_PATHS);
+            ArrayList<String> listExtra =
+                    data.getStringArrayListExtra(FileSelectConstant.SELECTOR_BUNDLE_PATHS);
             assert listExtra != null;
             String str = listExtra.toString();
             String substring = str.substring(1);
             String strPath = substring.substring(0, substring.length() - 1);
             try {
-                //read file
-                PyObject txFromFile = Daemon.commands.callAttr("read_tx_from_file", strPath, new Kwarg("is_tx", signTransaction.isChecked()));
+                // read file
+                PyObject txFromFile =
+                        Daemon.commands.callAttr(
+                                "read_tx_from_file",
+                                strPath,
+                                new Kwarg("is_tx", signTransaction.isChecked()));
                 if (txFromFile != null) {
                     String readFile = txFromFile.toString();
                     editTransactionText.setText(readFile);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                Toast.makeText(this, getString(R.string.filestyle_wrong), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.filestyle_wrong), Toast.LENGTH_SHORT)
+                        .show();
             }
         }
     }

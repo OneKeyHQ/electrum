@@ -1292,4 +1292,6 @@
     <string name="gas_limit_large">Gas Limit 不应大于 %d</string>
     <string name="gas_price_small">Gas Price 不应小于 %s</string>
     <string name="gas_price_large">Gas Price 不应大于 %s</string>
+    <string name="hint_hardware_signature_cancelled">签名已取消，请重试</string>
+
 </resources>
