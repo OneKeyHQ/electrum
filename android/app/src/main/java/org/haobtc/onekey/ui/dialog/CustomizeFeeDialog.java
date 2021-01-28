@@ -1,16 +1,17 @@
 package org.haobtc.onekey.ui.dialog;
+
 import android.os.Bundle;
-import android.text.InputFilter;
-import android.text.InputType;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import butterknife.BindView;
+import butterknife.OnClick;
+import butterknife.OnTextChanged;
 import com.google.common.base.Strings;
-
+import java.util.Locale;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.bean.CustomFeeInfo;
@@ -23,34 +24,33 @@ import org.haobtc.onekey.manager.MySPManager;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.ui.base.BaseDialogFragment;
 
-import java.util.Locale;
-
-import butterknife.BindView;
-import butterknife.OnClick;
-import butterknife.OnTextChanged;
-
-
 /**
  * @author liyan
  * @date 12/11/20
  */
-
 public class CustomizeFeeDialog extends BaseDialogFragment {
 
     @BindView(R.id.img_cancel)
     ImageView imgCancel;
+
     @BindView(R.id.edit_fee_rate)
     EditText editFeeByte;
+
     @BindView(R.id.text_time)
     TextView textTime;
+
     @BindView(R.id.text_size)
     EditText textSize;
+
     @BindView(R.id.text_fee_in_btc)
     TextView textFeeInBtc;
+
     @BindView(R.id.text_fee_in_cash)
     TextView textFeeInCash;
+
     @BindView(R.id.btn_next)
     Button btnNext;
+
     private int size;
     private double feeRateMin;
     private int feeRateMax;
@@ -60,8 +60,9 @@ public class CustomizeFeeDialog extends BaseDialogFragment {
     private String hdWalletName;
     private SystemConfigManager mSystemConfigManager;
 
-    /***
-     * init layout
+    /**
+     * * init layout
+     *
      * @return
      */
     @Override
@@ -82,7 +83,8 @@ public class CustomizeFeeDialog extends BaseDialogFragment {
         double nowRate = bundle.getDouble(Constant.FEE_RATE);
         textSize.setText(String.valueOf(size));
         if (String.valueOf(nowRate).contains(".")) {
-            String rate = String.valueOf(nowRate).substring(0, String.valueOf(nowRate).indexOf("."));
+            String rate =
+                    String.valueOf(nowRate).substring(0, String.valueOf(nowRate).indexOf("."));
             editFeeByte.setText(rate);
         } else {
             editFeeByte.setText(String.valueOf(nowRate));
@@ -112,11 +114,18 @@ public class CustomizeFeeDialog extends BaseDialogFragment {
                 String feeRate = editFeeByte.getText().toString();
                 double feeRate1 = Double.parseDouble(feeRate);
                 if (feeRate1 < feeRateMin) {
-                    Toast.makeText(getContext(), R.string.fee_rate_too_small, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), R.string.fee_rate_too_small, Toast.LENGTH_SHORT)
+                            .show();
                     return;
                 }
                 MySPManager.getInstance().put(hdWalletName, feeRate);
-                EventBus.getDefault().post(new CustomizeFeeRateEvent(editFeeByte.getText().toString(), fee, fiat, String.valueOf(time)));
+                EventBus.getDefault()
+                        .post(
+                                new CustomizeFeeRateEvent(
+                                        editFeeByte.getText().toString(),
+                                        fee,
+                                        fiat,
+                                        String.valueOf(time)));
                 dismiss();
                 break;
         }
@@ -127,7 +136,8 @@ public class CustomizeFeeDialog extends BaseDialogFragment {
         String feeRate = editFeeByte.getText().toString();
         if (!Strings.isNullOrEmpty(feeRate) && Double.parseDouble(feeRate) > 0) {
             btnNext.setEnabled(true);
-            PyResponse<String> customFeeInfo = PyEnv.getCustomFeeInfo(editFeeByte.getText().toString());
+            PyResponse<String> customFeeInfo =
+                    PyEnv.getCustomFeeInfo(editFeeByte.getText().toString());
             String errors = customFeeInfo.getErrors();
             if (Strings.isNullOrEmpty(errors)) {
                 CustomFeeInfo fromDate = CustomFeeInfo.objectFromDate(customFeeInfo.getResult());
@@ -135,11 +145,27 @@ public class CustomizeFeeDialog extends BaseDialogFragment {
                 time = customer.getTime();
                 fiat = customer.getFiat();
                 fee = customer.getFee();
-                textTime.setText(String.format("%s%s%s", getString(R.string.about_), time, getString(R.string.minute)));
-                textFeeInBtc.setText(String.format(Locale.ENGLISH, "%s %s", fee, mSystemConfigManager.getCurrentBaseUnit()));
+                textTime.setText(
+                        String.format(
+                                Locale.getDefault(),
+                                "%s%s%s",
+                                getString(R.string.about_),
+                                time,
+                                getString(R.string.minute)));
+                textFeeInBtc.setText(
+                        String.format(
+                                Locale.getDefault(),
+                                "%s %s",
+                                fee,
+                                mSystemConfigManager.getCurrentBaseUnit()));
                 textSize.setText(String.valueOf(customer.getSize()));
                 textFeeInCash.setVisibility(View.VISIBLE);
-                textFeeInCash.setText(String.format(Locale.ENGLISH, "≈ %s %s", mSystemConfigManager.getCurrentFiatSymbol(), customer.getFiat()));
+                textFeeInCash.setText(
+                        String.format(
+                                Locale.getDefault(),
+                                "≈ %s %s",
+                                mSystemConfigManager.getCurrentFiatSymbol(),
+                                customer.getFiat()));
             } else {
                 Toast.makeText(getActivity(), errors, Toast.LENGTH_SHORT).show();
             }

@@ -1230,7 +1230,7 @@
     <string name="not_allow_un_check">This item cannot be cancelled</string>
     <string name="unknown">Unknown</string>
     <string name="empty_help_words">The mnemonic is empty</string>
-    <string name="accuracy_num">Accuracy should not exceed 8 decimal places</string>
+    <string name="accuracy_num">Accuracy should not exceed %d decimal places</string>
     <string name="use_cold_sign">Use Cold Wallet for sweep signatures</string>
     <string name="watch_wallet_tip">Currently it is a watch wallet, and initiated transfers need to be swept and signed using the cold wallet that holds the private key.</string>
     <string name="qr_exception">The transaction amount is too large to generate a QR code</string>
@@ -1281,8 +1281,6 @@
     <string name="keystore_export">Keystore 导出</string>
     <string name="hint_update"></string>
     <string name="action_continue">Continue</string>
-    <string name="gas_limit_tip">Gas Limit 不应大于 %d 不应小于 %d</string>
-    <string name="gas_price_tip">Gas Price 不应大于 %s 不应小于 %s</string>
     <string name="new_guide_tip">App 快速上手教程</string>
     <string name="hint_temp_scan_inconformity">扫描的二维码与当前选择的币种不一致。</string>
     <string name="hint_view_more_record">查看更多记录</string>
@@ -1290,5 +1288,8 @@
     <string name="not_find_wallet">没有找到有交易记录的钱包，您可以选择创建新钱包</string>
     <string name="exist">已存在</string>
     <string name="not_cancel">不可取消</string>
-
+    <string name="gas_limit_small">Gas Limit 不应小于 %d</string>
+    <string name="gas_limit_large">Gas Limit 不应大于 %d</string>
+    <string name="gas_price_small">Gas Price 不应小于 %s</string>
+    <string name="gas_price_large">Gas Price 不应大于 %s</string>
 </resources>

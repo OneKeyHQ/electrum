@@ -1202,7 +1202,7 @@
 
     <!--  last translate  -->
     <string name="empty_help_words">助记词为空</string>
-    <string name="accuracy_num">精度不应超过小数点后 8 位</string>
+    <string name="accuracy_num">精度不应超过小数点后 %d 位</string>
     <string name="use_cold_sign">使用冷钱包进行扫码签名</string>
     <string name="watch_wallet_tip">当前为观察钱包，发起的转账需使用掌握该私钥的冷钱包进行扫码签名。</string>
     <string name="qr_exception">交易金额过大，无法生成二维码</string>
@@ -1222,8 +1222,6 @@
     <string name="keystore_export">Keystore 导出</string>
     <string name="hint_update">升级</string>
     <string name="action_continue">继续</string>
-    <string name="gas_limit_tip">Gas Limit 不应大于 %d 不应小于 %d</string>
-    <string name="gas_price_tip">Gas Price 不应大于 %s 不应小于 %s</string>
     <string name="new_guide_tip">App 快速上手教程</string>
     <string name="hint_temp_scan_inconformity">扫描的二维码与当前选择的币种不一致。</string>
     <string name="hint_view_more_record">查看更多记录</string>
@@ -1231,5 +1229,9 @@
     <string name="not_find_wallet">没有找到有交易记录的钱包，您可以选择创建新钱包</string>
     <string name="exist">已存在</string>
     <string name="not_cancel">不可取消</string>
+    <string name="gas_limit_small">Gas Limit 不应小于 %d</string>
+    <string name="gas_limit_large">Gas Limit 不应大于 %d</string>
+    <string name="gas_price_small">Gas Price 不应小于 %s</string>
+    <string name="gas_price_large">Gas Price 不应大于 %s</string>
 
 </resources>

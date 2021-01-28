@@ -138,7 +138,7 @@
                     android:textColor="@color/graytext_color"
                     tools:ignore="UseCompatTextViewDrawableXml" />
 
-                <EditText
+                <org.haobtc.onekey.ui.widget.PasteEditText
                     android:id="@+id/edit_amount"
                     android:layout_width="250dp"
                     android:layout_height="@dimen/dp_40"

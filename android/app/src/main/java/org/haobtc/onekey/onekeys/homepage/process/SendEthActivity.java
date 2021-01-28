@@ -1,7 +1,5 @@
 package org.haobtc.onekey.onekeys.homepage.process;
 
-import static org.haobtc.onekey.constant.Constant.WALLET_BALANCE;
-
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -15,37 +13,22 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.lifecycle.ViewModelProvider;
-import butterknife.BindView;
-import butterknife.OnClick;
-import butterknife.OnFocusChange;
-import butterknife.OnTextChanged;
+
 import com.google.common.base.Strings;
 import com.lxj.xpopup.XPopup;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.bean.ZxingConfig;
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.ObservableOnSubscribe;
-import io.reactivex.rxjava3.core.ObservableSource;
-import io.reactivex.rxjava3.disposables.CompositeDisposable;
-import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.functions.Function;
-import io.reactivex.rxjava3.schedulers.Schedulers;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -86,11 +69,31 @@ import org.haobtc.onekey.ui.widget.PointLengthFilter;
 import org.haobtc.onekey.utils.ClipboardUtils;
 import org.haobtc.onekey.viewmodel.AppWalletViewModel;
 
-/** @author liyan */
-public class SendEthActivity extends BaseActivity
-        implements BusinessAsyncTask.Helper,
-                PasteEditText.OnPasteCallback,
-                CustomEthFeeDialog.onCustomInterface {
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
+
+import butterknife.BindView;
+import butterknife.OnClick;
+import butterknife.OnFocusChange;
+import butterknife.OnTextChanged;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.ObservableOnSubscribe;
+import io.reactivex.rxjava3.core.ObservableSource;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.functions.Function;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+
+import static org.haobtc.onekey.constant.Constant.WALLET_BALANCE;
+
+/**
+ * @author liyan
+ */
+public class SendEthActivity extends BaseActivity implements BusinessAsyncTask.Helper, CustomEthFeeDialog.onCustomInterface {
 
     private static final String EXT_BALANCE = WALLET_BALANCE;
     private static final String EXT_WALLET_NAME = "hdWalletName";
@@ -120,7 +123,7 @@ public class SendEthActivity extends BaseActivity
     private static final int DEFAULT_TX_SIZE = 220;
 
     @BindView(R.id.edit_amount)
-    EditText editAmount;
+    PasteEditText editAmount;
 
     @BindView(R.id.btn_next)
     Button btnNext;
@@ -259,7 +262,8 @@ public class SendEthActivity extends BaseActivity
     private final CompositeDisposable mCompositeDisposable = new CompositeDisposable();
     private SystemConfigManager mSystemConfigManager;
     private AccountManager mAccountManager;
-    private boolean isClickPaste;
+    private boolean isAddressClickPaste;
+    private boolean isAmountClickPaste;
     // 钱包类型：btc || eth
     private static final String walletType = Constant.ETH;
     private int mGasLimit = 0;
@@ -301,8 +305,16 @@ public class SendEthActivity extends BaseActivity
         initShowDefaultView();
         getDefaultFee();
         editAmount.setFilters(
-                new InputFilter[] {
-                    new PointLengthFilter(scale, maxNum -> showToast(R.string.accuracy_num))
+                new InputFilter[]{
+
+                        new PointLengthFilter(
+                                scale,
+                                maxNum ->
+                                        showToast(
+                                                String.format(
+                                                        Locale.getDefault(),
+                                                        mContext.getString(R.string.accuracy_num),
+                                                        scale)))
                 });
         String addressScan = getIntent().getStringExtra(EXT_SCAN_ADDRESS);
         if (!TextUtils.isEmpty(addressScan)) {
@@ -349,7 +361,8 @@ public class SendEthActivity extends BaseActivity
                     textBalance.setText(String.format("%s%s", balance, baseUnit));
                 });
         switchCoinType.setText(Constant.COIN_TYPE_ETH);
-        editReceiverAddress.setOnPasteCallback(this);
+        editReceiverAddress.setOnPasteCallback(() -> isAddressClickPaste = true);
+        editAmount.setOnPasteCallback(() -> isAmountClickPaste = true);
         registerLayoutChangeListener();
     }
 
@@ -1116,14 +1129,18 @@ public class SendEthActivity extends BaseActivity
         if (amount.startsWith(".")) {
             editAmount.setText("");
         }
+        if (isAmountClickPaste) {
+            isAmountClickPaste = false;
+            refreshFeeView();
+        }
     }
 
     @OnTextChanged(
             value = R.id.edit_receiver_address,
             callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
     public void onAddress(CharSequence sequence) {
-        if (isClickPaste) {
-            isClickPaste = false;
+        if (isAddressClickPaste) {
+            isAddressClickPaste = false;
             keyBoardHideRefresh();
         }
     }
@@ -1305,7 +1322,6 @@ public class SendEthActivity extends BaseActivity
             showToast(errorMsg);
         }
     }
-
     /** 如果当前是最大模式，那么需要根据当前选中的费率，计算最大值 */
     private void doDealMaxAmount() {
         // 查看输入的值是否大于最大值
@@ -1423,12 +1439,6 @@ public class SendEthActivity extends BaseActivity
             subscribe.dispose();
         }
     }
-
-    @Override
-    public void onPaste() {
-        isClickPaste = true;
-    }
-
     // 自定义费率完成的回调
     @Override
     public void onCustomComplete(CustomizeFeeRateEvent event) {
