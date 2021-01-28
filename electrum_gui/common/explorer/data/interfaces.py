@@ -2,14 +2,8 @@ from abc import ABC, abstractmethod
 from typing import List
 
 from electrum_gui.common.explorer.data.enums import TransactionStatus
-from electrum_gui.common.explorer.data.objects import (
-    Address,
-    Transaction,
-    ExplorerInfo,
-)
-from electrum_gui.common.explorer.data.exceptions import (
-    TransactionNotFound,
-)
+from electrum_gui.common.explorer.data.exceptions import TransactionNotFound
+from electrum_gui.common.explorer.data.objects import Address, ExplorerInfo, Token, Transaction, TxBroadcastReceipt
 
 
 class ExplorerInterface(ABC):
@@ -28,6 +22,15 @@ class ExplorerInterface(ABC):
         :param address: address
         :return: Address
         """
+
+    def get_balance(self, address: str, token: Token = None) -> int:
+        """
+        get address balance
+        :param address: address
+        :param token: token, optional
+        :return: balance
+        """
+        return self.get_address(address).balance
 
     @abstractmethod
     def get_transaction_by_txid(self, txid: str) -> Transaction:
@@ -68,3 +71,11 @@ class ExplorerInterface(ABC):
         txids = {i.txid for i in txs}
         txids = list(txids)
         return txids
+
+    @abstractmethod
+    def broadcast_transaction(self, raw_tx: str) -> TxBroadcastReceipt:
+        """
+        push transaction to chain
+        :param raw_tx: transaction in str
+        :return: txid, optional
+        """

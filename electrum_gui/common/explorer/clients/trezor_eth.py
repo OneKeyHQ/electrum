@@ -5,20 +5,17 @@ from electrum_gui.common.basic.functional.require import require
 from electrum_gui.common.basic.functional.text import force_text
 from electrum_gui.common.basic.request.exceptions import ResponseException
 from electrum_gui.common.basic.request.restful import RestfulRequest
-from electrum_gui.common.explorer.data.enums import TransactionStatus
+from electrum_gui.common.explorer.data.enums import TransactionStatus, TxBroadcastReceiptCode
+from electrum_gui.common.explorer.data.exceptions import TransactionNotFound
+from electrum_gui.common.explorer.data.interfaces import ExplorerInterface
 from electrum_gui.common.explorer.data.objects import (
-    Transaction,
     Address,
     BlockHeader,
-    AddressBalance,
-    TransactionFee,
     ExplorerInfo,
-)
-from electrum_gui.common.explorer.data.exceptions import (
-    TransactionNotFound,
-)
-from electrum_gui.common.explorer.data.interfaces import (
-    ExplorerInterface,
+    Token,
+    Transaction,
+    TransactionFee,
+    TxBroadcastReceipt,
 )
 
 
@@ -44,20 +41,28 @@ class TrezorETH(ExplorerInterface):
         )
 
     def get_address(self, address: str) -> Address:
-        resp = self.restful.get(
-            f"/api/v2/address/{address}", params=dict(details="basic")
-        )
-        require(resp["address"].lower() == address.lower())
+        resp = self._get_raw_address_info(address, details="basic")
 
         return Address(
             address=address,
-            balance=AddressBalance(
-                available=int(resp["balance"]),
-                pending=int(resp["unconfirmedBalance"]),
-            ),
+            balance=int(resp["balance"]),
             nonce=int(resp["nonce"]),
             existing=True,
         )
+
+    def _get_raw_address_info(self, address: str, details: str, **kwargs) -> dict:
+        resp = self.restful.get(f"/api/v2/address/{address}", params=dict(details=details, **kwargs))
+        require(resp["address"].lower() == address.lower())
+        return resp
+
+    def get_balance(self, address: str, token: Token = None) -> int:
+        if not token:
+            return super(TrezorETH, self).get_balance(address)
+        else:
+            resp = self._get_raw_address_info(address, details="tokenBalances")
+            tokens = {i["contract"].lower(): i["balance"] for i in resp.get("tokens", ())}
+            balance = tokens.get(token.contract.lower(), 0)
+            return int(balance)
 
     def get_transaction_by_txid(self, txid: str) -> Transaction:
         try:
@@ -94,28 +99,54 @@ class TrezorETH(ExplorerInterface):
             source=raw_tx["vin"][0]["addresses"][0],
             target=raw_tx["vout"][0]["addresses"][0],
             value=int(raw_tx["vout"][0]["value"]),
-            status=self.__raw_tx_status_mapping__.get(
-                ethereum_data.get("status"), TransactionStatus.UNKNOWN
-            ),
+            status=self.__raw_tx_status_mapping__.get(ethereum_data.get("status"), TransactionStatus.UNKNOWN),
             block_header=block_header,
             fee=fee,
             raw_tx=json.dumps(raw_tx),
         )
 
     def search_txs_by_address(self, address: str) -> List[Transaction]:
-        resp = self.restful.get(
-            f"/api/v2/address/{address}", params=dict(details="txs")
-        )
-        require(resp["address"].lower() == address.lower())
-
+        resp = self._get_raw_address_info(address, details="txs")
         txs = [self._populate_transaction(i) for i in resp.get("transactions", ())]
+
         return txs
 
     def search_txids_by_address(self, address: str) -> List[str]:
-        resp = self.restful.get(
-            f"/api/v2/address/{address}", params=dict(details="txids")
-        )
-        require(resp["address"].lower() == address.lower())
-
+        resp = self._get_raw_address_info(address, details="txids")
         txids = [i for i in resp.get("txids", ())]
+
         return txids
+
+    def broadcast_transaction(self, raw_tx: str) -> TxBroadcastReceipt:
+        if not raw_tx.startswith("0x"):
+            raw_tx += "0x"
+
+        try:
+            resp = self.restful.get(f"/api/v2/sendtx/{raw_tx}")
+
+        except ResponseException as e:
+            try:
+                resp = e.response.json()
+            except ValueError:
+                resp = dict()
+
+        txid = resp.get("result")
+        if txid:
+            return TxBroadcastReceipt(is_success=True, receipt_code=TxBroadcastReceiptCode.SUCCESS, txid=txid)
+
+        error_message = resp.get("error", "")
+        if "already known" in error_message:
+            return TxBroadcastReceipt(
+                is_success=True,
+                receipt_code=TxBroadcastReceiptCode.ALREADY_KNOWN,
+            )
+        elif "nonce too low" in error_message:
+            return TxBroadcastReceipt(
+                is_success=False,
+                receipt_code=TxBroadcastReceiptCode.NONCE_TOO_LOW,
+                receipt_message=error_message,
+            )
+        else:
+            return TxBroadcastReceipt(
+                is_success=False, receipt_code=TxBroadcastReceiptCode.UNEXPECTED_FAILED, receipt_message=error_message
+            )

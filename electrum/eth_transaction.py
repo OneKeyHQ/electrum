@@ -58,7 +58,7 @@ class Eth_Transaction:
         return transaction
 
     @staticmethod
-    def send_transaction(account, w3, transaction):
+    def sign_transaction(account, transaction) -> str:
         """
         Signs and send transaction
         :param transaction: transaction dict
@@ -66,17 +66,13 @@ class Eth_Transaction:
         """
         print('transaction: ' + str(transaction))
 
-        signed_tx = Account.signTransaction(transaction, account.privateKey)
-        tx_hash = w3.eth.sendRawTransaction(signed_tx.rawTransaction)
-
-        return tx_hash
+        return Account.signTransaction(transaction, account.privateKey).rawTransaction.hex()
 
     @staticmethod
-    def serialize_and_send_tx(w3, transaction_dict, vrs=()):
+    def serialize_tx(transaction_dict, vrs=()) -> str:
         unsigned_transaction = serializable_unsigned_transaction_from_dict(transaction_dict)
         encoded_transaction = encode_transaction(unsigned_transaction, vrs=vrs)
-        tx_hash = w3.eth.sendRawTransaction(HexBytes(encoded_transaction))
-        return tx_hash
+        return HexBytes(encoded_transaction).hex()
 
     @staticmethod
     def get_tx_erc20_data_field(receiver, value):

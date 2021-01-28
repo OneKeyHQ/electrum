@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 
 from electrum_gui.common.basic.dataclass.dataclass import DataClassMixin
-from electrum_gui.common.explorer.data.enums import TransactionStatus
+from electrum_gui.common.explorer.data.enums import TransactionStatus, TxBroadcastReceiptCode
 
 
 @dataclass
@@ -40,17 +40,22 @@ class Transaction(DataClassMixin):
 
 
 @dataclass
-class AddressBalance(DataClassMixin):
-    available: int
-    pending: int = 0
-    frozen: int = 0
+class Address(DataClassMixin):
+    address: str
+    balance: int
+    existing: bool = True
+    nonce: int = 0
     payload: dict = field(default_factory=dict)
 
 
 @dataclass
-class Address(DataClassMixin):
-    address: str
-    balance: AddressBalance
-    existing: bool = True
-    nonce: int = 0
-    payload: dict = field(default_factory=dict)
+class Token(DataClassMixin):
+    contract: str
+
+
+@dataclass
+class TxBroadcastReceipt(DataClassMixin):
+    is_success: bool
+    receipt_code: TxBroadcastReceiptCode
+    receipt_message: str = None
+    txid: str = None

@@ -2,15 +2,16 @@ import json
 from typing import List
 
 from electrum_gui.common.basic.request.restful import RestfulRequest
-from electrum_gui.common.explorer.data.enums import TransactionStatus
+from electrum_gui.common.explorer.data.enums import TransactionStatus, TxBroadcastReceiptCode
 from electrum_gui.common.explorer.data.interfaces import ExplorerInterface
 from electrum_gui.common.explorer.data.objects import (
-    Transaction,
     Address,
-    ExplorerInfo,
-    AddressBalance,
     BlockHeader,
+    ExplorerInfo,
+    Token,
+    Transaction,
     TransactionFee,
+    TxBroadcastReceipt,
 )
 
 
@@ -29,7 +30,6 @@ class Etherscan(ExplorerInterface):
             data["apikey"] = self.api_key
 
         resp = self.restful.post(path, data=data)
-        print(f"resp: {resp}")
         return resp
 
     def get_explorer_info(self) -> ExplorerInfo:
@@ -46,9 +46,14 @@ class Etherscan(ExplorerInterface):
 
         resp = self._call_action("proxy", "eth_getTransactionCount", address=address)
         nonce = int(resp["result"], base=16)
-        return Address(
-            address=address, balance=AddressBalance(available=balance), nonce=nonce
-        )
+        return Address(address=address, balance=balance, nonce=nonce)
+
+    def get_balance(self, address: str, token: Token = None) -> int:
+        if not token:
+            return super(Etherscan, self).get_balance(address)
+        else:
+            resp = self._call_action("account", "tokenbalance", address=address, contractaddress=token.contract)
+            return int(resp.get("result", 0))
 
     def get_transaction_by_txid(self, txid: str) -> Transaction:
         resp = self._call_action("proxy", "eth_getTransactionByHash", txhash=txid)
@@ -117,9 +122,7 @@ class Etherscan(ExplorerInterface):
 
             gas_limit = int(raw_tx["gas"])
             gas_usage = int(raw_tx.get("gasUsed")) or gas_limit
-            fee = TransactionFee(
-                limit=gas_limit, usage=gas_usage, price_per_unit=int(raw_tx["gasPrice"])
-            )
+            fee = TransactionFee(limit=gas_limit, usage=gas_usage, price_per_unit=int(raw_tx["gasPrice"]))
 
             tx = Transaction(
                 txid=raw_tx["hash"],
@@ -134,3 +137,30 @@ class Etherscan(ExplorerInterface):
             txs.append(tx)
 
         return txs
+
+    def broadcast_transaction(self, raw_tx: str) -> TxBroadcastReceipt:
+        if not raw_tx.startswith("0x"):
+            raw_tx += "0x"
+
+        resp = self._call_action("proxy", "eth_sendRawTransaction", hex=raw_tx)
+
+        txid = resp.get("result")
+        if txid:
+            return TxBroadcastReceipt(is_success=True, receipt_code=TxBroadcastReceiptCode.SUCCESS, txid=txid)
+
+        error_message = resp["error"].get("message", "") if resp.get("error") else ""
+        if "already known" in error_message:
+            return TxBroadcastReceipt(
+                is_success=True,
+                receipt_code=TxBroadcastReceiptCode.ALREADY_KNOWN,
+            )
+        elif "nonce too low" in error_message:
+            return TxBroadcastReceipt(
+                is_success=False,
+                receipt_code=TxBroadcastReceiptCode.NONCE_TOO_LOW,
+                receipt_message=error_message,
+            )
+        else:
+            return TxBroadcastReceipt(
+                is_success=False, receipt_code=TxBroadcastReceiptCode.UNEXPECTED_FAILED, receipt_message=error_message
+            )
