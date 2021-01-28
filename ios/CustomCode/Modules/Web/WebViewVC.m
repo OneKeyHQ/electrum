@@ -10,6 +10,7 @@
 #import "UIBarButtonItem+CustomBarButtonItem.h"
 #import <WebKit/WKWebView.h>
 #import <WebKit/WebKit.h>
+#import "OKURLSchemeHandler.h"
 
 typedef NS_ENUM(NSInteger, WebViewLoadType) {
     WebViewLoadTypeURL = 0,
@@ -48,7 +49,20 @@ typedef NS_ENUM(NSInteger, WebViewLoadType) {
 }
 
 + (WebViewVC *)loadWebViewControllerWithTitle:(NSString *)title url:(NSString *)url rightItemTitle:(NSString *)rightItemTitle rightItemImage:(NSString *)rightItemImage rightItemBlock:(RightItemClickBlock)rightItemBlock {
+    return [self loadWebViewControllerWithTitle:title url:url rightItemTitle:rightItemTitle rightItemImage:rightItemImage rightItemBlock:rightItemBlock useProxy:NO];
+}
+
++ (WebViewVC *)loadWebViewControllerWithTitle:(NSString *)title url:(NSString *)url rightItemTitle:(NSString *)rightItemTitle {
+    return [self loadWebViewControllerWithTitle:title url:url rightItemTitle:rightItemTitle rightItemBlock:nil];
+}
+
++ (WebViewVC *)loadWebViewControllerWithTitle:(NSString *)title url:(NSString *)url useProxy:(BOOL)useProxy {
+    return [self loadWebViewControllerWithTitle:title url:url rightItemTitle:nil rightItemImage:nil rightItemBlock:nil useProxy:useProxy];
+}
+
++ (WebViewVC *)loadWebViewControllerWithTitle:(NSString *)title url:(NSString *)url rightItemTitle:(NSString *)rightItemTitle rightItemImage:(NSString *)rightItemImage rightItemBlock:(RightItemClickBlock)rightItemBlock useProxy:(BOOL)useProxy {
     WebViewVC *vc = [[WebViewVC alloc] init];
+    vc.useProxy = useProxy;
     [vc loadWebURLSring:url];
     if (title) {
         vc.navigationItem.title = title;
@@ -60,10 +74,6 @@ typedef NS_ENUM(NSInteger, WebViewLoadType) {
     vc.rightItemClickBlock = rightItemBlock;
     vc.hidesBottomBarWhenPushed = YES;
     return vc;
-}
-
-+ (WebViewVC *)loadWebViewControllerWithTitle:(NSString *)title url:(NSString *)url rightItemTitle:(NSString *)rightItemTitle {
-    return [self loadWebViewControllerWithTitle:title url:url rightItemTitle:rightItemTitle rightItemBlock:nil];
 }
 
 #pragma mark 添加rightItem
@@ -369,6 +379,11 @@ typedef NS_ENUM(NSInteger, WebViewLoadType) {
         [userContentController addUserScript:dsbridgeJs];
         
         config.userContentController = userContentController;
+        
+        if (self.useProxy) {
+            [config setURLSchemeHandler:[OKURLSchemeHandler new] forURLScheme:@"https"];
+            [config setURLSchemeHandler:[OKURLSchemeHandler new] forURLScheme:@"http"];
+        }
 
         CGFloat height = SCREEN_HEIGHT - APP_STATUSBAR_AND_NAVIGATIONBAR_HEIGHT - KDevice_SafeArea_Bottom;
         _wkWebView = [[DWKWebView alloc] initWithFrame:CGRectMake(0, APP_STATUSBAR_AND_NAVIGATIONBAR_HEIGHT, SCREEN_WIDTH, height) configuration:config];

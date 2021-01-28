@@ -24,12 +24,14 @@ typedef void(^RightItemClickBlock)(void);
 @property (assign, nonatomic) BOOL isShouldReload; // 跳转原生回来后刷新， 默认为YES，设置为NO后下一次重置为YES
 @property (nonatomic, strong) DWKWebView *wkWebView;
 @property (nonatomic, copy) void (^loadedCallback)(BOOL isSuccess);
+@property (nonatomic, assign) BOOL useProxy;  // 在 wkwebview init 之前设置。否则不会生效。
 
 + (WebViewVC *)loadWebViewControllerWithTitle:(NSString *)title url:(NSString *)url rightItemTitle:(NSString *)rightItemTitle rightItemBlock:(RightItemClickBlock)rightItemBlock;
 + (WebViewVC *)loadWebViewControllerWithTitle:(NSString *)title url:(NSString *)url rightItemImage:(NSString *)rightItemImage rightItemBlock:(RightItemClickBlock)rightItemBlock;
 + (WebViewVC *)loadWebViewControllerWithTitle:(NSString *)title url:(NSString *)url rightItemTitle:(NSString *)rightItemTitle;
 + (WebViewVC *)loadWebViewControllerWithTitle:(NSString *)title url:(NSString *)url;
 + (WebViewVC *)loadWebViewControllerWithTitle:(NSString *)title html:(NSString *)html;
++ (WebViewVC *)loadWebViewControllerWithTitle:(NSString *)title url:(NSString *)url useProxy:(BOOL)useProxy;
 
 - (void)reload;
 

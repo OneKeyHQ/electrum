@@ -30,6 +30,7 @@
 #import "OKSignatureViewController.h"
 #import "OKMatchingInCirclesViewController.h"
 
+#import "OKURLSchemeHandler.h"
 
 @interface OKWalletViewController ()<UITableViewDelegate,UITableViewDataSource,UINavigationControllerDelegate,UIGestureRecognizerDelegate>
 
@@ -411,8 +412,7 @@
 }
 
 - (void)tapBanner {
-    NSString *url = @"https://onekey.zendesk.com/hc/zh-cn/articles/360002182556-App-%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B%E6%95%99%E7%A8%8B";
-    WebViewVC * webVC = [WebViewVC loadWebViewControllerWithTitle:nil url:url];
+    WebViewVC * webVC = [WebViewVC loadWebViewControllerWithTitle:nil url:kAppUserGuide useProxy:YES];
     [self.navigationController pushViewController:webVC animated:YES];
 }
 

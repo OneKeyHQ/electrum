@@ -56,7 +56,7 @@
             break;
         case 1:
         {
-            WebViewVC *vc = [WebViewVC loadWebViewControllerWithTitle:MyLocalizedString(@"用户协议", nil) url:kTheServiceAgreement];
+            WebViewVC *vc = [WebViewVC loadWebViewControllerWithTitle:MyLocalizedString(@"用户协议", nil) url:kTheServiceAgreement useProxy:YES];
             [self.navigationController pushViewController:vc animated:YES];
         }
             break;
