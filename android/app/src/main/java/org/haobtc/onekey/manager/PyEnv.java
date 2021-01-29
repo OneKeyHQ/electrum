@@ -470,14 +470,20 @@ public final class PyEnv {
 
     /** 获取所有钱包的余额 */
     @Nullable
-    public static AllWalletBalanceInfoDTO getAllWalletBalance() {
+    public static PyResponse<AllWalletBalanceInfoDTO> getAllWalletBalance() {
+        PyResponse<AllWalletBalanceInfoDTO> pyResponse = new PyResponse<>();
         try {
             String info = sCommands.callAttr("get_all_wallet_balance").toString();
-            return new Gson().fromJson(info, AllWalletBalanceInfoDTO.class);
+            AllWalletBalanceInfoDTO allWalletBalanceInfoDTO =
+                    new Gson().fromJson(info, AllWalletBalanceInfoDTO.class);
+            pyResponse.setResult(allWalletBalanceInfoDTO);
         } catch (Exception e) {
             e.printStackTrace();
+            Exception exception = HardWareExceptions.exceptionConvert(e);
+            pyResponse.setErrors(exception.getMessage());
+            e.printStackTrace();
         }
-        return null;
+        return pyResponse;
     }
 
     /** 查看当前钱包的备份状态 */

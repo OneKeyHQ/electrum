@@ -18,15 +18,12 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.IdRes;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
-
 import butterknife.BindView;
 import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
-
 import com.chaquo.python.PyObject;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
@@ -34,12 +31,9 @@ import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.bean.ZxingConfig;
 import com.yzq.zxinglibrary.common.Constant;
-
 import io.reactivex.functions.Consumer;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -82,9 +76,7 @@ import org.haobtc.onekey.viewmodel.NetworkViewModel;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-/**
- * @author jinxiaomin
- */
+/** @author jinxiaomin */
 public class WalletFragment extends BaseFragment implements TextWatcher {
 
     private static final int REQUEST_CODE = 0;
@@ -338,10 +330,10 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
             String deviceId = localWalletInfo.getDeviceId();
             String deviceInfo =
                     PreferencesManager.get(
-                            getContext(),
-                            org.haobtc.onekey.constant.Constant.DEVICES,
-                            deviceId,
-                            "")
+                                    getContext(),
+                                    org.haobtc.onekey.constant.Constant.DEVICES,
+                                    deviceId,
+                                    "")
                             .toString();
             if (!Strings.isNullOrEmpty(deviceInfo)) {
                 HardwareFeatures info = HardwareFeatures.objectFromData(deviceInfo);
@@ -349,10 +341,10 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
                 String label = info.getLabel();
                 bleMac =
                         PreferencesManager.get(
-                                getContext(),
-                                org.haobtc.onekey.constant.Constant.BLE_INFO,
-                                bleName,
-                                "")
+                                        getContext(),
+                                        org.haobtc.onekey.constant.Constant.BLE_INFO,
+                                        bleName,
+                                        "")
                                 .toString();
                 textHard.setText(Strings.isNullOrEmpty(label) ? bleName : label);
             } else {
@@ -364,9 +356,7 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
         }
     }
 
-    /**
-     * 判断当前钱包是否需要备份
-     */
+    /** 判断当前钱包是否需要备份 */
     private void whetherBackup() {
         try {
             isBackup = PyEnv.hasBackup(getActivity());
@@ -383,9 +373,7 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
         }
     }
 
-    /**
-     * 判断备份提示弹窗是否需要出现
-     */
+    /** 判断备份提示弹窗是否需要出现 */
     private void whetherBackupDialog() {
         // whether to pop backup dialog
         if (mSystemConfigManager.getNeedPopBackUpDialog()) {
@@ -397,17 +385,15 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
         }
     }
 
-    /**
-     * 统一处理硬件连接
-     */
+    /** 统一处理硬件连接 */
     private void deal(@IdRes int id) {
         if (org.haobtc.onekey.constant.Constant.WALLET_TYPE_HARDWARE.equals(nowType)) {
             currentAction = id;
             if (Strings.isNullOrEmpty(bleMac)) {
                 Toast.makeText(
-                        getContext(),
-                        getString(R.string.not_found_device_msg),
-                        Toast.LENGTH_SHORT)
+                                getContext(),
+                                getString(R.string.not_found_device_msg),
+                                Toast.LENGTH_SHORT)
                         .show();
             } else {
                 Intent intent2 = new Intent(getActivity(), SearchDevicesActivity.class);
@@ -423,9 +409,7 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
         toNext(id);
     }
 
-    /**
-     * 处理具体业务
-     */
+    /** 处理具体业务 */
     private void toNext(int id) {
         switch (id) {
             case R.id.linear_send:
@@ -466,9 +450,7 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
         }
     }
 
-    /**
-     * 备份钱包响应
-     */
+    /** 备份钱包响应 */
     @Subscribe
     public void onBack(BackupEvent event) {
         Intent intent = new Intent(getActivity(), BackupGuideActivity.class);
@@ -482,9 +464,7 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
         currentAction = 0;
     }
 
-    /**
-     * 连接硬件超时响应
-     */
+    /** 连接硬件超时响应 */
     @Subscribe
     public void onConnectionTimeout(BleConnectionEx connectionEx) {
         if (connectionEx == BleConnectionEx.BLE_CONNECTION_EX_TIMEOUT) {
@@ -511,9 +491,9 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
                     } catch (Exception e) {
                         e.printStackTrace();
                         Toast.makeText(
-                                getActivity(),
-                                e.getMessage().replace("BaseException:", ""),
-                                Toast.LENGTH_SHORT)
+                                        getActivity(),
+                                        e.getMessage().replace("BaseException:", ""),
+                                        Toast.LENGTH_SHORT)
                                 .show();
                         return;
                     }
@@ -594,19 +574,19 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
 
     @SingleClick(value = 1000L)
     @OnClick({
-            R.id.rel_check_wallet,
-            R.id.img_scan,
-            R.id.img_Add,
-            R.id.rel_create_hd,
-            R.id.rel_recovery_hd,
-            R.id.rel_pair_hard,
-            R.id.rel_wallet_detail,
-            R.id.linear_send,
-            R.id.linear_receive,
-            R.id.linear_sign,
-            R.id.rel_now_back_up,
-            R.id.rel_bi_detail,
-            R.id.img_bottom
+        R.id.rel_check_wallet,
+        R.id.img_scan,
+        R.id.img_Add,
+        R.id.rel_create_hd,
+        R.id.rel_recovery_hd,
+        R.id.rel_pair_hard,
+        R.id.rel_wallet_detail,
+        R.id.linear_send,
+        R.id.linear_receive,
+        R.id.linear_sign,
+        R.id.rel_now_back_up,
+        R.id.rel_bi_detail,
+        R.id.img_bottom
     })
     public void onViewClicked(View view) {
         switch (view.getId()) {
@@ -639,9 +619,9 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
                                             startActivityForResult(intent2, REQUEST_CODE);
                                         } else {
                                             Toast.makeText(
-                                                    getActivity(),
-                                                    R.string.photopersion,
-                                                    Toast.LENGTH_SHORT)
+                                                            getActivity(),
+                                                            R.string.photopersion,
+                                                            Toast.LENGTH_SHORT)
                                                     .show();
                                         }
                                     }
@@ -658,6 +638,7 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
                 startActivity(intent);
                 break;
             case R.id.rel_pair_hard:
+                EventBus.getDefault().removeAllStickyEvents();
                 Intent pair = new Intent(getActivity(), SearchDevicesActivity.class);
                 startActivity(pair);
                 break;
@@ -735,21 +716,17 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
         whetherBackup();
     }
 
-    /**
-     * 注册EventBus
-     */
+    /** 注册EventBus */
     @Override
     public boolean needEvents() {
         return true;
     }
 
     @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-    }
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
     @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {
-    }
+    public void onTextChanged(CharSequence s, int start, int before, int count) {}
 
     @Override
     public void afterTextChanged(Editable s) {

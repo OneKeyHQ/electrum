@@ -2,17 +2,18 @@ package org.haobtc.onekey.business.wallet;
 
 import android.text.TextUtils;
 import android.util.Pair;
-
 import androidx.annotation.Nullable;
-
-import com.orhanobut.logger.Logger;
-
+import com.google.common.base.Strings;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.bean.AllWalletBalanceBean;
 import org.haobtc.onekey.bean.AllWalletBalanceInfoDTO;
 import org.haobtc.onekey.bean.BalanceCoinInfo;
 import org.haobtc.onekey.bean.BalanceInfoDTO;
+import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.business.wallet.bean.ETHTokenBalanceBean;
 import org.haobtc.onekey.business.wallet.bean.TokenBalanceBean;
 import org.haobtc.onekey.business.wallet.bean.WalletBalanceBean;
@@ -20,10 +21,6 @@ import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.manager.PyEnv;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * 账户余额管理
@@ -37,7 +34,6 @@ public class BalanceManager {
      * 根据钱包名称获取钱包余额
      *
      * @param walletName 钱包名称
-     *
      * @return WalletBalanceBean
      */
     @Nullable
@@ -54,27 +50,37 @@ public class BalanceManager {
      *
      * @return 钱包金额
      */
-    public AllWalletBalanceBean getAllWalletBalances() {
-        AllWalletBalanceInfoDTO allWalletBalance = PyEnv.getAllWalletBalance();
-        if (allWalletBalance == null) {
-            return null;
-        }
+    public PyResponse<AllWalletBalanceBean> getAllWalletBalances() {
+        PyResponse<AllWalletBalanceBean> data = new PyResponse<>();
+        PyResponse<AllWalletBalanceInfoDTO> allWalletBalance = PyEnv.getAllWalletBalance();
+        if (Strings.isNullOrEmpty(allWalletBalance.getErrors())) {
+            AllWalletBalanceInfoDTO allWalletBalanceInfoDTO = allWalletBalance.getResult();
+            List<WalletBalanceBean> walletBalanceBean =
+                    new ArrayList<>(allWalletBalanceInfoDTO.getWalletInfo().size());
+            allWalletBalanceInfoDTO
+                    .getWalletInfo()
+                    .forEach(
+                            new Consumer<BalanceInfoDTO>() {
+                                @Override
+                                public void accept(BalanceInfoDTO balanceInfoDTO) {
+                                    walletBalanceBean.add(convert(balanceInfoDTO));
+                                }
+                            });
 
-        List<WalletBalanceBean> walletBalanceBean = new ArrayList<>(allWalletBalance.getWalletInfo().size());
-        allWalletBalance.getWalletInfo().forEach(new Consumer<BalanceInfoDTO>() {
-            @Override
-            public void accept(BalanceInfoDTO balanceInfoDTO) {
-                walletBalanceBean.add(convert(balanceInfoDTO));
-            }
-        });
-        return new AllWalletBalanceBean(allWalletBalance.getAllBalance(), walletBalanceBean);
+            AllWalletBalanceBean allWallet =
+                    new AllWalletBalanceBean(
+                            allWalletBalanceInfoDTO.getAllBalance(), walletBalanceBean);
+            data.setResult(allWallet);
+        } else {
+            data.setErrors(allWalletBalance.getErrors());
+        }
+        return data;
     }
 
     /**
      * 解析 Python 轮训放回的信息，取出金额，法币金额。
      *
      * @param msgVote Python 推来的消息
-     *
      * @return first 数字货币余额，second 法币余额
      */
     public Pair<String, String> decodePythonBalanceNotice(String msgVote) {
@@ -92,7 +98,10 @@ public class BalanceManager {
                         }
                     }
                     if (!TextUtils.isEmpty(fiat)) {
-                        String[] currencyArray = MyApplication.getInstance().getResources().getStringArray(R.array.currency);
+                        String[] currencyArray =
+                                MyApplication.getInstance()
+                                        .getResources()
+                                        .getStringArray(R.array.currency);
                         for (String s : currencyArray) {
                             if (fiat.contains(s)) {
                                 balanceFiat = fiat.substring(0, fiat.indexOf(" "));
@@ -124,9 +133,18 @@ public class BalanceManager {
                 e.printStackTrace();
             }
             if (i == 0) {
-                walletBalanceBean = new WalletBalanceBean(Vm.CoinType.convert(item.getCoin()), balance, fiatBalance, fiatUnit, new ArrayList<>(), balanceInfoDTO.getName());
+                walletBalanceBean =
+                        new WalletBalanceBean(
+                                Vm.CoinType.convert(item.getCoin()),
+                                balance,
+                                fiatBalance,
+                                fiatUnit,
+                                new ArrayList<>(),
+                                balanceInfoDTO.getName());
             } else {
-                tokenBalanceBeans.add(new ETHTokenBalanceBean("", item.getCoin(), balance, fiatBalance, fiatUnit));
+                tokenBalanceBeans.add(
+                        new ETHTokenBalanceBean(
+                                "", item.getCoin(), balance, fiatBalance, fiatUnit));
             }
         }
 
