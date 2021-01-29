@@ -1,14 +1,13 @@
 package org.haobtc.onekey.viewmodel;
 
 import android.app.Application;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
-
 import com.google.common.base.Strings;
 import com.orhanobut.logger.Logger;
-
+import java.util.ArrayList;
+import java.util.List;
 import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.adapter.WalletListTypeAdapter;
 import org.haobtc.onekey.bean.PyResponse;
@@ -18,23 +17,19 @@ import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
 
-import java.util.ArrayList;
-import java.util.List;
-
-/**
- * @Description: 钱包列表页面的ViewModel
- * @Author: peter Qin
- */
+/** @Description: 钱包列表页面的ViewModel @Author: peter Qin */
 public class WalletListViewModel extends AndroidViewModel {
     public MutableLiveData<WalletAsset> mAllWallets = new MutableLiveData<>();
     public MutableLiveData<List<WalletInfo>> mBtcWallets = new MutableLiveData<>();
     public MutableLiveData<List<WalletInfo>> mEthWallets = new MutableLiveData<>();
+    public MutableLiveData<List<WalletInfo>> mHardwareWallets = new MutableLiveData<>();
 
     public WalletListViewModel(@NonNull Application application) {
         super(application);
         getAllWallets(Constant.HD);
         getBtcWallets(Constant.BTC);
         getEthWallets(Constant.ETH);
+        getHardwareWallets();
     }
 
     private void getEthWallets(String eth) {
@@ -45,9 +40,11 @@ public class WalletListViewModel extends AndroidViewModel {
         getAllWallets(btc);
     }
 
-    /**
-     * 获取本地所有钱包
-     */
+    private void getHardwareWallets() {
+        getAllWallets(Constant.HW);
+    }
+
+    /** 获取本地所有钱包 */
     public void getAllWallets(String type) {
         PyResponse<List<WalletInfo>> response = PyEnv.loadWalletByType(type);
         if (Strings.isNullOrEmpty(response.getErrors())) {
@@ -57,7 +54,11 @@ public class WalletListViewModel extends AndroidViewModel {
                     WalletInfo walletInfo = new WalletInfo();
                     walletInfo.itemType = WalletListTypeAdapter.NoWallet;
                     list.add(walletInfo);
-                    PreferencesManager.put(MyApplication.getInstance(), "Preferences", Constant.HAS_LOCAL_HD, false);
+                    PreferencesManager.put(
+                            MyApplication.getInstance(),
+                            "Preferences",
+                            Constant.HAS_LOCAL_HD,
+                            false);
                 } else {
                     setItemType(list, WalletListTypeAdapter.WalletNorMal);
                     WalletInfo walletInfo = new WalletInfo();
@@ -75,6 +76,12 @@ public class WalletListViewModel extends AndroidViewModel {
                 } else if (type.equals(Constant.ETH)) {
                     setItemType(list, WalletListTypeAdapter.WalletNorMal);
                     mEthWallets.postValue(list);
+                } else if (type.equals(Constant.HW)) {
+                    setItemType(list, WalletListTypeAdapter.WalletNorMal);
+                    WalletInfo walletInfo = new WalletInfo();
+                    walletInfo.itemType = WalletListTypeAdapter.AddHardwareWallet;
+                    list.add(walletInfo);
+                    mHardwareWallets.postValue(list);
                 }
             }
         } else {
@@ -98,5 +105,4 @@ public class WalletListViewModel extends AndroidViewModel {
         }
         return showNumList.size();
     }
-
 }

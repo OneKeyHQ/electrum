@@ -88,6 +88,13 @@
             android:layout_marginTop="27dp"
             android:src="@drawable/eth_icon_gray" />
 
+        <ImageView
+            android:id="@+id/view_hardware"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_36"
+            android:layout_marginTop="27dp"
+            android:src="@drawable/ic_list_hardware_normal" />
+
     </LinearLayout>
 
     <LinearLayout

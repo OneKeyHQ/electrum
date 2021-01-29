@@ -805,6 +805,7 @@
     <string name="watch_only_tip">Observation Wallet does not require importing a private key or mnemonic, only an address or public key, which you can use to track daily transaction history or receive notifications of incoming and outgoing coins.</string>
     <string name="watch_wallet">Observation wallet</string>
     <string name="add_wallet_">Add Wallet</string>
+    <string name="add_wallet_hardware">Add Hardware Wallet</string>
     <string name="detail">Detail</string>
     <string name="create_">Create</string>
     <string name="collection">Receiver</string>
@@ -893,6 +894,7 @@
     <string name="remarks">Remark</string>
     <string name="no">None</string>
     <string name="support_btc_eth">Support BTC, ETH and others.</string>
+    <string name="support_hardware_coins">Support BTC, ETH and others.</string>
     <string name="add_asset">Add assets</string>
     <string name="select_asset">Select the assets to be added</string>
     <string name="coin_btc">BTC</string>
@@ -1036,6 +1038,7 @@
     <string name="electrum_node">Electrum Node</string>
     <string name="btc_wallet">BTC Wallet</string>
     <string name="eth_wallet">ETH Wallet</string>
+    <string name="hardware_wallet_list">Hardware Wallet</string>
     <string name="show_code">Show QR Code</string>
     <string name="hide_code">Hide QR Code</string>
     <string name="import_wallet">Importing single-currency wallets</string>

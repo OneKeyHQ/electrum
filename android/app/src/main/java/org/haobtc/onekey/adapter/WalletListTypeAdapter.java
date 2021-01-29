@@ -1,36 +1,32 @@
 package org.haobtc.onekey.adapter;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import androidx.core.content.res.ResourcesCompat;
-
 import com.chad.library.adapter.base.BaseMultiItemQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
-
+import java.util.List;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.bean.WalletInfo;
 import org.haobtc.onekey.utils.ClipboardUtils;
 
-import java.util.List;
-
-/**
- * @Description: java类作用描述
- * @Author: peter Qin
- */
+/** @Description: java类作用描述 @Author: peter Qin */
 public class WalletListTypeAdapter extends BaseMultiItemQuickAdapter<WalletInfo, BaseViewHolder> {
     public static final int NoWallet = 0;
     public static final int WalletNorMal = 1;
     public static final int AddWallet = 2;
+    public static final int AddHardwareWallet = 3;
 
     public WalletListTypeAdapter(List<WalletInfo> data) {
         super(data);
         addItemType(NoWallet, R.layout.item_no_wallet);
         addItemType(WalletNorMal, R.layout.hd_wallet_item);
         addItemType(AddWallet, R.layout.item_add_wallet);
+        addItemType(AddHardwareWallet, R.layout.item_add_hardware_wallet);
     }
 
     @Override
@@ -45,11 +41,25 @@ public class WalletListTypeAdapter extends BaseMultiItemQuickAdapter<WalletInfo,
                 RelativeLayout view = helper.getView(R.id.rel_background);
                 ImageView imgType = helper.getView(R.id.img_type);
                 if (item.type.contains("btc")) {
-                    view.setBackground(ResourcesCompat.getDrawable(helper.itemView.getResources(), R.drawable.orange_back, null));
-                    imgType.setImageDrawable(ResourcesCompat.getDrawable(helper.itemView.getResources(), R.drawable.token_trans_btc_list, null));
+                    view.setBackground(
+                            ResourcesCompat.getDrawable(
+                                    helper.itemView.getResources(), R.drawable.orange_back, null));
+                    imgType.setImageDrawable(
+                            ResourcesCompat.getDrawable(
+                                    helper.itemView.getResources(),
+                                    R.drawable.token_trans_btc_list,
+                                    null));
                 } else if (item.type.contains("eth")) {
-                    view.setBackground(ResourcesCompat.getDrawable(helper.itemView.getResources(), R.drawable.eth_blue_back, null));
-                    imgType.setImageDrawable(ResourcesCompat.getDrawable(helper.itemView.getResources(), R.drawable.token_trans_eth_list, null));
+                    view.setBackground(
+                            ResourcesCompat.getDrawable(
+                                    helper.itemView.getResources(),
+                                    R.drawable.eth_blue_back,
+                                    null));
+                    imgType.setImageDrawable(
+                            ResourcesCompat.getDrawable(
+                                    helper.itemView.getResources(),
+                                    R.drawable.token_trans_eth_list,
+                                    null));
                 }
                 if (item.type.contains("derived-standard")) {
                     helper.getView(R.id.text_type).setVisibility(View.VISIBLE);
@@ -70,24 +80,30 @@ public class WalletListTypeAdapter extends BaseMultiItemQuickAdapter<WalletInfo,
                 textAddr.setText(address);
                 helper.setText(R.id.text_address, String.format("%s…%s", front6, after6));
                 ImageView copyAddr = helper.getView(R.id.img_copy_addr);
-                SharedPreferences preferences = mContext.getSharedPreferences("Preferences", Context.MODE_PRIVATE);
-                String loadWalletName = preferences.getString(org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME, "");
+                SharedPreferences preferences =
+                        mContext.getSharedPreferences("Preferences", Context.MODE_PRIVATE);
+                String loadWalletName =
+                        preferences.getString(
+                                org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME,
+                                "");
                 ImageView chooseView = helper.getView(R.id.img_choose);
                 if (loadWalletName.equals(item.name)) {
                     chooseView.setVisibility(View.VISIBLE);
                 } else {
                     chooseView.setVisibility(View.GONE);
                 }
-                copyAddr.setOnClickListener(v -> {
-                    //copy text
-                    ClipboardUtils.copyText(mContext, textAddr.getText().toString());
-                });
+                copyAddr.setOnClickListener(
+                        v -> {
+                            // copy text
+                            ClipboardUtils.copyText(mContext, textAddr.getText().toString());
+                        });
                 helper.addOnClickListener(R.id.rel_background);
                 break;
             case AddWallet:
                 helper.addOnClickListener(R.id.recl_add_wallet);
+            case AddHardwareWallet:
+                helper.addOnClickListener(R.id.recl_add_hardware_wallet);
                 break;
         }
     }
-
 }

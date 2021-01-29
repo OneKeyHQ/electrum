@@ -770,6 +770,7 @@
     <string name="watch_only_tip">观察钱包不需要导入私钥或助记词，只需要地址或公钥，您可以用来追踪日常交易记录或接收收发币的通知。</string>
     <string name="watch_wallet">观察钱包</string>
     <string name="add_wallet_">添加账户</string>
+    <string name="add_wallet_hardware">添加硬件账户</string>
     <string name="detail">详情</string>
     <string name="create_">创建</string>
     <string name="collection">收款账号</string>
@@ -858,6 +859,7 @@
     <string name="remarks">备注</string>
     <string name="no">无</string>
     <string name="support_btc_eth">支持 BTC、ETH等多种公链</string>
+    <string name="support_hardware_coins">支持 BTC、ETH等多种公链</string>
     <string name="add_asset">添加资产</string>
     <string name="select_asset">选择要添加的资产</string>
     <string name="coin_btc">比特币</string>
@@ -1006,6 +1008,7 @@
     <string name="electrum_node">Electrum 节点</string>
     <string name="btc_wallet">比特币账户</string>
     <string name="eth_wallet">以太坊账户</string>
+    <string name="hardware_wallet_list">硬件钱包</string>
     <string name="show_code">显示二维码</string>
     <string name="hide_code">隐藏二维码</string>
     <string name="import_wallet">导入单币种账户</string>

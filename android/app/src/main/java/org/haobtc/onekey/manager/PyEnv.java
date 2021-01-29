@@ -1419,6 +1419,7 @@ public final class PyEnv {
             } else {
                 walletsInfo = sCommands.callAttr(PyConstant.GET_WALLETS_INFO, type).toString();
             }
+            Logger.e(type + "= = = = = " + walletsInfo);
             List<WalletInfo> list = new ArrayList<>();
             if (!Strings.isNullOrEmpty(walletsInfo)) {
                 JsonArray wallets = JsonParser.parseString(walletsInfo).getAsJsonArray();

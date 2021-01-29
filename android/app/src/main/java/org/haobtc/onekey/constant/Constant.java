@@ -220,6 +220,7 @@ public final class Constant {
     @Deprecated public static final String ETH = "eth";
 
     public static final String HD = "hd";
+    public static final String HW = "hw";
     public static final String DELETE_SINGLE = "deleteSingleWallet";
     public static final String IMPORT_HD = "importHdword";
     public static final String WALLET_NAME = "walletName";
