@@ -88,9 +88,10 @@ class TrezorETH(ExplorerInterface):
             else None
         )
 
+        gas_limit = ethereum_data.get("gasLimit", 0)
         fee = TransactionFee(
-            limit=int(ethereum_data.get("gasLimit", 0)),
-            usage=int(ethereum_data.get("gasUsed", ethereum_data.get("gasLimit", 0))),
+            limit=int(gas_limit),
+            usage=int(ethereum_data.get("gasUsed") or gas_limit),
             price_per_unit=int(ethereum_data.get("gasPrice", 1)),
         )
 

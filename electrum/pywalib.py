@@ -7,6 +7,8 @@ import json
 import time
 from enum import Enum
 from os.path import expanduser
+from typing import List
+
 from electrum.util import Ticker, make_aiohttp_session
 import requests
 # from eth_accounts.account_utils import AccountUtils
@@ -520,6 +522,10 @@ class PyWalib:
             output_txs.append(output_tx)
 
         return output_txs
+
+    @classmethod
+    def get_all_txid(cls, address) -> List[str]:
+        return cls.get_explorer().search_txids_by_address(address)
 
     @classmethod
     def get_transaction_info(cls, txid) -> dict:

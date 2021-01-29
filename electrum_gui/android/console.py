@@ -3286,9 +3286,14 @@ class AndroidCommands(commands.Commands):
                 coin = wallet.wallet_type[0:3]
                 if self.coins.__contains__(wallet.wallet_type[0:3]):
                     address = wallet.get_addresses()[0]
-                    tx_list = self.get_eth_tx_list(wallet, address)
-                    if len(tx_list) != 0:
-                        self.update_recover_list(recovery_list, wallet.get_all_balance(address, coin), wallet,
+                    txids = self.pywalib.get_all_txid(address)
+                    if len(txids) != 0:
+                        balance_info = wallet.get_all_balance(address, coin)
+                        fiat = self.daemon.fx.format_amount_and_units(balance_info["fiat"] * COIN) or f"0 {self.ccy}"
+                        balance = f"{balance_info['balance']} ETH ({fiat})"
+                        self.update_recover_list(recovery_list,
+                                                 balance,
+                                                 wallet,
                                                  wallet.get_name(), coin)
                         continue
                 else:
