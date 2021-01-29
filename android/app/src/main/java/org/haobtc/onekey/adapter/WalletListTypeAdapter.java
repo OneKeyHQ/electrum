@@ -65,6 +65,7 @@ public class WalletListTypeAdapter extends BaseMultiItemQuickAdapter<WalletInfo,
                     helper.getView(R.id.text_type).setVisibility(View.VISIBLE);
                     helper.setText(R.id.text_type, "HD");
                 } else if (item.type.contains("hw")) {
+                    helper.getView(R.id.text_type).setVisibility(View.VISIBLE);
                     String type = item.type.substring(item.type.indexOf("hw-") + 3);
                     helper.setText(R.id.text_type, mContext.getString(R.string.hardwares));
                 } else if (item.type.contains("watch")) {
