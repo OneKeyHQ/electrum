@@ -1,6 +1,7 @@
 package org.haobtc.onekey.ui.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
@@ -22,6 +23,7 @@ import org.haobtc.onekey.bean.BalanceInfoDTO;
 import org.haobtc.onekey.bean.CreateWalletBean;
 import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.event.SelectedEvent;
+import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
 import org.haobtc.onekey.onekeys.walletprocess.OnWalletCheckListener;
 import org.haobtc.onekey.ui.adapter.OnceWalletAdapter;
 import org.haobtc.onekey.ui.adapter.RecoveryWalletDerivedInfoAdapter;
@@ -60,6 +62,7 @@ public class RecoveryWalletFromHdFragment extends BaseFragment implements OnWall
     private OnFindWalletInfoProvider mProvider;
     private RecoveryWalletInfoAdapter mRecoveryWalletInfoAdapter;
     private RecoveryWalletDerivedInfoAdapter mRecoveryWalletDerivedInfoAdapter;
+    private boolean mHasExist;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -99,7 +102,7 @@ public class RecoveryWalletFromHdFragment extends BaseFragment implements OnWall
                 walletRec.setLayoutManager(new LinearLayoutManager(getContext()));
                 packageWalletInfoNameList(createWalletBean.getWalletInfo());
             } else {
-                findResultPromote.setText(R.string.recovery_hardware_wallet);
+                findResultPromote.setText(R.string.find_wallet_account);
                 recovery.setText(R.string.recovery);
                 mRecoveryWalletDerivedInfoAdapter =
                         new RecoveryWalletDerivedInfoAdapter(
@@ -131,14 +134,14 @@ public class RecoveryWalletFromHdFragment extends BaseFragment implements OnWall
         nameList.clear();
         if (derivedInfo != null && derivedInfo.size() > 0) {
             for (CreateWalletBean.DerivedInfoBean derivedInfoBean : derivedInfo) {
-                if (!Strings.isNullOrEmpty(derivedInfoBean.getName())
-                        && derivedInfoBean.getExist().equals("0")) {
-                    nameList.add(derivedInfoBean.getName());
+                if (!Strings.isNullOrEmpty(derivedInfoBean.getName())) {
+                    if (derivedInfoBean.getExist().equals("0")) {
+                        nameList.add(derivedInfoBean.getName());
+                    } else {
+                        mHasExist = true;
+                    }
                 }
             }
-        }
-        if (nameList.size() == 0) {
-            recovery.setEnabled(false);
         }
     }
 
@@ -171,7 +174,11 @@ public class RecoveryWalletFromHdFragment extends BaseFragment implements OnWall
             EventBus.getDefault().post(new ExitEvent());
         } else {
             if (nameList.isEmpty()) {
-                showToast(R.string.recovery_wallet_select_promote);
+                if (mHasExist) {
+                    startActivity(new Intent(getActivity(), HomeOneKeyActivity.class));
+                } else {
+                    showToast(R.string.recovery_wallet_select_promote);
+                }
             } else {
                 EventBus.getDefault().post(new SelectedEvent(nameList));
             }
@@ -195,7 +202,7 @@ public class RecoveryWalletFromHdFragment extends BaseFragment implements OnWall
             }
         }
         if (nameList.size() == 0) {
-            recovery.setEnabled(false);
+            recovery.setEnabled(mHasExist);
         } else {
             recovery.setEnabled(true);
         }

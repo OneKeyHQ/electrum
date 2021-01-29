@@ -1226,7 +1226,8 @@
     <string name="hint_temp_scan_inconformity">扫描的二维码与当前选择的币种不一致。</string>
     <string name="hint_view_more_record">查看更多记录</string>
     <string name="balance_zero">余额不足</string>
-    <string name="not_find_wallet">没有找到有交易记录的钱包，您可以选择创建新钱包</string>
+    <string name="not_find_wallet">没有找到有交易记录的账户，您可以选择创建新账户</string>
+    <string name="find_wallet_account">已为您找到以下有交易记录的账户</string>
     <string name="exist">已存在</string>
     <string name="not_cancel">不可取消</string>
     <string name="gas_limit_small">Gas Limit 不应小于 %d</string>

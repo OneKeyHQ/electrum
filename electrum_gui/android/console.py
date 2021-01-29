@@ -1661,7 +1661,7 @@ class AndroidCommands(commands.Commands):
         if len(time) != 0:
             info['date'] = util.format_time(int(time[0][1]))
         list_info.append(info)
- 
+
     def get_btc_raw_tx(self, tx_hash):
         try:
             self._assert_wallet_isvalid()
@@ -3469,10 +3469,12 @@ class AndroidCommands(commands.Commands):
             xpub = self.get_hd_wallet_encode_seed(seed=seed, coin='btc')
             self.recovery_wallet(seed, password, passphrase, xpub=xpub, hw=hw)
 
-            for coin, info in self.coins.items():
-                xpub = self.get_hd_wallet_encode_seed(seed=seed, coin=coin)
-                PyWalib.set_server(info)
-                self.recovery_wallet(seed, password, passphrase, coin=coin, xpub=xpub, hw=hw)
+
+            if 'ANDROID_DATA' in os.environ:
+                for coin, info in self.coins.items():
+                    xpub = self.get_hd_wallet_encode_seed(seed=seed, coin=coin)
+                    PyWalib.set_server(info)
+                    self.recovery_wallet(seed, password, passphrase, coin=coin, xpub=xpub, hw=hw)
 
         recovery_list = self.filter_wallet()
         wallet_data = self.filter_wallet_with_account_is_zero()

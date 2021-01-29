@@ -1,6 +1,7 @@
 package org.haobtc.onekey.ui.activity;
 
 import android.content.Intent;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import butterknife.BindView;
@@ -111,6 +112,12 @@ public class FindBackupOnlyDeviceActivity extends BaseActivity
                                     } else {
                                         mToast(response.getErrors());
                                     }
+                                },
+                                throwable -> {
+                                    if (!TextUtils.isEmpty(throwable.getMessage())) {
+                                        mToast(throwable.getMessage());
+                                    }
+                                    finish();
                                 });
         mCompositeDisposable.add(mDisposable);
     }

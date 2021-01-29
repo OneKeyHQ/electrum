@@ -1,6 +1,5 @@
 package org.haobtc.onekey.ui.adapter;
 
-import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -28,19 +27,21 @@ public class RecoveryWalletDerivedInfoAdapter
 
     @Override
     protected void convert(BaseViewHolder helper, CreateWalletBean.DerivedInfoBean item) {
+        CheckBox checkBox = helper.getView(R.id.check_wallet);
+        ImageView coinImg = helper.getView(R.id.token_btc);
         helper.setText(R.id.text_wallet_name, item.getLabel());
+        if (item.getCoin().contains("btc")) {
+
+            coinImg.setBackgroundResource(R.drawable.token_btc);
+        } else {
+            coinImg.setBackgroundResource(R.drawable.token_eth);
+        }
         if (item.getBlance().contains("(")) {
             helper.setText(
                     R.id.text_wallet_balance,
                     item.getBlance().substring(0, item.getBlance().indexOf("(")));
         }
-        CheckBox checkBox = helper.getView(R.id.check_wallet);
-        ImageView coinImg = helper.getView(R.id.token_btc);
-        if (item.getCoin().contains("btc")) {
-            coinImg.setBackgroundResource(R.drawable.token_btc);
-        } else if (item.getCoin().contains("eth")) {
-            coinImg.setBackgroundResource(R.drawable.token_eth);
-        }
+
         if (item.getExist().equals("0")) {
             helper.setGone(R.id.exist_tv, false);
         } else {
@@ -48,13 +49,9 @@ public class RecoveryWalletDerivedInfoAdapter
             checkBox.setBackgroundResource(R.mipmap.check_not_selected);
         }
         checkBox.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (item.getExist().equals("1")) {
-                            Toast.makeText(mContext, R.string.not_cancel, Toast.LENGTH_SHORT)
-                                    .show();
-                        }
+                v -> {
+                    if (item.getExist().equals("1")) {
+                        Toast.makeText(mContext, R.string.not_cancel, Toast.LENGTH_SHORT).show();
                     }
                 });
         checkBox.setOnCheckedChangeListener(

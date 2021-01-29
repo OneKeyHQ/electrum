@@ -21,8 +21,7 @@
                 android:layout_width="@dimen/dp_40"
                 android:layout_height="@dimen/dp_40"
                 android:layout_centerVertical="true"
-                android:layout_marginStart="@dimen/dp_16"
-                android:src="@drawable/token_btc" />
+                android:layout_marginStart="@dimen/dp_16" />
 
             <TextView
                 android:id="@+id/text_wallet_name"
