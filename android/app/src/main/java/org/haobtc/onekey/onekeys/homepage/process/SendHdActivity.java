@@ -61,6 +61,7 @@ import org.haobtc.onekey.business.wallet.AccountManager;
 import org.haobtc.onekey.business.wallet.SystemConfigManager;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.PyConstant;
+import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.event.ButtonRequestConfirmedEvent;
 import org.haobtc.onekey.event.ButtonRequestEvent;
 import org.haobtc.onekey.event.ChangePinEvent;
@@ -750,10 +751,7 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         PyResponse<Void> response = PyEnv.broadcast(signedTx);
         String errors = response.getErrors();
         if (Strings.isNullOrEmpty(errors)) {
-            Intent intent = new Intent(SendHdActivity.this, TransactionCompletion.class);
-            intent.putExtra("txDetail", signedTx);
-            intent.putExtra("amounts", amounts);
-            startActivity(intent);
+            TransactionCompletion.start(mContext, Vm.CoinType.BTC, signedTx, amounts);
             finish();
         } else {
             showToast(errors);

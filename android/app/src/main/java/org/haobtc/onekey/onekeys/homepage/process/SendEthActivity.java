@@ -1,5 +1,7 @@
 package org.haobtc.onekey.onekeys.homepage.process;
 
+import static org.haobtc.onekey.constant.Constant.WALLET_BALANCE;
+
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -18,17 +20,31 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.lifecycle.ViewModelProvider;
-
+import butterknife.BindView;
+import butterknife.OnClick;
+import butterknife.OnFocusChange;
+import butterknife.OnTextChanged;
 import com.google.common.base.Strings;
 import com.lxj.xpopup.XPopup;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.bean.ZxingConfig;
-
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.ObservableOnSubscribe;
+import io.reactivex.rxjava3.core.ObservableSource;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.functions.Function;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -69,31 +85,9 @@ import org.haobtc.onekey.ui.widget.PointLengthFilter;
 import org.haobtc.onekey.utils.ClipboardUtils;
 import org.haobtc.onekey.viewmodel.AppWalletViewModel;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
-
-import butterknife.BindView;
-import butterknife.OnClick;
-import butterknife.OnFocusChange;
-import butterknife.OnTextChanged;
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.ObservableOnSubscribe;
-import io.reactivex.rxjava3.core.ObservableSource;
-import io.reactivex.rxjava3.disposables.CompositeDisposable;
-import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.functions.Function;
-import io.reactivex.rxjava3.schedulers.Schedulers;
-
-import static org.haobtc.onekey.constant.Constant.WALLET_BALANCE;
-
-/**
- * @author liyan
- */
-public class SendEthActivity extends BaseActivity implements BusinessAsyncTask.Helper, CustomEthFeeDialog.onCustomInterface {
+/** @author liyan */
+public class SendEthActivity extends BaseActivity
+        implements BusinessAsyncTask.Helper, CustomEthFeeDialog.onCustomInterface {
 
     private static final String EXT_BALANCE = WALLET_BALANCE;
     private static final String EXT_WALLET_NAME = "hdWalletName";
@@ -305,16 +299,15 @@ public class SendEthActivity extends BaseActivity implements BusinessAsyncTask.H
         initShowDefaultView();
         getDefaultFee();
         editAmount.setFilters(
-                new InputFilter[]{
-
-                        new PointLengthFilter(
-                                scale,
-                                maxNum ->
-                                        showToast(
-                                                String.format(
-                                                        Locale.getDefault(),
-                                                        mContext.getString(R.string.accuracy_num),
-                                                        scale)))
+                new InputFilter[] {
+                    new PointLengthFilter(
+                            scale,
+                            maxNum ->
+                                    showToast(
+                                            String.format(
+                                                    Locale.getDefault(),
+                                                    mContext.getString(R.string.accuracy_num),
+                                                    scale)))
                 });
         String addressScan = getIntent().getStringExtra(EXT_SCAN_ADDRESS);
         if (!TextUtils.isEmpty(addressScan)) {
@@ -854,7 +847,7 @@ public class SendEthActivity extends BaseActivity implements BusinessAsyncTask.H
         PyResponse<Void> response = PyEnv.broadcast(signedTx);
         String errors = response.getErrors();
         if (Strings.isNullOrEmpty(errors)) {
-            TransactionCompletion.start(mContext, Vm.CoinType.ETH, signedTx, "mSendAmounts");
+            TransactionCompletion.start(mContext, Vm.CoinType.ETH, signedTx, amount);
             finish();
         } else {
             showToast(errors);
