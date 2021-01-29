@@ -3284,13 +3284,21 @@ class AndroidCommands(commands.Commands):
             try:
                 wallet = wallet_info['wallet']
                 coin = wallet.wallet_type[0:3]
-                if self.coins.__contains__(wallet.wallet_type[0:3]):
+                if self.coins.__contains__(coin):
                     address = wallet.get_addresses()[0]
-                    txids = self.pywalib.get_all_txid(address)
-                    if len(txids) != 0:
+                    try:
+                        txids = self.pywalib.get_all_txid(address)
+                    except Exception:
+                        txids = None
+
+                    if txids:
                         balance_info = wallet.get_all_balance(address, coin)
+                        balance_info = balance_info.get(coin)
+                        if not balance_info:
+                            continue
+
                         fiat = self.daemon.fx.format_amount_and_units(balance_info["fiat"] * COIN) or f"0 {self.ccy}"
-                        balance = f"{balance_info['balance']} ETH ({fiat})"
+                        balance = f"{balance_info['balance']} ({fiat})"
                         self.update_recover_list(recovery_list,
                                                  balance,
                                                  wallet,
@@ -4047,7 +4055,7 @@ class AndroidCommands(commands.Commands):
                     "name": name,
                     "label": self.wallet.get_name(),
                     "wallets": [
-                        {"coin": "btc", "balance": Decimal(balance), "fiat": fait}
+                        {"coin": "btc", "balance": self.format_amount(balance), "fiat": fait}
                     ]
                 }
                 if self.label_flag and self.wallet.wallet_type != "standard":
