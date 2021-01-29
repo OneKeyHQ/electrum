@@ -5,10 +5,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.constant.Vm;
@@ -57,16 +55,17 @@ public class SelectChainCoinFragment extends BaseFragment implements View.OnClic
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         mBindingView = FragmentSelectorChainCoinBinding.inflate(getLayoutInflater());
         init(mBindingView.getRoot());
         return mBindingView.getRoot();
     }
 
     @Override
-    public void init(View view) {
-
-    }
+    public void init(View view) {}
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -84,7 +83,13 @@ public class SelectChainCoinFragment extends BaseFragment implements View.OnClic
         if (Vm.CoinType.BTC.enable) {
             mBindingView.relBtc.setVisibility(View.VISIBLE);
         }
-        if (Vm.CoinType.ETH.enable) {
+
+        boolean tempControls =
+                (mCreateSoftWalletProvider != null && mCreateSoftWalletProvider.supportETH())
+                        || (mCreateFastHDSoftWalletProvider != null
+                                && mCreateFastHDSoftWalletProvider.supportETH())
+                        || mImportSoftWalletProvider != null;
+        if (Vm.CoinType.ETH.enable && tempControls) {
             mBindingView.relEth.setVisibility(View.VISIBLE);
         }
     }

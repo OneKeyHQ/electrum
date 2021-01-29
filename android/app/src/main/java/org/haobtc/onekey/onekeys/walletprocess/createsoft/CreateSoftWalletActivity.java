@@ -15,6 +15,7 @@ import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.core.SingleOnSubscribe;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
+import java.util.List;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.BuildConfig;
 import org.haobtc.onekey.R;
@@ -23,6 +24,7 @@ import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.bean.CreateWalletBean;
 import org.haobtc.onekey.bean.LocalWalletInfo;
 import org.haobtc.onekey.bean.PyResponse;
+import org.haobtc.onekey.bean.WalletInfo;
 import org.haobtc.onekey.business.wallet.AccountManager;
 import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.event.CreateSuccessEvent;
@@ -104,6 +106,21 @@ public class CreateSoftWalletActivity extends BaseActivity
     @Override
     public boolean isImport() {
         return false;
+    }
+
+    @Override
+    public boolean supportETH() {
+        if (mSoftWalletType == SoftWalletType.SINGLE) {
+            return true;
+        }
+        List<WalletInfo> allMainWallet = mAccountManager.getAllMainWallet();
+        int count = 0;
+        for (WalletInfo item : allMainWallet) {
+            if (Vm.convertCoinType(item.type) == Vm.CoinType.ETH) {
+                count++;
+            }
+        }
+        return count < 1;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package org.haobtc.onekey.business.wallet;
 
 import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
+import static org.haobtc.onekey.constant.Constant.HD;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -11,11 +12,15 @@ import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.bean.CreateWalletBean;
 import org.haobtc.onekey.bean.LocalWalletInfo;
+import org.haobtc.onekey.bean.PyResponse;
+import org.haobtc.onekey.bean.WalletInfo;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.PyConstant;
 import org.haobtc.onekey.constant.StringConstant;
@@ -326,5 +331,18 @@ public class AccountManager {
             e.printStackTrace();
             throw new AccountException.CreateException(message);
         }
+    }
+
+    /**
+     * 获取所有主钱包账户
+     *
+     * @return 主钱包账户
+     */
+    public List<WalletInfo> getAllMainWallet() {
+        PyResponse<List<WalletInfo>> listPyResponse = PyEnv.loadWalletByType(HD);
+        if (Strings.isNullOrEmpty(listPyResponse.getErrors())) {
+            return listPyResponse.getResult();
+        }
+        return new ArrayList(0);
     }
 }
