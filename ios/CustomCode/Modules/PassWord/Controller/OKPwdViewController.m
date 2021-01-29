@@ -127,8 +127,7 @@ typedef enum {
         default:
             break;
     }
-    self.switchPwdViewBtn.layer.cornerRadius = 14;
-    self.switchPwdViewBtn.layer.masksToBounds = YES;
+    [self.switchPwdViewBtn setLayerRadius:14];
     
     [self.longPwdViewFirst setLayerBoarderColor:HexColor(0xDBDEE7) width:1 radius:20];
     [self.longPwdViewSecond setLayerBoarderColor:HexColor(0xDBDEE7) width:1 radius:20];

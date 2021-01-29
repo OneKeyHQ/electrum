@@ -80,8 +80,7 @@ typedef enum {
     self.navTitleFirstLabel.text = MyLocalizedString(@"Check the password", nil);
     self.titleLabelFirst.text  = MyLocalizedString(@"Enter your password", nil);
     self.titleDescLabelFirst.text = MyLocalizedString(@"Don't reveal your password to anyone else", nil);
-    self.switchPwdViewBtn.layer.cornerRadius = 14;
-    self.switchPwdViewBtn.layer.masksToBounds = YES;
+    [self.switchPwdViewBtn setLayerRadius:14];
     [self.longPwdViewFirst setLayerBoarderColor:HexColor(0xDBDEE7) width:1 radius:20];
     [self.nextBtnFirst setLayerRadius:20];
     self.eyeBtnFirst.selected = NO;

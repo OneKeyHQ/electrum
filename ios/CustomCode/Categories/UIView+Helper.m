@@ -13,6 +13,9 @@
 
 - (void)setLayerRadius:(CGFloat)radius {
     self.clipsToBounds = YES;
+    if (@available(iOS 13.0, *)) {
+        self.layer.cornerCurve = kCACornerCurveContinuous;
+    }
     self.layer.cornerRadius = radius;
 }
 

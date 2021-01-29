@@ -41,10 +41,8 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-    self.updateButtonView.layer.masksToBounds = YES;
-    self.updateButtonView.layer.cornerRadius = self.updateButtonView.height * 0.5;
-    self.versionLabelView.layer.masksToBounds = YES;
-    self.versionLabelView.layer.cornerRadius = self.versionLabelView.height * 0.5;
+    [self.updateButtonView setLayerRadius:self.updateButtonView.height * 0.5];
+    [self.versionLabelView setLayerRadius:self.versionLabelView.height * 0.5];
 }
 
 - (void)setVersionDesc:(NSString *)versionDesc {
