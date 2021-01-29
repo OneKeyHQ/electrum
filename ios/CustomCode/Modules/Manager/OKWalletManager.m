@@ -256,7 +256,7 @@ static dispatch_once_t once;
         NSString *key = [dict.allKeys firstObject];
         NSDictionary *subDict = dict[key];
         NSString *type = [subDict safeStringForKey:@"type"];
-        if ([type containsString:@"watch"]) {
+        if ([type containsString:@"watch"]||[type containsString:@"-hw-"]) {
             continue;
         }
         count ++;

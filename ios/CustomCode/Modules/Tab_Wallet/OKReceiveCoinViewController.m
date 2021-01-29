@@ -144,4 +144,9 @@
 - (IBAction)verifyBtnClick:(UIButton *)sender {
     
 }
+
+- (void)backToPrevious
+{
+    [self.navigationController popToRootViewControllerAnimated:YES];
+}
 @end

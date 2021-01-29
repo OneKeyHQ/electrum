@@ -84,7 +84,8 @@
         if (self.type == OKMatchingTypeTransfer || self.type == OKMatchingTypeReceiveCoin || self.type == OKMatchingTypeSignatureData ) {
             OKDeviceModel *model = [[OKDevicesManager sharedInstance]getDeviceModelWithID:kWalletManager.currentWalletInfo.device_id];
             if ([kOKBlueManager isConnectedName:model.deviceInfo.ble_name]) {
-                [self subscribeComplete:@{}];
+                NSDictionary *dict = [[[OKDevicesManager sharedInstance]getDeviceModelWithID:kOKBlueManager.currentDeviceID]json];
+                [self subscribeComplete:dict];
             }else{
                 CBPeripheral *temp;
                 for (OKPeripheralInfo *infoModel in self.dataSource) {
@@ -231,14 +232,14 @@
 }
 - (void)subscribeComplete:(NSDictionary *)jsonDict
 {
+    OKDeviceModel *deviceModel  = [[OKDeviceModel alloc]initWithJson:jsonDict];
+    kOKBlueManager.currentDeviceID = deviceModel.deviceInfo.device_id;
+    [[OKDevicesManager sharedInstance]addDevices:deviceModel];
     switch (_type) {
         case OKMatchingTypeNone:
         {
             kOKBlueManager.currentReadDataStr = @"";
                 if (jsonDict != nil) {
-                    OKDeviceModel *deviceModel  = [[OKDeviceModel alloc]initWithJson:jsonDict];
-                    kOKBlueManager.currentDeviceID = deviceModel.deviceInfo.device_id;
-                    [[OKDevicesManager sharedInstance]addDevices:deviceModel];
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [MBProgressHUD hideHUDForView:self.view animated:YES];
                         if (deviceModel.deviceInfo.initialized ) {
@@ -254,6 +255,9 @@
                             [self.navigationController pushViewController:discoverNewDeviceVc animated:YES];
                         }
                     });
+                }else{
+                    [kTools tipMessage:MyLocalizedString(@"Matching failure", nil)];
+                    [self.navigationController popViewControllerAnimated:YES];
                 }
         }
             break;

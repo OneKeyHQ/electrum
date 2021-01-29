@@ -191,7 +191,6 @@ typedef enum {
     
     [self changUIForCustom];
 
-    //self.coinTypeBtn.hidden  = YES;
     BOOL isBackUp = [[kPyCommandsManager callInterface:kInterfaceget_backup_info parameter:@{@"name":kWalletManager.currentWalletInfo.name}] boolValue];
     if (!isBackUp) {
         OKWeakSelf(self)
@@ -660,4 +659,10 @@ typedef enum {
     _custom = NO;
     [self changUIForCustom];
 }
+
+- (void)backToPrevious
+{
+    [self.navigationController popToRootViewControllerAnimated:YES];
+}
+
 @end

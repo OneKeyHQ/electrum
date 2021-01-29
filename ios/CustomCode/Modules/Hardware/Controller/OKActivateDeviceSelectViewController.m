@@ -93,5 +93,8 @@
     }
     return _walletTypeListArray;
 }
-
+- (void)backToPrevious
+{
+    [self.navigationController popToRootViewControllerAnimated:YES];
+}
 @end

@@ -327,4 +327,10 @@ typedef enum {
 {
     _count = 0;
 }
+
+- (void)backToPrevious
+{
+    [self.navigationController popToRootViewControllerAnimated:YES];
+}
+
 @end

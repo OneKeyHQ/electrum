@@ -58,7 +58,7 @@
         [kTools tipMessage:MyLocalizedString(@"Wallet names cannot exceed 15 characters", nil)];
         return;
     }
-    
+    [self.view endEditing:YES];
     OKWeakSelf(self)
     if (self.addType == OKAddTypeImportAddresses) {
         NSDictionary *create =  [kPyCommandsManager callInterface:kInterfaceImport_Address parameter:@{@"name":self.walletNameTextfield.text,@"address":self.address}];
@@ -145,6 +145,7 @@
         {
             __block NSString *name = self.walletNameTextfield.text;
             [OKHwNotiManager  sharedInstance].delegate = self;
+            [MBProgressHUD showHUDAddedTo:self.view animated:YES];
             dispatch_async(dispatch_get_global_queue(0, 0), ^{
                NSString *xpub = [kPyCommandsManager callInterface:kInterfacecreate_hw_derived_wallet parameter:@{}];
                 NSArray *array = @[@[xpub,kOKBlueManager.currentDeviceID]];
@@ -215,6 +216,7 @@
                     break;
                 case OKAddTypeCreateHWDerived:
                 {
+                    [MBProgressHUD hideHUDForView:self.view animated:YES];
                     [kTools tipMessage:MyLocalizedString(@"Creating successful", nil)];
                 }
                     break;

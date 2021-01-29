@@ -23,8 +23,6 @@ typedef enum {
 
 #define kOKBlueManager (OKBlueManager.sharedInstance)
 
-// 设置蓝牙的channel值【开发者可不做修改】
-#define channelOneKeyPeripheral @"OneKeyPeripheralChannel"
 #define kPRIMARY_SERVICE        @"0001"
 #define kWRITE_CHARACTERISTIC   @"0002"
 #define kREAD_CHARACTERISTIC    @"0003"
@@ -114,7 +112,7 @@ typedef void(^ConnectedComplete)(BOOL isSuccess);
 - (BOOL)isConnectedName:(NSString *)name;
 - (void)startScanAndConnectWithName:(NSString *)name complete:(ConnectedComplete)complete;
 @property (nonatomic,copy)NSString *currentDeviceID;
-
+@property (nonatomic,strong)CBPeripheral *currentPeripheral;
 @property (nonatomic, weak) id<OKBabyBluetoothManageDelegate> delegate;
 
 
