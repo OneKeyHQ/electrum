@@ -1,16 +1,17 @@
 package org.haobtc.onekey.onekeys.homepage.mindmenu;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
 import com.google.common.base.Strings;
-
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -26,19 +27,15 @@ import org.haobtc.onekey.ui.activity.SoftPassActivity;
 import org.haobtc.onekey.ui.dialog.BackupRequireDialog;
 import org.haobtc.onekey.utils.Daemon;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-
 public class WalletManageActivity extends BaseActivity {
 
     @BindView(R.id.text_safe)
     TextView textSafe;
+
     @BindView(R.id.rel_export_word)
     RelativeLayout relExportWord;
+
     private String deleteHdWalletName;
-    private SharedPreferences preferences;
-    private Intent intent1;
 
     @Override
     public int getLayoutId() {
@@ -49,14 +46,11 @@ public class WalletManageActivity extends BaseActivity {
     public void initView() {
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
-        preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         deleteHdWalletName = getIntent().getStringExtra("deleteHdWalletName");
     }
 
     @Override
-    public void initData() {
-
-    }
+    public void initData() {}
 
     @SingleClick
     @OnClick({R.id.img_back, R.id.rel_export_word, R.id.rel_delete_wallet})
@@ -73,9 +67,11 @@ public class WalletManageActivity extends BaseActivity {
                 break;
         }
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGotPass(GotPassEvent event) {
-        PyResponse<String> response = PyEnv.exportMnemonics(event.getPassword(), deleteHdWalletName);
+        PyResponse<String> response =
+                PyEnv.exportMnemonics(event.getPassword(), deleteHdWalletName);
         String errors = response.getErrors();
         if (Strings.isNullOrEmpty(errors)) {
             Intent intent = new Intent(this, BackupGuideActivity.class);
@@ -87,10 +83,13 @@ public class WalletManageActivity extends BaseActivity {
             mlToast(errors);
         }
     }
+
     private void hdWalletIsBackup() {
-        Log.i("deleteHdWalletNamejxm", "hdWalletIsBackup: "+deleteHdWalletName);
+        Log.i("deleteHdWalletNamejxm", "hdWalletIsBackup: " + deleteHdWalletName);
         try {
-            PyObject data = Daemon.commands.callAttr("get_backup_info", new Kwarg("name", deleteHdWalletName));
+            PyObject data =
+                    Daemon.commands.callAttr(
+                            "get_backup_info", new Kwarg("name", deleteHdWalletName));
             boolean isBackup = data.toBoolean();
             if (isBackup) {
                 Intent intent = new Intent(WalletManageActivity.this, DeleteWalletActivity.class);
@@ -98,11 +97,13 @@ public class WalletManageActivity extends BaseActivity {
                 startActivity(intent);
                 finish();
             } else {
-                //没备份提示备份
+                // 没备份提示备份
                 new BackupRequireDialog(this).show(getSupportFragmentManager(), "");
             }
         } catch (Exception e) {
-            mToast(e.getMessage().replace("BaseException:", ""));
+            if (!TextUtils.isEmpty(e.getMessage())) {
+                mToast(e.getMessage().replace("BaseException:", ""));
+            }
             e.printStackTrace();
         }
     }
@@ -117,5 +118,4 @@ public class WalletManageActivity extends BaseActivity {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
     }
-
 }
