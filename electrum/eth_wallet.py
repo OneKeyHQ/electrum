@@ -823,7 +823,7 @@ class Imported_Eth_Wallet(Simple_Eth_Wallet):
             except BaseException as e:
                 bad_keys.append((key, _('invalid private key') + f': {e}'))
                 continue
-            addr = pubkey.to_address()
+            addr = PyWalib.web3.toChecksumAddress(pubkey.to_address())
             good_addr.append(addr)
             self.db.add_imported_address(addr, {'pubkey':pubkey.__str__()})
             #self.add_address(addr)
@@ -1153,5 +1153,3 @@ class Eth_Wallet(object):
         if wallet_type in wallet_constructors:
             return wallet_constructors[wallet_type]
         raise WalletFileException("Unknown wallet type: " + str(wallet_type))
-
-
