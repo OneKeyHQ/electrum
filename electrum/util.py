@@ -208,7 +208,7 @@ class InvoiceError(UserFacingException): pass
 class DecimalEncoder(json.JSONEncoder):
     def default(self, o):
         if isinstance(o, decimal.Decimal):
-            return str(o)
+            return f"{o:f}"
         return super(DecimalEncoder, self).default(o)
 
 class Ticker(Timer):

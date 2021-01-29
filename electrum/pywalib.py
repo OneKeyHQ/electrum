@@ -458,8 +458,11 @@ class PyWalib:
 
     @classmethod
     def _get_balance_inner(cls, address: str, contract=None):
-        return cls.get_explorer().get_balance(address,
-                                              token=None if not contract else Token(contract=contract.get_address()))
+        try:
+            return cls.get_explorer().get_balance(address,
+                token=None if not contract else Token(contract=contract.get_address()))
+        except Exception:
+            return 0
 
     @classmethod
     def get_explorer(cls) -> ExplorerInterface:
