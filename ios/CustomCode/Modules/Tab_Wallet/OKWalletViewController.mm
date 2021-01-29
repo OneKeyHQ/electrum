@@ -128,7 +128,9 @@
 
     [self loadWalletList];
     [self refreshUI];
-    [self setDefault];
+    dispatch_after(1.0, dispatch_get_global_queue(0, 0), ^{
+        [self setDefault];
+    });
 }
 - (void)dealloc
 {
@@ -180,7 +182,6 @@
             [kUserSettingManager setElectrum_server:electrumNode];
         }
     }
-    
 }
 
 - (void)selectWallet
@@ -547,11 +548,9 @@
             BaseNavigationController *baseVc = [[BaseNavigationController alloc]initWithRootViewController:wordImport];
             [weakself.OK_TopViewController presentViewController:baseVc animated:YES completion:nil];
         }else if (model.type == OKSelectCellTypeMatchHD){ //匹配硬件
-//            id json = [kPyCommandsManager callInterface:kInterfacehardware_verify parameter:@{@"msg":[NSUUID UUID].UUIDString}];
-//            NSLog(@"json == %@",json);
-           [kTools tipMessage:MyLocalizedString(@"Temporary does not support", nil)];
-//            OKMatchingInCirclesViewController *matchVc = [OKMatchingInCirclesViewController matchingInCirclesViewController];
-//            [self.navigationController pushViewController:matchVc animated:YES];
+            OKMatchingInCirclesViewController *matchVc = [OKMatchingInCirclesViewController matchingInCirclesViewController];
+            BaseNavigationController *baseVc = [[BaseNavigationController alloc]initWithRootViewController:matchVc];
+            [weakself.OK_TopViewController presentViewController:baseVc animated:YES completion:nil];
         }
         return;
     }

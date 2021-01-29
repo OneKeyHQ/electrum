@@ -12,6 +12,7 @@
 #import "OKSendCoinViewController.h"
 #import "OKReceiveCoinViewController.h"
 #import "OKAssetTableViewCellModel.h"
+#import "OKMatchingInCirclesViewController.h"
 
 #define kBottomBgViewH 100.0
 
@@ -177,17 +178,27 @@
     }];
 }
 - (IBAction)sendCoinBtnClick:(UIButton *)sender {
-    
-    OKSendCoinViewController *sendCoinVc = [OKSendCoinViewController sendCoinViewController];
-    [self.navigationController pushViewController:sendCoinVc animated:YES];
+    if ([kWalletManager getWalletDetailType] == OKWalletTypeHardware) {
+        OKMatchingInCirclesViewController *matchingVc = [OKMatchingInCirclesViewController matchingInCirclesViewController];
+        matchingVc.type = OKMatchingTypeTransfer;
+        [self.navigationController pushViewController:matchingVc animated:YES];
+    }else{
+        OKSendCoinViewController *sendCoinVc = [OKSendCoinViewController sendCoinViewController];
+        [self.navigationController pushViewController:sendCoinVc animated:YES];
+    }
 }
 - (IBAction)reciveCoinBtnClick:(UIButton *)sender {
-    
-    OKReceiveCoinViewController *receiveCoinVc = [OKReceiveCoinViewController receiveCoinViewController];
-    receiveCoinVc.coinType = self.coinType;
-    [self.navigationController pushViewController:receiveCoinVc animated:YES];
+    if ([kWalletManager getWalletDetailType] == OKWalletTypeHardware) {
+        OKMatchingInCirclesViewController *matchingVc = [OKMatchingInCirclesViewController matchingInCirclesViewController];
+        matchingVc.type = OKMatchingTypeReceiveCoin;
+        [self.navigationController pushViewController:matchingVc animated:YES];
+    }else{
+        OKReceiveCoinViewController *receiveCoinVc = [OKReceiveCoinViewController receiveCoinViewController];
+        receiveCoinVc.coinType = kWalletManager.currentWalletInfo.coinType;
+        receiveCoinVc.walletType = [kWalletManager getWalletDetailType];
+        [self.navigationController pushViewController:receiveCoinVc animated:YES];
+    }
 }
-
 
 - (void)dealloc
 {

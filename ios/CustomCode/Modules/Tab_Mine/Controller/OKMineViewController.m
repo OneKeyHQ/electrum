@@ -59,6 +59,14 @@
         self.navigationController.interactivePopGestureRecognizer.delegate = nil;
     }
 }
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [self.tableView reloadData];
+}
+
+
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer
 {
     return self.isCanSideBack;
@@ -358,10 +366,9 @@
 #pragma mark -mineTableViewCellModelDelegate
 - (void)mineTableViewCellModelDelegateSwitch:(UISwitch *)s
 {
-    NSArray *listDictArray =  [kPyCommandsManager callInterface:kInterfaceList_wallets parameter:@{}];
-    if (listDictArray.count > 0) {
+    if (kWalletManager.checkIsHavePwd) {
         OKWeakSelf(self)
-        [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
+        [OKValidationPwdController showValidationPwdPageOn:self isDis:NO complete:^(NSString * _Nonnull pwd) {
             [weakself.authIDControl yz_showAuthIDWithDescribe:MyLocalizedString(@"OenKey request enabled", nil) BlockState:^(YZAuthIDState state, NSError *error) {
                 if (state == YZAuthIDStateNotSupport
                     || state == YZAuthIDStatePasswordNotSet || state == YZAuthIDStateTouchIDNotSet) { // 不支持TouchID/FaceID
@@ -378,13 +385,14 @@
                     }else{
                         [kOneKeyPwdManager saveOneKeyPassWord:@""];
                     }
+                    [weakself dismissViewControllerAnimated:YES completion:nil];
                 }else{
                     s.on = !s.isOn;
                 }
             }];
         }];
     }else{
-        s.on = !s.isOn;
+        s.on = NO;
         [kTools tipMessage:MyLocalizedString(@"Please go to create a wallet first", nil)];
     }
 }

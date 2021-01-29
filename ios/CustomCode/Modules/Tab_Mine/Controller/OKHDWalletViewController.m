@@ -113,8 +113,7 @@
     }
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"walletType contains %@ || walletType contains %@",[@"HD" lowercaseString],[@"derived-standard" lowercaseString]];
     self.showList = [walletArray filteredArrayUsingPredicate:predicate];
-    NSPredicate *predicateHD = [NSPredicate predicateWithFormat:@"walletType contains %@",[@"HD" lowercaseString]];
-    OKWalletListTableViewCellModel *hdModel = [[walletArray filteredArrayUsingPredicate:predicateHD] firstObject];
+    OKWalletListTableViewCellModel *hdModel = [self.showList firstObject];
     self.HDWalletName = hdModel.walletName;
     self.countLabel.text = [NSString stringWithFormat:@"%zd",self.showList.count];
     self.headerTitleLabel.text = MyLocalizedString(@"HD derived wallet", nil);

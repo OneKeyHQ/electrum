@@ -43,7 +43,7 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="RVx-op-CqD">
-                                <rect key="frame" x="20" y="583" width="374" height="266"/>
+                                <rect key="frame" x="20" y="482" width="374" height="367"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="寻找设备中..." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="thG-lf-pYR">
                                         <rect key="frame" x="145.5" y="17" width="83.5" height="17"/>
@@ -52,7 +52,7 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="quanquan" translatesAutoresizingMaskIntoConstraints="NO" id="H71-KC-fMZ">
-                                        <rect key="frame" x="157" y="103" width="60" height="60"/>
+                                        <rect key="frame" x="157" y="153.5" width="60" height="60"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="60" id="wEz-1k-54S"/>
                                             <constraint firstAttribute="width" constant="60" id="yhr-96-Qc1"/>
@@ -68,27 +68,27 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dUj-Gd-673">
-                                <rect key="frame" x="20" y="232" width="374" height="341"/>
+                                <rect key="frame" x="20" y="232" width="374" height="240"/>
                                 <subviews>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="硬件钱包" translatesAutoresizingMaskIntoConstraints="NO" id="Qh8-8C-Zh6">
-                                        <rect key="frame" x="35" y="100.5" width="50" height="140"/>
+                                        <rect key="frame" x="35" y="60" width="50" height="120"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="50" id="jTU-ga-Du9"/>
-                                            <constraint firstAttribute="height" constant="140" id="nBh-Im-SvZ"/>
+                                            <constraint firstAttribute="height" constant="120" id="nBh-Im-SvZ"/>
                                         </constraints>
                                     </imageView>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="画板" translatesAutoresizingMaskIntoConstraints="NO" id="QDH-I2-KIH">
-                                        <rect key="frame" x="172" y="148" width="30" height="45"/>
+                                        <rect key="frame" x="172" y="97.5" width="30" height="45"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="30" id="kva-gp-4yw"/>
                                             <constraint firstAttribute="height" constant="45" id="zrz-vi-jpk"/>
                                         </constraints>
                                     </imageView>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="画板 1" translatesAutoresizingMaskIntoConstraints="NO" id="lZj-bO-Vzf">
-                                        <rect key="frame" x="161" y="17.5" width="243" height="306"/>
+                                        <rect key="frame" x="174" y="0.0" width="230" height="240"/>
                                         <constraints>
-                                            <constraint firstAttribute="width" constant="243" id="Dcm-wd-Ibz"/>
-                                            <constraint firstAttribute="height" constant="306" id="oEJ-lv-dgy"/>
+                                            <constraint firstAttribute="width" constant="230" id="Dcm-wd-Ibz"/>
+                                            <constraint firstAttribute="height" constant="240" id="oEJ-lv-dgy"/>
                                         </constraints>
                                     </imageView>
                                 </subviews>
@@ -97,7 +97,7 @@
                                     <constraint firstItem="Qh8-8C-Zh6" firstAttribute="leading" secondItem="dUj-Gd-673" secondAttribute="leading" constant="35" id="31f-CW-P5b"/>
                                     <constraint firstItem="Qh8-8C-Zh6" firstAttribute="centerY" secondItem="dUj-Gd-673" secondAttribute="centerY" id="Dz8-zv-7He"/>
                                     <constraint firstItem="QDH-I2-KIH" firstAttribute="centerX" secondItem="dUj-Gd-673" secondAttribute="centerX" id="fns-Cd-KQO"/>
-                                    <constraint firstAttribute="height" constant="341" id="huG-6I-aRt"/>
+                                    <constraint firstAttribute="height" constant="240" id="huG-6I-aRt"/>
                                     <constraint firstItem="QDH-I2-KIH" firstAttribute="centerY" secondItem="dUj-Gd-673" secondAttribute="centerY" id="nTK-7y-b4f"/>
                                     <constraint firstItem="lZj-bO-Vzf" firstAttribute="centerY" secondItem="dUj-Gd-673" secondAttribute="centerY" id="veZ-up-8Ca"/>
                                     <constraint firstAttribute="trailing" secondItem="lZj-bO-Vzf" secondAttribute="trailing" constant="-30" id="yJy-Y9-5CQ"/>
@@ -249,7 +249,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="gen-wo-QBA" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="31.884057971014496" y="37.5"/>
+            <point key="canvasLocation" x="57" y="51"/>
         </scene>
         <!--Activate Device Select View Controller-->
         <scene sceneID="dRI-Ra-ulk">
