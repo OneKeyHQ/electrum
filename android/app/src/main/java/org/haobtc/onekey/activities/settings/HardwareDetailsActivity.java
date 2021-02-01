@@ -51,6 +51,7 @@ import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.event.FixBixinkeyNameEvent;
 import org.haobtc.onekey.event.GotVerifyInfoEvent;
 import org.haobtc.onekey.event.NotifySuccessfulEvent;
+import org.haobtc.onekey.event.PinInputComplete;
 import org.haobtc.onekey.event.PostVerifyInfoEvent;
 import org.haobtc.onekey.event.VerifyFailedEvent;
 import org.haobtc.onekey.event.VerifySuccessEvent;
@@ -491,8 +492,19 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
                     showToast(R.string.confirm_hardware_msg);
                 } else {
                     if (BusinessAsyncTask.CHANGE_PIN.equals(currentMethod)) {
-                        startActivity(new Intent(this, ConfirmOnHardWareActivity.class));
-                        EventBus.getDefault().post(new ExitEvent());
+                        boolean isVerifyPinOnHardwareSp =
+                                (boolean)
+                                        PreferencesManager.get(
+                                                mContext,
+                                                "Preferences",
+                                                Constant.PIN_VERIFY_ON_HARDWARE,
+                                                true);
+                        if (isVerifyPinOnHardwareSp) {
+                            EventBus.getDefault().post(new PinInputComplete());
+                        } else {
+                            startActivity(new Intent(this, ConfirmOnHardWareActivity.class));
+                            EventBus.getDefault().post(new ExitEvent());
+                        }
                     }
                 }
                 break;
@@ -610,6 +622,8 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
                 if ("0".equals(s)) {
                     showToast(R.string.pin_wrong);
                     EventBus.getDefault().post(new ExitEvent());
+                } else if ("1".equals(s)) {
+                    EventBus.getDefault().post(new PinInputComplete());
                 }
                 break;
             case BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY:

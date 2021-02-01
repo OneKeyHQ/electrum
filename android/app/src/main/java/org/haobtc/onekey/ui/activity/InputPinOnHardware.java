@@ -10,8 +10,10 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.event.ExitEvent;
+import org.haobtc.onekey.event.PinInputComplete;
 import org.haobtc.onekey.exception.HardWareExceptions;
 import org.haobtc.onekey.ui.base.BaseActivity;
+import org.haobtc.onekey.ui.widget.SuperTextView;
 
 /**
  * @author liyan
@@ -24,10 +26,14 @@ public class InputPinOnHardware extends BaseActivity {
     @BindView(R.id.title)
     TextView title;
 
+    @BindView(R.id.confirm_btn)
+    SuperTextView confirmBtn;
+
     /** init */
     @Override
     public void init() {
         title.setText(R.string.verify_pin_onkey);
+        confirmBtn.setEnabled(false);
     }
 
     /**
@@ -62,6 +68,14 @@ public class InputPinOnHardware extends BaseActivity {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPinInputComplete(PinInputComplete pinInputComplete) {
+        if (hasWindowFocus()) {
+            confirmBtn.setEnabled(true);
+            confirmBtn.setText(R.string.finish);
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onExit(HardWareExceptions exceptions) {
         if (hasWindowFocus()) {
             finish();
@@ -71,5 +85,15 @@ public class InputPinOnHardware extends BaseActivity {
     @Override
     public boolean needEvents() {
         return true;
+    }
+
+    @SingleClick
+    @OnClick({R.id.confirm_btn})
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.confirm_btn:
+                finish();
+                break;
+        }
     }
 }

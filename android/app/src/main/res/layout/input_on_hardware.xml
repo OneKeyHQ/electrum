@@ -1,39 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <include
-        android:id="@+id/title_layout"
-        layout="@layout/title_layout"/>
-    <TextView
-        android:id="@+id/text_"
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/input_pin_on_device"
-        android:gravity="center"
-        android:textSize="@dimen/sp_30"
-        android:lineSpacingExtra="@dimen/dp_5"
-        android:layout_marginTop="@dimen/dp_10"
-        android:textColor="#142A3B"
-        app:layout_constraintTop_toBottomOf="@id/title_layout"/>
-    <TextView
-        android:id="@+id/text_1"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <include
+            android:id="@+id/title_layout"
+            layout="@layout/title_layout" />
+
+        <TextView
+            android:id="@+id/text_"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_10"
+            android:gravity="center"
+            android:lineSpacingExtra="@dimen/dp_5"
+            android:text="@string/input_pin_on_device"
+            android:textColor="#142A3B"
+            android:textSize="@dimen/sp_30" />
+
+        <TextView
+            android:id="@+id/text_1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_15"
+            android:gravity="center"
+            android:text="@string/input_pin_on_device_"
+            android:textColor="#142A3B"
+            android:textSize="@dimen/sp_14"
+            app:layout_constraintTop_toBottomOf="@id/text_" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="133dp"
+            android:src="@drawable/device_pin"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/text_1" />
+    </LinearLayout>
+
+    <org.haobtc.onekey.ui.widget.SuperTextView
+        android:id="@+id/confirm_btn"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_15"
-        android:textSize="@dimen/sp_14"
-        android:text="@string/input_pin_on_device_"
-        android:textColor="#142A3B"
+        android:layout_height="@dimen/dp_60"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="@dimen/dp_34"
+        android:layout_marginEnd="@dimen/dp_34"
+        android:layout_marginBottom="122dp"
+        android:background="@drawable/btn_enable_selector"
         android:gravity="center"
-        app:layout_constraintTop_toBottomOf="@id/text_"/>
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="133dp"
-        android:src="@drawable/device_pin"
-        app:layout_constraintTop_toBottomOf="@id/text_1"/>
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:text="@string/confirm_on_hw"
+        android:textColor="@color/defaultColor"
+        android:textSize="@dimen/sp_20"
+        app:corner="@dimen/dp_20" />
+
+</RelativeLayout>
