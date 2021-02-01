@@ -4,7 +4,7 @@ import org.haobtc.onekey.constant.Vm
 
 data class WalletBalanceBean(
     val coinType: Vm.CoinType,
-    val balance: String,
+    val balance: String?,
     val balanceFiat: String?,
     val balanceFiaUnit: String?,
     val tokens: List<TokenBalanceBean> = arrayListOf(),

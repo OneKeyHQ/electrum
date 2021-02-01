@@ -347,7 +347,7 @@ public class SendEthActivity extends BaseActivity
         mAppWalletViewModel.currentWalletBalance.observe(
                 this,
                 mBalance -> {
-                    balance = mBalance.getBalance();
+                    balance = mBalance.getBalance().stripTrailingZeros().toPlainString();
                     if (!Strings.isNullOrEmpty(balance)) {
                         decimalBalance = BigDecimal.valueOf(Double.parseDouble(balance));
                     }

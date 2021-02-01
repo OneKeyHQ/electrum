@@ -32,8 +32,6 @@ import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.bean.ZxingConfig;
 import com.yzq.zxinglibrary.common.Constant;
 import io.reactivex.functions.Consumer;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -272,11 +270,7 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
         mAppWalletViewModel.currentWalletBalance.observe(
                 this,
                 balance -> {
-                    String amount =
-                            new BigDecimal(balance.getBalance())
-                                    .setScale(8, RoundingMode.DOWN)
-                                    .stripTrailingZeros()
-                                    .toPlainString();
+                    String amount = balance.getBalanceFormat(8);
                     textBtcAmount.setText(amount);
                 });
         mAppWalletViewModel.currentWalletFiatBalance.observe(
@@ -284,18 +278,10 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
                 balance -> {
                     tetAmount.setText(
                             String.format(
-                                    "%s %s",
-                                    balance.getSymbol(),
-                                    balance.getBalance().equals("0")
-                                            ? "0.00"
-                                            : balance.getBalance()));
+                                    "%s %s", balance.getSymbol(), balance.getBalanceFormat()));
                     textDollar.setText(
                             String.format(
-                                    "≈ %s %s",
-                                    balance.getSymbol(),
-                                    balance.getBalance().equals("0")
-                                            ? "0.00"
-                                            : balance.getBalance()));
+                                    "≈ %s %s", balance.getSymbol(), balance.getBalanceFormat()));
                 });
     }
 

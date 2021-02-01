@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+import java.math.BigDecimal;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.greenrobot.eventbus.EventBus;
@@ -35,13 +36,14 @@ import org.haobtc.onekey.manager.PyEnv;
  * @create 2021-01-06 11:09 AM
  */
 public class AppWalletViewModel extends ViewModel {
+
     private final ExecutorService mExecutorService = Executors.newFixedThreadPool(4);
     private final Handler mMainHandler = new Handler(Looper.getMainLooper());
 
     public MutableLiveData<Boolean> existsWallet = new MutableLiveData<>();
     public MutableLiveData<LocalWalletInfo> currentWalletInfo = new MutableLiveData<>();
     public LiveData<WalletBalanceVo> currentWalletBalance =
-            new MutableLiveData<>(new WalletBalanceVo("0", "BTC"));
+            new MutableLiveData<>(new WalletBalanceVo(new BigDecimal("0"), "BTC"));
     public LiveData<WalletBalanceFiatVo> currentWalletFiatBalance =
             new MutableLiveData<>(new WalletBalanceFiatVo("0", "CNY", "¥"));
     private final BalanceManager mBalanceManager = new BalanceManager();
@@ -98,7 +100,8 @@ public class AppWalletViewModel extends ViewModel {
                             mSystemConfigManager.getCurrentFiatUnitSymbol();
 
                     // 防止网络请求慢，先恢复一下初始状态。
-                    setCurrentWalletBalance(new WalletBalanceVo("0", currentBaseUnit));
+                    setCurrentWalletBalance(
+                            new WalletBalanceVo(new BigDecimal("0"), currentBaseUnit));
                     setCurrentWalletFiatBalance(
                             new WalletBalanceFiatVo(
                                     "0",
@@ -113,9 +116,10 @@ public class AppWalletViewModel extends ViewModel {
                     if (balance != null) {
                         setCurrentWalletBalance(
                                 new WalletBalanceVo(
-                                        TextUtils.isEmpty(balance.getBalance())
-                                                ? "0"
-                                                : balance.getBalance(),
+                                        new BigDecimal(
+                                                TextUtils.isEmpty(balance.getBalance())
+                                                        ? "0"
+                                                        : balance.getBalance()),
                                         currentBaseUnit));
                         setCurrentWalletFiatBalance(
                                 new WalletBalanceFiatVo(
@@ -185,7 +189,10 @@ public class AppWalletViewModel extends ViewModel {
                             mSystemConfigManager.getCurrentFiatUnitSymbol();
                     setCurrentWalletBalance(
                             new WalletBalanceVo(
-                                    TextUtils.isEmpty(balancePair.first) ? "0" : balancePair.first,
+                                    new BigDecimal(
+                                            TextUtils.isEmpty(balancePair.first)
+                                                    ? "0"
+                                                    : balancePair.first),
                                     currentBaseUnit));
                     setCurrentWalletFiatBalance(
                             new WalletBalanceFiatVo(

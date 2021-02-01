@@ -23,7 +23,6 @@ import butterknife.OnClick;
 import com.google.common.base.Strings;
 import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.internal.schedulers.SingleScheduler;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import org.greenrobot.eventbus.EventBus;
@@ -43,6 +42,7 @@ import org.jetbrains.annotations.NotNull;
 public class TransactionDetailWalletActivity extends BaseActivity
         implements TransactionListFragment.SchedulerProvide,
                 TransactionListFragment.CoinTypeProvider {
+
     private static final String EXT_BLE_HW = Constant.BLE_MAC;
     private static final String EXT_WALLET_BALANCE = "walletBalance";
     private static final String EXT_WALLET_DOLLAR = "walletDollar";
@@ -136,11 +136,8 @@ public class TransactionDetailWalletActivity extends BaseActivity
         mAppWalletViewModel.currentWalletBalance.observe(
                 this,
                 balance -> {
-                    walletBalance = balance.getBalance();
-                    String amount =
-                            new BigDecimal(balance.getBalance())
-                                    .stripTrailingZeros()
-                                    .toPlainString();
+                    walletBalance = balance.getBalance().stripTrailingZeros().toPlainString();
+                    String amount = balance.getBalance().stripTrailingZeros().toPlainString();
                     textWalletAmount.setText(String.format("%s%s", amount, balance.getUnit()));
                 });
         mAppWalletViewModel.currentWalletFiatBalance.observe(
@@ -148,11 +145,7 @@ public class TransactionDetailWalletActivity extends BaseActivity
                 balance -> {
                     textWalletDollar.setText(
                             String.format(
-                                    "≈ %s %s",
-                                    balance.getSymbol(),
-                                    balance.getBalance().equals("0")
-                                            ? "0.00"
-                                            : balance.getBalance()));
+                                    "≈ %s %s", balance.getSymbol(), balance.getBalanceFormat()));
                 });
     }
 
@@ -278,6 +271,7 @@ public class TransactionDetailWalletActivity extends BaseActivity
     }
 
     static class ViewPageAdapter extends FragmentPagerAdapter {
+
         private List<Fragment> fragments;
 
         public ViewPageAdapter(@NonNull FragmentManager fm, List<Fragment> fragments) {
