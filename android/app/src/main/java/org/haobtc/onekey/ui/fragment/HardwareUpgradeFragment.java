@@ -5,9 +5,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
+import butterknife.BindView;
+import butterknife.OnClick;
 import com.google.common.base.Strings;
-
+import java.util.Objects;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -18,39 +19,42 @@ import org.haobtc.onekey.event.UpdateEvent;
 import org.haobtc.onekey.ui.activity.HardwareUpgradeActivity;
 import org.haobtc.onekey.ui.base.BaseFragment;
 
-import java.util.Objects;
-
-import butterknife.BindView;
-import butterknife.OnClick;
-
 /**
  * @author liyan
  * @date 12/3/20
  */
-
 public class HardwareUpgradeFragment extends BaseFragment {
-
 
     @BindView(R.id.current_stm32_version_code)
     TextView currentStm32VersionCode;
+
     @BindView(R.id.current_nrf_version_code)
     TextView currentNrfVersionCode;
+
     @BindView(R.id.newer_stm32_version_name)
     TextView newerStm32VersionName;
+
     @BindView(R.id.stm32_update)
     Button stm32Update;
+
     @BindView(R.id.stm32_update_description)
     TextView stm32UpdateDescription;
+
     @BindView(R.id.stm32)
     LinearLayout stm32;
+
     @BindView(R.id.newer_nrf_version_name)
     TextView newerNrfVersionName;
+
     @BindView(R.id.nrf_update)
     Button nrfUpdate;
+
     @BindView(R.id.nrf_update_description)
     TextView nrfUpdateDescription;
+
     @BindView(R.id.ble)
     LinearLayout ble;
+
     @BindView(R.id.no_update_promote)
     TextView noUpdatePromote;
 
@@ -59,20 +63,24 @@ public class HardwareUpgradeFragment extends BaseFragment {
      *
      * @param view
      */
-
     @Override
     public void init(View view) {
+        refreshView();
+    }
+
+    public void refreshView() {
         if (Strings.isNullOrEmpty(HardwareUpgradeActivity.currentFirmwareVersion)) {
             currentStm32VersionCode.setText(R.string.unknown_version);
         } else {
             currentStm32VersionCode.setText(HardwareUpgradeActivity.currentFirmwareVersion);
         }
         if (Strings.isNullOrEmpty(HardwareUpgradeActivity.currentNrfVersion)) {
-           currentNrfVersionCode.setText(R.string.unknown_version);
+            currentNrfVersionCode.setText(R.string.unknown_version);
         } else {
             currentNrfVersionCode.setText(HardwareUpgradeActivity.currentNrfVersion);
         }
-        if (Strings.isNullOrEmpty(HardwareUpgradeActivity.newFirmwareVersion) && Strings.isNullOrEmpty(HardwareUpgradeActivity.newNrfVersion)) {
+        if (Strings.isNullOrEmpty(HardwareUpgradeActivity.newFirmwareVersion)
+                && Strings.isNullOrEmpty(HardwareUpgradeActivity.newNrfVersion)) {
             noUpdatePromote.setVisibility(View.VISIBLE);
         } else {
             if (!Strings.isNullOrEmpty(HardwareUpgradeActivity.newFirmwareVersion)) {
@@ -90,15 +98,16 @@ public class HardwareUpgradeFragment extends BaseFragment {
         }
     }
 
-
-    /***
-     * init layout
+    /**
+     * * init layout
+     *
      * @return
      */
     @Override
     public int getContentViewId() {
         return R.layout.hardware_upgrade_fragment;
     }
+
     @SingleClick(value = 2000L)
     @OnClick({R.id.stm32_update, R.id.nrf_update})
     public void onViewClicked(View view) {
@@ -111,9 +120,7 @@ public class HardwareUpgradeFragment extends BaseFragment {
                 break;
         }
     }
-    /**
-     * 页面刷新监听
-     * */
+    /** 页面刷新监听 */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onRefreshView(RefreshViewEvent event) {
         if (Objects.isNull(noUpdatePromote)) {
@@ -136,7 +143,6 @@ public class HardwareUpgradeFragment extends BaseFragment {
                 break;
             default:
         }
-
     }
 
     @Override

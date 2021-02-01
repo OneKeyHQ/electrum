@@ -286,7 +286,14 @@ public class SendHdActivity extends BaseActivity implements BusinessAsyncTask.He
         setMinAmount();
         editAmount.setFilters(
                 new InputFilter[] {
-                    new PointLengthFilter(scale, maxNum -> showToast(R.string.accuracy_num))
+                    new PointLengthFilter(
+                            scale,
+                            maxNum ->
+                                    showToast(
+                                            String.format(
+                                                    Locale.getDefault(),
+                                                    mContext.getString(R.string.accuracy_num),
+                                                    scale)))
                 });
         String addressScan = getIntent().getStringExtra(EXT_SCAN_ADDRESS);
         if (!TextUtils.isEmpty(addressScan)) {

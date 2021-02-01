@@ -18,56 +18,58 @@ import org.haobtc.onekey.ui.base.BaseActivity;
  * @date 12/19/20
  */
 public class InputPinOnHardware extends BaseActivity {
-  @BindView(R.id.img_back)
-  ImageView imgBack;
+    @BindView(R.id.img_back)
+    ImageView imgBack;
 
-  @BindView(R.id.title)
-  TextView title;
+    @BindView(R.id.title)
+    TextView title;
 
-  /** init */
-  @Override
-  public void init() {
-    title.setText(R.string.verify_pin_onkey);
-  }
-
-  /**
-   * * init layout
-   *
-   * @return
-   */
-  @Override
-  public int getContentViewId() {
-    return R.layout.input_on_hardware;
-  }
-
-  @Override
-  protected void onPause() {
-    super.onPause();
-    finish();
-  }
-
-  @SingleClick
-  @OnClick(R.id.img_back)
-  public void onViewClicked(View view) {
-    finish();
-  }
-
-  @Subscribe(threadMode = ThreadMode.MAIN)
-  public void onFinish(ExitEvent event) {
-    if (hasWindowFocus()) {
-      finish();
+    /** init */
+    @Override
+    public void init() {
+        title.setText(R.string.verify_pin_onkey);
     }
-  }
 
-  @Subscribe(threadMode = ThreadMode.MAIN)
-  public void onExit(HardWareExceptions exceptions) {
-    if (hasWindowFocus()) {
-      finish();
+    /**
+     * * init layout
+     *
+     * @return
+     */
+    @Override
+    public int getContentViewId() {
+        return R.layout.input_on_hardware;
     }
-  }
 
-  @Override
-  public boolean needEvents() {
-    return true;
-  }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        finish();
+    }
+
+    @SingleClick
+    @OnClick({R.id.img_back})
+    public void onViewClicked(View view) {
+        if (view.getId() == R.id.img_back) {
+            finish();
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onFinish(ExitEvent event) {
+        if (hasWindowFocus()) {
+            finish();
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onExit(HardWareExceptions exceptions) {
+        if (hasWindowFocus()) {
+            finish();
+        }
+    }
+
+    @Override
+    public boolean needEvents() {
+        return true;
+    }
 }
