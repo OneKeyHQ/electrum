@@ -1,18 +1,14 @@
 from abc import ABC, abstractmethod
-from typing import Union, Any
+from typing import Any, List, Tuple, Union
+
+from requests import Response
 
 from electrum_gui.common.basic.request.enums import Method
-from requests import Response
 
 
 class RestfulInterface(ABC):
     def get(
-        self,
-        path: str,
-        params: Any = None,
-        headers: dict = None,
-        timeout: int = None,
-        **kwargs
+        self, path: str, params: Any = None, headers: dict = None, timeout: int = None, **kwargs
     ) -> Union[dict, Response]:
         """
         GET a request
@@ -23,23 +19,10 @@ class RestfulInterface(ABC):
         :param timeout: request timeout, optional
         :return: json dict or Response object
         """
-        return self.request(
-            method=Method.GET,
-            path=path,
-            params=params,
-            headers=headers,
-            timeout=timeout,
-            **kwargs
-        )
+        return self.request(method=Method.GET, path=path, params=params, headers=headers, timeout=timeout, **kwargs)
 
     def post(
-        self,
-        path: str,
-        data: Any = None,
-        json: Any = None,
-        headers: dict = None,
-        timeout: int = None,
-        **kwargs
+        self, path: str, data: Any = None, json: Any = None, headers: dict = None, timeout: int = None, **kwargs
     ) -> Union[dict, Response]:
         """
         POST a request
@@ -52,13 +35,7 @@ class RestfulInterface(ABC):
         :return: json dict or Response object
         """
         return self.request(
-            method=Method.POST,
-            path=path,
-            data=data,
-            json=json,
-            headers=headers,
-            timeout=timeout,
-            **kwargs
+            method=Method.POST, path=path, data=data, json=json, headers=headers, timeout=timeout, **kwargs
         )
 
     @abstractmethod
@@ -84,4 +61,44 @@ class RestfulInterface(ABC):
         :param headers: request header, optional
         :param timeout: request timeout, optional
         :return: json dict or Response object
+        """
+
+
+class JsonRPCInterface(ABC):
+    @abstractmethod
+    def call(
+        self,
+        method: str,
+        params: Union[list, dict] = None,
+        headers: dict = None,
+        timeout: int = None,
+        path: str = "",
+        **kwargs
+    ) -> Union[Response, Any]:
+        """
+        Call to server
+        :param method: RPC call method
+        :param params: RPC call params, optional list or dict
+        :param headers: request headers, optional
+        :param timeout: request timeout, optional
+        :param path: target path, optional
+        :return: Response object or any object
+        """
+
+    @abstractmethod
+    def batch_call(
+        self,
+        calls: List[Tuple[str, Union[list, dict]]],
+        headers: dict = None,
+        timeout: int = None,
+        path: str = "",
+        **kwargs
+    ) -> Union[Response, List[Any]]:
+        """
+        Batch call to server
+        :param calls: Batch calls group
+        :param headers: request headers, optional
+        :param timeout: request timeout, optional
+        :param path: target path, optional
+        :return: Response object or list of results
         """

@@ -1,10 +1,11 @@
-from typing import Any, Union, Callable
+from typing import Any, Callable, Union
 from urllib.parse import urljoin
+
+from requests import RequestException, Response, Session
 
 from electrum_gui.common.basic.request.enums import Method
 from electrum_gui.common.basic.request.exceptions import ResponseException
 from electrum_gui.common.basic.request.interfaces import RestfulInterface
-from requests import Response, Session, RequestException
 
 
 class RestfulRequest(RestfulInterface):
@@ -81,9 +82,7 @@ class RestfulRequest(RestfulInterface):
                 **kwargs,
             )
         except RequestException as e:
-            self.print_if_debug(
-                f"Error in sending a request. {args_str}, exception: {e}"
-            )
+            self.print_if_debug(f"Error in sending a request. {args_str}, exception: {e}")
             raise e
 
         if not response.ok:
@@ -101,10 +100,7 @@ class RestfulRequest(RestfulInterface):
         try:
             return response.json()
         except ValueError as e:
-            message = (
-                f"Error in parse response to json. {args_str}, "
-                f"response_text: {response.text}, exception: {e}"
-            )
+            message = f"Error in parse response to json. {args_str}, " f"response_text: {response.text}, exception: {e}"
             self.print_if_debug(message)
             raise ResponseException(message, response=response)
 

@@ -38,6 +38,7 @@ class ExplorerInterface(ABC):
         Get transaction by txid
         :param txid: transaction hash
         :return: Transaction
+        :raise: raise TransactionNotFound if target tx not found
         """
 
     def get_transaction_status(self, txid: str) -> TransactionStatus:

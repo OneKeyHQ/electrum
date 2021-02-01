@@ -19,7 +19,7 @@ from electrum_gui.common.explorer.data.objects import (
 )
 
 
-class TrezorETH(ExplorerInterface):
+class Trezor(ExplorerInterface):
     __raw_tx_status_mapping__ = {
         -1: TransactionStatus.IN_MEMPOOL,
         0: TransactionStatus.REVERED,
@@ -57,7 +57,7 @@ class TrezorETH(ExplorerInterface):
 
     def get_balance(self, address: str, token: Token = None) -> int:
         if not token:
-            return super(TrezorETH, self).get_balance(address)
+            return super(Trezor, self).get_balance(address)
         else:
             resp = self._get_raw_address_info(address, details="tokenBalances")
             tokens = {i["contract"].lower(): i["balance"] for i in resp.get("tokens", ())}
@@ -124,7 +124,6 @@ class TrezorETH(ExplorerInterface):
 
         try:
             resp = self.restful.get(f"/api/v2/sendtx/{raw_tx}")
-
         except ResponseException as e:
             try:
                 resp = e.response.json()
