@@ -129,9 +129,14 @@ static dispatch_once_t once;
     }else if([method isEqualToString:kInterfaceDelete_wallet]){
         NSString *password = [parameter safeStringForKey:@"password"];
         NSString *name = [parameter safeStringForKey:@"name"];
+        NSString *hd = [parameter safeStringForKey:@"hd"];
         PyObject *args =  Py_BuildValue("(s)", [password UTF8String]);
         PyObject *kwargs;
-        kwargs = Py_BuildValue("{s:s}", "name", [name UTF8String]);
+        if (hd.length > 0) {
+            kwargs = Py_BuildValue("{s:s,s:i}", "name", [name UTF8String],"hd",[hd boolValue]);
+        }else{
+            kwargs = Py_BuildValue("{s:s}", "name", [name UTF8String]);
+        }
         PyObject *myobject_method = PyObject_GetAttrString(self.pyInstance, [kInterfaceDelete_wallet UTF8String]);
         result = PyObject_Call(myobject_method, args, kwargs);
         

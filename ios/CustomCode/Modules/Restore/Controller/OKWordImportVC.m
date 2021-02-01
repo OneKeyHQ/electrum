@@ -12,6 +12,7 @@
 #import "OKFindFollowingWalletController.h"
 #import "OKCreateResultModel.h"
 #import "OKCreateResultWalletInfoModel.h"
+#import "OKMatchingInCirclesViewController.h"
 
 @interface OKWordImportVC ()<UIScrollViewDelegate>
 
@@ -174,6 +175,9 @@
 
 - (void)tapFromClick
 {
-    [kTools tipMessage:MyLocalizedString(@"Temporary does not support", nil)];
+    OKMatchingInCirclesViewController *matchVc = [OKMatchingInCirclesViewController matchingInCirclesViewController];
+    matchVc.where = OKMatchingFromWhereDis;
+    BaseNavigationController *baseVc = [[BaseNavigationController alloc]initWithRootViewController:matchVc];
+    [self.OK_TopViewController presentViewController:baseVc animated:YES completion:nil];
 }
 @end

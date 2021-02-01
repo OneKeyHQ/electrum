@@ -62,6 +62,23 @@
     [self.nameBgView setLayerDefaultRadius];
 }
 - (IBAction)completeBtnClick:(UIButton *)sender {
+    switch (_type) {
+        case OKDeviceSuccessHwBackup:
+        {
+            [kPyCommandsManager callInterface:kInterfacedelete_backup_info parameter:@{@"name":kWalletManager.currentWalletInfo.name}];
+            [[NSNotificationCenter defaultCenter]postNotificationName:kNotiBackUPWalletComplete object:nil];
+            [[NSNotificationCenter defaultCenter]postNotificationName:kNotiHwInfoUpdate object:nil];
+        }
+            break;
+        case OKDeviceSuccessActivate:
+        {
+            [[NSNotificationCenter defaultCenter]postNotificationName:kNotiHwInfoUpdate object:nil];
+        }
+            break;
+        default:
+            break;
+    }
+    
     [self.OK_TopViewController dismissToViewControllerWithClassName:@"OKWalletViewController" animated:YES complete:^{
         
     }];

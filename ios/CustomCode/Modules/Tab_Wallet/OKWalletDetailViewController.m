@@ -183,14 +183,13 @@
                     deleteVc.deleteType = OKWhereToDeleteTypeDetail;
                     deleteVc.walletName = kWalletManager.currentWalletInfo.name;
                     [weakself.navigationController pushViewController:deleteVc animated:YES];
-                    
                 }else{
                     OKDeleteTipsType type = OKDeleteTipsTypeWallet;
                     if (self.walletType == OKWalletTypeHardware) {
                         type = OKDeleteTipsTypeHW;
                     }
                     OKDeleteWalletConfirmController *deleteVc = [OKDeleteWalletConfirmController deleteWalletConfirmController:^{
-                        if (weakself.walletType == OKWalletTypeObserve) {
+                        if (weakself.walletType == OKWalletTypeObserve || weakself.walletType == OKWalletTypeHardware) {
                             [weakself deleteWalletPwd:@""];
                         }else{
                             if (kWalletManager.isOpenAuthBiological) {

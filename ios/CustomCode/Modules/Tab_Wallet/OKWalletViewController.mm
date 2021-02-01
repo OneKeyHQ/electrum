@@ -744,12 +744,14 @@
 #pragma mark - notiHwInfoUpdate
 - (void)notiHwInfoUpdate
 {
-    NSDictionary *jsonDict =  [kPyCommandsManager callInterface:kInterfaceget_feature parameter:@{@"path":kBluetooth_iOS}];
-    if (jsonDict != nil) {
-        OKDeviceModel *deviceModel  = [[OKDeviceModel alloc]initWithJson:jsonDict];
-        kOKBlueManager.currentDeviceID = deviceModel.deviceInfo.device_id;
-        [[OKDevicesManager sharedInstance]addDevices:deviceModel];
-    }
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        NSDictionary *jsonDict =  [kPyCommandsManager callInterface:kInterfaceget_feature parameter:@{@"path":kBluetooth_iOS}];
+        if (jsonDict != nil) {
+            OKDeviceModel *deviceModel  = [[OKDeviceModel alloc]initWithJson:jsonDict];
+            kOKBlueManager.currentDeviceID = deviceModel.deviceInfo.device_id;
+            [[OKDevicesManager sharedInstance]addDevices:deviceModel];
+        }
+    });
 }
 
 -(void)viewDidAppear:(BOOL)animated {

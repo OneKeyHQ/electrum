@@ -123,7 +123,13 @@
     if (name == nil || name.length == 0) {
         name = kWalletManager.currentWalletInfo.name;
     }
-    [kPyCommandsManager callInterface:kInterfaceDelete_wallet parameter:@{@"name":name,@"password":pwd}];
+    NSDictionary *dict = nil;
+    if (self.deleteType == OKWhereToDeleteTypeMine) {
+        dict = @{@"name":name,@"password":pwd,@"hd":@"1"};
+    }else{
+        dict = @{@"name":name,@"password":pwd};
+    }
+    [kPyCommandsManager callInterface:kInterfaceDelete_wallet parameter:dict];
     [kWalletManager clearCurrentWalletInfo];
     [[NSNotificationCenter defaultCenter]postNotificationName:kNotiDeleteWalletComplete object:nil];
     [kTools tipMessage:MyLocalizedString(@"Wallet deleted successfully", nil)];

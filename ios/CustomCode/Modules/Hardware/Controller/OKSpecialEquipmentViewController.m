@@ -15,6 +15,7 @@
 #import "OKCreateResultWalletInfoModel.h"
 #import "OKBiologicalViewController.h"
 #import "OKFindFollowingWalletController.h"
+#import "OKDeviceSettingsViewController.h"
 
 @interface OKSpecialEquipmentViewController ()<OKHwNotiManagerDelegate>
 @property (weak, nonatomic) IBOutlet UILabel *titleLabel;
@@ -160,7 +161,9 @@
 
 - (void)tapClick
 {
-    NSLog(@"tapClick");
+    OKDeviceSettingsViewController *vc = [OKDeviceSettingsViewController deviceSettingsViewController];
+    vc.deviceModel = [[OKDevicesManager sharedInstance]getDeviceModelWithID:kOKBlueManager.currentDeviceID];
+    [self.navigationController pushViewController:vc animated:YES];
 }
 
 #pragma mark - OKHwNotiManagerDelegate

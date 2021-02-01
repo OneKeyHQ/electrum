@@ -247,6 +247,27 @@ static dispatch_once_t once;
     return YES;
 }
 
+- (BOOL)haveHDWallet
+{
+    NSArray *listDictArray =  [kPyCommandsManager callInterface:kInterfaceList_wallets parameter:@{}];
+    NSInteger count = 0;
+    for (int i = 0;i < listDictArray.count; i++) {
+        NSDictionary *dict = listDictArray[i];
+        NSString *key = [dict.allKeys firstObject];
+        NSDictionary *subDict = dict[key];
+        NSString *type = [subDict safeStringForKey:@"type"];
+        if ([type containsString:@"hd"]||[type containsString:@"derived-standard"]) {
+            count ++;
+        }
+    }
+    if (count == 0) {
+        return NO;
+    }else{
+        return YES;
+    }
+}
+
+
 - (BOOL)checkIsHavePwd
 {
     NSArray *listDictArray =  [kPyCommandsManager callInterface:kInterfaceList_wallets parameter:@{}];

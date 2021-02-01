@@ -126,6 +126,7 @@ typedef enum{
 - (NSString *)getFeeBaseWithSat:(NSString *)sat;
 - (BOOL)checkWalletName:(NSString *)name;
 - (BOOL)checkIsHavePwd;
+- (BOOL)haveHDWallet;
 - (OKWalletInfoModel *)getCurrentWalletAddress:(NSString *)wallletName;
 @end
 

@@ -237,6 +237,7 @@
         [self.navigationController popViewControllerAnimated:YES];
         return;
     }
+    OKWeakSelf(self)
     OKDeviceModel *deviceModel  = [[OKDeviceModel alloc]initWithJson:jsonDict];
     kOKBlueManager.currentDeviceID = deviceModel.deviceInfo.device_id;
     [[OKDevicesManager sharedInstance]addDevices:deviceModel];
@@ -249,6 +250,12 @@
                         [MBProgressHUD hideHUDForView:self.view animated:YES];
                         if (deviceModel.deviceInfo.initialized ) {
                             if (deviceModel.deviceInfo.backup_only) {
+                                if ([kWalletManager haveHDWallet]) {
+                                    [kTools tipMessage:MyLocalizedString(@"The HD wallet already exists locally. The BACKUP mode hardware wallet cannot be connected again", nil)];
+                                    [kOKBlueManager disconnectAllPeripherals];
+                                    [weakself.navigationController popToRootViewControllerAnimated:YES];
+                                    return;
+                                }
                                 OKSpecialEquipmentViewController *SpecialEquipmentVc = [OKSpecialEquipmentViewController specialEquipmentViewController];
                                 [self.navigationController pushViewController:SpecialEquipmentVc animated:YES];
                             }else{
@@ -269,6 +276,12 @@
         case OKMatchingTypeBackup2Hw:
         {
             dispatch_async(dispatch_get_main_queue(), ^{
+                if (deviceModel.deviceInfo.initialized) {
+                    [kTools tipMessage:MyLocalizedString(@"Backup to inactive devices only", nil)];
+                    [kOKBlueManager disconnectAllPeripherals];
+                    [MBProgressHUD hideHUDForView:self.view animated:YES];
+                    return;
+                }
                 [MBProgressHUD hideHUDForView:self.view animated:YES];
                 OKSetDeviceNameViewController *setDeviceNameVc = [OKSetDeviceNameViewController setDeviceNameViewController];
                 setDeviceNameVc.type = OKMatchingTypeBackup2Hw;
