@@ -32,8 +32,8 @@ typedef NS_ENUM(NSUInteger, OKHardwareListBaseCellType) {
 @property (nonatomic, assign) NSUInteger titleColor;
 @property (nonatomic, copy) NSString* details;
 @property (nonatomic, assign) bool hideRightArrow;
-@property (nonatomic, assign) NSUInteger tagTextColor;
-@property (nonatomic, assign) NSUInteger tagBgColor;
+@property (nonatomic, strong) UIColor *tagTextColor;
+@property (nonatomic, strong) UIColor *tagBgColor;
 @property (nonatomic, copy) NSString* tagText;
 @end
 

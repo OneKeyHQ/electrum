@@ -60,31 +60,25 @@
     self.phase = OKDeviceVerifyPhaseFetching;
 
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
-
-        id json = [kPyCommandsManager callInterface:kInterfacehardware_verify parameter:@{@"msg":[NSUUID UUID].UUIDString}];
-        if (json) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                self.phase = OKDeviceVerifyPhaseSubmitting;
-            });
-            NSURLSession *session = [NSURLSession sharedSession];
-            NSURL *url = [NSURL URLWithString:@"https://key.bixin.com/lengqian.bo"];
-            NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
-            request.HTTPMethod = @"POST";
-            NSData *data = [NSJSONSerialization dataWithJSONObject:json options:NSJSONWritingPrettyPrinted error:nil];
-            request.HTTPBody = [NSData dataWithData:data];
-            
-            NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-
-                NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:nil];
-                BOOL is_bixinkey = [[dict objectForKey:@"is_bixinkey"] boolValue];
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self showResult:is_bixinkey];
-                });
-
-              }];
-
-          [dataTask resume];
+        BOOL pass = NO;
+        NSDictionary *result;
+        NSString *json = [kPyCommandsManager callInterface:kInterfacehardware_verify parameter:@{@"msg":[NSUUID UUID].UUIDString}];
+        
+        if ([json isKindOfClass:NSString.class]) {
+            // 非标准 json, 临时解决
+            json = [json stringByReplacingOccurrencesOfString:@": True" withString:@": true"];
+            result = json.toDict;
+        } else if ([json isKindOfClass:NSDictionary.class]) {
+            result = (NSDictionary *)json;
         }
+        BOOL is_bixinkey = [result objectForKey:@"is_bixinkey"];
+        BOOL is_verified = [result objectForKey:@"is_verified"];
+        pass = is_bixinkey && is_verified;
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.phase = OKDeviceVerifyPhaseSubmitting;
+            [self showResult:pass];
+        });
     });
 
 }
@@ -93,11 +87,20 @@
     self.phase = OKDeviceVerifyPhaseDone;
     OKDeviceVerifyResultController *vc = [OKDeviceVerifyResultController controllerWithStoryboard];
     vc.isPassed = isPassed;
+    if (isPassed) {
+        OKDeviceModel *deviceModel = [[OKDevicesManager sharedInstance] getDeviceModelWithID:self.deviceId];
+        deviceModel.verifiedDevice = YES;
+        [[OKDevicesManager sharedInstance] updateDevices:deviceModel];
+    }
     vc.name = self.nameLabel.text;
+    OKWeakSelf(self)
     vc.doneCallback = ^{
-        [self.navigationController popViewControllerAnimated:YES];
-        [self.navigationController popViewControllerAnimated:YES];
+        [weakself.navigationController popViewControllerAnimated:YES];
+        [weakself.navigationController popViewControllerAnimated:YES];
     };
+    if (self.resultCallback) {
+        self.resultCallback(isPassed);
+    }
     [self.navigationController pushViewController:vc animated:YES];
 }
 

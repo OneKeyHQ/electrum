@@ -104,4 +104,20 @@
         return NO;
     }
 }
+
+- (NSURL *)toURL {
+    return [NSURL URLWithString:self];
+}
+
+- (NSDictionary *)toDict {
+    NSData *jsonData = [self dataUsingEncoding:NSUTF8StringEncoding];
+    NSError *err;
+    
+    NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingAllowFragments error:&err];
+    if (err) {
+        NSLog(@"ERROR: %@", err);
+        return nil;
+    }
+    return dict;
+}
 @end

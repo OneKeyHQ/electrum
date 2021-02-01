@@ -10,6 +10,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef void(^OKVerifyResultCallback)(BOOL isPass);
+
 typedef NS_ENUM(NSUInteger, OKDeviceVerifyPhase) {
     OKDeviceVerifyPhaseBegin = 0,
     OKDeviceVerifyPhaseConnecting,
@@ -22,6 +24,7 @@ typedef NS_ENUM(NSUInteger, OKDeviceVerifyPhase) {
 + (instancetype)controllerWithStoryboard;
 @property (nonatomic, assign) OKDeviceVerifyPhase phase;
 @property (nonatomic, strong) NSString *deviceId;
+@property (nonatomic, copy) OKVerifyResultCallback resultCallback;
 @end
 
 NS_ASSUME_NONNULL_END

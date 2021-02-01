@@ -31,7 +31,7 @@
     [self.createButton setLayerDefaultRadius];
     [self.contentView setLayerDefaultRadius];
     self.viewTitleLabel.text = MyLocalizedString(@"Add wallet account", nil);
-    [self.createButton setTitle: MyLocalizedString(@"Create account", nil) forState:UIControlStateNormal];
+    [self.createButton setTitle: MyLocalizedString(@"Add wallet", nil) forState:UIControlStateNormal];
 }
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];

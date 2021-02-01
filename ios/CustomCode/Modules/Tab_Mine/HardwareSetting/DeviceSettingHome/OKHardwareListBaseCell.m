@@ -42,12 +42,12 @@
     self.detailsLabel.text = model.details;
     self.rightArrow.hidden = model.hideRightArrow;
 
-    if (model.tagText) {
+    if (model.tagText.length) {
         self.tagView.hidden = NO;
         [self.tagView setLayerRadius:self.tagView.height * 0.5];
-        self.tagView.backgroundColor = HexColor(model.tagBgColor);
+        self.tagView.backgroundColor = model.tagBgColor;
         self.tagLabel.text = model.tagText;
-        self.tagLabel.textColor = HexColor(model.tagTextColor);
+        self.tagLabel.textColor = model.tagTextColor;
     } else {
         self.tagView.hidden = YES;
     }

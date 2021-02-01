@@ -104,7 +104,10 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
 
 - (void)checkAvailableUpdate {
     NSURLSession *session = [NSURLSession sharedSession];
-    NSURL *url = [NSURL URLWithString:@"https://data.onekey.so/version.json"];
+    NSURL *url = [NSURL URLWithString:@"https://key.bixin.com/version.json"];
+#ifdef DEBUG
+    url = [NSURL URLWithString:@"https://key.bixin.com/version_regtest.json"];
+#endif
     NSURLSessionTask *task = [session dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError* error) {
         if (error) {
             return;

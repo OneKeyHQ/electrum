@@ -12,7 +12,11 @@
 
 - (NSString *)deviceSysVersion {
     if (!_deviceSysVersion) {
-        _deviceSysVersion = [NSString stringWithFormat:@"%li.%li.%li", (long)self.major_version, (long)self.minor_version, (long)self.patch_version];
+        if ([self.onekey_version length]) {
+            _deviceSysVersion = self.onekey_version;
+        } else {
+            _deviceSysVersion = [NSString stringWithFormat:@"%li.%li.%li", (long)self.major_version, (long)self.minor_version, (long)self.patch_version];
+        }
     }
     return _deviceSysVersion;
 }

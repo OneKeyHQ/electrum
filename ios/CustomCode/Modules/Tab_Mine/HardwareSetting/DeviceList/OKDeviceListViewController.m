@@ -97,7 +97,7 @@ static const NSUInteger titleColor = 0x14293b;
     for (OKDeviceModel *device in devices) {
         OKDeviceListCellModel *deviceCell = [[OKDeviceListCellModel alloc] init];
         deviceCell.devcie = device;
-        deviceCell.name = device.deviceInfo.label;
+        deviceCell.name = device.deviceInfo.label.length ? device.deviceInfo.label : device.deviceInfo.ble_name;
         deviceCell.imageName = @"device_bixinkey";
         deviceCell.titleColor = titleColor;
         [self.deviceCells addObject:deviceCell];

@@ -47,7 +47,7 @@ static const NSUInteger titleColorRed = 0xeb5757;
     [super viewDidLoad];
     self.tableView.backgroundColor = HexColor(backgroundColor);
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    self.title = self.deviceModel.deviceInfo.label;
+    self.title = self.deviceModel.deviceInfo.label.length ? self.deviceModel.deviceInfo.label : self.deviceModel.deviceInfo.ble_name;
     self.deviceId = self.deviceModel.deviceInfo.device_id;
     [self.view addSubview:self.loadingView];
     self.loadingView.hidden = YES;
@@ -90,6 +90,12 @@ static const NSUInteger titleColorRed = 0xeb5757;
             [self ensureDeviceMatch:^{
                 OKDeviceVerifyController *vc = [OKDeviceVerifyController controllerWithStoryboard];
                 vc.deviceId = self.deviceId;
+                OKWeakSelf(self)
+                vc.resultCallback = ^(BOOL isPass) {
+                    if (isPass) {
+                        [weakself reloadListData];
+                    }
+                };
                 [self.navigationController pushViewController:vc animated:YES];
             }];
         } break;
@@ -140,8 +146,10 @@ static const NSUInteger titleColorRed = 0xeb5757;
     OKWeakSelf(self)
     [kOKBlueManager startScanAndConnectWithName:self.deviceModel.deviceInfo.ble_name complete:^(BOOL isSuccess) {
         if (!isSuccess) {
-            [kTools tipMessage:@"蓝牙连接超时"];
-            self.loadingView.hidden = YES;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [kTools tipMessage:@"蓝牙连接超时"];
+                self.loadingView.hidden = YES;
+            });
             return;
         }
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
@@ -245,6 +253,12 @@ static const NSUInteger titleColorRed = 0xeb5757;
     deviceVerifyCellModel.imageName = @"privacy 1";
     deviceVerifyCellModel.details = @"";
     deviceVerifyCellModel.cellType = OKHardwareListBaseCellTypeDeviceVerify;
+    if (self.deviceModel.verifiedDevice) {
+        deviceVerifyCellModel.tagBgColor = HexColorA(0x26cf02, 0.1);
+        deviceVerifyCellModel.tagTextColor = HexColor(0x00b812);
+        deviceVerifyCellModel.tagText = MyLocalizedString(@"hardwareWallet.verify.pass", nil);
+    }
+
 
     OKDeviceSettingsModel *generalSettings = [[OKDeviceSettingsModel alloc] init];
     generalSettings.sectionTitle = MyLocalizedString(@"general", nil);//@"通用";
@@ -316,5 +330,7 @@ static const NSUInteger titleColorRed = 0xeb5757;
 //        advanceSettings,
         dangerSettings
     ];
+    
+    [self.tableView reloadData];
 }
 @end

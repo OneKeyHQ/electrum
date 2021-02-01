@@ -26,6 +26,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isChinese;
 - (BOOL)containsChinese;
 + (BOOL)isHexString:(NSString *)str;
+- (NSURL * _Nullable)toURL;
+- (NSDictionary * _Nullable)toDict; // json string to dict
 @end
 
 NS_ASSUME_NONNULL_END
