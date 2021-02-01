@@ -191,7 +191,7 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
     if (self.bootloaderMode || [self.updateModel systemFirmwareNeedUpdate:@"0.0.0"]) {
         NSString *version = self.updateModel.systemFirmwareVersion;
         NSString *versionDesc = [kLocalizedString(@"newSysAvailable") stringByAppendingString:version];
-        NSString *updateDesc = ([OKLocalizableManager getCurrentLanguageType] == AppLanguageTypeZh_Hans) ? self.updateModel.systemFirmwareChangeLogCN : self.updateModel.systemFirmwareChangeLogEN;
+        NSString *updateDesc = ([OKLocalizableManager getCurrentLanguage] == AppCurrentLanguage_Zh_Hans) ? self.updateModel.systemFirmwareChangeLogCN : self.updateModel.systemFirmwareChangeLogEN;
         NSString *url = self.updateModel.systemFirmwareUrl;
         [cellsData addObject:@{
             @"updateType": @(OKDeviceUpdateTypeFramework),
@@ -204,7 +204,7 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
 //    if ([self.updateModel bluetoothFirmwareNeedUpdate:@"3.0.0"]) {
 //        NSString *version = self.updateModel.bluetoothFirmwareVersion;
 //        NSString *versionDesc = [kLocalizedString(@"newBluetoothAvailable") stringByAppendingString:version];
-//        NSString *updateDesc = ([OKLocalizableManager getCurrentLanguageType] == AppLanguageTypeZh_Hans) ? self.updateModel.bluetoothFirmwareChangeLogCN : self.updateModel.bluetoothFirmwareChangeLogEN;
+//        NSString *updateDesc = ([OKLocalizableManager getCurrentLanguage] == AppCurrentLanguage_Zh_Hans) ? self.updateModel.bluetoothFirmwareChangeLogCN : self.updateModel.bluetoothFirmwareChangeLogEN;
 //        NSString *url = self.updateModel.bluetoothFirmwareUrl;
 //        [cellsData addObject:@{
 //            @"updateType": @(OKDeviceUpdateTypeBluetooth),

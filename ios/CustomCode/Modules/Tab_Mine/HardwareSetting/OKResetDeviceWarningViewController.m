@@ -10,7 +10,7 @@
 #import "OKPINCodeViewController.h"
 #import "OKDeviceConfirmController.h"
 
-@interface OKResetDeviceWarningViewController () <OKHwNotiManagerDelegate>
+@interface OKResetDeviceWarningViewController () <OKHwNotiManagerDelegate, UINavigationControllerDelegate>
 @property (weak, nonatomic) IBOutlet UILabel *warningText;
 @property (weak, nonatomic) IBOutlet UIButton *warning;
 @property (weak, nonatomic) IBOutlet UIButton *readButton;
@@ -34,6 +34,7 @@
     [self.confirmButton setLayerRadius:20];
     self.confirmButton.alpha = 0.5;
     self.confirmButton.enabled = NO;
+    
 
 }
 
@@ -57,12 +58,7 @@
         } else {
             [kTools tipMessage:[MyLocalizedString(@"hardwareWallet.recover.title", nil) stringByAppendingString:MyLocalizedString(@"fail", nil)]] ;
         }
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (weakself.navigationController.presentedViewController) {
-                [weakself.navigationController dismissViewControllerAnimated:YES completion:nil];
-            }
-            [weakself.navigationController popViewControllerAnimated:YES];
-        });
+        [weakself dismissSelf];
     });
 }
 
@@ -75,28 +71,43 @@
                 NSLog(@"pinCode = %@",pin);
                 dispatch_async(dispatch_get_global_queue(0, 0), ^{
                     [kPyCommandsManager callInterface:kInterfaceset_pin parameter:@{@"pin":pin}];
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [weakself.navigationController dismissViewControllerAnimated:YES completion:nil];
-                    });
+
                 });
             }];
-            [weakself.navigationController presentViewController:pinCode animated:YES completion:nil];
+            pinCode.backToPreviousCallback = ^{
+                [kPyCommandsManager cancelPIN];
+            };
+            pinCode.forbidInteractivePopGestureRecognizer = YES;
+            [weakself.navigationController pushViewController: pinCode animated:YES];
         } else if (type == OKHWNotiTypeFactoryReset) {
             OKDeviceConfirmController *confirmVC = [OKDeviceConfirmController controllerWithStoryboard];
             confirmVC.title = MyLocalizedString(@"hardwareWallet.recover.title", nil);
             confirmVC.titleText = MyLocalizedString(@"hardwareWallet.pin.comfirm", nil);
             confirmVC.btnText = MyLocalizedString(@"return", nil);
+            confirmVC.forbidInteractivePopGestureRecognizer = YES;
             confirmVC.btnCallback = ^{
-                [weakself.navigationController dismissViewControllerAnimated:YES completion:nil];
+                [kPyCommandsManager cancel];
             };
-            [weakself.navigationController presentViewController:confirmVC animated:YES completion:nil];
+            confirmVC.backToPreviousCallback = ^{
+                [kPyCommandsManager cancel];
+            };
+            [weakself.navigationController pushViewController: confirmVC animated:YES];
         } else {
-            NSLog(@"");
+            NSLog(@"!!ERR");
         }
     });
 }
 
-
+- (void)dismissSelf {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSUInteger index = [[self.navigationController viewControllers] indexOfObject:self];
+        if (index <= 1) {
+            return;
+        }
+        UIViewController *parentVC = [[self.navigationController viewControllers] objectAtIndex:index - 1];
+        [self.navigationController popToViewController:parentVC animated:YES];
+    });
+}
 
 
 @end

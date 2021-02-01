@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BOOL isRoot;
 @property (nonatomic) BOOL navigationbarTranslucent;
 @property (nonatomic) BOOL forbidInteractivePopGestureRecognizer;
+@property (nonatomic, copy) void(^backToPreviousCallback)(void);
 
 + (__kindof BaseViewController *)initWithStoryboardName:(NSString *)storyboardName identifier:(NSString *)identifier;
 

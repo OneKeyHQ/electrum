@@ -523,11 +523,6 @@ static dispatch_once_t once;
         [self startScanPeripheral];
     }
     
-    // 临时超时措施
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        self.connectedComplete = nil;
-        complete(NO);
-    });
 }
 
 @end

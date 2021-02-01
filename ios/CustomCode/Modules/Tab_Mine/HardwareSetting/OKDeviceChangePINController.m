@@ -65,6 +65,9 @@
                 [weakself.navigationController pushViewController:pinCode2 animated:YES];
             }];
             pinCode.titleLabelText = MyLocalizedString(@"hardwareWallet.pin.inputPinTip", nil);
+            pinCode.backToPreviousCallback = ^{
+                [kPyCommandsManager cancelPIN];
+            };
             [weakself.navigationController pushViewController:pinCode animated:YES];
         } else if (type == OKHWNotiTypeKeyConfirm) {
             OKDeviceConfirmController *confirmVC = [OKDeviceConfirmController controllerWithStoryboard];
@@ -78,11 +81,22 @@
             confirmVC.titleText = MyLocalizedString(@"Verify on the equipment", nil);
             confirmVC.btnText = MyLocalizedString(@"return", nil);
             confirmVC.btnCallback = ^{
-                [weakself.navigationController dismissViewControllerAnimated:YES completion:nil];
+                [kPyCommandsManager cancel];
+            };
+            confirmVC.backToPreviousCallback = ^{
+                [kPyCommandsManager cancel];
             };
             [weakself.navigationController pushViewController:confirmVC animated:YES];
-        } else {
-            NSLog(@"");
+        } else if (type == OKHWNotiTypePin_New_First){
+            dispatch_async(dispatch_get_main_queue(), ^{
+                OKPINCodeViewController *pinCode = [OKPINCodeViewController PINCodeViewController:^(NSString * _Nonnull pin) {
+                    NSLog(@"pinCode = %@",pin);
+                    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+                        [kPyCommandsManager callInterface:kInterfaceset_pin parameter:@{@"pin":pin}];
+                    });
+                }];
+               [weakself.navigationController pushViewController:pinCode animated:YES];
+            });
         }
     });
 }

@@ -76,10 +76,8 @@
     }
     OKDeviceModel *oldDeviceModel = [self.devices objectForKey:deviceModel.deviceInfo.device_id];
     if (!oldDeviceModel) { return; }
-    BOOL changed = [oldDeviceModel updateWithDict:deviceModel.json];
-    if (changed) {
-        [self saveToLocalStorage:oldDeviceModel];
-    }
+    [oldDeviceModel updateWithDict:deviceModel.json];
+    [self saveToLocalStorage:oldDeviceModel];
 }
 
 - (void)removeDevice:(NSString *)deviceID {

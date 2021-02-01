@@ -22,6 +22,11 @@ typedef NS_ENUM(NSInteger, AppLanguageType) {
     AppLanguageTypeZh_Hans,
 };
 
+typedef NS_ENUM(NSInteger, AppCurrentLanguage) {
+    AppCurrentLanguage_En,
+    AppCurrentLanguage_Zh_Hans,
+};
+
 #define kLanguageTypeKeyEn          @"en"
 #define kLanguageTypeKeyCh          @"zh-Hans"
 
@@ -36,6 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (OKLocalizableManager *)sharedInstance;
 + (NSString *)getCurrentLanguageString;
 + (AppLanguageType)getCurrentLanguageType;
++ (AppCurrentLanguage)getCurrentLanguage;
 - (void)setupAppLanguage:(AppLanguageType)languageType;
 @end
 

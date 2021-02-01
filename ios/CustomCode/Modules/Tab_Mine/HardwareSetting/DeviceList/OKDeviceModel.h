@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OKDeviceModel : NSObject
 @property (nonatomic, strong) OKDeviceInfoModel *deviceInfo;
-@property (nonatomic, strong) NSMutableDictionary *json;
+@property (nonatomic, strong, readonly) NSMutableDictionary *json;
 @property (nonatomic, assign) BOOL verifiedDevice;
 
 - (instancetype)initWithJson:(NSDictionary *)json;

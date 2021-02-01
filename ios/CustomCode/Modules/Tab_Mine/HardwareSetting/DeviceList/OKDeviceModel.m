@@ -33,11 +33,12 @@
     for (NSString *key in newDict) {
         id newValue = newDict[key];
         id oldValue = [_deviceInfo valueForKey:key];
+
         if (newValue == oldValue || [newValue isEqual:oldValue]) {
             continue;
         }
         [_deviceInfo setValue:newValue forKey:key];
-        [self.json setValue:newValue forKey:key];
+        [_json setValue:newValue forKey:key];
         changed = YES;
     }
     return changed;

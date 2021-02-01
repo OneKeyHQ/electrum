@@ -36,6 +36,35 @@ static dispatch_once_t once;
     return language;
 }
 
+
++ (AppCurrentLanguage)getCurrentLanguage {
+    AppLanguageType type = [OKLocalizableManager getCurrentLanguageType];
+    AppCurrentLanguage currentLanguage = AppCurrentLanguage_En;
+    
+    switch (type) {
+        case AppLanguageTypeFollowSys: {
+            NSArray  *languages = [NSLocale preferredLanguages];
+            NSString *language = [languages objectAtIndex:0];
+            if ([language hasPrefix:@"zh"]) {
+                currentLanguage = AppCurrentLanguage_Zh_Hans;
+            }
+        } break;
+            
+        case AppLanguageTypeEn: {
+            currentLanguage = AppCurrentLanguage_En;
+        } break;
+            
+        case AppLanguageTypeZh_Hans: {
+            currentLanguage = AppCurrentLanguage_Zh_Hans;
+        } break;
+
+        default:
+            break;
+    }
+    
+    return currentLanguage;
+}
+
 + (AppLanguageType)getCurrentLanguageType {
     NSString *languageStr = [OKStorageManager loadFromUserDefaults:kOnekey_language];
     if ([languageStr isEqualToString:kOnekey_languageSys]) {

@@ -103,6 +103,9 @@
     // Dispose of any resources that can be recreated.
 }
 - (void)backToPrevious {
+    if (self.backToPreviousCallback) {
+        self.backToPreviousCallback();
+    }
     if (self.isRoot == YES) {
         [[self.navigationController.viewControllers firstObject] setHidesBottomBarWhenPushed:NO];
         [self.navigationController popToRootViewControllerAnimated:YES];
