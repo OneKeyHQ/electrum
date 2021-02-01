@@ -47,7 +47,7 @@ public class TransactionListFragment extends BaseLazyFragment
         implements OnRefreshListener, OnLoadMoreListener {
 
     @StringDef({TransactionListType.ALL, TransactionListType.RECEIVE, TransactionListType.SEND})
-    @interface TransactionListType {
+    public @interface TransactionListType {
         String ALL = "all";
         String RECEIVE = "receive";
         String SEND = "send";
@@ -113,7 +113,7 @@ public class TransactionListFragment extends BaseLazyFragment
         mAppWalletViewModel = getApplicationViewModel(AppWalletViewModel.class);
         mAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.dialog_progress_anim);
         mType = getArguments().getString(EXT_TYPE, TransactionListType.ALL);
-        onekeyTxListAdapter = new OnekeyTxListAdapter(listBeans);
+        onekeyTxListAdapter = new OnekeyTxListAdapter(listBeans, mType);
         reclTransactionList.setAdapter(onekeyTxListAdapter);
         onekeyTxListAdapter.setOnItemClickListener(
                 (adapter, itemView, position) -> {
