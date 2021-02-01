@@ -15,6 +15,12 @@ import butterknife.OnClick;
 import com.google.common.base.Strings;
 import com.lxj.xpopup.XPopup;
 import com.lxj.xpopup.core.CenterPopupView;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.core.SingleObserver;
+import io.reactivex.rxjava3.core.SingleOnSubscribe;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -34,6 +40,7 @@ import org.haobtc.onekey.bean.HardwareVerifyResponse;
 import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.bean.UpdateInfo;
 import org.haobtc.onekey.business.language.LanguageManager;
+import org.haobtc.onekey.business.version.VersionManager;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.PyConstant;
 import org.haobtc.onekey.event.BleConnectionEx;
@@ -110,6 +117,7 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
     private String nrfVersion;
     private String currentMethod;
     private CenterPopupView dialog;
+    private VersionManager mVersionManager;
 
     @SingleClick(value = 6000L)
     @OnClick({
@@ -245,18 +253,50 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
     }
 
     private void getUpdateInfo(boolean isBootloader) {
-        String urlPrefix = "https://onekey.so/";
-        String locate = LanguageManager.getInstance().getLocalLanguage(this);
-        String info =
-                PreferencesManager.get(this, "Preferences", Constant.UPGRADE_INFO, "").toString();
-        if (Strings.isNullOrEmpty(info)) {
-            showToast(R.string.get_update_info_failed);
-            return;
-        }
-        Bundle bundle = getBundle(urlPrefix, locate, info, isBootloader);
-        Intent intentVersion = new Intent(this, HardwareUpgradeActivity.class);
-        intentVersion.putExtras(bundle);
-        startActivity(intentVersion);
+        Single.create(
+                        (SingleOnSubscribe<UpdateInfo>)
+                                emitter -> {
+                                    UpdateInfo forceVersionInfo =
+                                            mVersionManager.getForceLocalVersionInfo(
+                                                    HardwareDetailsActivity.this);
+                                    emitter.onSuccess(forceVersionInfo);
+                                })
+                .doFinally(this::dismissProgress)
+                .doOnSubscribe(disposable -> showProgress())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        new SingleObserver<UpdateInfo>() {
+                            @Override
+                            public void onSubscribe(
+                                    @io.reactivex.rxjava3.annotations.NonNull Disposable d) {}
+
+                            @Override
+                            public void onSuccess(
+                                    @io.reactivex.rxjava3.annotations.NonNull
+                                            UpdateInfo updateInfo) {
+                                if (updateInfo == null) {
+                                    showToast(R.string.get_update_info_failed);
+                                    return;
+                                }
+                                String urlPrefix = "https://onekey.so/";
+                                String locate =
+                                        LanguageManager.getInstance()
+                                                .getLocalLanguage(HardwareDetailsActivity.this);
+                                String info = updateInfo.toString();
+                                Bundle bundle = getBundle(urlPrefix, locate, info, isBootloader);
+                                Intent intentVersion =
+                                        new Intent(
+                                                HardwareDetailsActivity.this,
+                                                HardwareUpgradeActivity.class);
+                                intentVersion.putExtras(bundle);
+                                startActivity(intentVersion);
+                            }
+
+                            @Override
+                            public void onError(
+                                    @io.reactivex.rxjava3.annotations.NonNull Throwable e) {}
+                        });
     }
 
     @NonNull
@@ -530,6 +570,7 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
         boolean isVerified = intent.getBooleanExtra(Constant.TAG_HARDWARE_VERIFY, false);
         verified.setVisibility(isVerified ? View.VISIBLE : View.GONE);
         bleMac = PreferencesManager.get(this, Constant.BLE_INFO, bleName, "").toString();
+        mVersionManager = new VersionManager();
     }
 
     @Override
