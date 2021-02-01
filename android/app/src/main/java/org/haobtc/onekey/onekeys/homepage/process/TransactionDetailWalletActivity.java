@@ -55,13 +55,15 @@ public class TransactionDetailWalletActivity extends BaseActivity
             @NotNull String dollar,
             @NotNull String walletName,
             @NotNull String coinType,
-            @Nullable String bleMac) {
+            @Nullable String bleMac,
+            @Nullable String deviceId) {
         Intent intent = new Intent(context, TransactionDetailWalletActivity.class);
         intent.putExtra(EXT_WALLET_BALANCE, balance);
         intent.putExtra(EXT_WALLET_DOLLAR, dollar);
         intent.putExtra(EXT_HD_WALLET_NAME, walletName);
         intent.putExtra(EXT_WALLET_COIN_TYPE, coinType);
         intent.putExtra(EXT_BLE_HW, bleMac);
+        intent.putExtra(Constant.DEVICE_ID, deviceId);
         context.startActivity(intent);
     }
 
@@ -98,6 +100,7 @@ public class TransactionDetailWalletActivity extends BaseActivity
     private Vm.CoinType mCoinType;
     private int currentAction;
     private AppWalletViewModel mAppWalletViewModel;
+    private String currentDeviceId;
 
     @Override
     public int getLayoutId() {
@@ -112,6 +115,7 @@ public class TransactionDetailWalletActivity extends BaseActivity
         hdWalletName = getIntent().getStringExtra("hdWalletName");
         bleMac = getIntent().getStringExtra(Constant.BLE_MAC);
         mCoinType = Vm.CoinType.convert(getIntent().getStringExtra(EXT_WALLET_COIN_TYPE));
+        currentDeviceId = getIntent().getStringExtra(Constant.DEVICE_ID);
         listenerViewModel();
         switch (mCoinType) {
             default:
@@ -220,6 +224,7 @@ public class TransactionDetailWalletActivity extends BaseActivity
                 intent2.putExtra(
                         org.haobtc.onekey.constant.Constant.SEARCH_DEVICE_MODE,
                         org.haobtc.onekey.constant.Constant.SearchDeviceMode.MODE_PREPARE);
+                intent2.putExtra(Constant.DEVICE_ID, currentDeviceId);
                 startActivity(intent2);
                 BleManager.getInstance(this).connDevByMac(bleMac);
             }

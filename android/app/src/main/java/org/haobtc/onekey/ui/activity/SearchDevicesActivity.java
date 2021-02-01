@@ -49,6 +49,7 @@ import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.ui.adapter.BleDeviceAdapter;
 import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.ui.dialog.ConnectingDialog;
+import org.haobtc.onekey.ui.dialog.InvalidDeviceIdWarningDialog;
 import org.haobtc.onekey.utils.ValueAnimatorUtil;
 
 /** @author liyan */
@@ -87,6 +88,7 @@ public class SearchDevicesActivity extends BaseActivity
     private BleManager bleManager;
     private VersionManager mVersionManager;
     private CenterPopupView dialog;
+    private String deviceId = "";
 
     @Override
     public void init() {
@@ -95,6 +97,7 @@ public class SearchDevicesActivity extends BaseActivity
                         .getIntExtra(
                                 Constant.SEARCH_DEVICE_MODE,
                                 Constant.SearchDeviceMode.MODE_PAIR_WALLET_TO_COLD);
+        deviceId = getIntent().getStringExtra(Constant.DEVICE_ID);
         addBleView();
         bleManager = BleManager.getInstance(this);
         if (mSearchMode != Constant.SearchDeviceMode.MODE_PREPARE) {
@@ -306,6 +309,12 @@ public class SearchDevicesActivity extends BaseActivity
                             // 仅连接蓝牙
                         case Constant.SearchDeviceMode.MODE_PREPARE:
                             if (features.isInitialized() && !features.isBackupOnly()) {
+                                if (!Strings.isNullOrEmpty(deviceId)
+                                        && !Objects.equals(features.getDeviceId(), deviceId)) {
+                                    new InvalidDeviceIdWarningDialog()
+                                            .show(getSupportFragmentManager(), "");
+                                    return;
+                                }
                                 EventBus.getDefault().post(new BleConnectedEvent());
                             } else {
                                 showToast(getString(R.string.hard_tip3));

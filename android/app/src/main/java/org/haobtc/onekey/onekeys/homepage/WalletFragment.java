@@ -187,6 +187,7 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
     private SystemConfigManager mSystemConfigManager;
     private BackupDialog mBackupDialog;
     private AccountManager mAccountManager;
+    private String currentDeviceId = "";
 
     /**
      * init views
@@ -328,6 +329,7 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
             textHard.setVisibility(View.VISIBLE);
             linearSign.setVisibility(View.VISIBLE);
             String deviceId = localWalletInfo.getDeviceId();
+            currentDeviceId = deviceId;
             String deviceInfo =
                     PreferencesManager.get(
                                     getContext(),
@@ -400,6 +402,7 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
                 intent2.putExtra(
                         org.haobtc.onekey.constant.Constant.SEARCH_DEVICE_MODE,
                         org.haobtc.onekey.constant.Constant.SearchDeviceMode.MODE_PREPARE);
+                intent2.putExtra(org.haobtc.onekey.constant.Constant.DEVICE_ID, currentDeviceId);
                 startActivity(intent2);
                 EventBus.getDefault().removeAllStickyEvents();
                 BleManager.getInstance(getActivity()).connDevByMac(bleMac);
@@ -678,7 +681,8 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
                             textDollar.getText().toString().trim(),
                             textWalletName.getText().toString(),
                             coinType,
-                            ble);
+                            ble,
+                            currentDeviceId);
                 }
                 break;
             case R.id.img_bottom:
