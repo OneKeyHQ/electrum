@@ -9,6 +9,7 @@
 #import "OKSetPINPreViewController.h"
 #import "OKDeviceSuccessViewController.h"
 #import "OKPINCodeViewController.h"
+#import "OKVerifyOnTheDeviceController.h"
 
 @interface OKSetPINPreViewController ()<OKHwNotiManagerDelegate>
 @property (weak, nonatomic) IBOutlet UILabel *titleLabel;
@@ -40,14 +41,12 @@
 
 
 - (IBAction)nextBtnClick:(UIButton *)sender {
-    OKWeakSelf(self)
     kHwNotiManager.delegate = self;
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         id result =  [kPyCommandsManager callInterface:kInterfacereset_pin parameter:@{}];
         if (result != nil) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                OKDeviceSuccessViewController *devicevc = [OKDeviceSuccessViewController deviceSuccessViewController:OKDeviceSuccessActivate deviceName:self.deviceName];
-                [weakself.navigationController pushViewController:devicevc animated:YES];
+                [[NSNotificationCenter defaultCenter]postNotificationName:kActiveSuccess object:nil];
             });
         }
     });
@@ -61,8 +60,17 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             OKPINCodeViewController *pinCode = [OKPINCodeViewController PINCodeViewController:^(NSString * _Nonnull pin) {
                 NSLog(@"pinCode = %@",pin);
+                [MBProgressHUD showHUDAddedTo:weakself.view animated:YES];
                 dispatch_async(dispatch_get_global_queue(0, 0), ^{
-                    [kPyCommandsManager callInterface:kInterfaceset_pin parameter:@{@"pin":pin}];
+                   id result =  [kPyCommandsManager callInterface:kInterfaceset_pin parameter:@{@"pin":pin}];
+                    if (result != nil) {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [MBProgressHUD hideHUDForView:weakself.view animated:YES];
+                            OKVerifyOnTheDeviceController *verifyOnTheDevice = [OKVerifyOnTheDeviceController verifyOnTheDeviceController:OKVerifyOnTheDeviceTypeNormalActiveSuccess];
+                            verifyOnTheDevice.deviceName = weakself.deviceName;
+                            [weakself.navigationController pushViewController:verifyOnTheDevice animated:YES];
+                        });
+                    }
                 });
             }];
            [weakself.navigationController pushViewController:pinCode animated:YES];

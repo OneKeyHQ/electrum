@@ -124,6 +124,7 @@ typedef enum {
 
 @property (nonatomic,strong)NSDictionary *hwPredata;
 @property (nonatomic,strong)NSDictionary *hwSignData;
+@property (nonatomic,copy)NSString *hwFiat;
 @end
 
 @implementation OKSendCoinViewController
@@ -299,8 +300,9 @@ typedef enum {
 - (IBAction)customBtnClick:(UIButton *)sender {
     NSString *dsize = @"";
     dsize = [self.defaultFeeInfoModel.normal safeStringForKey:@"size"];
+    NSString *lowest = [self.defaultFeeInfoModel.slow safeStringForKey:@"feerate"];
     OKWeakSelf(self)
-    [OKWalletInputFeeView showWalletCustomFeeDsize:dsize sure:^(NSDictionary *customFeeDict, NSString *fiat, NSString *feeBit) {
+    [OKWalletInputFeeView showWalletCustomFeeDsize:dsize lowfeerate:lowest sure:^(NSDictionary *customFeeDict, NSString *fiat, NSString *feeBit) {
         weakself.customFeeDict = customFeeDict;
         weakself.fiatCustom = fiat;
         weakself.custom = YES;
@@ -360,23 +362,28 @@ typedef enum {
     }
     OKWeakSelf(self)
     __block  NSDictionary *dict = [NSDictionary dictionary];
+    __block  NSString *fiat = @"";
     if (weakself.custom) {
         dict = self.customFeeDict;
+        fiat = self.fiatCustom;
     }else{
         switch (weakself.currentFeeType) {
             case OKFeeTypeSlow:
             {
                 dict = weakself.lowFeeDict;
+                fiat = weakself.fiatLow;
             }
                 break;
             case OKFeeTypeRecommend:
             {
                 dict = weakself.recommendFeeDict;
+                fiat = weakself.fiatRecommend;
             }
                 break;
             case OKFeeTypeFast:
             {
                 dict = weakself.fastFeeDict;
+                fiat = weakself.fiatFast;
             }
                 break;
             default:
@@ -392,8 +399,10 @@ typedef enum {
     }
     
     if ([kWalletManager getWalletDetailType] == OKWalletTypeHardware) {
+        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         [OKHwNotiManager sharedInstance].delegate = self;
         self.hwPredata = dict;
+        self.hwFiat = fiat;
         NSString *feerateTx = [dict safeStringForKey:@"tx"];
         NSDictionary *dict1 =  [kPyCommandsManager callInterface:kInterfaceMktx parameter:@{@"tx":feerateTx}];
         NSString *unSignStr = [dict1 safeStringForKey:@"tx"];
@@ -407,9 +416,9 @@ typedef enum {
         });
         return;
     }
-    [self showPreInfoView:dict];
+    [self showPreInfoView:dict fiat:fiat];
 }
-- (void)showPreInfoView:(NSDictionary *)dict
+- (void)showPreInfoView:(NSDictionary *)dict fiat:(NSString *)fiat
 {
     OKSendTxPreInfoViewController *sendVc = [OKSendTxPreInfoViewController initViewControllerWithStoryboardName:@"Tab_Wallet"];
     OKSendTxPreModel *model = [OKSendTxPreModel new];
@@ -419,7 +428,7 @@ typedef enum {
     model.sendAddress = kWalletManager.currentWalletInfo.addr;
     model.rAddress = self.addressTextField.text;
     model.txType = @"";
-    model.fee = [NSString stringWithFormat:@"%@ %@",[dict safeStringForKey:@"fee"],[kWalletManager currentBitcoinUnit]];
+    model.fee = [NSString stringWithFormat:@"%@ %@ ≈ %@%@",[dict safeStringForKey:@"fee"],[kWalletManager currentBitcoinUnit],kWalletManager.currentFiatSymbol,fiat];
     sendVc.info = model;
     OKWeakSelf(self)
     [sendVc showOnWindowWithParentViewController:self block:^(NSString * _Nonnull str) {
@@ -467,7 +476,7 @@ typedef enum {
         dispatch_async(dispatch_get_main_queue(), ^{
             OKTransferCompleteController *transferCompleteVc = [OKTransferCompleteController transferCompleteController:dict block:^{
                 OKTxDetailViewController *txDetailVc = [OKTxDetailViewController txDetailViewController];
-                txDetailVc.tx_hash = [dict safeStringForKey:@"txid"];
+                txDetailVc.tx_hash = [signTxDict safeStringForKey:@"txid"];
                 [weakself.navigationController pushViewController:txDetailVc animated:YES];
             }];
             [self.navigationController pushViewController:transferCompleteVc animated:YES];
@@ -480,7 +489,8 @@ typedef enum {
 {
     if (type == OKHWNotiTypeSendCoinConfirm) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self showPreInfoView:self.hwPredata];
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
+            [self showPreInfoView:self.hwPredata fiat:self.hwFiat];
         });
     }
 }

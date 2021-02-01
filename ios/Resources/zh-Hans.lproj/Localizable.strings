@@ -478,3 +478,4 @@
 "Time out for connecting Bluetooth device. Please make sure your device has Bluetooth enabled and is at your side" = "连接蓝牙设备超时，请确认您的设备已经开启蓝牙并且在您的身边";
 "Import failure" = "导入失败";
 "Matching failure" = "配对失败";
+"The rate is lower than the minimum for the current network. Please reenter" = "费率低于当前网络的最小值，请重新输入";

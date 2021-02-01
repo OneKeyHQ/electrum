@@ -21,6 +21,12 @@ typedef enum {
     OKMatchingTypeSignatureData, //签名数据
 }OKMatchingType;
 
+typedef enum {
+    OKMatchingFromWhereNav, //导航
+    OKMatchingFromWhereDis  //模态
+}OKMatchingFromWhere;
+
+
 #define kOKBlueManager (OKBlueManager.sharedInstance)
 
 #define kPRIMARY_SERVICE        @"0001"

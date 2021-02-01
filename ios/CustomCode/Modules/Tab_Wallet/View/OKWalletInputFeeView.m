@@ -28,6 +28,7 @@
 @property (nonatomic,copy)NSString *dsize;
 @property (nonatomic,strong)NSDictionary *customFeeDict;
 @property (nonatomic,copy)NSString *fiatCustom;
+@property (nonatomic,copy)NSString *lowfeerate;
 @end
 
 @implementation OKWalletInputFeeView
@@ -36,10 +37,11 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-+ (void)showWalletCustomFeeDsize:(NSString *)dsize sure:(SureBlock)sureBlock  Cancel:(CancelBlock)cancelBlock{
++ (void)showWalletCustomFeeDsize:(NSString *)dsize lowfeerate:(NSString *)lowfeerate sure:(SureBlock)sureBlock  Cancel:(CancelBlock)cancelBlock{
     OKWalletInputFeeView *inputView = [[[NSBundle mainBundle] loadNibNamed:@"OKWalletInputFeeView" owner:self options:nil] firstObject];
     inputView.cancelBlock = cancelBlock;
     inputView.sureBlock = sureBlock;
+    inputView.lowfeerate = lowfeerate;
     inputView.dsize = dsize;
     if (dsize.length != 0 && dsize != nil) {
         inputView.sizeTF.text = dsize;
@@ -79,6 +81,11 @@
         [kTools tipMessage:MyLocalizedString(@"Please enter the rate", nil)];
         return;
     }
+    if ([self.feeTF.text doubleValue] < [self.lowfeerate doubleValue]) {
+        [kTools tipMessage:MyLocalizedString(@"The rate is lower than the minimum for the current network. Please reenter", nil)];
+        return;
+    }
+    
     if (self.sureBlock) {
         self.sureBlock(self.customFeeDict,self.fiatCustom,self.feeTF.text);
         [self closeBtnClick:nil];
@@ -101,7 +108,13 @@
 
 #pragma mark - UITextFieldDelegate
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
-    if ([string containsChinese]) {
+    if (string.length == 0) {
+        return YES;
+    }
+    if (![string isNumbers]) {
+        return NO;
+    }
+    if ([self.feeTF.text doubleValue] > [self.lowfeerate doubleValue] * 20.0) {
         return NO;
     }
     return YES;

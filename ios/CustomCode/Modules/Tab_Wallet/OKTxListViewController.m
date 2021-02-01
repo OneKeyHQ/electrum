@@ -181,6 +181,7 @@
     if ([kWalletManager getWalletDetailType] == OKWalletTypeHardware) {
         OKMatchingInCirclesViewController *matchingVc = [OKMatchingInCirclesViewController matchingInCirclesViewController];
         matchingVc.type = OKMatchingTypeTransfer;
+        matchingVc.where = OKMatchingFromWhereNav;
         [self.navigationController pushViewController:matchingVc animated:YES];
     }else{
         OKSendCoinViewController *sendCoinVc = [OKSendCoinViewController sendCoinViewController];
@@ -191,6 +192,7 @@
     if ([kWalletManager getWalletDetailType] == OKWalletTypeHardware) {
         OKMatchingInCirclesViewController *matchingVc = [OKMatchingInCirclesViewController matchingInCirclesViewController];
         matchingVc.type = OKMatchingTypeReceiveCoin;
+        matchingVc.where = OKMatchingFromWhereNav;
         [self.navigationController pushViewController:matchingVc animated:YES];
     }else{
         OKReceiveCoinViewController *receiveCoinVc = [OKReceiveCoinViewController receiveCoinViewController];

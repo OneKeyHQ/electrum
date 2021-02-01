@@ -65,6 +65,7 @@
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     self.tableView.tableFooterView = [UIView new];
+    self.navigationItem.leftBarButtonItem = [UIBarButtonItem backBarButtonItemWithTarget:self selector:@selector(backToPrevious)];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -232,6 +233,10 @@
 }
 - (void)subscribeComplete:(NSDictionary *)jsonDict
 {
+    if (jsonDict == nil) {
+        [self.navigationController popViewControllerAnimated:YES];
+        return;
+    }
     OKDeviceModel *deviceModel  = [[OKDeviceModel alloc]initWithJson:jsonDict];
     kOKBlueManager.currentDeviceID = deviceModel.deviceInfo.device_id;
     [[OKDevicesManager sharedInstance]addDevices:deviceModel];
@@ -302,6 +307,24 @@
         }
             break;
         default:
+            break;
+    }
+}
+- (void)backToPrevious
+{
+    switch (_where) {
+        case OKMatchingFromWhereNav:
+        {
+            [self.navigationController popViewControllerAnimated:YES];
+        }
+            break;
+        case OKMatchingFromWhereDis:
+        {
+            [self.OK_TopViewController dismissViewControllerAnimated:YES completion:nil];
+        }
+            break;
+        default:
+            [self.OK_TopViewController dismissViewControllerAnimated:YES completion:nil];
             break;
     }
 }

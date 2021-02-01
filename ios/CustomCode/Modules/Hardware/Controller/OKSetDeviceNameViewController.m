@@ -13,9 +13,11 @@
 @interface OKSetDeviceNameViewController ()
 @property (weak, nonatomic) IBOutlet UILabel *setDeviceNameLabel;
 @property (weak, nonatomic) IBOutlet UITextField *deviceNameTextfield;
-@property (weak, nonatomic) IBOutlet UIButton *createBtn;
+@property (weak, nonatomic) IBOutlet OKButton *createBtn;
 - (IBAction)createBtnClick:(UIButton *)sender;
 @property (weak, nonatomic) IBOutlet UIView *nameBgView;
+
+
 @end
 
 @implementation OKSetDeviceNameViewController
@@ -30,6 +32,8 @@
     [self.createBtn setLayerDefaultRadius];
     [self.nameBgView setLayerBoarderColor:HexColor(0xDBDEE7) width:1 radius:20];
     [self.deviceNameTextfield becomeFirstResponder];
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(deviceNameTextfieldChange) name:UITextFieldTextDidChangeNotification object:nil];
+    [self deviceNameTextfieldChange];
 }
 
 - (IBAction)createBtnClick:(UIButton *)sender
@@ -44,7 +48,7 @@
             break;
         case OKMatchingTypeBackup2Hw:
         {
-            OKVerifyOnTheDeviceController *verifyOnTheDevice = [OKVerifyOnTheDeviceController verifyOnTheDeviceController:OKVerifyOnTheDeviceTypeSetPin];
+            OKVerifyOnTheDeviceController *verifyOnTheDevice = [OKVerifyOnTheDeviceController verifyOnTheDeviceController:OKVerifyOnTheDeviceTypeBackupSetPin];
             verifyOnTheDevice.deviceName = self.deviceNameTextfield.text;
             verifyOnTheDevice.words = self.words;
             [self.navigationController pushViewController:verifyOnTheDevice animated:YES];
@@ -52,6 +56,15 @@
             break;
         default:
             break;
+    }
+}
+
+- (void)deviceNameTextfieldChange
+{
+    if (self.deviceNameTextfield.text.length > 0) {
+        [self.createBtn status:OKButtonStatusEnabled];
+    }else{
+        [self.createBtn status:OKButtonStatusDisabled];
     }
 }
 @end

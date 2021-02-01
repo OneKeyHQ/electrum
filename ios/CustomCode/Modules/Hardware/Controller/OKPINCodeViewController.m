@@ -62,7 +62,7 @@
     pwdView.num = 6;
     pwdView.tintColor = [UIColor whiteColor];
     pwdView.textBlock = ^(NSString *str) {
-        NSLog(@"str == %@",str);
+        //NSLog(@"str == %@",str);
     };
     self.pwdView = pwdView;
     [pwdView show];
@@ -84,6 +84,8 @@
     }else if (sender.tag == 1011){
         if (self.complete && oldStr.length == 6) {
             self.complete(oldStr);
+        }else{
+            [kTools tipMessage:MyLocalizedString(@"Enter your 6-digit password according to the PIN code location comparison table displayed on the device", nil)];
         }
     }else{
         [oldStr appendString:[NSString stringWithFormat:@"%zd",sender.tag - 1000]];

@@ -40,7 +40,8 @@
 #define kUserSetingMarketSource                 @"kUserSetingMarketSource"
 #define kUserSetingElectrumServer               @"kUserSetingElectrumServer"
 
-
+//设备激活成功
+#define kActiveSuccess @"VerifyOnTheDeviceActiveSuccess"
 
 
 

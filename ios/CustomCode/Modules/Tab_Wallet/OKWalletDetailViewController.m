@@ -355,8 +355,11 @@
             modelS3.clickType = OKClickTypeExportKeystore;
             modelS3.leftLabelColor = HexColor(0x14293B);
             modelS3.rightLabelColor = HexColor(0x00B812);
-            [securityGroup addObject:modelS1];
-            [securityGroup addObject:modelS2];
+            if (![kWalletManager.currentWalletInfo.type containsString:@"private-standard"]) {
+                [securityGroup addObject:modelS1];
+            }else{
+                [securityGroup addObject:modelS2];
+            }
             if ([kWalletManager.currentWalletInfo.coinType isEqualToString:COIN_ETH]) {
                 [securityGroup addObject:modelS3];
             }

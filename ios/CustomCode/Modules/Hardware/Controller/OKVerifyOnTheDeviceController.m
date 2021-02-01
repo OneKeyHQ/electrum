@@ -10,8 +10,6 @@
 #import "OKPINCodeViewController.h"
 #import "OKDeviceSuccessViewController.h"
 
-#define kActiveSuccess @"VerifyOnTheDeviceActiveSuccess"
-
 @interface OKVerifyOnTheDeviceController ()<OKHwNotiManagerDelegate>
 @property (weak, nonatomic) IBOutlet UILabel *titleLabel;
 @property (weak, nonatomic) IBOutlet UIImageView *iconImageView;
@@ -33,10 +31,15 @@
     // Do any additional setup after loading the view.
     [self stupUI];
     switch (_type) {
-        case OKVerifyOnTheDeviceTypeSetPin:
+        case OKVerifyOnTheDeviceTypeBackupSetPin:
             [self backupToHardwareInterface];
             break;
         case OKVerifyOnTheDeviceTypeBackupActiveSuccess:
+        {
+            [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(activeSuccess) name:kActiveSuccess object:nil];
+        }
+            break;
+        case OKVerifyOnTheDeviceTypeNormalActiveSuccess:
         {
             [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(activeSuccess) name:kActiveSuccess object:nil];
         }
@@ -69,7 +72,7 @@
 - (IBAction)nextBtnClick:(UIButton *)sender {
     OKWeakSelf(self)
     switch (_type) {
-        case OKVerifyOnTheDeviceTypeSetPin:
+        case OKVerifyOnTheDeviceTypeBackupSetPin:
         {
             OKPINCodeViewController *pinVc = [OKPINCodeViewController PINCodeViewController:^(NSString * _Nonnull pin) {
                 dispatch_async(dispatch_get_global_queue(0, 0), ^{
@@ -93,6 +96,12 @@
             [self.navigationController pushViewController:deviceVc animated:YES];
         }
             break;
+        case OKVerifyOnTheDeviceTypeNormalActiveSuccess:
+        {
+            OKDeviceSuccessViewController *deviceVc = [OKDeviceSuccessViewController deviceSuccessViewController:OKDeviceSuccessActivate deviceName:self.deviceName];
+            [self.navigationController pushViewController:deviceVc animated:YES];
+        }
+            break;
         default:
             break;
     }
@@ -100,6 +109,7 @@
 
 - (void)hwNotiManagerDekegate:(OKHwNotiManager *)hwNoti type:(OKHWNotiType)type
 {
+    NSLog(@"type = %zd",type);
     OKWeakSelf(self)
     if (type == OKHWNotiTypePin_New_First) {
         dispatch_async(dispatch_get_main_queue(), ^{

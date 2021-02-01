@@ -95,6 +95,7 @@
     OKMatchingInCirclesViewController *matchingInCirclesVc = [OKMatchingInCirclesViewController matchingInCirclesViewController];
     matchingInCirclesVc.type = OKMatchingTypeBackup2Hw;
     matchingInCirclesVc.words = self.words;
+    matchingInCirclesVc.where = OKMatchingFromWhereNav;
     [self.navigationController pushViewController:matchingInCirclesVc animated:YES];
 }
 

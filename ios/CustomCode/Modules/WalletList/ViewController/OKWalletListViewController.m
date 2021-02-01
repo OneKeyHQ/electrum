@@ -314,6 +314,7 @@
 
 - (IBAction)macthWalletBtnClick:(OKWalletListBottomBtn *)sender {
     OKMatchingInCirclesViewController *matchVc = [OKMatchingInCirclesViewController matchingInCirclesViewController];
+    matchVc.where = OKMatchingFromWhereNav;
     [self.navigationController pushViewController:matchVc animated:YES];
 }
 

@@ -63,7 +63,7 @@
             break;
     }
     self.title = MyLocalizedString(@"Activate the hardware wallet", nil);
-    self.bottomDescLabel.text = MyLocalizedString(@"1. Copy carefully with paper and pen, and keep it properly after reconfirming. 2. OneKey does not store private data for you, and mnemonic words once lost cannot be retrieved", nil);
+    self.bottomDescLabel.text = MyLocalizedString(@"1. Copy carefully with paper and pen, and keep it properly after reconfirming. 2. OneKey does not store private data for you, and mnemonic words once lost cannot be retrieved.", nil);
     [self.comfirmBtn setTitle:MyLocalizedString(@"I copied", nil) forState:UIControlStateNormal];
     self.comfirmBtn.alpha = 0.5;
     self.comfirmBtn.enabled = NO;

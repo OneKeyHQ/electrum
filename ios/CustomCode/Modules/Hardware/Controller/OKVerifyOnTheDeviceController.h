@@ -9,8 +9,9 @@
 #import "BaseViewController.h"
 
 typedef enum {
-    OKVerifyOnTheDeviceTypeSetPin,
-    OKVerifyOnTheDeviceTypeBackupActiveSuccess
+    OKVerifyOnTheDeviceTypeBackupSetPin,
+    OKVerifyOnTheDeviceTypeBackupActiveSuccess,
+    OKVerifyOnTheDeviceTypeNormalActiveSuccess
 }OKVerifyOnTheDeviceType;
 
 NS_ASSUME_NONNULL_BEGIN

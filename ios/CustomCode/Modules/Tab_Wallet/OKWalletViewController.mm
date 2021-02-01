@@ -549,6 +549,7 @@
             [weakself.OK_TopViewController presentViewController:baseVc animated:YES completion:nil];
         }else if (model.type == OKSelectCellTypeMatchHD){ //匹配硬件
             OKMatchingInCirclesViewController *matchVc = [OKMatchingInCirclesViewController matchingInCirclesViewController];
+            matchVc.where = OKMatchingFromWhereDis;
             BaseNavigationController *baseVc = [[BaseNavigationController alloc]initWithRootViewController:matchVc];
             [weakself.OK_TopViewController presentViewController:baseVc animated:YES completion:nil];
         }
@@ -635,6 +636,7 @@
     if ([kWalletManager getWalletDetailType] == OKWalletTypeHardware) {
         OKMatchingInCirclesViewController *matchingVc = [OKMatchingInCirclesViewController matchingInCirclesViewController];
         matchingVc.type = OKMatchingTypeTransfer;
+        matchingVc.where = OKMatchingFromWhereNav;
         [self.navigationController pushViewController:matchingVc animated:YES];
     }else{
         OKSendCoinViewController *sendCoinVc = [OKSendCoinViewController sendCoinViewController];
@@ -646,6 +648,7 @@
     if ([kWalletManager getWalletDetailType] == OKWalletTypeHardware) {
         OKMatchingInCirclesViewController *matchingVc = [OKMatchingInCirclesViewController matchingInCirclesViewController];
         matchingVc.type = OKMatchingTypeReceiveCoin;
+        matchingVc.where = OKMatchingFromWhereNav;
         [self.navigationController pushViewController:matchingVc animated:YES];
     }else{
         OKReceiveCoinViewController *receiveCoinVc = [OKReceiveCoinViewController receiveCoinViewController];
@@ -658,6 +661,7 @@
 - (IBAction)signatureBtnClick:(UIButton *)sender {
     OKMatchingInCirclesViewController *matchingVc = [OKMatchingInCirclesViewController matchingInCirclesViewController];
     matchingVc.type = OKMatchingTypeSignatureData;
+    matchingVc.where = OKMatchingFromWhereNav;
     [self.navigationController pushViewController:matchingVc animated:YES];
 }
 #pragma mark - 钱包详情

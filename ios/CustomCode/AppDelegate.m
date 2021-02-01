@@ -17,8 +17,9 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
-    
-    [OKPyCommandsManager setNetwork];
+#ifdef DEBUG
+        [OKPyCommandsManager setNetwork];
+#endif
     
     [self setupLanague];
     
