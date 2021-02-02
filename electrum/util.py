@@ -439,6 +439,10 @@ def json_decode(x):
     except:
         return x
 
+def get_keystore_path(path):
+    first = path[0:path.rindex('/')]
+    second = first[0:first.rindex('/')]
+    return second
 
 # taken from Django Source Code
 def constant_time_compare(val1, val2):
@@ -868,7 +872,7 @@ testnet_block_explorers = {
     'Blockstream.info': ('https://blockstream.info/testnet/',
                         {'tx': 'tx/', 'addr': 'address/'}),
     'mempool.space': ('https://mempool.space/testnet/',
-                        {'tx': 'tx/', 'addr': 'address/'}),    
+                        {'tx': 'tx/', 'addr': 'address/'}),
     'smartbit.com.au': ('https://testnet.smartbit.com.au/',
                        {'tx': 'tx/', 'addr': 'address/'}),
     'system default': ('blockchain://000000000933ea01ad0ee984209779baaec3ced90fa3f408719526f8d77f4943/',

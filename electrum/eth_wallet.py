@@ -121,9 +121,18 @@ class Abstract_Eth_Wallet(ABC):
         # save wallet type the first time
         if self.db.get('wallet_type') is None:
             self.db.put('wallet_type', self.wallet_type)
+        if self.db.get('address_index') is None:
+            self.set_address_index(0)
         self.name = self.db.get("name")
         self.contacts = dict()
         self._coin_price_cache = {}
+
+    def set_address_index(self, index):
+        self.address_index = index
+        self.db.put("address_index", self.address_index)
+
+    def get_address_index(self):
+        return self.address_index
 
     def set_name(self, name):
         self.name = name
@@ -858,13 +867,13 @@ class Imported_Eth_Wallet(Simple_Eth_Wallet):
 
 class Deterministic_Eth_Wallet(Abstract_Eth_Wallet):
 
-    def __init__(self, db, storage, *, config):
+    def __init__(self, db, storage, *, config, index):
         self._ephemeral_addr_to_addr_index = {}  # type: Dict[str, Sequence[int]]
         Abstract_Eth_Wallet.__init__(self, db, storage, config=config)
         self.gap_limit = db.get('gap_limit', 1)
         # generate addresses now. note that without libsecp this might block
         # for a few seconds!
-        self.synchronize()
+        self.synchronize(index)
 
     def has_seed(self):
         return self.keystore.has_seed()
@@ -957,24 +966,24 @@ class Deterministic_Eth_Wallet(Abstract_Eth_Wallet):
                 for k in self.get_keystores()}
 
 
-    def create_new_address(self, for_change: bool = False):
+    def create_new_address(self, for_change: bool = False, index: int = 0):
         assert type(for_change) is bool
         with self.lock:
-            n = self.db.num_change_addresses() if for_change else self.db.num_receiving_addresses()
-            address = self.derive_address(int(for_change), n)
-            self.db.add_change_address(address) if for_change else self.db.add_receiving_address(address)
+            address = self.derive_address(int(for_change), index)
+            self.db.add_change_address(address) if for_change else self.db.add_receiving_address(address, index=index)
+            self.set_address_index(index)
            # self.add_address(address)
             if for_change:
                 # note: if it's actually "old", it will get filtered later
                 self._not_old_change_addresses.append(address)
             return address
 
-    def synchronize_sequence(self, for_change):
+    def synchronize_sequence(self, for_change, index=0):
         limit = self.gap_limit_for_change if for_change else self.gap_limit
         while True:
             num_addr = self.db.num_change_addresses() if for_change else self.db.num_receiving_addresses()
             if num_addr < limit:
-                self.create_new_address(for_change)
+                self.create_new_address(for_change, index=index)
                 continue
             break
             # if for_change:
@@ -986,10 +995,10 @@ class Deterministic_Eth_Wallet(Abstract_Eth_Wallet):
             # else:
             #     break
 
-    def synchronize(self):
+    def synchronize(self, index):
         with self.lock:
-            self.synchronize_sequence(False)
-            self.synchronize_sequence(True)
+            self.synchronize_sequence(False, index)
+            self.synchronize_sequence(True, index)
 
 
     def get_all_known_addresses_beyond_gap_limit(self):
@@ -1036,8 +1045,8 @@ class Simple_Eth_Deterministic_Wallet(Simple_Eth_Wallet, Deterministic_Eth_Walle
 
     """ Deterministic Wallet with a single pubkey per address """
 
-    def __init__(self, db, storage, *, config):
-        Deterministic_Eth_Wallet.__init__(self, db, storage, config=config)
+    def __init__(self, db, storage, *, config, index):
+        Deterministic_Eth_Wallet.__init__(self, db, storage, config=config, index=index)
 
     def get_public_key(self, address):
         sequence = self.get_address_index(address)
@@ -1062,8 +1071,8 @@ class Simple_Eth_Deterministic_Wallet(Simple_Eth_Wallet, Deterministic_Eth_Walle
 class Standard_Eth_Wallet(Simple_Eth_Deterministic_Wallet):
     wallet_type = 'eth_standard'
 
-    def __init__(self, db, storage, *, config):
-        Simple_Eth_Deterministic_Wallet.__init__(self, db, storage, config=config)
+    def __init__(self, db, storage, *, config, index=0):
+        Simple_Eth_Deterministic_Wallet.__init__(self, db, storage, config=config, index=index)
         self.hd_main_eth_address = ''
 
     def pubkeys_to_address(self, public_key: str):
@@ -1105,9 +1114,9 @@ class Standard_Eth_Wallet(Simple_Eth_Deterministic_Wallet):
         pubkeys = self.derive_pubkeys(for_change, n, compressed=False)
         return self.pubkeys_to_address(pubkeys[0][2:])
 
-    def synchronize(self):
+    def synchronize(self, index=0):
         with self.lock:
-            self.synchronize_sequence(False)
+            self.synchronize_sequence(False, index)
 
     def export_private_key(self, address, password):
         return self.get_private_key(address, password=password)

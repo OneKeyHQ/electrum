@@ -1083,9 +1083,11 @@ class WalletDB(JsonDB):
         self.change_addresses.append(addr)
 
     @modifier
-    def add_receiving_address(self, addr: str) -> None:
+    def add_receiving_address(self, addr: str, index=None) -> None:
         assert isinstance(addr, str)
-        self._addr_to_addr_index[addr] = (0, len(self.receiving_addresses))
+        if index is None:
+            index = len(self.receiving_addresses)
+        self._addr_to_addr_index[addr] = (0, index)
         self.receiving_addresses.append(addr)
 
     @locked

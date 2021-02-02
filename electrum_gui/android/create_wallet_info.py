@@ -17,8 +17,8 @@ class CreateWalletInfo():
     #     self.wallet_info.append(info)
 
     @staticmethod
-    def create_wallet_info(coin_type, name):
-        return [{'coin_type':coin_type, 'name':name}]
+    def create_wallet_info(coin_type, name, exist=0):
+        return [{'coin_type':coin_type, 'name':name, 'exist':exist}]
 
     def add_derived_info(self, derived_info):
         if derived_info is not None:

@@ -1015,12 +1015,13 @@ def is_master_key(x):
 def is_bip32_key(x):
     return is_xprv(x) or is_xpub(x)
 
+def bip44_derivation(account_id, bip43_purpose=44):
+    cointype = constants.net.BIP44_COIN_TYPE
+    der = "m/%d'/%d'/%d'" % (bip43_purpose, cointype, int(account_id))
+    return normalize_bip32_derivation(der)
 
-def bip44_derivation(account_id, bip43_purpose=44, coin=None):
-    if coin is None:
-        coin = constants.net.BIP44_COIN_TYPE
-    coin = coin
-    der = "m/%d'/%d'/%d'" % (bip43_purpose, coin, int(account_id))
+def bip44_eth_derivation(index, bip43_purpose=44, cointype=None):
+    der = "m/%d'/%d'/0'/0/%s" % (bip43_purpose, cointype, index)
     return normalize_bip32_derivation(der)
 
 def purpose48_derivation(account_id: int, xtype: str) -> str:

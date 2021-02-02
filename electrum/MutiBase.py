@@ -30,13 +30,13 @@ from . import bitcoin
 from . import keystore
 from . import mnemonic
 from .bip32 import is_bip32_derivation, xpub_type, normalize_bip32_derivation, BIP32Node, root_fp_and_der_prefix_from_xkey
-from .keystore import purpose48_derivation, bip44_derivation
+from .keystore import purpose48_derivation, bip44_derivation, bip44_eth_derivation
 from .wallet import (Imported_Wallet, Standard_Wallet, Multisig_Wallet,
                      wallet_types, Wallet, Abstract_Wallet)
 from .storage import (WalletStorage,
                       get_derivation_used_for_hw_device_encryption)
 from .i18n import _
-from .util import UserCancelled, InvalidPassword, WalletFileException
+from .util import UserCancelled, InvalidPassword, WalletFileException, get_keystore_path
 from .logging import Logger
 from .simple_config import SimpleConfig
 from .wallet_db import WalletDB
@@ -93,7 +93,8 @@ class MutiBase(Logger):
                     if 'btc' == coin:
                         derivation = bip44_derivation(account_id, bip43_purpose=type)
                     else:
-                        derivation = bip44_derivation(account_id, bip43_purpose=type, coin=coinid)
+                        derivation = bip44_eth_derivation(0, bip43_purpose=type, cointype=coinid)
+                        derivation = get_keystore_path(derivation)
                 d = {
                     'type': 'hardware',
                     'hw_type': 'trezor',
