@@ -9,19 +9,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: 'Git setup'
-      run: |
-        git fetch --no-tags --prune origin +refs/heads/*:refs/remotes/origin/*
-        git checkout ${{ github.base_ref }}
-        git checkout ${{ github.head_ref }}
     - uses: actions/setup-python@v2
     - uses: actions/cache@v1
       with:
         path: ~/.cache/pre-commit
         key: pre-commit|${{ env.PY }}|${{ hashFiles('.pre-commit-config.yaml') }}
-    - name: Run pre-commit test
-      run: |
-        git fetch origin bixin_dev
-        pip install pre-commit
-        pre-commit install
-        pre-commit run --show-diff-on-failure --color=always --from-ref ${{ github.base_ref }} --to-ref ${{ github.head_ref }}
+    - id: file_changes
+      uses: jitterbit/get-changed-files@v1
+    - uses: pre-commit/action@v2.0.0
+      with:
+        extra_args: --files ${{ steps.file_changes.outputs.all }}
