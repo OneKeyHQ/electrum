@@ -1,6 +1,8 @@
 package org.haobtc.onekey.constant;
 
+import android.text.TextUtils;
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 import org.haobtc.onekey.BuildConfig;
 
@@ -88,7 +90,10 @@ public class Vm {
     }
 
     @WalletType
-    public static int convertWalletType(String type) {
+    public static int convertWalletType(@Nullable String type) {
+        if (TextUtils.isEmpty(type)) {
+            return WalletType.STANDARD;
+        }
         if (type.contains("derived-standard")) {
             return WalletType.MAIN;
         } else if (type.contains("private-standard")) {
@@ -104,7 +109,10 @@ public class Vm {
         }
     }
 
-    public static Vm.CoinType convertCoinType(String type) {
+    public static Vm.CoinType convertCoinType(@Nullable String type) {
+        if (TextUtils.isEmpty(type)) {
+            return CoinType.BTC;
+        }
         if (type.contains("btc")) {
             return Vm.CoinType.BTC;
         } else if (type.contains("eth")) {

@@ -13,9 +13,8 @@ import com.chaquo.python.PyObject;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.bean.CreateWalletBean;
 import org.haobtc.onekey.bean.LocalWalletInfo;
@@ -28,7 +27,6 @@ import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.event.CreateSuccessEvent;
 import org.haobtc.onekey.exception.AccountException;
 import org.haobtc.onekey.exception.HardWareExceptions;
-import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.utils.Daemon;
 
@@ -39,6 +37,7 @@ import org.haobtc.onekey.utils.Daemon;
  * @create 2021-01-06 2:13 PM
  */
 public class AccountManager {
+
     private Context mContext;
     private SharedPreferences mPreferencesSharedPreferences;
 
@@ -49,7 +48,7 @@ public class AccountManager {
     }
 
     public Boolean existsWallets() {
-        return PreferencesManager.hasWallet(mContext);
+        return getAllWallet().size() > 0;
     }
 
     /**
@@ -58,17 +57,7 @@ public class AccountManager {
      * @return true: 存在
      */
     public boolean existsLocalHD() {
-        return mPreferencesSharedPreferences.getBoolean(Constant.HAS_LOCAL_HD, false);
-    }
-
-    /**
-     * 设置本地是否存在 HD 钱包 应该由软件进行逻辑判断，不应该人为设置。
-     *
-     * @param exists 是否存在
-     */
-    @Deprecated
-    public void setExistsLocalHD(boolean exists) {
-        mPreferencesSharedPreferences.edit().putBoolean(Constant.HAS_LOCAL_HD, exists).apply();
+        return getAllWalletByType(HD).size() > 0;
     }
 
     public String getCurrentWalletName() {
@@ -85,16 +74,24 @@ public class AccountManager {
     @WorkerThread
     @Nullable
     public LocalWalletInfo getLocalWalletByName(String walletName) {
-        String str =
-                PreferencesManager.get(
-                                mContext,
-                                org.haobtc.onekey.constant.Constant.WALLETS,
-                                walletName,
-                                "")
-                        .toString();
-        if (!Strings.isNullOrEmpty(str)) {
-            return LocalWalletInfo.objectFromData(str);
+        List<WalletInfo> allWallet = getAllWallet();
+        WalletInfo findWalletInfo = null;
+        for (WalletInfo item : allWallet) {
+            if (item.name.equals(walletName)) {
+                findWalletInfo = item;
+                break;
+            }
         }
+
+        if (findWalletInfo != null) {
+            return new LocalWalletInfo(
+                    findWalletInfo.type,
+                    findWalletInfo.addr,
+                    findWalletInfo.name,
+                    findWalletInfo.label,
+                    findWalletInfo.deviceId);
+        }
+
         return null;
     }
 
@@ -128,17 +125,20 @@ public class AccountManager {
     @WorkerThread
     @Nullable
     public LocalWalletInfo autoSelectNextWallet() {
-        Optional<? extends Map.Entry<String, ?>> entry =
-                PreferencesManager.getAll(mContext, org.haobtc.onekey.constant.Constant.WALLETS)
-                        .entrySet().stream()
-                        .findFirst();
-        if (!entry.isPresent()) {
+        List<WalletInfo> result = getAllWallet();
+        if (result.size() <= 0) {
             return null;
         }
-        LocalWalletInfo info = LocalWalletInfo.objectFromData(entry.get().getValue().toString());
-        if (info == null) {
-            return null;
-        }
+        WalletInfo walletInfo = result.get(result.size() - 1);
+
+        LocalWalletInfo info =
+                new LocalWalletInfo(
+                        walletInfo.type,
+                        walletInfo.addr,
+                        walletInfo.name,
+                        walletInfo.label,
+                        walletInfo.deviceId);
+
         mPreferencesSharedPreferences
                 .edit()
                 .putString(
@@ -147,6 +147,35 @@ public class AccountManager {
                 .putString(CURRENT_SELECTED_WALLET_TYPE, info.getType())
                 .apply();
         return info;
+    }
+
+    /**
+     * 获取已经存储的所有钱包
+     *
+     * @return 所有钱包
+     */
+    public List<WalletInfo> getAllWallet() {
+        PyResponse<List<WalletInfo>> listPyResponse = PyEnv.loadWalletByType(null);
+        if (Strings.isNullOrEmpty(listPyResponse.getErrors())) {
+            return listPyResponse.getResult();
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    /**
+     * 获取已经存储的所有钱包
+     *
+     * @param type: None/hd/btc/eth
+     * @return 所有钱包
+     */
+    public List<WalletInfo> getAllWalletByType(String type) {
+        PyResponse<List<WalletInfo>> listPyResponse = PyEnv.loadWalletByType(type);
+        if (Strings.isNullOrEmpty(listPyResponse.getErrors())) {
+            return listPyResponse.getResult();
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     /**

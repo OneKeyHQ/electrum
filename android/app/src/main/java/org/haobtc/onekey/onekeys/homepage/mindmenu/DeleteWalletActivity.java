@@ -120,7 +120,7 @@ public class DeleteWalletActivity extends BaseActivity
         if ("deleteSingleWallet".equals(importHdword)) {
             deleteSingleWallet(event.getPassword());
         } else if (!Strings.isNullOrEmpty(deleteHdWalletName)) {
-            deleteAllWallet(event.getPassword());
+            deleteAllMainWallet(event.getPassword());
         }
     }
 
@@ -142,7 +142,12 @@ public class DeleteWalletActivity extends BaseActivity
         }
     }
 
-    private void deleteAllWallet(String password) {
+    /**
+     * 删除所有主钱包
+     *
+     * @param password 账户密码
+     */
+    private void deleteAllMainWallet(String password) {
         ArrayList<String> hd = new ArrayList<>();
         Map<String, ?> jsonToMap = PreferencesManager.getAll(this, Constant.WALLETS);
         jsonToMap
