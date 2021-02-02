@@ -63,6 +63,17 @@ public class CreateWalletBean {
         @SerializedName("name")
         private String name;
 
+        @SerializedName("exist")
+        private String exist;
+
+        public String getExist() {
+            return exist;
+        }
+
+        public void setExist(String exist) {
+            this.exist = exist;
+        }
+
         public static WalletInfoBean objectFromData(String str) {
 
             return new Gson().fromJson(str, WalletInfoBean.class);

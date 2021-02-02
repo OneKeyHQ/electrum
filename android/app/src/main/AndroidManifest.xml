@@ -589,8 +589,8 @@
             tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".ui.activity.FindBackupOnlyDeviceActivity"
-            android:screenOrientation="portrait"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".ui.activity.AddNewWalletByActivatedColdWalletActivity"
@@ -613,8 +613,8 @@
             android:theme="@style/dialog" />
         <activity
             android:name=".ui.activity.FindNormalDeviceActivity"
-            android:screenOrientation="portrait"
-            android:launchMode="singleTask" />
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activity.CreatePersonalWalletActivity"
             android:screenOrientation="portrait" />
@@ -672,7 +672,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activity.InputPinOnHardware"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".onekeys.walletprocess.createsoft.CreateSoftWalletActivity"
             android:screenOrientation="portrait" />
@@ -687,6 +687,21 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".onekeys.homepage.process.DetailETHTransactionActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="zendesk.messaging.MessagingActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/MyDarkTheme" />
+        <activity
+            android:name="zendesk.support.requestlist.RequestListActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/MyDarkTheme" />
+        <activity
+            android:name="zendesk.support.request.RequestActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/MyDarkTheme" />
+        <activity
+            android:name=".activities.SupportActivity"
             android:screenOrientation="portrait" />
     </application>
 

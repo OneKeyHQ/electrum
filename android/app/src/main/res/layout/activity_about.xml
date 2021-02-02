@@ -111,6 +111,27 @@
                 android:textColor="@color/text"
                 android:textSize="@dimen/text_size"
                 app:drawableEndCompat="@drawable/jiantou" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/line_hight"
+                android:layout_marginStart="@dimen/dp_16"
+                android:layout_marginEnd="@dimen/dp_16"
+                android:background="@color/separation_line" />
+
+            <TextView
+                android:id="@+id/service"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/dp_70"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:paddingStart="@dimen/dp_20"
+                android:paddingEnd="@dimen/dp_20"
+                android:text="@string/service_support"
+                android:textColor="@color/text"
+                android:textSize="@dimen/text_size"
+                app:drawableEndCompat="@drawable/jiantou" />
         </LinearLayout>
 
     </LinearLayout>

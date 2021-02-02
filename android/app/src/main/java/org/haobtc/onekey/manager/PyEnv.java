@@ -415,7 +415,7 @@ public final class PyEnv {
                                     xPubs,
                                     new Kwarg("hd", hd))
                             .toString();
-            Logger.json("通过xpub恢复钱包:" + walletsInfo);
+            Logger.json(walletsInfo);
             CreateWalletBean walletBean = CreateWalletBean.objectFromData(walletsInfo);
             response.setResult(walletBean);
         } catch (Exception e) {

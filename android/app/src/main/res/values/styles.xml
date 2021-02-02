@@ -127,15 +127,22 @@
         <!-- 圆角矩形背景色 -->
         <attr name="mv_backgroundColor" format="color"/>
         <!-- 圆角弧度,单位dp-->
-        <attr name="mv_cornerRadius" format="dimension"/>
+        <attr name="mv_cornerRadius" format="dimension" />
         <!-- 圆角弧度,单位dp-->
-        <attr name="mv_strokeWidth" format="dimension"/>
+        <attr name="mv_strokeWidth" format="dimension" />
         <!-- 圆角边框颜色-->
-        <attr name="mv_strokeColor" format="color"/>
+        <attr name="mv_strokeColor" format="color" />
         <!-- 圆角弧度是高度一半-->
-        <attr name="mv_isRadiusHalfHeight" format="boolean"/>
+        <attr name="mv_isRadiusHalfHeight" format="boolean" />
         <!-- 圆角矩形宽高相等,取较宽高中大值-->
-        <attr name="mv_isWidthHeightEqual" format="boolean"/>
+        <attr name="mv_isWidthHeightEqual" format="boolean" />
     </declare-styleable>
+
+    <style name="MyDarkTheme" parent="ZendeskSdkTheme.Dark">
+        <item name="zs_helpConversationsIcon">@drawable/left_arrow</item>
+        <item name="colorPrimary">@color/onekey</item>
+        <!--状态栏颜色（页面最顶层显示时间的地方）-->
+        <item name="colorPrimaryDark">@color/onekey</item>
+    </style>
 
 </resources>

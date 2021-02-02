@@ -16,7 +16,6 @@ import butterknife.OnClick;
 import com.google.common.base.Strings;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.bean.BalanceInfoDTO;
@@ -121,12 +120,13 @@ public class RecoveryWalletFromHdFragment extends BaseFragment implements OnWall
         if (walletInfo != null && walletInfo.size() > 0) {
             for (CreateWalletBean.WalletInfoBean walletInfoBean : walletInfo) {
                 if (!Strings.isNullOrEmpty(walletInfoBean.getName())) {
-                    nameList.add(walletInfoBean.getName());
+                    if (walletInfoBean.getExist().equals("0")) {
+                        nameList.add(walletInfoBean.getName());
+                    } else {
+                        mHasExist = true;
+                    }
                 }
             }
-        }
-        if (nameList.size() == 0) {
-            recovery.setEnabled(false);
         }
     }
 
@@ -153,19 +153,6 @@ public class RecoveryWalletFromHdFragment extends BaseFragment implements OnWall
     @Override
     public int getContentViewId() {
         return R.layout.looking_for_once_wallet;
-    }
-
-    private void refreshButton() {
-        AtomicReference<Boolean> isChecked = new AtomicReference<>(false);
-        adapter.getSelectMap()
-                .entrySet()
-                .forEach(
-                        (entry) -> {
-                            if (entry.getValue().isChecked()) {
-                                isChecked.set(true);
-                            }
-                        });
-        recovery.setEnabled(isChecked.get());
     }
 
     @OnClick(R.id.recovery)

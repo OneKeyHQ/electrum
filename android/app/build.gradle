@@ -56,7 +56,7 @@ android {
         ndk {
             abiFilters "armeabi-v7a", "arm64-v8a"
         }
-        resConfigs "zh"
+        resConfigs "zh","zh-rCN"
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments = [ eventBusIndex : 'org.haobtc.onekey.MyEventBusIndex' ]
@@ -300,7 +300,10 @@ dependencies {
     implementation 'io.reactivex.rxjava3:rxandroid:3.0.0'
     implementation "io.reactivex.rxjava3:rxjava:3.0.4"
     implementation 'com.orhanobut:logger:2.2.0'
-
+    implementation 'com.zendesk:support:5.0.2'
+    implementation 'com.zendesk:messaging:5.1.0'
+    implementation 'com.zendesk:answerbot:3.0.1'
+    implementation 'com.zendesk:chat:3.1.0'
 }
 
 // 为 lint 任务设置别名
@@ -308,6 +311,7 @@ task lintRegTestDebug(dependsOn: "lintRegTestOnekeyDebug")
 
 repositories {
     mavenCentral()
+    maven { url 'https://zendesk.jfrog.io/zendesk/repo' }
 }
 // AspectJ
 import org.aspectj.bridge.IMessage

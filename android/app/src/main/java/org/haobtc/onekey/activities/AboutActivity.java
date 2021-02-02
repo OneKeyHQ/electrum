@@ -1,36 +1,35 @@
 package org.haobtc.onekey.activities;
 
-import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
+import butterknife.BindView;
+import butterknife.OnClick;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.transaction.CheckChainDetailWebActivity;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.business.update.AutoCheckUpdate;
-
+import org.haobtc.onekey.constant.StringConstant;
 import org.haobtc.onekey.ui.base.BaseActivity;
 
-import butterknife.BindView;
-import butterknife.OnClick;
-
-/**
- * @author liyan
- */
+/** @author liyan */
 public class AboutActivity extends BaseActivity {
 
     @BindView(R.id.img_back)
     ImageView imgBack;
+
     @BindView(R.id.attempt_update)
     RelativeLayout update;
+
     @BindView(R.id.update_version)
     TextView updateVersion;
+
     @BindView(R.id.tet_s5)
     TextView tetS5;
+
     private AutoCheckUpdate mAutoCheckUpdate;
 
     @Override
@@ -49,7 +48,7 @@ public class AboutActivity extends BaseActivity {
     }
 
     @SingleClick
-    @OnClick({R.id.img_back, R.id.attempt_update, R.id.tet_s5})
+    @OnClick({R.id.img_back, R.id.attempt_update, R.id.tet_s5, R.id.service})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
@@ -59,10 +58,11 @@ public class AboutActivity extends BaseActivity {
                 mAutoCheckUpdate.checkUpdate(getSupportFragmentManager(), true);
                 break;
             case R.id.tet_s5:
-                Intent intent = new Intent(AboutActivity.this, CheckChainDetailWebActivity.class);
-                intent.putExtra("loadWhere", "userAgreement");
-                intent.putExtra("loadUrl", "https://onekey.zendesk.com/hc/articles/360002014776");
-                startActivity(intent);
+                CheckChainDetailWebActivity.start(
+                        mContext, "userAgreement", StringConstant.USER_URL);
+                break;
+            case R.id.service:
+                SupportActivity.start(mContext);
                 break;
         }
     }
