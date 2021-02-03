@@ -2894,7 +2894,7 @@ class AndroidCommands(commands.Commands):
             elif flag == "address":
                 if not bitcoin.is_address(data):
                     raise BaseException(UnavailableBtcAddr())
-        elif self.coins.__contains__(coin):
+        elif coin in self.coins:
             if flag == "private":
                 try:
                     keys.PrivateKey(HexBytes(data))
@@ -3121,7 +3121,7 @@ class AndroidCommands(commands.Commands):
                         raise BaseException(InvalidBip39Seed())
                     if coin == "btc":
                         derivation = bip44_derivation(0, purpose)
-                    elif self.coins.__contains__(coin):
+                    elif coin in self.coins:
                         index = 0
                         derivation = bip44_eth_derivation(0, self.coins[coin]['addressType'],
                                                       cointype=self.coins[coin]['coinId'])
@@ -3129,7 +3129,7 @@ class AndroidCommands(commands.Commands):
             db.put('keystore', ks.dump())
             if coin == "btc":
                 wallet = Standard_Wallet(db, storage, config=self.config)
-            elif self.coins.__contains__(coin):
+            elif coin in self.coins:
                 wallet = Standard_Eth_Wallet(db, storage, config=self.config, index=int(index))
         addr = wallet.get_addresses()[0]
         new_name = self.get_unique_path(wallet)
@@ -3234,7 +3234,7 @@ class AndroidCommands(commands.Commands):
                         self.set_hd_wallet(wallet)
                     # self.update_wallet_name(wallet.__str__(), self.get_unique_path(wallet))
                     coin = wallet.wallet_type[0:3]
-                    if self.coins.__contains__(coin):
+                    if coin in self.coins:
                         # if not hw:
                         #     self.coins[coin]['derivedInfoObj'].update_recovery_info(recovery_info['account_id'])
                         wallet_type = '%s-hw-derived-%s-%s' % (coin, wallet.m, wallet.n) if hw else (
@@ -3297,7 +3297,7 @@ class AndroidCommands(commands.Commands):
             try:
                 wallet = wallet_info['wallet']
                 coin = wallet.wallet_type[0:3]
-                if self.coins.__contains__(coin):
+                if coin in self.coins:
                     address = wallet.get_addresses()[0]
                     try:
                         txids = self.pywalib.get_all_txid(address)
@@ -3387,7 +3387,7 @@ class AndroidCommands(commands.Commands):
         try:
             if coin == 'btc':
                 type_list = [49, 44, 84]
-            elif self.coins.__contains__(coin):
+            elif coin in self.coins:
                 type_list = [self.coins[coin]['addressType']]
 
             for xtype in type_list:
@@ -3592,7 +3592,7 @@ class AndroidCommands(commands.Commands):
         db = WalletDB('', manual_upgrades=False)
         ks = keystore.from_bip39_seed(seed, passphrase, util.get_keystore_path(bip39_derivation) if coin in self.coins else bip39_derivation)
         db.put('keystore', ks.dump())
-        if self.coins.__contains__(coin):
+        if coin in self.coins:
             wallet = Standard_Eth_Wallet(db, storage, config=self.config, index=account_id)
             wallet.wallet_type = '%s_standard' % coin
         else:
