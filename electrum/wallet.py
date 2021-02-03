@@ -279,6 +279,11 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
         if self.db.get('status_flag') is None:
             self.db.put('status_flag', self.status_flag)
 
+        self.coin = db.get("coin")
+        if self.coin is None:
+            db.put("coin", "btc")
+            self.coin = db.get("coin")
+
         self.contacts = Contacts(self.db)
         self._coin_price_cache = {}
         # lightning
@@ -286,6 +291,7 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
         self.name = self.db.get("name")
         self.lnworker = LNWallet(self, ln_xprv) if ln_xprv else None
         self.lnbackups = LNBackups(self)
+
 
     def set_name(self, name):
         self.name = name

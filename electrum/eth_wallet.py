@@ -127,6 +127,11 @@ class Abstract_Eth_Wallet(ABC):
         self.contacts = dict()
         self._coin_price_cache = {}
 
+        self.coin = db.get("coin")
+        if self.coin is None:
+            db.put("coin", "eth")
+            self.coin = db.get("coin")
+
     def set_address_index(self, index):
         self.address_index = index
         self.db.put("address_index", self.address_index)
@@ -197,7 +202,7 @@ class Abstract_Eth_Wallet(ABC):
         eth, balance = PyWalib.get_balance(wallet_address)
 
         balance_info = {
-            self.wallet_type[0:3]: {'balance': Decimal(balance), 'fiat': Decimal(balance) * Decimal(last_price)}
+            self.coin: {'balance': Decimal(balance), 'fiat': Decimal(balance) * Decimal(last_price)}
         }
         for _, contract in self.contacts.items():
             symbol, balance = PyWalib.get_balance(wallet_address, contract)

@@ -1,4 +1,5 @@
 import json
+from decimal import Decimal
 from typing import List
 
 from electrum_gui.common.basic.functional.require import require
@@ -11,7 +12,9 @@ from electrum_gui.common.explorer.data.interfaces import ExplorerInterface
 from electrum_gui.common.explorer.data.objects import (
     Address,
     BlockHeader,
+    EstimatedTimeOnPrice,
     ExplorerInfo,
+    PricePerUnit,
     Token,
     Transaction,
     TransactionFee,
@@ -150,3 +153,23 @@ class Trezor(ExplorerInterface):
             return TxBroadcastReceipt(
                 is_success=False, receipt_code=TxBroadcastReceiptCode.UNEXPECTED_FAILED, receipt_message=error_message
             )
+
+    def get_price_per_unit_of_fee(self) -> PricePerUnit:
+        num_of_block = 10  # just a number, trezor does case what it is
+        resp = self.restful.get(f"/api/v2/estimatefee/{num_of_block}")
+
+        slow = Decimal(resp["result"])
+        normal = slow * Decimal(1.25)
+        fast = slow * Decimal(1.5)
+
+        to_wei_multiple = Decimal(1e18)
+        min_wei = 1e9
+        normal = int(max(normal * to_wei_multiple, min_wei))
+        slow = int(max(slow * to_wei_multiple, min_wei))
+        fast = int(max(fast * to_wei_multiple, min_wei))
+
+        return PricePerUnit(
+            fast=EstimatedTimeOnPrice(price=fast, time=60),
+            normal=EstimatedTimeOnPrice(price=normal, time=180),
+            slow=EstimatedTimeOnPrice(price=slow, time=600),
+        )

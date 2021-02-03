@@ -59,3 +59,16 @@ class TxBroadcastReceipt(DataClassMixin):
     receipt_code: TxBroadcastReceiptCode
     receipt_message: str = None
     txid: str = None
+
+
+@dataclass
+class EstimatedTimeOnPrice(DataClassMixin):
+    price: int
+    time: int = None  # in seconds
+
+
+@dataclass
+class PricePerUnit(DataClassMixin):
+    slow: EstimatedTimeOnPrice
+    normal: EstimatedTimeOnPrice
+    fast: EstimatedTimeOnPrice

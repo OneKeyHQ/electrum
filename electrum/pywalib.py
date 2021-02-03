@@ -18,7 +18,7 @@ from web3 import HTTPProvider, Web3
 
 from electrum_gui.common.explorer.data.objects import Token
 from .i18n import _
-from electrum_gui.common.explorer.clients import TrezorETH, Etherscan
+from electrum_gui.common.explorer.clients import TrezorETH, Etherscan, Geth
 from electrum_gui.common.explorer.data.enums import TransactionStatus
 from electrum_gui.common.explorer.data.interfaces import ExplorerInterface
 from . import util
@@ -32,7 +32,7 @@ eth_servers = {}
 ETHERSCAN_API_KEY = "R796P9T31MEA24P8FNDZBCA88UHW8YCNVW"
 INFURA_PROJECT_ID = "f001ce716b6e4a33a557f74df6fe8eff"
 ROUND_DIGITS = 3
-DEFAULT_GAS_PRICE_GWEI = 20
+DEFAULT_GAS_PRICE_WEI = int(20 * 1e9)
 DEFAULT_GAS_LIMIT = 21000
 GWEI_BASE = 1000000000
 DEFAULT_GAS_SPEED = 1
@@ -150,6 +150,7 @@ headers = {
 }
 
 class PyWalib:
+    server_config = None
     web3 = None
     market_server = None
     tx_list_server = None
@@ -254,12 +255,15 @@ class PyWalib:
         PyWalib.market_server = info['Market']
         PyWalib.tx_list_server = info['TxliServer']
         PyWalib.gas_server = info['GasServer']
+        PyWalib.server_config = info
         for i in info['Provider']:
             if PyWalib.chain_type in i:
                 url = i[PyWalib.chain_type]
                 chain_id = i['chainid']
         PyWalib.web3 = Web3(HTTPProvider(url))
         PyWalib.chain_id = chain_id
+        if hasattr(PyWalib, "__explorer__"):
+            delattr(PyWalib, "__explorer__")
 
     @staticmethod
     def get_coin_price(from_cur):
@@ -276,33 +280,46 @@ class PyWalib:
         except BaseException as e:
             return '0'
 
-    def get_gas_price(self) -> dict:
-        try:
-            if PyWalib.gas_server is not None:
-                response = requests.get(PyWalib.gas_server, headers=headers)
-                obj = response.json()
-                out = dict()
-                if obj['code'] == 200:
-                    estimated_time = {
-                        "rapid": 0.25,
-                        "fast": 1,
-                        "standard": 3,
-                        "slow": 10
+    def get_gas_price(self, coin) -> dict:
+        if coin in ("bsc", "heco"):
+            price_per_unit = self.get_explorer().get_price_per_unit_of_fee()
+            return {
+                "fast": {
+                    "gas_price": int(price_per_unit.fast.price / 1e9),
+                    "time": 1,
+                },
+                "normal": {
+                    "gas_price": int(price_per_unit.normal.price / 1e9),
+                    "time": 2,
+                },
+                "slow": {
+                    "gas_price": int(price_per_unit.slow.price / 1e9),
+                    "time": 3,
+                },
+            }
+        elif PyWalib.gas_server is not None:
+            response = requests.get(PyWalib.gas_server, headers=headers)
+            obj = response.json()
+            out = dict()
+            if obj['code'] == 200:
+                estimated_time = {
+                    "rapid": 0.25,
+                    "fast": 1,
+                    "standard": 3,
+                    "slow": 10
+                }
+                out.update({
+                    key: {
+                        "gas_price": int(self.web3.fromWei(price, "gwei")),
+                        "time": estimated_time[key]
                     }
-                    out.update({
-                        key: {
-                            "gas_price": int(self.web3.fromWei(price, "gwei")),
-                            "time": estimated_time[key]
-                        }
-                        for key, price in obj["data"].items() if key in estimated_time
-                    })
+                    for key, price in obj["data"].items() if key in estimated_time
+                })
 
-                if "standard" in out:
-                    out["normal"] = out["standard"]
-                    out.pop("standard")
-                return out
-        except BaseException as ex:
-            raise ex
+            if "standard" in out:
+                out["normal"] = out["standard"]
+                out.pop("standard")
+            return out
 
     def get_max_use_gas(self, gas_price):
         gas = gas_price * DEFAULT_GAS_LIMIT
@@ -373,7 +390,7 @@ class PyWalib:
             else:
                 value = self.web3.toWei(value, "ether")
 
-            gas_price = DEFAULT_GAS_PRICE_GWEI if gas_price is None else self.web3.toWei(gas_price, "gwei")
+            gas_price = DEFAULT_GAS_PRICE_WEI if gas_price is None else self.web3.toWei(gas_price, "gwei")
 
             assert value > 0
             assert gas_price > 0
@@ -471,16 +488,27 @@ class PyWalib:
 
         if explorer is None:
             servers = {list(i.keys())[0]: list(i.values())[0] for i in cls.tx_list_server}
-            explorer = (
-                TrezorETH(
-                    servers.get("onekey-mainnet")
-                    or servers.get("trezor-mainnet")
-                )
-                if cls.chain_type == "mainnet"
-                else Etherscan(servers.get("etherscan-testnet"), ETHERSCAN_API_KEY)
-            )
+            explorer = None
+
+            if cls.chain_type == "mainnet":
+                url = servers.get("onekey-mainnet") or servers.get("trezor-mainnet")
+                assert url
+                explorer = TrezorETH(url)
+            elif servers.get("etherscan-testnet"):
+                explorer = Etherscan(servers["etherscan-testnet"])
+            else:
+                provider = None
+                for i in cls.server_config.get("Provider", ()):
+                    if cls.chain_type in i:
+                        provider = i[cls.chain_type]
+                        break
+
+                if provider:
+                    explorer = Geth(provider)
+
             setattr(cls, cache_name, explorer)
 
+        assert explorer is not None
         return explorer
 
     @classmethod

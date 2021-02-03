@@ -3,7 +3,14 @@ from typing import List
 
 from electrum_gui.common.explorer.data.enums import TransactionStatus
 from electrum_gui.common.explorer.data.exceptions import TransactionNotFound
-from electrum_gui.common.explorer.data.objects import Address, ExplorerInfo, Token, Transaction, TxBroadcastReceipt
+from electrum_gui.common.explorer.data.objects import (
+    Address,
+    ExplorerInfo,
+    PricePerUnit,
+    Token,
+    Transaction,
+    TxBroadcastReceipt,
+)
 
 
 class ExplorerInterface(ABC):
@@ -79,4 +86,11 @@ class ExplorerInterface(ABC):
         push transaction to chain
         :param raw_tx: transaction in str
         :return: txid, optional
+        """
+
+    @abstractmethod
+    def get_price_per_unit_of_fee(self) -> PricePerUnit:
+        """
+        get the price per unit of the fee, likes the gas_price on eth
+        :return: price per unit
         """

@@ -7,7 +7,9 @@ from electrum_gui.common.explorer.data.interfaces import ExplorerInterface
 from electrum_gui.common.explorer.data.objects import (
     Address,
     BlockHeader,
+    EstimatedTimeOnPrice,
     ExplorerInfo,
+    PricePerUnit,
     Token,
     Transaction,
     TransactionFee,
@@ -164,3 +166,17 @@ class Etherscan(ExplorerInterface):
             return TxBroadcastReceipt(
                 is_success=False, receipt_code=TxBroadcastReceiptCode.UNEXPECTED_FAILED, receipt_message=error_message
             )
+
+    def get_price_per_unit_of_fee(self) -> PricePerUnit:
+        resp = self._call_action("gastracker", "gasoracle")
+        result = resp.get("result", dict())
+
+        slow = int(result["SafeGasPrice"] * 1e9)
+        normal = int(result["ProposeGasPrice"] * 1e9)
+        fast = int(result["FastGasPrice"] * 1e9)
+
+        return PricePerUnit(
+            fast=EstimatedTimeOnPrice(price=fast, time=60),
+            normal=EstimatedTimeOnPrice(price=normal, time=180),
+            slow=EstimatedTimeOnPrice(price=slow, time=600),
+        )

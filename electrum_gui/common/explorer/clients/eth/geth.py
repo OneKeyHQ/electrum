@@ -11,7 +11,9 @@ from electrum_gui.common.explorer.data.interfaces import ExplorerInterface
 from electrum_gui.common.explorer.data.objects import (
     Address,
     BlockHeader,
+    EstimatedTimeOnPrice,
     ExplorerInfo,
+    PricePerUnit,
     Transaction,
     TransactionFee,
     TxBroadcastReceipt,
@@ -113,4 +115,18 @@ class Geth(ExplorerInterface):
             is_success=is_success,
             receipt_code=receipt_code,
             receipt_message=receipt_message,
+        )
+
+    def get_price_per_unit_of_fee(self) -> PricePerUnit:
+        resp = self.rpc.call("eth_gasPrice", params=[])
+
+        min_wei = int(1e9)
+        slow = int(max(_hex2int(resp), min_wei))
+        normal = int(max(slow * 1.25, min_wei))
+        fast = int(max(slow * 1.5, min_wei))
+
+        return PricePerUnit(
+            fast=EstimatedTimeOnPrice(price=fast, time=60),
+            normal=EstimatedTimeOnPrice(price=normal, time=180),
+            slow=EstimatedTimeOnPrice(price=slow, time=600),
         )
