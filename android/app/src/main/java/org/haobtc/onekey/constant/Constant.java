@@ -195,7 +195,7 @@ public final class Constant {
     public static final String BTC_UNIT_BTC = "BTC";
     /** 比特币计量单位1 BTC = 1000 mBTC */
     public static final String BTC_UNIT_M_BTC = "mBTC";
-    /** 比特币计量单位 1 BTC = 10^6 bits */
+    /** 比特币计量单位 1 BTC = 10^8 bits */
     public static final String BTC_UNIT_M_BITS = "bits";
 
     public static final String VERIFY_DETAIL = "verify_detail";
@@ -203,7 +203,7 @@ public final class Constant {
     public static final String CURRENT_CURRENCY_SYMBOL = "currency_symbol";
 
     public static final String FEE_RATE = "fee_rate";
-    /** 当前发币的货币图形符号 */
+    /** 当前法币的货币图形符号 */
     public static final String CURRENT_CURRENCY_GRAPHIC_SYMBOL = "currency_graphic_symbol";
 
     public static final String English = "English";

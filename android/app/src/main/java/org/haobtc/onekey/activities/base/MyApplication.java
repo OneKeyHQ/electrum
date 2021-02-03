@@ -98,10 +98,10 @@ public class MyApplication extends Application implements ViewModelStoreOwner {
                 // Set global Bluetooth operation log TAG
                 .setLogTAG("AndroidBLE")
                 // Set whether to connect automatically
-                .setAutoConnect(false)
+                .setAutoConnect(true)
                 // Set whether to filter the founded devices
                 .setFilterScan(true)
-                // Set whether to filter the founded devices
+                // Set connect retry count when failed
                 .setConnectFailedRetryCount(3)
                 // Set the connection timeout
                 .setConnectTimeout(10 * 1000)
