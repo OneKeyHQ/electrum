@@ -34,6 +34,7 @@
     <string name="touch_again">请保持与硬件贴合</string>
     <string name="connect">连接硬件成功</string>
     <string name="set_pin_processinfo">设置PIN码成功</string>
+    <string name="connecting">连接设备中</string>
     <string name="activing_processinfo">激活设备中</string>
     <string name="back">返回</string>
     <string name="success">激活成功</string>
@@ -1246,4 +1247,5 @@
     <string name="create_main_wallet">创建账户</string>
     <string name="select_new_account_create">选择要创建的新账户</string>
     <string name="create_selected_account">创建选中的账户</string>
+    <string name="tip_private_key">私钥可用来在其他 App 或钱包中恢复资产，请认真抄写，确认无误后将其放置在只有您知道的安全地方。</string>
 </resources>

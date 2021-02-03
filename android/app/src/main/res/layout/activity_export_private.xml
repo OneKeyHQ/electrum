@@ -55,7 +55,7 @@
                 android:layout_marginTop="@dimen/dp_20"
                 android:layout_marginEnd="43dp"
                 android:gravity="center_horizontal"
-                android:text="@string/hd_root_tip"
+                android:text="@string/tip_private_key"
                 android:textColor="@color/text_two"
                 android:textSize="@dimen/sp_14" />
 

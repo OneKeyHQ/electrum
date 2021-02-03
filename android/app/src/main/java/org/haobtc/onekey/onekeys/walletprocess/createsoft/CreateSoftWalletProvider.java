@@ -14,11 +14,4 @@ public interface CreateSoftWalletProvider {
      * @return true 导入
      */
     boolean isImport();
-
-    /**
-     * 临时限制
-     *
-     * @return true:支持 ETH
-     */
-    boolean supportETH();
 }

@@ -84,12 +84,7 @@ public class SelectChainCoinFragment extends BaseFragment implements View.OnClic
             mBindingView.relBtc.setVisibility(View.VISIBLE);
         }
 
-        boolean tempControls =
-                (mCreateSoftWalletProvider != null && mCreateSoftWalletProvider.supportETH())
-                        || (mCreateFastHDSoftWalletProvider != null
-                                && mCreateFastHDSoftWalletProvider.supportETH())
-                        || mImportSoftWalletProvider != null;
-        if (Vm.CoinType.ETH.enable && tempControls) {
+        if (Vm.CoinType.ETH.enable) {
             mBindingView.relEth.setVisibility(View.VISIBLE);
         }
     }
