@@ -66,10 +66,13 @@ public class HardwareUpgradeActivity extends BaseActivity {
 
     @BindView(R.id.img_back)
     ImageView imgBack;
-
+    // 当前固件版本
     public static String currentFirmwareVersion;
+    // 当前蓝牙版本
     public static String currentNrfVersion;
+    // 固件的新版本
     public static String newFirmwareVersion;
+    // 蓝牙的新版本
     public static String newNrfVersion;
     public static String firmwareChangelog;
     public static String nrfChangelog;
@@ -97,6 +100,7 @@ public class HardwareUpgradeActivity extends BaseActivity {
                     if (!Strings.isNullOrEmpty(features)) {
                         HardwareFeatures features1 = HardwareFeatures.objectFromData(features);
                         features1.setBleVer(newNrfVersion);
+                        currentNrfVersion = newNrfVersion;
                         newNrfVersion = null;
                         devices.edit().putString(deviceId, features1.toString()).apply();
                         if (hardwareUpgradeFragment != null && hardwareUpgradeFragment.isAdded()) {
@@ -203,10 +207,10 @@ public class HardwareUpgradeActivity extends BaseActivity {
     /** init */
     @Override
     public void init() {
+        devices = getSharedPreferences("devices", Context.MODE_PRIVATE);
         updateTitle(R.string.verson_update);
         dealBundle(Objects.requireNonNull(getIntent().getExtras()));
         hardwareUpgradeFragment = new HardwareUpgradeFragment();
-        devices = getSharedPreferences("devices", Context.MODE_PRIVATE);
         startFragment(hardwareUpgradeFragment);
     }
 
@@ -224,6 +228,14 @@ public class HardwareUpgradeActivity extends BaseActivity {
         deviceId = bundle.getString(Constant.DEVICE_ID);
         cacheDir = getExternalCacheDir().getPath();
         isForceUpdate = bundle.getBoolean(Constant.FORCE_UPDATE, false);
+        String features = devices.getString(deviceId, "");
+        if (!Strings.isNullOrEmpty(features)) {
+            HardwareFeatures hardware = HardwareFeatures.objectFromData(features);
+            if (hardware.getBleVer().equals(newNrfVersion)) {
+                currentNrfVersion = newNrfVersion;
+                newNrfVersion = null;
+            }
+        }
     }
 
     /**
@@ -367,6 +379,7 @@ public class HardwareUpgradeActivity extends BaseActivity {
         if (!Strings.isNullOrEmpty(features)) {
             HardwareFeatures features1 = HardwareFeatures.objectFromData(features);
             features1.setOneKeyVersion(newFirmwareVersion);
+            currentFirmwareVersion = newFirmwareVersion;
             newFirmwareVersion = "";
             devices.edit().putString(deviceId, features1.toString()).apply();
             if (hardwareUpgradeFragment != null && hardwareUpgradeFragment.isAdded()) {
@@ -485,6 +498,7 @@ public class HardwareUpgradeActivity extends BaseActivity {
     public void onExit(ExitEvent exitEvent) {
         if (hasWindowFocus()) {
             startFragment(hardwareUpgradeFragment);
+            hardwareUpgradeFragment.refreshView();
         }
     }
 }

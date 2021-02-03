@@ -4,13 +4,17 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.view.View;
 import android.widget.ImageView;
-
 import androidx.recyclerview.widget.RecyclerView;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -20,27 +24,18 @@ import org.haobtc.onekey.adapter.BixinkeyManagerAdapter;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.HardwareFeatures;
 import org.haobtc.onekey.constant.Constant;
-import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.event.FixBixinkeyNameEvent;
+import org.haobtc.onekey.manager.PreferencesManager;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-
-/**
- * @author liyan
- */
+/** @author liyan */
 public class OneKeyManageActivity extends BaseActivity {
 
     @BindView(R.id.img_back)
     ImageView imgBack;
+
     @BindView(R.id.recl_bixinKey_list)
     RecyclerView reclBixinKeyList;
+
     private List<HardwareFeatures> deviceValue;
 
     @Override
@@ -56,9 +51,7 @@ public class OneKeyManageActivity extends BaseActivity {
     }
 
     @Override
-    public void initData() {
-
-    }
+    public void initData() {}
 
     @Override
     protected void onResume() {
@@ -68,37 +61,68 @@ public class OneKeyManageActivity extends BaseActivity {
 
     private void getKeyList() {
         deviceValue = new ArrayList<>();
-        Map<String, ?> devicesAll = PreferencesManager.getAll(this, Constant.DEVICES);;
-        //key
+        Map<String, ?> devicesAll = PreferencesManager.getAll(this, Constant.DEVICES);
+        ;
+        // key
         for (Map.Entry<String, ?> entry : devicesAll.entrySet()) {
             String mapValue = (String) entry.getValue();
-            HardwareFeatures hardwareFeatures = new Gson().fromJson(mapValue, HardwareFeatures.class);
+            HardwareFeatures hardwareFeatures =
+                    new Gson().fromJson(mapValue, HardwareFeatures.class);
             deviceValue.add(hardwareFeatures);
         }
         if (deviceValue != null) {
             BixinkeyManagerAdapter bixinkeyManagerAdapter = new BixinkeyManagerAdapter(deviceValue);
             reclBixinKeyList.setAdapter(bixinkeyManagerAdapter);
-            bixinkeyManagerAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
-                @SingleClick
-                @Override
-                public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
-                    if (view.getId() == R.id.relativeLayout_bixinkey) {
-                        String firmwareVersion = Optional.ofNullable(deviceValue.get(position).getOneKeyVersion()).orElse(deviceValue.get(position).getMajorVersion() + "." + deviceValue.get(position).getMinorVersion() + "." + deviceValue.get(position).getPatchVersion());
-                        String nrfVersion = deviceValue.get(position).getBleVer();
-                        String label = Strings.isNullOrEmpty(deviceValue.get(position).getLabel()) ?
-                                deviceValue.get(position).getBleName() : deviceValue.get(position).getLabel();
-                        Intent intent = new Intent(OneKeyManageActivity.this, HardwareDetailsActivity.class);
-                        intent.putExtra(Constant.TAG_LABEL, label);
-                        intent.putExtra(Constant.TAG_BLE_NAME, deviceValue.get(position).getBleName());
-                        intent.putExtra(Constant.TAG_FIRMWARE_VERSION, firmwareVersion);
-                        intent.putExtra(Constant.TAG_NRF_VERSION, nrfVersion);
-                        intent.putExtra(Constant.DEVICE_ID, deviceValue.get(position).getDeviceId());
-                        intent.putExtra(Constant.TAG_HARDWARE_VERIFY, deviceValue.get(position).isVerify());
-                        intent.putExtra(Constant.TAG_IS_BACKUP_ONLY, deviceValue.get(position).isBackupOnly());
-                        startActivity(intent);
-                    }
-                }
-            });
+            bixinkeyManagerAdapter.setOnItemChildClickListener(
+                    new BaseQuickAdapter.OnItemChildClickListener() {
+                        @SingleClick
+                        @Override
+                        public void onItemChildClick(
+                                BaseQuickAdapter adapter, View view, int position) {
+                            if (view.getId() == R.id.relativeLayout_bixinkey) {
+                                String firmwareVersion =
+                                        Optional.ofNullable(
+                                                        deviceValue
+                                                                .get(position)
+                                                                .getOneKeyVersion())
+                                                .orElse(
+                                                        deviceValue.get(position).getMajorVersion()
+                                                                + "."
+                                                                + deviceValue
+                                                                        .get(position)
+                                                                        .getMinorVersion()
+                                                                + "."
+                                                                + deviceValue
+                                                                        .get(position)
+                                                                        .getPatchVersion());
+                                String nrfVersion = deviceValue.get(position).getBleVer();
+                                String label =
+                                        Strings.isNullOrEmpty(deviceValue.get(position).getLabel())
+                                                ? deviceValue.get(position).getBleName()
+                                                : deviceValue.get(position).getLabel();
+                                Intent intent =
+                                        new Intent(
+                                                OneKeyManageActivity.this,
+                                                HardwareDetailsActivity.class);
+                                intent.putExtra(Constant.TAG_LABEL, label);
+                                intent.putExtra(
+                                        Constant.TAG_BLE_NAME,
+                                        deviceValue.get(position).getBleName());
+                                intent.putExtra(Constant.TAG_FIRMWARE_VERSION, firmwareVersion);
+                                intent.putExtra(Constant.TAG_NRF_VERSION, nrfVersion);
+                                intent.putExtra(
+                                        Constant.DEVICE_ID,
+                                        deviceValue.get(position).getDeviceId());
+                                intent.putExtra(
+                                        Constant.TAG_HARDWARE_VERIFY,
+                                        deviceValue.get(position).isVerify());
+                                intent.putExtra(
+                                        Constant.TAG_IS_BACKUP_ONLY,
+                                        deviceValue.get(position).isBackupOnly());
+                                startActivity(intent);
+                            }
+                        }
+                    });
         }
     }
 
@@ -121,10 +145,3 @@ public class OneKeyManageActivity extends BaseActivity {
         EventBus.getDefault().unregister(this);
     }
 }
-
-
-
-
-
-
-
