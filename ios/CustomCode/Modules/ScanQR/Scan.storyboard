@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <device id="retina4_0" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
@@ -13,34 +13,35 @@
             <objects>
                 <viewController storyboardIdentifier="OKWalletScanVC" hidesBottomBarWhenPushed="YES" id="t4j-Xp-130" customClass="OKWalletScanVC" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="IsJ-vj-qRb">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rar-LS-ZQ0" customClass="OKScanView">
-                                <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8EX-Gg-m8u" userLabel="borderView">
-                                        <rect key="frame" x="60" y="301" width="294" height="294"/>
+                                        <rect key="frame" x="60" y="184" width="200" height="200"/>
                                         <subviews>
-                                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="QRCode_finder" translatesAutoresizingMaskIntoConstraints="NO" id="nAG-j9-0WZ">
-                                                <rect key="frame" x="0.0" y="0.0" width="294" height="294"/>
-                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="QRCode_finder" translatesAutoresizingMaskIntoConstraints="NO" id="nAG-j9-0WZ">
+                                                <rect key="frame" x="-32" y="-32" width="264" height="264"/>
                                             </imageView>
                                         </subviews>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="8EX-Gg-m8u" secondAttribute="height" multiplier="1:1" id="EmI-YM-gqg"/>
+                                            <constraint firstItem="nAG-j9-0WZ" firstAttribute="centerY" secondItem="8EX-Gg-m8u" secondAttribute="centerY" id="Pnc-LZ-oYl"/>
+                                            <constraint firstItem="nAG-j9-0WZ" firstAttribute="centerX" secondItem="8EX-Gg-m8u" secondAttribute="centerX" id="rKq-rY-kzi"/>
                                         </constraints>
                                     </view>
                                     <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XYr-8d-Ky9">
-                                        <rect key="frame" x="199" y="675" width="16" height="25"/>
+                                        <rect key="frame" x="152" y="464" width="16" height="25"/>
                                         <state key="normal" image="QRCode_Light"/>
                                         <connections>
                                             <action selector="lightBtnAction:" destination="rar-LS-ZQ0" eventType="touchUpInside" id="yR9-Zm-7Cw"/>
                                         </connections>
                                     </button>
                                     <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="u8n-E6-Kaq">
-                                        <rect key="frame" x="178" y="705" width="58" height="20"/>
+                                        <rect key="frame" x="131" y="494" width="58" height="20"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="20" id="BXH-Yq-Cdz"/>
                                         </constraints>

@@ -1,4 +1,4 @@
-/* 
+/*
   Localizable.strings
   OneKey
 
@@ -166,7 +166,7 @@
 "To check the" = "重新核对";
 "Set the wallet name" = "设置账户名称";
 //OKScanVc
-"Scan QR Code" = "扫码";
+"Scan QR Code" = "扫描二维码";
 "Photo Album" = "相册";
 "Put QR code in the frame. Scan it." = "请从相册选择助记词二维码或扫码识别";
 "Gentle Hint" = "温馨提示";

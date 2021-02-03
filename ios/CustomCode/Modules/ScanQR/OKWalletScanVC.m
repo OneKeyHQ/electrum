@@ -31,7 +31,7 @@
     [super viewDidLoad];
     self.navigationItem.title = MyLocalizedString(@"Scan QR Code", nil);
     self.navigationItem.rightBarButtonItem = [UIBarButtonItem barButtonItemWithTitle:MyLocalizedString(@"Photo Album", nil) bounds:CGSizeMake(100, 30) size:15 titleColor:[UIColor whiteColor] backgroundColor:[UIColor clearColor] isSetLayer:NO target:self selector:@selector(toPhotoLibrary)];
-
+    [self setNavigationBarBackgroundColorWithClearColor];
     [self backButtonWhiteColor];
 
     _navigationBarBackgroundImage = [self.navigationController.navigationBar backgroundImageForBarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
