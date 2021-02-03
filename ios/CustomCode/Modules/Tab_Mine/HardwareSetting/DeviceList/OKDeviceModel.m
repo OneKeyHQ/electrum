@@ -13,6 +13,9 @@
 - (instancetype)initWithJson:(NSDictionary *)json {
     self = [super init];
     if (self) {
+        if ([[json objectForKey:@"bootloader_mode"] boolValue]) {
+            _bootloaderMode = YES;
+        }
         _deviceInfo = [OKDeviceInfoModel mj_objectWithKeyValues:json];
         _json = [json mutableCopy];
     }

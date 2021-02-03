@@ -19,12 +19,18 @@
 #define kRbf                            @"kRbf"
 #define kUnconfFlag                     @"kUnconfFlag"
 #define kElectrum_default_server        @"kElectrum_default_server"
+#define kPinInputMethod                 @"kPinInputMethod"
 
 #define kCurrentProxyDict               @"kCurrentProxyDict"
 
 
 #define kUserSettingManager (OKUserSettingManager.sharedInstance)
 NS_ASSUME_NONNULL_BEGIN
+
+typedef NS_ENUM(NSInteger, OKDevicePINInputMethod) {
+    OKDevicePINInputMethodOnDevice = 0,
+    OKDevicePINInputMethodOnApp,
+};
 
 @interface OKUserSettingManager : NSObject
 + (OKUserSettingManager *)sharedInstance;
@@ -37,6 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,assign)BOOL unconfFlag;
 @property (nonatomic,assign)BOOL sysServerFlag;
 @property (nonatomic,copy)NSString *currentProxyDict;
+@property (nonatomic,assign)OKDevicePINInputMethod pinInputMethod;
 
 
 @property (nonatomic,assign)BOOL isLongPwd;

@@ -20,6 +20,7 @@
 #import "YZAuthID.h"
 #import "OKOneKeyPwdManager.h"
 #import "OKDeviceListViewController.h"
+#import "OKPINInputMethodController.h"
 
 @interface OKMineViewController ()<UINavigationControllerDelegate,UITableViewDelegate,UITableViewDataSource,OKMineTableViewCellDelegate,UIGestureRecognizerDelegate,UINavigationControllerDelegate>
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
@@ -179,10 +180,15 @@
                 {
                     UIViewController *devicesListVC = [OKDeviceListViewController deviceListController];
                     [self.navigationController pushViewController:devicesListVC animated:YES];
+                }
+                    break;
+                case 1: // pin 校验方式
+                {
+                    UIViewController *pinMethodVC = [OKPINInputMethodController controllerWithStoryboard];
+                    [self.navigationController pushViewController:pinMethodVC animated:YES];
 
                 }
                     break;
-                    
                 default:
                     break;
             }
@@ -327,6 +333,11 @@
         allDeviceModel.imageName = @"device_link";
         allDeviceModel.isAuth = NO;
     
+        OKMineTableViewCellModel *pinInputModel = [OKMineTableViewCellModel new];
+        pinInputModel.menuName = MyLocalizedString(@"hardwareWallet.pin.verifyMethod", nil);
+        pinInputModel.imageName = @"privacy_3";
+        pinInputModel.isAuth = NO;
+    
         __block NSArray *biologicaArray = [NSArray array];
         [YZAuthID biologicalRecognitionResult:^(YZAuthenticationType type) {
             switch (type) {
@@ -347,7 +358,7 @@
                         break;
             }
         }];
-    _allMenuData = @[@[model1,model2],@[allDeviceModel],biologicaArray,@[model8,model9,model10,model11,model12]];
+    _allMenuData = @[@[model1,model2],@[allDeviceModel, pinInputModel],biologicaArray,@[model8,model9,model10,model11,model12]];
     return _allMenuData;
 }
 #pragma mark - UINavigationControllerDelegate

@@ -56,6 +56,11 @@
 }
 
 - (void)addDevices:(OKDeviceModel *)deviceModel {
+    if (deviceModel.bootloaderMode) {
+        // Bootloader mode 不写入磁盘
+        return;
+    }
+    
     if (!deviceModel.deviceInfo.device_id) {
         NSAssert(0, @"OKDeviceModel addDevices error");
         return;

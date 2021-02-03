@@ -382,36 +382,42 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="d8A-P2-3lG">
-                                <rect key="frame" x="0.0" y="44" width="414" height="818"/>
+                                <rect key="frame" x="0.0" y="44" width="414" height="852"/>
                                 <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="--" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="f0d-9F-pGL">
-                                        <rect key="frame" x="38" y="34" width="338" height="21.5"/>
-                                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="18"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="--PIN 标题--" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="f0d-9F-pGL">
+                                        <rect key="frame" x="38" y="34" width="338" height="36"/>
+                                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="30"/>
                                         <color key="textColor" red="0.078431372550000003" green="0.1647058824" blue="0.23137254900000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="aU3-Bd-zrM">
-                                        <rect key="frame" x="131.5" y="75.5" width="151" height="118"/>
+                                        <rect key="frame" x="131.5" y="90" width="151" height="118"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="151" id="0Of-sw-QOl"/>
                                             <constraint firstAttribute="height" constant="118" id="yIT-cv-qWs"/>
                                         </constraints>
                                     </imageView>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="device_input_pin" translatesAutoresizingMaskIntoConstraints="NO" id="QE2-N7-GnU">
+                                        <rect key="frame" x="112" y="299.5" width="190" height="253"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="QE2-N7-GnU" secondAttribute="height" multiplier="3:4" id="bzA-ch-t8h"/>
+                                        </constraints>
+                                    </imageView>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qX2-O2-EhG">
-                                        <rect key="frame" x="20" y="223.5" width="374" height="55"/>
+                                        <rect key="frame" x="20" y="238" width="374" height="55"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="55" id="NSz-sH-waF"/>
                                         </constraints>
                                     </view>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="手机上的数字键位每次都会随机改变。 PIN 码忘记不可找回，您务必要牢记。" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9zZ-Fj-WOm">
-                                        <rect key="frame" x="38" y="298.5" width="338" height="29"/>
+                                        <rect key="frame" x="38" y="313" width="338" height="29"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                         <color key="textColor" red="0.33085581660000002" green="0.38708245749999998" blue="0.43922376629999998" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="H42-d8-kkQ">
-                                        <rect key="frame" x="0.0" y="560" width="414" height="258"/>
+                                        <rect key="frame" x="0.0" y="594" width="414" height="258"/>
                                         <subviews>
                                             <button opaque="NO" tag="1007" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wLA-IQ-IW5">
                                                 <rect key="frame" x="6" y="6" width="130" height="46"/>
@@ -696,18 +702,29 @@
                                             <constraint firstItem="LHo-Zm-AJZ" firstAttribute="leading" secondItem="H42-d8-kkQ" secondAttribute="leading" constant="6" id="zpE-QX-27r"/>
                                         </constraints>
                                     </view>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="请抄写你的12位助记词请抄写你的12位助记词请抄写你的12位助记词" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YTz-d9-DJf">
+                                        <rect key="frame" x="20" y="90" width="374" height="33.5"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
                                     <constraint firstAttribute="trailing" secondItem="9zZ-Fj-WOm" secondAttribute="trailing" constant="38" id="05o-Ci-W6i"/>
+                                    <constraint firstItem="QE2-N7-GnU" firstAttribute="leading" secondItem="d8A-P2-3lG" secondAttribute="leading" constant="112" id="1uG-Tc-IrH"/>
                                     <constraint firstItem="f0d-9F-pGL" firstAttribute="leading" secondItem="d8A-P2-3lG" secondAttribute="leading" constant="38" id="2vd-jU-nJO"/>
-                                    <constraint firstAttribute="bottom" secondItem="H42-d8-kkQ" secondAttribute="bottom" id="9pN-rV-HWv"/>
-                                    <constraint firstAttribute="bottom" secondItem="H42-d8-kkQ" secondAttribute="bottom" id="ANy-YK-l9U"/>
+                                    <constraint firstItem="YTz-d9-DJf" firstAttribute="top" secondItem="f0d-9F-pGL" secondAttribute="bottom" constant="20" id="3se-Oj-HDz"/>
+                                    <constraint firstItem="QE2-N7-GnU" firstAttribute="centerX" secondItem="d8A-P2-3lG" secondAttribute="centerX" id="Hzj-rq-YKs"/>
+                                    <constraint firstItem="QE2-N7-GnU" firstAttribute="centerY" secondItem="d8A-P2-3lG" secondAttribute="centerY" id="I6j-kb-OJB"/>
+                                    <constraint firstAttribute="bottom" secondItem="H42-d8-kkQ" secondAttribute="bottom" id="IEc-yp-H7K"/>
                                     <constraint firstItem="qX2-O2-EhG" firstAttribute="top" secondItem="aU3-Bd-zrM" secondAttribute="bottom" constant="30" id="JFt-Ow-bDx"/>
                                     <constraint firstItem="f0d-9F-pGL" firstAttribute="top" secondItem="d8A-P2-3lG" secondAttribute="top" constant="34" id="LPh-8F-MnN"/>
+                                    <constraint firstAttribute="trailing" secondItem="YTz-d9-DJf" secondAttribute="trailing" constant="20" symbolic="YES" id="R8o-mF-yUh"/>
                                     <constraint firstItem="aU3-Bd-zrM" firstAttribute="centerX" secondItem="d8A-P2-3lG" secondAttribute="centerX" id="T80-XV-leY"/>
                                     <constraint firstItem="aU3-Bd-zrM" firstAttribute="top" secondItem="f0d-9F-pGL" secondAttribute="bottom" constant="20" id="dd2-ol-5mw"/>
                                     <constraint firstAttribute="trailing" secondItem="f0d-9F-pGL" secondAttribute="trailing" constant="38" id="duL-5z-SFW"/>
+                                    <constraint firstItem="YTz-d9-DJf" firstAttribute="leading" secondItem="d8A-P2-3lG" secondAttribute="leading" constant="20" symbolic="YES" id="fQT-gx-lFT"/>
                                     <constraint firstItem="9zZ-Fj-WOm" firstAttribute="leading" secondItem="d8A-P2-3lG" secondAttribute="leading" constant="38" id="gB4-TY-EeL"/>
                                     <constraint firstItem="H42-d8-kkQ" firstAttribute="leading" secondItem="d8A-P2-3lG" secondAttribute="leading" id="j57-Jg-8GS"/>
                                     <constraint firstAttribute="trailing" secondItem="H42-d8-kkQ" secondAttribute="trailing" id="kbj-WA-Orq"/>
@@ -721,9 +738,9 @@
                         <viewLayoutGuide key="safeArea" id="PUv-HZ-Bhm"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstAttribute="bottom" secondItem="d8A-P2-3lG" secondAttribute="bottom" id="IQp-i6-bt5"/>
                             <constraint firstItem="d8A-P2-3lG" firstAttribute="top" secondItem="PUv-HZ-Bhm" secondAttribute="top" id="RA2-08-4sh"/>
                             <constraint firstItem="d8A-P2-3lG" firstAttribute="leading" secondItem="PUv-HZ-Bhm" secondAttribute="leading" id="bpL-c6-1IM"/>
-                            <constraint firstItem="PUv-HZ-Bhm" firstAttribute="bottom" secondItem="d8A-P2-3lG" secondAttribute="bottom" id="q14-rd-sAw"/>
                             <constraint firstItem="d8A-P2-3lG" firstAttribute="trailing" secondItem="PUv-HZ-Bhm" secondAttribute="trailing" id="vA0-7O-IPw"/>
                         </constraints>
                     </view>
@@ -731,6 +748,8 @@
                         <outlet property="bgView" destination="d8A-P2-3lG" id="23W-uT-TLm"/>
                         <outlet property="confirmBtn" destination="wlW-x4-TAd" id="giy-jv-4e7"/>
                         <outlet property="descLabel" destination="9zZ-Fj-WOm" id="5k8-IO-ppw"/>
+                        <outlet property="deviceInputImage" destination="QE2-N7-GnU" id="HeQ-HV-eQf"/>
+                        <outlet property="deviceInputTip" destination="YTz-d9-DJf" id="SHl-Vv-abB"/>
                         <outlet property="dotBgView" destination="qX2-O2-EhG" id="KRa-d6-tbF"/>
                         <outlet property="iconImageView" destination="aU3-Bd-zrM" id="IXb-SV-Xwa"/>
                         <outlet property="keyBoardBgView" destination="H42-d8-kkQ" id="gwL-Lq-5Jq"/>
@@ -1906,6 +1925,7 @@
         <image name="checked" width="24" height="24"/>
         <image name="checked_Nomal" width="24" height="24"/>
         <image name="close" width="24" height="24"/>
+        <image name="device_input_pin" width="151" height="193"/>
         <image name="pen" width="248.5" height="204"/>
         <image name="quanquan" width="60" height="60"/>
         <image name="reload" width="18" height="18"/>

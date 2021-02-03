@@ -11,6 +11,7 @@
 #import "OKDeviceUpdateInstallController.h"
 #import "OKDeviceUpdateModel.h"
 #import "OKDevicesManager.h"
+#import "OKPINCodeViewController.h"
 
 #define kLocalizedString(key) \
 MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil)
@@ -67,7 +68,7 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
 }
 @end
 
-@interface OKDeviceUpdateViewController () <UITableViewDelegate, UITableViewDataSource>
+@interface OKDeviceUpdateViewController () <UITableViewDelegate, UITableViewDataSource, OKHwNotiManagerDelegate>
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet UILabel *currentVersionLabel;
 @property (strong, nonatomic) OKDeviceUpdateModel *updateModel;
@@ -83,6 +84,7 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [OKHwNotiManager sharedInstance].delegate = self;
     [self setupUI];
     [self checkAvailableUpdate];
 }
@@ -217,6 +219,7 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
     self.cellsData = cellsData;
     [self.tableView reloadData];
 }
+
 
 
 @end

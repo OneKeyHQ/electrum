@@ -574,7 +574,11 @@ static dispatch_once_t once;
 }
 
 - (void)cancelPIN {
-    [self callInterface:kInterface_set_user_cancel parameter:@{}];
+    if (kUserSettingManager.pinInputMethod == OKDevicePINInputMethodOnDevice) {
+        [self callInterface:kInterface_set_user_cancel parameter:@{}];
+    } else {
+        [self cancel];
+    }
 }
 //数组等过于复杂的类型  传递json字符串
 //else if ([tp_name isEqualToString:@"list"]){ //数组

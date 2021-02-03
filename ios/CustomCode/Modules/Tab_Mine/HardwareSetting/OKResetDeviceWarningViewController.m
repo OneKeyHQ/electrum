@@ -71,7 +71,6 @@
                 NSLog(@"pinCode = %@",pin);
                 dispatch_async(dispatch_get_global_queue(0, 0), ^{
                     [kPyCommandsManager callInterface:kInterfaceset_pin parameter:@{@"pin":pin}];
-
                 });
             }];
             pinCode.backToPreviousCallback = ^{
