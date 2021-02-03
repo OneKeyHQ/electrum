@@ -46,7 +46,6 @@ import org.haobtc.onekey.bean.BalanceCoinInfo;
 import org.haobtc.onekey.bean.BalanceInfoDTO;
 import org.haobtc.onekey.bean.CreateWalletBean;
 import org.haobtc.onekey.bean.CurrentAddressDetail;
-import org.haobtc.onekey.bean.FindOnceWalletEvent;
 import org.haobtc.onekey.bean.HardwareFeatures;
 import org.haobtc.onekey.bean.MakeTxResponseBean;
 import org.haobtc.onekey.bean.PyResponse;
@@ -635,109 +634,54 @@ public final class PyEnv {
         return pyResponse;
     }
 
-    /**
-     * 创建HD钱包
-     *
-     * @param passwd APP主密码
-     * @param mnemonics 助记词
-     * @deprecated 后面拆分成两个方法，导入和恢复。使用回调方法或直接返回，去掉 EventBus。
-     */
-    @Deprecated
-    public static void createLocalHd(String passwd, String mnemonics) {
-        mExecutorService.execute(
-                () -> {
-                    try {
-                        List<BalanceInfoDTO> infos = new ArrayList<>();
-                        String walletsInfo =
-                                sCommands
-                                        .callAttr(
-                                                PyConstant.CREATE_HD_WALLET,
-                                                passwd,
-                                                mnemonics,
-                                                new Kwarg(Constant.Purpose, 49))
-                                        .toString();
-                        CreateWalletBean walletBean = CreateWalletBean.objectFromData(walletsInfo);
-                        if (Strings.isNullOrEmpty(mnemonics)) {
-                            EventBus.getDefault()
-                                    .post(
-                                            new CreateSuccessEvent(
-                                                    walletBean.getWalletInfo().get(0).getName()));
-                            EventBus.getDefault().post(new RefreshEvent());
-                        } else {
-                            // HD 根钱包
-                            Optional.ofNullable(walletBean.getWalletInfo())
-                                    .ifPresent(
-                                            (walletInfos -> {
-                                                walletInfos.forEach(
-                                                        (walletInfo -> {
-                                                            String name = walletInfo.getName();
-                                                            BalanceInfoDTO info =
-                                                                    PyEnv.selectWallet(name);
-                                                            EventBus.getDefault()
-                                                                    .post(
-                                                                            new CreateSuccessEvent(
-                                                                                    name));
-                                                            if (walletInfo
-                                                                    .getCoinType()
-                                                                    .contains("btc")) {
-                                                                // 现在的 BTC HD 钱包的 Label 是 BTC-1
-                                                                info.setLabel("BTC-1");
-                                                            } else if (walletInfo
-                                                                    .getCoinType()
-                                                                    .contains("eth")) {
-                                                                // 现在的 ETH HD 钱包的 Label 是 ETH-1
-                                                                info.setLabel("ETH-1");
-                                                            }
-                                                            infos.add(info);
-                                                        }));
-                                            }));
-                            walletBean
-                                    .getDerivedInfo()
-                                    .forEach(
-                                            derivedInfoBean -> {
-                                                BalanceInfoDTO info = new BalanceInfoDTO();
-                                                info.setLabel(derivedInfoBean.getLabel());
-                                                info.setName(derivedInfoBean.getName());
-                                                ArrayList<BalanceCoinInfo> coinInfos =
-                                                        new ArrayList<>();
-                                                BalanceCoinInfo balanceCoinInfo =
-                                                        new BalanceCoinInfo();
-                                                balanceCoinInfo.setCoin(derivedInfoBean.getCoin());
-                                                String blance = "0.00 BTC";
-                                                String blanceFiat = "0.00 CNY";
-                                                try {
-                                                    String blanceStr = derivedInfoBean.getBlance();
-                                                    blance =
-                                                            blanceStr
-                                                                    .substring(
-                                                                            0,
-                                                                            blanceStr.indexOf("("))
-                                                                    .trim();
-                                                    blanceFiat =
-                                                            blanceStr
-                                                                    .substring(
-                                                                            blanceStr.indexOf("("))
-                                                                    .replace(")", "")
-                                                                    .trim();
-                                                } catch (Exception e) {
-                                                    e.printStackTrace();
-                                                }
-                                                balanceCoinInfo.setBalance(blance);
-                                                balanceCoinInfo.setFiat(blanceFiat);
+    @WorkerThread
+    public static List<BalanceInfoDTO> createLocalHDWallet(
+            String password, List<Vm.CoinType> coinTypes) {
 
-                                                coinInfos.add(balanceCoinInfo);
-                                                info.setWallets(coinInfos);
-                                                infos.add(info);
-                                            });
-                            EventBus.getDefault().post(new FindOnceWalletEvent<>(infos));
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        Exception exception = HardWareExceptions.exceptionConvert(e);
-                        MyApplication.getInstance().toastErr(exception);
-                        EventBus.getDefault().post(new ExitEvent());
-                    }
-                });
+        JsonArray coins = new JsonArray();
+        for (Vm.CoinType coinType : coinTypes) {
+            coins.add(coinType.coinName);
+        }
+        String walletsInfo =
+                sCommands
+                        .callAttr(
+                                PyConstant.CREATE_HD_WALLET,
+                                password,
+                                new Kwarg(Constant.Purpose, 49),
+                                new Kwarg("create_coin", coins.toString()))
+                        .toString();
+        CreateWalletBean walletBean = CreateWalletBean.objectFromData(walletsInfo);
+        EventBus.getDefault()
+                .post(new CreateSuccessEvent(walletBean.getWalletInfo().get(0).getName()));
+        EventBus.getDefault().post(new RefreshEvent());
+        // HD 根钱包
+        List<BalanceInfoDTO> infos = new ArrayList<>();
+        Optional.ofNullable(walletBean.getWalletInfo())
+                .ifPresent(
+                        (walletInfos -> {
+                            for (CreateWalletBean.WalletInfoBean walletInfo : walletInfos) {
+                                String name = walletInfo.getName();
+                                BalanceInfoDTO info = PyEnv.selectWallet(name);
+                                if (info == null) {
+                                    continue;
+                                }
+                                //                                EventBus.getDefault().post(new
+                                // CreateSuccessEvent(name));
+                                //                                if
+                                // (walletInfo.getCoinType().contains("btc")) {
+                                //                                    // 现在的 BTC HD 钱包的 Label 是
+                                // BTC-1
+                                //                                    info.setLabel("BTC-1");
+                                //                                } else if
+                                // (walletInfo.getCoinType().contains("eth")) {
+                                //                                    // 现在的 ETH HD 钱包的 Label 是
+                                // ETH-1
+                                //                                    info.setLabel("ETH-1");
+                                //                                }
+                                infos.add(info);
+                            }
+                        }));
+        return infos;
     }
 
     /**
@@ -815,7 +759,9 @@ public final class PyEnv {
             if (!Strings.isNullOrEmpty(receiver)) {
                 Map<String, String> map = new HashMap<>();
                 map.put("to_address", receiver);
-                if (!Strings.isNullOrEmpty(amount)) map.put("value", amount);
+                if (!Strings.isNullOrEmpty(amount)) {
+                    map.put("value", amount);
+                }
                 info =
                         sCommands
                                 .callAttr(
@@ -918,8 +864,12 @@ public final class PyEnv {
         PyResponse<TemporaryTxInfo> response = new PyResponse<>();
         ArrayList<Map<String, String>> arrayList = new ArrayList<>();
         Map<String, Object> params = new HashMap<>();
-        if (!Strings.isNullOrEmpty(receiver)) params.put("to_address", receiver);
-        if (!Strings.isNullOrEmpty(amount)) params.put("value", amount);
+        if (!Strings.isNullOrEmpty(receiver)) {
+            params.put("to_address", receiver);
+        }
+        if (!Strings.isNullOrEmpty(amount)) {
+            params.put("value", amount);
+        }
         params.put("gas_price", feeRate);
         params.put("gas_limit", String.valueOf(gasLimit));
         try {

@@ -58,6 +58,7 @@ import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.backup.BackupGuideActivity;
 import org.haobtc.onekey.onekeys.dialog.RecoverHdWalletActivity;
+import org.haobtc.onekey.onekeys.homepage.process.CreateLocalMainWalletActivity;
 import org.haobtc.onekey.onekeys.homepage.process.DetailTransactionActivity;
 import org.haobtc.onekey.onekeys.homepage.process.HdWalletDetailActivity;
 import org.haobtc.onekey.onekeys.homepage.process.ReceiveHDActivity;
@@ -688,8 +689,7 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
     public void onGotPass(GotPassEvent event) {
         if (shouldResponsePassEvent()) {
             if (event.fromType == 0) {
-                mSystemConfigManager.setNeedPopBackUpDialog(true);
-                PyEnv.createLocalHd(event.getPassword(), null);
+                CreateLocalMainWalletActivity.start(requireContext(), event.getPassword());
             }
         }
     }

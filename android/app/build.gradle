@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'com.chaquo.python'
+apply plugin: 'kotlin-kapt'
 
 def REPO_ROOT = "../.."
 
@@ -159,6 +160,9 @@ android {
             setIgnore(true)
         }
     }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
 
     applicationVariants.all { variant ->
         variant.outputs.all {
@@ -253,7 +257,7 @@ dependencies {
     implementation "ch.acra:acra-http:$acraVersion"
     //noinspection AnnotationProcessorOnCompilePath
     implementation 'com.jakewharton:butterknife:10.1.0'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:10.1.0'
+    kapt 'com.jakewharton:butterknife-compiler:10.1.0'
     //Picasso
     implementation 'com.squareup.picasso:picasso:2.5.2'
     //immersionbar
@@ -269,7 +273,7 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.6'
     //Eventbus
     implementation 'org.greenrobot:eventbus:3.1.1'
-    annotationProcessor 'org.greenrobot:eventbus-annotation-processor:3.1.1'
+    kapt 'org.greenrobot:eventbus-annotation-processor:3.1.1'
     //wheel_viewpager
     implementation 'com.github.ThirdGoddess:GoddessTNT:v1.5'
     implementation project(path: ':dRlibfileselector')
@@ -304,6 +308,9 @@ dependencies {
     implementation 'com.zendesk:messaging:5.1.0'
     implementation 'com.zendesk:answerbot:3.0.1'
     implementation 'com.zendesk:chat:3.1.0'
+    implementation 'com.github.bumptech.glide:glide:4.12.0'
+    kapt 'com.github.bumptech.glide:compiler:4.12.0'
+    implementation 'com.yqritc:recyclerview-flexibledivider:1.4.0'
 }
 
 // 为 lint 任务设置别名

@@ -22,6 +22,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
@@ -32,6 +33,7 @@ import org.haobtc.onekey.utils.MyDialog;
 
 /** @author liyan */
 public abstract class BaseActivity extends AppCompatActivity implements IBaseView {
+
     public Fragment mCurrentFragment;
     public Context mContext;
 
@@ -44,6 +46,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
     public TextView rightTitle;
     private MyDialog mProgressDialog;
     protected final CompositeDisposable mCompositeDisposable = new CompositeDisposable();
+    private Unbinder mBind;
 
     @Override
     protected void attachBaseContext(Context base) {
@@ -72,14 +75,14 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
 
         if (showToolBar()) {
             setContentView(R.layout.ac_base_fit_layout);
-            initDefaultView(getContentViewId());
+            initDefaultView();
             toolbar.setVisibility(View.VISIBLE);
         } else {
             setContentView(R.layout.ac_base_not_fit_layout);
-            initDefaultView(getContentViewId());
+            initDefaultView();
             toolbar.setVisibility(View.GONE);
         }
-        ButterKnife.bind(this);
+        mBind = ButterKnife.bind(this);
         if (requireSecure()) {
             requestSecure();
         }
@@ -90,14 +93,26 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
         }
     }
 
-    private void initDefaultView(int contentViewId) {
+    private void initDefaultView() {
         toolbar = findViewById(R.id.toolbar_base);
         leftTitle = findViewById(R.id.left_tv);
         rightTitle = findViewById(R.id.right_tv);
         FrameLayout container = findViewById(R.id.fl_activity_child_container);
         toolbar.setNavigationOnClickListener(view -> leftBackCLicked());
-        View childView = LayoutInflater.from(this).inflate(contentViewId, null);
-        container.addView(childView);
+
+        View childView = null;
+        if (enableViewBinding()) {
+            View layoutView = getLayoutView();
+            if (layoutView == null) {
+                throw new RuntimeException("需要重写 getLayoutView 方法。");
+            }
+            childView = layoutView;
+        } else {
+            childView = LayoutInflater.from(this).inflate(getContentViewId(), null);
+        }
+        if (childView != null) {
+            container.addView(childView);
+        }
     }
 
     /** init */
@@ -106,6 +121,15 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
     @Override
     public Activity getActivity() {
         return this;
+    }
+
+    public boolean enableViewBinding() {
+        return false;
+    }
+
+    @Nullable
+    public View getLayoutView() {
+        return null;
     }
 
     @Override
@@ -167,6 +191,9 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (mBind != null) {
+            mBind.unbind();
+        }
         mCompositeDisposable.dispose();
         if (needEvents()) {
             EventBus.getDefault().unregister(this);
@@ -238,6 +265,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
             rightTitle.setText(titleText);
         }
     }
+
     // 使用BaseActivity公用的ToolBar销毁页面的回调，需要做额外操作可以复写此方法
     protected void leftBackCLicked() {
         finish();

@@ -12,8 +12,11 @@
     <color name="text_red">#FFF26A3A</color>
     <color name="paste_bk">#FFE9EEFF</color>
     <color name="text_color1">#FF333333</color>
+    <color name="text_color2">#1A1A1A</color>
+    <color name="text_color3">#993C3C43</color>
     <color name="point">#FF30C28B</color>
     <color name="button_bk_grey">#687488</color>
+    <color name="button_bk_light_grey">#F2F2F7</color>
     <color name="button_bk_small">#87A1FD</color>
     <color name="t_white">#00000000</color>
     <color name="bk_yellow">#FFFFB12B</color>
@@ -86,5 +89,6 @@
     <color name="color_4B6A87">#4B6A87</color>
     <color name="color_AAffffff">#AAffffff</color>
     <color name="color_26CF02">#1A26CF02</color>
+    <color name="color_select_wallet_divider">#283C3C43</color>
 
 </resources>

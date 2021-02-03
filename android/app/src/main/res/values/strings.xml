@@ -1302,4 +1302,7 @@
     <string name="commit_order">提交工单</string>
     <string name="view_history_list">查看历史工单</string>
     <string name="service_support">客服支持</string>
+    <string name="create_main_wallet">创建账户</string>
+    <string name="select_new_account_create">选择要创建的新账户</string>
+    <string name="create_selected_account">创建选中的账户</string>
 </resources>

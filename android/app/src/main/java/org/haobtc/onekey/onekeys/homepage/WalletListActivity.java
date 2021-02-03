@@ -25,10 +25,10 @@ import org.haobtc.onekey.bean.WalletInfo;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.GotPassEvent;
 import org.haobtc.onekey.event.RefreshEvent;
-import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
 import org.haobtc.onekey.onekeys.dialog.RecoverHdWalletActivity;
 import org.haobtc.onekey.onekeys.homepage.mindmenu.HDWalletActivity;
+import org.haobtc.onekey.onekeys.homepage.process.CreateLocalMainWalletActivity;
 import org.haobtc.onekey.onekeys.walletprocess.createfasthd.CreateFastHDSoftWalletActivity;
 import org.haobtc.onekey.onekeys.walletprocess.createsoft.CreateSoftWalletActivity;
 import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
@@ -222,7 +222,7 @@ public class WalletListActivity extends BaseActivity
     public void onGotPass(GotPassEvent event) {
         if (shouldResponsePassEvent()) {
             if (event.fromType == 1) {
-                PyEnv.createLocalHd(event.getPassword(), null);
+                CreateLocalMainWalletActivity.start(this, event.getPassword());
             }
         }
     }

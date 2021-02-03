@@ -703,6 +703,9 @@
         <activity
             android:name=".activities.SupportActivity"
             android:screenOrientation="portrait" />
+      <activity
+        android:name=".onekeys.homepage.process.CreateLocalMainWalletActivity"
+        android:screenOrientation="portrait" />
     </application>
 
 </manifest>

@@ -1,15 +1,17 @@
 package org.haobtc.onekey.onekeys.homepage.mindmenu;
 
 import android.content.Intent;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import androidx.recyclerview.widget.RecyclerView;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import java.util.ArrayList;
+import java.util.Map;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -27,31 +29,31 @@ import org.haobtc.onekey.event.LoadWalletlistEvent;
 import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.dialog.RecoverHdWalletActivity;
+import org.haobtc.onekey.onekeys.homepage.process.CreateLocalMainWalletActivity;
 import org.haobtc.onekey.onekeys.walletprocess.createfasthd.CreateFastHDSoftWalletActivity;
 import org.haobtc.onekey.ui.dialog.HdWalletIntroductionDialog;
 import org.haobtc.onekey.utils.NavUtils;
-
-import java.util.ArrayList;
-import java.util.Map;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 public class HDWalletActivity extends BaseActivity {
 
     @BindView(R.id.img_back)
     ImageView imgBack;
+
     @BindView(R.id.text_wallet_num)
     TextView textWalletNum;
+
     @BindView(R.id.recl_wallet_list)
     RecyclerView reclWalletList;
+
     @BindView(R.id.lin_not_wallet)
     LinearLayout linNotWallet;
+
     @BindView(R.id.recl_add_wallet)
     RelativeLayout reclAddWallet;
+
     @BindView(R.id.text_manage)
     TextView textManage;
+
     private ArrayList<LocalWalletInfo> hdWalletList;
     private WalletListAdapter walletListAdapter;
     private String deleteHdWalletName = "";
@@ -77,7 +79,14 @@ public class HDWalletActivity extends BaseActivity {
     }
 
     @SingleClick
-    @OnClick({R.id.img_back, R.id.text_manage, R.id.recl_add_wallet, R.id.img_what_hd, R.id.recl_add_hd_wallet, R.id.recl_recovery_wallet})
+    @OnClick({
+        R.id.img_back,
+        R.id.text_manage,
+        R.id.recl_add_wallet,
+        R.id.img_what_hd,
+        R.id.recl_add_hd_wallet,
+        R.id.recl_recovery_wallet
+    })
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
@@ -115,14 +124,18 @@ public class HDWalletActivity extends BaseActivity {
             linNotWallet.setVisibility(View.VISIBLE);
             textManage.setVisibility(View.GONE);
         } else {
-            wallets.entrySet().forEach(stringEntry -> {
-                LocalWalletInfo info = LocalWalletInfo.objectFromData(stringEntry.getValue().toString());
-                String name = info.getName();
-                if (info.getWalletType() == Vm.WalletType.MAIN) {
-                    hdWalletList.add(info);
-                    deleteHdWalletName = name;
-                }
-            });
+            wallets.entrySet()
+                    .forEach(
+                            stringEntry -> {
+                                LocalWalletInfo info =
+                                        LocalWalletInfo.objectFromData(
+                                                stringEntry.getValue().toString());
+                                String name = info.getName();
+                                if (info.getWalletType() == Vm.WalletType.MAIN) {
+                                    hdWalletList.add(info);
+                                    deleteHdWalletName = name;
+                                }
+                            });
             textWalletNum.setText(String.valueOf(hdWalletList.size()));
             if (hdWalletList != null && hdWalletList.size() > 0) {
                 walletListAdapter.notifyDataSetChanged();
@@ -140,14 +153,15 @@ public class HDWalletActivity extends BaseActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onGotPass(GotPassEvent event) {
         if (event.fromType == 2) {
-            PyEnv.createLocalHd(event.getPassword(), null);
+            CreateLocalMainWalletActivity.start(this, event.getPassword());
         }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onCreateWalletSuccess(CreateSuccessEvent event) {
         PyEnv.loadLocalWalletInfo(MyApplication.getInstance());
-        PreferencesManager.put(this, "Preferences", Constant.CURRENT_SELECTED_WALLET_NAME, event.getName());
+        PreferencesManager.put(
+                this, "Preferences", Constant.CURRENT_SELECTED_WALLET_NAME, event.getName());
         getHomeWalletList();
     }
 
@@ -161,5 +175,4 @@ public class HDWalletActivity extends BaseActivity {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
     }
-
 }
