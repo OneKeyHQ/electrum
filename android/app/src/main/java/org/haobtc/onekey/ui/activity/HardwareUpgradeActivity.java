@@ -100,12 +100,12 @@ public class HardwareUpgradeActivity extends BaseActivity {
                     if (!Strings.isNullOrEmpty(features)) {
                         HardwareFeatures features1 = HardwareFeatures.objectFromData(features);
                         features1.setBleVer(newNrfVersion);
-                        currentNrfVersion = newNrfVersion;
-                        newNrfVersion = null;
                         devices.edit().putString(deviceId, features1.toString()).apply();
-                        if (hardwareUpgradeFragment != null && hardwareUpgradeFragment.isAdded()) {
-                            hardwareUpgradeFragment.refreshView();
-                        }
+                    }
+                    currentNrfVersion = newNrfVersion;
+                    newNrfVersion = null;
+                    if (hardwareUpgradeFragment != null && hardwareUpgradeFragment.isAdded()) {
+                        hardwareUpgradeFragment.refreshView();
                     }
                 }
 
@@ -379,12 +379,12 @@ public class HardwareUpgradeActivity extends BaseActivity {
         if (!Strings.isNullOrEmpty(features)) {
             HardwareFeatures features1 = HardwareFeatures.objectFromData(features);
             features1.setOneKeyVersion(newFirmwareVersion);
-            currentFirmwareVersion = newFirmwareVersion;
-            newFirmwareVersion = "";
             devices.edit().putString(deviceId, features1.toString()).apply();
-            if (hardwareUpgradeFragment != null && hardwareUpgradeFragment.isAdded()) {
-                hardwareUpgradeFragment.refreshView();
-            }
+        }
+        currentFirmwareVersion = newFirmwareVersion;
+        newFirmwareVersion = "";
+        if (hardwareUpgradeFragment != null && hardwareUpgradeFragment.isAdded()) {
+            hardwareUpgradeFragment.refreshView();
         }
     }
     /** stm32固件升级失败回调 */
