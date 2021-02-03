@@ -127,7 +127,7 @@
         model.walletName = [outerModelDict allKeys].firstObject;
         NSDictionary *innerDict = outerModelDict[model.walletName];
         model.walletType = [innerDict safeStringForKey:@"type"];
-        if ([model.walletType containsString:[kDefaultType lowercaseString]]) {
+        if ([model.walletType containsString:[kDefaultType lowercaseString]]||[model.walletType containsString:@"derived-standard"]) {
             _haveHD = YES;
         }
         model.walletTypeShowStr = [kWalletManager getWalletTypeShowStr:model.walletType];

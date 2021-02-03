@@ -412,9 +412,14 @@ static dispatch_once_t once;
     }else if ([method isEqualToString:kInterfaceinit]){
         NSString *path = kBluetooth_iOS;
         NSString *label = [parameter safeStringForKey:@"label"];
+        NSString *stronger_mnemonic = [parameter safeStringForKey:@"stronger_mnemonic"];
         PyObject *args =  Py_BuildValue("(s)", [path UTF8String]);
         PyObject *kwargs;
-        kwargs = Py_BuildValue("{s:s}", "label", [label UTF8String]);
+        if (stronger_mnemonic.length == 0) {
+            kwargs = Py_BuildValue("{s:s}", "label", [label UTF8String]);
+        }else{
+            kwargs = Py_BuildValue("{s:s,s:i}", "label", [label UTF8String],"stronger_mnemonic",[stronger_mnemonic boolValue]);
+        }
         PyObject *myobject_method = PyObject_GetAttrString(self.pyInstance, [kInterfaceinit UTF8String]);
         result = PyObject_Call(myobject_method, args, kwargs);
     }else if ([method isEqualToString:kInterfacereset_pin]){
@@ -477,7 +482,11 @@ static dispatch_once_t once;
     }else if ([method isEqualToString:kInterfaceget_tx_info_from_raw]){
         NSString *raw_tx = [parameter safeStringForKey:@"raw_tx"];
         result = PyObject_CallMethod(self.pyInstance, [kInterfaceget_tx_info_from_raw UTF8String], "(s)",[raw_tx UTF8String]);
+    }else if ([method isEqualToString:kInterfaceset_recovery_flag]){
+        result = PyObject_CallMethod(self.pyInstance, [kInterfaceset_recovery_flag UTF8String], "()",NULL);
     }
+    
+    
     if (result == NULL) {
         if (PyErr_Occurred()) {
             PyObject* ptype,*pvalue,*ptraceback;

@@ -24,10 +24,10 @@
                                         <rect key="frame" x="0.0" y="48" width="414" height="818"/>
                                     </imageView>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VAF-Ol-ceG">
-                                        <rect key="frame" x="20" y="100" width="374" height="345"/>
+                                        <rect key="frame" x="20" y="100" width="374" height="290"/>
                                         <subviews>
                                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="iTE-Qb-wim">
-                                                <rect key="frame" x="0.0" y="0.0" width="374" height="355"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="374" height="300"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                 <prototypes>
@@ -169,11 +169,11 @@
                                             </tableView>
                                         </subviews>
                                         <constraints>
-                                            <constraint firstAttribute="height" constant="345" id="QN8-ZX-phT"/>
+                                            <constraint firstAttribute="height" constant="290" id="QN8-ZX-phT"/>
                                         </constraints>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="NEY-pw-BZ3">
-                                        <rect key="frame" x="0.0" y="445" width="414" height="421"/>
+                                        <rect key="frame" x="0.0" y="390" width="414" height="476"/>
                                         <subviews>
                                             <imageView clipsSubviews="YES" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="home_banner" translatesAutoresizingMaskIntoConstraints="NO" id="Jjk-Zq-dVa">
                                                 <rect key="frame" x="20" y="45" width="374" height="395"/>

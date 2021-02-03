@@ -481,3 +481,4 @@
 "The rate is lower than the minimum for the current network. Please reenter" = "费率低于当前网络的最小值，请重新输入";
 "Backup to inactive devices only" = "只能备份到未激活的设备";
 "The HD wallet already exists locally. The BACKUP mode hardware wallet cannot be connected again" = "本地已存在HD钱包，无法再连接 backup 模式的硬件钱包";
+"The wallet already exists" = "该钱包已存在";

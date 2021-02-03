@@ -15,6 +15,8 @@
 @property (weak, nonatomic) IBOutlet UILabel *balanceLabel;
 @property (weak, nonatomic) IBOutlet UIButton *checkBtn;
 @property (weak, nonatomic) IBOutlet UIView *cellBgView;
+@property (weak, nonatomic) IBOutlet OKLabel *rightDescLabel;
+@property (weak, nonatomic) IBOutlet UIImageView *exitImageView;
 @end
 
 
@@ -34,6 +36,18 @@
     self.checkBtn.selected = model.isSelected;
     self.walletNameLabel.text = model.label;
     self.balanceLabel.text = model.blance;
+    
+    if (model.exist) {
+        self.checkBtn.hidden = YES;
+        self.checkBtn.userInteractionEnabled = NO;
+        self.exitImageView.hidden = NO;
+        self.rightDescLabel.hidden = NO;
+    }else{
+        self.checkBtn.hidden = NO;
+        self.checkBtn.userInteractionEnabled = NO;
+        self.exitImageView.hidden = YES;
+        self.rightDescLabel.hidden = YES;
+    }
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {

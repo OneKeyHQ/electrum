@@ -1545,17 +1545,32 @@
                                                                         <constraint firstAttribute="height" constant="24" id="OrY-gf-FZV"/>
                                                                         <constraint firstAttribute="width" constant="24" id="T89-no-uuv"/>
                                                                     </constraints>
-                                                                    <state key="normal" image="checked_Nomal"/>
+                                                                    <state key="normal" image="Ellipse_38"/>
                                                                     <state key="selected" image="checked"/>
                                                                 </button>
+                                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="checked_Nomal" translatesAutoresizingMaskIntoConstraints="NO" id="yOc-f5-h52">
+                                                                    <rect key="frame" x="318" y="19" width="24" height="24"/>
+                                                                </imageView>
+                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="已存在" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6hw-vc-Rvp" customClass="OKLabel">
+                                                                    <rect key="frame" x="261" y="23.5" width="37" height="15"/>
+                                                                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                                                    <color key="textColor" red="0.32941176470588235" green="0.38823529411764707" blue="0.4392156862745098" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                                                    <nil key="highlightedColor"/>
+                                                                </label>
                                                             </subviews>
                                                             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                             <constraints>
                                                                 <constraint firstItem="X1t-Oe-r5v" firstAttribute="leading" secondItem="7js-6E-WkY" secondAttribute="trailing" constant="20" id="3UP-SZ-CWj"/>
+                                                                <constraint firstItem="yOc-f5-h52" firstAttribute="top" secondItem="fGH-W8-yeE" secondAttribute="top" id="8tK-6m-dTv"/>
+                                                                <constraint firstItem="yOc-f5-h52" firstAttribute="trailing" secondItem="fGH-W8-yeE" secondAttribute="trailing" id="9Sv-fZ-gGU"/>
                                                                 <constraint firstItem="7js-6E-WkY" firstAttribute="leading" secondItem="cBW-wl-scf" secondAttribute="leading" constant="16" id="Bd2-ys-8y7"/>
                                                                 <constraint firstItem="7js-6E-WkY" firstAttribute="centerY" secondItem="cBW-wl-scf" secondAttribute="centerY" id="C17-kG-pMN"/>
+                                                                <constraint firstItem="yOc-f5-h52" firstAttribute="leading" secondItem="fGH-W8-yeE" secondAttribute="leading" id="Lem-61-yOE"/>
                                                                 <constraint firstItem="hcE-Z6-oZx" firstAttribute="leading" secondItem="X1t-Oe-r5v" secondAttribute="leading" id="Lq2-lG-mLt"/>
+                                                                <constraint firstItem="yOc-f5-h52" firstAttribute="centerY" secondItem="6hw-vc-Rvp" secondAttribute="centerY" id="Np4-P2-q4J"/>
+                                                                <constraint firstItem="fGH-W8-yeE" firstAttribute="leading" secondItem="6hw-vc-Rvp" secondAttribute="trailing" constant="20" id="PtH-SC-75s"/>
                                                                 <constraint firstItem="fGH-W8-yeE" firstAttribute="centerY" secondItem="cBW-wl-scf" secondAttribute="centerY" id="QVu-Gx-clU"/>
+                                                                <constraint firstItem="yOc-f5-h52" firstAttribute="bottom" secondItem="fGH-W8-yeE" secondAttribute="bottom" id="eEy-51-FSP"/>
                                                                 <constraint firstItem="X1t-Oe-r5v" firstAttribute="top" secondItem="cBW-wl-scf" secondAttribute="top" constant="14" id="gke-jd-URb"/>
                                                                 <constraint firstAttribute="trailing" secondItem="fGH-W8-yeE" secondAttribute="trailing" constant="20" id="hsK-4H-EDQ"/>
                                                                 <constraint firstItem="hcE-Z6-oZx" firstAttribute="top" secondItem="X1t-Oe-r5v" secondAttribute="bottom" constant="7" id="w9E-dc-Czd"/>
@@ -1574,7 +1589,9 @@
                                                     <outlet property="balanceLabel" destination="hcE-Z6-oZx" id="wPd-X5-WKy"/>
                                                     <outlet property="cellBgView" destination="cBW-wl-scf" id="Rbh-nK-TkP"/>
                                                     <outlet property="checkBtn" destination="fGH-W8-yeE" id="dtM-WH-dut"/>
+                                                    <outlet property="exitImageView" destination="yOc-f5-h52" id="zSB-oQ-Fpg"/>
                                                     <outlet property="iconImageView" destination="7js-6E-WkY" id="kJD-Tb-fq1"/>
+                                                    <outlet property="rightDescLabel" destination="6hw-vc-Rvp" id="21p-0u-Cc2"/>
                                                     <outlet property="walletNameLabel" destination="X1t-Oe-r5v" id="fWw-NU-dLz"/>
                                                 </connections>
                                             </tableViewCell>
@@ -1593,7 +1610,7 @@
                                     <constraint firstAttribute="bottom" secondItem="KJ1-g3-Ssq" secondAttribute="bottom" constant="10" id="vOj-1o-kVm"/>
                                 </constraints>
                             </view>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zB6-O8-RII">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zB6-O8-RII" customClass="OKButton">
                                 <rect key="frame" x="34" y="712" width="346" height="60"/>
                                 <color key="backgroundColor" red="0.0048919855620000001" green="0.72784882780000004" blue="0.070087619130000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <constraints>
@@ -1881,6 +1898,7 @@
     </scenes>
     <resources>
         <image name="Delete" width="24" height="18"/>
+        <image name="Ellipse_38" width="24" height="24"/>
         <image name="Group_copyword" width="151" height="118"/>
         <image name="Rectangle_1" width="19" height="19"/>
         <image name="Vectorright" width="15" height="10"/>

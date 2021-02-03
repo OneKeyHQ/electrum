@@ -113,6 +113,7 @@
 #define kInterfacesign_message         @"sign_message" //签名信息
 #define kInterfaceverify_message       @"verify_message" //验证签名信息
 #define kInterfaceget_tx_info_from_raw  @"get_tx_info_from_raw" //获取签名信息的原始信息
+#define kInterfaceset_recovery_flag     @"_set_recovery_flag"  //停止扫描曾经使用的钱包
 
 #define kPyCommandsManager (OKPyCommandsManager.sharedInstance)
 NS_ASSUME_NONNULL_BEGIN

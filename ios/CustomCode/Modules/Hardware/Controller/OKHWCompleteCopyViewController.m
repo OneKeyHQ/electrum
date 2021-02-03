@@ -37,7 +37,21 @@
 {
     OKWeakSelf(self)
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        id result =  [kPyCommandsManager callInterface:kInterfaceinit parameter:@{@"label":self.deviceName}];
+        id result = nil;
+        switch (weakself.type) {
+            case OKMnemonicLengthType12:
+            {
+                result =  [kPyCommandsManager callInterface:kInterfaceinit parameter:@{@"label":self.deviceName}];
+            }
+                break;
+            case OKMnemonicLengthType24:
+            {
+                result =  [kPyCommandsManager callInterface:kInterfaceinit parameter:@{@"label":self.deviceName,@"stronger_mnemonic":@"1"}];
+            }
+                break;
+            default:
+                break;
+        }
         if (result != nil) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 weakself.comfirmBtn.alpha = 1.0;

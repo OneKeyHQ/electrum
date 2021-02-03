@@ -119,46 +119,11 @@
 
 - (void)createWallet:(NSString *)pwd mnemonicStr:(NSString *)mnemonicStr isInit:(BOOL)isInit
 {
-    NSString *seed = mnemonicStr;
-    [kTools showIndicatorView];
-    OKWeakSelf(self)
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        NSDictionary *create =  [kPyCommandsManager callInterface:kInterfaceCreate_hd_wallet parameter:@{@"password":pwd,@"seed":seed}];
-        OKCreateResultModel *createResultModel = [OKCreateResultModel mj_objectWithKeyValues:create];
-        if (createResultModel != nil) {
-            dispatch_sync(dispatch_get_main_queue(), ^{
-                if (createResultModel.derived_info.count == 0) {
-                    [kPyCommandsManager callInterface:kInterfacerecovery_confirmed parameter:@{@"name_list":@[]}];
-                    OKCreateResultWalletInfoModel *model = [createResultModel.wallet_info firstObject];
-                    OKWalletInfoModel *walletInfoModel = [kWalletManager getCurrentWalletAddress:model.name];
-                    [kWalletManager setCurrentWalletInfo:walletInfoModel];
-                    if (kUserSettingManager.currentSelectPwdType.length > 0 && kUserSettingManager.currentSelectPwdType !=  nil) {
-                        [kUserSettingManager setIsLongPwd:[kUserSettingManager.currentSelectPwdType boolValue]];
-                    }
-                    if (!kWalletManager.isOpenAuthBiological && isInit) {
-                        OKBiologicalViewController *biologicalVc = [OKBiologicalViewController biologicalViewController:@"OKWalletViewController" pwd:pwd biologicalViewBlock:^{
-                            [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":pwd,@"backupshow":@"0",@"takecareshow":@"1"}];
-                        }];
-                        [kTools hideIndicatorView];
-                        [weakself.OK_TopViewController.navigationController pushViewController:biologicalVc animated:YES];
-                    }else{
-                        [self.OK_TopViewController dismissToViewControllerWithClassName:@"OKWalletViewController" animated:YES complete:^{
-                            [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":pwd,@"backupshow":@"0",@"takecareshow":@"1"}];
-                        }];
-                    }
-                }else{
-                    OKFindFollowingWalletController *findFollowingWalletVc = [OKFindFollowingWalletController findFollowingWalletController];
-                    findFollowingWalletVc.pwd = pwd;
-                    findFollowingWalletVc.isInit = isInit;
-                    findFollowingWalletVc.createResultModel = createResultModel;
-                    [kTools hideIndicatorView];
-                    [weakself.OK_TopViewController.navigationController pushViewController:findFollowingWalletVc animated:YES];
-                }
-            });
-        }else{
-            [kTools hideIndicatorView];
-        }
-    });
+    OKFindFollowingWalletController *findFollowingWalletVc = [OKFindFollowingWalletController findFollowingWalletController];
+    findFollowingWalletVc.pwd = pwd;
+    findFollowingWalletVc.isInit = isInit;
+    findFollowingWalletVc.mnemonicStr = mnemonicStr;
+    [self.OK_TopViewController.navigationController pushViewController:findFollowingWalletVc animated:YES];
 }
 
 #pragma mark - scrollView

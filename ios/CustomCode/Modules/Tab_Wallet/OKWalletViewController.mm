@@ -73,9 +73,6 @@
 @property (weak, nonatomic) IBOutlet UIView *hwBgView;
 @property (weak, nonatomic) IBOutlet UILabel *hwWalletNameLabel;
 
-
-
-
 //备份提醒
 @property (weak, nonatomic) IBOutlet UIView *backupBgView;
 @property (weak, nonatomic) IBOutlet UILabel *backupTitleLabel;

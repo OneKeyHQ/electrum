@@ -19,7 +19,7 @@
 @property (weak, nonatomic) IBOutlet UIView *tableViewBgView;
 @property (weak, nonatomic) IBOutlet UITableView *tbaleView;
 @property (weak, nonatomic) IBOutlet UIView *headerView;
-@property (weak, nonatomic) IBOutlet UIButton *restoreBtn;
+@property (weak, nonatomic) IBOutlet OKButton *restoreBtn;
 - (IBAction)restoreBtnClick:(UIButton *)sender;
 @property (weak, nonatomic) IBOutlet UILabel *descLabel;
 @property (nonatomic,strong)NSArray *walletList;
@@ -37,7 +37,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self hideBackBtn];
     self.tableView.tableFooterView = [UIView new];
     self.title = MyLocalizedString(@"Restore the purse", nil);
     self.titleLabel.text = MyLocalizedString(@"Find the following wallet", nil);
@@ -71,6 +70,7 @@
         OKCreateResultModel *createResultModel = [OKCreateResultModel mj_objectWithKeyValues:create];
         if (createResultModel.derived_info.count > 0) {
             weakself.walletList =  createResultModel.derived_info;
+            [weakself changeConfirmBtn];
             [weakself.tableView reloadData];
             _type = OKRestoreRefreshUIHaveWallet;
             [weakself refreshUI];
@@ -78,6 +78,18 @@
             _type = OKRestoreRefreshUIZeroWallet;
             [weakself refreshUI];
         }
+    }
+}
+
+- (void)backToPrevious
+{
+    if (self.quanquanView.hidden == NO) {
+        id result = [kPyCommandsManager callInterface:kInterfaceset_recovery_flag parameter:@{}];
+        if (result != nil) {
+            [self.navigationController popToRootViewControllerAnimated:YES];
+        }
+    }else{
+        [self.navigationController popToRootViewControllerAnimated:YES];
     }
 }
 
@@ -96,6 +108,7 @@
         case OKRestoreRefreshUIZeroWallet:
         {
             self.quanquanView.hidden = YES;
+            self.quanquanView.transform = CGAffineTransformIdentity;
             self.bottomBgViewCons.constant = 200;
             self.restoreBtn.hidden = NO;
             self.descLabel.text = MyLocalizedString(@"No wallet", nil);
@@ -106,6 +119,7 @@
         case OKRestoreRefreshUIHaveWallet:
         {
             self.quanquanView.hidden = YES;
+            self.quanquanView.transform = CGAffineTransformIdentity;
             self.bottomBgViewCons.constant = 200;
             self.restoreBtn.hidden = NO;
             self.descLabel.text = MyLocalizedString(@"You have created these wallets for this App, select which you want to restore", nil);
@@ -117,6 +131,17 @@
             break;
     }
 }
+
+- (void)changeConfirmBtn
+{
+    BOOL isEnable = [self ishaveSelectModel];
+    if (isEnable) {
+        [self.restoreBtn status:OKButtonStatusEnabled];
+    }else{
+        [self.restoreBtn status:OKButtonStatusDisabled];
+    }
+}
+
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
@@ -166,9 +191,27 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     OKFindWalletTableViewCellModel *model = self.walletList[indexPath.row];
-    model.isSelected = !model.isSelected;
+    if (model.exist) {
+        [kTools tipMessage:MyLocalizedString(@"The wallet already exists", nil)];
+        return;
+    }else{
+        model.isSelected = !model.isSelected;
+    }
     [self.tableView reloadData];
+    [self changeConfirmBtn];
 }
+
+- (BOOL)ishaveSelectModel
+{
+    NSInteger count = 0;
+    for (OKFindWalletTableViewCellModel *model in self.walletList) {
+        if (model.isSelected || model.exist) {
+            count ++;
+        }
+    }
+    return count > 0 ? YES:NO;
+}
+
 
 - (IBAction)restoreBtnClick:(UIButton *)sender {
     switch (_type) {
