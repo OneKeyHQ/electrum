@@ -185,9 +185,13 @@ class Abstract_Eth_Wallet(ABC):
         return self.total_balance
 
     def get_all_balance(self, wallet_address, from_coin):
-        if len(self.total_balance) != 0:
-            if len(self.total_balance['balance_info']) != 0 and (time.time() - self.total_balance['time'] > 10):
-                return self.total_balance['balance_info']
+        if (
+                self.total_balance
+                and self.total_balance.get("balance_info")
+                and self.total_balance.get("time")
+                and time.time() - self.total_balance["time"] <= 10  # Only cache for 10s
+        ):
+            return self.total_balance["balance_info"]
 
         last_price = PyWalib.get_coin_price(from_coin) or "0"
         eth, balance = PyWalib.get_balance(wallet_address)
