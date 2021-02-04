@@ -71,6 +71,7 @@
     OKHWCompleteCopyViewController *hwCompleteCopyVc = [OKHWCompleteCopyViewController hwCompleteCopyViewController];
     hwCompleteCopyVc.type = self.type;
     hwCompleteCopyVc.deviceName = self.deviceName;
+    hwCompleteCopyVc.where = self.where;
     [self.navigationController pushViewController:hwCompleteCopyVc animated:YES];
 }
 

@@ -81,6 +81,11 @@
     self.fromAddressLabel.font = [UIFont systemFontOfSize:14];
     self.toAddressLabel.font = [UIFont systemFontOfSize:14];
     
+    UITapGestureRecognizer *tapFrom = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapFrom)];
+    [self.fromAddressLabel addGestureRecognizer:tapFrom];
+    
+    UITapGestureRecognizer *tapTo = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapTo)];
+    [self.toAddressLabel addGestureRecognizer:tapTo];
 }
 
 - (void)loadList
@@ -122,6 +127,15 @@
     NSArray *strlist =  [[self.txInfo safeStringForKey:@"tx_status"] componentsSeparatedByString:@" "];
     confirmationNum = [strlist firstObject];
     self.confirmNumLabel.text = confirmationNum;
+}
+
+- (void)tapFrom
+{
+    [kTools pasteboardCopyString:self.fromAddressLabel.text msg:MyLocalizedString(@"Copied", nil)];
+}
+- (void)tapTo
+{
+    [kTools pasteboardCopyString:self.toAddressLabel.text msg:MyLocalizedString(@"Copied", nil)];
 }
 
 - (NSString *)getStatusLabel:(NSString *)status

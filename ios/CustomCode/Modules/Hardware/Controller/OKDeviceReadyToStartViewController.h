@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OKDeviceReadyToStartViewController : BaseViewController
 + (instancetype)deviceReadyToStartViewController;
+@property (nonatomic,assign)OKMatchingFromWhere where;
 @property (nonatomic,copy)NSString *deviceName;
 @end
 

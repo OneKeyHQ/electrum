@@ -10,11 +10,13 @@
 #import "OKSetDeviceNameViewController.h"
 #import "OKCreateSelectWalletTypeCell.h"
 #import "OKCreateSelectWalletTypeModel.h"
+#import "OKDeviceSettingsViewController.h"
 
 @interface OKDiscoverNewDeviceViewController ()
 @property (weak, nonatomic) IBOutlet UILabel *titleLabel;
 @property (nonatomic,strong)NSArray *walletTypeListArray;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property (weak, nonatomic) IBOutlet UILabel *toSettingLabel;
 @end
 
 @implementation OKDiscoverNewDeviceViewController
@@ -22,12 +24,38 @@
 {
     return [[UIStoryboard storyboardWithName:@"Hardware" bundle:nil]instantiateViewControllerWithIdentifier:@"OKDiscoverNewDeviceViewController"];
 }
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.title = MyLocalizedString(@"pairing", nil);
     self.titleLabel.text = MyLocalizedString(@"Discover a new device you can...", nil);
     self.tableView.tableFooterView = [UIView new];
+    
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapClick)];
+    [self.toSettingLabel addGestureRecognizer:tap];
 }
+
+- (void)backToPrevious
+{
+    switch (_where) {
+        case OKMatchingFromWhereNav:
+            [self.navigationController popToRootViewControllerAnimated:YES];
+            break;
+        case OKMatchingFromWhereDis:
+            [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+            break;
+        default:
+            break;
+    }
+}
+
+- (void)tapClick
+{
+    OKDeviceSettingsViewController *vc = [OKDeviceSettingsViewController deviceSettingsViewController];
+    vc.deviceModel = [[OKDevicesManager sharedInstance]getDeviceModelWithID:kOKBlueManager.currentDeviceID];
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
 
 #pragma mark - UITableViewDelegate | UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -48,6 +76,7 @@
 {
     OKSetDeviceNameViewController *setDeviceNameVc = [OKSetDeviceNameViewController setDeviceNameViewController];
     setDeviceNameVc.type = OKMatchingTypeActivation;
+    setDeviceNameVc.where = self.where;
     [self.navigationController pushViewController:setDeviceNameVc animated:YES];
 }
 

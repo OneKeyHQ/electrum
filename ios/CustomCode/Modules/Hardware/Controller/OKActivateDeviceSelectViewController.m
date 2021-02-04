@@ -12,11 +12,13 @@
 #import "OKPINCodeViewController.h"
 #import "OKSelectCoinTypeViewController.h"
 #import "OKHWRestoreViewController.h"
+#import "OKDeviceSettingsViewController.h"
 
 @interface OKActivateDeviceSelectViewController ()
 @property (weak, nonatomic) IBOutlet UILabel *titleLabel;
 @property (nonatomic,strong)NSArray *walletTypeListArray;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property (weak, nonatomic) IBOutlet UILabel *toSettingLabel;
 @end
 
 @implementation OKActivateDeviceSelectViewController
@@ -29,7 +31,18 @@
     self.title = MyLocalizedString(@"pairing", nil);
     self.titleLabel.text = MyLocalizedString(@"this is already activated device, you can...", nil);
     self.tableView.tableFooterView = [UIView new];
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapClick)];
+    [self.toSettingLabel addGestureRecognizer:tap];
 }
+
+- (void)tapClick
+{
+    OKDeviceSettingsViewController *vc = [OKDeviceSettingsViewController deviceSettingsViewController];
+    vc.deviceModel = [[OKDevicesManager sharedInstance]getDeviceModelWithID:kOKBlueManager.currentDeviceID];
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
+
 
 #pragma mark - UITableViewDelegate | UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section

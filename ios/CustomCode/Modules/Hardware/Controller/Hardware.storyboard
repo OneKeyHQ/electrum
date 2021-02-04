@@ -367,6 +367,7 @@
                     <connections>
                         <outlet property="tableView" destination="ced-7g-QdG" id="3VR-mN-ZpD"/>
                         <outlet property="titleLabel" destination="0hH-qu-xV0" id="DEE-pf-IeM"/>
+                        <outlet property="toSettingLabel" destination="MRL-ba-Mak" id="t7c-Qw-Yih"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="W4s-ys-mgR" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -1178,6 +1179,7 @@
                     <connections>
                         <outlet property="tableView" destination="p6G-fd-j4I" id="7is-oF-Lgw"/>
                         <outlet property="titleLabel" destination="esN-19-R3V" id="z4W-0p-U1o"/>
+                        <outlet property="toSettingLabel" destination="y8D-jb-uDA" id="dHF-rg-sJf"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DDl-We-tkS" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

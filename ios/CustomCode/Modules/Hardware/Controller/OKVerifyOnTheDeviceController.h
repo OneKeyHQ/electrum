@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)verifyOnTheDeviceController:(OKVerifyOnTheDeviceType)type;
 @property (nonatomic,copy)NSString *deviceName;
 @property (nonatomic,copy)NSString *words;
+@property (nonatomic,assign)OKMatchingFromWhere where;
 @end
 
 NS_ASSUME_NONNULL_END

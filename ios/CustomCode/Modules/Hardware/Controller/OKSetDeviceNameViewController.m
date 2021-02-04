@@ -43,6 +43,7 @@
         {
             OKDeviceReadyToStartViewController *deviceReadyToStartVc = [OKDeviceReadyToStartViewController deviceReadyToStartViewController];
             deviceReadyToStartVc.deviceName = self.deviceNameTextfield.text;
+            deviceReadyToStartVc.where = self.where;
             [self.navigationController pushViewController:deviceReadyToStartVc animated:YES];
         }
             break;
@@ -51,6 +52,7 @@
             OKVerifyOnTheDeviceController *verifyOnTheDevice = [OKVerifyOnTheDeviceController verifyOnTheDeviceController:OKVerifyOnTheDeviceTypeBackupSetPin];
             verifyOnTheDevice.deviceName = self.deviceNameTextfield.text;
             verifyOnTheDevice.words = self.words;
+            verifyOnTheDevice.where = self.where;
             [self.navigationController pushViewController:verifyOnTheDevice animated:YES];
         }
             break;

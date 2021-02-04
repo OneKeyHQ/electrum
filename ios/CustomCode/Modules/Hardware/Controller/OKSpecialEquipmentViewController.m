@@ -116,6 +116,7 @@
                 [kPyCommandsManager callInterface:kInterfacerecovery_confirmed parameter:@{@"name_list":@[model.name]}];
                 OKWalletInfoModel *walletInfoModel = [kWalletManager getCurrentWalletAddress:model.name];
                 [kWalletManager setCurrentWalletInfo:walletInfoModel];
+                [kTools hideIndicatorView];
                 if (kUserSettingManager.currentSelectPwdType.length > 0 && kUserSettingManager.currentSelectPwdType !=  nil) {
                     [kUserSettingManager setIsLongPwd:[kUserSettingManager.currentSelectPwdType boolValue]];
                 }

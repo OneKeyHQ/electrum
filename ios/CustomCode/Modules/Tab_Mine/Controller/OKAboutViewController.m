@@ -45,13 +45,20 @@
 {
     return 75;
 }
-
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     switch (indexPath.row) {
         case 0:
         {
-            NSLog(@"click update");
+            NSURL *customAppURL = [NSURL URLWithString:@"itms-beta://"];
+            if ([[UIApplication sharedApplication] canOpenURL:customAppURL]) {
+                customAppURL = [NSURL URLWithString:@"itms-beta://beta.itunes.apple.com/v1/invite/Eh0ndOyC"];
+                if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 10.0) {
+                        [[UIApplication sharedApplication] openURL:customAppURL options:@{} completionHandler:nil];
+                    }else{
+                        [[UIApplication sharedApplication] openURL:customAppURL];
+                    }
+            }
         }
             break;
         case 1:
@@ -65,14 +72,15 @@
     }
 }
 
-
 - (NSArray *)allData
 {
     if (!_allData) {
         
         OKAboutTableViewCellModel *model1 = [[OKAboutTableViewCellModel alloc]init];
         model1.titleStr = MyLocalizedString(@"Version update", nil);
-        model1.descStr = @"v1.0.0";
+        NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
+        NSString *app_Version = [infoDictionary objectForKey:@"CFBundleShortVersionString"];
+        model1.descStr = [NSString stringWithFormat:@"v%@",app_Version];
         
         OKAboutTableViewCellModel *model2 = [[OKAboutTableViewCellModel alloc]init];
         model2.titleStr = MyLocalizedString(@"User agreement", nil);

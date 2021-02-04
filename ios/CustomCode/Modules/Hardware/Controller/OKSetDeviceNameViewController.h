@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OKSetDeviceNameViewController : BaseViewController
 + (instancetype)setDeviceNameViewController;
 @property (nonatomic,assign)OKMatchingType type;
+@property (nonatomic,assign)OKMatchingFromWhere where;
 @property (nonatomic,copy)NSString *words;
 @end
 

@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OKHWCompleteCopyViewController : BaseViewController
 @property (nonatomic,assign)OKMnemonicLengthType type;
 @property (nonatomic,copy)NSString *deviceName;
+@property (nonatomic,assign)OKMatchingFromWhere where;
 + (instancetype)hwCompleteCopyViewController;
 @end
 

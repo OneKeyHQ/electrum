@@ -60,11 +60,32 @@
     OKWeakSelf(self)
     OKWalletScanVC *vc = [OKWalletScanVC initViewControllerWithStoryboardName:@"Scan"];
     vc.scanningType = ScanningTypeAddress;
-    vc.scanningCompleteBlock = ^(NSString* result) {
-        if (result && result.length > 0) {
-            weakself.textView.text = result;
-            weakself.textPlacehoderLabel.hidden = YES;
-            [weakself textChange];
+    vc.scanningCompleteBlock = ^(id result) {
+        if (result) {
+            NSDictionary *typeDict = [kPyCommandsManager callInterface:kInterfaceparse_pr parameter:@{@"data":result}];
+            if (typeDict != nil) {
+                NSInteger type = [typeDict[@"type"] integerValue];
+                switch (type) {
+                    case 1:
+                    {
+                        NSDictionary *data = typeDict[@"data"];
+                        NSString *address = [data safeStringForKey:@"address"];
+                        if (address && address.length > 0) {
+                            weakself.textView.text = address;
+                            weakself.textPlacehoderLabel.hidden = YES;
+                            [weakself textChange];
+                        }
+                    }
+                        break;
+                    case 2:
+                        break;
+                    default:
+                        [kTools tipMessage:result];
+                        break;
+                }
+            }else{
+                [kTools tipMessage:result];
+            }
         }
     };
     [vc authorizePushOn:self];
