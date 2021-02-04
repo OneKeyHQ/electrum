@@ -50,11 +50,14 @@
 
 - (void)hwNotiManagerDekegate:(OKHwNotiManager *)hwNoti type:(OKHWNotiType)type {
     OKWeakSelf(self)
-    NSLog(@"112233 hwNotiManagerDekegate %ld",(long)type);
     dispatch_async(dispatch_get_main_queue(), ^{
         if (type == OKHWNotiTypePin_Current) {
             OKPINCodeViewController *pinCode = [OKPINCodeViewController PINCodeViewController:^(NSString * _Nonnull pin) {
                 NSLog(@"pinCode = %@",pin);
+                if (kUserSettingManager.pinInputMethod == OKDevicePINInputMethodOnDevice) {
+                    [kPyCommandsManager callInterface:kInterfaceset_pin parameter:@{@"pin":pin}];
+                    return;
+                }
                 OKPINCodeViewController *pinCode2 = [OKPINCodeViewController PINCodeViewController:^(NSString * _Nonnull pin2) {
                     dispatch_async(dispatch_get_global_queue(0, 0), ^{
                         [kPyCommandsManager callInterface:kInterfaceset_pin parameter:@{@"pin":[pin stringByAppendingString:pin2]}];

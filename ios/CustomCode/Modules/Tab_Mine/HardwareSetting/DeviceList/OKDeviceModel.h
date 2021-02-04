@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) OKDeviceInfoModel *deviceInfo;
 @property (nonatomic, strong, readonly) NSMutableDictionary *json;
 @property (nonatomic, assign) BOOL verifiedDevice;
+@property (nonatomic, assign) BOOL bootloaderMode;
 
 - (instancetype)initWithJson:(NSDictionary *)json;
 - (BOOL)updateWithDict:(NSDictionary *)newDict; // 如果不同用 newDict 更新原来对象，返回 YES，如果相同不需要改变返回 NO

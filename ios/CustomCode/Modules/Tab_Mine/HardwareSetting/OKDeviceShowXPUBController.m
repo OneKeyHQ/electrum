@@ -50,6 +50,7 @@
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         NSString *result = [kPyCommandsManager callInterface:kInterface_get_xpub_from_hw parameter:@{}];
         dispatch_async(dispatch_get_main_queue(), ^{
+            [[self presentedViewController] dismissViewControllerAnimated:YES completion:nil];
             if (result) {
                 weakself.xpub = result;
             } else {
@@ -78,9 +79,6 @@
                 NSLog(@"pinCode = %@",pin);
                 dispatch_async(dispatch_get_global_queue(0, 0), ^{
                     [kPyCommandsManager callInterface:kInterfaceset_pin parameter:@{@"pin":pin}];
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [weakself dismissViewControllerAnimated:YES completion:nil];
-                    });
                 });
             }];
             BaseNavigationController *nav = [[BaseNavigationController alloc] initWithRootViewController:pinCode];
@@ -93,7 +91,7 @@
 
 - (void)cancel {
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        [kPyCommandsManager callInterface:kInterfaceset_pin parameter:@{@"pin":@"cancel"}];
+        [kPyCommandsManager cancelPIN];
     });
     [self dismissViewControllerAnimated:YES completion:nil];
 }

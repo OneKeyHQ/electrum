@@ -20,6 +20,7 @@
 #import "YZAuthID.h"
 #import "OKOneKeyPwdManager.h"
 #import "OKDeviceListViewController.h"
+#import "OKPINInputMethodController.h"
 
 @interface OKMineViewController ()<UINavigationControllerDelegate,UITableViewDelegate,UITableViewDataSource,OKMineTableViewCellDelegate,UIGestureRecognizerDelegate,UINavigationControllerDelegate>
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
@@ -85,9 +86,9 @@
     [attri appendAttributedString:string];
     self.bottomtipsLabel.attributedText = attri;
     self.bottomtipsLabel.alpha = 0.6;
-    
+
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notiUpdatePassWordComplete) name:kNotiUpdatePassWordComplete object:nil];;
-    
+
 }
 
 #pragma mark - TableView
@@ -179,10 +180,15 @@
                 {
                     UIViewController *devicesListVC = [OKDeviceListViewController deviceListController];
                     [self.navigationController pushViewController:devicesListVC animated:YES];
+                }
+                    break;
+                case 1: // pin 校验方式
+                {
+                    UIViewController *pinMethodVC = [OKPINInputMethodController controllerWithStoryboard];
+                    [self.navigationController pushViewController:pinMethodVC animated:YES];
 
                 }
                     break;
-                    
                 default:
                     break;
             }
@@ -195,18 +201,18 @@
                 {
                     NSArray *listDictArray =  [kPyCommandsManager callInterface:kInterfaceList_wallets parameter:@{}];
                     if (listDictArray.count > 0) {
-                        
+
                         OKChangePwdViewController *changePwd = [OKChangePwdViewController changePwdViewController];
                         [self.navigationController pushViewController:changePwd animated:YES];
                     }else{
                         [kTools tipMessage:MyLocalizedString(@"Please go to create a wallet first", nil)];
                     }
-                   
+
                 }
                     break;
                 case 1: //auth识别
                 {
-                    
+
                 }
                     break;
                 default:
@@ -265,68 +271,73 @@
         model1.menuName = MyLocalizedString(@"All assets", nil);
         model1.imageName = @"money";
         model1.isAuth = NO;
-        
+
         OKMineTableViewCellModel *model2 = [OKMineTableViewCellModel new];
         model2.menuName = MyLocalizedString(@"HD wallet", nil);
         model2.imageName = @"hd_wallet";
         model2.isAuth = NO;
-        
+
         OKMineTableViewCellModel *model3 = [OKMineTableViewCellModel new];
         model3.menuName = MyLocalizedString(@"All the equipment", nil);
         model3.imageName = @"device_link";
         model3.isAuth = NO;
-        
+
         OKMineTableViewCellModel *model4 = [OKMineTableViewCellModel new];
         model4.menuName = MyLocalizedString(@"The connection method", nil);
         model4.imageName = @"link";
         model4.isAuth = NO;
-        
+
         OKMineTableViewCellModel *model5 = [OKMineTableViewCellModel new];
         model5.menuName = MyLocalizedString(@"password", nil);
         model5.imageName = @"lockpwd";
         model5.isAuth = NO;
-        
-        
+
+
         OKMineTableViewCellModel *model6 = [OKMineTableViewCellModel new];
         model6.menuName = MyLocalizedString(@"Facial recognition", nil);
         model6.imageName = @"faceid";
         model6.isAuth = YES;
-        
+
         OKMineTableViewCellModel *model7 = [OKMineTableViewCellModel new];
         model7.menuName = MyLocalizedString(@"Fingerprint identification", nil);
         model7.imageName = @"zhiwen";
         model7.isAuth = YES;
-        
+
         OKMineTableViewCellModel *model8 = [OKMineTableViewCellModel new];
         model8.menuName = MyLocalizedString(@"language", nil);
         model8.imageName = @"translation 2";
         model8.isAuth = NO;
-        
+
         OKMineTableViewCellModel *model9 = [OKMineTableViewCellModel new];
         model9.menuName = MyLocalizedString(@"Monetary unit", nil);
         model9.imageName = @"currency-dollar 2";
         model9.isAuth = NO;
-        
+
         OKMineTableViewCellModel *model10 = [OKMineTableViewCellModel new];
         model10.menuName = MyLocalizedString(@"network", nil);
         model10.imageName = @"hotspot 1";
         model10.isAuth = NO;
-        
+
         OKMineTableViewCellModel *model11 = [OKMineTableViewCellModel new];
         model11.menuName = MyLocalizedString(@"Transaction Settings (Advanced)", nil);
         model11.imageName = @"bold-direction 1";
         model11.isAuth = NO;
-        
+
         OKMineTableViewCellModel *model12 = [OKMineTableViewCellModel new];
         model12.menuName = MyLocalizedString(@"about", nil);
         model12.imageName = @"c-question 4";
         model12.isAuth = NO;
-        
+
         OKMineTableViewCellModel *allDeviceModel = [OKMineTableViewCellModel new];
         allDeviceModel.menuName = MyLocalizedString(@"All the equipment", nil);
         allDeviceModel.imageName = @"device_link";
         allDeviceModel.isAuth = NO;
-    
+
+        OKMineTableViewCellModel *pinInputModel = [OKMineTableViewCellModel new];
+        pinInputModel.menuName = MyLocalizedString(@"hardwareWallet.pin.verifyMethod", nil);
+        pinInputModel.imageName = @"privacy_3";
+        pinInputModel.isAuth = NO;
+
         __block NSArray *biologicaArray = [NSArray array];
         [YZAuthID biologicalRecognitionResult:^(YZAuthenticationType type) {
             switch (type) {
@@ -347,7 +358,7 @@
                         break;
             }
         }];
-    _allMenuData = @[@[model1,model2],@[allDeviceModel],biologicaArray,@[model8,model9,model10,model11,model12]];
+    _allMenuData = @[@[model1,model2],@[allDeviceModel, pinInputModel],biologicaArray,@[model8,model9,model10,model11,model12]];
     return _allMenuData;
 }
 #pragma mark - UINavigationControllerDelegate

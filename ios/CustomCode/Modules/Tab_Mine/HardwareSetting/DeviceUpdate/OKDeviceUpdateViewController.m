@@ -11,6 +11,7 @@
 #import "OKDeviceUpdateInstallController.h"
 #import "OKDeviceUpdateModel.h"
 #import "OKDevicesManager.h"
+#import "OKPINCodeViewController.h"
 
 #define kLocalizedString(key) \
 MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil)
@@ -67,7 +68,7 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
 }
 @end
 
-@interface OKDeviceUpdateViewController () <UITableViewDelegate, UITableViewDataSource>
+@interface OKDeviceUpdateViewController () <UITableViewDelegate, UITableViewDataSource, OKHwNotiManagerDelegate>
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet UILabel *currentVersionLabel;
 @property (strong, nonatomic) OKDeviceUpdateModel *updateModel;
@@ -83,6 +84,7 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [OKHwNotiManager sharedInstance].delegate = self;
     [self setupUI];
     [self checkAvailableUpdate];
 }
@@ -93,7 +95,7 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
         _loadingView.backgroundColor = HexColorA(0x444444, 0.7);
         _loadingView.center = self.view.center;
         [_loadingView setLayerRadius:10];
-        
+
         UIActivityIndicatorView *actView = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(0, 0, 80, 80)];
         actView.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhiteLarge;
         [actView startAnimating];
@@ -132,7 +134,7 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
     NSString *versionText = kLocalizedString(@"currentDesc");
     NSString *frameworkVersionStr = @"Unknown";
     NSString *bluetoothVersionStr = @"Unknown";
-    
+
     OKDeviceModel *deviceModel = [[OKDevicesManager sharedInstance] getDeviceModelWithID:self.deviceId];
     if (!self.bootloaderMode && deviceModel) {
         frameworkVersionStr = deviceModel.deviceInfo.deviceSysVersion;
@@ -141,16 +143,16 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
     versionText = [versionText stringByReplacingOccurrencesOfString:@"<frameworkVersion>" withString:frameworkVersionStr];
     versionText = [versionText stringByReplacingOccurrencesOfString:@"<bluetoothVersion>" withString:bluetoothVersionStr];
     self.currentVersionLabel.text = versionText;
-    
+
     [self.view addSubview:self.loadingView];
     self.loadingView.hidden = NO;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
+
     NSDictionary *cellData = self.cellsData[indexPath.row];
     OKDeviceUpdateType cellType = [cellData[@"updateType"] integerValue];
-    
+
     if (cellType == OKDeviceUpdateTypeAlreadyUpToDate) {
         OKDeviceAlreadyUpToDateCell *uptodateCell = [tableView dequeueReusableCellWithIdentifier:@"OKDeviceAlreadyUpToDateCell"];
         if(!uptodateCell) {
@@ -158,7 +160,7 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
         }
         return uptodateCell;
     }
-    
+
     static NSString *cellID = @"OKDeviceUpdateCell";
     OKDeviceUpdateCell *cell = [tableView dequeueReusableCellWithIdentifier:cellID];
     if (cell == nil) {
@@ -186,7 +188,7 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
 }
 
 - (void)updateCellModel {
-    
+
     NSMutableArray *cellsData = [[NSMutableArray alloc] initWithCapacity:2];
     if (self.bootloaderMode || [self.updateModel systemFirmwareNeedUpdate:@"0.0.0"]) {
         NSString *version = self.updateModel.systemFirmwareVersion;
@@ -200,7 +202,7 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
             @"url": url
         }];
     }
-    
+
 //    if ([self.updateModel bluetoothFirmwareNeedUpdate:@"3.0.0"]) {
 //        NSString *version = self.updateModel.bluetoothFirmwareVersion;
 //        NSString *versionDesc = [kLocalizedString(@"newBluetoothAvailable") stringByAppendingString:version];
@@ -213,10 +215,11 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
 //            @"url": url
 //        }];
 //    }
-    
+
     self.cellsData = cellsData;
     [self.tableView reloadData];
 }
+
 
 
 @end

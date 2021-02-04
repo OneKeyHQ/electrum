@@ -70,7 +70,7 @@ static dispatch_once_t once;
 - (void)setSysServerFlag:(BOOL)sysServerFlag
 {
     [OKStorageManager saveToUserDefaults:@(sysServerFlag) key:kSysServerFlag];
-    
+
 }
 - (BOOL)sysServerFlag
 {
@@ -113,4 +113,13 @@ static dispatch_once_t once;
     }
     return _btcBrowserList;
 }
+
+- (void)setPinInputMethod:(OKDevicePINInputMethod)pinInputMethod {
+    [OKStorageManager saveToUserDefaults:@(pinInputMethod) key:kPinInputMethod];
+}
+
+- (OKDevicePINInputMethod)pinInputMethod {
+    return [[OKStorageManager loadFromUserDefaults:kPinInputMethod] integerValue];
+}
+
 @end

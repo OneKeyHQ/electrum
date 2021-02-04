@@ -45,17 +45,22 @@
         assert(0);
         return;
     }
-    
+
     for (NSString *name in names) {
         NSData *data = [NSData dataWithContentsOfFile:[self.devicesInfoPath stringByAppendingPathComponent:name]];
         id json = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
-        
+
         OKDeviceModel *deviceModel = [[OKDeviceModel alloc] initWithJson:json];
         [self.devices setObject:deviceModel forKey:deviceModel.deviceInfo.device_id];
     }
 }
 
 - (void)addDevices:(OKDeviceModel *)deviceModel {
+    if (deviceModel.bootloaderMode) {
+        // Bootloader mode 不写入磁盘
+        return;
+    }
+
     if (!deviceModel.deviceInfo.device_id) {
         NSAssert(0, @"OKDeviceModel addDevices error");
         return;

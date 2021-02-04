@@ -13,6 +13,7 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
 #import "OKDeviceUpdateInstallController.h"
 #import "OKHwNotiManager.h"
 #import "OKPINCodeViewController.h"
+#import "OKDeviceConfirmController.h"
 
 @interface OKDeviceUpdateInstallController () <NSURLSessionDelegate, OKHwNotiManagerDelegate>
 @property (nonatomic, strong) NSURLSessionConfiguration* sessionConfiguration;
@@ -42,6 +43,7 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
     [OKHwNotiManager sharedInstance].delegate = self;
     self.phase = OKDeviceUpdateInstallPhaseBegin;
     [self.finshedButton addTarget:self action:@selector(back) forControlEvents:UIControlEventTouchUpInside];
+    self.framewareDownloadURL = @"https://devs.243096.com/onekey/bixin-2.0.3.bin";
     if (self.framewareDownloadURL) {
         [self startDownload];
     } else {
@@ -54,13 +56,13 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
     [self setNavigationBarBackgroundColorWithClearColor];
     self.navigationItem.leftBarButtonItem = [UIBarButtonItem backBarButtonItemWithTarget:self selector:@selector(back)];
     self.progressView.progress = 0;
-    
+
     if (self.type == OKDeviceUpdateTypeFramework) {
         self.titleLabel.text = kLocalizedString(@"sysUpdating");
     } else if (self.type == OKDeviceUpdateTypeBluetooth) {
         self.titleLabel.text = kLocalizedString(@"bluetoothUpdating");
     }
-    
+
     [self.finshedButton setLayerRadius: 20];
     self.finshedButton.titleLabel.text = MyLocalizedString(@"done", nil);
 }
@@ -76,9 +78,18 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
     NSURLRequest *request = [NSURLRequest requestWithURL:url];
     NSURLSessionDownloadTask *downloadTask =  [downloadSession downloadTaskWithRequest:request];
     self.downloadTask = downloadTask;
-    
-    [downloadTask resume];
+
     self.phase = OKDeviceUpdateInstallPhaseDownloading;
+
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *docDir = [paths objectAtIndex:0];
+    NSString *filePath = [docDir stringByAppendingPathComponent:[NSString stringWithFormat:@"%ld.bin", self.framewareDownloadURL.hash]];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
+        self.progressView.progress = 1.0;
+        [self installFrameware:filePath];
+    } else {
+        [downloadTask resume];
+    }
 }
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite {
@@ -93,7 +104,7 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *docDir = [paths objectAtIndex:0];
 
-    NSString *filePath = [docDir stringByAppendingPathComponent:@"framework.bin"];
+    NSString *filePath = [docDir stringByAppendingPathComponent:[NSString stringWithFormat:@"%ld.bin", self.framewareDownloadURL.hash]];
 
     NSError *error = nil;
     if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
@@ -113,13 +124,25 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
     self.phase = OKDeviceUpdateInstallPhaseInstalling;
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         [kPyCommandsManager callInterface:kInterfacefirmware_update parameter:@{@"filename": path}];
-        NSLog(@"");
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (self.phase != OKDeviceUpdateInstallPhaseDone) {
+                [self back];
+            }
+        });
+
     });
 }
 
 - (void)installProcess:(NSNotification *)noti {
     NSInteger process = [noti.object integerValue];
     dispatch_async(dispatch_get_main_queue(), ^{
+
+        // TODO: 硬件输入 pin 码没有通知临时解决方案
+        static NSUInteger received;
+        if (++received < 5) {
+            [self.navigationController popToRootViewControllerAnimated:YES];
+        }
+
         self.progressView.progress = process / 100.0;
         if (process >= 100) {
             self.phase = OKDeviceUpdateInstallPhaseDone;
@@ -128,26 +151,9 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
 
 }
 
-- (void)hwNotiManagerDekegate:(OKHwNotiManager *)hwNoti type:(OKHWNotiType)type {
-    OKWeakSelf(self)
-    NSLog(@"112233 hwNotiManagerDekegate");
-    dispatch_async(dispatch_get_main_queue(), ^{
-        OKPINCodeViewController *pinCode = [OKPINCodeViewController PINCodeViewController:^(NSString * _Nonnull pin) {
-            NSLog(@"pinCode = %@",pin);
-            dispatch_async(dispatch_get_global_queue(0, 0), ^{
-                [kPyCommandsManager callInterface:kInterfaceset_pin parameter:@{@"pin":pin}];
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [weakself dismissViewControllerAnimated:YES completion:nil];
-                });
-            });
-        }];
-        [self.navigationController presentViewController:pinCode animated:YES completion:nil];
-    });
-}
-
 - (void)setPhase:(OKDeviceUpdateInstallPhase)phase {
     _phase = phase;
-    
+
     self.finshedButton.enabled = (phase == OKDeviceUpdateInstallPhaseDone);
     self.finshedButton.alpha = (phase == OKDeviceUpdateInstallPhaseDone ? 1 : 0.3);
     if (phase == OKDeviceUpdateInstallPhaseDownloading) {
@@ -157,7 +163,49 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
     } else if (phase == OKDeviceUpdateInstallPhaseDone) {
         self.descLabel.text = kLocalizedString(@"installed");
     }
+}
 
+
+
+- (void)hwNotiManagerDekegate:(OKHwNotiManager *)hwNoti type:(OKHWNotiType)type {
+    OKWeakSelf(self)
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (type == OKHWNotiTypePin_Current) {
+            OKPINCodeViewController *pinCode = [OKPINCodeViewController PINCodeViewController:^(NSString * _Nonnull pin) {
+                NSLog(@"pinCode = %@",pin);
+                dispatch_async(dispatch_get_global_queue(0, 0), ^{
+                    [kPyCommandsManager callInterface:kInterfaceset_pin parameter:@{@"pin":pin}];
+                });
+            }];
+            pinCode.forbidInteractivePopGestureRecognizer = YES;
+            pinCode.backToPreviousCallback = ^{
+                [weakself cancel];
+            };
+            [weakself.navigationController pushViewController:pinCode animated:YES];
+
+        } else if (type == OKHWNotiTypeKeyConfirm) {
+            OKDeviceConfirmController *confirmVC = [OKDeviceConfirmController controllerWithStoryboard];
+            confirmVC.titleText = MyLocalizedString(@"Verify on the equipment", nil);
+            confirmVC.btnText = MyLocalizedString(@"cancel", nil);
+            confirmVC.btnCallback = ^{
+                [kPyCommandsManager cancel];
+            };
+            confirmVC.backToPreviousCallback = ^{
+                [kPyCommandsManager cancel];
+            };
+            confirmVC.forbidInteractivePopGestureRecognizer = YES;
+            [weakself.navigationController pushViewController:confirmVC animated:YES];
+        } else {
+//            NSAssert(0, @"OKDeviceUpdateInstallController hwNotiManagerDekegate unimplemented");
+        }
+    });
+}
+
+- (void)cancel {
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        [kPyCommandsManager cancelPIN];
+    });
+    [self back];
 }
 
 - (void)back {
@@ -166,5 +214,4 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
     }
     [self dismissViewControllerAnimated:YES completion:nil];
 }
-
 @end

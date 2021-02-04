@@ -455,6 +455,10 @@
 		B01CB1C625C1141C0099F931 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B01CB1C525C1141B0099F931 /* CFNetwork.framework */; };
 		B01CB1D425C12F9A0099F931 /* WKWebView+Bypass.h in Headers */ = {isa = PBXBuildFile; fileRef = B01CB1D225C12F9A0099F931 /* WKWebView+Bypass.h */; };
 		B01CB1D525C12F9A0099F931 /* WKWebView+Bypass.m in Sources */ = {isa = PBXBuildFile; fileRef = B01CB1D325C12F9A0099F931 /* WKWebView+Bypass.m */; };
+		B03A1A4325C90835004137F1 /* OKPINInputMethodController.h in Headers */ = {isa = PBXBuildFile; fileRef = B03A1A4125C90835004137F1 /* OKPINInputMethodController.h */; };
+		B03A1A4425C90835004137F1 /* OKPINInputMethodController.m in Sources */ = {isa = PBXBuildFile; fileRef = B03A1A4225C90835004137F1 /* OKPINInputMethodController.m */; };
+		B03A1A4725C91601004137F1 /* OKPINInputMethodCell.h in Headers */ = {isa = PBXBuildFile; fileRef = B03A1A4525C91601004137F1 /* OKPINInputMethodCell.h */; };
+		B03A1A4825C91601004137F1 /* OKPINInputMethodCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B03A1A4625C91601004137F1 /* OKPINInputMethodCell.m */; };
 		B058D8A325B55662000EB27C /* OKResetDeviceWarningViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B058D88225B55662000EB27C /* OKResetDeviceWarningViewController.m */; };
 		B058D8A425B55663000EB27C /* OKDeviceListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B058D88425B55662000EB27C /* OKDeviceListViewController.m */; };
 		B058D8A525B55663000EB27C /* OKDeviceListCellModel.h in Headers */ = {isa = PBXBuildFile; fileRef = B058D88525B55662000EB27C /* OKDeviceListCellModel.h */; };
@@ -1022,6 +1026,10 @@
 		B01CB1C525C1141B0099F931 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		B01CB1D225C12F9A0099F931 /* WKWebView+Bypass.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "WKWebView+Bypass.h"; sourceTree = "<group>"; };
 		B01CB1D325C12F9A0099F931 /* WKWebView+Bypass.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "WKWebView+Bypass.m"; sourceTree = "<group>"; };
+		B03A1A4125C90835004137F1 /* OKPINInputMethodController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKPINInputMethodController.h; sourceTree = "<group>"; };
+		B03A1A4225C90835004137F1 /* OKPINInputMethodController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKPINInputMethodController.m; sourceTree = "<group>"; };
+		B03A1A4525C91601004137F1 /* OKPINInputMethodCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKPINInputMethodCell.h; sourceTree = "<group>"; };
+		B03A1A4625C91601004137F1 /* OKPINInputMethodCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKPINInputMethodCell.m; sourceTree = "<group>"; };
 		B058D88225B55662000EB27C /* OKResetDeviceWarningViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKResetDeviceWarningViewController.m; sourceTree = "<group>"; };
 		B058D88425B55662000EB27C /* OKDeviceListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKDeviceListViewController.m; sourceTree = "<group>"; };
 		B058D88525B55662000EB27C /* OKDeviceListCellModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKDeviceListCellModel.h; sourceTree = "<group>"; };
@@ -1607,6 +1615,8 @@
 				8814231C25B18EA900961668 /* OKDeleteWalletTipsViewController.h */,
 				8814231D25B18EA900961668 /* OKAboutViewController.h */,
 				8814231E25B18EA900961668 /* Tab_Mine.storyboard */,
+				B03A1A4125C90835004137F1 /* OKPINInputMethodController.h */,
+				B03A1A4225C90835004137F1 /* OKPINInputMethodController.m */,
 				8814231F25B18EA900961668 /* OKLanguageViewController.m */,
 				8814232025B18EA900961668 /* OKTradeSettingViewController.h */,
 				8814232125B18EA900961668 /* OKManagerHDViewController.h */,
@@ -1682,6 +1692,8 @@
 		8814235725B18EA900961668 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				B03A1A4525C91601004137F1 /* OKPINInputMethodCell.h */,
+				B03A1A4625C91601004137F1 /* OKPINInputMethodCell.m */,
 				8814235825B18EA900961668 /* OKMineTableViewCell.m */,
 				8814235925B18EA900961668 /* OKAllAssetsTableViewCell.m */,
 				8814235A25B18EA900961668 /* OKLanguageTableViewCell.m */,
@@ -2225,6 +2237,7 @@
 				8814250625B18EAA00961668 /* OKTxTableViewCellModel.h in Headers */,
 				8814246425B18EAA00961668 /* OKDeviceInfoModel.h in Headers */,
 				8814257A25B18EAA00961668 /* OKWalletListNoHDTableViewCell.h in Headers */,
+				B03A1A4725C91601004137F1 /* OKPINInputMethodCell.h in Headers */,
 				BE674FDD991CD488615B3B16 /* AppDelegate.h in Headers */,
 				8814246825B18EAA00961668 /* OKDiscoverViewController.h in Headers */,
 				881425FD25BFF0A400961668 /* OKTransferCompleteController.h in Headers */,
@@ -2255,6 +2268,7 @@
 				B058D8CA25B572C7000EB27C /* OKDevicesManager.h in Headers */,
 				8814243C25B18EAA00961668 /* OKCreateResultWalletInfoModel.h in Headers */,
 				881424EB25B18EAA00961668 /* OKReceiveCoinViewController.h in Headers */,
+				B03A1A4325C90835004137F1 /* OKPINInputMethodController.h in Headers */,
 				881424C625B18EAA00961668 /* OKElectrumNodeViewController.h in Headers */,
 				8814252E25B18EAA00961668 /* OKWalletManager.h in Headers */,
 				881425F925B9216700961668 /* OKSpecialEquipmentViewController.h in Headers */,
@@ -2477,6 +2491,11 @@
 			attributes = {
 				LastUpgradeCheck = 0940;
 				ORGANIZATIONNAME = Onekey;
+				TargetAttributes = {
+					60796EE119190F4100A9926B = {
+						LastSwiftMigration = 1240;
+					};
+				};
 			};
 			buildConfigurationList = 60796EDD19190F4100A9926B /* Build configuration list for PBXProject "OneKey" */;
 			compatibilityVersion = "Xcode 9.3";
@@ -2625,6 +2644,7 @@
 				8814245825B18EAA00961668 /* OKVerifyOnTheDeviceController.m in Sources */,
 				881424F225B18EAA00961668 /* OKPrivateKeyExportViewController.m in Sources */,
 				881424ED25B18EAA00961668 /* OKTxViewController.m in Sources */,
+				B03A1A4425C90835004137F1 /* OKPINInputMethodController.m in Sources */,
 				8814253125B18EAA00961668 /* OKOneKeyPwdManager.m in Sources */,
 				8814251C25B18EAA00961668 /* OKFirstUseViewController.m in Sources */,
 				881424E225B18EAA00961668 /* OKUnitTableViewCell.m in Sources */,
@@ -2729,6 +2749,7 @@
 				881424D625B18EAA00961668 /* OKUnitTableViewCellModel.m in Sources */,
 				881424F125B18EAA00961668 /* OKExportTipsViewController.m in Sources */,
 				8814255225B18EAA00961668 /* OKBackUpViewController.m in Sources */,
+				B03A1A4825C91601004137F1 /* OKPINInputMethodCell.m in Sources */,
 				8814254325B18EAA00961668 /* OKQRCodeScanManager.m in Sources */,
 				8814251725B18EAA00961668 /* OKWalletDetailTableViewCell.m in Sources */,
 				8814258925B18EAA00961668 /* OKSelectCoinTypeViewController.m in Sources */,
@@ -2948,6 +2969,7 @@
 			baseConfigurationReference = BCFCEB50ADB4FE66770ECABD /* Pods-OneKey.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = 6M2QF4T7XG;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -3028,6 +3050,9 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRIP_INSTALLED_PRODUCT = NO;
 				STRIP_STYLE = debugging;
+				SWIFT_OBJC_BRIDGING_HEADER = "../CustomCode/Modules/Tab_Mine/HardwareSetting/OneKey-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 				USER_HEADER_SEARCH_PATHS = "";
 				WRAPPER_EXTENSION = app;
 			};
@@ -3038,6 +3063,7 @@
 			baseConfigurationReference = 505BDC9C9DD2B8FE5C29638F /* Pods-OneKey.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEVELOPMENT_TEAM = 6M2QF4T7XG;
 				ENABLE_BITCODE = NO;
@@ -3120,6 +3146,8 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRIP_INSTALLED_PRODUCT = NO;
 				STRIP_STYLE = debugging;
+				SWIFT_OBJC_BRIDGING_HEADER = "../CustomCode/Modules/Tab_Mine/HardwareSetting/OneKey-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
