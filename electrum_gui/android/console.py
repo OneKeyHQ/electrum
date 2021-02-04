@@ -176,6 +176,7 @@ def verify_xpub(xpub: str) -> bool:
 
 # Adds additional commands which aren't available over JSON RPC.
 class AndroidCommands(commands.Commands):
+    _recovery_flag = True
     def __init__(self, android_id=None, config=None, user_dir=None, callback=None, chain_type="mainnet"):
         self.asyncio_loop, self._stop_loop, self._loop_thread = create_and_start_event_loop()  # TODO:close loop
         self.config = self.init_config(config=config)
@@ -268,7 +269,6 @@ class AndroidCommands(commands.Commands):
         self.start_daemon()
         self.get_block_info()
 
-    _recovery_flag = True
 
     def init_config(self, config=None):
         config_options = {}
