@@ -3,19 +3,18 @@ package org.haobtc.onekey.onekeys.homepage.process;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.TextView;
+import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
-import androidx.recyclerview.widget.RecyclerView;
-import butterknife.BindView;
-import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnLoadMoreListener;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
+import com.zy.multistatepage.MultiStateContainer;
+import com.zy.multistatepage.MultiStatePage;
+import com.zy.multistatepage.state.SuccessState;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.ObservableOnSubscribe;
@@ -33,7 +32,11 @@ import org.haobtc.onekey.business.blockBrowser.BlockBrowserManager;
 import org.haobtc.onekey.business.chain.bitcoin.BitcoinService;
 import org.haobtc.onekey.business.chain.ethereum.EthService;
 import org.haobtc.onekey.constant.Vm;
+import org.haobtc.onekey.databinding.FragmentTransactionListBinding;
 import org.haobtc.onekey.ui.base.BaseLazyFragment;
+import org.haobtc.onekey.ui.status.LoadErrorGoBrowserState;
+import org.haobtc.onekey.ui.status.LoadProgressState;
+import org.haobtc.onekey.ui.status.NoRecordState;
 import org.haobtc.onekey.viewmodel.AppWalletViewModel;
 import org.jetbrains.annotations.NotNull;
 
@@ -48,6 +51,7 @@ public class TransactionListFragment extends BaseLazyFragment
 
     @StringDef({TransactionListType.ALL, TransactionListType.RECEIVE, TransactionListType.SEND})
     public @interface TransactionListType {
+
         String ALL = "all";
         String RECEIVE = "receive";
         String SEND = "send";
@@ -64,24 +68,10 @@ public class TransactionListFragment extends BaseLazyFragment
         return transactionListFragment;
     }
 
-    @BindView(R.id.recl_transaction_list)
-    RecyclerView reclTransactionList;
-
-    @BindView(R.id.tet_None)
-    TextView tetNone;
-
-    @BindView(R.id.smart_RefreshLayout)
-    SmartRefreshLayout refreshLayout;
-
-    @BindView(R.id.loadProgress)
-    View mLoadProgress;
-
-    @BindView(R.id.ivProgress)
-    View ivProgress;
-
     View mFooterMore;
+    private boolean isFirstLoad = true;
 
-    private List<TransactionSummaryVo> listBeans = new ArrayList<>(PAGE_SIZE);
+    private final List<TransactionSummaryVo> listBeans = new ArrayList<>(PAGE_SIZE);
     private OnekeyTxListAdapter onekeyTxListAdapter;
     private Disposable mLoadTxListDisposable;
     @TransactionListType private String mType = TransactionListType.ALL;
@@ -91,11 +81,12 @@ public class TransactionListFragment extends BaseLazyFragment
     private BitcoinService mBitcoinService = null;
     private EthService mEthService = null;
 
-    private Animation mAnimation;
     private Vm.CoinType mCoinType;
     private int mTotalCount = 0;
 
     private AppWalletViewModel mAppWalletViewModel;
+    private FragmentTransactionListBinding mBinding;
+    private MultiStateContainer mMultiStateContainer;
 
     @Override
     public void onAttach(@NotNull Context context) {
@@ -109,12 +100,32 @@ public class TransactionListFragment extends BaseLazyFragment
     }
 
     @Override
+    public boolean enableViewBinding() {
+        return true;
+    }
+
+    @Nullable
+    @Override
+    public View getLayoutView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
+        mBinding = FragmentTransactionListBinding.inflate(inflater, container, false);
+        return mBinding.getRoot();
+    }
+
+    @Override
     public void init(View view) {
         mAppWalletViewModel = getApplicationViewModel(AppWalletViewModel.class);
-        mAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.dialog_progress_anim);
         mType = getArguments().getString(EXT_TYPE, TransactionListType.ALL);
         onekeyTxListAdapter = new OnekeyTxListAdapter(listBeans, mType);
-        reclTransactionList.setAdapter(onekeyTxListAdapter);
+        mBinding.reclTransactionList.setAdapter(onekeyTxListAdapter);
+        mMultiStateContainer =
+                MultiStatePage.bindMultiState(
+                        mBinding.smartRefreshLayout,
+                        multiStateContainer -> {
+                            onRefresh(mBinding.smartRefreshLayout);
+                        });
         onekeyTxListAdapter.setOnItemClickListener(
                 (adapter, itemView, position) -> {
                     TransactionSummaryVo item = listBeans.get(position);
@@ -150,26 +161,19 @@ public class TransactionListFragment extends BaseLazyFragment
         }
 
         if (mCoinType == Vm.CoinType.ETH) {
-            refreshLayout.setOnRefreshListener(this);
-            refreshLayout.setEnableLoadMore(false);
+            mBinding.smartRefreshLayout.setOnRefreshListener(this);
+            mBinding.smartRefreshLayout.setEnableLoadMore(false);
         } else {
-            refreshLayout.setEnableLoadMore(true);
-            refreshLayout.setOnRefreshListener(this);
-            refreshLayout.setOnLoadMoreListener(this);
+            mBinding.smartRefreshLayout.setEnableLoadMore(true);
+            mBinding.smartRefreshLayout.setOnRefreshListener(this);
+            mBinding.smartRefreshLayout.setOnLoadMoreListener(this);
         }
         mFooterMore = View.inflate(getContext(), R.layout.view_transaction_list_footer, null);
         mFooterMore.setVisibility(View.GONE);
         onekeyTxListAdapter.addFooterView(mFooterMore);
         mFooterMore.setOnClickListener(
                 v -> {
-                    LocalWalletInfo value = mAppWalletViewModel.currentWalletInfo.getValue();
-                    if (value != null) {
-                        CheckChainDetailWebActivity.startWebUrl(
-                                getContext(),
-                                getString(R.string.check_trsaction),
-                                BlockBrowserManager.INSTANCE.browseAddressUrl(
-                                        mCoinType, value.getAddr()));
-                    }
+                    startBrowser();
                 });
     }
 
@@ -236,18 +240,18 @@ public class TransactionListFragment extends BaseLazyFragment
                         .observeOn(AndroidSchedulers.mainThread())
                         .map(
                                 historyTx -> {
-                                    refreshLayout.finishRefresh();
                                     if (mTotalCount > 0 || historyTx.size() > 0) {
-                                        reclTransactionList.setVisibility(View.VISIBLE);
-                                        tetNone.setVisibility(View.GONE);
+                                        if (mTotalCount == 0) {
+                                            mMultiStateContainer.show(SuccessState.class);
+                                        }
                                     } else {
-                                        reclTransactionList.setVisibility(View.GONE);
-                                        tetNone.setVisibility(View.VISIBLE);
+                                        mMultiStateContainer.show(NoRecordState.class);
                                     }
                                     return historyTx;
                                 })
                         .map(
                                 historyTx -> {
+                                    mBinding.smartRefreshLayout.finishRefresh();
                                     if (mTotalCount == 0) {
                                         listBeans.clear();
                                     }
@@ -257,10 +261,10 @@ public class TransactionListFragment extends BaseLazyFragment
                                             || (mTotalCount != 0 && mTotalCount == listBeans.size())
                                             || (mTotalCount == 0 && listBeans.size() < PAGE_SIZE)) {
                                         mFooterMore.setVisibility(View.VISIBLE);
-                                        refreshLayout.finishLoadMore();
-                                        refreshLayout.setEnableLoadMore(false);
+                                        mBinding.smartRefreshLayout.finishLoadMore();
+                                        mBinding.smartRefreshLayout.setEnableLoadMore(false);
                                     } else {
-                                        refreshLayout.finishLoadMore();
+                                        mBinding.smartRefreshLayout.finishLoadMore();
                                     }
                                     mTotalCount = listBeans.size();
                                     return historyTx;
@@ -268,7 +272,6 @@ public class TransactionListFragment extends BaseLazyFragment
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeOn(getLoadWorkScheduler())
                         .doOnSubscribe(s -> showProgress())
-                        .doFinally(this::dismissProgress)
                         .subscribe(
                                 o -> {
                                     if (null != onekeyTxListAdapter) {
@@ -276,18 +279,28 @@ public class TransactionListFragment extends BaseLazyFragment
                                     }
                                 },
                                 e -> {
-                                    e.printStackTrace();
-                                    String message = e.getMessage();
-                                    if (message != null && !message.contains("SQLite")) {
-                                        showToast(e.getMessage());
-                                    }
-                                    if (mTotalCount == 0 && null != reclTransactionList) {
-                                        reclTransactionList.setVisibility(View.GONE);
-                                    }
-                                    if (mTotalCount == 0 && null != tetNone) {
-                                        tetNone.setVisibility(View.VISIBLE);
+                                    if (mTotalCount == 0) {
+                                        isFirstLoad = true;
+                                        mMultiStateContainer.show(
+                                                LoadErrorGoBrowserState.class,
+                                                multiState -> {
+                                                    multiState.setOnGotoBrowserListener(
+                                                            v -> {
+                                                                startBrowser();
+                                                            });
+                                                });
                                     }
                                 });
+    }
+
+    private void startBrowser() {
+        LocalWalletInfo value = mAppWalletViewModel.currentWalletInfo.getValue();
+        if (value != null) {
+            CheckChainDetailWebActivity.startWebUrl(
+                    getContext(),
+                    getString(R.string.check_trsaction),
+                    BlockBrowserManager.INSTANCE.browseAddressUrl(mCoinType, value.getAddr()));
+        }
     }
 
     @Override
@@ -301,20 +314,9 @@ public class TransactionListFragment extends BaseLazyFragment
     private void showProgress() {
         runOnUiThread(
                 () -> {
-                    if (ivProgress != null && mLoadProgress != null) {
-                        ivProgress.startAnimation(mAnimation);
-                        mAnimation.startNow();
-                        mLoadProgress.setVisibility(View.VISIBLE);
-                    }
-                });
-    }
-
-    private void dismissProgress() {
-        runOnUiThread(
-                () -> {
-                    if (mLoadProgress != null) {
-                        mLoadProgress.setVisibility(View.GONE);
-                        mAnimation.cancel();
+                    if (isFirstLoad) {
+                        isFirstLoad = false;
+                        mMultiStateContainer.show(LoadProgressState.class);
                     }
                 });
     }
@@ -328,11 +330,13 @@ public class TransactionListFragment extends BaseLazyFragment
     }
 
     interface SchedulerProvide {
+
         @NonNull
         Scheduler getScheduler();
     }
 
     public interface CoinTypeProvider {
+
         Vm.CoinType getCurrentCoinType();
     }
 }

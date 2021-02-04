@@ -14,9 +14,11 @@ import org.haobtc.onekey.business.chain.TransactionListType
 import org.haobtc.onekey.constant.Vm
 import org.haobtc.onekey.utils.Daemon
 import org.haobtc.onekey.utils.internet.NetUtil
+import java.lang.RuntimeException
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.DecimalFormat
+import kotlin.jvm.Throws
 
 class BitcoinService {
   private val mGson by lazy {
@@ -35,6 +37,7 @@ class BitcoinService {
     }
   }
 
+  @Throws(Exception::class)
   @WorkerThread
   fun getTxList(@TransactionListType status: String = TransactionListType.ALL, position: Int = 0, limit: Int = 10): List<TransactionSummaryVo> {
     return try {
@@ -77,7 +80,7 @@ class BitcoinService {
         CrashReport.postCatchedException(e)
       }
       e.printStackTrace()
-      arrayListOf()
+      throw e
     }
   }
 

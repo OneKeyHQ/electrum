@@ -1,33 +1,30 @@
 package org.haobtc.onekey.ui.base;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
-
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.utils.EventBusUtils;
 
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
-
-
-/**
- * @author liyan
- */
+/** @author liyan */
 public abstract class BaseFragment extends Fragment implements IBaseView {
+
     protected Unbinder unbinder;
 
     public Handler mHandler;
 
     static class MyHandler extends Handler {
+
         public MyHandler() {
             super(Looper.getMainLooper());
         }
@@ -35,9 +32,17 @@ public abstract class BaseFragment extends Fragment implements IBaseView {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(getContentViewId(), container, false);
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
+        View view;
+        if (enableViewBinding()) {
+            view = getLayoutView(inflater, container, savedInstanceState);
+            assert view != null;
+        } else {
+            view = inflater.inflate(getContentViewId(), container, false);
+        }
         unbinder = ButterKnife.bind(this, view);
         if (needEvents()) {
             EventBusUtils.register(this);
@@ -47,13 +52,23 @@ public abstract class BaseFragment extends Fragment implements IBaseView {
     }
 
     /**
-     * init views
-     * it's needless
+     * init views it's needless
      *
      * @param view
      */
     public abstract void init(View view);
 
+    public boolean enableViewBinding() {
+        return false;
+    }
+
+    @Nullable
+    public View getLayoutView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
+        return null;
+    }
 
     @Override
     public void onDetach() {
@@ -84,7 +99,8 @@ public abstract class BaseFragment extends Fragment implements IBaseView {
     }
 
     public <T extends ViewModel> T getApplicationViewModel(Class<T> clazz) {
-        return new ViewModelProvider(((MyApplication) requireContext().getApplicationContext())).get(clazz);
+        return new ViewModelProvider(((MyApplication) requireContext().getApplicationContext()))
+                .get(clazz);
     }
 
     public <T extends ViewModel> T getActivityViewModel(Class<T> clazz) {

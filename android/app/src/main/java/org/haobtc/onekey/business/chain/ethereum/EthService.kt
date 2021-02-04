@@ -15,9 +15,11 @@ import org.haobtc.onekey.constant.Vm
 import org.haobtc.onekey.utils.Daemon
 import org.haobtc.onekey.utils.internet.NetUtil
 import java.lang.Exception
+import java.lang.RuntimeException
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.DecimalFormat
+import kotlin.jvm.Throws
 
 class EthService {
   private val mGson by lazy {
@@ -32,6 +34,7 @@ class EthService {
     }
   }
 
+  @Throws(Exception::class)
   @WorkerThread
   fun getTxList(@TransactionListType status: String = TransactionListType.ALL, position: Int = 0, limit: Int = 10): List<TransactionSummaryVo> {
     return try {
@@ -74,7 +77,7 @@ class EthService {
         // 及时上报 eth 区块浏览器获取交易记录不可用的信息
         CrashReport.postCatchedException(e)
       }
-      arrayListOf()
+      throw e
     }
   }
 }
