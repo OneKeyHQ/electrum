@@ -255,7 +255,6 @@ class AndroidCommands(commands.Commands):
         self.rbf_tx = ""
         self.m = 0
         self.n = 0
-        # self.sync_timer = None
         self.config.set_key("auto_connect", True, True)
         global ticker
         ticker = Ticker(5.0, self.ticker_action)
@@ -375,7 +374,7 @@ class AndroidCommands(commands.Commands):
             if x:
                 out["unmatured"] = self.format_amount(x, is_diff=True).strip()
 
-        if out:
+        if out and self.callbackIntent is not None:
             self.callbackIntent.onCallback("update_status=%s" % json.dumps(out, cls=DecimalEncoder))
 
     def get_remove_flag(self, tx_hash):
@@ -2950,8 +2949,11 @@ class AndroidCommands(commands.Commands):
             elif flag == "keystore":
                 try:
                     Account.decrypt(json.loads(data), password).hex()
-                except BaseException:
+                except (TypeError, KeyError, NotImplementedError):
                     raise BaseException(_("Incorrect eth keystore."))
+                except BaseException as e:
+                    raise InvalidPasswordException()
+
             elif flag == "public":
                 try:
                     uncom_key = get_uncompressed_key(data)
