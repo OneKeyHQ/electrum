@@ -7,10 +7,11 @@ import butterknife.OnClick;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.ui.base.BaseActivity;
-import zendesk.chat.ChatEngine;
+import zendesk.configurations.Configuration;
 import zendesk.messaging.Engine;
 import zendesk.messaging.MessagingActivity;
 import zendesk.support.SupportEngine;
+import zendesk.support.request.RequestActivity;
 import zendesk.support.requestlist.RequestListActivity;
 
 public class SupportActivity extends BaseActivity {
@@ -40,12 +41,15 @@ public class SupportActivity extends BaseActivity {
         switch (view.getId()) {
             case R.id.commit:
                 Engine supportEngine = SupportEngine.engine();
-                Engine chatEngine = ChatEngine.engine();
-
                 MessagingActivity.builder().withEngines(supportEngine).show(mContext);
                 break;
             case R.id.view_history:
-                RequestListActivity.builder().show(mContext);
+                Configuration requestActivityConfig =
+                        RequestActivity.builder()
+                                .withRequestSubject("Android ticket")
+                                .withTags("android", "mobile")
+                                .config();
+                RequestListActivity.builder().show(SupportActivity.this, requestActivityConfig);
                 break;
         }
     }
