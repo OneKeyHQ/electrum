@@ -44,6 +44,7 @@ typedef enum {
 - (void)setCreateResultModel:(OKCreateResultModel *)createResultModel
 {
     _createResultModel = createResultModel;
+    
     self.walletList = self.createResultModel.derived_info;
     [self.tableView reloadData];
 }
@@ -142,7 +143,7 @@ typedef enum {
 
 - (void)createWallet:(NSString *)pwd mnemonicStr:(NSString *)mnemonicStr isInit:(BOOL)isInit
 {
-    NSString *seed = mnemonicStr;
+    NSString *seed = mnemonicStr == nil?@"":mnemonicStr;
     OKWeakSelf(self)
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         NSDictionary *create =  [kPyCommandsManager callInterface:kInterfaceCreate_hd_wallet parameter:@{@"password":pwd,@"seed":seed}];

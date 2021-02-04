@@ -417,7 +417,7 @@
 
 - (void)tableViewDidSelectLangue
 {
-    [self tableView:self.tableView didSelectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:2]];
+    [self tableView:self.tableView didSelectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:3]];
 }
 
 
