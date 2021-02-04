@@ -58,6 +58,7 @@
         } else {
             [kTools tipMessage:[MyLocalizedString(@"hardwareWallet.recover.title", nil) stringByAppendingString:MyLocalizedString(@"fail", nil)]] ;
         }
+        [kOKBlueManager disconnectAllPeripherals];
         [weakself dismissSelf];
     });
 }

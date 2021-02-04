@@ -3190,8 +3190,6 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRIP_INSTALLED_PRODUCT = NO;
 				STRIP_STYLE = debugging;
-				SWIFT_OBJC_BRIDGING_HEADER = "../CustomCode/Modules/Tab_Mine/HardwareSetting/OneKey-Bridging-Header.h";
-				SWIFT_VERSION = 5.0;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

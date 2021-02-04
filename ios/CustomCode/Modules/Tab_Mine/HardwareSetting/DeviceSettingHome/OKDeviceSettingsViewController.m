@@ -125,6 +125,9 @@ static const NSUInteger titleColorRed = 0xeb5757;
         case OKHardwareListBaseCellTypeDeviceDelete: {
             OKDeviceDeleteController *vc = [OKDeviceDeleteController controllerWithStoryboard];
             vc.deleteDeviceCallback = ^{
+                if ([kOKBlueManager.currentDeviceID isEqualToString:self.deviceId]) {
+                    [kOKBlueManager disconnectAllPeripherals];
+                }
                 [[OKDevicesManager sharedInstance] removeDevice:self.deviceId];
                 [[NSNotificationCenter defaultCenter] postNotificationName:OKDeviceListReloadNotificationKey object:nil];
                 [self.navigationController popViewControllerAnimated:YES];
