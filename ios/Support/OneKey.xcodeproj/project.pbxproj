@@ -496,6 +496,10 @@
 		B058D8CB25B572C7000EB27C /* OKDevicesManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B058D8C925B572C7000EB27C /* OKDevicesManager.m */; };
 		B058D8CE25B5A64F000EB27C /* OKDeviceModel.h in Headers */ = {isa = PBXBuildFile; fileRef = B058D8CC25B5A64F000EB27C /* OKDeviceModel.h */; };
 		B058D8CF25B5A64F000EB27C /* OKDeviceModel.m in Sources */ = {isa = PBXBuildFile; fileRef = B058D8CD25B5A64F000EB27C /* OKDeviceModel.m */; };
+		B094AE7325CBEE9400DCA01E /* NSArray+OKAdd.h in Headers */ = {isa = PBXBuildFile; fileRef = B094AE7125CBEE9400DCA01E /* NSArray+OKAdd.h */; };
+		B094AE7425CBEE9400DCA01E /* NSArray+OKAdd.m in Sources */ = {isa = PBXBuildFile; fileRef = B094AE7225CBEE9400DCA01E /* NSArray+OKAdd.m */; };
+		B094AEB025CBFD1500DCA01E /* OKVersion.h in Headers */ = {isa = PBXBuildFile; fileRef = B094AEAE25CBFD1500DCA01E /* OKVersion.h */; };
+		B094AEB125CBFD1500DCA01E /* OKVersion.m in Sources */ = {isa = PBXBuildFile; fileRef = B094AEAF25CBFD1500DCA01E /* OKVersion.m */; };
 		B1224B57B4D99A578C974400 /* _raw_cbc.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 55E241F594223A4D0246CAB6 /* _raw_cbc.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B29C483197B6698004570F27 /* OKNSObject.h in Headers */ = {isa = PBXBuildFile; fileRef = A911430B96FB9633A857ACAD /* OKNSObject.h */; settings = {ATTRIBUTES = (project, ); }; };
 		B2EE47BDB57AA751FFE38EF0 /* _raw_ecb.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1A4144F991D1C48D86723572 /* _raw_ecb.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -1067,6 +1071,10 @@
 		B058D8C925B572C7000EB27C /* OKDevicesManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKDevicesManager.m; sourceTree = "<group>"; };
 		B058D8CC25B5A64F000EB27C /* OKDeviceModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKDeviceModel.h; sourceTree = "<group>"; };
 		B058D8CD25B5A64F000EB27C /* OKDeviceModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKDeviceModel.m; sourceTree = "<group>"; };
+		B094AE7125CBEE9400DCA01E /* NSArray+OKAdd.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSArray+OKAdd.h"; sourceTree = "<group>"; };
+		B094AE7225CBEE9400DCA01E /* NSArray+OKAdd.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSArray+OKAdd.m"; sourceTree = "<group>"; };
+		B094AEAE25CBFD1500DCA01E /* OKVersion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKVersion.h; sourceTree = "<group>"; };
+		B094AEAF25CBFD1500DCA01E /* OKVersion.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKVersion.m; sourceTree = "<group>"; };
 		B0D7435FBD7BF7C736F29F8F /* OKColors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OKColors.h; path = ../CustomCode/OKColors.h; sourceTree = SOURCE_ROOT; };
 		B73C4F1B98EDFBC9B4F96E3E /* _chacha20.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = _chacha20.framework; path = ../Resources/Dylib/_chacha20.framework; sourceTree = SOURCE_ROOT; };
 		B7414DFCA31369C5738DFF3D /* _cpuid_c.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = _cpuid_c.framework; path = ../Resources/Dylib/_cpuid_c.framework; sourceTree = SOURCE_ROOT; };
@@ -1248,6 +1256,7 @@
 		8814228525B18EA900961668 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				B094AEAD25CBFCFA00DCA01E /* Common */,
 				8814228625B18EA900961668 /* ImportWallet */,
 				8814229125B18EA900961668 /* PassWord */,
 				881422A925B18EA900961668 /* Tools */,
@@ -2046,6 +2055,8 @@
 			isa = PBXGroup;
 			children = (
 				72FF4539A963089D04591408 /* NSString+OKAdd.m */,
+				B094AE7125CBEE9400DCA01E /* NSArray+OKAdd.h */,
+				B094AE7225CBEE9400DCA01E /* NSArray+OKAdd.m */,
 				B058D8C125B5567A000EB27C /* NSArray+OKKeyPath.h */,
 				B058D8C325B5567B000EB27C /* NSArray+OKKeyPath.m */,
 				B058D8C225B5567B000EB27C /* NSDictionary+OKKeyPath.h */,
@@ -2169,6 +2180,15 @@
 			path = DeviceSettingHome;
 			sourceTree = "<group>";
 		};
+		B094AEAD25CBFCFA00DCA01E /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				B094AEAE25CBFD1500DCA01E /* OKVersion.h */,
+				B094AEAF25CBFD1500DCA01E /* OKVersion.m */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
 		CBB14A08A299E78F0950E8FA /* CustomCode */ = {
 			isa = PBXGroup;
 			children = (
@@ -2242,6 +2262,7 @@
 				8814246825B18EAA00961668 /* OKDiscoverViewController.h in Headers */,
 				881425FD25BFF0A400961668 /* OKTransferCompleteController.h in Headers */,
 				6BF5481D9407079B03FE8AD6 /* OKClickTextView.h in Headers */,
+				B094AEB025CBFD1500DCA01E /* OKVersion.h in Headers */,
 				8814249825B18EAA00961668 /* qrencode.h in Headers */,
 				881424DA25B18EAA00961668 /* OKUnitTableViewCellModel.h in Headers */,
 				881424FE25B18EAA00961668 /* OKWalletDetailModel.h in Headers */,
@@ -2286,6 +2307,7 @@
 				881424A425B18EAA00961668 /* OKDeleteWalletTipsViewController.h in Headers */,
 				8814244825B18EAA00961668 /* Base64.h in Headers */,
 				8814243825B18EAA00961668 /* OKBiologicalViewController.h in Headers */,
+				B094AE7325CBEE9400DCA01E /* NSArray+OKAdd.h in Headers */,
 				8814249925B18EAA00961668 /* QRCodeGenerator.h in Headers */,
 				8814245C25B18EAA00961668 /* OKMatchingInCirclesViewController.h in Headers */,
 				881424C525B18EAA00961668 /* OKElectrumNodeModel.h in Headers */,
@@ -2624,6 +2646,7 @@
 				881424AE25B18EAA00961668 /* OKFiatSelectViewController.m in Sources */,
 				B058D8AF25B55663000EB27C /* OKDeviceVerifyResultController.m in Sources */,
 				8814243225B18EAA00961668 /* OKCreateResultWalletInfoModel.m in Sources */,
+				B094AEB125CBFD1500DCA01E /* OKVersion.m in Sources */,
 				B058D8B325B55663000EB27C /* OKDeviceUpdateModel.m in Sources */,
 				8814256325B18EAA00961668 /* OKCheckWordView.m in Sources */,
 				02F741609824FB47EF141ABE /* OKNSObject.m in Sources */,
@@ -2774,6 +2797,7 @@
 				404D4A3F8F073EC7E7FFA53B /* NSData+StringToData.m in Sources */,
 				881424CC25B18EAA00961668 /* OKNetTableViewCell.m in Sources */,
 				8814254F25B18EAA00961668 /* OKWordWrongViewController.m in Sources */,
+				B094AE7425CBEE9400DCA01E /* NSArray+OKAdd.m in Sources */,
 				8814249725B18EAA00961668 /* qrspec.c in Sources */,
 				8814250725B18EAA00961668 /* OKDefaultFeeInfoModel.m in Sources */,
 				B058D8BB25B55663000EB27C /* OKHardwareListBaseCell.m in Sources */,

@@ -28,6 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)isHexString:(NSString *)str;
 - (NSURL * _Nullable)toURL;
 - (NSDictionary * _Nullable)toDict; // json string to dict
+- (NSArray<NSString *>*)split:(NSString *)sparator;
+
 @end
 
 NS_ASSUME_NONNULL_END

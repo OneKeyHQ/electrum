@@ -8,6 +8,7 @@
 
 #import "OKDeviceUpdateModel.h"
 #import "NSDictionary+OKKeyPath.h"
+#import "OKVersion.h"
 
 @interface OKDeviceUpdateModel ()
 
@@ -36,7 +37,7 @@
 
 - (NSArray *)cellModels {
     NSMutableArray *cellModels = [[NSMutableArray alloc] init];
-    
+
     return cellModels;
 }
 
@@ -59,29 +60,10 @@
     return version;
 }
 
-- (NSArray <NSNumber *>*)arrayFromVersionString:(NSString *)version {
-    NSMutableArray *versionArray = [[NSMutableArray alloc] init];
-    NSArray *strArray = [version componentsSeparatedByString:@"."];
-    for (NSString *s in strArray) {
-        [versionArray addObject: @(s.integerValue)];
-    }
-    return versionArray;
-}
-
 - (BOOL)needUpdateWithCurrent:(NSString *)cur andLatest:(NSString *)latest {
-    NSArray <NSNumber *>* v0 = [self arrayFromVersionString:cur];
-    NSArray <NSNumber *>* v1 = [self arrayFromVersionString:latest];
-    
-    if (v0.count != v1.count) {
-        assert(0);
-    }
-
-    for (int i = 0; i < v0.count; i++) {
-        if (v1[i].integerValue > v0[i].integerValue) {
-            return YES;
-        }
-    }
-    return NO;
+    OKVersion *A = [OKVersion versionWithString:cur];
+    OKVersion *B = [OKVersion versionWithString:latest];
+    return [B versionGreaterThen:A];
 }
 
 

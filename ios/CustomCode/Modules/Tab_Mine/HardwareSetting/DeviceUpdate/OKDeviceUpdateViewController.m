@@ -190,7 +190,9 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
 - (void)updateCellModel {
 
     NSMutableArray *cellsData = [[NSMutableArray alloc] initWithCapacity:2];
-    if (self.bootloaderMode || [self.updateModel systemFirmwareNeedUpdate:@"0.0.0"]) {
+
+    OKDeviceModel *deviceModel = [[OKDevicesManager sharedInstance] getDeviceModelWithID:self.deviceId];
+    if (self.bootloaderMode || [self.updateModel systemFirmwareNeedUpdate:deviceModel.deviceInfo.deviceSysVersion]) {
         NSString *version = self.updateModel.systemFirmwareVersion;
         NSString *versionDesc = [kLocalizedString(@"newSysAvailable") stringByAppendingString:version];
         NSString *updateDesc = ([OKLocalizableManager getCurrentLanguage] == AppCurrentLanguage_Zh_Hans) ? self.updateModel.systemFirmwareChangeLogCN : self.updateModel.systemFirmwareChangeLogEN;

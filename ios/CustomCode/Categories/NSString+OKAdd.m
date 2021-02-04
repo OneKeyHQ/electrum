@@ -41,12 +41,12 @@
 - (CGFloat)getLabelHeightWithWidth:(CGFloat)width font: (CGFloat)font
 {
     CGRect rect = [self boundingRectWithSize:CGSizeMake(width, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:font]} context:nil];
-    
+
     return rect.size.height;
 }
 //根据高度度求宽度  text 计算的内容  Height 计算的高度 font字体大小
 - (CGFloat)getWidthWithHeight:(CGFloat)height font:(CGFloat)font{
-    
+
     CGRect rect = [self boundingRectWithSize:CGSizeMake(MAXFLOAT, height)
                                         options:NSStringDrawingUsesLineFragmentOrigin
                                      attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:font]}
@@ -112,12 +112,16 @@
 - (NSDictionary *)toDict {
     NSData *jsonData = [self dataUsingEncoding:NSUTF8StringEncoding];
     NSError *err;
-    
+
     NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingAllowFragments error:&err];
     if (err) {
         NSLog(@"ERROR: %@", err);
         return nil;
     }
     return dict;
+}
+
+- (NSArray<NSString *> *)split:(NSString *)sparator {
+    return [self componentsSeparatedByString:sparator];
 }
 @end
