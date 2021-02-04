@@ -19,6 +19,7 @@
 #import "OKReceiveCoinViewController.h"
 #import "OKSendCoinViewController.h"
 #import "OKSignatureViewController.h"
+#import "OKDeviceUpdateViewController.h"
 
 @interface OKMatchingInCirclesViewController ()<OKBabyBluetoothManageDelegate,UITableViewDelegate,UITableViewDataSource>
 
@@ -210,7 +211,7 @@
 
 - (void)getScanResultPeripherals:(NSArray *)peripheralInfoArr {
     NSLog(@"peripheralInfoArr == %@",peripheralInfoArr);
-    
+
     OKWeakSelf(self)
     // 这里获取到扫描到的蓝牙外设数组、添加至数据源中
     if (self.dataSource.count>0) {
@@ -248,6 +249,13 @@
                 if (jsonDict != nil) {
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [MBProgressHUD hideHUDForView:self.view animated:YES];
+                        if (deviceModel.bootloaderMode) {
+                            OKDeviceUpdateViewController *vc = [OKDeviceUpdateViewController controllerWithStoryboard];
+                            vc.bootloaderMode = YES;
+                            [weakself.navigationController pushViewController:vc animated:YES];
+                            return;
+                        }
+
                         if (deviceModel.deviceInfo.initialized ) {
                             if (deviceModel.deviceInfo.backup_only) {
                                 if ([kWalletManager haveHDWallet]) {
