@@ -376,7 +376,7 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
 
     /** 统一处理硬件连接 */
     private void deal(@IdRes int id) {
-        if (org.haobtc.onekey.constant.Constant.WALLET_TYPE_HARDWARE.equals(nowType)) {
+        if (nowType.contains(org.haobtc.onekey.constant.Constant.HW)) {
             currentAction = id;
             if (Strings.isNullOrEmpty(bleMac)) {
                 Toast.makeText(
@@ -429,7 +429,7 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
                 intent8.putExtra(
                         org.haobtc.onekey.constant.Constant.WALLET_LABEL,
                         textWalletName.getText().toString());
-                if (org.haobtc.onekey.constant.Constant.WALLET_TYPE_HARDWARE.equals(nowType)) {
+                if (nowType.contains(org.haobtc.onekey.constant.Constant.HW)) {
                     intent8.putExtra(
                             org.haobtc.onekey.constant.Constant.WALLET_TYPE,
                             org.haobtc.onekey.constant.Constant.WALLET_TYPE_HARDWARE_PERSONAL);

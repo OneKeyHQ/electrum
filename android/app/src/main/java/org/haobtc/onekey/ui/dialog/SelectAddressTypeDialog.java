@@ -1,13 +1,10 @@
 package org.haobtc.onekey.ui.dialog;
 
 import android.view.View;
-
+import butterknife.OnClick;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.constant.PyConstant;
-import org.haobtc.onekey.ui.activity.CreatePersonalWalletActivity;
 import org.haobtc.onekey.ui.base.BaseDialogFragment;
-
-import butterknife.OnClick;
 
 /**
  * @author liyan
@@ -16,8 +13,9 @@ import butterknife.OnClick;
 @Deprecated
 public class SelectAddressTypeDialog extends BaseDialogFragment {
 
-    /***
-     * init layout
+    /**
+     * * init layout
+     *
      * @return
      */
     @Override
@@ -39,7 +37,7 @@ public class SelectAddressTypeDialog extends BaseDialogFragment {
                 walletType = PyConstant.ADDRESS_TYPE_P2PKH;
                 break;
         }
-        ((CreatePersonalWalletActivity)requireActivity()).getXpub(walletType);
+        //        ((CreatePersonalWalletActivity)requireActivity()).getXpub(walletType);
         dismiss();
     }
 }

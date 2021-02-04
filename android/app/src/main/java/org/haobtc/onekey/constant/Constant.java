@@ -95,8 +95,10 @@ public final class Constant {
     public static final String AUTO_SHUT_DOWN_TIME = "shut_down_time";
     /** 蓝牙Mac地址 */
     public static final String BLE_MAC = "mac";
-    /** 通过硬件创建 */
+    /** 通过硬件创建 BTC */
     public static final String WALLET_TYPE_HARDWARE = "btc-hw-derived-1-1";
+    /** 通过硬件创建Eth */
+    public static final String WALLET_TYPE_HARDWARE_ETH = "eth-hw-derived-1-1";
     /** 软件hd */
     public static final String WALLET_TYPE_LOCAL_HD = "btc-hd-standard";
 
@@ -221,6 +223,7 @@ public final class Constant {
 
     public static final String HD = "hd";
     public static final String HW = "hw";
+    public static final String WATCH = "watch";
     public static final String DELETE_SINGLE = "deleteSingleWallet";
     public static final String IMPORT_HD = "importHdword";
     public static final String WALLET_NAME = "walletName";

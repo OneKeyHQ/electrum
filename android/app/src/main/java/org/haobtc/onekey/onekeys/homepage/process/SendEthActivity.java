@@ -51,13 +51,11 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.aop.SingleClick;
-import org.haobtc.onekey.asynctask.BusinessAsyncTask;
 import org.haobtc.onekey.bean.CurrentFeeDetails;
 import org.haobtc.onekey.bean.LocalWalletInfo;
 import org.haobtc.onekey.bean.MainSweepcodeBean;
 import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.bean.TemporaryTxInfo;
-import org.haobtc.onekey.bean.TransactionInfoBean;
 import org.haobtc.onekey.business.qrdecode.QRDecode;
 import org.haobtc.onekey.business.wallet.AccountManager;
 import org.haobtc.onekey.business.wallet.SystemConfigManager;
@@ -86,8 +84,7 @@ import org.haobtc.onekey.utils.ClipboardUtils;
 import org.haobtc.onekey.viewmodel.AppWalletViewModel;
 
 /** @author liyan */
-public class SendEthActivity extends BaseActivity
-        implements BusinessAsyncTask.Helper, CustomEthFeeDialog.onCustomInterface {
+public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.onCustomInterface {
 
     private static final String EXT_BALANCE = WALLET_BALANCE;
     private static final String EXT_WALLET_NAME = "hdWalletName";
@@ -727,6 +724,14 @@ public class SendEthActivity extends BaseActivity
 
     /** 发送交易 */
     private void sendETH() {
+        if (showWalletType.contains(Constant.HW)) {
+            signHardWare();
+        } else {
+            sendConfirmDialog();
+        }
+    }
+
+    private void sendConfirmDialog() {
         String sender = localWalletByName.getAddr();
         String receiver = editReceiverAddress.getText().toString().trim();
         String fee = "";
@@ -776,7 +781,7 @@ public class SendEthActivity extends BaseActivity
         bundle.putString(Constant.WALLET_LABEL, hdWalletName);
         bundle.putInt(
                 Constant.WALLET_TYPE,
-                Constant.WALLET_TYPE_HARDWARE.equals(showWalletType)
+                showWalletType.contains(Constant.HW)
                         ? Constant.WALLET_TYPE_HARDWARE_PERSONAL
                         : Constant.WALLET_TYPE_SOFTWARE);
         confirmDialog = new TransactionConfirmDialog();
@@ -792,8 +797,8 @@ public class SendEthActivity extends BaseActivity
     /** 软件签名交易 path : NFC/android_usb/bluetooth as str, used by hardware */
     private void softSign(String password) {
         String path;
-        if (Constant.WALLET_TYPE_HARDWARE.equals(showWalletType)) {
-            path = Constant.WAY_MODE_BLE;
+        if (Constant.WALLET_TYPE_HARDWARE_ETH.equals(showWalletType)) {
+            path = MyApplication.getInstance().getDeviceWay();
         } else {
             path = "";
         }
@@ -842,29 +847,68 @@ public class SendEthActivity extends BaseActivity
         mCompositeDisposable.add(disposable);
     }
 
-    /** ETH 签名加广播是一起的，不需要单独广播 广播交易 BTC 后期也需要修改 */
-    private void broadcastTx(String signedTx) {
-        PyResponse<Void> response = PyEnv.broadcast(signedTx);
-        String errors = response.getErrors();
-        if (Strings.isNullOrEmpty(errors)) {
-            TransactionCompletion.start(mContext, Vm.CoinType.ETH, signedTx, amount);
-            finish();
-        } else {
-            showToast(errors);
-        }
-    }
-
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onConfirm(ButtonRequestConfirmedEvent event) {
-        if (Constant.WALLET_TYPE_HARDWARE.equals(showWalletType)) {
-            TransactionInfoBean info = TransactionInfoBean.objectFromData(signedTx);
-            broadcastTx(info.getTx());
-        } else if (Constant.BTC_WATCH.equals(showWalletType)) {
+        if (showWalletType.contains(Constant.HW)) {
+            TransactionCompletion.start(
+                    mContext,
+                    Vm.CoinType.ETH,
+                    signedTx,
+                    String.format(Locale.ENGLISH, "%s %s", amount, baseUnit));
+            finish();
+        } else if (showWalletType.contains(Constant.WATCH)) {
             showWatchQrDialog();
         } else {
             // 获取主密码
             startActivity(new Intent(this, SoftPassActivity.class));
         }
+    }
+
+    /** 硬件签名 */
+    private void signHardWare() {
+        signClickable = false;
+        Disposable disposable =
+                Observable.create(
+                                (ObservableOnSubscribe<PyResponse<String>>)
+                                        emitter -> {
+                                            PyResponse<String> response =
+                                                    PyEnv.signHardWareEthTX(
+                                                            editReceiverAddress
+                                                                    .getText()
+                                                                    .toString()
+                                                                    .trim(),
+                                                            amount,
+                                                            MyApplication.getInstance()
+                                                                    .getDeviceWay(),
+                                                            String.valueOf(currentFeeRate),
+                                                            String.valueOf(mGasLimit));
+                                            emitter.onNext(response);
+                                            emitter.onComplete();
+                                        })
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .doOnSubscribe(show -> showProgress())
+                        .doFinally(this::dismissProgress)
+                        .subscribe(
+                                stringPyResponse -> {
+                                    if (Strings.isNullOrEmpty(stringPyResponse.getErrors())) {
+                                        signedTx = stringPyResponse.getResult();
+                                        if (confirmDialog != null
+                                                && confirmDialog.getBtnConfirmPay() != null) {
+                                            confirmDialog.getBtnConfirmPay().setEnabled(true);
+                                        }
+                                    } else {
+                                        finish();
+                                        mToast(stringPyResponse.getErrors());
+                                    }
+                                    signClickable = true;
+                                },
+                                error -> {
+                                    signClickable = true;
+                                    dismissProgress();
+                                    mToast(error.toString());
+                                });
+        mCompositeDisposable.add(disposable);
     }
 
     private void showWatchQrDialog() {
@@ -1339,16 +1383,6 @@ public class SendEthActivity extends BaseActivity
         }
     }
 
-    /** 硬件签名方法 */
-    private void hardwareSign(String rawTx) {
-        new BusinessAsyncTask()
-                .setHelper(this)
-                .execute(
-                        BusinessAsyncTask.SIGN_TX,
-                        rawTx,
-                        MyApplication.getInstance().getDeviceWay());
-    }
-
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onChangePin(ChangePinEvent event) {
         // 回写PIN码
@@ -1366,43 +1400,11 @@ public class SendEthActivity extends BaseActivity
                 break;
             case PyConstant.BUTTON_REQUEST_8:
                 EventBus.getDefault().post(new ExitEvent());
-                sendETH();
+                if (confirmDialog == null) sendConfirmDialog();
                 break;
             default:
         }
     }
-
-    @Override
-    public void onPreExecute() {
-        signClickable = false;
-    }
-
-    @Override
-    public void onException(Exception e) {
-        showToast(e.getMessage());
-        signClickable = true;
-    }
-
-    @Override
-    public void onResult(String s) {
-        if (!Strings.isNullOrEmpty(s)) {
-            signedTx = s;
-            if (confirmDialog != null && confirmDialog.getBtnConfirmPay() != null) {
-                confirmDialog.getBtnConfirmPay().setEnabled(true);
-            }
-        } else {
-            finish();
-        }
-        signClickable = true;
-    }
-
-    @Override
-    public void onCancelled() {
-        signClickable = true;
-    }
-
-    @Override
-    public void currentMethod(String methodName) {}
 
     @Override
     protected void onNewIntent(Intent intent) {

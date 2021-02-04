@@ -20,6 +20,8 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
 
     public static final String GET_EXTEND_PUBLIC_KEY = "get_xpub_from_hw";
     /** Use {@link BusinessAsyncTask#GET_EXTEND_PUBLIC_KEY_PERSONAL} instead. */
+
+    /** @Deprecated Use {@link BusinessAsyncTask#GET_EXTEND_PUBLIC_KEY_PERSONAL} instead. */
     @Deprecated public static final String GET_EXTEND_PUBLIC_KEY_SINGLE = "get_xpub_from_hw_single";
 
     public static final String SIGN_TX = "sign_tx";

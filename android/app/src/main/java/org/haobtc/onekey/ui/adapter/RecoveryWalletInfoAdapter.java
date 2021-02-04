@@ -6,6 +6,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
+import com.google.common.base.Strings;
 import java.util.List;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.bean.CreateWalletBean;
@@ -40,11 +41,13 @@ public class RecoveryWalletInfoAdapter
         }
         CheckBox checkBox = helper.getView(R.id.check_wallet);
 
-        if (item.getExist().equals("0")) {
-            helper.setGone(R.id.exist_tv, false);
-        } else {
-            helper.setGone(R.id.exist_tv, true);
-            checkBox.setBackgroundResource(R.mipmap.check_not_selected);
+        if (!Strings.isNullOrEmpty(item.getExist())) {
+            if (item.getExist().equals("0")) {
+                helper.setGone(R.id.exist_tv, false);
+            } else {
+                helper.setGone(R.id.exist_tv, true);
+                checkBox.setBackgroundResource(R.mipmap.check_not_selected);
+            }
         }
 
         checkBox.setOnClickListener(

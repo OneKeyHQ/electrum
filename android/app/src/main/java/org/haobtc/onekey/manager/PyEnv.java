@@ -303,6 +303,7 @@ public final class PyEnv {
                     sCommands
                             .callAttr(PyConstant.CREATE_WALLET_BY_XPUB, walletName, m, n, xPubs)
                             .toString();
+            Logger.json(walletInfo);
             String name =
                     CreateWalletBean.objectFromData(walletInfo).getWalletInfo().get(0).getName();
             EventBus.getDefault().post(new CreateSuccessEvent(name));
@@ -323,6 +324,48 @@ public final class PyEnv {
             activity.finish();
         }
         return null;
+    }
+
+    /** 通过xpub创建钱包 */
+    public static PyResponse<String> createWalletNew(
+            String walletName, int m, int n, String xPubs, String coinType) {
+        PyResponse<String> response = new PyResponse<>();
+        String walletInfo = null;
+        try {
+            walletInfo =
+                    sCommands
+                            .callAttr(
+                                    PyConstant.CREATE_WALLET_BY_XPUB,
+                                    walletName,
+                                    m,
+                                    n,
+                                    xPubs,
+                                    new Kwarg("coin", coinType))
+                            .toString();
+            String name =
+                    CreateWalletBean.objectFromData(walletInfo).getWalletInfo().get(0).getName();
+            EventBus.getDefault().post(new CreateSuccessEvent(name));
+            response.setResult(name);
+        } catch (Exception e) {
+            e.printStackTrace();
+            String message = e.getMessage();
+            assert message != null;
+            if (HardWareExceptions.WALLET_ALREADY_EXIST.getMessage().equals(message)) {
+                response.setErrors(
+                        MyApplication.getInstance().getString(R.string.changewalletname));
+            } else {
+                if (message.contains(HardWareExceptions.WALLET_ALREADY_EXIST_1.getMessage())) {
+                    String haveWalletName = message.substring(message.indexOf("name=") + 5);
+                    response.setErrors(
+                            MyApplication.getInstance().getString(R.string.xpub_have_wallet)
+                                    + haveWalletName);
+                } else {
+                    Exception exception = HardWareExceptions.exceptionConvert(e);
+                    response.setErrors(exception.getMessage());
+                }
+            }
+        }
+        return response;
     }
 
     /**
@@ -1461,19 +1504,99 @@ public final class PyEnv {
                                         PyConstant.SIGN_ETH_TX,
                                         to_addr,
                                         value,
-                                        pass,
+                                        new Kwarg("path", path),
                                         new Kwarg("password", pass),
                                         new Kwarg("gas_price", gasPrice),
                                         new Kwarg("gas_limit", gasLimit))
                                 .toString();
             }
-            Logger.d(res);
+            Logger.json(res);
             response.setResult(res);
         } catch (Exception e) {
             Exception exception = HardWareExceptions.exceptionConvert(e);
             response.setErrors(exception.getMessage());
             e.printStackTrace();
         }
+        return response;
+    }
+
+    /**
+     * eth 硬件签名
+     *
+     * @param to_addr 发送的地址
+     * @param value 数量
+     * @param path NFC/android_usb/bluetooth as str, used by hardware，软件不需要此参数
+     * @param gasPrice gas_price
+     * @param gasLimit gas_limit
+     * @return
+     */
+    public static PyResponse<String> signHardWareEthTX(
+            @NotNull String to_addr,
+            @NotNull String value,
+            String path,
+            @NotNull String gasPrice,
+            @NotNull String gasLimit) {
+        PyResponse<String> response = new PyResponse<>();
+        try {
+            String res;
+
+            res =
+                    sCommands
+                            .callAttr(
+                                    PyConstant.SIGN_ETH_TX,
+                                    to_addr,
+                                    value,
+                                    new Kwarg("path", path),
+                                    new Kwarg("gas_price", gasPrice),
+                                    new Kwarg("gas_limit", gasLimit))
+                            .toString();
+            response.setResult(res);
+        } catch (Exception e) {
+            Exception exception = HardWareExceptions.exceptionConvert(e);
+            response.setErrors(exception.getMessage());
+            e.printStackTrace();
+        }
+        return response;
+    }
+
+    /**
+     * 硬件创建Eth钱包
+     *
+     * @param path
+     * @param coinType
+     * @return
+     */
+    public static PyResponse<String> createEthHwDerivedWallet(
+            String path, String coinType, String addressType) {
+        PyResponse<String> response = new PyResponse<>();
+
+        try {
+            String result = "";
+            if (coinType.equals(Vm.CoinType.ETH.coinName)) {
+                result =
+                        sCommands
+                                .callAttr(
+                                        PyConstant.Create_Hw_Derived_Wallet,
+                                        path,
+                                        new Kwarg("coin", coinType))
+                                .toString();
+            } else {
+                result =
+                        sCommands
+                                .callAttr(
+                                        PyConstant.Create_Hw_Derived_Wallet,
+                                        path,
+                                        addressType,
+                                        new Kwarg("coin", coinType))
+                                .toString();
+            }
+            response.setResult(result);
+        } catch (Exception e) {
+            Exception exception = HardWareExceptions.exceptionConvert(e);
+            response.setErrors(exception.getMessage());
+            e.printStackTrace();
+        }
+
         return response;
     }
 }

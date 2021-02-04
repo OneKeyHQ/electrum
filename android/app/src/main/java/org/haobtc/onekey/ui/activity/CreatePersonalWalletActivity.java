@@ -1,11 +1,17 @@
 package org.haobtc.onekey.ui.activity;
+
 import android.content.Intent;
 import android.view.View;
 import android.widget.ImageView;
-
+import butterknife.BindView;
+import butterknife.OnClick;
 import com.google.common.base.Strings;
 import com.lxj.xpopup.XPopup;
-
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -13,8 +19,10 @@ import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.asynctask.BusinessAsyncTask;
+import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.PyConstant;
+import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.event.ButtonRequestEvent;
 import org.haobtc.onekey.event.ChangePinEvent;
 import org.haobtc.onekey.event.CreateSuccessEvent;
@@ -29,32 +37,29 @@ import org.haobtc.onekey.ui.fragment.AddAssetFragment;
 import org.haobtc.onekey.ui.fragment.DevicePINFragment;
 import org.haobtc.onekey.ui.fragment.SetWalletNameFragment;
 
-import butterknife.BindView;
-import butterknife.OnClick;
-
 /**
  * @author liyan
  * @date 11/23/20
  */
-
 public class CreatePersonalWalletActivity extends BaseActivity implements BusinessAsyncTask.Helper {
 
     @BindView(R.id.img_back)
     ImageView imgBack;
+
     private String coinType;
     private String xpub;
+    private final CompositeDisposable mCompositeDisposable = new CompositeDisposable();
 
-    /**
-     * init
-     */
+    /** init */
     @Override
     public void init() {
         updateTitle(R.string.choose_amount);
         startFragment(new AddAssetFragment());
     }
 
-    /***
-     * init layout
+    /**
+     * * init layout
+     *
      * @return
      */
     @Override
@@ -68,38 +73,89 @@ public class CreatePersonalWalletActivity extends BaseActivity implements Busine
         switch (coinType) {
             case Constant.COIN_TYPE_BTC:
                 new XPopup.Builder(mContext)
-                        .asCustom(new SelectWalletTypeDialog(mContext, new SelectWalletTypeDialog.onClickListener() {
-                            @Override
-                            public void onClick (int mode) {
-                                String walletType = null;
-                                switch (mode) {
-                                    case SelectWalletTypeDialog.RecommendType:
-                                        walletType = PyConstant.ADDRESS_TYPE_P2SH_P2WPKH;
-                                        break;
-                                    case SelectWalletTypeDialog.NativeType:
-                                        walletType = PyConstant.ADDRESS_TYPE_P2WPKH;
-                                        break;
-                                    case SelectWalletTypeDialog.NormalType:
-                                        walletType = PyConstant.ADDRESS_TYPE_P2PKH;
-                                        break;
-                                }
-                                getXpub(walletType);
-                            }
-                        })).show();
+                        .asCustom(
+                                new SelectWalletTypeDialog(
+                                        mContext,
+                                        mode -> {
+                                            String walletType = null;
+                                            switch (mode) {
+                                                case SelectWalletTypeDialog.RecommendType:
+                                                    walletType =
+                                                            PyConstant.ADDRESS_TYPE_P2SH_P2WPKH;
+                                                    break;
+                                                case SelectWalletTypeDialog.NativeType:
+                                                    walletType = PyConstant.ADDRESS_TYPE_P2WPKH;
+                                                    break;
+                                                case SelectWalletTypeDialog.NormalType:
+                                                    walletType = PyConstant.ADDRESS_TYPE_P2PKH;
+                                                    break;
+                                            }
+                                            getBtcXpub(walletType, Vm.CoinType.BTC.coinName);
+                                        }))
+                        .show();
+                break;
             case Constant.COIN_TYPE_ETH:
+                getEthXpub(Vm.CoinType.ETH.coinName);
                 break;
             case Constant.COIN_TYPE_EOS:
+                break;
         }
-
     }
-    /**
-     * 获取用于个人钱包的扩展公钥
-     */
-    public void getXpub(String type) {
 
-        new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY_PERSONAL,
-                MyApplication.getInstance().getDeviceWay(),
-                type);
+    /** 获取用于个人钱包的扩展公钥 */
+    public void getBtcXpub(String addressType, String coinType) {
+        Disposable disposable =
+                getXpubObserVable(coinType, addressType)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                result -> {
+                                    if (Strings.isNullOrEmpty(result.getErrors())) {
+                                        onResult(result.getResult());
+                                    } else {
+                                        mToast(result.getErrors());
+                                    }
+                                });
+        mCompositeDisposable.add(disposable);
+    }
+
+    public void getEthXpub(String coinType) {
+        Disposable disposable =
+                getXpubObserVable(Vm.CoinType.ETH.coinName, "")
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                result -> {
+                                    if (Strings.isNullOrEmpty(result.getErrors())) {
+                                        onResult(result.getResult());
+                                    } else {
+                                        mToast(result.getErrors());
+                                    }
+                                });
+        mCompositeDisposable.add(disposable);
+    }
+
+    private Observable<PyResponse<String>> getXpubObserVable(String coinType, String addressType) {
+        return Observable.create(
+                emitter -> {
+                    PyResponse<String> response =
+                            PyEnv.createEthHwDerivedWallet(
+                                    MyApplication.getInstance().getDeviceWay(),
+                                    coinType,
+                                    addressType);
+                    emitter.onNext(response);
+                    emitter.onComplete();
+                });
+    }
+
+    private Observable<PyResponse<String>> getCreateObservable(
+            String name, String xpub, String coinType) {
+        return Observable.create(
+                emitter -> {
+                    PyResponse<String> response = PyEnv.createWalletNew(name, 1, 1, xpub, coinType);
+                    emitter.onNext(response);
+                    emitter.onComplete();
+                });
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -107,20 +163,42 @@ public class CreatePersonalWalletActivity extends BaseActivity implements Busine
         switch (coinType) {
             case Constant.COIN_TYPE_BTC:
                 String walletName = event.getName();
-                String xpubs = "[[\"" + xpub + "\", \"" + FindNormalDeviceActivity.deviceId + "\"]]";
-                String name = PyEnv.createWallet(this, walletName, 1, 1, xpubs);
-                if (!Strings.isNullOrEmpty(name)) {
-                    startActivity(new Intent(this, HomeOneKeyActivity.class));
-                }
-                finish();
+                String xpubs =
+                        "[[\"" + xpub + "\", \"" + FindNormalDeviceActivity.deviceId + "\"]]";
+                createWallet(walletName, xpubs, Vm.CoinType.BTC.coinName);
                 break;
             case Constant.COIN_TYPE_ETH:
+                String name = event.getName();
+                String ethXpubs =
+                        "[[\"" + xpub + "\", \"" + FindNormalDeviceActivity.deviceId + "\"]]";
+                createWallet(event.getName(), ethXpubs, Vm.CoinType.ETH.coinName);
                 break;
             case Constant.COIN_TYPE_EOS:
                 break;
             default:
-
         }
+    }
+
+    /**
+     * 创建钱包
+     *
+     * @param walletName 钱包名称
+     * @param xpub 公钥
+     * @param coinName 钱包类型
+     */
+    private void createWallet(String walletName, String xpub, String coinName) {
+        Disposable disposable =
+                getCreateObservable(walletName, xpub, coinName)
+                        .subscribeOn(Schedulers.io())
+                        .doOnSubscribe(show -> showProgress())
+                        .doFinally(this::dismissProgress)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                result -> {
+                                    if (!Strings.isNullOrEmpty(result.getErrors())) {
+                                        mToast(result.getErrors());
+                                    }
+                                });
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -149,13 +227,11 @@ public class CreatePersonalWalletActivity extends BaseActivity implements Busine
     }
 
     @Override
-    public void onPreExecute() {
-
-    }
+    public void onPreExecute() {}
 
     @Override
     public void onException(Exception e) {
-        if (e.getMessage().contains("PIN invalid")){
+        if (e.getMessage().contains("PIN invalid")) {
             showToast(getString(R.string.pin_input_wrong));
         } else {
             showToast(e.getMessage());
@@ -171,14 +247,10 @@ public class CreatePersonalWalletActivity extends BaseActivity implements Busine
     }
 
     @Override
-    public void onCancelled() {
-
-    }
+    public void onCancelled() {}
 
     @Override
-    public void currentMethod(String methodName) {
-
-    }
+    public void currentMethod(String methodName) {}
 
     @SingleClick
     @OnClick(R.id.img_back)
