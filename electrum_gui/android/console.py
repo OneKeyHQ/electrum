@@ -330,7 +330,7 @@ class AndroidCommands(commands.Commands):
     #     self.update_history()
 
     def on_quotes(self, d):
-        if self.wallet is not None and not self.coins.__contains__(self.wallet.wallet_type[0:3]):
+        if self.wallet is not None:
             self.update_status()
         # self.update_history()
 
@@ -340,34 +340,43 @@ class AndroidCommands(commands.Commands):
         # self.update_history()
 
     def update_status(self):
-        out = {}
         if not self.wallet:
             return
-        if self.network is None or not self.network.is_connected():
-            print("network is ========offline")
-        elif self.network.is_connected():
-            self.num_blocks = self.network.get_local_height()
-            server_height = self.network.get_server_height()
-            if not self.wallet.up_to_date or server_height == 0:
-                num_sent, num_answered = self.wallet.get_history_sync_state_details()
-            else:
-                c, u, x = self.wallet.get_balance()
-                text = _("Balance") + ": %s " % (self.format_amount_and_units(c))
-                show_balance = c + u
-                out["balance"] = self.format_amount(show_balance)
-                out["fiat"] = self.daemon.fx.format_amount_and_units(show_balance) if self.daemon.fx else None
-                if u:
-                    out["unconfirmed"] = self.format_amount(u, is_diff=True).strip()
-                    text += " [%s unconfirmed]" % (self.format_amount(u, is_diff=True).strip())
-                if x:
-                    out["unmatured"] = self.format_amount(x, is_diff=True).strip()
-                    text += " [%s unmatured]" % (self.format_amount(x, is_diff=True).strip())
 
-                # append fiat balance and price
-                if self.daemon.fx.is_enabled():
-                    text += self.daemon.fx.get_fiat_status_text(c + u + x, self.base_unit, self.decimal_point) or ""
-            # print("update_statue out = %s" % (out))
-            self.callbackIntent.onCallback("update_status=%s" % json.dumps(out))
+        coin = self.wallet.wallet_type[:3]
+        address = self.wallet.get_addresses()[0]
+        out = dict()
+
+        if coin in self.coins:  # eth base
+            address = self.pywalib.web3.toChecksumAddress(address)
+            balance_info = self.wallet.get_all_balance(address, self.coins[coin]["symbol"])
+            balance_info = balance_info.get(coin, dict())
+
+            out["coin"] = coin
+            out["address"] = address
+            out["balance"] = balance_info.get("balance", "0")
+            out["fiat"] = self.daemon.fx.format_amount_and_units(balance_info.get("fiat", 0) * COIN) or f"0 {self.ccy}"
+        elif (
+                self.network
+                and self.network.is_connected()
+                and self.network.get_server_height() != 0
+                and self.wallet.up_to_date
+        ):  # btc
+            c, u, x = self.wallet.get_balance()
+            show_balance = c + u
+
+            out["coin"] = "btc"
+            out["address"] = address
+            out["balance"] = self.format_amount(show_balance)
+            out["fiat"] = self.daemon.fx.format_amount_and_units(show_balance) if self.daemon.fx else None
+
+            if u:
+                out["unconfirmed"] = self.format_amount(u, is_diff=True).strip()
+            if x:
+                out["unmatured"] = self.format_amount(x, is_diff=True).strip()
+
+        if out:
+            self.callbackIntent.onCallback("update_status=%s" % json.dumps(out, cls=DecimalEncoder))
 
     def get_remove_flag(self, tx_hash):
         height = self.wallet.get_tx_height(tx_hash).height
@@ -433,7 +442,7 @@ class AndroidCommands(commands.Commands):
         # self.callbackIntent.onCallback("update_wallet")
 
     def on_network_event(self, event, *args):
-        if self.wallet is not None and not self.coins.__contains__(self.wallet.wallet_type[0:3]):
+        if self.wallet is not None:
             if event == "network_updated":
                 self.update_interfaces()
                 self.update_status()
