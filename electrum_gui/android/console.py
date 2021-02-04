@@ -3347,7 +3347,7 @@ class AndroidCommands(commands.Commands):
                     coin = wallet.wallet_type[0:3]
                     if coin in self.coins:
                         wallet_type = (
-                            "%s-hw-derived-%s-%s" % (coin, wallet.m, wallet.n) if hw else ("%s-derived-standard" % coin)
+                            "%s-hw-derived-%s-%s" % (coin, 1, 1) if hw else ("%s-derived-standard" % coin)
                         )
                         self.update_devired_wallet_info(
                             bip44_eth_derivation(
