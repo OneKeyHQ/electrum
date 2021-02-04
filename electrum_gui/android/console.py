@@ -3459,7 +3459,7 @@ class AndroidCommands(commands.Commands):
                 account_id, self.coins[coin]["addressType"], cointype=self.coins[coin]["coinId"]
             )
 
-    def recovery_import_create_hw_wallet(self, i, name, m, n, xpubs, hide_type=False, coin="btc"):
+    def recovery_import_create_hw_wallet(self, i, name, m, n, xpubs, coin="btc"):
         try:
             self.set_multi_wallet_info(name, m, n)
             self.add_xpub(xpubs, self.hw_info["device_id"], i, self.hw_info["type"], coin=coin)
@@ -3467,14 +3467,6 @@ class AndroidCommands(commands.Commands):
             temp_path = self.get_temp_file()
             path = self._wallet_path(temp_path)
             keystores = self.get_keystores_info()
-            if not hide_type:
-                for key, value in self.local_wallet_info.items():
-                    num = 0
-                    for xpub in keystores:
-                        if value["xpubs"].__contains__(xpub):
-                            num += 1
-                    # if num == len(keystores) and value["type"] == wallet_type: #noqa
-                    #     raise BaseException(f"The same xpubs have create wallet, name={key}") #noqa
             storage, db = self.wizard.create_storage(path=path, password="", hide_type=True, coin=coin)
             if storage:
                 if coin in self.coins:
