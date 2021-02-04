@@ -3,7 +3,6 @@ package org.haobtc.onekey.viewmodel;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
-import android.util.Pair;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
@@ -16,6 +15,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.activities.base.MyApplication;
+import org.haobtc.onekey.bean.BalanceBroadcastEventBean;
 import org.haobtc.onekey.bean.FiatUnitSymbolBean;
 import org.haobtc.onekey.bean.LocalWalletInfo;
 import org.haobtc.onekey.bean.WalletBalanceFiatVo;
@@ -114,13 +114,19 @@ public class AppWalletViewModel extends ViewModel {
                     WalletBalanceBean balance =
                             mBalanceManager.getBalanceByWalletName(localWalletInfo.getName());
                     if (balance != null) {
+                        BigDecimal balanceBigDecimal;
+                        try {
+                            balanceBigDecimal =
+                                    new BigDecimal(
+                                            TextUtils.isEmpty(balance.getBalance())
+                                                    ? "0"
+                                                    : balance.getBalance());
+                        } catch (NumberFormatException e) {
+                            balanceBigDecimal = BigDecimal.ZERO;
+                        }
+
                         setCurrentWalletBalance(
-                                new WalletBalanceVo(
-                                        new BigDecimal(
-                                                TextUtils.isEmpty(balance.getBalance())
-                                                        ? "0"
-                                                        : balance.getBalance()),
-                                        currentBaseUnit));
+                                new WalletBalanceVo(balanceBigDecimal, currentBaseUnit));
                         setCurrentWalletFiatBalance(
                                 new WalletBalanceFiatVo(
                                         TextUtils.isEmpty(balance.getBalanceFiat())
@@ -182,23 +188,30 @@ public class AppWalletViewModel extends ViewModel {
     public void event(SecondEvent event) {
         mExecutorService.execute(
                 () -> {
-                    Pair<String, String> balancePair =
+                    BalanceBroadcastEventBean eventBean =
                             mBalanceManager.decodePythonBalanceNotice(event.getMsg());
+                    if (currentWalletInfo.getValue() == null) {
+                        return;
+                    }
+                    String addr = currentWalletInfo.getValue().getAddr();
+                    if (eventBean == null || !addr.equals(eventBean.getAddress())) {
+                        return;
+                    }
                     String currentBaseUnit = mSystemConfigManager.getCurrentBaseUnit();
                     FiatUnitSymbolBean currentFiatUnitSymbol =
                             mSystemConfigManager.getCurrentFiatUnitSymbol();
-                    setCurrentWalletBalance(
-                            new WalletBalanceVo(
-                                    new BigDecimal(
-                                            TextUtils.isEmpty(balancePair.first)
-                                                    ? "0"
-                                                    : balancePair.first),
-                                    currentBaseUnit));
+
+                    BigDecimal balance;
+                    try {
+                        balance = new BigDecimal(eventBean.getBalance());
+                    } catch (NumberFormatException e) {
+                        balance = BigDecimal.ZERO;
+                    }
+
+                    setCurrentWalletBalance(new WalletBalanceVo(balance, currentBaseUnit));
                     setCurrentWalletFiatBalance(
                             new WalletBalanceFiatVo(
-                                    TextUtils.isEmpty(balancePair.second)
-                                            ? "0"
-                                            : balancePair.second,
+                                    eventBean.getFiat(),
                                     currentFiatUnitSymbol.getUnit(),
                                     currentFiatUnitSymbol.getSymbol()));
                 });

@@ -1,16 +1,15 @@
 package org.haobtc.onekey.business.wallet;
 
 import android.text.TextUtils;
-import android.util.Pair;
 import androidx.annotation.Nullable;
 import com.google.common.base.Strings;
+import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import org.haobtc.onekey.R;
-import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.bean.AllWalletBalanceBean;
 import org.haobtc.onekey.bean.AllWalletBalanceInfoDTO;
+import org.haobtc.onekey.bean.BalanceBroadcastEventBean;
 import org.haobtc.onekey.bean.BalanceCoinInfo;
 import org.haobtc.onekey.bean.BalanceInfoDTO;
 import org.haobtc.onekey.bean.PyResponse;
@@ -19,8 +18,6 @@ import org.haobtc.onekey.business.wallet.bean.TokenBalanceBean;
 import org.haobtc.onekey.business.wallet.bean.WalletBalanceBean;
 import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.manager.PyEnv;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * 账户余额管理
@@ -83,38 +80,16 @@ public class BalanceManager {
      * @param msgVote Python 推来的消息
      * @return first 数字货币余额，second 法币余额
      */
-    public Pair<String, String> decodePythonBalanceNotice(String msgVote) {
-        String balance = null;
-        String balanceFiat = null;
+    @Nullable
+    public BalanceBroadcastEventBean decodePythonBalanceNotice(String msgVote) {
         try {
             if (!TextUtils.isEmpty(msgVote) && msgVote.length() != 2 && msgVote.contains("{")) {
-                JSONObject jsonObject = new JSONObject(msgVote);
-                if (msgVote.contains("fiat")) {
-                    String fiat = jsonObject.getString("fiat");
-                    if (jsonObject.has("balance")) {
-                        String changeBalance = jsonObject.getString("balance");
-                        if (!TextUtils.isEmpty(changeBalance)) {
-                            balance = changeBalance;
-                        }
-                    }
-                    if (!TextUtils.isEmpty(fiat)) {
-                        String[] currencyArray =
-                                MyApplication.getInstance()
-                                        .getResources()
-                                        .getStringArray(R.array.currency);
-                        for (String s : currencyArray) {
-                            if (fiat.contains(s)) {
-                                balanceFiat = fiat.substring(0, fiat.indexOf(" "));
-                                break;
-                            }
-                        }
-                    }
-                }
+                return new Gson().fromJson(msgVote, BalanceBroadcastEventBean.class);
             }
-        } catch (JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        return new Pair<>(balance, balanceFiat);
+        return null;
     }
 
     private WalletBalanceBean convert(BalanceInfoDTO balanceInfoDTO) {
