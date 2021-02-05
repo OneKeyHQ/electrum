@@ -1066,9 +1066,9 @@
     <string name="device">设备</string>
     <string name="import_success_description">您的助记词已经成功备份到这台设备，\n 我们也没什么可提醒您的了。\n 总之，切记保管好它，\n 搞丢了没有任何人可以帮您找回来。\n祝您在区块链的世界玩儿开心❤️。</string>
     <string name="success_1">大功告成</string>
-    <string name="change_pin_promote">干的好，继续根据设备\n上的 PIN 码位置\n设置您的新6位 PIN 码</string>
+    <string name="change_pin_promote">根据设备显示的位置对照表\n设置您的新 PIN 码</string>
     <string name="input_pin_promote">请输入PIN码</string>
-    <string name="set_pin_promote">根据设备显示的\n PIN 码位置对照表\n 输入您曾设置的6位密码</string>
+    <string name="set_pin_promote">根据设备显示的\n位置对照表\n输入您的 PIN 码</string>
     <string name="mnemonic_word_12_crete_promote">创建 12 位助记词钱包↑</string>
     <string name="mnemonic_word_24_crete_promote">创建 24 位助记词钱包↑</string>
     <string name="mnemonic_word_12_generate_promote">硬件钱包将为你生成 12 位助记词</string>

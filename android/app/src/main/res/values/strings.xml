@@ -1095,9 +1095,9 @@
     <string name="device">Device</string>
     <string name="import_success_description">Your mnemonic has been successfully backed up to this device, so we have nothing more to remind you. Anyway, remember to keep it safe, no one can help you get it back if you lose it. Have fun in the world of blockchain️.</string>
     <string name="success_1">Success</string>
-    <string name="change_pin_promote">Good job, go ahead and set your new 6-digit PIN according to the PIN location on the device </string>
+    <string name="change_pin_promote">根据设备显示的位置对照表\n设置您的新 PIN 码</string>
     <string name="input_pin_promote">Please enter the PIN code</string>
-    <string name="set_pin_promote">Enter the 6-digit PIN according to the PIN location displayed on the device</string>
+    <string name="set_pin_promote">根据设备显示的\n位置对照表\n输入您的 PIN 码</string>
     <string name="mnemonic_word_12_crete_promote">Create a 12-digit mnemonic wallet↑</string>
     <string name="mnemonic_word_24_crete_promote">Create a 24-digit mnemonic wallet↑</string>
     <string name="mnemonic_word_12_generate_promote">The hardware wallet will generate 12-digit mnemonics for you</string>
