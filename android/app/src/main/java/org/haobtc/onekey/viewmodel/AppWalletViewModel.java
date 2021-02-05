@@ -24,6 +24,7 @@ import org.haobtc.onekey.business.wallet.AccountManager;
 import org.haobtc.onekey.business.wallet.BalanceManager;
 import org.haobtc.onekey.business.wallet.SystemConfigManager;
 import org.haobtc.onekey.business.wallet.bean.WalletBalanceBean;
+import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.event.CreateSuccessEvent;
 import org.haobtc.onekey.event.LoadOtherWalletEvent;
 import org.haobtc.onekey.event.SecondEvent;
@@ -197,7 +198,9 @@ public class AppWalletViewModel extends ViewModel {
                     if (eventBean == null || !addr.equals(eventBean.getAddress())) {
                         return;
                     }
-                    String currentBaseUnit = mSystemConfigManager.getCurrentBaseUnit();
+                    String currentBaseUnit =
+                            mSystemConfigManager.getCurrentBaseUnit(
+                                    Vm.CoinType.convert(eventBean.getCoin().toLowerCase()));
                     FiatUnitSymbolBean currentFiatUnitSymbol =
                             mSystemConfigManager.getCurrentFiatUnitSymbol();
 

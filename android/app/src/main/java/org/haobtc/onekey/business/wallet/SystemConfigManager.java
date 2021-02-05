@@ -1,19 +1,17 @@
 package org.haobtc.onekey.business.wallet;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.text.TextUtils;
-
-import androidx.annotation.StringDef;
-
-import org.haobtc.onekey.bean.FiatUnitSymbolBean;
-import org.haobtc.onekey.constant.Vm;
-import org.haobtc.onekey.utils.Daemon;
-
 import static org.haobtc.onekey.constant.Constant.CURRENT_CURRENCY_GRAPHIC_SYMBOL;
 import static org.haobtc.onekey.constant.Constant.CURRENT_CURRENCY_SYMBOL;
 import static org.haobtc.onekey.constant.Constant.NEED_POP_BACKUP_DIALOG;
 import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.text.TextUtils;
+import androidx.annotation.StringDef;
+import org.haobtc.onekey.bean.FiatUnitSymbolBean;
+import org.haobtc.onekey.constant.Vm;
+import org.haobtc.onekey.utils.Daemon;
 
 /**
  * 系统配置管理
@@ -22,22 +20,22 @@ import static org.haobtc.onekey.constant.Constant.SOFT_HD_PASS_TYPE;
  * @create 2021-01-06 3:15 PM
  */
 public class SystemConfigManager {
+
     private final SharedPreferences mPreferencesSharedPreferences;
 
     public SystemConfigManager(Context context) {
-        mPreferencesSharedPreferences = context.getApplicationContext().getSharedPreferences("Preferences", Context.MODE_PRIVATE);
+        mPreferencesSharedPreferences =
+                context.getApplicationContext()
+                        .getSharedPreferences("Preferences", Context.MODE_PRIVATE);
     }
 
     @StringDef({SoftHdPassType.LONG, SoftHdPassType.SHORT})
     public @interface SoftHdPassType {
-        /**
-         * 长密码
-         */
+
+        /** 长密码 */
         public static final String LONG = "long";
 
-        /**
-         * 短密码
-         */
+        /** 短密码 */
         public static final String SHORT = "short";
     }
 
@@ -47,9 +45,7 @@ public class SystemConfigManager {
      * @param type 密码输入模式
      */
     public void setPassWordType(@SoftHdPassType String type) {
-        mPreferencesSharedPreferences.edit()
-                .putString(SOFT_HD_PASS_TYPE, type)
-                .apply();
+        mPreferencesSharedPreferences.edit().putString(SOFT_HD_PASS_TYPE, type).apply();
     }
 
     @SoftHdPassType
@@ -63,9 +59,7 @@ public class SystemConfigManager {
      * @param bool true 下次弹窗
      */
     public void setNeedPopBackUpDialog(Boolean bool) {
-        mPreferencesSharedPreferences.edit()
-                .putBoolean(NEED_POP_BACKUP_DIALOG, bool)
-                .apply();
+        mPreferencesSharedPreferences.edit().putBoolean(NEED_POP_BACKUP_DIALOG, bool).apply();
     }
 
     /**
@@ -110,7 +104,6 @@ public class SystemConfigManager {
      * 设置当前法币的符号与单位
      *
      * @param symbol 法币符号与单位
-     *
      * @return 是否保存成功
      */
     public boolean setCurrentFiatUnitSymbol(FiatUnitSymbolBean symbol) {
@@ -119,7 +112,8 @@ public class SystemConfigManager {
         }
         try {
             Daemon.commands.callAttr("set_currency", symbol.getUnit());
-            mPreferencesSharedPreferences.edit()
+            mPreferencesSharedPreferences
+                    .edit()
                     .putString(CURRENT_CURRENCY_SYMBOL, symbol.getUnit())
                     .putString(CURRENT_CURRENCY_GRAPHIC_SYMBOL, symbol.getSymbol())
                     .apply();
@@ -135,6 +129,7 @@ public class SystemConfigManager {
      *
      * @return 数字货币单位
      */
+    @Deprecated
     public String getCurrentBaseUnit() {
         return mPreferencesSharedPreferences.getString("base_unit", "BTC");
     }
@@ -153,7 +148,6 @@ public class SystemConfigManager {
      * 设置数字货币单位
      *
      * @param unit 数字货币单位
-     *
      * @return 是否存储成功
      */
     public boolean setCurrentBaseUnit(String unit) {
