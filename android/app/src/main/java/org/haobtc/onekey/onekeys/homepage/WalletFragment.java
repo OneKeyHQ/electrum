@@ -287,22 +287,28 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
     }
 
     private void showTypeInfo(LocalWalletInfo localWalletInfo) {
+        int walletType = localWalletInfo.getWalletType();
+        Vm.CoinType coinType = localWalletInfo.getCoinType();
+
         nowType = localWalletInfo.getType();
-        if (org.haobtc.onekey.constant.Constant.Btc_Derived_Standard.equals(nowType)) {
+        if (walletType == Vm.WalletType.MAIN) {
             PreferencesManager.put(
                     getContext(),
                     "Preferences",
                     org.haobtc.onekey.constant.Constant.HAS_LOCAL_HD,
                     true);
         }
-        preferences.edit().putString(CURRENT_SELECTED_WALLET_TYPE, nowType).apply();
-        if (nowType.contains("btc")) {
+        preferences
+                .edit()
+                .putString(CURRENT_SELECTED_WALLET_TYPE, localWalletInfo.getType())
+                .apply();
+        if (coinType == Vm.CoinType.BTC) {
             imgType.setImageDrawable(
                     ContextCompat.getDrawable(requireContext(), R.drawable.token_btc));
             ivTokenType.setImageDrawable(
                     ContextCompat.getDrawable(requireContext(), R.drawable.token_btc));
             tvTokenName.setText(getString(R.string.btc_c));
-        } else if (nowType.contains("eth")) {
+        } else if (coinType == Vm.CoinType.ETH) {
             imgType.setImageDrawable(
                     ContextCompat.getDrawable(requireContext(), R.drawable.token_eth));
             ivTokenType.setImageDrawable(
@@ -312,9 +318,13 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
             imgType.setImageDrawable(
                     ContextCompat.getDrawable(requireContext(), R.drawable.loco_round));
         }
-        if (nowType.contains("hw")) {
+        if (walletType == Vm.WalletType.HARDWARE) {
             textHard.setVisibility(View.VISIBLE);
-            linearSign.setVisibility(View.VISIBLE);
+            if (coinType == Vm.CoinType.BTC) {
+                linearSign.setVisibility(View.VISIBLE);
+            } else {
+                linearSign.setVisibility(View.GONE);
+            }
             String deviceId = localWalletInfo.getDeviceId();
             currentDeviceId = deviceId;
             String deviceInfo =
