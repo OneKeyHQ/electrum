@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSURL * _Nullable)toURL;
 - (NSDictionary * _Nullable)toDict; // json string to dict
 - (NSArray<NSString *>*)split:(NSString *)sparator;
-
++ (NSString *)stringFromHexString:(NSString *)hexString;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -71,10 +71,16 @@ typedef enum {
     self.titleLabel.text = MyLocalizedString(@"Find the following wallet", nil);
     self.descLabel.text = MyLocalizedString(@"You have derived the following wallet using the HD mnemonic, select the one you want to recover. If you do not want to recover the wallet for a while, you can skip it and readd it later in the HD Wallet. Your assets will not be lost", nil);
     [self.tableViewBgView setLayerRadius:20];
-    [self rotateImageView];
-    [self refreshUISearch:YES];
-    [self changeConfirmBtn];
-    [self createWallet:self.pwd mnemonicStr:self.mnemonicStr isInit:self.isInit];
+    
+    if (self.createResultModel == nil) {
+        [self refreshUISearch:YES];
+        [self rotateImageView];
+        [self changeConfirmBtn];
+        [self createWallet:self.pwd mnemonicStr:self.mnemonicStr isInit:self.isInit];
+    }else{
+        [self refreshUISearch:NO];
+        [self changeConfirmBtn];
+    }
 }
 
 - (void)refreshUISearch:(BOOL)isSearching

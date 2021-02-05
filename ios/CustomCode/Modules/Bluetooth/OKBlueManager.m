@@ -24,6 +24,9 @@
 @property (nonatomic,strong)CBService *service;
 @property (nonatomic,strong)CBCharacteristic *readCharacteristic;
 @property (nonatomic,strong)CBCharacteristic *writeCharacteristic;
+
+@property (nonatomic,strong)CBCharacteristic *deviceCharacteristic;
+
 @property (nonatomic, strong)NSMutableArray  *peripheralArr;
 @property (nonatomic,strong)NSMutableString *buffer;
 
@@ -158,11 +161,11 @@ static dispatch_once_t once;
         //NSLog(@"setBlockOnDiscoverCharacteristics");
     }];
     
-    
     // 8-设置发现设service的Characteristics的委托
     [self.babyBluetooth setBlockOnDiscoverCharacteristics:^(CBPeripheral *peripheral, CBService *service, NSError *error) {
         NSLog(@"peripheral == %@",peripheral);
         NSString *serviceUUID = [NSString stringWithFormat:@"%@",service.UUID];
+        NSLog(@"serviceUUID == %@",serviceUUID);
         if ([serviceUUID isEqualToString:kPRIMARY_SERVICE]) {
             for (CBCharacteristic *ch in service.characteristics) {
                 // 写数据的特征值
@@ -175,6 +178,15 @@ static dispatch_once_t once;
                     weakSelf.readCharacteristic = ch;
                     [weakSelf.currentPeripheral setNotifyValue:YES
                                              forCharacteristic:weakSelf.readCharacteristic];
+                }
+            }
+        }else if([serviceUUID isEqualToString:kDEVICEINFOSERVICE]){
+            for (CBCharacteristic *ch in service.characteristics) {
+                // 读数据的特征值
+                NSString *chUUID = [NSString stringWithFormat:@"%@",ch.UUID];
+                NSLog(@"chUUID = %@",chUUID);
+                if ([chUUID isEqualToString:kDEVICEINFOCHARACTERISTIC]) {
+                    weakSelf.deviceCharacteristic = ch;
                 }
             }
         }
@@ -200,8 +212,8 @@ static dispatch_once_t once;
     [self.babyBluetooth setBlockOnDidUpdateNotificationStateForCharacteristic:^(CBCharacteristic *characteristic, NSError *error) {
         dispatch_async(dispatch_get_main_queue(), ^{
             // 从block中取到值，再回到主线程
-            if ([weakSelf respondsToSelector:@selector(subscribeToComplete)]) {
-                [weakSelf subscribeToComplete];
+            if ([weakSelf respondsToSelector:@selector(subscribeToComplete:)]) {
+                [weakSelf subscribeToComplete:characteristic];
             }
         });
     }];
@@ -340,7 +352,20 @@ static dispatch_once_t once;
 }
 
 ///订阅完成
-- (void)subscribeToComplete{
+- (void)subscribeToComplete:(CBCharacteristic *)ch{
+    NSString *hexStr = [NSData hexStringForData:self.deviceCharacteristic.value];
+    NSString *hwVersion = [NSString stringFromHexString:hexStr];
+    OKWeakSelf(self)
+    if ([OKTools compareVersion:kIOSMINIMUMBLUETOOTHVERSION version2:hwVersion] == 1?YES:NO) {
+        [MBProgressHUD hideHUDForView:weakself.OK_TopViewController.view animated:YES];
+        UIAlertController *alertVc = [UIAlertController alertControllerWithTitle:MyLocalizedString(@"Update tip", nil) message:MyLocalizedString(@"Bluetooth firmware version is too low, please skip to web upgrade", nil) preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction *action = [UIAlertAction actionWithTitle:MyLocalizedString(@"determine", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            [weakself skipToSafari];
+        }];
+        [alertVc addAction:action];
+        [self.OK_TopViewController presentViewController:alertVc animated:YES completion:nil];
+        return;
+    }
     kOKBlueManager.currentReadDataStr = @"";
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         NSDictionary *jsonDict =  [kPyCommandsManager callInterface:kInterfaceget_feature parameter:@{@"path":kBluetooth_iOS}];
@@ -361,13 +386,16 @@ static dispatch_once_t once;
                  self.needConnectName = @"";
              }
          }else{
-             if ([self.delegate respondsToSelector:@selector(subscribeComplete:)]) {
-                 [self.delegate subscribeComplete:jsonDict];
+             if ([self.delegate respondsToSelector:@selector(subscribeComplete:characteristic:)]) {
+                 [self.delegate subscribeComplete:jsonDict characteristic:ch];
              }
          }
     });
 }
-
+- (void)skipToSafari
+{
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:kBleUpdatedURL]];
+}
 ///获取设备的服务跟特征值[当已连接成功时]
 - (void)searchServerAndCharacteristicUUID {
     self.babyBluetooth.having(self.currentPeripheral).and.

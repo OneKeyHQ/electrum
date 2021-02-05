@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isJailBreak;
 - (BOOL)isNotchScreen;
 - (NSDecimalNumber *)decimalNumberHandlerWithValue:(NSDecimalNumber *)value roundingMode:(NSRoundingMode)mode scale:(NSInteger)scale;
-
++ (NSInteger)compareVersion:(NSString *)version1 version2:(NSString *)version2;
 - (void)alertTips:(NSString *)title desc:(NSString *)desc confirm:(void(^)(void))cblock cancel:(void(^)(void))cancel vc:(UIViewController *)vc conLabel:(NSString *)conLabel isOneBtn:(BOOL)oneBtn;
 - (BOOL)clearDataWithFilePath:(NSString *)path;
 @end

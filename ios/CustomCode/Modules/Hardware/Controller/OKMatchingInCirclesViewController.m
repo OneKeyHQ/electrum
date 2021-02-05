@@ -87,7 +87,7 @@
             OKDeviceModel *model = [[OKDevicesManager sharedInstance]getDeviceModelWithID:kWalletManager.currentWalletInfo.device_id];
             if ([kOKBlueManager isConnectedName:model.deviceInfo.ble_name]) {
                 NSDictionary *dict = [[[OKDevicesManager sharedInstance]getDeviceModelWithID:kOKBlueManager.currentDeviceID]json];
-                [self subscribeComplete:dict];
+                [self subscribeComplete:dict characteristic:nil];
             }else{
                 CBPeripheral *temp;
                 for (OKPeripheralInfo *infoModel in self.dataSource) {
@@ -105,7 +105,7 @@
         }else{
             if ([kOKBlueManager isConnectedCurrentDevice]) {
                 NSDictionary *dict = [[[OKDevicesManager sharedInstance]getDeviceModelWithID:kOKBlueManager.currentDeviceID]json];
-                [self subscribeComplete:dict];
+                [self subscribeComplete:dict characteristic:nil];
             }else{
                 [weakself changeToListBgView];
                 [weakself.tableView reloadData];
@@ -232,8 +232,13 @@
 - (void)connectFailed {
     // 连接失败、做连接失败的处理
 }
-- (void)subscribeComplete:(NSDictionary *)jsonDict
+- (void)subscribeComplete:(NSDictionary *)jsonDict characteristic:(nonnull CBCharacteristic *)ch
 {
+    if ([ch.UUID isEqual:kDEVICEINFOCHARACTERISTIC]) {
+        NSLog(@"ch.value == %@",ch.value);
+        return;
+    }
+    
     if (jsonDict == nil) {
         [self.navigationController popViewControllerAnimated:YES];
         return;

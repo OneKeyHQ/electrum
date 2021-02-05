@@ -213,4 +213,85 @@
     return YES;
 }
 
+
+#pragma mark - 比较版本
++ (NSInteger)compareVersion:(NSString *)version1 version2:(NSString *)version2//要完成的子函数
+  {
+      if(version1==version2)// 如果相等，直接返回
+          return 0;
+      NSInteger i=0,j=0,s1=version1.length,s2=version2.length,start1=0,start2=0,result1,result2;
+      while(start1<s1||start2<s2)//start1表示第一个字符串中当前数字从哪里开始，start2同理
+      {//只要有一个字符串还有数字，那么就继续比较下去
+          if(start1<s1&&start2<s2)//如果两个字符串都有数字
+          {
+              while(i<s1)//i记录'.'的位置，或者到达字符串最末端i=version1.size()
+              {
+                  if([version1 characterAtIndex:i]=='.')
+                      break;
+                  i++;
+              }
+              while(j<s2)//j同理，记录'.'的位置或者version2.size()
+              {
+                  if([version2 characterAtIndex:j]=='.')
+                      break;
+                  j++;
+              }
+              result1 = [self str2int:[version1 substringWithRange:NSMakeRange(start1, i-start1)]];//取出当前子字符串，转化为数字，存储在result1中
+              result2= [self str2int:[version2 substringWithRange:NSMakeRange(start2, j-start2)]];//取出当前子字符串，转化为数字，存储在result2中
+              if(result1>result2)//如果第一个大于第二个，那么返回1
+                  return 1;
+              else if(result1<result2)//如果第一个小于第二个，那么返回-1
+                  return -1;
+              else//如果当前这两个数字相等，那么继续比较下去
+              {
+                  start1=i+1;//更新start1的值
+                  i=start1;//更新i的值
+                  start2=j+1;//更新start2的值
+                  j=start2;//更新j的值
+              }
+          }
+          else if(start1<s1)//如果只有第一个字符串还有数字
+          {
+              while(i<s1)
+              {
+                  if([version1 characterAtIndex:i]=='.')
+                      break;
+                  i++;
+              }
+              result1 = [self str2int:[version1 substringWithRange:NSMakeRange(start1, i-start1)]];
+              if(result1>0)//如果大于0，那么立马返回1，不用再比较了
+                  return 1;
+              else//如果等于0，那么继续比较下去
+              {
+                  start1=i+1;
+                  i=start1;
+              }
+          }
+          else if(start2<s2)//如果只有第二个字符串有数字
+          {
+              while(j<s2)
+              {
+                  if([version2 characterAtIndex:j]=='.')
+                      break;
+                  j++;
+              }
+              result2 = [self str2int:[version2 substringWithRange:NSMakeRange(start2, j-start2)]];
+              if(result2>0)//如果大于0，那么停止比较，返回-1
+                  return -1;
+              else
+              {
+                  start2=j+1;
+                  j=start2;
+              }
+          }
+      }
+      return 0;
+}
++ (NSInteger)str2int:(NSString *)iStr//把字符串转为数字，返回得到的数字
+{
+      NSInteger res=0;
+      for(NSInteger j=0;j<iStr.length;j++)
+          res=10*res+[iStr characterAtIndex:j]-'0';
+      return res;
+}
 @end

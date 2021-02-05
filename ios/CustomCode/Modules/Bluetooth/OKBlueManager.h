@@ -29,10 +29,13 @@ typedef enum {
 
 #define kOKBlueManager (OKBlueManager.sharedInstance)
 
-#define kPRIMARY_SERVICE        @"0001"
-#define kWRITE_CHARACTERISTIC   @"0002"
-#define kREAD_CHARACTERISTIC    @"0003"
-
+#define kPRIMARY_SERVICE                     @"0001"
+#define kWRITE_CHARACTERISTIC                @"0002"
+#define kREAD_CHARACTERISTIC                 @"0003"
+#define kDEVICEINFOCHARACTERISTIC            @"Firmware Revision String"
+#define kDEVICEINFOSERVICE                   @"Device Information"
+#define kIOSMINIMUMBLUETOOTHVERSION          @"1.1.8"
+#define kBleUpdatedURL                       @"https://firmware.onekey.so/"
 
 @interface OKPeripheralInfo : NSObject
 
@@ -94,7 +97,7 @@ typedef enum {
  */
 - (void)readData:(NSData *)valueData;
 
-- (void)subscribeComplete:(NSDictionary *)jsonDict;
+- (void)subscribeComplete:(NSDictionary *)jsonDict characteristic:(CBCharacteristic *)ch;
 
 
 @end
