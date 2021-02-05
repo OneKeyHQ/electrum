@@ -60,7 +60,10 @@
                 }
                 OKPINCodeViewController *pinCode2 = [OKPINCodeViewController PINCodeViewController:^(NSString * _Nonnull pin2) {
                     dispatch_async(dispatch_get_global_queue(0, 0), ^{
-                        [kPyCommandsManager callInterface:kInterfaceset_pin parameter:@{@"pin":[pin stringByAppendingString:pin2]}];
+                        NSString *oldPin = [[pin stringByAppendingString:@"000000000"] substringToIndex:9];
+                        NSString *newPin = [[pin2 stringByAppendingString:@"000000000"] substringToIndex:9];
+                        NSString *pincom = [oldPin stringByAppendingString:newPin];
+                        [kPyCommandsManager callInterface:kInterfaceset_pin parameter:@{@"pin": pincom}];
                         weakself.changed = YES;
                     });
                 }];
