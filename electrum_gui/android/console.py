@@ -528,7 +528,7 @@ class AndroidCommands(commands.Commands):
                 raise BaseException(_("Failed to load file {}".format(path)))
             if storage.is_encrypted():
                 if not password:
-                    raise BaseException(util.InvalidPassword())
+                    raise InvalidPassword()
                 storage.decrypt(password)
             db = WalletDB(storage.read(), manual_upgrades=False)
             if db.requires_split():
@@ -2952,7 +2952,7 @@ class AndroidCommands(commands.Commands):
                 except (TypeError, KeyError, NotImplementedError):
                     raise BaseException(_("Incorrect eth keystore."))
                 except BaseException as e:
-                    raise InvalidPasswordException()
+                    raise InvalidPassword()
 
             elif flag == "public":
                 try:
@@ -3172,7 +3172,7 @@ class AndroidCommands(commands.Commands):
 
                         privkeys = Account.decrypt(keystores, keystore_password).hex()
                     except ValueError:
-                        raise BaseException(str(InvalidPassword()))
+                        raise InvalidPassword()
                 k = keystore.Imported_KeyStore({})
                 db.put("keystore", k.dump())
                 wallet = Imported_Eth_Wallet(db, storage, config=self.config)

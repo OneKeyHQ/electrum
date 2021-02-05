@@ -127,7 +127,7 @@ class NotEnoughFundsStr(Exception):
     def __str__(self):
         return (_("Insufficient funds"))
 
-class InvalidPassword(Exception):
+class InvalidPassword(BaseException):
     def __str__(self):
         return _("Incorrect password.")
 
