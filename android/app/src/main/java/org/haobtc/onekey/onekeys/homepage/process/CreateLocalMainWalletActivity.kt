@@ -101,7 +101,7 @@ class CreateLocalMainWalletActivity : BaseActivity(), AccountSelectAdapter.OnSel
                 it.coinName.toUpperCase(Locale.ROOT),
                 describe,
                 LocalImage(resId),
-                it == Vm.CoinType.BTC
+                true
             ))
           }
           emitter.onSuccess(accounts)
