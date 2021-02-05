@@ -476,6 +476,9 @@
     <string name="bluetooth_fail">蓝牙连接失败</string>
     <string name="copy_mnemonic">复制助记词</string>
     <string name="pass_morethan_6">密码不足6位</string>
+    <string name="hint_hardware_pin_input_warn">硬件钱包 PIN 码位数 1 - 9 位</string>
+    <string name="pass_longest_nine">PIN 码不得超过 9 位</string>
+    <string name="hint_please_enter_pin_code">请输入 PIN 码</string>
     <string name="single_sign_only">签名消息只支持单签</string>
     <string name="unrelated_transaction">此交易与当前钱包无关</string>
     <string name="please_open_unconfirmed">请在设置中开启\"花费未确认的收入\"按钮即可创建交易</string>

@@ -564,6 +564,9 @@
     <string name="bluetooth_fail">Bluetooth connection failed</string>
     <string name="copy_mnemonic">Copy Mnemonic</string>
     <string name="pass_morethan_6">Password must be over 6 characters</string>
+    <string name="hint_hardware_pin_input_warn">硬件钱包 PIN 码位数 1 - 9 位</string>
+    <string name="pass_longest_nine">PIN 码不得超过 9 位</string>
+    <string name="hint_please_enter_pin_code">请输入 PIN 码</string>
     <string name="single_sign_only">Only single signature is supported for signed messages</string>
     <string name="unrelated_transaction">This transaction is not related to the current wallet</string>
     <string name="please_open_unconfirmed">Please turn on the \"Spend unconfirmed income\" button in the settings to create the transaction</string>

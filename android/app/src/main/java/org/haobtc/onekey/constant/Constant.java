@@ -149,7 +149,7 @@ public final class Constant {
         public static final int MODE_PREPARE = 6;
     }
     /** 这个值意味着要在硬件上输入PIN, 注意 '0' 并不是合法的可选PIN值 */
-    public static final String PIN_INVALID = "000000";
+    public static final String PIN_INVALID = "000000000";
     /** 操作类型 */
     public static final String OPERATE_TYPE = "operate_type";
     /** 备份hd到未激活硬件设备 */

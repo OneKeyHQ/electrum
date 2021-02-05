@@ -1,13 +1,17 @@
 package org.haobtc.onekey.ui.activity;
 
-
 import android.content.Intent;
 import android.inputmethodservice.Keyboard;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
+import butterknife.BindView;
+import butterknife.OnClick;
+import butterknife.OnTouch;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -20,29 +24,34 @@ import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.ui.custom.PwdInputView;
+import org.haobtc.onekey.ui.widget.AsteriskPasswordTransformationMethod;
 import org.haobtc.onekey.utils.NumKeyboardUtil;
-
-import butterknife.BindView;
-import butterknife.OnClick;
-import butterknife.OnTouch;
 
 /**
  * @author liyan
  * @date 11/25/20
  */
-
 public class VerifyPinActivity extends BaseActivity implements NumKeyboardUtil.CallBack {
+
+    @BindView(R.id.edit_pass_long)
+    protected EditText mLongEdit;
 
     @BindView(R.id.pwd_edit_text)
     protected PwdInputView mPwdInputView;
+
     @BindView(R.id.promote)
     TextView promote;
+
     @BindView(R.id.img_back)
     ImageView imgBack;
+
     private NumKeyboardUtil mKeyboardUtil;
+
     @BindView(R.id.relativeLayout_key)
     protected RelativeLayout mRelativeLayoutKey;
+
     private String action;
+
     @Override
     public void init() {
         action = getIntent().getAction();
@@ -52,10 +61,29 @@ public class VerifyPinActivity extends BaseActivity implements NumKeyboardUtil.C
             updateTitle(R.string.verify_pin_onkey);
             promote.setText(R.string.input_pin_promote);
         }
-        mKeyboardUtil = new NumKeyboardUtil(mRelativeLayoutKey, this, mPwdInputView, R.xml.number, this);
+        mKeyboardUtil =
+                new NumKeyboardUtil(mRelativeLayoutKey, this, mLongEdit, R.xml.number, this);
+        mLongEdit.setTransformationMethod(new AsteriskPasswordTransformationMethod());
+        mLongEdit.addTextChangedListener(
+                new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(
+                            CharSequence s, int start, int count, int after) {}
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        if (s.length() > 9) {
+                            showToast(R.string.pass_longest_nine);
+                            mLongEdit.setText(s.subSequence(0, 9));
+                        }
+                    }
+                });
     }
 
-    @OnTouch(R.id.pwd_edit_text)
+    @OnTouch(R.id.edit_pass_long)
     public boolean onTouch() {
         if (mKeyboardUtil.getKeyboardVisible() != View.VISIBLE) {
             mRelativeLayoutKey.setVisibility(View.VISIBLE);
@@ -67,9 +95,9 @@ public class VerifyPinActivity extends BaseActivity implements NumKeyboardUtil.C
     @Override
     public void onKey(int key) {
         if (key == Keyboard.KEYCODE_CANCEL) {
-            String pin = mPwdInputView.getText().toString();
-            if (pin.length() != 6) {
-                showToast(R.string.pass_morethan_6);
+            String pin = mLongEdit.getText().toString();
+            if (pin.length() < 1) {
+                showToast(R.string.hint_please_enter_pin_code);
                 mKeyboardUtil.showKeyboard();
                 return;
             }
@@ -86,24 +114,28 @@ public class VerifyPinActivity extends BaseActivity implements NumKeyboardUtil.C
         }
     }
 
-    /***
-     * init layout
+    /**
+     * * init layout
+     *
      * @return
      */
     @Override
     public int getContentViewId() {
         return R.layout.input_pin_activity;
     }
+
     @SingleClick
     @OnClick(R.id.img_back)
     public void onViewClicked(View view) {
         PyEnv.cancelPinInput();
         finish();
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onExit(ExitEvent exitEvent) {
         finish();
     }
+
     @Override
     public boolean needEvents() {
         return true;

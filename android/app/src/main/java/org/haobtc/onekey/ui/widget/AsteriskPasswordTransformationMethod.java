@@ -19,7 +19,7 @@ public class AsteriskPasswordTransformationMethod extends PasswordTransformation
         }
 
         public char charAt(int index) {
-            return '*'; // This is the important part
+            return '•'; // This is the important part
         }
 
         public int length() {

@@ -1,6 +1,8 @@
 package org.haobtc.onekey.ui.fragment;
 
 import android.inputmethodservice.Keyboard;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -51,6 +53,23 @@ public class DevicePINFragment extends BaseFragment implements NumKeyboardUtil.C
         }
         mKeyboardUtil = new NumKeyboardUtil(view, getContext(), mLongEdit, R.xml.number, this);
         mLongEdit.setTransformationMethod(new AsteriskPasswordTransformationMethod());
+        mLongEdit.addTextChangedListener(
+                new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(
+                            CharSequence s, int start, int count, int after) {}
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        if (s.length() > 9) {
+                            showToast(R.string.pass_longest_nine);
+                            mLongEdit.setText(s.subSequence(0, 9));
+                        }
+                    }
+                });
     }
 
     @OnTouch(R.id.edit_pass_long)
@@ -72,8 +91,8 @@ public class DevicePINFragment extends BaseFragment implements NumKeyboardUtil.C
         if (key == Keyboard.KEYCODE_CANCEL) {
             String pin = mLongEdit.getText().toString();
             Log.e(TAG, "pin : " + pin);
-            if (pin.length() < 1 || pin.length() > 9) {
-                showToast(R.string.pass_morethan_6);
+            if (pin.length() < 1) {
+                showToast(R.string.hint_please_enter_pin_code);
                 mKeyboardUtil.showKeyboard();
                 return;
             }
