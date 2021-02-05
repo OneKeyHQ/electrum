@@ -349,7 +349,7 @@ class TrezorClientBase(HardwareClientBase, Logger):
         pin = self.handler.get_pin(msg.format(self.device), show_strength=show_strength)
         if not pin:
             raise Cancelled
-        if len(pin) > 9 and len(pin) != 12:
+        if len(pin) < 1 and len(pin) != 18:
             self.handler.show_error(_('The PIN cannot be longer than 9 characters.'))
             raise Cancelled
         return pin
