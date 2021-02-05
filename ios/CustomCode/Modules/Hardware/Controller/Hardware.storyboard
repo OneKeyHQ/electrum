@@ -405,14 +405,53 @@
                                         </constraints>
                                     </imageView>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qX2-O2-EhG">
-                                        <rect key="frame" x="20" y="238" width="374" height="55"/>
+                                        <rect key="frame" x="20" y="238" width="374" height="60"/>
+                                        <subviews>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VSy-7h-Erg" userLabel="longpwdView">
+                                                <rect key="frame" x="0.0" y="0.0" width="374" height="60"/>
+                                                <subviews>
+                                                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Input PIN" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="cNB-Aa-Bzz" customClass="OKTextField">
+                                                        <rect key="frame" x="24" y="22" width="296" height="18"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="height" constant="18" id="vpx-dc-NEY"/>
+                                                        </constraints>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                                        <textInputTraits key="textInputTraits" keyboardType="alphabet" secureTextEntry="YES"/>
+                                                    </textField>
+                                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kC6-2k-Igv">
+                                                        <rect key="frame" x="328" y="20" width="22" height="22"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="width" constant="22" id="uVX-Nq-leP"/>
+                                                            <constraint firstAttribute="height" constant="22" id="vDs-K9-m10"/>
+                                                        </constraints>
+                                                        <state key="normal" image="hide_on"/>
+                                                        <state key="selected" image="eye_open"/>
+                                                        <connections>
+                                                            <action selector="eyeBtnClick:" destination="pMx-PF-nPb" eventType="touchUpInside" id="1Wl-f0-NdW"/>
+                                                        </connections>
+                                                    </button>
+                                                </subviews>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <constraints>
+                                                    <constraint firstItem="cNB-Aa-Bzz" firstAttribute="top" secondItem="VSy-7h-Erg" secondAttribute="top" constant="22" id="2ah-Z7-fSt"/>
+                                                    <constraint firstItem="kC6-2k-Igv" firstAttribute="leading" secondItem="cNB-Aa-Bzz" secondAttribute="trailing" constant="8" id="Cjf-Mc-6cw"/>
+                                                    <constraint firstAttribute="trailing" secondItem="kC6-2k-Igv" secondAttribute="trailing" constant="24" id="M5E-DT-wqK"/>
+                                                    <constraint firstItem="cNB-Aa-Bzz" firstAttribute="leading" secondItem="VSy-7h-Erg" secondAttribute="leading" constant="24" id="Sn6-80-Lty"/>
+                                                    <constraint firstAttribute="height" constant="60" id="WdD-JU-LMz"/>
+                                                    <constraint firstItem="kC6-2k-Igv" firstAttribute="centerY" secondItem="cNB-Aa-Bzz" secondAttribute="centerY" id="WrH-nI-sTU"/>
+                                                </constraints>
+                                            </view>
+                                        </subviews>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
-                                            <constraint firstAttribute="height" constant="55" id="NSz-sH-waF"/>
+                                            <constraint firstItem="VSy-7h-Erg" firstAttribute="leading" secondItem="qX2-O2-EhG" secondAttribute="leading" id="XwG-oy-zGL"/>
+                                            <constraint firstAttribute="trailing" secondItem="VSy-7h-Erg" secondAttribute="trailing" id="udI-Zq-tPj"/>
+                                            <constraint firstItem="VSy-7h-Erg" firstAttribute="top" secondItem="qX2-O2-EhG" secondAttribute="top" id="wzu-tg-z81"/>
+                                            <constraint firstAttribute="bottom" secondItem="VSy-7h-Erg" secondAttribute="bottom" id="xFh-2l-RqY"/>
                                         </constraints>
                                     </view>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="手机上的数字键位每次都会随机改变。 PIN 码忘记不可找回，您务必要牢记。" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9zZ-Fj-WOm">
-                                        <rect key="frame" x="38" y="313" width="338" height="29"/>
+                                        <rect key="frame" x="38" y="318" width="338" height="29"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                         <color key="textColor" red="0.33085581660000002" green="0.38708245749999998" blue="0.43922376629999998" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                         <nil key="highlightedColor"/>
@@ -752,8 +791,11 @@
                         <outlet property="deviceInputImage" destination="QE2-N7-GnU" id="HeQ-HV-eQf"/>
                         <outlet property="deviceInputTip" destination="YTz-d9-DJf" id="SHl-Vv-abB"/>
                         <outlet property="dotBgView" destination="qX2-O2-EhG" id="KRa-d6-tbF"/>
+                        <outlet property="eyeBtn" destination="kC6-2k-Igv" id="BrE-SL-cbn"/>
                         <outlet property="iconImageView" destination="aU3-Bd-zrM" id="IXb-SV-Xwa"/>
                         <outlet property="keyBoardBgView" destination="H42-d8-kkQ" id="gwL-Lq-5Jq"/>
+                        <outlet property="longPwdBgView" destination="VSy-7h-Erg" id="DfX-z7-Us9"/>
+                        <outlet property="pwdAppInputTextField" destination="cNB-Aa-Bzz" id="Osv-is-lfp"/>
                         <outlet property="titleLabel" destination="f0d-9F-pGL" id="zt7-Vq-qNE"/>
                     </connections>
                 </viewController>
@@ -1928,6 +1970,8 @@
         <image name="checked_Nomal" width="24" height="24"/>
         <image name="close" width="24" height="24"/>
         <image name="device_input_pin" width="151" height="193"/>
+        <image name="eye_open" width="16" height="12"/>
+        <image name="hide_on" width="16" height="15"/>
         <image name="pen" width="248.5" height="204"/>
         <image name="quanquan" width="60" height="60"/>
         <image name="reload" width="18" height="18"/>

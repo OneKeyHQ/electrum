@@ -308,7 +308,7 @@
 "If you have ever deleted a wallet created by the device on your phone, you can recover it this way." = "如果您曾经在手机删除过由该设备创建的账户，可以用此办法恢复。";
 "Create a Condominium wallet (Advanced)" = "创建共管账户（高级）";
 "At least 2 devices are required to cooperate. Before adding, make sure that all hardware devices that want to participate in the public pipe are activated" = "需至少2台设备配合，添加前确认所有想要参与公管的硬件设备 都已激活。";
-"Enter your 6-digit password according to the PIN code location comparison table displayed on the device" = "根据设备显示的 PIN 码位置对照表 输入您的6位密码";
+"Enter your 6-digit password according to the PIN code location comparison table displayed on the device" = "根据设备显示的 PIN 码位置对照表 输入您的PIN密码";
 "The number keys on the phone change randomly every time. The PIN number is not retrievable. You must keep it in mind" = "手机上的数字键位每次都会随机改变。 \nPIN 码忘记不可找回，您务必要牢记。";
 "confirm" = "确认";
 "Check the PIN code" = "校验 PIN 码";
@@ -490,3 +490,4 @@
 "The wallet already exists" = "该钱包已存在";
 "Bluetooth firmware version is too low, please skip to web upgrade" = "硬件蓝牙版本过低，请跳转到web升级";
 "Update tip" = "更新提示";
+"Input PIN" = "输入PIN";
