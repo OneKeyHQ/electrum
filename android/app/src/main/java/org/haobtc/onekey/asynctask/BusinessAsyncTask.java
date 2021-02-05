@@ -81,6 +81,8 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
                                             strings[1],
                                             strings[2])
                                     .toString();
+                    String request =
+                            (strings[0].endsWith("single") ? GET_EXTEND_PUBLIC_KEY : strings[0]);
                 } catch (Exception e) {
                     cancel(true);
                     onException(e);

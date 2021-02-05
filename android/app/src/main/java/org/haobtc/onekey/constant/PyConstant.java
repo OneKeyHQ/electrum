@@ -163,4 +163,6 @@ public final class PyConstant {
     public static final String SIGN_ETH_TX = "sign_eth_tx";
 
     public static final String Create_Hw_Derived_Wallet = "create_hw_derived_wallet";
+
+    public static final String GET_XPUB_FORM_HW = "get_xpub_from_hw";
 }

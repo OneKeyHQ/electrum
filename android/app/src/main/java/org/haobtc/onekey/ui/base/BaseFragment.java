@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import com.orhanobut.logger.Logger;
 import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.utils.EventBusUtils;
 
@@ -36,6 +37,7 @@ public abstract class BaseFragment extends Fragment implements IBaseView {
             @NonNull LayoutInflater inflater,
             @Nullable ViewGroup container,
             @Nullable Bundle savedInstanceState) {
+        Logger.d(" Current Fragment-->" + getClass().getName());
         View view;
         if (enableViewBinding()) {
             view = getLayoutView(inflater, container, savedInstanceState);

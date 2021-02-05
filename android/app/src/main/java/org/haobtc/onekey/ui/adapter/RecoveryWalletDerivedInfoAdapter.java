@@ -51,7 +51,8 @@ public class RecoveryWalletDerivedInfoAdapter
         checkBox.setOnClickListener(
                 v -> {
                     if (item.getExist().equals("1")) {
-                        Toast.makeText(mContext, R.string.not_cancel, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mContext, R.string.hint_wallet_existence, Toast.LENGTH_SHORT)
+                                .show();
                     }
                 });
         checkBox.setOnCheckedChangeListener(

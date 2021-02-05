@@ -462,7 +462,16 @@ public final class PyEnv {
             response.setResult(walletBean);
         } catch (Exception e) {
             Exception exception = HardWareExceptions.exceptionConvert(e);
-            response.setErrors(exception.getMessage());
+            String message = exception.getMessage();
+            if (message.startsWith(HardWareExceptions.PAIR_USER_CANCEL.getMessage())) {
+                message =
+                        message.replaceFirst(HardWareExceptions.PAIR_USER_CANCEL.getMessage(), "");
+            }
+            if (message.startsWith(HardWareExceptions.OPERATION_CANCEL.getMessage())) {
+                message =
+                        message.replaceFirst(HardWareExceptions.OPERATION_CANCEL.getMessage(), "");
+            }
+            response.setErrors(message);
             e.printStackTrace();
         }
         return response;
@@ -671,7 +680,16 @@ public final class PyEnv {
             pyResponse.setResult(walletBean);
         } catch (Exception e) {
             Exception exception = HardWareExceptions.exceptionConvert(e);
-            pyResponse.setErrors(exception.getMessage());
+            String message = exception.getMessage();
+            if (message.startsWith(HardWareExceptions.PAIR_USER_CANCEL.getMessage())) {
+                message =
+                        message.replaceFirst(HardWareExceptions.PAIR_USER_CANCEL.getMessage(), "");
+            }
+            if (message.startsWith(HardWareExceptions.OPERATION_CANCEL.getMessage())) {
+                message =
+                        message.replaceFirst(HardWareExceptions.OPERATION_CANCEL.getMessage(), "");
+            }
+            pyResponse.setErrors(message);
             e.printStackTrace();
         }
         return pyResponse;
@@ -1569,7 +1587,6 @@ public final class PyEnv {
     public static PyResponse<String> createEthHwDerivedWallet(
             String path, String coinType, String addressType) {
         PyResponse<String> response = new PyResponse<>();
-
         try {
             String result = "";
             if (coinType.equals(Vm.CoinType.ETH.coinName)) {
@@ -1596,7 +1613,21 @@ public final class PyEnv {
             response.setErrors(exception.getMessage());
             e.printStackTrace();
         }
+        return response;
+    }
 
+    /** 获取用于个人钱包的扩展公钥 */
+    public static PyResponse<String> getXpubP2wpkh(String path, String type) {
+        PyResponse<String> response = new PyResponse<>();
+        try {
+            String result =
+                    sCommands.callAttr(PyConstant.Create_Hw_Derived_Wallet, path, type).toString();
+            response.setResult(result);
+        } catch (Exception e) {
+            Exception exception = HardWareExceptions.exceptionConvert(e);
+            response.setErrors(exception.getMessage());
+            e.printStackTrace();
+        }
         return response;
     }
 }

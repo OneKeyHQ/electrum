@@ -77,9 +77,6 @@ public class RecoveryChooseWalletActivity extends BaseActivity implements OnWall
         // choose wallet data list
         listDates = new ArrayList<>();
         reclWalletList.setNestedScrollingEnabled(false);
-        if (mDisposable != null && !mDisposable.isDisposed()) {
-            mDisposable.dispose();
-        }
         mDisposable =
                 Single.create(
                                 (SingleOnSubscribe<PyResponse<CreateWalletBean>>)
@@ -191,8 +188,9 @@ public class RecoveryChooseWalletActivity extends BaseActivity implements OnWall
     }
 
     @SingleClick
-    @OnClick({R.id.btn_recovery})
+    @OnClick({R.id.btn_recovery, R.id.img_back})
     public void onViewClicked(View view) {
+
         if (view.getId() == R.id.btn_recovery) {
             if (btnRecovery.getText().equals(getString(R.string.no_use_wallet))) {
                 finish();
@@ -215,6 +213,11 @@ public class RecoveryChooseWalletActivity extends BaseActivity implements OnWall
                     }
                 }
             }
+        } else if (view.getId() == R.id.img_back) {
+            PyEnv.cancelRecovery();
+            PyEnv.cancelPinInput();
+            PyEnv.cancelAll();
+            finish();
         }
     }
 

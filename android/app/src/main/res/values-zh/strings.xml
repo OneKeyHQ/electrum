@@ -1239,7 +1239,7 @@
     <string name="gas_price_small">Gas Price 不应小于 %s</string>
     <string name="gas_price_large">Gas Price 不应大于 %s</string>
     <string name="hint_hardware_signature_cancelled">签名已取消，请重试</string>
-    <string name="hint_wallet_existence">钱包已存在</string>
+    <string name="hint_wallet_existence">账户已存在</string>
     <string name="confirm_on_hw">请在硬件钱包上设置</string>
     <string name="service_support">客服支持</string>
     <string name="commit_order">提交工单</string>

@@ -1,7 +1,6 @@
 package org.haobtc.onekey.ui.activity;
 
 import android.content.Intent;
-import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -11,14 +10,15 @@ import com.google.common.base.Strings;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.ObservableOnSubscribe;
+import io.reactivex.rxjava3.core.ObservableSource;
 import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.MyApplication;
-import org.haobtc.onekey.asynctask.BusinessAsyncTask;
 import org.haobtc.onekey.bean.CreateWalletBean;
 import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.constant.PyConstant;
@@ -39,8 +39,7 @@ import org.haobtc.onekey.ui.fragment.RecoveryWalletFromHdFragment.OnFindWalletIn
  * @author liyan
  * @date 12/2/20
  */
-public class RecoveryHardwareOnceWallet extends BaseActivity
-        implements BusinessAsyncTask.Helper, OnFindWalletInfoProvider {
+public class RecoveryHardwareOnceWallet extends BaseActivity implements OnFindWalletInfoProvider {
 
     @BindView(R.id.img_back)
     ImageView imgBack;
@@ -70,12 +69,41 @@ public class RecoveryHardwareOnceWallet extends BaseActivity
 
     /** 获取用于个人钱包的扩展公钥 */
     private void getXpubP2wpkh() {
-        new BusinessAsyncTask()
-                .setHelper(this)
-                .execute(
-                        BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY_PERSONAL,
-                        MyApplication.getInstance().getDeviceWay(),
-                        PyConstant.ADDRESS_TYPE_P2WPKH);
+        Disposable disposable =
+                Observable.create(
+                                (ObservableOnSubscribe<PyResponse<String>>)
+                                        emitter -> {
+                                            PyResponse<String> response =
+                                                    PyEnv.getXpubP2wpkh(
+                                                            MyApplication.getInstance()
+                                                                    .getDeviceWay(),
+                                                            PyConstant.ADDRESS_TYPE_P2WPKH);
+                                            if (Strings.isNullOrEmpty(response.getErrors())) {
+                                                emitter.onNext(response);
+                                                emitter.onComplete();
+                                            } else {
+                                                emitter.onError(
+                                                        new Throwable(response.getErrors()));
+                                            }
+                                        })
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .observeOn(Schedulers.io())
+                        .flatMap(
+                                (Function<
+                                                PyResponse<String>,
+                                                ObservableSource<PyResponse<CreateWalletBean>>>)
+                                        response -> getRecoveryXpub(response.getResult()))
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                this::dealWithResponse,
+                                throwable -> {
+                                    if (!Strings.isNullOrEmpty(throwable.getMessage())) {
+                                        mToast(throwable.getMessage());
+                                    }
+                                    finish();
+                                });
+        mCompositeDisposable.add(disposable);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -120,63 +148,31 @@ public class RecoveryHardwareOnceWallet extends BaseActivity
         }
     }
 
-    @Override
-    public void onPreExecute() {}
-
-    @Override
-    public void onException(Exception e) {
-        showToast(e.getMessage());
-        if (!hasWindowFocus()) {
-            EventBus.getDefault().post(new ExitEvent());
-        }
-        finish();
+    private Observable<PyResponse<CreateWalletBean>> getRecoveryXpub(String string) {
+        return Observable.create(
+                emitter -> {
+                    String xpubs =
+                            "[[\"" + string + "\", \"" + FindNormalDeviceActivity.deviceId + "\"]]";
+                    PyResponse<CreateWalletBean> response = PyEnv.recoveryXpubWallet(xpubs, true);
+                    if (Strings.isNullOrEmpty(response.getErrors())) {
+                        emitter.onNext(response);
+                        emitter.onComplete();
+                    } else {
+                        emitter.onError(new Throwable(response.getErrors()));
+                    }
+                });
     }
 
-    @Override
-    public void onResult(String s) {
-        if (!hasWindowFocus()) {
-            EventBus.getDefault().post(new ExitEvent());
+    private void dealWithResponse(PyResponse<CreateWalletBean> response) {
+        if (Strings.isNullOrEmpty(response.getErrors())) {
+            CreateWalletBean createWalletBean = response.getResult();
+            if (fromHdFragment != null) {
+                fromHdFragment.setDate(createWalletBean);
+            }
+        } else {
+            mToast(response.getErrors());
         }
-        String xpubs = "[[\"" + s + "\", \"" + FindNormalDeviceActivity.deviceId + "\"]]";
-        if (mDisposable != null && !mDisposable.isDisposed()) {
-            mDisposable.dispose();
-        }
-        mDisposable =
-                Observable.create(
-                                (ObservableOnSubscribe<PyResponse<CreateWalletBean>>)
-                                        emitter -> {
-                                            PyResponse<CreateWalletBean> response =
-                                                    PyEnv.recoveryXpubWallet(xpubs, true);
-                                            emitter.onNext(response);
-                                            emitter.onComplete();
-                                        })
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                response -> {
-                                    if (Strings.isNullOrEmpty(response.getErrors())) {
-                                        CreateWalletBean createWalletBean = response.getResult();
-                                        if (fromHdFragment != null) {
-                                            fromHdFragment.setDate(createWalletBean);
-                                        }
-                                    } else {
-                                        mToast(response.getErrors());
-                                    }
-                                },
-                                throwable -> {
-                                    if (!TextUtils.isEmpty(throwable.getMessage())) {
-                                        mToast(throwable.getMessage());
-                                    }
-                                    finish();
-                                });
-        mCompositeDisposable.add(mDisposable);
     }
-
-    @Override
-    public void onCancelled() {}
-
-    @Override
-    public void currentMethod(String methodName) {}
 
     @Override
     public boolean needEvents() {
@@ -199,8 +195,8 @@ public class RecoveryHardwareOnceWallet extends BaseActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (mDisposable != null && !mDisposable.isDisposed()) {
-            mDisposable.dispose();
+        if (mCompositeDisposable != null && !mCompositeDisposable.isDisposed()) {
+            mCompositeDisposable.dispose();
         }
     }
 }

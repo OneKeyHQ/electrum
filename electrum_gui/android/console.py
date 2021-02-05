@@ -718,13 +718,13 @@ class AndroidCommands(commands.Commands):
             self.wallet_name = wallet.basename()
             print("console:create_multi_wallet:wallet_name = %s---------" % self.wallet_name)
             # self.select_wallet(self.wallet_name)
-            if self.label_flag and not hide_type:
-                wallet_name = ""
-                if wallet_type[0:1] == "1":
-                    wallet_name = name
-                else:
-                    wallet_name = "共管钱包"
-                self.label_plugin.create_wallet(self.wallet, wallet_type, wallet_name)
+            # if self.label_flag and not hide_type:
+            #     wallet_name = ""
+            #     if wallet_type[0:1] == "1":
+            #         wallet_name = name
+            #     else:
+            #         wallet_name = "共管钱包"
+            #     self.label_plugin.create_wallet(self.wallet, wallet_type, wallet_name)
         self.wizard = None
         wallet_info = CreateWalletInfo.create_wallet_info(coin_type="btc", name=self.wallet_name)
         out = self.get_create_info_by_json(wallet_info=wallet_info)

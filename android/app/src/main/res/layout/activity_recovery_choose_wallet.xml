@@ -15,6 +15,13 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_50">
 
+        <ImageView
+            android:id="@+id/img_back"
+            android:layout_width="@dimen/dp_44"
+            android:layout_height="@dimen/dp_44"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/dp_10"
+            android:src="@drawable/left_arrow" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

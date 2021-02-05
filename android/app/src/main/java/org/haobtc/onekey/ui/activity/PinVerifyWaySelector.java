@@ -85,10 +85,10 @@ public class PinVerifyWaySelector extends BaseActivity {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         if (onHardware != null) {
             PreferencesManager.put(
                     this, "Preferences", Constant.PIN_VERIFY_ON_HARDWARE, onHardware.isChecked());
         }
+        super.onDestroy();
     }
 }
