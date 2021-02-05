@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OKDevicesManager : NSObject
 @property(nonatomic, strong) NSMutableDictionary <NSString *, OKDeviceModel *>* devices;
+@property(nonatomic, copy) NSString *recentDeviceId;
 
 + (OKDevicesManager *)sharedInstance;
 

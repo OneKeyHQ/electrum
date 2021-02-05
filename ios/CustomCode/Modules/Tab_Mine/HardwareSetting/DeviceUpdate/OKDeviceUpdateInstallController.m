@@ -14,8 +14,11 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
 #import "OKHwNotiManager.h"
 #import "OKPINCodeViewController.h"
 #import "OKDeviceConfirmController.h"
+@import iOSDFULibrary;
 
-@interface OKDeviceUpdateInstallController () <NSURLSessionDelegate, OKHwNotiManagerDelegate>
+@interface OKDeviceUpdateInstallController () <NSURLSessionDelegate, OKHwNotiManagerDelegate,
+DFUServiceDelegate, LoggerDelegate, DFUProgressDelegate>
+
 @property (nonatomic, strong) NSURLSessionConfiguration* sessionConfiguration;
 @property (nonatomic, strong) NSURLSessionDownloadTask* downloadTask;
 @property (nonatomic, strong) NSURLSession* session;
@@ -43,7 +46,6 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
     [OKHwNotiManager sharedInstance].delegate = self;
     self.phase = OKDeviceUpdateInstallPhaseBegin;
     [self.finshedButton addTarget:self action:@selector(back) forControlEvents:UIControlEventTouchUpInside];
-    self.framewareDownloadURL = @"https://devs.243096.com/onekey/bixin-2.0.3.bin";
     if (self.framewareDownloadURL) {
         [self startDownload];
     } else {
@@ -81,12 +83,14 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
 
     self.phase = OKDeviceUpdateInstallPhaseDownloading;
 
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *docDir = [paths objectAtIndex:0];
-    NSString *filePath = [docDir stringByAppendingPathComponent:[NSString stringWithFormat:@"%ld.bin", self.framewareDownloadURL.hash]];
+    NSString *filePath = [self filePathForUrl];
     if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
         self.progressView.progress = 1.0;
-        [self installFrameware:filePath];
+        if (self.type == OKDeviceUpdateTypeBluetooth) {
+            [self installBluetoothFirmware:filePath];
+        } else if (self.type == OKDeviceUpdateTypeFramework) {
+            [self installFrameware:filePath];
+        }
     } else {
         [downloadTask resume];
     }
@@ -101,10 +105,8 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location {
     self.progressView.progress = 1.0;
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *docDir = [paths objectAtIndex:0];
 
-    NSString *filePath = [docDir stringByAppendingPathComponent:[NSString stringWithFormat:@"%ld.bin", self.framewareDownloadURL.hash]];
+    NSString *filePath = [self filePathForUrl];
 
     NSError *error = nil;
     if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
@@ -116,7 +118,11 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
         NSLog(@"错误信息为:%@",[error localizedDescription]);
     } else {
         NSLog(@"拷贝文件成功，文件的路径为:%@",filePath);
-        [self installFrameware:filePath];
+        if (self.type == OKDeviceUpdateTypeBluetooth) {
+            [self installBluetoothFirmware:filePath];
+        } else if (self.type == OKDeviceUpdateTypeFramework) {
+            [self installFrameware:filePath];
+        }
     }
 }
 
@@ -132,6 +138,20 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
 
     });
 }
+
+- (void)installBluetoothFirmware:(NSString *)path {
+    NSURL *zipUrl = [NSURL fileURLWithPath:path];
+
+    CBPeripheral *peripheral = kOKBlueManager.currentPeripheral;
+    DFUFirmware *selectedFirmware = [[DFUFirmware alloc] initWithUrlToZipFile:zipUrl];
+    DFUServiceInitiator *initiator = [[DFUServiceInitiator alloc] initWithCentralManager:[kOKBlueManager centralManager] target:peripheral];
+    id _ = [initiator withFirmware:selectedFirmware];
+    initiator.delegate = self; // - to be informed about current state and errors
+    initiator.logger = self;
+    initiator.progressDelegate = self;
+    [initiator start];
+}
+
 
 - (void)installProcess:(NSNotification *)noti {
     NSInteger process = [noti.object integerValue];
@@ -161,11 +181,24 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
     } else if (phase == OKDeviceUpdateInstallPhaseInstalling) {
         self.descLabel.text = kLocalizedString(@"installing");
     } else if (phase == OKDeviceUpdateInstallPhaseDone) {
-        self.descLabel.text = kLocalizedString(@"installed");
+        if (self.type == OKDeviceUpdateTypeBluetooth) {
+            self.descLabel.text = @"固件升级成功。请前往系统蓝牙设置页忽略此设备，然后重启“OneKey” App。";
+        } else {
+            self.descLabel.text = kLocalizedString(@"installed");
+        }
     }
 }
 
-
+- (NSString *)filePathForUrl {
+    NSString *namePatten = @"%lu.bin";
+    if (self.type == OKDeviceUpdateTypeBluetooth) {
+        namePatten = @"%lu.zip";
+    }
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *docDir = [paths objectAtIndex:0];
+    NSString *filePath = [docDir stringByAppendingPathComponent:[NSString stringWithFormat:namePatten, self.framewareDownloadURL.hash]];
+    return filePath;
+}
 
 - (void)hwNotiManagerDekegate:(OKHwNotiManager *)hwNoti type:(OKHWNotiType)type {
     OKWeakSelf(self)
@@ -201,6 +234,25 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
     });
 }
 
+
+- (void)settingAndReboot {
+    OKDeviceModel *device = [[OKDevicesManager sharedInstance] getDeviceModelWithID:[OKDevicesManager sharedInstance].recentDeviceId];
+    NSString *ble_name = device.deviceInfo.ble_name;
+    NSString *msg = [NSString stringWithFormat:@"请前往系统蓝牙设置页找到设备 %@ 并点击“忽略此设备”，然后重新连接。", ble_name ?: @""];
+    UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"蓝牙升级成功，请重新进行蓝牙配对"
+                                                                   message:msg
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+
+    UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"去设置" style:UIAlertActionStyleDefault
+                                                          handler:^(UIAlertAction * action) {
+        NSURL *url = [NSURL URLWithString: @"App-Prefs:root=Bluetooth"];
+        [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:^(BOOL success) {
+            exit(0);
+        }];                                                              }];
+    [alert addAction:defaultAction];
+    [self presentViewController:alert animated:YES completion:nil];
+}
+
 - (void)cancel {
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         [kPyCommandsManager cancelPIN];
@@ -214,4 +266,31 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
     }
     [self dismissViewControllerAnimated:YES completion:nil];
 }
+
+#pragma mark - LoggerDelegate
+- (void)logWith:(enum LogLevel)level message:(NSString *)message{
+    NSLog(@"dfu logWith---------level = %ld,-------message,%@", (long)level, message);
+}
+
+#pragma mark - DFUServiceDelegate & DFUProgressDelegate
+- (void)dfuProgressDidChangeFor:(NSInteger)part outOf:(NSInteger)totalParts to:(NSInteger)progress currentSpeedBytesPerSecond:(double)currentSpeedBytesPerSecond avgSpeedBytesPerSecond:(double)avgSpeedBytesPerSecond {
+    self.progressView.progress = progress * 0.01;
+}
+
+- (void)dfuStateDidChangeTo:(enum DFUState)state {
+    if (state == 0) {
+        self.phase = OKDeviceUpdateInstallPhaseInstalling;
+    }
+    if (state == 6) { // completed
+        self.phase = OKDeviceUpdateInstallPhaseDone;
+        [self settingAndReboot];
+    }
+    NSLog(@"dfu state: %ld", (long)state);
+}
+
+- (void)dfuError:(enum DFUError)error didOccurWithMessage:(NSString *)message {
+    NSLog(@"dfu Error-----------error = %ld,-------------message = %@", (long)error, message);
+}
+
+
 @end

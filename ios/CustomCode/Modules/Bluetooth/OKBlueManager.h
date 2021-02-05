@@ -64,7 +64,7 @@ typedef enum {
 
 /**
  扫描到的设备回调
- 
+
  @param peripheralInfoArr 扫描到的蓝牙设备数组
  */
 - (void)getScanResultPeripherals:(NSArray *)peripheralInfoArr;
@@ -84,7 +84,7 @@ typedef enum {
 
 /**
  当前断开的设备
- 
+
  @param peripheral 断开的peripheral信息
  */
 - (void)disconnectPeripheral:(CBPeripheral *)peripheral;
@@ -92,7 +92,7 @@ typedef enum {
 
 /**
  读取蓝牙数据
- 
+
  @param valueData 蓝牙设备发送过来的data数据
  */
 - (void)readData:(NSData *)valueData;
@@ -123,7 +123,7 @@ typedef void(^ConnectedComplete)(BOOL isSuccess);
 @property (nonatomic,copy)NSString *currentDeviceID;
 @property (nonatomic,strong)CBPeripheral *currentPeripheral;
 @property (nonatomic, weak) id<OKBabyBluetoothManageDelegate> delegate;
-
+- (CBCentralManager *)centralManager;
 
 /**
  开始扫描周边蓝牙设备
@@ -139,7 +139,7 @@ typedef void(^ConnectedComplete)(BOOL isSuccess);
 
 /**
  连接所选取的蓝牙外设
- 
+
  @param peripheral 所选择蓝牙外设的perioheral
  */
 -(void)connectPeripheral:(CBPeripheral *)peripheral;
@@ -147,7 +147,7 @@ typedef void(^ConnectedComplete)(BOOL isSuccess);
 
 /**
  获取当前连接成功的蓝牙设备数组
- 
+
  @return 返回当前所连接成功蓝牙设备数组
  */
 - (NSArray *)getCurrentPeripherals;
@@ -168,14 +168,14 @@ typedef void(^ConnectedComplete)(BOOL isSuccess);
 
 /**
  断开所选择的蓝牙设备
- 
+
  @param peripheral 所选择蓝牙外设的perioheral
  */
 - (void)disconnectLastPeripheral:(CBPeripheral *)peripheral;
 
 /**
  向蓝牙设备发送数据
- 
+
  @param msgData 数据data值
  */
 - (void)write:(NSData *)msgData;

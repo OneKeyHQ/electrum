@@ -109,6 +109,7 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
     NSURL *url = [NSURL URLWithString:@"https://key.bixin.com/version.json"];
 #ifdef DEBUG
     url = [NSURL URLWithString:@"https://key.bixin.com/version_regtest.json"];
+//    url = [NSURL URLWithString:@"https://data.onekey.so/version.json"]; //lagacy
 #endif
     NSURLSessionTask *task = [session dataTaskWithURL:url completionHandler:^(NSData *data, NSURLResponse *response, NSError* error) {
         if (error) {
@@ -170,15 +171,43 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
     cell.versionDesc = cellData[@"versionDesc"];
     cell.updateDesc = cellData[@"updateDesc"];
     cell.updateUrl = cellData[@"url"];
+    OKWeakSelf(self)
     cell.updateClickCallback = ^(OKDeviceUpdateType type, NSString *url) {
-        OKDeviceUpdateInstallController *vc = [OKDeviceUpdateInstallController controllerWithStoryboard];
-        vc.framewareDownloadURL = url;
-        vc.type = type;
-        vc.doneCallback = ^(BOOL sucess) {
-            [self.navigationController popViewControllerAnimated:YES];
-        };
-        BaseNavigationController *nav = [[BaseNavigationController alloc]initWithRootViewController:vc];
-        [self presentViewController:nav animated:YES completion:nil];
+        if (type == OKDeviceUpdateTypeBluetooth) {
+
+            UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"提示"
+                                                                           message:@"蓝牙固件升级成功后，需要重置蓝牙并重启 “OneKey” App"
+                                                                    preferredStyle:UIAlertControllerStyleAlert];
+
+            UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"升级" style:UIAlertActionStyleDefault
+                                                                  handler:^(UIAlertAction * action) {
+                                                                      //响应事件
+                OKDeviceUpdateInstallController *vc = [OKDeviceUpdateInstallController controllerWithStoryboard];
+                vc.framewareDownloadURL = url;
+                vc.type = type;
+                vc.doneCallback = ^(BOOL sucess) {
+                    [weakself.navigationController popViewControllerAnimated:YES];
+                };
+                BaseNavigationController *nav = [[BaseNavigationController alloc]initWithRootViewController:vc];
+                [weakself presentViewController:nav animated:YES completion:nil];                                                                  }];
+            UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel
+                                                                 handler:nil];
+
+            [alert addAction:cancelAction];
+            [alert addAction:defaultAction];
+
+            [weakself presentViewController:alert animated:YES completion:nil];
+
+        } else {
+            OKDeviceUpdateInstallController *vc = [OKDeviceUpdateInstallController controllerWithStoryboard];
+            vc.framewareDownloadURL = url;
+            vc.type = type;
+            vc.doneCallback = ^(BOOL sucess) {
+                [weakself.navigationController popViewControllerAnimated:YES];
+            };
+            BaseNavigationController *nav = [[BaseNavigationController alloc]initWithRootViewController:vc];
+            [weakself presentViewController:nav animated:YES completion:nil];
+        }
     };
     return cell;
 }
@@ -205,18 +234,18 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
         }];
     }
 
-//    if ([self.updateModel bluetoothFirmwareNeedUpdate:@"3.0.0"]) {
-//        NSString *version = self.updateModel.bluetoothFirmwareVersion;
-//        NSString *versionDesc = [kLocalizedString(@"newBluetoothAvailable") stringByAppendingString:version];
-//        NSString *updateDesc = ([OKLocalizableManager getCurrentLanguage] == AppCurrentLanguage_Zh_Hans) ? self.updateModel.bluetoothFirmwareChangeLogCN : self.updateModel.bluetoothFirmwareChangeLogEN;
-//        NSString *url = self.updateModel.bluetoothFirmwareUrl;
-//        [cellsData addObject:@{
-//            @"updateType": @(OKDeviceUpdateTypeBluetooth),
-//            @"versionDesc": versionDesc,
-//            @"updateDesc": updateDesc,
-//            @"url": url
-//        }];
-//    }
+    if (self.bootloaderMode || [self.updateModel bluetoothFirmwareNeedUpdate:deviceModel.deviceInfo.ble_ver]) {
+        NSString *version = self.updateModel.bluetoothFirmwareVersion;
+        NSString *versionDesc = [kLocalizedString(@"newBluetoothAvailable") stringByAppendingString:version];
+        NSString *updateDesc = ([OKLocalizableManager getCurrentLanguage] == AppCurrentLanguage_Zh_Hans) ? self.updateModel.bluetoothFirmwareChangeLogCN : self.updateModel.bluetoothFirmwareChangeLogEN;
+        NSString *url = self.updateModel.bluetoothFirmwareUrl;
+        [cellsData addObject:@{
+            @"updateType": @(OKDeviceUpdateTypeBluetooth),
+            @"versionDesc": versionDesc,
+            @"updateDesc": updateDesc,
+            @"url": url
+        }];
+    }
 
     self.cellsData = cellsData;
     [self.tableView reloadData];

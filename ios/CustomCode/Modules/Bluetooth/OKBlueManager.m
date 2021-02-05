@@ -71,7 +71,7 @@ static dispatch_once_t once;
 #pragma mark 蓝牙配置
 - (void)babyBluetoothDelegate {
     __weak typeof(self) weakSelf = self;
-    
+
     // 1-系统蓝牙状态
     [self.babyBluetooth setBlockOnCentralManagerDidUpdateState:^(CBCentralManager *central) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -81,7 +81,7 @@ static dispatch_once_t once;
             }
         });
     }];
-    
+
     // 2-设置查找设备的过滤器
     [self.babyBluetooth setFilterOnDiscoverPeripherals:^BOOL(NSString *peripheralName, NSDictionary *advertisementData, NSNumber *RSSI) {
         // 最常用的场景是查找某一个前缀开头的设备
@@ -90,24 +90,24 @@ static dispatch_once_t once;
         }
         return NO;
     }];
-    
+
     [self.babyBluetooth setFilterOnDiscoverPeripherals:^BOOL(NSString *peripheralName, NSDictionary *advertisementData, NSNumber *RSSI) {
         if ([weakSelf validateBleName:peripheralName regular:@"^K[0-9]{4}$"]||[weakSelf validateBleName:peripheralName regular:@"^(B|b)(I|i)(X|x)(I|i)(N|n)(K|k)(E|e)(Y|y)[0-9]+$"]) {
             return YES;
         }
                                                          return NO;
     }];
-    
+
     [self.babyBluetooth setFilterOnConnectToPeripherals:^BOOL(NSString *peripheralName, NSDictionary *advertisementData, NSNumber *RSSI) {
         return NO;
     }];
-    
+
     //2.1-设备连接过滤器
     [self.babyBluetooth setFilterOnConnectToPeripherals:^BOOL(NSString *peripheralName, NSDictionary *advertisementData, NSNumber *RSSI) {
         //不自动连接
         return NO;
     }];
-    
+
     //3-设置扫描到设备的委托
     [self.babyBluetooth setBlockOnDiscoverToPeripherals:^(CBCentralManager *central, CBPeripheral *peripheral, NSDictionary *advertisementData, NSNumber *RSSI) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -117,7 +117,7 @@ static dispatch_once_t once;
             }
         });
     }];
-    
+
     BabyRhythm *rhythm = [[BabyRhythm alloc]init];
     //4-设置设备连接成功的委托,同一个baby对象，使用不同的channel切换委托回调
     [self.babyBluetooth setBlockOnConnected:^(CBCentralManager *central, CBPeripheral *peripheral) {
@@ -129,7 +129,7 @@ static dispatch_once_t once;
             }
         });
     }];
-    
+
     // 5-设置设备连接失败的委托
     [self.babyBluetooth setBlockOnFailToConnect:^(CBCentralManager *central, CBPeripheral *peripheral, NSError *error) {
         NSLog(@"【OKBabyBluetooth】->连接失败");
@@ -140,7 +140,7 @@ static dispatch_once_t once;
             }
         });
     }];
-    
+
     // 6-设置设备断开连接的委托
     [self.babyBluetooth setBlockOnDisconnect:^(CBCentralManager *central, CBPeripheral *peripheral, NSError *error) {
         NSLog(@"【OKBabyBluetooth】->设备：%@断开连接",peripheral.name);
@@ -151,16 +151,16 @@ static dispatch_once_t once;
             }
         });
     }];
-    
+
     // 7-设置发现设备的Services的委托
     [self.babyBluetooth setBlockOnDiscoverServices:^(CBPeripheral *peripheral, NSError *error) {
                                                           [rhythm beats];
                                                       }];
-    
+
     [self.babyBluetooth setBlockOnDiscoverCharacteristics:^(CBPeripheral *peripheral, CBService *service, NSError *error) {
         //NSLog(@"setBlockOnDiscoverCharacteristics");
     }];
-    
+
     // 8-设置发现设service的Characteristics的委托
     [self.babyBluetooth setBlockOnDiscoverCharacteristics:^(CBPeripheral *peripheral, CBService *service, NSError *error) {
         NSLog(@"peripheral == %@",peripheral);
@@ -191,24 +191,24 @@ static dispatch_once_t once;
             }
         }
     }];
-    
+
     // 9-设置读取characteristics的委托
     [self.babyBluetooth setBlockOnReadValueForCharacteristic:^(CBPeripheral *peripheral, CBCharacteristic *characteristics, NSError *error) {
         [weakSelf readData:characteristics.value];
                                                                 }];
-    
+
     // 设置发现characteristics的descriptors的委托
     [self.babyBluetooth setBlockOnDiscoverDescriptorsForCharacteristic:^(CBPeripheral *peripheral, CBCharacteristic *characteristic, NSError *error) {
         //NSLog(@"setBlockOnDiscoverDescriptorsForCharacteristicAtChannel = %@",characteristic);
-        
+
     }];
-    
+
     // 设置读取Descriptor的委托
     [self.babyBluetooth setBlockOnReadValueForDescriptors:^(CBPeripheral *peripheral, CBDescriptor *descriptor, NSError *error) {
         NSLog(@"descriptor %@",descriptor);
     }];
-    
-    
+
+
     [self.babyBluetooth setBlockOnDidUpdateNotificationStateForCharacteristic:^(CBCharacteristic *characteristic, NSError *error) {
         dispatch_async(dispatch_get_main_queue(), ^{
             // 从block中取到值，再回到主线程
@@ -217,17 +217,17 @@ static dispatch_once_t once;
             }
         });
     }];
-    
-    
+
+
     // 读取rssi的委托
     [self.babyBluetooth setBlockOnDidReadRSSI:^(NSNumber *RSSI, NSError *error) { }];
-    
+
     // 设置beats break委托
     [rhythm setBlockOnBeatsBreak:^(BabyRhythm *bry) { }];
-    
+
     // 设置beats over委托
     [rhythm setBlockOnBeatsOver:^(BabyRhythm *bry) { }];
-    
+
     // 扫描选项->CBCentralManagerScanOptionAllowDuplicatesKey:忽略同一个Peripheral端的多个发现事件被聚合成一个发现事件
     NSDictionary *scanForPeripheralsWithOptions = @{CBCentralManagerScanOptionAllowDuplicatesKey:@YES};
     /*连接选项->
@@ -240,7 +240,7 @@ static dispatch_once_t once;
                                      CBConnectPeripheralOptionNotifyOnDisconnectionKey:@YES,
                                      CBConnectPeripheralOptionNotifyOnNotificationKey:@YES};
     [self.babyBluetooth setBabyOptionsWithScanForPeripheralsWithOptions:scanForPeripheralsWithOptions connectPeripheralWithOptions:connectOptions scanForPeripheralsWithServices:nil discoverWithServices:nil discoverWithCharacteristics:nil];
-    
+
     // 连接设备
     [self.babyBluetooth setBabyOptionsWithScanForPeripheralsWithOptions:scanForPeripheralsWithOptions
                                            connectPeripheralWithOptions:nil
@@ -270,12 +270,12 @@ static dispatch_once_t once;
 
 /// 扫描到的设备[由block回主线程]
 - (void)scanResultPeripheral:(CBPeripheral *)peripheral advertisementData:(NSDictionary *)advertisementData rssi:(NSNumber *)RSSI {
-    
+
     if ([peripheral.name isEqualToString:self.needConnectName]) {
         [self connectPeripheral:peripheral];
         return;
     }
-    
+
     for (OKPeripheralInfo *peripheralInfo in self.peripheralArr) {
         if ([peripheralInfo.peripheral.identifier isEqual:peripheral.identifier]) {
             return;
@@ -287,7 +287,7 @@ static dispatch_once_t once;
     peripheralInfo.advertisementData = advertisementData;
     peripheralInfo.RSSI = RSSI;
     [self.peripheralArr addObject:peripheralInfo];
-    
+
     if ([self.delegate respondsToSelector:@selector(getScanResultPeripherals:)]) {
         [self.delegate getScanResultPeripherals:self.peripheralArr];
     }
@@ -349,6 +349,11 @@ static dispatch_once_t once;
 /// 获取当前连接
 - (NSArray *)getCurrentPeripherals {
     return [self.babyBluetooth findConnectedPeripherals];
+}
+
+- (CBCentralManager *)centralManager
+{
+  return self.babyBluetooth.centralManager;
 }
 
 ///订阅完成
@@ -423,7 +428,7 @@ static dispatch_once_t once;
         NSLog(@"【OKBabyBluetooth】->数据发送失败");
         return;
     }
-    
+
     //若最后一个参数是CBCharacteristicWriteWithResponse
     //则会进入setBlockOnDidWriteValueForCharacteristic委托
     [self.currentPeripheral writeValue:msgData
@@ -479,7 +484,7 @@ static dispatch_once_t once;
             NSLog(@"OKBlueManager: characteristicWrite Empty data");
             return;
         }
-        [self.currentPeripheral writeValue:data forCharacteristic:self.writeCharacteristic type:CBCharacteristicWriteWithResponse]; 
+        [self.currentPeripheral writeValue:data forCharacteristic:self.writeCharacteristic type:CBCharacteristicWriteWithResponse];
     }
 }
 
@@ -523,7 +528,7 @@ static dispatch_once_t once;
         _buffer = [NSMutableString new];
     }
     return _buffer;
-    
+
 }
 
 - (BOOL)isConnectedCurrentDevice
@@ -550,7 +555,7 @@ static dispatch_once_t once;
         self.needConnectName = name;
         [self startScanPeripheral];
     }
-    
+
 }
 
 @end

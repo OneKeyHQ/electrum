@@ -12,6 +12,7 @@ pod 'MJExtension', '3.0.13'
 pod 'BabyBluetooth','0.7.0'
 pod 'MBProgressHUD', '1.2.0'
 pod 'TYAttributedLabel', '2.6.9'
+pod 'iOSDFULibrary'
 end
 post_install do |installer|
      installer.pods_project.targets.each do |target|

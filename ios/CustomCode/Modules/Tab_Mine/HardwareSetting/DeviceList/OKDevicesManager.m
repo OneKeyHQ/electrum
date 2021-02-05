@@ -65,6 +65,7 @@
         NSAssert(0, @"OKDeviceModel addDevices error");
         return;
     }
+    self.recentDeviceId = deviceModel.deviceInfo.device_id;
     OKDeviceModel *oldDeviceModel = [self.devices objectForKey:deviceModel.deviceInfo.device_id];
     if (!oldDeviceModel) {
         [self.devices setObject:deviceModel forKey:deviceModel.deviceInfo.device_id];
@@ -79,6 +80,7 @@
         NSAssert(0, @"OKDeviceModel updateDevices error");
         return;
     }
+    self.recentDeviceId = deviceModel.deviceInfo.device_id;
     OKDeviceModel *oldDeviceModel = [self.devices objectForKey:deviceModel.deviceInfo.device_id];
     if (!oldDeviceModel) { return; }
     [oldDeviceModel updateWithDict:deviceModel.json];
