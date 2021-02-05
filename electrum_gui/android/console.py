@@ -462,7 +462,7 @@ class AndroidCommands(commands.Commands):
                     self.callbackIntent.onCallback("set_server_status=%s" % args[0])
 
     def ticker_action(self):
-        if self.wallet is not None and not self.coins.__contains__(self.wallet.wallet_type[0:3]):
+        if self.wallet is not None:
             self.update_wallet()
             self.update_interfaces()
 
