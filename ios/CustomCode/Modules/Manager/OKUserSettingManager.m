@@ -119,7 +119,7 @@ static dispatch_once_t once;
 }
 
 - (OKDevicePINInputMethod)pinInputMethod {
-    return [[OKStorageManager loadFromUserDefaults:kPinInputMethod] integerValue];
+    return OKDevicePINInputMethodOnApp;
 }
 
 @end

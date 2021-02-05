@@ -431,7 +431,7 @@
 "hardwareWallet.pin.fail" = "修改 PIN 码失败";
 "hardwareWallet.pin.title" = "修改设备 PIN 码";
 "hardwareWallet.pin.inputPinTip" = "输入设备原 PIN 码\n以继续";
-"hardwareWallet.pin.newPinTip" = "干的好，继续根据设备\n上的 PIN 码位置\n设置您的新6位 PIN 码";
+"hardwareWallet.pin.newPinTip" = "干的好，继续根据设备\n上的 PIN 码位置\n设置您的新 PIN 码";
 "hardwareWallet.pin.keyboardTip" = "手机上的数字键位每次都会随机改变。\nPIN 码忘记不可找回，您务必要牢记。";
 "hardwareWallet.pin.comfirm" = "最终确认";
 "hardwareWallet.pin.comfirmTip" = "在您的设备上确认新的 PIN 码，\n这是最后一步。";

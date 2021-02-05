@@ -26,6 +26,7 @@
 @property (nonatomic,strong)CBCharacteristic *writeCharacteristic;
 
 @property (nonatomic,strong)CBCharacteristic *deviceCharacteristic;
+@property (nonatomic,strong)CBCharacteristic *softwareCharacteristic;
 
 @property (nonatomic, strong)NSMutableArray  *peripheralArr;
 @property (nonatomic,strong)NSMutableString *buffer;
@@ -187,6 +188,8 @@ static dispatch_once_t once;
                 NSLog(@"chUUID = %@",chUUID);
                 if ([chUUID isEqualToString:kDEVICEINFOCHARACTERISTIC]) {
                     weakSelf.deviceCharacteristic = ch;
+                }else if ([chUUID isEqualToString:kDEVICESOFTWARECHARACTERISTIC]){
+                    weakSelf.softwareCharacteristic = ch;
                 }
             }
         }
@@ -361,14 +364,19 @@ static dispatch_once_t once;
     NSString *hexStr = [NSData hexStringForData:self.deviceCharacteristic.value];
     NSString *hwVersion = [NSString stringFromHexString:hexStr];
     OKWeakSelf(self)
-    if ([OKTools compareVersion:kIOSMINIMUMBLUETOOTHVERSION version2:hwVersion] == 1?YES:NO) {
+    BOOL isDFU = NO;
+    if ([hwVersion hasPrefix:@"s132"]) {
+        NSString *softwarehexStr = [NSData hexStringForData:weakself.softwareCharacteristic.value];
+        NSString *softwarehwVersion = [NSString stringFromHexString:softwarehexStr];
+        isDFU = [OKTools compareVersion:kIOSMINIMUMBLUETOOTHVERSION version2:softwarehwVersion] == 1?YES:NO;
+    }else{
+        isDFU = [OKTools compareVersion:kIOSMINIMUMBLUETOOTHVERSION version2:hwVersion] == 1?YES:NO;
+    }
+    if (isDFU) {
         [MBProgressHUD hideHUDForView:weakself.OK_TopViewController.view animated:YES];
-        UIAlertController *alertVc = [UIAlertController alertControllerWithTitle:MyLocalizedString(@"Update tip", nil) message:MyLocalizedString(@"Bluetooth firmware version is too low, please skip to web upgrade", nil) preferredStyle:UIAlertControllerStyleAlert];
-        UIAlertAction *action = [UIAlertAction actionWithTitle:MyLocalizedString(@"determine", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-            [weakself skipToSafari];
-        }];
-        [alertVc addAction:action];
-        [self.OK_TopViewController presentViewController:alertVc animated:YES completion:nil];
+        if ([self.delegate respondsToSelector:@selector(subscribeComplete:characteristic:)]) {
+            [self.delegate subscribeComplete:@{} characteristic:self.deviceCharacteristic];
+        }
         return;
     }
     kOKBlueManager.currentReadDataStr = @"";

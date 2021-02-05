@@ -33,6 +33,7 @@ typedef enum {
 #define kWRITE_CHARACTERISTIC                @"0002"
 #define kREAD_CHARACTERISTIC                 @"0003"
 #define kDEVICEINFOCHARACTERISTIC            @"Firmware Revision String"
+#define kDEVICESOFTWARECHARACTERISTIC        @"Software Revision String"
 #define kDEVICEINFOSERVICE                   @"Device Information"
 #define kIOSMINIMUMBLUETOOTHVERSION          @"1.1.8"
 #define kBleUpdatedURL                       @"https://firmware.onekey.so/"

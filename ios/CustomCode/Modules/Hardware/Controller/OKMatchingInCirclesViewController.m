@@ -234,8 +234,12 @@
 }
 - (void)subscribeComplete:(NSDictionary *)jsonDict characteristic:(nonnull CBCharacteristic *)ch
 {
-    if ([ch.UUID isEqual:kDEVICEINFOCHARACTERISTIC]) {
-        NSLog(@"ch.value == %@",ch.value);
+    OKWeakSelf(self)
+    NSString *chUUID = [NSString stringWithFormat:@"%@",ch.UUID];
+    if ([chUUID isEqualToString:kDEVICEINFOCHARACTERISTIC]) {
+        OKDeviceUpdateViewController *vc = [OKDeviceUpdateViewController controllerWithStoryboard];
+        vc.mode = OKDeviceFirmwareInstallModeBLEDFU;
+        [weakself.navigationController pushViewController:vc animated:YES];
         return;
     }
 
@@ -243,7 +247,6 @@
         [self.navigationController popViewControllerAnimated:YES];
         return;
     }
-    OKWeakSelf(self)
     OKDeviceModel *deviceModel  = [[OKDeviceModel alloc]initWithJson:jsonDict];
     kOKBlueManager.currentDeviceID = deviceModel.deviceInfo.device_id;
     [[OKDevicesManager sharedInstance]addDevices:deviceModel];

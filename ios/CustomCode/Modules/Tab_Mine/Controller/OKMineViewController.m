@@ -358,7 +358,7 @@
                         break;
             }
         }];
-    _allMenuData = @[@[model1,model2],@[allDeviceModel, pinInputModel],biologicaArray,@[model8,model9,model10,model11,model12]];
+    _allMenuData = @[@[model1,model2],@[allDeviceModel],biologicaArray,@[model8,model9,model10,model11,model12]];
     return _allMenuData;
 }
 #pragma mark - UINavigationControllerDelegate
