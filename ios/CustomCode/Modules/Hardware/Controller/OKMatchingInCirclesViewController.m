@@ -238,7 +238,7 @@
         NSLog(@"ch.value == %@",ch.value);
         return;
     }
-    
+
     if (jsonDict == nil) {
         [self.navigationController popViewControllerAnimated:YES];
         return;
@@ -256,7 +256,7 @@
                         [MBProgressHUD hideHUDForView:self.view animated:YES];
                         if (deviceModel.bootloaderMode) {
                             OKDeviceUpdateViewController *vc = [OKDeviceUpdateViewController controllerWithStoryboard];
-                            vc.bootloaderMode = YES;
+                            vc.mode = OKDeviceFirmwareInstallModeBootloader;
                             [weakself.navigationController pushViewController:vc animated:YES];
                             return;
                         }

@@ -17,6 +17,12 @@ typedef NS_ENUM(NSUInteger, OKDeviceUpdateType) {
     OKDeviceUpdateTypeAlreadyUpToDate,
 };
 
+typedef NS_ENUM(NSUInteger, OKDeviceFirmwareInstallMode) {
+    OKDeviceFirmwareInstallModeNormal = 0,
+    OKDeviceFirmwareInstallModeBootloader,
+    OKDeviceFirmwareInstallModeBLEDFU,
+};
+
 typedef void(^OKDeviceUpdateCellCallback)(OKDeviceUpdateType type, NSString *url);
 
 @interface OKDeviceUpdateCell : UITableViewCell
@@ -31,7 +37,7 @@ typedef void(^OKDeviceUpdateCellCallback)(OKDeviceUpdateType type, NSString *url
 @end
 
 @interface OKDeviceUpdateViewController : BaseViewController
-@property (nonatomic, assign) BOOL bootloaderMode; // bootloader 模式安装固件
+@property (nonatomic, assign) OKDeviceFirmwareInstallMode mode;
 @property (nonatomic, strong) NSString *deviceId;
 + (instancetype)controllerWithStoryboard;
 
