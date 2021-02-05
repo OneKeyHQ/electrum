@@ -5,6 +5,7 @@ fun getBlockBrowserBTCMain(): Map<String, BlockBrowserBTCMain> {
       BlockBrowserBTCMain.BTC(),
       BlockBrowserBTCMain.BlockIn(),
       BlockBrowserBTCMain.BlockChain(),
+      BlockBrowserBTCMain.OkLink(),
       BlockBrowserBTCMain.BlockChair(),
       BlockBrowserBTCMain.BitInfoCharts(),
       BlockBrowserBTCMain.TradeBlock(),
@@ -46,6 +47,13 @@ abstract class BlockBrowserBTCMain(val url: String) : BTCBlockBrowser {
     override fun browseTransactionDetailsUrl(txHash: String) = "${url()}btc/tx/$txHash"
     override fun browseBlockUrl(block: String) = "${url()}btc/block/$block"
     override fun blockBrowserTag() = "BlockChain"
+  }
+
+  class OkLink : BlockBrowserBTCMain("https://www.oklink.com/") {
+    override fun browseAddressUrl(address: String) = "${url()}btc/address/$address"
+    override fun browseTransactionDetailsUrl(txHash: String) = "${url()}btc/tx/$txHash"
+    override fun browseBlockUrl(block: String) = "${url()}btc/block/$block"
+    override fun blockBrowserTag() = "OkLink"
   }
 
   class BlockChair : BlockBrowserBTCMain("https://blockchair.com/") {

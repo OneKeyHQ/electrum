@@ -4,6 +4,7 @@ fun getBlockBrowserEthMain(): Map<String, BlockBrowserEthMain> {
   return arrayListOf(
       BlockBrowserEthMain.EtherScanCN(),
       BlockBrowserEthMain.EtherScan(),
+      BlockBrowserEthMain.OkLink(),
       BlockBrowserEthMain.BlockChain(),
       BlockBrowserEthMain.BlockChair(),
       BlockBrowserEthMain.TradeBlock(),
@@ -33,6 +34,13 @@ abstract class BlockBrowserEthMain(val url: String) : ETHBlockBrowser {
     override fun browseTransactionDetailsUrl(txHash: String) = "${url()}tx/$txHash"
     override fun browseBlockUrl(block: String) = "${url()}block/$block"
     override fun blockBrowserTag() = "EtherScan"
+  }
+
+  class OkLink : BlockBrowserEthMain("https://www.oklink.com/") {
+    override fun browseAddressUrl(address: String) = "${url()}eth/address/$address"
+    override fun browseTransactionDetailsUrl(txHash: String) = "${url()}eth/tx/$txHash"
+    override fun browseBlockUrl(block: String) = "${url()}eth/block/$block"
+    override fun blockBrowserTag() = "OkLink"
   }
 
   class BlockChain : BlockBrowserEthMain("https://www.blockchain.com/") {
