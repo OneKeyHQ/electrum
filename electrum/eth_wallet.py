@@ -89,7 +89,6 @@ class Abstract_Eth_Wallet(ABC):
     gap_limit_for_change = 1
 
 
-    txin_type: str
     wallet_type: str
 
     def __init__(self, db: WalletDB, storage: Optional[WalletStorage], *, config: SimpleConfig):
@@ -390,23 +389,7 @@ class Abstract_Eth_Wallet(ABC):
         """
         pass
 
-    @abstractmethod
-    def get_txin_type(self, address: str) -> str:
-        """Return script type of wallet address."""
-        pass
-
     def export_private_key(self, address: str, password: Optional[str]) -> str:
-        # if self.is_watching_only():
-        #     raise Exception(_("This is a watching-only wallet"))
-        # # if not is_address(address):
-        # #     raise Exception(f"Invalid bitcoin address: {address}")
-        # if not self.is_mine(address):
-        #     raise Exception(_('Address not in wallet.') + f' {address}')
-        # index = self.get_address_index(address)
-        # pk, compressed = self.keystore.get_private_key(index, password)
-        # txin_type = self.get_txin_type(address)
-        # serialized_privkey = bitcoin.serialize_privkey(pk, compressed, txin_type)
-        # return serialized_privkey
         pass
 
     def export_private_key_for_path(self, path: Union[Sequence[int], str], password: Optional[str]) -> str:
@@ -812,10 +795,6 @@ class Imported_Eth_Wallet(Simple_Eth_Wallet):
         else:
             raise BaseException("Not checksumaddr")
 
-    def get_txin_type(self, address):
-        pass
-        #return self.db.get_imported_address(address).get('type', 'address')
-
     def is_mine(self, address) -> bool:
         if not address: return False
         return self.db.has_imported_address(address)
@@ -857,17 +836,6 @@ class Imported_Eth_Wallet(Simple_Eth_Wallet):
         else:
             raise BaseException("Not checksumaddr")
             #raise BitcoinException(str(bad_keys[0][1]))
-
-    # def pubkeys_to_address(self, pubkeys):
-    #     pubkey = pubkeys[0]
-    #     for addr in self.db.get_imported_addresses():  # FIXME slow...
-    #         if self.db.get_imported_address(addr)['pubkey'] == pubkey:
-    #             return addr
-    #     return None
-
-    def get_txin_type(self, ):
-        print("11")
-        pass
 
     def decrypt_message(self, pubkey: str, message, password) -> bytes:
         # this is significantly faster than the implementation in the superclass
@@ -962,11 +930,7 @@ class Deterministic_Eth_Wallet(Abstract_Eth_Wallet):
         return self.pubkeys_to_address(pubkeys)
 
     def export_private_key_for_path(self, path: Union[Sequence[int], str], password: Optional[str]) -> str:
-        if isinstance(path, str):
-            path = convert_bip32_path_to_list_of_uint32(path)
-        pk, compressed = self.keystore.get_private_key(path, password)
-        txin_type = self.get_txin_type()  # assumes no mixed-scripts in wallet
-        return bitcoin.serialize_privkey(pk, compressed, txin_type)
+        pass
 
     def get_public_keys_with_deriv_info(self, address: str):
         der_suffix = self.get_address_index(address)
@@ -1046,10 +1010,6 @@ class Deterministic_Eth_Wallet(Abstract_Eth_Wallet):
     def get_device_info(self):
         return self.keystore.get_device_info()
 
-    def get_txin_type(self, address=None):
-        return self.txin_type
-
-
 class Simple_Eth_Deterministic_Wallet(Simple_Eth_Wallet, Deterministic_Eth_Wallet):
 
     """ Deterministic Wallet with a single pubkey per address """
@@ -1068,7 +1028,6 @@ class Simple_Eth_Deterministic_Wallet(Simple_Eth_Wallet, Deterministic_Eth_Walle
             xtype = bip32.xpub_type(self.keystore.xpub)
         except:
             xtype = 'eth_standard'
-        #self.txin_type = 'p2pkh' if xtype == 'standard' else xtype
 
     def get_master_public_key(self):
         return self.keystore.get_master_public_key()
