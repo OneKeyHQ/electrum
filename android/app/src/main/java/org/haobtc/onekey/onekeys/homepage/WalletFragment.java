@@ -427,7 +427,8 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
                 break;
             case R.id.linear_receive:
                 Intent intent3 = new Intent(getActivity(), ReceiveHDActivity.class);
-                if (org.haobtc.onekey.constant.Constant.WALLET_TYPE_HARDWARE.equals(nowType)) {
+                int i = Vm.convertWalletType(nowType);
+                if (i == Vm.WalletType.HARDWARE) {
                     intent3.putExtra(
                             org.haobtc.onekey.constant.Constant.WALLET_TYPE,
                             org.haobtc.onekey.constant.Constant.WALLET_TYPE_HARDWARE_PERSONAL);

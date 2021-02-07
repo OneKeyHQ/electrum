@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.heaton.blelibrary.ble.Ble;
+import cn.com.heaton.blelibrary.ble.BleLog;
 import cn.com.heaton.blelibrary.ble.model.BleDevice;
 import com.google.common.base.Strings;
 import com.lxj.xpopup.XPopup;
@@ -114,7 +115,11 @@ public class SearchDevicesActivity extends BaseActivity
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onBleScanDevice(BleDevice device) {
         if (mBleAdapter != null) {
-            Logger.d("find device ====%s=====%s", device.getBleName(), device.getBleAddress());
+            BleLog.d(
+                    "SearchDevicesActivity",
+                    String.format(
+                            "find device ====%s=====%s",
+                            device.getBleName(), device.getBleAddress()));
             mBleAdapter.add(device);
         }
     }

@@ -113,6 +113,7 @@ public class CreatePersonalWalletActivity extends BaseActivity implements Busine
                                     if (Strings.isNullOrEmpty(result.getErrors())) {
                                         onResult(result.getResult());
                                     } else {
+                                        startFragment(new AddAssetFragment());
                                         mToast(result.getErrors());
                                     }
                                 });
@@ -129,6 +130,7 @@ public class CreatePersonalWalletActivity extends BaseActivity implements Busine
                                     if (Strings.isNullOrEmpty(result.getErrors())) {
                                         onResult(result.getResult());
                                     } else {
+                                        startFragment(new AddAssetFragment());
                                         mToast(result.getErrors());
                                     }
                                 });
@@ -257,5 +259,11 @@ public class CreatePersonalWalletActivity extends BaseActivity implements Busine
     public void onViewClicked(View view) {
         PyEnv.cancelPinInput();
         finish();
+    }
+
+    @Override
+    protected void onDestroy() {
+        PyEnv.cancelPinInput();
+        super.onDestroy();
     }
 }
