@@ -17,7 +17,7 @@
 @implementation OKURLSchemeHandler
 
 - (void)webView:(nonnull WKWebView *)webView startURLSchemeTask:(nonnull id<WKURLSchemeTask>)urlSchemeTask {
-    
+
     NSURLSession *session;
     NSURL *url = urlSchemeTask.request.URL;
     if ([self shouldUseProxyWithUrl:url]) {
@@ -25,27 +25,27 @@
     } else {
         session = [NSURLSession sharedSession];
     }
-    
+
     __weak id<WKURLSchemeTask> weakUrlSchemeTask = urlSchemeTask;
     NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:urlSchemeTask.request
                                                        completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
         if (!weakUrlSchemeTask) {
             return;
         }
-        
+
         if (error) {
             [weakUrlSchemeTask didFailWithError:error];
             return;
         }
-        
+
         if (response) {
             [weakUrlSchemeTask didReceiveResponse:response];
         }
-        
+
         if (data) {
             [weakUrlSchemeTask didReceiveData:data];
         }
-        
+
         [weakUrlSchemeTask didFinish];
     }];
     [dataTask resume];
@@ -57,7 +57,7 @@
 
 - (NSURLSession *)proxySession {
     if (!_proxySession) {
-        
+
         NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
         configuration.connectionProxyDictionary = self.proxyDict;
         NSString *username = @"onekey";
@@ -90,11 +90,11 @@
 }
 
 - (BOOL)shouldUseProxyWithUrl:(NSURL *)url {
-    return YES;
+    return NO;
 }
 
 - (NSString *)proxyAuthHeaderWithUsername:(NSString *)username andPassword:(NSString *)password {
-    
+
     NSString *authString = [NSString stringWithFormat:@"%@:%@", username, password];
     NSData *authData = [authString dataUsingEncoding:NSUTF8StringEncoding];
     NSString *authHeader = [NSString stringWithFormat: @"Basic %@",
@@ -103,5 +103,3 @@
 }
 
 @end
-
-

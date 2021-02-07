@@ -55,17 +55,6 @@
 }
 
 - (void)changeName {
-    UIAlertController *alertVc = [UIAlertController alertControllerWithTitle:@"" message:nil preferredStyle:UIAlertControllerStyleAlert];
-    [alertVc addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
-        textField.placeholder = self.nameLabel.text;
-    }];
-    UIAlertAction *action1 = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        self.nameLabel.text = [[alertVc textFields] objectAtIndex:0].text;
-    }];
-    UIAlertAction *action2 = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
-
-    [alertVc addAction:action2];
-    [alertVc addAction:action1];
-    [self presentViewController:alertVc animated:YES completion:nil];
+    [kTools tipMessage:MyLocalizedString(@"Temporary does not support", nil)];
 }
 @end
