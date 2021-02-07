@@ -44,7 +44,7 @@ typedef enum {
 - (void)setCreateResultModel:(OKCreateResultModel *)createResultModel
 {
     _createResultModel = createResultModel;
-    
+
     self.walletList = self.createResultModel.derived_info;
     [self.tableView reloadData];
 }
@@ -67,11 +67,11 @@ typedef enum {
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.tableView.tableFooterView = [UIView new];
-    self.title = MyLocalizedString(@"Recover HD Wallet", nil);
+    self.title = MyLocalizedString(@"restore", nil);
     self.titleLabel.text = MyLocalizedString(@"Find the following wallet", nil);
     self.descLabel.text = MyLocalizedString(@"You have derived the following wallet using the HD mnemonic, select the one you want to recover. If you do not want to recover the wallet for a while, you can skip it and readd it later in the HD Wallet. Your assets will not be lost", nil);
     [self.tableViewBgView setLayerRadius:20];
-    
+
     if (self.createResultModel == nil) {
         [self refreshUISearch:YES];
         [self rotateImageView];
@@ -175,7 +175,7 @@ typedef enum {
                     weakself.listType = OKListTypeRestore;
                     [weakself refreshUISearch:NO];
                     [weakself.tableView reloadData];
-                    
+
                 }
             });
         }

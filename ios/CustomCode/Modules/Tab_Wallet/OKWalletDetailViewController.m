@@ -167,7 +167,7 @@
         case OKClickTypeExportKeystore:
         {
             OKExportTipsViewController *exportTipsVc = [OKExportTipsViewController exportTipsViewController:^{
-                
+
             }];
             exportTipsVc.modalPresentationStyle = UIModalPresentationOverFullScreen;
             [self.OK_TopViewController presentViewController:exportTipsVc animated:NO completion:nil];
@@ -216,7 +216,7 @@
                 }
             }else{
                 OKDeleteBackUpTipsController *tipsVc = [OKDeleteBackUpTipsController deleteBackUpTipsController:^{
-                    
+
                 }];
                 tipsVc.modalPresentationStyle = UIModalPresentationOverFullScreen;
                 [self presentViewController:tipsVc animated:NO completion:nil];
@@ -272,7 +272,7 @@
         model1.isShowDesc = NO;
         model1.leftLabelColor = HexColor(0x14293B);
         model1.rightLabelColor = HexColor(0x9FA6AD);
-        
+
         OKWalletDetailModel *model2 = [OKWalletDetailModel new];
         model2.titleStr = MyLocalizedString(@"type", nil);
         model2.rightLabelStr = [self getTypeStr:_walletType];
@@ -282,7 +282,7 @@
         model2.isShowDesc = NO;
         model2.leftLabelColor = HexColor(0x14293B);
         model2.rightLabelColor = HexColor(0x00B812);
-        
+
         //第一组
         NSMutableArray *oneGroup = [NSMutableArray array];
         [oneGroup addObject:model1];
@@ -299,7 +299,7 @@
             model4.rightLabelColor = HexColor(0x9FA6AD);
             [oneGroup addObject:model4];
         }
-        
+
         if (_walletType == OKWalletTypeHardware || _walletType == OKWalletTypeHD){
             OKWalletDetailModel *model3 = [OKWalletDetailModel new];
             model3.titleStr = @"";
@@ -308,7 +308,7 @@
             }else{
                 model3.rightLabelStr = MyLocalizedString(@"All subwallets derived from the ROOT mnemonic of HD wallet can be recovered with the root mnemonic, so there is no need to export mnemonic words for a single wallet. If you want to get the HD purse the root word mnemonic, please go to my assets HD wallet", nil);
             }
-            
+
             model3.isShowCopy = NO;
             model3.isShowSerialNumber = NO;
             model3.isShowArrow = NO;
@@ -317,9 +317,9 @@
             model3.rightLabelColor = HexColor(0x00B812);
             [oneGroup addObject:model3];
         }
-        
+
         [allDataM addObject:oneGroup];
-        
+
         if (_walletType == OKWalletTypeIndependent) {
             NSMutableArray *securityGroup = [NSMutableArray array];
             OKWalletDetailModel *modelS1 = [OKWalletDetailModel new];
@@ -332,7 +332,7 @@
             modelS1.clickType = OKClickTypeExportMnemonic;
             modelS1.leftLabelColor = HexColor(0x14293B);
             modelS1.rightLabelColor = HexColor(0x9FA6AD);
-            
+
             OKWalletDetailModel *modelS2 = [OKWalletDetailModel new];
             modelS2.titleStr = MyLocalizedString(@"Export the private key", nil);
             modelS2.rightLabelStr = @"";
@@ -343,7 +343,7 @@
             modelS2.clickType = OKClickTypeExportPrivatekey;
             modelS2.leftLabelColor = HexColor(0x14293B);
             modelS2.rightLabelColor = HexColor(0x00B812);
-            
+
             OKWalletDetailModel *modelS3 = [OKWalletDetailModel new];
             modelS3.titleStr = MyLocalizedString(@"Export the Keystore", nil);
             modelS3.rightLabelStr = @"";
@@ -364,7 +364,7 @@
             }
             [allDataM addObject:securityGroup];
         }
-        
+
         if (_walletType == OKWalletTypeIndependent || _walletType == OKWalletTypeHardware || _walletType == OKWalletTypeMultipleSignature  || _walletType == OKWalletTypeObserve) {
             NSMutableArray *twoGroup = [NSMutableArray array];
             OKWalletDetailModel *modelDel = [OKWalletDetailModel new];
@@ -380,7 +380,7 @@
             [twoGroup addObject:modelDel];
             [allDataM addObject:twoGroup];
         }
-        
+
         _allData = allDataM;
     }
     return _allData;
@@ -392,10 +392,10 @@
             return MyLocalizedString(@"HD wallet account", nil);
             break;
         case OKWalletTypeIndependent:
-            return MyLocalizedString(@"Independent wallet", nil);
+            return MyLocalizedString(@"Independent", nil);
             break;
         case OKWalletTypeHardware:
-            return MyLocalizedString(@"Hardware wallet", nil);
+            return MyLocalizedString(@"Hardware wallet account", nil);
             break;
         case OKWalletTypeMultipleSignature:
             return MyLocalizedString(@"Hardware wallet", nil);
@@ -432,7 +432,7 @@
             case OKWalletTypeMultipleSignature:
                 _groupNameArray = @[@"",MyLocalizedString(@"Dangerous operation", nil)];
                 break;
-                
+
             default:
                 break;
         };

@@ -303,8 +303,8 @@
 "Open your hardware wallet and hold it close to your phone." = "开启您的硬件设备，并且靠近手机。";
 "this is already activated device, you can..." = "🔑 这是个已激活的设备，您可以...";
 "Add a new wallet (recommended)" = "添加账户（推荐）";
-"Up to 20 derived wallets can be created, as needed" = "最多支持创建 20 个派生账户，请按需创建。";
-"Restore the wallet that was created from this hardware device" = "恢复曾由此硬件设备创建的账户";
+"Up to 20 derived wallets can be created, as needed" = "支持 BTC、ETH 等多种公链";
+"Restore the wallet that was created from this hardware device" = "如果您曾经在手机删除过由该设备创建的账户，可以用此办法恢复。";
 "If you have ever deleted a wallet created by the device on your phone, you can recover it this way." = "如果您曾经在手机删除过由该设备创建的账户，可以用此办法恢复。";
 "Create a Condominium wallet (Advanced)" = "创建共管账户（高级）";
 "At least 2 devices are required to cooperate. Before adding, make sure that all hardware devices that want to participate in the public pipe are activated" = "需至少2台设备配合，添加前确认所有想要参与公管的硬件设备 都已激活。";
@@ -366,7 +366,7 @@
 "The signature information is consistent with the public key/original informatio" = "签名信息与公钥/原始信息一致";
 "The signature information does not match the public key/original information" = "签名信息与公钥/原始信息不符";
 "return" = "返回";
-"This action will delete the wallet's data stored in the App, but you can still recover from the hardware wallet that knows its mnemonic words. Are you sure you want to continue?" = "此操作将会删除 App 中存储的该账户的数据，但您仍可通过掌握其助记词的硬件设备恢复。确定要继续此操作吗？";
+"This action will delete the wallet's data stored in the App, but you can still recover from the hardware wallet that knows its mnemonic words. Are you sure you want to continue?" = "此操作将会删除 App 中存储的该账户的数据，但您仍可通过掌握其助记词的硬件钱包恢复。确定要继续此操作吗？";
 "The wallet's private key or mnemonic has been securely stored on the hardware device. If you need to export a mnemonic for your hardware wallet, please go to [My Hardware] to find your device to export." = "该钱包的私钥或助记词已经妥善的保管在硬件设备中。如果您需要导出硬件设备的助记词，请前往「我的 ➡️ 硬件 ➡ 全部设备」查找您要导出的设备。";
 "Discover a new device you can..." = "🎉 发现一个新设备 您可以...";
 "Activated as a new device" = "作为新设备激活（推荐）";
@@ -383,9 +383,10 @@
 "general" = "通用";
 "advanced" = "高级";
 "done" = "完成";
+"Hardware wallet account" = "硬件";
 // Hardware Wallet Associated - start
 "hardwareWallet.devices" = "设备";
-
+"hardwareWallet.pair.backupTip" = "备份了主钱包助记词的设备将仅被用来恢复您在 App 上创建的主钱包，如果您希望使用这台设备的更多功能，可以在妥善保管主钱包的助记词后（手动抄写），将这台设备恢复到出厂模式，然后重新配对并激活设备，将其作为普通硬件钱包使用。";
 // 升级固件
 "hardwareWallet.update" = "升级固件";
 "hardwareWallet.update.title" = "固件升级";
@@ -472,9 +473,9 @@
 "Please copy your 24 - digit mnemonic words" = "请抄写你的 24 位助记词";
 "1. Copy carefully with paper and pen, and keep it properly after reconfirming. 2. OneKey does not store private data for you, and mnemonic words once lost cannot be retrieved." = "1. 备好纸笔认真抄写，再次确认无误后请妥善保管。 \n2. OneKey 不会为您存储私密数据，助记词一旦丢失将无法找回。";
 "Your mnemonic has been successfully backed up to this device, and we have nothing more to remind you of. In a word, remember to take good care of it, lost no one can help you find it. Have fun in the world of blockchain." = "您的助记词已经成功备份到这台设备， 我们也没什么可提醒您的了。 总之，切记保管好它， 搞丢了没有任何人可以帮您找回来。 祝您在区块链的世界玩儿开心❤️。";
-"Restore your HD wallet completely. Any wallet derived from the original HD mnemonic will be restored" = "完整恢复您的 HD 钱包，任何由原 HD 助记词派生的钱包都将获得复原。";
-"This is a special device that stores HD wallet mnemonic words. You can..." = "🔑 这是一台存储了 HD 钱包助记词的特殊设备，您可以...";
-"Restore the phone HD wallet" = "恢复手机 HD 钱包";
+"Restore your HD wallet completely. Any wallet derived from the original HD mnemonic will be restored" = "完整恢复您的主钱包，任何由属于该主钱包的账户都将获得复原。";
+"This is a special device that stores HD wallet mnemonic words. You can..." = "🔑 这是一台存储了主钱包助记词的特殊设备，您可以...";
+"Restore the phone HD wallet" = "恢复手机主钱包";
 "Have to check" = "已核对";
 "Hardware wallet checking" = "硬件钱包核对中";
 "Confirm at the facility" = "在设备进行确认";

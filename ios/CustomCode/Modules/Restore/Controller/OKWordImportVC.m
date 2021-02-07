@@ -57,7 +57,7 @@
 
 -(void)awakeFromNib {
     [super awakeFromNib];
-    self.title = MyLocalizedString(@"Recover HD Wallet", nil);
+    self.title = MyLocalizedString(@"restore", nil);
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
