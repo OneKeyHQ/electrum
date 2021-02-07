@@ -143,11 +143,15 @@ class NotSupportExportSeed(Exception):
     def __str__(self):
         return _("Current wallet does not support exporting Mnemonic.")
 
-class UnavailableBtcAddr(Exception):
+class UnsupportedCurrencyCoin(BaseException):
+    def __str__(self):
+        return _("Unsupported coin types.")
+
+class UnavailableBtcAddr(BaseException):
     def __str__(self):
         return _("Incorrect bitcoin address.")
 
-class UnavailableEthAddr(Exception):
+class UnavailableEthAddr(BaseException):
     def __str__(self):
         return _("Incorrect eth address.")
 

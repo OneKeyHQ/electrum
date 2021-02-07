@@ -274,15 +274,39 @@ class TrezorClientBase(HardwareClientBase, Logger):
                     show_display=True,
                     multisig=multisig)
 
-    def sign_message(self, address_str, message):
-        coin_name = self.plugin.get_coin_name()
+    def verify_message(self, address_str, message, sign_info, coin='btc'):
+        with self.run_flow():
+            if coin == "btc":
+                coin_name = self.plugin.get_coin_name()
+                return trezorlib.btc.verify_message(
+                    self.client,
+                    signature=sign_info,
+                    coin_name=coin_name,
+                    address=address_str,
+                    message=message)
+            else:
+                return trezorlib.ethereum.verify_message(
+                    self.client,
+                    address=address_str,
+                    signature=sign_info,
+                    message=message)
+
+    def sign_message(self, address_str, message, script_type=None, coin='btc'):
         address_n = parse_path(address_str)
         with self.run_flow():
-            return trezorlib.btc.sign_message(
-                self.client,
-                coin_name,
-                address_n,
-                message)
+            if coin == "btc":
+                coin_name = self.plugin.get_coin_name()
+                return trezorlib.btc.sign_message(
+                    self.client,
+                    coin_name,
+                    address_n,
+                    message,
+                    script_type=script_type)
+            else:
+                return trezorlib.ethereum.sign_message(
+                    self.client,
+                    address_n,
+                    message)
 
     def recover_device(self, recovery_type, *args, **kwargs):
         input_callback = self.mnemonic_callback(recovery_type)

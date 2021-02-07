@@ -636,7 +636,8 @@ class Abstract_Eth_Wallet(ABC):
 
     def sign_message(self, address, message, password):
         index = self.get_address_index(address)
-        return self.keystore.sign_message(index, message, password)
+        coin = self.wallet_type.split('_')[0]
+        return self.keystore.sign_message(index, message, password, coin=coin)
 
     def decrypt_message(self, pubkey: str, message, password) -> bytes:
         addr = self.pubkeys_to_address([pubkey])

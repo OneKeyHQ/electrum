@@ -75,7 +75,7 @@ class TrezorKeyStore(Hardware_KeyStore):
     def decrypt_message(self, sequence, message, password):
         raise UserFacingException(_('Encryption and decryption are not implemented by {}').format(self.device))
 
-    def sign_message(self, sequence, message, password):
+    def sign_message(self, sequence, message, password, coin='btc', txin_type=None):
         if not self.plugin.client:
             raise Exception("client is None")
         xpub = self.xpub
@@ -83,7 +83,10 @@ class TrezorKeyStore(Hardware_KeyStore):
         if not self.plugin.force_pair_with_xpub(self.plugin.client, xpub, derivation):
             raise Exception("Can't Pair With You Device")
         address_path = self.get_derivation_prefix() + "/%d/%d" % sequence
-        msg_sig = self.plugin.client.sign_message(address_path, message)
+        script_type = None
+        if coin == 'btc':
+            script_type = self.plugin.get_trezor_input_script_type(txin_type)
+        msg_sig = self.plugin.client.sign_message(address_path, message, coin=coin, script_type=script_type)
         return msg_sig.signature
 
     def sign_transaction(self, tx, password):

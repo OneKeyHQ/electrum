@@ -65,6 +65,7 @@ from electrum.util import (
     UnavailableEthAddr,
     UnavailablePrivateKey,
     UnavailablePublicKey,
+    UnsupportedCurrencyCoin,
     UserCancel,
     bfh,
     create_and_start_event_loop,
@@ -2044,15 +2045,23 @@ class AndroidCommands(commands.Commands):
             self._assert_wallet_isvalid()
             address = address.strip()
             message = message.strip()
-            if not bitcoin.is_address(address):
-                raise BaseException(UnavailableBtcAddr())
+            coin = self._detect_wallet_coin(self.wallet)
+            if coin in self.coins:
+                if not self.pywalib.web3.isAddress(address):
+                    raise UnavailableEthAddr()
+            elif coin == 'standard':
+                if not bitcoin.is_address(address):
+                    raise UnavailableBtcAddr()
+                txin_type = self.wallet.get_txin_type(address)
+                if txin_type not in ["p2pkh", "p2wpkh", "p2wpkh-p2sh"]:
+                    raise BaseException(_("Current wallet does not support signature message:{}".format(txin_type)))
+            else:
+                raise UnsupportedCurrencyCoin()
             if self.wallet.is_watching_only():
                 raise BaseException(_("This is a watching-only wallet."))
             if not self.wallet.is_mine(address):
                 raise BaseException(_("The address is not in the current wallet."))
-            txin_type = self.wallet.get_txin_type(address)
-            if txin_type not in ["p2pkh", "p2wpkh", "p2wpkh-p2sh"]:
-                raise BaseException(_("Current wallet does not support signature message:{}".format(txin_type)))
+
             sig = self.wallet.sign_message(address, message, password)
             import base64
 
@@ -2060,7 +2069,7 @@ class AndroidCommands(commands.Commands):
         except Exception as e:
             raise BaseException(e)
 
-    def verify_message(self, address, message, signature):
+    def verify_message(self, address, message, signature, coin='btc', path="android_usb"):
         """
         Verify the message that you signed by sign_message, for btc only
         :param address: must bitcoin address as str
@@ -2070,14 +2079,20 @@ class AndroidCommands(commands.Commands):
         """
         address = address.strip()
         message = message.strip().encode("utf-8")
-        if not bitcoin.is_address(address):
-            raise BaseException(UnavailableBtcAddr())
+        if coin == 'btc':
+            if not bitcoin.is_address(address):
+                raise UnavailableBtcAddr()
+        elif coin in self.coins:
+            if not self.pywalib.web3.isAddress(address):
+                raise UnavailableEthAddr()
+        else:
+            raise UnsupportedCurrencyCoin()
         try:
             # This can throw on invalid base64
             import base64
-
             sig = base64.b64decode(str(signature))
-            verified = ecc.verify_message_with_address(address, sig, message)
+            client = self.get_client(path=path)
+            verified = client.verify_message(address, message, sig, coin=coin)
         except Exception:
             verified = False
         return verified
@@ -2941,7 +2956,7 @@ class AndroidCommands(commands.Commands):
                     raise BaseException(UnavailablePublicKey())
             elif flag == "address":
                 if not bitcoin.is_address(data):
-                    raise BaseException(UnavailableBtcAddr())
+                    raise UnavailableBtcAddr()
         elif coin in self.coins:
             if flag == "private":
                 try:
@@ -2964,7 +2979,7 @@ class AndroidCommands(commands.Commands):
                     raise BaseException(UnavailablePublicKey())
             elif flag == "address":
                 if not self.pywalib.web3.isAddress(data):
-                    raise BaseException(UnavailableEthAddr())
+                    raise UnavailableEthAddr()
 
     def replace_watch_only_wallet(self, replace=True):
         """
