@@ -2,70 +2,77 @@ package cn.com.heaton.blelibrary.ble;
 
 import android.text.TextUtils;
 import android.util.Log;
-
+import cn.com.heaton.blelibrary.ble.model.BleDevice;
 import java.util.Locale;
 
-/**
- * 蓝牙日志类
- * Created by LiuLei on 2017/5/16.
- */
-
+/** 蓝牙日志类 Created by LiuLei on 2017/5/16. */
 public class BleLog {
 
     public static String TAG = "AndroidBLE";
     public static boolean isDebug;
 
-    public static void init(){
+    public static void init() {
         Ble.Options options = Ble.options();
         isDebug = options.logBleEnable;
-        if (!TextUtils.isEmpty(options.logTAG))
+        if (!TextUtils.isEmpty(options.logTAG)) {
             TAG = options.logTAG;
+        }
     }
 
-    private static String getSubTag(Object o){
+    private static String getSubTag(Object o) {
         String tag = "";
-        if(o instanceof String){
+        if (o == null) {
+            tag = "";
+        } else if (o instanceof String) {
             tag = (String) o;
-        }else if(o instanceof Number){
+        } else if (o instanceof Number) {
             tag = String.valueOf(o);
-        }else {
+        } else if (o instanceof BleDevice) {
+            tag = o.toString();
+        } else {
             tag = o.getClass().getSimpleName();
         }
         return tag;
     }
 
-    public static void e(Object o, String msg){
-        if(isDebug){
-            Log.e(TAG,buildMessge(getSubTag(o), msg));
+    public static void e(Object o, String msg) {
+        if (isDebug) {
+            Log.e(TAG, buildMessge(getSubTag(o), msg));
         }
     }
 
-    public static void i(Object o, String msg){
-        if(isDebug){
-            Log.i(TAG,buildMessge(getSubTag(o), msg));
+    public static void i(Object o, String msg) {
+        if (isDebug) {
+            Log.i(TAG, buildMessge(getSubTag(o), msg));
         }
     }
 
-    public static void w(Object o, String msg){
-        if(isDebug){
-            Log.w(TAG,buildMessge(getSubTag(o), msg));
+    public static void w(Object o, String msg) {
+        if (isDebug) {
+            Log.w(TAG, buildMessge(getSubTag(o), msg));
         }
     }
 
-    public static void d(Object o, String msg){
-        if(isDebug){
-            Log.d(TAG,buildMessge(getSubTag(o), msg));
+    public static void d(Object o, String msg) {
+        if (isDebug) {
+            Log.d(TAG, buildMessge(getSubTag(o), msg));
         }
     }
 
-    private static String buildMessge(String subTag, String msg){
-        return String.format(Locale.CHINA, "[%d] %s: %s",
-                Thread.currentThread().getId(), subTag, msg);
+    public static void BluetoothState(String msg, Object o) {
+        if (isDebug) {
+            Log.d(TAG, buildMessge(msg, getSubTag(o)));
+        }
+    }
+
+    private static String buildMessge(String subTag, String msg) {
+        return String.format(
+                Locale.CHINA, "[%d] %s: %s", Thread.currentThread().getId(), subTag, msg);
     }
 
     /**
-     * Formats the caller's provided message and prepends useful info like
-     * calling thread ID and method name.
+     * Formats the caller's provided message and prepends useful info like calling thread ID and
+     * method name.
      */
     private static String buildMessage(String format, Object... args) {
         String msg = (args == null) ? format : String.format(Locale.CHINA, format, args);
@@ -85,8 +92,7 @@ public class BleLog {
                 break;
             }
         }
-        return String.format(Locale.CHINA, "[%d] %s: %s",
-                Thread.currentThread().getId(), caller, msg);
+        return String.format(
+                Locale.CHINA, "[%d] %s: %s", Thread.currentThread().getId(), caller, msg);
     }
-
 }

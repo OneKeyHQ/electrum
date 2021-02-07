@@ -3,28 +3,18 @@ package cn.com.heaton.blelibrary.ble.model;
 import android.bluetooth.BluetoothDevice;
 import android.os.Parcel;
 import android.os.Parcelable;
-
 import androidx.annotation.Nullable;
 import androidx.annotation.RestrictTo;
-
 import cn.com.heaton.blelibrary.ble.Ble;
 import cn.com.heaton.blelibrary.ble.BleStates;
 
-/**
- *
- * Created by LiuLei on 2016/11/26.
- */
+/** Created by LiuLei on 2016/11/26. */
 public class BleDevice implements Parcelable {
 
-    public final static String          TAG                      = BleDevice.class.getSimpleName();
+    public static final String TAG = BleDevice.class.getSimpleName();
     private static final long serialVersionUID = -2576082824642358033L;
 
-    /**
-     *  连接状态
-     *  2503 未连接状态
-     *  2504 正在连接
-     *  2505 连接成功
-     */
+    /** 连接状态 2503 未连接状态 2504 正在连接 2505 连接成功 */
     private int mConnectionState = BleStates.BleStatus.DISCONNECT;
 
     /*蓝牙地址*/
@@ -37,7 +27,8 @@ public class BleDevice implements Parcelable {
     private String mBleAlias;
 
     /*是否自动连接*/
-    private boolean mAutoConnect = Ble.options().autoConnect;//The default is not automatic connection
+    private boolean mAutoConnect =
+            Ble.options().autoConnect; // The default is not automatic connection
 
     /*是否正在自动重连*/
     private boolean isAutoConnectting = false;
@@ -46,8 +37,8 @@ public class BleDevice implements Parcelable {
     private ScanRecord scanRecord;
 
     /**
-     * Use the address and name of the BluetoothDevice object
-     * to construct the address and name of the {@code BleDevice} object
+     * Use the address and name of the BluetoothDevice object to construct the address and name of
+     * the {@code BleDevice} object
      *
      * @param device BleDevice
      */
@@ -67,17 +58,18 @@ public class BleDevice implements Parcelable {
     }
 
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    public static final Creator<BleDevice> CREATOR = new Creator<BleDevice>() {
-        @Override
-        public BleDevice createFromParcel(Parcel in) {
-            return new BleDevice(in);
-        }
+    public static final Creator<BleDevice> CREATOR =
+            new Creator<BleDevice>() {
+                @Override
+                public BleDevice createFromParcel(Parcel in) {
+                    return new BleDevice(in);
+                }
 
-        @Override
-        public BleDevice[] newArray(int size) {
-            return new BleDevice[size];
-        }
-    };
+                @Override
+                public BleDevice[] newArray(int size) {
+                    return new BleDevice[size];
+                }
+            };
 
     public boolean isConnected() {
         return mConnectionState == BleStates.BleStatus.CONNECTED;
@@ -111,10 +103,9 @@ public class BleDevice implements Parcelable {
         return mConnectionState;
     }
 
-    public void setConnectionState(@BleStates.BleStatus int state){
+    public void setConnectionState(@BleStates.BleStatus int state) {
         mConnectionState = state;
     }
-
 
     public String getBleAddress() {
         return mBleAddress;
@@ -148,15 +139,35 @@ public class BleDevice implements Parcelable {
         this.scanRecord = scanRecord;
     }
 
+    private String getConnectionStateStr() {
+        if (mConnectionState == BleStates.BleStatus.CONNECTED) {
+            return "connected";
+        } else if (mConnectionState == BleStates.BleStatus.CONNECTING) {
+            return "connecting";
+        } else if (mConnectionState == BleStates.BleStatus.DISCONNECT) {
+            return "disconnect";
+        } else {
+            return "unknown";
+        }
+    }
+
     @Override
     public String toString() {
-        return "BleDevice{" +
-                "mConnectionState=" + mConnectionState +
-                ", mBleAddress='" + mBleAddress + '\'' +
-                ", mBleName='" + mBleName + '\'' +
-                ", mBleAlias='" + mBleAlias + '\'' +
-                ", mAutoConnect=" + mAutoConnect +
-                '}';
+        return "BleDevice{"
+                + "ConnectionState="
+                + getConnectionStateStr()
+                + ", BleAddress='"
+                + mBleAddress
+                + '\''
+                + ", BleName='"
+                + mBleName
+                + '\''
+                + ", BleAlias='"
+                + mBleAlias
+                + '\''
+                + ", AutoConnect="
+                + mAutoConnect
+                + '}';
     }
 
     @Override
@@ -174,7 +185,7 @@ public class BleDevice implements Parcelable {
     @Override
     public int hashCode() {
         int result = 17;
-        return this.getBleAddress().hashCode() +  31 * result;
+        return this.getBleAddress().hashCode() + 31 * result;
     }
 
     @Override

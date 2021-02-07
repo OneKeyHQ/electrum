@@ -1,21 +1,16 @@
 package cn.com.heaton.blelibrary.ble.request;
 
-import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGattCharacteristic;
-
-import java.util.UUID;
-
 import cn.com.heaton.blelibrary.ble.Ble;
 import cn.com.heaton.blelibrary.ble.BleRequestImpl;
-import cn.com.heaton.blelibrary.ble.callback.wrapper.BleWrapperCallback;
-import cn.com.heaton.blelibrary.ble.model.BleDevice;
 import cn.com.heaton.blelibrary.ble.annotation.Implement;
 import cn.com.heaton.blelibrary.ble.callback.BleNotiftCallback;
+import cn.com.heaton.blelibrary.ble.callback.wrapper.BleWrapperCallback;
 import cn.com.heaton.blelibrary.ble.callback.wrapper.NotifyWrapperCallback;
+import cn.com.heaton.blelibrary.ble.model.BleDevice;
+import java.util.UUID;
 
-/**
- * Created by LiuLei on 2017/10/23.
- */
+/** Created by LiuLei on 2017/10/23. */
 @Implement(NotifyRequest.class)
 public class NotifyRequest<T extends BleDevice> implements NotifyWrapperCallback<T> {
 
@@ -33,10 +28,16 @@ public class NotifyRequest<T extends BleDevice> implements NotifyWrapperCallback
         bleRequest.setCharacteristicNotification(device.getBleAddress(), enable);
     }
 
-    public void notifyByUuid(T device, boolean enable, UUID serviceUUID, UUID characteristicUUID, BleNotiftCallback<T> callback) {
+    public void notifyByUuid(
+            T device,
+            boolean enable,
+            UUID serviceUUID,
+            UUID characteristicUUID,
+            BleNotiftCallback<T> callback) {
         notiftCallback = callback;
         BleRequestImpl bleRequest = BleRequestImpl.getBleRequest();
-        bleRequest.setCharacteristicNotificationByUuid(device.getBleAddress(),enable, serviceUUID, characteristicUUID);
+        bleRequest.setCharacteristicNotificationByUuid(
+                device.getBleAddress(), enable, serviceUUID, characteristicUUID);
     }
 
     @Deprecated
@@ -48,8 +49,8 @@ public class NotifyRequest<T extends BleDevice> implements NotifyWrapperCallback
 
     @Override
     public void onChanged(final T device, final BluetoothGattCharacteristic characteristic) {
-        if (null != notiftCallback){
-//            T bleDevice = ble.getBleDevice(device);
+        if (null != notiftCallback) {
+            //            T bleDevice = ble.getBleDevice(device);
             notiftCallback.onChanged(device, characteristic);
         }
         bleWrapperCallback.onChanged(device, characteristic);
@@ -57,8 +58,9 @@ public class NotifyRequest<T extends BleDevice> implements NotifyWrapperCallback
 
     @Override
     public void onNotifySuccess(final T device) {
-        if (null != notiftCallback){
-//            T bleDevice = ble.getBleDevice(device);
+
+        if (null != notiftCallback) {
+            //            T bleDevice = ble.getBleDevice(device);
             notiftCallback.onNotifySuccess(device);
         }
         bleWrapperCallback.onNotifySuccess(device);
@@ -66,8 +68,8 @@ public class NotifyRequest<T extends BleDevice> implements NotifyWrapperCallback
 
     @Override
     public void onNotifyCanceled(T device) {
-        if (null != notiftCallback){
-//            T bleDevice = ble.getBleDevice(device);
+        if (null != notiftCallback) {
+            //            T bleDevice = ble.getBleDevice(device);
             notiftCallback.onNotifyCanceled(device);
         }
         bleWrapperCallback.onNotifyCanceled(device);

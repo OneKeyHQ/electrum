@@ -1,35 +1,30 @@
 package cn.com.heaton.blelibrary.ble.request;
 
-import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGattCharacteristic;
-
+import cn.com.heaton.blelibrary.ble.Ble;
+import cn.com.heaton.blelibrary.ble.BleLog;
+import cn.com.heaton.blelibrary.ble.BleRequestImpl;
+import cn.com.heaton.blelibrary.ble.annotation.Implement;
+import cn.com.heaton.blelibrary.ble.callback.BleWriteCallback;
+import cn.com.heaton.blelibrary.ble.callback.BleWriteEntityCallback;
+import cn.com.heaton.blelibrary.ble.callback.wrapper.BleWrapperCallback;
+import cn.com.heaton.blelibrary.ble.callback.wrapper.WriteWrapperCallback;
+import cn.com.heaton.blelibrary.ble.exception.BleWriteException;
+import cn.com.heaton.blelibrary.ble.model.BleDevice;
+import cn.com.heaton.blelibrary.ble.model.EntityData;
+import cn.com.heaton.blelibrary.ble.utils.ThreadUtils;
 import java.math.BigDecimal;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
-import cn.com.heaton.blelibrary.ble.callback.wrapper.BleWrapperCallback;
-import cn.com.heaton.blelibrary.ble.callback.wrapper.WriteWrapperCallback;
-import cn.com.heaton.blelibrary.ble.model.BleDevice;
-import cn.com.heaton.blelibrary.ble.Ble;
-import cn.com.heaton.blelibrary.ble.BleRequestImpl;
-import cn.com.heaton.blelibrary.ble.model.EntityData;
-import cn.com.heaton.blelibrary.ble.utils.ThreadUtils;
-import cn.com.heaton.blelibrary.ble.annotation.Implement;
-import cn.com.heaton.blelibrary.ble.callback.BleWriteCallback;
-import cn.com.heaton.blelibrary.ble.callback.BleWriteEntityCallback;
-import cn.com.heaton.blelibrary.ble.exception.BleWriteException;
-
-/**
- *
- * Created by LiuLei on 2017/10/23.
- */
+/** Created by LiuLei on 2017/10/23. */
 @Implement(WriteRequest.class)
 public class WriteRequest<T extends BleDevice> implements WriteWrapperCallback<T> {
 
     private BleWriteCallback<T> bleWriteCallback;
     private BleWriteEntityCallback<T> bleWriteEntityCallback;
     private boolean isWritingEntity;
-    private boolean isAutoWriteMode = false;//当前是否为自动写入模式
+    private boolean isAutoWriteMode = false; // 当前是否为自动写入模式
     private final Object lock = new Object();
     private BleWrapperCallback<T> bleWrapperCallback;
 
@@ -37,22 +32,29 @@ public class WriteRequest<T extends BleDevice> implements WriteWrapperCallback<T
         bleWrapperCallback = Ble.options().bleWrapperCallback;
     }
 
-    public boolean write(T device, byte[]data, BleWriteCallback<T> callback){
+    public boolean write(T device, byte[] data, BleWriteCallback<T> callback) {
         this.bleWriteCallback = callback;
         boolean result = false;
         BleRequestImpl bleRequest = BleRequestImpl.getBleRequest();
         if (bleRequest != null) {
-            result = bleRequest.wirteCharacteristic(device.getBleAddress(),data);
+            result = bleRequest.wirteCharacteristic(device.getBleAddress(), data);
         }
         return result;
     }
 
-    public boolean writeByUuid(T device, byte[]data, UUID serviceUUID, UUID characteristicUUID, BleWriteCallback<T> callback){
+    public boolean writeByUuid(
+            T device,
+            byte[] data,
+            UUID serviceUUID,
+            UUID characteristicUUID,
+            BleWriteCallback<T> callback) {
         this.bleWriteCallback = callback;
         boolean result = false;
         BleRequestImpl bleRequest = BleRequestImpl.getBleRequest();
         if (bleRequest != null) {
-            result = bleRequest.wirteCharacteristicByUuid(device.getBleAddress(), data, serviceUUID, characteristicUUID);
+            result =
+                    bleRequest.wirteCharacteristicByUuid(
+                            device.getBleAddress(), data, serviceUUID, characteristicUUID);
         }
         return result;
     }
@@ -70,8 +72,8 @@ public class WriteRequest<T extends BleDevice> implements WriteWrapperCallback<T
         });
     }*/
 
-    public void cancelWriteEntity(){
-        if (isWritingEntity){
+    public void cancelWriteEntity() {
+        if (isWritingEntity) {
             isWritingEntity = false;
             isAutoWriteMode = false;
         }
@@ -83,9 +85,14 @@ public class WriteRequest<T extends BleDevice> implements WriteWrapperCallback<T
         executeEntity(entityData);
     }
 
-    public void writeEntity(final T device, final byte[]data, final int packLength, final int delay, BleWriteEntityCallback<T> lisenter){
+    public void writeEntity(
+            final T device,
+            final byte[] data,
+            final int packLength,
+            final int delay,
+            BleWriteEntityCallback<T> lisenter) {
         this.bleWriteEntityCallback = lisenter;
-        if(data == null || data.length == 0) {
+        if (data == null || data.length == 0) {
             throw new BleWriteException("Send Entity cannot be empty");
         }
         if (packLength <= 0) {
@@ -103,78 +110,86 @@ public class WriteRequest<T extends BleDevice> implements WriteWrapperCallback<T
         final long delay = entityData.getDelay();
         final boolean lastPackComplete = entityData.isLastPackComplete();
         final BleRequestImpl bleRequest = BleRequestImpl.getBleRequest();
-        Callable<Boolean> callable = new Callable<Boolean>() {
-            @Override
-            public Boolean call() throws Exception {
-                isWritingEntity = true;
-                isAutoWriteMode = autoWriteMode;
-                int index = 0;
-                int length = data.length;
-                int availableLength = length;
-                while (index < length){
-                    if (!isWritingEntity){
-                        if (bleWriteEntityCallback != null){
-                            bleWriteEntityCallback.onWriteCancel();
-                            isAutoWriteMode = false;
+        Callable<Boolean> callable =
+                new Callable<Boolean>() {
+                    @Override
+                    public Boolean call() throws Exception {
+                        isWritingEntity = true;
+                        isAutoWriteMode = autoWriteMode;
+                        int index = 0;
+                        int length = data.length;
+                        int availableLength = length;
+                        while (index < length) {
+                            if (!isWritingEntity) {
+                                if (bleWriteEntityCallback != null) {
+                                    bleWriteEntityCallback.onWriteCancel();
+                                    isAutoWriteMode = false;
+                                }
+                                return false;
+                            }
+                            int onePackLength = packLength;
+                            if (!lastPackComplete) { // 最后一包不足数据字节不会自动补零
+                                onePackLength =
+                                        (availableLength >= packLength
+                                                ? packLength
+                                                : availableLength);
+                            }
+                            byte[] txBuffer = new byte[onePackLength];
+                            for (int i = 0; i < onePackLength; i++) {
+                                if (index < length) {
+                                    txBuffer[i] = data[index++];
+                                }
+                            }
+                            availableLength -= onePackLength;
+                            boolean result = bleRequest.wirteCharacteristic(address, txBuffer);
+                            if (!result) {
+                                if (bleWriteEntityCallback != null) {
+                                    bleWriteEntityCallback.onWriteFailed();
+                                    isWritingEntity = false;
+                                    isAutoWriteMode = false;
+                                    return false;
+                                }
+                            } else {
+                                if (bleWriteEntityCallback != null) {
+                                    double progress =
+                                            new BigDecimal((float) index / length)
+                                                    .setScale(2, BigDecimal.ROUND_HALF_UP)
+                                                    .doubleValue();
+                                    bleWriteEntityCallback.onWriteProgress(progress);
+                                }
+                            }
+                            if (autoWriteMode) {
+                                synchronized (lock) {
+                                    lock.wait(500);
+                                }
+                            } else {
+                                try {
+                                    Thread.sleep(delay);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }
                         }
-                        return false;
-                    }
-                    int onePackLength = packLength;
-                    if (!lastPackComplete){//最后一包不足数据字节不会自动补零
-                        onePackLength = (availableLength >= packLength ? packLength : availableLength);
-                    }
-                    byte[] txBuffer = new byte[onePackLength];
-                    for (int i=0; i<onePackLength; i++){
-                        if(index < length){
-                            txBuffer[i] = data[index++];
-                        }
-                    }
-                    availableLength-=onePackLength;
-                    boolean result = bleRequest.wirteCharacteristic(address, txBuffer);
-                    if(!result){
-                        if(bleWriteEntityCallback != null){
-                            bleWriteEntityCallback.onWriteFailed();
+                        if (bleWriteEntityCallback != null) {
+                            bleWriteEntityCallback.onWriteSuccess();
                             isWritingEntity = false;
                             isAutoWriteMode = false;
-                            return false;
                         }
-                    }else {
-                        if (bleWriteEntityCallback != null){
-                            double progress = new BigDecimal((float)index / length).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-                            bleWriteEntityCallback.onWriteProgress(progress);
-                        }
+                        return true;
                     }
-                    if (autoWriteMode){
-                        synchronized (lock){
-                            lock.wait(500);
-                        }
-                    }else {
-                        try {
-                            Thread.sleep(delay);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-                if(bleWriteEntityCallback != null){
-                    bleWriteEntityCallback.onWriteSuccess();
-                    isWritingEntity = false;
-                    isAutoWriteMode = false;
-                }
-                return true;
-            }
-        };
+                };
         ThreadUtils.submit(callable);
     }
 
     @Override
     public void onWriteSuccess(T device, BluetoothGattCharacteristic characteristic) {
-        if(bleWriteCallback != null){
+        BleLog.BluetoothState("onWriteSuccess", device);
+        if (bleWriteCallback != null) {
             bleWriteCallback.onWriteSuccess(device, characteristic);
         }
         bleWrapperCallback.onWriteSuccess(device, characteristic);
-        if (isAutoWriteMode){
-            synchronized (lock){
+        if (isAutoWriteMode) {
+            synchronized (lock) {
                 lock.notify();
             }
         }
@@ -182,10 +197,10 @@ public class WriteRequest<T extends BleDevice> implements WriteWrapperCallback<T
 
     @Override
     public void onWiteFailed(T device, int failedCode) {
-        if(bleWriteCallback != null){
+        BleLog.BluetoothState("onWiteFailed", device);
+        if (bleWriteCallback != null) {
             bleWriteCallback.onWiteFailed(device, failedCode);
         }
         bleWrapperCallback.onWiteFailed(device, failedCode);
     }
-
 }

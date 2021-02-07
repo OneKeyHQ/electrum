@@ -92,7 +92,7 @@ public class MyApplication extends Application implements ViewModelStoreOwner {
     private void initBle() {
         // Set whether to print Bluetooth log
         Ble.options()
-                .setLogBleEnable(false)
+                .setLogBleEnable(true)
                 /* Set whether to throw Bluetooth exception */
                 .setThrowBleException(true)
                 // Set global Bluetooth operation log TAG
@@ -112,7 +112,7 @@ public class MyApplication extends Application implements ViewModelStoreOwner {
                 .setUuidWriteCha(UUID.fromString(WRITE_CHARACTERISTIC))
                 .setUuidNotify(UUID.fromString(READ_CHARACTERISTIC))
                 .setUuidReadCha(UUID.fromString(READ_CHARACTERISTIC))
-                .create(mInstance);
+                .create(this);
     }
 
     private void initChaquo() {
