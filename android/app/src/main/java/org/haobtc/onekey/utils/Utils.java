@@ -7,17 +7,19 @@ import android.app.Application;
 import android.app.Application.ActivityLifecycleCallbacks;
 import android.content.Context;
 import android.os.Bundle;
-
 import androidx.annotation.NonNull;
-
+import androidx.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import org.jetbrains.annotations.NotNull;
 
 /**
+ *
+ *
  * <pre>
  *     author:
  *                                      ___           ___           ___         ___
@@ -49,7 +51,8 @@ public final class Utils {
 
     /**
      * Init utils.
-     * <p>Init it in the class of Application.</p>
+     *
+     * <p>Init it in the class of Application.
      *
      * @param context context
      */
@@ -59,7 +62,8 @@ public final class Utils {
 
     /**
      * Init utils.
-     * <p>Init it in the class of Application.</p>
+     *
+     * <p>Init it in the class of Application.
      *
      * @param app application
      */
@@ -76,7 +80,9 @@ public final class Utils {
      * @return the context of Application object
      */
     public static Application getApp() {
-        if (sApplication != null) {return sApplication;}
+        if (sApplication != null) {
+            return sApplication;
+        }
         try {
             @SuppressLint("PrivateApi")
             Class<?> activityThread = Class.forName("android.app.ActivityThread");
@@ -99,15 +105,16 @@ public final class Utils {
         throw new NullPointerException("u should init first");
     }
 
-    static ActivityLifecycleImpl getActivityLifecycle() {
+    public static ActivityLifecycleImpl getActivityLifecycle() {
         return ACTIVITY_LIFECYCLE;
     }
 
-    static LinkedList<Activity> getActivityList() {
+    public static LinkedList<Activity> getActivityList() {
         return ACTIVITY_LIFECYCLE.mActivityList;
     }
 
-    static Context getTopActivityOrApp() {
+    @NotNull
+    public static Context getTopActivityOrApp() {
         if (isAppForeground()) {
             Activity topActivity = ACTIVITY_LIFECYCLE.getTopActivity();
             return topActivity == null ? Utils.getApp() : topActivity;
@@ -116,12 +123,126 @@ public final class Utils {
         }
     }
 
-    static boolean isAppForeground() {
+    @Nullable
+    public static Activity getTopActivity() {
+        if (!isAppForeground()) {
+            return null;
+        }
+        return ACTIVITY_LIFECYCLE.getTopActivity();
+    }
+
+    /** Finish all of activities. */
+    public static void finishAllActivities() {
+        finishAllActivities(false);
+    }
+
+    /**
+     * Finish all of activities.
+     *
+     * @param isLoadAnim True to use animation for the outgoing activity, false otherwise.
+     */
+    public static void finishAllActivities(final boolean isLoadAnim) {
+        List<Activity> activityList = getActivityList();
+        for (Activity act : activityList) {
+            // sActivityList remove the index activity at onActivityDestroyed
+            act.finish();
+            if (!isLoadAnim) {
+                act.overridePendingTransition(0, 0);
+            }
+        }
+    }
+
+    /** Finish all of activities except the newest activity. */
+    public static void finishAllActivitiesExceptNewest() {
+        finishAllActivitiesExceptNewest(false);
+    }
+
+    /**
+     * Finish all of activities except the newest activity.
+     *
+     * @param isLoadAnim True to use animation for the outgoing activity, false otherwise.
+     */
+    public static void finishAllActivitiesExceptNewest(final boolean isLoadAnim) {
+        List<Activity> activities = getActivityList();
+        for (int i = 1; i < activities.size(); i++) {
+            finishActivity(activities.get(i), isLoadAnim);
+        }
+    }
+
+    public static void finishActivity(@NonNull final Activity activity) {
+        finishActivity(activity, false);
+    }
+
+    public static void finishActivity(@NonNull final Activity activity, final boolean isLoadAnim) {
+        activity.finish();
+        if (!isLoadAnim) {
+            activity.overridePendingTransition(0, 0);
+        }
+    }
+
+    /**
+     * Finish the activity.
+     *
+     * @param clz The activity class.
+     */
+    public static void finishActivity(@NonNull final Class<? extends Activity> clz) {
+        finishActivity(clz, false);
+    }
+
+    /**
+     * Finish the activity.
+     *
+     * @param clz The activity class.
+     * @param isLoadAnim True to use animation for the outgoing activity, false otherwise.
+     */
+    public static void finishActivity(
+            @NonNull final Class<? extends Activity> clz, final boolean isLoadAnim) {
+        List<Activity> activities = getActivityList();
+        for (Activity activity : activities) {
+            if (activity.getClass().equals(clz)) {
+                activity.finish();
+                if (!isLoadAnim) {
+                    activity.overridePendingTransition(0, 0);
+                }
+            }
+        }
+    }
+
+    /**
+     * Finish the activities whose type not equals the activity class.
+     *
+     * @param clz The activity class.
+     */
+    public static void finishOtherActivities(@NonNull final Class<? extends Activity> clz) {
+        finishOtherActivities(clz, false);
+    }
+
+    /**
+     * Finish the activities whose type not equals the activity class.
+     *
+     * @param clz The activity class.
+     * @param isLoadAnim True to use animation for the outgoing activity, false otherwise.
+     */
+    public static void finishOtherActivities(
+            @NonNull final Class<? extends Activity> clz, final boolean isLoadAnim) {
+        List<Activity> activities = getActivityList();
+        for (Activity act : activities) {
+            if (!act.getClass().equals(clz)) {
+                finishActivity(act, isLoadAnim);
+            }
+        }
+    }
+
+    public static boolean isAppForeground() {
         ActivityManager am =
                 (ActivityManager) Utils.getApp().getSystemService(Context.ACTIVITY_SERVICE);
-        if (am == null){ return false;}
+        if (am == null) {
+            return false;
+        }
         List<ActivityManager.RunningAppProcessInfo> info = am.getRunningAppProcesses();
-        if (info == null || info.size() == 0) {return false;}
+        if (info == null || info.size() == 0) {
+            return false;
+        }
         for (ActivityManager.RunningAppProcessInfo aInfo : info) {
             if (aInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
                 return aInfo.processName.equals(Utils.getApp().getPackageName());
@@ -132,11 +253,11 @@ public final class Utils {
 
     static class ActivityLifecycleImpl implements ActivityLifecycleCallbacks {
 
-        final LinkedList<Activity>                        mActivityList      = new LinkedList<>();
+        final LinkedList<Activity> mActivityList = new LinkedList<>();
         final HashMap<Object, OnAppStatusChangedListener> mStatusListenerMap = new HashMap<>();
 
         private int mForegroundCount = 0;
-        private int mConfigCount     = 0;
+        private int mConfigCount = 0;
 
         void addListener(final Object object, final OnAppStatusChangedListener listener) {
             mStatusListenerMap.put(object, listener);
@@ -170,7 +291,9 @@ public final class Utils {
         }
 
         @Override
-        public void onActivityPaused(Activity activity) {/**/}
+        public void onActivityPaused(Activity activity) {
+            /**/
+        }
 
         @Override
         public void onActivityStopped(Activity activity) {
@@ -185,7 +308,9 @@ public final class Utils {
         }
 
         @Override
-        public void onActivitySaveInstanceState(Activity activity, Bundle outState) {/**/}
+        public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+            /**/
+        }
 
         @Override
         public void onActivityDestroyed(Activity activity) {
@@ -193,9 +318,14 @@ public final class Utils {
         }
 
         private void postStatus(final boolean isForeground) {
-            if (mStatusListenerMap.isEmpty()) {return;}
-            for (OnAppStatusChangedListener onAppStatusChangedListener : mStatusListenerMap.values()) {
-                if (onAppStatusChangedListener == null) {return;}
+            if (mStatusListenerMap.isEmpty()) {
+                return;
+            }
+            for (OnAppStatusChangedListener onAppStatusChangedListener :
+                    mStatusListenerMap.values()) {
+                if (onAppStatusChangedListener == null) {
+                    return;
+                }
                 if (isForeground) {
                     onAppStatusChangedListener.onForeground();
                 } else {
@@ -205,7 +335,9 @@ public final class Utils {
         }
 
         private void setTopActivity(final Activity activity) {
-            if (activity.getClass() == PermissionUtils.PermissionActivity.class) {return;}
+            if (activity.getClass() == PermissionUtils.PermissionActivity.class) {
+                return;
+            }
             if (mActivityList.contains(activity)) {
                 if (!mActivityList.getLast().equals(activity)) {
                     mActivityList.remove(activity);
@@ -216,6 +348,7 @@ public final class Utils {
             }
         }
 
+        @Nullable
         Activity getTopActivity() {
             if (!mActivityList.isEmpty()) {
                 final Activity topActivity = mActivityList.getLast();
@@ -227,11 +360,14 @@ public final class Utils {
             try {
                 @SuppressLint("PrivateApi")
                 Class<?> activityThreadClass = Class.forName("android.app.ActivityThread");
-                Object activityThread = activityThreadClass.getMethod("currentActivityThread").invoke(null);
+                Object activityThread =
+                        activityThreadClass.getMethod("currentActivityThread").invoke(null);
                 Field activitiesField = activityThreadClass.getDeclaredField("mActivityList");
                 activitiesField.setAccessible(true);
                 Map activities = (Map) activitiesField.get(activityThread);
-                if (activities == null) {return null;}
+                if (activities == null) {
+                    return null;
+                }
                 for (Object activityRecord : activities.values()) {
                     Class activityRecordClass = activityRecord.getClass();
                     Field pausedField = activityRecordClass.getDeclaredField("paused");
@@ -264,6 +400,7 @@ public final class Utils {
     ///////////////////////////////////////////////////////////////////////////
 
     public interface OnAppStatusChangedListener {
+
         void onForeground();
 
         void onBackground();

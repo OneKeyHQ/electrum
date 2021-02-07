@@ -25,6 +25,7 @@ import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.StringConstant;
 import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.utils.Global;
+import org.haobtc.onekey.utils.Utils;
 import zendesk.answerbot.AnswerBot;
 import zendesk.core.AnonymousIdentity;
 import zendesk.core.Identity;
@@ -45,6 +46,7 @@ public class MyApplication extends Application implements ViewModelStoreOwner {
     @Override
     public void onCreate() {
         super.onCreate();
+        Utils.init(this);
         AutoSizeConfig.getInstance().setExcludeFontScale(true);
 
         // add application lifecycle observer
