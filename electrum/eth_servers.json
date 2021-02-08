@@ -32,59 +32,5 @@
       {"huobi": "https://api.huobi.pro/market/detail/merged?symbol="}
     ],
     "GasServer": "https://www.gasnow.org/api/v3/gas/price?utm_source=onekey"
-  },
-  "heco": {
-    "id": "heco",
-    "name": "Huobi ECO Chain",
-    "coinId": 60,
-    "addressType": 44,
-    "symbol": "HECO",
-    "decimals": 18,
-    "blockchain": "Heco",
-    "curve": "secp256k1",
-    "publicKeyType": "secp256k1Extended",
-    "derived_info": "",
-    "Provider": [
-      {"mainnet": "https://http-mainnet-node.huobichain.com", "chainid": "128"},
-      {"testnet": "https://http-testnet.hecochain.com", "chainid": "256"}
-    ],
-    "TxliServer": [
-      {"onekey-mainnet": "https://heco1.onekey.so/api/v2/"}
-    ],
-    "Market": [
-      {"coinbase": "https://api.coinbase.com/v2/exchange-rates?currency="},
-      {"bixin": "https://mkline.bixin.com/api/v1/ticker?symbol="},
-      {"binance": "https://api.binance.com/api/v1/ticker/24hr?symbol="},
-      {"ok": "https://mkline.bixin.com/api/v1/ticker?symbol="},
-      {"huobi": "https://api.huobi.pro/market/detail/merged?symbol="}
-    ],
-    "GasServer": ""
-  },
-  "bsc": {
-    "id": "bsc",
-    "name": "Binance Smart Chain",
-    "coinId": 60,
-    "addressType": 44,
-    "symbol": "BSC",
-    "decimals": 18,
-    "blockchain": "Bsc",
-    "curve": "secp256k1",
-    "publicKeyType": "secp256k1Extended",
-    "derived_info": "",
-    "Provider": [
-      {"mainnet": "https://bsc-dataseed1.binance.org", "chainid": "56"},
-      {"testnet": "https://data-seed-prebsc-1-s1.binance.org:8545", "chainid": "97"}
-    ],
-    "TxliServer": [
-      {"onekey-mainnet": "https://heco1.onekey.so/api/v2/"}
-    ],
-    "Market": [
-      {"coinbase": "https://api.coinbase.com/v2/exchange-rates?currency="},
-      {"bixin": "https://mkline.bixin.com/api/v1/ticker?symbol="},
-      {"binance": "https://api.binance.com/api/v1/ticker/24hr?symbol="},
-      {"ok": "https://mkline.bixin.com/api/v1/ticker?symbol="},
-      {"huobi": "https://api.huobi.pro/market/detail/merged?symbol="}
-    ],
-    "GasServer": ""
   }
 }
