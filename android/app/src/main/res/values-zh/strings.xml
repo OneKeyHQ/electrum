@@ -1254,4 +1254,5 @@
     <string name="hint_view_record_by_browser">前往区块浏览器查看</string>
     <string name="action_refresh">刷新</string>
     <string name="hint_view_record_load_error">记录加载失败</string>
+    <string name="hint_unknown_error">未知错误</string>
 </resources>

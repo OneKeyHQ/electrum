@@ -1,35 +1,30 @@
 package org.haobtc.onekey.ui.dialog;
+
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.google.common.base.Strings;
-
-import org.greenrobot.eventbus.EventBus;
-import org.haobtc.onekey.R;
-import org.haobtc.onekey.bean.PyResponse;
-import org.haobtc.onekey.constant.Constant;
-import org.haobtc.onekey.event.LoadOtherWalletEvent;
-import org.haobtc.onekey.manager.PreferencesManager;
-import org.haobtc.onekey.manager.PyEnv;
-import org.haobtc.onekey.ui.base.BaseDialogFragment;
-
+import androidx.fragment.app.DialogFragment;
 import butterknife.BindView;
 import butterknife.OnClick;
+import org.haobtc.onekey.R;
+import org.haobtc.onekey.constant.Constant;
+import org.haobtc.onekey.ui.base.BaseDialogFragment;
 
 /**
  * @author liyan
  * @date 12/20/20
  */
-
 public class DeleteWalletTipsDialog extends BaseDialogFragment {
+
     @BindView(R.id.content)
     TextView content;
-    private int type;
 
-    /***
-     * init layout
+    private int type;
+    private ConfirmClickListener mConfirmClickListener;
+
+    /**
+     * * init layout
+     *
      * @return
      */
     @Override
@@ -41,7 +36,7 @@ public class DeleteWalletTipsDialog extends BaseDialogFragment {
     public void init() {
         Bundle args = getArguments();
         if (args != null) {
-            type =  args.getInt(Constant.WALLET_TYPE, 0);
+            type = args.getInt(Constant.WALLET_TYPE, 0);
         }
         if (type == 1) {
             content.setText(R.string.delete_watch_wallet_warning);
@@ -52,25 +47,21 @@ public class DeleteWalletTipsDialog extends BaseDialogFragment {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.confirm_button:
-                deleteWatchWallet();
+                if (mConfirmClickListener != null) {
+                    mConfirmClickListener.onClick(this);
+                }
                 break;
             case R.id.cancel_button:
                 dismiss();
                 break;
         }
     }
-    private void deleteWatchWallet() {
-        String keyName = PreferencesManager.get(requireActivity(), "Preferences", Constant.CURRENT_SELECTED_WALLET_NAME, "").toString();
-        PyResponse<Void> response = PyEnv.deleteWallet("", keyName, false);
-        String error = response.getErrors();
-        if (Strings.isNullOrEmpty(error)) {
-            PreferencesManager.remove(getContext(), Constant.WALLETS, keyName);
-            EventBus.getDefault().post(new LoadOtherWalletEvent());
-            dismiss();
-            requireActivity().finish();
-            Toast.makeText(getContext(), R.string.delete_succse, Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
-        }
+
+    public void setConfirmClickListener(ConfirmClickListener clickListener) {
+        mConfirmClickListener = clickListener;
+    }
+
+    public interface ConfirmClickListener {
+        void onClick(DialogFragment dialogFragment);
     }
 }

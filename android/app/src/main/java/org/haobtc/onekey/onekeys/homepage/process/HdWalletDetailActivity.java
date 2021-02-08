@@ -21,9 +21,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.fragment.app.DialogFragment;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -287,6 +289,10 @@ public class HdWalletDetailActivity extends BaseActivity {
                             bundle.putInt(Constant.WALLET_TYPE, 1);
                             dialog.setArguments(bundle);
                         }
+                        dialog.setConfirmClickListener(
+                                dialogFragment -> {
+                                    deleteWatchWallet(dialogFragment);
+                                });
                         dialog.show(getSupportFragmentManager(), "");
                     } else {
                         Intent intent =
@@ -302,6 +308,52 @@ public class HdWalletDetailActivity extends BaseActivity {
             case R.id.text_sign:
             default:
         }
+    }
+
+    private void deleteWatchWallet(DialogFragment dialogFragment) {
+        final String keyName =
+                PreferencesManager.get(
+                                HdWalletDetailActivity.this,
+                                "Preferences",
+                                Constant.CURRENT_SELECTED_WALLET_NAME,
+                                "")
+                        .toString();
+        Disposable subscribe =
+                Single.fromCallable(
+                                () -> {
+                                    PyResponse<Void> response =
+                                            PyEnv.deleteWallet("", keyName, false);
+                                    return response.getErrors();
+                                })
+                        .doOnSubscribe(disposable -> showProgress())
+                        .doFinally(this::dismissProgress)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                error -> {
+                                    if (dialogFragment != null) {
+                                        dialogFragment.dismiss();
+                                    }
+                                    if (Strings.isNullOrEmpty(error)) {
+                                        PreferencesManager.remove(this, Constant.WALLETS, keyName);
+                                        EventBus.getDefault().post(new LoadOtherWalletEvent());
+                                        finish();
+                                        Toast.makeText(
+                                                        this,
+                                                        R.string.delete_succse,
+                                                        Toast.LENGTH_SHORT)
+                                                .show();
+                                    } else {
+                                        Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
+                                    }
+                                },
+                                throwable ->
+                                        Toast.makeText(
+                                                        this,
+                                                        R.string.hint_unknown_error,
+                                                        Toast.LENGTH_SHORT)
+                                                .show());
+        mCompositeDisposable.add(subscribe);
     }
 
     /**
@@ -568,17 +620,39 @@ public class HdWalletDetailActivity extends BaseActivity {
     }
 
     private void deleteSingleWallet(String password) {
-        String keyName =
+        final String keyName =
                 PreferencesManager.get(
-                                this, "Preferences", Constant.CURRENT_SELECTED_WALLET_NAME, "")
+                                HdWalletDetailActivity.this,
+                                "Preferences",
+                                Constant.CURRENT_SELECTED_WALLET_NAME,
+                                "")
                         .toString();
-        PyResponse<Void> response = PyEnv.deleteWallet(password, keyName, false);
-        String errors = response.getErrors();
-        if (Strings.isNullOrEmpty(errors)) {
-            onDeleteSuccess(keyName);
-        } else {
-            mlToast(errors);
-        }
+        Disposable subscribe =
+                Single.fromCallable(
+                                () -> {
+                                    PyResponse<Void> response =
+                                            PyEnv.deleteWallet(password, keyName, false);
+                                    return response.getErrors();
+                                })
+                        .doOnSubscribe(disposable -> showProgress())
+                        .doFinally(this::dismissProgress)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                error -> {
+                                    if (Strings.isNullOrEmpty(error)) {
+                                        onDeleteSuccess(keyName);
+                                    } else {
+                                        mlToast(error);
+                                    }
+                                },
+                                throwable ->
+                                        Toast.makeText(
+                                                        this,
+                                                        R.string.hint_unknown_error,
+                                                        Toast.LENGTH_SHORT)
+                                                .show());
+        mCompositeDisposable.add(subscribe);
     }
 
     public void onDeleteSuccess(String walletName) {
