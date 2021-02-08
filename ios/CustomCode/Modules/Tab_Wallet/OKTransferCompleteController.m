@@ -50,12 +50,19 @@
 }
 - (void)viewTransactionDetails
 {
-    if (self.block) {
-        self.block();
-    }
+    OKWeakSelf(self)
+    [MBProgressHUD showHUDAddedTo:weakself.view animated:YES];
+    dispatch_time_t delayTime =  dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC));
+    dispatch_after(delayTime, dispatch_get_main_queue(), ^{
+        [MBProgressHUD hideHUDForView:weakself.view animated:YES];
+        if (self.block) {
+            self.block();
+        }
+    });
 }
 
 - (IBAction)completeBtnClick:(UIButton *)sender {
     [self.navigationController popToRootViewControllerAnimated:YES];
 }
+
 @end

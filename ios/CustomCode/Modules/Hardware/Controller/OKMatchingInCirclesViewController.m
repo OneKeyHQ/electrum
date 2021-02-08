@@ -167,9 +167,14 @@
     dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         // Do something...
         OKPeripheralInfo *peripheralInfo = self.dataSource[indexPath.row];
+        OKWeakSelf(self)
         if ([kOKBlueManager isConnectedCurrentDevice] && [kOKBlueManager.currentPeripheral.name isEqualToString:peripheralInfo.peripheral.name]) {
             NSDictionary *dict = [[[OKDevicesManager sharedInstance]getDeviceModelWithID:kOKBlueManager.currentDeviceID]json];
-            [weakself subscribeComplete:dict characteristic:nil];
+            if ([kOKBlueManager isBluetoothLowVersion]) {
+                [weakself subscribeComplete:dict characteristic:kOKBlueManager.deviceCharacteristic];
+            }else{
+                [weakself subscribeComplete:dict characteristic:nil];
+            }
         }else{
             [kOKBlueManager disconnectAllPeripherals];
             [kOKBlueManager connectPeripheral:peripheralInfo.peripheral];
@@ -268,19 +273,34 @@
     OKWeakSelf(self)
     NSString *chUUID = [NSString stringWithFormat:@"%@",ch.UUID];
     if ([chUUID isEqualToString:kDEVICEINFOCHARACTERISTIC]) {
-        OKDeviceUpdateViewController *vc = [OKDeviceUpdateViewController controllerWithStoryboard];
-        vc.mode = OKDeviceFirmwareInstallModeBLEDFU;
-        [weakself.navigationController pushViewController:vc animated:YES];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
+            OKDeviceUpdateViewController *vc = [OKDeviceUpdateViewController controllerWithStoryboard];
+            vc.mode = OKDeviceFirmwareInstallModeBLEDFU;
+            [weakself.navigationController pushViewController:vc animated:YES];
+        });
         return;
     }
 
     if (jsonDict == nil) {
-        [self.navigationController popViewControllerAnimated:YES];
+        [kTools tipMessage:MyLocalizedString(@"This operation is not supported if the current device is not active, or if the special device is backed up", nil)];
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+        [weakself.navigationController popViewControllerAnimated:YES];
         return;
     }
     OKDeviceModel *deviceModel  = [[OKDeviceModel alloc]initWithJson:jsonDict];
     kOKBlueManager.currentDeviceID = deviceModel.deviceInfo.device_id;
     [[OKDevicesManager sharedInstance]addDevices:deviceModel];
+    
+    if (deviceModel.bootloaderMode) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            OKDeviceUpdateViewController *vc = [OKDeviceUpdateViewController controllerWithStoryboard];
+            vc.mode = OKDeviceFirmwareInstallModeBootloader;
+            [weakself.navigationController pushViewController:vc animated:YES];
+        });
+        return;
+    }
+    
     switch (_type) {
         case OKMatchingTypeNone:
         {

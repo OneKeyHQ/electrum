@@ -147,6 +147,16 @@
 
 - (void)backToPrevious
 {
+    [kPyCommandsManager callInterface:kInterface_set_cancel_flag parameter:@{}];
     [self.navigationController popToRootViewControllerAnimated:YES];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    if ([self.navigationController.viewControllers indexOfObject:self]==NSNotFound)
+    {
+        [self.navigationController popToRootViewControllerAnimated:YES];
+    }
 }
 @end

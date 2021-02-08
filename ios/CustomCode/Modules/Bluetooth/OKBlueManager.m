@@ -24,10 +24,6 @@
 @property (nonatomic,strong)CBService *service;
 @property (nonatomic,strong)CBCharacteristic *readCharacteristic;
 @property (nonatomic,strong)CBCharacteristic *writeCharacteristic;
-
-@property (nonatomic,strong)CBCharacteristic *deviceCharacteristic;
-@property (nonatomic,strong)CBCharacteristic *softwareCharacteristic;
-
 @property (nonatomic, strong)NSMutableArray  *peripheralArr;
 @property (nonatomic,strong)NSMutableString *buffer;
 
@@ -361,18 +357,8 @@ static dispatch_once_t once;
 
 ///订阅完成
 - (void)subscribeToComplete:(CBCharacteristic *)ch{
-    NSString *hexStr = [NSData hexStringForData:self.deviceCharacteristic.value];
-    NSString *hwVersion = [NSString stringFromHexString:hexStr];
     OKWeakSelf(self)
-    BOOL isDFU = NO;
-    if ([hwVersion hasPrefix:@"s132"]) {
-        NSString *softwarehexStr = [NSData hexStringForData:weakself.softwareCharacteristic.value];
-        NSString *softwarehwVersion = [NSString stringFromHexString:softwarehexStr];
-        isDFU = [OKTools compareVersion:kIOSMINIMUMBLUETOOTHVERSION version2:softwarehwVersion] == 1?YES:NO;
-    }else{
-        isDFU = [OKTools compareVersion:kIOSMINIMUMBLUETOOTHVERSION version2:hwVersion] == 1?YES:NO;
-    }
-    if (isDFU) {
+    if ([self isBluetoothLowVersion]) {
         [MBProgressHUD hideHUDForView:weakself.OK_TopViewController.view animated:YES];
         if ([self.delegate respondsToSelector:@selector(subscribeComplete:characteristic:)]) {
             [self.delegate subscribeComplete:@{} characteristic:self.deviceCharacteristic];
@@ -441,7 +427,7 @@ static dispatch_once_t once;
     //则会进入setBlockOnDidWriteValueForCharacteristic委托
     [self.currentPeripheral writeValue:msgData
                      forCharacteristic:self.writeCharacteristic
-                                  type:CBCharacteristicWriteWithResponse];
+                                  type:CBCharacteristicWriteWithoutResponse];
 }
 
 
@@ -564,6 +550,20 @@ static dispatch_once_t once;
         [self startScanPeripheral];
     }
 
+}
+
+- (BOOL)isBluetoothLowVersion{
+    NSString *hexStr = [NSData hexStringForData:kOKBlueManager.deviceCharacteristic.value];
+    NSString *hwVersion = [NSString stringFromHexString:hexStr];
+    BOOL isDFU = NO;
+    if ([hwVersion hasPrefix:@"s132"]) {
+        NSString *softwarehexStr = [NSData hexStringForData:kOKBlueManager.softwareCharacteristic.value];
+        NSString *softwarehwVersion = [NSString stringFromHexString:softwarehexStr];
+        isDFU = [OKTools compareVersion:kIOSMINIMUMBLUETOOTHVERSION version2:softwarehwVersion] == 1?YES:NO;
+    }else{
+        isDFU = [OKTools compareVersion:kIOSMINIMUMBLUETOOTHVERSION version2:hwVersion] == 1?YES:NO;
+    }
+    return isDFU;
 }
 
 @end

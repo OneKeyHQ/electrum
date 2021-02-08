@@ -114,8 +114,10 @@ typedef void(^ConnectedComplete)(BOOL isSuccess);
 @property (nonatomic, copy) NSString *readUUIDString;
 
 @property (nonatomic,copy)NSString *currentReadDataStr;
+@property (nonatomic,strong)CBCharacteristic *deviceCharacteristic;
+@property (nonatomic,strong)CBCharacteristic *softwareCharacteristic;
 + (OKBlueManager *)sharedInstance;
-
+- (BOOL)isBluetoothLowVersion;
 - (NSString *)getStrValueInUD;
 - (void)saveStrValueInUD:(NSString *)bleUUID;
 - (BOOL)isConnectedCurrentDevice;
