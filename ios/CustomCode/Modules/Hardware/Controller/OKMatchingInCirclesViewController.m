@@ -20,6 +20,7 @@
 #import "OKSendCoinViewController.h"
 #import "OKSignatureViewController.h"
 #import "OKDeviceUpdateViewController.h"
+#import "OKDeviceIdInconsistentViewController.h"
 
 @interface OKMatchingInCirclesViewController ()<OKBabyBluetoothManageDelegate,UITableViewDelegate,UITableViewDataSource>
 
@@ -83,37 +84,44 @@
         _count = 0;
         [weakself.terminalTimer invalidate];
         weakself.terminalTimer = nil;
-        if (self.type == OKMatchingTypeTransfer || self.type == OKMatchingTypeReceiveCoin || self.type == OKMatchingTypeSignatureData ) {
+        if (self.type == OKMatchingTypeTransfer || self.type == OKMatchingTypeReceiveCoin || self.type == OKMatchingTypeSignatureData) {
             OKDeviceModel *model = [[OKDevicesManager sharedInstance]getDeviceModelWithID:kWalletManager.currentWalletInfo.device_id];
-            if ([kOKBlueManager isConnectedName:model.deviceInfo.ble_name]) {
-                NSDictionary *dict = [[[OKDevicesManager sharedInstance]getDeviceModelWithID:kOKBlueManager.currentDeviceID]json];
-                [self subscribeComplete:dict characteristic:nil];
-            }else{
-                CBPeripheral *temp;
-                for (OKPeripheralInfo *infoModel in self.dataSource) {
-                    if ([model.deviceInfo.ble_name isEqualToString:infoModel.peripheral.name]) {
-                        temp = infoModel.peripheral;
-                    }
+            if (model == nil) { //数据被删除
+                if ([kOKBlueManager isConnectedCurrentDevice]) {
+                    [kOKBlueManager disconnectAllPeripherals];
                 }
-                if (temp != nil) {
-                    [kOKBlueManager connectPeripheral:temp];
-                }else{
-                    [kTools tipMessage:MyLocalizedString(@"Time out for connecting Bluetooth device. Please make sure your device has Bluetooth enabled and is at your side", nil)];
-                    [self.navigationController popViewControllerAnimated:YES];
-                }
-            }
-        }else{
-            if ([kOKBlueManager isConnectedCurrentDevice]) {
-                NSDictionary *dict = [[[OKDevicesManager sharedInstance]getDeviceModelWithID:kOKBlueManager.currentDeviceID]json];
-                [self subscribeComplete:dict characteristic:nil];
-            }else{
                 [weakself changeToListBgView];
                 [weakself.tableView reloadData];
                 weakself.completeCons.constant = - (SCREEN_HEIGHT - 170);
                 [UIView animateWithDuration:0.5 animations:^{
                     [weakself.view layoutIfNeeded];
                 }];
+            }else{
+                if ([kOKBlueManager isConnectedName:model.deviceInfo.ble_name]) {
+                    NSDictionary *dict = [[[OKDevicesManager sharedInstance]getDeviceModelWithID:kOKBlueManager.currentDeviceID]json];
+                    [self subscribeComplete:dict characteristic:nil];
+                }else{
+                    CBPeripheral *temp;
+                    for (OKPeripheralInfo *infoModel in self.dataSource) {
+                        if ([model.deviceInfo.ble_name isEqualToString:infoModel.peripheral.name]) {
+                            temp = infoModel.peripheral;
+                        }
+                    }
+                    if (temp != nil) {
+                        [kOKBlueManager connectPeripheral:temp];
+                    }else{
+                        [kTools tipMessage:MyLocalizedString(@"Time out for connecting Bluetooth device. Please make sure your device has Bluetooth enabled and is at your side", nil)];
+                        [self.navigationController popViewControllerAnimated:YES];
+                    }
+                }
             }
+        }else{
+            [weakself changeToListBgView];
+            [weakself.tableView reloadData];
+            weakself.completeCons.constant = - (SCREEN_HEIGHT - 170);
+            [UIView animateWithDuration:0.5 animations:^{
+                [weakself.view layoutIfNeeded];
+            }];
         }
     }
 }
@@ -146,6 +154,7 @@
     cell.model = model;
     return cell;
 }
+
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     return 75;
@@ -153,11 +162,18 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    OKWeakSelf(self)
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         // Do something...
         OKPeripheralInfo *peripheralInfo = self.dataSource[indexPath.row];
-        [kOKBlueManager connectPeripheral:peripheralInfo.peripheral];
+        if ([kOKBlueManager isConnectedCurrentDevice] && [kOKBlueManager.currentPeripheral.name isEqualToString:peripheralInfo.peripheral.name]) {
+            NSDictionary *dict = [[[OKDevicesManager sharedInstance]getDeviceModelWithID:kOKBlueManager.currentDeviceID]json];
+            [weakself subscribeComplete:dict characteristic:nil];
+        }else{
+            [kOKBlueManager disconnectAllPeripherals];
+            [kOKBlueManager connectPeripheral:peripheralInfo.peripheral];
+        }
     });
 }
 - (void)refreshBtnClick
@@ -200,14 +216,22 @@
 
 #pragma mark OKBabyBluetoothManageDelegate
 - (void)systemBluetoothClose {
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
     // 系统蓝牙被关闭、提示用户去开启蓝牙
-    NSLog(@"系统蓝牙被关闭、提示用户去开启蓝牙");
+    [kTools tipMessage:MyLocalizedString(@"Bluetooth of the system has been turned off. Please turn it on", nil)];
 }
 
 - (void)sysytemBluetoothOpen {
     // 系统蓝牙已开启、开始扫描周边的蓝牙设备
     [kOKBlueManager startScanPeripheral];
 }
+
+- (void)disconnectPeripheral:(CBPeripheral *)peripheral
+{
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    [kTools tipMessage:[NSString stringWithFormat:@"%@%@",peripheral.name,MyLocalizedString(@"connection is broken", nil)]];
+}
+
 
 - (void)getScanResultPeripherals:(NSArray *)peripheralInfoArr {
     NSLog(@"peripheralInfoArr == %@",peripheralInfoArr);
@@ -218,6 +242,11 @@
         [weakself.dataSource removeAllObjects];
     }
     [weakself.dataSource addObjectsFromArray:peripheralInfoArr];
+    if (![weakself.dataSource containsObject:kOKBlueManager.currentPeripheral] && kOKBlueManager.currentPeripheral != nil) {
+        OKPeripheralInfo *currentPeripheralInfo = [[OKPeripheralInfo alloc] init];
+        currentPeripheralInfo.peripheral = kOKBlueManager.currentPeripheral;
+        [weakself.dataSource addObject:currentPeripheralInfo];
+    }
     [weakself.tableView reloadData];
 }
 
@@ -231,6 +260,8 @@
 }
 - (void)connectFailed {
     // 连接失败、做连接失败的处理
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    [kTools tipMessage:MyLocalizedString(@"Bluetooth connection failed, please try again", nil)];
 }
 - (void)subscribeComplete:(NSDictionary *)jsonDict characteristic:(nonnull CBCharacteristic *)ch
 {
@@ -310,29 +341,71 @@
         case OKMatchingTypeTransfer:
         {
             dispatch_async(dispatch_get_main_queue(), ^{
-                [MBProgressHUD hideHUDForView:self.view animated:YES];
-                OKSendCoinViewController *sendCoinVc = [OKSendCoinViewController sendCoinViewController];
-                [self.navigationController pushViewController:sendCoinVc animated:YES];
+                if (deviceModel.deviceInfo.initialized && !deviceModel.deviceInfo.backup_only&& [deviceModel.deviceInfo.device_id isEqualToString:kWalletManager.currentWalletInfo.device_id]) {
+                    [MBProgressHUD hideHUDForView:self.view animated:YES];
+                    OKSendCoinViewController *sendCoinVc = [OKSendCoinViewController sendCoinViewController];
+                    [self.navigationController pushViewController:sendCoinVc animated:YES];
+                }else{
+                    if (![deviceModel.deviceInfo.device_id isEqualToString:kWalletManager.currentWalletInfo.device_id]) {
+                        OKDeviceIdInconsistentViewController *deviceIdVc = [OKDeviceIdInconsistentViewController deviceIdInconsistentViewController];
+                        deviceIdVc.modalPresentationStyle = UIModalPresentationOverFullScreen;
+                        [weakself.OK_TopViewController presentViewController:deviceIdVc animated:NO completion:nil];
+                    }else{
+                        [kTools tipMessage:MyLocalizedString(@"This operation is not supported if the current device is not active, or if the special device is backed up", nil)];
+                        [kOKBlueManager disconnectAllPeripherals];
+                        [MBProgressHUD hideHUDForView:self.view animated:YES];
+                        [weakself.navigationController popViewControllerAnimated:YES];
+                        return;
+                    }
+                }
             });
         }
             break;
         case OKMatchingTypeReceiveCoin:
         {
             dispatch_async(dispatch_get_main_queue(), ^{
-                [MBProgressHUD hideHUDForView:self.view animated:YES];
-                OKReceiveCoinViewController *receiveCoinVc = [OKReceiveCoinViewController receiveCoinViewController];
-                receiveCoinVc.coinType = kWalletManager.currentWalletInfo.coinType;
-                receiveCoinVc.walletType = [kWalletManager getWalletDetailType];
-                [self.navigationController pushViewController:receiveCoinVc animated:YES];
+                if (deviceModel.deviceInfo.initialized && !deviceModel.deviceInfo.backup_only && [deviceModel.deviceInfo.device_id isEqualToString:kWalletManager.currentWalletInfo.device_id]) {
+                    [MBProgressHUD hideHUDForView:self.view animated:YES];
+                    OKReceiveCoinViewController *receiveCoinVc = [OKReceiveCoinViewController receiveCoinViewController];
+                    receiveCoinVc.coinType = kWalletManager.currentWalletInfo.coinType;
+                    receiveCoinVc.walletType = [kWalletManager getWalletDetailType];
+                    [self.navigationController pushViewController:receiveCoinVc animated:YES];
+                }else{
+                    if (![deviceModel.deviceInfo.device_id isEqualToString:kWalletManager.currentWalletInfo.device_id]) {
+                        OKDeviceIdInconsistentViewController *deviceIdVc = [OKDeviceIdInconsistentViewController deviceIdInconsistentViewController];
+                        deviceIdVc.modalPresentationStyle = UIModalPresentationOverFullScreen;
+                        [weakself.OK_TopViewController presentViewController:deviceIdVc animated:NO completion:nil];
+                    }else{
+                        [kTools tipMessage:MyLocalizedString(@"This operation is not supported if the current device is not active, or if the special device is backed up", nil)];
+                        [kOKBlueManager disconnectAllPeripherals];
+                        [MBProgressHUD hideHUDForView:self.view animated:YES];
+                        [weakself.navigationController popViewControllerAnimated:YES];
+                        return;
+                    }
+                }
             });
         }
             break;
         case OKMatchingTypeSignatureData:
         {
             dispatch_async(dispatch_get_main_queue(), ^{
-                [MBProgressHUD hideHUDForView:self.view animated:YES];
-                OKSignatureViewController *signatureVc = [OKSignatureViewController signatureViewController];
-                [self.navigationController pushViewController:signatureVc animated:YES];
+                if (deviceModel.deviceInfo.initialized && !deviceModel.deviceInfo.backup_only && [deviceModel.deviceInfo.device_id isEqualToString:kWalletManager.currentWalletInfo.device_id]) {
+                    [MBProgressHUD hideHUDForView:self.view animated:YES];
+                    OKSignatureViewController *signatureVc = [OKSignatureViewController signatureViewController];
+                    [self.navigationController pushViewController:signatureVc animated:YES];
+                }else{
+                    if (![deviceModel.deviceInfo.device_id isEqualToString:kWalletManager.currentWalletInfo.device_id]) {
+                        OKDeviceIdInconsistentViewController *deviceIdVc = [OKDeviceIdInconsistentViewController deviceIdInconsistentViewController];
+                        deviceIdVc.modalPresentationStyle = UIModalPresentationOverFullScreen;
+                        [weakself.OK_TopViewController presentViewController:deviceIdVc animated:NO completion:nil];
+                    }else{
+                        [kTools tipMessage:MyLocalizedString(@"This operation is not supported if the current device is not active, or if the special device is backed up", nil)];
+                        [kOKBlueManager disconnectAllPeripherals];
+                        [MBProgressHUD hideHUDForView:self.view animated:YES];
+                        [weakself.navigationController popViewControllerAnimated:YES];
+                        return;
+                    }
+                }
             });
         }
             break;

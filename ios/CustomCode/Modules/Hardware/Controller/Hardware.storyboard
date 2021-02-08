@@ -1241,7 +1241,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ehZ-dF-fft" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-10" y="1619"/>
+            <point key="canvasLocation" x="3" y="2249"/>
         </scene>
         <!--Device Ready To Start View Controller-->
         <scene sceneID="zt4-Cy-LRe">
@@ -1957,6 +1957,99 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="cHM-su-chd" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-10.144927536231885" y="1564.9553571428571"/>
+        </scene>
+        <!--Device Id Inconsistent View Controller-->
+        <scene sceneID="lG8-o8-7x9">
+            <objects>
+                <viewController storyboardIdentifier="OKDeviceIdInconsistentViewController" id="ReN-rs-e6o" customClass="OKDeviceIdInconsistentViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="UFT-xS-E5h"/>
+                        <viewControllerLayoutGuide type="bottom" id="gj5-AE-RfZ"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="JMU-4m-f4u">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="v4Z-je-Map">
+                                <rect key="frame" x="10" y="568.5" width="394" height="297.5"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="The device ID is inconsistent" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="sWJ-ld-iVV" customClass="OKLabel">
+                                        <rect key="frame" x="50" y="30" width="294" height="25"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="25" id="bUm-IA-ZcI"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="18"/>
+                                        <color key="textColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5hY-mX-Wqy" customClass="OKButton">
+                                        <rect key="frame" x="25" y="207.5" width="344" height="60"/>
+                                        <color key="backgroundColor" red="0.0039215686269999999" green="0.72941176470000002" blue="0.070588235289999995" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="60" id="C2t-bE-e6s"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="16"/>
+                                        <state key="normal" title="return">
+                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="iKnowBtnClick:" destination="ReN-rs-e6o" eventType="touchUpInside" id="uqC-GB-Vo5"/>
+                                        </connections>
+                                    </button>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EHn-1e-3HY" customClass="OKLabel">
+                                        <rect key="frame" x="20" y="75" width="354" height="100.5"/>
+                                        <mutableString key="text">A change in the device ID of the currently connected device was detected, possibly because the device had been reset. This will cause the state of the device displayed at this point to differ from the real state of your device. Please go back to the previous page and choose again.</mutableString>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <color key="textColor" red="0.078431372550000003" green="0.1647058824" blue="0.23137254900000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <button opaque="NO" contentMode="center" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aQi-YF-swF">
+                                        <rect key="frame" x="341" y="10" width="40" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="40" id="uuL-PD-QVH"/>
+                                            <constraint firstAttribute="width" constant="40" id="xmY-G8-3Pl"/>
+                                        </constraints>
+                                        <state key="normal" image="close"/>
+                                        <connections>
+                                            <action selector="closeBtnClick:" destination="ReN-rs-e6o" eventType="touchUpInside" id="xHZ-an-gzW"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstItem="sWJ-ld-iVV" firstAttribute="centerX" secondItem="v4Z-je-Map" secondAttribute="centerX" id="GZZ-Oa-ilD"/>
+                                    <constraint firstAttribute="bottom" secondItem="5hY-mX-Wqy" secondAttribute="bottom" constant="30" id="LUF-Dz-d7D"/>
+                                    <constraint firstItem="5hY-mX-Wqy" firstAttribute="top" secondItem="EHn-1e-3HY" secondAttribute="bottom" constant="32" id="UEr-MT-WNl"/>
+                                    <constraint firstAttribute="trailing" secondItem="5hY-mX-Wqy" secondAttribute="trailing" constant="25" id="X0P-Ku-bmQ"/>
+                                    <constraint firstItem="sWJ-ld-iVV" firstAttribute="top" secondItem="aQi-YF-swF" secondAttribute="bottom" constant="-20" id="YAG-ac-rsj"/>
+                                    <constraint firstItem="EHn-1e-3HY" firstAttribute="top" secondItem="sWJ-ld-iVV" secondAttribute="bottom" constant="20" id="YNt-cO-dHS"/>
+                                    <constraint firstItem="5hY-mX-Wqy" firstAttribute="leading" secondItem="v4Z-je-Map" secondAttribute="leading" constant="25" id="dFE-Wq-udU"/>
+                                    <constraint firstAttribute="trailing" secondItem="EHn-1e-3HY" secondAttribute="trailing" constant="20" id="eT1-oK-GbN"/>
+                                    <constraint firstItem="sWJ-ld-iVV" firstAttribute="top" secondItem="v4Z-je-Map" secondAttribute="top" constant="30" id="hke-ah-i6X"/>
+                                    <constraint firstAttribute="trailing" secondItem="aQi-YF-swF" secondAttribute="trailing" constant="13" id="pQt-eL-Sg5"/>
+                                    <constraint firstAttribute="trailing" secondItem="sWJ-ld-iVV" secondAttribute="trailing" priority="750" constant="50" id="wZm-mA-g8N"/>
+                                    <constraint firstItem="EHn-1e-3HY" firstAttribute="leading" secondItem="v4Z-je-Map" secondAttribute="leading" constant="20" id="wii-TE-9CY"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="hfw-wH-uBe"/>
+                        <color key="backgroundColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="0.1953392551" colorSpace="custom" customColorSpace="displayP3"/>
+                        <constraints>
+                            <constraint firstAttribute="bottom" secondItem="v4Z-je-Map" secondAttribute="bottom" constant="30" id="5rH-yb-U2Y"/>
+                            <constraint firstItem="v4Z-je-Map" firstAttribute="leading" secondItem="JMU-4m-f4u" secondAttribute="leading" constant="10" id="M9G-Q7-Evf"/>
+                            <constraint firstAttribute="trailing" secondItem="v4Z-je-Map" secondAttribute="trailing" constant="10" id="Tz2-EA-YJV"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="contentView" destination="v4Z-je-Map" id="DOU-V3-Ezb"/>
+                        <outlet property="detailLabel" destination="EHn-1e-3HY" id="TiS-vT-kr5"/>
+                        <outlet property="iKnowBtn" destination="5hY-mX-Wqy" id="KD1-Us-RZZ"/>
+                        <outlet property="titleLabel" destination="sWJ-ld-iVV" id="2mp-eE-AWN"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="bvC-we-cyj" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1006" y="1573"/>
         </scene>
     </scenes>
     <resources>

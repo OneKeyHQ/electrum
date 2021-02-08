@@ -435,6 +435,8 @@
 		881425FA25B9216700961668 /* OKSpecialEquipmentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 881425F825B9216700961668 /* OKSpecialEquipmentViewController.m */; };
 		881425FD25BFF0A400961668 /* OKTransferCompleteController.h in Headers */ = {isa = PBXBuildFile; fileRef = 881425FB25BFF0A400961668 /* OKTransferCompleteController.h */; };
 		881425FE25BFF0A400961668 /* OKTransferCompleteController.m in Sources */ = {isa = PBXBuildFile; fileRef = 881425FC25BFF0A400961668 /* OKTransferCompleteController.m */; };
+		8822105025D003F500BC7819 /* OKDeviceIdInconsistentViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 8822104E25D003F400BC7819 /* OKDeviceIdInconsistentViewController.h */; };
+		8822105125D003F500BC7819 /* OKDeviceIdInconsistentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8822104F25D003F400BC7819 /* OKDeviceIdInconsistentViewController.m */; };
 		88F89FBE25CB9E4700EFC641 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 88F89FBC25CB9E4700EFC641 /* Localizable.strings */; };
 		8BA64C7EB8F197124BEFC4B9 /* BTCBrowser.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2B8A43CE94718C2C5184C2DC /* BTCBrowser.plist */; };
 		92534669BFCAE1EF0EC2F024 /* UIViewController+Extension.m in Sources */ = {isa = PBXBuildFile; fileRef = 468549E8AF41F4FF1257667D /* UIViewController+Extension.m */; };
@@ -1009,6 +1011,8 @@
 		881425FB25BFF0A400961668 /* OKTransferCompleteController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKTransferCompleteController.h; sourceTree = "<group>"; };
 		881425FC25BFF0A400961668 /* OKTransferCompleteController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKTransferCompleteController.m; sourceTree = "<group>"; };
 		881C49CA9B3FEEE96D160552 /* OKClickTextView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OKClickTextView.h; path = ../CustomCode/CommonView/OKClickTextView.h; sourceTree = SOURCE_ROOT; };
+		8822104E25D003F400BC7819 /* OKDeviceIdInconsistentViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKDeviceIdInconsistentViewController.h; sourceTree = "<group>"; };
+		8822104F25D003F400BC7819 /* OKDeviceIdInconsistentViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKDeviceIdInconsistentViewController.m; sourceTree = "<group>"; };
 		88D7404B9FF067F44DABF936 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = None; name = LaunchScreen.storyboard; path = ../Resources/LaunchScreen.storyboard; sourceTree = SOURCE_ROOT; };
 		88F89FBD25CB9E4700EFC641 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = Localizable.strings; sourceTree = "<group>"; };
 		90BF4B77B7BC2B3709FC7726 /* NSString+OKAdd.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "NSString+OKAdd.h"; path = "../CustomCode/Categories/NSString+OKAdd.h"; sourceTree = SOURCE_ROOT; };
@@ -1416,6 +1420,8 @@
 				881422C125B18EA900961668 /* OKDeviceSuccessViewController.h */,
 				881422C825B18EA900961668 /* OKDeviceSuccessViewController.m */,
 				881422C225B18EA900961668 /* Hardware.storyboard */,
+				8822104E25D003F400BC7819 /* OKDeviceIdInconsistentViewController.h */,
+				8822104F25D003F400BC7819 /* OKDeviceIdInconsistentViewController.m */,
 				881425AF25B5BD2C00961668 /* OKHWCompleteCopyViewController.h */,
 				881425B025B5BD2C00961668 /* OKHWCompleteCopyViewController.m */,
 				881425A725B302E500961668 /* OKChangeMnemonicLenController.h */,
@@ -2249,6 +2255,7 @@
 				8814248C25B18EAA00961668 /* mask.h in Headers */,
 				881424CB25B18EAA00961668 /* OKProxyServerModel.h in Headers */,
 				B058D8B625B55663000EB27C /* OKDeviceUpdateModel.h in Headers */,
+				8822105025D003F500BC7819 /* OKDeviceIdInconsistentViewController.h in Headers */,
 				8814242A25B18EAA00961668 /* OKMnemonicImportViewController.h in Headers */,
 				8814255D25B18EAA00961668 /* OKFindWalletTableViewCellModel.h in Headers */,
 				881424F925B18EAA00961668 /* OKTxViewController.h in Headers */,
@@ -2766,6 +2773,7 @@
 				8814256F25B18EAA00961668 /* OKSelectCellModel.m in Sources */,
 				B058D8CB25B572C7000EB27C /* OKDevicesManager.m in Sources */,
 				881424B525B18EAA00961668 /* OKAllAssetsViewController.m in Sources */,
+				8822105125D003F500BC7819 /* OKDeviceIdInconsistentViewController.m in Sources */,
 				881424B325B18EAA00961668 /* OKNetworkViewController.m in Sources */,
 				8814245525B18EAA00961668 /* OKSetPINPreViewController.m in Sources */,
 				881424FF25B18EAA00961668 /* OKDefaultFeeInfoSubModel.m in Sources */,

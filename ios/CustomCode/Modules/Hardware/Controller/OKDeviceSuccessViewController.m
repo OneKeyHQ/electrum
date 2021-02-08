@@ -7,6 +7,7 @@
 //
 
 #import "OKDeviceSuccessViewController.h"
+#import "OKActivateDeviceSelectViewController.h"
 
 @interface OKDeviceSuccessViewController ()
 @property (weak, nonatomic) IBOutlet UILabel *titleLabel;
@@ -68,19 +69,28 @@
             [kPyCommandsManager callInterface:kInterfacedelete_backup_info parameter:@{@"name":kWalletManager.currentWalletInfo.name}];
             [[NSNotificationCenter defaultCenter]postNotificationName:kNotiBackUPWalletComplete object:nil];
             [[NSNotificationCenter defaultCenter]postNotificationName:kNotiHwInfoUpdate object:nil];
+            [self.OK_TopViewController dismissToViewControllerWithClassName:@"OKWalletViewController" animated:YES complete:^{
+                
+            }];
         }
             break;
         case OKDeviceSuccessActivate:
         {
             [[NSNotificationCenter defaultCenter]postNotificationName:kNotiHwInfoUpdate object:nil];
+            OKActivateDeviceSelectViewController *activateDeviceVc = [OKActivateDeviceSelectViewController activateDeviceSelectViewController];
+            [self.navigationController pushViewController:activateDeviceVc animated:YES];
         }
             break;
         default:
             break;
     }
-    
-    [self.OK_TopViewController dismissToViewControllerWithClassName:@"OKWalletViewController" animated:YES complete:^{
-        
-    }];
 }
+
+- (void)backToPrevious
+{
+    [[NSNotificationCenter defaultCenter]postNotificationName:kNotiHwInfoUpdate object:nil];
+    [self.navigationController popToRootViewControllerAnimated:YES];
+}
+
+
 @end

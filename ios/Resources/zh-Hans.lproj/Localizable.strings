@@ -492,3 +492,9 @@
 "Bluetooth firmware version is too low, please skip to web upgrade" = "硬件蓝牙版本过低，请跳转到web升级";
 "Update tip" = "更新提示";
 "Input PIN" = "输入PIN";
+"Bluetooth connection failed, please try again" = "蓝牙连接失败，请重试";
+"connection is broken" = "蓝牙连接已断开";
+"Bluetooth of the system has been turned off. Please turn it on" = "系统蓝牙被关闭，请开启";
+"This operation is not supported if the current device is not active, or if the special device is backed up" = "当前设备未激活，或者是备份的特殊设备，不支持该操作";
+"A change in the device ID of the currently connected device was detected, possibly because the device had been reset. This will cause the state of the device displayed at this point to differ from the real state of your device. Please go back to the previous page and choose again." = "检测到当前连接设备的设备 ID 发生了变化，可能是因为该设备曾进行过重置。 这将导致此刻展示的设备状态与您的设备真实状态有差异。请退回到上一页重新选择。";
+"The device ID is inconsistent" = "设备 ID 不一致";
