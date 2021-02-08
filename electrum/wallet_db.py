@@ -1128,13 +1128,22 @@ class WalletDB(JsonDB):
             for name in ['receiving', 'change']:
                 if name not in self.data['addresses']:
                     self.data['addresses'][name] = []
+            coin = wallet_type.split("_")[0]
             self.change_addresses = self.data['addresses']['change']
             self.receiving_addresses = self.data['addresses']['receiving']
             self._addr_to_addr_index = {}  # type: Dict[str, Sequence[int]]  # key: address, value: (is_change, index)
-            for i, addr in enumerate(self.receiving_addresses):
-                self._addr_to_addr_index[addr] = (0, i)
             for i, addr in enumerate(self.change_addresses):
                 self._addr_to_addr_index[addr] = (1, i)
+
+            if coin == "standard":
+                for i, addr in enumerate(self.receiving_addresses):
+                    self._addr_to_addr_index[addr] = (0, i)
+            else:
+                index = 0
+                if len(self.receiving_addresses) != 0:
+                    if "address_index" in self.data:
+                        index = self.data["address_index"]
+                    self._addr_to_addr_index[self.receiving_addresses[0]] = (0, index)
 
     @profiler
     def _load_transactions(self):

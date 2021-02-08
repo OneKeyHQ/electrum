@@ -634,10 +634,9 @@ class Abstract_Eth_Wallet(ABC):
     def _update_password_for_keystore(self, old_pw: Optional[str], new_pw: Optional[str]) -> None:
         pass
 
-    def sign_message(self, address, message, password):
+    def sign_eth_message(self, address, message, password):
         index = self.get_address_index(address)
-        coin = self.wallet_type.split('_')[0]
-        return self.keystore.sign_message(index, message, password, coin=coin)
+        return self.keystore.sign_eth_message(index, message, password)
 
     def decrypt_message(self, pubkey: str, message, password) -> bytes:
         addr = self.pubkeys_to_address([pubkey])
@@ -944,7 +943,7 @@ class Deterministic_Eth_Wallet(Abstract_Eth_Wallet):
         assert type(for_change) is bool
         with self.lock:
             address = self.derive_address(int(for_change), index)
-            self.db.add_change_address(address) if for_change else self.db.add_receiving_address(address, index=index)
+            self.db.add_receiving_address(address, index=index)
             self.set_address_index(index)
            # self.add_address(address)
             if for_change:

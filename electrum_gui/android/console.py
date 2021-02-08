@@ -2049,7 +2049,7 @@ class AndroidCommands(commands.Commands):
             if coin in self.coins:
                 if not self.pywalib.web3.isAddress(address):
                     raise UnavailableEthAddr()
-            elif coin == 'standard':
+            elif coin == 'btc':
                 if not bitcoin.is_address(address):
                     raise UnavailableBtcAddr()
                 txin_type = self.wallet.get_txin_type(address)
@@ -2061,8 +2061,10 @@ class AndroidCommands(commands.Commands):
                 raise BaseException(_("This is a watching-only wallet."))
             if not self.wallet.is_mine(address):
                 raise BaseException(_("The address is not in the current wallet."))
-
-            sig = self.wallet.sign_message(address, message, password)
+            if coin == 'btc':
+                sig = self.wallet.sign_message(address, message, password)
+            else:
+                sig = self.wallet.sign_eth_message(address, message, password)
             import base64
 
             return base64.b64encode(sig).decode("ascii")
@@ -2092,7 +2094,10 @@ class AndroidCommands(commands.Commands):
             import base64
             sig = base64.b64decode(str(signature))
             client = self.get_client(path=path)
-            verified = client.verify_message(address, message, sig, coin=coin)
+            if coin == 'btc':
+                verified = client.verify_message(address, message, sig)
+            else:
+                verified = client.verify_eth_message(address, message, sig)
         except Exception:
             verified = False
         return verified

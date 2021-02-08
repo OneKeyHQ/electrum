@@ -1988,7 +1988,7 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
 
     def sign_message(self, address, message, password):
         index = self.get_address_index(address)
-        return self.keystore.sign_message(index, message, password, coin='btc', txin_type=self.txin_type)
+        return self.keystore.sign_message(index, message, password, txin_type=self.txin_type)
 
     def decrypt_message(self, pubkey: str, message, password) -> bytes:
         addr = self.pubkeys_to_address([pubkey])

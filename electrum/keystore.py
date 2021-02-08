@@ -127,7 +127,7 @@ class KeyStore(Logger, ABC):
         pass
 
     @abstractmethod
-    def sign_message(self, sequence: 'AddressIndexGeneric', message, password, coin=None, txin_type=None) -> bytes:
+    def sign_message(self, sequence: 'AddressIndexGeneric', message, password,txin_type=None) -> bytes:
         pass
 
     @abstractmethod
@@ -172,7 +172,7 @@ class Software_KeyStore(KeyStore):
     def may_have_password(self):
         return not self.is_watching_only()
 
-    def sign_message(self, sequence, message, password, coin=None, txin_type=None) -> bytes:
+    def sign_message(self, sequence, message, password, txin_type=None) -> bytes:
         privkey, compressed = self.get_private_key(sequence, password)
         key = ecc.ECPrivkey(privkey)
         return key.sign_message(message, compressed)
