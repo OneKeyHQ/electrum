@@ -27,6 +27,7 @@ import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.business.wallet.BalanceManager;
 import org.haobtc.onekey.business.wallet.SystemConfigManager;
 import org.haobtc.onekey.business.wallet.bean.WalletBalanceBean;
+import org.haobtc.onekey.onekeys.homepage.process.HdWalletDetailActivity;
 
 public class AllAssetsActivity extends BaseActivity implements TextWatcher {
 
@@ -113,6 +114,16 @@ public class AllAssetsActivity extends BaseActivity implements TextWatcher {
                                                     new HdWalletAssetAdapter(
                                                             getBaseContext(), walletInfo);
                                             reclAssets.setAdapter(hdWalletAssetAdapter);
+                                            hdWalletAssetAdapter.setOnItemClickListener(
+                                                    (adapter, view, position) -> {
+                                                        WalletBalanceBean walletBalanceBean =
+                                                                (WalletBalanceBean)
+                                                                        adapter.getData()
+                                                                                .get(position);
+                                                        String name = walletBalanceBean.getName();
+                                                        HdWalletDetailActivity.start(
+                                                                mContext, name);
+                                                    });
                                         }
                                     } else {
                                         tetNone.setVisibility(View.VISIBLE);

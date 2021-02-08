@@ -43,6 +43,7 @@ class HdWalletAssetAdapter(context: Context, data: List<WalletBalanceBean?>?) : 
     if (!Strings.isNullOrEmpty(strFiat)) {
       helper.setText(R.id.text_fiat, "≈ " + mSystemConfigManager.currentFiatSymbol + " " + strFiat)
     }
+
   }
 
 }

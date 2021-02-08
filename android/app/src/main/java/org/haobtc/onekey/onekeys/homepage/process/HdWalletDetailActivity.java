@@ -73,6 +73,7 @@ public class HdWalletDetailActivity extends BaseActivity {
     private static final int REQUEST_PASSWORD_EXPORT_PRIVATE_KEY = 0x2 | REQUEST_PASSWORD_TAG;
     private static final int REQUEST_PASSWORD_EXPORT_KEYSTORE = 0x3 | REQUEST_PASSWORD_TAG;
     private static final int REQUEST_PASSWORD_DELETE_HD_DERIVED = 0x4 | REQUEST_PASSWORD_TAG;
+    private static final String WALLET_NAME = "hdWalletName";
 
     @BindView(R.id.img_token_logo)
     ImageView mImageTokenLogo;
@@ -142,6 +143,12 @@ public class HdWalletDetailActivity extends BaseActivity {
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
         inits();
+    }
+
+    public static void start(Context context, String name) {
+        Intent intent = new Intent(context, HdWalletDetailActivity.class);
+        intent.putExtra(WALLET_NAME, name);
+        context.startActivity(intent);
     }
 
     private void inits() {
