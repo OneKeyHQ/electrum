@@ -41,3 +41,5 @@ electrum/*.so
 electrum/*.so.0
 electrum/*.dll
 electrum/*.dylib
+/*.sqlite
+/local_settings.py

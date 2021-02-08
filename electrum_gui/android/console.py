@@ -73,6 +73,7 @@ from electrum.util import (
 from electrum.util import user_dir as get_dir
 from electrum.wallet import Imported_Wallet, Standard_Wallet, Wallet
 from electrum.wallet_db import WalletDB
+from electrum_gui.common import the_begging
 
 from .create_wallet_info import CreateWalletInfo
 from .derived_info import DerivedInfo
@@ -268,7 +269,7 @@ class AndroidCommands(commands.Commands):
             self.set_callback_fun(self.my_handler)
         self.start_daemon()
         self.get_block_info()
-
+        the_begging.initialize()
 
     def init_config(self, config=None):
         config_options = {}
