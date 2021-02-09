@@ -75,6 +75,26 @@ class TrezorKeyStore(Hardware_KeyStore):
     def decrypt_message(self, sequence, message, password):
         raise UserFacingException(_('Encryption and decryption are not implemented by {}').format(self.device))
 
+    def verify_message(self, address, message, sig):
+        if not self.plugin.client:
+            raise Exception("client is None")
+        xpub = self.xpub
+        derivation = self.get_derivation_prefix()
+        if not self.plugin.force_pair_with_xpub(self.plugin.client, xpub, derivation):
+            raise Exception("Can't Pair With You Device")
+        verify = self.plugin.client.verify_message(address, message, sig)
+        return verify
+
+    def verify_eth_message(self, address, message, sig):
+        if not self.plugin.client:
+            raise Exception("client is None")
+        xpub = self.xpub
+        derivation = self.get_derivation_prefix()
+        if not self.plugin.force_pair_with_xpub(self.plugin.client, xpub, derivation):
+            raise Exception("Can't Pair With You Device")
+        verify = self.plugin.client.verify_eth_message(address, message, sig)
+        return verify
+
     def sign_message(self, sequence, message, password, txin_type=None):
         if not self.plugin.client:
             raise Exception("client is None")

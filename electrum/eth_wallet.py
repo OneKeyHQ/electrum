@@ -634,9 +634,12 @@ class Abstract_Eth_Wallet(ABC):
     def _update_password_for_keystore(self, old_pw: Optional[str], new_pw: Optional[str]) -> None:
         pass
 
-    def sign_eth_message(self, address, message, password):
+    def sign_message(self, address, message, password):
         index = self.get_address_index(address)
         return self.keystore.sign_eth_message(index, message, password)
+
+    def verify_message(self, address, message, sig):
+        return self.keystore.verify_eth_message(address, message, sig)
 
     def decrypt_message(self, pubkey: str, message, password) -> bytes:
         addr = self.pubkeys_to_address([pubkey])

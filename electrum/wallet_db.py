@@ -1139,10 +1139,8 @@ class WalletDB(JsonDB):
                 for i, addr in enumerate(self.receiving_addresses):
                     self._addr_to_addr_index[addr] = (0, i)
             else:
-                index = 0
-                if len(self.receiving_addresses) != 0:
-                    if "address_index" in self.data:
-                        index = self.data["address_index"]
+                if self.receiving_addresses:
+                    index = self.data.get("address_index", 0)
                     self._addr_to_addr_index[self.receiving_addresses[0]] = (0, index)
 
     @profiler

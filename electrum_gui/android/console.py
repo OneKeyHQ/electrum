@@ -2061,10 +2061,8 @@ class AndroidCommands(commands.Commands):
                 raise BaseException(_("This is a watching-only wallet."))
             if not self.wallet.is_mine(address):
                 raise BaseException(_("The address is not in the current wallet."))
-            if coin == 'btc':
-                sig = self.wallet.sign_message(address, message, password)
-            else:
-                sig = self.wallet.sign_eth_message(address, message, password)
+
+            sig = self.wallet.sign_message(address, message, password)
             import base64
 
             return base64.b64encode(sig).decode("ascii")
@@ -2094,10 +2092,7 @@ class AndroidCommands(commands.Commands):
             import base64
             sig = base64.b64decode(str(signature))
             client = self.get_client(path=path)
-            if coin == 'btc':
-                verified = client.verify_message(address, message, sig)
-            else:
-                verified = client.verify_eth_message(address, message, sig)
+            verified = self.wallet.verify_message(address, message, sig)
         except Exception:
             verified = False
         return verified

@@ -1990,6 +1990,9 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
         index = self.get_address_index(address)
         return self.keystore.sign_message(index, message, password, txin_type=self.txin_type)
 
+    def verify_message(self, address,message, sig):
+        return self.keystore.verify_message(address, message, sig)
+
     def decrypt_message(self, pubkey: str, message, password) -> bytes:
         addr = self.pubkeys_to_address([pubkey])
         index = self.get_address_index(addr)
