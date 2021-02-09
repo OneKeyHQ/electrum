@@ -140,7 +140,10 @@ public class DetailETHTransactionActivity extends BaseActivity {
                                 e -> {
                                     e.printStackTrace();
                                     if (e.getMessage() != null) {
-                                        mToast(e.getMessage().replace("BaseException:", ""));
+                                        mToast(
+                                                e.getMessage()
+                                                        .substring(
+                                                                e.getMessage().indexOf(":") + 1));
                                     }
                                 });
     }

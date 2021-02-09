@@ -21,6 +21,7 @@ import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.event.FinishEvent;
 import org.haobtc.onekey.event.GotPassEvent;
+import org.haobtc.onekey.exception.HardWareExceptions;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.backup.BackupGuideActivity;
 import org.haobtc.onekey.ui.activity.SoftPassActivity;
@@ -102,7 +103,7 @@ public class WalletManageActivity extends BaseActivity {
             }
         } catch (Exception e) {
             if (!TextUtils.isEmpty(e.getMessage())) {
-                mToast(e.getMessage().replace("BaseException:", ""));
+                mToast(HardWareExceptions.getExceptionString(e));
             }
             e.printStackTrace();
         }

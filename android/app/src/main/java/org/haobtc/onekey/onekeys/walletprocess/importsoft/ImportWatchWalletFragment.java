@@ -12,36 +12,32 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
-
 import com.chaquo.python.Kwarg;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.bean.ZxingConfig;
 import com.yzq.zxinglibrary.common.Constant;
-
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.ObservableOnSubscribe;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+import java.util.ArrayList;
+import java.util.List;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.MainSweepcodeBean;
 import org.haobtc.onekey.business.qrdecode.QRDecode;
 import org.haobtc.onekey.databinding.FragmentImportWatchWalletBinding;
+import org.haobtc.onekey.exception.HardWareExceptions;
 import org.haobtc.onekey.onekeys.walletprocess.OnFinishViewCallBack;
 import org.haobtc.onekey.ui.base.BaseFragment;
 import org.haobtc.onekey.utils.Daemon;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.ObservableOnSubscribe;
-import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.schedulers.Schedulers;
 
 /**
  * 导入观察钱包
@@ -50,7 +46,8 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
  * @create 2021-01-17 11:23 AM
  */
 @Keep
-public class ImportWatchWalletFragment extends BaseFragment implements TextWatcher, View.OnClickListener {
+public class ImportWatchWalletFragment extends BaseFragment
+        implements TextWatcher, View.OnClickListener {
     private static final int REQUEST_CODE = 0;
 
     private FragmentImportWatchWalletBinding mBinding;
@@ -82,7 +79,10 @@ public class ImportWatchWalletFragment extends BaseFragment implements TextWatch
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         mBinding = FragmentImportWatchWalletBinding.inflate(inflater, container, false);
         init(mBinding.getRoot());
         return mBinding.getRoot();
@@ -97,11 +97,15 @@ public class ImportWatchWalletFragment extends BaseFragment implements TextWatch
         if (mImportSoftWalletProvider != null) {
             switch (mImportSoftWalletProvider.currentCoinType()) {
                 case BTC:
-                    mBinding.imgCoinType.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.token_btc, null));
+                    mBinding.imgCoinType.setImageDrawable(
+                            ResourcesCompat.getDrawable(
+                                    getResources(), R.drawable.token_btc, null));
                     mBinding.editAddress.setHint(R.string.watch_tip);
                     break;
                 case ETH:
-                    mBinding.imgCoinType.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.token_eth, null));
+                    mBinding.imgCoinType.setImageDrawable(
+                            ResourcesCompat.getDrawable(
+                                    getResources(), R.drawable.token_eth, null));
                     mBinding.editAddress.setHint(R.string.watch_eth_tip);
                     break;
             }
@@ -128,23 +132,30 @@ public class ImportWatchWalletFragment extends BaseFragment implements TextWatch
                 }
                 rxPermissions
                         .request(Manifest.permission.CAMERA)
-                        .subscribe(granted -> {
-                            if (granted) { // Always true pre-M
-                                //If you have already authorized it, you can directly jump to the QR code scanning interface
-                                Intent intent2 = new Intent(getContext(), CaptureActivity.class);
-                                ZxingConfig config = new ZxingConfig();
-                                config.setPlayBeep(true);
-                                config.setShake(true);
-                                config.setDecodeBarCode(false);
-                                config.setFullScreenScan(true);
-                                config.setShowAlbum(false);
-                                config.setShowbottomLayout(false);
-                                intent2.putExtra(Constant.INTENT_ZXING_CONFIG, config);
-                                startActivityForResult(intent2, REQUEST_CODE);
-                            } else { // Oups permission denied
-                                Toast.makeText(getContext(), R.string.photopersion, Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                        .subscribe(
+                                granted -> {
+                                    if (granted) { // Always true pre-M
+                                        // If you have already authorized it, you can directly jump
+                                        // to the QR code scanning interface
+                                        Intent intent2 =
+                                                new Intent(getContext(), CaptureActivity.class);
+                                        ZxingConfig config = new ZxingConfig();
+                                        config.setPlayBeep(true);
+                                        config.setShake(true);
+                                        config.setDecodeBarCode(false);
+                                        config.setFullScreenScan(true);
+                                        config.setShowAlbum(false);
+                                        config.setShowbottomLayout(false);
+                                        intent2.putExtra(Constant.INTENT_ZXING_CONFIG, config);
+                                        startActivityForResult(intent2, REQUEST_CODE);
+                                    } else { // Oups permission denied
+                                        Toast.makeText(
+                                                        getContext(),
+                                                        R.string.photopersion,
+                                                        Toast.LENGTH_SHORT)
+                                                .show();
+                                    }
+                                });
                 break;
             case R.id.btn_import:
                 addressIsRight();
@@ -156,15 +167,17 @@ public class ImportWatchWalletFragment extends BaseFragment implements TextWatch
         String watchAddress = mBinding.editAddress.getText().toString().trim();
         try {
             List<Kwarg> argList = new ArrayList<>();
-            if (mImportSoftWalletProvider != null && mImportSoftWalletProvider.currentCoinType() != null) {
-                argList.add(new Kwarg("coin", mImportSoftWalletProvider.currentCoinType().coinName));
+            if (mImportSoftWalletProvider != null
+                    && mImportSoftWalletProvider.currentCoinType() != null) {
+                argList.add(
+                        new Kwarg("coin", mImportSoftWalletProvider.currentCoinType().coinName));
             }
             argList.add(new Kwarg("data", watchAddress));
             argList.add(new Kwarg("flag", "address"));
             Daemon.commands.callAttr("verify_legality", argList.toArray(new Object[0]));
         } catch (Exception e) {
             if (e.getMessage() != null) {
-                showToast(e.getMessage().replace("BaseException:", ""));
+                showToast(HardWareExceptions.getExceptionString(e));
             }
             e.printStackTrace();
             return;
@@ -194,42 +207,49 @@ public class ImportWatchWalletFragment extends BaseFragment implements TextWatch
         if (mHandlerScanCodeDisposable != null && !mHandlerScanCodeDisposable.isDisposed()) {
             mHandlerScanCodeDisposable.dispose();
         }
-        mHandlerScanCodeDisposable = Observable
-                .create((ObservableOnSubscribe<String>) emitter -> {
-                    MainSweepcodeBean.DataBean dataBean = new QRDecode().decodeAddress(content);
-                    if (null == dataBean) {
-                        emitter.onError(new RuntimeException("Parse failure"));
-                    } else {
-                        emitter.onNext(dataBean.getAddress());
-                        emitter.onComplete();
-                    }
-                })
-                .doOnSubscribe((s) -> {
-                    if (mBaseActivity != null) {
-                        mBaseActivity.showProgress();
-                    }
-                })
-                .doFinally(() -> {
-                    if (mBaseActivity != null) {
-                        mBaseActivity.dismissProgress();
-                    }
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(address -> {
-                    if (mBinding.editAddress != null) {
-                        mBinding.editAddress.setText(address);
-                    }
-                }, throwable -> {
-                    if (mBinding.editAddress != null) {
-                        mBinding.editAddress.setText(content);
-                    }
-                });
+        mHandlerScanCodeDisposable =
+                Observable.create(
+                                (ObservableOnSubscribe<String>)
+                                        emitter -> {
+                                            MainSweepcodeBean.DataBean dataBean =
+                                                    new QRDecode().decodeAddress(content);
+                                            if (null == dataBean) {
+                                                emitter.onError(
+                                                        new RuntimeException("Parse failure"));
+                                            } else {
+                                                emitter.onNext(dataBean.getAddress());
+                                                emitter.onComplete();
+                                            }
+                                        })
+                        .doOnSubscribe(
+                                (s) -> {
+                                    if (mBaseActivity != null) {
+                                        mBaseActivity.showProgress();
+                                    }
+                                })
+                        .doFinally(
+                                () -> {
+                                    if (mBaseActivity != null) {
+                                        mBaseActivity.dismissProgress();
+                                    }
+                                })
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                address -> {
+                                    if (mBinding.editAddress != null) {
+                                        mBinding.editAddress.setText(address);
+                                    }
+                                },
+                                throwable -> {
+                                    if (mBinding.editAddress != null) {
+                                        mBinding.editAddress.setText(content);
+                                    }
+                                });
     }
 
     @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-    }
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -249,10 +269,12 @@ public class ImportWatchWalletFragment extends BaseFragment implements TextWatch
     public void afterTextChanged(Editable s) {
         if (!TextUtils.isEmpty(s.toString())) {
             mBinding.btnImport.setEnabled(true);
-            mBinding.btnImport.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.btn_checked, null));
+            mBinding.btnImport.setBackground(
+                    ResourcesCompat.getDrawable(getResources(), R.drawable.btn_checked, null));
         } else {
             mBinding.btnImport.setEnabled(false);
-            mBinding.btnImport.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.btn_no_check, null));
+            mBinding.btnImport.setBackground(
+                    ResourcesCompat.getDrawable(getResources(), R.drawable.btn_no_check, null));
         }
     }
 

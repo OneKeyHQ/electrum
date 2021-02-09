@@ -29,6 +29,7 @@ import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.TransactionInfoBean;
 import org.haobtc.onekey.business.blockBrowser.BlockBrowserManager;
 import org.haobtc.onekey.constant.Vm;
+import org.haobtc.onekey.exception.HardWareExceptions;
 import org.haobtc.onekey.utils.Daemon;
 
 public class DetailTransactionActivity extends BaseActivity {
@@ -151,7 +152,7 @@ public class DetailTransactionActivity extends BaseActivity {
                                 e -> {
                                     e.printStackTrace();
                                     if (e.getMessage() != null) {
-                                        mToast(e.getMessage().replace("BaseException:", ""));
+                                        mToast(HardWareExceptions.getThrowString(e));
                                     }
                                 });
     }

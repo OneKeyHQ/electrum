@@ -46,6 +46,7 @@ import org.haobtc.onekey.event.ButtonRequestEvent;
 import org.haobtc.onekey.event.ChangePinEvent;
 import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.event.SecondEvent;
+import org.haobtc.onekey.exception.HardWareExceptions;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.ui.activity.VerifyPinActivity;
 import org.haobtc.onekey.ui.base.BaseActivity;
@@ -207,7 +208,7 @@ public class ReceiveHDActivity extends BaseActivity implements BusinessAsyncTask
             e.printStackTrace();
             Toast.makeText(
                             this,
-                            Objects.requireNonNull(e.getMessage()).replace("BaseException:", ""),
+                            Objects.requireNonNull(HardWareExceptions.getExceptionString(e)),
                             Toast.LENGTH_SHORT)
                     .show();
             return;

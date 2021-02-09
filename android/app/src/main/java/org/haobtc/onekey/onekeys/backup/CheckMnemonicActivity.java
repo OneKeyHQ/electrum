@@ -1,4 +1,7 @@
 package org.haobtc.onekey.onekeys.backup;
+
+import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME;
+
 import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -11,62 +14,73 @@ import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-
 import androidx.annotation.LayoutRes;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.event.BackupCompleteEvent;
+import org.haobtc.onekey.exception.HardWareExceptions;
 import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.utils.Daemon;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-
-import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_NAME;
 
 public class CheckMnemonicActivity extends BaseActivity {
 
     @BindView(R.id.text_word_one)
     TextView textWordOne;
+
     @BindView(R.id.red_group_one)
     RadioGroup redGroupOne;
+
     @BindView(R.id.text_word_two)
     TextView textWordTwo;
+
     @BindView(R.id.red_group_two)
     RadioGroup redGroupTwo;
+
     @BindView(R.id.text_word_three)
     TextView textWordThree;
+
     @BindView(R.id.red_group_three)
     RadioGroup redGroupThree;
+
     @BindView(R.id.btn_check)
     Button btnCheck;
+
     @BindView(R.id.one_line_1)
     RadioButton oneLine1;
+
     @BindView(R.id.one_line_2)
     RadioButton oneLine2;
+
     @BindView(R.id.one_line_3)
     RadioButton oneLine3;
+
     @BindView(R.id.two_line_1)
     RadioButton twoLine1;
+
     @BindView(R.id.two_line_2)
     RadioButton twoLine2;
+
     @BindView(R.id.two_line_3)
     RadioButton twoLine3;
+
     @BindView(R.id.three_line_1)
     RadioButton threeLine1;
+
     @BindView(R.id.three_line_2)
     RadioButton threeLine2;
+
     @BindView(R.id.three_line_3)
     RadioButton threeLine3;
+
     private String[] array;
     private String word1 = "";
     private String word2 = "";
@@ -84,11 +98,10 @@ public class CheckMnemonicActivity extends BaseActivity {
     public void initView() {
         ButterKnife.bind(this);
         SharedPreferences preferences = getSharedPreferences("", MODE_PRIVATE);
-        //Get current wallet name
+        // Get current wallet name
         loadWalletName = preferences.getString(CURRENT_SELECTED_WALLET_NAME, "");
         String mnemonic = getIntent().getStringExtra("mnemonic");
         array = mnemonic.split("\\s+");
-
     }
 
     @Override
@@ -99,66 +112,66 @@ public class CheckMnemonicActivity extends BaseActivity {
     }
 
     private void radioOnclick() {
-        redGroupOne.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                switch (checkedId) {
-                    case R.id.one_line_1:
-                        word1 = oneLine1.getText().toString();
-                        buttonStatus();
-                        break;
-                    case R.id.one_line_2:
-                        word1 = oneLine2.getText().toString();
-                        buttonStatus();
-                        break;
-                    case R.id.one_line_3:
-                        word1 = oneLine3.getText().toString();
-                        buttonStatus();
-                        break;
-
-                }
-            }
-        });
-        redGroupTwo.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                switch (checkedId) {
-                    case R.id.two_line_1:
-                        word2 = twoLine1.getText().toString();
-                        buttonStatus();
-                        break;
-                    case R.id.two_line_2:
-                        word2 = twoLine2.getText().toString();
-                        buttonStatus();
-                        break;
-                    case R.id.two_line_3:
-                        word2 = twoLine3.getText().toString();
-                        buttonStatus();
-                        break;
-
-                }
-            }
-        });
-        redGroupThree.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                switch (checkedId) {
-                    case R.id.three_line_1:
-                        word3 = threeLine1.getText().toString();
-                        buttonStatus();
-                        break;
-                    case R.id.three_line_2:
-                        word3 = threeLine2.getText().toString();
-                        buttonStatus();
-                        break;
-                    case R.id.three_line_3:
-                        word3 = threeLine3.getText().toString();
-                        buttonStatus();
-                        break;
-
-                }
-            }
-        });
+        redGroupOne.setOnCheckedChangeListener(
+                new RadioGroup.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(RadioGroup group, int checkedId) {
+                        switch (checkedId) {
+                            case R.id.one_line_1:
+                                word1 = oneLine1.getText().toString();
+                                buttonStatus();
+                                break;
+                            case R.id.one_line_2:
+                                word1 = oneLine2.getText().toString();
+                                buttonStatus();
+                                break;
+                            case R.id.one_line_3:
+                                word1 = oneLine3.getText().toString();
+                                buttonStatus();
+                                break;
+                        }
+                    }
+                });
+        redGroupTwo.setOnCheckedChangeListener(
+                new RadioGroup.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(RadioGroup group, int checkedId) {
+                        switch (checkedId) {
+                            case R.id.two_line_1:
+                                word2 = twoLine1.getText().toString();
+                                buttonStatus();
+                                break;
+                            case R.id.two_line_2:
+                                word2 = twoLine2.getText().toString();
+                                buttonStatus();
+                                break;
+                            case R.id.two_line_3:
+                                word2 = twoLine3.getText().toString();
+                                buttonStatus();
+                                break;
+                        }
+                    }
+                });
+        redGroupThree.setOnCheckedChangeListener(
+                new RadioGroup.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(RadioGroup group, int checkedId) {
+                        switch (checkedId) {
+                            case R.id.three_line_1:
+                                word3 = threeLine1.getText().toString();
+                                buttonStatus();
+                                break;
+                            case R.id.three_line_2:
+                                word3 = threeLine2.getText().toString();
+                                buttonStatus();
+                                break;
+                            case R.id.three_line_3:
+                                word3 = threeLine3.getText().toString();
+                                buttonStatus();
+                                break;
+                        }
+                    }
+                });
     }
 
     private void buttonStatus() {
@@ -169,7 +182,6 @@ public class CheckMnemonicActivity extends BaseActivity {
             btnCheck.setEnabled(false);
             btnCheck.setBackground(getDrawable(R.drawable.btn_no_check));
         }
-
     }
 
     private void titleList() {
@@ -181,11 +193,26 @@ public class CheckMnemonicActivity extends BaseActivity {
                 num = rand.nextInt(11) + 1;
             }
             listPos.add(num);
-            chooseWord.add(array[num - 1]);//choose 3 words
+            chooseWord.add(array[num - 1]); // choose 3 words
         }
-        textWordOne.setText(String.format("%s %s %s", getString(R.string.chooseword_left), listPos.get(0), getString(R.string.chooseword_right)));
-        textWordTwo.setText(String.format("%s %s %s", getString(R.string.chooseword_left), listPos.get(1), getString(R.string.chooseword_right)));
-        textWordThree.setText(String.format("%s %s %s", getString(R.string.chooseword_left), listPos.get(2), getString(R.string.chooseword_right)));
+        textWordOne.setText(
+                String.format(
+                        "%s %s %s",
+                        getString(R.string.chooseword_left),
+                        listPos.get(0),
+                        getString(R.string.chooseword_right)));
+        textWordTwo.setText(
+                String.format(
+                        "%s %s %s",
+                        getString(R.string.chooseword_left),
+                        listPos.get(1),
+                        getString(R.string.chooseword_right)));
+        textWordThree.setText(
+                String.format(
+                        "%s %s %s",
+                        getString(R.string.chooseword_left),
+                        listPos.get(2),
+                        getString(R.string.chooseword_right)));
         List<String> list1 = new ArrayList();
         for (int i = 0; i < 3; i++) {
             int num = rand.nextInt(12);
@@ -265,13 +292,18 @@ public class CheckMnemonicActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.btn_check:
-                String keyName = PreferencesManager.get(this, "Preferences", CURRENT_SELECTED_WALLET_NAME, "").toString();
-                if (chooseWord.get(0).equals(word1) && chooseWord.get(1).equals(word2) && chooseWord.get(2).equals(word3)) {
+                String keyName =
+                        PreferencesManager.get(
+                                        this, "Preferences", CURRENT_SELECTED_WALLET_NAME, "")
+                                .toString();
+                if (chooseWord.get(0).equals(word1)
+                        && chooseWord.get(1).equals(word2)
+                        && chooseWord.get(2).equals(word3)) {
                     try {
                         Daemon.commands.callAttr("delete_backup_info", keyName);
                     } catch (Exception e) {
                         e.printStackTrace();
-                        mToast(e.getMessage().replace("BaseException:", ""));
+                        mToast(HardWareExceptions.getExceptionString(e));
                         return;
                     }
                     EventBus.getDefault().post(new BackupCompleteEvent());
@@ -283,27 +315,31 @@ public class CheckMnemonicActivity extends BaseActivity {
         }
     }
 
-    //check Mnemonic Fail
+    // check Mnemonic Fail
     private void checkMnemonicFail(Context context, @LayoutRes int resource) {
-        //set see view
+        // set see view
         View view = View.inflate(context, resource, null);
         Dialog dialogBtoms = new Dialog(context, R.style.dialog);
-        view.findViewById(R.id.img_cancel).setOnClickListener(v -> {
-            dialogBtoms.dismiss();
-        });
-        view.findViewById(R.id.btn_check).setOnClickListener(v -> {
-            dialogBtoms.dismiss();
-        });
+        view.findViewById(R.id.img_cancel)
+                .setOnClickListener(
+                        v -> {
+                            dialogBtoms.dismiss();
+                        });
+        view.findViewById(R.id.btn_check)
+                .setOnClickListener(
+                        v -> {
+                            dialogBtoms.dismiss();
+                        });
         dialogBtoms.setContentView(view);
         Window window = dialogBtoms.getWindow();
-        //set pop_up size
-        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-        //set locate
+        // set pop_up size
+        window.setLayout(
+                WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        // set locate
         window.setGravity(Gravity.BOTTOM);
-        //set animal
+        // set animal
         window.setWindowAnimations(R.style.AnimBottom);
         dialogBtoms.setCanceledOnTouchOutside(true);
         dialogBtoms.show();
     }
-
 }

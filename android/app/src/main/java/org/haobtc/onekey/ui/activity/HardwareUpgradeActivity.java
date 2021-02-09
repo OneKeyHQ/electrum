@@ -17,6 +17,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import butterknife.BindView;
 import butterknife.OnClick;
 import cn.com.heaton.blelibrary.ble.Ble;
+import cn.com.heaton.blelibrary.ble.model.BleDevice;
 import com.google.common.base.Strings;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -212,6 +213,8 @@ public class HardwareUpgradeActivity extends BaseActivity {
         dealBundle(Objects.requireNonNull(getIntent().getExtras()));
         hardwareUpgradeFragment = new HardwareUpgradeFragment();
         startFragment(hardwareUpgradeFragment);
+        BleDevice bleDevice = Ble.getInstance().getBleDevice(mac);
+        Ble.getInstance().autoConnect(bleDevice, false);
     }
 
     private void dealBundle(Bundle bundle) {
@@ -369,7 +372,7 @@ public class HardwareUpgradeActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         task = null;
-        DfuServiceListenerHelper.registerProgressListener(this, dfuProgressListener);
+        DfuServiceListenerHelper.unregisterProgressListener(this, dfuProgressListener);
     }
 
     /** stm32固件升级成功回调 */
@@ -447,7 +450,7 @@ public class HardwareUpgradeActivity extends BaseActivity {
         }
 
         private void doUpdate(String path) {
-            EventBus.getDefault().postSticky(new UpdatingEvent());
+            EventBus.getDefault().post(new UpdatingEvent());
             File file = new File(path);
             PyEnv.setProgressReporter(this);
             PyResponse<Void> response = PyEnv.firmwareUpdate(path);

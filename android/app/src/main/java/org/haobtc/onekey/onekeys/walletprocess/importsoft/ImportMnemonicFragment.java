@@ -13,30 +13,27 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chaquo.python.PyObject;
 import com.google.common.base.Strings;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.haobtc.onekey.BuildConfig;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.adapter.SearchMnemonicAdapter;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.databinding.FragmentImportMnemonicBinding;
+import org.haobtc.onekey.exception.HardWareExceptions;
 import org.haobtc.onekey.onekeys.walletprocess.OnFinishViewCallBack;
 import org.haobtc.onekey.ui.base.BaseFragment;
 import org.haobtc.onekey.utils.Daemon;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * 使用助记词导入账户
@@ -45,7 +42,8 @@ import java.util.List;
  * @create 2021-01-17 12:44 PM
  */
 @Keep
-public class ImportMnemonicFragment extends BaseFragment implements View.OnFocusChangeListener, View.OnClickListener {
+public class ImportMnemonicFragment extends BaseFragment
+        implements View.OnFocusChangeListener, View.OnClickListener {
 
     private FragmentImportMnemonicBinding mBinding;
 
@@ -77,7 +75,10 @@ public class ImportMnemonicFragment extends BaseFragment implements View.OnFocus
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         mBinding = FragmentImportMnemonicBinding.inflate(inflater, container, false);
         init(mBinding.getRoot());
         return mBinding.getRoot();
@@ -98,10 +99,14 @@ public class ImportMnemonicFragment extends BaseFragment implements View.OnFocus
         if (mImportSoftWalletProvider != null) {
             switch (mImportSoftWalletProvider.currentCoinType()) {
                 case BTC:
-                    mBinding.imgCoinType.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.token_btc, null));
+                    mBinding.imgCoinType.setImageDrawable(
+                            ResourcesCompat.getDrawable(
+                                    getResources(), R.drawable.token_btc, null));
                     break;
                 case ETH:
-                    mBinding.imgCoinType.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.token_eth, null));
+                    mBinding.imgCoinType.setImageDrawable(
+                            ResourcesCompat.getDrawable(
+                                    getResources(), R.drawable.token_eth, null));
                     break;
             }
         }
@@ -113,45 +118,46 @@ public class ImportMnemonicFragment extends BaseFragment implements View.OnFocus
     }
 
     private void inits() {
-        //模糊匹配的助记词集合
+        // 模糊匹配的助记词集合
         searchWordList = new ArrayList<>();
         LinearLayoutManager manager = new LinearLayoutManager(getContext());
         manager.setOrientation(RecyclerView.HORIZONTAL);
         mBinding.reclSearchMnemonic.setLayoutManager(manager);
         searchMnemonicAdapter = new SearchMnemonicAdapter(searchWordList);
         mBinding.reclSearchMnemonic.setAdapter(searchMnemonicAdapter);
-        searchMnemonicAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                String word = searchWordList.get(position);
-                String switchWord = word.replaceAll(" ", "");
-                if (focus == 1) {
-                    mBinding.editOne.setText(switchWord);
-                } else if (focus == 2) {
-                    mBinding.editTwo.setText(switchWord);
-                } else if (focus == 3) {
-                    mBinding.editThree.setText(switchWord);
-                } else if (focus == 4) {
-                    mBinding.editFour.setText(switchWord);
-                } else if (focus == 5) {
-                    mBinding.editFive.setText(switchWord);
-                } else if (focus == 6) {
-                    mBinding.editSix.setText(switchWord);
-                } else if (focus == 7) {
-                    mBinding.editSeven.setText(switchWord);
-                } else if (focus == 8) {
-                    mBinding.editEight.setText(switchWord);
-                } else if (focus == 9) {
-                    mBinding.editNine.setText(switchWord);
-                } else if (focus == 10) {
-                    mBinding.editTen.setText(switchWord);
-                } else if (focus == 11) {
-                    mBinding.editEleven.setText(switchWord);
-                } else if (focus == 12) {
-                    mBinding.editTwelve.setText(switchWord);
-                }
-            }
-        });
+        searchMnemonicAdapter.setOnItemClickListener(
+                new BaseQuickAdapter.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                        String word = searchWordList.get(position);
+                        String switchWord = word.replaceAll(" ", "");
+                        if (focus == 1) {
+                            mBinding.editOne.setText(switchWord);
+                        } else if (focus == 2) {
+                            mBinding.editTwo.setText(switchWord);
+                        } else if (focus == 3) {
+                            mBinding.editThree.setText(switchWord);
+                        } else if (focus == 4) {
+                            mBinding.editFour.setText(switchWord);
+                        } else if (focus == 5) {
+                            mBinding.editFive.setText(switchWord);
+                        } else if (focus == 6) {
+                            mBinding.editSix.setText(switchWord);
+                        } else if (focus == 7) {
+                            mBinding.editSeven.setText(switchWord);
+                        } else if (focus == 8) {
+                            mBinding.editEight.setText(switchWord);
+                        } else if (focus == 9) {
+                            mBinding.editNine.setText(switchWord);
+                        } else if (focus == 10) {
+                            mBinding.editTen.setText(switchWord);
+                        } else if (focus == 11) {
+                            mBinding.editEleven.setText(switchWord);
+                        } else if (focus == 12) {
+                            mBinding.editTwelve.setText(switchWord);
+                        }
+                    }
+                });
     }
 
     public void initData() {
@@ -180,9 +186,9 @@ public class ImportMnemonicFragment extends BaseFragment implements View.OnFocus
         mBinding.editTen.setOnFocusChangeListener(this);
         mBinding.editEleven.setOnFocusChangeListener(this);
         mBinding.editTwelve.setOnFocusChangeListener(this);
-        //监听软键盘
+        // 监听软键盘
         registerKeyBoard();
-        //获取所有助记词
+        // 获取所有助记词
         getAllMnemonic();
     }
 
@@ -195,28 +201,38 @@ public class ImportMnemonicFragment extends BaseFragment implements View.OnFocus
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(metric);
         screenHeight = metric.heightPixels;
         mIsSoftKeyboardShowing = false;
-        mLayoutChangeListener = () -> {
-            if (getActivity() == null || getActivity().getWindow() == null) {
-                return;
-            }
-            //Determine the size of window visible area
-            Rect r = new Rect();
-            getActivity().getWindow().getDecorView().getWindowVisibleDisplayFrame(r);
-            //If the difference between screen height and window visible area height is greater than 1 / 3 of the whole screen height, it means that the soft keyboard is in display, otherwise, the soft keyboard is hidden.
-            int heightDifference = screenHeight - (r.bottom - r.top);
-            boolean isKeyboardShowing = heightDifference > screenHeight / 3;
+        mLayoutChangeListener =
+                () -> {
+                    if (getActivity() == null || getActivity().getWindow() == null) {
+                        return;
+                    }
+                    // Determine the size of window visible area
+                    Rect r = new Rect();
+                    getActivity().getWindow().getDecorView().getWindowVisibleDisplayFrame(r);
+                    // If the difference between screen height and window visible area height is
+                    // greater than 1 / 3 of the whole screen height, it means that the soft
+                    // keyboard is in display, otherwise, the soft keyboard is hidden.
+                    int heightDifference = screenHeight - (r.bottom - r.top);
+                    boolean isKeyboardShowing = heightDifference > screenHeight / 3;
 
-            //If the status of the soft keyboard was previously displayed, it is now closed, or it was previously closed, it is now displayed, it means that the status of the soft keyboard has changed
-            if ((mIsSoftKeyboardShowing && !isKeyboardShowing) || (!mIsSoftKeyboardShowing && isKeyboardShowing)) {
-                mIsSoftKeyboardShowing = isKeyboardShowing;
-                if (!mIsSoftKeyboardShowing) {
-                    mBinding.reclSearchMnemonic.setVisibility(View.GONE);
-                    mBinding.viewShow.setVisibility(View.GONE);
-                }
-            }
-        };
-        //Register layout change monitoring
-        getActivity().getWindow().getDecorView().getViewTreeObserver().addOnGlobalLayoutListener(mLayoutChangeListener);
+                    // If the status of the soft keyboard was previously displayed, it is now
+                    // closed, or it was previously closed, it is now displayed, it means that the
+                    // status of the soft keyboard has changed
+                    if ((mIsSoftKeyboardShowing && !isKeyboardShowing)
+                            || (!mIsSoftKeyboardShowing && isKeyboardShowing)) {
+                        mIsSoftKeyboardShowing = isKeyboardShowing;
+                        if (!mIsSoftKeyboardShowing) {
+                            mBinding.reclSearchMnemonic.setVisibility(View.GONE);
+                            mBinding.viewShow.setVisibility(View.GONE);
+                        }
+                    }
+                };
+        // Register layout change monitoring
+        getActivity()
+                .getWindow()
+                .getDecorView()
+                .getViewTreeObserver()
+                .addOnGlobalLayoutListener(mLayoutChangeListener);
     }
 
     private void getAllMnemonic() {
@@ -238,7 +254,7 @@ public class ImportMnemonicFragment extends BaseFragment implements View.OnFocus
             isSeeds = Daemon.commands.callAttr("is_seed", strNewseed);
         } catch (Exception e) {
             e.printStackTrace();
-            showToast(e.getMessage().replace("BaseException:", ""));
+            showToast(HardWareExceptions.getExceptionString(e));
             return;
         }
         if (isSeeds.toBoolean()) {
@@ -251,7 +267,8 @@ public class ImportMnemonicFragment extends BaseFragment implements View.OnFocus
     }
 
     private void past() {
-        ClipboardManager clipboard = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipboardManager clipboard =
+                (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
         if (clipboard != null) {
             ClipData data = clipboard.getPrimaryClip();
             if (data != null && data.getItemCount() > 0) {
@@ -319,7 +336,10 @@ public class ImportMnemonicFragment extends BaseFragment implements View.OnFocus
                 String strten = mBinding.editTen.getText().toString();
                 String streleven = mBinding.editEleven.getText().toString();
                 String strtwelve = mBinding.editTwelve.getText().toString();
-                String strNewseed = strone + " " + strtwo + " " + strthree + " " + strfour + " " + strfive + " " + strsix + " " + strseven + " " + streight + " " + strnine + " " + strten + " " + streleven + " " + strtwelve;
+                String strNewseed =
+                        strone + " " + strtwo + " " + strthree + " " + strfour + " " + strfive + " "
+                                + strsix + " " + strseven + " " + streight + " " + strnine + " "
+                                + strten + " " + streleven + " " + strtwelve;
                 isSeed(strNewseed);
                 break;
             case R.id.img_coin_type:
@@ -378,25 +398,33 @@ public class ImportMnemonicFragment extends BaseFragment implements View.OnFocus
     class TextWatcher1 implements TextWatcher {
 
         @Override
-        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        }
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 
         @Override
-        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-        }
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 
         @Override
         public void afterTextChanged(Editable editable) {
             searchWordList.clear();
-            if ((mBinding.editOne.length() > 0 && mBinding.editTwo.length() > 0 && mBinding.editThree.length() > 0 && mBinding.editFour.length() > 0)
-                    && mBinding.editFive.length() > 0 && mBinding.editSix.length() > 0 && mBinding.editSeven.length() > 0 && mBinding.editEight.length() > 0
-                    && mBinding.editNine.length() > 0 && mBinding.editTen.length() > 0 && mBinding.editEleven.length() > 0 && mBinding.editTwelve.length() > 0) {
+            if ((mBinding.editOne.length() > 0
+                            && mBinding.editTwo.length() > 0
+                            && mBinding.editThree.length() > 0
+                            && mBinding.editFour.length() > 0)
+                    && mBinding.editFive.length() > 0
+                    && mBinding.editSix.length() > 0
+                    && mBinding.editSeven.length() > 0
+                    && mBinding.editEight.length() > 0
+                    && mBinding.editNine.length() > 0
+                    && mBinding.editTen.length() > 0
+                    && mBinding.editEleven.length() > 0
+                    && mBinding.editTwelve.length() > 0) {
                 mBinding.btnRecovery.setEnabled(true);
-                mBinding.btnRecovery.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.btn_checked, null));
+                mBinding.btnRecovery.setBackground(
+                        ResourcesCompat.getDrawable(getResources(), R.drawable.btn_checked, null));
             } else {
                 mBinding.btnRecovery.setEnabled(false);
-                mBinding.btnRecovery.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.btn_no_check, null));
+                mBinding.btnRecovery.setBackground(
+                        ResourcesCompat.getDrawable(getResources(), R.drawable.btn_no_check, null));
             }
             if (!TextUtils.isEmpty(editable.toString())) {
                 for (int i = 0; i < seedList.size(); i++) {
@@ -413,7 +441,6 @@ public class ImportMnemonicFragment extends BaseFragment implements View.OnFocus
                 mBinding.viewShow.setVisibility(View.VISIBLE);
             }
             searchMnemonicAdapter.notifyDataSetChanged();
-
         }
     }
 

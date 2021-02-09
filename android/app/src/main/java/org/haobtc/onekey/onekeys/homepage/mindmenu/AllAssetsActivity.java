@@ -27,6 +27,7 @@ import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.business.wallet.BalanceManager;
 import org.haobtc.onekey.business.wallet.SystemConfigManager;
 import org.haobtc.onekey.business.wallet.bean.WalletBalanceBean;
+import org.haobtc.onekey.exception.HardWareExceptions;
 import org.haobtc.onekey.onekeys.homepage.process.HdWalletDetailActivity;
 
 public class AllAssetsActivity extends BaseActivity implements TextWatcher {
@@ -132,7 +133,7 @@ public class AllAssetsActivity extends BaseActivity implements TextWatcher {
                                 },
                                 e -> {
                                     tetNone.setVisibility(View.VISIBLE);
-                                    mToast(e.getMessage().replace("BaseException:", ""));
+                                    mToast(HardWareExceptions.getThrowString(e));
                                     e.printStackTrace();
                                 });
     }

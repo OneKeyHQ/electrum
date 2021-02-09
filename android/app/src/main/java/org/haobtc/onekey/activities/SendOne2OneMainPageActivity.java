@@ -1,5 +1,8 @@
 package org.haobtc.onekey.activities;
 
+import static org.haobtc.onekey.constant.Constant.CURRENT_CURRENCY_SYMBOL;
+import static org.haobtc.onekey.constant.Constant.WALLET_BALANCE;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -31,11 +34,12 @@ import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.LayoutRes;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import cn.com.heaton.blelibrary.ble.Ble;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.chaquo.python.Kwarg;
@@ -46,30 +50,6 @@ import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.bean.ZxingConfig;
 import com.yzq.zxinglibrary.common.Constant;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-import org.haobtc.onekey.R;
-import org.haobtc.onekey.activities.base.BaseActivity;
-import org.haobtc.onekey.activities.service.CommunicationModeSelector;
-import org.haobtc.onekey.adapter.ChoosePayAddressAdapter;
-import org.haobtc.onekey.bean.AddressEvent;
-import org.haobtc.onekey.bean.MakeTxResponseBean;
-import org.haobtc.onekey.bean.CurrentAddressDetail;
-import org.haobtc.onekey.bean.TransactionInfoBean;
-import org.haobtc.onekey.bean.TemporaryTxInfo;
-import org.haobtc.onekey.bean.HardwareFeatures;
-import org.haobtc.onekey.bean.MainNewWalletBean;
-import org.haobtc.onekey.bean.MainSweepcodeBean;
-import org.haobtc.onekey.event.FirstEvent;
-import org.haobtc.onekey.event.HandlerEvent;
-import org.haobtc.onekey.event.MainpageWalletEvent;
-import org.haobtc.onekey.event.SecondEvent;
-import org.haobtc.onekey.utils.Daemon;
-import org.haobtc.onekey.utils.IndicatorSeekBar;
-import org.json.JSONException;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -78,42 +58,73 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+import org.haobtc.onekey.R;
+import org.haobtc.onekey.activities.base.BaseActivity;
+import org.haobtc.onekey.activities.service.CommunicationModeSelector;
+import org.haobtc.onekey.adapter.ChoosePayAddressAdapter;
+import org.haobtc.onekey.bean.AddressEvent;
+import org.haobtc.onekey.bean.CurrentAddressDetail;
+import org.haobtc.onekey.bean.HardwareFeatures;
+import org.haobtc.onekey.bean.MainNewWalletBean;
+import org.haobtc.onekey.bean.MainSweepcodeBean;
+import org.haobtc.onekey.bean.MakeTxResponseBean;
+import org.haobtc.onekey.bean.TemporaryTxInfo;
+import org.haobtc.onekey.bean.TransactionInfoBean;
+import org.haobtc.onekey.event.FirstEvent;
+import org.haobtc.onekey.event.HandlerEvent;
+import org.haobtc.onekey.event.MainpageWalletEvent;
+import org.haobtc.onekey.event.SecondEvent;
+import org.haobtc.onekey.exception.HardWareExceptions;
+import org.haobtc.onekey.utils.Daemon;
+import org.haobtc.onekey.utils.IndicatorSeekBar;
+import org.json.JSONException;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import cn.com.heaton.blelibrary.ble.Ble;
-
-import static org.haobtc.onekey.constant.Constant.CURRENT_CURRENCY_SYMBOL;
-import static org.haobtc.onekey.constant.Constant.WALLET_BALANCE;
-
-public class SendOne2OneMainPageActivity extends BaseActivity implements View.OnClickListener, TextWatcher {
+public class SendOne2OneMainPageActivity extends BaseActivity
+        implements View.OnClickListener, TextWatcher {
     public static final String TAG = SendOne2OneMainPageActivity.class.getSimpleName();
+
     @BindView(R.id.edit_changeMoney)
     EditText editChangeMoney;
+
     @BindView(R.id.seek_bar)
     IndicatorSeekBar seekBar;
+
     @BindView(R.id.tv_indicator)
     TextView tvIndicator;
+
     @BindView(R.id.lin_btcAddress)
     LinearLayout mRootView;
+
     @BindView(R.id.tet_Table)
     TextView tetTable;
+
     @BindView(R.id.tet_WalletTable)
     TextView tetWalletTable;
+
     @BindView(R.id.tet_strunit)
     TextView tetStrunit;
+
     @BindView(R.id.btnRecommendFee)
     TextView btnRecommendFee;
+
     @BindView(R.id.testNowCanUse)
     TextView testNowCanUse;
+
     @BindView(R.id.text_blocks)
     EditText textBlocks;
+
     @BindView(R.id.linear_show)
     LinearLayout linearShow;
+
     @BindView(R.id.choose_text)
     TextView chooseText;
+
     @BindView(R.id.text_choose_num)
     TextView textChooseNum;
+
     private LinearLayout selectSend, selectSigNumLin;
     private ImageView buttonSweep, selectSigNum;
     private EditText editTextComments, editAddress;
@@ -173,7 +184,10 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         base_unit = preferences.getString("base_unit", "mBTC");
         strUnit = preferences.getString(CURRENT_CURRENCY_SYMBOL, "CNY");
-        wallet_type_to_sign = preferences.getString("wallet_type_to_sign", "");//1-n wallet  --> Direct signature and broadcast
+        wallet_type_to_sign =
+                preferences.getString(
+                        "wallet_type_to_sign",
+                        ""); // 1-n wallet  --> Direct signature and broadcast
         selectSend = findViewById(R.id.llt_select_wallet);
         LinearLayout linChooseUtxo = findViewById(R.id.lin_choose_utxo);
         tetMoneye = findViewById(R.id.tet_Money);
@@ -196,29 +210,31 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         init();
     }
 
-    //edittext focus change
+    // edittext focus change
     private void focusChange() {
         registerKeyBoard();
-        editAddress.setOnFocusChangeListener((v, hasFocus) -> {
-            if (!hasFocus) {
-                //getFeerate
-                getFeerate();
-                //button to gray or blue
-                changeButton();
-            }
-        });
-        tetamount.setOnFocusChangeListener((v, hasFocus) -> {
-            if (!hasFocus) {
-                //getFeerate
-                getFeerate();
-                //button to gray or blue
-                changeButton();
-            }
-        });
-        //btc to cny
+        editAddress.setOnFocusChangeListener(
+                (v, hasFocus) -> {
+                    if (!hasFocus) {
+                        // getFeerate
+                        getFeerate();
+                        // button to gray or blue
+                        changeButton();
+                    }
+                });
+        tetamount.setOnFocusChangeListener(
+                (v, hasFocus) -> {
+                    if (!hasFocus) {
+                        // getFeerate
+                        getFeerate();
+                        // button to gray or blue
+                        changeButton();
+                    }
+                });
+        // btc to cny
         TextWatcher1 textWatcher1 = new TextWatcher1();
         tetamount.addTextChangedListener(textWatcher1);
-        //cny to btc
+        // cny to btc
         TextWatcher2 textWatcher2 = new TextWatcher2();
         editChangeMoney.addTextChangedListener(textWatcher2);
         TextWatcher3 textWatcher3 = new TextWatcher3();
@@ -230,31 +246,41 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         getWindowManager().getDefaultDisplay().getMetrics(metric);
         screenHeight = metric.heightPixels;
         mIsSoftKeyboardShowing = false;
-        mLayoutChangeListener = () -> {
-            //Determine the size of window visible area
-            Rect r = new Rect();
-            getWindow().getDecorView().getWindowVisibleDisplayFrame(r);
-            //If the difference between screen height and window visible area height is greater than 1 / 3 of the whole screen height, it means that the soft keyboard is in display, otherwise, the soft keyboard is hidden.
-            int heightDifference = screenHeight - (r.bottom - r.top);
-            boolean isKeyboardShowing = heightDifference > screenHeight / 3;
-            //If the status of the soft keyboard was previously displayed, it is now closed, or it was previously closed, it is now displayed, it means that the status of the soft keyboard has changed
-            if ((mIsSoftKeyboardShowing && !isKeyboardShowing) || (!mIsSoftKeyboardShowing && isKeyboardShowing)) {
-                mIsSoftKeyboardShowing = isKeyboardShowing;
-                if (!mIsSoftKeyboardShowing) {
-                    //getFeerate
-                    getFeerate();
-                    //button to gray or blue
-                    changeButton();
-                }
-            }
-        };
-        //Register layout change monitoring
-        getWindow().getDecorView().getViewTreeObserver().addOnGlobalLayoutListener(mLayoutChangeListener);
+        mLayoutChangeListener =
+                () -> {
+                    // Determine the size of window visible area
+                    Rect r = new Rect();
+                    getWindow().getDecorView().getWindowVisibleDisplayFrame(r);
+                    // If the difference between screen height and window visible area height is
+                    // greater than 1 / 3 of the whole screen height, it means that the soft
+                    // keyboard is in display, otherwise, the soft keyboard is hidden.
+                    int heightDifference = screenHeight - (r.bottom - r.top);
+                    boolean isKeyboardShowing = heightDifference > screenHeight / 3;
+                    // If the status of the soft keyboard was previously displayed, it is now
+                    // closed, or it was previously closed, it is now displayed, it means that the
+                    // status of the soft keyboard has changed
+                    if ((mIsSoftKeyboardShowing && !isKeyboardShowing)
+                            || (!mIsSoftKeyboardShowing && isKeyboardShowing)) {
+                        mIsSoftKeyboardShowing = isKeyboardShowing;
+                        if (!mIsSoftKeyboardShowing) {
+                            // getFeerate
+                            getFeerate();
+                            // button to gray or blue
+                            changeButton();
+                        }
+                    }
+                };
+        // Register layout change monitoring
+        getWindow()
+                .getDecorView()
+                .getViewTreeObserver()
+                .addOnGlobalLayoutListener(mLayoutChangeListener);
     }
 
-    //button to gray or blue
+    // button to gray or blue
     private void changeButton() {
-        if (!TextUtils.isEmpty(editAddress.getText().toString()) && !TextUtils.isEmpty(tetamount.getText().toString())) {
+        if (!TextUtils.isEmpty(editAddress.getText().toString())
+                && !TextUtils.isEmpty(tetamount.getText().toString())) {
             buttonCreate.setEnabled(true);
             buttonCreate.setBackground(getDrawable(R.drawable.button_bk));
         } else {
@@ -285,14 +311,19 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         String strNowCny = intent.getStringExtra("strNowCny");
         if (!TextUtils.isEmpty(strNowCny)) {
             if (strNowCny.contains("≈")) {
-                testNowCanUse.setText(String.format("%s%s%s", getString(R.string.usable), strNowBtc, strNowCny));
+                testNowCanUse.setText(
+                        String.format("%s%s%s", getString(R.string.usable), strNowBtc, strNowCny));
             } else {
-                testNowCanUse.setText(String.format("%s%s≈ %s", getString(R.string.usable), strNowBtc, strNowCny));
+                testNowCanUse.setText(
+                        String.format(
+                                "%s%s≈ %s", getString(R.string.usable), strNowBtc, strNowCny));
             }
         } else {
             testNowCanUse.setText(String.format("%s%s", getString(R.string.usable), strNowBtc));
         }
-        onlickName = wallet_name;//if onlickName != wallet_name -->home page don't update transaction list
+        onlickName =
+                wallet_name; // if onlickName != wallet_name -->home page don't update transaction
+        // list
         tetWalletname.setText(wallet_name);
         String sendamount = intent.getStringExtra("sendamount");
         editAddress.setText(sendAdress);
@@ -305,7 +336,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 editChangeMoney.setText(strCNY);
             } else {
                 try {
-                    PyObject money = Daemon.commands.callAttr("get_exchange_currency", "base", strAmount);
+                    PyObject money =
+                            Daemon.commands.callAttr("get_exchange_currency", "base", strAmount);
                     editChangeMoney.setText(money.toString());
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -318,12 +350,12 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         } else {
             editTextComments.setText(String.format("%s", ""));
         }
-        //fee
+        // fee
         getFeeamont();
-        //InputMaxTextNum
+        // InputMaxTextNum
         setEditTextComments();
         payAddressMore();
-        //edittext focus change
+        // edittext focus change
         focusChange();
     }
 
@@ -333,7 +365,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             getDefaultFeeStatus = Daemon.commands.callAttr("get_default_fee_status");
         } catch (Exception e) {
             e.printStackTrace();
-            mToast(e.getMessage().replace("BaseException:", ""));
+            mToast(HardWareExceptions.getExceptionString(e));
             return;
         }
         if (getDefaultFeeStatus != null) {
@@ -344,8 +376,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 String strMaxTemp = strFeeamont.replaceAll(" ", "");
                 String strMax = strMaxTemp.split("\\.", 2)[0];
                 tjFee = Float.parseFloat(strMax);
-                intmaxFee = Float.parseFloat(strMax);//fee
-                recommendFee = (int) (intmaxFee * 10000);//Current progress
+                intmaxFee = Float.parseFloat(strMax); // fee
+                recommendFee = (int) (intmaxFee * 10000); // Current progress
                 seekBar.setMax((int) (intmaxFee * 20000));
                 seekBar.setProgress(recommendFee);
                 textBlocks.setText(String.valueOf(intmaxFee));
@@ -355,169 +387,206 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     }
 
     private void seekbarLatoutup() {
-        seekBar.setOnSeekBarChangeListener(new IndicatorSeekBar.OnIndicatorSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, float indicatorOffset) {
-            }
+        seekBar.setOnSeekBarChangeListener(
+                new IndicatorSeekBar.OnIndicatorSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(
+                            SeekBar seekBar, int progress, float indicatorOffset) {}
 
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {}
 
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                if (seekBar.getProgress() == 1) {
-                    intmaxFee = 1;
-                    textBlocks.setText(String.format("%s", intmaxFee));
-                } else {
-                    intmaxFee = Float.parseFloat(String.valueOf(seekBar.getProgress())) / 10000;
-                    textBlocks.setText(String.format("%s", intmaxFee));
-                }
-                //getFeerate
-                getFeerate();
-            }
-        });
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+                        if (seekBar.getProgress() == 1) {
+                            intmaxFee = 1;
+                            textBlocks.setText(String.format("%s", intmaxFee));
+                        } else {
+                            intmaxFee =
+                                    Float.parseFloat(String.valueOf(seekBar.getProgress())) / 10000;
+                            textBlocks.setText(String.format("%s", intmaxFee));
+                        }
+                        // getFeerate
+                        getFeerate();
+                    }
+                });
     }
 
     @Override
     public void initData() {
-        //get pay address
+        // get pay address
         mGeneratecode();
     }
 
     private void setEditTextComments() {
-        editTextComments.addTextChangedListener(new TextWatcher() {
-            CharSequence input;
+        editTextComments.addTextChangedListener(
+                new TextWatcher() {
+                    CharSequence input;
 
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                input = s;
-            }
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                        input = s;
+                    }
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                bytesCount.setText(String.format(Locale.CHINA, "%d/20", input.length()));
-                if (input.length() > 19) {
-                    Toast.makeText(SendOne2OneMainPageActivity.this, R.string.moreinput_text, Toast.LENGTH_SHORT).show();
-                }
-            }
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        bytesCount.setText(String.format(Locale.CHINA, "%d/20", input.length()));
+                        if (input.length() > 19) {
+                            Toast.makeText(
+                                            SendOne2OneMainPageActivity.this,
+                                            R.string.moreinput_text,
+                                            Toast.LENGTH_SHORT)
+                                    .show();
+                        }
+                    }
 
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
-        });
+                    @Override
+                    public void afterTextChanged(Editable s) {}
+                });
     }
 
     private void showPopupSelectWallet() {
-        //check address
+        // check address
         showDialogs(SendOne2OneMainPageActivity.this, R.layout.select_send_wallet_popwindow);
     }
 
     private void showDialogs(Context context, @LayoutRes int resource) {
-        //set see view
+        // set see view
         View view = View.inflate(context, resource, null);
         dialogBtom = new Dialog(context, R.style.dialog);
-        //cancel dialog
-        view.findViewById(R.id.cancel_select_wallet).setOnClickListener(v -> {
-            dialogBtom.cancel();
-        });
-        view.findViewById(R.id.bn_select_wallet).setOnClickListener(v -> {
-            try {
-                Daemon.commands.callAttr("load_wallet", wallet_name);
-                PyObject selectWallet = Daemon.commands.callAttr("select_wallet", wallet_name);
-                if (selectWallet != null) {
-                    Log.i("select_wallet", "select_wallet+++: " + selectWallet.toString());
-                    Gson gson = new Gson();
-                    MainNewWalletBean mainWheelBean = gson.fromJson(selectWallet.toString(), MainNewWalletBean.class);
-                    String balanceC = mainWheelBean.getBalance();
-                    if (!TextUtils.isEmpty(balanceC)) {
-                        if (balanceC.contains("(")) {
-                            String strNowBtc = balanceC.substring(0, balanceC.indexOf("("));
-                            String strNowCny = balanceC.substring(balanceC.indexOf("(") + 1, balanceC.indexOf(")"));
-                            if (strNowCny.contains("≈")) {
-                                testNowCanUse.setText(String.format("%s%s%s", getString(R.string.usable), strNowBtc, strNowCny));
-                            } else {
-                                testNowCanUse.setText(String.format("%s%s≈ %s", getString(R.string.usable), strNowBtc, strNowCny));
+        // cancel dialog
+        view.findViewById(R.id.cancel_select_wallet)
+                .setOnClickListener(
+                        v -> {
+                            dialogBtom.cancel();
+                        });
+        view.findViewById(R.id.bn_select_wallet)
+                .setOnClickListener(
+                        v -> {
+                            try {
+                                Daemon.commands.callAttr("load_wallet", wallet_name);
+                                PyObject selectWallet =
+                                        Daemon.commands.callAttr("select_wallet", wallet_name);
+                                if (selectWallet != null) {
+                                    Log.i(
+                                            "select_wallet",
+                                            "select_wallet+++: " + selectWallet.toString());
+                                    Gson gson = new Gson();
+                                    MainNewWalletBean mainWheelBean =
+                                            gson.fromJson(
+                                                    selectWallet.toString(),
+                                                    MainNewWalletBean.class);
+                                    String balanceC = mainWheelBean.getBalance();
+                                    if (!TextUtils.isEmpty(balanceC)) {
+                                        if (balanceC.contains("(")) {
+                                            String strNowBtc =
+                                                    balanceC.substring(0, balanceC.indexOf("("));
+                                            String strNowCny =
+                                                    balanceC.substring(
+                                                            balanceC.indexOf("(") + 1,
+                                                            balanceC.indexOf(")"));
+                                            if (strNowCny.contains("≈")) {
+                                                testNowCanUse.setText(
+                                                        String.format(
+                                                                "%s%s%s",
+                                                                getString(R.string.usable),
+                                                                strNowBtc,
+                                                                strNowCny));
+                                            } else {
+                                                testNowCanUse.setText(
+                                                        String.format(
+                                                                "%s%s≈ %s",
+                                                                getString(R.string.usable),
+                                                                strNowBtc,
+                                                                strNowCny));
+                                            }
+                                        } else {
+                                            testNowCanUse.setText(
+                                                    String.format(
+                                                            "%s%s",
+                                                            getString(R.string.usable), balanceC));
+                                        }
+                                    }
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                return;
                             }
-                        } else {
-                            testNowCanUse.setText(String.format("%s%s", getString(R.string.usable), balanceC));
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                return;
-            }
-            getFeerate();
-            tetWalletname.setText(wallet_name);
-            dialogBtom.cancel();
-        });
+                            getFeerate();
+                            tetWalletname.setText(wallet_name);
+                            dialogBtom.cancel();
+                        });
         RecyclerView recyPayaddress = view.findViewById(R.id.recy_payAdress);
-        choosePayAddressAdapetr = new ChoosePayAddressAdapter(SendOne2OneMainPageActivity.this, dataListName);
+        choosePayAddressAdapetr =
+                new ChoosePayAddressAdapter(SendOne2OneMainPageActivity.this, dataListName);
         recyPayaddress.setAdapter(choosePayAddressAdapetr);
         recyclerviewOnclick();
         dialogBtom.setContentView(view);
         Window window = dialogBtom.getWindow();
-        //set pop_up size
-        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
-        //set locate
+        // set pop_up size
+        window.setLayout(
+                WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        // set locate
         window.setGravity(Gravity.BOTTOM);
-        //set animal
+        // set animal
         window.setWindowAnimations(R.style.AnimBottom);
         dialogBtom.show();
     }
 
-    //getMorepayAddress
+    // getMorepayAddress
     private void payAddressMore() {
         Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    get_wallets_list = Daemon.commands.callAttr("list_wallets");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return;
-                }
-                if (get_wallets_list != null) {
-                    String toString = get_wallets_list.toString();
-                    JSONArray jsons = JSONObject.parseArray(toString);
-                    for (int i = 0; i < jsons.size(); i++) {
-                        Map jsonToMap = (Map) jsons.get(i);
-                        Set<String> keySets = jsonToMap.keySet();
-                        Iterator<String> ki = keySets.iterator();
-                        AddressEvent addressEvent = new AddressEvent();
-                        while (ki.hasNext()) {
-                            //get key
-                            String key = ki.next();
-                            String value = jsonToMap.get(key).toString();
-                            addressEvent.setName(key);
-                            addressEvent.setType(value);
-                            dataListName.add(addressEvent);
+        handler.postDelayed(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            get_wallets_list = Daemon.commands.callAttr("list_wallets");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            return;
+                        }
+                        if (get_wallets_list != null) {
+                            String toString = get_wallets_list.toString();
+                            JSONArray jsons = JSONObject.parseArray(toString);
+                            for (int i = 0; i < jsons.size(); i++) {
+                                Map jsonToMap = (Map) jsons.get(i);
+                                Set<String> keySets = jsonToMap.keySet();
+                                Iterator<String> ki = keySets.iterator();
+                                AddressEvent addressEvent = new AddressEvent();
+                                while (ki.hasNext()) {
+                                    // get key
+                                    String key = ki.next();
+                                    String value = jsonToMap.get(key).toString();
+                                    addressEvent.setName(key);
+                                    addressEvent.setType(value);
+                                    dataListName.add(addressEvent);
+                                }
+                            }
                         }
                     }
-                }
-            }
-        }, 200);
+                },
+                200);
     }
 
     private void recyclerviewOnclick() {
-        choosePayAddressAdapetr.setmOnItemClickListener(new ChoosePayAddressAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(int position) {
-                wallet_name_pos = position;
-                wallet_name = dataListName.get(position).getName();
-                waletType = dataListName.get(position).getType();
-                wallet_type_to_sign = waletType;
-            }
-        });
+        choosePayAddressAdapetr.setmOnItemClickListener(
+                new ChoosePayAddressAdapter.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(int position) {
+                        wallet_name_pos = position;
+                        wallet_name = dataListName.get(position).getName();
+                        waletType = dataListName.get(position).getType();
+                        wallet_type_to_sign = waletType;
+                    }
+                });
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.llt_select_wallet:
-                //check address
+                // check address
                 showPopupSelectWallet();
                 break;
             case R.id.linear_fee_select:
@@ -550,17 +619,23 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                     return;
                 }
                 if (TextUtils.isEmpty(errorMessage)) {
-                    //creatTrnsaction
+                    // creatTrnsaction
                     mCreatTransaction();
                 } else {
                     if (errorMessage.contains("invalid bitcoin address")) {
-                        Toast.makeText(this, getString(R.string.changeaddress), Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, getString(R.string.changeaddress), Toast.LENGTH_LONG)
+                                .show();
                     } else if (errorMessage.contains("Insufficient funds")) {
                         mToast(getString(R.string.wallet_insufficient));
                     } else if (errorMessage.contains("Please use unconfirmed coins")) {
-                        Toast.makeText(this, getString(R.string.please_open_unconfirmed), Toast.LENGTH_LONG).show();
+                        Toast.makeText(
+                                        this,
+                                        getString(R.string.please_open_unconfirmed),
+                                        Toast.LENGTH_LONG)
+                                .show();
                     } else if (errorMessage.contains("Please broadcast the parent tx")) {
-                        Toast.makeText(this, getString(R.string.broad_parent), Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, getString(R.string.broad_parent), Toast.LENGTH_LONG)
+                                .show();
                     } else {
                         mToast(errorMessage);
                     }
@@ -569,33 +644,40 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             case R.id.bn_sweep_one2noe:
                 rxPermissions
                         .request(Manifest.permission.CAMERA)
-                        .subscribe(granted -> {
-                            if (granted) { // Always true pre-M
-                                //If you have already authorized it, you can directly jump to the QR code scanning interface
-                                Intent intent2 = new Intent(this, CaptureActivity.class);
-                                ZxingConfig config = new ZxingConfig();
-                                config.setPlayBeep(true);
-                                config.setShake(true);
-                                config.setDecodeBarCode(false);
-                                config.setFullScreenScan(true);
-                                config.setShowAlbum(false);
-                                config.setShowbottomLayout(false);
-                                intent2.putExtra(Constant.INTENT_ZXING_CONFIG, config);
-                                startActivityForResult(intent2, REQUEST_CODE);
-                            } else { // Oups permission denied
-                                Toast.makeText(this, R.string.photopersion, Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                        .subscribe(
+                                granted -> {
+                                    if (granted) { // Always true pre-M
+                                        // If you have already authorized it, you can directly jump
+                                        // to the QR code scanning interface
+                                        Intent intent2 = new Intent(this, CaptureActivity.class);
+                                        ZxingConfig config = new ZxingConfig();
+                                        config.setPlayBeep(true);
+                                        config.setShake(true);
+                                        config.setDecodeBarCode(false);
+                                        config.setFullScreenScan(true);
+                                        config.setShowAlbum(false);
+                                        config.setShowbottomLayout(false);
+                                        intent2.putExtra(Constant.INTENT_ZXING_CONFIG, config);
+                                        startActivityForResult(intent2, REQUEST_CODE);
+                                    } else { // Oups permission denied
+                                        Toast.makeText(
+                                                        this,
+                                                        R.string.photopersion,
+                                                        Toast.LENGTH_SHORT)
+                                                .show();
+                                    }
+                                });
                 break;
             case R.id.bn_paste_one2one:
-                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipboardManager clipboard =
+                        (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                 if (clipboard != null) {
                     ClipData data = clipboard.getPrimaryClip();
                     if (data != null && data.getItemCount() > 0) {
                         editAddress.setText(data.getItemAt(0).getText());
-                        //getFeerate
+                        // getFeerate
                         getFeerate();
-                        //button to gray or blue
+                        // button to gray or blue
                         changeButton();
                     }
                 }
@@ -606,7 +688,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             case R.id.btnRecommendFee:
                 intmaxFee = tjFee;
                 if (!TextUtils.isEmpty(tetMoneye.getText().toString())) {
-                    //getFeerate
+                    // getFeerate
                     getFeerate();
                 }
                 seekBar.setProgress(recommendFee);
@@ -614,7 +696,8 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 break;
             case R.id.lin_choose_utxo:
                 if (!TextUtils.isEmpty(tetamount.getText().toString())) {
-                    Intent intent1 = new Intent(SendOne2OneMainPageActivity.this, ChooseUtxoActivity.class);
+                    Intent intent1 =
+                            new Intent(SendOne2OneMainPageActivity.this, ChooseUtxoActivity.class);
                     intent1.putExtra(WALLET_BALANCE, tetamount.getText().toString());
                     intent1.putStringArrayListExtra("utxoPositionData", utxoPosData);
                     intent1.putExtra("sumUtxoTotal", sumUtxo);
@@ -627,7 +710,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         }
     }
 
-    //creat transaction
+    // creat transaction
     private void mCreatTransaction() {
         straddress = editAddress.getText().toString();
         strAmount = tetamount.getText().toString();
@@ -653,14 +736,17 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         if (mktx != null) {
             String jsonObj = mktx.toString();
             Gson gson = new Gson();
-            MakeTxResponseBean makeTxResponseBean = gson.fromJson(jsonObj, MakeTxResponseBean.class);
+            MakeTxResponseBean makeTxResponseBean =
+                    gson.fromJson(jsonObj, MakeTxResponseBean.class);
             String rowtx = makeTxResponseBean.getTx();
             if (!TextUtils.isEmpty(rowtx)) {
                 if (wallet_type_to_sign.contains("1-") && TextUtils.isEmpty(hideRefresh)) {
                     try {
-                        PyObject txInfoFromRaw = Daemon.commands.callAttr("get_tx_info_from_raw", rowtx);
+                        PyObject txInfoFromRaw =
+                                Daemon.commands.callAttr("get_tx_info_from_raw", rowtx);
                         gson = new Gson();
-                        TransactionInfoBean transactionInfoBean = gson.fromJson(txInfoFromRaw.toString(), TransactionInfoBean.class);
+                        TransactionInfoBean transactionInfoBean =
+                                gson.fromJson(txInfoFromRaw.toString(), TransactionInfoBean.class);
                         outputAddr = transactionInfoBean.getOutputAddr();
                         fee = transactionInfoBean.getFee();
                     } catch (Exception e) {
@@ -672,14 +758,23 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                     } else {
                         EventBus.getDefault().post(new MainpageWalletEvent("22", wallet_name_pos));
                     }
-                    //1-n wallet  --> Direct signature and broadcast
-                    if ("1-1".equals(wallet_type_to_sign) && Ble.getInstance().getConnetedDevices().size() != 0) {
-                        String deviceId = Daemon.commands.callAttr("get_device_info").toString().replaceAll("\"", "");
+                    // 1-n wallet  --> Direct signature and broadcast
+                    if ("1-1".equals(wallet_type_to_sign)
+                            && Ble.getInstance().getConnetedDevices().size() != 0) {
+                        String deviceId =
+                                Daemon.commands
+                                        .callAttr("get_device_info")
+                                        .toString()
+                                        .replaceAll("\"", "");
                         SharedPreferences devices = getSharedPreferences("devices", MODE_PRIVATE);
                         String feature = devices.getString(deviceId, "");
                         if (!Strings.isNullOrEmpty(feature)) {
                             HardwareFeatures features = HardwareFeatures.objectFromData(feature);
-                            if (Ble.getInstance().getConnetedDevices().get(0).getBleName().equals(features.getBleName())) {
+                            if (Ble.getInstance()
+                                    .getConnetedDevices()
+                                    .get(0)
+                                    .getBleName()
+                                    .equals(features.getBleName())) {
                                 EventBus.getDefault().postSticky(new HandlerEvent());
                             }
                         }
@@ -696,7 +791,10 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                     } else {
                         EventBus.getDefault().post(new MainpageWalletEvent("22", wallet_name_pos));
                     }
-                    Intent intent = new Intent(SendOne2OneMainPageActivity.this, TransactionDetailsActivity.class);
+                    Intent intent =
+                            new Intent(
+                                    SendOne2OneMainPageActivity.this,
+                                    TransactionDetailsActivity.class);
                     intent.putExtra("tx_hash", rowtx);
                     intent.putExtra("keyValue", "A");
                     intent.putExtra("is_mine", true);
@@ -712,7 +810,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         }
     }
 
-    //get pay address
+    // get pay address
     private void mGeneratecode() {
         PyObject walletAddressShowUi = null;
         try {
@@ -724,11 +822,11 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         if (walletAddressShowUi != null) {
             String strCode = walletAddressShowUi.toString();
             Gson gson = new Gson();
-            CurrentAddressDetail currentAddressDetail = gson.fromJson(strCode, CurrentAddressDetail.class);
+            CurrentAddressDetail currentAddressDetail =
+                    gson.fromJson(strCode, CurrentAddressDetail.class);
             payAddress = currentAddressDetail.getAddr();
         }
     }
-
 
     private Runnable runnable = this::gotoConfirmOnHardware;
 
@@ -750,24 +848,27 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             // Scan QR code / barcode return
             if (data != null) {
                 String content = data.getStringExtra(Constant.CODED_CONTENT);
-//                Log.i("sendScanData", "on------: " + content);
+                //                Log.i("sendScanData", "on------: " + content);
                 if (!TextUtils.isEmpty(content)) {
                     PyObject parsePr = Daemon.commands.callAttr("parse_pr", content);
-//                    Log.i("sendScanData", "on------: " + parsePr);
+                    //                    Log.i("sendScanData", "on------: " + parsePr);
                     if (!TextUtils.isEmpty(parsePr.toString())) {
                         try {
-                            org.json.JSONObject jsonObject = new org.json.JSONObject(parsePr.toString());
+                            org.json.JSONObject jsonObject =
+                                    new org.json.JSONObject(parsePr.toString());
                             int type = jsonObject.getInt("type");
                             Gson gson = new Gson();
                             if (type == 1) {
-                                MainSweepcodeBean mainSweepcodeBean = gson.fromJson(parsePr.toString(), MainSweepcodeBean.class);
+                                MainSweepcodeBean mainSweepcodeBean =
+                                        gson.fromJson(parsePr.toString(), MainSweepcodeBean.class);
                                 MainSweepcodeBean.DataBean listData = mainSweepcodeBean.getData();
                                 String address = listData.getAddress();
                                 String sendAmount = listData.getAmount();
                                 String message = listData.getMessage();
                                 editAddress.setText(address);
                                 if (!TextUtils.isEmpty(sendAmount)) {
-                                    String amount = sendAmount.substring(0, sendAmount.indexOf(" "));
+                                    String amount =
+                                            sendAmount.substring(0, sendAmount.indexOf(" "));
                                     tetamount.setText(amount);
                                 }
                                 editTextComments.setText(message);
@@ -777,9 +878,9 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        //getFeerate
+                        // getFeerate
                         getFeerate();
-                        //button to gray or blue
+                        // button to gray or blue
                         changeButton();
                     }
                 }
@@ -788,15 +889,19 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             String language = preferences.getString("language", "Chinese");
             assert data != null;
             String chooseNum = data.getStringExtra("chooseNum");
-            utxoListDates = data.getStringExtra("listDates");//selected utxo data
+            utxoListDates = data.getStringExtra("listDates"); // selected utxo data
             utxoPosData = data.getStringArrayListExtra("UtxoPosData");
-            sumUtxo = data.getStringExtra("sumUtxo");//sum utxo
-            //getFeerate
+            sumUtxo = data.getStringExtra("sumUtxo"); // sum utxo
+            // getFeerate
             getFeerate();
             if ("English".equals(language)) {
-                textChooseNum.setText(String.format("%s%s", getString(R.string.selected), chooseNum));
+                textChooseNum.setText(
+                        String.format("%s%s", getString(R.string.selected), chooseNum));
             } else {
-                textChooseNum.setText(String.format("%s%s%s", getString(R.string.selected), chooseNum, getString(R.string.ge)));
+                textChooseNum.setText(
+                        String.format(
+                                "%s%s%s",
+                                getString(R.string.selected), chooseNum, getString(R.string.ge)));
             }
         }
     }
@@ -807,22 +912,26 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         super.onDestroy();
         EventBus.getDefault().unregister(this);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            getWindow().getDecorView().getViewTreeObserver().removeOnGlobalLayoutListener(mLayoutChangeListener);
+            getWindow()
+                    .getDecorView()
+                    .getViewTreeObserver()
+                    .removeOnGlobalLayoutListener(mLayoutChangeListener);
         } else {
-            getWindow().getDecorView().getViewTreeObserver().removeGlobalOnLayoutListener(mLayoutChangeListener);
+            getWindow()
+                    .getDecorView()
+                    .getViewTreeObserver()
+                    .removeGlobalOnLayoutListener(mLayoutChangeListener);
         }
     }
 
     @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-    }
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
         if (s.toString().contains(".")) {
             if (s.length() - 1 - s.toString().indexOf(".") > 7) {
-                s = s.toString().subSequence(0,
-                        s.toString().indexOf(".") + 8);
+                s = s.toString().subSequence(0, s.toString().indexOf(".") + 8);
                 tetamount.setText(s);
                 tetamount.setSelection(s.length());
             }
@@ -832,8 +941,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             tetamount.setText(s);
             tetamount.setSelection(2);
         }
-        if (s.toString().startsWith("0")
-                && s.toString().trim().length() > 1) {
+        if (s.toString().startsWith("0") && s.toString().trim().length() > 1) {
             if (!".".equals(s.toString().substring(1, 2))) {
                 tetamount.setText(s.subSequence(0, 1));
                 tetamount.setSelection(1);
@@ -851,7 +959,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 Log.i("pyObjectcommands", "---------: " + pyObject);
             } catch (Exception e) {
                 e.printStackTrace();
-                mToast(e.getMessage().replace("BaseException:", ""));
+                mToast(HardWareExceptions.getExceptionString(e));
             }
             if (pyObject != null) {
                 editChangeMoney.setText(pyObject.toString());
@@ -861,7 +969,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         }
     }
 
-    //get fee num
+    // get fee num
     private void getFeerate() {
         straddress = editAddress.getText().toString();
         strAmount = tetamount.getText().toString();
@@ -876,9 +984,17 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             try {
                 if (!TextUtils.isEmpty(utxoListDates)) {
                     Log.i("utxoListDates", "getFeerate:--- " + utxoListDates);
-                    getFeeByFeeRate = Daemon.commands.callAttr("get_fee_by_feerate", strPramas, strComment, intmaxFee, new Kwarg("customer", utxoListDates));
+                    getFeeByFeeRate =
+                            Daemon.commands.callAttr(
+                                    "get_fee_by_feerate",
+                                    strPramas,
+                                    strComment,
+                                    intmaxFee,
+                                    new Kwarg("customer", utxoListDates));
                 } else {
-                    getFeeByFeeRate = Daemon.commands.callAttr("get_fee_by_feerate", strPramas, strComment, intmaxFee);
+                    getFeeByFeeRate =
+                            Daemon.commands.callAttr(
+                                    "get_fee_by_feerate", strPramas, strComment, intmaxFee);
                 }
                 errorMessage = "";
             } catch (Exception e) {
@@ -910,13 +1026,14 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         }
     }
 
-    //Turn off soft keyboard, lose focus
+    // Turn off soft keyboard, lose focus
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {
             View v = getCurrentFocus();
             if (isShouldHideInput(v, ev)) {
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                InputMethodManager imm =
+                        (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 if (imm != null) {
                     assert v != null;
                     imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
@@ -932,7 +1049,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         return getWindow().superDispatchTouchEvent(ev) || onTouchEvent(ev);
     }
 
-    //Turn off soft keyboard, lose focus
+    // Turn off soft keyboard, lose focus
     public boolean isShouldHideInput(View v, MotionEvent event) {
         if ((v instanceof EditText)) {
             int[] leftTop = {0, 0};
@@ -941,8 +1058,10 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             int top = leftTop[1];
             int bottom = top + v.getHeight();
             int right = left + v.getWidth();
-            return !(event.getX() > left && event.getX() < right
-                    && event.getY() > top && event.getY() < bottom);
+            return !(event.getX() > left
+                    && event.getX() < right
+                    && event.getY() > top
+                    && event.getY() < bottom);
         }
         return false;
     }
@@ -957,8 +1076,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
 
     class TextWatcher1 implements TextWatcher {
         @Override
-        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        }
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 
         @Override
         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -972,7 +1090,9 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 if (flag) {
                     flag = false;
                     try {
-                        pyObject = Daemon.commands.callAttr("get_exchange_currency", "base", strAmount);
+                        pyObject =
+                                Daemon.commands.callAttr(
+                                        "get_exchange_currency", "base", strAmount);
                     } catch (Exception e) {
                         e.printStackTrace();
                         return;
@@ -996,8 +1116,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
 
     class TextWatcher2 implements TextWatcher {
         @Override
-        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        }
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 
         @Override
         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -1010,7 +1129,9 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 if (flag) {
                     flag = false;
                     try {
-                        pyObject = Daemon.commands.callAttr("get_exchange_currency", "fiat", editable.toString());
+                        pyObject =
+                                Daemon.commands.callAttr(
+                                        "get_exchange_currency", "fiat", editable.toString());
                     } catch (Exception e) {
                         e.printStackTrace();
                         return;
@@ -1034,8 +1155,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
 
     class TextWatcher3 implements TextWatcher {
         @Override
-        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        }
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 
         @Override
         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -1050,7 +1170,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
                 intmaxFee = 0;
             }
             seekBar.setProgress((int) (intmaxFee * 10000));
-            //getFeerate
+            // getFeerate
             getFeerate();
         }
     }
@@ -1058,8 +1178,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
     private void inputType(EditText edittext, CharSequence s) {
         if (s.toString().contains(".")) {
             if (s.length() - 1 - s.toString().indexOf(".") > 7) {
-                s = s.toString().subSequence(0,
-                        s.toString().indexOf(".") + 8);
+                s = s.toString().subSequence(0, s.toString().indexOf(".") + 8);
                 edittext.setText(s);
                 edittext.setSelection(s.length());
             }
@@ -1069,8 +1188,7 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
             edittext.setText(s);
             edittext.setSelection(2);
         }
-        if (s.toString().startsWith("0")
-                && s.toString().trim().length() > 1) {
+        if (s.toString().startsWith("0") && s.toString().trim().length() > 1) {
             if (!".".equals(s.toString().substring(1, 2))) {
                 edittext.setText(s.subSequence(0, 1));
                 edittext.setSelection(1);
@@ -1078,6 +1196,3 @@ public class SendOne2OneMainPageActivity extends BaseActivity implements View.On
         }
     }
 }
-
-
-

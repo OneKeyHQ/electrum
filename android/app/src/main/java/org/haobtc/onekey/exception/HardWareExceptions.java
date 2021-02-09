@@ -21,7 +21,7 @@ public enum HardWareExceptions {
     OPERATION_CANCEL("Operation cancelled", 19);
     private final String message;
     private final int code;
-    public static final String BASE_EXCEPTION_PREFIX = "BaseException:";
+    public static final String BASE_EXCEPTION_PREFIX = ":";
 
     HardWareExceptions(String message, int code) {
         this.message = message;
@@ -37,15 +37,32 @@ public enum HardWareExceptions {
     }
 
     /**
-     * 统一 replace "BaseException: "
+     * 统一 replace "BaseException: "，后端后续返回可能不是这个格式
      *
      * @param e 异常
      * @return
      */
     public static Exception exceptionConvert(Exception e) {
-        if (Objects.requireNonNull(e.getMessage()).startsWith(BASE_EXCEPTION_PREFIX)) {
-            return new Exception(e.getMessage().replaceFirst(BASE_EXCEPTION_PREFIX, ""));
+        if (Objects.requireNonNull(e.getMessage()).contains(BASE_EXCEPTION_PREFIX)) {
+            return new Exception(
+                    e.getMessage().substring(e.getMessage().indexOf(BASE_EXCEPTION_PREFIX) + 1));
         }
         return e;
+    }
+
+    public static String getExceptionString(Exception e) {
+        if (Objects.requireNonNull(e.getMessage()).contains(BASE_EXCEPTION_PREFIX)) {
+            return e.getMessage().substring(e.getMessage().indexOf(BASE_EXCEPTION_PREFIX) + 1);
+        }
+        return "";
+    }
+
+    public static String getThrowString(Throwable throwable) {
+        if (throwable.getMessage().contains(BASE_EXCEPTION_PREFIX)) {
+            return throwable
+                    .getMessage()
+                    .substring(throwable.getMessage().indexOf(BASE_EXCEPTION_PREFIX) + 1);
+        }
+        return "";
     }
 }

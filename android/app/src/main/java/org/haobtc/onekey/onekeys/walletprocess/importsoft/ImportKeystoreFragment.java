@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Optional;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.databinding.FragmentImportKeystoreBinding;
+import org.haobtc.onekey.exception.HardWareExceptions;
 import org.haobtc.onekey.onekeys.walletprocess.OnFinishViewCallBack;
 import org.haobtc.onekey.ui.base.BaseFragment;
 import org.haobtc.onekey.utils.Daemon;
@@ -219,7 +220,7 @@ public class ImportKeystoreFragment extends BaseFragment implements View.OnClick
                                     public void onError(
                                             @io.reactivex.rxjava3.annotations.NonNull Throwable e) {
                                         if (e.getMessage() != null) {
-                                            showToast(e.getMessage().replace("BaseException:", ""));
+                                            showToast(HardWareExceptions.getThrowString(e));
                                         }
                                         e.printStackTrace();
                                     }

@@ -62,7 +62,6 @@ public class OneKeyManageActivity extends BaseActivity {
     private void getKeyList() {
         deviceValue = new ArrayList<>();
         Map<String, ?> devicesAll = PreferencesManager.getAll(this, Constant.DEVICES);
-        ;
         // key
         for (Map.Entry<String, ?> entry : devicesAll.entrySet()) {
             String mapValue = (String) entry.getValue();

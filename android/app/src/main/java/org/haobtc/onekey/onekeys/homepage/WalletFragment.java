@@ -53,6 +53,7 @@ import org.haobtc.onekey.event.BleConnectionEx;
 import org.haobtc.onekey.event.FixWalletNameEvent;
 import org.haobtc.onekey.event.GotPassEvent;
 import org.haobtc.onekey.event.RefreshEvent;
+import org.haobtc.onekey.exception.HardWareExceptions;
 import org.haobtc.onekey.manager.BleManager;
 import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
@@ -493,7 +494,7 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
                         e.printStackTrace();
                         Toast.makeText(
                                         getActivity(),
-                                        e.getMessage().replace("BaseException:", ""),
+                                        HardWareExceptions.getExceptionString(e),
                                         Toast.LENGTH_SHORT)
                                 .show();
                         return;

@@ -30,6 +30,7 @@ import org.haobtc.onekey.bean.BalanceInfoDTO;
 import org.haobtc.onekey.bean.CreateWalletBean;
 import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.event.CreateSuccessEvent;
+import org.haobtc.onekey.exception.HardWareExceptions;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
 import org.haobtc.onekey.onekeys.walletprocess.OnWalletCheckListener;
@@ -205,7 +206,7 @@ public class RecoveryChooseWalletActivity extends BaseActivity implements OnWall
                             mIntent(HomeOneKeyActivity.class);
                         }
                     } catch (Exception e) {
-                        mToast(e.getMessage().replace("BaseException:", ""));
+                        mToast(HardWareExceptions.getExceptionString(e));
                     }
                 } else {
                     if (mHasExist) {

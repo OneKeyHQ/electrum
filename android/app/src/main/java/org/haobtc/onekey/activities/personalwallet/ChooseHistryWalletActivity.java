@@ -7,40 +7,40 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.recyclerview.widget.RecyclerView;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
-
+import java.util.ArrayList;
+import java.util.Map;
 import org.haobtc.onekey.MainActivity;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.adapter.ImportHistryWalletAdapter;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.event.InputHistoryWalletEvent;
+import org.haobtc.onekey.exception.HardWareExceptions;
 import org.haobtc.onekey.utils.Daemon;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Map;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-
 public class ChooseHistryWalletActivity extends BaseActivity {
 
     @BindView(R.id.img_backCreat)
     ImageView imgBackCreat;
+
     @BindView(R.id.recl_importWallet)
     RecyclerView reclImportWallet;
+
     @BindView(R.id.btn_Finish)
     Button btnFinish;
+
     @BindView(R.id.test_no_wallet)
     TextView testNoWallet;
+
     private String historyXpub;
     private ArrayList<InputHistoryWalletEvent> walletList;
     private ImportHistryWalletAdapter histryWalletAdapter;
@@ -61,12 +61,12 @@ public class ChooseHistryWalletActivity extends BaseActivity {
 
     @Override
     public void initData() {
-        listDates = new ArrayList<>();//choose wallet data list
+        listDates = new ArrayList<>(); // choose wallet data list
         walletList = new ArrayList<>();
         list = new ArrayList<>();
         histryWalletAdapter = new ImportHistryWalletAdapter(ChooseHistryWalletActivity.this, list);
         reclImportWallet.setAdapter(histryWalletAdapter);
-        //get histry wallet
+        // get histry wallet
         getHistryWallet();
     }
 
@@ -88,7 +88,8 @@ public class ChooseHistryWalletActivity extends BaseActivity {
                         String walletType = jsonObject.getString("walletType");
                         String xpubs = jsonObject.getString("xpubs");
                         String name = jsonObject.getString("walletName");
-                        InputHistoryWalletEvent inputHistoryWalletEvent = new InputHistoryWalletEvent();
+                        InputHistoryWalletEvent inputHistoryWalletEvent =
+                                new InputHistoryWalletEvent();
                         inputHistoryWalletEvent.setType(walletType);
                         inputHistoryWalletEvent.setXpubs(xpubs);
                         inputHistoryWalletEvent.setName(name);
@@ -98,7 +99,8 @@ public class ChooseHistryWalletActivity extends BaseActivity {
                     for (int i = 0; i < walletList.size(); i++) {
                         String c = walletList.get(i).getName();
                         if (list.size() > 0) {
-                            InputHistoryWalletEvent inputHistoryWalletEvent = new InputHistoryWalletEvent();
+                            InputHistoryWalletEvent inputHistoryWalletEvent =
+                                    new InputHistoryWalletEvent();
                             int index = 1;
                             for (int j = 0; j < list.size(); j++) {
                                 if (list.get(j).getName().contains(c)) {
@@ -117,7 +119,8 @@ public class ChooseHistryWalletActivity extends BaseActivity {
                                 list.add(inputHistoryWalletEvent);
                             }
                         } else {
-                            InputHistoryWalletEvent inputHistoryWalletEvent = new InputHistoryWalletEvent();
+                            InputHistoryWalletEvent inputHistoryWalletEvent =
+                                    new InputHistoryWalletEvent();
                             inputHistoryWalletEvent.setName(c);
                             inputHistoryWalletEvent.setType(walletList.get(i).getType());
                             inputHistoryWalletEvent.setXpubs(walletList.get(i).getXpubs());
@@ -179,7 +182,7 @@ public class ChooseHistryWalletActivity extends BaseActivity {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            mToast(e.getMessage().replace("BaseException:", ""));
+            mToast(HardWareExceptions.getExceptionString(e));
             return;
         }
         mIntent(MainActivity.class);

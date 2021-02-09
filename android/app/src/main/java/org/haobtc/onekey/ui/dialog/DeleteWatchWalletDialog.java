@@ -2,21 +2,17 @@ package org.haobtc.onekey.ui.dialog;
 
 import android.view.View;
 import android.widget.Toast;
-
+import butterknife.OnClick;
 import com.chaquo.python.Kwarg;
-
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.LoadOtherWalletEvent;
 import org.haobtc.onekey.event.SecondEvent;
+import org.haobtc.onekey.exception.HardWareExceptions;
 import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.ui.base.BaseDialogFragment;
 import org.haobtc.onekey.utils.Daemon;
-
-import java.util.Objects;
-
-import butterknife.OnClick;
 
 public class DeleteWatchWalletDialog extends BaseDialogFragment {
     @Override
@@ -38,12 +34,22 @@ public class DeleteWatchWalletDialog extends BaseDialogFragment {
     }
 
     private void deleteWatchWallet() {
-        String keyName = PreferencesManager.get(getActivity(), "Preferences", Constant.CURRENT_SELECTED_WALLET_NAME, "").toString();
+        String keyName =
+                PreferencesManager.get(
+                                getActivity(),
+                                "Preferences",
+                                Constant.CURRENT_SELECTED_WALLET_NAME,
+                                "")
+                        .toString();
         try {
             Daemon.commands.callAttr("delete_wallet", "111111", new Kwarg("name", keyName));
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(getActivity(), Objects.requireNonNull(e.getMessage()).replace("BaseException:", ""), Toast.LENGTH_SHORT).show();
+            Toast.makeText(
+                            getActivity(),
+                            HardWareExceptions.getExceptionString(e),
+                            Toast.LENGTH_SHORT)
+                    .show();
             return;
         }
         Toast.makeText(getActivity(), getString(R.string.delete_succse), Toast.LENGTH_SHORT).show();

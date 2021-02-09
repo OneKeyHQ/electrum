@@ -137,10 +137,8 @@ public class MyApplication extends Application implements ViewModelStoreOwner {
             return;
         }
         String info;
-        if (e.getMessage().contains("BaseException:")) {
-            info = e.getMessage().replace("BaseException:", "");
-        } else if (e.getMessage().contains("InvalidPassword:")) {
-            info = e.getMessage().replace("InvalidPassword:", "");
+        if (e.getMessage().contains(":")) {
+            info = e.getMessage().substring(e.getMessage().indexOf(":") + 1);
         } else {
             info = e.getMessage();
         }

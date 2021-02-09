@@ -1,4 +1,7 @@
 package org.haobtc.onekey.onekeys.dialog;
+
+import static org.haobtc.onekey.constant.Constant.SEARCH_DEVICE_MODE;
+
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -14,13 +17,16 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
-
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chaquo.python.PyObject;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -31,53 +37,59 @@ import org.haobtc.onekey.adapter.SearchMnemonicAdapter;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.GotPassEvent;
+import org.haobtc.onekey.exception.HardWareExceptions;
 import org.haobtc.onekey.onekeys.dialog.recovery.RecoveryChooseWalletActivity;
 import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
 import org.haobtc.onekey.ui.activity.SoftPassActivity;
 import org.haobtc.onekey.utils.Daemon;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-
-import static org.haobtc.onekey.constant.Constant.SEARCH_DEVICE_MODE;
-
 public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocusChangeListener {
 
     @BindView(R.id.edit_one)
     EditText editOne;
+
     @BindView(R.id.edit_two)
     EditText editTwo;
+
     @BindView(R.id.edit_three)
     EditText editThree;
+
     @BindView(R.id.edit_four)
     EditText editFour;
+
     @BindView(R.id.edit_five)
     EditText editFive;
+
     @BindView(R.id.edit_six)
     EditText editSix;
+
     @BindView(R.id.edit_seven)
     EditText editSeven;
+
     @BindView(R.id.edit_eight)
     EditText editEight;
+
     @BindView(R.id.edit_nine)
     EditText editNine;
+
     @BindView(R.id.edit_ten)
     EditText editTen;
+
     @BindView(R.id.edit_eleven)
     EditText editEleven;
+
     @BindView(R.id.edit_twelve)
     EditText editTwelve;
+
     @BindView(R.id.btn_recovery)
     Button btnRecovery;
+
     @BindView(R.id.view_show)
     View viewShow;
+
     @BindView(R.id.recl_search_mnemonic)
     RecyclerView reclSearchMnemonic;
+
     private ArrayList<String> searchWordList;
     private SearchMnemonicAdapter searchMnemonicAdapter;
     private int focus;
@@ -125,49 +137,50 @@ public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocu
     }
 
     private void inits() {
-        //监听软键盘
+        // 监听软键盘
         registerKeyBoard();
-        //获取所有助记词
+        // 获取所有助记词
         getAllMnemonic();
-        //模糊匹配的助记词集合
+        // 模糊匹配的助记词集合
         searchWordList = new ArrayList<>();
         LinearLayoutManager manager = new LinearLayoutManager(this);
         manager.setOrientation(RecyclerView.HORIZONTAL);
         reclSearchMnemonic.setLayoutManager(manager);
         searchMnemonicAdapter = new SearchMnemonicAdapter(searchWordList);
         reclSearchMnemonic.setAdapter(searchMnemonicAdapter);
-        searchMnemonicAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                String word = searchWordList.get(position);
-                String switchWord = word.replaceAll(" ", "");
-                if (focus == 1) {
-                    editOne.setText(switchWord);
-                } else if (focus == 2) {
-                    editTwo.setText(switchWord);
-                } else if (focus == 3) {
-                    editThree.setText(switchWord);
-                } else if (focus == 4) {
-                    editFour.setText(switchWord);
-                } else if (focus == 5) {
-                    editFive.setText(switchWord);
-                } else if (focus == 6) {
-                    editSix.setText(switchWord);
-                } else if (focus == 7) {
-                    editSeven.setText(switchWord);
-                } else if (focus == 8) {
-                    editEight.setText(switchWord);
-                } else if (focus == 9) {
-                    editNine.setText(switchWord);
-                } else if (focus == 10) {
-                    editTen.setText(switchWord);
-                } else if (focus == 11) {
-                    editEleven.setText(switchWord);
-                } else if (focus == 12) {
-                    editTwelve.setText(switchWord);
-                }
-            }
-        });
+        searchMnemonicAdapter.setOnItemClickListener(
+                new BaseQuickAdapter.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                        String word = searchWordList.get(position);
+                        String switchWord = word.replaceAll(" ", "");
+                        if (focus == 1) {
+                            editOne.setText(switchWord);
+                        } else if (focus == 2) {
+                            editTwo.setText(switchWord);
+                        } else if (focus == 3) {
+                            editThree.setText(switchWord);
+                        } else if (focus == 4) {
+                            editFour.setText(switchWord);
+                        } else if (focus == 5) {
+                            editFive.setText(switchWord);
+                        } else if (focus == 6) {
+                            editSix.setText(switchWord);
+                        } else if (focus == 7) {
+                            editSeven.setText(switchWord);
+                        } else if (focus == 8) {
+                            editEight.setText(switchWord);
+                        } else if (focus == 9) {
+                            editNine.setText(switchWord);
+                        } else if (focus == 10) {
+                            editTen.setText(switchWord);
+                        } else if (focus == 11) {
+                            editEleven.setText(switchWord);
+                        } else if (focus == 12) {
+                            editTwelve.setText(switchWord);
+                        }
+                    }
+                });
     }
 
     private void getAllMnemonic() {
@@ -189,35 +202,53 @@ public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocu
         getWindowManager().getDefaultDisplay().getMetrics(metric);
         screenHeight = metric.heightPixels;
         mIsSoftKeyboardShowing = false;
-        //Determine the size of window visible area
-        //If the difference between screen height and window visible area height is greater than 1 / 3 of the whole screen height, it means that the soft keyboard is in display, otherwise, the soft keyboard is hidden.
-        //If the status of the soft keyboard was previously displayed, it is now closed, or it was previously closed, it is now displayed, it means that the status of the soft keyboard has changed
-        ViewTreeObserver.OnGlobalLayoutListener mLayoutChangeListener = () -> {
-            //Determine the size of window visible area
-            Rect r = new Rect();
-            getWindow().getDecorView().getWindowVisibleDisplayFrame(r);
-            //If the difference between screen height and window visible area height is greater than 1 / 3 of the whole screen height, it means that the soft keyboard is in display, otherwise, the soft keyboard is hidden.
-            int heightDifference = screenHeight - (r.bottom - r.top);
-            boolean isKeyboardShowing = heightDifference > screenHeight / 3;
-            //If the status of the soft keyboard was previously displayed, it is now closed, or it was previously closed, it is now displayed, it means that the status of the soft keyboard has changed
-            if ((mIsSoftKeyboardShowing && !isKeyboardShowing) || (!mIsSoftKeyboardShowing && isKeyboardShowing)) {
-                mIsSoftKeyboardShowing = isKeyboardShowing;
-                if (!mIsSoftKeyboardShowing) {
-                    reclSearchMnemonic.setVisibility(View.GONE);
-                    viewShow.setVisibility(View.GONE);
-                }
-            }
-        };
-        //Register layout change monitoring
-        getWindow().getDecorView().getViewTreeObserver().addOnGlobalLayoutListener(mLayoutChangeListener);
+        // Determine the size of window visible area
+        // If the difference between screen height and window visible area height is greater than 1
+        // / 3 of the whole screen height, it means that the soft keyboard is in display, otherwise,
+        // the soft keyboard is hidden.
+        // If the status of the soft keyboard was previously displayed, it is now closed, or it was
+        // previously closed, it is now displayed, it means that the status of the soft keyboard has
+        // changed
+        ViewTreeObserver.OnGlobalLayoutListener mLayoutChangeListener =
+                () -> {
+                    // Determine the size of window visible area
+                    Rect r = new Rect();
+                    getWindow().getDecorView().getWindowVisibleDisplayFrame(r);
+                    // If the difference between screen height and window visible area height is
+                    // greater than 1 / 3 of the whole screen height, it means that the soft
+                    // keyboard is in display, otherwise, the soft keyboard is hidden.
+                    int heightDifference = screenHeight - (r.bottom - r.top);
+                    boolean isKeyboardShowing = heightDifference > screenHeight / 3;
+                    // If the status of the soft keyboard was previously displayed, it is now
+                    // closed, or it was previously closed, it is now displayed, it means that the
+                    // status of the soft keyboard has changed
+                    if ((mIsSoftKeyboardShowing && !isKeyboardShowing)
+                            || (!mIsSoftKeyboardShowing && isKeyboardShowing)) {
+                        mIsSoftKeyboardShowing = isKeyboardShowing;
+                        if (!mIsSoftKeyboardShowing) {
+                            reclSearchMnemonic.setVisibility(View.GONE);
+                            viewShow.setVisibility(View.GONE);
+                        }
+                    }
+                };
+        // Register layout change monitoring
+        getWindow()
+                .getDecorView()
+                .getViewTreeObserver()
+                .addOnGlobalLayoutListener(mLayoutChangeListener);
     }
 
     @Override
-    public void initData() {
-    }
+    public void initData() {}
 
     @SingleClick(value = 6000L)
-    @OnClick({R.id.img_back, R.id.btn_recovery, R.id.lin_hard_recovery, R.id.lin_import, R.id.img_copy_test})
+    @OnClick({
+        R.id.img_back,
+        R.id.btn_recovery,
+        R.id.lin_hard_recovery,
+        R.id.lin_import,
+        R.id.img_copy_test
+    })
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.img_back:
@@ -236,14 +267,18 @@ public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocu
                 String strten = editTen.getText().toString();
                 String streleven = editEleven.getText().toString();
                 String strtwelve = editTwelve.getText().toString();
-                seed = strone + " " + strtwo + " " + strthree + " " + strfour + " " + strfive + " " + strsix + " " + strseven + " " + streight + " " + strnine + " " + strten + " " + streleven + " " + strtwelve;
+                seed =
+                        strone + " " + strtwo + " " + strthree + " " + strfour + " " + strfive + " "
+                                + strsix + " " + strseven + " " + streight + " " + strnine + " "
+                                + strten + " " + streleven + " " + strtwelve;
                 isSeed(seed);
                 break;
             case R.id.lin_hard_recovery:
                 break;
             case R.id.lin_import:
                 Intent intent = new Intent(this, SearchDevicesActivity.class);
-                intent.putExtra(SEARCH_DEVICE_MODE, Constant.SearchDeviceMode.MODE_RECOVERY_WALLET_BY_COLD);
+                intent.putExtra(
+                        SEARCH_DEVICE_MODE, Constant.SearchDeviceMode.MODE_RECOVERY_WALLET_BY_COLD);
                 startActivity(intent);
                 finish();
                 break;
@@ -261,7 +296,7 @@ public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocu
             isSeeds = Daemon.commands.callAttr("is_seed", seed);
         } catch (Exception e) {
             e.printStackTrace();
-            mToast(e.getMessage().replace("BaseException:", ""));
+            mToast(HardWareExceptions.getExceptionString(e));
             return;
         }
         if (isSeeds.toBoolean()) {
@@ -275,7 +310,7 @@ public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocu
     public void onGotPass(GotPassEvent event) {
         Intent intent = new Intent(this, RecoveryChooseWalletActivity.class);
         intent.putExtra("password", event.getPassword());
-        intent.putExtra("recoverySeed",seed);
+        intent.putExtra("recoverySeed", seed);
         startActivity(intent);
     }
 
@@ -367,24 +402,33 @@ public class RecoverHdWalletActivity extends BaseActivity implements View.OnFocu
     class TextWatcher1 implements TextWatcher {
 
         @Override
-        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        }
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 
         @Override
-        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        }
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 
         @Override
         public void afterTextChanged(Editable editable) {
             searchWordList.clear();
-            if ((editOne.length() > 0 && editTwo.length() > 0 && editThree.length() > 0 && editFour.length() > 0)
-                    && editFive.length() > 0 && editSix.length() > 0 && editSeven.length() > 0 && editEight.length() > 0
-                    && editNine.length() > 0 && editTen.length() > 0 && editEleven.length() > 0 && editTwelve.length() > 0) {
+            if ((editOne.length() > 0
+                            && editTwo.length() > 0
+                            && editThree.length() > 0
+                            && editFour.length() > 0)
+                    && editFive.length() > 0
+                    && editSix.length() > 0
+                    && editSeven.length() > 0
+                    && editEight.length() > 0
+                    && editNine.length() > 0
+                    && editTen.length() > 0
+                    && editEleven.length() > 0
+                    && editTwelve.length() > 0) {
                 btnRecovery.setEnabled(true);
             } else {
                 btnRecovery.setEnabled(false);
             }
-            if (!TextUtils.isEmpty(editable.toString()) && seedList != null && seedList.size() > 0) {
+            if (!TextUtils.isEmpty(editable.toString())
+                    && seedList != null
+                    && seedList.size() > 0) {
                 for (int i = 0; i < seedList.size(); i++) {
                     if (seedList.get(i).replaceAll(" ", "").startsWith(editable.toString())) {
                         searchWordList.add(seedList.get(i));
