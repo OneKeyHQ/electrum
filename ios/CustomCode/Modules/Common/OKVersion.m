@@ -82,4 +82,9 @@
     return [version versionGreaterThen:self];
 }
 
++ (BOOL)versionString:(NSString *)A lessThen:(NSString *)B {
+    OKVersion *VerA = [OKVersion versionWithString:A];
+    OKVersion *VerB = [OKVersion versionWithString:B];
+    return [VerA versionLessThen:VerB];
+}
 @end

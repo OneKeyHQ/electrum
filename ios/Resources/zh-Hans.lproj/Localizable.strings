@@ -401,6 +401,7 @@
 "hardwareWallet.update.installing" = "固件安装中";
 "hardwareWallet.update.installed" = "固件升级完成";
 "hardwareWallet.update.warning" = "为避免设备重置，升级期间请勿离开 OneKey App，并确保硬件钱包始终处于解锁状态。";
+"hardwareWallet.update.needUpdate" = "当前硬件设备系统版本过低，请先升级。";
 
 "hardwareWallet.lanuage.desc" = "选择硬件设备的显示语言";
 

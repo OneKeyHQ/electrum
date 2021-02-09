@@ -19,6 +19,7 @@
 #import "OKDeviceChangePINController.h"
 #import "OKDeviceShowXPUBController.h"
 #import "OKDeviceListViewController.h"
+#import "OKVersion.h"
 
 static const NSUInteger backgroundColor = 0xF5F6F7;
 static const NSUInteger sectionTitleColor = 0x546370;
@@ -79,7 +80,7 @@ static const NSUInteger titleColorRed = 0xeb5757;
         } break;
 
         case OKHardwareListBaseCellTypeDeviceUpdate: {
-            [self ensureDeviceMatch:^{
+            [self ensureDeviceMatch:^(BOOL needUpdate) {
                 OKDeviceUpdateViewController *vc = [OKDeviceUpdateViewController controllerWithStoryboard];
                 vc.deviceId = self.deviceId;
                 [self.navigationController pushViewController:vc animated:YES];
@@ -87,7 +88,7 @@ static const NSUInteger titleColorRed = 0xeb5757;
         } break;
 
         case OKHardwareListBaseCellTypeDeviceVerify: {
-            [self ensureDeviceMatch:^{
+            [self ensureDeviceMatch:^(BOOL needUpdate) {
                 OKDeviceVerifyController *vc = [OKDeviceVerifyController controllerWithStoryboard];
                 vc.deviceId = self.deviceId;
                 OKWeakSelf(self)
@@ -101,7 +102,11 @@ static const NSUInteger titleColorRed = 0xeb5757;
         } break;
 
         case OKHardwareListBaseCellTypeDeviceChangePIN: {
-            [self ensureDeviceMatch:^{
+            [self ensureDeviceMatch:^(BOOL needUpdate) {
+                if (needUpdate) {
+                    [kTools tipMessage:MyLocalizedString(@"hardwareWallet.update.needUpdate", nil)];
+                    return;
+                }
                 UIViewController *vc = [[OKDeviceChangePINController alloc] init];
                 BaseNavigationController *nav = [[BaseNavigationController alloc] initWithRootViewController:vc];
                 [self presentViewController:nav animated:YES completion:nil];
@@ -109,14 +114,14 @@ static const NSUInteger titleColorRed = 0xeb5757;
         } break;
 
         case OKHardwareListBaseCellTypeDeviceShowXPUB: {
-            [self ensureDeviceMatch:^{
+            [self ensureDeviceMatch:^(BOOL needUpdate) {
                 UIViewController *vc = [OKDeviceShowXPUBController controllerWithStoryboard];
                 [self.navigationController pushViewController:vc animated:YES];
             }];
         } break;
 
         case OKHardwareListBaseCellTypeDeviceReset: {
-            [self ensureDeviceMatch:^{
+            [self ensureDeviceMatch:^(BOOL needUpdate) {
                 UIViewController *vc = [OKResetDeviceWarningViewController controllerWithStoryboard];
                 [self.navigationController pushViewController:vc animated:YES];
             }];
@@ -141,7 +146,7 @@ static const NSUInteger titleColorRed = 0xeb5757;
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
-- (void)ensureDeviceMatch:(void(^)(void))callback {
+- (void)ensureDeviceMatch:(void(^)(BOOL needUpdate))callback {
     if (!callback || !self.deviceId) {
         [kTools tipMessage:@"蓝牙连接失败"];
         self.loadingView.hidden = YES;
@@ -165,11 +170,12 @@ static const NSUInteger titleColorRed = 0xeb5757;
             }
             OKDeviceModel *device = [[OKDeviceModel alloc] initWithJson:json];
             NSString *currentDeviceId = device.deviceInfo.device_id;
+            NSString *currentDeviceVersion = device.deviceInfo.deviceSysVersion;
             [[OKDevicesManager sharedInstance] addDevices:device];
             dispatch_async(dispatch_get_main_queue(), ^{
-                self.loadingView.hidden = YES;
+                weakself.loadingView.hidden = YES;
                 if ([currentDeviceId isEqualToString:weakself.deviceId]) {
-                    callback();
+                    callback([weakself checkNeedUpdate:currentDeviceVersion]);
                     return;
                 } else {
                     [kTools tipMessage:MyLocalizedString(@"hardwareWallet.id_not_match", nil)];
@@ -226,6 +232,10 @@ static const NSUInteger titleColorRed = 0xeb5757;
 
 - (OKHardwareListBaseCellModel *)cellModelForIndexPath:(NSIndexPath *)indexPath {
     return self.listData[indexPath.section].cellModel[indexPath.row];
+}
+
+- (BOOL)checkNeedUpdate:(NSString *)ver {
+    return [OKVersion versionString:ver lessThen:@"2.0.4"];
 }
 
 - (void)reloadListData {

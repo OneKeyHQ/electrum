@@ -20,6 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)versionEqualTo:(OKVersion *)version; // Attention! : @"1.2.3" equal to @"1.2.3.0"
 - (BOOL)versionGreaterThen:(OKVersion *)version;
 - (BOOL)versionLessThen:(OKVersion *)version;
+
++ (BOOL)versionString:(NSString *)A lessThen:(NSString *)B;
 @end
 
 NS_ASSUME_NONNULL_END
