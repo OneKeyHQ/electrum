@@ -281,7 +281,6 @@
         });
         return;
     }
-
     if (jsonDict == nil) {
         [kTools tipMessage:MyLocalizedString(@"This operation is not supported if the current device is not active, or if the special device is backed up", nil)];
         [MBProgressHUD hideHUDForView:self.view animated:YES];
@@ -294,13 +293,24 @@
     
     if (deviceModel.bootloaderMode) {
         dispatch_async(dispatch_get_main_queue(), ^{
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
             OKDeviceUpdateViewController *vc = [OKDeviceUpdateViewController controllerWithStoryboard];
             vc.mode = OKDeviceFirmwareInstallModeBootloader;
             [weakself.navigationController pushViewController:vc animated:YES];
         });
         return;
     }
-    
+    BOOL isFirmwareH = [OKTools compareVersion:kIOSFirmwareSysVersin version2:deviceModel.deviceInfo.deviceSysVersion] == 1?YES:NO;
+    if (isFirmwareH) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
+            OKDeviceUpdateViewController *vc = [OKDeviceUpdateViewController controllerWithStoryboard];
+            vc.mode = OKDeviceFirmwareInstallModeNormal;
+            vc.deviceId = deviceModel.deviceInfo.device_id;
+            [weakself.navigationController pushViewController:vc animated:YES];
+        });
+        return;
+    }
     switch (_type) {
         case OKMatchingTypeNone:
         {

@@ -359,7 +359,9 @@ static dispatch_once_t once;
 - (void)subscribeToComplete:(CBCharacteristic *)ch{
     OKWeakSelf(self)
     if ([self isBluetoothLowVersion]) {
-        [MBProgressHUD hideHUDForView:weakself.OK_TopViewController.view animated:YES];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [MBProgressHUD hideHUDForView:weakself.OK_TopViewController.view animated:YES];
+        });
         if ([self.delegate respondsToSelector:@selector(subscribeComplete:characteristic:)]) {
             [self.delegate subscribeComplete:@{} characteristic:self.deviceCharacteristic];
         }
@@ -385,8 +387,15 @@ static dispatch_once_t once;
                  self.needConnectName = @"";
              }
          }else{
-             if ([self.delegate respondsToSelector:@selector(subscribeComplete:characteristic:)]) {
-                 [self.delegate subscribeComplete:jsonDict characteristic:ch];
+             if (jsonDict != nil) {
+                 if ([self.delegate respondsToSelector:@selector(subscribeComplete:characteristic:)]) {
+                     [self.delegate subscribeComplete:jsonDict characteristic:ch];
+                 }
+             }else{
+                 [self disconnectAllPeripherals];
+                 dispatch_async(dispatch_get_main_queue(), ^{
+                     [MBProgressHUD hideHUDForView:weakself.OK_TopViewController.view animated:YES];
+                 });
              }
          }
     });

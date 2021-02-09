@@ -37,7 +37,7 @@ typedef enum {
 #define kDEVICEINFOSERVICE                   @"Device Information"
 #define kIOSMINIMUMBLUETOOTHVERSION          @"1.1.8"
 #define kBleUpdatedURL                       @"https://firmware.onekey.so/"
-
+#define kIOSFirmwareSysVersin                @"2.0.4"
 @interface OKPeripheralInfo : NSObject
 
 @property (nonatomic, strong) NSNumber     *RSSI;
