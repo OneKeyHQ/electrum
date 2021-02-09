@@ -61,6 +61,7 @@ public class RecoveryChooseWalletActivity extends BaseActivity implements OnWall
     private RecoveryWalletInfoAdapter mRecoveryWalletInfoAdapter;
     private RecoveryWalletDerivedInfoAdapter mRecoveryWalletDerivedInfoAdapter;
     private boolean mHasExist;
+    private boolean mResponse = false;
 
     @Override
     public int getLayoutId() {
@@ -100,6 +101,7 @@ public class RecoveryChooseWalletActivity extends BaseActivity implements OnWall
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 walletBalances -> {
+                                    mResponse = true;
                                     if (loadedWallet == null) {
                                         return;
                                     }
@@ -214,9 +216,11 @@ public class RecoveryChooseWalletActivity extends BaseActivity implements OnWall
                 }
             }
         } else if (view.getId() == R.id.img_back) {
-            PyEnv.cancelRecovery();
-            PyEnv.cancelPinInput();
-            PyEnv.cancelAll();
+            if (!mResponse) {
+                PyEnv.cancelRecovery();
+                PyEnv.cancelPinInput();
+                PyEnv.cancelAll();
+            }
             finish();
         }
     }
