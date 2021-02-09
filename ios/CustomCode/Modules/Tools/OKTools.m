@@ -89,6 +89,11 @@
             view = nil;
         });)
 }
+- (void)debugTipMessage:(NSString *)msg {
+#ifdef DEBUG
+    [self tipMessage:[@"DEBUG: " stringByAppendingString:msg]];
+#endif
+}
 
 - (NSString *)immutableUUID { // 不可变的UUID
     if (!_immutableUUID) {
@@ -138,11 +143,11 @@
     NSString *tempStr = @"";
     NSScanner *scanner = [NSScanner scannerWithString:string];
     NSCharacterSet *numbers = [NSCharacterSet characterSetWithCharactersInString:@"0123456789"];
-    
+
     while (![scanner isAtEnd]) {
         // Throw away characters before the first number.
         [scanner scanUpToCharactersFromSet:numbers intoString:NULL];
-        
+
         // Collect numbers.
         [scanner scanCharactersFromSet:numbers intoString:&tempStr];
         if (tempStr != nil) {
@@ -153,7 +158,7 @@
     }
     // Result.
     int number = [numberString intValue];
-    
+
     return number;
 }
 

@@ -168,6 +168,9 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
         cell = [[OKDeviceUpdateCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID];
     }
     cell.updateType = [cellData[@"updateType"] integerValue];
+    if (cell.updateType == OKDeviceUpdateTypeAlreadyUpToDate) {
+        return cell;
+    }
     cell.versionDesc = cellData[@"versionDesc"];
     cell.updateDesc = cellData[@"updateDesc"];
     cell.updateUrl = cellData[@"url"];
@@ -249,6 +252,12 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
         }];
     }
 
+
+    if (!cellsData.count) {
+        [cellsData addObject:@{
+            @"updateType": @(OKDeviceUpdateTypeAlreadyUpToDate),
+        }];
+    }
     self.cellsData = cellsData;
     [self.tableView reloadData];
 }
