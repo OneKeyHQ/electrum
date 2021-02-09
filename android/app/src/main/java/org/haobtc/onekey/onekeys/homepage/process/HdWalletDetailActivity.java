@@ -319,12 +319,18 @@ public class HdWalletDetailActivity extends BaseActivity {
                                 "")
                         .toString();
         Disposable subscribe =
-                Single.fromCallable(
-                                () -> {
-                                    PyResponse<Void> response =
-                                            PyEnv.deleteWallet("", keyName, false);
-                                    return response.getErrors();
-                                })
+                Single.create(
+                                (SingleOnSubscribe<String>)
+                                        emitter -> {
+                                            PyResponse<Void> response =
+                                                    PyEnv.deleteWallet("", keyName, false);
+                                            if (Strings.isNullOrEmpty(response.getErrors())) {
+                                                emitter.onSuccess("");
+                                            } else {
+                                                emitter.onError(
+                                                        new RuntimeException(response.getErrors()));
+                                            }
+                                        })
                         .doOnSubscribe(disposable -> showProgress())
                         .doFinally(this::dismissProgress)
                         .subscribeOn(Schedulers.io())
@@ -334,25 +340,20 @@ public class HdWalletDetailActivity extends BaseActivity {
                                     if (dialogFragment != null) {
                                         dialogFragment.dismiss();
                                     }
-                                    if (Strings.isNullOrEmpty(error)) {
-                                        PreferencesManager.remove(this, Constant.WALLETS, keyName);
-                                        EventBus.getDefault().post(new LoadOtherWalletEvent());
-                                        finish();
-                                        Toast.makeText(
-                                                        this,
-                                                        R.string.delete_succse,
-                                                        Toast.LENGTH_SHORT)
-                                                .show();
-                                    } else {
-                                        Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
-                                    }
+                                    PreferencesManager.remove(this, Constant.WALLETS, keyName);
+                                    EventBus.getDefault().post(new LoadOtherWalletEvent());
+                                    finish();
+                                    Toast.makeText(this, R.string.delete_succse, Toast.LENGTH_SHORT)
+                                            .show();
                                 },
-                                throwable ->
-                                        Toast.makeText(
-                                                        this,
-                                                        R.string.hint_unknown_error,
-                                                        Toast.LENGTH_SHORT)
-                                                .show());
+                                throwable -> {
+                                    if (dialogFragment != null) {
+                                        dialogFragment.dismiss();
+                                    }
+                                    Toast.makeText(this, throwable.getMessage(), Toast.LENGTH_SHORT)
+                                            .show();
+                                    throwable.printStackTrace();
+                                });
         mCompositeDisposable.add(subscribe);
     }
 
@@ -628,30 +629,30 @@ public class HdWalletDetailActivity extends BaseActivity {
                                 "")
                         .toString();
         Disposable subscribe =
-                Single.fromCallable(
-                                () -> {
-                                    PyResponse<Void> response =
-                                            PyEnv.deleteWallet(password, keyName, false);
-                                    return response.getErrors();
-                                })
+                Single.create(
+                                (SingleOnSubscribe<String>)
+                                        emitter -> {
+                                            PyResponse<Void> response =
+                                                    PyEnv.deleteWallet(password, keyName, false);
+                                            if (Strings.isNullOrEmpty(response.getErrors())) {
+                                                emitter.onSuccess("");
+                                            } else {
+                                                emitter.onError(
+                                                        new RuntimeException(response.getErrors()));
+                                            }
+                                        })
                         .doOnSubscribe(disposable -> showProgress())
                         .doFinally(this::dismissProgress)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 error -> {
-                                    if (Strings.isNullOrEmpty(error)) {
-                                        onDeleteSuccess(keyName);
-                                    } else {
-                                        mlToast(error);
-                                    }
+                                    onDeleteSuccess(keyName);
                                 },
-                                throwable ->
-                                        Toast.makeText(
-                                                        this,
-                                                        R.string.hint_unknown_error,
-                                                        Toast.LENGTH_SHORT)
-                                                .show());
+                                throwable -> {
+                                    mlToast(throwable.getMessage());
+                                    throwable.printStackTrace();
+                                });
         mCompositeDisposable.add(subscribe);
     }
 
