@@ -3838,7 +3838,7 @@ class AndroidCommands(commands.Commands):
             all_balance = Decimal("0")
             all_wallet_info = []
             for wallet in self.daemon.get_wallets().values():
-                wallet_info = {"name": wallet.get_name()}
+                wallet_info = {"name": wallet.get_name(), "label": str(wallet)}
                 coin = self._detect_wallet_coin(wallet)
                 if coin in self.coins:
                     checksum_from_address = self.pywalib.web3.toChecksumAddress(wallet.get_addresses()[0])
