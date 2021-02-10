@@ -75,45 +75,32 @@ class TrezorKeyStore(Hardware_KeyStore):
     def decrypt_message(self, sequence, message, password):
         raise UserFacingException(_('Encryption and decryption are not implemented by {}').format(self.device))
 
-    def verify_message(self, address, message, sig):
+    def wallet_pair_with_hw(self):
         if not self.plugin.client:
             raise Exception("client is None")
-        xpub = self.xpub
         derivation = self.get_derivation_prefix()
-        if not self.plugin.force_pair_with_xpub(self.plugin.client, xpub, derivation):
+        if not self.plugin.force_pair_with_xpub(self.plugin.client, self.xpub, derivation):
             raise Exception("Can't Pair With You Device")
+
+    def verify_message(self, address, message, sig):
+        self.wallet_pair_with_hw()
         verify = self.plugin.client.verify_message(address, message, sig)
         return verify
 
     def verify_eth_message(self, address, message, sig):
-        if not self.plugin.client:
-            raise Exception("client is None")
-        xpub = self.xpub
-        derivation = self.get_derivation_prefix()
-        if not self.plugin.force_pair_with_xpub(self.plugin.client, xpub, derivation):
-            raise Exception("Can't Pair With You Device")
+        self.wallet_pair_with_hw()
         verify = self.plugin.client.verify_eth_message(address, message, sig)
         return verify
 
     def sign_message(self, sequence, message, password, txin_type=None):
-        if not self.plugin.client:
-            raise Exception("client is None")
-        xpub = self.xpub
-        derivation = self.get_derivation_prefix()
-        if not self.plugin.force_pair_with_xpub(self.plugin.client, xpub, derivation):
-            raise Exception("Can't Pair With You Device")
+        self.wallet_pair_with_hw()
         address_path = self.get_derivation_prefix() + "/%d/%d" % sequence
         script_type = self.plugin.get_trezor_input_script_type(txin_type)
         msg_sig = self.plugin.client.sign_message(address_path, message, script_type=script_type)
         return msg_sig.signature
 
     def sign_eth_message(self, sequence, message, password):
-        if not self.plugin.client:
-            raise Exception("client is None")
-        xpub = self.xpub
-        derivation = self.get_derivation_prefix()
-        if not self.plugin.force_pair_with_xpub(self.plugin.client, xpub, derivation):
-            raise Exception("Can't Pair With You Device")
+        self.wallet_pair_with_hw()
         address_path = self.get_derivation_prefix() + "/%d/%d" % sequence
         msg_sig = self.plugin.client.sign_eth_message(address_path, message)
         return msg_sig.signature
