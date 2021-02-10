@@ -703,6 +703,7 @@ class AndroidCommands(commands.Commands):
         if storage:
             if "btc" == coin:
                 wallet = Wallet(db, storage, config=self.config)
+                wallet.set_derived_master_xpub(self.hw_info["xpub"])
             else:
                 wallet = Standard_Eth_Wallet(db, storage, config=self.config, index=index)
             self.check_exist_file(wallet)
@@ -820,7 +821,7 @@ class AndroidCommands(commands.Commands):
             )
             if len(self.hw_info) != 0:
                 bip39_path = self.get_coin_derived_path(self.hw_info["account_id"], coin=coin)
-                self.update_devired_wallet_info(bip39_path, self.hw_info["xpub"], name, coin)
+                self.update_devired_wallet_info(bip39_path, self.hw_info["xpub"] + coin.lower(), name, coin)
             return wallet_name
         except BaseException as e:
             raise e
@@ -2299,7 +2300,7 @@ class AndroidCommands(commands.Commands):
         :return: xpub as string
         """
         xpub = self.get_xpub_from_hw(path=path, _type="p2wpkh", coin=coin)
-        list_info = self.get_derived_list(xpub)
+        list_info = self.get_derived_list(xpub + coin.lower())
         self.hw_info["xpub"] = xpub
         if list_info is None:
             self.hw_info["account_id"] = 0
@@ -3155,7 +3156,7 @@ class AndroidCommands(commands.Commands):
                 if coin == "btc":
                     wallet.start_network(self.daemon.network)
                 self.recovery_wallets[new_name] = self.update_recovery_wallet(
-                    xpubs, wallet, self.get_coin_derived_path(i, coin), name, coin
+                    xpubs + coin.lower(), wallet, self.get_coin_derived_path(i, coin), name, coin
                 )
                 self.wizard = None
         except Exception as e:
@@ -3410,13 +3411,22 @@ class AndroidCommands(commands.Commands):
             num = len(self.derived_info[xpub])
         return num
 
-    def delete_devired_wallet_info(self, wallet_obj):
-        derivation = wallet_obj.keystore.get_derivation_prefix()
-        account_id = int(derivation.split("/")[ACCOUNT_POS].split("'")[0])
+    def get_hw_config_xpub(self, wallet_obj, coin):
+        xpub = wallet_obj.keystore.xpub
+        if coin == 'btc':
+            xpub = wallet_obj.get_derived_master_xpub()
+        return xpub + coin.lower()
+
+    def delete_devired_wallet_info(self, wallet_obj, hw=False):
+        derivation = self.get_derivation_path(wallet_obj, wallet_obj.get_addresses()[0])
         coin = self._detect_wallet_coin(wallet_obj)
-        if coin not in self.coins:
-            coin = "btc"
-        xpub = self.get_hd_wallet_encode_seed(coin=coin)
+        account_id = int(self.get_account_id(derivation, coin))
+
+        if not hw:
+            xpub = self.get_hd_wallet_encode_seed(coin=coin)
+        else:
+            xpub = self.get_hw_config_xpub(wallet_obj, coin=coin)
+
         if self.derived_info.__contains__(xpub):
             derived_wallet = self.derived_info[xpub]
             for pos, wallet_info in enumerate(derived_wallet):
@@ -4011,11 +4021,12 @@ class AndroidCommands(commands.Commands):
         except BaseException as e:
             raise e
 
-    def delete_wallet_devired_info(self, wallet_obj):
+    def delete_wallet_devired_info(self, wallet_obj, hw=False):
         have_tx = self.has_history_wallet(wallet_obj)
         if not have_tx:
             # delete wallet info from config
-            self.delete_devired_wallet_info(wallet_obj)
+            self.delete_devired_wallet_info(wallet_obj, hw=hw)
+
 
     def delete_wallet(self, password="", name="", hd=None):
         """
@@ -4037,10 +4048,10 @@ class AndroidCommands(commands.Commands):
             if hd is not None:
                 self.delete_derived_wallet()
             else:
-                if (-1 != wallet_type.find("-hd-") or -1 != wallet_type.find("-derived-")) and -1 == wallet_type.find(
-                    "-hw-"
-                ):
-                    self.delete_wallet_devired_info(wallet)
+                if "-derived-" in wallet_type:
+                    hw = ("-hw-" in wallet_type)
+                    self.delete_wallet_devired_info(wallet, hw=hw)
+
                 self.delete_wallet_from_deamon(self._wallet_path(name))
                 self.local_wallet_info.pop(name)
                 self.config.set_key("all_wallet_type_info", self.local_wallet_info)
