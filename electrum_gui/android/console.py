@@ -2254,7 +2254,7 @@ class AndroidCommands(commands.Commands):
         """
         Get extended public key from hardware, used by hardware
         :param path: NFC/android_usb/bluetooth as str
-        :param _type: p2wsh/p2pkh/p2pkh-p2sh as string
+        :param _type: p2wsh/p2pkh/p2wpkh-p2sh as string
         :coin: btc/eth as string
         :return: xpub string
         """
@@ -3470,6 +3470,7 @@ class AndroidCommands(commands.Commands):
           "wallet_info": [
             {
               "name": "",
+              "label": "",
               "btc": "0.005 BTC",
               "fiat": "1,333.55",
               "wallets": [
@@ -3478,6 +3479,7 @@ class AndroidCommands(commands.Commands):
             },
             {
               "name": "",
+              "label": "",
               "wallets": [
                 { "coin": "btc", "balance": "", "fiat": ""},
                 { "coin": "usdt", "balance": "", "fiat": ""}
