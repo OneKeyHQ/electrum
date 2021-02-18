@@ -4,7 +4,7 @@ from typing import Tuple
 
 from electrum import ecc
 from electrum.i18n import _
-from electrum.util import UserCancelled, UserFacingException
+from electrum.util import UserCancelled
 from electrum.keystore import bip39_normalize_passphrase
 from electrum.bip32 import BIP32Node, convert_bip32_path_to_list_of_uint32 as parse_path
 from electrum.logging import Logger
@@ -12,7 +12,7 @@ from electrum.plugins.hw_wallet.plugin import OutdatedHwFirmwareException, Hardw
 
 from trezorlib.client import TrezorClient, PASSPHRASE_ON_DEVICE
 from trezorlib.exceptions import TrezorFailure, Cancelled, OutdatedFirmwareError
-from trezorlib.messages import WordRequestType, FailureType, RecoveryDeviceType, ButtonRequestType
+from trezorlib.messages import WordRequestType, RecoveryDeviceType, ButtonRequestType
 import trezorlib.btc
 import trezorlib.device
 from trezorlib.customer_ui import CustomerUI
@@ -152,7 +152,7 @@ class TrezorClientBase(HardwareClientBase, Logger):
         address_n = parse_path(bip32_path)
         with self.run_flow(''):
             node = trezorlib.ethereum.get_public_node(self.client, address_n).node
-       # return node.xpub
+        # return node.xpub
         return BIP32Node(xtype='standard',
                          eckey=ecc.ECPubkey(node.public_key),
                          chaincode=node.chain_code,
@@ -164,10 +164,6 @@ class TrezorClientBase(HardwareClientBase, Logger):
         return trezorlib.device.apply_settings(self.client, **kwargs)
 
     def backup(self) -> str:
-        if type == 1:
-            msg = ("Confirm backup your {} device")
-        elif type == 2:
-            msg = ("Confirm recovry your {} device")
         with self.run_flow(''):
             return trezorlib.device.se_backup(self.client).hex()
 
@@ -311,7 +307,6 @@ class TrezorClientBase(HardwareClientBase, Logger):
                 message,
                 script_type=script_type)
 
-
     def sign_eth_message(self, address_str, message):
         address_n = parse_path(address_str)
         with self.run_flow():
@@ -375,7 +370,7 @@ class TrezorClientBase(HardwareClientBase, Logger):
                 msg = "3"
             else:
                 msg = (_("Re-enter the new PIN for your {}.\n\n"
-                     "NOTE: the positions of the numbers have changed!"))
+                         "NOTE: the positions of the numbers have changed!"))
         else:
             if isinstance(self.handler, CustomerUI):
                 msg = "1"
@@ -396,9 +391,9 @@ class TrezorClientBase(HardwareClientBase, Logger):
                 msg = "6"
             else:
                 msg = _("Enter a passphrase to generate this wallet.  Each time "
-                    "you use this wallet your {} will prompt you for the "
-                    "passphrase.  If you forget the passphrase you cannot "
-                    "access the bitcoins in the wallet.").format(self.device)
+                        "you use this wallet your {} will prompt you for the "
+                        "passphrase.  If you forget the passphrase you cannot "
+                        "access the bitcoins in the wallet.").format(self.device)
         else:
             if isinstance(self.handler, CustomerUI):
                 msg = "3"
