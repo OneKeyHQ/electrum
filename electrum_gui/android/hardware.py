@@ -24,7 +24,7 @@ from electrum_gui.android import firmware_sign_nordic_dfu
 TREZOR_PLUGIN_NAME = 'trezor'
 
 
-def _reboot_to_bootloader(client, dry_run=False):
+def _reboot_to_bootloader(client: trezor_clientbase.TrezorClientBase, dry_run: bool = False) -> None:
     if client.features.bootloader_mode:
         return
 
@@ -41,7 +41,9 @@ def _reboot_to_bootloader(client, dry_run=False):
     raise BaseException(_("Switch the device to bootloader mode."))
 
 
-def _do_firmware_update(client, data, type, dry_run=False):
+def _do_firmware_update(
+    client: trezor_clientbase.TrezorClientBase, data: bytes, type: str, dry_run: bool = False
+) -> None:
     if dry_run:
         print("Dry run. Not uploading firmware to device.")
         return
@@ -131,17 +133,17 @@ class TrezorManager(object):
         client = self._get_client(path)
         return client.features.device_id
 
-    def get_xpub(self, path, derivation, _type, creating):
+    def get_xpub(self, path: str, derivation: str, _type: str, creating: bool) -> str:
         return self._bridge(path, 'get_xpub', derivation, _type, creating=creating)
 
-    def get_eth_xpub(self, path, derivation):
+    def get_eth_xpub(self, path: str, derivation: str) -> str:
         return self._bridge(path, 'get_eth_xpub', derivation)
 
     # === End helper methods used in console.AndroidCommands ===
 
     # Below are exposed methods, would be directly called from the upper users.
 
-    def hardware_verify(self, msg, path="android_usb") -> str:
+    def hardware_verify(self, msg: str, path: str = "android_usb") -> str:
         """
         Anti-counterfeiting verification, used by hardware
         :param msg: msg as str
@@ -172,7 +174,7 @@ class TrezorManager(object):
         else:
             return res.text
 
-    def backup_wallet(self, path="android_usb"):
+    def backup_wallet(self, path: str = "android_usb") -> str:
         """
         Backup wallet by se
         :param path: NFC/android_usb/bluetooth as str, used by hardware
@@ -180,10 +182,10 @@ class TrezorManager(object):
         """
         return self._bridge(path, 'backup')
 
-    def se_proxy(self, message, path="android_usb") -> str:
+    def se_proxy(self, message: str, path: str = "android_usb") -> str:
         return self._bridge(path, 'se_proxy', message)
 
-    def bixin_backup_device(self, path="android_usb"):
+    def bixin_backup_device(self, path: str = "android_usb") -> str:
         """
         Export seed, used by hardware
         :param path: NFC/android_usb/bluetooth as str
@@ -191,7 +193,13 @@ class TrezorManager(object):
         """
         return self._bridge(path, 'bixin_backup_device')
 
-    def bixin_load_device(self, path="android_usb", mnemonics=None, language="en-US", label="BIXIN KEY"):
+    def bixin_load_device(
+        self,
+        path: str = "android_usb",
+        mnemonics: Optional[str] = None,
+        language: str = "en-US",
+        label: str = "BIXIN KEY",
+    ) -> str:
         """
         Import seed, used by hardware
         :param mnemonics: as string
@@ -200,7 +208,7 @@ class TrezorManager(object):
         """
         return self._bridge(path, 'bixin_load_device', mnemonics=mnemonics, language=language, label=label)
 
-    def recovery_wallet_hw(self, path="android_usb", *args):
+    def recovery_wallet_hw(self, path: str = "android_usb", *args) -> str:
         """
         Recovery wallet by encryption
         :param path: NFC/android_usb/bluetooth as str, used by hardware
@@ -209,7 +217,7 @@ class TrezorManager(object):
         """
         return self._bridge(path, 'recovery', *args)
 
-    def bx_inquire_whitelist(self, path="android_usb", **kwargs):
+    def bx_inquire_whitelist(self, path: str = "android_usb", **kwargs) -> str:
         """
         Inquire
         :param path: NFC/android_usb/bluetooth as str, used by hardware
@@ -220,7 +228,7 @@ class TrezorManager(object):
         """
         return self._json_bridge(path, 'bx_inquire_whitelist', **kwargs)
 
-    def bx_add_or_delete_whitelist(self, path="android_usb", **kwargs):
+    def bx_add_or_delete_whitelist(self, path: str = "android_usb", **kwargs) -> str:
         """
         Add and delete whitelist
         :param path: NFC/android_usb/bluetooth as str, used by hardware
@@ -231,7 +239,7 @@ class TrezorManager(object):
         """
         return self._json_bridge(path, 'bx_add_or_delete_whitelist', **kwargs)
 
-    def apply_setting(self, path="nfc", **kwargs):
+    def apply_setting(self, path: str = "nfc", **kwargs) -> int:
         """
         Set the hardware function, used by hardware
         :param path: NFC/android_usb/bluetooth as str
@@ -250,7 +258,14 @@ class TrezorManager(object):
         resp = trezor_device.apply_settings(self._get_client(path).client, **kwargs)
         return 1 if resp == "Settings applied" else 0
 
-    def init(self, path="android_usb", label="BIXIN KEY", language="english", stronger_mnemonic=None, use_se=False):
+    def init(
+        self,
+        path: str = "android_usb",
+        label: str = "BIXIN KEY",
+        language: str = "english",
+        stronger_mnemonic: Optional[str] = None,
+        use_se: bool = False,
+    ) -> int:
         """
         Activate the device, used by hardware
         :param stronger_mnemonic: if not None 256  else 128
@@ -268,7 +283,7 @@ class TrezorManager(object):
         )
         return 1 if response == "Device successfully initialized" else 0
 
-    def reset_pin(self, path="android_usb") -> int:
+    def reset_pin(self, path: str = "android_usb") -> int:
         """
         Reset pin, used by hardware
         :param path:NFC/android_usb/bluetooth as str
@@ -286,7 +301,7 @@ class TrezorManager(object):
 
         return 1
 
-    def wipe_device(self, path="android_usb") -> int:
+    def wipe_device(self, path: str = "android_usb") -> int:
         """
         Reset device, used by hardware
         :param path: NFC/android_usb/bluetooth as str
@@ -304,11 +319,11 @@ class TrezorManager(object):
 
         return 1 if resp == "Device wiped" else 0
 
-    def get_passphrase_status(self, path="android_usb"):
+    def get_passphrase_status(self, path: str = "android_usb") -> bool:
         client = self._get_client(path=path)
         return client.features.passphrase_protection
 
-    def get_feature(self, path="android_usb"):
+    def get_feature(self, path: str = "android_usb") -> str:
         """
         Get hardware information, used by hardware
         :param path: NFC/android_usb/bluetooth as str
@@ -373,14 +388,14 @@ class TrezorManager(object):
 
     def firmware_update(
         self,
-        filename,
-        path,
-        type="",
-        fingerprint=None,
-        skip_check=True,
-        raw=False,
-        dry_run=False,
-    ):
+        filename: str,
+        path: str,
+        type: str = "",
+        fingerprint: Optional[str] = None,
+        skip_check: bool = True,
+        raw: bool = False,
+        dry_run: bool = False,
+    ) -> None:
         """
         Upload new firmware to device.used by hardware
         Note : Device must be in bootloader mode.
