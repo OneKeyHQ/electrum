@@ -1,25 +1,19 @@
 package org.haobtc.onekey.activities.base;
 
 import android.util.Log;
-
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
-
+import cn.com.heaton.blelibrary.ble.Ble;
 import java.util.Optional;
 
-import cn.com.heaton.blelibrary.ble.Ble;
-
-/**
- * @author liyan
- */
+/** @author liyan */
 public class ApplicationObserver implements LifecycleObserver {
+
     private final String TAG = this.getClass().getName();
     public static boolean tryUpdate;
 
-    public ApplicationObserver() {
-
-    }
+    public ApplicationObserver() {}
 
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     public void onCreate() {
@@ -32,23 +26,20 @@ public class ApplicationObserver implements LifecycleObserver {
         Log.d(TAG, "Lifecycle.Event.ON_START");
     }
 
-
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     public void onResume() {
-        MyApplication.getInstance().getHandler().removeCallbacks(this::disConnectDevices);
+        MyApplication.getInstance().getHandler().removeCallbacks(DisConnectDevicesRunnable);
         Log.d(TAG, "Lifecycle.Event.ON_RESUME");
     }
-
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     public void onPause() {
         Log.d(TAG, "Lifecycle.Event.ON_PAUSE");
     }
 
-
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     public void onStop() {
-        MyApplication.getInstance().getHandler().postDelayed(this::disConnectDevices, 60*1000L);
+        MyApplication.getInstance().getHandler().postDelayed(DisConnectDevicesRunnable, 60 * 1000L);
         Log.d(TAG, "Lifecycle.Event.ON_STOP");
     }
 
@@ -56,7 +47,10 @@ public class ApplicationObserver implements LifecycleObserver {
     public void onDestroy() {
         Log.d(TAG, "Lifecycle.Event.ON_DESTROY");
     }
-    private void disConnectDevices() {
-        Optional.ofNullable(Ble.getInstance().getConnetedDevices()).ifPresent((bleDevices) -> Ble.getInstance().disconnectAll());
-    }
+
+    private final Runnable DisConnectDevicesRunnable =
+            () -> {
+                Optional.ofNullable(Ble.getInstance().getConnetedDevices())
+                        .ifPresent((bleDevices) -> Ble.getInstance().disconnectAll());
+            };
 }
