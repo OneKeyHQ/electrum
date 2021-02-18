@@ -28,7 +28,7 @@ public class WalletBalanceFiatVo {
     }
 
     public String getBalanceFormat() {
-        if (!TextUtils.isEmpty(balance) && balance.equals("0")) {
+        if (TextUtils.isEmpty(balance) || balance.equals("0")) {
             return "0.00";
         }
         return balance;

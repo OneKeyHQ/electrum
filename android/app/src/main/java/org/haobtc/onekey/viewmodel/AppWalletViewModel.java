@@ -38,6 +38,9 @@ import org.haobtc.onekey.manager.PyEnv;
  */
 public class AppWalletViewModel extends ViewModel {
 
+    public static final WalletBalanceFiatVo DEF_WALLET_FIAT_BALANCE =
+            new WalletBalanceFiatVo("0", "CNY", "¥");
+
     private final ExecutorService mExecutorService = Executors.newFixedThreadPool(4);
     private final Handler mMainHandler = new Handler(Looper.getMainLooper());
 
@@ -46,7 +49,7 @@ public class AppWalletViewModel extends ViewModel {
     public LiveData<WalletBalanceVo> currentWalletBalance =
             new MutableLiveData<>(new WalletBalanceVo(new BigDecimal("0"), "BTC"));
     public LiveData<WalletBalanceFiatVo> currentWalletFiatBalance =
-            new MutableLiveData<>(new WalletBalanceFiatVo("0", "CNY", "¥"));
+            new MutableLiveData<>(DEF_WALLET_FIAT_BALANCE);
     private final BalanceManager mBalanceManager = new BalanceManager();
     private final AccountManager mAccountManager = new AccountManager(MyApplication.getInstance());
     private final SystemConfigManager mSystemConfigManager =
@@ -105,7 +108,7 @@ public class AppWalletViewModel extends ViewModel {
                             new WalletBalanceVo(new BigDecimal("0"), currentBaseUnit));
                     setCurrentWalletFiatBalance(
                             new WalletBalanceFiatVo(
-                                    "0",
+                                    DEF_WALLET_FIAT_BALANCE.getBalance(),
                                     currentFiatUnitSymbol.getUnit(),
                                     currentFiatUnitSymbol.getSymbol()));
 
@@ -131,7 +134,7 @@ public class AppWalletViewModel extends ViewModel {
                         setCurrentWalletFiatBalance(
                                 new WalletBalanceFiatVo(
                                         TextUtils.isEmpty(balance.getBalanceFiat())
-                                                ? "0"
+                                                ? DEF_WALLET_FIAT_BALANCE.getBalance()
                                                 : balance.getBalanceFiat(),
                                         currentFiatUnitSymbol.getUnit(),
                                         currentFiatUnitSymbol.getSymbol()));
@@ -233,9 +236,9 @@ public class AppWalletViewModel extends ViewModel {
 
     @Override
     protected void onCleared() {
-        super.onCleared();
-        EventBus.getDefault().unregister(this);
         mExecutorService.shutdown();
+        EventBus.getDefault().unregister(this);
+        super.onCleared();
     }
 
     private void setCurrentWalletBalance(@NonNull WalletBalanceVo balance) {
