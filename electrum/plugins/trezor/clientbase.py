@@ -1,5 +1,6 @@
 import time
 from struct import pack
+from typing import Tuple
 
 from electrum import ecc
 from electrum.i18n import _
@@ -159,6 +160,9 @@ class TrezorClientBase(HardwareClientBase, Logger):
                          fingerprint=self.i4b(node.fingerprint),
                          child_number=self.i4b(node.child_num)).to_xpub()
 
+    def apply_settings(self, **kwargs) -> str:
+        return trezorlib.device.apply_settings(self.client, **kwargs)
+
     def backup(self) -> str:
         if type == 1:
             msg = ("Confirm backup your {} device")
@@ -170,6 +174,10 @@ class TrezorClientBase(HardwareClientBase, Logger):
     def se_proxy(self, message) -> str:
         with self.run_flow(''):
             return trezorlib.device.se_proxy(self.client, message).hex()
+
+    def se_verify(self, digest: bytes) -> Tuple[str, str]:
+        resp = trezorlib.device.se_verify(self.client, digest)
+        return resp.cert.hex(), resp.signature.hex()
 
     def recovery(self, *args):
         with self.run_flow(''):

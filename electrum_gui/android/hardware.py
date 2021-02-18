@@ -9,7 +9,6 @@ from typing import Any, Optional
 # module only communicates with the trezor plugin, no lower level functions
 # would be directly called from this module.
 from trezorlib import customer_ui as trezorlib_customer_ui
-from trezorlib import device as trezor_device
 from trezorlib import exceptions as trezor_exceptions
 from trezorlib import firmware as trezor_firmware
 from trezorlib import messages as trezor_messages
@@ -154,14 +153,9 @@ class TrezorManager(object):
              'is_verified': 'True',
              'last_check_time': 1611904981}
         """
-        try:
-            digest = hashlib.sha256(msg.encode('utf-8')).digest()
-            # TODO: move this device.se_verify() call into trezor plugin's
-            # clientbase
-            response = trezor_device.se_verify(self._get_client(path).client, digest)
-        except Exception as e:
-            raise BaseException(e)
-        params = {"data": msg, "cert": response.cert.hex(), "signature": response.signature.hex()}
+        digest = hashlib.sha256(msg.encode('utf-8')).digest()
+        cert, signature = self._bridge(path, 'se_verify', digest)
+        params = {"data": msg, "cert": cert, "signature": signature}
         verify_url = "https://key.bixin.com/lengqian.bo/"
         import requests
 
@@ -253,9 +247,7 @@ class TrezorManager(object):
             is_bixinapp=true/false
         :return:0/1
         """
-        # TODO: move this device.apply_settings() call into trezor plugin's
-        # clientbase
-        resp = trezor_device.apply_settings(self._get_client(path).client, **kwargs)
+        resp = self._bridge(path, 'apply_settings', **kwargs)
         return 1 if resp == "Settings applied" else 0
 
     def init(
