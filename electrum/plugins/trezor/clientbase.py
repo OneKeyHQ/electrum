@@ -439,3 +439,20 @@ class TrezorClientBase(HardwareClientBase, Logger):
             return word
 
         return word_callback
+
+    def reboot_to_bootloader(self) -> bool:
+        """
+        Reboot the device to bootloader mode if needed.
+        :return: True if the device enters or is already in bootloader mode,
+                 False otherwise.
+        """
+        if not self.features.bootloader_mode:
+            try:
+                trezorlib.device.reboot(self.client)
+            except Exception:
+                return False
+            else:
+                time.sleep(2)
+                self.client.init_device()
+
+        return self.features.bootloader_mode

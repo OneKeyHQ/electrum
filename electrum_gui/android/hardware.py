@@ -1,6 +1,5 @@
 import hashlib
 import json
-import time
 import threading
 from typing import Any, Optional
 
@@ -11,7 +10,6 @@ from typing import Any, Optional
 from trezorlib import customer_ui as trezorlib_customer_ui
 from trezorlib import exceptions as trezor_exceptions
 from trezorlib import firmware as trezor_firmware
-from trezorlib import messages as trezor_messages
 from trezorlib import protobuf as trezor_protobuf
 from trezorlib.cli import trezorctl
 
@@ -21,23 +19,6 @@ from electrum.plugins.trezor import clientbase as trezor_clientbase
 from electrum_gui.android import firmware_sign_nordic_dfu
 
 TREZOR_PLUGIN_NAME = 'trezor'
-
-
-def _reboot_to_bootloader(client: trezor_clientbase.TrezorClientBase, dry_run: bool = False) -> None:
-    if client.features.bootloader_mode:
-        return
-
-    resp = client.client.call(trezor_messages.BixinReboot())
-    if isinstance(resp, trezor_messages.Success) or dry_run:
-        time.sleep(2)
-        client.client.init_device()
-    else:
-        raise RuntimeError("Failed turn into bootloader")
-
-    if dry_run or client.features.bootloader_mode:
-        return
-
-    raise BaseException(_("Switch the device to bootloader mode."))
 
 
 def _do_firmware_update(
@@ -408,7 +389,8 @@ class TrezorManager(object):
             raise BaseException(e)
 
         client = self._get_client(path)
-        _reboot_to_bootloader(client, dry_run=dry_run)
+        if not client.reboot_to_bootloader():
+            raise BaseException(_("Switch the device to bootloader mode."))
 
         if raw:
             return _do_firmware_update(client, data, type, dry_run=dry_run)
