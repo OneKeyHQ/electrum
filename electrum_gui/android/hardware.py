@@ -10,7 +10,6 @@ from typing import Any, Optional
 from trezorlib import customer_ui as trezorlib_customer_ui
 from trezorlib import exceptions as trezor_exceptions
 from trezorlib import firmware as trezor_firmware
-from trezorlib import protobuf as trezor_protobuf
 from trezorlib.cli import trezorctl
 
 from electrum import plugin as electrum_plugin
@@ -357,7 +356,7 @@ class TrezorManager(object):
             self.plugin.clean()
             self.clients.pop(path, None)
             client = self._get_client(path=path)
-        return json.dumps(trezor_protobuf.to_dict(client.features))
+        return json.dumps(client.features_dict)
 
     def firmware_update(
         self,

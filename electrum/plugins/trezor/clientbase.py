@@ -13,6 +13,7 @@ from electrum.plugins.hw_wallet.plugin import OutdatedHwFirmwareException, Hardw
 from trezorlib.client import TrezorClient, PASSPHRASE_ON_DEVICE
 from trezorlib.exceptions import TrezorFailure, Cancelled, OutdatedFirmwareError
 from trezorlib.messages import WordRequestType, RecoveryDeviceType, ButtonRequestType
+from trezorlib import protobuf as trezor_protobuf
 import trezorlib.btc
 import trezorlib.device
 from trezorlib.customer_ui import CustomerUI
@@ -93,6 +94,10 @@ class TrezorClientBase(HardwareClientBase, Logger):
     @property
     def features(self):
         return self.client.features
+
+    @property
+    def features_dict(self):
+        return trezor_protobuf.to_dict(self.features)
 
     def __str__(self):
         return "%s/%s" % (self.label(), self.features.device_id)
