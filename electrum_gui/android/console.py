@@ -18,8 +18,6 @@ from eth_account import Account
 from eth_keys import keys
 from hexbytes import HexBytes
 from mnemonic import Mnemonic
-from trezorlib import device, exceptions, firmware, messages, protobuf
-from trezorlib.cli import trezorctl
 from trezorlib.customer_ui import CustomerUI
 
 from electrum import MutiBase, bitcoin, commands, constants, daemon, ecc, keystore, paymentrequest, simple_config, util
@@ -75,9 +73,10 @@ from electrum.wallet import Imported_Wallet, Standard_Wallet, Wallet
 from electrum.wallet_db import WalletDB
 from electrum_gui.common import the_begging
 
+from electrum_gui.android import hardware
+
 from .create_wallet_info import CreateWalletInfo
 from .derived_info import DerivedInfo
-from .firmware_sign_nordic_dfu import parse
 from .tx_db import TxDb
 
 log_info = logging.getLogger(__name__)
@@ -223,7 +222,6 @@ class AndroidCommands(commands.Commands):
             ran_str = "".join(random.sample(string.ascii_letters + string.digits, 8))
             self.config.set_key("ra_str", ran_str)
         self.android_id = android_id + ran_str
-        self.lock = threading.RLock()
         self.init_local_wallet_info()
         if self.network:
             interests = [
@@ -270,6 +268,14 @@ class AndroidCommands(commands.Commands):
         self.start_daemon()
         self.get_block_info()
         the_begging.initialize()
+
+        self.trezor_manager = hardware.TrezorManager(self.plugin)
+
+    def __getattr__(self, name):
+        if name in self.trezor_manager.exposed_commands:
+            return getattr(self.trezor_manager, name)
+
+        raise AttributeError
 
     def init_config(self, config=None):
         config_options = {}
@@ -2042,7 +2048,7 @@ class AndroidCommands(commands.Commands):
         """
         try:
             if path:
-                self.get_client(path=path)
+                self.trezor_manager.ensure_client(path)
             self._assert_wallet_isvalid()
             address = address.strip()
             message = message.strip()
@@ -2092,7 +2098,7 @@ class AndroidCommands(commands.Commands):
             # This can throw on invalid base64
             import base64
             sig = base64.b64decode(str(signature))
-            client = self.get_client(path=path)
+            self.trezor_manager.ensure_client(path)
             verified = self.wallet.verify_message(address, message, sig)
         except Exception:
             verified = False
@@ -2189,7 +2195,7 @@ class AndroidCommands(commands.Commands):
         """
         try:
             if path is not None:
-                self.get_client(path=path)
+                self.trezor_manager.ensure_client(path)
             self._assert_wallet_isvalid()
             tx = tx_from_any(tx)
             tx.deserialize()
@@ -2221,193 +2227,6 @@ class AndroidCommands(commands.Commands):
         except BaseException as e:
             raise e
 
-    def hardware_verify(self, msg, path="android_usb") -> str:
-        """
-        Anti-counterfeiting verification, used by hardware
-        :param msg: msg as str
-        :param path: NFC/android_usb/bluetooth as str
-        :return: json like {'serialno': 'Bixin20051500293', 'is_bixinkey': 'True', 'is_verified': 'True', 'last_check_time': 1611904981}
-        """
-        client = self.get_client(path=path)
-        try:
-            from hashlib import sha256
-
-            digest = sha256(msg.encode("utf-8")).digest()
-            response = device.se_verify(client.client, digest)
-        except Exception as e:
-            raise BaseException(e)
-        params = {"data": msg, "cert": response.cert.hex(), "signature": response.signature.hex()}
-        verify_url = "https://key.bixin.com/lengqian.bo/"
-        import requests
-
-        try:
-            res = requests.post(verify_url, data=params, timeout=30)
-        except Exception as e:
-            raise BaseException(_(str(e))) from e
-        else:
-            return res.text
-
-    def backup_wallet(self, path="android_usb"):
-        """
-        Backup wallet by se
-        :param path: NFC/android_usb/bluetooth as str, used by hardware
-        :return:
-        """
-        client = self.get_client(path=path)
-        try:
-            response = client.backup()
-        except Exception as e:
-            raise BaseException(e)
-        return response
-
-    def se_proxy(self, message, path="android_usb") -> str:
-        client = self.get_client(path=path)
-        try:
-            response = client.se_proxy(message)
-        except Exception as e:
-            raise BaseException(e)
-        return response
-
-    def bixin_backup_device(self, path="android_usb"):
-        """
-        Export seed, used by hardware
-        :param path: NFC/android_usb/bluetooth as str
-        :return: as string
-        """
-        client = self.get_client(path=path)
-        try:
-            response = client.bixin_backup_device()
-        except Exception as e:
-            raise BaseException(e)
-        return response
-
-    def bixin_load_device(self, path="android_usb", mnemonics=None, language="en-US", label="BIXIN KEY"):
-        """
-        Import seed, used by hardware
-        :param mnemonics: as string
-        :param path: NFC/android_usb/bluetooth as str
-        :return: raise except if error
-        """
-        client = self.get_client(path=path)
-        try:
-            response = client.bixin_load_device(mnemonics=mnemonics, language=language, label=label)
-        except Exception as e:
-            raise BaseException(e)
-        return response
-
-    def recovery_wallet_hw(self, path="android_usb", *args):
-        """
-        Recovery wallet by encryption
-        :param path: NFC/android_usb/bluetooth as str, used by hardware
-        :param args: encryption data as str
-        :return:
-        """
-        client = self.get_client(path=path)
-        try:
-            response = client.recovery(*args)
-        except Exception as e:
-            raise BaseException(e)
-        return response
-
-    def bx_inquire_whitelist(self, path="android_usb", **kwargs):
-        """
-        Inquire
-        :param path: NFC/android_usb/bluetooth as str, used by hardware
-        :param kwargs:
-            type:2=inquire
-            addr_in: addreess as str
-        :return:
-        """
-        client = self.get_client(path=path)
-        try:
-            response = json.dumps(client.bx_inquire_whitelist(**kwargs))
-        except Exception as e:
-            raise BaseException(e)
-        return response
-
-    def bx_add_or_delete_whitelist(self, path="android_usb", **kwargs):
-        """
-        Add and delete whitelist
-        :param path: NFC/android_usb/bluetooth as str, used by hardware
-        :param kwargs:
-            type:0=add 1=delete
-            addr_in: addreess as str
-        :return:
-        """
-        client = self.get_client(path=path)
-        try:
-            response = json.dumps(client.bx_add_or_delete_whitelist(**kwargs))
-        except Exception as e:
-            raise BaseException(e)
-        return response
-
-    def apply_setting(self, path="nfc", **kwargs):
-        """
-        Set the hardware function, used by hardware
-        :param path: NFC/android_usb/bluetooth as str
-        :param kwargs:
-            label="wangls"
-            language="chinese/english"
-            use_passphrase=true/false
-            auto_lock_delay_ms="600"
-            use_ble=true/false
-            use_se=true/false
-            is_bixinapp=true/false
-        :return:0/1
-        """
-        client = self.get_client(path=path)
-        try:
-            resp = device.apply_settings(client.client, **kwargs)
-            if resp == "Settings applied":
-                return 1
-            else:
-                return 0
-        except Exception as e:
-            raise BaseException(e)
-
-    def init(self, path="android_usb", label="BIXIN KEY", language="english", stronger_mnemonic=None, use_se=False):
-        """
-        Activate the device, used by hardware
-        :param stronger_mnemonic: if not None 256  else 128
-        :param path: NFC/android_usb/bluetooth as str
-        :param label: name as string
-        :param language: as string
-        :param use_se: as bool
-        :return:0/1
-        """
-        client = self.get_client(path=path)
-        strength = 128
-        try:
-            if use_se:
-                device.apply_settings(client.client, use_se=True)
-            if stronger_mnemonic:
-                strength = 256
-            response = client.reset_device(
-                language=language, passphrase_protection=True, label=label, strength=strength
-            )
-        except Exception as e:
-            raise BaseException(e)
-        if response == "Device successfully initialized":
-            return 1
-        else:
-            return 0
-
-    def reset_pin(self, path="android_usb") -> int:
-        """
-        Reset pin, used by hardware
-        :param path:NFC/android_usb/bluetooth as str
-        :return:0/1
-        """
-        try:
-            client = self.get_client(path)
-            client.set_pin(False)
-        except Exception as e:
-            if isinstance(e, exceptions.PinException) or isinstance(e, RuntimeError):
-                return 0
-            else:
-                raise BaseException("user cancel")
-        return 1
-
     def show_address(self, address, path="android_usb", coin="btc") -> str:
         """
         Verify address on hardware, used by hardware
@@ -2416,101 +2235,19 @@ class AndroidCommands(commands.Commands):
         :return:1/except
         """
         try:
-            plugin = self.plugin.get_plugin("trezor")
-            plugin.show_address(path=path, ui=CustomerUI(), wallet=self.wallet, address=address, coin=coin)
+            self.trezor_manager.plugin.show_address(
+                path=path,
+                ui=CustomerUI(),
+                wallet=self.wallet,
+                address=address,
+                coin=coin
+            )
             return "1"
         except Exception as e:
             raise BaseException(e)
 
-    def wipe_device(self, path="android_usb") -> int:
-        """
-        Reset device, used by hardware
-        :param path: NFC/android_usb/bluetooth as str
-        :return:0/1
-        """
-        try:
-            client = self.get_client(path)
-            resp = client.wipe_device()
-        except Exception as e:
-            if isinstance(e, exceptions.PinException) or isinstance(e, RuntimeError):
-                return 0
-            else:
-                raise BaseException(str(e)) from e
-        if resp == "Device wiped":
-            return 1
-        else:
-            return 0
-
-    def get_passphrase_status(self, path="android_usb"):
-        # self.client = None
-        # self.path = ''
-        client = self.get_client(path=path)
-        return client.features.passphrase_protection
-
-    def get_client(self, path="android_usb", ui=CustomerUI(), clean=False):
-        plugin = self.plugin.get_plugin("trezor")
-        if clean:
-            plugin.clean()
-        return plugin.get_client(path=path, ui=ui)
-
     def is_encrypted_with_hw_device(self):
         self.wallet.storage.is_encrypted_with_hw_device()
-
-    def get_feature(self, path="android_usb"):
-        """
-        Get hardware information, used by hardware
-        :param path: NFC/android_usb/bluetooth as str
-        :return: dict like:
-            {capabilities: List[EnumTypeCapability] = None,
-            vendor: str = None,
-            major_version: int = None,  主版本号
-            minor_version: int = None,  次版本号
-            patch_version: int = None,  修订号    硬件的软件版本(俗称固件，在2.0.1 之前使用)
-            bootloader_mode: bool = None,  设备当时是不是在bootloader模式
-            device_id: str = None,  设备唯一标识，设备恢复出厂设置这个值会变
-            pin_protection: bool = None, 是否开启了PIN码保护，
-            passphrase_protection: bool = None, 是否开启了passphrase功能,这个用来支持创建隐藏钱包
-            language: str = None,
-            label: str = None,  激活钱包时，使用的名字
-            initialized: bool = None, 当时设备是否激活
-            revision: bytes = None,
-            bootloader_hash: bytes = None,
-            imported: bool = None,
-            unlocked: bool = None,
-            firmware_present: bool = None,
-            needs_backup: bool = None,
-            flags: int = None,
-            model: str = None,
-            fw_major: int = None,
-            fw_minor: int = None,
-            fw_patch: int = None,
-            fw_vendor: str = None,
-            fw_vendor_keys: bytes = None,
-            unfinished_backup: bool = None,
-            no_backup: bool = None,
-            recovery_mode: bool = None,
-            backup_type: EnumTypeBackupType = None,
-            sd_card_present: bool = None,
-            sd_protection: bool = None,
-            wipe_code_protection: bool = None,
-            session_id: bytes = None,
-            passphrase_always_on_device: bool = None,
-            safety_checks: EnumTypeSafetyCheckLevel = None,
-            auto_lock_delay_ms: int = None, 自动关机时间
-            display_rotation: int = None,
-            experimental_features: bool = None,
-            offset: int = None,  升级时断点续传使用的字段
-            ble_name: str = None,
-            ble_ver: str = None,  蓝牙固件版本
-            ble_enable: bool = None,
-            se_enable: bool = None,
-            se_ver: str = None,  se的版本
-            backup_only: bool = None,  是否是特殊设备，只用来备份，没有额外功能支持
-            onekey_version: str = None,  硬件的软件版本（俗称固件），仅供APP使用（从2.0.1开始加入）}
-        """
-        with self.lock:
-            client = self.get_client(path=path, clean=True)
-        return json.dumps(protobuf.to_dict(client.features))
 
     def get_xpub_from_hw(self, path="android_usb", _type="p2wpkh", is_creating=True, account_id=None, coin="btc"):
         """
@@ -2520,12 +2257,11 @@ class AndroidCommands(commands.Commands):
         :coin: btc/eth as string
         :return: xpub string
         """
-        client = self.get_client(path=path)
-        self.hw_info["device_id"] = client.features.device_id
-        self.hw_info["type"] = _type
+        self.hw_info["device_id"] = self.trezor_manager.get_device_id(path)
         if account_id is None:
             account_id = 0
         if coin == "btc":
+            self.hw_info["type"] = _type
             if _type == "p2wsh":
                 derivation = purpose48_derivation(account_id, xtype="p2wsh")
                 self.hw_info["type"] = 48
@@ -2539,23 +2275,19 @@ class AndroidCommands(commands.Commands):
             elif _type == "p2wpkh-p2sh":
                 derivation = bip44_derivation(account_id, bip43_purpose=49)
                 self.hw_info["type"] = 49
-            try:
-                xpub = client.get_xpub(derivation, _type, creating=is_creating)
-            except Exception as e:
-                raise BaseException(e)
-            return xpub
+            xpub = self.trezor_manager.get_xpub(
+                path, derivation, _type, is_creating
+            )
         else:
+            self.hw_info["type"] = self.coins[coin]["addressType"]
             derivation = bip44_eth_derivation(
                 account_id, bip43_purpose=self.coins[coin]["addressType"], cointype=self.coins[coin]["coinId"]
             )
 
             derivation = util.get_keystore_path(derivation)
-            try:
-                xpub = client.get_eth_xpub(derivation)
-                self.hw_info["type"] = self.coins[coin]["addressType"]
-            except Exception as e:
-                raise BaseException(e)
-            return xpub
+            xpub = self.trezor_manager.get_eth_xpub(path, derivation)
+
+        return xpub
 
     def create_hw_derived_wallet(self, path="android_usb", _type="p2wpkh", is_creating=True, coin="btc"):
         """
@@ -2577,88 +2309,6 @@ class AndroidCommands(commands.Commands):
         dervied_xpub = self.get_xpub_from_hw(path=path, _type=_type, account_id=list_info[0], coin=coin)
         self.hw_info["account_id"] = list_info[0]
         return dervied_xpub
-
-    def firmware_update(  # noqa
-        self,
-        filename,
-        path,
-        type="",
-        fingerprint=None,
-        skip_check=True,
-        raw=False,
-        dry_run=False,
-    ):
-        """
-        Upload new firmware to device.used by hardware
-        Note : Device must be in bootloader mode.
-        :param filename: full path to local upgrade file
-        :param path: NFC/android_usb/bluetooth as str
-        :return: None
-        """
-        # self.client = None
-        # self.path = ''
-        client = self.get_client(path)
-        features = client.features
-        if not features.bootloader_mode:
-            resp = client.client.call(messages.BixinReboot())
-            if not dry_run and not isinstance(resp, messages.Success):
-                raise RuntimeError("Failed turn into bootloader")
-            time.sleep(2)
-            client.client.init_device()
-        if not dry_run and not client.features.bootloader_mode:
-            raise BaseException(_("Switch the device to bootloader mode."))
-
-        bootloader_onev2 = features.major_version == 1 and features.minor_version >= 8
-
-        if filename:
-            try:
-                if type:
-                    data = parse(filename)
-                else:
-                    with open(filename, "rb") as file:
-                        data = file.read()
-            except Exception as e:
-                raise BaseException(e)
-        else:
-            raise BaseException(("Please give the file name"))
-
-        if not raw and not skip_check:
-            try:
-                version, fw = firmware.parse(data)
-            except Exception as e:
-                raise BaseException(e)
-
-            trezorctl.validate_firmware(version, fw, fingerprint)
-            if bootloader_onev2 and version == firmware.FirmwareFormat.TREZOR_ONE and not fw.embedded_onev2:
-                raise BaseException(_("Your device's firmware version is too low. Aborting."))
-            elif not bootloader_onev2 and version == firmware.FirmwareFormat.TREZOR_ONE_V2:
-                raise BaseException(_("You need to upgrade the bootloader immediately."))
-
-            if features.major_version not in trezorctl.ALLOWED_FIRMWARE_FORMATS:
-                raise BaseException(("Trezorctl doesn't know your device version. Aborting."))
-            elif version not in trezorctl.ALLOWED_FIRMWARE_FORMATS[features.major_version]:
-                raise BaseException(_("Firmware not compatible with your equipment, Aborting."))
-
-        if not raw:
-            # special handling for embedded-OneV2 format:
-            # for bootloader < 1.8, keep the embedding
-            # for bootloader 1.8.0 and up, strip the old OneV1 header
-            if bootloader_onev2 and data[:4] == b"TRZR" and data[256 : 256 + 4] == b"TRZF":
-                print("Extracting embedded firmware image (fingerprint may change).")
-                data = data[256:]
-
-        if dry_run:
-            print("Dry run. Not uploading firmware to device.")
-        else:
-            try:
-                if features.major_version == 1 and features.firmware_present is not False:
-                    # Trezor One does not send ButtonRequest
-                    print("Please confirm the action on your Trezor device")
-                return firmware.update(client.client, data, type=type)
-            except exceptions.Cancelled:
-                print("Update aborted on device.")
-            except exceptions.TrezorException as e:
-                raise BaseException(_("Update failed: {}".format(e)))
 
     def export_keystore(self, password):
         """
