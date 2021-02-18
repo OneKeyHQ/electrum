@@ -178,6 +178,7 @@ def verify_xpub(xpub: str) -> bool:
 # Adds additional commands which aren't available over JSON RPC.
 class AndroidCommands(commands.Commands):
     _recovery_flag = True
+
     def __init__(self, android_id=None, config=None, user_dir=None, callback=None, chain_type="mainnet"):
         self.asyncio_loop, self._stop_loop, self._loop_thread = create_and_start_event_loop()  # TODO:close loop
         self.config = self.init_config(config=config)
@@ -1377,7 +1378,7 @@ class AndroidCommands(commands.Commands):
                     addr = asyncio.run_coroutine_threadsafe(
                         self.gettransaction(txin.prevout.txid.hex(), txin.prevout.out_idx), self.network.asyncio_loop
                     ).result()
-                except BaseException as e:  # noqa
+                except BaseException:
                     addr = ""
             input_info["address"] = addr
             input_list.append(input_info)
@@ -2619,7 +2620,7 @@ class AndroidCommands(commands.Commands):
                     Account.decrypt(json.loads(data), password).hex()
                 except (TypeError, KeyError, NotImplementedError):
                     raise BaseException(_("Incorrect eth keystore."))
-                except BaseException as e:
+                except BaseException:
                     raise InvalidPassword()
 
             elif flag == "public":
@@ -3137,7 +3138,7 @@ class AndroidCommands(commands.Commands):
 
             temp_path = self.get_temp_file()
             path = self._wallet_path(temp_path)
-            keystores = self.get_keystores_info()
+            self.get_keystores_info()  # TODO: is this required to ensure something?
             storage, db = self.wizard.create_storage(path=path, password="", hide_type=True, coin=coin)
             if storage:
                 if coin in self.coins:
@@ -3532,7 +3533,7 @@ class AndroidCommands(commands.Commands):
             raise e
 
     def check_exist_file(self, wallet_obj):
-        for _, exist_wallet in self.daemon._wallets.items():  # noqa
+        for _path, exist_wallet in self.daemon._wallets.items():
             if wallet_obj.get_addresses()[0] in exist_wallet.get_addresses()[0]:
                 if exist_wallet.is_watching_only() and not wallet_obj.is_watching_only():
                     raise ReplaceWatchonlyWallet(exist_wallet)
@@ -3743,7 +3744,7 @@ class AndroidCommands(commands.Commands):
         try:
             self._assert_daemon_running()
             net_params = self.network.get_parameters()
-            host, port, _ = net_params.server.host, net_params.server.port, net_params.server.protocol
+            host, port = net_params.server.host, net_params.server.port
         except BaseException as e:
             raise e
 
