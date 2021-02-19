@@ -69,6 +69,16 @@ DFUServiceDelegate, LoggerDelegate, DFUProgressDelegate>
     self.finshedButton.titleLabel.text = MyLocalizedString(@"done", nil);
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    [UIApplication sharedApplication].idleTimerDisabled = YES;
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    [UIApplication sharedApplication].idleTimerDisabled = NO;
+}
+
 - (void)startDownload {
     NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
     self.sessionConfiguration = sessionConfiguration;
