@@ -3138,7 +3138,6 @@ class AndroidCommands(commands.Commands):
 
             temp_path = self.get_temp_file()
             path = self._wallet_path(temp_path)
-            self.get_keystores_info()  # TODO: is this required to ensure something?
             storage, db = self.wizard.create_storage(path=path, password="", hide_type=True, coin=coin)
             if storage:
                 if coin in self.coins:
