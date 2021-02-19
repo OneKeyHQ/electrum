@@ -1,5 +1,7 @@
 package org.haobtc.onekey.activities.sign;
 
+import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
+
 import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -42,6 +44,7 @@ import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.bean.TransactionInfoBean;
 import org.haobtc.onekey.business.wallet.SystemConfigManager;
 import org.haobtc.onekey.constant.PyConstant;
+import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.entries.FsActivity;
 import org.haobtc.onekey.event.ButtonRequestConfirmedEvent;
 import org.haobtc.onekey.event.ButtonRequestEvent;
@@ -113,6 +116,7 @@ public class SignActivity extends BaseActivity
     private String signature;
     private String amounts;
     private SystemConfigManager mSystemConfigManager;
+    private Vm.CoinType coinType;
 
     /** init */
     @Override
@@ -129,6 +133,8 @@ public class SignActivity extends BaseActivity
                         .getIntExtra(
                                 org.haobtc.onekey.constant.Constant.WALLET_TYPE,
                                 org.haobtc.onekey.constant.Constant.WALLET_TYPE_SOFTWARE);
+        String currentSelectedType = preferences.getString(CURRENT_SELECTED_WALLET_TYPE, "");
+        coinType = Vm.convertCoinType(currentSelectedType);
         getAddress();
         switch (showWalletType) {
             case org.haobtc.onekey.constant.Constant.WALLET_TYPE_SOFTWARE:
@@ -353,10 +359,7 @@ public class SignActivity extends BaseActivity
         PyResponse<Void> response = PyEnv.broadcast(signedTx);
         String errors = response.getErrors();
         if (Strings.isNullOrEmpty(errors)) {
-            Intent intent = new Intent(this, TransactionCompletion.class);
-            intent.putExtra("txDetail", signedTx);
-            intent.putExtra("amounts", amounts);
-            startActivity(intent);
+            TransactionCompletion.start(mContext, coinType, signedTx, amounts);
             finish();
         } else {
             showToast(errors);

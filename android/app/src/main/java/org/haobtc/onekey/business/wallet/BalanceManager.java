@@ -116,7 +116,7 @@ public class BalanceManager {
                                 fiatUnit,
                                 new ArrayList<>(),
                                 balanceInfoDTO.getName(),
-                                item.getWalletName());
+                                balanceInfoDTO.getLabel());
             } else {
                 tokenBalanceBeans.add(
                         new ETHTokenBalanceBean(

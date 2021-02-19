@@ -1,11 +1,9 @@
 package org.haobtc.onekey.utils;
 
 import android.text.TextUtils;
-import android.util.Log;
-
 import com.chaquo.python.Kwarg;
 import com.chaquo.python.PyObject;
-
+import com.orhanobut.logger.Logger;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.constant.PyConstant;
 import org.haobtc.onekey.constant.Vm;
@@ -17,8 +15,7 @@ public class Daemon {
     public static PyObject network = null;
     private static volatile Daemon daemon;
 
-    private Daemon() {
-    }
+    private Daemon() {}
 
     public static Daemon getInstance() {
         if (daemon == null) {
@@ -36,12 +33,15 @@ public class Daemon {
             Global.guiConsole = Global.py.getModule(PyConstant.ELECTRUM_GUI_ANDROID_CONSOLE);
             try {
                 String ethNetwork = Vm.getEthNetwork();
-                commands = Global.guiConsole.callAttr(PyConstant.ANDROID_COMMANDS,
-                        new Kwarg("chain_type", ethNetwork),
-                        new Kwarg(PyConstant.ANDROID_ID, "112233"),
-                        new Kwarg(PyConstant.CALLBACK, getInstance()));
+                commands =
+                        Global.guiConsole.callAttr(
+                                PyConstant.ANDROID_COMMANDS,
+                                new Kwarg("chain_type", ethNetwork),
+                                new Kwarg(PyConstant.ANDROID_ID, "112233"),
+                                new Kwarg(PyConstant.CALLBACK, getInstance()));
             } catch (Exception ignored) {
                 ignored.printStackTrace();
+                Logger.e("异常：" + ignored.getMessage());
             }
         }
     }
@@ -50,7 +50,8 @@ public class Daemon {
         String[] info = event.split("=");
         String type = info[0];
         String msg = info[1];
-//        Log.i("onCallback", "==================" + type + "   ============================    " + msg);
+        //        Log.i("onCallback", "==================" + type + "   ============================
+        //    " + msg);
         if (PyConstant.CALLBACK_STATUS.equals(type)) {
             if (!TextUtils.isEmpty(msg) && msg.length() != 2) {
                 EventBus.getDefault().post(new SecondEvent(msg));
@@ -60,8 +61,7 @@ public class Daemon {
             // todo:
         } else if (PyConstant.CALLBACK_SERVER_STATUS.equals(event)) {
             // todo:
-//            Log.i("onCallback", "自定义节点添加+++++++++++++++++++++++    " + msg);
+            //            Log.i("onCallback", "自定义节点添加+++++++++++++++++++++++    " + msg);
         }
-
     }
 }

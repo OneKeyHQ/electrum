@@ -47,8 +47,8 @@ class HdWalletAssetAdapter(context: Context, appViewModel: AppWalletViewModel, d
       helper.setText(R.id.text_fiat, "≈ " + mSystemConfigManager.currentFiatSymbol + " " + strFiat)
     }
     helper.getView<View>(R.id.back_layout).setOnClickListener {
-      if (!Strings.isNullOrEmpty(item.walletName)) {
-        model.changeCurrentWallet(item.walletName)
+      if (!Strings.isNullOrEmpty(item.label)) {
+        model.changeCurrentWallet(item.label)
         TransactionDetailWalletActivity.start(
             mContext,
             "",
