@@ -74,6 +74,7 @@
                     android:focusable="true"
                     android:gravity="center_vertical"
                     android:text="@string/version_updates"
+                    android:textSize="@dimen/text_size"
                     android:textColor="@color/text" />
 
                 <TextView

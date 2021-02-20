@@ -293,7 +293,7 @@ public class SignActivity extends BaseActivity
         confirmDialog.show(getSupportFragmentManager(), "confirm");
     }
 
-    /** 签名逻辑处理 */
+    /** 签名逻辑处理 只有正常转出的钱包才可以签名 */
     private void dealSign(@NonNull String rawMessage) {
         if (signTransaction.isChecked()) {
             // sign transaction
