@@ -21,6 +21,7 @@
 #import "OKOneKeyPwdManager.h"
 #import "OKDeviceListViewController.h"
 #import "OKPINInputMethodController.h"
+#import "OKCSViewController.h"
 
 @interface OKMineViewController ()<UINavigationControllerDelegate,UITableViewDelegate,UITableViewDataSource,OKMineTableViewCellDelegate,UIGestureRecognizerDelegate,UINavigationControllerDelegate>
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
@@ -28,6 +29,7 @@
 @property (nonatomic,strong)NSArray *allMenuData;
 
 @property (weak, nonatomic) IBOutlet UILabel *bottomtipsLabel;
+@property (weak, nonatomic) IBOutlet UIView *CSView;
 
 @property (nonatomic,strong)YZAuthID *authIDControl;
 
@@ -86,6 +88,10 @@
     [attri appendAttributedString:string];
     self.bottomtipsLabel.attributedText = attri;
     self.bottomtipsLabel.alpha = 0.6;
+
+    [self.CSView setLayerRadius: self.CSView.height * 0.5];
+    UITapGestureRecognizer *CSTap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(openCS)];
+    [self.CSView addGestureRecognizer:CSTap];
 
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notiUpdatePassWordComplete) name:kNotiUpdatePassWordComplete object:nil];;
 
@@ -420,5 +426,9 @@
     [self tableView:self.tableView didSelectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:3]];
 }
 
+- (void)openCS {
+    OKCSViewController *CSVC = [OKCSViewController controllerWithStoryboard];
+    [self.navigationController pushViewController:CSVC animated:YES];
+}
 
 @end

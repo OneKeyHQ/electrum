@@ -512,3 +512,9 @@
 "wallet.btc.nativeSegwitDesc" = "以 bc1 开头，正在普及，转账手续费最低";
 "wallet.btc.normalAddr" = "普通地址 Legacy";
 "wallet.btc.normalAddrDesc" = "以 1 开头，全面普及，转账手续费中等";
+
+"cs" = "客服";
+"cs.title" = "客户支持";
+"cs.ticket" = "工单";
+"cs.ticket.submit" = "提交工单";
+"cs.ticket.history" = "查看历史工单";

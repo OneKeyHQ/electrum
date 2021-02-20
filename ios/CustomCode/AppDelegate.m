@@ -11,6 +11,8 @@
 #import "JPUSHService.h"
 #import <UserNotifications/UserNotifications.h>
 #import <AdSupport/AdSupport.h>
+@import SupportSDK;
+@import ZendeskCoreSDK;
 
 @interface AppDelegate () <JPUSHRegisterDelegate>
 @property (nonatomic,strong)MainViewController *mainVC;
@@ -26,6 +28,7 @@
 
     [self setupLanague];
     [self setupJPUSH:launchOptions];
+    [self setupZendesk];
 
     self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     self.window.rootViewController = self.mainVC;
@@ -57,6 +60,13 @@
     self.mainVC = nil;
     self.mainVC.isTabSettingVC = isSettingVC;
     self.window.rootViewController = self.mainVC;
+}
+
+- (void)setupZendesk {
+    [ZDKZendesk initializeWithAppId:@"7e7239e265d6bcb1017a4ab16f18faafcca77abb0e2fd03f" clientId:@"mobile_sdk_client_1ddf0a8fce788502dd31" zendeskUrl:@"https://onekey.zendesk.com"];
+    [ZDKSupport initializeWithZendesk:[ZDKZendesk instance]];
+    id<ZDKObjCIdentity> userIdentity = [[ZDKObjCAnonymous alloc] initWithName:nil email:nil];
+    [[ZDKZendesk instance] setIdentity:userIdentity];
 }
 
 - (void)setupJPUSH:(NSDictionary *)launchOptions {
@@ -106,6 +116,10 @@
   }
   completionHandler();  // 系统要求执行这个方法
 }
+
+- (void)jpushNotificationAuthorization:(JPAuthorizationStatus)status withInfo:(NSDictionary *)info {
+}
+
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
 
