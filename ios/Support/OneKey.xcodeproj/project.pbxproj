@@ -1037,6 +1037,7 @@
 		B016510525BFE0810037C6B4 /* OKDeviceChangePINController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKDeviceChangePINController.h; sourceTree = "<group>"; };
 		B016517125C057920037C6B4 /* OKURLSchemeHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKURLSchemeHandler.h; sourceTree = "<group>"; };
 		B016517225C057920037C6B4 /* OKURLSchemeHandler.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKURLSchemeHandler.m; sourceTree = "<group>"; };
+		B017B6A825E15B11006A91D4 /* OneKey.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; name = OneKey.entitlements; path = ../../Support/OneKey.entitlements; sourceTree = "<group>"; };
 		B01CB1C525C1141B0099F931 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		B01CB1D225C12F9A0099F931 /* WKWebView+Bypass.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "WKWebView+Bypass.h"; sourceTree = "<group>"; };
 		B01CB1D325C12F9A0099F931 /* WKWebView+Bypass.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "WKWebView+Bypass.m"; sourceTree = "<group>"; };
@@ -1241,6 +1242,7 @@
 		60796EEC19190F4100A9926B /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				B017B6A825E15B11006A91D4 /* OneKey.entitlements */,
 				BAA858D825AD52FB00A51CDE /* InfoPlist.strings */,
 				BA578E2A25ACA43D00EFE0AA /* main.m */,
 				BA578E2825ACA43C00EFE0AA /* OneKey-Info.plist */,
@@ -3033,7 +3035,7 @@
 					arm64,
 				);
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = OneKey/OneKey.entitlements;
+				CODE_SIGN_ENTITLEMENTS = ../Support/OneKey.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
@@ -3133,7 +3135,7 @@
 					arm64,
 				);
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = OneKey/OneKey.entitlements;
+				CODE_SIGN_ENTITLEMENTS = ../Support/OneKey.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
