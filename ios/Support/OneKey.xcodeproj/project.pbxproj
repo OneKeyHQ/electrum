@@ -1042,7 +1042,6 @@
 		B03A1A4225C90835004137F1 /* OKPINInputMethodController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKPINInputMethodController.m; sourceTree = "<group>"; };
 		B03A1A4525C91601004137F1 /* OKPINInputMethodCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKPINInputMethodCell.h; sourceTree = "<group>"; };
 		B03A1A4625C91601004137F1 /* OKPINInputMethodCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKPINInputMethodCell.m; sourceTree = "<group>"; };
-		B04F6E0525DE09C400FF377E /* OneKey.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = OneKey.entitlements; sourceTree = "<group>"; };
 		B04F6E0625DE573500FF377E /* OKBTCAddressTypeSelectController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKBTCAddressTypeSelectController.h; sourceTree = "<group>"; };
 		B04F6E0725DE573500FF377E /* OKBTCAddressTypeSelectController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKBTCAddressTypeSelectController.m; sourceTree = "<group>"; };
 		B058D88225B55662000EB27C /* OKResetDeviceWarningViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKResetDeviceWarningViewController.m; sourceTree = "<group>"; };
@@ -1228,7 +1227,6 @@
 		60796EEB19190F4100A9926B /* OneKey */ = {
 			isa = PBXGroup;
 			children = (
-				B04F6E0525DE09C400FF377E /* OneKey.entitlements */,
 				BA578E2E25ACA68700EFE0AA /* Images.xcassets */,
 				60F0BABF191FC868006EC268 /* app_packages */,
 				60796EEC19190F4100A9926B /* Supporting Files */,
@@ -3028,6 +3026,8 @@
 				);
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = OneKey/OneKey.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 4000003;
 				DEVELOPMENT_TEAM = 6M2QF4T7XG;
@@ -3108,6 +3108,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = so.onekey.testflight;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				STRIP_INSTALLED_PRODUCT = NO;
 				STRIP_STYLE = debugging;
 				USER_HEADER_SEARCH_PATHS = "";
@@ -3125,6 +3126,8 @@
 				);
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = OneKey/OneKey.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 4000003;
 				DEVELOPMENT_TEAM = 6M2QF4T7XG;
@@ -3208,6 +3211,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = so.onekey.testflight;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				STRIP_INSTALLED_PRODUCT = NO;
 				STRIP_STYLE = debugging;
 				WRAPPER_EXTENSION = app;

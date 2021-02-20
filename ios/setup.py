@@ -55,7 +55,7 @@ setup(
         'qrcode==6.1', 'QtPy==1.9.0', 'six==1.15.0', 'typing-extensions==3.7.4.2', 'yarl==1.4.2', 'zipp==3.1.0', 'colorama==0.4.3',
         'coincurve==13.0.0', 'pycparser==2.20', 'asn1crypto==0.24.0', 'web3==5.13.0', 'eth-account==0.5.4', 'eth-keys==0.3.3', 'eth-utils==1.9.5', 'lru-dict==1.1.6',
         'eth-abi==2.1.1', 'hexbytes==0.2.1', 'cytoolz==0.11.0', 'eth-rlp==0.2.1', 'attrdict==2.0.1', 'eth-typing==2.2.2',
-        'parsimonious==0.8.1',  'rlp==2.0.0', 'rubicon-objc==0.4.0',  # 'cffi==1.13.2', 'eth-hash==0.2.0',
+        'parsimonious==0.8.1',  'rlp==2.0.0', 'rubicon-objc==0.4.0', 'peewee==3.14.0'   # 'cffi==1.13.2', 'eth-hash==0.2.0',
     ],
     options={
         'app': {
