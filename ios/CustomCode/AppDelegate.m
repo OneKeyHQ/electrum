@@ -63,7 +63,7 @@
 }
 
 - (void)setupZendesk {
-    [ZDKZendesk initializeWithAppId:@"7e7239e265d6bcb1017a4ab16f18faafcca77abb0e2fd03f" clientId:@"mobile_sdk_client_1ddf0a8fce788502dd31" zendeskUrl:@"https://onekey.zendesk.com"];
+    [ZDKZendesk initializeWithAppId:OK_ZENDESK_APPID clientId:OK_ZENDESK_CLIENTID zendeskUrl:OK_ZENDESK_URL];
     [ZDKSupport initializeWithZendesk:[ZDKZendesk instance]];
     id<ZDKObjCIdentity> userIdentity = [[ZDKObjCAnonymous alloc] initWithName:nil email:nil];
     [[ZDKZendesk instance] setIdentity:userIdentity];
@@ -81,7 +81,7 @@
 
     NSString *advertisingId = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
     [JPUSHService setupWithOption:launchOptions
-                             appKey:@"8deab53d077ef22770b7521a"
+                             appKey:OK_JPUSH_APPKEY
                             channel:@"NA"
                    apsForProduction:NO
               advertisingIdentifier:advertisingId];
