@@ -14,6 +14,7 @@ pod 'MBProgressHUD', '1.2.0'
 pod 'TYAttributedLabel', '2.6.9'
 pod 'iOSDFULibrary', '4.9.0'
 pod 'JPush', '3.4.0'
+pod 'ZendeskSupportSDK', '5.2.0'
 end
 post_install do |installer|
      installer.pods_project.targets.each do |target|
