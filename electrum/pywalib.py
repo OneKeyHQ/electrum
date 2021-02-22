@@ -207,10 +207,14 @@ class PyWalib:
             for server in PyWalib.market_server:
                 for name, url in server.items():
                     if name == "coinbase":
-                        url += from_cur
-                        response = requests.get(url, timeout=5, verify=False)
-                        json = response.json()
-                        return [str(Decimal(rate)) for (ccy, rate) in json["data"]["rates"].items() if ccy == to_cur][0]
+                        try:
+                            url += from_cur
+                            response = requests.get(url, timeout=5, verify=False)
+                            json = response.json()
+                            return [str(Decimal(rate)) for (ccy, rate) in json["data"]["rates"].items()
+                                    if ccy == to_cur][0]
+                        except BaseException:
+                            pass
                     # if name == "binance":
                     #     url += from_cur.upper()+to_cur.upper()
                     #     try:
@@ -226,7 +230,7 @@ class PyWalib:
                             obj = response.json()
                             #out_price[name] = obj['data']['price']
                             return obj['data']['price']
-                        except BaseException as e:
+                        except BaseException:
                             pass
                     # elif name == 'huobi':
                     #     url += from_cur.lower() + to_cur.lower()
