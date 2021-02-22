@@ -77,13 +77,11 @@
     [self.fromAddressBg setLayerBoarderColor:HexColor(0xF2F2F2) width:1 radius:30];
     [self.toBg setLayerBoarderColor:HexColor(0xF2F2F2) width:1 radius:20];
     [self.toAddressBg setLayerBoarderColor:HexColor(0xF2F2F2) width:1 radius:30];
-    
-    self.fromAddressLabel.font = [UIFont systemFontOfSize:14];
-    self.toAddressLabel.font = [UIFont systemFontOfSize:14];
-    
+
+
     UITapGestureRecognizer *tapFrom = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapFrom)];
     [self.fromAddressLabel addGestureRecognizer:tapFrom];
-    
+
     UITapGestureRecognizer *tapTo = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapTo)];
     [self.toAddressLabel addGestureRecognizer:tapTo];
 }
@@ -101,17 +99,17 @@
     self.amountLabel.text = [amountStr containsString:@"-"] ? amountStr : [NSString stringWithFormat:@"+%@",amountStr];
     self.statusLabel.text = [self getStatusLabel:[self.txInfo safeStringForKey:@"tx_status"]];
     self.txNumLabel.text = [self.txInfo safeStringForKey:@"txid"];
-    
+
     NSArray *input_addr_array = self.txInfo[@"input_addr"];
     NSDictionary *input_addr_dict = [input_addr_array firstObject];
     [self.fromAddressLabel appendText:[input_addr_dict safeStringForKey:@"address"]];
     [self.fromAddressLabel appendImage:[UIImage imageNamed:@"copy_small"]];
-    
+
     NSArray *output_addr_array = self.txInfo[@"output_addr"];
     NSDictionary *output_addr_dict = [output_addr_array firstObject];
     [self.toAddressLabel appendText:[output_addr_dict safeStringForKey:@"addr"]];
     [self.toAddressLabel appendImage:[UIImage imageNamed:@"copy_small"]];
-    
+
     self.blockNumLabel.text = [self.txInfo safeStringForKey:@"height"];
     NSString *feeresult = [self.txInfo safeStringForKey:@"fee"];
     if ([feeresult containsString:@"("]) {

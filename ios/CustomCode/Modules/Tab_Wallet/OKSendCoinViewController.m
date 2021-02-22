@@ -331,10 +331,27 @@ typedef enum {
 }
 - (IBAction)customBtnClick:(UIButton *)sender {
     NSString *dsize = @"";
-    dsize = [self.defaultFeeInfoModel.normal safeStringForKey:@"size"];
+    NSString *feerate = @"";
+    switch (self.currentFeeType) {
+        case OKFeeTypeFast:
+            feerate = [self.defaultFeeInfoModel.fast safeStringForKey:@"feerate"];
+            dsize = [self.defaultFeeInfoModel.fast safeStringForKey:@"size"];
+            break;
+        case OKFeeTypeRecommend:
+            feerate = [self.defaultFeeInfoModel.normal safeStringForKey:@"feerate"];
+            dsize = [self.defaultFeeInfoModel.normal safeStringForKey:@"size"];
+            break;
+        case OKFeeTypeSlow:
+            feerate = [self.defaultFeeInfoModel.slow safeStringForKey:@"feerate"];
+            dsize = [self.defaultFeeInfoModel.slow safeStringForKey:@"size"];
+            break;
+
+        default:
+            break;
+    }
     NSString *lowest = [self.defaultFeeInfoModel.slow safeStringForKey:@"feerate"];
     OKWeakSelf(self)
-    [OKWalletInputFeeView showWalletCustomFeeDsize:dsize lowfeerate:lowest sure:^(NSDictionary *customFeeDict, NSString *fiat, NSString *feeBit) {
+    [OKWalletInputFeeView showWalletCustomFeeDsize:dsize feerate:feerate lowfeerate:lowest sure:^(NSDictionary *customFeeDict, NSString *fiat, NSString *feeBit) {
         weakself.customFeeDict = customFeeDict;
         weakself.fiatCustom = fiat;
         weakself.custom = YES;
