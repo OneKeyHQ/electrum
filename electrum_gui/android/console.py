@@ -991,7 +991,7 @@ class AndroidCommands(commands.Commands):
             )
 
         gas_limit = Decimal(gas_limit)
-        last_price = PyWalib.get_coin_price(coin) or "0"
+        last_price = PyWalib.get_coin_price(self.pywalib.coin_symbol) or "0"
 
         for val in estimate_gas_prices.values():
             val["gas_limit"] = gas_limit
@@ -1761,8 +1761,8 @@ class AndroidCommands(commands.Commands):
         tx = self.pywalib.get_transaction_info(tx_hash)
         fiat = self.daemon.fx.format_amount_and_units(tx.pop("fiat") * COIN) or f"0 {self.ccy}"
         fee_fiat = self.daemon.fx.format_amount_and_units(tx.pop("fee_fiat") * COIN) or f"0 {self.ccy}"
-        tx["amount"] = f"{tx['amount']} ETH ({fiat})"
-        tx["fee"] = f"{tx['fee']} ETH ({fee_fiat})"
+        tx["amount"] = f"{tx['amount']} {self.pywalib.coin_symbol} ({fiat})"
+        tx["fee"] = f"{tx['fee']} {self.pywalib.coin_symbol} ({fee_fiat})"
 
         return json.dumps(tx, cls=DecimalEncoder)
 
@@ -3087,22 +3087,24 @@ class AndroidCommands(commands.Commands):
                 wallet = wallet_info["wallet"]
                 coin = self._detect_wallet_coin(wallet)
                 if coin in self.coins:
-                    address = wallet.get_addresses()[0]
-                    try:
-                        txids = self.pywalib.get_all_txid(address)
-                    except Exception:
-                        txids = None
+                    with self.pywalib.override_server(self.coins[coin]):
+                        address = wallet.get_addresses()[0]
+                        try:
+                            txids = self.pywalib.get_all_txid(address)
+                        except Exception:
+                            txids = None
 
-                    if txids:
-                        balance_info = wallet.get_all_balance(address, coin)
-                        balance_info = balance_info.get(coin)
-                        if not balance_info:
+                        if txids:
+                            balance_info = wallet.get_all_balance(address, self.coins[coin]["symbol"])
+                            balance_info = balance_info.get(coin)
+                            if not balance_info:
+                                continue
+
+                            fiat = self.daemon.fx.format_amount_and_units(
+                                balance_info["fiat"] * COIN) or f"0 {self.ccy}"
+                            balance = f"{balance_info['balance']} ({fiat})"
+                            self.update_recover_list(recovery_list, balance, wallet, wallet.get_name(), coin)
                             continue
-
-                        fiat = self.daemon.fx.format_amount_and_units(balance_info["fiat"] * COIN) or f"0 {self.ccy}"
-                        balance = f"{balance_info['balance']} ({fiat})"
-                        self.update_recover_list(recovery_list, balance, wallet, wallet.get_name(), coin)
-                        continue
                 else:
                     history = reversed(wallet.get_history())
                     for item in history:
@@ -3289,8 +3291,8 @@ class AndroidCommands(commands.Commands):
 
             if "ANDROID_DATA" in os.environ:
                 for coin, info in self.coins.items():
-                    PyWalib.set_server(info)
-                    self.recovery_wallet(xpub=xpub, hw=hw, path=path, coin=coin)
+                    with PyWalib.override_server(info):
+                        self.recovery_wallet(xpub=xpub, hw=hw, path=path, coin=coin)
         else:
             xpub = self.get_hd_wallet_encode_seed(seed=seed, coin="btc")
             self.recovery_wallet(seed, password, passphrase, xpub=xpub, hw=hw)
@@ -3298,8 +3300,8 @@ class AndroidCommands(commands.Commands):
             if "ANDROID_DATA" in os.environ:
                 for coin, info in self.coins.items():
                     xpub = self.get_hd_wallet_encode_seed(seed=seed, coin=coin)
-                    PyWalib.set_server(info)
-                    self.recovery_wallet(seed, password, passphrase, coin=coin, xpub=xpub, hw=hw)
+                    with PyWalib.override_server(info):
+                        self.recovery_wallet(seed, password, passphrase, coin=coin, xpub=xpub, hw=hw)
 
         recovery_list = self.filter_wallet()
         wallet_data = self.filter_wallet_with_account_is_zero()
@@ -3492,27 +3494,29 @@ class AndroidCommands(commands.Commands):
                 wallet_info = {"name": wallet.get_name(), "label": str(wallet)}
                 coin = self._detect_wallet_coin(wallet)
                 if coin in self.coins:
-                    checksum_from_address = self.pywalib.web3.toChecksumAddress(wallet.get_addresses()[0])
-                    balances_info = wallet.get_all_balance(
-                        checksum_from_address, self.coins[coin]["symbol"]
-                    )
-                    wallet_balances = []
-                    for symbol, info in balances_info.items():
-                        copied_info = dict(info)
-                        copied_info["fiat"] = (
-                            self.daemon.fx.format_amount_and_units(copied_info["fiat"] * COIN) or f"0 {self.ccy}"
+                    with self.pywalib.override_server(self.coins[coin]):
+                        checksum_from_address = self.pywalib.web3.toChecksumAddress(wallet.get_addresses()[0])
+                        balances_info = wallet.get_all_balance(
+                            checksum_from_address, self.coins[coin]["symbol"]
                         )
-                        wallet_balances.append(
-                            {
-                                "coin": symbol,
-                                **copied_info,
-                            }
-                        )
-                        fiat = Decimal(copied_info["fiat"].split()[0].replace(",", ""))
-                        all_balance += fiat
+                        wallet_balances = []
+                        for symbol, info in balances_info.items():
+                            copied_info = dict(info)
+                            copied_info["fiat"] = (
+                                    self.daemon.fx.format_amount_and_units(
+                                        copied_info["fiat"] * COIN) or f"0 {self.ccy}"
+                            )
+                            wallet_balances.append(
+                                {
+                                    "coin": symbol,
+                                    **copied_info,
+                                }
+                            )
+                            fiat = Decimal(copied_info["fiat"].split()[0].replace(",", ""))
+                            all_balance += fiat
 
-                    wallet_info["wallets"] = wallet_balances
-                    all_wallet_info.append(wallet_info)
+                        wallet_info["wallets"] = wallet_balances
+                        all_wallet_info.append(wallet_info)
                 else:
                     c, u, x = wallet.get_balance()
                     balance = self.daemon.fx.format_amount_and_units(c + u) or f"0 {self.ccy}"

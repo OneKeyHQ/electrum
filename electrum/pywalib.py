@@ -5,6 +5,7 @@ import math
 import os
 import json
 import time
+from contextlib import contextmanager
 from enum import Enum
 from os.path import expanduser
 from typing import List
@@ -151,6 +152,7 @@ headers = {
 
 class PyWalib:
     server_config = None
+    coin_symbol = None
     web3 = None
     market_server = None
     tx_list_server = None
@@ -173,7 +175,7 @@ class PyWalib:
         PyWalib.cursor.execute("CREATE TABLE IF NOT EXISTS txlist (tx_hash TEXT PRIMARY KEY, address TEXT, time INTEGER, tx TEXT)")
 
     def init_symbols(self):
-        symbol_list = self.config.get("symbol_list", {'ETH':'','EOS':''})
+        symbol_list = self.config.get("symbol_list", {'ETH':'','HT':'', 'BNB': ''})
         for symbol in symbol_list:
             PyWalib.symbols_price[symbol] = PyWalib.get_currency(symbol, 'BTC')
         global symbol_ticker
@@ -255,6 +257,7 @@ class PyWalib:
         PyWalib.market_server = info['Market']
         PyWalib.tx_list_server = info['TxliServer']
         PyWalib.gas_server = info['GasServer']
+        PyWalib.coin_symbol = info["symbol"]
         PyWalib.server_config = info
         for i in info['Provider']:
             if PyWalib.chain_type in i:
@@ -264,6 +267,17 @@ class PyWalib:
         PyWalib.chain_id = chain_id
         if hasattr(PyWalib, "__explorer__"):
             delattr(PyWalib, "__explorer__")
+
+    @classmethod
+    @contextmanager
+    def override_server(cls, config):
+        cur_config = cls.server_config
+
+        try:
+            cls.set_server(config)
+            yield
+        finally:
+            cls.set_server(cur_config)
 
     @staticmethod
     def get_coin_price(from_cur):
@@ -521,7 +535,7 @@ class PyWalib:
             txs = [i for i in txs if i.target and i.target.lower() == address]
 
         output_txs = []
-        last_price = Decimal(cls.get_coin_price("eth") or "0")
+        last_price = Decimal(cls.get_coin_price(cls.coin_symbol) or "0")
 
         for tx in txs:
             block_header = tx.block_header
@@ -561,7 +575,7 @@ class PyWalib:
     @classmethod
     def get_transaction_info(cls, txid) -> dict:
         tx = cls.get_explorer().get_transaction_by_txid(txid)
-        last_price = Decimal(cls.get_coin_price("eth") or "0")
+        last_price = Decimal(cls.get_coin_price(cls.coin_symbol) or "0")
         amount = Decimal(cls.web3.fromWei(tx.value, "ether"))
         fiat = last_price * amount
         fee = Decimal(cls.web3.fromWei(tx.fee.usage * tx.fee.price_per_unit, "ether"))

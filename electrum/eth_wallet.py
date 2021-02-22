@@ -198,7 +198,7 @@ class Abstract_Eth_Wallet(ABC):
             return self.total_balance["balance_info"]
 
         last_price = PyWalib.get_coin_price(from_coin) or "0"
-        eth, balance = PyWalib.get_balance(wallet_address)
+        _, balance = PyWalib.get_balance(wallet_address)
 
         balance_info = {
             self.coin: {'balance': Decimal(balance), 'fiat': Decimal(balance) * Decimal(last_price)}
