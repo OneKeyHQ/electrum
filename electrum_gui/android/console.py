@@ -697,7 +697,7 @@ class AndroidCommands(commands.Commands):
             temp_path = self.get_temp_file()
             path = self._wallet_path(temp_path)
             wallet_type = "%s-hw-%s-%s" % (coin, self.m, self.n)
-            storage, db = self.wizard.create_storage(path=path, password=None, hide_type=hide_type, coin=coin)
+            storage, db = self.wizard.create_storage(path=path, password=None, coin=coin)
         except Exception as e:
             raise BaseException(e)
         if storage:
@@ -709,11 +709,11 @@ class AndroidCommands(commands.Commands):
             wallet.status_flag = "btc-hw-%s-%s" % (self.m, self.n)
             wallet.hide_type = hide_type
             wallet.set_name(name)
+            new_name = self.get_unique_path(wallet)
+            wallet.storage.set_path(self._wallet_path(new_name))
             wallet.save_db()
             self.daemon.add_wallet(wallet)
             wallet.update_password(old_pw=None, new_pw=None, str_pw=self.android_id, encrypt_storage=True)
-            self.update_wallet_name(temp_path, self.get_unique_path(wallet))
-            wallet = self.get_wallet_by_name(self.get_unique_path(wallet))
             if "btc" == coin:
                 wallet.start_network(self.daemon.network)
             # if hd:
