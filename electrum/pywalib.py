@@ -31,6 +31,7 @@ eth_servers = {}
 
 ETHERSCAN_API_KEY = "R796P9T31MEA24P8FNDZBCA88UHW8YCNVW"
 INFURA_PROJECT_ID = "f001ce716b6e4a33a557f74df6fe8eff"
+CMC_API_KEY = "e134e277-0927-4e00-8fb5-0e14598516b3"
 ROUND_DIGITS = 3
 DEFAULT_GAS_PRICE_WEI = int(20 * 1e9)
 DEFAULT_GAS_LIMIT = 21000
@@ -237,6 +238,14 @@ class PyWalib:
                     #         pass
                     # elif name == 'ok':
                     #     print("TODO")
+                    elif name == "cmc":
+                        try:
+                            response = requests.get(url, headers={"X-CMC_PRO_API_KEY": CMC_API_KEY},
+                                                    params={"symbol": from_cur, "convert": to_cur}).json()
+                            price = response["data"][from_cur.upper()][0]["quote"][to_cur.upper()]["price"]
+                            return price
+                        except BaseException:
+                            pass
 
             # return_price = 0.0
             # for price in out_price.values():
