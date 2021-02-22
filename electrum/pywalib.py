@@ -495,7 +495,7 @@ class PyWalib:
                 assert url
                 explorer = TrezorETH(url)
             elif servers.get("etherscan-testnet"):
-                explorer = Etherscan(servers["etherscan-testnet"])
+                explorer = Etherscan(servers["etherscan-testnet"], ETHERSCAN_API_KEY)
             else:
                 provider = None
                 for i in cls.server_config.get("Provider", ()):
