@@ -3539,11 +3539,12 @@ class AndroidCommands(commands.Commands):
 
     def check_exist_file(self, wallet_obj):
         for _path, exist_wallet in self.daemon._wallets.items():
-            if wallet_obj.get_addresses()[0] in exist_wallet.get_addresses()[0]:
-                if exist_wallet.is_watching_only() and not wallet_obj.is_watching_only():
-                    raise ReplaceWatchonlyWallet(exist_wallet)
-                else:
-                    raise BaseException(FileAlreadyExist())
+            if wallet_obj.get_addresses()[0] not in exist_wallet.get_addresses():
+                continue
+            if exist_wallet.is_watching_only() and not wallet_obj.is_watching_only():
+                raise ReplaceWatchonlyWallet(exist_wallet)
+            elif self._detect_wallet_coin(exist_wallet) == self._detect_wallet_coin(wallet_obj):
+                raise BaseException(FileAlreadyExist())
 
     def set_rbf(self, status_rbf):
         """
