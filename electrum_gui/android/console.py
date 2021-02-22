@@ -8,7 +8,6 @@ import os
 import random
 import string
 import threading
-import time
 from code import InteractiveConsole
 from decimal import Decimal
 from enum import Enum
@@ -72,7 +71,7 @@ from electrum.util import (
 from electrum.util import user_dir as get_dir
 from electrum.wallet import Imported_Wallet, Standard_Wallet, Wallet
 from electrum.wallet_db import WalletDB
-from electrum_gui.android import hardware
+from electrum_gui.android import hardware, wallet_context
 from electrum_gui.common import the_begging
 
 from .create_wallet_info import CreateWalletInfo
@@ -223,7 +222,7 @@ class AndroidCommands(commands.Commands):
             ran_str = "".join(random.sample(string.ascii_letters + string.digits, 8))
             self.config.set_key("ra_str", ran_str)
         self.android_id = android_id + ran_str
-        self.init_local_wallet_info()
+        self.wallet_context = wallet_context.WalletContext(self.config, self.user_dir)
         if self.network:
             interests = [
                 "wallet_updated",
@@ -299,34 +298,6 @@ class AndroidCommands(commands.Commands):
     def stop_loop(self):
         self.asyncio_loop.call_soon_threadsafe(self._stop_loop.set_result, 1)
         self._loop_thread.join(timeout=1)
-
-    def update_local_wallet_info(self, name, wallet_type):
-        wallet_info = {}
-        wallet_info["type"] = wallet_type
-        wallet_info["time"] = time.time()
-        # wallet_info['xpubs'] = keystores
-        wallet_info["seed"] = ""
-        self.local_wallet_info[name] = wallet_info
-        self.config.set_key("all_wallet_type_info", self.local_wallet_info)
-
-    def init_local_wallet_info(self):
-        try:
-            self.local_wallet_info = self.config.get("all_wallet_type_info", {})
-            new_wallet_info = {}
-            name_wallets = [name for name in os.listdir(self._wallet_path())]
-            for name, info in self.local_wallet_info.items():
-                if name_wallets.__contains__(name):
-                    if not info.__contains__("time"):
-                        info["time"] = time.time()
-                    if not info.__contains__("xpubs"):
-                        info["xpubs"] = []
-                    # if not info.__contains__('seed'):
-                    info["seed"] = ""
-                    new_wallet_info[name] = info
-            self.local_wallet_info = new_wallet_info
-            self.config.set_key("all_wallet_type_info", self.local_wallet_info)
-        except BaseException as e:
-            raise e
 
     def on_fee(self, event, *arg):
         try:
@@ -523,17 +494,9 @@ class AndroidCommands(commands.Commands):
         self.daemon.join()
         self.daemon_running = False
 
-    def get_wallet_type(self, name):
-        return self.local_wallet_info.get(name)
-
     def set_hd_wallet(self, wallet_obj):
         if self.hd_wallet is None:
             self.hd_wallet = wallet_obj
-
-    def is_have_hd_wallet(self, wallet_type):
-        return (-1 != wallet_type.find("-hd-") or -1 != wallet_type.find("-derived-")) and -1 == wallet_type.find(
-            "-hw-"
-        )
 
     def load_wallet(self, name, password=None):
         """
@@ -576,14 +539,8 @@ class AndroidCommands(commands.Commands):
             else:
                 wallet = Wallet(db, storage, config=self.config)
                 wallet.start_network(self.network)
-            if name in self.local_wallet_info:
-                wallet_type = self.local_wallet_info.get(name)["type"]
-                if self.is_have_hd_wallet(wallet_type):
-                    self.set_hd_wallet(wallet)
-                # if -1 != wallet_type.find('btc-hd-'):
-                #     self.btc_derived_info.set_hd_wallet(wallet)
-                # elif -1 != wallet_type.find('%s-hd' %wallet_type[0:3]):
-                #     self.coins[wallet_type[0:3]]['derivedInfoObj'].set_hd_wallet(wallet)
+            if self.wallet_context.is_hd(name):
+                self.set_hd_wallet(wallet)
             self.daemon.add_wallet(wallet)
 
     def close_wallet(self, name=None):
@@ -741,7 +698,7 @@ class AndroidCommands(commands.Commands):
             wallet_type = "%s-hw-derived-%s-%s" % (coin, self.m, self.n)
 
             if not hide_type:
-                self.update_local_wallet_info(self.get_unique_path(wallet), wallet_type)
+                self.wallet_context.set_wallet_type(self.get_unique_path(wallet), wallet_type)
             self.wallet = wallet
             self.wallet_name = wallet.basename()
             print("console:create_multi_wallet:wallet_name = %s---------" % self.wallet_name)
@@ -2495,8 +2452,7 @@ class AndroidCommands(commands.Commands):
         return self.daemon._wallets[self._wallet_path(name)]
 
     def get_xpub_by_name(self, name, wallet_obj):
-        wallet_type = self.get_wallet_type(name)["type"]
-        if (-1 != wallet_type.find("-hd-") or -1 != wallet_type.find("-derived-")) and -1 == wallet_type.find("-hw-"):
+        if self.wallet_context.is_hd(name):
             return self.get_hd_wallet_encode_seed()
         else:
             return wallet_obj.keystore.xpub
@@ -2731,7 +2687,7 @@ class AndroidCommands(commands.Commands):
             self.daemon.add_wallet(wallet)
             if coin == "btc":
                 wallet.start_network(self.daemon.network)
-            self.update_local_wallet_info(self.get_unique_path(wallet), wallet_type)
+            self.wallet_context.set_wallet_type(self.get_unique_path(wallet), wallet_type)
             if derived_flag:
                 self.set_hd_wallet(wallet)
                 self.update_devired_wallet_info(
@@ -3072,7 +3028,7 @@ class AndroidCommands(commands.Commands):
                             wallet.get_name(),
                             coin,
                         )
-                    self.update_local_wallet_info(self.get_unique_path(wallet), wallet_type)
+                    self.wallet_context.set_wallet_type(self.get_unique_path(wallet), wallet_type)
         self.recovery_wallets.clear()
 
     def delete_derived_wallet(self):
@@ -3084,9 +3040,7 @@ class AndroidCommands(commands.Commands):
                         wallet_obj = self.daemon._wallets[self._wallet_path(key)]
                         self.delete_wallet_devired_info(wallet_obj)
                         self.delete_wallet_from_deamon(self._wallet_path(key))
-                        if self.local_wallet_info.__contains__(key):
-                            self.local_wallet_info.pop(key)
-                            self.config.set_key("all_wallet_type_info", self.local_wallet_info)
+                        self.wallet_context.remove_type_info(key)
                 except Exception as e:
                     raise BaseException(e)
         self.hd_wallet = None
@@ -3258,15 +3212,14 @@ class AndroidCommands(commands.Commands):
         if self.hd_wallet is None:
             wallets = self.daemon.get_wallets()
             for key, wallet in wallets.items():
-                if self.local_wallet_info.__contains__(self.get_unique_path(wallet)):
-                    wallet_info = self.local_wallet_info.get(self.get_unique_path(wallet))
-                    wallet_type = wallet_info["type"]
-                    if self.is_have_hd_wallet(wallet_type):
-                        self.hd_wallet = wallet
-                        return wallet
-            raise BaseException(UnavaiableHdWallet())
-        else:
-            return self.hd_wallet
+                address_digest = self.get_unique_path(wallet)
+                if self.wallet_context.is_hd(address_digest):
+                    self.hd_wallet = wallet
+                    break
+            else:
+                raise BaseException(UnavaiableHdWallet())
+
+        return self.hd_wallet
 
     def get_hd_wallet_encode_seed(self, seed=None, coin="", passphrase=""):
         if seed is not None:
@@ -4081,25 +4034,15 @@ class AndroidCommands(commands.Commands):
 
         """
 
-        name_wallets = sorted([name for name in os.listdir(self._wallet_path())])
-        name_info = {}
-        for name in name_wallets:
-            name_info[name] = (
-                self.local_wallet_info.get(name)
-                if self.local_wallet_info.__contains__(name)
-                else {"type": "unknow", "time": time.time(), "xpubs": [], "seed": ""}
-            )
-
-        name_info = sorted(name_info.items(), key=lambda item: item[1]["time"], reverse=True)
         wallet_infos = []
-        for key, value in name_info:
+        for key, wallet_type in self.wallet_context.get_stored_wallets_types():
             if -1 != key.find(".tmp.") or -1 != key.find(".tmptest."):
                 continue
             temp = {}
             wallet = self.daemon.wallets[self._wallet_path(key)]
             device_id = self.get_device_info(wallet) if isinstance(wallet.keystore, Hardware_KeyStore) else ""
             wallet_info = {
-                "type": value["type"],
+                "type": wallet_type,
                 "addr": wallet.get_addresses()[0],
                 "name": self.get_unique_path(wallet),
                 "label": wallet.get_name(),
@@ -4127,8 +4070,7 @@ class AndroidCommands(commands.Commands):
             return bool(history)
 
     def reset_config_info(self):
-        self.local_wallet_info = {}
-        self.config.set_key("all_wallet_type_info", self.local_wallet_info)
+        self.wallet_context.clear_type_info()
         self.derived_info = {}
         self.config.set_key("derived_info", self.derived_info)
         self.backup_info = {}
@@ -4171,22 +4113,18 @@ class AndroidCommands(commands.Commands):
 
         try:
             wallet = self.daemon._wallets[self._wallet_path(name)]
-            if self.local_wallet_info.__contains__(name):
-                wallet_info = self.local_wallet_info.get(name)
-                wallet_type = wallet_info["type"]
 
-            if not wallet.is_watching_only() and -1 == wallet_type.find("-hw-"):
+            if not wallet.is_watching_only() and not self.wallet_context.is_hw(name):
                 self.check_password(password=password)
+
             if hd is not None:
                 self.delete_derived_wallet()
             else:
-                if "-derived-" in wallet_type:
-                    hw = "-hw-" in wallet_type
+                if self.wallet_context.is_derived(name):
+                    hw = self.wallet_context.is_hw(name)
                     self.delete_wallet_devired_info(wallet, hw=hw)
-
                 self.delete_wallet_from_deamon(self._wallet_path(name))
-                self.local_wallet_info.pop(name)
-                self.config.set_key("all_wallet_type_info", self.local_wallet_info)
+                self.wallet_context.remove_type_info(name)
             # os.remove(self._wallet_path(name))
         except Exception as e:
             raise BaseException(e)
