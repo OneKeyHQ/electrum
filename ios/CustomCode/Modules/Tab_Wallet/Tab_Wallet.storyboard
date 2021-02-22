@@ -1600,7 +1600,7 @@
                                                             <outlet property="delegate" destination="PTE-MU-2WW" id="ghR-Xs-net"/>
                                                         </connections>
                                                     </textField>
-                                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aPt-LU-eyh">
+                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aPt-LU-eyh">
                                                         <rect key="frame" x="358" y="72" width="36" height="24"/>
                                                         <constraints>
                                                             <constraint firstAttribute="width" constant="36" id="rv7-MP-buQ"/>

@@ -201,7 +201,7 @@
                                         }];
                                     } else if (state == YZAuthIDStateSuccess) {
                                         NSString *pwd = [kOneKeyPwdManager getOneKeyPassWord];
-                                        [weakself deleteWalletPwd:pwd];;
+                                        [weakself deleteWalletPwd:pwd];
                                     }
                                 }];
                             }else{
@@ -365,21 +365,19 @@
             [allDataM addObject:securityGroup];
         }
 
-        if (_walletType == OKWalletTypeIndependent || _walletType == OKWalletTypeHardware || _walletType == OKWalletTypeMultipleSignature  || _walletType == OKWalletTypeObserve) {
-            NSMutableArray *twoGroup = [NSMutableArray array];
-            OKWalletDetailModel *modelDel = [OKWalletDetailModel new];
-            modelDel.titleStr = MyLocalizedString(@"To delete the wallet", nil);
-            modelDel.rightLabelStr = @"";
-            modelDel.isShowCopy = NO;
-            modelDel.isShowSerialNumber = NO;
-            modelDel.isShowArrow = YES;
-            modelDel.isShowDesc = NO;
-            modelDel.clickType = OKClickTypeDeleteWallet;
-            modelDel.leftLabelColor = HexColor(0xEB5757);
-            modelDel.rightLabelColor = HexColor(0x9FA6AD);
-            [twoGroup addObject:modelDel];
-            [allDataM addObject:twoGroup];
-        }
+        NSMutableArray *twoGroup = [NSMutableArray array];
+        OKWalletDetailModel *modelDel = [OKWalletDetailModel new];
+        modelDel.titleStr = MyLocalizedString(@"To delete the wallet", nil);
+        modelDel.rightLabelStr = @"";
+        modelDel.isShowCopy = NO;
+        modelDel.isShowSerialNumber = NO;
+        modelDel.isShowArrow = YES;
+        modelDel.isShowDesc = NO;
+        modelDel.clickType = OKClickTypeDeleteWallet;
+        modelDel.leftLabelColor = HexColor(0xEB5757);
+        modelDel.rightLabelColor = HexColor(0x9FA6AD);
+        [twoGroup addObject:modelDel];
+        [allDataM addObject:twoGroup];
 
         _allData = allDataM;
     }
@@ -421,7 +419,7 @@
     if (!_groupNameArray) {
         switch (_walletType) {
             case OKWalletTypeHD:
-                _groupNameArray = @[];
+                _groupNameArray = @[@"",MyLocalizedString(@"Dangerous operation", nil)];
                 break;
             case OKWalletTypeIndependent:
                 _groupNameArray = @[@"",MyLocalizedString(@"security", nil),MyLocalizedString(@"Dangerous operation", nil)];

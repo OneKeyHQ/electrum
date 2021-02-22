@@ -153,7 +153,7 @@ typedef enum {
 }
 - (void)passwordInputViewEndInput:(CLPasswordInputView *)passwordInputView {
     //NSLog(@"结束输入");
- 
+
 }
 
 #pragma mark - UINavigationControllerDelegate
@@ -189,12 +189,17 @@ typedef enum {
 
 - (void)validationPwd:(NSString *)pwd
 {
+    OKWeakSelf(self)
     id result = [kPyCommandsManager callInterface:kInterfacecheck_password parameter:@{@"password":pwd}];
     if (result != nil) {
         if (self.block) {
-            self.block([pwd copy]);
+            NSString * bpwd = [pwd copy];
             if (_isDis == YES) {
-                [self dismissViewControllerAnimated:YES completion:nil];
+                [weakself dismissViewControllerAnimated:YES completion:^{
+                    weakself.block(bpwd);
+                }];
+            }else{
+                self.block(bpwd);
             }
         }
     }

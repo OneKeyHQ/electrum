@@ -490,10 +490,16 @@ static dispatch_once_t once;
         NSString *stronger_mnemonic = [parameter safeStringForKey:@"stronger_mnemonic"];
         PyObject *args =  Py_BuildValue("(s)", [path UTF8String]);
         PyObject *kwargs;
-        if (stronger_mnemonic.length == 0) {
-            kwargs = Py_BuildValue("{s:s}", "label", [label UTF8String]);
+        NSString *language = @"english";
+        if ([OKLocalizableManager getCurrentLanguage] == AppCurrentLanguage_Zh_Hans) {
+            language = @"zh-CN";
         }else{
-            kwargs = Py_BuildValue("{s:s,s:i}", "label", [label UTF8String],"stronger_mnemonic",[stronger_mnemonic boolValue]);
+            language = @"english";
+        }
+        if (stronger_mnemonic.length == 0) {
+            kwargs = Py_BuildValue("{s:s,s:s}", "label", [label UTF8String],"language",[language UTF8String]);
+        }else{
+            kwargs = Py_BuildValue("{s:s,s:i,s:s}", "label", [label UTF8String],"stronger_mnemonic",[stronger_mnemonic boolValue],"language",[language UTF8String]);
         }
         PyObject *myobject_method = PyObject_GetAttrString(self.pyInstance, [kInterfaceinit UTF8String]);
         result = PyObject_Call(myobject_method, args, kwargs);

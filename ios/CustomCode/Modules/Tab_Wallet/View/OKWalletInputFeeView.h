@@ -13,6 +13,6 @@ typedef void(^SureBlock)(NSDictionary *customFeeDict,NSString *fiat,NSString *fe
 @interface OKWalletInputFeeView : UIView
 @property (nonatomic, copy) CancelBlock cancelBlock;
 @property (nonatomic, copy) SureBlock sureBlock;
-+ (void)showWalletCustomFeeDsize:(NSString *)dsize lowfeerate:(NSString *)lowfeerate sure:(SureBlock)sureBlock  Cancel:(CancelBlock)cancelBlock;
++ (void)showWalletCustomFeeDsize:(NSString *)dsize feerate:(NSString *)feerate lowfeerate:(NSString *)lowfeerate sure:(SureBlock)sureBlock  Cancel:(CancelBlock)cancelBlock;
 
 @end
