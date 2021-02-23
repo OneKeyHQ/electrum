@@ -214,7 +214,6 @@ class AndroidCommands(commands.Commands):
         self.client = None
         self.recovery_wallets = {}
         self.path = ""
-        self.backup_info = self.config.get("backupinfo", {})
         self.derived_info = self.config.get("derived_info", dict())
         self.replace_wallet_info = {}
         ran_str = self.config.get("ra_str", None)
@@ -2435,19 +2434,6 @@ class AndroidCommands(commands.Commands):
             out[type] = temp
         return json.dumps(out)
 
-    def update_backup_info(self, encrypt_seed):
-        """
-        Add wallet backup info to config file
-        :param encrypt_seed: encrypt_seed is key as str
-        :return:
-        """
-        try:
-            if not self.backup_info.__contains__(encrypt_seed):
-                self.backup_info[encrypt_seed] = False
-                self.config.set_key("backupinfo", self.backup_info)
-        except BaseException as e:
-            raise e
-
     def get_wallet_by_name(self, name):
         return self.daemon._wallets[self._wallet_path(name)]
 
@@ -2463,18 +2449,17 @@ class AndroidCommands(commands.Commands):
         :param name: Wallet key
         :return: True/False as bool
         """
-        backup_flag = True
         try:
             wallet = self.get_wallet_by_name(name)
             if isinstance(wallet, Imported_Wallet) or isinstance(wallet, Imported_Eth_Wallet):
                 return True
-            xpub = self.get_xpub_by_name(name, wallet)
             if wallet.has_seed():
-                if self.backup_info.__contains__(xpub):
-                    backup_flag = False
+                xpub = self.get_xpub_by_name(name, wallet)
+                return self.wallet_context.get_backup_flag(xpub)
         except BaseException as e:
             raise e
-        return backup_flag
+
+        return True
 
     def delete_backup_info(self, name):
         """
@@ -2485,9 +2470,7 @@ class AndroidCommands(commands.Commands):
         try:
             wallet = self.get_wallet_by_name(name)
             xpub = self.get_xpub_by_name(name, wallet)
-            if self.backup_info.__contains__(xpub):
-                del self.backup_info[xpub]
-                self.config.set_key("backupinfo", self.backup_info)
+            self.wallet_context.remove_backup_info(xpub)
         except BaseException as e:
             raise e
 
@@ -2547,7 +2530,7 @@ class AndroidCommands(commands.Commands):
                 )
                 wallet_data.append(json.loads(wallet_info))
         key = self.get_hd_wallet_encode_seed(seed=seed)
-        self.update_backup_info(key)
+        self.wallet_context.set_backup_info(key)
 
         out_info = []
         for info in wallet_data:
@@ -2926,9 +2909,8 @@ class AndroidCommands(commands.Commands):
             )
         except BaseException as e:
             raise e
-        if new_seed != "":
-            key = wallet.keystore.xpub
-            self.update_backup_info(key)
+        if new_seed:
+            self.wallet_context.set_backup_info(wallet.keystore.xpub)
         wallet_info = CreateWalletInfo.create_wallet_info(coin_type=coin, name=wallet.__str__())
         out = self.get_create_info_by_json(new_seed, wallet_info)
         return json.dumps(out)
@@ -4073,8 +4055,7 @@ class AndroidCommands(commands.Commands):
         self.wallet_context.clear_type_info()
         self.derived_info = {}
         self.config.set_key("derived_info", self.derived_info)
-        self.backup_info = {}
-        self.config.set_key("backupinfo", self.backup_info)
+        self.wallet_context.clear_backup_info()
         self.decimal_point = 5
         self.config.set_key("decimal_point", self.decimal_point)
         self.config.set_key("language", "zh_CN")

@@ -20,6 +20,8 @@ class WalletContext(object):
         self._type_info = self._init_type_info()
         self._save_type_info()
 
+        self._backup_info = self.config.get('backupinfo', {})
+
     @property
     def stored_wallets(self):
         return set(os.listdir(self.wallets_dir))
@@ -83,3 +85,22 @@ class WalletContext(object):
     def is_hw(self, address_digest: str) -> bool:
         wallet_type = self._type_info.get(address_digest, {}).get('type', '')
         return '-hw-' in wallet_type
+
+    def _save_backup_info(self) -> None:
+        self.config.set_key('backupinfo', self._backup_info)
+
+    def clear_backup_info(self) -> None:
+        self._backup_info = {}
+        self._save_backup_info()
+
+    def set_backup_info(self, xpub: str) -> None:
+        if xpub not in self._backup_info:
+            self._backup_info[xpub] = False
+            self._save_backup_info()
+
+    def get_backup_flag(self, xpub: str) -> bool:
+        return xpub not in self._backup_info
+
+    def remove_backup_info(self, xpub: str) -> None:
+        if self._backup_info.pop(xpub, None) is not None:
+            self._save_backup_info()
