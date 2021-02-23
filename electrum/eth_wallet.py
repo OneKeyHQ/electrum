@@ -214,6 +214,9 @@ class Abstract_Eth_Wallet(ABC):
         self.set_total_balance(balance_info)
         return balance_info
 
+    def get_all_token_address(self):
+        return list(self.contacts.keys())
+
     def add_contract_token(self, contract_symbol, contract_address):
         contract = Eth_Contract(contract_symbol, contract_address)
         self.contacts[contract_address] = contract

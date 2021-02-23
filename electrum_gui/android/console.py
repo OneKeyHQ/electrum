@@ -2106,6 +2106,16 @@ class AndroidCommands(commands.Commands):
             verified = False
         return verified
 
+    def get_all_token_info(self):
+        """
+        Get all token contract addresses in the current wallet
+        :return:
+        """
+        try:
+            return json.dumps(self.wallet.get_all_token_address())
+        except BaseException as e:
+            raise e
+
     def add_token(self, symbol, contract_addr):
         """
         Add token to eth, for eth/bsc only
