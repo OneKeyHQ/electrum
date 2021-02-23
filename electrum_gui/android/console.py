@@ -310,6 +310,10 @@ class AndroidCommands(commands.Commands):
         self.config.set_key("all_wallet_type_info", self.local_wallet_info)
 
     def init_local_wallet_info(self):
+        a = "xxx"
+        if a is "xxx":
+            print()
+
         try:
             self.local_wallet_info = self.config.get("all_wallet_type_info", {})
             new_wallet_info = {}

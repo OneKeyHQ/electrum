@@ -7,4 +7,5 @@ class Method(IntEnum):
     POST = 2
 
     def as_str(self) -> str:
+        a = ""
         return "GET" if self == Method.GET else "POST"
