@@ -9,6 +9,8 @@ from electrum_gui.android import derived_info
 
 class WalletContext(object):
     def __init__(self, config: simple_config.SimpleConfig, user_dir: str) -> None:
+        # NOTE: we use user config to store these infomation, should consider
+        # using database instead.
         self.config = config
 
         # TODO: This wallets_dir stuff should be moved into the storage submodule,
@@ -18,10 +20,27 @@ class WalletContext(object):
 
         # NOTE: The values of the following dict are of type dict. However only
         # the 'type' value in it is meaningful, therefore name it _type_info.
+        # Details of self._type_info:
+        #   Key: sha256 of the first address of the wallet, see
+        #        AndroidCommands.get_unique_path() in console.py
+        #   Value: a dict, explained below:
+        #          'type': a str indicating the wallet type
+        #          'time': a timestamp used only to sort items in
+        #                  self._type_info, see self.get_stored_wallets_types()
+        #          'xpubs': always [],  TODO: should be removed?
+        #          'seed': always '',  TODO: should be removed?
         self._type_info = self._init_type_info()
         self._save_type_info()
 
+        # Details of self._backup_info:
+        #   Key: a xpub (wallet.keystore.xpub)
+        #        or xpub + lowercase coin name (see
+        #        AndroidCommands.get_hd_wallet_encode_seed() in console.py)
+        #   Value: always False
         self._backup_info = self.config.get('backupinfo', {})
+        # Details of self._derived_info:
+        #   Key: a xpub or xpub + lowercase coin name, same as self._backup_info
+        #   Value: a dict with keys are 'name' and 'account_id'
         self._derived_info = self.config.get('derived_info', {})
 
     @property
