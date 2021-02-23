@@ -216,6 +216,16 @@ class Abstract_Eth_Wallet(ABC):
     def get_all_token_address(self):
         return list(self.contacts.keys())
 
+    def get_contract_symbols_with_address(self):
+        token_info = [
+            {
+                "coin": contract.symbol,
+                "address": key
+            }
+            for key, contract in self.contacts.items()
+        ]
+        return token_info
+
     def add_contract_token(self, contract_symbol, contract_address):
         contract = Eth_Contract(contract_symbol, contract_address)
         self.contacts[contract_address] = contract

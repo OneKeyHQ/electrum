@@ -48,6 +48,7 @@ from electrum.transaction import PartialTransaction, PartialTxOutput, Serializat
 from electrum.util import (
     DecimalEncoder,
     DerivedWalletLimit,
+    FailedToSwitchWallet,
     FailedGetTx,
     Fiat,
     FileAlreadyExist,
@@ -3857,7 +3858,95 @@ class AndroidCommands(commands.Commands):
 
         return coin
 
-    def select_wallet(self, name):
+    def switch_wallet(self, name):
+        """
+        Switching to a specific wallet
+        :param name: name as string
+        :return: json like
+        {
+            "name": "",
+            "label": "",
+            "wallets": [
+            {"coin": "eth", "address": ""},
+            {"coin": "usdt", "address": ""}
+            ]
+        }
+        """
+        self._assert_daemon_running()
+        if name is None:
+            raise FailedToSwitchWallet()
+
+        self.wallet = self.daemon._wallets[self._wallet_path(name)]
+        self.wallet.use_change = self.config.get("use_change", False)
+
+        coin = self._detect_wallet_coin(self.wallet)
+        if coin in self.coins:
+            PyWalib.set_server(self.coins[coin])
+            addrs = self.wallet.get_addresses()
+            contract_info = self.wallet.get_contract_symbols_with_address()
+
+            info = {"name": name, "label": self.wallet.get_name(), "wallets": contract_info}
+        else:
+            c, u, x = self.wallet.get_balance()
+            util.trigger_callback("wallet_updated", self.wallet)
+
+            info = {
+                "name": name,
+                "label": self.wallet.get_name(),
+                "wallets": [{"coin": "btc", "address": ""}],
+            }
+            if self.label_flag and self.wallet.wallet_type != "standard":
+                self.label_plugin.load_wallet(self.wallet)
+        return json.dumps(info, cls=DecimalEncoder)
+
+    def get_wallet_balance(self):
+        """
+        Get the current balance of your wallet
+        :return: json like
+        {
+          "all_balance": ""
+          "wallets": [
+            {"coin": "eth", "balance": "", "fiat": ""},
+            {"coin": "usdt", "balance": "", "fiat": ""}
+          ]
+        }
+        """
+        self._assert_wallet_isvalid()
+        coin = self._detect_wallet_coin(self.wallet)
+        if coin in self.coins:
+            addrs = self.wallet.get_addresses()
+            checksum_from_address = self.pywalib.web3.toChecksumAddress(addrs[0])
+            balance_info = self.wallet.get_all_balance(
+                checksum_from_address, self.coins[coin]["symbol"]
+            )
+            all_balance = Decimal(0)
+            for key, val in balance_info.items():
+                all_balance += val['fiat']
+
+            all_balance = self.daemon.fx.format_amount_and_units(all_balance * COIN) or f"0 {self.ccy}"
+            wallet_balances = [
+                {
+                    "coin": key,
+                    **val,
+                    "fiat": self.daemon.fx.format_amount_and_units(val["fiat"] * COIN) or f"0 {self.ccy}",
+                }
+                for key, val in balance_info.items()
+            ]
+            info = {"all_balance": all_balance, "wallets": wallet_balances}
+        else:
+            c, u, x = self.wallet.get_balance()
+            balance = c + u
+            fait = self.daemon.fx.format_amount_and_units(balance) if self.daemon.fx else None
+            fait = fait or f"0 {self.ccy}"
+            info = {
+                "all_balance": self.format_amount(balance) + " (%s)" % fait,  # fixme deprecated field
+                "wallets": [{"coin": "btc", "balance": self.format_amount(balance), "fiat": fait}],
+            }
+            if self.label_flag and self.wallet.wallet_type != "standard":
+                self.label_plugin.load_wallet(self.wallet)
+        return json.dumps(info, cls=DecimalEncoder)
+
+    def select_wallet(self, name): #TODO: Will be deleted later
         """
         Select wallet by name
         :param name: name as string

@@ -147,6 +147,10 @@ class UnsupportedCurrencyCoin(BaseException):
     def __str__(self):
         return _("Unsupported coin types.")
 
+class FailedToSwitchWallet(BaseException):
+    def __str__(self):
+        return _("Failed to switch wallets")
+
 class UnavailableBtcAddr(BaseException):
     def __str__(self):
         return _("Incorrect bitcoin address.")
