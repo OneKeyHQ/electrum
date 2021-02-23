@@ -1,0 +1,20 @@
+[
+  {
+    "chain_code": "teth",
+    "name": "Ethereum Ropsten Test Network",
+    "fee_code": "teth",
+    "chain_id": "3"
+  },
+  {
+    "chain_code": "tbsc",
+    "name": "Binance Smart Chain Test Network",
+    "fee_code": "tbsc",
+    "chain_id": "97"
+  },
+  {
+    "chain_code": "theco",
+    "name": "Huobi ECO Chain Test Network",
+    "fee_code": "theco",
+    "chain_id": "256"
+  }
+]

@@ -1,5 +1,6 @@
 from os import path
 
+from electrum_gui.common.coin import codes
 from electrum_gui.common.conf.utils import get_data_dir
 
 PROJECT_DIR = path.dirname(path.dirname(path.dirname(path.dirname(path.abspath(__file__)))))
@@ -30,6 +31,12 @@ DATABASE = {
 }
 
 DB_MODULES = []
+
+ENABLED_CHAIN_COINS = [
+    codes.ETH,
+    codes.BSC,
+    codes.HECO,
+]  # TODO enable specific test coin on dev env?
 
 # loading local_settings.py on project root
 try:
