@@ -1,9 +1,10 @@
 import itertools
 import os
 import time
-from typing import List, Tuple
+from typing import Generator, List, Tuple
 
 from electrum import simple_config, util
+from electrum_gui.android import derived_info
 
 
 class WalletContext(object):
@@ -21,6 +22,7 @@ class WalletContext(object):
         self._save_type_info()
 
         self._backup_info = self.config.get('backupinfo', {})
+        self._derived_info = self.config.get('derived_info', {})
 
     @property
     def stored_wallets(self):
@@ -104,3 +106,39 @@ class WalletContext(object):
     def remove_backup_info(self, xpub: str) -> None:
         if self._backup_info.pop(xpub, None) is not None:
             self._save_backup_info()
+
+    def _save_derived_info(self) -> None:
+        self.config.set_key('derived_info', self._derived_info)
+
+    def clear_derived_info(self) -> None:
+        self._derived_info = {}
+        self._save_derived_info()
+
+    def iter_derived_wallets(self, xpub: str) -> Generator[dict, None, None]:
+        for derived_wallet in self._derived_info.get(xpub, []):
+            yield derived_wallet
+
+    def get_derived_num(self, xpub: str) -> int:
+        return len(self._derived_info.get(xpub, []))
+
+    def add_derived_wallet(self, xpub: str, name: str, account_id: str) -> None:
+        if xpub not in self._derived_info:
+            self._derived_info[xpub] = []
+        elif self.get_derived_num(xpub) > derived_info.RECOVERY_DERIVAT_NUM:  # too many wallets
+            return
+        elif account_id in (w['account_id'] for w in self.iter_derived_wallets(xpub)):  # already present
+            return
+
+        self._derived_info[xpub].append({'name': name, 'account_id': account_id})
+        self._save_derived_info()
+
+    def remove_derived_wallet(self, xpub: str, account_id: str) -> None:
+        wallets_before_delete = self._derived_info.get(xpub, [])
+        if not wallets_before_delete:
+            return
+
+        new_wallets = [wallet for wallet in wallets_before_delete if wallet['account_id'] != account_id]
+
+        if len(new_wallets) < len(wallets_before_delete):
+            self._derived_info[xpub] = new_wallets
+            self._save_derived_info()

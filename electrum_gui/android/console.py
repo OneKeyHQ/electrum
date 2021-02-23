@@ -214,7 +214,6 @@ class AndroidCommands(commands.Commands):
         self.client = None
         self.recovery_wallets = {}
         self.path = ""
-        self.derived_info = self.config.get("derived_info", dict())
         self.replace_wallet_info = {}
         ran_str = self.config.get("ra_str", None)
         if ran_str is None:
@@ -2212,13 +2211,15 @@ class AndroidCommands(commands.Commands):
         try:
             derived_info = DerivedInfo(self.config)
             derived_info.init_recovery_num()
-            for derived_xpub, wallet_list in self.derived_info.items():
-                if xpub == derived_xpub:
-                    for info in wallet_list:
-                        derived_info.update_recovery_info(info["account_id"])
-                    derived_info.reset_list()
-                    return derived_info.get_list()
-            return None
+
+            for derived_wallet in self.wallet_context.iter_derived_wallets(xpub):
+                derived_info.update_recovery_info(derived_wallet['account_id'])
+
+            if derived_info.recovery_num:
+                derived_info.reset_list()
+                return derived_info.get_list()
+            else:
+                return None
         except BaseException as e:
             raise e
 
@@ -3171,15 +3172,15 @@ class AndroidCommands(commands.Commands):
         derived = DerivedInfo(self.config)
         derived.init_recovery_num()
         AndroidCommands._set_recovery_flag(True)
-        for derived_xpub, derived_wallet in self.derived_info.items():
-            if xpub == derived_xpub:
-                for derived_info in derived_wallet:
-                    flag = self.recovery_create_subfun(
-                        coin, derived_info["account_id"], hw, derived_info["name"], seed, password, passphrase, path
-                    )
-                    if not flag:
-                        return False
-                    derived.update_recovery_info(derived_info["account_id"])
+
+        for derived_wallet in self.wallet_context.iter_derived_wallets(xpub):
+            flag = self.recovery_create_subfun(
+                coin, derived_wallet['account_id'], hw, derived_wallet['name'], seed, password, passphrase, path
+            )
+            if not flag:
+                return False
+            derived.update_recovery_info(derived_wallet['account_id'])
+
         derived.reset_list()
         account_list = derived.get_list()
         if account_list is not None:
@@ -3372,10 +3373,7 @@ class AndroidCommands(commands.Commands):
         :return: num as int
         """
         xpub = self.get_hd_wallet_encode_seed(coin=coin.lower())
-        num = 0
-        if self.derived_info.__contains__(xpub):
-            num = len(self.derived_info[xpub])
-        return num
+        return self.wallet_context.get_derived_num(xpub)
 
     def get_hw_config_xpub(self, wallet_obj, coin):
         xpub = wallet_obj.keystore.xpub
@@ -3386,21 +3384,14 @@ class AndroidCommands(commands.Commands):
     def delete_devired_wallet_info(self, wallet_obj, hw=False):
         derivation = self.get_derivation_path(wallet_obj, wallet_obj.get_addresses()[0])
         coin = self._detect_wallet_coin(wallet_obj)
-        account_id = int(self.get_account_id(derivation, coin))
+        account_id = self.get_account_id(derivation, coin)
 
-        if not hw:
-            xpub = self.get_hd_wallet_encode_seed(coin=coin)
-        else:
+        if hw:
             xpub = self.get_hw_config_xpub(wallet_obj, coin=coin)
+        else:
+            xpub = self.get_hd_wallet_encode_seed(coin=coin)
 
-        if self.derived_info.__contains__(xpub):
-            derived_wallet = self.derived_info[xpub]
-            for pos, wallet_info in enumerate(derived_wallet):
-                if int(wallet_info["account_id"]) == account_id:
-                    derived_wallet.pop(pos)
-                    break
-            self.derived_info[xpub] = derived_wallet
-            self.config.set_key("derived_info", self.derived_info)
+        self.wallet_context.remove_derived_wallet(xpub, account_id)
 
     def get_account_id(self, path, coin):
         if coin in self.coins:
@@ -3409,26 +3400,8 @@ class AndroidCommands(commands.Commands):
             return self.get_path_info(path, ACCOUNT_POS)
 
     def update_devired_wallet_info(self, bip39_derivation, xpub, name, coin):
-        wallet_info = {}
-        wallet_info["name"] = name
-        wallet_info["account_id"] = self.get_account_id(bip39_derivation, coin)
-        if not self.derived_info.__contains__(xpub):
-            derivated_wallets = []
-            derivated_wallets.append(wallet_info)
-            self.derived_info[xpub] = derivated_wallets
-            self.config.set_key("derived_info", self.derived_info)
-        else:
-            save_flag = False
-            from .derived_info import RECOVERY_DERIVAT_NUM
-
-            if len(self.derived_info[xpub]) <= RECOVERY_DERIVAT_NUM:
-                derived_wallet = self.derived_info[xpub]
-                for info in derived_wallet:
-                    if info["account_id"] == wallet_info["account_id"]:
-                        save_flag = True
-                if not save_flag:
-                    self.derived_info[xpub].append(wallet_info)
-                    self.config.set_key("derived_info", self.derived_info)
+        account_id = self.get_account_id(bip39_derivation, coin)
+        self.wallet_context.add_derived_wallet(xpub, name, account_id)
 
     def get_all_mnemonic(self):
         """
@@ -4053,8 +4026,7 @@ class AndroidCommands(commands.Commands):
 
     def reset_config_info(self):
         self.wallet_context.clear_type_info()
-        self.derived_info = {}
-        self.config.set_key("derived_info", self.derived_info)
+        self.wallet_context.clear_derived_info()
         self.wallet_context.clear_backup_info()
         self.decimal_point = 5
         self.config.set_key("decimal_point", self.decimal_point)
