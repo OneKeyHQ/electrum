@@ -22,7 +22,7 @@ import java.util.Locale;
 
 /**
  * 文件相关工具类
- * 
+ *
  * @author DarkRanger
  * @datetime 20160530
  *
@@ -31,7 +31,7 @@ public class FileUtil {
 
 	/**
 	 * 根据文件得到文件的名称 比如abc.txt，返回abc。如果文件名是abc，则返回abc
-	 * 
+	 *
 	 * @param file
 	 * @return
 	 */
@@ -47,7 +47,7 @@ public class FileUtil {
 
 	/**
 	 * 根据文件得到文件的后缀 比如abc.txt，返回.txt。如果文件名是abc，则返回"";
-	 * 
+	 *
 	 * @param file
 	 * @return
 	 */
@@ -63,7 +63,7 @@ public class FileUtil {
 
 	/**
 	 * 根据给出的父节点folder找到所有的file，如果不是folder，则返回size为0的集合。
-	 * 
+	 *
 	 * @param parentFile
 	 * @return
 	 */
@@ -83,7 +83,7 @@ public class FileUtil {
 
 	/**
 	 * 根据当前文件路径找到上级路径
-	 * 
+	 *
 	 * @param filepath
 	 * @return
 	 */
@@ -99,13 +99,13 @@ public class FileUtil {
 
 	/**
 	 * 根据文件名称对文件list集合进行排序（先文件夹，再文件，按文件名称排序，忽略大小写）
-	 * 
+	 *
 	 * 排序结果类似于这样:
-	 * 
+	 *
 	 * [F:\FileTest\b, F:\FileTest\d, F:\FileTest\A1.txt, F:\FileTest\a2.txt,
 	 * F:\FileTest\A3.txt, F:\FileTest\B1.txt, F:\FileTest\b2.txt,
 	 * F:\FileTest\B3.txt]
-	 * 
+	 *
 	 * @param fileList
 	 * @return
 	 */
@@ -129,7 +129,7 @@ public class FileUtil {
 
 	/**
 	 * 文件复制（通过文件通道FileChannel更加高效），目标文件不存在将会创建
-	 * 
+	 *
 	 * @param fromPath
 	 *            from文件路径
 	 * @param toPath
@@ -143,7 +143,7 @@ public class FileUtil {
 
 	/**
 	 * 文件复制（通过文件通道FileChannel更加高效），目标文件不存在将会创建
-	 * 
+	 *
 	 * @param fromFile
 	 * @param toFile
 	 */
@@ -211,7 +211,7 @@ public class FileUtil {
 
 	/**
 	 * 删除路径下所有的文件和文件夹
-	 * 
+	 *
 	 * @param userDataDir
 	 */
 	public static void deleteByParentPath(File userDataFolder) {
@@ -232,7 +232,7 @@ public class FileUtil {
 
 	/**
 	 * 以字节为单位读写文件内容
-	 * 
+	 *
 	 * @param filePath
 	 *            ：需要读取的文件路径
 	 */
@@ -266,7 +266,7 @@ public class FileUtil {
 
 	/**
 	 * 以字符为单位读写文件内容
-	 * 
+	 *
 	 * @param filePath
 	 */
 	public static void copyFileByCharacter(String filePath, File toFile) {
@@ -297,7 +297,7 @@ public class FileUtil {
 
 	/**
 	 * 以行为单位读写文件内容
-	 * 
+	 *
 	 * @param filePath
 	 */
 	public static void copyFileByLine(String filePath, File toFile) {
@@ -331,7 +331,7 @@ public class FileUtil {
 
 	/**
 	 * 使用Java.nio ByteBuffer字节将一个文件输出至另一文件
-	 * 
+	 *
 	 * @param filePath
 	 */
 	public static void copyFileByBybeBuffer(String filePath, File toFile) {
@@ -374,7 +374,7 @@ public class FileUtil {
 
 	/**
 	 * B-->KB-->M-->G之间的转换
-	 * 
+	 *
 	 * @param size
 	 *            传进来的字节数（B）
 	 * @return 返回类似于“12.56 KB”的string格式
@@ -398,7 +398,7 @@ public class FileUtil {
 
 	/**
 	 * 根据文件路径创建文件，如果存在，不做任何操作。 如果文件不存在，则创建（如果父级folder不存在，则创建）
-	 * 
+	 *
 	 * @param filePath
 	 */
 	public static void createFileAndFolder(String filePath) {
@@ -408,7 +408,7 @@ public class FileUtil {
 
 	/**
 	 * 根据文件路径创建文件，如果存在，不做任何操作。 如果文件不存在，则创建（如果父级folder不存在，则创建）
-	 * 
+	 *
 	 * @param filePath
 	 */
 	public static void createFileAndFolder(File targetFile) {

@@ -12,5 +12,3 @@
 @interface InternalApis : NSObject
 @property (nullable, nonatomic, weak) DWKWebView* webview;
 @end
-
-

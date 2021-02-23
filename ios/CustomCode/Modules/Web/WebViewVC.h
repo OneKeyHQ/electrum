@@ -41,14 +41,14 @@ typedef void(^RightItemClickBlock)(void);
 
 /**
  加载纯外部链接网页
- 
+
  @param string URL地址
  */
 - (void)loadWebURLSring:(NSString *)string;
 
 /**
  加载本地网页
- 
+
  @param string 本地HTML文件名
  */
 - (void)loadWebHTMLSring:(NSString *)string;

@@ -157,7 +157,7 @@ class IntegerGMP(IntegerBase):
             raise ValueError("A floating point type is not a natural number")
 
         self._initialized = True
-        
+
         if is_native_int(value):
             _gmp.mpz_init(self._mpz_p)
             result = _gmp.gmp_sscanf(tobytes(str(value)), b"%Zd", self._mpz_p)

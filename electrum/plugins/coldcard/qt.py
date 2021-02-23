@@ -220,7 +220,7 @@ class CKCCSettingsDialog(WindowModalDialog):
             mw.show_error("Does not appear to be a Coldcard firmware file.\n\n%s" % exc)
             return
 
-        # TODO: 
+        # TODO:
         # - detect if they are trying to downgrade; aint gonna work
         # - warn them about the reboot?
         # - length checks

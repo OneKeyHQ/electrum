@@ -1252,4 +1252,3 @@ class OnionFailureCodeMetaFlag(IntFlag):
     PERM     = 0x4000
     NODE     = 0x2000
     UPDATE   = 0x1000
-

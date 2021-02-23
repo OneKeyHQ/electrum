@@ -18,7 +18,7 @@
     [paragraphStyle setLineSpacing:lineSpacing];        //设置行间距
     [paragraphStyle setLineBreakMode:self.lineBreakMode];
     [paragraphStyle setAlignment:self.textAlignment];
-    
+
     NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:text];
     [attributedString addAttribute:NSParagraphStyleAttributeName value:paragraphStyle range:NSMakeRange(0, [text length])];
     self.attributedText = attributedString;

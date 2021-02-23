@@ -41,7 +41,7 @@
     [self.contentView setLayerRadius:20];
     [self.confirmDeleteBtn setLayerRadius:20];
     [self.cancleBtn setLayerBoarderColor:HexColor(0xDBDEE7) width:1 radius:20];
-    
+
     switch (self.type) {
         case OKDeleteTipsTypeWallet:
         {
@@ -69,8 +69,8 @@
         default:
             break;
     }
-    
-   
+
+
 }
 - (IBAction)closeBtnClick:(UIButton *)sender {
     [self dismissViewControllerAnimated:NO completion:nil];

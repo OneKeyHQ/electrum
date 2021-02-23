@@ -46,7 +46,7 @@
             }else{
                 self.titleLabel.text = @"";
             }
-            
+
             self.descLabel.text = MyLocalizedString(@"Mnemonics are used to recover assets in other apps or wallets, transcribe them in the correct order, and place them in a safe place known only to you", nil);
             self.bottomDescLabel.text = MyLocalizedString(@"- Do not uninstall OneKey App easily - do not disclose mnemonics or private keys to anyone - do not take screenshots, send sensitive information via chat tools, etc", nil);
         }
@@ -90,7 +90,7 @@
 
 
 - (IBAction)next:(id)sender {
-    
+
     OKWeakSelf(self)
     switch (_showType) {
         case WordsShowTypeRestore:
@@ -139,7 +139,7 @@
     OKScreenshotsTipsController *screenshotsTips = [OKScreenshotsTipsController screenshotsTipsController];
     screenshotsTips.modalPresentationStyle = UIModalPresentationOverFullScreen;
     [self.OK_TopViewController presentViewController:screenshotsTips animated:NO completion:nil];
-    
+
 }
 
 @end

@@ -70,7 +70,7 @@ class LabelsPlugin(BasePlugin):
         iv = hashlib.sha256(password).digest()[:16]
         encrypted = aes_encrypt_with_iv(password, iv, msg.encode('utf8'))
         return base64.b64encode(encrypted).decode()
-        
+
 
     def decode_xpub(self, xpub, message):
         decoded = base64.b64decode(message)
@@ -214,7 +214,7 @@ class LabelsPlugin(BasePlugin):
         if not wallet_data:
             raise Exception('Wallet {} not loaded'.format(wallet))
         wallet_id = wallet_data[2]
-        
+
         for xpub in wallet_data[3]:
            # xpubId = self.encode(wallet, xpub)
             bundle = {"xpubs": "",
@@ -282,7 +282,7 @@ class LabelsPlugin(BasePlugin):
     def push_xpub(self, wallet):
         if not wallet.network: raise Exception(_('You are offline.'))
         return asyncio.run_coroutine_threadsafe(self.push_xpub_thread(wallet), wallet.network.asyncio_loop).result()
-   
+
     def create_new_wallet(self, wallet, wallet_type, wallet_name):
         if not wallet.network: return  # 'offline' mode
         mpk = wallet.get_fingerprint()
@@ -371,8 +371,3 @@ class LabelsPlugin(BasePlugin):
         self.logger.info(f"received {len(response)} transactions")
         # print("tx info is %s---" %json.dumps(out))
         return json.dumps(out)
-        
-
-    
-   
-    

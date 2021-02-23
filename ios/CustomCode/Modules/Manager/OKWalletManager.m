@@ -141,7 +141,7 @@ static dispatch_once_t once;
     if (sat.length == 0 || sat == nil) {
         return @"";
     }
-    
+
     NSString *cuUnit = kWalletManager.currentBitcoinUnit;
     NSDecimalNumber *num = [NSDecimalNumber decimalNumberWithString:sat];
     if ([cuUnit isEqualToString:@"sat"]) {

@@ -48,7 +48,7 @@
     [self.leftBgView setLayerRadius:2];
     [self.importBtn setLayerDefaultRadius];
     [self.pwdBgView setLayerBoarderColor:HexColor(0xDBDEE7) width:1 radius:20];
-    
+
     self.pwdTextField.placeholder = MyLocalizedString(@"Enter the Keystore file password", nil);
     [self textChange];
     self.navigationItem.rightBarButtonItem = [UIBarButtonItem barButtonItemScanBtnWithTarget:self selector:@selector(scanBtnClick)];
@@ -61,7 +61,7 @@
         [kTools tipMessage:MyLocalizedString(@"KeyStore cannot be empty", nil)];
         return;
     }
-    
+
     id result = [kPyCommandsManager callInterface:kInterfaceverify_legality parameter:@{@"data":self.textView.text,@"flag":@"keystore"}];
     if (result != nil) {
         OKSetWalletNameViewController *setNameVc = [OKSetWalletNameViewController setWalletNameViewController];
@@ -95,7 +95,7 @@
         return NO;
     }
     if (textView == self.textView) {
-        if (text.length == 0) { 
+        if (text.length == 0) {
             if (textView.text.length == 1) {
                 self.textPlacehoderLabel.hidden = NO;
             }
@@ -105,7 +105,7 @@
             }
         }
     }
-    
+
     return YES;
 }
 

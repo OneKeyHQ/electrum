@@ -8,4 +8,3 @@ rm "$CONTRIB"/../packages/ -r
 #Install pure python modules in electrum directory
 python3 -m pip install --no-dependencies --no-binary :all: \
     -r "$CONTRIB"/deterministic-build/requirements.txt -t "$CONTRIB"/../packages
-

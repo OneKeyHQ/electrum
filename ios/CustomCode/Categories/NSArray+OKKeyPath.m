@@ -15,7 +15,7 @@
     if (!path.length) {
         return nil;
     }
-    
+
     NSPredicate *pred = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", OKKeyPathQueryPattern];
     if (![pred evaluateWithObject:path]) {
         return nil;
@@ -28,13 +28,13 @@
     if (path.length == 0) {
         return self;
     }
-    
+
     if (![path hasPrefix:@"["]) {
         NSString *errorMsg = [NSString stringWithFormat:@"对数组使用非法查询路径: '%@'", path];
         NSAssert(0, errorMsg);
         return nil;
     }
-    
+
     NSInteger index = [self getIndexKey:path];
     if (index >= self.count) {
         return nil;

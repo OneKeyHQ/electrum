@@ -23,7 +23,7 @@ import java.util.Map;
 
 public class OpenFileDialog {
 	public static String tag = "OpenFileDialog";
-	static final public String sRoot = "/"; 
+	static final public String sRoot = "/";
 	static final public String sParent = "..";
 	static final public String sFolder = ".";
 	static final public String sEmpty = "";
@@ -37,19 +37,19 @@ public class OpenFileDialog {
 		dialog.setTitle(title);
 		return dialog;
 	}
-	
+
 	static class FileSelectView extends ListView implements AdapterView.OnItemClickListener {
-		
-		
+
+
 		private CallbackBundle callback = null;
 		private String path = sRoot;
 		private List<Map<String, Object>> list = null;
 		private int dialogid = 0;
-		
+
 		private String suffix = null;
-		
+
 		private Map<String, Integer> imagemap = null;
-		
+
 		public FileSelectView(Context context, int dialogid, CallbackBundle callback, String suffix, Map<String, Integer> images) {
 			super(context);
 			this.imagemap = images;
@@ -59,7 +59,7 @@ public class OpenFileDialog {
 			this.setOnItemClickListener(this);
 			refreshFileList();
 		}
-		
+
 		private String getSuffix(String filename){
 			int dix = filename.lastIndexOf('.');
 			if(dix<0){
@@ -69,7 +69,7 @@ public class OpenFileDialog {
 				return filename.substring(dix+1);
 			}
 		}
-		
+
 		private int getImageId(String s){
 			if(imagemap == null){
 				return 0;
@@ -84,7 +84,7 @@ public class OpenFileDialog {
 				return 0;
 			}
 		}
-		
+
 		private int refreshFileList()
 		{
 			// 刷新文件列表
@@ -106,11 +106,11 @@ public class OpenFileDialog {
 			else{
 				list = new ArrayList<Map<String, Object>>(files.length);
 			}
-			
+
 			// 用来先保存文件夹和文件夹的两个列表
 			ArrayList<Map<String, Object>> lfolders = new ArrayList<Map<String, Object>>();
 			ArrayList<Map<String, Object>> lfiles = new ArrayList<Map<String, Object>>();
-			
+
 			if(!this.path.equals(sRoot)){
 				// 添加根目录 和 上一层目录
 				Map<String, Object> map = new HashMap<String, Object>();
@@ -118,14 +118,14 @@ public class OpenFileDialog {
 				map.put("path", sRoot);
 				map.put("img", getImageId(sRoot));
 				list.add(map);
-				
+
 				map = new HashMap<String, Object>();
 				map.put("name", sParent);
 				map.put("path", path);
 				map.put("img", getImageId(sParent));
 				list.add(map);
 			}
-			
+
 			for(File file: files)
 			{
 				if(file.isDirectory() && file.listFiles()!=null){
@@ -146,13 +146,13 @@ public class OpenFileDialog {
 						map.put("img", getImageId(sf));
 						lfiles.add(map);
 					}
-				}  
+				}
 			}
-			
+
 			list.addAll(lfolders); // 先添加文件夹，确保文件夹显示在上面
 			list.addAll(lfiles);	//再添加文件
-			
-			
+
+
 			SimpleAdapter adapter = new SimpleAdapter(getContext(), list, R.layout.filedialogitem, new String[]{"img", "name", "path"}, new int[]{R.id.filedialogitem_img, R.id.filedialogitem_name, R.id.filedialogitem_path});
 			this.setAdapter(adapter);
 			return files.length;
@@ -180,7 +180,7 @@ public class OpenFileDialog {
 				if(fl.isFile()){
 					// 如果是文件
 					((Activity)getContext()).dismissDialog(this.dialogid); // 让文件夹对话框消失
-					
+
 					// 设置回调的返回值
 					Bundle bundle = new Bundle();
 					bundle.putString("path", pt);

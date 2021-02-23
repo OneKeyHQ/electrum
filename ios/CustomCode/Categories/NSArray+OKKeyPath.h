@@ -13,4 +13,3 @@
 - (id)ok_objectForKeyPath:(NSString *)keyPath;
 
 @end
-

@@ -186,7 +186,3 @@ public class CreatePersonalHelpPassActivity extends BaseActivity {
         });
     }
 }
-
-
-
-

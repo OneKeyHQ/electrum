@@ -157,15 +157,15 @@ class CfbMode(object):
         if self.encrypt not in self._next:
             raise TypeError("encrypt() cannot be called after decrypt()")
         self._next = [ self.encrypt ]
-        
+
         if output is None:
             ciphertext = create_string_buffer(len(plaintext))
         else:
             ciphertext = output
-            
+
             if not is_writeable_buffer(output):
                 raise TypeError("output must be a bytearray or a writeable memoryview")
-        
+
             if len(plaintext) != len(output):
                 raise ValueError("output must have the same length as the input"
                                  "  (%d bytes)" % len(plaintext))
@@ -218,7 +218,7 @@ class CfbMode(object):
         if self.decrypt not in self._next:
             raise TypeError("decrypt() cannot be called after encrypt()")
         self._next = [ self.decrypt ]
-        
+
         if output is None:
             plaintext = create_string_buffer(len(ciphertext))
         else:
@@ -226,11 +226,11 @@ class CfbMode(object):
 
             if not is_writeable_buffer(output):
                 raise TypeError("output must be a bytearray or a writeable memoryview")
-            
+
             if len(ciphertext) != len(output):
                 raise ValueError("output must have the same length as the input"
                                  "  (%d bytes)" % len(plaintext))
-        
+
         result = raw_cfb_lib.CFB_decrypt(self._state.get(),
                                          c_uint8_ptr(ciphertext),
                                          c_uint8_ptr(plaintext),

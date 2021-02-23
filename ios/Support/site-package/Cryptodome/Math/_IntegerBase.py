@@ -228,7 +228,7 @@ class IntegerBase(ABC):
     @abc.abstractmethod
     def jacobi_symbol(a, n):
         pass
-    
+
     @staticmethod
     def _tonelli_shanks(n, p):
         """Tonelli-shanks algorithm for computing the square root
@@ -389,4 +389,3 @@ class IntegerBase(ABC):
                                     randfunc=randfunc
                                     )
         return norm_candidate + min_inclusive
-

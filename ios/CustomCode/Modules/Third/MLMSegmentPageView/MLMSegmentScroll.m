@@ -36,7 +36,7 @@
     self.bounces = NO;
     self.delegate = self;
     [self setContentSize:CGSizeMake(viewsArray.count *self.width, self.height)];
-    
+
     _countLimit = viewsArray.count;
 }
 
@@ -52,11 +52,11 @@
 }
 
 
-#pragma mark - default add View 
+#pragma mark - default add View
 - (void)createView {
     _showIndex = MIN(viewsArray.count-1, MAX(0, _showIndex));
     [self setContentOffset:CGPointMake(_showIndex * self.frame.size.width, 0)];
-    
+
     if (_loadAll) {
         NSInteger startIndex;
         if (viewsArray.count-_showIndex > _countLimit) {
@@ -74,7 +74,7 @@
 
 //- (void)addVcOrViews:(NSArray *)sources {
 //    NSInteger startIndex = viewsArray.count;
-//    
+//
 //    [viewsArray addObjectsFromArray:sources];
 //
 //    if (_loadAll) {
@@ -110,7 +110,7 @@
             NSLog(@"this class was not found!");
         }
     }
-    
+
 }
 
 #pragma mark - addvc
@@ -158,7 +158,7 @@
             [self addViewCacheIndex:currentIndex];
         }
     }
-    
+
 }
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {

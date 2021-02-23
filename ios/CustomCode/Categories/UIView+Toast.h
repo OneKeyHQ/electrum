@@ -35,18 +35,18 @@ extern const NSString * CSToastPositionBottom;
  Toast is an Objective-C category that adds toast notifications to the UIView
  object class. It is intended to be simple, lightweight, and easy to use. Most
  toast notifications can be triggered with a single line of code.
- 
+
  The `makeToast:` methods create a new view and then display it as toast.
- 
+
  The `showToast:` methods display any view as toast.
- 
+
  */
 @interface UIView (Toast)
 
 /**
  Creates and presents a new toast view with a message and displays it with the
  default duration and position. Styled using the shared style.
- 
+
  @param message The message to be displayed
  */
 - (void)makeToast:(NSString *)message;
@@ -54,7 +54,7 @@ extern const NSString * CSToastPositionBottom;
 /**
  Creates and presents a new toast view with a message. Duration and position
  can be set explicitly. Styled using the shared style.
- 
+
  @param message The message to be displayed
  @param duration The toast duration
  @param position The toast's center point. Can be one of the predefined CSToastPosition
@@ -67,7 +67,7 @@ extern const NSString * CSToastPositionBottom;
 /**
  Creates and presents a new toast view with a message. Duration, position, and
  style can be set explicitly.
- 
+
  @param message The message to be displayed
  @param duration The toast duration
  @param position The toast's center point. Can be one of the predefined CSToastPosition
@@ -82,9 +82,9 @@ extern const NSString * CSToastPositionBottom;
 /**
  Creates and presents a new toast view with a message, title, and image. Duration,
  position, and style can be set explicitly. The completion block executes when the
- toast view completes. `didTap` will be `YES` if the toast view was dismissed from 
+ toast view completes. `didTap` will be `YES` if the toast view was dismissed from
  a tap.
- 
+
  @param message The message to be displayed
  @param duration The toast duration
  @param position The toast's center point. Can be one of the predefined CSToastPosition
@@ -108,9 +108,9 @@ extern const NSString * CSToastPositionBottom;
  The look and feel is configured via the style. Unlike the `makeToast:` methods,
  this method does not present the toast view automatically. One of the showToast:
  methods must be used to present the resulting view.
- 
+
  @warning if message, title, and image are all nil, this method will return nil.
- 
+
  @param message The message to be displayed
  @param title The title
  @param image The image
@@ -124,14 +124,14 @@ extern const NSString * CSToastPositionBottom;
 
 /**
  Creates and displays a new toast activity indicator view at a specified position.
- 
+
  @warning Only one toast activity indicator view can be presented per superview. Subsequent
  calls to `makeToastActivity:` will be ignored until hideToastActivity is called.
- 
+
  @warning `makeToastActivity:` works independently of the showToast: methods. Toast activity
  views can be presented and dismissed while toast views are being displayed. `makeToastActivity:`
  has no effect on the queueing behavior of the showToast: methods.
- 
+
  @param position The toast's center point. Can be one of the predefined CSToastPosition
                  constants or a `CGPoint` wrapped in an `NSValue` object.
  @return The newly created toast view
@@ -145,16 +145,16 @@ extern const NSString * CSToastPositionBottom;
 
 /**
  Displays any view as toast using the default duration and position.
- 
+
  @param toast The view to be displayed as toast
  */
 - (void)showToast:(UIView *)toast;
 
 /**
- Displays any view as toast at a provided position and duration. The completion block 
- executes when the toast view completes. `didTap` will be `YES` if the toast view was 
+ Displays any view as toast at a provided position and duration. The completion block
+ executes when the toast view completes. `didTap` will be `YES` if the toast view was
  dismissed from a tap.
- 
+
  @param toast The view to be displayed as toast
  @param duration The notification duration
  @param position The toast's center point. Can be one of the predefined CSToastPosition
@@ -170,10 +170,10 @@ extern const NSString * CSToastPositionBottom;
 @end
 
 /**
- `CSToastStyle` instances define the look and feel for toast views created via the 
+ `CSToastStyle` instances define the look and feel for toast views created via the
  `makeToast:` methods as well for toast views created directly with
  `toastViewForMessage:title:image:style:`.
- 
+
  @warning `CSToastStyle` offers relatively simple styling options for the default
  toast view. If you require a toast view with more complex UI, it probably makes more
  sense to create your own custom UIView subclass and present it with the `showToast:`
@@ -323,7 +323,7 @@ extern const NSString * CSToastPositionBottom;
  a `makeToast:` method (or `toastViewForMessage:title:image:style:`) is called
  with with a nil style. By default, this is set to `CSToastStyle`'s default
  style.
- 
+
  @param sharedStyle
  */
 + (void)setSharedStyle:(CSToastStyle *)sharedStyle;
@@ -331,14 +331,14 @@ extern const NSString * CSToastPositionBottom;
 /**
  Gets the shared style from the singlton. By default, this is
  `CSToastStyle`'s default style.
- 
+
  @return the shared style
  */
 + (CSToastStyle *)sharedStyle;
 
 /**
  Enables or disables tap to dismiss on toast views. Default is `YES`.
- 
+
  @param allowTapToDismiss
  */
 + (void)setTapToDismissEnabled:(BOOL)tapToDismissEnabled;
@@ -346,7 +346,7 @@ extern const NSString * CSToastPositionBottom;
 /**
  Returns `YES` if tap to dismiss is enabled, otherwise `NO`.
  Default is `YES`.
- 
+
  @return BOOL
  */
 + (BOOL)isTapToDismissEnabled;
@@ -357,7 +357,7 @@ extern const NSString * CSToastPositionBottom;
  views will appear at the same time (potentially overlapping depending
  on their positions). This has no effect on the toast activity view,
  which operates independently of normal toast views. Default is `YES`.
- 
+
  @param queueEnabled
  */
 + (void)setQueueEnabled:(BOOL)queueEnabled;
@@ -365,7 +365,7 @@ extern const NSString * CSToastPositionBottom;
 /**
  Returns `YES` if the queue is enabled, otherwise `NO`.
  Default is `YES`.
- 
+
  @return BOOL
  */
 + (BOOL)isQueueEnabled;
@@ -374,14 +374,14 @@ extern const NSString * CSToastPositionBottom;
  Sets the default duration. Used for the `makeToast:` and
  `showToast:` methods that don't require an explicit duration.
  Default is 3.0.
- 
+
  @param duration The toast duration
  */
 + (void)setDefaultDuration:(NSTimeInterval)duration;
 
 /**
  Returns the default duration. Default is 3.0.
- 
+
  @return duration The toast duration
 */
 + (NSTimeInterval)defaultDuration;
@@ -390,7 +390,7 @@ extern const NSString * CSToastPositionBottom;
  Sets the default position. Used for the `makeToast:` and
  `showToast:` methods that don't require an explicit position.
  Default is `CSToastPositionBottom`.
- 
+
  @param position The default center point. Can be one of the predefined
  CSToastPosition constants or a `CGPoint` wrapped in an `NSValue` object.
  */
@@ -398,7 +398,7 @@ extern const NSString * CSToastPositionBottom;
 
 /**
  Returns the default toast position. Default is `CSToastPositionBottom`.
- 
+
  @return position The default center point. Will be one of the predefined
  CSToastPosition constants or a `CGPoint` wrapped in an `NSValue` object.
  */

@@ -28,4 +28,3 @@ Plugin rules:
    without putting at risk the user's bitcoins. If we feel that a
    plugin cannot be removed without threatening users who rely on it,
    we will not merge it.
-

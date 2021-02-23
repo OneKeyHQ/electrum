@@ -51,4 +51,3 @@ def pycryptodome_filename(dir_comps, filename):
     path_so = dylib_path + "/" + dir_comps[1].split(".")[0] + ".framework" + "/" + dir_comps[1]
     return path_so
 #    return os.path.join(root_lib, *dir_comps)
-

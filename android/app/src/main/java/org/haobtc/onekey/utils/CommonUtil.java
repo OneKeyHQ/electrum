@@ -38,16 +38,16 @@ import java.util.Locale;
 import java.util.UUID;
 
 public class CommonUtil {
- 
+
     private static String generateFileName() {
         return UUID.randomUUID().toString();
     }
- 
+
     private static final String SD_PATH = Environment.getExternalStorageDirectory().getPath() + "/OA头像/";
- 
+
     public static void saveBitmap2file(Bitmap bmp, Context context) {
- 
- 
+
+
         String savePath;
         String fileName = generateFileName() + ".JPEG";
         if (Environment.getExternalStorageState().equals(
@@ -81,9 +81,9 @@ public class CommonUtil {
 //        }
         // 最后通知图库更新
         context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + savePath+fileName)));
- 
+
     }
- 
+
     public static File getFileDir(Context context, String desFileName) {
         try {
             File dir = new File(Environment.getExternalStorageDirectory().toString() + "/carefree/");
@@ -95,9 +95,9 @@ public class CommonUtil {
             e.printStackTrace();
             return new File(context.getFilesDir() + desFileName);
         }
- 
+
     }
- 
+
     public static Bitmap createAsciiPic(final String path, Context context) {
         final String base = "#8XOHLTI)i=+;:,.";// 字符串由复杂到简单
 //        final String base = "#,.0123456789:;@ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";// 字符串由复杂到简单
@@ -136,7 +136,7 @@ public class CommonUtil {
 //        return creatCodeBitmap(text,context,colors);
 //        return image;
     }
- 
+
     public static Bitmap createAsciiPicColor(final String path, Context context) {
         final String base = "#8XOHLTI)i=+;:,.";// 字符串由复杂到简单
 //        final String base = "#,.0123456789:;@ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";// 字符串由复杂到简单
@@ -178,11 +178,11 @@ public class CommonUtil {
 //        return creatCodeBitmap(text,context,colors);
 //        return image;
     }
- 
+
     public static Bitmap creatCodeBitmap(StringBuilder contents, Context context, List<Integer> colors) {
 //        contents = new StringBuilder().append("")
         float scale = context.getResources().getDisplayMetrics().scaledDensity;
- 
+
         TextView tv = new TextView(context);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -202,15 +202,15 @@ public class CommonUtil {
         tv.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
         tv.layout(0, 0, tv.getMeasuredWidth(), tv.getMeasuredHeight());
- 
- 
+
+
         tv.setBackgroundColor(Color.WHITE);
- 
+
         tv.buildDrawingCache();
         Bitmap bitmapCode = tv.getDrawingCache();
         return bitmapCode;
     }
- 
+
     public static Bitmap textAsBitmap(StringBuilder text, Context context) {
         TextPaint textPaint = new TextPaint();
         textPaint.setColor(Color.GRAY);
@@ -221,27 +221,27 @@ public class CommonUtil {
         DisplayMetrics dm = new DisplayMetrics();
         wm.getDefaultDisplay().getMetrics(dm);
         int width = dm.widthPixels;         //
- 
+
         StaticLayout layout = new StaticLayout(text, textPaint, width,
- 
+
                 Layout.Alignment.ALIGN_CENTER, 1f, 0.0f, true);
- 
+
         Bitmap bitmap = Bitmap.createBitmap(layout.getWidth() + 20,
- 
+
                 layout.getHeight() + 20, Bitmap.Config.ARGB_8888);
- 
+
         Canvas canvas = new Canvas(bitmap);
- 
+
         canvas.translate(10, 10);
- 
+
         canvas.drawColor(Color.WHITE);
- 
+
 //        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);//绘制透明色
- 
+
         layout.draw(canvas);
- 
+
         return bitmap;
- 
+
     }
     public static Bitmap textAsBitmapColor(StringBuilder text, List<Integer> colors, Context context) {
         TextPaint textPaint = new TextPaint();
@@ -260,32 +260,32 @@ public class CommonUtil {
             spannableString.setSpan(colorSpan, i, i+1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
         StaticLayout layout = new StaticLayout(spannableString, textPaint, width,
- 
+
                 Layout.Alignment.ALIGN_CENTER, 1f, 0.0f, true);
- 
+
         Bitmap bitmap = Bitmap.createBitmap(layout.getWidth() + 20,
- 
+
                 layout.getHeight() + 20, Bitmap.Config.ARGB_8888);
- 
+
         Canvas canvas = new Canvas(bitmap);
- 
+
         canvas.translate(10, 10);
- 
+
         canvas.drawColor(Color.WHITE);
- 
+
 //        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);//绘制透明色
- 
+
         layout.draw(canvas);
- 
+
         return bitmap;
- 
+
     }
- 
+
     public static Bitmap scale(String src, int newWidth, int newHeight) {
         Bitmap ret = Bitmap.createScaledBitmap(BitmapFactory.decodeFile(src), newWidth, newHeight, true);
         return ret;
     }
- 
+
     /**
      * 存放拍摄图片的文件夹
      */
@@ -298,8 +298,8 @@ public class CommonUtil {
      * 图片种类
      */
     public static final String IMAGE_TYPE = ".png";
- 
- 
+
+
     /**
      * 获取手机可存储路径
      *
@@ -317,7 +317,7 @@ public class CommonUtil {
             return context.getCacheDir().getPath();
         }
     }
- 
+
     /**
      * 使用当前系统时间作为上传图片的名称
      *
@@ -336,7 +336,7 @@ public class CommonUtil {
         String photoName = "/" + time + IMAGE_TYPE;
         return file + photoName;
     }
- 
+
     /**
      * 保存Bitmap图片在SD卡中
      * 如果没有SD卡则存在手机中
@@ -369,7 +369,7 @@ public class CommonUtil {
             }
         }
     }
- 
+
     /**
      * 把原图按1/10的比例压缩
      *
@@ -384,7 +384,7 @@ public class CommonUtil {
         options = null;
         return bmp;
     }
- 
+
     /**
      * 处理旋转后的图片
      *
@@ -393,7 +393,7 @@ public class CommonUtil {
      * @return 返回修复完毕后的图片路径
      */
     public static String amendRotatePhoto(String originpath, Context context) {
- 
+
         // 取得图片旋转角度
         int angle = readPictureDegree(originpath);
         // 把原图压缩后得到Bitmap对象
@@ -404,9 +404,9 @@ public class CommonUtil {
         } else {
             return originpath;
         }
- 
+
     }
- 
+
     /**
      * 读取照片旋转角度
      *
@@ -434,7 +434,7 @@ public class CommonUtil {
         }
         return degree;
     }
- 
+
     /**
      * 旋转图片
      *
@@ -460,7 +460,7 @@ public class CommonUtil {
         }
         return returnBm;
     }
- 
+
     public static Bitmap sizeCompres(String path, int rqsW, int rqsH) {
         // 用option设置返回的bitmap对象的一些属性参数
         final BitmapFactory.Options options = new BitmapFactory.Options();

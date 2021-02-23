@@ -290,7 +290,7 @@
     OKDeviceModel *deviceModel  = [[OKDeviceModel alloc]initWithJson:jsonDict];
     kOKBlueManager.currentDeviceID = deviceModel.deviceInfo.device_id;
     [[OKDevicesManager sharedInstance]addDevices:deviceModel];
-    
+
     if (deviceModel.bootloaderMode) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [MBProgressHUD hideHUDForView:self.view animated:YES];

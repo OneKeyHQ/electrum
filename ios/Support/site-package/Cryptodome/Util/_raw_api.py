@@ -311,7 +311,7 @@ def load_pycryptodome_raw_lib(name, cdecl):
 
 
 if sys.version_info[:2] != (2, 6):
-    
+
     def is_buffer(x):
         """Return True if object x supports the buffer interface"""
         return isinstance(x, (bytes, bytearray, memoryview))

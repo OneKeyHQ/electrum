@@ -23,20 +23,20 @@
 + (instancetype)tradeSettingViewController
 {
     return [[UIStoryboard storyboardWithName:@"Tab_Mine" bundle:nil] instantiateViewControllerWithIdentifier:@"OKTradeSettingViewController"];
-    
+
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     [self stupUI];
-    
+
 }
 - (void)stupUI
 {
     self.title = MyLocalizedString(@"Transaction Settings (Advanced)", nil);
     self.tableView.tableFooterView = [UIView new];
     self.topTipsLabel.text = MyLocalizedString(@"The following Settings apply to the Bitcoin account for the hardware wallet", nil);
-  
+
     NSString *labelText = MyLocalizedString(@"Restore the default", nil);
     CGFloat labelW = [labelText getWidthWithHeight:30 font:14];
     CGFloat labelmargin = 10;
@@ -45,13 +45,13 @@
     label.text = labelText;
     label.font = [UIFont boldSystemFontOfSize:14];
     label.textColor = HexColor(0x26CF02);
-    
+
     UIView *rightView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, labelW + labelmargin * 2, labelH)];
     rightView.backgroundColor = HexColorA(0x26CF02, 0.1);
     [rightView setLayerRadius:labelH * 0.5];
     [rightView addSubview:label];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithCustomView:rightView];
-    
+
     UITapGestureRecognizer *tapRightViewClick = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapRightViewClick)];
     [rightView addGestureRecognizer:tapRightViewClick];
 }
@@ -91,13 +91,13 @@
     model1.titleStr = MyLocalizedString(@"Use RBF (trade substitution)", nil);
     model1.switchOn = kUserSettingManager.rbfFlag;
     model1.index = 0;
-    
+
     OKTradeSettingViewCellModel *model2 = [[OKTradeSettingViewCellModel alloc]init];
     model2.titleStr = MyLocalizedString(@"Spend unrecognized income", nil);
     model2.switchOn = kUserSettingManager.unconfFlag;
     model2.index = 1;
     _allData = @[model1,model2];
-    
+
     return _allData;
 }
 
@@ -122,7 +122,7 @@
             [kUserSettingManager setUnconfFlag:on];
         }
             break;
-            
+
         default:
             break;
     }

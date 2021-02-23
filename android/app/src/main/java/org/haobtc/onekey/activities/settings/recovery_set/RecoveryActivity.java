@@ -188,4 +188,3 @@ public class RecoveryActivity extends BaseActivity {
         }
     }
 }
-

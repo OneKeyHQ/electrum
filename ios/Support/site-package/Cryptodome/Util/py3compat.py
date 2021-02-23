@@ -95,7 +95,7 @@ if sys.version_info[0] == 2:
         _memoryview = types.NoneType
     else:
         _memoryview = memoryview
-    
+
     iter_range = xrange
 
     def is_native_int(x):

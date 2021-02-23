@@ -23,7 +23,7 @@
         iconName = [model.iconName stringByAppendingString:@"_selected"];
     }
     self.iconImageView.image = [UIImage imageNamed:iconName];
-    
+
 }
 
 @end

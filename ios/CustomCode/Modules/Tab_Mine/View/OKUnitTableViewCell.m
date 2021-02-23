@@ -22,7 +22,7 @@
 {
     _model = model;
     self.titleLabel.text = model.titleStr;
-    
+
     if (model.type == GroupTypeFait) {
         NSString *fiat = kWalletManager.currentFiat;
         self.checkImageView.hidden = ![fiat isEqualToString:model.typeString];
@@ -34,8 +34,8 @@
     }else{
         self.checkImageView.hidden = YES;
     }
- 
-    
+
+
     if (model.descStr.length == 0 || model.descStr == nil) {
         self.descLabel.hidden = YES;
     }else{

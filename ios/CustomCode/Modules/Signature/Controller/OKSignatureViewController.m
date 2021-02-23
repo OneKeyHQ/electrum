@@ -78,7 +78,7 @@ typedef enum {
     [self.confirmBtn setLayerRadius:20];
     [self.confirmBtn setTitle:MyLocalizedString(@"determine", nil) forState:UIControlStateNormal];
     [self.textViewBgView setLayerBoarderColor:HexColor(0xDBDEE7) width:1 radius:20];
-    
+
 }
 
 - (void)viewDidLayoutSubviews
@@ -111,7 +111,7 @@ typedef enum {
     _segHead.deSelectColor = [UIColor blackColor];
     _segHead.bottomLineHeight = 0;
     _segHead.bottomLineColor = [UIColor lightGrayColor];
-    
+
     _segHead.slideScale = 0.98;
     OKWeakSelf(self)
     [MLMSegmentManager associateHead:_segHead withScroll:nil completion:^{
@@ -305,7 +305,7 @@ typedef enum {
             }
         });
     }else if (type == OKHWNotiTypeKeyConfirm) {
-       
+
     }
 }
 

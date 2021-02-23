@@ -17,11 +17,11 @@ const NSString *OKKeyPathQueryPattern = @"^((\\[(\\d+|'(\\w|\\s)+')\\])|\\.\\w+)
     if (!path.length) {
         return nil;
     }
-    
+
     if (![path hasPrefix:@"."] && ![path hasPrefix:@"["]) {
         path = [NSString stringWithFormat:@".%@", path];
     }
-    
+
     NSPredicate *pred = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", OKKeyPathQueryPattern];
     if (![pred evaluateWithObject:path]) {
         return nil;
@@ -40,7 +40,7 @@ const NSString *OKKeyPathQueryPattern = @"^((\\[(\\d+|'(\\w|\\s)+')\\])|\\.\\w+)
     if ([obj respondsToSelector:@selector(ok_queryObj:)]) {
         return [obj ok_queryObj:[path substringFromIndex:key.length + offset]];
     }
-    
+
     return obj;
 }
 

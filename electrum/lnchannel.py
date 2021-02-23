@@ -1462,4 +1462,3 @@ class Channel(AbstractChannel):
             self.logger.info('funding outpoint mismatch')
             return False
         return True
-

@@ -84,24 +84,24 @@
 - (NSArray *)walletTypeListArray
 {
     if (!_walletTypeListArray) {
-        
+
         OKCreateSelectWalletTypeModel *model = [OKCreateSelectWalletTypeModel new];
         model.createWalletType = MyLocalizedString(@"Add a new wallet (recommended)", nil);
         model.iconName = @"new_device";
         model.tipsString = MyLocalizedString(@"Up to 20 derived wallets can be created, as needed", nil);
         model.addtype = OKAddTypeCreateHWDerived;
-        
+
         OKCreateSelectWalletTypeModel *model1 = [OKCreateSelectWalletTypeModel new];
         model1.createWalletType = MyLocalizedString(@"Restore the wallet that was created from this hardware device", nil);
         model1.iconName = @"recover_device";
         model1.tipsString = MyLocalizedString(@"If you have ever deleted a wallet created by the device on your phone, you can recover it this way.", nil);
         model1.addtype = OKAddTypeRestoredHWWallet;
-        
+
         OKCreateSelectWalletTypeModel *model2 = [OKCreateSelectWalletTypeModel new];
         model2.createWalletType = MyLocalizedString(@"Create a Condominium wallet (Advanced)", nil);
         model2.iconName = @"multi-sig";
         model2.tipsString = MyLocalizedString(@"At least 2 devices are required to cooperate. Before adding, make sure that all hardware devices that want to participate in the public pipe are activated", nil);
-        
+
         _walletTypeListArray = @[model,model1];
     }
     return _walletTypeListArray;

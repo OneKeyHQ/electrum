@@ -31,7 +31,7 @@
 }
 
 - (void)viewDidLoad {
-    
+
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     [self.nextBtn setLayerBoarderColor:HexColor(0xBDBDBD) width:1 radius:20];

@@ -27,7 +27,7 @@
 + (instancetype)allAssetsViewController
 {
     return [[UIStoryboard storyboardWithName:@"Tab_Mine" bundle:nil] instantiateViewControllerWithIdentifier:@"OKAllAssetsViewController"];
-    
+
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -61,7 +61,7 @@
         self.tableView.tableFooterView = [UIView new];
         return;
     }
-    
+
     UILabel *lab = [UILabel new];
     lab.font = [UIFont systemFontOfSize:21];
     lab.textColor = HexColor(0x9FA6AD);
@@ -69,8 +69,8 @@
     lab.textAlignment = NSTextAlignmentCenter;
     [lab sizeToFit];
     self.tableView.tableFooterView = lab;
-    
-    
+
+
 }
 #pragma mark - UITableViewDataSource ,UITableViewDelegate
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section

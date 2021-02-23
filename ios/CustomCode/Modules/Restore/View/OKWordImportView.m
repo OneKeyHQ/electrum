@@ -44,7 +44,7 @@
     int column = 0;
     for (UIView *bgView in _stackView.subviews) {
         for (int i = 0; i < CountPerRow; ++i) {
-            
+
             UILabel *indexLabel = [[UILabel alloc]init];
             indexLabel.text = [NSString stringWithFormat:@"%d",column * CountPerRow + i + 1];
             indexLabel.textColor = HexColor(0x546370);
@@ -90,7 +90,7 @@
         indexl.frame = CGRectMake(x, 0, width, HeightIndexL);
         ++j;
     }
-    
+
 }
 
 - (void)textFieldDidBeginEditing:(UITextField *)textField {
@@ -258,7 +258,7 @@
         }
         _completed(completed);
     }
-    
+
     if (_completed) {
         _completed(YES);
     }

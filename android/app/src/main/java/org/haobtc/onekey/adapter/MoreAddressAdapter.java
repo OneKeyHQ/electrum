@@ -53,4 +53,3 @@ public class MoreAddressAdapter extends BaseQuickAdapter<TransactionInfoBean.Out
         }
     }
 }
-

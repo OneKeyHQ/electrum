@@ -7,7 +7,7 @@ import java.util.Locale;
 import dr.android.utils.SdCardUtil;
 
 /**
- * 
+ *
  * @author DarkRanger
  * @datetime 20160530
  *
@@ -21,7 +21,7 @@ public class Storage implements Serializable {
 
 	/**
 	 * 构造函数
-	 * 
+	 *
 	 * @param absPath
 	 *            存储设置全路径
 	 */

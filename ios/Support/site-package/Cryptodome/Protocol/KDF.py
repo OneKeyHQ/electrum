@@ -201,10 +201,10 @@ class _S2V(object):
         self._key = _copy_bytes(None, None, key)
         self._ciphermod = ciphermod
         self._last_string = self._cache = b'\x00' * ciphermod.block_size
-        
+
         # Max number of update() call we can process
         self._n_updates = ciphermod.block_size * 8 - 1
-        
+
         if cipher_params is None:
             self._cipher_params = {}
         else:

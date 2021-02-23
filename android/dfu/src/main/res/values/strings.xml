@@ -1,7 +1,7 @@
 <resources>
 
     <string name="dfu_unknown_name">unnamed device</string>
-    
+
     <string name="dfu_action_abort">Abort</string>
 
     <string name="dfu_status_foreground_title">Device Firmware Update</string>
@@ -18,7 +18,7 @@
     <string name="dfu_status_aborted">Aborted</string>
     <string name="dfu_status_aborting">Aborting&#8230;</string>
     <string name="dfu_status_error">Upload failed</string>
-    
+
     <string name="dfu_status_connecting_msg">Connecting to %s&#8230;</string>
     <string name="dfu_status_starting_msg">Initializing DFU process&#8230;</string>
     <string name="dfu_status_switching_to_dfu_msg">Waiting for bootloader&#8230;</string>
@@ -31,5 +31,5 @@
 
     <string name="dfu_channel_name">DFU</string>
     <string name="dfu_channel_description">Shows DFU progress.</string>
-    
+
 </resources>

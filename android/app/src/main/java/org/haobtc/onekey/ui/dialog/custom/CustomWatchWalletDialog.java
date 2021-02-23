@@ -89,4 +89,3 @@ public class CustomWatchWalletDialog extends BottomPopupView {
     }
 
 }
-

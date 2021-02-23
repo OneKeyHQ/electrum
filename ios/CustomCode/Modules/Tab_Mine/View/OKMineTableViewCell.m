@@ -23,10 +23,10 @@
 - (void)setModel:(OKMineTableViewCellModel *)model
 {
     _model = model;
-    
+
     self.iconView.image = [UIImage imageNamed:model.imageName];
     self.titleLabel.text = model.menuName;
-    
+
     if (_model.isAuth) {
         self.rightSwitch.hidden = NO;
         self.rightArrow.hidden = YES;

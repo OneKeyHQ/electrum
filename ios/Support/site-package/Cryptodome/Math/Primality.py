@@ -67,7 +67,7 @@ def miller_rabin_test(candidate, iterations, randfunc=None):
 
     if candidate in (1, 2, 3, 5):
         return PROBABLY_PRIME
-    
+
     if candidate.is_even():
         return COMPOSITE
 

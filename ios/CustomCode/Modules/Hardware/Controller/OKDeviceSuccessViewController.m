@@ -70,7 +70,7 @@
             [[NSNotificationCenter defaultCenter]postNotificationName:kNotiBackUPWalletComplete object:nil];
             [[NSNotificationCenter defaultCenter]postNotificationName:kNotiHwInfoUpdate object:nil];
             [self.OK_TopViewController dismissToViewControllerWithClassName:@"OKWalletViewController" animated:YES complete:^{
-                
+
             }];
         }
             break;

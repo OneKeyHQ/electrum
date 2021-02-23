@@ -57,10 +57,10 @@
     [self.greenView setLayerRadius:2];
     [self.QRBgView setLayerRadius:20];
     [self.showQRImageBgView setLayerRadius:14];
-    
+
     UITapGestureRecognizer *tapp = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(privateKeyBgViewClick)];
     [self.privateKeyBgView addGestureRecognizer:tapp];
-    
+
     UITapGestureRecognizer *tapshowQr = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapshowQrClick)];
     [self.showQRImageBgView addGestureRecognizer:tapshowQr];
     self.showQrLabel.text = MyLocalizedString(@"Display qr code", nil);

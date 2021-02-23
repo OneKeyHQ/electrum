@@ -33,7 +33,7 @@
 
 - (void)setupUI {
     [self.bgView setLayerRadius:20];
-    
+
     self.titleLabel.text = MyLocalizedString(@"hardwareWallet.delete", nil);
     NSString *tip = MyLocalizedString(@"hardwareWallet.delete.tip", nil);
     NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:tip];
@@ -41,7 +41,7 @@
     paragraphStyle.lineSpacing = 15;
     [attributedString addAttribute:NSParagraphStyleAttributeName value:paragraphStyle range:NSMakeRange(0, tip.length)];
     self.tipLabel.attributedText = attributedString;
-    
+
     self.deleteButton.titleLabel.text = MyLocalizedString(@"hardwareWallet.delete", nil);
     [self.deleteButton setLayerRadius:20];
 

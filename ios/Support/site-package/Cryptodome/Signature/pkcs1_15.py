@@ -219,4 +219,3 @@ def new(rsa_key):
     :return: a :class:`PKCS115_SigScheme` signature object
     """
     return PKCS115_SigScheme(rsa_key)
-

@@ -21,14 +21,14 @@
 + (instancetype)fiatSelectViewController
 {
     return [[UIStoryboard storyboardWithName:@"Tab_Mine" bundle:nil] instantiateViewControllerWithIdentifier:@"OKFiatSelectViewController"];
-    
+
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     self.title = MyLocalizedString(@"Legal tender units", nil);
     self.tableView.tableFooterView = [UIView new];
-    
+
     self.allData = kWalletManager.supportFiatArray;
 }
 

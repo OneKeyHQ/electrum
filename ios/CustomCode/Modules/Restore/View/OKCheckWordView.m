@@ -70,7 +70,7 @@
     if (!data || !data.count || data.count != kWordNum) {
         return;
     }
-    
+
     self.delegate = delegate;
     // 顺序赋值
     for (NSInteger i = 0; i < kWordNum; ++i) {

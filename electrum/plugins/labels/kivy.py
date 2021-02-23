@@ -11,4 +11,3 @@ class Plugin(LabelsPlugin):
     def on_pulled(self, wallet):
         self.logger.info('on pulled')
         self.window._trigger_update_history()
-

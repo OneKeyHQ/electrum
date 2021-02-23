@@ -12,7 +12,7 @@ fi
 
 
 if [ "$1" == "-k" ]; then
-	find "$dir1" "$dir2" -type d -name __pycache__ -exec rm -fvr {} \; 
+	find "$dir1" "$dir2" -type d -name __pycache__ -exec rm -fvr {} \;
 	find "$dir1" "$dir2" -type f -name \*.pyc -exec rm -fvr {} \;
 elif [ -n "$1" ]; then
 	echo "Usage: $0 [-k]"
@@ -22,13 +22,10 @@ elif [ -n "$1" ]; then
 	echo ""
 else
 	originaldir=`pwd`
-	cd "$dir1" 
+	cd "$dir1"
 	python3.6 -m compileall . || exit 1
-	cd "$originaldir" 
+	cd "$originaldir"
 	cd "$dir2"
 	python3.6 -m compileall . || exit 1
 	cd "$originaldir"
 fi
-
-
-

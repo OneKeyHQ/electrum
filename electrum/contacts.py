@@ -120,7 +120,7 @@ class Contacts(dict, Logger):
             return regex.search(haystack).groups()[0]
         except AttributeError:
             return None
-            
+
     def _validate(self, data):
         for k, v in list(data.items()):
             if k == 'contacts':
@@ -132,4 +132,3 @@ class Contacts(dict, Logger):
                 if _type != 'address':
                     data.pop(k)
         return data
-

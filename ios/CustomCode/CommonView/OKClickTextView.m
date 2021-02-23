@@ -64,7 +64,7 @@
     if (self.text.length < underlineTextRange.location+underlineTextRange.length) {
         return;
     }
-    
+
     // 设置下划线
     if (self.isShowUnderline) {
         [self.content addAttribute:NSUnderlineStyleAttributeName value:[NSNumber numberWithInteger:NSUnderlineStyleSingle] range:underlineTextRange];
@@ -74,11 +74,11 @@
         [self.content addAttribute:NSForegroundColorAttributeName value:color range:underlineTextRange];
     }
     self.attributedText = self.content;
-    
+
     // 设置下划线文字的点击事件
     // self.selectedRange  影响  self.selectedTextRange
     self.selectedRange = underlineTextRange;
-    
+
     // 获取选中范围内的矩形框
     NSArray *selectionRects = [self selectionRectsForRange:self.selectedTextRange];
     // 清空选中范围
@@ -104,7 +104,7 @@
     }
     // 将可能点击的范围的数组存储到总的数组中
     [self.rectsArray addObject:selectedArray];
-    
+
 }
 
 // 点击textView的 touchesBegan 方法
@@ -112,7 +112,7 @@
 {
     // 获取触摸对象
     UITouch *touch = [touches anyObject];
-    
+
     // 触摸点
     CGPoint point = [touch locationInView:self];
     // 通过一个触摸点，查询点击的是不是在下划线对应的文字的frame

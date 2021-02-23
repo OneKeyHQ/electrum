@@ -8,5 +8,3 @@ description = ''.join(["<br/>",
     " <a href=\"https://revealer.cc\">https://revealer.cc</a>", '<br/>', '<br/>',
 ])
 available_for = ['qt']
-
-

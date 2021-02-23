@@ -26,7 +26,7 @@
 {
     _model = model;
     self.titleLabel.text = model.titleStr;
-    
+
     NSString *addr = model.rightLabelStr;
     if (addr.length > 12) {
         addr = [NSString stringWithFormat:@"%@...%@",[addr substringToIndex:6],[addr substringFromIndex:addr.length - 6]];
@@ -34,7 +34,7 @@
     self.rightLabel.text = addr;
     self.rightLabel.textColor = model.rightLabelColor;
     self.titleLabel.textColor = model.leftLabelColor;
-    
+
     if (model.isShowDesc == YES) { //显示DESC
         self.descLabel.hidden = NO;
         self.titleLabel.hidden = YES;
@@ -48,7 +48,7 @@
         self.rightLabel.hidden = NO;
         self.imageViewCopy.hidden = NO;
     }
-    
+
     if (model.isShowCopy==NO &&model.isShowArrow==NO) {
         self.imageViewCopy.hidden = YES;
     }else{

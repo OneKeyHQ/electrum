@@ -47,14 +47,14 @@
     [self setNavigationBarBackgroundColorWithClearColor];
     [self hideBackBtn];
     self.title = MyLocalizedString(@"Create a new wallet", nil);
-    
+
     self.descTitleLabel.text = MyLocalizedString(@"You can more easily unlock your wallet without having to type in your password every time", nil);
     self.descDetailLabel.text = MyLocalizedString(@"Your face, fingerprints and other biological data are stored on this machine, encrypted by the operating system of your phone manufacturer, and we can neither access nor save these data", nil);
     [self.nextBtn setTitle:MyLocalizedString(@"The next time again say", nil) forState:UIControlStateNormal];
     [self.startBtn setLayerRadius:20];
     [self.nextBtn setLayerBoarderColor:HexColor(0xDBDEE7) width:1 radius:20];
-   
-    
+
+
     [YZAuthID biologicalRecognitionResult:^(YZAuthenticationType type) {
         switch (type) {
             case YZAuthenticationFace:
@@ -98,9 +98,9 @@
         if (state == YZAuthIDStateNotSupport
             || state == YZAuthIDStatePasswordNotSet || state == YZAuthIDStateTouchIDNotSet) { // 不支持TouchID/FaceID
         } else if(state == YZAuthIDStateFail) { // 认证失败
-            
+
         } else if(state == YZAuthIDStateTouchIDLockout) {   // 多次错误，已被锁定
-            
+
         } else if (state == YZAuthIDStateSuccess) { // TouchID/FaceID验证成功
             kWalletManager.isOpenAuthBiological = YES;
             [kOneKeyPwdManager saveOneKeyPassWord:self.pwd];

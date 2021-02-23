@@ -93,7 +93,7 @@ def _create_base_cipher(dict_parameters):
 
 def new(key, mode, salt, cost, invert):
     """Create a new EKSBlowfish cipher
-    
+
     Args:
 
       key (bytes, bytearray, memoryview):

@@ -11,7 +11,7 @@ RUN apt-get update && \
     apt-get install -y gettext openjdk-8-jdk-headless unzip wget
 RUN echo "progress=dot:giga" > .wgetrc
 
-# install Python 3.8 
+# install Python 3.8
 RUN apt install -y python3.8 libpython3.8-minimal libpython3.8-dev libpython3.8-stdlib python3-distutils
 
 RUN filename=sdk-tools-linux-4333796.zip && \

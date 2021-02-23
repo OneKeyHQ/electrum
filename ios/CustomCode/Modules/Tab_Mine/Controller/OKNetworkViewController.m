@@ -31,18 +31,18 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     self.title = MyLocalizedString(@"network", nil);
-    
+
 
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(userSetingSysServerComplete) name:kUserSetingSysServerComplete object:nil];
     [self userSetingSysServerComplete];
-    
+
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(userSetingBtcBComplete) name:kUserSetingBtcBComplete object:nil];
     [self userSetingBtcBComplete];
-    
+
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(userSetingMarketSource) name:kUserSetingMarketSource object:nil];
     [self userSetingMarketSource];
-    
-    
+
+
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(userSetingElectrumServer) name:kUserSetingElectrumServer object:nil];
     [self userSetingElectrumServer];
 }

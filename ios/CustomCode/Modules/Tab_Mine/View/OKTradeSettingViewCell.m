@@ -36,7 +36,7 @@
 }
 
 - (IBAction)rightSwitchClick:(UISwitch *)sender {
-    
+
     if ([self.delegate respondsToSelector:@selector(switchClick:on:)]) {
         [self.delegate switchClick:self.model on:sender.isOn];
     }

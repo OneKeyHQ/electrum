@@ -55,7 +55,7 @@ class SettingsDialog(WindowModalDialog):
         self.need_restart = False
         self.fx = self.window.fx
         self.wallet = self.window.wallet
-        
+
         vbox = QVBoxLayout()
         tabs = QTabWidget()
         gui_widgets = []
@@ -465,7 +465,7 @@ Use this if you want your local watchtower to keep running after you close your 
         vbox.addStretch(1)
         vbox.addLayout(Buttons(CloseButton(self)))
         self.setLayout(vbox)
-        
+
     def set_alias_color(self):
         if not self.config.get('alias'):
             self.alias_e.setStyleSheet("")

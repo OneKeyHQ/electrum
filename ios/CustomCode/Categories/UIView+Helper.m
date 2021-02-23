@@ -54,21 +54,21 @@
 
 -(void)addBottedlineWidth:(CGFloat)lineWidth lineColor:(UIColor *)lineColor{
     CAShapeLayer *border = [CAShapeLayer layer];
-    
+
     border.strokeColor = lineColor.CGColor;
-    
+
     border.fillColor = nil;
-    
+
     border.path = [UIBezierPath bezierPathWithRect:self.bounds].CGPath;
-    
+
     border.frame = self.bounds;
-    
+
     border.lineWidth = lineWidth;
-    
+
     border.lineCap = @"square";
     //设置线宽和线间距
     border.lineDashPattern = @[@4, @5];
-    
+
     [self.layer addSublayer:border];
 }
 
@@ -96,23 +96,23 @@
     CGSize boundsSize = self.bounds.size;
     CGFloat boundsWidth = boundsSize.width;
     CGFloat boundsHeight = boundsSize.height;
-    
+
     CGSize contentSize = scrollView.contentSize;
     CGFloat contentHeight = contentSize.height;
-    
+
     CGPoint offset = scrollView.contentOffset;
-    
+
     NSMutableArray *images = [NSMutableArray array];
     //创建一个view覆盖在上面
     [self createPlaceholder:images];
-    
-    
+
+
     [scrollView setContentOffset:CGPointMake(0, 0)];
-    
+
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [self createImg:images height:contentHeight block:^{
             [scrollView setContentOffset:offset];
-            
+
             CGSize imageSize = CGSizeMake(contentSize.width * scale,
                                           contentSize.height * scale);
             UIGraphicsBeginImageContext(imageSize);
@@ -162,7 +162,7 @@
     [self.layer renderInContext:UIGraphicsGetCurrentContext()];
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
-    
+
     UIImageView * imgViewPlaceholder=[[UIImageView alloc] initWithImage:image];
     imgViewPlaceholder.tag=100;
     imgViewPlaceholder.frame=self.frame;

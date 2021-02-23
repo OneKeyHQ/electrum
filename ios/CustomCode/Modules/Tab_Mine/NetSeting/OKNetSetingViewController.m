@@ -31,15 +31,15 @@
 }
 
 - (void)viewDidLoad {
-    
+
     [super viewDidLoad];
-    
+
     [self.confirmBtn setLayerRadius:20];
-    
+
     self.title = MyLocalizedString(@"Synchronous server", nil);
-    
+
     self.titleLabel.text = MyLocalizedString(@"The synchronous server USES the synchronous server to back up and restore multi-signature wallet, and synchronizes unsigned transactions among multiple co-signers; The synchronization server stores only public information such as the wallet public key and name, and does not store any private keys and personal information", nil);
-    
+
     NSString *labelText = MyLocalizedString(@"Restore the default", nil);
     CGFloat labelW = [labelText getWidthWithHeight:30 font:14];
     CGFloat labelmargin = 10;
@@ -48,25 +48,25 @@
     label.text = labelText;
     label.font = [UIFont boldSystemFontOfSize:14];
     label.textColor = HexColor(0x26CF02);
-    
+
     UIView *rightView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, labelW + labelmargin * 2, labelH)];
     rightView.backgroundColor = HexColorA(0x26CF02, 0.1);
     [rightView setLayerRadius:labelH * 0.5];
     [rightView addSubview:label];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithCustomView:rightView];
-    
+
     UITapGestureRecognizer *tapRightViewClick = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapRightViewClick)];
     [rightView addGestureRecognizer:tapRightViewClick];
     self.defaultSeting =  [kPyCommandsManager callInterface:kInterfaceget_sync_server_host parameter:@{}];
-    
+
     if (kUserSettingManager.sysServerFlag) {
         self.switchR.on = YES;
     }else{
         self.switchR.on = NO;
     }
     [self.confirmBtn checkBtnStatus:self.switchR.isOn];
-    
-    
+
+
     if (kUserSettingManager.currentSynchronousServer == nil || kUserSettingManager.currentSynchronousServer.length == 0) {
         [self refreshUI:self.defaultSeting];
     }else{
@@ -104,7 +104,7 @@
     [kPyCommandsManager callInterface:kInterfaceset_syn_server parameter:@{@"flag":flag}];
     [kUserSettingManager setSysServerFlag:sender.isOn];
     [self.confirmBtn checkBtnStatus:sender.isOn];
-    
+
     [self refreshUI:self.defaultSeting];
 }
 
@@ -120,18 +120,18 @@
 }
 
 - (IBAction)confirmBtnClick:(UIButton *)sender {
-    
+
     if (self.ipRTextField.text.length == 0) {
         [kTools tipMessage:MyLocalizedString(@"The IP address cannot be empty", nil)];
         return;
     }
-    
+
     if (self.portRLabel.text.length == 0) {
         [kTools tipMessage:MyLocalizedString(@"The port cannot be empty", nil)];
         return;
     }
-    
-    
+
+
     [kPyCommandsManager callInterface:kInterfaceset_sync_server_host parameter:@{@"ip":self.ipRTextField.text , @"port":self.portRLabel.text}];
     NSString *ipportStr = [NSString stringWithFormat:@"%@:%@",self.ipRTextField.text,self.portRLabel.text];
     [kUserSettingManager setCurrentSynchronousServer:ipportStr];

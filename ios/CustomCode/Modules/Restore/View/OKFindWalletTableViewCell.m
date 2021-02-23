@@ -36,7 +36,7 @@
     self.checkBtn.selected = model.isSelected;
     self.walletNameLabel.text = model.label;
     self.balanceLabel.text = model.blance;
-    
+
     if (model.exist) {
         self.checkBtn.hidden = YES;
         self.checkBtn.userInteractionEnabled = NO;

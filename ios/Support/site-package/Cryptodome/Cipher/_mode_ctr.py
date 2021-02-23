@@ -184,15 +184,15 @@ class CtrMode(object):
         if self.encrypt not in self._next:
             raise TypeError("encrypt() cannot be called after decrypt()")
         self._next = [self.encrypt]
-        
+
         if output is None:
             ciphertext = create_string_buffer(len(plaintext))
         else:
             ciphertext = output
-            
+
             if not is_writeable_buffer(output):
                 raise TypeError("output must be a bytearray or a writeable memoryview")
-        
+
             if len(plaintext) != len(output):
                 raise ValueError("output must have the same length as the input"
                                  "  (%d bytes)" % len(plaintext))
@@ -206,7 +206,7 @@ class CtrMode(object):
                 raise OverflowError("The counter has wrapped around in"
                                     " CTR mode")
             raise ValueError("Error %X while encrypting in CTR mode" % result)
-        
+
         if output is None:
             return get_raw_buffer(ciphertext)
         else:
@@ -248,7 +248,7 @@ class CtrMode(object):
         if self.decrypt not in self._next:
             raise TypeError("decrypt() cannot be called after encrypt()")
         self._next = [self.decrypt]
-        
+
         if output is None:
             plaintext = create_string_buffer(len(ciphertext))
         else:
@@ -256,7 +256,7 @@ class CtrMode(object):
 
             if not is_writeable_buffer(output):
                 raise TypeError("output must be a bytearray or a writeable memoryview")
-            
+
             if len(ciphertext) != len(output):
                 raise ValueError("output must have the same length as the input"
                                  "  (%d bytes)" % len(plaintext))
@@ -271,7 +271,7 @@ class CtrMode(object):
                 raise OverflowError("The counter has wrapped around in"
                                     " CTR mode")
             raise ValueError("Error %X while decrypting in CTR mode" % result)
-        
+
         if output is None:
             return get_raw_buffer(plaintext)
         else:
@@ -337,7 +337,7 @@ def _create_ctr_cipher(factory, **kwargs):
         else:
             if len(nonce) >= factory.block_size:
                 raise ValueError("Nonce is too long")
-        
+
         # What is not nonce is counter
         counter_len = factory.block_size - len(nonce)
 

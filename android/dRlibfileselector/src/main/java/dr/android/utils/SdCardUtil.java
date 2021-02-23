@@ -13,9 +13,9 @@ import android.os.Environment;
 import dr.android.fileselector.Storage;
 
 /**
- * 
+ *
  * SdCard相关工具类
- * 
+ *
  * @author DarkRanger
  * @datetime 20160530
  *
@@ -88,7 +88,7 @@ public class SdCardUtil {
 
 	/**
 	 * 根据所有存储路径获取Storage实体类集合（不存在的路径不会添加到Storage里面）
-	 * 
+	 *
 	 * @param storagePaths
 	 * @return
 	 */
@@ -109,7 +109,7 @@ public class SdCardUtil {
 
 	/**
 	 * 将/storage/sdcard替换成“sd卡存储”
-	 * 
+	 *
 	 * @param parentFolderPath
 	 * @return
 	 */
@@ -128,7 +128,7 @@ public class SdCardUtil {
 
 	/**
 	 * 将“sd卡存储”替换成/storage/sdcard
-	 * 
+	 *
 	 * @param parentFolderPath
 	 * @return
 	 */

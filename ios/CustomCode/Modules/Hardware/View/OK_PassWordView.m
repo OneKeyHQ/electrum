@@ -30,7 +30,7 @@
 {
     self = [super initWithCoder:coder];
     if (self) {
-    
+
     }
     return self;
 }
@@ -39,7 +39,7 @@
 {
     self = [super init];
     if (self) {
-      
+
     }
     return self;
 }
@@ -48,47 +48,47 @@
     self.bottomLineArr= @[].mutableCopy;
     self.dotArr = @[].mutableCopy;
     self.codeLArr = @[].mutableCopy;
- 
-    
+
+
     [self.bottomLineArr removeAllObjects];
     [self.dotArr removeAllObjects];
     [self.codeLArr removeAllObjects];
 
-    
+
 //    passShow1,//黑点,框,没间隔
 //    passShow2,//显示数字,框,没间隔
 //    passShow3,//黑点,框,有间隔
 //    passShow4,//显示数字,框,有间隔
 //    passShow5,//显示数字,下划线,一般用做验证码
-    
+
     if (self.showType == passShow1) {
         [self initShow1];
     }else if(self.showType == passShow2){
         [self initShow2];
-        
+
     }else if(self.showType == passShow3){
         [self initShow3];
-        
+
     }else if(self.showType == passShow4){
         [self initShow4];
-        
+
     }else if(self.showType == passShow5){
         [self initShow5];
-        
+
     }
-    
+
 }
 
 //    passShow1,//黑点,框,没间隔
 -(void)initShow1{
     CGFloat width = self.frame.size.width/self.num;
-    
+
     for (int i = 0; i< self.num -1; i++) {
             UIView *lineV = [[UIView alloc]initWithFrame:CGRectMake(CGRectGetMinX(self.textF.frame)+(i+1)*width, 0, 1,K_Field_Height)];
             lineV.backgroundColor = self.tintColor;
             [self addSubview:lineV];
     }
-    
+
     self.dotArr = @[].mutableCopy;
     for (int i=0; i<self.num; i++) {
         UIView *dotView =[[UIView alloc]initWithFrame:CGRectMake(CGRectGetMinX(self.textF.frame) + (width - self.num) / 2 + i * width, CGRectGetMinY(self.textF.frame) + (K_Field_Height - kDotSize.height) / 2, kDotSize.width, kDotSize.height)];
@@ -102,18 +102,18 @@
     _textF.layer.borderColor = self.tintColor.CGColor;
     _textF.layer.borderWidth = 1;
     _textF.layer.masksToBounds = YES;
-    
+
 }
 //    passShow2,//显示数字,框,没间隔
 -(void)initShow2{
     CGFloat width = self.frame.size.width/self.num;
-    
+
     for (int i = 0; i< self.num -1; i++) {
         UIView *lineV = [[UIView alloc]initWithFrame:CGRectMake(CGRectGetMinX(self.textF.frame)+(i+1)*width, 0, 1,K_Field_Height)];
         lineV.backgroundColor = self.tintColor;
         [self addSubview:lineV];
     }
-    
+
     for (int i=0; i<self.num; i++) {
         UILabel *codeL =[[UILabel alloc]initWithFrame:CGRectMake(CGRectGetMinX(self.textF.frame) + (i)*width+1, 1, width-2, self.frame.size.height-2)];
         codeL.backgroundColor = [UIColor clearColor];
@@ -125,7 +125,7 @@
         [self addSubview:codeL];
         [self.codeLArr addObject:codeL];
     }
-    
+
     _textF.layer.borderColor = self.tintColor.CGColor;
     _textF.layer.borderWidth = 1;
     _textF.layer.masksToBounds = YES;
@@ -134,9 +134,9 @@
 //    passShow3,//黑点,框,有间隔
 -(void)initShow3{
     CGFloat f = 10; //设置格子间隔
-    
+
     CGFloat width = ((self.frame.size.width-(self.num-1)*f)/self.num);
-    
+
     for (int i=0; i<self.num; i++) {
         UILabel *codeL =[[UILabel alloc]initWithFrame:CGRectMake(CGRectGetMinX(self.textF.frame) + (i)*(width+f), 0, width, self.frame.size.height)];
         codeL.backgroundColor = HexColor(0xF2F2F2);
@@ -148,7 +148,7 @@
         [self addSubview:codeL];
         [self.codeLArr addObject:codeL];
     }
-    
+
     for (int i=0; i<self.num; i++) {
         UIView *dotView =[[UIView alloc]initWithFrame:CGRectMake(CGRectGetMinX(self.textF.frame) + i * (width+f) +(width- kDotSize.width)/2, CGRectGetMinY(self.textF.frame) + (K_Field_Height - kDotSize.height) / 2, kDotSize.width, kDotSize.height)];
         dotView.backgroundColor = [UIColor blackColor];
@@ -173,22 +173,22 @@
         [self addSubview:codeL];
         [self.codeLArr addObject:codeL];
     }
-    
+
 }
 
 //    passShow5,//显示数字,下划线,一般用做验证码
 -(void)initShow5{
         CGFloat f = 10; //设置间隔
      CGFloat width = ((self.frame.size.width-(self.num-1)*f)/self.num);
-    
+
     for (int i =0; i<self.num; i++) {
         UIView *lineV = [[UIView alloc]initWithFrame:CGRectMake(CGRectGetMinX(self.textF.frame) + (i)*(width+f), K_Field_Height-1,width,1)];
         lineV.backgroundColor = [UIColor grayColor];//原始线的颜色
         [self addSubview:lineV];
         [self.bottomLineArr addObject:lineV];
-        
+
     }
-    
+
     for (int i=0; i<self.num; i++) {
         UILabel *codeL =[[UILabel alloc]initWithFrame:CGRectMake(CGRectGetMinX(self.textF.frame) + (i)*(width+f), 0, width, K_Field_Height-1)];
         codeL.backgroundColor = [UIColor whiteColor];
@@ -198,11 +198,11 @@
         [self addSubview:codeL];
         [self.codeLArr addObject:codeL];
     }
-    
+
 }
 -(BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string{
-    
-    
+
+
     if ([string isEqualToString:@"\n"]) {
         [textField resignFirstResponder];
         return NO;
@@ -233,7 +233,7 @@
             for (UIView *dotView in self.dotArr) {
                 dotView.hidden = YES;
             }
-            
+
             for (int i = 0; i < textField.text.length; i++) {
                 ((UIView *)[self.dotArr objectAtIndex:i]).hidden = NO;
             }
@@ -253,18 +253,18 @@
             for (UIView *dotView in self.dotArr) {
                 dotView.hidden = YES;
             }
-            
+
             for (int i = 0; i < textField.text.length; i++) {
                 ((UIView *)[self.dotArr objectAtIndex:i]).hidden = NO;
             }
-            
+
         }
             break;
         case 4:{
-            
+
             for (UILabel *codeL in self.codeLArr) {
                 codeL.text = @"";
-                
+
             }
           for (int i = 0; i < textField.text.length; i++) {
                 ((UILabel *)[self.codeLArr objectAtIndex:i]).hidden = NO;
@@ -280,7 +280,7 @@
                 ((UILabel *)[self.codeLArr objectAtIndex:i]).hidden = NO;
                 ((UILabel *)[self.codeLArr objectAtIndex:i]).text =[textField.text substringWithRange:NSMakeRange(i, 1)];
             }
-            
+
             for (UIView *lineV in self.bottomLineArr) {
                 lineV.backgroundColor = [UIColor grayColor];
             }
@@ -297,9 +297,9 @@
         if (_textBlock) {
             self.textBlock(textField.text);
         }
-        
+
     }
-    
+
 
 }
 
@@ -350,6 +350,6 @@
         _num =6;//默认
     }
     [self configUI];
-    
+
 }
 @end

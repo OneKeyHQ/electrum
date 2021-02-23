@@ -104,19 +104,19 @@
 {
     if (!_allData) {
         AppLanguageType type =  kLocalizableManager.languageType; ;
-        
+
         OKLanguageCellModel *model1 = [[OKLanguageCellModel alloc]init];
         model1.titleStr = MyLocalizedString(@"Following system language", nil);
         model1.isSelected = type == AppLanguageTypeFollowSys;
-        
+
         OKLanguageCellModel *model2 = [[OKLanguageCellModel alloc]init];
         model2.titleStr = @"中文（简体）";
         model2.isSelected = type == AppLanguageTypeZh_Hans;
-        
+
         OKLanguageCellModel *model3 = [[OKLanguageCellModel alloc]init];
         model3.titleStr = @"English";
         model3.isSelected = type == AppLanguageTypeEn;
-        
+
         _allData = @[model1,model2,model3];
     }
     return _allData;

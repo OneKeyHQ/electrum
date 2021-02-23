@@ -74,7 +74,3 @@ public class InputBackupPassActivity extends BaseActivity {
         }
     }
 }
-
-
-
-

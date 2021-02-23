@@ -16,7 +16,7 @@
     if ([UIDevice currentDevice].systemVersion.floatValue >= 8.0) {
         UIActivityViewControllerCompletionWithItemsHandler itemsBlock = ^(UIActivityType __nullable activityType, BOOL completed, NSArray * __nullable returnedItems, NSError * __nullable activityError){
             [vc dismissViewControllerAnimated:YES completion:nil];
-            
+
             if (completed) {
                 if (shareCompletion) {
                     shareCompletion();
@@ -43,9 +43,9 @@
         };
         activityVC.completionHandler = handlerBlock;
     }
-    
+
     [vc presentViewController:activityVC animated:YES completion:nil];
-    
+
     return activityVC;
 }
 

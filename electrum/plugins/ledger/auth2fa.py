@@ -40,14 +40,14 @@ class LedgerAuthDialog(QDialog):
         self.cfg = copy.deepcopy(self.handler.win.wallet.get_keystore().cfg)
         self.dongle = self.handler.win.wallet.get_keystore().get_client().dongle
         self.pin = ''
-        
+
         self.devmode = self.getDevice2FAMode()
         if self.devmode == 0x11 or self.txdata['confirmationType'] == 1:
             self.cfg['mode'] = 0
-        
+
         vbox = QVBoxLayout()
         self.setLayout(vbox)
-        
+
         def on_change_mode(idx):
             self.cfg['mode'] = 0 if self.devmode == 0x11 else idx if idx > 0 else 1
             if self.cfg['mode'] > 0:
@@ -55,11 +55,11 @@ class LedgerAuthDialog(QDialog):
                 self.handler.win.wallet.save_keystore()
             self.update_dlg()
         def return_pin():
-            self.pin = self.pintxt.text() if self.txdata['confirmationType'] == 1 else self.cardtxt.text() 
+            self.pin = self.pintxt.text() if self.txdata['confirmationType'] == 1 else self.cardtxt.text()
             if self.cfg['mode'] == 1:
                 self.pin = ''.join(chr(int(str(i),16)) for i in self.pin)
             self.accept()
-        
+
         self.modebox = QWidget()
         modelayout = QHBoxLayout()
         self.modebox.setLayout(modelayout)
@@ -69,7 +69,7 @@ class LedgerAuthDialog(QDialog):
         modelayout.addStretch(1)
         self.modebox.setMaximumHeight(50)
         vbox.addWidget(self.modebox)
-        
+
         self.populate_modes()
         self.modes.currentIndexChanged.connect(on_change_mode)
 
@@ -77,7 +77,7 @@ class LedgerAuthDialog(QDialog):
         self.helpmsg.setStyleSheet("QTextEdit { color:black; background-color: lightgray; }")
         self.helpmsg.setReadOnly(True)
         vbox.addWidget(self.helpmsg)
-        
+
         self.pinbox = QWidget()
         pinlayout = QHBoxLayout()
         self.pinbox.setLayout(pinlayout)
@@ -90,7 +90,7 @@ class LedgerAuthDialog(QDialog):
         pinlayout.addStretch(1)
         self.pinbox.setVisible(self.cfg['mode'] == 0)
         vbox.addWidget(self.pinbox)
-                    
+
         self.cardbox = QWidget()
         card = QVBoxLayout()
         self.cardbox.setLayout(card)
@@ -103,7 +103,7 @@ class LedgerAuthDialog(QDialog):
         self.addrtext.setReadOnly(True)
         self.addrtext.setMaximumHeight(130)
         card.addWidget(self.addrtext)
-        
+
         def pin_changed(s):
             if len(s) < len(self.idxs):
                 i = self.idxs[len(s)]
@@ -118,8 +118,8 @@ class LedgerAuthDialog(QDialog):
                 self.addrtext.setHtml(str(text))
             else:
                 self.addrtext.setHtml(_("Press Enter"))
-                
-        pin_changed('')    
+
+        pin_changed('')
         cardpin = QHBoxLayout()
         cardpin.addWidget(QLabel(_("Enter PIN:")))
         self.cardtxt = PasswordLineEdit()
@@ -142,7 +142,7 @@ class LedgerAuthDialog(QDialog):
         if self.txdata['confirmationType'] > 1:
             self.modes.addItem(_("Security Card Challenge"))
         self.modes.blockSignals(False)
-        
+
     def update_dlg(self):
         self.modes.setCurrentIndex(self.cfg['mode'])
         self.modebox.setVisible(True)

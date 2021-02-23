@@ -38,4 +38,3 @@ for p in sys.stdin.read().split():
     except TypeError:
         # Has no dependencies at all
         continue
-

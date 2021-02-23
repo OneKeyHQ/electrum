@@ -28,7 +28,7 @@
     [super viewDidLoad];
     [self setNavigationBarBackgroundColorWithClearColor];
     self.navigationItem.leftBarButtonItem = [UIBarButtonItem backBarButtonItemWithTarget:self selector:@selector(back)];
-    
+
     self.title = MyLocalizedString(@"hardwareWallet.verify", nil);
     NSString *descLabelText;
     if (self.isPassed) {

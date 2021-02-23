@@ -40,10 +40,10 @@
 
     UITapGestureRecognizer *socket4Tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(socket4TapClick)];
     [self.socket4BgView addGestureRecognizer:socket4Tap];
-    
+
     UITapGestureRecognizer *socket5Tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(socket5TapClick)];
     [self.scoket5BgView addGestureRecognizer:socket5Tap];
-    
+
 }
 
 - (IBAction)closeBtnClick:(UIButton *)sender {

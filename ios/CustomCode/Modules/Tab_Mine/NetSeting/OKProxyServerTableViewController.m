@@ -40,7 +40,7 @@
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
- 
+
     self.title = MyLocalizedString(@"Proxy server", nil);
     self.serverLLabel.text = MyLocalizedString(@"Using a proxy server", nil);
     self.nodeTypeLabel.text = MyLocalizedString(@"The node type", nil);
@@ -49,7 +49,7 @@
     self.pwdLLabel.text = MyLocalizedString(@"password", nil);
     self.NodeTypeRLabel.text = @"";
     [self.confirmBtn setLayerRadius:20];
-    
+
     OKProxyServerModel *model = [OKProxyServerModel mj_objectWithKeyValues:[kUserSettingManager.currentProxyDict mj_JSONObject]];
     self.currentModel = model;
     self.serverSwitch.on = self.currentModel.proxyOn;
@@ -67,7 +67,7 @@
         self.portRTextField.userInteractionEnabled = YES;
         self.userNameTextField.userInteractionEnabled = YES;
         self.pwdTextField.userInteractionEnabled = YES;
-        
+
         self.NodeTypeRLabel.text = self.currentModel.type;
         self.ipaddressTextField.text = self.currentModel.ipAddress;
         self.portRTextField.text = self.currentModel.port;
@@ -80,7 +80,7 @@
         self.portRTextField.userInteractionEnabled = NO;
         self.userNameTextField.userInteractionEnabled = NO;
         self.pwdTextField.userInteractionEnabled = NO;
-        
+
         self.NodeTypeRLabel.text = @"";
         self.ipaddressTextField.text = @"";
         self.portRTextField.text = @"";

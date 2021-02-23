@@ -53,7 +53,7 @@
     self.topTextView.delegate = self;
     self.midTextView.delegate = self;
     self.bottomTextView.delegate = self;
-    
+
     if (self.signMessageInfo != nil) {
         self.topTextView.text = [self.signMessageInfo safeStringForKey:@"message"];
         self.midTextView.text = [self.signMessageInfo safeStringForKey:@"address"];

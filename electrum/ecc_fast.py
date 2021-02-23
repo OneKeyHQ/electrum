@@ -268,4 +268,3 @@ except BaseException as e:
 
 
 _prepare_monkey_patching_of_python_ecdsa_internals_with_libsecp256k1()
-

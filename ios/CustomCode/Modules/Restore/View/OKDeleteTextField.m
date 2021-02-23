@@ -16,7 +16,7 @@
     if ([_deleteDelegate respondsToSelector:@selector(deleteBackward)]) {
         [_deleteDelegate deleteBackward];
     }
-    
+
     if (length) {
         [super deleteBackward];
         if ([_deleteDelegate respondsToSelector:@selector(AfterDeleteBackward)]) {

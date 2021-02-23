@@ -145,4 +145,3 @@ public class CardPin extends BaseActivity {
 //        finish();
 //    }
 }
-

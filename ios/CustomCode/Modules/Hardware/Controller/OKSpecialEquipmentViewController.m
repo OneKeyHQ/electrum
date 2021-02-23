@@ -29,7 +29,7 @@
 + (instancetype)specialEquipmentViewController
 {
     return [[UIStoryboard storyboardWithName:@"Hardware" bundle:nil]instantiateViewControllerWithIdentifier:@"OKSpecialEquipmentViewController"];
-    
+
 }
 - (void)viewDidLoad {
     [super viewDidLoad];

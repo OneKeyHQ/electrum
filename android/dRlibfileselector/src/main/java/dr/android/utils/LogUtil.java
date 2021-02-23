@@ -6,7 +6,7 @@ import android.util.Log;
 /**
  * LogUtils工具说明: 1 只输出等级大于等于LEVEL的日志 所以在开发和产品发布后通过修改LEVEL来选择性输出日志.
  * 当LEVEL=NOTHING则屏蔽了所有的日志. 2 v,d,i,w,e均对应两个方法. 若不设置TAG或者TAG为空则为设置默认TAG
- * 
+ *
  * @author DarkRanger
  * @datetime 20160530
  */

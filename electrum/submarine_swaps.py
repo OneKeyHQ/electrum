@@ -423,4 +423,3 @@ class SwapManager(Logger):
             x = int(x * 100 / (100 - self.percentage)) + 1
             x += self.normal_fee
         return x
-

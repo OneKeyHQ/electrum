@@ -757,5 +757,3 @@ class Plugin(RevealerPlugin):
         self.config.set_key('calibration_h', self.calibration_h)
         self.calibration_v = int(Decimal(vertical.text()))
         self.config.set_key('calibration_v', self.calibration_v)
-
-

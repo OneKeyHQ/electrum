@@ -118,9 +118,9 @@
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notiDeleteWalletComplete) name:kNotiDeleteWalletComplete object:nil];
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notiBackUPWalletComplete) name:kNotiBackUPWalletComplete object:nil];
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notiHwInfoUpdate) name:kNotiHwInfoUpdate object:nil];
-    
+
     [OKPyCommandsManager sharedInstance];
-    
+
     [kPyCommandsManager callInterface:kInterfaceLoad_all_wallet parameter:@{}];
 
     [self loadWalletList];
@@ -143,7 +143,7 @@
     }else{
         [kPyCommandsManager callInterface:kInterfaceSet_currency parameter:@{@"ccy":kWalletManager.currentFiat}];
     }
-    
+
     //设置默认BTC单位
     if (kWalletManager.currentBitcoinUnit == nil || kWalletManager.currentBitcoinUnit.length == 0) {
         [kWalletManager setCurrentBitcoinUnit:@"BTC"];
@@ -151,27 +151,27 @@
     }else{
         [kPyCommandsManager callInterface:kInterfaceSet_base_uint parameter:@{@"base_unit":kWalletManager.currentBitcoinUnit}];
     }
-    
-    
+
+
     //设置默认的浏览器
     if (kUserSettingManager.currentBtcBrowser == nil || kUserSettingManager.currentBtcBrowser.length == 0) {
         [kUserSettingManager setCurrentBtcBrowser:kUserSettingManager.btcBrowserList.firstObject];
     }
-    
+
 
     [kPyCommandsManager callInterface:kInterfaceset_rbf parameter:@{@"status_rbf":@"1"}];
     [kPyCommandsManager callInterface:kInterfaceset_unconf parameter:@{@"x":@"1"}];
     [kUserSettingManager setUnconfFlag:YES];
     [kUserSettingManager setRbfFlag:YES];
-    
-    
+
+
     if (kUserSettingManager.currentMarketSource == nil || kUserSettingManager.currentMarketSource.length == 0) {
         NSArray *marketSource =  [kPyCommandsManager callInterface:kInterfaceget_exchanges parameter:@{}];
         NSString *first =  marketSource.firstObject;
         [kUserSettingManager setCurrentMarketSource:first];
         [kPyCommandsManager callInterface:kInterfaceset_exchange parameter:@{@"exchange":first}];
     }
-    
+
     if (kUserSettingManager.electrum_server == nil || kUserSettingManager.electrum_server.length == 0) {
        NSDictionary *dict =   [kPyCommandsManager callInterface:kInterfaceget_default_server parameter:@{}];
         if (dict != nil) {
@@ -193,7 +193,7 @@
     NSDictionary *dict =  [kPyCommandsManager callInterface:kInterfaceSelect_wallet parameter:@{@"name":kWalletManager.currentWalletInfo.name}];
     NSString *b = [dict safeStringForKey:@"balance"];
     NSString *balance = [[b componentsSeparatedByString:@" "]firstObject];
-    
+
     NSString *fiatS =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":balance}];
     [self updateStatus:@{@"balance":balance,@"fiat":fiatS}];
 }
@@ -239,9 +239,9 @@
     UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapGestureClick)];
     [self.leftView addGestureRecognizer:tapGesture];
     self.navigationController.delegate = self;
-    
+
     [self.coinImage addTarget:self action:@selector(tapGestureClick) forControlEvents:UIControlEventTouchUpInside];
-    
+
     //asset界面
     [self.walletTopBgView setCornerWith:20 side:OKCornerPathTopLeft|OKCornerPathTopRight withSize:CGSizeMake(SCREEN_WIDTH - 40, 168)];
     [self.srBgView setCornerWith:20 side:OKCornerPathBottomLeft|OKCornerPathBottomRight withSize:CGSizeMake(SCREEN_WIDTH - 40, 68)];
@@ -254,22 +254,22 @@
     } else {
         // Fallback on earlier versions
     }
-    
-    
+
+
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(backUpBgClick)];
     [self.backupBgView addGestureRecognizer:tap];
     self.assetTableView.tableFooterView = [UIView new];
-    
-    
+
+
     UITapGestureRecognizer *tapWalletTopBgView = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapWalletTopBgViewClick)];
-    
+
     [self.walletTopBgView addGestureRecognizer:tapWalletTopBgView];
-    
+
     UITapGestureRecognizer *tapeye = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapEyeClick)];
     self.eyeBtn.userInteractionEnabled = YES;
     [self.eyebgView addGestureRecognizer:tapeye];
     [self changeEye];
-    
+
     UITapGestureRecognizer *tapBanner = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapBanner)];
     self.bannerImageView.userInteractionEnabled = YES;
     [self.bannerImageView addGestureRecognizer:tapBanner];
@@ -307,7 +307,7 @@
         self.createBgView.hidden = NO;
         self.walletHomeBgView.hidden = YES;
     }
-    
+
     if (isBackUp) {
         self.backupBgView.hidden = YES;
         self.tableViewHeaderView.frame = CGRectMake(0, 0, SCREEN_WIDTH, 348);
@@ -317,7 +317,7 @@
         [self.assetTableView setTableHeaderView:self.tableViewHeaderView];
         self.backupBgView.hidden = NO;
     }
-    
+
     if ([kWalletManager getWalletDetailType] == OKWalletTypeHardware) {
         self.signatureBtn.hidden = NO;
         self.hwBgView.hidden = NO;
@@ -498,7 +498,7 @@
             return cell;
         }
     }
-    
+
     //assetTableView
     static NSString *ID = @"OKAssetTableViewCell";
     OKAssetTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:ID];
@@ -602,21 +602,21 @@
         model1.titleStr = MyLocalizedString(@"Create HD Wallet", nil);
         model1.descStr = MyLocalizedString(@"easy to use", nil);
         model1.imageStr = @"add";
-        
+
         OKSelectCellModel *model2 = [OKSelectCellModel new];
         model2.titleStr = MyLocalizedString(@"Recover HD Wallet", nil);
         model2.descStr = MyLocalizedString(@"Recovery by mnemonic", nil);
         model2.imageStr = @"import";
         model2.descStrL = @"";
         model2.type = OKSelectCellTypeRestoreHD;
-        
+
         OKSelectCellModel *model3 = [OKSelectCellModel new];
         model3.titleStr = MyLocalizedString(@"Paired hardware wallet", nil);
         model3.descStr = MyLocalizedString(@"Support BixinKey", nil);
         model3.imageStr = @"match_hardware";
         model3.descStrL = @"";
         model3.type = OKSelectCellTypeMatchHD;
-        
+
         _allData = @[model1,model2,model3];
     }
     return  _allData;
@@ -682,7 +682,7 @@
     NSDictionary *dict = noti.object;
     BOOL showB = [[dict safeStringForKey:@"backupshow"] boolValue];
     BOOL showT = [[dict safeStringForKey:@"takecareshow"]boolValue];
-    
+
     if (showB == YES) {
         NSString *pwd = [dict safeStringForKey:@"pwd"];
         OKWeakSelf(self)
@@ -757,12 +757,12 @@
     if([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
         self.navigationController.interactivePopGestureRecognizer.delegate = self;
     }
-    
+
 }
 - (void)viewDidDisappear:(BOOL)animated {
-    
+
     [super viewDidDisappear:animated];
-    
+
     self.isCanSideBack=YES; //开启ios右滑返回
     if([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
         self.navigationController.interactivePopGestureRecognizer.delegate = nil;

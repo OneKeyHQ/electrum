@@ -17,7 +17,7 @@ exit guitar chalk discover ring pluck avocado limb example volcano snap interest
 Vpub5fULw6tvH6udtVSXtU1fc2dRYumVPEb2VS9AjFeqrt4MbE5qxduJur8jgGMt1AhiFv2NTgvrc4KbrwGEvLSqDDcCQvTBMw2ir4DgA2WZwme
 
 
-# run 
+# run
 
 ./run_electrum --regtest
 

@@ -41,7 +41,7 @@ class _UrandomRNG(object):
     def close(self):
         """Method provided for backward compatibility only."""
         pass
-        
+
 
 def new(*args, **kwargs):
     """Return a file-like object that outputs cryptographically random bytes."""
@@ -54,4 +54,3 @@ def atfork():
 
 #: Function that returns a random byte string of the desired size.
 get_random_bytes = urandom
-

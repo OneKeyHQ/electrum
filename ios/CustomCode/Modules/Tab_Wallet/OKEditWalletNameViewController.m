@@ -35,7 +35,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-  
+
     [self.contentView setLayerRadius:20];
     [self.confirmBtn setLayerRadius:20];
     [self.textFieldBgView setLayerBoarderColor:HexColor(0xDBDEE7) width:1 radius:20];
@@ -51,17 +51,17 @@
         [kTools tipMessage:MyLocalizedString(@"The wallet name cannot be empty", nil)];
         return;
     }
-    
+
     if ([self.textField.text isEqualToString:kWalletManager.currentWalletInfo.label]) {
         [self closeBtnClick:nil];
         return;
     }
-    
+
     if (![kWalletManager checkWalletName:self.textField.text]) {
         [kTools tipMessage:MyLocalizedString(@"Wallet names cannot exceed 15 characters", nil)];
         return;
     }
-    
+
     NSString *msg =  [kPyCommandsManager callInterface:kInterfacerename_wallet parameter:@{@"old_name": kWalletManager.currentWalletInfo.name,@"new_name" : self.textField.text}];
     if (msg != nil) {
         [kTools tipMessage:MyLocalizedString(@"Name modification successful", nil)];

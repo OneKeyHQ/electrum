@@ -290,7 +290,7 @@ class SivMode(object):
             The first item becomes ``None`` when the ``output`` parameter
             specified a location for the result.
         """
-        
+
         if self.encrypt not in self._next:
             raise TypeError("encrypt() can only be called after"
                             " initialization or an update()")
@@ -302,7 +302,7 @@ class SivMode(object):
             self._kdf.update(self.nonce)
         self._kdf.update(plaintext)
         self._mac_tag = self._kdf.derive()
-        
+
         cipher = self._create_ctr_cipher(self._mac_tag)
 
         return cipher.encrypt(plaintext, output=output), self._mac_tag
@@ -350,7 +350,7 @@ class SivMode(object):
             self._kdf.update(self.nonce)
         self._kdf.update(plaintext if output is None else output)
         self.verify(mac_tag)
-        
+
         return plaintext
 
 

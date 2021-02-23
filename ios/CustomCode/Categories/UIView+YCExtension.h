@@ -69,6 +69,3 @@
 @property (nonatomic, assign) CGFloat bottom;
 
 @end
-
-
-

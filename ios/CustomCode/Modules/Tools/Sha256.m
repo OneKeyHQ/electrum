@@ -16,13 +16,13 @@
 {
     self = [super init];
     if (self) {
-        
+
         uint8_t digest[CC_SHA256_DIGEST_LENGTH];
         CC_SHA256(bytesData.bytes, (CC_LONG)bytesData.length, digest);
         self.mHashBytesData = [NSData dataWithBytes:digest length:CC_SHA256_DIGEST_LENGTH];
-        
+
         NSMutableString* outputSha256_Digest = [NSMutableString stringWithCapacity:CC_SHA256_DIGEST_LENGTH * 2];
-        
+
         for(int i = 0; i < CC_SHA256_DIGEST_LENGTH; i++){
             [outputSha256_Digest appendFormat:@"%02x", digest[i]];
         }

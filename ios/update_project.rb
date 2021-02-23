@@ -27,5 +27,3 @@ end
 
 # Save the project
 project.save();
-
-

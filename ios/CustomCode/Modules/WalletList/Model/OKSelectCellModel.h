@@ -13,7 +13,7 @@ typedef enum {
     OKSelectCellTypeCreateHD,  //创建钱包
     OKSelectCellTypeRestoreHD, //恢复钱包
     OKSelectCellTypeMatchHD    //配对硬件钱包
-    
+
 }OKSelectCellType;
 
 @interface OKSelectCellModel : NSObject

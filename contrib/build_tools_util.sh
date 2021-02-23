@@ -130,4 +130,3 @@ if [ -n "$GCC_TRIPLET_BUILD" ] ; then
 fi
 
 export GCC_STRIP_BINARIES="${GCC_STRIP_BINARIES:-0}"
-

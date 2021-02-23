@@ -18,9 +18,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 /**
- * 
+ *
  * FileSelectActivity中ListView的适配器
- * 
+ *
  * @author DarkRanger
  * @datetime 20160530
  *
@@ -146,7 +146,7 @@ public class FileSelectAdapter extends BaseAdapter {
 
 	/**
 	 * 设置icon图标的宽度和高度
-	 * 
+	 *
 	 * @param holder
 	 */
 	private void setWidthAndHeight(ViewHoder holder) {

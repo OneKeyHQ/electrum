@@ -35,7 +35,7 @@
     [self.importBtn setLayerDefaultRadius];
     [self textChange];
     self.navigationItem.rightBarButtonItem = [UIBarButtonItem barButtonItemScanBtnWithTarget:self selector:@selector(scanBtnClick)];
-    
+
 }
 #pragma mark - 导入
 - (IBAction)importBtnClick:(UIButton *)sender
@@ -44,7 +44,7 @@
         [kTools tipMessage:MyLocalizedString(@"The address cannot be empty", nil)];
         return;
     }
-    
+
     id result =  [kPyCommandsManager callInterface:kInterfaceverify_legality parameter:@{@"data":self.textView.text,@"flag":@"address"}];
     if (result != nil) {
         OKSetWalletNameViewController *setNameVc = [OKSetWalletNameViewController setWalletNameViewController];
@@ -111,7 +111,7 @@
         return NO;
     }
     if (textView == self.textView) {
-        if (text.length == 0) { 
+        if (text.length == 0) {
             if (textView.text.length == 1) {
                 self.textPlacehoderLabel.hidden = NO;
             }
@@ -121,7 +121,7 @@
             }
         }
     }
-    
+
     return YES;
 }
 

@@ -21,7 +21,7 @@ typedef NS_ENUM(NSInteger,YZAuthenticationType) {
  *  TouchID 状态
  */
 typedef NS_ENUM(NSUInteger, YZAuthIDState){
-    
+
     /**
      *  当前设备不支持TouchID/FaceID
      */
@@ -30,7 +30,7 @@ typedef NS_ENUM(NSUInteger, YZAuthIDState){
      *  TouchID/FaceID 验证成功
      */
     YZAuthIDStateSuccess = 1,
-    
+
     /**
      *  TouchID/FaceID 验证失败
      */
@@ -85,7 +85,7 @@ typedef void (^StateBlock)(YZAuthIDState state,NSError *error);
 
 /**
  启动TouchID/FaceID进行验证
- 
+
  @param desc TouchID/FaceID显示的描述
  @param block 回调状态的block
  */

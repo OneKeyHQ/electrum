@@ -28,13 +28,13 @@
     self.descLabel.text = MyLocalizedString(@"hardwareWallet.autoOff.desc", nil);
     self.timeLabel.text = MyLocalizedString(@"hardwareWallet.autoOff.timeout", nil);
     self.unitLabel.text = MyLocalizedString(@"hardwareWallet.autoOff.second", nil);
-    
+
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(timeViewClicked)];
     [self.timeView addGestureRecognizer:tap];
 }
 
 - (void)timeViewClicked {
-    
+
 }
 
 

@@ -10,7 +10,7 @@
 
 @interface Sha256 : NSObject
 @property(nonatomic, strong) NSData *mHashBytesData;
-// sha256result with hex encoding 
+// sha256result with hex encoding
 @property(nonatomic, strong) NSString *sha256;
 - (instancetype)initWithData:(NSData *)bytesData;
 

@@ -181,5 +181,3 @@ the new version explicitly, like
    :target: https://pypi.python.org/pypi/eth-hash
 .. |Docs build| image:: https://readthedocs.org/projects/eth-hash/badge/?version=latest
    :target: http://eth-hash.readthedocs.io/en/latest/?badge=latest
-
-

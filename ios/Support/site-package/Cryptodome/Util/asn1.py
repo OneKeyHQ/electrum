@@ -137,7 +137,7 @@ class DerObject(object):
                     self._tag_octet = 0xA0 | self._convertTag(explicit)
                     self._inner_tag_octet = 0x20 * constructed | asn1Id
                     return
-                
+
                 self._tag_octet = 0x20 * constructed | asn1Id
 
         def _convertTag(self, tag):
@@ -442,7 +442,7 @@ class DerSequence(DerObject):
                   only_non_negative (boolean):
                     If ``True``, negative integers are not counted in.
                 """
-                
+
                 items = [x for x in self._seq if _is_number(x, only_non_negative)]
                 return len(items)
 

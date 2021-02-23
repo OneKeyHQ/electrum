@@ -127,7 +127,7 @@ int main(int argc, char *argv[]) {
         putenv((char *)[python_path UTF8String]);
         NSString *documentPath = [NSString stringWithFormat:@"iOS_DATA=%@",[OKStorageManager getDocumentDirectoryPath]];
         putenv((char *)[documentPath UTF8String]);
-           
+
         NSString *DYLIB_PATH = [NSString stringWithFormat:@"DYLIB_PATH=%@/Frameworks",resourcePath];
         putenv((char *)[DYLIB_PATH UTF8String]);
         // iOS provides a specific directory for temp files.

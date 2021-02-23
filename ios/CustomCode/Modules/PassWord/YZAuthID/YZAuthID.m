@@ -30,29 +30,29 @@
             NSLog(@"系统版本不支持TouchID/FaceID (必须高于iOS 8.0才能使用)");
             block(YZAuthIDStateVersionNotSupport,nil);
         });
-        
+
         return;
     }
-    
+
     LAContext *context = [[LAContext alloc] init];
-    
+
     // 认证失败提示信息，为 @"" 则不提示
 //    context.localizedFallbackTitle = [YZAuthID getEnterPasswordTipsString];
     NSError *error = nil;
-    
+
     // LAPolicyDeviceOwnerAuthenticationWithBiometrics: 用TouchID/FaceID验证
     // LAPolicyDeviceOwnerAuthenztication: 用TouchID/FaceID或密码验证, 默认是错误两次或锁定后, 弹出输入密码界面（本案例使用）
     if ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthentication error:&error]) {
-        
+
         [context evaluatePolicy:LAPolicyDeviceOwnerAuthentication localizedReason:desc == nil ? @"" : desc reply:^(BOOL success, NSError * _Nullable error) {
-            
+
             if (success) {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     NSLog(@"TouchID/FaceID 验证成功");
                     block(YZAuthIDStateSuccess,error);
                 });
             }else if(error){
-                
+
                 if (@available(iOS 11.0, *)) {
                     switch (error.code) {
                         case LAErrorAuthenticationFailed:{
@@ -209,17 +209,17 @@
                             break;
                     }
                 }
-                
+
             }
         }];
-        
+
     }else{
-        
+
         dispatch_async(dispatch_get_main_queue(), ^{
             NSLog(@"当前设备不支持TouchID/FaceID");
             block(YZAuthIDStateNotSupport,error);
         });
-        
+
     }
 }
 

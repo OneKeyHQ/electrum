@@ -45,9 +45,9 @@ static const NSString * CSToastQueueKey             = @"CSToastQueueKey";
 @interface UIView (ToastPrivate)
 
 /**
- These private methods are being prefixed with "cs_" to reduce the likelihood of non-obvious 
+ These private methods are being prefixed with "cs_" to reduce the likelihood of non-obvious
  naming conflicts with other UIView methods.
- 
+
  @discussion Should the public API also use the cs_ prefix? Technically it should, but it
  results in code that is less legible. The current public method names seem unlikely to cause
  conflicts so I think we should favor the cleaner API for now.
@@ -94,15 +94,15 @@ static const NSString * CSToastQueueKey             = @"CSToastQueueKey";
 - (void)showToast:(UIView *)toast duration:(NSTimeInterval)duration position:(id)position completion:(void(^)(BOOL didTap))completion {
     // sanity
     if (toast == nil) return;
-    
+
     // store the completion block on the toast view
     objc_setAssociatedObject(toast, &CSToastCompletionKey, completion, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    
+
     if ([CSToastManager isQueueEnabled] && objc_getAssociatedObject(self, &CSToastActiveToastViewKey) != nil) {
         // we're about to queue this toast view so we need to store the duration and position as well
         objc_setAssociatedObject(toast, &CSToastDurationKey, @(duration), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
         objc_setAssociatedObject(toast, &CSToastPositionKey, position, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-        
+
         // enqueue
         [self.cs_toastQueue addObject:toast];
     } else {
@@ -116,19 +116,19 @@ static const NSString * CSToastQueueKey             = @"CSToastQueueKey";
 - (void)cs_showToast:(UIView *)toast duration:(NSTimeInterval)duration position:(id)position {
     toast.center = [self cs_centerPointForPosition:position withToast:toast];
     toast.alpha = 0.0;
-    
+
     if ([CSToastManager isTapToDismissEnabled]) {
         UITapGestureRecognizer *recognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(cs_handleToastTapped:)];
         [toast addGestureRecognizer:recognizer];
         toast.userInteractionEnabled = YES;
         toast.exclusiveTouch = YES;
     }
-    
+
     // set the active toast
     objc_setAssociatedObject(self, &CSToastActiveToastViewKey, toast, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    
+
     [self addSubview:toast];
-    
+
     [UIView animateWithDuration:[[CSToastManager sharedStyle] fadeDuration]
                           delay:0.0
                         options:(UIViewAnimationOptionCurveEaseOut | UIViewAnimationOptionAllowUserInteraction)
@@ -144,7 +144,7 @@ static const NSString * CSToastQueueKey             = @"CSToastQueueKey";
 - (void)cs_hideToast:(UIView *)toast {
     [self cs_hideToast:toast fromTap:NO];
 }
-    
+
 - (void)cs_hideToast:(UIView *)toast fromTap:(BOOL)fromTap {
     [UIView animateWithDuration:[[CSToastManager sharedStyle] fadeDuration]
                           delay:0.0
@@ -153,21 +153,21 @@ static const NSString * CSToastQueueKey             = @"CSToastQueueKey";
                          toast.alpha = 0.0;
                      } completion:^(BOOL finished) {
                          [toast removeFromSuperview];
-                         
+
                          // clear the active toast
                          objc_setAssociatedObject(self, &CSToastActiveToastViewKey, nil, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-                         
+
                          // execute the completion block, if necessary
                          void (^completion)(BOOL didTap) = objc_getAssociatedObject(toast, &CSToastCompletionKey);
                          if (completion) {
                              completion(fromTap);
                          }
-                         
+
                          if ([self.cs_toastQueue count] > 0) {
                              // dequeue
                              UIView *nextToast = [[self cs_toastQueue] firstObject];
                              [[self cs_toastQueue] removeObjectAtIndex:0];
-                             
+
                              // present the next toast
                              NSTimeInterval duration = [objc_getAssociatedObject(nextToast, &CSToastDurationKey) doubleValue];
                              id position = objc_getAssociatedObject(nextToast, &CSToastPositionKey);
@@ -181,39 +181,39 @@ static const NSString * CSToastQueueKey             = @"CSToastQueueKey";
 - (UIView *)toastViewForMessage:(NSString *)message title:(NSString *)title image:(UIImage *)image style:(CSToastStyle *)style {
     // sanity
     if(message == nil && title == nil && image == nil) return nil;
-    
+
     // default to the shared style
     if (style == nil) {
         style = [CSToastManager sharedStyle];
     }
-    
+
     // dynamically build a toast view with any combination of message, title, & image.
     UILabel *messageLabel = nil;
     UILabel *titleLabel = nil;
     UIImageView *imageView = nil;
-    
+
     // create the parent view
     UIView *wrapperView = [[UIView alloc] init];
     wrapperView.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin);
     wrapperView.layer.cornerRadius = style.cornerRadius;
-    
+
     if (style.displayShadow) {
         wrapperView.layer.shadowColor = style.shadowColor.CGColor;
         wrapperView.layer.shadowOpacity = style.shadowOpacity;
         wrapperView.layer.shadowRadius = style.shadowRadius;
         wrapperView.layer.shadowOffset = style.shadowOffset;
     }
-    
+
     wrapperView.backgroundColor = style.backgroundColor;
-    
+
     if(image != nil) {
         imageView = [[UIImageView alloc] initWithImage:image];
         imageView.contentMode = UIViewContentModeScaleAspectFit;
         imageView.frame = CGRectMake(style.horizontalPadding, style.verticalPadding, style.imageSize.width, style.imageSize.height);
     }
-    
+
     CGFloat imageWidth, imageHeight, imageLeft;
-    
+
     // the imageView frame values will be used to size & position the other views
     if(imageView != nil) {
         imageWidth = imageView.bounds.size.width;
@@ -222,7 +222,7 @@ static const NSString * CSToastQueueKey             = @"CSToastQueueKey";
     } else {
         imageWidth = imageHeight = imageLeft = 0.0;
     }
-    
+
     if (title != nil) {
         titleLabel = [[UILabel alloc] init];
         titleLabel.numberOfLines = style.titleNumberOfLines;
@@ -233,13 +233,13 @@ static const NSString * CSToastQueueKey             = @"CSToastQueueKey";
         titleLabel.backgroundColor = [UIColor clearColor];
         titleLabel.alpha = 1.0;
         titleLabel.text = title;
-        
+
         // size the title label according to the length of the text
         CGSize maxSizeTitle = CGSizeMake((self.bounds.size.width * style.maxWidthPercentage) - imageWidth, self.bounds.size.height * style.maxHeightPercentage);
         CGSize expectedSizeTitle = [self cs_sizeForString:title font:titleLabel.font constrainedToSize:maxSizeTitle lineBreakMode:titleLabel.lineBreakMode];
         titleLabel.frame = CGRectMake(0.0, 0.0, expectedSizeTitle.width, expectedSizeTitle.height);
     }
-    
+
     if (message != nil) {
         messageLabel = [[UILabel alloc] init];
         messageLabel.numberOfLines = style.messageNumberOfLines;
@@ -250,16 +250,16 @@ static const NSString * CSToastQueueKey             = @"CSToastQueueKey";
         messageLabel.backgroundColor = [UIColor clearColor];
         messageLabel.alpha = 1.0;
         messageLabel.text = message;
-        
+
         // size the message label according to the length of the text
         CGSize maxSizeMessage = CGSizeMake((self.bounds.size.width * style.maxWidthPercentage) - imageWidth, self.bounds.size.height * style.maxHeightPercentage);
         CGSize expectedSizeMessage = [self cs_sizeForString:message font:messageLabel.font constrainedToSize:maxSizeMessage lineBreakMode:messageLabel.lineBreakMode];
         messageLabel.frame = CGRectMake(0.0, 0.0, expectedSizeMessage.width, expectedSizeMessage.height);
     }
-    
+
     // titleLabel frame values
     CGFloat titleWidth, titleHeight, titleTop, titleLeft;
-    
+
     if(titleLabel != nil) {
         titleWidth = titleLabel.bounds.size.width;
         titleHeight = titleLabel.bounds.size.height;
@@ -268,10 +268,10 @@ static const NSString * CSToastQueueKey             = @"CSToastQueueKey";
     } else {
         titleWidth = titleHeight = titleTop = titleLeft = 0.0;
     }
-    
+
     // messageLabel frame values
     CGFloat messageWidth, messageHeight, messageLeft, messageTop;
-    
+
     if(messageLabel != nil) {
         messageWidth = messageLabel.bounds.size.width;
         messageHeight = messageLabel.bounds.size.height;
@@ -280,30 +280,30 @@ static const NSString * CSToastQueueKey             = @"CSToastQueueKey";
     } else {
         messageWidth = messageHeight = messageLeft = messageTop = 0.0;
     }
-    
+
     CGFloat longerWidth = MAX(titleWidth, messageWidth);
     CGFloat longerLeft = MAX(titleLeft, messageLeft);
-    
+
     // wrapper width uses the longerWidth or the image width, whatever is larger. same logic applies to the wrapper height
     CGFloat wrapperWidth = MAX((imageWidth + (style.horizontalPadding * 2.0)), (longerLeft + longerWidth + style.horizontalPadding));
     CGFloat wrapperHeight = MAX((messageTop + messageHeight + style.verticalPadding), (imageHeight + (style.verticalPadding * 2.0)));
-    
+
     wrapperView.frame = CGRectMake(0.0, 0.0, wrapperWidth, wrapperHeight);
-    
+
     if(titleLabel != nil) {
         titleLabel.frame = CGRectMake(titleLeft, titleTop, titleWidth, titleHeight);
         [wrapperView addSubview:titleLabel];
     }
-    
+
     if(messageLabel != nil) {
         messageLabel.frame = CGRectMake(messageLeft, messageTop, messageWidth, messageHeight);
         [wrapperView addSubview:messageLabel];
     }
-    
+
     if(imageView != nil) {
         [wrapperView addSubview:imageView];
     }
-    
+
     return wrapperView;
 }
 
@@ -328,7 +328,7 @@ static const NSString * CSToastQueueKey             = @"CSToastQueueKey";
     UIView *toast = recognizer.view;
     NSTimer *timer = (NSTimer *)objc_getAssociatedObject(toast, &CSToastTimerKey);
     [timer invalidate];
-    
+
     [self cs_hideToast:toast fromTap:YES];
 }
 
@@ -338,33 +338,33 @@ static const NSString * CSToastQueueKey             = @"CSToastQueueKey";
     // sanity
     UIView *existingActivityView = (UIView *)objc_getAssociatedObject(self, &CSToastActivityViewKey);
     if (existingActivityView != nil) return;
-    
+
     CSToastStyle *style = [CSToastManager sharedStyle];
-    
+
     UIView *activityView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, style.activitySize.width, style.activitySize.height)];
     activityView.center = [self cs_centerPointForPosition:position withToast:activityView];
     activityView.backgroundColor = style.backgroundColor;
     activityView.alpha = 0.0;
     activityView.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin);
     activityView.layer.cornerRadius = style.cornerRadius;
-    
+
     if (style.displayShadow) {
         activityView.layer.shadowColor = style.shadowColor.CGColor;
         activityView.layer.shadowOpacity = style.shadowOpacity;
         activityView.layer.shadowRadius = style.shadowRadius;
         activityView.layer.shadowOffset = style.shadowOffset;
     }
-    
+
     UIActivityIndicatorView *activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
     activityIndicatorView.center = CGPointMake(activityView.bounds.size.width / 2, activityView.bounds.size.height / 2);
     [activityView addSubview:activityIndicatorView];
     [activityIndicatorView startAnimating];
-    
+
     // associate the activity view with self
     objc_setAssociatedObject (self, &CSToastActivityViewKey, activityView, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    
+
     [self addSubview:activityView];
-    
+
     [UIView animateWithDuration:style.fadeDuration
                           delay:0.0
                         options:UIViewAnimationOptionCurveEaseOut
@@ -392,7 +392,7 @@ static const NSString * CSToastQueueKey             = @"CSToastQueueKey";
 
 - (CGPoint)cs_centerPointForPosition:(id)point withToast:(UIView *)toast {
     CSToastStyle *style = [CSToastManager sharedStyle];
-    
+
     if([point isKindOfClass:[NSString class]]) {
         if([point caseInsensitiveCompare:CSToastPositionTop] == NSOrderedSame) {
             return CGPointMake(self.bounds.size.width/2, (toast.frame.size.height / 2) + style.verticalPadding);
@@ -402,7 +402,7 @@ static const NSString * CSToastQueueKey             = @"CSToastQueueKey";
     } else if ([point isKindOfClass:[NSValue class]]) {
         return [point CGPointValue];
     }
-    
+
     // default to bottom
     return CGPointMake(self.bounds.size.width/2, (self.bounds.size.height - (toast.frame.size.height / 2)) - style.verticalPadding);
 }
@@ -492,7 +492,7 @@ static const NSString * CSToastQueueKey             = @"CSToastQueueKey";
     dispatch_once(&oncePredicate, ^{
         _sharedManager = [[self alloc] init];
     });
-    
+
     return _sharedManager;
 }
 

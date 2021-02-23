@@ -106,7 +106,7 @@ public class HexInputStream extends FilterInputStream {
 		in.mark(in.available());
 
 		int b, lineSize, offset, type;
-		int lastBaseAddress = 0; // last Base Address, default 0 
+		int lastBaseAddress = 0; // last Base Address, default 0
 		int lastAddress;
 		try {
 			b = in.read();

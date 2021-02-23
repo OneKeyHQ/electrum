@@ -24,19 +24,19 @@
 - (void)setModel:(OKAllAssetsTableViewCellModel *)model
 {
     _model = model;
-    
+
     self.iconImageView.image = [UIImage imageNamed:@"token_btc"];
     self.cointypeLabel.text = model.name;
     self.balanceLabel.text = model.btc;
     self.moneyLabel.text = model.fiat;
-    
+
 }
 
 
 - (void)awakeFromNib {
     [super awakeFromNib];
     // Initialization code
-    
+
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {

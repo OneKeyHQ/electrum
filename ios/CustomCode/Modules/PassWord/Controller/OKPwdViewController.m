@@ -90,7 +90,7 @@ typedef enum {
         _type = PwdTypeShort;
         [self.pwdInputViewFirst becomeFirstResponder];
     }
-    
+
     _isSecret = YES;
     self.eyeBtnFirst.selected = !_isSecret;
     self.eyeBtnSecond.selected = !_isSecret;
@@ -123,24 +123,24 @@ typedef enum {
             self.titleDescLabelSecond.text = @"";
         }
             break;
-            
+
         default:
             break;
     }
     [self.switchPwdViewBtn setLayerRadius:14];
-    
+
     [self.longPwdViewFirst setLayerBoarderColor:HexColor(0xDBDEE7) width:1 radius:20];
     [self.longPwdViewSecond setLayerBoarderColor:HexColor(0xDBDEE7) width:1 radius:20];
-    
+
     [self.nextBtnFirst setLayerRadius:20];
     [self.nextBtnSecond setLayerRadius:20];
-    
+
     self.navigationController.delegate = self;
     self.pwdInputViewFirst.delegate = self;
     self.pwdInputViewSecond.delegate = self;
 
-    
-    
+
+
     [self.pwdInputViewFirst updateWithConfigure:^(CLPasswordInputViewConfigure * _Nonnull configure) {
         configure.pointColor = HexColor(APP_MAIN_BLACK_COLOR);
         configure.rectColor = HexColor(0xF2F2F2);
@@ -280,7 +280,7 @@ typedef enum {
 
 - (void)passwordInputViewEndInput:(CLPasswordInputView *)passwordInputView {
     //NSLog(@"结束输入");
- 
+
 }
 
 
@@ -311,7 +311,7 @@ typedef enum {
             [kTools tipMessage:MyLocalizedString(@"The password cannot contain Chinese", nil)];
             return;
         }
-        
+
         self.page = PageTypeSecond;
         [self resetViewWithAnimated:YES];
         [self resetPwdViewTips];

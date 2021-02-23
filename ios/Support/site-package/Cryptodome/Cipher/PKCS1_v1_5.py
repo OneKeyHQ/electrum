@@ -196,4 +196,3 @@ def new(key, randfunc=None):
     if randfunc is None:
         randfunc = Random.get_random_bytes
     return PKCS115_Cipher(key, randfunc)
-

@@ -22,13 +22,13 @@
 - (void)setupSessionOnController:(UIViewController *)currentController {
     // 1、获取摄像设备
     AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
-    
+
     // 2、创建设备输入流
     AVCaptureDeviceInput *deviceInput = [AVCaptureDeviceInput deviceInputWithDevice:device error:nil];
-    
+
     // 3、创建数据输出流
     AVCaptureMetadataOutput *metaDataOutput = [[AVCaptureMetadataOutput alloc] init];
-    
+
     // 4、设置代理：在主线程里刷新
     [metaDataOutput setMetadataObjectsDelegate:self queue:dispatch_get_main_queue()];
     // 光源输出
@@ -38,17 +38,17 @@
     // 设置扫描范围（每一个取值0～1，以屏幕右上角为坐标原点）
     // 注：微信二维码的扫描范围是整个屏幕，这里并没有做处理（可不用设置）
 //    metadataOutput.rectOfInterest = CGRectMake(0.05, 0.2, 0.7, 0.6);
-    
+
     // 5、创建会话对象
     _session = [[AVCaptureSession alloc] init];
     // 会话采集率: AVCaptureSessionPresetHigh
     _session.sessionPreset = AVCaptureSessionPreset1920x1080; // 推荐使用AVCaptureSessionPreset1920x1080，对于小型的二维码读取率较高
-    
+
     // 6、添加设备输入流到会话对象
     if ([_session canAddInput:deviceInput]) {
         [_session addInput:deviceInput];
     }
-    
+
     // 7、添加设备输入流到会话对象
     if ([_session canAddOutput:metaDataOutput]) {
         [_session addOutput:metaDataOutput];
@@ -57,12 +57,12 @@
     if ([_session canAddOutput:viewDataOutput]) {
         [_session addOutput:viewDataOutput];
     }
-    
+
     // 8、设置数据输出类型，需要将数据输出添加到会话后，才能指定元数据类型，否则会报错
     // 设置扫码支持的编码格式(如下设置条形码和二维码兼容)
     // @[AVMetadataObjectTypeQRCode, AVMetadataObjectTypeEAN13Code,  AVMetadataObjectTypeEAN8Code, AVMetadataObjectTypeCode128Code]
     metaDataOutput.metadataObjectTypes = @[AVMetadataObjectTypeQRCode, AVMetadataObjectTypeEAN13Code, AVMetadataObjectTypeEAN8Code, AVMetadataObjectTypeCode128Code];
-    
+
     // 9、实例化预览图层, 传递_session是为了告诉图层将来显示什么内容
     _videoPreviewLayer = [AVCaptureVideoPreviewLayer layerWithSession:_session];
     // 保持纵横比；填充层边界
@@ -100,7 +100,7 @@
 }
 
 void soundCompleteCallback(SystemSoundID soundID, void *clientData){
-    
+
 }
 
 #pragma mark - - - AVCaptureMetadataOutputObjectsDelegate
@@ -132,10 +132,10 @@ void soundCompleteCallback(SystemSoundID soundID, void *clientData){
                         [self.currentVC presentViewController:imagePicker animated:YES completion:nil];
                     });
                 } else { // 用户第一次拒绝了访问相册权限
-                
+
                 }
             }];
-            
+
         } else if (status == PHAuthorizationStatusAuthorized) { // 用户允许当前应用访问相册
             self.isPHAuthorization = YES;
             UIImagePickerController *imagePicker = [[UIImagePickerController alloc] init];
@@ -148,14 +148,14 @@ void soundCompleteCallback(SystemSoundID soundID, void *clientData){
             NSString *message = [NSString stringWithFormat:@"请前往 -> [设置 - 隐私 - 照片 - %@ 打开访问开关", appName];
             UIAlertController *alertC = [UIAlertController alertControllerWithTitle:@"温馨提示" message:message preferredStyle:(UIAlertControllerStyleAlert)];
             UIAlertAction *alertA = [UIAlertAction actionWithTitle:@"确定" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
-                
+
             }];
             [alertC addAction:alertA];
             [self.currentVC presentViewController:alertC animated:YES completion:nil];
         } else if (status == PHAuthorizationStatusRestricted) {
             UIAlertController *alertC = [UIAlertController alertControllerWithTitle:@"温馨提示" message:@"由于系统原因, 无法访问相册" preferredStyle:(UIAlertControllerStyleAlert)];
             UIAlertAction *alertA = [UIAlertAction actionWithTitle:@"确定" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
-                
+
             }];
             [alertC addAction:alertA];
             [self.currentVC presentViewController:alertC animated:YES completion:nil];
@@ -184,7 +184,7 @@ void soundCompleteCallback(SystemSoundID soundID, void *clientData){
         NSString *message = @"暂未识别出扫描的二维码";
         UIAlertController *alertC = [UIAlertController alertControllerWithTitle:@"很抱歉" message:message preferredStyle:(UIAlertControllerStyleAlert)];
         UIAlertAction *alertA = [UIAlertAction actionWithTitle:@"确定" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
-            
+
         }];
         [alertC addAction:alertA];
         [self.currentVC presentViewController:alertC animated:YES completion:nil];

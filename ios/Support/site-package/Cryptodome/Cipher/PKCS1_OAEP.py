@@ -236,4 +236,3 @@ def new(key, hashAlgo=None, mgfunc=None, label=b'', randfunc=None):
     if randfunc is None:
         randfunc = Random.get_random_bytes
     return PKCS1OAEP_Cipher(key, hashAlgo, mgfunc, label, randfunc)
-

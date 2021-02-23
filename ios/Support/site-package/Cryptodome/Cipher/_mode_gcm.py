@@ -186,7 +186,7 @@ class GcmMode(object):
 
         if len(nonce) == 0:
             raise ValueError("Nonce cannot be empty")
-        
+
         if not is_buffer(nonce):
             raise TypeError("Nonce must be bytes, bytearray or memoryview")
 

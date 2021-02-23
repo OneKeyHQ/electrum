@@ -23,8 +23,8 @@
  * symbology.
  *
  * \section encoding Encoding
- * 
- * There are two ways to encode data: <b>encoding a string</b> or 
+ *
+ * There are two ways to encode data: <b>encoding a string</b> or
  * <b>encoding a structured data</b>.
  *
  * \subsection encoding-string Encoding a string
@@ -68,7 +68,7 @@
  * to generate structured-appended symbols. This functions returns an instance
  * of ::QRcode_List. The returned list is a singly-linked list of QRcode: you
  * can retrieve each QR code in this way:
- *  
+ *
  * \code
  * QRcode_List *qrcodes;
  * QRcode_List *entry;

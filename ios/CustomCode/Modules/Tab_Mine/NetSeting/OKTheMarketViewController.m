@@ -27,16 +27,16 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+
     self.title = MyLocalizedString(@"Price quotation", nil);
     self.topDescLabel.text  = MyLocalizedString(@"Choosing the right market source only affects the PRICE display of BTC and ETH", nil);
     self.tableView.dataSource = self;
     self.tableView.delegate = self;
     self.tableView.tableFooterView = [UIView new];
-    
+
     self.allData =  [kPyCommandsManager callInterface:kInterfaceget_exchanges parameter:@{}];
     [self.tableView reloadData];
-    
+
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section

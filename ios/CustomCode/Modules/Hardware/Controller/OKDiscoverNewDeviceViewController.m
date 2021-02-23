@@ -30,7 +30,7 @@
     self.title = MyLocalizedString(@"pairing", nil);
     self.titleLabel.text = MyLocalizedString(@"Discover a new device you can...", nil);
     self.tableView.tableFooterView = [UIView new];
-    
+
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapClick)];
     [self.toSettingLabel addGestureRecognizer:tap];
 }

@@ -38,7 +38,7 @@ typedef enum : NSUInteger {
      * 默认均分，根据maxTitles计算宽度，均分
      */
     MLMSegmentLayoutDefault,
-    
+
     /*
      * 居中(标题不足一屏时选择样式，反之设置后按照居左)
      */
@@ -47,7 +47,7 @@ typedef enum : NSUInteger {
      * 居左
      */
     MLMSegmentLayoutLeft
-    
+
 } MLMSegmentLayoutStyle;
 
 @protocol MLMSegmentHeadDelegate <NSObject>

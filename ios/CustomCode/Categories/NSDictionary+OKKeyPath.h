@@ -15,4 +15,3 @@ extern const NSString *OKKeyPathQueryPattern;
 - (id)ok_objectForKeyPath:(NSString *)keyPath;
 
 @end
-

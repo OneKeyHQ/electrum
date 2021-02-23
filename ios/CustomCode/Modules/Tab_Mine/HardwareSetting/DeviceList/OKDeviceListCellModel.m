@@ -15,5 +15,3 @@
     self.title = name;
 }
 @end
-
-

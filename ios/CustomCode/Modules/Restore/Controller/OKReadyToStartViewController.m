@@ -38,13 +38,13 @@
     self.tips3Label.text = MyLocalizedString(@"A standalone wallet does not support backing up to a hardware device", nil);
     [self.startBtn setTitle:MyLocalizedString(@"Ready to star", nil) forState:UIControlStateNormal];
     self.title = MyLocalizedString(@"Backup the purse", nil);
-    
+
     [self.startBtn setLayerDefaultRadius];
-    
-    
+
+
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(backUpToHardwareClick)];
     [self.bottomBtnBgView addGestureRecognizer:tap];
-    
+
     if (self.isExport) {
         self.dontwanttocopyLabel.hidden = YES;
         self.bottomBtnBgView.hidden = YES;

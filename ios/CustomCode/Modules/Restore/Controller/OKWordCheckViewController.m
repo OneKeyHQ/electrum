@@ -47,15 +47,15 @@
     [self.checktopView setLayerRadius:20];
     [self.checkmidView setLayerRadius:20];
     [self.checkbottomView setLayerRadius:20];
-    
+
     self.indexTop = [self getRandomNumber:0 to:3];
     self.indexMid = [self getRandomNumber:4 to:7];
     self.indexBottom = [self getRandomNumber:8 to:11];
-    
+
     self.checktopLabel.text = [NSString stringWithFormat:@"选择刚才抄写的第%d个单词",self.indexTop + 1];
     self.checkmidLabel.text = [NSString stringWithFormat:@"选择刚才抄写的第%d个单词",self.indexMid + 1];
     self.checkbottomLabel.text = [NSString stringWithFormat:@"选择刚才抄写的第%d个单词",self.indexBottom + 1];
-    
+
     if (self.words.count > 0) {
         [self.checktopView configureData:[self getConfusedWords:self.indexTop] delegate:self];
         [self.checkmidView configureData:[self getConfusedWords:self.indexMid] delegate:self];

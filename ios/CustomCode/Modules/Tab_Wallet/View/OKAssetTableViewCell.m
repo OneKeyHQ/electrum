@@ -32,7 +32,7 @@
         }else{
             self.moneyLabel.text = @"";
         }
-        
+
     }else{
         self.balanceLabel.text = @"****";
         self.moneyLabel.text = @"****";

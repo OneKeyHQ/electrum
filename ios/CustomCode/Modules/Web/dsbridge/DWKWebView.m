@@ -53,7 +53,7 @@
                                                   injectionTime:WKUserScriptInjectionTimeAtDocumentStart
                                                forMainFrameOnly:YES];
     [configuration.userContentController addUserScript:script];
-    self = [super initWithFrame:frame configuration: configuration]; 
+    self = [super initWithFrame:frame configuration: configuration];
     if (self) {
         super.UIDelegate=self;
     }
@@ -83,7 +83,7 @@ completionHandler:(void (^)(NSString * _Nullable result))completionHandler
             }
         }
         completionHandler(result);
-     
+
     }else {
         if(!jsDialogBlock){
             completionHandler(nil);
@@ -272,12 +272,12 @@ initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(BOOL))completi
                         }
                         value=[JSBUtil objToJsonString:result];
                         value=[value stringByAddingPercentEscapesUsingEncoding: NSUTF8StringEncoding];
-                        
+
                         if(complete){
                             del=[@"delete window." stringByAppendingString:cb];
                         }
                         NSString*js=[NSString stringWithFormat:@"try {%@(JSON.parse(decodeURIComponent(\"%@\")).data);%@; } catch(e){};",cb,(value == nil) ? @"" : value,del];
-                        
+
                         @synchronized(self)
                         {
                             UInt64  t=[[NSDate date] timeIntervalSince1970]*1000;
@@ -291,13 +291,13 @@ initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(BOOL))completi
                                 [self evalJavascript:0];
                             }
                         }
-                        
+
                     };
                     SuppressPerformSelectorLeakWarning(
                                                        [JavascriptInterfaceObject performSelector:selasyn withObject:arg withObject:completionHandler];
-                                                       
+
                                                        );
-                    
+
                     break;
                 }
             }else if([JavascriptInterfaceObject respondsToSelector:sel]){
@@ -305,7 +305,7 @@ initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(BOOL))completi
                 SuppressPerformSelectorLeakWarning(
                                                    ret=[JavascriptInterfaceObject performSelector:sel withObject:arg];
                                                    );
-                
+
                 [result setValue:@0 forKey:@"code"];
                 if(ret!=nil){
                     [result setValue:ret forKey:@"data"];
@@ -484,5 +484,3 @@ initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(BOOL))completi
 }
 
 @end
-
-

@@ -26,7 +26,7 @@
  * Add a Javascript Object to dsBridge with namespace.
  * @param object
  * which implemented the javascript interfaces
- * @param namespace  
+ * @param namespace
  * if empty, the object have no namespace.
  **/
 - (void)addJavascriptObject:(id _Nullable ) object namespace:(NSString *  _Nullable) namespaces;

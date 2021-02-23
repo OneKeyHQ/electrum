@@ -55,7 +55,7 @@ static const NSUInteger titleColor = 0x14293b;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
+
     static NSString *cellID = @"OKHardwareListBaseCell";
     OKHardwareListBaseCell *cell = [tableView dequeueReusableCellWithIdentifier:cellID];
     if (cell == nil) {
@@ -93,7 +93,7 @@ static const NSUInteger titleColor = 0x14293b;
     [self.deviceCells removeAllObjects];
 
     NSArray <OKDeviceModel *>*devices = [OKDevicesManager sharedInstance].devices.allValues;
-    
+
     for (OKDeviceModel *device in devices) {
         OKDeviceListCellModel *deviceCell = [[OKDeviceListCellModel alloc] init];
         deviceCell.devcie = device;

@@ -114,7 +114,7 @@ class Poly1305_MAC(object):
 
         if self._mac_tag:
             return self._mac_tag
-        
+
         bfr = create_string_buffer(16)
         result = _raw_poly1305.poly1305_digest(self._state.get(),
                                                bfr,
@@ -206,12 +206,12 @@ def new(**kwargs):
 
     nonce = kwargs.pop("nonce", None)
     data = kwargs.pop("data", None)
-    
+
     if kwargs:
         raise TypeError("Unknown parameters: " + str(kwargs))
 
     r, s, nonce = cipher._derive_Poly1305_key_pair(cipher_key, nonce)
-    
+
     new_mac = Poly1305_MAC(r, s, data)
     new_mac.nonce = _copy_bytes(None, None, nonce)  # nonce may still be just a memoryview
     return new_mac

@@ -19,7 +19,7 @@
 + (instancetype)aboutViewController
 {
     return [[UIStoryboard storyboardWithName:@"Tab_Mine" bundle:nil] instantiateViewControllerWithIdentifier:@"OKAboutViewController"];
-    
+
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -75,17 +75,17 @@
 - (NSArray *)allData
 {
     if (!_allData) {
-        
+
         OKAboutTableViewCellModel *model1 = [[OKAboutTableViewCellModel alloc]init];
         model1.titleStr = MyLocalizedString(@"Version update", nil);
         NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
         NSString *app_Version = [infoDictionary objectForKey:@"CFBundleShortVersionString"];
         model1.descStr = [NSString stringWithFormat:@"v%@",app_Version];
-        
+
         OKAboutTableViewCellModel *model2 = [[OKAboutTableViewCellModel alloc]init];
         model2.titleStr = MyLocalizedString(@"User agreement", nil);
         model2.descStr = @"";
-        
+
         _allData = @[model1,model2];
     }
     return _allData;

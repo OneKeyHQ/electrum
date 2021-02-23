@@ -23,7 +23,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.lang.reflect.Method;
 
 /**
- * Class to manage status and navigation bar tint effects when using KitKat 
+ * Class to manage status and navigation bar tint effects when using KitKat
  * translucent system UI modes.
  *
  */

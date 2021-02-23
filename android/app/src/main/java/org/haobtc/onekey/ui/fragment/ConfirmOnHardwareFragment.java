@@ -49,4 +49,3 @@ public class ConfirmOnHardwareFragment extends BaseFragment {
         return true;
     }
 }
-

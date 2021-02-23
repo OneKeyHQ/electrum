@@ -50,4 +50,3 @@ def new(rsa_key):
     pkcs1._verify = pkcs1.verify
     pkcs1.verify = types.MethodType(_pycrypto_verify, pkcs1)
     return pkcs1
-

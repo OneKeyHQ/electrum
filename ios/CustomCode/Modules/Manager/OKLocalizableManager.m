@@ -40,7 +40,7 @@ static dispatch_once_t once;
 + (AppCurrentLanguage)getCurrentLanguage {
     AppLanguageType type = [OKLocalizableManager getCurrentLanguageType];
     AppCurrentLanguage currentLanguage = AppCurrentLanguage_En;
-    
+
     switch (type) {
         case AppLanguageTypeFollowSys: {
             NSArray  *languages = [NSLocale preferredLanguages];
@@ -49,11 +49,11 @@ static dispatch_once_t once;
                 currentLanguage = AppCurrentLanguage_Zh_Hans;
             }
         } break;
-            
+
         case AppLanguageTypeEn: {
             currentLanguage = AppCurrentLanguage_En;
         } break;
-            
+
         case AppLanguageTypeZh_Hans: {
             currentLanguage = AppCurrentLanguage_Zh_Hans;
         } break;
@@ -61,7 +61,7 @@ static dispatch_once_t once;
         default:
             break;
     }
-    
+
     return currentLanguage;
 }
 
@@ -118,7 +118,7 @@ static dispatch_once_t once;
             bundleName = @"en";
         }
     }
-    
+
     NSString *path = [[NSBundle mainBundle] pathForResource:bundleName ofType:@"lproj"];
     self.languageBundle = [NSBundle bundleWithPath:path];
     self.languageType = languageType;

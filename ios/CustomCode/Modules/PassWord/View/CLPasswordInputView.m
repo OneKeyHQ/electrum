@@ -183,13 +183,13 @@ void CGContextAddRoundRect(CGContextRef context,CGRect rect,CGFloat radius){
     float y4=y3;
     CGContextMoveToPoint(context, x1, y1+radius);
     CGContextAddArcToPoint(context, x1, y1, x1+radius, y1, radius);
-    
+
     CGContextAddArcToPoint(context, x2, y2, x2, y2+radius, radius);
     CGContextAddArcToPoint(context, x3, y3, x3-radius, y3, radius);
     CGContextAddArcToPoint(context, x4, y4, x4, y4-radius, radius);
-    
+
     CGContextClosePath(context);
-    
+
 }
 
 - (NSMutableString *)text

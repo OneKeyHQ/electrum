@@ -203,4 +203,3 @@ class LNInvoice(Invoice):
             # 'tags': str(lnaddr.tags),
         })
         return d
-

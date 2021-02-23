@@ -178,7 +178,7 @@ def MGF1(mgfSeed, maskLen, hash_gen):
 
     :return: the mask, as a *byte string*
     """
-    
+
     T = b""
     for counter in iter_range(ceil_div(maskLen, hash_gen.digest_size)):
         c = long_to_bytes(counter, 4)

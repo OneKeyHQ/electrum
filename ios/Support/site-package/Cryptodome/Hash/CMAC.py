@@ -147,7 +147,7 @@ class CMAC(object):
 
     def _update(self, data_block):
         """Update a block aligned to the block boundary"""
-        
+
         bs = self._block_size
         assert len(data_block) % bs == 0
 
@@ -294,10 +294,10 @@ def new(key, msg=None, ciphermod=None, cipher_params=None, mac_len=None,
 
     if mac_len is None:
         mac_len = ciphermod.block_size
-    
+
     if mac_len < 4:
         raise ValueError("MAC tag length must be at least 4 bytes long")
-    
+
     if mac_len > ciphermod.block_size:
         raise ValueError("MAC tag length cannot be larger than a cipher block (%d) bytes" % ciphermod.block_size)
 

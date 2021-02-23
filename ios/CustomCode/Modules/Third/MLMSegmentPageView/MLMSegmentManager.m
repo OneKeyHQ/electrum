@@ -24,7 +24,7 @@
     NSInteger showIndex;
     showIndex = head.showIndex?head.showIndex:scroll.showIndex;
     head.showIndex = scroll.showIndex = showIndex;
-    
+
     head.selectedIndex = ^(NSInteger index) {
         [scroll setContentOffset:CGPointMake(index*scroll.width, 0) animated:YES];
         if (selectEnd) {
@@ -32,7 +32,7 @@
         }
     };
     [head defaultAndCreateView];
-    
+
     scroll.scrollEnd = ^(NSInteger index) {
         [head setSelectIndex:index];
         if (selectEnd) {
@@ -45,12 +45,12 @@
     scroll.offsetScale = ^(CGFloat scale) {
         [head changePointScale:scale];
     };
-    
+
     if (completion) {
         completion();
     }
     [scroll createView];
-    
+
     UIView *view = head.nextResponder?head:scroll;
     UIViewController *currentVC = [view viewController];
     currentVC.automaticallyAdjustsScrollViewInsets = NO;

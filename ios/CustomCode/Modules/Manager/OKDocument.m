@@ -10,9 +10,9 @@
 
 @implementation OKDocument
 - (BOOL)loadFromContents:(id)contents ofType:(NSString *)typeName error:(NSError * _Nullable __autoreleasing *)outError {
-    
+
     self.myData = contents;
-    
+
     return YES;
 }
 

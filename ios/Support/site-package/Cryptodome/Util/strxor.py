@@ -46,7 +46,7 @@ _raw_strxor = load_pycryptodome_raw_lib("Cryptodome.Util._strxor",
 
 def strxor(term1, term2, output=None):
     """XOR two byte strings.
-    
+
     Args:
       term1 (bytes/bytearray/memoryview):
         The first term of the XOR operation.
@@ -62,16 +62,16 @@ def strxor(term1, term2, output=None):
 
     if len(term1) != len(term2):
         raise ValueError("Only byte strings of equal length can be xored")
-    
+
     if output is None:
         result = create_string_buffer(len(term1))
     else:
         # Note: output may overlap with either input
         result = output
-        
+
         if not is_writeable_buffer(output):
             raise TypeError("output must be a bytearray or a writeable memoryview")
-        
+
         if len(term1) != len(output):
             raise ValueError("output must have the same length as the input"
                              "  (%d bytes)" % len(term1))
@@ -105,16 +105,16 @@ def strxor_c(term, c, output=None):
 
     if not 0 <= c < 256:
         raise ValueError("c must be in range(256)")
-    
+
     if output is None:
         result = create_string_buffer(len(term))
     else:
         # Note: output may overlap with either input
         result = output
-       
+
         if not is_writeable_buffer(output):
             raise TypeError("output must be a bytearray or a writeable memoryview")
-        
+
         if len(term) != len(output):
             raise ValueError("output must have the same length as the input"
                              "  (%d bytes)" % len(term))
@@ -134,4 +134,3 @@ def strxor_c(term, c, output=None):
 def _strxor_direct(term1, term2, result):
     """Very fast XOR - check conditions!"""
     _raw_strxor.strxor(term1, term2, result, c_size_t(len(term1)))
-

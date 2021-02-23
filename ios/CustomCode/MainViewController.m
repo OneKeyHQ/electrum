@@ -30,7 +30,7 @@
     [self addTabBarController];
     [self tabBarAppearance];
     [self tabBarResetLineColor];
-    
+
     if (self.isTabSettingVC) {
         [self selectLangue];
     }

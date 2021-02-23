@@ -42,27 +42,27 @@ static CGFloat animation_time = .3;
 
     NSMutableArray *buttonArray;//按钮数组
 
-    
+
     UIView *lineView;//下划线view
     CAShapeLayer *arrow_layer;//箭头layer
-    
+
 //    UIView *slideView;//滑块View
     UIButton *slideView;//滑块btn
 
     UIScrollView *slideScroll;
-    
-    
+
+
     UIView *bottomLineView;//分割线
-    
+
     NSInteger currentIndex;//当前选中的按钮
-    
+
     NSInteger isSelected;//区分点击还是滑动
-    
-    
+
+
     //button宽度的数组，总宽度
     NSMutableArray *titleWidthArray;
     CGFloat sum_width;
-    
+
     //用来判断向左向右
     CGFloat endScale;
 }
@@ -100,31 +100,31 @@ static CGFloat animation_time = .3;
     _headColor = [UIColor whiteColor];
     _selectColor = [UIColor blackColor];
     _deSelectColor = [UIColor lightGrayColor];
-    
+
     _moreButton_width = 0;
-    
+
     buttonArray = [NSMutableArray array];
     _showIndex = 0;
-    
+
     _fontSize = 13;
     _fontScale = 1;
-    
+
     _singleW_Add = 20;
-    
+
     _lineColor = _selectColor;
     _lineHeight = 2.5;
     _lineScale = 1;
-    
+
     _arrowColor = _selectColor;
-    
+
     _slideHeight = SCROLL_HEIGHT - 4;
     _slideColor = _deSelectColor;
-    
+
     _slideCorner = _slideHeight/2;
-    
+
     _slideScale = 1;
     _maxTitles = 5.0;
-    
+
     _bottomLineColor = [UIColor grayColor];
     _bottomLineHeight = 1;
 
@@ -136,36 +136,36 @@ static CGFloat animation_time = .3;
         titleWidthArray = [NSMutableArray arrayWithCapacity:titlesArray.count];
     }
     [titleWidthArray removeAllObjects];
-    
+
     _maxTitles = _maxTitles>titlesArray.count?titlesArray.count:_maxTitles;
 
-    
+
     [self titlesWidth];
 
     if (_equalSize) {
         self.width = sum_width+_moreButton_width;
-        
+
         if (titlesScroll) {
             titlesScroll.width = SCREEN_WIDTH;
         }
-        
+
         if (slideScroll) {
             slideScroll.width = SCREEN_WIDTH;
         }
     }
-    
+
     //判断总宽度
     if (sum_width > SCROLL_WIDTH && _layoutStyle== MLMSegmentLayoutCenter) {
         _layoutStyle = MLMSegmentLayoutLeft;
     }
-    
+
     _showIndex = MIN(titlesArray.count-1, MAX(0, _showIndex));
     currentIndex = _showIndex;
     [self createView];
-    
 
-    
-    
+
+
+
     [self setSelectIndex:_showIndex];
 }
 
@@ -193,26 +193,26 @@ static CGFloat animation_time = .3;
 //    if (_layoutStyle == MLMSegmentLayoutCenter) {
 //        return;
 //    }
-//    
+//
 //    CGFloat start_x = sum_width;
 //    CGFloat start_index = titleWidthArray.count;
-//    
+//
 //    //添加到数组，并计算宽度
 //    for (NSInteger i = 0; i < moreTitles.count; i ++) {
 //        NSString *title = moreTitles[i];
 //        CGFloat width = [self titleWidth:title];
 //        [titleWidthArray addObject:@(width)];
 //        sum_width += width;
-//        
+//
 //        [titlesArray addObject:title];
 //    }
-//    
+//
 //    [self createBtn:titlesArray addScroll:titlesScroll startX:start_x start_index:start_index];
 //    if (_headStyle == SegmentHeadStyleSlide) {
 //        [self createBtn:titlesArray addScroll:slideScroll startX:start_x start_index:start_index];
 //    }
-//    
-//    
+//
+//
 //    [self setSelectIndex:currentIndex];
 //}
 
@@ -223,24 +223,24 @@ static CGFloat animation_time = .3;
     titlesScroll = [self customScroll];
     [self scrollViewSubviews:titlesScroll];
     [self addSubview:titlesScroll];
-    
-    
+
+
     if (_moreButton) {
         _moreButton.frame = CGRectMake(CGRectGetMaxX(titlesScroll.frame), 0, _moreButton_width, titlesScroll.height);
         [self addSubview:_moreButton];
     }
-    
+
     if (_bottomLineHeight) {
         bottomLineView = [self bottomLineView];
         [self addSubview:bottomLineView];
     }
-    
+
     switch (_headStyle) {
         case SegmentHeadStyleLine:
         {
             lineView = [self lineView];
             [titlesScroll addSubview:lineView];
-            
+
         }
             break;
         case SegmentHeadStyleArrow:
@@ -265,7 +265,7 @@ static CGFloat animation_time = .3;
         default:
             break;
     }
-    
+
 }
 
 #pragma mark - drow arrow
@@ -302,7 +302,7 @@ static CGFloat animation_time = .3;
     BOOL titles = [scroll isEqual:titlesScroll];
 
     CGFloat start_x = 0;
-    
+
     if (_layoutStyle == MLMSegmentLayoutCenter) {
         //计算布局的起点
         start_x = SCROLL_WIDTH/2;
@@ -314,7 +314,7 @@ static CGFloat animation_time = .3;
         }
     }
     [self createBtn:titlesArray addScroll:scroll startX:start_x start_index:0];
-    
+
     if (titles && _headStyle != SegmentHeadStyleSlide) {
         UIButton *curBtn = buttonArray[_showIndex];
         if (_fontScale != 1) {
@@ -335,10 +335,10 @@ static CGFloat animation_time = .3;
         button.titleLabel.font = [UIFont systemFontOfSize:_fontSize];
         button.frame = CGRectMake(start_x, 0, width, SCROLL_HEIGHT);
         start_x += width;
-        
-        
+
+
         //button.backgroundColor = [UIColor colorWithRed:arc4random_uniform(244)/255.0 green:arc4random_uniform(244)/255.0  blue:arc4random_uniform(244)/255.0  alpha:1.0];
-        
+
         if (titles) {
             [button setTitleColor:_deSelectColor forState:UIControlStateNormal];
             [button addTarget:self action:@selector(selectedHeadTitles:) forControlEvents:UIControlEventTouchUpInside];
@@ -355,9 +355,9 @@ static CGFloat animation_time = .3;
 #pragma mark - create Line
 - (UIView *)lineView {
     _lineScale = fabs(_lineScale)>1?1:fabs(_lineScale);
-    
+
     CGFloat line_w = CURRENT_WIDTH(currentIndex);
-    
+
     UIView *line = [[UIView alloc] initWithFrame:CGRectMake(0, SCROLL_HEIGHT-_lineHeight, line_w*_lineScale, _lineHeight)];
     UIButton *current_btn = buttonArray[currentIndex];
     line.center = CGPointMake(current_btn.center.x, line.center.y);
@@ -403,36 +403,36 @@ static CGFloat animation_time = .3;
     {
         //before
         UIButton *before_btn = buttonArray[currentIndex];
-        
+
         NSInteger selectIndex = index;
-        
+
         //repeat click
         if (selectIndex == currentIndex) {
             return;
         }
         //select
         UIButton *select_btn = buttonArray[selectIndex];
-        
+
         [UIView animateWithDuration:animation_time animations:^{
             if (_headStyle != SegmentHeadStyleSlide) {
                 [before_btn setTitleColor:_deSelectColor forState:UIControlStateNormal];
                 [select_btn setTitleColor:_selectColor forState:UIControlStateNormal];
             }
-            
+
             if (_fontScale) {
                 before_btn.titleLabel.font = [UIFont systemFontOfSize:_fontSize];
                 select_btn.titleLabel.font = [UIFont systemFontOfSize:_fontSize*_fontScale];
             }
-            
+
             if (lineView) {
                 lineView.width = select_btn.width*_lineScale;
                 lineView.center = CGPointMake(select_btn.center.x, lineView.center.y);
             }
-            
+
             if (arrow_layer) {
                 arrow_layer.position = CGPointMake(lineView.width/2, lineView.height/2);
             }
-            
+
             if (slideView) {
                 //slide位置变化
                 slideView.width = select_btn.width*_slideScale;
@@ -444,7 +444,7 @@ static CGFloat animation_time = .3;
         } completion:^(BOOL finished) {
             [self setSelectIndex:selectIndex];
         }];
-        
+
         isSelected = YES;
         if ([self.delegate respondsToSelector:@selector(didSelectedIndex:)]) {
             [self.delegate didSelectedIndex:selectIndex];
@@ -462,7 +462,7 @@ static CGFloat animation_time = .3;
 #pragma mark - set index
 - (void)setSelectIndex:(NSInteger)index {
     currentIndex = index;
-    
+
     if (sum_width > SCROLL_WIDTH) {
         UIButton *currentBtn = buttonArray[index];
         if (currentBtn.center.x<SCROLL_WIDTH/2) {
@@ -490,7 +490,7 @@ static CGFloat animation_time = .3;
     //区分向左 还是向右
     BOOL left = endScale > scale;
     endScale = scale;
-    
+
     //1.将scale变为对应titleScroll的titleScale
     //每个view所占的百分比
     CGFloat per_view = 1.0/(CGFloat)titlesArray.count;
@@ -596,7 +596,7 @@ static CGFloat animation_time = .3;
     CGFloat de_sel_green;
     CGFloat de_sel_blue;
     CGFloat de_sel_alpha;
-    
+
     if ([_selectColor getRed:&sel_red green:&sel_green blue:&sel_blue alpha:&sel_alpha] && [_deSelectColor getRed:&de_sel_red green:&de_sel_green blue:&de_sel_blue alpha:&de_sel_alpha]) {
         //颜色的变化的大小
         CGFloat red_changge = sel_red - de_sel_red;

@@ -124,7 +124,7 @@ def _x_and_y_from_pubkey_bytes(pubkey: bytes) -> Tuple[int, int]:
     if not ret:
         return None, None
         #raise InvalidECPointException('public key could not be parsed or is invalid')
-        
+
     pubkey_serialized = create_string_buffer(65)
     pubkey_size = c_size_t(65)
     _libsecp256k1.secp256k1_ec_pubkey_serialize(

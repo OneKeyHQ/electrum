@@ -92,15 +92,15 @@ class Salsa20Cipher:
           If ``output`` is ``None``, the ciphertext is returned as ``bytes``.
           Otherwise, ``None``.
         """
-        
+
         if output is None:
             ciphertext = create_string_buffer(len(plaintext))
         else:
             ciphertext = output
-           
+
             if not is_writeable_buffer(output):
                 raise TypeError("output must be a bytearray or a writeable memoryview")
-        
+
             if len(plaintext) != len(output):
                 raise ValueError("output must have the same length as the input"
                                  "  (%d bytes)" % len(plaintext))
@@ -120,7 +120,7 @@ class Salsa20Cipher:
 
     def decrypt(self, ciphertext, output=None):
         """Decrypt a piece of data.
-        
+
         Args:
           ciphertext(bytes/bytearray/memoryview): The data to decrypt, of any size.
         Keyword Args:
@@ -164,4 +164,3 @@ block_size = 1
 
 # Size of a key (in bytes)
 key_size = (16, 32)
-

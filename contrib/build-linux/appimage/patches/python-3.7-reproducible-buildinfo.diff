@@ -9,5 +9,5 @@
 +	      $(if $(BUILD_DATE),-DDATE='"$(BUILD_DATE)"') \
 +	      $(if $(BUILD_TIME),-DTIME='"$(BUILD_TIME)"') \
  	      -o $@ $(srcdir)/Modules/getbuildinfo.c
- 
+
  Modules/getpath.o: $(srcdir)/Modules/getpath.c Makefile

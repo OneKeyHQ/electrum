@@ -1,4 +1,4 @@
-/* 
+/*
   Localizable.strings
   OneKey
 
@@ -322,4 +322,3 @@
 // Hardware Wallet Associated - start
 "hardwareWallet.update.currentDesc" = "Current framework version <frameworkVersion> \n当前蓝牙固件版本 <bluetoothVersion> \n升级固件前务必备份好钱包，否则可能造成资产损失";
 // Hardware Wallet Associated - end
-

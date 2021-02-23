@@ -363,7 +363,7 @@ In Python:
 ::
 
     from ens import ENS
-    from web3 import IPCProvider 
+    from web3 import IPCProvider
 
     ens = ENS(IPCProvider('/your/custom/ipc/path'))
 
@@ -429,5 +429,3 @@ if you're going to develop on top of Ethereum. Your ETH depends on it!
 
 .. |Join the chat at https://gitter.im/ens-py/Lobby| image:: https://badges.gitter.im/ens-py/Lobby.svg
    :target: https://gitter.im/ens-py/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
-
-

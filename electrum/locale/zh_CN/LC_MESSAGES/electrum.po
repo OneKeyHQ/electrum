@@ -2,13 +2,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
+#
 # Translators:
 # danielsocials <daniel.socials@gmail.com>, 2020
 # leihao <fungiriot@gmail.com>, 2020
 # Yishi Wang <rayston92@hotmail.com>, 2020
 # JINGHUA SHAO <shaohanchu@bixin.com>, 2021
-# 
+#
 #, fuzzy
 msgid ""
 msgstr ""

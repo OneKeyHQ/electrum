@@ -7,8 +7,8 @@ import android.widget.LinearLayout;
 
 /**
  * 不让viewgroup向下传递触摸事件的LinearLayout
- * 
- * 
+ *
+ *
  * @author DarkRanger
  * @datetime 20160530
  *

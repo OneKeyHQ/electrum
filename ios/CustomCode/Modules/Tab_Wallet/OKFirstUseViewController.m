@@ -34,7 +34,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self stupUI];
-    
+
 }
 
 - (void)stupUI
@@ -47,7 +47,7 @@
     self.desc1Labelsub.attributedText = [NSString lineSpacing:13 content:MyLocalizedString(@"Our server will not store your private key or mnemonic in any way. Both software and hardware are open source and can be used safely", nil)];
     self.desc2Label.text = MyLocalizedString(@"End-to-end encryption", nil);
     self.desc2Labelsub.attributedText = [NSString lineSpacing:13 content:MyLocalizedString(@"We use industry-leading encryption technology to store information locally. Only you can decrypt the information, we will not and cannot view, use or sell any of your data", nil)];
-    
+
     NSString *content = MyLocalizedString(@"By starting to use, you agree to Onekey's User Agreement and Privacy Policy", nil);
     // 设置文字
     self.textViewClick.text = content;
@@ -58,17 +58,17 @@
     [self.textViewClick setUnderlineTextWithRange:range1 withUnderlineColor:HexColor(RGB_THEME_GREEN) withClickCoverColor:nil withBlock:^(NSString *clickText) {
         WebViewVC *webVc = [WebViewVC loadWebViewControllerWithTitle:@"OneKey" url:kTheServiceAgreement useProxy:YES];
         [weakself.navigationController pushViewController:webVc animated:YES];
-        
+
     }];
     NSRange range2 = [content rangeOfString:MyLocalizedString(@"Privacy policy", nil)];
     [self.textViewClick setUnderlineTextWithRange:range2 withUnderlineColor:HexColor(RGB_THEME_GREEN) withClickCoverColor:nil withBlock:^(NSString *clickText) {
         WebViewVC *webVc = [WebViewVC loadWebViewControllerWithTitle:@"OneKey" url:kPrivacyAgreement useProxy:YES];
         [weakself.navigationController pushViewController:webVc animated:YES];
     }];
-    
+
     [self.startBtn setTitle:MyLocalizedString(@"Begin to use", nil) forState:UIControlStateNormal];
     self.navigationController.delegate = self;
-    
+
     [self checkUI];
 }
 

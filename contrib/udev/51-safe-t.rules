@@ -7,4 +7,3 @@ KERNEL=="hidraw*", ATTRS{idVendor}=="0e79", ATTRS{idProduct}=="6000",  MODE="066
 # Archos Safe-T mini Bootloader
 SUBSYSTEM=="usb", ATTR{idVendor}=="0e79", ATTR{idProduct}=="6001", MODE="0660", GROUP="plugdev", TAG+="uaccess", TAG+="udev-acl", SYMLINK+="safe-t%n"
 KERNEL=="hidraw*", ATTRS{idVendor}=="0e79", ATTRS{idProduct}=="6001",  MODE="0660", GROUP="plugdev", TAG+="uaccess", TAG+="udev-acl"
-

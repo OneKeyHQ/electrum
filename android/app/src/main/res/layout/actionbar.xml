@@ -21,4 +21,3 @@
             android:textSize="@dimen/text_size"
             android:textColor="@color/text"/>
     </androidx.appcompat.widget.Toolbar>
-

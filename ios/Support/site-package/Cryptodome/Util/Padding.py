@@ -103,4 +103,3 @@ def unpad(padded_data, block_size, style='pkcs7'):
     else:
         raise ValueError("Unknown padding style")
     return padded_data[:-padding_len]
-

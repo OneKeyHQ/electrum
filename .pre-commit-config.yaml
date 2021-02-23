@@ -37,5 +37,5 @@ repos:
     rev: 1.7.0
     hooks:
       - id: bandit
-        files: ^electrum_gui
-        args: [--skip, "B107,B101,B106",]
+        files: ^electrum_gui/common
+        args: [--skip, "B107,B101,B106"]

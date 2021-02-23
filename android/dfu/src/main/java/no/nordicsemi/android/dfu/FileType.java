@@ -10,4 +10,3 @@ import androidx.annotation.IntDef;
         },
         flag = true)
 public @interface FileType {}
-

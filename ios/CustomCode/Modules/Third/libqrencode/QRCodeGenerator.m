@@ -3,21 +3,21 @@
 //
 // Copyright (C) 2012 http://moqod.com Andrew Kopanev <andrew@moqod.com>
 //
-// Permission is hereby granted, free of charge, to any person obtaining a copy 
-// of this software and associated documentation files (the "Software"), to deal 
-// in the Software without restriction, including without limitation the rights 
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies 
-// of the Software, and to permit persons to whom the Software is furnished to do so, 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+// of the Software, and to permit persons to whom the Software is furnished to do so,
 // subject to the following conditions:
 //
-// The above copyright notice and this permission notice shall be included in all 
+// The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
 //
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
-// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
-// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR 
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+// FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 //
 
@@ -37,7 +37,7 @@ enum {
 	width = code->width;
 	float zoom = (double)size / (code->width + 2.0 * qr_margin);
 	CGRect rectDraw = CGRectMake(0, 0, zoom, zoom);
-	
+
 	// draw
 	CGContextSetFillColor(ctx, CGColorGetComponents([UIColor blackColor].CGColor));
 	for(int i = 0; i < width; ++i) {
@@ -66,35 +66,35 @@ enum {
         if (!code) {
             return nil;
         }
-        
+
         // create context
         CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
         CGContextRef ctx = CGBitmapContextCreate(0, size, size, 8, size * 4, colorSpace, kCGImageAlphaPremultipliedLast);
-        
+
         CGAffineTransform translateTransform = CGAffineTransformMakeTranslation(0, -size);
         CGAffineTransform scaleTransform = CGAffineTransformMakeScale(1, -1);
         CGContextConcatCTM(ctx, CGAffineTransformConcat(translateTransform, scaleTransform));
-        
+
         // draw QR on this context
         [self drawQRCode:code context:ctx size:size withPointType:0 withPositionType:0 withColor:[UIColor blackColor]];
-        
+
         // get image
         CGImageRef qrCGImage = CGBitmapContextCreateImage(ctx);
         UIImage * qrImage = [UIImage imageWithCGImage:qrCGImage];
-        
+
         if(topimg)
         {
                UIGraphicsBeginImageContext(qrImage.size);
-               
+
                //Draw image2
                [qrImage drawInRect:CGRectMake(0, 0, qrImage.size.width, qrImage.size.height)];
-               
+
                //Draw image1
                float r=qrImage.size.width*45/240.0;
                [topimg drawInRect:CGRectMake((qrImage.size.width-r)/2, (qrImage.size.height-r)/2 ,r, r)];
 
                qrImage=UIGraphicsGetImageFromCurrentImageContext();
-               
+
                UIGraphicsEndImageContext();
         }
         // some releases
@@ -102,7 +102,7 @@ enum {
         CGImageRelease(qrCGImage);
         CGColorSpaceRelease(colorSpace);
         QRcode_free(code);
-        
+
         return qrImage;
 }
 + (void)drawQRCode:(QRcode *)code context:(CGContextRef)ctx size:(CGFloat)size withPointType:(NSInteger)pointType withPositionType:(NSInteger)positionType withColor:(UIColor *)color {
@@ -112,7 +112,7 @@ enum {
   width = code->width;
   float zoom = (double)size / (code->width + 2.0 * qr_margin);
   CGRect rectDraw = CGRectMake(0, 0, zoom, zoom);
-    
+
   // draw
     const CGFloat *components;
     if (color) {
@@ -122,7 +122,7 @@ enum {
     }
     CGContextSetRGBFillColor(ctx, 0, 0, 0, 1.0);
     NSLog(@"aad :%f  bbd :%f   ccd:%f",components[0],components[1],components[2]);
- 
+
   for(int i = 0; i < width; ++i) {
     for(int j = 0; j < width; ++j) {
       if(*data & 1) {

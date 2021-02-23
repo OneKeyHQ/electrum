@@ -6,4 +6,3 @@ description = ' '.join([
     _("Labels, transactions IDs and addresses are encrypted before they are sent to the remote server.")
 ])
 available_for = ['qt', 'kivy', 'cmdline']
-

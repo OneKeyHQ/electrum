@@ -1,7 +1,7 @@
 import json
-from dataclasses import replace, asdict, fields
-from typing import Set
+from dataclasses import asdict, fields, replace
 from decimal import Decimal
+from typing import Set
 
 from electrum.util import DecimalEncoder
 
@@ -42,9 +42,7 @@ class DataClassMixin(object):
         decimal_fields = cls._load_decimal_fields()
 
         if decimal_fields:
-            data = {
-                k: Decimal(v) if k in decimal_fields else v for k, v in data.items()
-            }
+            data = {k: Decimal(v) if k in decimal_fields else v for k, v in data.items()}
 
         return data
 

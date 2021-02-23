@@ -62,7 +62,7 @@
     self.accountDescLabel.text = MyLocalizedString(@"Support BTC, ETH and other main chain", nil);
     [self.countBgView setLayerRadius:10];
     [self.footerBgView setLayerDefaultRadius];
-    
+
     NSString *labelText = MyLocalizedString(@"management", nil);
     CGFloat labelW = [labelText getWidthWithHeight:30 font:14];
     CGFloat labelmargin = 10;
@@ -71,16 +71,16 @@
     label.text = labelText;
     label.font = [UIFont boldSystemFontOfSize:14];
     label.textColor = HexColor(0x26CF02);
-    
+
     UIView *rightView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, labelW + labelmargin * 2, labelH)];
     rightView.backgroundColor = HexColorA(0x26CF02, 0.1);
     [rightView setLayerRadius:labelH * 0.5];
     [rightView addSubview:label];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithCustomView:rightView];
-    
+
     UITapGestureRecognizer *tapRightViewClick = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapRightViewClick)];
     [rightView addGestureRecognizer:tapRightViewClick];
-    
+
     [self.footerBgView setLayerBoarderColor:HexColorA(0x546370, 0.3) width:1 radius:20];
 }
 
@@ -118,7 +118,7 @@
     self.countLabel.text = [NSString stringWithFormat:@"%zd",self.showList.count];
     self.headerTitleLabel.text = MyLocalizedString(@"HD derived wallet", nil);
     self.footerBgView.hidden = self.showList.count == 0 ? YES : NO;
-    
+
     if (self.showList.count == 0) {
         self.navigationItem.rightBarButtonItem.customView.userInteractionEnabled = NO;
         self.navigationItem.rightBarButtonItem.customView.alpha = 0.5;
@@ -153,7 +153,7 @@
         cell.model = model;
         return cell;
     }
-    
+
     static NSString *ID = @"OKWalletListTableViewCell";
     OKWalletListTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:ID];
     if (cell == nil) {
@@ -196,7 +196,7 @@
                         }];
                         BaseNavigationController *baseVc = [[BaseNavigationController alloc]initWithRootViewController:pwdVc];
                         [weakself.OK_TopViewController presentViewController:baseVc animated:YES completion:nil];
-                        
+
                     }
                 }];
             }
@@ -278,17 +278,17 @@
 - (NSArray *)NoHDArray
 {
     if (!_NoHDArray) {
-        
+
         OKWalletListNoHDTableViewCellModel *model1 = [OKWalletListNoHDTableViewCellModel new];
         model1.iconName = @"retorei_add";
         model1.titleStr = MyLocalizedString(@"Add HD Wallet", nil);
         model1.descStr = MyLocalizedString(@"Support BTC, ETH and other main chain", nil);
-        
+
         OKWalletListNoHDTableViewCellModel *model2 = [OKWalletListNoHDTableViewCellModel new];
         model2.iconName = @"restore_phone";
         model2.titleStr = MyLocalizedString(@"Restore the purse", nil);
         model2.descStr = MyLocalizedString(@"Import through mnemonic", nil);
-        
+
         _NoHDArray = @[model1,model2];
     }
     return _NoHDArray;

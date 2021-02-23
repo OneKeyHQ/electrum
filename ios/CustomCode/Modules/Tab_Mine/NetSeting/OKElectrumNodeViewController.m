@@ -32,14 +32,14 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+
     self.title = MyLocalizedString(@"Electrum node", nil);
     self.titleLabel.text = MyLocalizedString(@"Electrum node selection college node traded using the open source distributed radio and access to information on the chain", nil);
     self.alternativeNodesLabel.text = MyLocalizedString(@"Alternative nodes", nil);
     self.ipRTextField.userInteractionEnabled = NO;
     self.portRTextField.userInteractionEnabled = NO;
     self.tableView.tableFooterView = [UIView new];
-    
+
     NSDictionary *dict =  [kPyCommandsManager callInterface:kInterfaceget_server_list parameter:@{}];
     NSArray *keys = [dict allKeys];
     NSMutableArray *arrayM = [NSMutableArray array];

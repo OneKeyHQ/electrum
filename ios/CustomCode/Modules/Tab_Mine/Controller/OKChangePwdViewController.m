@@ -35,7 +35,7 @@
         {
             [OKValidationPwdController showValidationPwdPageOn:self isDis:NO complete:^(NSString * _Nonnull pwd) {
                 OKPwdViewController *pwdVc = [OKPwdViewController setPwdViewControllerPwdUseType:OKPwdUseTypeUpdatePassword setPwd:^(NSString * _Nonnull pwd) {
-                    
+
                 }];
                 pwdVc.oldPwd = pwd;
                 [weakself.OK_TopViewController.navigationController pushViewController:pwdVc animated:YES];
@@ -52,6 +52,6 @@
         default:
             break;
     }
-    
+
 }
 @end

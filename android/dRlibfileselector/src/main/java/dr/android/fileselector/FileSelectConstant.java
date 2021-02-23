@@ -2,7 +2,7 @@ package dr.android.fileselector;
 
 /**
  * 文件/文件夹路径中经常用到的常量
- * 
+ *
  * @author DarkRanger
  * @datetime 20160530
  *

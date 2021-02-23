@@ -123,10 +123,10 @@ class EcbMode(object):
             ciphertext = create_string_buffer(len(plaintext))
         else:
             ciphertext = output
-            
+
             if not is_writeable_buffer(output):
                 raise TypeError("output must be a bytearray or a writeable memoryview")
-        
+
             if len(plaintext) != len(output):
                 raise ValueError("output must have the same length as the input"
                                  "  (%d bytes)" % len(plaintext))
@@ -139,7 +139,7 @@ class EcbMode(object):
             if result == 3:
                 raise ValueError("Data must be aligned to block boundary in ECB mode")
             raise ValueError("Error %d while encrypting in ECB mode" % result)
-        
+
         if output is None:
             return get_raw_buffer(ciphertext)
         else:
@@ -173,7 +173,7 @@ class EcbMode(object):
           If ``output`` is ``None``, the plaintext is returned as ``bytes``.
           Otherwise, ``None``.
         """
-        
+
         if output is None:
             plaintext = create_string_buffer(len(ciphertext))
         else:
@@ -181,7 +181,7 @@ class EcbMode(object):
 
             if not is_writeable_buffer(output):
                 raise TypeError("output must be a bytearray or a writeable memoryview")
-            
+
             if len(ciphertext) != len(output):
                 raise ValueError("output must have the same length as the input"
                                  "  (%d bytes)" % len(plaintext))

@@ -40,11 +40,11 @@ jobs:
         - if [ $TRAVIS_PULL_REQUEST == false ]; then
             openssl aes-256-cbc -K $encrypted_0712df971a99_key -iv $encrypted_0712df971a99_iv
              -in android/local.properties.enc -out android/local.properties -d;
-            sudo docker run --rm -it --name electrum-android-native-builder-cont -v $PWD:/data 
+            sudo docker run --rm -it --name electrum-android-native-builder-cont -v $PWD:/data
             -e TRAVIS_BUILD_NUMBER=$TRAVIS_BUILD_NUMBER --workdir=/data/android lightningcn/electrum_env:latest
             /bin/bash -c 'cp debug.keystore ~/.android/debug.keystore && /data/android/gradlew app:assembleDebug';
           else
-            sudo docker run --rm -it --name electrum-android-native-builder-cont -v $PWD:/data 
+            sudo docker run --rm -it --name electrum-android-native-builder-cont -v $PWD:/data
             -e TRAVIS_BUILD_NUMBER=$TRAVIS_BUILD_NUMBER --workdir=/data/android lightningcn/electrum_env:latest
             /bin/bash -c 'cp ~/android/local.properties local.properties && cp debug.keystore ~/.android/debug.keystore && /data/android/gradlew app:assembleDebug';
           fi
@@ -69,7 +69,7 @@ deploy:
   provider: releases
   api_key: $GITHUB_API_KEY
   file_glob: true
-  file: 
+  file:
     - "android/app/build/outputs/apk/MainNetOnekey/debug/*.apk"
     - "android/app/build/outputs/apk/MainNetOnekey/release/*.apk"
     - "android/app/build/outputs/apk/TestNetOnekey/debug/*.apk"
