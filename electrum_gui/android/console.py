@@ -3562,7 +3562,7 @@ class AndroidCommands(commands.Commands):
 
     def check_exist_file(self, wallet_obj):
         for _path, exist_wallet in self.daemon._wallets.items():
-            if wallet_obj.get_addresses()[0] not in exist_wallet.get_addresses():
+            if wallet_obj.get_addresses()[0] != exist_wallet.get_addresses()[0]:
                 continue
             if exist_wallet.is_watching_only() and not wallet_obj.is_watching_only():
                 raise ReplaceWatchonlyWallet(exist_wallet)
