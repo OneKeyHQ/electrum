@@ -98,6 +98,12 @@ BTC_BLOCK_INTERVAL_TIME = 10
 DEFAULT_ADDR_TYPE = 49
 ticker = None
 
+PURPOSE_TO_ADDRESS_TYPE = {
+    44: 'p2pkh',
+    49: 'p2wpkh-p2sh',
+    84: 'p2wpkh',
+}
+
 
 class Status(Enum):
     net = 1
@@ -185,7 +191,7 @@ class AndroidCommands(commands.Commands):
 
     def __init__(self, android_id=None, config=None, user_dir=None, callback=None, chain_type="mainnet"):
         self.asyncio_loop, self._stop_loop, self._loop_thread = create_and_start_event_loop()  # TODO:close loop
-        self.config = self.init_config(config=config)
+        self.config = config or simple_config.SimpleConfig({"auto_connect": True})
         if user_dir is None:
             self.user_dir = get_dir()
         else:
@@ -280,15 +286,6 @@ class AndroidCommands(commands.Commands):
             return getattr(self.trezor_manager, name)
 
         raise AttributeError
-
-    def init_config(self, config=None):
-        config_options = {}
-        config_options["auto_connect"] = True
-        if config is None:
-            out_config = simple_config.SimpleConfig(config_options)
-        else:
-            out_config = config
-        return out_config
 
     def set_language(self, language):
         """
@@ -603,17 +600,6 @@ class AndroidCommands(commands.Commands):
             self.wizard.restore_from_xpub(xpub, device_id, account_id, type=type, coin=coin, coinid=coinid)
         except Exception as e:
             raise BaseException(e)
-
-    def get_device_info(self, wallet_info):
-        """
-        Get hardware device info
-        :return:
-        """
-        try:
-            device_info = wallet_info.get_device_info()
-            return device_info
-        except BaseException as e:
-            raise e
 
     def delete_xpub(self, xpub):
         """
@@ -3256,16 +3242,12 @@ class AndroidCommands(commands.Commands):
         except Exception as e:
             raise BaseException(e)
 
-    def get_type(self, xtype):
-        return "p2wpkh-p2sh" if xtype == 49 else "p2pkh" if xtype == 44 else "p2wpkh" if xtype == 84 else ""
-
     def recovery_create_subfun(self, coin, account_id, hw, name, seed, password, passphrase, path):
         try:
             if coin == "btc":
                 type_list = [49, 44, 84]
             elif coin in self.coins:
                 type_list = [self.coins[coin]["addressType"]]
-
             for xtype in type_list:
                 bip39_derivation = self.get_coin_derived_path(account_id, coin, purpose=xtype)
                 if not AndroidCommands._recovery_flag:
@@ -3282,9 +3264,8 @@ class AndroidCommands(commands.Commands):
                         coin=coin,
                     )
                 else:
-                    xpub = self.get_xpub_from_hw(
-                        path=path, _type=self.get_type(xtype), account_id=account_id, coin=coin
-                    )
+                    _type = PURPOSE_TO_ADDRESS_TYPE.get(xtype, "")
+                    xpub = self.get_xpub_from_hw(path=path, _type=_type, account_id=account_id, coin=coin)
                     self.recovery_import_create_hw_wallet(account_id, name, 1, 1, xpub, coin=coin)
             return True
         except BaseException as e:
@@ -3423,8 +3404,15 @@ class AndroidCommands(commands.Commands):
                             'wallet_info':''
                             'derived_info':''}
         """
+        # NOTE: change the below check if adding support for other coins.
+        # This should be a call like this:
+        # ```
+        # if coin_manager.is_derived_wallet_supported(coin):
+        #     raise BaseException(f"Derived wallet of {coin} isn't supported.")
+        # ```
+        if coin not in ("btc", "eth"):
+            raise BaseException("coin must btc/eth")
 
-        self._assert_coin_isvalid(coin)
         try:
             self.check_password(password)
         except BaseException as e:
@@ -3499,19 +3487,16 @@ class AndroidCommands(commands.Commands):
         xpub = self.get_hd_wallet_encode_seed(coin=coin.lower())
         return self.wallet_context.get_derived_num(xpub)
 
-    def get_hw_config_xpub(self, wallet_obj, coin):
-        xpub = wallet_obj.keystore.xpub
-        if coin == 'btc':
-            xpub = wallet_obj.get_derived_master_xpub()
-        return xpub + coin.lower()
-
     def delete_devired_wallet_info(self, wallet_obj, hw=False):
         derivation = self.get_derivation_path(wallet_obj, wallet_obj.get_addresses()[0])
         coin = self._detect_wallet_coin(wallet_obj)
         account_id = self.get_account_id(derivation, coin)
 
         if hw:
-            xpub = self.get_hw_config_xpub(wallet_obj, coin=coin)
+            if coin == "btc":
+                xpub = wallet_obj.get_derived_master_xpub() + 'btc'
+            else:
+                xpub = wallet_obj.keystore.xpub + coin.lower()
         else:
             xpub = self.get_hd_wallet_encode_seed(coin=coin)
 
@@ -4139,18 +4124,24 @@ class AndroidCommands(commands.Commands):
         for key, wallet_type in self.wallet_context.get_stored_wallets_types():
             if -1 != key.find(".tmp.") or -1 != key.find(".tmptest."):
                 continue
-            temp = {}
+
             wallet = self.daemon.wallets[self._wallet_path(key)]
-            device_id = self.get_device_info(wallet) if isinstance(wallet.keystore, Hardware_KeyStore) else ""
-            wallet_info = {
-                "type": wallet_type,
-                "addr": wallet.get_addresses()[0],
-                "name": self.get_unique_path(wallet),
-                "label": wallet.get_name(),
-                "device_id": device_id,
-            }
-            temp[key] = wallet_info
-            wallet_infos.append(temp)
+            if isinstance(wallet.keystore, Hardware_KeyStore):
+                device_id = wallet.get_device_info()
+            else:
+                device_id = ""
+
+            wallet_infos.append(
+                {
+                    key: {
+                        "type": wallet_type,
+                        "addr": wallet.get_addresses()[0],
+                        "name": self.get_unique_path(wallet),
+                        "label": wallet.get_name(),
+                        "device_id": device_id,
+                    }
+                }
+            )
         sort_info = self.sort_list(wallet_infos, type=type)
         return json.dumps(sort_info)
 
@@ -4248,10 +4239,6 @@ class AndroidCommands(commands.Commands):
     def _assert_hd_wallet_isvalid(self):
         if self.hd_wallet is None:
             raise BaseException(UnavaiableHdWallet())
-
-    def _assert_coin_isvalid(self, coin):
-        if coin != "btc" and coin != "eth":
-            raise BaseException("coin must btc/eth")
 
     def _on_callback(self, *args):
         util.print_stderr("[Callback] " + ", ".join(repr(x) for x in args))
