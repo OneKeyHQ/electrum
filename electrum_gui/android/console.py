@@ -2534,6 +2534,9 @@ class AndroidCommands(commands.Commands):
         new_seed = None
         wallet_data = []
         if seed is not None:
+            is_checksum_valid, _ = keystore.bip39_is_checksum_valid(seed)
+            if not is_checksum_valid:
+                raise BaseException(InvalidBip39Seed())
             return self.recovery_hd_derived_wallet(password, seed, passphrase)
 
         if seed is None:
