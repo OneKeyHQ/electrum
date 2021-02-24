@@ -98,7 +98,7 @@ typedef NS_ENUM(NSInteger, WebViewLoadType) {
 
 + (WebViewVC *)loadWebViewControllerWithTitle:(NSString *)title url:(NSString *)url {
     WebViewVC *vc = [self loadWebViewControllerWithTitle:title url:url rightItemTitle:nil rightItemBlock:nil];
-    
+
     return vc;
 }
 
@@ -122,7 +122,6 @@ typedef NS_ENUM(NSInteger, WebViewLoadType) {
     self.view.backgroundColor = [UIColor whiteColor];
     //加载web页面
     [self webViewloadURLType];
-    self.navigationbarTranslucent = NO;
     // 设置代理
     _wkWebView.navigationDelegate = self;
     _wkWebView.DSUIDelegate = self;
@@ -130,16 +129,8 @@ typedef NS_ENUM(NSInteger, WebViewLoadType) {
     if (_webTag != WebViewTagNativeDiscover) {
         //添加进度条
         [self.view addSubview:self.progressView];
-        if (self.navigationController.navigationBar) {
-            self.progressView.y = [UIApplication sharedApplication].statusBarFrame.size.height + self.navigationController.navigationBar.height;
-        }
     }
-    
-    if (@available(iOS 11.0, *)) { // 解决UIScrollView自动预留空白问题
-        self.wkWebView.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-    } else {
-        self.automaticallyAdjustsScrollViewInsets = NO;
-    }
+    self.wkWebView.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
 }
 
 -(void)viewWillAppear:(BOOL)animated
@@ -161,7 +152,7 @@ typedef NS_ENUM(NSInteger, WebViewLoadType) {
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    
+
     _isShouldReload = YES;
 }
 
@@ -294,12 +285,12 @@ typedef NS_ENUM(NSInteger, WebViewLoadType) {
 
 //KVO监听进度条
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
-    
+
     if ([keyPath isEqualToString:NSStringFromSelector(@selector(estimatedProgress))] && object == self.wkWebView) {
         [self.progressView setAlpha:1.0f];
         BOOL animated = self.wkWebView.estimatedProgress > self.progressView.progress;
         [self.progressView setProgress:self.wkWebView.estimatedProgress animated:animated];
-        
+
         // Once complete, fade out UIProgressView
         if(self.wkWebView.estimatedProgress >= 1.0f) {
             [UIView animateWithDuration:0.3f delay:0.3f options:UIViewAnimationOptionCurveEaseOut animations:^{
@@ -377,16 +368,16 @@ typedef NS_ENUM(NSInteger, WebViewLoadType) {
         WKUserScript *dsbridgeJs = [[WKUserScript alloc]initWithSource:[NSString stringWithContentsOfURL:[NSURL fileURLWithPath:[[NSBundle mainBundle]pathForResource:@"dsbridge" ofType:@"js"]] encoding:NSUTF8StringEncoding error:nil] injectionTime:WKUserScriptInjectionTimeAtDocumentStart forMainFrameOnly:NO];
 
         [userContentController addUserScript:dsbridgeJs];
-        
+
         config.userContentController = userContentController;
-        
+
         if (self.useProxy) {
             [config setURLSchemeHandler:[OKURLSchemeHandler new] forURLScheme:@"https"];
             [config setURLSchemeHandler:[OKURLSchemeHandler new] forURLScheme:@"http"];
         }
 
-        CGFloat height = SCREEN_HEIGHT - APP_STATUSBAR_AND_NAVIGATIONBAR_HEIGHT - KDevice_SafeArea_Bottom;
-        _wkWebView = [[DWKWebView alloc] initWithFrame:CGRectMake(0, APP_STATUSBAR_AND_NAVIGATIONBAR_HEIGHT, SCREEN_WIDTH, height) configuration:config];
+        CGFloat height = SCREEN_HEIGHT - APP_STATUSBAR_AND_NAVIGATIONBAR_HEIGHT;
+        _wkWebView = [[DWKWebView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, height) configuration:config];
         _wkWebView.backgroundColor = [UIColor colorWithRed:240.0/255 green:240.0/255 blue:240.0/255 alpha:1.0];
         //kvo 添加进度监控
         [_wkWebView addObserver:self forKeyPath:NSStringFromSelector(@selector(estimatedProgress)) options:0 context:nil];

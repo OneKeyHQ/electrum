@@ -12,7 +12,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface BaseViewController : UIViewController
 @property (nonatomic) BOOL isRoot;
-@property (nonatomic) BOOL navigationbarTranslucent;
 @property (nonatomic) BOOL forbidInteractivePopGestureRecognizer;
 @property (nonatomic, copy) void(^backToPreviousCallback)(void);
 
@@ -20,8 +19,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (__kindof BaseViewController *)initViewControllerWithStoryboardName:(NSString *)name;
 
-- (void)backButtonWhiteColor;
+// override
+- (UIColor *)navBarTintColor;
 
+- (void)backButtonWhiteColor;
 - (void)hideBackBtn;
 - (void)setNavigationBarBackgroundColorWithClearColor;
 - (void)backToPrevious;

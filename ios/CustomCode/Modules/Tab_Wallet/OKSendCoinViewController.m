@@ -144,6 +144,7 @@ typedef enum {
     // Do any additional setup after loading the view.
     [self setNavigationBarBackgroundColorWithClearColor];
     self.title = MyLocalizedString(@"transfer", nil);
+    self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName:[UIColor blackColor]};
     _custom = NO;
     _isClickBiggest = NO;
     [self stupUI];

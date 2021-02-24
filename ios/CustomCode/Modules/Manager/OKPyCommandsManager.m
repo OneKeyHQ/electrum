@@ -661,6 +661,18 @@ static dispatch_once_t once;
         [self cancel];
     }
 }
+
+- (void)asyncCall:(NSString *)method parameter:(NSDictionary *)parameter callback:(void(^)(id result))callback {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        id result = [self callInterface:method parameter:parameter];
+        if (!callback) {
+            return;
+        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            callback(result);
+        });
+    });
+}
 //数组等过于复杂的类型  传递json字符串
 //else if ([tp_name isEqualToString:@"list"]){ //数组
 //    for (int i = 0; i < PyList_Size(result); i++) {
