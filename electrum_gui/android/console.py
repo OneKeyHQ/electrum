@@ -26,7 +26,7 @@ from electrum.address_synchronizer import TX_HEIGHT_FUTURE, TX_HEIGHT_LOCAL
 from electrum.bip32 import BIP32Node
 from electrum.bip32 import convert_bip32_path_to_list_of_uint32 as parse_path
 from electrum.bip32 import get_uncompressed_key
-from electrum.bitcoin import COIN, base_decode, is_address
+from electrum.bitcoin import COIN, is_address
 from electrum.constants import read_json
 from electrum.eth_wallet import Eth_Wallet, Imported_Eth_Wallet, Standard_Eth_Wallet
 from electrum.i18n import _, set_language
@@ -1094,15 +1094,6 @@ class AndroidCommands(commands.Commands):
         except Exception as e:
             raise BaseException(e)
 
-    def eth_max_button_use_gas(self, gas_price, coin=None):
-        """
-        The gas value when the max button is clicked, for eth only
-        :param gas_price: gas price by coustomer
-        :param coin: eth/bsc
-        :return: gas info as string, unit is ether
-        """
-        return PyWalib.get_max_use_gas(gas_price)
-
     # ### coinjoin
     # def join_tx_with_another(self, tx: 'PartialTransaction', other_tx: 'PartialTransaction') -> None:
     #     if tx is None or other_tx is None:
@@ -1280,24 +1271,6 @@ class AndroidCommands(commands.Commands):
                 }
             net_params = net_params._replace(proxy=proxy)
             self.network.run_from_another_thread(self.network.set_parameters(net_params))
-        except BaseException as e:
-            raise e
-
-    # #qr api
-    def get_raw_tx_from_qr_data(self, data):
-        try:
-            from electrum.util import bh2u
-
-            return bh2u(base_decode(data, None, base=43))
-        except BaseException as e:
-            raise e
-
-    def get_qr_data_from_raw_tx(self, raw_tx):
-        try:
-            from electrum.bitcoin import base_encode, bfh
-
-            text = bfh(raw_tx)
-            return base_encode(text, base=43)
         except BaseException as e:
             raise e
 
@@ -4239,9 +4212,6 @@ class AndroidCommands(commands.Commands):
     def _assert_hd_wallet_isvalid(self):
         if self.hd_wallet is None:
             raise BaseException(UnavaiableHdWallet())
-
-    def _on_callback(self, *args):
-        util.print_stderr("[Callback] " + ", ".join(repr(x) for x in args))
 
     def _wallet_path(self, name=""):
         if name is None:
