@@ -73,7 +73,7 @@ from electrum.util import (
 from electrum.util import user_dir as get_dir
 from electrum.wallet import Imported_Wallet, Standard_Wallet, Wallet
 from electrum.wallet_db import WalletDB
-from electrum_gui.android import hardware, wallet_context
+from electrum_gui.android import hardware, helpers, wallet_context
 from electrum_gui.common import the_begging
 
 from ..common.basic.functional.text import force_text
@@ -659,7 +659,7 @@ class AndroidCommands(commands.Commands):
         try:
             self._assert_daemon_running()
             self._assert_wizard_isvalid()
-            temp_path = self.get_temp_file()
+            temp_path = helpers.get_temp_file()
             path = self._wallet_path(temp_path)
             wallet_type = "%s-hw-%s-%s" % (coin, self.m, self.n)
             storage, db = self.wizard.create_storage(path=path, password=None, coin=coin)
@@ -675,7 +675,7 @@ class AndroidCommands(commands.Commands):
             wallet.status_flag = "btc-hw-%s-%s" % (self.m, self.n)
             wallet.hide_type = hide_type
             wallet.set_name(name)
-            new_name = self.get_unique_path(wallet)
+            new_name = helpers.get_unique_wallet_filename(wallet)
             wallet.storage.set_path(self._wallet_path(new_name))
             wallet.save_db()
             self.daemon.add_wallet(wallet)
@@ -688,7 +688,7 @@ class AndroidCommands(commands.Commands):
             wallet_type = "%s-hw-derived-%s-%s" % (coin, self.m, self.n)
 
             if not hide_type:
-                self.wallet_context.set_wallet_type(self.get_unique_path(wallet), wallet_type)
+                self.wallet_context.set_wallet_type(helpers.get_unique_wallet_filename(wallet), wallet_type)
             self.wallet = wallet
             self.wallet_name = wallet.basename()
             print("console:create_multi_wallet:wallet_name = %s---------" % self.wallet_name)
@@ -864,24 +864,6 @@ class AndroidCommands(commands.Commands):
                 coins.append(utxo)
         return coins
 
-    def get_best_block_by_feerate(self, feerate, list):
-        if feerate < list[20]:
-            return 25
-        elif list[20] <= feerate < list[10]:
-            return 20
-        elif list[10] <= feerate < list[5]:
-            return 10
-        elif list[5] <= feerate < list[4]:
-            return 5
-        elif list[4] <= feerate < list[3]:
-            return 4
-        elif list[3] <= feerate < list[2]:
-            return 3
-        elif list[2] <= feerate < list[1]:
-            return 2
-        elif list[1] <= feerate:
-            return 1
-
     def format_return_data(self, feerate, size, block):
         fee = float(feerate / 1000) * size
         ret_data = {
@@ -938,7 +920,7 @@ class AndroidCommands(commands.Commands):
                     key = "slow" if block == 10 else "normal" if block == 5 else "fast" if block == 2 else "slowest"
                     out_info[key] = self.format_return_data(feerate, out_size_p2pkh, block)
         else:
-            block = self.get_best_block_by_feerate(float(feerate) * 1000, fee_info_list)
+            block = helpers.get_best_block_by_feerate(float(feerate) * 1000, fee_info_list)
             out_info["customer"] = self.format_return_data(float(feerate) * 1000, out_size_p2pkh, block)
         return json.dumps(out_info)
 
@@ -1049,7 +1031,7 @@ class AndroidCommands(commands.Commands):
             print("tx_details 1111111 = %s" % json.dumps(tx_details))
 
             fee_info_list = self.get_block_info()
-            block = self.get_best_block_by_feerate(float(feerate) * 1000, fee_info_list)
+            block = helpers.get_best_block_by_feerate(float(feerate) * 1000, fee_info_list)
             ret_data = {
                 "amount": self.format_amount(tx_details.amount),
                 "size": size,
@@ -1566,7 +1548,7 @@ class AndroidCommands(commands.Commands):
                 i["is_mine"] = True
                 i["confirmations"] = 0
                 data = json.loads(data)
-                i["address"] = self.get_show_addr(data["output_addr"][0]["addr"])
+                i["address"] = helpers.get_show_addr(data["output_addr"][0]["addr"])
                 amount = data["amount"].split(" ")[0]
                 if amount[0] == "-":
                     amount = amount[1:]
@@ -1645,17 +1627,14 @@ class AndroidCommands(commands.Commands):
         except BaseException as e:
             raise e
 
-    def get_show_addr(self, addr):
-        return "%s...%s" % (addr[0:6], addr[-6:])
-
     def get_history_show_info(self, info, list_info):
         info["type"] = "history"
         data = self.get_tx_info(info["tx_hash"], tx_list=True)
         info["tx_status"] = json.loads(data)["tx_status"]
         info["address"] = (
-            self.get_show_addr(json.loads(data)["output_addr"][0]["addr"])
+            helpers.get_show_addr(json.loads(data)["output_addr"][0]["addr"])
             if info["is_mine"]
-            else self.get_show_addr(json.loads(data)["input_addr"][0]["address"])
+            else helpers.get_show_addr(json.loads(data)["input_addr"][0]["address"])
         )
         time = self.txdb.get_tx_time_info(info["tx_hash"])
         if len(time) != 0:
@@ -2197,7 +2176,7 @@ class AndroidCommands(commands.Commands):
 
         if isinstance(self.wallet.get_keystore(), Hardware_KeyStore):
             if path:
-                address_path = self.get_derivation_path(self.wallet, from_address)
+                address_path = helpers.get_derivation_path(self.wallet, from_address)
                 address_n = parse_path(address_path)
 
                 self.trezor_manager.ensure_client(path)
@@ -2631,14 +2610,6 @@ class AndroidCommands(commands.Commands):
                     num += 1
         return num
 
-    def get_temp_file(self):
-        return "".join(random.sample(string.ascii_letters + string.digits, 8)) + ".unique.file"
-
-    def get_unique_path(self, wallet_info):
-        import hashlib
-
-        return hashlib.sha256(wallet_info.get_addresses()[0].encode()).hexdigest()
-
     def verify_legality(self, data, flag="", coin="btc", password=None):  # noqa
         """
         Verify legality for seed/private/public/address
@@ -2754,7 +2725,7 @@ class AndroidCommands(commands.Commands):
             self.daemon.add_wallet(wallet)
             if coin == "btc":
                 wallet.start_network(self.daemon.network)
-            self.wallet_context.set_wallet_type(self.get_unique_path(wallet), wallet_type)
+            self.wallet_context.set_wallet_type(helpers.get_unique_wallet_filename(wallet), wallet_type)
             if derived_flag:
                 self.set_hd_wallet(wallet)
                 self.update_devired_wallet_info(
@@ -2762,9 +2733,6 @@ class AndroidCommands(commands.Commands):
                 )
         except BaseException as e:
             raise e
-
-    def get_path_info(self, path, pos):
-        return path.split("/")[pos].split("'")[0]
 
     def create(  # noqa
         self,
@@ -2832,7 +2800,7 @@ class AndroidCommands(commands.Commands):
         new_seed = ""
         derived_flag = False
         wallet_type = "%s-standard" % coin
-        temp_path = self.get_temp_file()
+        temp_path = helpers.get_temp_file()
         path = self._wallet_path(temp_path)
         if exists(path):
             raise BaseException(FileAlreadyExist())
@@ -2927,7 +2895,7 @@ class AndroidCommands(commands.Commands):
                 wallet_type = "%s-derived-standard" % coin
                 derived_flag = True
                 if coin in self.coins:
-                    index = self.get_path_info(bip39_derivation, INDEX_POS)
+                    index = helpers.get_path_info(bip39_derivation, INDEX_POS)
 
             elif master is not None:
                 ks = keystore.from_master_key(master)
@@ -2961,7 +2929,7 @@ class AndroidCommands(commands.Commands):
                 wallet = Standard_Wallet(db, storage, config=self.config)
             elif coin in self.coins:
                 wallet = Standard_Eth_Wallet(db, storage, config=self.config, index=int(index))
-        new_name = self.get_unique_path(wallet)
+        new_name = helpers.get_unique_wallet_filename(wallet)
         wallet.storage.set_path(self._wallet_path(new_name))
         try:
             self.check_exist_file(wallet)
@@ -3094,7 +3062,7 @@ class AndroidCommands(commands.Commands):
                             wallet.get_name(),
                             coin,
                         )
-                    self.wallet_context.set_wallet_type(self.get_unique_path(wallet), wallet_type)
+                    self.wallet_context.set_wallet_type(helpers.get_unique_wallet_filename(wallet), wallet_type)
         self.recovery_wallets.clear()
 
     def delete_derived_wallet(self):
@@ -3192,7 +3160,7 @@ class AndroidCommands(commands.Commands):
             self.set_multi_wallet_info(name, m, n)
             self.add_xpub(xpubs, self.hw_info["device_id"], i, self.hw_info["type"], coin=coin)
 
-            temp_path = self.get_temp_file()
+            temp_path = helpers.get_temp_file()
             path = self._wallet_path(temp_path)
             storage, db = self.wizard.create_storage(path=path, password="", coin=coin)
             if storage:
@@ -3203,7 +3171,7 @@ class AndroidCommands(commands.Commands):
                     wallet = Wallet(db, storage, config=self.config)
                 wallet.set_name(name)
                 wallet.hide_type = True
-                new_name = self.get_unique_path(wallet)
+                new_name = helpers.get_unique_wallet_filename(wallet)
                 wallet.storage.set_path(self._wallet_path(new_name))
                 wallet.update_password(old_pw=None, new_pw=None, str_pw=self.android_id, encrypt_storage=True)
                 if coin == "btc":
@@ -3273,7 +3241,7 @@ class AndroidCommands(commands.Commands):
         if self.hd_wallet is None:
             wallets = self.daemon.get_wallets()
             for key, wallet in wallets.items():
-                address_digest = self.get_unique_path(wallet)
+                address_digest = helpers.get_unique_wallet_filename(wallet)
                 if self.wallet_context.is_hd(address_digest):
                     self.hd_wallet = wallet
                     break
@@ -3300,19 +3268,13 @@ class AndroidCommands(commands.Commands):
         """
         cls._recovery_flag = flag
 
-    def get_derivation_path(self, wallet_obj, address):
-        deriv_suffix = wallet_obj.get_address_index(address)
-        derivation = wallet_obj.keystore.get_derivation_prefix()
-        address_path = "%s/%d/%d" % (derivation, *deriv_suffix)
-        return address_path
-
     def filter_wallet_with_account_is_zero(self):
         wallet_list = []
         for name, wallet_info in self.recovery_wallets.items():
             try:
                 wallet = wallet_info["wallet"]
                 coin = self._detect_wallet_coin(wallet)
-                derivation = self.get_derivation_path(wallet, wallet.get_addresses()[0])
+                derivation = helpers.get_derivation_path(wallet, wallet.get_addresses()[0])
                 account_id = int(self.get_account_id(derivation, coin if coin in self.coins else "btc"))
                 purpose = int(derivation.split("/")[PURPOSE_POS].split("'")[0])
                 if account_id != 0:
@@ -3417,14 +3379,14 @@ class AndroidCommands(commands.Commands):
             raise e
         account_id = int(self.get_account_id(bip39_derivation, coin))
         if account_id == 0:
-            purpose = int(self.get_path_info(bip39_derivation, PURPOSE_POS))
+            purpose = int(helpers.get_path_info(bip39_derivation, PURPOSE_POS))
             if purpose == 49:
                 name = "BTC-1"
             elif coin in self.coins:
                 name = "%s-1" % coin.upper()
             else:
                 name = "btc-derived-%s" % purpose
-        temp_path = self.get_temp_file()
+        temp_path = helpers.get_temp_file()
         path = self._wallet_path(temp_path)
         if exists(path):
             raise BaseException(FileAlreadyExist())
@@ -3441,7 +3403,7 @@ class AndroidCommands(commands.Commands):
             wallet = Standard_Wallet(db, storage, config=self.config)
         wallet.hide_type = True
         wallet.set_name(name)
-        new_name = self.get_unique_path(wallet)
+        new_name = helpers.get_unique_wallet_filename(wallet)
         wallet.storage.set_path(self._wallet_path(new_name))
         self.recovery_wallets[new_name] = self.update_recovery_wallet(
             self.get_hd_wallet_encode_seed(seed=seed, coin=coin), wallet, bip39_derivation, name, coin
@@ -3461,7 +3423,7 @@ class AndroidCommands(commands.Commands):
         return self.wallet_context.get_derived_num(xpub)
 
     def delete_devired_wallet_info(self, wallet_obj, hw=False):
-        derivation = self.get_derivation_path(wallet_obj, wallet_obj.get_addresses()[0])
+        derivation = helpers.get_derivation_path(wallet_obj, wallet_obj.get_addresses()[0])
         coin = self._detect_wallet_coin(wallet_obj)
         account_id = self.get_account_id(derivation, coin)
 
@@ -3477,9 +3439,9 @@ class AndroidCommands(commands.Commands):
 
     def get_account_id(self, path, coin):
         if coin in self.coins:
-            return self.get_path_info(path, INDEX_POS)
+            return helpers.get_path_info(path, INDEX_POS)
         else:
-            return self.get_path_info(path, ACCOUNT_POS)
+            return helpers.get_path_info(path, ACCOUNT_POS)
 
     def update_devired_wallet_info(self, bip39_derivation, xpub, name, coin):
         account_id = self.get_account_id(bip39_derivation, coin)
@@ -4109,7 +4071,7 @@ class AndroidCommands(commands.Commands):
                     key: {
                         "type": wallet_type,
                         "addr": wallet.get_addresses()[0],
-                        "name": self.get_unique_path(wallet),
+                        "name": helpers.get_unique_wallet_filename(wallet),
                         "label": wallet.get_name(),
                         "device_id": device_id,
                     }
