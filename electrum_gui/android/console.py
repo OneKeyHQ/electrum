@@ -3302,19 +3302,17 @@ class AndroidCommands(commands.Commands):
         if hw:
             self.recovery_wallet(xpub=xpub, hw=hw, path=path, coin="btc")
 
-            if "ANDROID_DATA" in os.environ:
-                for coin, info in self.coins.items():
-                    with PyWalib.override_server(info):
-                        self.recovery_wallet(xpub=xpub, hw=hw, path=path, coin=coin)
+            for coin, info in self.coins.items():
+                with PyWalib.override_server(info):
+                    self.recovery_wallet(xpub=xpub, hw=hw, path=path, coin=coin)
         else:
             xpub = self.get_hd_wallet_encode_seed(seed=seed, coin="btc")
             self.recovery_wallet(seed, password, passphrase, xpub=xpub, hw=hw)
 
-            if "ANDROID_DATA" in os.environ:
-                for coin, info in self.coins.items():
-                    xpub = self.get_hd_wallet_encode_seed(seed=seed, coin=coin)
-                    with PyWalib.override_server(info):
-                        self.recovery_wallet(seed, password, passphrase, coin=coin, xpub=xpub, hw=hw)
+            for coin, info in self.coins.items():
+                xpub = self.get_hd_wallet_encode_seed(seed=seed, coin=coin)
+                with PyWalib.override_server(info):
+                    self.recovery_wallet(seed, password, passphrase, coin=coin, xpub=xpub, hw=hw)
 
         recovery_list = self.filter_wallet()
         wallet_data = self.filter_wallet_with_account_is_zero()
