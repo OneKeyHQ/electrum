@@ -358,12 +358,14 @@ class AndroidCommands(commands.Commands):
         if coin in self.coins:  # eth base
             address = self.pywalib.web3.toChecksumAddress(address)
             balance_info = self.wallet.get_all_balance(address, self.coins[coin]["symbol"])
-            balance_info = balance_info.get(coin, dict())
+            main_coin_balance_info = balance_info.pop(coin, dict())
 
             out["coin"] = coin
             out["address"] = address
-            out["balance"] = balance_info.get("balance", "0")
-            out["fiat"] = self.daemon.fx.format_amount_and_units(balance_info.get("fiat", 0) * COIN) or f"0 {self.ccy}"
+            out["balance"] = main_coin_balance_info.get("balance", "0")
+            out["fiat"] = self.daemon.fx.format_amount_and_units(main_coin_balance_info.get("fiat", 0) * COIN) or f"0 {self.ccy}"
+            out["tokens"] = [{"address": k, **v} for k, v in balance_info.items()]
+            out["sum_fiat"] = out["fiat"]
         elif (
                 self.network
                 and self.network.is_connected()
