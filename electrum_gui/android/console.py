@@ -48,8 +48,8 @@ from electrum.transaction import PartialTransaction, PartialTxOutput, Serializat
 from electrum.util import (
     DecimalEncoder,
     DerivedWalletLimit,
-    FailedToSwitchWallet,
     FailedGetTx,
+    FailedToSwitchWallet,
     Fiat,
     FileAlreadyExist,
     InvalidBip39Seed,
@@ -72,9 +72,8 @@ from electrum.util import (
 from electrum.util import user_dir as get_dir
 from electrum.wallet import Imported_Wallet, Standard_Wallet, Wallet
 from electrum.wallet_db import WalletDB
-from electrum_gui.common import the_begging
-
 from electrum_gui.android import hardware
+from electrum_gui.common import the_begging
 
 from .create_wallet_info import CreateWalletInfo
 from .derived_info import DerivedInfo
@@ -368,10 +367,10 @@ class AndroidCommands(commands.Commands):
             out["tokens"] = [{"address": k, **v} for k, v in balance_info.items()]
             out["sum_fiat"] = out["fiat"]
         elif (
-                self.network
-                and self.network.is_connected()
-                and self.network.get_server_height() != 0
-                and self.wallet.up_to_date
+            self.network
+            and self.network.is_connected()
+            and self.network.get_server_height() != 0
+            and self.wallet.up_to_date
         ):  # btc
             c, u, x = self.wallet.get_balance()
             show_balance = c + u
@@ -981,7 +980,15 @@ class AndroidCommands(commands.Commands):
         return json.dumps(out_info)
 
     def eth_estimate_fee(
-        self, coin, from_address, to_address="", contract_address=None, value="0", data="", gas_price=None, gas_limit=None
+        self,
+        coin,
+        from_address,
+        to_address="",
+        contract_address=None,
+        value="0",
+        data="",
+        gas_price=None,
+        gas_limit=None,
     ):
         estimate_gas_prices = self.pywalib.get_gas_price(coin)
         if gas_price:
@@ -2101,6 +2108,7 @@ class AndroidCommands(commands.Commands):
         try:
             # This can throw on invalid base64
             import base64
+
             sig = base64.b64decode(str(signature))
             self.trezor_manager.ensure_client(path)
             verified = self.wallet.verify_message(address, message, sig)
@@ -2250,11 +2258,7 @@ class AndroidCommands(commands.Commands):
         """
         try:
             self.trezor_manager.plugin.show_address(
-                path=path,
-                ui=CustomerUI(),
-                wallet=self.wallet,
-                address=address,
-                coin=coin
+                path=path, ui=CustomerUI(), wallet=self.wallet, address=address, coin=coin
             )
             return "1"
         except Exception as e:
@@ -2289,9 +2293,7 @@ class AndroidCommands(commands.Commands):
             elif _type == "p2wpkh-p2sh":
                 derivation = bip44_derivation(account_id, bip43_purpose=49)
                 self.hw_info["type"] = 49
-            xpub = self.trezor_manager.get_xpub(
-                path, derivation, _type, is_creating
-            )
+            xpub = self.trezor_manager.get_xpub(path, derivation, _type, is_creating)
         else:
             self.hw_info["type"] = self.coins[coin]["addressType"]
             derivation = bip44_eth_derivation(
@@ -3034,9 +3036,7 @@ class AndroidCommands(commands.Commands):
                         self.set_hd_wallet(wallet)
                     coin = self._detect_wallet_coin(wallet)
                     if coin in self.coins:
-                        wallet_type = (
-                            "%s-hw-derived-%s-%s" % (coin, 1, 1) if hw else ("%s-derived-standard" % coin)
-                        )
+                        wallet_type = "%s-hw-derived-%s-%s" % (coin, 1, 1) if hw else ("%s-derived-standard" % coin)
                         self.update_devired_wallet_info(
                             bip44_eth_derivation(
                                 recovery_info["account_id"],
@@ -3116,8 +3116,9 @@ class AndroidCommands(commands.Commands):
                             if not balance_info:
                                 continue
 
-                            fiat = self.daemon.fx.format_amount_and_units(
-                                balance_info["fiat"] * COIN) or f"0 {self.ccy}"
+                            fiat = (
+                                self.daemon.fx.format_amount_and_units(balance_info["fiat"] * COIN) or f"0 {self.ccy}"
+                            )
                             balance = f"{balance_info['balance']} ({fiat})"
                             self.update_recover_list(recovery_list, balance, wallet, wallet.get_name(), coin)
                             continue
@@ -3521,15 +3522,12 @@ class AndroidCommands(commands.Commands):
                 if coin in self.coins:
                     with self.pywalib.override_server(self.coins[coin]):
                         checksum_from_address = self.pywalib.web3.toChecksumAddress(wallet.get_addresses()[0])
-                        balances_info = wallet.get_all_balance(
-                            checksum_from_address, self.coins[coin]["symbol"]
-                        )
+                        balances_info = wallet.get_all_balance(checksum_from_address, self.coins[coin]["symbol"])
                         wallet_balances = []
                         for symbol, info in balances_info.items():
                             copied_info = dict(info)
                             copied_info["fiat"] = (
-                                    self.daemon.fx.format_amount_and_units(
-                                        copied_info["fiat"] * COIN) or f"0 {self.ccy}"
+                                self.daemon.fx.format_amount_and_units(copied_info["fiat"] * COIN) or f"0 {self.ccy}"
                             )
                             wallet_balances.append(
                                 {
@@ -3882,7 +3880,6 @@ class AndroidCommands(commands.Commands):
         coin = self._detect_wallet_coin(self.wallet)
         if coin in self.coins:
             PyWalib.set_server(self.coins[coin])
-            addrs = self.wallet.get_addresses()
             contract_info = self.wallet.get_contract_symbols_with_address()
 
             info = {"name": name, "label": self.wallet.get_name(), "wallets": contract_info}
@@ -3916,9 +3913,7 @@ class AndroidCommands(commands.Commands):
         if coin in self.coins:
             addrs = self.wallet.get_addresses()
             checksum_from_address = self.pywalib.web3.toChecksumAddress(addrs[0])
-            balance_info = self.wallet.get_all_balance(
-                checksum_from_address, self.coins[coin]["symbol"]
-            )
+            balance_info = self.wallet.get_all_balance(checksum_from_address, self.coins[coin]["symbol"])
             all_balance = Decimal(0)
             for key, val in balance_info.items():
                 all_balance += val['fiat']
@@ -3946,7 +3941,7 @@ class AndroidCommands(commands.Commands):
                 self.label_plugin.load_wallet(self.wallet)
         return json.dumps(info, cls=DecimalEncoder)
 
-    def select_wallet(self, name): #TODO: Will be deleted later
+    def select_wallet(self, name):  # TODO: Will be deleted later
         """
         Select wallet by name
         :param name: name as string
@@ -3974,9 +3969,7 @@ class AndroidCommands(commands.Commands):
                 PyWalib.set_server(self.coins[coin])
                 addrs = self.wallet.get_addresses()
                 checksum_from_address = self.pywalib.web3.toChecksumAddress(addrs[0])
-                balance_info = self.wallet.get_all_balance(
-                    checksum_from_address, self.coins[coin]["symbol"]
-                )
+                balance_info = self.wallet.get_all_balance(checksum_from_address, self.coins[coin]["symbol"])
                 wallet_balances = [
                     {
                         "coin": key,
@@ -4128,7 +4121,6 @@ class AndroidCommands(commands.Commands):
             # delete wallet info from config
             self.delete_devired_wallet_info(wallet_obj, hw=hw)
 
-
     def delete_wallet(self, password="", name="", hd=None):
         """
         Delete (a/all hd) wallet
@@ -4150,7 +4142,7 @@ class AndroidCommands(commands.Commands):
                 self.delete_derived_wallet()
             else:
                 if "-derived-" in wallet_type:
-                    hw = ("-hw-" in wallet_type)
+                    hw = "-hw-" in wallet_type
                     self.delete_wallet_devired_info(wallet, hw=hw)
 
                 self.delete_wallet_from_deamon(self._wallet_path(name))
