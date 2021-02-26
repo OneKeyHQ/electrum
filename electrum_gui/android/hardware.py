@@ -79,6 +79,8 @@ class TrezorManager(object):
         # select a device.
         # dict.setdefault() is not short-circuiting.
         client = self.clients.get(path)
+        if client:
+            client.client.init_device()
         client = client or self.clients.setdefault(
             path,
             self.plugin.get_client(
