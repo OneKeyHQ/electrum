@@ -146,6 +146,7 @@ public class ConnectRequest<T extends BleDevice> implements ConnectWrapperCallba
      */
     public void disconnect(BleDevice device) {
         if (device != null) {
+            connetedDevices.remove(device);
             disconnect(device.getBleAddress());
         }
     }
@@ -196,7 +197,6 @@ public class ConnectRequest<T extends BleDevice> implements ConnectWrapperCallba
         } else if (bleDevice.isDisconnected()) {
             // only if the device is once connected could be added to autoPool
             if (connetedDevices.contains(bleDevice)) {
-                connetedDevices.remove(bleDevice);
                 devices.remove(bleDevice);
                 BleLog.d(TAG, "disconnected>>>> " + bleDevice.getBleName());
                 addAutoPool(bleDevice);
@@ -352,7 +352,9 @@ public class ConnectRequest<T extends BleDevice> implements ConnectWrapperCallba
      */
     private void addAutoPool(T device) {
         if (device == null) return;
-        if (device.isAutoConnect()) {
+        BluetoothDevice remoteDevice =
+                BluetoothAdapter.getDefaultAdapter().getRemoteDevice(device.getBleAddress());
+        if (device.isAutoConnect() && remoteDevice.getBondState() == BluetoothDevice.BOND_BONDED) {
             BleLog.d(
                     TAG,
                     "addAutoPool: " + "Add automatic connection device to the connection pool");

@@ -1,6 +1,5 @@
 package cn.com.heaton.blelibrary.ble.proxy;
 
-import android.util.Log;
 import cn.com.heaton.blelibrary.ble.BleLog;
 import cn.com.heaton.blelibrary.ble.callback.BleConnectCallback;
 import cn.com.heaton.blelibrary.ble.callback.BleMtuCallback;
@@ -93,7 +92,7 @@ public class RequestImpl<T extends BleDevice> implements RequestLisenter<T> {
     public void disconnect(T device) {
         ConnectRequest request = Rproxy.getRequest(ConnectRequest.class);
         BleLog.BluetoothState("disconnect", device);
-        Log.e(BleLog.TAG, Log.getStackTraceString(new Throwable()));
+        //        Log.e(BleLog.TAG, Log.getStackTraceString(new Throwable()));
         request.disconnect(device);
     }
 
@@ -101,7 +100,7 @@ public class RequestImpl<T extends BleDevice> implements RequestLisenter<T> {
     public void disconnect(T device, BleConnectCallback<T> callback) {
         ConnectRequest<T> request = Rproxy.getRequest(ConnectRequest.class);
         BleLog.BluetoothState("disconnect", device);
-        Log.e(BleLog.TAG, Log.getStackTraceString(new Throwable()));
+        //        Log.e(BleLog.TAG, Log.getStackTraceString(new Throwable()));
         request.disconnect(device, callback);
     }
 
