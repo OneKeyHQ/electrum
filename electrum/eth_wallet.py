@@ -123,8 +123,14 @@ class Abstract_Eth_Wallet(ABC):
         if self.db.get('address_index') is None:
             self.set_address_index(0)
         self.name = self.db.get("name")
-        self.contacts = dict()
         self._coin_price_cache = {}
+
+        self.contacts = {}
+        for addr, symbol in self.db.get("contracts", {}).items():
+            try:
+                self.contacts[addr] = Eth_Contract(symbol, addr)
+            except Exception as e:
+                _logger.exception(f"Error in recovering contracts. contract_addr: {addr}, error: {e}")
 
         self.coin = db.get("coin")
         if self.coin is None:
@@ -148,6 +154,7 @@ class Abstract_Eth_Wallet(ABC):
 
     def save_db(self):
         if self.storage and not self.hide_type:
+            self.db.set_modified(True)
             self.db.write(self.storage)
 
     def save_backup(self):
@@ -230,12 +237,16 @@ class Abstract_Eth_Wallet(ABC):
     def add_contract_token(self, contract_symbol, contract_address):
         contract = Eth_Contract(contract_symbol, contract_address)
         self.contacts[contract_address] = contract
+        self.db.put("contracts", {addr: c.symbol for addr, c in self.contacts.items()})
+        self.save_db()
 
     def get_contract_token(self, contract_address) -> Eth_Contract:
         return self.contacts.get(contract_address)
 
     def delete_contract_token(self, contract_address):
         self.contacts.pop(contract_address, None)
+        self.db.put("contracts", {addr: c.symbol for addr, c in self.contacts.items()})
+        self.save_db()
 
     def load_and_cleanup(self):
         self.load_keystore()

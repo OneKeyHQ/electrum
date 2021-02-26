@@ -2136,6 +2136,7 @@ class AndroidCommands(commands.Commands):
         :return: raise except if error
         """
         try:
+            contract_addr = self.pywalib.web3.toChecksumAddress(contract_addr)
             self.wallet.add_contract_token(symbol, contract_addr)
         except BaseException as e:
             raise e
