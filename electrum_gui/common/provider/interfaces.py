@@ -1,25 +1,33 @@
 from abc import ABC, abstractmethod
 from typing import List
 
-from electrum_gui.common.explorer.data.enums import TransactionStatus
-from electrum_gui.common.explorer.data.exceptions import TransactionNotFound
-from electrum_gui.common.explorer.data.objects import (
+from electrum_gui.common.provider.data import (
     Address,
-    ExplorerInfo,
     PricePerUnit,
+    ProviderInfo,
     Token,
     Transaction,
+    TransactionStatus,
     TxBroadcastReceipt,
 )
+from electrum_gui.common.provider.exceptions import TransactionNotFound
 
 
-class ExplorerInterface(ABC):
+class ProviderInterface(ABC):
     @abstractmethod
-    def get_explorer_info(self) -> ExplorerInfo:
+    def get_info(self) -> ProviderInfo:
         """
-        Get explorer information
+        Get information of provider
         :return: ChainInfo
         """
+
+    @property
+    def is_ready(self) -> bool:
+        """
+        Is provider ready?
+        :return: ready or not
+        """
+        return self.get_info().is_ready
 
     @abstractmethod
     def get_address(self, address: str) -> Address:

@@ -6,37 +6,38 @@ from electrum_gui.common.basic.functional.require import require
 from electrum_gui.common.basic.functional.text import force_text
 from electrum_gui.common.basic.request.exceptions import ResponseException
 from electrum_gui.common.basic.request.restful import RestfulRequest
-from electrum_gui.common.explorer.data.enums import TransactionStatus, TxBroadcastReceiptCode
-from electrum_gui.common.explorer.data.exceptions import TransactionNotFound
-from electrum_gui.common.explorer.data.interfaces import ExplorerInterface
-from electrum_gui.common.explorer.data.objects import (
+from electrum_gui.common.provider.data import (
     Address,
     BlockHeader,
     EstimatedTimeOnPrice,
-    ExplorerInfo,
     PricePerUnit,
+    ProviderInfo,
     Token,
     Transaction,
     TransactionFee,
+    TransactionStatus,
     TxBroadcastReceipt,
+    TxBroadcastReceiptCode,
 )
+from electrum_gui.common.provider.exceptions import TransactionNotFound
+from electrum_gui.common.provider.interfaces import ProviderInterface
 
 
-class Trezor(ExplorerInterface):
+class BlockBook(ProviderInterface):
     __raw_tx_status_mapping__ = {
         -1: TransactionStatus.IN_MEMPOOL,
         0: TransactionStatus.REVERED,
         1: TransactionStatus.CONFIRMED,
     }
 
-    def __init__(self, base_url: str):
-        self.restful = RestfulRequest(base_url)
+    def __init__(self, url: str):
+        self.restful = RestfulRequest(url)
 
-    def get_explorer_info(self) -> ExplorerInfo:
+    def get_info(self) -> ProviderInfo:
         resp = self.restful.get("/api")
         require(resp["blockbook"]["coin"] == "Ethereum")
 
-        return ExplorerInfo(
+        return ProviderInfo(
             name="trezor",
             best_block_number=int(resp["blockbook"].get("bestHeight", 0)),
             is_ready=resp["blockbook"].get("inSync") is True,
@@ -60,7 +61,7 @@ class Trezor(ExplorerInterface):
 
     def get_balance(self, address: str, token: Token = None) -> int:
         if not token:
-            return super(Trezor, self).get_balance(address)
+            return super(BlockBook, self).get_balance(address)
         else:
             resp = self._get_raw_address_info(address, details="tokenBalances")
             tokens = {i["contract"].lower(): i["balance"] for i in resp.get("tokens", ())}

@@ -1,6 +1,6 @@
 {
   "eth": {
-    "id": "ethereum",
+    "id": "eth",
     "name": "Ethereum",
     "coinId": 60,
     "addressType": 44,

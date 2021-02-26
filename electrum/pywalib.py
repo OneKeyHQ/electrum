@@ -17,11 +17,11 @@ from eth_keyfile import keyfile
 from eth_utils import to_checksum_address
 from web3 import HTTPProvider, Web3
 
-from electrum_gui.common.explorer.data.objects import Token
+from electrum_gui.common.provider.manager import get_provider_by_chain
 from .i18n import _
-from electrum_gui.common.explorer.clients import TrezorETH, Etherscan, Geth
-from electrum_gui.common.explorer.data.enums import TransactionStatus
-from electrum_gui.common.explorer.data.interfaces import ExplorerInterface
+from electrum_gui.common.provider.data import Token, TransactionStatus
+from electrum_gui.common.provider.clients import eth as eth_clients
+from electrum_gui.common.provider.interfaces import ProviderInterface
 from . import util
 from .eth_transaction import Eth_Transaction
 from decimal import Decimal
@@ -309,7 +309,7 @@ class PyWalib:
 
     def get_gas_price(self, coin) -> dict:
         if coin in ("bsc", "heco"):
-            price_per_unit = self.get_explorer().get_price_per_unit_of_fee()
+            price_per_unit = self.get_provider().get_price_per_unit_of_fee()
             return {
                 "fast": {
                     "gas_price": int(price_per_unit.fast.price / 1e9),
@@ -474,7 +474,7 @@ class PyWalib:
 
     @classmethod
     def get_nonce(cls,  address):
-        return cls.get_explorer().get_address(address).nonce
+        return cls.get_provider().get_address(address).nonce
 
     def is_contract(self, address) -> bool:
         return len(self.web3.eth.getCode(self.web3.toChecksumAddress(address))) > 0
@@ -489,7 +489,7 @@ class PyWalib:
 
     @classmethod
     def _send_tx(cls, tx_hex: str) -> str:
-        return cls.get_explorer().broadcast_transaction(tx_hex).txid
+        return cls.get_provider().broadcast_transaction(tx_hex).txid
 
     @classmethod
     def get_balance(cls, wallet_address, contract=None):
@@ -503,45 +503,24 @@ class PyWalib:
     @classmethod
     def _get_balance_inner(cls, address: str, contract=None):
         try:
-            return cls.get_explorer().get_balance(address,
-                token=None if not contract else Token(contract=contract.get_address()))
+            return cls.get_provider().get_balance(address,
+                                                  token=None if not contract else Token(contract=contract.get_address()))
         except Exception:
             return 0
 
     @classmethod
-    def get_explorer(cls) -> ExplorerInterface:
-        cache_name = "__explorer__"
-        explorer = getattr(cls, cache_name, None)
+    def get_provider(cls) -> ProviderInterface:
+        chain_code = cls.server_config["id"]  # TODO Confirm that the 'id' field has not been used before?
 
-        if explorer is None:
-            servers = {list(i.keys())[0]: list(i.values())[0] for i in cls.tx_list_server}
-            explorer = None
+        if cls.chain_type == "testnet":
+            chain_code = f"t{chain_code}"
 
-            if cls.chain_type == "mainnet":
-                url = servers.get("onekey-mainnet") or servers.get("trezor-mainnet")
-                assert url
-                explorer = TrezorETH(url)
-            elif servers.get("etherscan-testnet"):
-                explorer = Etherscan(servers["etherscan-testnet"], ETHERSCAN_API_KEY)
-            else:
-                provider = None
-                for i in cls.server_config.get("Provider", ()):
-                    if cls.chain_type in i:
-                        provider = i[cls.chain_type]
-                        break
-
-                if provider:
-                    explorer = Geth(provider)
-
-            setattr(cls, cache_name, explorer)
-
-        assert explorer is not None
-        return explorer
+        return get_provider_by_chain(chain_code)
 
     @classmethod
     def get_transaction_history(cls, address, search_type=None):
         address = address.lower()
-        txs = cls.get_explorer().search_txs_by_address(address)
+        txs = cls.get_provider().search_txs_by_address(address)
         if search_type == "send":
             txs = [i for i in txs if i.source and i.source.lower() == address]
         elif search_type == "receive":
@@ -583,11 +562,11 @@ class PyWalib:
 
     @classmethod
     def get_all_txid(cls, address) -> List[str]:
-        return cls.get_explorer().search_txids_by_address(address)
+        return cls.get_provider().search_txids_by_address(address)
 
     @classmethod
     def get_transaction_info(cls, txid) -> dict:
-        tx = cls.get_explorer().get_transaction_by_txid(txid)
+        tx = cls.get_provider().get_transaction_by_txid(txid)
         last_price = Decimal(cls.get_coin_price(cls.coin_symbol) or "0")
         amount = Decimal(cls.web3.fromWei(tx.value, "ether"))
         fiat = last_price * amount

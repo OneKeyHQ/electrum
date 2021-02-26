@@ -2,25 +2,26 @@ import json
 from typing import List
 
 from electrum_gui.common.basic.request.restful import RestfulRequest
-from electrum_gui.common.explorer.data.enums import TransactionStatus, TxBroadcastReceiptCode
-from electrum_gui.common.explorer.data.interfaces import ExplorerInterface
-from electrum_gui.common.explorer.data.objects import (
+from electrum_gui.common.provider.data import (
     Address,
     BlockHeader,
     EstimatedTimeOnPrice,
-    ExplorerInfo,
     PricePerUnit,
+    ProviderInfo,
     Token,
     Transaction,
     TransactionFee,
+    TransactionStatus,
     TxBroadcastReceipt,
+    TxBroadcastReceiptCode,
 )
+from electrum_gui.common.provider.interfaces import ProviderInterface
 
 
-class Etherscan(ExplorerInterface):
-    def __init__(self, base_url: str, api_key: str = None):
-        self.restful = RestfulRequest(base_url)
-        self.api_key = api_key
+class Etherscan(ProviderInterface):
+    def __init__(self, url: str, api_keys: List[str] = None):
+        self.restful = RestfulRequest(url)
+        self.api_key = api_keys[0] if api_keys else None
 
     def _call_action(self, module: str, action: str, **kwargs) -> dict:
         kwargs = kwargs if kwargs is not None else dict()
@@ -34,9 +35,9 @@ class Etherscan(ExplorerInterface):
         resp = self.restful.post(path, data=data)
         return resp
 
-    def get_explorer_info(self) -> ExplorerInfo:
+    def get_info(self) -> ProviderInfo:
         resp = self._call_action("proxy", "eth_blockNumber")
-        return ExplorerInfo(
+        return ProviderInfo(
             name="etherscan",
             best_block_number=int(resp["result"], base=16),
             is_ready=True,

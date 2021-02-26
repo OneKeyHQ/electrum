@@ -5,32 +5,33 @@ from electrum_gui.common.basic.functional.require import require
 from electrum_gui.common.basic.functional.text import force_text
 from electrum_gui.common.basic.request.exceptions import JsonRPCException
 from electrum_gui.common.basic.request.json_rpc import JsonRPCRequest
-from electrum_gui.common.explorer.data.enums import TransactionStatus, TxBroadcastReceiptCode
-from electrum_gui.common.explorer.data.exceptions import TransactionNotFound
-from electrum_gui.common.explorer.data.interfaces import ExplorerInterface
-from electrum_gui.common.explorer.data.objects import (
+from electrum_gui.common.provider.data import (
     Address,
     BlockHeader,
     EstimatedTimeOnPrice,
-    ExplorerInfo,
     PricePerUnit,
+    ProviderInfo,
     Transaction,
     TransactionFee,
+    TransactionStatus,
     TxBroadcastReceipt,
+    TxBroadcastReceiptCode,
 )
+from electrum_gui.common.provider.exceptions import TransactionNotFound
+from electrum_gui.common.provider.interfaces import ProviderInterface
 
 _hex2int = partial(int, base=16)
 
 
-class Geth(ExplorerInterface):
+class Geth(ProviderInterface):
     __LAST_BLOCK__ = "latest"
 
     def __init__(self, url: str):
         self.rpc = JsonRPCRequest(url)
 
-    def get_explorer_info(self) -> ExplorerInfo:
+    def get_info(self) -> ProviderInfo:
         block_number = self.rpc.call("eth_blockNumber", params=[])
-        return ExplorerInfo(
+        return ProviderInfo(
             "geth",
             best_block_number=_hex2int(block_number),
             is_ready=True,
