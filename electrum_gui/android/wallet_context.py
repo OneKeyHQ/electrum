@@ -28,7 +28,6 @@ class WalletContext(object):
         #          'time': a timestamp used only to sort items in
         #                  self._type_info, see self.get_stored_wallets_types()
         #          'xpubs': always [],  TODO: should be removed?
-        #          'seed': always '',  TODO: should be removed?
         self._type_info = self._init_type_info()
         self._save_type_info()
 
@@ -59,7 +58,6 @@ class WalletContext(object):
                 info['time'] = time.time()
             if 'xpubs' not in info:
                 info['xpubs'] = []
-            info['seed'] = ''
             new_info[address_digest] = info
 
         return new_info
@@ -88,7 +86,7 @@ class WalletContext(object):
         return unknowns + saved
 
     def set_wallet_type(self, address_digest: str, wallet_type: str) -> None:
-        self._type_info[address_digest] = {'type': wallet_type, 'time': time.time(), 'seed': ''}
+        self._type_info[address_digest] = {'type': wallet_type, 'time': time.time()}
         self._save_type_info()
 
     def remove_type_info(self, address_digest: str) -> None:
@@ -96,8 +94,10 @@ class WalletContext(object):
             self._save_type_info()
 
     def is_hd(self, address_digest: str) -> bool:
+        # Essentially, this method equals a simple return of:
+        # return not self.is_hw(address_digest) and self.is_derived(address_digest)
         wallet_type = self._type_info.get(address_digest, {}).get('type', '')
-        return '-hw-' not in wallet_type and ('-hd-' in wallet_type or '-derived-' in wallet_type)
+        return '-hw-' not in wallet_type and '-derived-' in wallet_type
 
     def is_derived(self, address_digest: str) -> bool:
         wallet_type = self._type_info.get(address_digest, {}).get('type', '')
