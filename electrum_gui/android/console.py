@@ -4023,28 +4023,10 @@ class AndroidCommands(commands.Commands):
         except BaseException as e:
             raise BaseException(e)
 
-    def sort_list(self, wallet_infos, type=None):
-        try:
-            from .sort_wallet_list import SortWalletList
-
-            if len(wallet_infos) == 0:
-                return wallet_infos
-            sorted_wallet = SortWalletList(wallet_infos)
-            if type is None:
-                return wallet_infos
-            if type == "hd":
-                return sorted_wallet.get_wallets_by_hd()
-            if type == "hw":
-                return sorted_wallet.get_wallets_by_hw()
-            else:
-                return sorted_wallet.get_wallets_by_coin(coin=type)
-        except BaseException as e:
-            raise e
-
-    def list_wallets(self, type=None):
+    def list_wallets(self, type_=None):
         """
         List available wallets
-        :param type: None/hd/btc/eth
+        :param type: None/hw/hd/btc/eth/bsc
         :return: json like "[{"wallet_key":{'type':"", "addr":"", "name":"", "label":"", "device_id": ""}}, ...]"
         exp:
             all_list = testcommond.list_wallets()
@@ -4054,12 +4036,17 @@ class AndroidCommands(commands.Commands):
             eth_list = testcommond.list_wallets(type='eth')
 
         """
+        coin = None
+        generic_wallet_type = None
+        if type_ in ("hw", "hd"):
+            generic_wallet_type = type_
+        elif type_ in ("btc", "eth", "bsc"):
+            coin = type_
+        elif type_ is not None:
+            raise BaseException(_("Unsupported coin types"))
 
         wallet_infos = []
-        for key, wallet_type in self.wallet_context.get_stored_wallets_types():
-            if -1 != key.find(".tmp.") or -1 != key.find(".tmptest."):
-                continue
-
+        for key, wallet_type in self.wallet_context.get_stored_wallets_types(generic_wallet_type, coin):
             wallet = self.daemon.wallets[self._wallet_path(key)]
             if isinstance(wallet.keystore, Hardware_KeyStore):
                 device_id = wallet.get_device_info()
@@ -4077,8 +4064,7 @@ class AndroidCommands(commands.Commands):
                     }
                 }
             )
-        sort_info = self.sort_list(wallet_infos, type=type)
-        return json.dumps(sort_info)
+        return json.dumps(wallet_infos)
 
     def delete_wallet_from_deamon(self, name):
         try:

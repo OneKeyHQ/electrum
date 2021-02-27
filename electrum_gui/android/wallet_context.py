@@ -1,10 +1,62 @@
+import functools
 import itertools
 import os
 import time
-from typing import Generator, List, Tuple
+from typing import Generator, List, Optional, Tuple
 
 from electrum import simple_config, util
 from electrum_gui.android import derived_info
+
+_COIN_PRIORITY = {
+    "btc": 3,
+    "eth": 2,
+    "bsc": 1,
+}
+
+
+def _get_wallet_priority_by_type(wallet_type: str) -> int:
+    if "hw" in wallet_type:
+        return 2
+    elif "private" in wallet_type:
+        return 3
+    elif "derived" in wallet_type:
+        return 5
+    elif "watch" in wallet_type:
+        return 1
+    else:
+        return 4
+
+
+def _type_info_basic_filter_func(address_digest: str, stored_wallets: List[str]) -> bool:
+    return address_digest in stored_wallets and ".tmp." not in address_digest and ".tmptest." not in address_digest
+
+
+def _type_info_default_extra_filter_func(_wallet_type: str) -> bool:
+    return True
+
+
+def _type_info_wallet_type_is_hd(wallet_type: str) -> bool:
+    return '-hw-' not in wallet_type and '-derived-' in wallet_type
+
+
+def _type_info_wallet_type_is_hw(wallet_type: str) -> bool:
+    return '-hw-' in wallet_type
+
+
+def _type_info_filter_wallet_type_by_coin(coin: str, wallet_type: str) -> bool:
+    return wallet_type[0:3] == coin
+
+
+def _type_info_default_sort_func(type_info_item: Tuple[str, dict]) -> float:
+    return type_info_item[1]["time"]
+
+
+def _type_info_by_coin_and_time_sort_func(type_info_item: Tuple[str, dict]) -> Tuple[int, float]:
+    return _COIN_PRIORITY.get(type_info_item[1]["type"][:3], 0), type_info_item[1]["time"]
+
+
+def _type_info_by_type_and_time_sort_func(type_info_item: Tuple[str, dict]) -> Tuple[int, float]:
+    return _get_wallet_priority_by_type(type_info_item[1]["type"]), type_info_item[1]["time"]
 
 
 class WalletContext(object):
@@ -70,19 +122,39 @@ class WalletContext(object):
         self._type_info = {}
         self._save_type_info()
 
-    def get_stored_wallets_types(self) -> List[Tuple[str, str]]:
-        stored_wallets = self.stored_wallets
+    def get_stored_wallets_types(
+        self, generic_wallet_type: Optional[str] = None, coin: Optional[str] = None
+    ) -> List[Tuple[str, str]]:
 
-        unknowns = list(zip(stored_wallets - set(self._type_info.keys()), itertools.repeat('unknow')))
+        unknowns = []
+
+        stored_wallets = self.stored_wallets
+        extra_filter_func = _type_info_default_extra_filter_func
+        sort_func = _type_info_default_sort_func
+
+        if generic_wallet_type is not None:
+            # Sort by coin (btc > eth > bsc > ...)
+            # Filter by generic wallet type
+            sort_func = _type_info_by_coin_and_time_sort_func
+            if generic_wallet_type == "hd":
+                extra_filter_func = _type_info_wallet_type_is_hd
+            elif generic_wallet_type == "hw":
+                extra_filter_func = _type_info_wallet_type_is_hw
+        elif coin is not None:
+            # Filter by coin
+            # Sort by wallet_type (derived > normal > private > hw > watch)
+            extra_filter_func = functools.partial(_type_info_filter_wallet_type_by_coin, coin)
+            sort_func = _type_info_by_type_and_time_sort_func
+        else:
+            # We want all stored wallets.
+            unknowns = list(zip(stored_wallets - set(self._type_info.keys()), itertools.repeat('unknow')))
 
         saved_type_info = {
             address_digest: type_info
             for address_digest, type_info in self._type_info.items()
-            if address_digest in stored_wallets
+            if (_type_info_basic_filter_func(address_digest, stored_wallets) and extra_filter_func(type_info["type"]))
         }
-        saved = [
-            (kv[0], kv[1]['type']) for kv in sorted(saved_type_info.items(), key=lambda kv: kv[1]['time'], reverse=True)
-        ]
+        saved = [(kv[0], kv[1]['type']) for kv in sorted(saved_type_info.items(), key=sort_func, reverse=True)]
 
         return unknowns + saved
 
@@ -98,7 +170,7 @@ class WalletContext(object):
         # Essentially, this method equals a simple return of:
         # return not self.is_hw(address_digest) and self.is_derived(address_digest)
         wallet_type = self._type_info.get(address_digest, {}).get('type', '')
-        return '-hw-' not in wallet_type and '-derived-' in wallet_type
+        return _type_info_wallet_type_is_hd(wallet_type)
 
     def is_derived(self, address_digest: str) -> bool:
         wallet_type = self._type_info.get(address_digest, {}).get('type', '')
@@ -106,7 +178,7 @@ class WalletContext(object):
 
     def is_hw(self, address_digest: str) -> bool:
         wallet_type = self._type_info.get(address_digest, {}).get('type', '')
-        return '-hw-' in wallet_type
+        return _type_info_wallet_type_is_hw(wallet_type)
 
     def _save_backup_info(self) -> None:
         self.config.set_key('backupinfo', self._backup_info)
