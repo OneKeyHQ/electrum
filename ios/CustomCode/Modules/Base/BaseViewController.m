@@ -10,9 +10,6 @@
 
 @interface BaseViewController ()
 {
-    UIImage *_navigationBarBackgroundImage;
-    NSDictionary<NSAttributedStringKey, id> *_navigationBarTitleTextAttributes;
-    BOOL _isNavigationBarTranslucent;
     BOOL _interactivePopEnable;
 }
 @end
@@ -38,32 +35,34 @@
     if ([self.navigationController.viewControllers count] > 1) {
         self.navigationItem.leftBarButtonItem = [UIBarButtonItem backBarButtonItemWithTarget:self selector:@selector(backToPrevious)];
     };
-    if (_isNavigationBarTranslucent) {
-        _navigationBarBackgroundImage = [self.navigationController.navigationBar backgroundImageForBarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
-        _isNavigationBarTranslucent = self.navigationController.navigationBar.isTranslucent;
-        _navigationBarTitleTextAttributes = self.navigationController.navigationBar.titleTextAttributes;
-    }
+    [self findHairlineImageViewUnder:self.navigationController.navigationBar].hidden = YES;
+    self.navigationController.navigationBar.translucent = NO;
+    [self.navigationController.navigationBar setBarTintColor:[self navBarTintColor]];
+
     _interactivePopEnable = self.navigationController.interactivePopGestureRecognizer.isEnabled;
+}
+
+- (UIImageView *)findHairlineImageViewUnder:(UIView *)view {
+   if ([view isKindOfClass:UIImageView.class] && view.bounds.size.height <= 1.0) {
+       return (UIImageView *)view;
+   }
+   for (UIView *subview in view.subviews) {
+       UIImageView *imageView = [self findHairlineImageViewUnder:subview];
+       if (imageView) {
+           return imageView;
+       }
+   }
+   return nil;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    if (self.navigationbarTranslucent) {
-        [self.navigationController.navigationBar setTranslucent:YES];
-        [self.navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
-        self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName:[UIColor whiteColor]};
-    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     if (_forbidInteractivePopGestureRecognizer) {
         self.navigationController.interactivePopGestureRecognizer.enabled = NO;
-    }
-    if (self.navigationbarTranslucent) {
-        [self.navigationController.navigationBar setTranslucent:YES];
-        [self.navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
-        self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName:[UIColor whiteColor]};
     }
 }
 
@@ -76,12 +75,6 @@
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
-    if (_navigationbarTranslucent) {
-        UINavigationController *naVC = self.navigationController ?:self.OK_NavigationController;
-        [naVC.navigationBar setTranslucent:_isNavigationBarTranslucent];
-        [naVC.navigationBar setBackgroundImage:_navigationBarBackgroundImage forBarMetrics:UIBarMetricsDefault];
-        naVC.navigationBar.titleTextAttributes = _navigationBarTitleTextAttributes;
-    }
 }
 
 - (void)backButtonWhiteColor {
@@ -98,10 +91,7 @@
 {
      aTableView.tableFooterView = [[UIView alloc] init];
 }
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
+
 - (void)backToPrevious {
     if (self.backToPreviousCallback) {
         self.backToPreviousCallback();
@@ -116,10 +106,11 @@
         [self.navigationController popViewControllerAnimated:YES];
     }
 }
+
 - (void)setNavigationBarBackgroundColorWithClearColor {
     self.navigationController.navigationBar.translucent = YES;
     UIColor *color = [UIColor clearColor];
-    CGRect rect = CGRectMake(0, 0, SCREEN_WIDTH, 64);
+    CGRect rect = CGRectMake(0, 0, 1, 1);
     UIGraphicsBeginImageContext(rect.size);
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextSetFillColorWithColor(context, color.CGColor);
@@ -127,12 +118,15 @@
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     [self.navigationController.navigationBar setBackgroundImage:image forBarMetrics:UIBarMetricsDefault];
-    self.navigationController.navigationBar.clipsToBounds = YES;
 }
 
 - (void)presentNavigationViewController:(UIViewController *)viewController animated:(BOOL)animated completion:(void (^ __nullable)(void))completion{
     UINavigationController *nav = [[UINavigationController alloc]initWithRootViewController:viewController];
     nav.modalPresentationStyle = UIModalPresentationCustom;
     [self presentViewController:nav animated:animated completion:completion];
+}
+
+- (UIColor *)navBarTintColor {
+    return [UIColor whiteColor];
 }
 @end

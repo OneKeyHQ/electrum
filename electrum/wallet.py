@@ -278,6 +278,8 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
             self.db.put('wallet_type', self.wallet_type)
         if self.db.get('status_flag') is None:
             self.db.put('status_flag', self.status_flag)
+        if self.db.get('derived_master_xpub') is None:
+            self.set_derived_master_xpub("")
 
         self.coin = db.get("coin")
         if self.coin is None:
@@ -292,6 +294,12 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
         self.lnworker = LNWallet(self, ln_xprv) if ln_xprv else None
         self.lnbackups = LNBackups(self)
 
+    def set_derived_master_xpub(self, xpub):
+        self.derived_master_xpub = xpub
+        self.db.put("derived_master_xpub", self.derived_master_xpub)
+
+    def get_derived_master_xpub(self):
+        return self.db.get("derived_master_xpub", self.derived_master_xpub)
 
     def set_name(self, name):
         self.name = name

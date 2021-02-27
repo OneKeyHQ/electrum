@@ -87,6 +87,9 @@ public final class BleManager {
                         @Override
                         public void onStop() {
                             super.onStop();
+                            if (connecting) {
+                                connecting = false;
+                            }
                             EventBus.getDefault().post(new BleScanStopEvent());
                         }
 

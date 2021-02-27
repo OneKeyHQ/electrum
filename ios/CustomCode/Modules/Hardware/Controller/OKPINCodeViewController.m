@@ -119,4 +119,14 @@ static NSString *PIN_ON_DEVICE_CODE = @"000000";
 - (IBAction)eyeBtnClick:(UIButton *)sender {
     NSLog(@"eyeBtnClick");
 }
+
+- (void)backToPrevious
+{
+    [kPyCommandsManager callInterface:kInterface_set_user_cancel parameter:@{}];
+    OKWeakSelf(self)
+    [self.OK_TopViewController dismissViewControllerAnimated:YES completion:^{
+        [weakself.navigationController popToRootViewControllerAnimated:YES];
+    }];
+}
+
 @end

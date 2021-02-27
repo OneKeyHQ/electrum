@@ -163,7 +163,7 @@ class MutiBase(Logger):
     def get_cosigner_num(self):
         return self.m,self.n
 
-    def create_storage(self,path, password, hide_type=False, encrypt_storage=True, storage_enc_version=None, coin='btc'):
+    def create_storage(self,path, password, encrypt_storage=True, storage_enc_version=None, coin='btc'):
         encrypt_keystore = any(k.may_have_password() for k in self.keystores)
 
         if self.wallet_type == 'standard':
@@ -198,6 +198,4 @@ class MutiBase(Logger):
         for key, value in self.data.items():
             db.put(key, value)
         db.load_plugins()
-        if not hide_type:
-            db.write(storage)
         return storage, db

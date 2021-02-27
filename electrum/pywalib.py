@@ -5,6 +5,7 @@ import math
 import os
 import json
 import time
+from contextlib import contextmanager
 from enum import Enum
 from os.path import expanduser
 from typing import List
@@ -31,6 +32,7 @@ eth_servers = {}
 
 ETHERSCAN_API_KEY = "R796P9T31MEA24P8FNDZBCA88UHW8YCNVW"
 INFURA_PROJECT_ID = "f001ce716b6e4a33a557f74df6fe8eff"
+CMC_API_KEY = "e134e277-0927-4e00-8fb5-0e14598516b3"
 ROUND_DIGITS = 3
 DEFAULT_GAS_PRICE_WEI = int(20 * 1e9)
 DEFAULT_GAS_LIMIT = 21000
@@ -151,6 +153,7 @@ headers = {
 
 class PyWalib:
     server_config = None
+    coin_symbol = None
     web3 = None
     market_server = None
     tx_list_server = None
@@ -173,7 +176,7 @@ class PyWalib:
         PyWalib.cursor.execute("CREATE TABLE IF NOT EXISTS txlist (tx_hash TEXT PRIMARY KEY, address TEXT, time INTEGER, tx TEXT)")
 
     def init_symbols(self):
-        symbol_list = self.config.get("symbol_list", {'ETH':'','EOS':''})
+        symbol_list = self.config.get("symbol_list", {'ETH':'','HT':'', 'BNB': ''})
         for symbol in symbol_list:
             PyWalib.symbols_price[symbol] = PyWalib.get_currency(symbol, 'BTC')
         global symbol_ticker
@@ -206,10 +209,14 @@ class PyWalib:
             for server in PyWalib.market_server:
                 for name, url in server.items():
                     if name == "coinbase":
-                        url += from_cur
-                        response = requests.get(url, timeout=5, verify=False)
-                        json = response.json()
-                        return [str(Decimal(rate)) for (ccy, rate) in json["data"]["rates"].items() if ccy == to_cur][0]
+                        try:
+                            url += from_cur
+                            response = requests.get(url, timeout=5, verify=False)
+                            json = response.json()
+                            return [str(Decimal(rate)) for (ccy, rate) in json["data"]["rates"].items()
+                                    if ccy == to_cur][0]
+                        except BaseException:
+                            pass
                     # if name == "binance":
                     #     url += from_cur.upper()+to_cur.upper()
                     #     try:
@@ -225,7 +232,7 @@ class PyWalib:
                             obj = response.json()
                             #out_price[name] = obj['data']['price']
                             return obj['data']['price']
-                        except BaseException as e:
+                        except BaseException:
                             pass
                     # elif name == 'huobi':
                     #     url += from_cur.lower() + to_cur.lower()
@@ -237,6 +244,14 @@ class PyWalib:
                     #         pass
                     # elif name == 'ok':
                     #     print("TODO")
+                    elif name == "cmc":
+                        try:
+                            response = requests.get(url, headers={"X-CMC_PRO_API_KEY": CMC_API_KEY},
+                                                    params={"symbol": from_cur, "convert": to_cur}).json()
+                            price = response["data"][from_cur.upper()][0]["quote"][to_cur.upper()]["price"]
+                            return price
+                        except BaseException:
+                            pass
 
             # return_price = 0.0
             # for price in out_price.values():
@@ -255,6 +270,7 @@ class PyWalib:
         PyWalib.market_server = info['Market']
         PyWalib.tx_list_server = info['TxliServer']
         PyWalib.gas_server = info['GasServer']
+        PyWalib.coin_symbol = info["symbol"]
         PyWalib.server_config = info
         for i in info['Provider']:
             if PyWalib.chain_type in i:
@@ -264,6 +280,17 @@ class PyWalib:
         PyWalib.chain_id = chain_id
         if hasattr(PyWalib, "__explorer__"):
             delattr(PyWalib, "__explorer__")
+
+    @classmethod
+    @contextmanager
+    def override_server(cls, config):
+        cur_config = cls.server_config
+
+        try:
+            cls.set_server(config)
+            yield
+        finally:
+            cls.set_server(cur_config)
 
     @staticmethod
     def get_coin_price(from_cur):
@@ -495,7 +522,7 @@ class PyWalib:
                 assert url
                 explorer = TrezorETH(url)
             elif servers.get("etherscan-testnet"):
-                explorer = Etherscan(servers["etherscan-testnet"])
+                explorer = Etherscan(servers["etherscan-testnet"], ETHERSCAN_API_KEY)
             else:
                 provider = None
                 for i in cls.server_config.get("Provider", ()):
@@ -521,7 +548,7 @@ class PyWalib:
             txs = [i for i in txs if i.target and i.target.lower() == address]
 
         output_txs = []
-        last_price = Decimal(cls.get_coin_price("eth") or "0")
+        last_price = Decimal(cls.get_coin_price(cls.coin_symbol) or "0")
 
         for tx in txs:
             block_header = tx.block_header
@@ -561,7 +588,7 @@ class PyWalib:
     @classmethod
     def get_transaction_info(cls, txid) -> dict:
         tx = cls.get_explorer().get_transaction_by_txid(txid)
-        last_price = Decimal(cls.get_coin_price("eth") or "0")
+        last_price = Decimal(cls.get_coin_price(cls.coin_symbol) or "0")
         amount = Decimal(cls.web3.fromWei(tx.value, "ether"))
         fiat = last_price * amount
         fee = Decimal(cls.web3.fromWei(tx.fee.usage * tx.fee.price_per_unit, "ether"))

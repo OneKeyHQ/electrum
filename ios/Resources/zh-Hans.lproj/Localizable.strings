@@ -304,7 +304,7 @@
 "this is already activated device, you can..." = "🔑 这是个已激活的设备，您可以...";
 "Add a new wallet (recommended)" = "添加账户（推荐）";
 "Up to 20 derived wallets can be created, as needed" = "支持 BTC、ETH 等多种公链";
-"Restore the wallet that was created from this hardware device" = "如果您曾经在手机删除过由该设备创建的账户，可以用此办法恢复。";
+"Restore the wallet that was created from this hardware device" = "恢复曾经使用过的钱包";
 "If you have ever deleted a wallet created by the device on your phone, you can recover it this way." = "如果您曾经在手机删除过由该设备创建的账户，可以用此办法恢复。";
 "Create a Condominium wallet (Advanced)" = "创建共管账户（高级）";
 "At least 2 devices are required to cooperate. Before adding, make sure that all hardware devices that want to participate in the public pipe are activated" = "需至少2台设备配合，添加前确认所有想要参与公管的硬件设备 都已激活。";
@@ -501,7 +501,7 @@
 "A change in the device ID of the currently connected device was detected, possibly because the device had been reset. This will cause the state of the device displayed at this point to differ from the real state of your device. Please go back to the previous page and choose again." = "检测到当前连接设备的设备 ID 发生了变化，可能是因为该设备曾进行过重置。 这将导致此刻展示的设备状态与您的设备真实状态有差异。请退回到上一页重新选择。";
 "The device ID is inconsistent" = "设备 ID 不一致";
 "Save" = "保存";
-"Save Success" = "保存成功";
+"Save Success" = "已保存到相册";
 "Save Failed" = "保存失败";
 
 "wallet.btc.selectAddrType" = "选择 BTC 地址类型";

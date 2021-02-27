@@ -123,6 +123,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (id)callInterface:(NSString *)method parameter:(NSDictionary *)parameter;
 - (void)cancel; // 取消上一个操作，让其立即返回, 可以重复调用
 - (void)cancelPIN; // 取消输入PIN操作
+- (void)asyncCall:(NSString *)method parameter:(NSDictionary *)parameter callback:(void(^)(id result))callback; // callback will be dispatched to main queue.
 @property (nonatomic,assign)PyObject *pyInstance;
 //硬件实例
 @property (nonatomic,assign)PyObject *pyHwInstance;

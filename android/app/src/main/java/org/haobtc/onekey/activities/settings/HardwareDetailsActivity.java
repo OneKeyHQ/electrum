@@ -612,6 +612,7 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
                         .post(new VerifyFailedEvent(VerifyFailedEvent.FailedReason.NETWORK_ERROR));
                 break;
         }
+        currentMethod = "";
     }
 
     @Override
@@ -639,6 +640,7 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
                 break;
             default:
         }
+        currentMethod = "";
     }
 
     @Override

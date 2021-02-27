@@ -1,10 +1,6 @@
 package org.haobtc.onekey.card.gpchannel;
 
-/**
- * @Date 2020-07-09  16:29
- * @Author li
- * @Version 1.0
- */
+/** @Date 2020-07-09 16:29 @Author li @Version 1.0 */
 public class GPChannelNatives {
 
     static {
@@ -26,9 +22,11 @@ public class GPChannelNatives {
 
     public static native int nativeGPCOpenSecureChannel(String response);
 
-    public static native String nativeGPCBuildAPDU(long cla, long ins, long p1, long p2, String data);
+    public static native String nativeGPCBuildAPDU(
+            long cla, long ins, long p1, long p2, String data);
 
-    public static native String nativeGPCBuildSafeAPDU(long cla, long ins, long p1, long p2, String data);
+    public static native String nativeGPCBuildSafeAPDU(
+            long cla, long ins, long p1, long p2, String data);
 
     public static native String nativeGPCParseSafeAPDUResponse(String response);
 
@@ -36,4 +34,5 @@ public class GPChannelNatives {
 
     public static native String nativeGPCTLVDecode(String apdu);
 
+    public static native String nativeGPCParseCertificate(String cert);
 }

@@ -29,6 +29,7 @@
 @property (nonatomic,strong)NSDictionary *customFeeDict;
 @property (nonatomic,copy)NSString *fiatCustom;
 @property (nonatomic,copy)NSString *lowfeerate;
+@property (nonatomic,copy)NSString *defaultfeerate;
 @end
 
 @implementation OKWalletInputFeeView
@@ -37,22 +38,28 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-+ (void)showWalletCustomFeeDsize:(NSString *)dsize lowfeerate:(NSString *)lowfeerate sure:(SureBlock)sureBlock  Cancel:(CancelBlock)cancelBlock{
++ (void)showWalletCustomFeeDsize:(NSString *)dsize feerate:(NSString *)feerate lowfeerate:(NSString *)lowfeerate sure:(SureBlock)sureBlock  Cancel:(CancelBlock)cancelBlock{
     OKWalletInputFeeView *inputView = [[[NSBundle mainBundle] loadNibNamed:@"OKWalletInputFeeView" owner:self options:nil] firstObject];
     inputView.cancelBlock = cancelBlock;
     inputView.sureBlock = sureBlock;
     inputView.lowfeerate = lowfeerate;
     inputView.dsize = dsize;
+    inputView.defaultfeerate = feerate;
     if (dsize.length != 0 && dsize != nil) {
         inputView.sizeTF.text = dsize;
     }
     [[NSNotificationCenter defaultCenter] addObserver:inputView selector:@selector(textChange:) name:UITextFieldTextDidChangeNotification object:nil];
-    
+
+    if (feerate.length != 0 && feerate != nil) {
+        inputView.feeTF.text = feerate;
+        [inputView textChange:inputView.feeTF.text];
+    }
+
     [[NSNotificationCenter defaultCenter] addObserver:inputView
                                              selector:@selector(keyboardWillShow:)
                                                  name:UIKeyboardWillShowNotification
                                                object:nil];
-    
+
     [[NSNotificationCenter defaultCenter] addObserver:inputView
                                              selector:@selector(keyboardWillHide:)
                                                  name:UIKeyboardWillHideNotification
@@ -85,7 +92,7 @@
         [kTools tipMessage:MyLocalizedString(@"The rate is lower than the minimum for the current network. Please reenter", nil)];
         return;
     }
-    
+
     if (self.sureBlock) {
         self.sureBlock(self.customFeeDict,self.fiatCustom,self.feeTF.text);
         [self closeBtnClick:nil];
@@ -128,6 +135,7 @@
     self.customFeeDict = dict[@"customer"];
     NSString *feesat = [self.customFeeDict safeStringForKey:@"fee"];
     self.fiatCustom =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":feesat}];
+
     [self refreshFeeUI];
 }
 
@@ -139,7 +147,7 @@
         self.timeStrLabel.text = [NSString stringWithFormat:@"预计时间：约%@分钟",[self.customFeeDict safeStringForKey:@"time"]];
     }else{
         self.sizeTF.text = [self.customFeeDict safeStringForKey:@"size"];
-        self.equaltoLabel.text = [NSString stringWithFormat:@"%@ %@",[self.customFeeDict safeStringForKey:@"fee"],kWalletManager.currentBitcoinUnit];
+        self.equaltoLabel.text = [NSString stringWithFormat:@"%@ %@ ≈ %@%@",[self.customFeeDict safeStringForKey:@"fee"],kWalletManager.currentBitcoinUnit,kWalletManager.currentFiatSymbol,self.fiatCustom];
         self.timeStrLabel.text = [NSString stringWithFormat:@"预计时间：约%@分钟",[self.customFeeDict safeStringForKey:@"time"]];
     }
 }

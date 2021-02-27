@@ -1,0 +1,29 @@
+{
+  "teth": [
+    {
+      "code": "teth",
+      "symbol": "TETH",
+      "name": "Ethereum Ropsten Test Network",
+      "decimals": 18,
+      "icon": "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1595348880"
+    }
+  ],
+  "tbsc": [
+    {
+      "code": "tbsc",
+      "symbol": "TBNB",
+      "name": "Binance Smart Chain Test Network",
+      "decimals": 18,
+      "icon": "https://assets.coingecko.com/coins/images/825/large/binance-coin-logo.png?1547034615"
+    }
+  ],
+  "theco": [
+    {
+      "code": "theco",
+      "symbol": "THT",
+      "name": "Huobi ECO Chain Test Network",
+      "decimals": 18,
+      "icon": "https://assets.coingecko.com/coins/images/2822/large/huobi-token-logo.png?1547036992"
+    }
+  ]
+}

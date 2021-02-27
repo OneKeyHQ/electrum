@@ -13,12 +13,6 @@
 #import <AVFoundation/AVFoundation.h>
 
 @interface OKWalletScanVC () <OKQRCodeScanManagerDelegate>
-{
-    UIImage *_navigationBarBackgroundImage;
-    NSDictionary<NSAttributedStringKey, id> *_navigationBarTitleTextAttributes;
-    BOOL _navigationBarTranslucent;
-    UIColor *_barTintColor;
-}
 
 @property (nonatomic, strong) OKQRCodeScanManager *scanManager;
 @property (weak, nonatomic) IBOutlet OKScanView *scanView;
@@ -34,10 +28,6 @@
     [self setNavigationBarBackgroundColorWithClearColor];
     [self backButtonWhiteColor];
 
-    _navigationBarBackgroundImage = [self.navigationController.navigationBar backgroundImageForBarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
-    _navigationBarTranslucent = self.navigationController.navigationBar.isTranslucent;
-    _navigationBarTitleTextAttributes = self.navigationController.navigationBar.titleTextAttributes;
-    _barTintColor = self.navigationController.navigationBar.barTintColor;
     // 扫描二维码
     __weak typeof(self) weakSelf = self;
     self.scanView.lightBtnEventBlocks = ^(BOOL selected){
@@ -88,15 +78,6 @@
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     [self.scanManager sessionStopRunning];
-    [self resetNavigationBar];
-}
-
-- (void)resetNavigationBar {
-    UINavigationController *naVC = self.navigationController ?:self.OK_NavigationController;
-    [naVC.navigationBar setTranslucent:_navigationBarTranslucent];
-    [naVC.navigationBar setBackgroundImage:_navigationBarBackgroundImage forBarMetrics:UIBarMetricsDefault];
-    naVC.navigationBar.titleTextAttributes = _navigationBarTitleTextAttributes;
-    naVC.navigationBar.barTintColor = _barTintColor;
 }
 
 - (void)didReceiveMemoryWarning {

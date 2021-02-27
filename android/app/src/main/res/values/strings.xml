@@ -1309,8 +1309,8 @@
     <string name="select_new_account_create">选择要创建的新账户</string>
     <string name="create_selected_account">创建选中的账户</string>
     <string name="tip_private_key">私钥可用来在其他 App 或钱包中恢复资产，请认真抄写，确认无误后将其放置在只有您知道的安全地方。</string>
-    <string name="hint_view_record_by_browser">前往区块浏览器查看</string>
+    <string name="hint_view_record_by_browser">查看更多记录</string>
     <string name="action_refresh">刷新</string>
-    <string name="hint_view_record_load_error">记录加载失败</string>
+    <string name="hint_view_record_load_error">数据获取失败</string>
     <string name="hint_unknown_error">未知错误</string>
 </resources>

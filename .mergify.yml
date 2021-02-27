@@ -3,6 +3,7 @@ pull_request_rules:
     conditions:
       - "#approved-reviews-by>=2"
       - author=@OneKeyHQ/all
+      - "-draft"
     actions:
       merge:
         method: rebase
