@@ -111,7 +111,6 @@
     OKShareActivity* shareActivity = [[OKShareActivity alloc]initWithImage:shareImage
                                                              andShareTitle:shareTitle];
     NSArray* shareItems = [[NSArray alloc]initWithObjects:shareActivity, nil];
-    
     [OKSystemShareView showSystemShareViewWithActivityItems:shareItems parentVc:self cancelBlock:^{
 
     } shareCompletionBlock:^{
