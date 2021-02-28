@@ -503,6 +503,7 @@
 "Save" = "保存";
 "Save Success" = "已保存到相册";
 "Save Failed" = "保存失败";
+"Share QRCode" = "分享 %@ 收款码";
 
 "wallet.btc.selectAddrType" = "选择 BTC 地址类型";
 "wallet.btc.selectAddrTypeTip" = "地址类型选择后无法更改，推荐使用兼容隔离见证 SegWit。";

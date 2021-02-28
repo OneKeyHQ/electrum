@@ -8,6 +8,7 @@
 
 #import "OKReceiveCoinViewController.h"
 #import "OKShareView.h"
+#import "OKShareActivity.h"
 #import "OKMatchingInCirclesViewController.h"
 
 @interface OKReceiveCoinViewController ()<OKHwNotiManagerDelegate>
@@ -104,7 +105,14 @@
 
 - (IBAction)shareBtnClick:(UIButton *)sender {
     OKShareView *shareView = [OKShareView initViewWithImage:self.QRCodeImageView.image coinType:self.coinType address:self.walletAddressLabel.text];
-    [OKSystemShareView showSystemShareViewWithActivityItems:@[[shareView convertImage2WithOptions]] parentVc:self cancelBlock:^{
+    UIImage* shareImage = [shareView convertImage2WithOptions];
+    NSString* shareTitleString = MyLocalizedString(@"Share QRCode", nil);
+    NSString* shareTitle = [NSString stringWithFormat:shareTitleString,[self.coinType uppercaseString]];
+    OKShareActivity* shareActivity = [[OKShareActivity alloc]initWithImage:shareImage
+                                                             andShareTitle:shareTitle];
+    NSArray* shareItems = [[NSArray alloc]initWithObjects:shareActivity, nil];
+    
+    [OKSystemShareView showSystemShareViewWithActivityItems:shareItems parentVc:self cancelBlock:^{
 
     } shareCompletionBlock:^{
 
