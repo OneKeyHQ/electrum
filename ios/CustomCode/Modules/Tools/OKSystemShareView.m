@@ -15,7 +15,6 @@
     UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:items applicationActivities:nil];
     UIActivityViewControllerCompletionWithItemsHandler itemsBlock = ^(UIActivityType __nullable activityType, BOOL completed, NSArray * __nullable returnedItems, NSError * __nullable activityError){
         [vc dismissViewControllerAnimated:YES completion:nil];
-        
         if (completed) {
             if (shareCompletion) {
                 shareCompletion();
@@ -28,7 +27,6 @@
     };
     activityVC.completionWithItemsHandler = itemsBlock;
     [vc presentViewController:activityVC animated:YES completion:nil];
-    
     return activityVC;
 }
 
