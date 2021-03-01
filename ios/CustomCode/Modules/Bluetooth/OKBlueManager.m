@@ -133,7 +133,7 @@ static dispatch_once_t once;
         dispatch_async(dispatch_get_main_queue(), ^{
             // 从block中取到值，再回到主线程
             if ([weakSelf respondsToSelector:@selector(connectFailed)]) {
-                [weakSelf connectFailed];
+                [weakSelf connectFailed:peripheral];
             }
         });
     }];
@@ -324,7 +324,7 @@ static dispatch_once_t once;
 
 
 /// 连接失败[由block回主线程]
-- (void)connectFailed {
+- (void)connectFailed:(CBPeripheral *)peripheral {
     if (self.needConnectName.length > 0) {
         if (self.connectedComplete) {
             self.connectedComplete(NO);
@@ -339,6 +339,9 @@ static dispatch_once_t once;
 
 /// 获取当前断开的设备[由block回主线程]
 - (void)disconnectPeripheral:(CBPeripheral *)peripheral {
+    if ([self.currentPeripheral.identifier isEqual:peripheral.identifier]) {
+        self.currentPeripheral = nil;
+    }
     if ([self.delegate respondsToSelector:@selector(disconnectPeripheral:)]) {
         [self.delegate disconnectPeripheral:peripheral];
     }

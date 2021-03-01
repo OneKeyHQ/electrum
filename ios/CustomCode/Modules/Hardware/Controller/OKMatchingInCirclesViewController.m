@@ -97,7 +97,7 @@
                     [weakself.view layoutIfNeeded];
                 }];
             }else{
-                if ([kOKBlueManager isConnectedName:model.deviceInfo.ble_name]) {
+                if ([kOKBlueManager isConnectedName:model.deviceInfo.ble_name] && kOKBlueManager.currentDeviceID != nil) {
                     NSDictionary *dict = [[[OKDevicesManager sharedInstance]getDeviceModelWithID:kOKBlueManager.currentDeviceID]json];
                     [self subscribeComplete:dict characteristic:nil];
                 }else{
@@ -282,15 +282,17 @@
         return;
     }
     if (jsonDict == nil) {
-        [kTools tipMessage:MyLocalizedString(@"This operation is not supported if the current device is not active, or if the special device is backed up", nil)];
-        [MBProgressHUD hideHUDForView:self.view animated:YES];
-        [weakself.navigationController popViewControllerAnimated:YES];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [kTools tipMessage:MyLocalizedString(@"This operation is not supported if the current device is not active, or if the special device is backed up", nil)];
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
+            [weakself.navigationController popViewControllerAnimated:YES];
+        });
         return;
     }
     OKDeviceModel *deviceModel  = [[OKDeviceModel alloc]initWithJson:jsonDict];
     kOKBlueManager.currentDeviceID = deviceModel.deviceInfo.device_id;
     [[OKDevicesManager sharedInstance]addDevices:deviceModel];
-    
+
     if (deviceModel.bootloaderMode) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [MBProgressHUD hideHUDForView:self.view animated:YES];
@@ -336,8 +338,15 @@
                                 OKSpecialEquipmentViewController *SpecialEquipmentVc = [OKSpecialEquipmentViewController specialEquipmentViewController];
                                 [self.navigationController pushViewController:SpecialEquipmentVc animated:YES];
                             }else{
-                                OKActivateDeviceSelectViewController *activateDeviceVc = [OKActivateDeviceSelectViewController activateDeviceSelectViewController];
-                                [self.navigationController pushViewController:activateDeviceVc animated:YES];
+                                if (weakself.isHwRestore) {
+                                    [kTools tipMessage:MyLocalizedString(@"This operation only supports BACKUP ONLY special devices", nil)];
+                                    [kOKBlueManager disconnectAllPeripherals];
+                                    [weakself.navigationController popToRootViewControllerAnimated:YES];
+                                    return;
+                                }else{
+                                    OKActivateDeviceSelectViewController *activateDeviceVc = [OKActivateDeviceSelectViewController activateDeviceSelectViewController];
+                                    [self.navigationController pushViewController:activateDeviceVc animated:YES];
+                                }
                             }
                         }else{
                             OKDiscoverNewDeviceViewController *discoverNewDeviceVc = [OKDiscoverNewDeviceViewController discoverNewDeviceViewController];

@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)matchingInCirclesViewController;
 @property (nonatomic,assign)OKMatchingType type;
 @property (nonatomic,assign)OKMatchingFromWhere where;
+@property (nonatomic,assign)BOOL isHwRestore;
 @property (nonatomic,copy)NSString *words;
 @end
 

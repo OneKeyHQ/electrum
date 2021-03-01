@@ -78,7 +78,7 @@ typedef enum {
     [self.confirmBtn setLayerRadius:20];
     [self.confirmBtn setTitle:MyLocalizedString(@"determine", nil) forState:UIControlStateNormal];
     [self.textViewBgView setLayerBoarderColor:HexColor(0xDBDEE7) width:1 radius:20];
-    
+
 }
 
 - (void)viewDidLayoutSubviews
@@ -111,7 +111,7 @@ typedef enum {
     _segHead.deSelectColor = [UIColor blackColor];
     _segHead.bottomLineHeight = 0;
     _segHead.bottomLineColor = [UIColor lightGrayColor];
-    
+
     _segHead.slideScale = 0.98;
     OKWeakSelf(self)
     [MLMSegmentManager associateHead:_segHead withScroll:nil completion:^{
@@ -221,13 +221,17 @@ typedef enum {
             OKWeakSelf(self)
             dispatch_async(dispatch_get_global_queue(0, 0), ^{
                id result = [kPyCommandsManager callInterface:kInterfacesign_message parameter:@{@"address":kWalletManager.currentWalletInfo.addr,@"message":message}];
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    NSLog(@"dispatch_async");
-                    OKVerifySignatureViewController *verifySignatureVc = [OKVerifySignatureViewController initWithStoryboardName:@"Signature" identifier:@"OKVerifySignatureViewController"];
-                    NSDictionary *dict = @{@"message":weakself.textView.text,@"address":kWalletManager.currentWalletInfo.addr,@"signature":result};
-                    verifySignatureVc.signMessageInfo = dict;
-                    [self.navigationController pushViewController:verifySignatureVc animated:YES];
-                });
+                if (result != nil) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        NSLog(@"dispatch_async");
+                        OKVerifySignatureViewController *verifySignatureVc = [OKVerifySignatureViewController initWithStoryboardName:@"Signature" identifier:@"OKVerifySignatureViewController"];
+                        NSDictionary *dict = @{@"message":weakself.textView.text,@"address":kWalletManager.currentWalletInfo.addr,@"signature":result};
+                        verifySignatureVc.signMessageInfo = dict;
+                        [self.navigationController pushViewController:verifySignatureVc animated:YES];
+                    });
+                }else{
+                    [kTools tipMessage:MyLocalizedString(@"Signature error or cancellation", nil)];
+                }
             });
         }
             break;
@@ -297,6 +301,7 @@ typedef enum {
 #pragma mark - OKHwNotiManagerDelegate
 - (void)hwNotiManagerDekegate:(OKHwNotiManager *)hwNoti type:(OKHWNotiType)type
 {
+    OKWeakSelf(self)
     if (type == OKHWNotiTypeSendCoinConfirm) {
         dispatch_async(dispatch_get_main_queue(), ^{
             NSDictionary* result =  [kPyCommandsManager callInterface:kInterfaceget_tx_info_from_raw parameter:@{@"raw_tx":self.textView.text}];
@@ -304,8 +309,23 @@ typedef enum {
                 [self showPreInfoView:result];
             }
         });
-    }else if (type == OKHWNotiTypeKeyConfirm) {
-       
+    }else if(type == OKHWNotiTypePin_Current){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            OKPINCodeViewController *pinCodeVc = [OKPINCodeViewController PINCodeViewController:^(NSString * _Nonnull pin) {
+                dispatch_async(dispatch_get_global_queue(0, 0), ^{
+                    id result = [kPyCommandsManager callInterface:kInterfaceset_pin parameter:@{@"pin":pin}];
+                    if (result != nil) {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [weakself.OK_TopViewController dismissViewControllerWithCount:1 animated:YES complete:^{
+
+                            }];
+                        });
+                        return;
+                    }
+                });
+            }];
+            [weakself.OK_TopViewController presentViewController:pinCodeVc animated:YES completion:nil];
+        });
     }
 }
 
@@ -340,4 +360,5 @@ typedef enum {
         [self.navigationController popToRootViewControllerAnimated:YES];
     }
 }
+
 @end

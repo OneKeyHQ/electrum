@@ -148,10 +148,30 @@
 #pragma mark - OKHwNotiManagerDelegate
 - (void)hwNotiManagerDekegate:(OKHwNotiManager *)hwNoti type:(OKHWNotiType)type
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        self.startChekBgView.hidden = YES;
-        self.hwDescLabel.text = MyLocalizedString(@"Hardware wallet checking", nil);
-    });
+    OKWeakSelf(self)
+    if (type == OKHWNotiTypeVerify_Address_Confirm) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.startChekBgView.hidden = YES;
+            self.hwDescLabel.text = MyLocalizedString(@"Hardware wallet checking", nil);
+        });
+    }else if(type == OKHWNotiTypePin_Current){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            OKPINCodeViewController *pinCodeVc = [OKPINCodeViewController PINCodeViewController:^(NSString * _Nonnull pin) {
+                dispatch_async(dispatch_get_global_queue(0, 0), ^{
+                    id result = [kPyCommandsManager callInterface:kInterfaceset_pin parameter:@{@"pin":pin}];
+                    if (result != nil) {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [weakself.OK_TopViewController dismissViewControllerWithCount:1 animated:YES complete:^{
+
+                            }];
+                        });
+                        return;
+                    }
+                });
+            }];
+            [weakself.OK_TopViewController presentViewController:pinCodeVc animated:YES completion:nil];
+        });
+    }
 }
 
 

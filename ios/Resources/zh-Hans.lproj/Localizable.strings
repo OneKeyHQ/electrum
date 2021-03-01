@@ -518,3 +518,6 @@
 "cs.ticket" = "工单";
 "cs.ticket.submit" = "提交工单";
 "cs.ticket.history" = "查看历史工单";
+
+"This operation only supports BACKUP ONLY special devices" = "该操作仅支持backup only特殊设备";
+"Signature error or cancellation" = "签名出错或取消";
