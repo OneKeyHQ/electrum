@@ -3319,7 +3319,7 @@
 					"$(SRCROOT)/../CustomCode/Categories",
 				);
 				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = so.onekey.testflight2333;
+				PRODUCT_BUNDLE_IDENTIFIER = so.onekey.testflight;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				STRIP_INSTALLED_PRODUCT = NO;
