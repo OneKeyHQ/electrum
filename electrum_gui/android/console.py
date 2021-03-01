@@ -358,6 +358,7 @@ class AndroidCommands(commands.Commands):
         if coin in self.coins:  # eth base
             address = self.pywalib.web3.toChecksumAddress(address)
             balance_info = self.wallet.get_all_balance(address, self.coins[coin]["symbol"])
+            sum_fiat = sum(i.get("fiat", 0) for i in balance_info.values())
             main_coin_balance_info = balance_info.pop(coin, dict())
 
             out["coin"] = coin
@@ -366,8 +367,21 @@ class AndroidCommands(commands.Commands):
             out["fiat"] = (
                 self.daemon.fx.format_amount_and_units(main_coin_balance_info.get("fiat", 0) * COIN) or f"0 {self.ccy}"
             )
-            out["tokens"] = [{"address": k, **v} for k, v in balance_info.items()]
-            out["sum_fiat"] = out["fiat"]
+            sorted_tokens = sorted(
+                balance_info.values(),
+                key=lambda i: (Decimal(i.get("fiat", 0)), Decimal(i.get("balance", 0))),
+                reverse=True,
+            )
+            out["tokens"] = [
+                {
+                    "coin": i.get("symbol"),
+                    "address": i.get("address"),
+                    "balance": i.get("balance", "0"),
+                    "fiat": self.daemon.fx.format_amount_and_units(i.get("fiat", 0) * COIN) or f"0 {self.ccy}",
+                }
+                for i in sorted_tokens
+            ]
+            out["sum_fiat"] = self.daemon.fx.format_amount_and_units(sum_fiat * COIN) or f"0 {self.ccy}"
         elif (
             self.network
             and self.network.is_connected()
@@ -3526,18 +3540,24 @@ class AndroidCommands(commands.Commands):
                     with self.pywalib.override_server(self.coins[coin]):
                         checksum_from_address = self.pywalib.web3.toChecksumAddress(wallet.get_addresses()[0])
                         balances_info = wallet.get_all_balance(checksum_from_address, self.coins[coin]["symbol"])
+                        sorted_balances = [balances_info.pop(coin, {})]
+                        sorted_balances.extend(
+                            sorted(
+                                balances_info.values(),
+                                key=lambda i: (Decimal(i.get("fiat", 0)), Decimal(i.get("balance", 0))),
+                                reverse=True,
+                            )
+                        )
                         wallet_balances = []
-                        for symbol, info in balances_info.items():
-                            copied_info = dict(info)
-                            copied_info["fiat"] = (
-                                self.daemon.fx.format_amount_and_units(copied_info["fiat"] * COIN) or f"0 {self.ccy}"
-                            )
-                            wallet_balances.append(
-                                {
-                                    "coin": symbol,
-                                    **copied_info,
-                                }
-                            )
+                        for info in sorted_balances:
+                            copied_info = {
+                                "coin": info.get("symbol") or coin,
+                                "address": info.get("address"),
+                                "balance": info.get("balance", "0"),
+                                "fiat": self.daemon.fx.format_amount_and_units(info.get("fiat", 0) * COIN)
+                                or f"0 {self.ccy}",
+                            }
+                            wallet_balances.append(copied_info)
                             fiat = Decimal(copied_info["fiat"].split()[0].replace(",", ""))
                             all_balance += fiat
 
@@ -3917,20 +3937,27 @@ class AndroidCommands(commands.Commands):
             addrs = self.wallet.get_addresses()
             checksum_from_address = self.pywalib.web3.toChecksumAddress(addrs[0])
             balance_info = self.wallet.get_all_balance(checksum_from_address, self.coins[coin]["symbol"])
-            all_balance = Decimal(0)
-            for key, val in balance_info.items():
-                all_balance += val['fiat']
+            sum_fiat = sum(i.get("fiat", 0) for i in balance_info.values())
+            sum_fiat = self.daemon.fx.format_amount_and_units(sum_fiat * COIN) or f"0 {self.ccy}"
 
-            all_balance = self.daemon.fx.format_amount_and_units(all_balance * COIN) or f"0 {self.ccy}"
+            sorted_balances = [balance_info.pop(coin, {})]
+            sorted_balances.extend(
+                sorted(
+                    balance_info.values(),
+                    key=lambda i: (Decimal(i.get("fiat", 0)), Decimal(i.get("balance", 0))),
+                    reverse=True,
+                )
+            )
             wallet_balances = [
                 {
-                    "coin": key,
-                    **val,
-                    "fiat": self.daemon.fx.format_amount_and_units(val["fiat"] * COIN) or f"0 {self.ccy}",
+                    "coin": i.get("symbol") or coin,
+                    "address": i.get("address"),
+                    "balance": i.get("balance", "0"),
+                    "fiat": self.daemon.fx.format_amount_and_units(i.get("fiat", 0) * COIN) or f"0 {self.ccy}",
                 }
-                for key, val in balance_info.items()
+                for i in sorted_balances
             ]
-            info = {"all_balance": all_balance, "wallets": wallet_balances}
+            info = {"all_balance": sum_fiat, "wallets": wallet_balances}
         else:
             c, u, x = self.wallet.get_balance()
             balance = c + u
@@ -3973,13 +4000,22 @@ class AndroidCommands(commands.Commands):
                 addrs = self.wallet.get_addresses()
                 checksum_from_address = self.pywalib.web3.toChecksumAddress(addrs[0])
                 balance_info = self.wallet.get_all_balance(checksum_from_address, self.coins[coin]["symbol"])
+                sorted_balances = [balance_info.pop(coin, {})]
+                sorted_balances.extend(
+                    sorted(
+                        balance_info.values(),
+                        key=lambda i: (Decimal(i.get("fiat", 0)), Decimal(i.get("balance", 0))),
+                        reverse=True,
+                    )
+                )
                 wallet_balances = [
                     {
-                        "coin": key,
-                        "balance": val['balance'],
-                        "fiat": self.daemon.fx.format_amount_and_units(val["fiat"] * COIN) or f"0 {self.ccy}",
+                        "coin": i.get("symbol") or coin,
+                        "address": i.get("address"),
+                        "balance": i.get("balance", "0"),
+                        "fiat": self.daemon.fx.format_amount_and_units(i.get("fiat", 0) * COIN) or f"0 {self.ccy}",
                     }
-                    for key, val in balance_info.items()
+                    for i in sorted_balances
                 ]
                 info = {"name": name, "label": self.wallet.get_name(), "wallets": wallet_balances}
                 return json.dumps(info, cls=DecimalEncoder)

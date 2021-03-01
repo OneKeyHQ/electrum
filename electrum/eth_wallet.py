@@ -202,7 +202,7 @@ class Abstract_Eth_Wallet(ABC):
                 and self.total_balance.get("time")
                 and time.time() - self.total_balance["time"] <= 10  # Only cache for 10s
         ):
-            return self.total_balance["balance_info"]
+            return self.total_balance["balance_info"].copy()
 
         last_price = PyWalib.get_coin_price(from_coin) or "0"
         _, balance = PyWalib.get_balance(wallet_address)
@@ -212,14 +212,16 @@ class Abstract_Eth_Wallet(ABC):
         }
         for contract_address, contract in self.contacts.items():
             symbol, balance = PyWalib.get_balance(wallet_address, contract)
+            token_last_price = PyWalib.get_coin_price(from_coin, contract_address=contract_address)
             balance_info[contract_address] = {
+                'symbol': symbol,
+                'address': contract_address,
                 'balance': Decimal(balance),
-                'fiat': "0",  # TODO Currently does not support getting price of tokens
-                'address': contract_address
+                'fiat': Decimal(balance) * Decimal(token_last_price)
             }
 
         self.set_total_balance(balance_info)
-        return balance_info
+        return balance_info.copy()
 
     def get_all_token_address(self):
         return list(self.contacts.keys())
