@@ -2702,21 +2702,21 @@
 
 /* Begin PBXShellScriptBuildPhase section */
 		3B5031824CAC348952A2C857 /* [CP] Prepare Artifacts */ = {	
-			isa = PBXShellScriptBuildPhase;	
-			buildActionMask = 2147483647;	
-			files = (	
-			);	
-			inputFileListPaths = (	
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-OneKey/Pods-OneKey-artifacts-${CONFIGURATION}-input-files.xcfilelist",	
-			);	
-			name = "[CP] Prepare Artifacts";	
-			outputFileListPaths = (	
+			);
+			name = "[CP] Prepare Artifacts";
+			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-OneKey/Pods-OneKey-artifacts-${CONFIGURATION}-output-files.xcfilelist",	
-			);	
-			runOnlyForDeploymentPostprocessing = 0;	
-			shellPath = /bin/sh;	
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-OneKey/Pods-OneKey-artifacts.sh\"\n";	
-			showEnvVarsInLog = 0;	
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-OneKey/Pods-OneKey-artifacts.sh\"\n";
+			showEnvVarsInLog = 0;
 		};
 		60796F2F1919C7E700A9926B /* Refresh Python source */ = {
 			isa = PBXShellScriptBuildPhase;
