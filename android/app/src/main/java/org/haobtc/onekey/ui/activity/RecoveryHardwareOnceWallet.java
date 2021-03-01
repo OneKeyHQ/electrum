@@ -8,11 +8,9 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import com.google.common.base.Strings;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.ObservableOnSubscribe;
-import io.reactivex.rxjava3.core.ObservableSource;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.core.SingleOnSubscribe;
 import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -46,7 +44,6 @@ public class RecoveryHardwareOnceWallet extends BaseActivity implements OnFindWa
 
     private RecoveryWalletFromHdFragment fromHdFragment;
     private OnFindWalletInfoCallback mOnFindWalletInfoCallback = null;
-    private Disposable mDisposable;
 
     /** init */
     @Override
@@ -70,8 +67,8 @@ public class RecoveryHardwareOnceWallet extends BaseActivity implements OnFindWa
     /** 获取用于个人钱包的扩展公钥 */
     private void getXpubP2wpkh() {
         Disposable disposable =
-                Observable.create(
-                                (ObservableOnSubscribe<PyResponse<String>>)
+                Single.create(
+                                (SingleOnSubscribe<PyResponse<String>>)
                                         emitter -> {
                                             PyResponse<String> response =
                                                     PyEnv.getXpubP2wpkh(
@@ -79,26 +76,20 @@ public class RecoveryHardwareOnceWallet extends BaseActivity implements OnFindWa
                                                                     .getDeviceWay(),
                                                             PyConstant.ADDRESS_TYPE_P2WPKH);
                                             if (Strings.isNullOrEmpty(response.getErrors())) {
-                                                emitter.onNext(response);
-                                                emitter.onComplete();
+                                                emitter.onSuccess(response);
                                             } else {
                                                 emitter.onError(
                                                         new Throwable(response.getErrors()));
                                             }
                                         })
                         .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .observeOn(Schedulers.io())
-                        .flatMap(
-                                (Function<
-                                                PyResponse<String>,
-                                                ObservableSource<PyResponse<CreateWalletBean>>>)
-                                        response -> getRecoveryXpub(response.getResult()))
+                        .flatMap(response -> getRecoveryXpub(response.getResult()))
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 this::dealWithResponse,
                                 throwable -> {
                                     if (!Strings.isNullOrEmpty(throwable.getMessage())) {
+
                                         mToast(throwable.getMessage());
                                     }
                                     finish();
@@ -148,15 +139,14 @@ public class RecoveryHardwareOnceWallet extends BaseActivity implements OnFindWa
         }
     }
 
-    private Observable<PyResponse<CreateWalletBean>> getRecoveryXpub(String string) {
-        return Observable.create(
+    private Single<PyResponse<CreateWalletBean>> getRecoveryXpub(String string) {
+        return Single.create(
                 emitter -> {
                     String xpubs =
                             "[[\"" + string + "\", \"" + FindNormalDeviceActivity.deviceId + "\"]]";
                     PyResponse<CreateWalletBean> response = PyEnv.recoveryXpubWallet(xpubs, true);
                     if (Strings.isNullOrEmpty(response.getErrors())) {
-                        emitter.onNext(response);
-                        emitter.onComplete();
+                        emitter.onSuccess(response);
                     } else {
                         emitter.onError(new Throwable(response.getErrors()));
                     }

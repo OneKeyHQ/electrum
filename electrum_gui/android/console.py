@@ -3188,7 +3188,7 @@ class AndroidCommands(commands.Commands):
                 bip39_derivation = self.get_coin_derived_path(account_id, coin, purpose=xtype)
                 if not AndroidCommands._recovery_flag:
                     self.recovery_wallets.clear()
-                    AndroidCommands._recovery_flag = True
+                    AndroidCommands._set_recovery_flag(True)
                     raise UserCancel()
                 if not hw:
                     self.recovery_create(
@@ -3206,7 +3206,6 @@ class AndroidCommands(commands.Commands):
                     self.recovery_import_create_hw_wallet(account_id, name, 1, 1, xpub, coin=coin)
             return True
         except BaseException as e:
-            AndroidCommands._recovery_flag = True
             raise e
 
     def recovery_wallet(
@@ -3214,6 +3213,7 @@ class AndroidCommands(commands.Commands):
     ):
         derived = DerivedInfo(self.config)
         derived.init_recovery_num()
+        AndroidCommands._set_recovery_flag(True)
         for derived_xpub, derived_wallet in self.derived_info.items():
             if xpub == derived_xpub:
                 for derived_info in derived_wallet:
