@@ -22,7 +22,7 @@
                                 <color key="backgroundColor" red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <inset key="separatorInset" minX="31" minY="0.0" maxX="16" maxY="0.0"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" rowHeight="64" id="9Sc-ty-ztw">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="OKTokenSectionCell" rowHeight="64" id="9Sc-ty-ztw" customClass="OKTokenSectionCell">
                                         <rect key="frame" x="0.0" y="28" width="375" height="64"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="9Sc-ty-ztw" id="38W-tS-K9h">
@@ -42,6 +42,9 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                         <color key="backgroundColor" red="0.97227032230640986" green="0.97920274172980748" blue="1" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <connections>
+                                            <outlet property="titleLabel" destination="OSY-Yc-Xqg" id="xdg-05-yQd"/>
+                                        </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="OKTokenCell" rowHeight="64" id="JSX-9z-nKq" customClass="OKTokenCell">
                                         <rect key="frame" x="0.0" y="92" width="375" height="64"/>
@@ -118,8 +121,8 @@
                                     </tableViewCell>
                                 </prototypes>
                                 <connections>
-                                    <outlet property="dataSource" destination="wLW-7M-Azx" id="XTD-qF-o2y"/>
-                                    <outlet property="delegate" destination="wLW-7M-Azx" id="Saj-kd-xBw"/>
+                                    <outlet property="dataSource" destination="wLW-7M-Azx" id="W3q-AX-XJz"/>
+                                    <outlet property="delegate" destination="wLW-7M-Azx" id="WcE-Or-A5A"/>
                                 </connections>
                             </tableView>
                         </subviews>
@@ -133,7 +136,7 @@
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="tableView" destination="q93-Wt-lAO" id="FI1-ji-xbt"/>
+                        <outlet property="tableView" destination="q93-Wt-lAO" id="6f5-3s-NJz"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="gVj-Dr-i89" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

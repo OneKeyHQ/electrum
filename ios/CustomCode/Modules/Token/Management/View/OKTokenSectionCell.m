@@ -7,18 +7,13 @@
 //
 
 #import "OKTokenSectionCell.h"
+@interface OKTokenSectionCell()
+@property (weak, nonatomic) IBOutlet UILabel *titleLabel;
+@end
 
 @implementation OKTokenSectionCell
 
-- (void)awakeFromNib {
-    [super awakeFromNib];
-    // Initialization code
+- (void)setTitle:(NSString *)title {
+    self.titleLabel.text = title;
 }
-
-- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
-    [super setSelected:selected animated:animated];
-
-    // Configure the view for the selected state
-}
-
 @end

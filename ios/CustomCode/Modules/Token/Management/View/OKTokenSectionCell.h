@@ -11,6 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OKTokenSectionCell : UITableViewCell
+@property (nonatomic, copy)NSString *title;
 
 @end
 

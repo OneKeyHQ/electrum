@@ -65,5 +65,7 @@
 #import "OKDevicesManager.h"
 #import "MBProgressHUD.h"
 #import "OKPINCodeViewController.h"
+#import "UIColor+OKAppreance.h"
+#import "UIFont+OKAppreance.h"
 
 #endif /* OneKeyImport_h */
