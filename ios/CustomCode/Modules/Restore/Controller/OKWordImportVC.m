@@ -142,6 +142,7 @@
 {
     OKMatchingInCirclesViewController *matchVc = [OKMatchingInCirclesViewController matchingInCirclesViewController];
     matchVc.where = OKMatchingFromWhereDis;
+    matchVc.isHwRestore = YES;
     BaseNavigationController *baseVc = [[BaseNavigationController alloc]initWithRootViewController:matchVc];
     [self.OK_TopViewController presentViewController:baseVc animated:YES completion:nil];
 }

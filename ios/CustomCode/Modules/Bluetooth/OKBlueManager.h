@@ -124,7 +124,7 @@ typedef void(^ConnectedComplete)(BOOL isSuccess);
 - (BOOL)isConnectedName:(NSString *)name;
 - (void)startScanAndConnectWithName:(NSString *)name complete:(ConnectedComplete)complete;
 @property (nonatomic,copy)NSString *currentDeviceID;
-@property (nonatomic,strong)CBPeripheral *currentPeripheral;
+@property (nonatomic,strong)CBPeripheral * __nullable currentPeripheral;
 @property (nonatomic, weak) id<OKBabyBluetoothManageDelegate> delegate;
 - (CBCentralManager *)centralManager;
 

@@ -322,7 +322,14 @@ typedef enum {
                 break;
         }
     }
-    NSString *biggestAmount = [NSString stringWithFormat:@"%lf",[self.balanceLabel.text doubleValue] - [fee doubleValue]];
+    NSDecimalNumber *balanceNum = [NSDecimalNumber decimalNumberWithString:self.balanceLabel.text];
+    NSDecimalNumber *feeNum = [NSDecimalNumber decimalNumberWithString:fee];
+    NSDecimalNumber *resultNum = [balanceNum decimalNumberBySubtracting:feeNum];
+    if ([resultNum compare:[NSDecimalNumber decimalNumberWithString:@"0"]] == NSOrderedAscending) {
+        [kTools tipMessage:MyLocalizedString(@"Lack of balance", nil)];
+        return;
+    }
+    NSString *biggestAmount = [NSString stringWithFormat:@"%@",resultNum.stringValue];
     self.amountTextField.text = biggestAmount;
     _isClickBiggest = YES;
     [self changeBtn];
@@ -479,7 +486,13 @@ typedef enum {
 {
     OKSendTxPreInfoViewController *sendVc = [OKSendTxPreInfoViewController initViewControllerWithStoryboardName:@"Tab_Wallet"];
     OKSendTxPreModel *model = [OKSendTxPreModel new];
-    model.amount = self.amountTextField.text;
+    NSString *amount = self.amountTextField.text;
+    if (_isClickBiggest) {
+        NSDecimalNumber *blance = [NSDecimalNumber decimalNumberWithString:self.balanceLabel.text];
+        NSDecimalNumber *fee = [NSDecimalNumber decimalNumberWithString:[dict safeStringForKey:@"fee"]];
+        amount = [[blance decimalNumberBySubtracting:fee] stringValue];
+    }
+    model.amount = amount;
     model.coinType = self.coinTypeLabel.text;
     model.walletName = kWalletManager.currentWalletInfo.label;
     model.sendAddress = kWalletManager.currentWalletInfo.addr;
@@ -552,10 +565,28 @@ typedef enum {
 #pragma mark - OKHwNotiManagerDelegate
 - (void)hwNotiManagerDekegate:(OKHwNotiManager *)hwNoti type:(OKHWNotiType)type
 {
+    OKWeakSelf(self)
     if (type == OKHWNotiTypeSendCoinConfirm) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [MBProgressHUD hideHUDForView:self.view animated:YES];
             [self showPreInfoView:self.hwPredata fiat:self.hwFiat];
+        });
+    }else if(type == OKHWNotiTypePin_Current){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            OKPINCodeViewController *pinCodeVc = [OKPINCodeViewController PINCodeViewController:^(NSString * _Nonnull pin) {
+                dispatch_async(dispatch_get_global_queue(0, 0), ^{
+                    id result = [kPyCommandsManager callInterface:kInterfaceset_pin parameter:@{@"pin":pin}];
+                    if (result != nil) {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [weakself.OK_TopViewController dismissViewControllerWithCount:1 animated:YES complete:^{
+
+                            }];
+                        });
+                        return;
+                    }
+                });
+            }];
+            [weakself.OK_TopViewController presentViewController:pinCodeVc animated:YES completion:nil];
         });
     }
 }
@@ -758,6 +789,7 @@ typedef enum {
 }
 - (IBAction)restoreDefaultOptionsBtnClick:(UIButton *)sender {
     _custom = NO;
+    [self moreBtnClick:nil];
     [self changUIForCustom];
 }
 
