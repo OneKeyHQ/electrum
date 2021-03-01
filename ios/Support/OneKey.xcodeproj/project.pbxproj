@@ -523,6 +523,8 @@
 		B1224B57B4D99A578C974400 /* _raw_cbc.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 55E241F594223A4D0246CAB6 /* _raw_cbc.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B29C483197B6698004570F27 /* OKNSObject.h in Headers */ = {isa = PBXBuildFile; fileRef = A911430B96FB9633A857ACAD /* OKNSObject.h */; settings = {ATTRIBUTES = (project, ); }; };
 		B2EE47BDB57AA751FFE38EF0 /* _raw_ecb.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1A4144F991D1C48D86723572 /* _raw_ecb.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		B5EF95E325EABD1F0003510A /* OKShareActivity.h in Headers */ = {isa = PBXBuildFile; fileRef = B5EF95E225EABD1F0003510A /* OKShareActivity.h */; };
+		B5EF95E525EABDAB0003510A /* OKShareActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = B5EF95E425EABDA60003510A /* OKShareActivity.m */; };
 		B79B44FEB0B063791823629A /* _scrypt.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 550D49D6809F43DBBB23EC8A /* _scrypt.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B81C4E0CBA74DE460FA9B246 /* _BLAKE2s.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 81C14718ACB5BC8BC2048FF5 /* _BLAKE2s.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		BA0B7AC525AC560000F26B0C /* electrum_gui in Resources */ = {isa = PBXBuildFile; fileRef = BA0B7AC325AC560000F26B0C /* electrum_gui */; };
@@ -1117,6 +1119,8 @@
 		B0A8FFFC25E6261800513B8E /* UIColor+OKAppreance.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIColor+OKAppreance.h"; sourceTree = "<group>"; };
 		B0A8FFFD25E6261800513B8E /* UIColor+OKAppreance.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIColor+OKAppreance.m"; sourceTree = "<group>"; };
 		B0D7435FBD7BF7C736F29F8F /* OKColors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OKColors.h; path = ../CustomCode/OKColors.h; sourceTree = SOURCE_ROOT; };
+		B5EF95E225EABD1F0003510A /* OKShareActivity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKShareActivity.h; sourceTree = "<group>"; };
+		B5EF95E425EABDA60003510A /* OKShareActivity.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKShareActivity.m; sourceTree = "<group>"; };
 		B73C4F1B98EDFBC9B4F96E3E /* _chacha20.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = _chacha20.framework; path = ../Resources/Dylib/_chacha20.framework; sourceTree = SOURCE_ROOT; };
 		B7414DFCA31369C5738DFF3D /* _cpuid_c.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = _cpuid_c.framework; path = ../Resources/Dylib/_cpuid_c.framework; sourceTree = SOURCE_ROOT; };
 		BA0B7AC325AC560000F26B0C /* electrum_gui */ = {isa = PBXFileReference; lastKnownFileType = folder; name = electrum_gui; path = ../../electrum_gui; sourceTree = "<group>"; };
@@ -1414,6 +1418,8 @@
 				881422B725B18EA900961668 /* OKSystemShareView.m */,
 				881422B825B18EA900961668 /* Sha256.m */,
 				881422B925B18EA900961668 /* OKTools.m */,
+				B5EF95E225EABD1F0003510A /* OKShareActivity.h */,
+				B5EF95E425EABDA60003510A /* OKShareActivity.m */,
 			);
 			path = Tools;
 			sourceTree = "<group>";
@@ -2482,6 +2488,7 @@
 				B058D8B825B55663000EB27C /* OKDeviceOffController.h in Headers */,
 				8814243525B18EAA00961668 /* OKCreateResultModel.h in Headers */,
 				8814246F25B18EAA00961668 /* OKVerifySignatureViewController.h in Headers */,
+				B5EF95E325EABD1F0003510A /* OKShareActivity.h in Headers */,
 				8814247725B18EAA00961668 /* DSCallInfo.h in Headers */,
 				881424F525B18EAA00961668 /* OKTxListViewController.h in Headers */,
 				881424E925B18EAA00961668 /* OKUnitTableViewCell.h in Headers */,
@@ -2600,7 +2607,6 @@
 			buildPhases = (
 				9225720F4E5300A0FB772F2B /* [CP] Check Pods Manifest.lock */,
 				60796F2F1919C7E700A9926B /* Refresh Python source */,
-				3B5031824CAC348952A2C857 /* [CP] Prepare Artifacts */,
 				60796EDE19190F4100A9926B /* Sources */,
 				60796EDF19190F4100A9926B /* Frameworks */,
 				60796EE019190F4100A9926B /* Resources */,
@@ -2694,23 +2700,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		3B5031824CAC348952A2C857 /* [CP] Prepare Artifacts */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-OneKey/Pods-OneKey-artifacts-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Prepare Artifacts";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-OneKey/Pods-OneKey-artifacts-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-OneKey/Pods-OneKey-artifacts.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		60796F2F1919C7E700A9926B /* Refresh Python source */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -2771,6 +2760,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B5EF95E525EABDAB0003510A /* OKShareActivity.m in Sources */,
 				8814253525B18EAA00961668 /* OKShareView.m in Sources */,
 				8814256125B18EAA00961668 /* OKWordImportView.m in Sources */,
 				8814253925B18EAA00961668 /* OKBluetoothViewCell.m in Sources */,
@@ -3150,7 +3140,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 4000003;
-				DEVELOPMENT_TEAM = 6M2QF4T7XG;
+				DEVELOPMENT_TEAM = 9FC59XLT7P;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3226,7 +3216,7 @@
 					"$(SRCROOT)/../CustomCode/Modules/Base",
 					"$(SRCROOT)/../CustomCode/Categories",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = so.onekey.testflight;
+				PRODUCT_BUNDLE_IDENTIFIER = so.onekey.testflight2333;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -3250,7 +3240,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 4000003;
-				DEVELOPMENT_TEAM = 6M2QF4T7XG;
+				DEVELOPMENT_TEAM = 9FC59XLT7P;
 				ENABLE_BITCODE = NO;
 				ENABLE_TESTABILITY = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -3329,7 +3319,7 @@
 					"$(SRCROOT)/../CustomCode/Categories",
 				);
 				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = so.onekey.testflight;
+				PRODUCT_BUNDLE_IDENTIFIER = so.onekey.testflight2333;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				STRIP_INSTALLED_PRODUCT = NO;
