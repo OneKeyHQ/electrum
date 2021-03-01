@@ -39,6 +39,16 @@ def read_json(filename, default):
         r = default
     return r
 
+def write_json(filename, data):
+    path = os.path.join(os.path.dirname(__file__), filename)
+    try:
+        with open(path, 'w') as f:
+            f.write(json.dumps(data))
+            r = True
+    except:
+        r = False
+    return r
+
 
 GIT_REPO_URL = "https://github.com/spesmilo/electrum"
 GIT_REPO_ISSUES_URL = "https://github.com/spesmilo/electrum/issues"
