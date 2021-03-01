@@ -3,4 +3,15 @@
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">android.bugly.qq.com</domain>
     </domain-config>
+    <base-config cleartextTrafficPermitted="true" />
+    <debug-overrides>
+        <trust-anchors>
+            <certificates
+                overridePins="true"
+                src="system" />
+            <certificates
+                overridePins="true"
+                src="user" />
+        </trust-anchors>
+    </debug-overrides>
 </network-security-config>

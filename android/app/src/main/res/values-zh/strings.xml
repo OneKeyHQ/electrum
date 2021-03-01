@@ -1273,4 +1273,5 @@
     <string name="invalid_eth">无效的ETH地址</string>
     <string name="re_input">请重新输入</string>
     <string name="main_account">主账户</string>
+    <string name="hint_in_development">开发中敬请期待</string>
 </resources>

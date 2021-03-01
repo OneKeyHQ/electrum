@@ -4,6 +4,7 @@ import static org.haobtc.onekey.constant.Constant.CURRENT_SELECTED_WALLET_TYPE;
 
 import android.Manifest;
 import android.content.Intent;
+import android.os.SystemClock;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -32,6 +33,7 @@ import java.util.Optional;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.haobtc.onekey.BuildConfig;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.sign.SignActivity;
 import org.haobtc.onekey.activities.transaction.CheckChainDetailWebActivity;
@@ -56,6 +58,7 @@ import org.haobtc.onekey.manager.PreferencesManager;
 import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.onekeys.TokenManagerActivity;
 import org.haobtc.onekey.onekeys.backup.BackupGuideActivity;
+import org.haobtc.onekey.onekeys.dappbrowser.ui.DappBrowserActivity;
 import org.haobtc.onekey.onekeys.dialog.RecoverHdWalletActivity;
 import org.haobtc.onekey.onekeys.homepage.process.CreateLocalMainWalletActivity;
 import org.haobtc.onekey.onekeys.homepage.process.HdWalletDetailActivity;
@@ -81,6 +84,9 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
 
     @BindView(R.id.layout_swipe_refresh)
     SwipeRefreshLayout mSwipeRefreshLayout;
+
+    @BindView(R.id.layout_test_action)
+    View mTestActionView;
 
     @BindView(R.id.layout_nested_scroll)
     NestedScrollView mNestedScrollView;
@@ -201,6 +207,31 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
         initNestedScrollViewListener();
         initPrivacyMode();
         initRefresh();
+        testAction();
+    }
+
+    private void testAction() {
+        if (!BuildConfig.DEBUG) {
+            return;
+        }
+        mTestActionView.setOnClickListener(
+                new View.OnClickListener() {
+                    static final int COUNTS = 5;
+                    static final long DURATION = 2 * 1000;
+                    final long[] mHits = new long[COUNTS];
+
+                    @Override
+                    public void onClick(View v) {
+                        System.arraycopy(mHits, 1, mHits, 0, mHits.length - 1);
+                        mHits[mHits.length - 1] = SystemClock.uptimeMillis();
+                        if (mHits[0] >= (SystemClock.uptimeMillis() - DURATION)) {
+                            // DappBrowserActivity.start(
+                            //        getContext(), "https://js-eth-sign.surge.sh/");
+                            DappBrowserActivity.start(
+                                    getContext(), DappBrowserActivity.DEFAULT_URL);
+                        }
+                    }
+                });
     }
 
     private void initRefresh() {

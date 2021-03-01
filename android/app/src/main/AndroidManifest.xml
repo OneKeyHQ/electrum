@@ -722,6 +722,9 @@
             android:name=".onekeys.TokenManagerActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan|stateHidden" />
+        <activity
+            android:name=".onekeys.dappbrowser.ui.DappBrowserActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

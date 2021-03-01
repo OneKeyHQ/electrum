@@ -22,7 +22,7 @@ public abstract class BaseFragment extends Fragment implements IBaseView {
 
     protected Unbinder unbinder;
 
-    public Handler mHandler;
+    private Handler mHandler;
 
     static class MyHandler extends Handler {
 
@@ -79,6 +79,9 @@ public abstract class BaseFragment extends Fragment implements IBaseView {
 
     @Override
     public void onDestroyView() {
+        if (mHandler != null) {
+            mHandler.removeCallbacksAndMessages(null);
+        }
         super.onDestroyView();
         if (unbinder != null) {
             unbinder.unbind();

@@ -18,37 +18,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <RelativeLayout
-            android:id="@+id/layout_title"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/dp_60"
-            android:layout_marginTop="@dimen/dp_10"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <ImageView
-                android:id="@+id/img_back"
-                android:layout_width="@dimen/dp_44"
-                android:layout_height="@dimen/dp_44"
-                android:layout_centerVertical="true"
-                android:layout_marginStart="@dimen/dp_10"
-                android:src="@drawable/left_arrow" />
-
-            <TextView
-                android:id="@+id/text_page_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:layout_gravity="center"
-                android:fontFamily="sans-serif-medium"
-                android:text="@string/check_pass"
-                android:textColor="@color/text"
-                android:textSize="@dimen/text_size" />
-
-        </RelativeLayout>
-
         <TextView
             android:id="@+id/text_pass_promote"
             android:layout_width="match_parent"
@@ -58,7 +27,7 @@
             android:text="@string/set__pass"
             android:textColor="@color/text_two"
             android:textSize="24sp"
-            app:layout_constraintTop_toBottomOf="@+id/layout_title" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/layoutTip"
