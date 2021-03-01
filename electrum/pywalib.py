@@ -9,6 +9,7 @@ from contextlib import contextmanager
 from enum import Enum
 from os.path import expanduser
 from typing import List
+from urllib.parse import urljoin
 
 from electrum.util import Ticker, make_aiohttp_session
 import requests
@@ -156,6 +157,7 @@ class PyWalib:
     coin_symbol = None
     web3 = None
     market_server = None
+    market_server_dict = None
     tx_list_server = None
     gas_server = None
     symbols_price = {}
@@ -177,16 +179,19 @@ class PyWalib:
 
     def init_symbols(self):
         symbol_list = self.config.get("symbol_list", {'ETH':'','HT':'', 'BNB': ''})
-        for symbol in symbol_list:
-            PyWalib.symbols_price[symbol] = PyWalib.get_currency(symbol, 'BTC')
+        for cache_key in symbol_list:
+            from_cur, contract_address = cache_key.split(":") if ":" in cache_key else (cache_key, None)
+            PyWalib.symbols_price[cache_key] = PyWalib.get_currency(from_cur, 'BTC', contract_address=contract_address)
+
         global symbol_ticker
-        symbol_ticker = Ticker(1*60, self.get_symbols_price)
+        symbol_ticker = Ticker(5*60, self.get_symbols_price)
         symbol_ticker.start()
 
     def get_symbols_price(self):
         try:
-            for symbol, price in PyWalib.symbols_price.items():
-                PyWalib.symbols_price[symbol] = self.get_currency(symbol, 'BTC')
+            for cache_key, price in PyWalib.symbols_price.items():
+                from_cur, contract_address = cache_key.split(":") if ":" in cache_key else (cache_key, None)
+                PyWalib.symbols_price[cache_key] = self.get_currency(from_cur, 'BTC', contract_address=contract_address)
                 PyWalib.config.set_key("symbol_list", PyWalib.symbols_price)
                 time.sleep(1)
         except BaseException as e:
@@ -203,7 +208,27 @@ class PyWalib:
                 return response.json(content_type=None)
 
     @classmethod
-    def get_currency(cls, from_cur, to_cur):
+    def get_currency(cls, from_cur, to_cur, contract_address=None):
+        if (
+                from_cur
+                and from_cur.lower() == "eth"
+                and contract_address
+                and PyWalib.market_server_dict
+                and PyWalib.market_server_dict.get("cgk")
+        ):
+            try:
+                contract_address = contract_address.lower()
+                url = urljoin(PyWalib.market_server_dict["cgk"], "/api/v3/simple/token_price/ethereum")
+                response = requests.get(
+                    url, params={"vs_currencies": "btc", "contract_addresses": contract_address}
+                ).json()
+                if not response or not response.get(contract_address) or not response[contract_address].get("btc"):
+                    return 0
+                else:
+                    return response[contract_address]["btc"]
+            except Exception:
+                return 0
+
         try:
             out_price = {}
             for server in PyWalib.market_server:
@@ -268,6 +293,7 @@ class PyWalib:
     @staticmethod
     def set_server(info):
         PyWalib.market_server = info['Market']
+        PyWalib.market_server_dict = {list(i.keys())[0]: list(i.values())[0] for i in info['Market'] if i}
         PyWalib.tx_list_server = info['TxliServer']
         PyWalib.gas_server = info['GasServer']
         PyWalib.coin_symbol = info["symbol"]
@@ -293,15 +319,18 @@ class PyWalib:
             cls.set_server(cur_config)
 
     @staticmethod
-    def get_coin_price(from_cur):
+    def get_coin_price(from_cur, contract_address=None):
         try:
             from_cur = from_cur.upper()
-            if from_cur in PyWalib.symbols_price:
-                symbol_price = PyWalib.symbols_price[from_cur]
-                return symbol_price if symbol_price is not None else PyWalib.get_currency(from_cur, 'BTC')
+            cache_key = f"{from_cur}:{contract_address}" if contract_address else from_cur
+
+            if cache_key in PyWalib.symbols_price:
+                symbol_price = PyWalib.symbols_price[cache_key]
+                return (symbol_price if symbol_price is not None
+                        else PyWalib.get_currency(from_cur, 'BTC', contract_address=contract_address))
             else:
-                symbol_price = PyWalib.get_currency(from_cur, 'BTC')
-                PyWalib.symbols_price[from_cur] = symbol_price
+                symbol_price = PyWalib.get_currency(from_cur, 'BTC', contract_address=contract_address)
+                PyWalib.symbols_price[cache_key] = symbol_price
                 PyWalib.config.set_key("symbol_list", PyWalib.symbols_price)
                 return symbol_price
         except BaseException as e:

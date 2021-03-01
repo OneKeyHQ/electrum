@@ -30,7 +30,8 @@
       {"binance": "https://api.binance.com/api/v1/ticker/24hr?symbol="},
       {"ok": "https://mkline.bixin.com/api/v1/ticker?symbol="},
       {"huobi": "https://api.huobi.pro/market/detail/merged?symbol="},
-      {"cmc":  "https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest"}
+      {"cmc":  "https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest"},
+      {"cgk": "https://api.coingecko.com"}
     ],
     "GasServer": "https://www.gasnow.org/api/v3/gas/price?utm_source=onekey"
   }
