@@ -201,13 +201,14 @@ class Abstract_Eth_Wallet(ABC):
         _, balance = PyWalib.get_balance(wallet_address)
 
         balance_info = {
-            self.coin: {'balance': Decimal(balance), 'fiat': Decimal(balance) * Decimal(last_price)}
+            self.coin: {'address': '', 'balance': Decimal(balance), 'fiat': Decimal(balance) * Decimal(last_price)}
         }
         for contract_address, contract in self.contacts.items():
             symbol, balance = PyWalib.get_balance(wallet_address, contract)
             balance_info[contract_address] = {
                 'balance': Decimal(balance),
-                'fiat': "0"  # TODO Currently does not support getting price of tokens
+                'fiat': "0",  # TODO Currently does not support getting price of tokens
+                'address': contract_address
             }
 
         self.set_total_balance(balance_info)

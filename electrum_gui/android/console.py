@@ -363,7 +363,9 @@ class AndroidCommands(commands.Commands):
             out["coin"] = coin
             out["address"] = address
             out["balance"] = main_coin_balance_info.get("balance", "0")
-            out["fiat"] = self.daemon.fx.format_amount_and_units(main_coin_balance_info.get("fiat", 0) * COIN) or f"0 {self.ccy}"
+            out["fiat"] = (
+                self.daemon.fx.format_amount_and_units(main_coin_balance_info.get("fiat", 0) * COIN) or f"0 {self.ccy}"
+            )
             out["tokens"] = [{"address": k, **v} for k, v in balance_info.items()]
             out["sum_fiat"] = out["fiat"]
         elif (
@@ -3903,8 +3905,8 @@ class AndroidCommands(commands.Commands):
         {
           "all_balance": ""
           "wallets": [
-            {"coin": "eth", "balance": "", "fiat": ""},
-            {"coin": "usdt", "balance": "", "fiat": ""}
+            {"coin": "eth", "address": "", "balance": "", "fiat": ""},
+            {"coin": "usdt", "address": "", "balance": "", "fiat": ""}
           ]
         }
         """
@@ -3934,7 +3936,7 @@ class AndroidCommands(commands.Commands):
             fait = self.daemon.fx.format_amount_and_units(balance) if self.daemon.fx else None
             fait = fait or f"0 {self.ccy}"
             info = {
-                "all_balance": self.format_amount(balance) + " (%s)" % fait,  # fixme deprecated field
+                "all_balance": "%s" % fait,  # fixme deprecated field
                 "wallets": [{"coin": "btc", "balance": self.format_amount(balance), "fiat": fait}],
             }
             if self.label_flag and self.wallet.wallet_type != "standard":
@@ -3973,7 +3975,7 @@ class AndroidCommands(commands.Commands):
                 wallet_balances = [
                     {
                         "coin": key,
-                        **val,
+                        "balance": val['balance'],
                         "fiat": self.daemon.fx.format_amount_and_units(val["fiat"] * COIN) or f"0 {self.ccy}",
                     }
                     for key, val in balance_info.items()
