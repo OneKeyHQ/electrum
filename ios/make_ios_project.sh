@@ -18,6 +18,9 @@ if [ -d iOS ]; then
     exit 0
   fi
   echo "Cleaning up old iOS dir..."
+  rm -rf tmp
+  mkdir tmp
+  cp -fRa iOS/"${compact_name}".xcodeproj tmp/
   rm -rf iOS
 fi
 
@@ -59,13 +62,13 @@ echo ""
 if [ ! -d iOS/Support ]; then
   mkdir iOS/Support
 fi
-cp -fRa Support/"${compact_name}".xcodeproj iOS/
+cp -fRa tmp/"${compact_name}".xcodeproj iOS/
 mv iOS/BZip2 iOS/OpenSSL iOS/Python iOS/XZ iOS/VERSIONS iOS/Support/
 cp -fRa Support/site-package/ iOS/app_packages/
 
 rm -rf iOS/"${compact_name}"/*
 rm -rf iOS/app
-ln Support/podfile iOS/podfile
+ln -s ../Support/podfile iOS/podfile
 
 (cd iOS && pod install)
 if [ "$?" != "0" ]; then

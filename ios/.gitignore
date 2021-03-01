@@ -55,7 +55,10 @@ var/
 .idea_modules/
 
 # Briefcase build directories
-iOS/
+tmp/
+iOS/*
+!iOS/*.xcodeproj
+iOS/*.xcodeproj/xcuserdata/*
 macOS/
 windows/
 android/
