@@ -1615,15 +1615,22 @@ class AndroidCommands(commands.Commands):
             self.old_history_info = all_data
             return json.dumps(all_data[start:end])
 
-    def get_eth_tx_list(self, wallet_obj, search_type=None):
-        txs = PyWalib.get_transaction_history(wallet_obj.get_addresses()[0], search_type=search_type)
+    def get_eth_tx_list(self, wallet_obj, contract_address=None, search_type=None):
+        contract = self.wallet.get_contract_token(contract_address)
+        txs = PyWalib.get_transaction_history(
+            wallet_obj.get_addresses()[0],
+            contract=contract,
+            search_type=search_type,
+        )
+
         for tx in txs:
-            fiat = tx["fiat"]
-            fiat = self.daemon.fx.format_amount_and_units(fiat * COIN) or f"0 {self.ccy}"
-            amount = tx["amount"]
-            amount = f"{amount} ETH ({fiat})"
-            tx["amount"] = amount
-            tx.pop("fiat", None)
+            fiat = self.daemon.fx.format_amount_and_units(Decimal(tx.get("fiat") or 0) * COIN) or f"0 {self.ccy}"
+            fee_fiat = (
+                self.daemon.fx.format_amount_and_units(Decimal(tx.get("fee_fiat") or 0) * COIN) or f"0 {self.ccy}"
+            )
+            tx["amount"] = f"{tx['amount']} {tx['coin']} ({fiat})"
+            tx["fee"] = f"{tx['fee']} {self.pywalib.coin_symbol} ({fee_fiat})"
+
         return json.dumps(txs, cls=DecimalEncoder)
 
     def get_detail_tx_info_by_hash(self, tx_hash):
@@ -1643,11 +1650,12 @@ class AndroidCommands(commands.Commands):
         except BaseException as e:
             raise e
 
-    def get_all_tx_list(self, search_type=None, coin="btc", start=None, end=None):
+    def get_all_tx_list(self, search_type=None, coin="btc", contract_address=None, start=None, end=None):
         """
         Get the histroy list with the wallet that you select
         :param search_type: None/send/receive as str
         :param coin: btc/eth as string
+        :param contract_address: contract address on eth base chains
         :param start: start position as int
         :param end: end position as int
         :return:
@@ -1665,7 +1673,7 @@ class AndroidCommands(commands.Commands):
             if coin == "btc":
                 return self.get_btc_tx_list(start=start, end=end, search_type=search_type)
             else:
-                return self.get_eth_tx_list(self.wallet, search_type=search_type)
+                return self.get_eth_tx_list(self.wallet, contract_address=contract_address, search_type=search_type)
         except BaseException as e:
             raise e
 

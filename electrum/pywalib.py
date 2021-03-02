@@ -547,40 +547,95 @@ class PyWalib:
         return get_provider_by_chain(chain_code)
 
     @classmethod
-    def get_transaction_history(cls, address, search_type=None):
-        address = address.lower()
+    def _search_tx_actions(cls, address):
         txs = cls.get_provider().search_txs_by_address(address)
-        if search_type == "send":
-            txs = [i for i in txs if i.source and i.source.lower() == address]
-        elif search_type == "receive":
-            txs = [i for i in txs if i.target and i.target.lower() == address]
-
-        output_txs = []
-        last_price = Decimal(cls.get_coin_price(cls.coin_symbol) or "0")
+        actions = []
 
         for tx in txs:
-            block_header = tx.block_header
-            target_address = tx.target
-            amount = Decimal(cls.web3.fromWei(tx.value, "ether"))
-            fiat = amount * last_price
+            common_params = {
+                "txid": tx.txid,
+                "status": tx.status,
+                "block_header": tx.block_header,
+                "fee": tx.fee,
+            }
+            for tx_input, tx_output in zip(tx.inputs, tx.outputs):
+                action = {
+                    **common_params,
+                    "from": tx_input.address,
+                    "to": tx_output.address,
+                    "value": tx_output.value,
+                }
+
+                if tx_output.token_address:
+                    action["token_address"] = tx_output.token_address
+
+                actions.append(action)
+
+        return actions
+
+    @classmethod
+    def get_transaction_history(cls, address, contract=None, search_type=None):
+        address = address.lower()
+        actions = cls._search_tx_actions(address)
+
+        if contract:
+            contract_address = contract.address.lower()
+            actions = (i for i in actions if i.get("token_address") and i["token_address"].lower() == contract_address)
+        else:
+            actions = (i for i in actions if not i.get("token_address"))
+
+        if search_type == "send":
+            actions = (i for i in actions if i.get("from") and i["from"].lower() == address)
+        elif search_type == "receive":
+            actions = (i for i in actions if i.get("to") and i["to"].lower() == address)
+
+        actions = list(actions)
+        output_txs = []
+
+        eth_last_price = Decimal(cls.get_coin_price(cls.coin_symbol) or 0)
+
+        if contract:
+            coin_last_price = Decimal(cls.get_coin_price(cls.coin_symbol, contract_address=contract.address) or 0)
+            decimal_multiply = pow(10, Decimal(contract.contract_decimals))
+        else:
+            coin_last_price = eth_last_price
+            decimal_multiply = pow(10, Decimal(18))
+
+        for action in actions:
+            block_header = action["block_header"]
+            target_address = action["to"]
+            amount = Decimal(action["value"]) / decimal_multiply
+            fiat = amount * coin_last_price
+            fee = Decimal(cls.web3.fromWei(action["fee"].usage * action["fee"].price_per_unit, "ether"))
+            fee_fiat = eth_last_price * fee
 
             tx_status = _("Unconfirmed")
-            if tx.status == TransactionStatus.REVERED:
+            show_status = [1, _("Unconfirmed")]
+            if action["status"] == TransactionStatus.REVERED:
                 tx_status = _("Sending failure")
-            elif tx.status == TransactionStatus.CONFIRMED:
+                show_status = [2, _("Sending failure")]
+            elif action["status"] == TransactionStatus.CONFIRMED:
                 tx_status = (
-                    _("{} confirmations").format(tx.block_header.confirmations)
+                    _("{} confirmations").format(block_header.confirmations)
                     if block_header and block_header.confirmations > 0
                     else _("Confirmed")
                 )
+                show_status = [3, _("Confirmed")]
 
             output_tx = {
                 "type": "history",
+                "coin": contract.symbol if contract else cls.coin_symbol,
                 "tx_status": tx_status,
+                "show_status": show_status,
+                'fee': fee,
+                'fee_fiat': fee_fiat,
                 "date": util.format_time(block_header.block_time) if block_header else _("Unknown"),
-                "tx_hash": tx.txid,
-                "is_mine": tx.source.lower() == address,
+                "tx_hash": action["txid"],
+                "is_mine": action["from"].lower() == address,
+                'height': block_header.block_number if block_header else -2,
                 "confirmations": block_header.confirmations if block_header else 0,
+                'input_addr': [action["from"]],
+                'output_addr': [action["to"]],
                 "address": f"{target_address[:6]}...{target_address[-6:]}",
                 "amount": amount,
                 "fiat": fiat
