@@ -437,6 +437,15 @@
 		881425FE25BFF0A400961668 /* OKTransferCompleteController.m in Sources */ = {isa = PBXBuildFile; fileRef = 881425FC25BFF0A400961668 /* OKTransferCompleteController.m */; };
 		8822105025D003F500BC7819 /* OKDeviceIdInconsistentViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 8822104E25D003F400BC7819 /* OKDeviceIdInconsistentViewController.h */; };
 		8822105125D003F500BC7819 /* OKDeviceIdInconsistentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8822104F25D003F400BC7819 /* OKDeviceIdInconsistentViewController.m */; };
+		885798CA25E7982F00C16059 /* OKSendFeeModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 885798C825E7982F00C16059 /* OKSendFeeModel.h */; };
+		885798CB25E7982F00C16059 /* OKSendFeeModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 885798C925E7982F00C16059 /* OKSendFeeModel.m */; };
+		8864AEAE25E6081100459C4E /* SelectAssetType.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8864AEA525E6081100459C4E /* SelectAssetType.storyboard */; };
+		8864AEAF25E6081100459C4E /* OKSelectAssetTypeController.h in Headers */ = {isa = PBXBuildFile; fileRef = 8864AEA625E6081100459C4E /* OKSelectAssetTypeController.h */; };
+		8864AEB025E6081100459C4E /* OKSelectAssetTypeController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8864AEA725E6081100459C4E /* OKSelectAssetTypeController.m */; };
+		8864AEB125E6081100459C4E /* OKSelectAssetTypeModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 8864AEA925E6081100459C4E /* OKSelectAssetTypeModel.h */; };
+		8864AEB225E6081100459C4E /* OKSelectAssetTypeModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 8864AEAA25E6081100459C4E /* OKSelectAssetTypeModel.m */; };
+		8864AEB325E6081100459C4E /* OKSelectAssetTypeTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8864AEAC25E6081100459C4E /* OKSelectAssetTypeTableViewCell.m */; };
+		8864AEB425E6081100459C4E /* OKSelectAssetTypeTableViewCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 8864AEAD25E6081100459C4E /* OKSelectAssetTypeTableViewCell.h */; };
 		88F89FBE25CB9E4700EFC641 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 88F89FBC25CB9E4700EFC641 /* Localizable.strings */; };
 		8BA64C7EB8F197124BEFC4B9 /* BTCBrowser.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2B8A43CE94718C2C5184C2DC /* BTCBrowser.plist */; };
 		92534669BFCAE1EF0EC2F024 /* UIViewController+Extension.m in Sources */ = {isa = PBXBuildFile; fileRef = 468549E8AF41F4FF1257667D /* UIViewController+Extension.m */; };
@@ -1034,6 +1043,15 @@
 		881C49CA9B3FEEE96D160552 /* OKClickTextView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OKClickTextView.h; path = ../CustomCode/CommonView/OKClickTextView.h; sourceTree = SOURCE_ROOT; };
 		8822104E25D003F400BC7819 /* OKDeviceIdInconsistentViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKDeviceIdInconsistentViewController.h; sourceTree = "<group>"; };
 		8822104F25D003F400BC7819 /* OKDeviceIdInconsistentViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKDeviceIdInconsistentViewController.m; sourceTree = "<group>"; };
+		885798C825E7982F00C16059 /* OKSendFeeModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKSendFeeModel.h; sourceTree = "<group>"; };
+		885798C925E7982F00C16059 /* OKSendFeeModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKSendFeeModel.m; sourceTree = "<group>"; };
+		8864AEA525E6081100459C4E /* SelectAssetType.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = SelectAssetType.storyboard; sourceTree = "<group>"; };
+		8864AEA625E6081100459C4E /* OKSelectAssetTypeController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKSelectAssetTypeController.h; sourceTree = "<group>"; };
+		8864AEA725E6081100459C4E /* OKSelectAssetTypeController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKSelectAssetTypeController.m; sourceTree = "<group>"; };
+		8864AEA925E6081100459C4E /* OKSelectAssetTypeModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKSelectAssetTypeModel.h; sourceTree = "<group>"; };
+		8864AEAA25E6081100459C4E /* OKSelectAssetTypeModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKSelectAssetTypeModel.m; sourceTree = "<group>"; };
+		8864AEAC25E6081100459C4E /* OKSelectAssetTypeTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKSelectAssetTypeTableViewCell.m; sourceTree = "<group>"; };
+		8864AEAD25E6081100459C4E /* OKSelectAssetTypeTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKSelectAssetTypeTableViewCell.h; sourceTree = "<group>"; };
 		88D7404B9FF067F44DABF936 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = None; name = LaunchScreen.storyboard; path = ../Resources/LaunchScreen.storyboard; sourceTree = SOURCE_ROOT; };
 		88F89FBD25CB9E4700EFC641 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = Localizable.strings; sourceTree = "<group>"; };
 		90BF4B77B7BC2B3709FC7726 /* NSString+OKAdd.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "NSString+OKAdd.h"; path = "../CustomCode/Categories/NSString+OKAdd.h"; sourceTree = SOURCE_ROOT; };
@@ -1323,6 +1341,7 @@
 				881423B225B18EAA00961668 /* Public */,
 				881423B725B18EAA00961668 /* Bluetooth */,
 				881423C025B18EAA00961668 /* ScanQR */,
+				8864AEA325E6081100459C4E /* SelectAssetType */,
 				881423CC25B18EAA00961668 /* Restore */,
 				881423EF25B18EAA00961668 /* WalletList */,
 				8814241C25B18EAA00961668 /* Base */,
@@ -1832,6 +1851,8 @@
 				8814238425B18EA900961668 /* OKDefaultFeeInfoModel.m */,
 				8814238525B18EA900961668 /* OKSendTxPreModel.h */,
 				8814238625B18EA900961668 /* OKAssetTableViewCellModel.m */,
+				885798C825E7982F00C16059 /* OKSendFeeModel.h */,
+				885798C925E7982F00C16059 /* OKSendFeeModel.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -2099,6 +2120,44 @@
 			path = Base;
 			sourceTree = "<group>";
 		};
+		8864AEA325E6081100459C4E /* SelectAssetType */ = {
+			isa = PBXGroup;
+			children = (
+				8864AEA425E6081100459C4E /* Controller */,
+				8864AEA825E6081100459C4E /* Model */,
+				8864AEAB25E6081100459C4E /* View */,
+			);
+			path = SelectAssetType;
+			sourceTree = "<group>";
+		};
+		8864AEA425E6081100459C4E /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				8864AEA525E6081100459C4E /* SelectAssetType.storyboard */,
+				8864AEA625E6081100459C4E /* OKSelectAssetTypeController.h */,
+				8864AEA725E6081100459C4E /* OKSelectAssetTypeController.m */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		8864AEA825E6081100459C4E /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				8864AEA925E6081100459C4E /* OKSelectAssetTypeModel.h */,
+				8864AEAA25E6081100459C4E /* OKSelectAssetTypeModel.m */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		8864AEAB25E6081100459C4E /* View */ = {
+			isa = PBXGroup;
+			children = (
+				8864AEAD25E6081100459C4E /* OKSelectAssetTypeTableViewCell.h */,
+				8864AEAC25E6081100459C4E /* OKSelectAssetTypeTableViewCell.m */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
 		897B470BBDFF6189764A28B1 /* CommonView */ = {
 			isa = PBXGroup;
 			children = (
@@ -2363,6 +2422,7 @@
 				8822105025D003F500BC7819 /* OKDeviceIdInconsistentViewController.h in Headers */,
 				8814242A25B18EAA00961668 /* OKMnemonicImportViewController.h in Headers */,
 				8814255D25B18EAA00961668 /* OKFindWalletTableViewCellModel.h in Headers */,
+				885798CA25E7982F00C16059 /* OKSendFeeModel.h in Headers */,
 				881424F925B18EAA00961668 /* OKTxViewController.h in Headers */,
 				881424FA25B18EAA00961668 /* OKSendCoinViewController.h in Headers */,
 				8814254B25B18EAA00961668 /* OKBackUpTipsViewController.h in Headers */,
@@ -2451,6 +2511,7 @@
 				8814244B25B18EAA00961668 /* NSData+CommonCrypto.h in Headers */,
 				8814246D25B18EAA00961668 /* OKSignatureViewController.h in Headers */,
 				8814249E25B18EAA00961668 /* OKFiatSelectViewController.h in Headers */,
+				8864AEB425E6081100459C4E /* OKSelectAssetTypeTableViewCell.h in Headers */,
 				50E24DA7AD1AAF4349C67138 /* UILabel+OneKey.h in Headers */,
 				881424CD25B18EAA00961668 /* OKNetTableViewCellModel.h in Headers */,
 				B0A8FFE525E4EF2300513B8E /* OKToken.h in Headers */,
@@ -2515,6 +2576,7 @@
 				881424AD25B18EAA00961668 /* OKMineViewController.h in Headers */,
 				5FE847DEB18B4A8BF606EF48 /* NSTimer+TimerBlock.h in Headers */,
 				881424A525B18EAA00961668 /* OKAboutViewController.h in Headers */,
+				8864AEAF25E6081100459C4E /* OKSelectAssetTypeController.h in Headers */,
 				881424E625B18EAA00961668 /* OKLanguageTableViewCell.h in Headers */,
 				8814258F25B18EAA00961668 /* OKTextField.h in Headers */,
 				881424FD25B18EAA00961668 /* OKTxDetailViewController.h in Headers */,
@@ -2596,6 +2658,7 @@
 				8814257225B18EAA00961668 /* OKWalletListCollectionViewCell.h in Headers */,
 				8814250025B18EAA00961668 /* OKDefaultFeeInfoModel.h in Headers */,
 				8814259625B18EAA00961668 /* BaseTableViewController.h in Headers */,
+				8864AEB125E6081100459C4E /* OKSelectAssetTypeModel.h in Headers */,
 				B016510B25BFE0810037C6B4 /* OKDeviceChangePINController.h in Headers */,
 				8814244125B18EAA00961668 /* OKWalletInfoModel.h in Headers */,
 				8814246125B18EAA00961668 /* OKVerifyOnTheDeviceController.h in Headers */,
@@ -2671,6 +2734,7 @@
 				8814253425B18EAA00961668 /* OKShareView.xib in Resources */,
 				BA9CB38E25AC7499002DD64A /* trezor in Resources */,
 				BA0B7AC525AC560000F26B0C /* electrum_gui in Resources */,
+				8864AEAE25E6081100459C4E /* SelectAssetType.storyboard in Resources */,
 				8814247A25B18EAA00961668 /* dsbridge.js in Resources */,
 				8814242D25B18EAA00961668 /* Import.storyboard in Resources */,
 				BA0B7AC625AC560000F26B0C /* electrum in Resources */,
@@ -2776,6 +2840,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-OneKey/Pods-OneKey-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		DC810E7AD1C03015C35A789F /* [CP] Prepare Artifacts */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-OneKey/Pods-OneKey-artifacts-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Prepare Artifacts";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-OneKey/Pods-OneKey-artifacts-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-OneKey/Pods-OneKey-artifacts.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -2895,9 +2976,11 @@
 				8814258725B18EAA00961668 /* OKSetWalletNameViewController.m in Sources */,
 				8814252325B18EAA00961668 /* OKDocument.m in Sources */,
 				B058D8A625B55663000EB27C /* OKDeviceListCellModel.m in Sources */,
+				8864AEB225E6081100459C4E /* OKSelectAssetTypeModel.m in Sources */,
 				8814246325B18EAA00961668 /* OKDeviceInfoModel.m in Sources */,
 				B058D8BF25B55663000EB27C /* OKDeviceLanguageViewController.m in Sources */,
 				8814259E25B1900600961668 /* OKHwNotiManager.m in Sources */,
+				885798CB25E7982F00C16059 /* OKSendFeeModel.m in Sources */,
 				8814246725B18EAA00961668 /* OKDiscoverViewController.m in Sources */,
 				8814248325B18EAA00961668 /* UIView+ViewController.m in Sources */,
 				881424BC25B18EAA00961668 /* OKElectrumNodeModel.m in Sources */,
@@ -2911,6 +2994,7 @@
 				8814246A25B18EAA00961668 /* OKSignatureViewController.m in Sources */,
 				8814245625B18EAA00961668 /* OKPINCodeViewController.m in Sources */,
 				8814256F25B18EAA00961668 /* OKSelectCellModel.m in Sources */,
+				8864AEB025E6081100459C4E /* OKSelectAssetTypeController.m in Sources */,
 				B058D8CB25B572C7000EB27C /* OKDevicesManager.m in Sources */,
 				881424B525B18EAA00961668 /* OKAllAssetsViewController.m in Sources */,
 				8822105125D003F500BC7819 /* OKDeviceIdInconsistentViewController.m in Sources */,
@@ -2952,6 +3036,7 @@
 				B094AE7425CBEE9400DCA01E /* NSArray+OKAdd.m in Sources */,
 				B0A8FFE625E4EF2300513B8E /* OKToken.m in Sources */,
 				8814249725B18EAA00961668 /* qrspec.c in Sources */,
+				8864AEB325E6081100459C4E /* OKSelectAssetTypeTableViewCell.m in Sources */,
 				8814250725B18EAA00961668 /* OKDefaultFeeInfoModel.m in Sources */,
 				B058D8BB25B55663000EB27C /* OKHardwareListBaseCell.m in Sources */,
 				8814257325B18EAA00961668 /* OKWalletListBottomBtn.m in Sources */,
