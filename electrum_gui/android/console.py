@@ -9,6 +9,7 @@ import random
 import string
 import threading
 from code import InteractiveConsole
+from collections import OrderedDict
 from decimal import Decimal
 from enum import Enum
 from os.path import exists, join
@@ -253,7 +254,7 @@ class AndroidCommands(commands.Commands):
         self.rbf_tx = ""
         self.m = 0
         self.n = 0
-        self.token_list_info = []
+        self.token_list_by_chain = OrderedDict()
         self.config.set_key("auto_connect", True, True)
         global ticker
         ticker = Ticker(5.0, self.ticker_action)
@@ -2106,20 +2107,42 @@ class AndroidCommands(commands.Commands):
         except BaseException as e:
             raise e
 
+    def get_customer_token_info(self, contract_address):
+        """
+        Add one token info
+        :param contract_address:
+        :return: {
+                "chain_id": "",
+                "decimals" : "",
+                "address" : "",
+                "symbol" : "",
+                "name" : "",
+                "logoURI": "",
+                "rank": 0
+        """
+
+        token_info = PyWalib.get_token_info("", contract_address)
+        return json.dumps(token_info)
+
     def get_all_token_info(self):
         """
         Get all token information
         :return:
         """
-        if self.token_list_info:
-            return json.dumps(self.token_list_info)
+        chain_code = PyWalib.get_chain_code()
+        token_info = self.token_list_by_chain.get(chain_code)
+        if token_info is None:
+            token_info = {
+                token["address"].lower(): token
+                for token in read_json(f"{chain_code}_token_list.json", {}).get("tokens", ())
+            }
+            self.token_list_by_chain[chain_code] = token_info
 
-        token_data = read_json("eth_token_list.json", {})
-        if not token_data:
-            return '[]'
+        return json.dumps(list(self.token_list_by_chain.values()))
 
-        self.token_list_info = token_data['tokens']
-        return json.dumps(self.token_list_info)
+    def get_all_customer_token_info(self):
+        chain_code = PyWalib.get_chain_code()
+        return json.dumps(self.wallet_context.get_customer_token_info(chain_code))
 
     def add_token(self, symbol, contract_addr):
         """
@@ -2129,6 +2152,15 @@ class AndroidCommands(commands.Commands):
         :return: raise except if error
         """
         try:
+            if not contract_addr:
+                raise BaseException("Contract address cannot be empty")
+            chain_code = PyWalib.get_chain_code()
+            if contract_addr.lower() in list(self.token_list_by_chain)[50:]:
+                self.wallet_context.add_customer_token_info(self.token_list_by_chain[contract_addr.lower()], chain_code)
+            elif contract_addr.lower() not in self.token_list_by_chain:
+                token_info = PyWalib.get_token_info("", contract_addr)
+                self.wallet_context.add_customer_token_info(token_info, chain_code)
+
             contract_addr = self.pywalib.web3.toChecksumAddress(contract_addr)
             self.wallet.add_contract_token(symbol, contract_addr)
         except BaseException as e:

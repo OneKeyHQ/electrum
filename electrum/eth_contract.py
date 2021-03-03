@@ -37,7 +37,13 @@ class Eth_Contract:
     def get_address(self):
         return self.address
 
+    def get_name(self):
+        return self.contract.functions.name().call()
+
     def get_symbol(self):
+        if self.symbol:
+            return self.symbol
+        self.symbol = self.contract.functions.symbol().call()
         return self.symbol
 
     def get_decimals(self):

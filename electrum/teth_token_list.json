@@ -1,0 +1,20 @@
+{
+	"name": "CoinGecko",
+	"logoURI": "https://www.coingecko.com/assets/thumbnail-007177f3eca19695592f0b8b0eabbdae282b54154e1be912285c9034ea6cbaf2.png",
+	"keywords": ["defi"],
+	"timestamp": "2021-02-25T10:18:27.589+00:00",
+	"tokens": [{
+		"chainId": 3,
+		"address": "0x9a42d6dcd2519e94d037439c447a7a752ba9f66c",
+		"name": "GameCredits",
+		"symbol": "GAME",
+		"decimals": 18,
+		"logoURI": "",
+		"rank": 230
+	}],
+	"version": {
+		"major": 132,
+		"minor": 0,
+		"patch": 0
+	}
+}

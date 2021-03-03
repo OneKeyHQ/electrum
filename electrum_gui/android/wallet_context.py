@@ -41,6 +41,7 @@ class WalletContext(object):
         #   Key: a xpub or xpub + lowercase coin name, same as self._backup_info
         #   Value: a dict with keys are 'name' and 'account_id'
         self._derived_info = self.config.get('derived_info', {})
+        self._token_customer_info = self.config.get("token_customer_info", {})
 
     @property
     def stored_wallets(self):
@@ -161,3 +162,22 @@ class WalletContext(object):
         if len(new_wallets) < len(wallets_before_delete):
             self._derived_info[xpub] = new_wallets
             self._save_derived_info()
+
+    def _save_token_custmer_list(self):
+        self.config.set_key("token_customer_info", self._token_customer_info)
+
+    def add_customer_token_info(self, token_info, chain_code):
+        if token_info.get('address') and token_info['address'].lower() in self._token_customer_info.get(chain_code, {}):
+            return
+
+        chain_info = self._token_customer_info.get(chain_code, {})
+        chain_info[token_info['address'].lower()] = token_info
+        self._token_customer_info[chain_code] = chain_info
+        self._save_token_custmer_list()
+
+    def get_customer_token_info(self, chain_code):
+        return (
+            list(self._token_customer_info.get(chain_code).values())
+            if self._token_customer_info.get(chain_code)
+            else []
+        )

@@ -502,6 +502,22 @@ class PyWalib:
         return tx_dict
 
     @classmethod
+    def get_token_info(cls, symbol, contract_address):
+        from .eth_contract import Eth_Contract
+        contract_address = PyWalib.web3.toChecksumAddress(contract_address)
+        contract = Eth_Contract(symbol, contract_address)
+        token_info = {
+            "chain_id": PyWalib.chain_id,
+            "decimals" : contract.get_decimals(),
+            "address" : contract_address,
+            "symbol" : contract.get_symbol(),
+            "name" : contract.get_name(),
+            "logoURI": "",
+            "rank": 0
+        }
+        return token_info
+
+    @classmethod
     def get_nonce(cls,  address):
         return cls.get_provider().get_address(address).nonce
 
@@ -536,6 +552,15 @@ class PyWalib:
                                                   token=None if not contract else Token(contract=contract.get_address()))
         except Exception:
             return 0
+
+    @classmethod
+    def get_chain_code(cls) -> str:
+        chain_code = cls.server_config["id"]
+
+        if cls.chain_type == "testnet":
+            chain_code = f"t{chain_code}"
+
+        return chain_code
 
     @classmethod
     def get_provider(cls) -> ProviderInterface:
