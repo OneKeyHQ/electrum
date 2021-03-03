@@ -16,14 +16,25 @@
       ]
     },
     {
+      "class": "Etherscan",
+      "url": "https://api.etherscan.io",
+      "api_keys": [
+        "R796P9T31MEA24P8FNDZBCA88UHW8YCNVW"
+      ]
+    },
+    {
       "class": "Geth",
       "url": "https://mainnet.infura.io/v3/f001ce716b6e4a33a557f74df6fe8eff"
     }
   ],
   "teth": [
     {
+      "class": "BlockBook",
+      "url": "https://ropsten1.trezor.io"
+    },
+    {
       "class": "Etherscan",
-      "url": "https://api-ropsten.etherscan.io/api",
+      "url": "https://api-ropsten.etherscan.io",
       "api_keys": [
         "R796P9T31MEA24P8FNDZBCA88UHW8YCNVW"
       ]

@@ -35,10 +35,9 @@ class BlockBook(ProviderInterface):
 
     def get_info(self) -> ProviderInfo:
         resp = self.restful.get("/api")
-        require(resp["blockbook"]["coin"] == "Ethereum")
 
         return ProviderInfo(
-            name="trezor",
+            name="blockbook",
             best_block_number=int(resp["blockbook"].get("bestHeight", 0)),
             is_ready=resp["blockbook"].get("inSync") is True,
             desc=resp["blockbook"].get("about"),
