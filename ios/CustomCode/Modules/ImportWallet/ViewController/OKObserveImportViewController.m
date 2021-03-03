@@ -28,14 +28,14 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     self.title = MyLocalizedString(@"Observe the purse import", nil);
-    self.iconImageView.image = [UIImage imageNamed:@"token_btc"];
+    self.iconImageView.image = [UIImage imageNamed:[NSString stringWithFormat:@"token_%@",[self.coinType lowercaseString]]];
     [self.textBgView setLayerBoarderColor:HexColor(0xDBDEE7) width:1 radius:20];
     self.textPlacehoderLabel.text = MyLocalizedString(@"Please enter an address or public key, support xPub, or scan Two-dimensional code import", nil);
     self.tips1Label.text = MyLocalizedString(@"Observing a wallet does not require importing a private key or mnemonic, just an address or public key, which you can use to track daily transactions or to receive notifications of incoming or outgoing money", nil);
     [self.importBtn setLayerDefaultRadius];
     [self textChange];
     self.navigationItem.rightBarButtonItem = [UIBarButtonItem barButtonItemScanBtnWithTarget:self selector:@selector(scanBtnClick)];
-    
+
 }
 #pragma mark - 导入
 - (IBAction)importBtnClick:(UIButton *)sender
@@ -44,11 +44,11 @@
         [kTools tipMessage:MyLocalizedString(@"The address cannot be empty", nil)];
         return;
     }
-    
     id result =  [kPyCommandsManager callInterface:kInterfaceverify_legality parameter:@{@"data":self.textView.text,@"flag":@"address"}];
     if (result != nil) {
         OKSetWalletNameViewController *setNameVc = [OKSetWalletNameViewController setWalletNameViewController];
         setNameVc.addType = self.importType;
+        setNameVc.coinType = self.coinType;
         setNameVc.address = self.textView.text;
         setNameVc.where = OKWhereToSelectTypeWalletList;
         [self.navigationController pushViewController:setNameVc animated:YES];
@@ -111,7 +111,7 @@
         return NO;
     }
     if (textView == self.textView) {
-        if (text.length == 0) { 
+        if (text.length == 0) {
             if (textView.text.length == 1) {
                 self.textPlacehoderLabel.hidden = NO;
             }
@@ -121,7 +121,7 @@
             }
         }
     }
-    
+
     return YES;
 }
 

@@ -46,6 +46,7 @@
         [self getAddressType:^(OKBTCAddressType btcAddressType) {
             OKSetWalletNameViewController *setNameVc = [OKSetWalletNameViewController setWalletNameViewController];
             setNameVc.addType = OKAddTypeImportSeed;
+            setNameVc.coinType = self.coinType;
             setNameVc.where = OKWhereToSelectTypeWalletList;
             setNameVc.seed = [self.wordInputView.wordsArr componentsJoinedByString:@" "];
             setNameVc.btcAddressType = btcAddressType;

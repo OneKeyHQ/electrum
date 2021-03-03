@@ -78,7 +78,7 @@ static dispatch_once_t once;
 - (NSArray *)supportCoinArray
 {
     if (!_supportCoinArray) {
-        _supportCoinArray = @[COIN_BTC];
+        _supportCoinArray = @[COIN_BTC,COIN_ETH];
     }
     return _supportCoinArray;
 }
@@ -141,7 +141,7 @@ static dispatch_once_t once;
     if (sat.length == 0 || sat == nil) {
         return @"";
     }
-    
+
     NSString *cuUnit = kWalletManager.currentBitcoinUnit;
     NSDecimalNumber *num = [NSDecimalNumber decimalNumberWithString:sat];
     if ([cuUnit isEqualToString:@"sat"]) {
@@ -305,6 +305,19 @@ static dispatch_once_t once;
         }
     }
     return nil;
+}
+
+
+- (NSString *)getUnitForCoinType
+{
+    NSString *coinType = [kWalletManager.currentWalletInfo.coinType uppercaseString];
+    if ([coinType isEqualToString:COIN_BTC]) {
+        return kWalletManager.currentBitcoinUnit;
+    }else if ([coinType isEqualToString:COIN_ETH]){
+        return @"ETH";
+    }else{
+        return @"";
+    }
 }
 
 @end

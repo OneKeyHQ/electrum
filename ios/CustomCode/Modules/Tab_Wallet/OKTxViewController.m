@@ -34,9 +34,13 @@
 
 - (void)loadList
 {
-    NSArray *resultArray = [kPyCommandsManager callInterface:kInterfaceGet_all_tx_list parameter:@{@"search_type":self.searchType}];
-    self.txListArray = [OKTxTableViewCellModel mj_objectArrayWithKeyValuesArray:resultArray];
-    [self.tableView reloadData];
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        NSArray *resultArray = [kPyCommandsManager callInterface:kInterfaceGet_all_tx_list parameter:@{@"search_type":self.searchType,@"coin":[kWalletManager.currentWalletInfo.coinType lowercaseString]}];
+        self.txListArray = [OKTxTableViewCellModel mj_objectArrayWithKeyValuesArray:resultArray];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.tableView reloadData];
+        });
+    });
 }
 
 

@@ -22,6 +22,7 @@
 #define kInterfaceImport_Seed              @"Import_create_seed"         // seed导入钱包
 #define kInterfaceImport_Address           @"Import_create_addresses"    // addresses导入钱包
 #define kInterfaceImport_xpub              @"Import_create_xpub"         // xpub导入钱包
+#define kInterfaceImport_KeyStore          @"Import_KeyStore"            //keystore导入
 
 #define kInterfaceLoad_all_wallet        @"load_all_wallet" //加载并且选择钱包
 #define kInterfaceList_wallets           @"list_wallets" //加载钱包列表

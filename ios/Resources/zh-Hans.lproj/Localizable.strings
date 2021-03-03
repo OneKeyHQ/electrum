@@ -521,3 +521,11 @@
 
 "This operation only supports BACKUP ONLY special devices" = "该操作仅支持backup only特殊设备";
 "Signature error or cancellation" = "签名出错或取消";
+
+"Failed to get the rate" = "获取费率失败";
+"Select the assets to add" = "选择要添加的资产";
+"Add the asset" = "添加资产";
+"sendcoin.about" = "约";
+"sendcoin.minutes" = "分钟";
+"Expected time:" = "预计时间：";
+"The minimum amount must not be less than 546 sat" = "最低转账金额不得低于546 sat";

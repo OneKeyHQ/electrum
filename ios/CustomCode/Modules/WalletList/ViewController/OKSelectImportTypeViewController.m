@@ -79,21 +79,22 @@
             [self.navigationController pushViewController:mnemonicImportVc animated:YES];
         }
             break;
-//        case 2:
-//        {
-//            OKKeystoreImportViewController *keystoreImportVc = [OKKeystoreImportViewController keystoreImportViewController];
-//            keystoreImportVc.importType = OKAddTypeImportKeystore;
-//            [self.navigationController pushViewController:keystoreImportVc animated:YES];
-//        }
-//            break;
         case 2:
         {
             OKObserveImportViewController *observeImportVc = [OKObserveImportViewController observeImportViewController];
             observeImportVc.importType = OKAddTypeImportAddresses;
+            observeImportVc.coinType = self.coinType;
             [self.navigationController pushViewController:observeImportVc animated:YES];
         }
             break;
-
+        case 3:
+        {
+            OKKeystoreImportViewController *keystoreImportVc = [OKKeystoreImportViewController keystoreImportViewController];
+            keystoreImportVc.importType = OKAddTypeImportKeystore;
+            keystoreImportVc.coinType = self.coinType;
+            [self.navigationController pushViewController:keystoreImportVc animated:YES];
+        }
+            break;
         default:
             break;
     }
@@ -111,15 +112,15 @@
         model1.titleString = MyLocalizedString(@"Mnemonic import", nil);
         model1.iconName = @"memo_import";
 
-//        OKSelectCoinTypeTableViewCellModel *model2 = [OKSelectCoinTypeTableViewCellModel new];
-//        model2.titleString = MyLocalizedString(@"Keystore import", nil);
-//        model2.iconName = @"keystore_import";
-
         OKSelectCoinTypeTableViewCellModel *model3 = [OKSelectCoinTypeTableViewCellModel new];
         model3.titleString = MyLocalizedString(@"Observe the purse", nil);
         model3.iconName = @"watch_only_wallet";
 
-        _coinTypeListArray = @[model,model1,model3];
+        OKSelectCoinTypeTableViewCellModel *model2 = [OKSelectCoinTypeTableViewCellModel new];
+        model2.titleString = MyLocalizedString(@"Keystore import", nil);
+        model2.iconName = @"keystore_import";
+
+        _coinTypeListArray = @[model,model1,model3,model2];
     }
     return _coinTypeListArray;
 }

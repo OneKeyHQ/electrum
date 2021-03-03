@@ -119,7 +119,7 @@
 - (void)refreshListData
 {
     NSArray *listDictArray =  [kPyCommandsManager callInterface:kInterfaceList_wallets parameter:@{}];
-    
+
     NSMutableArray *walletArray = [NSMutableArray arrayWithCapacity:listDictArray.count];
     for (int i = 0; i < listDictArray.count; i++) {
         NSDictionary *outerModelDict = listDictArray[i];
@@ -151,7 +151,7 @@
         predicate = [NSPredicate predicateWithFormat:@"walletType contains %@",[walletType lowercaseString]];
     }
     self.showList = [self.walletListArray filteredArrayUsingPredicate:predicate];
-    
+
     self.countLabel.text = [NSString stringWithFormat:@"%zd",self.showList.count];
     self.headerWalletTypeLabel.text = [self headerWalletType:walletType];
     if([kWalletManager.currentSelectCoinType isEqualToString:kDefaultType]){
@@ -159,7 +159,7 @@
     }else{
         self.footBgView.hidden = YES;
     }
-    
+
     if ([walletType isEqualToString:kDefaultType]) {
         self.detailBtn.hidden = self.showList.count== 0 ? YES:NO;
         self.detailLabel.hidden = self.showList.count== 0 ? YES:NO;
@@ -376,26 +376,25 @@
 - (NSArray *)allCoinTypeArray
 {
     if (!_allCoinTypeArray) {
-        
+
         OKWalletListCollectionViewCellModel *model0 = [OKWalletListCollectionViewCellModel new];
         model0.coinType = @"HD";
         model0.iconName = @"cointype_hd";
         model0.isSelected = [kWalletManager.currentSelectCoinType isEqualToString:model0.coinType];
         model0.headerWaletType = MyLocalizedString(@"HD derived wallet", nil);
-        
+
         OKWalletListCollectionViewCellModel *model1 = [OKWalletListCollectionViewCellModel new];
         model1.coinType = @"BTC";
         model1.iconName = @"cointype_btc";
         model1.isSelected = [kWalletManager.currentSelectCoinType isEqualToString:model1.coinType];
         model1.headerWaletType = MyLocalizedString(@"BTC wallet", nil);
-        
-//        OKWalletListCollectionViewCellModel *model2 = [OKWalletListCollectionViewCellModel new];
-//        model2.coinType = @"ETH";
-//        model2.iconName = @"cointype_eth";
-//        model2.isSelected = [kWalletManager.currentSelectCoinType isEqualToString:model2.coinType];
-//        model2.headerWaletType = MyLocalizedString(@"ETH wallet", nil);
-//        _allCoinTypeArray = @[model0,model1,model2];
-         _allCoinTypeArray = @[model0,model1];
+
+        OKWalletListCollectionViewCellModel *model2 = [OKWalletListCollectionViewCellModel new];
+        model2.coinType = @"ETH";
+        model2.iconName = @"cointype_eth";
+        model2.isSelected = [kWalletManager.currentSelectCoinType isEqualToString:model2.coinType];
+        model2.headerWaletType = MyLocalizedString(@"ETH wallet", nil);
+        _allCoinTypeArray = @[model0,model1,model2];
     }
     return _allCoinTypeArray;
 }
@@ -403,17 +402,17 @@
 - (NSArray *)NoHDArray
 {
     if (!_NoHDArray) {
-        
+
         OKWalletListNoHDTableViewCellModel *model1 = [OKWalletListNoHDTableViewCellModel new];
         model1.iconName = @"retorei_add";
         model1.titleStr = MyLocalizedString(@"Add HD Wallet", nil);
         model1.descStr = MyLocalizedString(@"Support BTC, ETH and other main chain", nil);
-        
+
         OKWalletListNoHDTableViewCellModel *model2 = [OKWalletListNoHDTableViewCellModel new];
         model2.iconName = @"restore_phone";
         model2.titleStr = MyLocalizedString(@"Restore the purse", nil);
         model2.descStr = MyLocalizedString(@"Import through mnemonic", nil);
-        
+
         _NoHDArray = @[model1,model2];
     }
     return _NoHDArray;
@@ -423,7 +422,7 @@
 - (IBAction)tipsBtnClick:(UIButton *)sender {
     OKTipsViewController *tipsVc = [OKTipsViewController tipsViewController];
     tipsVc.modalPresentationStyle = UIModalPresentationOverFullScreen;
-    [self presentViewController:tipsVc animated:NO completion:nil];
+    [self.OK_TopViewController presentViewController:tipsVc animated:NO completion:nil];
 }
 
 - (IBAction)circlePlusBtnClick:(UIButton *)sender {

@@ -24,7 +24,7 @@
 + (instancetype)monetaryUnitViewController
 {
     return [[UIStoryboard storyboardWithName:@"Tab_Mine" bundle:nil] instantiateViewControllerWithIdentifier:@"OKMonetaryUnitViewController"];
-    
+
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -58,6 +58,7 @@
     [view addSubview:label];
     return view;
 }
+
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
     return 65;
@@ -141,9 +142,9 @@
 {
     if (!_allData) {
         NSMutableArray *allDataM = [NSMutableArray array];
-        
+
         NSMutableArray *moneyUnitGroup = [NSMutableArray array];
- 
+
         for (int i = 0; i < 3; i++) {
             NSString *type = kWalletManager.supportFiatArray[i];
             OKUnitTableViewCellModel *model1 = [[OKUnitTableViewCellModel alloc]init];
@@ -152,50 +153,50 @@
             model1.type = GroupTypeFait;
             [moneyUnitGroup addObject:model1];
         }
-        
+
         [allDataM addObject:moneyUnitGroup];
-        
+
         NSMutableArray *btcUnitGroup = [NSMutableArray array];
-        
+
         OKUnitTableViewCellModel *model4 = [[OKUnitTableViewCellModel alloc]init];
         model4.titleStr = @"BTC";
         model4.type = GroupTypeBitcoinUnit;
         model4.typeString = model4.titleStr;
         [btcUnitGroup addObject:model4];
-        
+
         OKUnitTableViewCellModel *model5 = [[OKUnitTableViewCellModel alloc]init];
         model5.titleStr = @"mBTC";
         model5.descStr = @"=0.001 BTC";
         model5.type = GroupTypeBitcoinUnit;
         model5.typeString = model5.titleStr;
         [btcUnitGroup addObject:model5];
-        
-        
+
+
         OKUnitTableViewCellModel *model6 = [[OKUnitTableViewCellModel alloc]init];
         model6.titleStr = @"bits";
         model6.descStr = @"=0.000001 BTC";
         model6.type = GroupTypeBitcoinUnit;
         model6.typeString = model6.titleStr;
         [btcUnitGroup addObject:model6];
-        
+
         OKUnitTableViewCellModel *model7 = [[OKUnitTableViewCellModel alloc]init];
         model7.titleStr = @"sat";
         model7.descStr = @"=0.00000001 BTC";
         model7.type = GroupTypeBitcoinUnit;
         model7.typeString = model7.titleStr;
         [btcUnitGroup addObject:model7];
-        
-        
-//        NSMutableArray *ethUnitGroup = [NSMutableArray array];
-//        OKUnitTableViewCellModel *model8 = [[OKUnitTableViewCellModel alloc]init];
-//        model8.titleStr = @"ETH";
-//        model8.isSelected = YES;
-//        model8.type = GroupTypeBitcoinETH;
-//        [ethUnitGroup addObject:model8];
-//
-        
+
+
+        NSMutableArray *ethUnitGroup = [NSMutableArray array];
+        OKUnitTableViewCellModel *model8 = [[OKUnitTableViewCellModel alloc]init];
+        model8.titleStr = @"ETH";
+        model8.isSelected = YES;
+        model8.type = GroupTypeBitcoinETH;
+        [ethUnitGroup addObject:model8];
+
+
         [allDataM addObject:btcUnitGroup];
-//        [allDataM addObject:ethUnitGroup];
+        [allDataM addObject:ethUnitGroup];
         _allData = allDataM;
     }
     return _allData;

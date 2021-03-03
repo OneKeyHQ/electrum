@@ -38,7 +38,7 @@
 {
     _model = model;
     self.walletNameLabel.text = model.label;
-    self.walletTypeBgView.backgroundColor = model.backColor;
+    self.cellBgView.backgroundColor = model.backColor;
     NSString *address = model.address;
     if (model.address.length > 12) {
         address = [NSString stringWithFormat:@"%@...%@",[model.address substringToIndex:6],[model.address substringFromIndex:model.address.length - 6]];

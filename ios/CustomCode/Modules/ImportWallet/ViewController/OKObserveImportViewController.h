@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OKObserveImportViewController : BaseViewController
 @property (nonatomic,assign)OKAddType importType;
+@property (nonatomic,copy)NSString *coinType;
 + (instancetype)observeImportViewController;
 @end
 

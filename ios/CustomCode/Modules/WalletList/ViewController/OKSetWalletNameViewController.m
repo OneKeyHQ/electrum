@@ -62,7 +62,7 @@
     [self.view endEditing:YES];
     OKWeakSelf(self)
     if (self.addType == OKAddTypeImportAddresses) {
-        NSDictionary *create =  [kPyCommandsManager callInterface:kInterfaceImport_Address parameter:@{@"name":self.walletNameTextfield.text,@"address":self.address}];
+        NSDictionary *create =  [kPyCommandsManager callInterface:kInterfaceImport_Address parameter:@{@"name":self.walletNameTextfield.text,@"address":self.address,@"coin":[self.coinType lowercaseString]}];
         OKCreateResultModel *createResultModel = [OKCreateResultModel mj_objectWithKeyValues:create];
         if (createResultModel != nil) {
             [kTools tipMessage:MyLocalizedString(@"Import success", nil)];
@@ -182,6 +182,16 @@
                     [weakself createComplete:create isInit:isInit pwd:pwd isHw:YES];
                 });
             });
+        }
+            break;
+        case OKAddTypeImportKeystore:
+        {
+            [params addEntriesFromDictionary:@{
+                @"keystores":self.keystores,
+                @"keystore_password":self.keystore_password
+            }];
+            create =  [kPyCommandsManager callInterface:kInterfaceImport_KeyStore parameter:params];
+            [weakself createComplete:create isInit:isInit pwd:pwd isHw:NO];
         }
             break;
         default:

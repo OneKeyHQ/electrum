@@ -19,6 +19,7 @@
 #import "OKBiologicalViewController.h"
 #import "OKCreateResultModel.h"
 #import "OKCreateResultWalletInfoModel.h"
+#import "OKSelectAssetTypeController.h"
 
 @interface OKHDWalletViewController ()<UITableViewDelegate,UITableViewDataSource>
 @property (strong, nonatomic) IBOutlet UITableView *tableView;
@@ -62,7 +63,7 @@
     self.accountDescLabel.text = MyLocalizedString(@"Support BTC, ETH and other main chain", nil);
     [self.countBgView setLayerRadius:10];
     [self.footerBgView setLayerDefaultRadius];
-    
+
     NSString *labelText = MyLocalizedString(@"management", nil);
     CGFloat labelW = [labelText getWidthWithHeight:30 font:14];
     CGFloat labelmargin = 10;
@@ -71,16 +72,16 @@
     label.text = labelText;
     label.font = [UIFont boldSystemFontOfSize:14];
     label.textColor = HexColor(0x26CF02);
-    
+
     UIView *rightView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, labelW + labelmargin * 2, labelH)];
     rightView.backgroundColor = HexColorA(0x26CF02, 0.1);
     [rightView setLayerRadius:labelH * 0.5];
     [rightView addSubview:label];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithCustomView:rightView];
-    
+
     UITapGestureRecognizer *tapRightViewClick = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapRightViewClick)];
     [rightView addGestureRecognizer:tapRightViewClick];
-    
+
     [self.footerBgView setLayerBoarderColor:HexColorA(0x546370, 0.3) width:1 radius:20];
 }
 
@@ -118,7 +119,7 @@
     self.countLabel.text = [NSString stringWithFormat:@"%zd",self.showList.count];
     self.headerTitleLabel.text = MyLocalizedString(@"HD derived wallet", nil);
     self.footerBgView.hidden = self.showList.count == 0 ? YES : NO;
-    
+
     if (self.showList.count == 0) {
         self.navigationItem.rightBarButtonItem.customView.userInteractionEnabled = NO;
         self.navigationItem.rightBarButtonItem.customView.alpha = 0.5;
@@ -153,7 +154,7 @@
         cell.model = model;
         return cell;
     }
-    
+
     static NSString *ID = @"OKWalletListTableViewCell";
     OKWalletListTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:ID];
     if (cell == nil) {
@@ -196,7 +197,7 @@
                         }];
                         BaseNavigationController *baseVc = [[BaseNavigationController alloc]initWithRootViewController:pwdVc];
                         [weakself.OK_TopViewController presentViewController:baseVc animated:YES completion:nil];
-                        
+
                     }
                 }];
             }
@@ -217,29 +218,10 @@
 
 - (void)createWallet:(NSString *)pwd isInit:(BOOL)isInit
 {
-    NSString *seed = @"";
-    NSArray *words = [NSArray array];
-    NSDictionary *create =  [kPyCommandsManager callInterface:kInterfaceCreate_hd_wallet parameter:@{@"password":pwd,@"seed":seed}];
-    OKCreateResultModel *createResultModel = [OKCreateResultModel mj_objectWithKeyValues:create];
-    words = [createResultModel.seed componentsSeparatedByString:@" "];
-    if (words.count > 0) {
-        OKCreateResultWalletInfoModel *model =  createResultModel.wallet_info.firstObject;
-        OKWalletInfoModel *curentWalletModel= [kWalletManager getCurrentWalletAddress:model.name];
-        [kWalletManager setCurrentWalletInfo:curentWalletModel];
-        if (kUserSettingManager.currentSelectPwdType.length > 0 && kUserSettingManager.currentSelectPwdType !=  nil) {
-            [kUserSettingManager setIsLongPwd:[kUserSettingManager.currentSelectPwdType boolValue]];
-        }
-        if (!kWalletManager.isOpenAuthBiological && isInit) {
-            OKBiologicalViewController *biologicalVc = [OKBiologicalViewController biologicalViewController:@"OKWalletViewController" pwd:pwd biologicalViewBlock:^{
-                [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":pwd,@"backupshow":@"1"}];
-            }];
-            [self.OK_TopViewController.navigationController pushViewController:biologicalVc animated:YES];
-        }else{
-            [self.OK_TopViewController dismissToViewControllerWithClassName:@"OKHDWalletViewController" animated:YES complete:^{
-                [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":pwd,@"backupshow":@"1"}];
-            }];
-        }
-    }
+    OKSelectAssetTypeController *selectAssetTypeVc = [OKSelectAssetTypeController selectAssetTypeController];
+    selectAssetTypeVc.pwd = pwd;
+    selectAssetTypeVc.isInit = isInit;
+    [self.OK_TopViewController.navigationController pushViewController:selectAssetTypeVc animated:YES];
 }
 
 - (IBAction)headerTipsBtnclick:(UIButton *)sender {
@@ -278,17 +260,17 @@
 - (NSArray *)NoHDArray
 {
     if (!_NoHDArray) {
-        
+
         OKWalletListNoHDTableViewCellModel *model1 = [OKWalletListNoHDTableViewCellModel new];
         model1.iconName = @"retorei_add";
         model1.titleStr = MyLocalizedString(@"Add HD Wallet", nil);
         model1.descStr = MyLocalizedString(@"Support BTC, ETH and other main chain", nil);
-        
+
         OKWalletListNoHDTableViewCellModel *model2 = [OKWalletListNoHDTableViewCellModel new];
         model2.iconName = @"restore_phone";
         model2.titleStr = MyLocalizedString(@"Restore the purse", nil);
         model2.descStr = MyLocalizedString(@"Import through mnemonic", nil);
-        
+
         _NoHDArray = @[model1,model2];
     }
     return _NoHDArray;

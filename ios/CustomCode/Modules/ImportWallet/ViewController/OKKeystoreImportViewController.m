@@ -40,7 +40,7 @@
     [super viewDidLoad];
 
     self.title = MyLocalizedString(@"Keystore import", nil);
-    self.iconImageView.image = [UIImage imageNamed:@"token_btc"];
+    self.iconImageView.image = [UIImage imageNamed:[NSString stringWithFormat:@"token_%@",[self.coinType lowercaseString]]];
     [self.textBgView setLayerBoarderColor:HexColor(0xDBDEE7) width:1 radius:20];
     self.textPlacehoderLabel.text = MyLocalizedString(@"Copy and paste the contents of the Keystore file, or scan it Keystore QR code import", nil);
     self.tips1Label.text = MyLocalizedString(@"Once imported, the private key is encrypted and stored on your local device for safekeeping. OneKey does not store any private data, nor can it retrieve it for you", nil);
@@ -48,7 +48,7 @@
     [self.leftBgView setLayerRadius:2];
     [self.importBtn setLayerDefaultRadius];
     [self.pwdBgView setLayerBoarderColor:HexColor(0xDBDEE7) width:1 radius:20];
-    
+
     self.pwdTextField.placeholder = MyLocalizedString(@"Enter the Keystore file password", nil);
     [self textChange];
     self.navigationItem.rightBarButtonItem = [UIBarButtonItem barButtonItemScanBtnWithTarget:self selector:@selector(scanBtnClick)];
@@ -61,11 +61,14 @@
         [kTools tipMessage:MyLocalizedString(@"KeyStore cannot be empty", nil)];
         return;
     }
-    
+
     id result = [kPyCommandsManager callInterface:kInterfaceverify_legality parameter:@{@"data":self.textView.text,@"flag":@"keystore"}];
     if (result != nil) {
         OKSetWalletNameViewController *setNameVc = [OKSetWalletNameViewController setWalletNameViewController];
         setNameVc.addType = self.importType;
+        setNameVc.coinType = self.coinType;
+        setNameVc.keystores = self.textView.text;
+        setNameVc.keystore_password = self.pwdTextField.text;
         setNameVc.where = OKWhereToSelectTypeWalletList;
         [self.navigationController pushViewController:setNameVc animated:YES];
     }
@@ -90,12 +93,8 @@
 }
 
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(nonnull NSString *)text {
-    NSString *result = [textView.text stringByAppendingString:text];
-    if (result.length > 100) {
-        return NO;
-    }
     if (textView == self.textView) {
-        if (text.length == 0) { 
+        if (text.length == 0) {
             if (textView.text.length == 1) {
                 self.textPlacehoderLabel.hidden = NO;
             }
@@ -105,7 +104,6 @@
             }
         }
     }
-    
     return YES;
 }
 

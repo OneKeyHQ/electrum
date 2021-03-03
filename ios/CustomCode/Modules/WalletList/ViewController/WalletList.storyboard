@@ -1161,10 +1161,10 @@
             </objects>
             <point key="canvasLocation" x="1840.5797101449277" y="865.84821428571422"/>
         </scene>
-        <!--View Controller-->
+        <!--Tips View Controller-->
         <scene sceneID="XWy-AU-zB3">
             <objects>
-                <viewController storyboardIdentifier="OKTipsViewController" id="f4J-2E-Vot" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="OKTipsViewController" id="f4J-2E-Vot" customClass="OKTipsViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="oS8-6g-lfK"/>
                         <viewControllerLayoutGuide type="bottom" id="Wck-qF-gAX"/>

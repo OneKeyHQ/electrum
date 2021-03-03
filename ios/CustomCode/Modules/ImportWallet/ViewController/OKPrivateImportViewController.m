@@ -33,7 +33,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     self.title = MyLocalizedString(@"The private key import", nil);
-    self.iconImageView.image = [UIImage imageNamed:@"token_btc"];
+    self.iconImageView.image = [UIImage imageNamed:[NSString stringWithFormat:@"token_%@",[self.coinType lowercaseString]]];
     [self.textBgView setLayerBoarderColor:HexColor(0xDBDEE7) width:1 radius:20];
     self.textPlacehoderLabel.text = MyLocalizedString(@"Enter the private key or scan the QR code (case sensitive)", nil);
     self.tips1Label.text = MyLocalizedString(@"Once imported, the private key is encrypted and stored on your local device for safekeeping. OneKey does not store any private data, nor can it retrieve it for you", nil);
@@ -51,11 +51,12 @@
         return;
     }
 
-    id reult =  [kPyCommandsManager callInterface:kInterfaceverify_legality parameter:@{@"data":self.textView.text,@"flag":@"private"}];
+    id reult =  [kPyCommandsManager callInterface:kInterfaceverify_legality parameter:@{@"data":self.textView.text,@"flag":@"private",@"coin":[self.coinType lowercaseString]}];
     if (reult != nil) {
         [self getAddressType:^(OKBTCAddressType btcAddressType) {
             OKSetWalletNameViewController *setNameVc = [OKSetWalletNameViewController setWalletNameViewController];
             setNameVc.addType = self.importType;
+            setNameVc.coinType = self.coinType;
             setNameVc.privkeys = self.textView.text;
             setNameVc.where = OKWhereToSelectTypeWalletList;
             setNameVc.btcAddressType = btcAddressType;

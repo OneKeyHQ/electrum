@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OKSendCoinViewController : BaseViewController
 @property (nonatomic,copy)NSString *address;
+@property (nonatomic,copy)NSString *coinType;
 + (instancetype)sendCoinViewController;
 @end
 

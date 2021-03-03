@@ -112,7 +112,6 @@ typedef enum{
 
 @property (nonatomic,copy)NSString *currentSelectCoinType;
 @property (nonatomic,strong)OKWalletInfoModel *currentWalletInfo;
-
 @property (nonatomic,copy)NSString *currentFiat;
 @property (nonatomic,copy)NSString *currentFiatSymbol;
 @property (nonatomic,copy)NSString *currentBitcoinUnit;
@@ -135,6 +134,8 @@ typedef enum{
 - (BOOL)checkIsHavePwd;
 - (BOOL)haveHDWallet;
 - (OKWalletInfoModel *)getCurrentWalletAddress:(NSString *)wallletName;
+
+- (NSString *)getUnitForCoinType;
 @end
 
 NS_ASSUME_NONNULL_END

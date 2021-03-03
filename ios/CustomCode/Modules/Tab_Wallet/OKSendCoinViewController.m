@@ -98,38 +98,32 @@ typedef enum {
 @property (weak, nonatomic) IBOutlet UIView *restoreDefaultBgView;
 - (IBAction)restoreDefaultOptionsBtnClick:(UIButton *)sender;
 
-@property (nonatomic,copy)NSString* currentFee_status;
-
+//当前选择的 慢、推荐、快类型
 @property (nonatomic,assign)OKFeeType currentFeeType;
-
-@property (nonatomic,strong)NSDictionary *lowFeeDict;
-@property (nonatomic,copy)NSString *fiatLow;
-
-@property (nonatomic,strong)NSDictionary *recommendFeeDict;
-@property (nonatomic,copy)NSString *fiatRecommend;
-
-@property (nonatomic,strong)NSDictionary *fastFeeDict;
-@property (nonatomic,copy)NSString *fiatFast;
-
-@property (nonatomic,strong)NSDictionary *customFeeDict;
-@property (nonatomic,copy)NSString *fiatCustom;
-
-@property (nonatomic,strong)NSDictionary *biggestFeeDict;
-@property (nonatomic,copy)NSString *fiatBiggest;
 
 @property (nonatomic,copy)NSString *currentMemo;
 
-@property (nonatomic,assign)BOOL custom;
-
-@property (nonatomic,strong)OKDefaultFeeInfoModel *defaultFeeInfoModel;
-
+//存储硬件签名数据
 @property (nonatomic,strong)NSString *feeBit;
-
 @property (nonatomic,strong)NSDictionary *hwPredata;
 @property (nonatomic,strong)NSDictionary *hwSignData;
 @property (nonatomic,copy)NSString *hwFiat;
 
 @property (nonatomic,assign)BOOL isClickBiggest;
+//存储最大选项的交易编码数据
+@property (nonatomic,strong)NSDictionary *biggestFeeDict;
+//存储慢、推荐、快、自定义的交易数据
+@property (nonatomic,strong)NSDictionary *lowFeeDict;
+@property (nonatomic,strong)NSDictionary *recommendFeeDict;
+@property (nonatomic,strong)NSDictionary *fastFeeDict;
+@property (nonatomic,strong)NSDictionary *customFeeDict;
+
+//是否选择了自定义
+@property (nonatomic,assign)BOOL custom;
+//存储UI展示的慢、推荐、快数据
+@property (nonatomic,strong)OKDefaultFeeInfoModel *defaultFeeInfoModel;
+//存储UI展示的自定义数据
+@property (nonatomic,strong)OKSendFeeModel *customFeeModel;
 
 @end
 
@@ -149,21 +143,29 @@ typedef enum {
     _isClickBiggest = NO;
     [self stupUI];
     [self changeFeeType:OKFeeTypeRecommend];
-
-    NSDictionary *dict = [kPyCommandsManager callInterface:kInterfaceget_default_fee_info parameter:@{}];
-    self.defaultFeeInfoModel = [OKDefaultFeeInfoModel mj_objectWithKeyValues:dict];
-    [self setDefaultFee];
-
-
+    [self getNoDataRates];
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(refreshBalance:) name:kNotiUpdate_status object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textChange:) name:UITextFieldTextDidChangeNotification object:nil];
     self.addressTextField.text = self.address;
 }
 
-- (void)dealloc
+//获取没有输入内容时候的默认费率
+- (void)getNoDataRates
 {
-    [[NSNotificationCenter defaultCenter]removeObserver:self];
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        NSDictionary *dict = [kPyCommandsManager callInterface:kInterfaceget_default_fee_info parameter:@{@"coin":[self.coinType lowercaseString]}];
+        if (dict == nil || dict.count == 0) {
+            [kTools tipMessage:MyLocalizedString(@"Failed to get the rate", nil)];
+            return;
+        }
+        self.defaultFeeInfoModel = [OKDefaultFeeInfoModel mj_objectWithKeyValues:dict];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            //刷新默认fee值
+            [self refreshFeeSelect];
+        });
+    });
 }
+
 - (void)stupUI
 {
     [self.shoukuanLabelBg setLayerRadius:12];
@@ -181,24 +183,22 @@ typedef enum {
 
 
     self.slowTitleLabel.text = MyLocalizedString(@"slow", nil);
-    self.slowCoinAmountLabel.text = [NSString stringWithFormat:@"0 %@",kWalletManager.currentBitcoinUnit];
+    self.slowCoinAmountLabel.text = [NSString stringWithFormat:@"0 %@",[kWalletManager getUnitForCoinType]];
     self.slowTimeLabel.text = MyLocalizedString(@"About 0 minutes", nil);
 
     self.recommendTitleLabel.text = MyLocalizedString(@"recommended", nil);
-    self.recommendCoinAmountLabel.text = [NSString stringWithFormat:@"0 %@",kWalletManager.currentBitcoinUnit];
+    self.recommendCoinAmountLabel.text = [NSString stringWithFormat:@"0 %@",[kWalletManager getUnitForCoinType]];
     self.recommendTimeLabel.text = MyLocalizedString(@"About 0 minutes", nil);
 
     self.fastTitleLabel.text = MyLocalizedString(@"fast", nil);
-    self.fastCoinAmountLabel.text = [NSString stringWithFormat:@"0 %@",kWalletManager.currentBitcoinUnit];
+    self.fastCoinAmountLabel.text = [NSString stringWithFormat:@"0 %@",[kWalletManager getUnitForCoinType]];
     self.fastTimeLabel.text = MyLocalizedString(@"About 0 minutes", nil);
-    [self.coinTypeBtn setTitle:kWalletManager.currentBitcoinUnit forState:UIControlStateNormal];
+    [self.coinTypeBtn setTitle:[kWalletManager getUnitForCoinType] forState:UIControlStateNormal];
 
     self.customTitleLabel.text = MyLocalizedString(@"The custom", nil);
-    self.customCoinAmountLabel.text = [NSString stringWithFormat:@"0 %@",kWalletManager.currentBitcoinUnit];
+    self.customCoinAmountLabel.text = [NSString stringWithFormat:@"0 %@",[kWalletManager getUnitForCoinType]];
     self.customTimeLabel.text = MyLocalizedString(@"About 0 minutes", nil);
-    [self.coinTypeBtn setTitle:kWalletManager.currentBitcoinUnit forState:UIControlStateNormal];
-
-    [self changUIForCustom];
+    [self.coinTypeBtn setTitle:[kWalletManager getUnitForCoinType] forState:UIControlStateNormal];
 
     BOOL isBackUp = [[kPyCommandsManager callInterface:kInterfaceget_backup_info parameter:@{@"name":kWalletManager.currentWalletInfo.name}] boolValue];
     if (!isBackUp) {
@@ -214,77 +214,80 @@ typedef enum {
                        [weakself.navigationController popViewControllerAnimated:YES];
         } vc:self conLabel:MyLocalizedString(@"confirm", nil) isOneBtn:NO];
     }
-
+    //刷新自定义界面
+    [self changUIForCustom];
+    //刷新确定按钮状态
     [self changeBtn];
 }
 
+/// 刷新余额
+/// @param noti 通知
 - (void)refreshBalance:(NSNotification *)noti
 {
     NSDictionary *dict = noti.object;
     dispatch_async(dispatch_get_main_queue(), ^{
        // UI更新代码
         self.balanceLabel.text =  [dict safeStringForKey:@"balance"];
-        self.coinTypeLabel.text = kWalletManager.currentBitcoinUnit;
+        self.coinTypeLabel.text = [kWalletManager getUnitForCoinType];
     });
 }
 
-- (void)setDefaultFee
-{
-    self.lowFeeDict = self.defaultFeeInfoModel.slow;
-    self.recommendFeeDict = self.defaultFeeInfoModel.normal;
-    self.fastFeeDict = self.defaultFeeInfoModel.fast;
-
-    self.fiatFast =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":[self.fastFeeDict safeStringForKey:@"fee"]}];
-    self.fiatLow =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":[self.lowFeeDict safeStringForKey:@"fee"]}];
-    self.fiatRecommend =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":[self.recommendFeeDict safeStringForKey:@"fee"]}];
-    [self refreshFeeSelect];
-}
-
-
+/// 刷新矿工费UI数据
 - (void)refreshFeeSelect
 {
+    NSLog(@"refreshFeeSelect , %@",[self.defaultFeeInfoModel mj_JSONObject]);
     NSString *fiatS = kWalletManager.currentFiatSymbol;
     if (_custom) {
-        self.customTitleLabel.text = MyLocalizedString(@"The custom", nil);
-        NSString *fee = [self.customFeeDict safeStringForKey:@"fee"];
-        if (fee == nil) {
-            fee = @"0";
+        if (self.customFeeModel == nil) {
+            return;
         }
-        self.customCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",fee,kWalletManager.currentBitcoinUnit];
-        self.customTimeLabel.text = [NSString stringWithFormat:@"约%@分钟",[self.customFeeDict safeStringForKey:@"time"]==nil?@"--":[self.customFeeDict safeStringForKey:@"time"]];
-        self.customMoneyAmountLabel.text = [NSString stringWithFormat:@"%@%@",fiatS,self.fiatCustom];
+        self.customTitleLabel.text = MyLocalizedString(@"The custom", nil);
+        NSString *fee = self.customFeeModel.fee;
+        if (fee == nil) {
+            fee = @"--";
+        }
+        self.customCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",fee,[kWalletManager getUnitForCoinType]];
+        self.customTimeLabel.text = [NSString stringWithFormat:@"%@%@%@",MyLocalizedString(@"sendcoin.about", nil),self.customFeeModel.time?:@"--",MyLocalizedString(@"sendcoin.minutes", nil)];
+        NSString *fiat = [[self.customFeeModel.fiat componentsSeparatedByString:@" "] firstObject];
+        self.customMoneyAmountLabel.text = [NSString stringWithFormat:@"%@ %@",fiatS,fiat];
     }else{
+        if (self.defaultFeeInfoModel.slow == nil || self.defaultFeeInfoModel.normal == nil || self.defaultFeeInfoModel.fast == nil) {
+            return;
+        }
         self.slowTitleLabel.text = MyLocalizedString(@"slow", nil);
-        NSString *feeslow = [self.lowFeeDict safeStringForKey:@"fee"];
+        NSString *feeslow = self.defaultFeeInfoModel.slow.fee;
         if (feeslow == nil) {
             feeslow = @"-";
         }
-        self.slowCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",feeslow,kWalletManager.currentBitcoinUnit];
-        self.slowTimeLabel.text = [NSString stringWithFormat:@"约%@分钟",[self.lowFeeDict safeStringForKey:@"time"]==nil?@"--":[self.lowFeeDict safeStringForKey:@"time"]];
-        self.slowMoneyAmountLabel.text = [NSString stringWithFormat:@"%@%@",fiatS,self.fiatLow];
+        self.slowCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",feeslow,[kWalletManager getUnitForCoinType]];
+        self.slowTimeLabel.text = [NSString stringWithFormat:@"%@%@%@",MyLocalizedString(@"sendcoin.about", nil),self.defaultFeeInfoModel.slow.time?:@"--",MyLocalizedString(@"sendcoin.minutes", nil)];
+        NSString *slowfiat = [[self.defaultFeeInfoModel.slow.fiat componentsSeparatedByString:@" "] firstObject];
+        self.slowMoneyAmountLabel.text = [NSString stringWithFormat:@"%@ %@",fiatS,slowfiat];
 
 
         self.recommendTitleLabel.text = MyLocalizedString(@"recommended", nil);
-        NSString *feerecommend = [self.recommendFeeDict safeStringForKey:@"fee"];
+        NSString *feerecommend = self.defaultFeeInfoModel.normal.fee;
         if (feerecommend == nil) {
             feerecommend = @"-";
         }
-        self.recommendCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",feerecommend,kWalletManager.currentBitcoinUnit];
-        self.recommendTimeLabel.text = [NSString stringWithFormat:@"约%@分钟",[self.recommendFeeDict safeStringForKey:@"time"]==nil?@"--":[self.recommendFeeDict safeStringForKey:@"time"]];
-        self.recommendMoneyAmountLabel.text = [NSString stringWithFormat:@"%@%@",fiatS,self.fiatRecommend];
+        self.recommendCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",feerecommend,[kWalletManager getUnitForCoinType]];
+        self.recommendTimeLabel.text = [NSString stringWithFormat:@"%@%@%@",MyLocalizedString(@"sendcoin.about", nil),self.defaultFeeInfoModel.normal.time?:@"--",MyLocalizedString(@"sendcoin.minutes", nil)];
+        NSString *recommendfiat = [[self.defaultFeeInfoModel.normal.fiat componentsSeparatedByString:@" "] firstObject];
+        self.recommendMoneyAmountLabel.text = [NSString stringWithFormat:@"%@ %@",fiatS,recommendfiat];
 
         self.fastTitleLabel.text = MyLocalizedString(@"fast", nil);
-        NSString *feefast = [self.fastFeeDict safeStringForKey:@"fee"];
+        NSString *feefast = self.defaultFeeInfoModel.fast.fee;
         if (feefast == nil) {
             feefast = @"-";
         }
-        self.fastCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",feefast,kWalletManager.currentBitcoinUnit];
-        self.fastTimeLabel.text = [NSString stringWithFormat:@"约%@分钟",[self.fastFeeDict safeStringForKey:@"time"] == nil ? @"--":[self.fastFeeDict safeStringForKey:@"time"]];
-        self.fastMoneyAmountLabel.text = [NSString stringWithFormat:@"%@%@",fiatS,self.fiatFast];
+        self.fastCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",feefast,[kWalletManager getUnitForCoinType]];
+        self.fastTimeLabel.text = [NSString stringWithFormat:@"%@%@%@",MyLocalizedString(@"sendcoin.about", nil),self.defaultFeeInfoModel.fast.time?: @"--",MyLocalizedString(@"sendcoin.minutes", nil)];
+        NSString *fastfiat = [[self.defaultFeeInfoModel.fast.fiat componentsSeparatedByString:@" "] firstObject];
+        self.fastMoneyAmountLabel.text = [NSString stringWithFormat:@"%@ %@",fiatS,fastfiat];
     }
     [self changUIForCustom];
 }
-
+///刷新矿工费自定义UI数据
 - (void)changUIForCustom
 {
     self.custom_BGView.hidden = !_custom;
@@ -303,20 +306,19 @@ typedef enum {
     if (self.balanceLabel.text.length == 0) {
         return;
     }
-
     NSString *fee = @"";
     if (self.custom) {
-        fee = [self.customFeeDict safeStringForKey:@"fee"];
+        fee = [self.customFeeDict safeStringForKey:@"fee"]?:self.customFeeModel.fee;
     }else{
         switch (self.currentFeeType) {
             case OKFeeTypeSlow:
-                fee = [self.lowFeeDict safeStringForKey:@"fee"];
+                fee = [self.lowFeeDict safeStringForKey:@"fee"]?:self.defaultFeeInfoModel.slow.fee;
                 break;
             case OKFeeTypeRecommend:
-                fee = [self.recommendFeeDict safeStringForKey:@"fee"];
+                fee = [self.recommendFeeDict safeStringForKey:@"fee"]?:self.defaultFeeInfoModel.normal.fee;
                 break;
             case OKFeeTypeFast:
-                fee = [self.fastFeeDict safeStringForKey:@"fee"];
+                fee = [self.fastFeeDict safeStringForKey:@"fee"]?:self.defaultFeeInfoModel.fast.fee;
                 break;
             default:
                 break;
@@ -342,26 +344,26 @@ typedef enum {
     NSString *feerate = @"";
     switch (self.currentFeeType) {
         case OKFeeTypeFast:
-            feerate = [self.defaultFeeInfoModel.fast safeStringForKey:@"feerate"];
-            dsize = [self.defaultFeeInfoModel.fast safeStringForKey:@"size"];
+            feerate = self.defaultFeeInfoModel.fast.feerate;
+            dsize = self.defaultFeeInfoModel.fast.size;
             break;
         case OKFeeTypeRecommend:
-            feerate = [self.defaultFeeInfoModel.normal safeStringForKey:@"feerate"];
-            dsize = [self.defaultFeeInfoModel.normal safeStringForKey:@"size"];
+            feerate = self.defaultFeeInfoModel.normal.feerate;
+            dsize = self.defaultFeeInfoModel.normal.size;
             break;
         case OKFeeTypeSlow:
-            feerate = [self.defaultFeeInfoModel.slow safeStringForKey:@"feerate"];
-            dsize = [self.defaultFeeInfoModel.slow safeStringForKey:@"size"];
+            feerate = self.defaultFeeInfoModel.slow.feerate;
+            dsize = self.defaultFeeInfoModel.slow.size;
             break;
 
         default:
             break;
     }
-    NSString *lowest = [self.defaultFeeInfoModel.slow safeStringForKey:@"feerate"];
+    NSString *lowest = self.defaultFeeInfoModel.slow.feerate;
     OKWeakSelf(self)
-    [OKWalletInputFeeView showWalletCustomFeeDsize:dsize feerate:feerate lowfeerate:lowest sure:^(NSDictionary *customFeeDict, NSString *fiat, NSString *feeBit) {
+    [OKWalletInputFeeView showWalletCustomFeeDsize:dsize feerate:feerate lowfeerate:lowest coinType:self.coinType sure:^(NSDictionary *customFeeDict, NSString *fiat, NSString *feeBit) {
         weakself.customFeeDict = customFeeDict;
-        weakself.fiatCustom = fiat;
+        weakself.customFeeModel = [OKSendFeeModel mj_objectWithKeyValues:customFeeDict];
         weakself.custom = YES;
         weakself.feeBit = feeBit;
         [weakself refreshFeeSelect];
@@ -383,104 +385,105 @@ typedef enum {
 }
 
 
-- (BOOL)checkTextField
+- (BOOL)checkTextField:(BOOL)isShowTips
 {
     if (self.addressTextField.text.length == 0) {
-        [kTools tipMessage:MyLocalizedString(@"Please enter the transfer address", nil)];
+        if (isShowTips) {
+            [kTools tipMessage:MyLocalizedString(@"Please enter the transfer address", nil)];
+        }
         return NO;
     }
 
-    id result =  [kPyCommandsManager callInterface:kInterfaceverify_legality parameter:@{@"data":self.addressTextField.text,@"flag":@"address"}];
-    if (result == nil) {
-        return NO;
+    if (isShowTips) {
+        id result =  [kPyCommandsManager callInterface:kInterfaceverify_legality parameter:@{@"data":self.addressTextField.text,@"flag":@"address"}];
+        if (result == nil) {
+            return NO;
+        }
     }
 
     if (self.amountTextField.text.length == 0) {
-        [kTools tipMessage:MyLocalizedString(@"Please enter the transfer amount", nil)];
+        if (isShowTips) {
+            [kTools tipMessage:MyLocalizedString(@"Please enter the transfer amount", nil)];
+        }
         return NO;
     }
 
     if ([self.amountTextField.text doubleValue] <= 0) {
-        [kTools tipMessage:MyLocalizedString(@"The transfer amount cannot be zero", nil)];
+        if (isShowTips) {
+            [kTools tipMessage:MyLocalizedString(@"The transfer amount cannot be zero", nil)];
+        }
         return NO;
     }
 
     if ([self.balanceLabel.text doubleValue] < [self.amountTextField.text doubleValue]) {
-        [kTools tipMessage:MyLocalizedString(@"Lack of balance", nil)];
+        if (isShowTips) {
+            [kTools tipMessage:MyLocalizedString(@"Lack of balance", nil)];
+        }
         return NO;
     }
 
     if ([self.amountTextField.text doubleValue] < [[kWalletManager getFeeBaseWithSat:@"546"] doubleValue]) {
-        [kTools tipMessage:MyLocalizedString(@"The minimum amount must not be less than 546SAT", nil)];
+        if (isShowTips) {
+            [kTools tipMessage:MyLocalizedString(@"The minimum amount must not be less than 546 sat", nil)];
+        }
         return NO;
     }
-
-
     return YES;
 }
 - (IBAction)sendBtnClick:(OKButton *)sender {
-    if (![self checkTextField]) {
+    if (![self checkTextField:YES]) {
         return;
     }
-    BOOL isSuccess = [self loadFee];
-    if (!isSuccess) {
-        return;
-    }
-    OKWeakSelf(self)
-    __block  NSDictionary *dict = [NSDictionary dictionary];
-    __block  NSString *fiat = @"";
+    if ([[self.coinType uppercaseString] isEqualToString:COIN_BTC]) {
+        [self loadFee:^(void) {
+            OKWeakSelf(self)
+            __block  NSDictionary *dict = [NSDictionary dictionary];
+            if (weakself.isClickBiggest) {
+                dict = self.biggestFeeDict;
+            }else{
+                if (weakself.custom) {
+                    dict = self.customFeeDict;
+                }else{
+                    switch (weakself.currentFeeType) {
+                        case OKFeeTypeSlow:
+                            dict = weakself.lowFeeDict;
+                            break;
+                        case OKFeeTypeRecommend:
+                            dict = weakself.recommendFeeDict;
+                            break;
+                        case OKFeeTypeFast:
+                            dict = weakself.fastFeeDict;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+            if ([kWalletManager getWalletDetailType] == OKWalletTypeHardware) {
+                [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+                [OKHwNotiManager sharedInstance].delegate = self;
+                self.hwPredata = dict;
+                self.hwFiat = [self getCurrentFiat];
+                NSString *feerateTx = [dict safeStringForKey:@"tx"];
+                NSDictionary *dict1 =  [kPyCommandsManager callInterface:kInterfaceMktx parameter:@{@"tx":feerateTx}];
+                NSString *unSignStr = [dict1 safeStringForKey:@"tx"];
+                NSString *tx = unSignStr;
+                dispatch_async(dispatch_get_global_queue(0, 0), ^{
+                    NSDictionary *signTxDict =  [kPyCommandsManager callInterface:kInterfaceSign_tx parameter:@{@"tx":tx}];
+                    if (signTxDict != nil) {
+                        weakself.hwSignData = signTxDict;
+                        [[NSNotificationCenter defaultCenter]postNotificationName:kNotiHwBroadcastiComplete object:nil];
+                    }
+                });
+                return;
+            }
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self showPreInfoView:dict fiat:[self getCurrentFiat]];
+            });
+        }];
+    }else if ([[self.coinType uppercaseString] isEqualToString:COIN_ETH]){
 
-    if (_isClickBiggest) {
-        dict = self.biggestFeeDict;
-        fiat = self.fiatBiggest;
-    }else{
-        if (weakself.custom) {
-            dict = self.customFeeDict;
-            fiat = self.fiatCustom;
-        }else{
-            switch (weakself.currentFeeType) {
-                case OKFeeTypeSlow:
-                {
-                    dict = weakself.lowFeeDict;
-                    fiat = weakself.fiatLow;
-                }
-                    break;
-                case OKFeeTypeRecommend:
-                {
-                    dict = weakself.recommendFeeDict;
-                    fiat = weakself.fiatRecommend;
-                }
-                    break;
-                case OKFeeTypeFast:
-                {
-                    dict = weakself.fastFeeDict;
-                    fiat = weakself.fiatFast;
-                }
-                    break;
-                default:
-                    break;
-            }
-        }
     }
-    if ([kWalletManager getWalletDetailType] == OKWalletTypeHardware) {
-        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-        [OKHwNotiManager sharedInstance].delegate = self;
-        self.hwPredata = dict;
-        self.hwFiat = fiat;
-        NSString *feerateTx = [dict safeStringForKey:@"tx"];
-        NSDictionary *dict1 =  [kPyCommandsManager callInterface:kInterfaceMktx parameter:@{@"tx":feerateTx}];
-        NSString *unSignStr = [dict1 safeStringForKey:@"tx"];
-        NSString *tx = unSignStr;
-        dispatch_async(dispatch_get_global_queue(0, 0), ^{
-            NSDictionary *signTxDict =  [kPyCommandsManager callInterface:kInterfaceSign_tx parameter:@{@"tx":tx}];
-            if (signTxDict != nil) {
-                weakself.hwSignData = signTxDict;
-                [[NSNotificationCenter defaultCenter]postNotificationName:kNotiHwBroadcastiComplete object:nil];
-            }
-        });
-        return;
-    }
-    [self showPreInfoView:dict fiat:fiat];
 }
 - (void)showPreInfoView:(NSDictionary *)dict fiat:(NSString *)fiat
 {
@@ -536,6 +539,7 @@ typedef enum {
 }
 - (void)sendTxPwd:(NSString *)pwd dict:(NSDictionary *)dict
 {
+    NSLog(@"pwd = %@ dict ==== %@",pwd,dict);
     NSString *feerateTx = [dict safeStringForKey:@"tx"];
     NSDictionary *dict1 =  [kPyCommandsManager callInterface:kInterfaceMktx parameter:@{@"tx":feerateTx}];
     NSString *unSignStr = [dict1 safeStringForKey:@"tx"];
@@ -591,136 +595,136 @@ typedef enum {
     }
 }
 
-
-- (BOOL)loadFee
+- (void)loadFee:(void(^)(void))block
 {
+    NSString *address = [self.addressTextField.text copy];
+    NSString *amount = [self.amountTextField.text copy];
+    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    dispatch_group_t group = dispatch_group_create();
+    dispatch_group_async(group, queue, ^{
+        [self loadZeroFee:address amount:amount];
+    });
+    dispatch_group_async(group, queue, ^{
+        [self loadReRecommendFee:address amount:amount];
+    });
+    dispatch_group_async(group, queue, ^{
+        [self loadFastFee:address amount:amount];
+    });
     if (_isClickBiggest) {
-        return [self loadBiggestFeeDict];
+        dispatch_group_async(group, queue, ^{
+            [self loadBiggestFeeDict:address];
+        });
     }
     if (self.custom) {
-        return [self loadCustomFee];
+        dispatch_group_async(group, queue, ^{
+            [self loadCustomFee:address amount:amount];
+        });
     }
-    switch (_currentFeeType) {
-        case OKFeeTypeSlow:
-        {
-            return [self loadZeroFee];
+    dispatch_group_notify(group,dispatch_get_main_queue(), ^{
+        if (self.custom) {
+            if (block && self.customFeeDict) {
+                block();
+            }
+        }else{
+            if (block && self.lowFeeDict && self.recommendFeeDict && self.fastFeeDict) {
+                block();
+            }
         }
-            break;
-        case OKFeeTypeRecommend:
-        {
-            return [self loadReRecommendFee];
-        }
-            break;
-        case OKFeeTypeFast:
-        {
-            return [self loadFastFee];
-        }
-            break;
-        default:
-        {
-            return [self loadReRecommendFee];
-        }
-            break;
-    }
+    });
 }
-- (BOOL)loadFastFee
+- (void)loadFastFee:(NSString *)address amount:(NSString *)amount
 {
-    NSString *status = [NSString stringWithFormat:@"%zd",[[self.defaultFeeInfoModel.fast safeStringForKey:@"feerate"] integerValue] * 2];
+    NSString *status = [NSString stringWithFormat:@"%zd",[self.defaultFeeInfoModel.fast.feerate integerValue] * 2];
     //输入地址和转账额度 获取fee
-    NSDictionary *outputsDict = @{self.addressTextField.text:self.amountTextField.text};
+    NSDictionary *outputsDict = @{address:amount};
     NSArray *outputsArray = @[outputsDict];
     NSString *outputs = [outputsArray mj_JSONString];
     NSString *memo = @"";
     NSDictionary *dict =  [kPyCommandsManager callInterface:kInterfaceGet_fee_by_feerate parameter:@{@"outputs":outputs,@"message":memo,@"feerate":status}];
-    if (dict == nil) {
-        return NO;
-    }
     self.fastFeeDict = dict;
-
+    if (dict == nil) {
+        return;
+    }
     NSString *feesat = [dict safeStringForKey:@"fee"];
-    self.fiatFast =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":feesat == nil ? @"0":feesat}];
-    return YES;
+    self.defaultFeeInfoModel.fast.fee = feesat;
+    self.defaultFeeInfoModel.fast.time = [dict safeStringForKey:@"time"];
+    self.defaultFeeInfoModel.fast.size = [dict safeStringForKey:@"size"];
+    self.defaultFeeInfoModel.fast.fiat =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":feesat == nil ? @"0":feesat}];;
 }
 
-- (BOOL)loadReRecommendFee
+- (void)loadReRecommendFee:(NSString *)address amount:(NSString *)amount
 {
     //输入地址和转账额度 获取fee
-    NSDictionary *outputsDict = @{self.addressTextField.text:self.amountTextField.text};
+    NSDictionary *outputsDict = @{address:amount};
     NSArray *outputsArray = @[outputsDict];
     NSString *outputs = [outputsArray mj_JSONString];
     NSString *memo = @"";
-    NSDictionary *dict =  [kPyCommandsManager callInterface:kInterfaceGet_fee_by_feerate parameter:@{@"outputs":outputs,@"message":memo,@"feerate":[self.defaultFeeInfoModel.normal safeStringForKey:@"feerate"]}];
-    if (dict == nil) {
-        return NO;
-    }
+    NSDictionary *dict =  [kPyCommandsManager callInterface:kInterfaceGet_fee_by_feerate parameter:@{@"outputs":outputs,@"message":memo,@"feerate":self.defaultFeeInfoModel.normal.feerate}];
     self.recommendFeeDict = dict;
-
+    if (dict == nil) {
+        return;
+    }
     NSString *feesat = [dict safeStringForKey:@"fee"];
-    self.fiatRecommend =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":feesat == nil ? @"0":feesat}];
-    return YES;
+    self.defaultFeeInfoModel.normal.fee = feesat;
+    self.defaultFeeInfoModel.normal.time = [dict safeStringForKey:@"time"];
+    self.defaultFeeInfoModel.normal.size = [dict safeStringForKey:@"size"];
+    self.defaultFeeInfoModel.normal.fiat =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":feesat == nil ? @"0":feesat}];
 }
 
-- (BOOL)loadZeroFee
+- (void)loadZeroFee:(NSString *)address amount:(NSString *)amount
 {
     //输入地址和转账额度 获取fee
-    NSDictionary *outputsDict = @{self.addressTextField.text:self.amountTextField.text};
+    NSDictionary *outputsDict = @{address:amount};
     NSArray *outputsArray = @[outputsDict];
     NSString *outputs = [outputsArray mj_JSONString];
     NSString *memo = @"";
-    NSDictionary *dict =  [kPyCommandsManager callInterface:kInterfaceGet_fee_by_feerate parameter:@{@"outputs":outputs,@"message":memo,@"feerate":[self.defaultFeeInfoModel.slow safeStringForKey:@"feerate"]}];
-    if (dict == nil) {
-        return NO;
-    }
-
+    NSDictionary *dict =  [kPyCommandsManager callInterface:kInterfaceGet_fee_by_feerate parameter:@{@"outputs":outputs,@"message":memo,@"feerate":self.defaultFeeInfoModel.slow.feerate}];
     self.lowFeeDict = dict;
-
+    if (dict == nil) {
+        return;
+    }
     NSString *feesat = [dict safeStringForKey:@"fee"];
-    self.fiatLow =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":feesat == nil ? @"0":feesat}];
-    return YES;
+    self.defaultFeeInfoModel.slow.fee = feesat;
+    self.defaultFeeInfoModel.slow.time = [dict safeStringForKey:@"time"];
+    self.defaultFeeInfoModel.slow.size = [dict safeStringForKey:@"size"];
+    self.defaultFeeInfoModel.slow.fiat =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":feesat == nil ? @"0":feesat}];
 }
 
-- (BOOL)loadCustomFee
+- (void)loadCustomFee:(NSString *)address amount:(NSString *)amount
 {
     NSString *status = self.feeBit;
     //输入地址和转账额度 获取fee
-    NSDictionary *outputsDict = @{self.addressTextField.text:self.amountTextField.text};
+    NSDictionary *outputsDict = @{address:amount};
     NSArray *outputsArray = @[outputsDict];
     NSString *outputs = [outputsArray mj_JSONString];
     NSString *memo = @"";
     NSDictionary *dict =  [kPyCommandsManager callInterface:kInterfaceGet_fee_by_feerate parameter:@{@"outputs":outputs,@"message":memo,@"feerate":status}];
-    if (dict == nil) {
-        return NO;
-    }
     self.customFeeDict = dict;
-
+    if (dict == nil) {
+        return;
+    }
+    self.customFeeModel = [OKSendFeeModel mj_objectWithKeyValues:dict];
     NSString *feesat = [dict safeStringForKey:@"fee"];
-    self.fiatCustom =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":feesat == nil ? @"0":feesat}];
-    return YES;
+    self.customFeeModel.fee = feesat;
+    self.customFeeModel.time = [dict safeStringForKey:@"time"];
+    self.customFeeModel.size = [dict safeStringForKey:@"size"];
+    self.customFeeModel.fiat = [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":feesat == nil ? @"0":feesat}];;
 }
 
 
-- (BOOL)loadBiggestFeeDict
+- (void)loadBiggestFeeDict:(NSString *)address
 {
-    NSDictionary *outputsDict = @{self.addressTextField.text:@"!"};
+    NSDictionary *outputsDict = @{address:@"!"};
     NSArray *outputsArray = @[outputsDict];
     NSString *outputs = [outputsArray mj_JSONString];
     NSString *memo = @"";
-    NSString *status = self.feeBit;
+    NSString *feerate = self.feeBit;
     if (!self.custom) {
-        status = [self.defaultFeeInfoModel.slow safeStringForKey:@"feerate"];
+        feerate = [self getCurrentFiat];
     }
-    NSDictionary *dict =  [kPyCommandsManager callInterface:kInterfaceGet_fee_by_feerate parameter:@{@"outputs":outputs,@"message":memo,@"feerate":status}];
-    if (dict == nil) {
-        return NO;
-    }
+    NSDictionary *dict =  [kPyCommandsManager callInterface:kInterfaceGet_fee_by_feerate parameter:@{@"outputs":outputs,@"message":memo,@"feerate":feerate}];
     self.biggestFeeDict = dict;
-    NSString *feesat = [dict safeStringForKey:@"fee"];
-    self.fiatBiggest =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":feesat == nil ? @"0":feesat}];
-    return YES;
 }
-
-
-
 
 - (IBAction)tapSlowBgClick:(UITapGestureRecognizer *)sender {
     if (self.currentFeeType != OKFeeTypeSlow) {
@@ -781,11 +785,18 @@ typedef enum {
     }
 }
 
-
 #pragma mark - UITextFieldDelegate
 - (void)textChange:(NSString *)str
 {
     [self changeBtn];
+    if (![self checkTextField:NO])
+    {
+        [self getNoDataRates];
+        return;
+    }
+    [self loadFee:^(void) {
+        [self refreshFeeSelect];
+    }];
 }
 - (IBAction)restoreDefaultOptionsBtnClick:(UIButton *)sender {
     _custom = NO;
@@ -804,5 +815,42 @@ typedef enum {
     {
         [self.navigationController popToRootViewControllerAnimated:YES];
     }
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter]removeObserver:self];
+}
+
+
+
+- (NSString *)getCurrentFiat
+{
+    NSString *fiat = @"";
+    if (_custom) {
+        fiat = self.customFeeModel.fiat;
+    }else{
+        switch (_currentFeeType) {
+            case OKFeeTypeSlow:
+            {
+                fiat = self.defaultFeeInfoModel.slow.fiat;
+            }
+                break;
+            case OKFeeTypeRecommend:
+            {
+                fiat = self.defaultFeeInfoModel.normal.fiat;
+            }
+                break;
+            case OKFeeTypeFast:
+            {
+                fiat = self.defaultFeeInfoModel.fast.fiat;
+            }
+                break;
+            default:
+                fiat = self.defaultFeeInfoModel.normal.fiat;
+                break;
+        }
+    }
+    return fiat;
 }
 @end

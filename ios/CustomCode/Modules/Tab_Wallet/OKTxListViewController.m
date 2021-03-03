@@ -46,7 +46,7 @@
     [self setNavigationBarBackgroundColorWithClearColor];
     self.title = self.coinType;
     self.navigationItem.rightBarButtonItem = [UIBarButtonItem barButtonItemWithImage:[UIImage imageNamed:@"token_btc"] frame:CGRectMake(0, 0, 30, 30) target:self selector:@selector(rightBarButtonItemClick)];
-    
+
     [self.sendCoinBtn setLayerRadius:15];
     [self.reciveCoinBtn setLayerRadius:15];
 }
@@ -70,7 +70,7 @@
 {
     dispatch_async(dispatch_get_main_queue(), ^{
        // UI更新代码
-        self.textBalanceLabel.text =  [NSString stringWithFormat:@"%@ %@",[dict safeStringForKey:@"balance"],kWalletManager.currentBitcoinUnit];
+        self.textBalanceLabel.text =  [NSString stringWithFormat:@"%@ %@",[dict safeStringForKey:@"balance"],[kWalletManager getUnitForCoinType]];
         self.textMoneyLabel.text = [NSString stringWithFormat:@"≈%@",[dict safeStringForKey:@"fiat"]];
     });
 }
@@ -95,15 +95,15 @@
     OKTxViewController *txAllVc = [OKTxViewController txViewController];
     txAllVc.searchType = @"";
     [arr addObject:txAllVc];
-    
+
     OKTxViewController *txInVc = [OKTxViewController txViewController];
     txInVc.searchType = @"receive";
     [arr addObject:txInVc];
-    
+
     OKTxViewController *txOutVc = [OKTxViewController txViewController];
     txOutVc.searchType = @"send";
     [arr addObject:txOutVc];
-    
+
     return arr;
 }
 #pragma mark - 均分下划线
@@ -115,7 +115,7 @@
     CGFloat headerH = 36;
     _segHead = [[MLMSegmentHead alloc] initWithFrame:CGRectMake(0,0, self.topBgView.width, (headerH)) titles:self.list headStyle:SegmentHeadStyleSlide layoutStyle:MLMSegmentLayoutDefault];
     _segHead.slideCorner = 7;
-    
+
 //    _segHead.fontScale = 1.05;
     _segHead.fontSize = (15);
     /**
@@ -150,13 +150,13 @@
      *  下划线相对于正常状态下的百分比，默认为1
      */
 //    _segHead.lineScale = 0.8;
-    
+
     /**
      *  顶部导航栏下方的边线
      */
     _segHead.bottomLineHeight = 0;
     _segHead.bottomLineColor = [UIColor lightGrayColor];
-    
+
     _segHead.slideScale = 0.98;
     /**
      *  设置当前屏幕最多显示的按钮数,只有在默认布局样式 - MLMSegmentLayoutDefault 下使用
@@ -171,9 +171,9 @@
         [self.topBgView addSubview:self.segScroll];
     } selectEnd:^(NSInteger index) {
         if (index == 2) {
-            
+
         }else{
-            
+
         }
     }];
 }
@@ -185,6 +185,7 @@
         [self.navigationController pushViewController:matchingVc animated:YES];
     }else{
         OKSendCoinViewController *sendCoinVc = [OKSendCoinViewController sendCoinViewController];
+        sendCoinVc.coinType = kWalletManager.currentWalletInfo.coinType;
         [self.navigationController pushViewController:sendCoinVc animated:YES];
     }
 }

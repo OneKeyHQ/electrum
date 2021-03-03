@@ -30,6 +30,7 @@
 @property (nonatomic,copy)NSString *fiatCustom;
 @property (nonatomic,copy)NSString *lowfeerate;
 @property (nonatomic,copy)NSString *defaultfeerate;
+@property (nonatomic,copy)NSString *coinType;
 @end
 
 @implementation OKWalletInputFeeView
@@ -38,13 +39,14 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-+ (void)showWalletCustomFeeDsize:(NSString *)dsize feerate:(NSString *)feerate lowfeerate:(NSString *)lowfeerate sure:(SureBlock)sureBlock  Cancel:(CancelBlock)cancelBlock{
++ (void)showWalletCustomFeeDsize:(NSString *)dsize feerate:(NSString *)feerate lowfeerate:(NSString *)lowfeerate coinType:(NSString *)coinType sure:(SureBlock)sureBlock  Cancel:(CancelBlock)cancelBlock{
     OKWalletInputFeeView *inputView = [[[NSBundle mainBundle] loadNibNamed:@"OKWalletInputFeeView" owner:self options:nil] firstObject];
     inputView.cancelBlock = cancelBlock;
     inputView.sureBlock = sureBlock;
     inputView.lowfeerate = lowfeerate;
     inputView.dsize = dsize;
     inputView.defaultfeerate = feerate;
+    inputView.coinType = coinType;
     if (dsize.length != 0 && dsize != nil) {
         inputView.sizeTF.text = dsize;
     }
@@ -131,25 +133,15 @@
     if (self.feeTF.text.length == 0) {
         return;
     }
-    NSDictionary *dict = [kPyCommandsManager callInterface:kInterfaceget_default_fee_info parameter:@{@"feerate":self.feeTF.text}];
+    NSDictionary *dict = [kPyCommandsManager callInterface:kInterfaceget_default_fee_info parameter:@{@"feerate":self.feeTF.text,@"coin":[self.coinType lowercaseString]}];
     self.customFeeDict = dict[@"customer"];
-    NSString *feesat = [self.customFeeDict safeStringForKey:@"fee"];
-    self.fiatCustom =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":feesat}];
-
     [self refreshFeeUI];
 }
-
 - (void)refreshFeeUI
 {
-    if (self.customFeeDict == nil) {
-        self.sizeTF.text = [self.customFeeDict safeStringForKey:@"size"];
-        self.equaltoLabel.text = [NSString stringWithFormat:@"%@ %@",[self.customFeeDict safeStringForKey:@"fee"],kWalletManager.currentBitcoinUnit];
-        self.timeStrLabel.text = [NSString stringWithFormat:@"预计时间：约%@分钟",[self.customFeeDict safeStringForKey:@"time"]];
-    }else{
-        self.sizeTF.text = [self.customFeeDict safeStringForKey:@"size"];
-        self.equaltoLabel.text = [NSString stringWithFormat:@"%@ %@ ≈ %@%@",[self.customFeeDict safeStringForKey:@"fee"],kWalletManager.currentBitcoinUnit,kWalletManager.currentFiatSymbol,self.fiatCustom];
-        self.timeStrLabel.text = [NSString stringWithFormat:@"预计时间：约%@分钟",[self.customFeeDict safeStringForKey:@"time"]];
-    }
+    self.sizeTF.text = [self.customFeeDict safeStringForKey:@"size"];
+    self.equaltoLabel.text = [NSString stringWithFormat:@"%@ %@ ≈ %@%@",[self.customFeeDict safeStringForKey:@"fee"],[kWalletManager getUnitForCoinType],kWalletManager.currentFiatSymbol,[self.customFeeDict safeStringForKey:@"fiat"]];
+    self.timeStrLabel.text = [NSString stringWithFormat:@"%@%@%@%@",MyLocalizedString(@"Expected time:", nil),MyLocalizedString(@"sendcoin.about", nil),[self.customFeeDict safeStringForKey:@"time"],MyLocalizedString(@"sendcoin.minutes", nil)];
 }
 
 @end

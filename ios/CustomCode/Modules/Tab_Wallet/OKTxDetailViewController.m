@@ -88,9 +88,13 @@
 
 - (void)loadList
 {
-    NSDictionary *txInfo =  [kPyCommandsManager callInterface:kInterfaceGet_tx_info parameter:@{@"tx_hash":self.tx_hash}];
-    self.txInfo = txInfo;
-    [self refreshUI];
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        NSDictionary *txInfo =  [kPyCommandsManager callInterface:kInterfaceGet_tx_info parameter:@{@"tx_hash":self.tx_hash,@"coin":[kWalletManager.currentWalletInfo.coinType lowercaseString]}];
+        self.txInfo = txInfo;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self refreshUI];
+        });
+    });
 }
 
 - (void)refreshUI
@@ -100,16 +104,30 @@
     self.statusLabel.text = [self getStatusLabel:[self.txInfo safeStringForKey:@"tx_status"]];
     self.txNumLabel.text = [self.txInfo safeStringForKey:@"txid"];
 
-    NSArray *input_addr_array = self.txInfo[@"input_addr"];
-    NSDictionary *input_addr_dict = [input_addr_array firstObject];
-    [self.fromAddressLabel appendText:[input_addr_dict safeStringForKey:@"address"]];
-    [self.fromAddressLabel appendImage:[UIImage imageNamed:@"copy_small"]];
+    NSString *coinType = [kWalletManager.currentWalletInfo.coinType uppercaseString];
+    if ([coinType isEqualToString:COIN_BTC]) {
+        NSArray *input_addr_array = self.txInfo[@"input_addr"];
+        NSDictionary *input_addr_dict = [input_addr_array firstObject];
+        [self.fromAddressLabel appendText:[input_addr_dict safeStringForKey:@"address"]];
+        [self.fromAddressLabel appendImage:[UIImage imageNamed:@"copy_small"]];
 
-    NSArray *output_addr_array = self.txInfo[@"output_addr"];
-    NSDictionary *output_addr_dict = [output_addr_array firstObject];
-    [self.toAddressLabel appendText:[output_addr_dict safeStringForKey:@"addr"]];
-    [self.toAddressLabel appendImage:[UIImage imageNamed:@"copy_small"]];
+        NSArray *output_addr_array = self.txInfo[@"output_addr"];
+        NSDictionary *output_addr_dict = [output_addr_array firstObject];
+        [self.toAddressLabel appendText:[output_addr_dict safeStringForKey:@"addr"]];
+        [self.toAddressLabel appendImage:[UIImage imageNamed:@"copy_small"]];
 
+    }else if ([coinType isEqualToString:COIN_ETH]){
+        NSArray *input_addr_array = self.txInfo[@"input_addr"];
+        NSString *input_addr = [input_addr_array firstObject];
+        [self.fromAddressLabel appendText:input_addr];
+        [self.fromAddressLabel appendImage:[UIImage imageNamed:@"copy_small"]];
+
+        NSArray *output_addr_array = self.txInfo[@"output_addr"];
+        NSString *output_addr = [output_addr_array firstObject];
+        [self.toAddressLabel appendText:output_addr];
+        [self.toAddressLabel appendImage:[UIImage imageNamed:@"copy_small"]];
+
+    }
     self.blockNumLabel.text = [self.txInfo safeStringForKey:@"height"];
     NSString *feeresult = [self.txInfo safeStringForKey:@"fee"];
     if ([feeresult containsString:@"("]) {
