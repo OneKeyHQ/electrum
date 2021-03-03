@@ -1,31 +1,55 @@
 import logging
 import time
+from typing import Any
 
 from electrum_gui.common.provider import exceptions, registry
 from electrum_gui.common.provider.interfaces import ProviderInterface
 
 logger = logging.getLogger("app.provider")
 
-_CACHE = {}
+
+_CACHE = dict()
 
 
-def get_provider_by_chain(chain_code: str, force_update: bool = False) -> ProviderInterface:
-    provider, expired_at = _CACHE.get(chain_code) or (None, None)
+def get_provider_by_chain(
+    chain_code: str,
+    force_update: bool = False,
+    instance_required: Any = None,
+) -> ProviderInterface:
+    candidates = _CACHE.get(chain_code)
 
-    if not force_update and provider and expired_at and expired_at > time.time():
-        return provider
+    if not candidates:
+        candidates = [
+            {"provider": provider, "is_ready": False, "expired_at": None}
+            for provider in (registry.PROVIDERS.get(chain_code) or ())
+        ]
+        _CACHE[chain_code] = candidates
 
-    _CACHE.pop(chain_code, None)
+    if instance_required is not None:
+        candidates = (i for i in candidates if isinstance(i.get("provider"), instance_required))
 
-    if chain_code not in registry.PROVIDERS:
-        raise exceptions.ProviderNotFound(chain_code)
+    for candidate in candidates:
+        provider, is_ready, expired_at = (
+            candidate["provider"],
+            candidate["is_ready"],
+            candidate["expired_at"],
+        )
 
-    for candidate in registry.PROVIDERS[chain_code]:
+        if not force_update and expired_at and expired_at > time.time():
+            if not is_ready:
+                continue
+            else:
+                return provider
+
         try:
-            if candidate.is_ready:
-                _CACHE[chain_code] = (candidate, int(time.time() + 300))  # expired after 5 min
-                return candidate
+            is_ready, skip_seconds = provider.is_ready, 300
         except Exception as e:
-            logger.debug(f"Error in check status of <{candidate}>. error: {e}", exc_info=True)
+            is_ready, skip_seconds = False, 180
+            logger.info(f"Error in check status of <{candidate}>. error: {e}", exc_info=True)
 
-    raise exceptions.ProvidersAllDown(chain_code, registry.PROVIDERS[chain_code])
+        candidate.update({"expired_at": int(time.time() + skip_seconds), "is_ready": is_ready})
+
+        if is_ready:
+            return provider
+
+    raise exceptions.NoAvailableProvider(chain_code, registry.PROVIDERS[chain_code], instance_required or "Any")
