@@ -15,6 +15,8 @@ from electrum_gui.common.provider.data import (
     Token,
     Transaction,
     TransactionFee,
+    TransactionInput,
+    TransactionOutput,
     TransactionStatus,
     TxBroadcastReceipt,
     TxBroadcastReceiptCode,
@@ -78,7 +80,8 @@ class BlockBook(ProviderInterface):
                 raise e
 
     def _populate_transaction(self, raw_tx: dict) -> Transaction:
-        ethereum_data = raw_tx["ethereumSpecific"]
+        ethereum_data = raw_tx.get("ethereumSpecific") or {}
+        token_transfers = raw_tx.get("tokenTransfers") or []
 
         block_header = (
             BlockHeader(
@@ -97,13 +100,29 @@ class BlockBook(ProviderInterface):
             usage=int(ethereum_data.get("gasUsed") or gas_limit),
             price_per_unit=int(ethereum_data.get("gasPrice", 1)),
         )
+        sender = raw_tx["vin"][0]["addresses"][0]
+        receiver = raw_tx["vout"][0]["addresses"][0]
+        value = int(raw_tx["vout"][0]["value"])
 
         return Transaction(
             txid=raw_tx["txid"],
-            source=raw_tx["vin"][0]["addresses"][0],
-            target=raw_tx["vout"][0]["addresses"][0],
-            value=int(raw_tx["vout"][0]["value"]),
-            status=self.__raw_tx_status_mapping__.get(ethereum_data.get("status"), TransactionStatus.UNKNOWN),
+            inputs=[
+                TransactionInput(address=sender, value=value),
+                *(
+                    TransactionInput(address=i.get("from"), value=int(i.get("value") or 0), token_address=i["token"])
+                    for i in token_transfers
+                    if i.get("token")
+                ),
+            ],
+            outputs=[
+                TransactionOutput(address=receiver, value=value),
+                *(
+                    TransactionOutput(address=i.get("from"), value=int(i.get("value") or 0), token_address=i["token"])
+                    for i in token_transfers
+                    if i.get("token")
+                ),
+            ],
+            status=self.__raw_tx_status_mapping__.get(ethereum_data.get("status")) or TransactionStatus.UNKNOWN,
             block_header=block_header,
             fee=fee,
             raw_tx=json.dumps(raw_tx),

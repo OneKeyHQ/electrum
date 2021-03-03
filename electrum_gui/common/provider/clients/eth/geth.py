@@ -13,6 +13,8 @@ from electrum_gui.common.provider.data import (
     ProviderInfo,
     Transaction,
     TransactionFee,
+    TransactionInput,
+    TransactionOutput,
     TransactionStatus,
     TxBroadcastReceipt,
     TxBroadcastReceiptCode,
@@ -77,12 +79,14 @@ class Geth(ProviderInterface):
             usage=gas_usage or gas_limit,
             price_per_unit=_hex2int(tx.get("gasPrice", "0x0")),
         )
+        sender = tx.get("from", "")
+        receiver = tx.get("to", "")
+        value = _hex2int(tx.get("value", "0x0"))
 
         return Transaction(
             txid=txid,
-            source=tx.get("from", ""),
-            target=tx.get("to", ""),
-            value=_hex2int(tx.get("value", "0x0")),
+            inputs=[TransactionInput(address=sender, value=value)],
+            outputs=[TransactionOutput(address=receiver, value=value)],
             status=status,
             block_header=block_header,
             fee=fee,

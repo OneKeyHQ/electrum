@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 from enum import IntEnum, unique
+from typing import List, Optional
 
 from electrum_gui.common.basic.dataclass.dataclass import DataClassMixin
 
@@ -45,14 +46,27 @@ class TransactionFee(DataClassMixin):
 
 
 @dataclass
+class TransactionInput(DataClassMixin):
+    address: str
+    value: int
+    token_address: Optional[str] = None
+
+
+@dataclass
+class TransactionOutput(DataClassMixin):
+    address: str
+    value: int
+    token_address: Optional[str] = None
+
+
+@dataclass
 class Transaction(DataClassMixin):
     txid: str
-    target: str
-    value: int
     status: TransactionStatus
+    inputs: List[TransactionInput] = field(default=list)
+    outputs: List[TransactionOutput] = field(default=list)
     fee: TransactionFee = None
     block_header: BlockHeader = None
-    source: str = ""
     raw_tx: str = ""
 
 

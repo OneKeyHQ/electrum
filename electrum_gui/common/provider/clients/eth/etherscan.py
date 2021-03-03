@@ -11,6 +11,8 @@ from electrum_gui.common.provider.data import (
     Token,
     Transaction,
     TransactionFee,
+    TransactionInput,
+    TransactionOutput,
     TransactionStatus,
     TxBroadcastReceipt,
     TxBroadcastReceiptCode,
@@ -92,13 +94,15 @@ class Etherscan(ProviderInterface):
             usage=gas_usage,
             price_per_unit=int(raw_tx["gasPrice"], base=16),
         )
+        sender = raw_tx.get("from", "")
+        receiver = raw_tx.get("to", "")
+        value = int(raw_tx.get("value", "0x0"), base=16)
 
         return Transaction(
             txid=raw_tx["hash"],
             block_header=block_header,
-            source=raw_tx["from"],
-            target=raw_tx["to"],
-            value=int(raw_tx["value"], base=16),
+            inputs=[TransactionInput(address=sender, value=value)],
+            outputs=[TransactionOutput(address=receiver, value=value)],
             status=status,
             fee=fee,
             raw_tx=json.dumps(raw_tx),
@@ -126,13 +130,15 @@ class Etherscan(ProviderInterface):
             gas_limit = int(raw_tx["gas"])
             gas_usage = int(raw_tx.get("gasUsed")) or gas_limit
             fee = TransactionFee(limit=gas_limit, usage=gas_usage, price_per_unit=int(raw_tx["gasPrice"]))
+            sender = raw_tx.get("from", "")
+            receiver = raw_tx.get("to", "")
+            value = int(raw_tx.get("value", "0x0"), base=16)
 
             tx = Transaction(
                 txid=raw_tx["hash"],
                 block_header=block_header,
-                source=raw_tx["from"],
-                target=raw_tx["to"],
-                value=int(raw_tx["value"]),
+                inputs=[TransactionInput(address=sender, value=value)],
+                outputs=[TransactionOutput(address=receiver, value=value)],
                 status=status,
                 fee=fee,
                 raw_tx=json.dumps(raw_tx),
