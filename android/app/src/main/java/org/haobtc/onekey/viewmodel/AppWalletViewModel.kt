@@ -159,15 +159,9 @@ class AppWalletViewModel : ViewModel() {
           currentFiatUnitSymbol.symbol))
     }
     val triggerMark = TriggerMark()
-    balance?.wallets?.forEachIndexed { index, walletBalanceBean ->
-      if (walletBalanceBean == null
-          || walletBalanceBean.contractAddress?.isEmpty() == true) {
-        // continue
-        return@forEachIndexed
-      }
-
+    balance?.wallets?.filterNotNull()?.forEachIndexed { index, walletBalanceBean ->
       val generateUniqueId = if (index == 0) {
-        CoinAssets.generateUniqueId(convertByCallFlag(walletAccountInfo.name))
+        CoinAssets.generateUniqueId(walletAccountInfo.coinType)
       } else {
         walletBalanceBean.contractAddress?.let { ERC20Assets.generateUniqueId(it, walletAccountInfo.coinType) }
       } ?: return@forEachIndexed
@@ -235,8 +229,9 @@ class AppWalletViewModel : ViewModel() {
       if (currentWalletAccountInfo.value == null) {
         return@execute
       }
-      val addr = currentWalletAccountInfo.value!!.address
-      if (eventBean == null || addr != eventBean.address) {
+
+      val address = currentWalletAccountInfo.value?.address
+      if (eventBean == null || address == null || !address.equals(eventBean.address, true)) {
         return@execute
       }
       val coinType = convertByCallFlag(eventBean.coin)
@@ -285,8 +280,10 @@ class AppWalletViewModel : ViewModel() {
         AssetsBalance(balance, it.balance.unit)
       }
       val assetsBalanceFiat = AssetsBalanceFiat.fromAmountAndUnit(balanceFiat, fiatSymbol)
+
       val setBalance = checkRepeatAssignment(it.balance, assetsBalance)
       val setBalanceFiat = checkRepeatAssignment(it.balanceFiat, assetsBalanceFiat)
+
       triggerMark.trigger(setBalance || setBalanceFiat)
       if (setBalance || setBalanceFiat) {
         val newInstance = it.newInstance()
@@ -298,9 +295,11 @@ class AppWalletViewModel : ViewModel() {
   }
 
   private fun <T> checkRepeatAssignment(source: T, value: T): Boolean {
-    if (source != null && value != source
-        || (source != null && value is Number
-            && value != source)) {
+    if (source == null) {
+      return true
+    }
+    if (value != source
+        || (value is Number && value != source)) {
       return true
     }
     return false

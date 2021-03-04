@@ -91,7 +91,7 @@ class ERC20Assets @JvmOverloads constructor(
     @JvmStatic
     fun generateUniqueId(contractAddress: String, coinType: CoinType): Int {
       return Objects.hashCode("erc20",
-          contractAddress.replace("0x", "").replace("0X", "").toLowerCase(Locale.ROOT),
+          contractAddress.replace("0x", "").toLowerCase(Locale.ROOT),
           coinType.coinName)
     }
   }
