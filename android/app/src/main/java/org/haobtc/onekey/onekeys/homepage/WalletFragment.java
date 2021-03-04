@@ -26,6 +26,7 @@ import com.orhanobut.logger.Logger;
 import com.scwang.smartrefresh.layout.util.SmartUtil;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
+import io.reactivex.disposables.Disposable;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -163,6 +164,8 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
     LinearLayout linearWalletList;
 
     private RxPermissions rxPermissions;
+    private Disposable mPermissionsDisposable;
+
     @Deprecated private String nowType;
     private boolean isBackup;
     private String bleMac;
@@ -452,7 +455,7 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
         WalletAccountInfo value = mAppWalletViewModel.currentWalletAccountInfo.getValue();
         switch (id) {
             case R.id.linear_send:
-                if (null != value)
+                if (null != value) {
                     if (value.getCoinType().callFlag.equalsIgnoreCase(Vm.CoinType.BTC.callFlag)) {
                         Intent intent = new Intent(getActivity(), SendHdActivity.class);
                         intent.putExtra("hdWalletName", textWalletName.getText().toString());
@@ -462,6 +465,7 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
                             .equalsIgnoreCase(Vm.CoinType.ETH.callFlag)) {
                         SendEthActivity.start(getActivity(), value.getId());
                     }
+                }
                 break;
             case R.id.linear_receive:
                 if (value != null) {
@@ -534,26 +538,30 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
                 startActivity(intent1);
                 break;
             case R.id.img_scan:
-                rxPermissions
-                        .request(Manifest.permission.CAMERA)
-                        .subscribe(
-                                granted -> {
-                                    if (granted) {
-                                        OnekeyScanQrActivity.start(
-                                                WalletFragment.this,
-                                                mAppWalletViewModel
-                                                        .currentWalletAccountInfo
-                                                        .getValue()
-                                                        .getId(),
-                                                REQUEST_CODE);
-                                    } else {
-                                        Toast.makeText(
-                                                        getActivity(),
-                                                        R.string.photopersion,
-                                                        Toast.LENGTH_SHORT)
-                                                .show();
-                                    }
-                                });
+                if (mPermissionsDisposable != null && !mPermissionsDisposable.isDisposed()) {
+                    mPermissionsDisposable.dispose();
+                }
+                mPermissionsDisposable =
+                        rxPermissions
+                                .request(Manifest.permission.CAMERA)
+                                .subscribe(
+                                        granted -> {
+                                            if (granted) {
+                                                OnekeyScanQrActivity.start(
+                                                        WalletFragment.this,
+                                                        mAppWalletViewModel
+                                                                .currentWalletAccountInfo
+                                                                .getValue()
+                                                                .getId(),
+                                                        REQUEST_CODE);
+                                            } else {
+                                                Toast.makeText(
+                                                                getActivity(),
+                                                                R.string.photopersion,
+                                                                Toast.LENGTH_SHORT)
+                                                        .show();
+                                            }
+                                        });
                 break;
             case R.id.rel_create_hd:
                 isAddHd = true;
@@ -640,5 +648,13 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
         } else {
             tetAmount.setTextSize(32);
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        if (mPermissionsDisposable != null && !mPermissionsDisposable.isDisposed()) {
+            mPermissionsDisposable.dispose();
+        }
+        super.onDestroy();
     }
 }

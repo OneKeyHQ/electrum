@@ -67,6 +67,7 @@ public class MyApplication extends Application implements ViewModelStoreOwner {
                 });
         // Error message after unsubscribing,It crashes if you don't handle it.
         RxJavaPlugins.setErrorHandler(Throwable::printStackTrace);
+        io.reactivex.plugins.RxJavaPlugins.setErrorHandler(Throwable::printStackTrace);
         initZendesk();
     }
 

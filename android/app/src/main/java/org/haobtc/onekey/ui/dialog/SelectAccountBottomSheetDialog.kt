@@ -15,11 +15,11 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.common.base.Strings
-import com.orhanobut.logger.Logger
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.ObservableEmitter
 import io.reactivex.rxjava3.core.ObservableOnSubscribe
+import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import org.haobtc.onekey.R
@@ -29,6 +29,7 @@ import org.haobtc.onekey.bean.AllWalletBalanceBean
 import org.haobtc.onekey.bean.AssetsBalance
 import org.haobtc.onekey.bean.PyResponse
 import org.haobtc.onekey.bean.WalletAccountBalanceInfo
+import org.haobtc.onekey.business.assetsLogo.AssetsLogo
 import org.haobtc.onekey.business.wallet.BalanceManager
 import org.haobtc.onekey.constant.Vm
 import org.haobtc.onekey.manager.PyEnv
@@ -52,6 +53,7 @@ class SelectAccountBottomSheetDialog : BottomSheetDialogFragment() {
   private var mBehavior: BottomSheetBehavior<*>? = null
   private val mAdapter = SelectAccountAdapter()
   private var mLoadDisposable: Disposable? = null
+  private var mSwitchDisposable: Disposable? = null
 
   private lateinit var mImgCoinType: ImageView
   private lateinit var mTvCoinType: TextView
@@ -97,29 +99,29 @@ class SelectAccountBottomSheetDialog : BottomSheetDialogFragment() {
 
   private fun initData() {
     Vm.CoinType.convertByCallFlag(arguments?.getString(EXT_DATA)).let {
-      val drawableLogo = when (it) {
-        Vm.CoinType.BTC -> {
-          mTvCoinType.text = getString(R.string.btc_wallet)
-          R.drawable.token_btc
-        }
-        Vm.CoinType.ETH -> {
-          mTvCoinType.text = getString(R.string.eth_wallet)
-          R.drawable.token_eth
-        }
-        else -> {
-          mTvCoinType.text = getString(R.string.hd_wallet)
-          R.drawable.hd_wallet_1
-        }
-      }
+      val drawableLogo = AssetsLogo().getLogoResources(it)
       mImgCoinType.setImageDrawable(ResourcesCompat.getDrawable(resources, drawableLogo, null))
       mAdapter.setNewData(getWallets(it))
       getAccountBalance()
       mAdapter.setOnItemClickListener { adapter, view, position ->
         mAdapter.getItem(position)?.let { walletInfo ->
-          mAppWalletViewModel.changeCurrentWallet(walletInfo.name)
-          dismissAllowingStateLoss()
-          mOnDismissListener?.onDismiss(dialog)
-          mOnSelectAccountCallback?.onCall(walletInfo)
+          if (mSwitchDisposable?.isDisposed() == false) {
+            mSwitchDisposable?.dispose()
+          }
+          mSwitchDisposable = Single
+              .fromCallable {
+                mAppWalletViewModel.changeCurrentWallet(walletInfo.id)
+              }
+              .subscribeOn(Schedulers.io())
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe({
+                dismissAllowingStateLoss()
+                mOnDismissListener?.onDismiss(dialog)
+                mOnSelectAccountCallback?.onCall(walletInfo)
+              }, {
+                dismissAllowingStateLoss()
+                mOnDismissListener?.onDismiss(dialog)
+              })
         }
       }
       mRecyclerView.adapter = mAdapter
@@ -161,7 +163,12 @@ class SelectAccountBottomSheetDialog : BottomSheetDialogFragment() {
   }
 
   override fun onDestroyView() {
-    mLoadDisposable?.dispose()
+    if (mSwitchDisposable?.isDisposed == false) {
+      mSwitchDisposable?.dispose()
+    }
+    if (mLoadDisposable?.isDisposed == false) {
+      mLoadDisposable?.dispose()
+    }
     super.onDestroyView()
   }
 
