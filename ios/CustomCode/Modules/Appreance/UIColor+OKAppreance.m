@@ -22,4 +22,10 @@ OKAppreanceColor(FG_B04, 3C3C43, .2)
 OKAppreanceColor(FG_W01, FFFFFF, 1)
 OKAppreanceColor(FG_W02, FFFFFF, .6)
 OKAppreanceColor(FG_W03, FFFFFF, .3)
+
+OKAppreanceColor(TintBrand, 00B812, 1)
+OKAppreanceColor(TintGreen, 34C759, 1)
+OKAppreanceColor(TintRed, FF3B30, 1)
+OKAppreanceColor(TintYellow, FFCC00, 1)
+OKAppreanceColor(TintBlue, 007AFF, 1)
 @end

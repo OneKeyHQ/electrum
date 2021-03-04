@@ -514,6 +514,9 @@
 		B067DE6F25E8E66400E98881 /* OKTokenManModel.m in Sources */ = {isa = PBXBuildFile; fileRef = B067DE6D25E8E66400E98881 /* OKTokenManModel.m */; };
 		B067DE7225E90E3E00E98881 /* OKIndexView.h in Headers */ = {isa = PBXBuildFile; fileRef = B067DE7025E90E3E00E98881 /* OKIndexView.h */; };
 		B067DE7325E90E3E00E98881 /* OKIndexView.m in Sources */ = {isa = PBXBuildFile; fileRef = B067DE7125E90E3E00E98881 /* OKIndexView.m */; };
+		B0763E7D25EE187100112100 /* TokenViews.xib in Resources */ = {isa = PBXBuildFile; fileRef = B0763E7C25EE187100112100 /* TokenViews.xib */; };
+		B0763E8025EE187C00112100 /* OKTokenNoResultView.h in Headers */ = {isa = PBXBuildFile; fileRef = B0763E7E25EE187C00112100 /* OKTokenNoResultView.h */; };
+		B0763E8125EE187C00112100 /* OKTokenNoResultView.m in Sources */ = {isa = PBXBuildFile; fileRef = B0763E7F25EE187C00112100 /* OKTokenNoResultView.m */; };
 		B08CCEA225E118DE003D12E8 /* OKCSViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = B08CCEA025E118DE003D12E8 /* OKCSViewController.h */; };
 		B08CCEA325E118DE003D12E8 /* OKCSViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B08CCEA125E118DE003D12E8 /* OKCSViewController.m */; };
 		B094AE7325CBEE9400DCA01E /* NSArray+OKAdd.h in Headers */ = {isa = PBXBuildFile; fileRef = B094AE7125CBEE9400DCA01E /* NSArray+OKAdd.h */; };
@@ -533,6 +536,14 @@
 		B0A8FFF625E52D7A00513B8E /* OKTokenSectionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B0A8FFF425E52D7A00513B8E /* OKTokenSectionCell.m */; };
 		B0A8FFFE25E6261800513B8E /* UIColor+OKAppreance.h in Headers */ = {isa = PBXBuildFile; fileRef = B0A8FFFC25E6261800513B8E /* UIColor+OKAppreance.h */; };
 		B0A8FFFF25E6261800513B8E /* UIColor+OKAppreance.m in Sources */ = {isa = PBXBuildFile; fileRef = B0A8FFFD25E6261800513B8E /* UIColor+OKAppreance.m */; };
+		B0CA023925EE2D47002EAB56 /* OKAddTokenController.h in Headers */ = {isa = PBXBuildFile; fileRef = B0CA023725EE2D47002EAB56 /* OKAddTokenController.h */; };
+		B0CA023A25EE2D47002EAB56 /* OKAddTokenController.m in Sources */ = {isa = PBXBuildFile; fileRef = B0CA023825EE2D47002EAB56 /* OKAddTokenController.m */; };
+		B0E3FEC825EF4BA000BE4B7F /* OKAddTokenSheet.h in Headers */ = {isa = PBXBuildFile; fileRef = B0E3FEC625EF4BA000BE4B7F /* OKAddTokenSheet.h */; };
+		B0E3FEC925EF4BA000BE4B7F /* OKAddTokenSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = B0E3FEC725EF4BA000BE4B7F /* OKAddTokenSheet.m */; };
+		B0E3FED725EF6B3700BE4B7F /* OKButtonView.h in Headers */ = {isa = PBXBuildFile; fileRef = B0E3FED525EF6B3700BE4B7F /* OKButtonView.h */; };
+		B0E3FED825EF6B3700BE4B7F /* OKButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = B0E3FED625EF6B3700BE4B7F /* OKButtonView.m */; };
+		B0E3FEDB25EF7B5500BE4B7F /* OKAddTokenSheetController.h in Headers */ = {isa = PBXBuildFile; fileRef = B0E3FED925EF7B5500BE4B7F /* OKAddTokenSheetController.h */; };
+		B0E3FEDC25EF7B5500BE4B7F /* OKAddTokenSheetController.m in Sources */ = {isa = PBXBuildFile; fileRef = B0E3FEDA25EF7B5500BE4B7F /* OKAddTokenSheetController.m */; };
 		B1224B57B4D99A578C974400 /* _raw_cbc.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 55E241F594223A4D0246CAB6 /* _raw_cbc.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B29C483197B6698004570F27 /* OKNSObject.h in Headers */ = {isa = PBXBuildFile; fileRef = A911430B96FB9633A857ACAD /* OKNSObject.h */; settings = {ATTRIBUTES = (project, ); }; };
 		B2EE47BDB57AA751FFE38EF0 /* _raw_ecb.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1A4144F991D1C48D86723572 /* _raw_ecb.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -1123,6 +1134,9 @@
 		B067DE6D25E8E66400E98881 /* OKTokenManModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKTokenManModel.m; sourceTree = "<group>"; };
 		B067DE7025E90E3E00E98881 /* OKIndexView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKIndexView.h; sourceTree = "<group>"; };
 		B067DE7125E90E3E00E98881 /* OKIndexView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKIndexView.m; sourceTree = "<group>"; };
+		B0763E7C25EE187100112100 /* TokenViews.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TokenViews.xib; sourceTree = "<group>"; };
+		B0763E7E25EE187C00112100 /* OKTokenNoResultView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKTokenNoResultView.h; sourceTree = "<group>"; };
+		B0763E7F25EE187C00112100 /* OKTokenNoResultView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKTokenNoResultView.m; sourceTree = "<group>"; };
 		B08CCEA025E118DE003D12E8 /* OKCSViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKCSViewController.h; sourceTree = "<group>"; };
 		B08CCEA125E118DE003D12E8 /* OKCSViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKCSViewController.m; sourceTree = "<group>"; };
 		B094AE7125CBEE9400DCA01E /* NSArray+OKAdd.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSArray+OKAdd.h"; sourceTree = "<group>"; };
@@ -1142,7 +1156,15 @@
 		B0A8FFF425E52D7A00513B8E /* OKTokenSectionCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKTokenSectionCell.m; sourceTree = "<group>"; };
 		B0A8FFFC25E6261800513B8E /* UIColor+OKAppreance.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIColor+OKAppreance.h"; sourceTree = "<group>"; };
 		B0A8FFFD25E6261800513B8E /* UIColor+OKAppreance.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIColor+OKAppreance.m"; sourceTree = "<group>"; };
+		B0CA023725EE2D47002EAB56 /* OKAddTokenController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKAddTokenController.h; sourceTree = "<group>"; };
+		B0CA023825EE2D47002EAB56 /* OKAddTokenController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKAddTokenController.m; sourceTree = "<group>"; };
 		B0D7435FBD7BF7C736F29F8F /* OKColors.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OKColors.h; path = ../CustomCode/OKColors.h; sourceTree = SOURCE_ROOT; };
+		B0E3FEC625EF4BA000BE4B7F /* OKAddTokenSheet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKAddTokenSheet.h; sourceTree = "<group>"; };
+		B0E3FEC725EF4BA000BE4B7F /* OKAddTokenSheet.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKAddTokenSheet.m; sourceTree = "<group>"; };
+		B0E3FED525EF6B3700BE4B7F /* OKButtonView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKButtonView.h; sourceTree = "<group>"; };
+		B0E3FED625EF6B3700BE4B7F /* OKButtonView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKButtonView.m; sourceTree = "<group>"; };
+		B0E3FED925EF7B5500BE4B7F /* OKAddTokenSheetController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKAddTokenSheetController.h; sourceTree = "<group>"; };
+		B0E3FEDA25EF7B5500BE4B7F /* OKAddTokenSheetController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKAddTokenSheetController.m; sourceTree = "<group>"; };
 		B73C4F1B98EDFBC9B4F96E3E /* _chacha20.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = _chacha20.framework; path = ../Resources/Dylib/_chacha20.framework; sourceTree = SOURCE_ROOT; };
 		B7414DFCA31369C5738DFF3D /* _cpuid_c.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = _cpuid_c.framework; path = ../Resources/Dylib/_cpuid_c.framework; sourceTree = SOURCE_ROOT; };
 		BA0B7AC325AC560000F26B0C /* electrum_gui */ = {isa = PBXFileReference; lastKnownFileType = folder; name = electrum_gui; path = ../../electrum_gui; sourceTree = "<group>"; };
@@ -2112,6 +2134,8 @@
 				8814242025B18EAA00961668 /* BaseViewController.m */,
 				8814241F25B18EAA00961668 /* OKButton.h */,
 				8814242725B18EAA00961668 /* OKButton.m */,
+				B0E3FED525EF6B3700BE4B7F /* OKButtonView.h */,
+				B0E3FED625EF6B3700BE4B7F /* OKButtonView.m */,
 				8814242825B18EAA00961668 /* OKLabel.h */,
 				8814242225B18EAA00961668 /* OKLabel.m */,
 				8814241D25B18EAA00961668 /* OKTextField.h */,
@@ -2319,6 +2343,8 @@
 		B0A8FFE225E4EEC600513B8E /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				B067DE6C25E8E66400E98881 /* OKTokenManModel.h */,
+				B067DE6D25E8E66400E98881 /* OKTokenManModel.m */,
 				B0A8FFE325E4EF2300513B8E /* OKToken.h */,
 				B0A8FFE425E4EF2300513B8E /* OKToken.m */,
 			);
@@ -2331,8 +2357,10 @@
 				B0A8FFEE25E5097A00513B8E /* View */,
 				B0A8FFEA25E4F60E00513B8E /* OKTokenManagementController.h */,
 				B0A8FFEB25E4F60E00513B8E /* OKTokenManagementController.m */,
-				B067DE6C25E8E66400E98881 /* OKTokenManModel.h */,
-				B067DE6D25E8E66400E98881 /* OKTokenManModel.m */,
+				B0CA023725EE2D47002EAB56 /* OKAddTokenController.h */,
+				B0CA023825EE2D47002EAB56 /* OKAddTokenController.m */,
+				B0E3FED925EF7B5500BE4B7F /* OKAddTokenSheetController.h */,
+				B0E3FEDA25EF7B5500BE4B7F /* OKAddTokenSheetController.m */,
 			);
 			path = Management;
 			sourceTree = "<group>";
@@ -2340,12 +2368,17 @@
 		B0A8FFEE25E5097A00513B8E /* View */ = {
 			isa = PBXGroup;
 			children = (
-				B0A8FFEF25E509A000513B8E /* OKTokenCell.h */,
-				B0A8FFF025E509A000513B8E /* OKTokenCell.m */,
-				B0A8FFF325E52D7A00513B8E /* OKTokenSectionCell.h */,
-				B0A8FFF425E52D7A00513B8E /* OKTokenSectionCell.m */,
+				B0E3FEC625EF4BA000BE4B7F /* OKAddTokenSheet.h */,
+				B0E3FEC725EF4BA000BE4B7F /* OKAddTokenSheet.m */,
 				B067DE7025E90E3E00E98881 /* OKIndexView.h */,
 				B067DE7125E90E3E00E98881 /* OKIndexView.m */,
+				B0A8FFEF25E509A000513B8E /* OKTokenCell.h */,
+				B0A8FFF025E509A000513B8E /* OKTokenCell.m */,
+				B0763E7E25EE187C00112100 /* OKTokenNoResultView.h */,
+				B0763E7F25EE187C00112100 /* OKTokenNoResultView.m */,
+				B0A8FFF325E52D7A00513B8E /* OKTokenSectionCell.h */,
+				B0A8FFF425E52D7A00513B8E /* OKTokenSectionCell.m */,
+				B0763E7C25EE187100112100 /* TokenViews.xib */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -2468,6 +2501,7 @@
 				8814243C25B18EAA00961668 /* OKCreateResultWalletInfoModel.h in Headers */,
 				881424EB25B18EAA00961668 /* OKReceiveCoinViewController.h in Headers */,
 				B03A1A4325C90835004137F1 /* OKPINInputMethodController.h in Headers */,
+				B0E3FED725EF6B3700BE4B7F /* OKButtonView.h in Headers */,
 				881424C625B18EAA00961668 /* OKElectrumNodeViewController.h in Headers */,
 				8814252E25B18EAA00961668 /* OKWalletManager.h in Headers */,
 				881425F925B9216700961668 /* OKSpecialEquipmentViewController.h in Headers */,
@@ -2515,9 +2549,11 @@
 				50E24DA7AD1AAF4349C67138 /* UILabel+OneKey.h in Headers */,
 				881424CD25B18EAA00961668 /* OKNetTableViewCellModel.h in Headers */,
 				B0A8FFE525E4EF2300513B8E /* OKToken.h in Headers */,
+				B0763E8025EE187C00112100 /* OKTokenNoResultView.h in Headers */,
 				8814259825B18EAA00961668 /* BaseViewController.h in Headers */,
 				8814250425B18EAA00961668 /* OKDefaultFeeInfoSubModel.h in Headers */,
 				8814245F25B18EAA00961668 /* OKSetPINPreViewController.h in Headers */,
+				B0E3FEDB25EF7B5500BE4B7F /* OKAddTokenSheetController.h in Headers */,
 				8814244A25B18EAA00961668 /* PBKDF2.h in Headers */,
 				8814255E25B18EAA00961668 /* OKDeleteTextField.h in Headers */,
 				8814252925B18EAA00961668 /* OKStorageManager.h in Headers */,
@@ -2582,6 +2618,7 @@
 				881424FD25B18EAA00961668 /* OKTxDetailViewController.h in Headers */,
 				881424E725B18EAA00961668 /* OKAllAssetsTableViewCell.h in Headers */,
 				B058D8A825B55663000EB27C /* OKDeviceDeleteController.h in Headers */,
+				B0E3FEC825EF4BA000BE4B7F /* OKAddTokenSheet.h in Headers */,
 				B058D8B725B55663000EB27C /* OKResetDeviceWarningViewController.h in Headers */,
 				8814243F25B18EAA00961668 /* CLPasswordView.h in Headers */,
 				B058D8B425B55663000EB27C /* OKDeviceUpdateViewController.h in Headers */,
@@ -2648,6 +2685,7 @@
 				8814250825B18EAA00961668 /* OKSendTxPreModel.h in Headers */,
 				B058D8C525B5567B000EB27C /* NSArray+OKKeyPath.h in Headers */,
 				8814254825B18EAA00961668 /* OKYouareDoneViewController.h in Headers */,
+				B0CA023925EE2D47002EAB56 /* OKAddTokenController.h in Headers */,
 				8814253E25B18EAA00961668 /* OKQRCodeGenerateManager.h in Headers */,
 				8814243E25B18EAA00961668 /* CLPasswordInputView.h in Headers */,
 				8814256A25B18EAA00961668 /* OKWalletListTableViewCellModel.h in Headers */,
@@ -2756,6 +2794,7 @@
 				881424A625B18EAA00961668 /* Tab_Mine.storyboard in Resources */,
 				8814244C25B18EAA00961668 /* README.md in Resources */,
 				11A14D4B9EAA43065301A6AA /* Main.storyboard in Resources */,
+				B0763E7D25EE187100112100 /* TokenViews.xib in Resources */,
 				8814243925B18EAA00961668 /* OKPwd.storyboard in Resources */,
 				881424FC25B18EAA00961668 /* Tab_Wallet.storyboard in Resources */,
 				BAA858DA25AD52FB00A51CDE /* InfoPlist.strings in Resources */,
@@ -2940,6 +2979,7 @@
 				B08CCEA325E118DE003D12E8 /* OKCSViewController.m in Sources */,
 				881424BF25B18EAA00961668 /* OKProxyServerTableViewController.m in Sources */,
 				881424C025B18EAA00961668 /* OKBrowserBTCTableViewController.m in Sources */,
+				B0CA023A25EE2D47002EAB56 /* OKAddTokenController.m in Sources */,
 				8814243625B18EAA00961668 /* OKWalletInfoModel.m in Sources */,
 				881424EC25B18EAA00961668 /* OKSendCoinViewController.m in Sources */,
 				881424C425B18EAA00961668 /* OKSocketTypeSelectController.m in Sources */,
@@ -2962,6 +3002,7 @@
 				8814250125B18EAA00961668 /* OKTxTableViewCellModel.m in Sources */,
 				8814259525B18EAA00961668 /* OKTextField.m in Sources */,
 				0D854AFCA5A54E5775B61DB1 /* NSObject+OneKey.m in Sources */,
+				B0763E8125EE187C00112100 /* OKTokenNoResultView.m in Sources */,
 				881425FA25B9216700961668 /* OKSpecialEquipmentViewController.m in Sources */,
 				881424CE25B18EAA00961668 /* OKTheMarketViewController.m in Sources */,
 				8814244925B18EAA00961668 /* AESCrypt.m in Sources */,
@@ -2986,6 +3027,7 @@
 				881424BC25B18EAA00961668 /* OKElectrumNodeModel.m in Sources */,
 				881424DC25B18EAA00961668 /* OKMineTableViewCellModel.m in Sources */,
 				B0A8FFFF25E6261800513B8E /* UIColor+OKAppreance.m in Sources */,
+				B0E3FED825EF6B3700BE4B7F /* OKButtonView.m in Sources */,
 				8814258A25B18EAA00961668 /* OKTipsViewController.m in Sources */,
 				8814250325B18EAA00961668 /* OKSendTxPreModel.m in Sources */,
 				3BE1457292868A66CC6B701F /* UIView+YCExtension.m in Sources */,
@@ -3020,6 +3062,7 @@
 				AB3F4EEE868AEEB2FD3E7365 /* UIImage+OneKey.m in Sources */,
 				8814259925B18EAA00961668 /* OKButton.m in Sources */,
 				8814257625B18EAA00961668 /* OKSelectTableViewCell.m in Sources */,
+				B0E3FEC925EF4BA000BE4B7F /* OKAddTokenSheet.m in Sources */,
 				881424B225B18EAA00961668 /* OKAboutViewController.m in Sources */,
 				8814249125B18EAA00961668 /* split.c in Sources */,
 				8814256425B18EAA00961668 /* OKFindWalletTableViewCell.m in Sources */,
@@ -3055,6 +3098,7 @@
 				B058D8C425B5567B000EB27C /* NSDictionary+OKKeyPath.m in Sources */,
 				B067DE7325E90E3E00E98881 /* OKIndexView.m in Sources */,
 				8814255825B18EAA00961668 /* OKFindFollowingWalletController.m in Sources */,
+				B0E3FEDC25EF7B5500BE4B7F /* OKAddTokenSheetController.m in Sources */,
 				8814256825B18EAA00961668 /* OKWalletListCollectionViewCellModel.m in Sources */,
 				B058D8A925B55663000EB27C /* OKDeviceOffController.m in Sources */,
 				B058D8A425B55663000EB27C /* OKDeviceListViewController.m in Sources */,

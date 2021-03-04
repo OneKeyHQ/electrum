@@ -33,6 +33,7 @@
 #import "IQKeyboardManager.h"
 #import "OKLabel.h"
 #import "OKButton.h"
+#import "OKButtonView.h"
 #import "OKTextField.h"
 #import "QRCodeGenerator.h"
 #import "OKTools.h"

@@ -17,8 +17,8 @@
 "Create a new wallet" = "创建账户";
 "Create HD Wallet" = "创建主钱包";
 "Recover HD Wallet" = "恢复主钱包";
-"Paired hardware wallet" = "配对硬件设备";
-"Paired hardware" = "配对硬件";
+"Paired hardware wallet" = "连接硬件设备";
+"Paired hardware" = "连接硬件";
 "Add wallet" = "添加";
 "Create account" = "创建";
 "Add wallet account" = "添加账户";
@@ -514,11 +514,26 @@
 "wallet.btc.normalAddr" = "普通地址 Legacy";
 "wallet.btc.normalAddrDesc" = "以 1 开头，全面普及，转账手续费中等";
 
+".add" = "添加";
+
 "cs" = "客服";
 "cs.title" = "客户支持";
 "cs.ticket" = "工单";
 "cs.ticket.submit" = "提交工单";
 "cs.ticket.history" = "查看历史工单";
+
+"token.management" = "代币管理";
+"token.noResult" = "找不到搜索结果";
+"token.icon" = "代币图标";
+"token.name" = "代币名称";
+"token.add" = "添加代币";
+"token.add.follow" = "添加以下代币";
+"token.contractAddress" = "合约地址";
+"token.contractAddress.tip" = "请输入有效的合约地址";
+"token.contractAddress.notFound" = "合约地址不存在";
+"token.find.title" = "找到<placeholder1>个结果";
+"token.blance" = "余额";
+"token.select" = "选择代币";
 
 "This operation only supports BACKUP ONLY special devices" = "该操作仅支持backup only特殊设备";
 "Signature error or cancellation" = "签名出错或取消";

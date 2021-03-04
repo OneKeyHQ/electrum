@@ -140,4 +140,8 @@
 - (NSArray<NSString *> *)split:(NSString *)sparator {
     return [self componentsSeparatedByString:sparator];
 }
+
+- (NSString *)localized {
+    return MyLocalizedString(self, nil);
+}
 @end
