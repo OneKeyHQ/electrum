@@ -1,0 +1,29 @@
+target 'OneKey’ do
+  # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
+   use_frameworks!
+  # Pods for OneKey
+pod 'AFNetworking', '4.0.1'
+pod 'HMSegmentedControl', '1.5.6'
+pod 'FMDB', '2.7.5'
+pod 'IQKeyboardManager', '6.5.6'
+pod 'SDWebImage', '5.8.1'
+pod 'Masonry','1.1.0'
+pod 'MJExtension', '3.0.13'
+pod 'BabyBluetooth','0.7.0'
+pod 'MBProgressHUD', '1.2.0'
+pod 'TYAttributedLabel', '2.6.9'
+pod 'iOSDFULibrary', '4.9.0'
+pod 'JPush', '3.4.0'
+pod 'ZendeskSupportSDK', '5.2.0'
+end
+post_install do |installer|
+     installer.pods_project.targets.each do |target|
+         target.build_configurations.each do |config|
+             config.build_settings['EXPANDED_CODE_SIGN_IDENTITY'] = ""
+             config.build_settings['CODE_SIGNING_REQUIRED'] = "NO"
+             config.build_settings['CODE_SIGNING_ALLOWED'] = "NO"
+             config.build_settings['OTHER_CFLAGS'] = "$(inherited) -Qunused-arguments -Xanalyzer -analyzer-disable-all-checks"
+             config.build_settings['ENABLE_TESTABILITY'] = 'YES'
+         end
+     end
+end

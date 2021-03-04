@@ -21,6 +21,7 @@ if [ -d iOS ]; then
   rm -rf tmp
   mkdir tmp
   cp -fRa iOS/"${compact_name}".xcodeproj tmp/
+  cp -fRa iOS/podfile tmp/
   rm -rf iOS
 fi
 
@@ -63,12 +64,12 @@ if [ ! -d iOS/Support ]; then
   mkdir iOS/Support
 fi
 cp -fRa tmp/"${compact_name}".xcodeproj iOS/
+cp -fRa tmp/podfile iOS/
 mv iOS/BZip2 iOS/OpenSSL iOS/Python iOS/XZ iOS/VERSIONS iOS/Support/
 cp -fRa Support/site-package/ iOS/app_packages/
 
 rm -rf iOS/"${compact_name}"/*
 rm -rf iOS/app
-ln -s ../Support/podfile iOS/podfile
 
 (cd iOS && pod install)
 if [ "$?" != "0" ]; then
