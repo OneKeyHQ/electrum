@@ -25,7 +25,7 @@
 }
 
 - (void)setupUI {
-    self.title = MyLocalizedString(@"hardwareWallet.pin.title", nil);
+    self.title = @"hardwareWallet.pin.title".localized;
     self.view.backgroundColor = [UIColor whiteColor];
     [self setNavigationBarBackgroundColorWithClearColor];
     self.navigationItem.leftBarButtonItem = [UIBarButtonItem backBarButtonItemWithTarget:self selector:@selector(back)];
@@ -36,9 +36,9 @@
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         id result = [kPyCommandsManager callInterface:kInterfacereset_pin parameter:@{}];
         if ([result boolValue]) {
-            [kTools tipMessage:MyLocalizedString(@"hardwareWallet.pin.success", nil)];
+            [kTools tipMessage:@"hardwareWallet.pin.success".localized];
         } else {
-            [kTools tipMessage:MyLocalizedString(@"hardwareWallet.pin.fail", nil)];
+            [kTools tipMessage:@"hardwareWallet.pin.fail".localized];
         }
         NSLog(@"112233 changePIN: %d", [result boolValue]);
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -67,10 +67,10 @@
                         weakself.changed = YES;
                     });
                 }];
-                pinCode2.titleLabelText = MyLocalizedString(@"hardwareWallet.pin.newPinTip", nil);
+                pinCode2.titleLabelText = @"hardwareWallet.pin.newPinTip".localized;
                 [weakself.navigationController pushViewController:pinCode2 animated:YES];
             }];
-            pinCode.titleLabelText = MyLocalizedString(@"hardwareWallet.pin.inputPinTip", nil);
+            pinCode.titleLabelText = @"hardwareWallet.pin.inputPinTip".localized;
             pinCode.backToPreviousCallback = ^{
                 [kPyCommandsManager cancelPIN];
             };
@@ -78,14 +78,14 @@
         } else if (type == OKHWNotiTypeKeyConfirm) {
             OKDeviceConfirmController *confirmVC = [OKDeviceConfirmController controllerWithStoryboard];
             if (weakself.changed) {
-                confirmVC.titleText = MyLocalizedString(@"hardwareWallet.pin.comfirm", nil);
-                confirmVC.descText = MyLocalizedString(@"hardwareWallet.pin.comfirmTip", nil);
+                confirmVC.titleText = @"hardwareWallet.pin.comfirm".localized;
+                confirmVC.descText = @"hardwareWallet.pin.comfirmTip".localized;
             } else {
-                confirmVC.titleText = MyLocalizedString(@"Verify on the equipment", nil);
+                confirmVC.titleText = @"Verify on the equipment".localized;
             }
-            confirmVC.title =  MyLocalizedString(@"hardwareWallet.pin.title", nil);
-            confirmVC.titleText = MyLocalizedString(@"Verify on the equipment", nil);
-            confirmVC.btnText = MyLocalizedString(@"return", nil);
+            confirmVC.title =  @"hardwareWallet.pin.title".localized;
+            confirmVC.titleText = @"Verify on the equipment".localized;
+            confirmVC.btnText = @"return".localized;
             confirmVC.btnCallback = ^{
                 [kPyCommandsManager cancel];
             };

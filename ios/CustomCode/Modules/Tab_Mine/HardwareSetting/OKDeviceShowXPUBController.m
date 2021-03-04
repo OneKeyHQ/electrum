@@ -28,20 +28,20 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [OKHwNotiManager sharedInstance].delegate = self;
-    self.title = MyLocalizedString(@"hardwareWallet.xpub.title", nil);
+    self.title = @"hardwareWallet.xpub.title".localized;
     [self.view0 setLayerRadius:20];
     [self.xpubView setLayerRadius:30];
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(copyXPUB)];
     [self.xpubView addGestureRecognizer:tap];
-    self.descLabel.text = MyLocalizedString(@"hardwareWallet.xpub.tip", nil);
-    self.xpubTitleLabel.text = MyLocalizedString(@"hardwareWallet.xpub.xpub", nil);
+    self.descLabel.text = @"hardwareWallet.xpub.tip".localized;
+    self.xpubTitleLabel.text = @"hardwareWallet.xpub.xpub".localized;
     [self getXPUB];
 }
 
 - (void)copyXPUB {
     if (self.xpub) {
         [UIPasteboard generalPasteboard].string = self.xpub;
-        [kTools tipMessage:MyLocalizedString(@"hardwareWallet.xpub.copy", nil)];
+        [kTools tipMessage:@"hardwareWallet.xpub.copy".localized];
     }
 }
 

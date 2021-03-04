@@ -32,16 +32,16 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.title = MyLocalizedString(@"hardwareWallet.verify", nil);
-    self.titleLabel.text = MyLocalizedString(@"hardwareWallet.verify.connecting", nil);
-    NSString *descLabelTtext = MyLocalizedString(@"hardwareWallet.verify.connectingTip", nil);
+    self.title = @"hardwareWallet.verify".localized;
+    self.titleLabel.text = @"hardwareWallet.verify.connecting".localized;
+    NSString *descLabelTtext = @"hardwareWallet.verify.connectingTip".localized;
     self.descLabel.attributedText = [NSString lineSpacing:8 content:descLabelTtext];
     self.descLabel.textAlignment = NSTextAlignmentCenter;
-    self.processLabel.text = MyLocalizedString(@"hardwareWallet.verify.processing", nil);
-    self.stage1Label.text = MyLocalizedString(@"hardwareWallet.verify.connectingDevice", nil);
-    self.stage2Label.text = MyLocalizedString(@"hardwareWallet.verify.getSign", nil);
-    self.stage3Label.text = MyLocalizedString(@"hardwareWallet.verify.submitting", nil);
-    
+    self.processLabel.text = @"hardwareWallet.verify.processing".localized;
+    self.stage1Label.text = @"hardwareWallet.verify.connectingDevice".localized;
+    self.stage2Label.text = @"hardwareWallet.verify.getSign".localized;
+    self.stage3Label.text = @"hardwareWallet.verify.submitting".localized;
+
     [self.tagLabel setLayerRadius:self.tagLabel.height * 0.5];
     [self.processView setLayerRadius:20];
     [self.stage1ImageView.layer addAnimation:self.rotationAnimation forKey:@"rotationAnimation"];
@@ -63,7 +63,7 @@
         BOOL pass = NO;
         NSDictionary *result;
         NSString *json = [kPyCommandsManager callInterface:kInterfacehardware_verify parameter:@{@"msg":[NSUUID UUID].UUIDString}];
-        
+
         if ([json isKindOfClass:NSString.class]) {
             // 非标准 json, 临时解决
             json = [json stringByReplacingOccurrencesOfString:@": True" withString:@": true"];
@@ -74,7 +74,7 @@
         BOOL is_bixinkey = [result objectForKey:@"is_bixinkey"];
         BOOL is_verified = [result objectForKey:@"is_verified"];
         pass = is_bixinkey && is_verified;
-        
+
         dispatch_async(dispatch_get_main_queue(), ^{
             self.phase = OKDeviceVerifyPhaseSubmitting;
             [self showResult:pass];
@@ -119,7 +119,7 @@
 
     _phase = phase;
     if (phase == OKDeviceVerifyPhaseConnecting) {
-        
+
     } else if (phase == OKDeviceVerifyPhaseFetching) {
         [self.stage1ImageView.layer removeAllAnimations];
         self.stage1ImageView.image = [UIImage imageNamed:@"isselected"];
@@ -130,7 +130,7 @@
         [self.stage3ImageView.layer removeAllAnimations];
         self.stage3ImageView.image = [UIImage imageNamed:@"isselected"];
     }
-       
+
 }
 
 @end

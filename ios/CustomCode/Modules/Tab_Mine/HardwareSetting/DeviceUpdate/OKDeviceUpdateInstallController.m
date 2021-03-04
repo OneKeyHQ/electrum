@@ -66,7 +66,7 @@ DFUServiceDelegate, LoggerDelegate, DFUProgressDelegate>
     }
 
     [self.finshedButton setLayerRadius: 20];
-    self.finshedButton.titleLabel.text = MyLocalizedString(@"done", nil);
+    self.finshedButton.titleLabel.text = @"done".localized;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -228,8 +228,8 @@ DFUServiceDelegate, LoggerDelegate, DFUProgressDelegate>
 
         } else if (type == OKHWNotiTypeKeyConfirm) {
             OKDeviceConfirmController *confirmVC = [OKDeviceConfirmController controllerWithStoryboard];
-            confirmVC.titleText = MyLocalizedString(@"Verify on the equipment", nil);
-            confirmVC.btnText = MyLocalizedString(@"cancel", nil);
+            confirmVC.titleText = @"Verify on the equipment".localized;
+            confirmVC.btnText = @"cancel".localized;
             confirmVC.btnCallback = ^{
                 [kPyCommandsManager cancel];
             };

@@ -64,7 +64,7 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
 @implementation OKDeviceAlreadyUpToDateCell : UITableViewCell
 - (void)awakeFromNib {
     [super awakeFromNib];
-    self.tipLabel.text = MyLocalizedString(@"hardwareWallet.update.uptodate", nil);
+    self.tipLabel.text = @"hardwareWallet.update.uptodate".localized;
 }
 @end
 
@@ -128,7 +128,7 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
 }
 
 - (void)setupUI {
-    self.title = MyLocalizedString(@"hardwareWallet.update", nil);
+    self.title = @"hardwareWallet.update".localized;
     self.tableView.backgroundColor = HexColor(0xf5f6f7);
     self.tableView.allowsSelection = NO;
 

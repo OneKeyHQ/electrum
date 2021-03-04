@@ -24,17 +24,17 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.title = MyLocalizedString(@"hardwareWallet.autoOff", nil);
-    self.descLabel.text = MyLocalizedString(@"hardwareWallet.autoOff.desc", nil);
-    self.timeLabel.text = MyLocalizedString(@"hardwareWallet.autoOff.timeout", nil);
-    self.unitLabel.text = MyLocalizedString(@"hardwareWallet.autoOff.second", nil);
-    
+    self.title = @"hardwareWallet.autoOff".localized;
+    self.descLabel.text = @"hardwareWallet.autoOff.desc".localized;
+    self.timeLabel.text = @"hardwareWallet.autoOff.timeout".localized;
+    self.unitLabel.text = @"hardwareWallet.autoOff.second".localized;
+
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(timeViewClicked)];
     [self.timeView addGestureRecognizer:tap];
 }
 
 - (void)timeViewClicked {
-    
+
 }
 
 

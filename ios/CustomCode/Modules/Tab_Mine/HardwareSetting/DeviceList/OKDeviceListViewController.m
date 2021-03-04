@@ -36,7 +36,7 @@ static const NSUInteger titleColor = 0x14293b;
     self.deviceCells = [[NSMutableArray alloc] init];
     self.tableView.backgroundColor = HexColor(backgroundColor);
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    self.title = MyLocalizedString(@"All the equipment", nil);
+    self.title = @"All the equipment".localized;
     [self reloadDeviceList];
 }
 
@@ -47,7 +47,7 @@ static const NSUInteger titleColor = 0x14293b;
     UIView *view = [[UIView alloc] initWithFrame: CGRectMake(0, 0, SCREEN_WIDTH, 65)];
     view.backgroundColor = HexColor(backgroundColor);
     UILabel *label = [[UILabel alloc] initWithFrame: CGRectMake(20, 35, 200, 22)];
-    label.text = MyLocalizedString(@"hardwareWallet.devices", nil);
+    label.text = @"hardwareWallet.devices".localized;
     label.textColor = HexColor(sectionTitleColor);
     label.font = [UIFont systemFontOfSize:14];
     [view addSubview:label];
@@ -55,7 +55,7 @@ static const NSUInteger titleColor = 0x14293b;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
+
     static NSString *cellID = @"OKHardwareListBaseCell";
     OKHardwareListBaseCell *cell = [tableView dequeueReusableCellWithIdentifier:cellID];
     if (cell == nil) {
@@ -93,7 +93,7 @@ static const NSUInteger titleColor = 0x14293b;
     [self.deviceCells removeAllObjects];
 
     NSArray <OKDeviceModel *>*devices = [OKDevicesManager sharedInstance].devices.allValues;
-    
+
     for (OKDeviceModel *device in devices) {
         OKDeviceListCellModel *deviceCell = [[OKDeviceListCellModel alloc] init];
         deviceCell.devcie = device;

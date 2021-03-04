@@ -28,18 +28,18 @@
     [super viewDidLoad];
     [self setNavigationBarBackgroundColorWithClearColor];
     self.navigationItem.leftBarButtonItem = [UIBarButtonItem backBarButtonItemWithTarget:self selector:@selector(back)];
-    
-    self.title = MyLocalizedString(@"hardwareWallet.verify", nil);
+
+    self.title = @"hardwareWallet.verify".localized;
     NSString *descLabelText;
     if (self.isPassed) {
-        self.resultLabel.text = MyLocalizedString(@"hardwareWallet.verify.pass", nil);
+        self.resultLabel.text = @"hardwareWallet.verify.pass".localized;
         self.resultLabel.textColor = HexColor(0x00b812);
-        descLabelText = MyLocalizedString(@"hardwareWallet.verify.passDesc", nil);
+        descLabelText = @"hardwareWallet.verify.passDesc".localized;
         self.deviceImageView.image = [UIImage imageNamed:@"device_success"];
     } else {
-        self.resultLabel.text = MyLocalizedString(@"hardwareWallet.verify.fail", nil);
+        self.resultLabel.text = @"hardwareWallet.verify.fail".localized;
         self.resultLabel.textColor = HexColor(0xeb5757);
-        descLabelText = MyLocalizedString(@"hardwareWallet.verify.failDesc", nil);
+        descLabelText = @"hardwareWallet.verify.failDesc".localized;
         self.deviceImageView.image = [UIImage imageNamed:@"device_failed"];
     }
     self.descLabel.attributedText = [NSString lineSpacing:16 content:descLabelText];
@@ -47,7 +47,7 @@
 
     self.tagLabel.text = self.name;
     [self.tagView setLayerRadius:self.tagView.height * 0.5];
-    self.doneButton.titleLabel.text = MyLocalizedString(@"hardwareWallet.verify.return", nil);
+    self.doneButton.titleLabel.text = @"hardwareWallet.verify.return".localized;
     [self.doneButton setLayerRadius:20];
 }
 - (IBAction)doneClick:(id)sender {

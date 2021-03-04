@@ -104,7 +104,7 @@ static const NSUInteger titleColorRed = 0xeb5757;
         case OKHardwareListBaseCellTypeDeviceChangePIN: {
             [self ensureDeviceMatch:^(BOOL needUpdate) {
                 if (needUpdate) {
-                    [kTools tipMessage:MyLocalizedString(@"hardwareWallet.update.needUpdate", nil)];
+                    [kTools tipMessage:@"hardwareWallet.update.needUpdate".localized];
                     return;
                 }
                 UIViewController *vc = [[OKDeviceChangePINController alloc] init];
@@ -178,7 +178,7 @@ static const NSUInteger titleColorRed = 0xeb5757;
                     callback([weakself checkNeedUpdate:currentDeviceVersion]);
                     return;
                 } else {
-                    [kTools tipMessage:MyLocalizedString(@"hardwareWallet.id_not_match", nil)];
+                    [kTools tipMessage:@"hardwareWallet.id_not_match".localized];
                 }
             });
         });
@@ -240,43 +240,43 @@ static const NSUInteger titleColorRed = 0xeb5757;
 
 - (void)reloadListData {
     OKHardwareListBaseCellModel *deviceInfoCellModel = [[OKHardwareListBaseCellModel alloc] init];
-    deviceInfoCellModel.title = MyLocalizedString(@"hardwareWallet.info", nil);
+    deviceInfoCellModel.title = @"hardwareWallet.info".localized;
     deviceInfoCellModel.imageName = @"c-info 1";
     deviceInfoCellModel.details = @"";
     deviceInfoCellModel.cellType = OKHardwareListBaseCellTypeDeviceInfo;
 
 //    OKHardwareListBaseCellModel *devicelanguageCellModel = [[OKHardwareListBaseCellModel alloc] init];
-//    devicelanguageCellModel.title = MyLocalizedString(@"language", nil);//@"语言";
+//    devicelanguageCellModel.title = @"language".localized;//@"语言";
 //    devicelanguageCellModel.imageName = @"language";
 //    devicelanguageCellModel.details = @"中文";
 //    devicelanguageCellModel.cellType = OKHardwareListBaseCellTypeDeviceLanguage;
 
     OKHardwareListBaseCellModel *deviceUpdateCellModel = [[OKHardwareListBaseCellModel alloc] init];
-    deviceUpdateCellModel.title = MyLocalizedString(@"hardwareWallet.update", nil);//@"升级固件";
+    deviceUpdateCellModel.title = @"hardwareWallet.update".localized;//@"升级固件";
     deviceUpdateCellModel.imageName = @"sim-card 1";
     deviceUpdateCellModel.details = @"";
     deviceUpdateCellModel.cellType = OKHardwareListBaseCellTypeDeviceUpdate;
 
 //    OKHardwareListBaseCellModel *deviceAutoOffCellModel = [[OKHardwareListBaseCellModel alloc] init];
-//    deviceAutoOffCellModel.title = MyLocalizedString(@"hardwareWallet.autoOff", nil);//@"自动关机";
+//    deviceAutoOffCellModel.title = @"hardwareWallet.autoOff".localized;//@"自动关机";
 //    deviceAutoOffCellModel.imageName = @"engine-start 1";
 //    deviceAutoOffCellModel.details = @"600s";
 //    deviceAutoOffCellModel.cellType = OKHardwareListBaseCellTypeDeviceAutoOff;
 
     OKHardwareListBaseCellModel *deviceVerifyCellModel = [[OKHardwareListBaseCellModel alloc] init];
-    deviceVerifyCellModel.title = MyLocalizedString(@"hardwareWallet.verify", nil);
+    deviceVerifyCellModel.title = @"hardwareWallet.verify".localized;
     deviceVerifyCellModel.imageName = @"privacy 1";
     deviceVerifyCellModel.details = @"";
     deviceVerifyCellModel.cellType = OKHardwareListBaseCellTypeDeviceVerify;
     if (self.deviceModel.verifiedDevice) {
         deviceVerifyCellModel.tagBgColor = HexColorA(0x26cf02, 0.1);
         deviceVerifyCellModel.tagTextColor = HexColor(0x00b812);
-        deviceVerifyCellModel.tagText = MyLocalizedString(@"hardwareWallet.verify.pass", nil);
+        deviceVerifyCellModel.tagText = @"hardwareWallet.verify.pass".localized;
     }
 
 
     OKDeviceSettingsModel *generalSettings = [[OKDeviceSettingsModel alloc] init];
-    generalSettings.sectionTitle = MyLocalizedString(@"general", nil);//@"通用";
+    generalSettings.sectionTitle = @"general".localized;//@"通用";
     generalSettings.cellModel = @[
         deviceInfoCellModel,
 //        devicelanguageCellModel,
@@ -291,18 +291,18 @@ static const NSUInteger titleColorRed = 0xeb5757;
 //    quickPayCellModel.imageName = @"traffic 1";
 
     OKHardwareListBaseCellModel *changepPINCellModel = [[OKHardwareListBaseCellModel alloc] init];
-    changepPINCellModel.title = MyLocalizedString(@"hardwareWallet.pin", nil); //修改 PIN 码
+    changepPINCellModel.title = @"hardwareWallet.pin".localized; //修改 PIN 码
     changepPINCellModel.imageName = @"Group";
     changepPINCellModel.cellType = OKHardwareListBaseCellTypeDeviceChangePIN;
 
     OKHardwareListBaseCellModel *showXPUBCellModel = [[OKHardwareListBaseCellModel alloc] init];
-    showXPUBCellModel.title = MyLocalizedString(@"hardwareWallet.xpub", nil);
+    showXPUBCellModel.title = @"hardwareWallet.xpub".localized;
     showXPUBCellModel.imageName = @"Group-1";
     showXPUBCellModel.cellType = OKHardwareListBaseCellTypeDeviceShowXPUB;
 
 
     OKDeviceSettingsModel *securitySettings = [[OKDeviceSettingsModel alloc] init];
-    securitySettings.sectionTitle = MyLocalizedString(@"security", nil);//@"安全";
+    securitySettings.sectionTitle = @"security".localized;//@"安全";
     securitySettings.cellModel = @[
 //        quickPayCellModel,
         changepPINCellModel,
@@ -322,18 +322,18 @@ static const NSUInteger titleColorRed = 0xeb5757;
 //
 
     OKHardwareListBaseCellModel *recoverDeviceCellModel = [[OKHardwareListBaseCellModel alloc] init];
-    recoverDeviceCellModel.title = MyLocalizedString(@"hardwareWallet.recover.title", nil);//@"恢复出厂设置";
+    recoverDeviceCellModel.title = @"hardwareWallet.recover.title".localized;//@"恢复出厂设置";
     recoverDeviceCellModel.titleColor = titleColorRed;
     recoverDeviceCellModel.cellType = OKHardwareListBaseCellTypeDeviceReset;
 
     OKHardwareListBaseCellModel *removeDeviceCellModel = [[OKHardwareListBaseCellModel alloc] init];
-    removeDeviceCellModel.title = MyLocalizedString(@"hardwareWallet.delete", nil);//@"删除设备";
+    removeDeviceCellModel.title = @"hardwareWallet.delete".localized;//@"删除设备";
     removeDeviceCellModel.titleColor = titleColorRed;
     removeDeviceCellModel.cellType = OKHardwareListBaseCellTypeDeviceDelete;
     removeDeviceCellModel.hideRightArrow = YES;
 
     OKDeviceSettingsModel *dangerSettings = [[OKDeviceSettingsModel alloc] init];
-    dangerSettings.sectionTitle = MyLocalizedString(@"Dangerous operation", nil);//@"危险设置";
+    dangerSettings.sectionTitle = @"Dangerous operation".localized;//@"危险设置";
     dangerSettings.cellModel = @[
         recoverDeviceCellModel,
         removeDeviceCellModel

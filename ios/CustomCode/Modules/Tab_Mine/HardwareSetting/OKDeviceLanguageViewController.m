@@ -25,9 +25,9 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.title = MyLocalizedString(@"language", nil);
-    self.descLabel.text = MyLocalizedString(@"hardwareWallet.lanuage.desc", nil);
-    
+    self.title = @"language".localized;
+    self.descLabel.text = @"hardwareWallet.lanuage.desc".localized;
+
     self.isChinese = YES; // TODO: sync with device.
     UITapGestureRecognizer *tapCN = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(changeLanguageCN)];
     [self.chineseCell addGestureRecognizer:tapCN];
@@ -51,7 +51,7 @@
     _isChinese = isChinese;
     self.chineseCheckView.hidden = !isChinese;
     self.englishCheckView.hidden = !self.chineseCheckView.hidden;
-    
+
     // TODO: sync with device.
 }
 

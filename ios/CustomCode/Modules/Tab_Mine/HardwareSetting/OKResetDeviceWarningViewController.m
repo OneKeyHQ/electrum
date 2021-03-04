@@ -26,11 +26,11 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [OKHwNotiManager sharedInstance].delegate = self;
-    self.title = MyLocalizedString(@"hardwareWallet.recover.title", nil);
-    self.warningText.text = MyLocalizedString(@"hardwareWallet.recover.tip", nil);
-    self.warning.titleLabel.text = MyLocalizedString(@"⚠️ risk warning", nil);
-    self.readButton.titleLabel.text = MyLocalizedString(@"I am aware of the above risk", nil);
-    [self.confirmButton setTitle:MyLocalizedString(@"hardwareWallet.recover.title", nil) forState:UIControlStateNormal];
+    self.title = @"hardwareWallet.recover.title".localized;
+    self.warningText.text = @"hardwareWallet.recover.tip".localized;
+    self.warning.titleLabel.text = @"⚠️ risk warning".localized;
+    self.readButton.titleLabel.text = @"I am aware of the above risk".localized;
+    [self.confirmButton setTitle:@"hardwareWallet.recover.title".localized forState:UIControlStateNormal];
     [self.confirmButton setLayerRadius:20];
     self.confirmButton.alpha = 0.5;
     self.confirmButton.enabled = NO;
@@ -54,9 +54,9 @@
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         id result = [kPyCommandsManager callInterface:kInterface_wipe_device parameter:@{}];
         if ([result boolValue]) {
-            [kTools tipMessage:[MyLocalizedString(@"hardwareWallet.recover.title", nil) stringByAppendingString:MyLocalizedString(@"success", nil)]] ;
+            [kTools tipMessage:[@"hardwareWallet.recover.title".localized stringByAppendingString:@"success".localized]] ;
         } else {
-            [kTools tipMessage:[MyLocalizedString(@"hardwareWallet.recover.title", nil) stringByAppendingString:MyLocalizedString(@"fail", nil)]] ;
+            [kTools tipMessage:[@"hardwareWallet.recover.title".localized stringByAppendingString:@"fail".localized]] ;
         }
         [kOKBlueManager disconnectAllPeripherals];
         [weakself dismissSelf];
@@ -81,9 +81,9 @@
             [weakself.navigationController pushViewController: pinCode animated:YES];
         } else if (type == OKHWNotiTypeFactoryReset) {
             OKDeviceConfirmController *confirmVC = [OKDeviceConfirmController controllerWithStoryboard];
-            confirmVC.title = MyLocalizedString(@"hardwareWallet.recover.title", nil);
-            confirmVC.titleText = MyLocalizedString(@"hardwareWallet.pin.comfirm", nil);
-            confirmVC.btnText = MyLocalizedString(@"return", nil);
+            confirmVC.title = @"hardwareWallet.recover.title".localized;
+            confirmVC.titleText = @"hardwareWallet.pin.comfirm".localized;
+            confirmVC.btnText = @"return".localized;
             confirmVC.forbidInteractivePopGestureRecognizer = YES;
             confirmVC.btnCallback = ^{
                 [kPyCommandsManager cancel];

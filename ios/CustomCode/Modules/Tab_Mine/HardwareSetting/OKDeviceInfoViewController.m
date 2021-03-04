@@ -35,16 +35,16 @@
     [super viewDidLoad];
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(changeName)];
     [self.nameView addGestureRecognizer:tap];
-    self.title = MyLocalizedString(@"hardwareWallet.info", nil);
+    self.title = @"hardwareWallet.info".localized;
     [self setupUI];
 }
 
 - (void)setupUI {
     OKDeviceInfoModel *deviceInfo = [[OKDevicesManager sharedInstance] getDeviceModelWithID:self.deviceId].deviceInfo;
-    self.deviceIDLabel.text = MyLocalizedString(@"hardwareWallet.info.id", nil);
-    self.bluetoothNameLabel.text = MyLocalizedString(@"hardwareWallet.info.buletoothName", nil);
-    self.sysVersionLabel.text = MyLocalizedString(@"hardwareWallet.info.sysVersion", nil);
-    self.bluetoothVersionLabel.text = MyLocalizedString(@"hardwareWallet.info.buletoothVersion", nil);
+    self.deviceIDLabel.text = @"hardwareWallet.info.id".localized;
+    self.bluetoothNameLabel.text = @"hardwareWallet.info.buletoothName".localized;
+    self.sysVersionLabel.text = @"hardwareWallet.info.sysVersion".localized;
+    self.bluetoothVersionLabel.text = @"hardwareWallet.info.buletoothVersion".localized;
 
     self.nameLabel.text = deviceInfo.label;
     self.deviceID.text = deviceInfo.device_id;
@@ -55,6 +55,6 @@
 }
 
 - (void)changeName {
-    [kTools tipMessage:MyLocalizedString(@"Temporary does not support", nil)];
+    [kTools tipMessage:@"Temporary does not support".localized];
 }
 @end
