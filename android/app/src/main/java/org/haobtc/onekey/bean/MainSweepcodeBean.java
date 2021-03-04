@@ -104,5 +104,9 @@ public class MainSweepcodeBean {
         public void setCoin(String coin) {
             this.coin = coin;
         }
+
+        public Boolean isEmpty() {
+            return coin == null || address == null;
+        }
     }
 }

@@ -5,6 +5,7 @@ import android.content.Intent
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.google.gson.Gson
+import com.orhanobut.logger.Logger
 import com.yzq.zxinglibrary.android.CaptureActivity
 import com.yzq.zxinglibrary.bean.ZxingConfig
 import com.yzq.zxinglibrary.common.Constant
@@ -15,7 +16,6 @@ import org.haobtc.onekey.R
 import org.haobtc.onekey.bean.HardwareFeatures
 import org.haobtc.onekey.bean.MainSweepcodeBean
 import org.haobtc.onekey.bean.WalletAccountBalanceInfo
-import org.haobtc.onekey.bean.WalletInfo
 import org.haobtc.onekey.constant.Vm
 import org.haobtc.onekey.manager.BleManager
 import org.haobtc.onekey.manager.PreferencesManager
@@ -89,7 +89,7 @@ class OnekeyScanQrActivity : CaptureActivity() {
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe({
-          if (it != null) {
+          if (it != null && !it.isEmpty) {
             showAccountSelect(it, rawResult)
           } else {
             handler.restartPreviewAndDecodeDelayed(800)
