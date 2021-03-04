@@ -283,6 +283,7 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
         mAppWalletViewModel.existsWallet.observe(
                 this,
                 exists -> {
+                    mSwipeRefreshLayout.setEnabled(exists);
                     if (exists) {
                         // have wallet
                         linearNoWallet.setVisibility(View.GONE);
