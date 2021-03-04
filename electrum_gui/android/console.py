@@ -1616,7 +1616,7 @@ class AndroidCommands(commands.Commands):
             return json.dumps(all_data[start:end])
 
     def get_eth_tx_list(self, wallet_obj, contract_address=None, search_type=None):
-        contract = self.wallet.get_contract_token(contract_address)
+        contract = self.wallet.get_contract_token(contract_address) if contract_address else None
         txs = PyWalib.get_transaction_history(
             wallet_obj.get_addresses()[0],
             contract=contract,

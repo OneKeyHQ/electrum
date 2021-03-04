@@ -117,7 +117,7 @@ class BlockBook(ProviderInterface):
             outputs=[
                 TransactionOutput(address=receiver, value=value),
                 *(
-                    TransactionOutput(address=i.get("from"), value=int(i.get("value") or 0), token_address=i["token"])
+                    TransactionOutput(address=i.get("to"), value=int(i.get("value") or 0), token_address=i["token"])
                     for i in token_transfers
                     if i.get("token")
                 ),
