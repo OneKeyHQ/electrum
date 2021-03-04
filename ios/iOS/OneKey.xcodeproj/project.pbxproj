@@ -544,6 +544,8 @@
 		B0E3FED825EF6B3700BE4B7F /* OKButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = B0E3FED625EF6B3700BE4B7F /* OKButtonView.m */; };
 		B0E3FEDB25EF7B5500BE4B7F /* OKAddTokenSheetController.h in Headers */ = {isa = PBXBuildFile; fileRef = B0E3FED925EF7B5500BE4B7F /* OKAddTokenSheetController.h */; };
 		B0E3FEDC25EF7B5500BE4B7F /* OKAddTokenSheetController.m in Sources */ = {isa = PBXBuildFile; fileRef = B0E3FEDA25EF7B5500BE4B7F /* OKAddTokenSheetController.m */; };
+		B0E3FEDF25F08CD300BE4B7F /* OKShareActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = B0E3FEDD25F08CD200BE4B7F /* OKShareActivity.m */; };
+		B0E3FEE025F08CD300BE4B7F /* OKShareActivity.h in Headers */ = {isa = PBXBuildFile; fileRef = B0E3FEDE25F08CD200BE4B7F /* OKShareActivity.h */; };
 		B1224B57B4D99A578C974400 /* _raw_cbc.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 55E241F594223A4D0246CAB6 /* _raw_cbc.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B29C483197B6698004570F27 /* OKNSObject.h in Headers */ = {isa = PBXBuildFile; fileRef = A911430B96FB9633A857ACAD /* OKNSObject.h */; settings = {ATTRIBUTES = (project, ); }; };
 		B2EE47BDB57AA751FFE38EF0 /* _raw_ecb.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1A4144F991D1C48D86723572 /* _raw_ecb.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -1165,6 +1167,8 @@
 		B0E3FED625EF6B3700BE4B7F /* OKButtonView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKButtonView.m; sourceTree = "<group>"; };
 		B0E3FED925EF7B5500BE4B7F /* OKAddTokenSheetController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKAddTokenSheetController.h; sourceTree = "<group>"; };
 		B0E3FEDA25EF7B5500BE4B7F /* OKAddTokenSheetController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKAddTokenSheetController.m; sourceTree = "<group>"; };
+		B0E3FEDD25F08CD200BE4B7F /* OKShareActivity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKShareActivity.m; sourceTree = "<group>"; };
+		B0E3FEDE25F08CD200BE4B7F /* OKShareActivity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKShareActivity.h; sourceTree = "<group>"; };
 		B73C4F1B98EDFBC9B4F96E3E /* _chacha20.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = _chacha20.framework; path = ../Resources/Dylib/_chacha20.framework; sourceTree = SOURCE_ROOT; };
 		B7414DFCA31369C5738DFF3D /* _cpuid_c.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = _cpuid_c.framework; path = ../Resources/Dylib/_cpuid_c.framework; sourceTree = SOURCE_ROOT; };
 		BA0B7AC325AC560000F26B0C /* electrum_gui */ = {isa = PBXFileReference; lastKnownFileType = folder; name = electrum_gui; path = ../../electrum_gui; sourceTree = "<group>"; };
@@ -1456,6 +1460,8 @@
 		881422A925B18EA900961668 /* Tools */ = {
 			isa = PBXGroup;
 			children = (
+				B0E3FEDE25F08CD200BE4B7F /* OKShareActivity.h */,
+				B0E3FEDD25F08CD200BE4B7F /* OKShareActivity.m */,
 				881422AA25B18EA900961668 /* OKSystemShareView.h */,
 				881422AB25B18EA900961668 /* OKTools.h */,
 				881422AC25B18EA900961668 /* Sha256.h */,
@@ -2477,6 +2483,7 @@
 				8814249825B18EAA00961668 /* qrencode.h in Headers */,
 				881424DA25B18EAA00961668 /* OKUnitTableViewCellModel.h in Headers */,
 				881424FE25B18EAA00961668 /* OKWalletDetailModel.h in Headers */,
+				B0E3FEE025F08CD300BE4B7F /* OKShareActivity.h in Headers */,
 				FE0B4D48BF081F3373C7B27F /* OKComMarco.h in Headers */,
 				8814257C25B18EAA00961668 /* OKSelectTableViewCell.h in Headers */,
 				B058D8A725B55663000EB27C /* OKDeviceListViewController.h in Headers */,
@@ -2881,23 +2888,6 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-OneKey/Pods-OneKey-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		DC810E7AD1C03015C35A789F /* [CP] Prepare Artifacts */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-OneKey/Pods-OneKey-artifacts-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Prepare Artifacts";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-OneKey/Pods-OneKey-artifacts-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-OneKey/Pods-OneKey-artifacts.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -2911,6 +2901,7 @@
 				881424AE25B18EAA00961668 /* OKFiatSelectViewController.m in Sources */,
 				B058D8AF25B55663000EB27C /* OKDeviceVerifyResultController.m in Sources */,
 				8814243225B18EAA00961668 /* OKCreateResultWalletInfoModel.m in Sources */,
+				B0E3FEDF25F08CD300BE4B7F /* OKShareActivity.m in Sources */,
 				B094AEB125CBFD1500DCA01E /* OKVersion.m in Sources */,
 				B058D8B325B55663000EB27C /* OKDeviceUpdateModel.m in Sources */,
 				8814256325B18EAA00961668 /* OKCheckWordView.m in Sources */,
