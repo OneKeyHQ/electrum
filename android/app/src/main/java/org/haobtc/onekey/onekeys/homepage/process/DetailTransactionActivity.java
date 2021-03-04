@@ -3,6 +3,7 @@ package org.haobtc.onekey.onekeys.homepage.process;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -14,11 +15,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.chaquo.python.Kwarg;
-import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.ObservableOnSubscribe;
+import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import java.util.Objects;
@@ -27,12 +26,35 @@ import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.activities.transaction.CheckChainDetailWebActivity;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.TransactionInfoBean;
+import org.haobtc.onekey.bean.TransactionSummaryVo;
 import org.haobtc.onekey.business.blockBrowser.BlockBrowserManager;
 import org.haobtc.onekey.constant.Vm;
-import org.haobtc.onekey.exception.HardWareExceptions;
 import org.haobtc.onekey.utils.Daemon;
 
 public class DetailTransactionActivity extends BaseActivity {
+
+    private static final String EXT_TX_ID = "ext_tx_id";
+    private static final String EXT_TX_DETAILS = "ext_tx_details";
+    private static final String EXT_TX_TIME = "tx_time";
+
+    public static void start(Context context, String txDetails) {
+        Intent intent = new Intent(context, DetailTransactionActivity.class);
+        intent.putExtra(EXT_TX_DETAILS, txDetails);
+        context.startActivity(intent);
+    }
+
+    public static void start(Context context, String txId, String txTime) {
+        Intent intent = new Intent(context, DetailTransactionActivity.class);
+        intent.putExtra(EXT_TX_ID, txId);
+        intent.putExtra(EXT_TX_TIME, txTime);
+        context.startActivity(intent);
+    }
+
+    public static void startRawTx(Context context, String txDetail) {
+        Intent intent = new Intent(context, DetailTransactionActivity.class);
+        intent.putExtra("txDetail", txDetail);
+        context.startActivity(intent);
+    }
 
     @BindView(R.id.text_tx_amount)
     TextView textTxAmount;
@@ -68,6 +90,7 @@ public class DetailTransactionActivity extends BaseActivity {
     TextView textTxNum;
 
     private String tx;
+    private String txDetail;
     private String hashDetail;
     private String txTime;
     private String txid;
@@ -83,8 +106,9 @@ public class DetailTransactionActivity extends BaseActivity {
     public void initView() {
         ButterKnife.bind(this);
         tx = getIntent().getStringExtra("txDetail");
-        hashDetail = getIntent().getStringExtra("hashDetail");
-        txTime = getIntent().getStringExtra("txTime");
+        hashDetail = getIntent().getStringExtra(EXT_TX_ID);
+        txDetail = getIntent().getStringExtra(EXT_TX_DETAILS);
+        txTime = getIntent().getStringExtra(EXT_TX_TIME);
     }
 
     @Override
@@ -104,45 +128,48 @@ public class DetailTransactionActivity extends BaseActivity {
         if (mLoadTxDetailDisposable != null && !mLoadTxDetailDisposable.isDisposed()) {
             mLoadTxDetailDisposable.dispose();
         }
+        if (!TextUtils.isEmpty(tx)) {
+            getTxDetailByTx();
+        } else if (!TextUtils.isEmpty(txDetail)) {
+            getLocalTxDetail();
+        } else {
+            getTxDetailByTxId();
+        }
+    }
+
+    private void getLocalTxDetail() {
         mLoadTxDetailDisposable =
-                Observable.create(
-                                (ObservableOnSubscribe<PyObject>)
-                                        emitter -> {
-                                            try {
-                                                PyObject infoFromRaw;
-                                                if (!TextUtils.isEmpty(tx)) {
-                                                    infoFromRaw =
-                                                            Daemon.commands.callAttr(
-                                                                    "get_tx_info_from_raw", tx);
-                                                } else {
-                                                    infoFromRaw =
-                                                            Daemon.commands.callAttr(
-                                                                    "get_tx_info",
-                                                                    hashDetail,
-                                                                    new Kwarg(
-                                                                            "coin",
-                                                                            Vm.CoinType.BTC
-                                                                                    .callFlag));
-                                                }
-                                                emitter.onNext(infoFromRaw);
-                                                emitter.onComplete();
-                                            } catch (Exception e) {
-                                                emitter.onError(e);
-                                            }
-                                        })
+                Single.fromCallable(() -> txDetail)
+                        .subscribe(
+                                this::localDetailData,
+                                e -> {
+                                    e.printStackTrace();
+                                    if (e.getMessage() != null) {
+                                        mToast(
+                                                e.getMessage()
+                                                        .substring(
+                                                                e.getMessage().indexOf(":") + 1));
+                                    }
+                                });
+    }
+
+    private void getTxDetailByTxId() {
+        mLoadTxDetailDisposable =
+                Single.fromCallable(
+                                () ->
+                                        Daemon.commands
+                                                .callAttr(
+                                                        "get_tx_info",
+                                                        hashDetail,
+                                                        new Kwarg("coin", Vm.CoinType.BTC.callFlag))
+                                                .toString())
                         .observeOn(AndroidSchedulers.mainThread())
                         .map(
                                 txInfo -> {
-                                    String txInfoStr = txInfo.toString();
-                                    if (!TextUtils.isEmpty(txInfoStr)) {
-                                        if (!TextUtils.isEmpty(tx)) {
-                                            String nowDatetime = mGetNowDatetime();
-                                            textTxTime.setText(nowDatetime);
-                                        } else {
-                                            textTxTime.setText(txTime);
-                                        }
+                                    if (!TextUtils.isEmpty(txInfo)) {
+                                        textTxTime.setText(txTime);
                                     }
-                                    return txInfoStr;
+                                    return txInfo;
                                 })
                         .subscribeOn(Schedulers.io())
                         .doOnSubscribe(disposable -> showProgress())
@@ -152,7 +179,42 @@ public class DetailTransactionActivity extends BaseActivity {
                                 e -> {
                                     e.printStackTrace();
                                     if (e.getMessage() != null) {
-                                        mToast(HardWareExceptions.getThrowString(e));
+                                        mToast(
+                                                e.getMessage()
+                                                        .substring(
+                                                                e.getMessage().indexOf(":") + 1));
+                                    }
+                                });
+    }
+
+    private void getTxDetailByTx() {
+        mLoadTxDetailDisposable =
+                Single.fromCallable(
+                                () ->
+                                        Daemon.commands
+                                                .callAttr("get_tx_info_from_raw", tx)
+                                                .toString())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .map(
+                                txInfo -> {
+                                    if (!TextUtils.isEmpty(txInfo)) {
+                                        String nowDatetime = mGetNowDatetime();
+                                        textTxTime.setText(nowDatetime);
+                                    }
+                                    return txInfo;
+                                })
+                        .subscribeOn(Schedulers.io())
+                        .doOnSubscribe(disposable -> showProgress())
+                        .doFinally(this::dismissProgress)
+                        .subscribe(
+                                this::jsonDetailData,
+                                e -> {
+                                    e.printStackTrace();
+                                    if (e.getMessage() != null) {
+                                        mToast(
+                                                e.getMessage()
+                                                        .substring(
+                                                                e.getMessage().indexOf(":") + 1));
                                     }
                                 });
     }
@@ -173,6 +235,65 @@ public class DetailTransactionActivity extends BaseActivity {
                 imageId = R.drawable.ic_tx_failure;
         }
         return imageId;
+    }
+
+    private void localDetailData(String detailMsg) {
+        Gson gson = new Gson();
+        TransactionSummaryVo listBean = gson.fromJson(detailMsg, TransactionSummaryVo.class);
+        String showStatus;
+        int showStatusType;
+        try {
+            showStatus = listBean.getShowStatus().get(1).toString().replace("。", "");
+            showStatusType = ((Number) listBean.getShowStatus().get(0)).intValue();
+        } catch (Exception e) {
+            showStatus = getString(R.string.unknown);
+            showStatusType = 1;
+        }
+        textTxStatus.setText(showStatus);
+        imgTxStatus.setImageDrawable(
+                ResourcesCompat.getDrawable(
+                        getResources(), getTxStatusImage(showStatusType), getTheme()));
+        String amount = listBean.getAmount();
+        if (listBean.getInputAddr() != null && listBean.getInputAddr().size() != 0) {
+            String address = listBean.getInputAddr().get(0);
+            if (!TextUtils.isEmpty(address)) {
+                textSendAddress.setText(address);
+            } else {
+                textSendAddress.setText(getString(R.string.line));
+            }
+        }
+        if (listBean.getOutputAddr() != null && listBean.getOutputAddr().size() != 0) {
+            String outputAddr = listBean.getOutputAddr().get(0);
+            textReceiveAddress.setText(outputAddr);
+        }
+        String txStatus = listBean.getStatus();
+        txid = listBean.getTxId();
+        String fee = listBean.getFee();
+        if (amount.contains(" (")) {
+            String txAmount = amount.substring(0, amount.indexOf(" ("));
+            textTxAmount.setText(txAmount);
+        } else {
+            textTxAmount.setText(amount);
+        }
+        if (txStatus.contains("confirmations")) {
+            String confirms = txStatus.substring(0, txStatus.indexOf(" "));
+            textConfirmNum.setText(confirms);
+        } else {
+            textConfirmNum.setText(txStatus);
+        }
+        textTxNum.setText(txid);
+        if (fee.contains(" (")) {
+            String txFee = fee.substring(0, fee.indexOf(" ("));
+            textFee.setText(txFee);
+        }
+        String description = "";
+        if (!TextUtils.isEmpty(description)) {
+            textRemarks.setText(description);
+        } else {
+            textRemarks.setText("-");
+        }
+        txBlockHeight = String.valueOf(listBean.getHeight());
+        textBlockHigh.setText(txBlockHeight);
     }
 
     private void jsonDetailData(String detailMsg) {

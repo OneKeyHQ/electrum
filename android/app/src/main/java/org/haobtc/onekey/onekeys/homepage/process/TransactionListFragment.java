@@ -1,7 +1,6 @@
 package org.haobtc.onekey.onekeys.homepage.process;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +8,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
+import com.google.gson.Gson;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnLoadMoreListener;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
@@ -16,13 +16,13 @@ import com.zy.multistatepage.MultiStateContainer;
 import com.zy.multistatepage.MultiStatePage;
 import com.zy.multistatepage.state.SuccessState;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.ObservableOnSubscribe;
 import io.reactivex.rxjava3.core.Scheduler;
+import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.transaction.CheckChainDetailWebActivity;
 import org.haobtc.onekey.adapter.OnekeyTxListAdapter;
@@ -131,17 +131,13 @@ public class TransactionListFragment extends BaseLazyFragment
         onekeyTxListAdapter.setOnItemClickListener(
                 (adapter, itemView, position) -> {
                     TransactionSummaryVo item = listBeans.get(position);
+                    String jsonStr = new Gson().toJson(item);
                     switch (item.getCoinType()) {
                         case BTC:
-                            Intent intent =
-                                    new Intent(requireContext(), DetailTransactionActivity.class);
-                            intent.putExtra("hashDetail", item.getTxId());
-                            intent.putExtra("txTime", item.getDate());
-                            startActivity(intent);
+                            DetailTransactionActivity.start(requireContext(), jsonStr);
                             break;
                         case ETH:
-                            DetailETHTransactionActivity.start(
-                                    requireContext(), item.getTxId(), item.getDate());
+                            DetailETHTransactionActivity.start(requireContext(), jsonStr);
                             break;
                     }
                 });
@@ -203,101 +199,101 @@ public class TransactionListFragment extends BaseLazyFragment
             mLoadTxListDisposable.dispose();
         }
         mLoadTxListDisposable =
-                Observable.create(
-                                (ObservableOnSubscribe<List<TransactionSummaryVo>>)
-                                        emitter -> {
-                                            try {
-                                                List<TransactionSummaryVo> summaryVoList;
-                                                switch (mAssets.getCoinType()) {
-                                                    default:
-                                                    case BTC:
-                                                        if (mBitcoinService == null) {
-                                                            mBitcoinService = new BitcoinService();
-                                                        }
-                                                        summaryVoList =
-                                                                mBitcoinService.getTxList(
-                                                                        status,
-                                                                        mTotalCount,
-                                                                        PAGE_SIZE);
-                                                        break;
-                                                    case ETH:
-                                                        if (mEthService == null) {
-                                                            mEthService = new EthService();
-                                                        }
-                                                        String contractAddress = null;
-                                                        if (mAssets instanceof ERC20Assets) {
-                                                            contractAddress =
-                                                                    ((ERC20Assets) mAssets)
-                                                                            .getContractAddress();
-                                                        }
-                                                        summaryVoList =
-                                                                mEthService.getTxList(
-                                                                        status,
-                                                                        contractAddress,
-                                                                        mTotalCount,
-                                                                        PAGE_SIZE);
-                                                        break;
+                (Disposable)
+                        Single.fromCallable(
+                                        (Callable<List<TransactionSummaryVo>>)
+                                                () -> {
+                                                    List<TransactionSummaryVo> summaryVoList;
+                                                    switch (mAssets.getCoinType()) {
+                                                        default:
+                                                        case BTC:
+                                                            if (mBitcoinService == null) {
+                                                                mBitcoinService =
+                                                                        new BitcoinService();
+                                                            }
+                                                            summaryVoList =
+                                                                    mBitcoinService.getTxList(
+                                                                            status,
+                                                                            mTotalCount,
+                                                                            PAGE_SIZE);
+                                                            break;
+                                                        case ETH:
+                                                            if (mEthService == null) {
+                                                                mEthService = new EthService();
+                                                            }
+                                                            String contractAddress = null;
+                                                            if (mAssets instanceof ERC20Assets) {
+                                                                contractAddress =
+                                                                        ((ERC20Assets) mAssets)
+                                                                                .getContractAddress();
+                                                            }
+                                                            summaryVoList =
+                                                                    mEthService.getTxList(
+                                                                            status,
+                                                                            contractAddress,
+                                                                            mTotalCount,
+                                                                            PAGE_SIZE);
+                                                            break;
+                                                    }
+                                                    return summaryVoList;
+                                                })
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .map(
+                                        historyTx -> {
+                                            if (mTotalCount > 0 || historyTx.size() > 0) {
+                                                if (mTotalCount == 0) {
+                                                    mMultiStateContainer.show(SuccessState.class);
                                                 }
-                                                emitter.onNext(summaryVoList);
-                                                emitter.onComplete();
-                                            } catch (Exception e) {
-                                                emitter.onError(e);
+                                            } else {
+                                                mMultiStateContainer.show(NoRecordState.class);
                                             }
+                                            return historyTx;
                                         })
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .map(
-                                historyTx -> {
-                                    if (mTotalCount > 0 || historyTx.size() > 0) {
-                                        if (mTotalCount == 0) {
-                                            mMultiStateContainer.show(SuccessState.class);
-                                        }
-                                    } else {
-                                        mMultiStateContainer.show(NoRecordState.class);
-                                    }
-                                    return historyTx;
-                                })
-                        .map(
-                                historyTx -> {
-                                    mBinding.smartRefreshLayout.finishRefresh();
-                                    if (mTotalCount == 0) {
-                                        listBeans.clear();
-                                    }
-                                    listBeans.addAll(historyTx);
-                                    // 没有数据可以加载
-                                    if (mAssets.getCoinType() == Vm.CoinType.ETH
-                                            || (mTotalCount != 0 && mTotalCount == listBeans.size())
-                                            || (mTotalCount == 0 && listBeans.size() < PAGE_SIZE)) {
-                                        mFooterMore.setVisibility(View.VISIBLE);
-                                        mBinding.smartRefreshLayout.finishLoadMore();
-                                        mBinding.smartRefreshLayout.setEnableLoadMore(false);
-                                    } else {
-                                        mBinding.smartRefreshLayout.finishLoadMore();
-                                    }
-                                    mTotalCount = listBeans.size();
-                                    return historyTx;
-                                })
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribeOn(getLoadWorkScheduler())
-                        .doOnSubscribe(s -> showProgress())
-                        .subscribe(
-                                o -> {
-                                    if (null != onekeyTxListAdapter) {
-                                        onekeyTxListAdapter.notifyDataSetChanged();
-                                    }
-                                },
-                                e -> {
-                                    if (mTotalCount == 0) {
-                                        isFirstLoad = true;
-                                        mMultiStateContainer.show(
-                                                LoadErrorGoBrowserState.class,
-                                                multiState -> {
-                                                    multiState.setOnGotoBrowserListener(
-                                                            v -> {
-                                                                startBrowser();
-                                                            });
-                                                });
-                                    }
-                                });
+                                .map(
+                                        historyTx -> {
+                                            mBinding.smartRefreshLayout.finishRefresh();
+                                            if (mTotalCount == 0) {
+                                                listBeans.clear();
+                                            }
+                                            listBeans.addAll(historyTx);
+                                            // 没有数据可以加载
+                                            if (mAssets.getCoinType() == Vm.CoinType.ETH
+                                                    || (mTotalCount != 0
+                                                            && mTotalCount == listBeans.size())
+                                                    || (mTotalCount == 0
+                                                            && listBeans.size() < PAGE_SIZE)) {
+                                                mFooterMore.setVisibility(View.VISIBLE);
+                                                mBinding.smartRefreshLayout.finishLoadMore();
+                                                mBinding.smartRefreshLayout.setEnableLoadMore(
+                                                        false);
+                                            } else {
+                                                mBinding.smartRefreshLayout.finishLoadMore();
+                                            }
+                                            mTotalCount = listBeans.size();
+                                            return historyTx;
+                                        })
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribeOn(getLoadWorkScheduler())
+                                .doOnSubscribe(s -> showProgress())
+                                .subscribe(
+                                        o -> {
+                                            if (null != onekeyTxListAdapter) {
+                                                onekeyTxListAdapter.notifyDataSetChanged();
+                                            }
+                                        },
+                                        e -> {
+                                            if (mTotalCount == 0) {
+                                                isFirstLoad = true;
+                                                mMultiStateContainer.show(
+                                                        LoadErrorGoBrowserState.class,
+                                                        multiState -> {
+                                                            multiState.setOnGotoBrowserListener(
+                                                                    v -> {
+                                                                        startBrowser();
+                                                                    });
+                                                        });
+                                            }
+                                        });
     }
 
     private void startBrowser() {

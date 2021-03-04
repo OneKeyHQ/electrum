@@ -66,12 +66,7 @@ public class TransactionCompletion extends BaseActivity {
             case R.id.text_check_detail:
                 switch (mCoinType) {
                     case BTC:
-                        Intent intent =
-                                new Intent(
-                                        TransactionCompletion.this,
-                                        DetailTransactionActivity.class);
-                        intent.putExtra("txDetail", txDetail);
-                        startActivity(intent);
+                        DetailTransactionActivity.startRawTx(TransactionCompletion.this, txDetail);
                         break;
                     case ETH:
                         DetailETHTransactionActivity.start(

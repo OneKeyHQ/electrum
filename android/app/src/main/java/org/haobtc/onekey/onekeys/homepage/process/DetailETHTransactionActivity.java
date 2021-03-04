@@ -5,7 +5,6 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -15,11 +14,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.chaquo.python.Kwarg;
-import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.ObservableOnSubscribe;
+import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import java.math.BigDecimal;
@@ -29,6 +26,7 @@ import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.activities.transaction.CheckChainDetailWebActivity;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.TransactionETHInfoBean;
+import org.haobtc.onekey.bean.TransactionSummaryVo;
 import org.haobtc.onekey.business.blockBrowser.BlockBrowserManager;
 import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.utils.Daemon;
@@ -36,7 +34,14 @@ import org.haobtc.onekey.utils.Daemon;
 public class DetailETHTransactionActivity extends BaseActivity {
 
     private static final String EXT_TX_ID = "tx_id";
+    private static final String EXT_TX_DETAILS = "ext_tx_details";
     private static final String EXT_TX_TIME = "tx_time";
+
+    public static void start(Context context, String txDetails) {
+        Intent intent = new Intent(context, DetailETHTransactionActivity.class);
+        intent.putExtra(EXT_TX_DETAILS, txDetails);
+        context.startActivity(intent);
+    }
 
     public static void start(Context context, String txid, String txTime) {
         Intent intent = new Intent(context, DetailETHTransactionActivity.class);
@@ -79,6 +84,7 @@ public class DetailETHTransactionActivity extends BaseActivity {
     TextView textTxNum;
 
     private String hashDetail;
+    private String txDetail;
     private String txTime;
     private String txid;
     private String txBlockHeight;
@@ -93,6 +99,7 @@ public class DetailETHTransactionActivity extends BaseActivity {
     public void initView() {
         ButterKnife.bind(this);
         hashDetail = getIntent().getStringExtra(EXT_TX_ID);
+        txDetail = getIntent().getStringExtra(EXT_TX_DETAILS);
         txTime = getIntent().getStringExtra(EXT_TX_TIME);
     }
 
@@ -105,32 +112,47 @@ public class DetailETHTransactionActivity extends BaseActivity {
         if (mLoadTxDetailDisposable != null && !mLoadTxDetailDisposable.isDisposed()) {
             mLoadTxDetailDisposable.dispose();
         }
+
+        if (!TextUtils.isEmpty(txDetail)) {
+            getLocalTxDetail();
+        } else {
+            getTxDetailByTxId();
+        }
+    }
+
+    private void getLocalTxDetail() {
         mLoadTxDetailDisposable =
-                Observable.create(
-                                (ObservableOnSubscribe<PyObject>)
-                                        emitter -> {
-                                            try {
-                                                PyObject infoFromRaw =
-                                                        Daemon.commands.callAttr(
-                                                                "get_tx_info",
-                                                                hashDetail,
-                                                                new Kwarg(
-                                                                        "coin",
-                                                                        Vm.CoinType.ETH.callFlag));
-                                                emitter.onNext(infoFromRaw);
-                                                emitter.onComplete();
-                                            } catch (Exception e) {
-                                                emitter.onError(e);
-                                            }
-                                        })
+                Single.fromCallable(() -> txDetail)
+                        .subscribe(
+                                this::localDetailData,
+                                e -> {
+                                    e.printStackTrace();
+                                    if (e.getMessage() != null) {
+                                        mToast(
+                                                e.getMessage()
+                                                        .substring(
+                                                                e.getMessage().indexOf(":") + 1));
+                                    }
+                                });
+    }
+
+    private void getTxDetailByTxId() {
+        mLoadTxDetailDisposable =
+                Single.fromCallable(
+                                () ->
+                                        Daemon.commands
+                                                .callAttr(
+                                                        "get_tx_info",
+                                                        hashDetail,
+                                                        new Kwarg("coin", Vm.CoinType.ETH.callFlag))
+                                                .toString())
                         .observeOn(AndroidSchedulers.mainThread())
                         .map(
                                 txInfo -> {
-                                    String txInfoStr = txInfo.toString();
-                                    if (!TextUtils.isEmpty(txInfoStr)) {
+                                    if (!TextUtils.isEmpty(txInfo)) {
                                         textTxTime.setText(txTime);
                                     }
-                                    return txInfoStr;
+                                    return txInfo;
                                 })
                         .subscribeOn(Schedulers.io())
                         .doOnSubscribe(disposable -> showProgress())
@@ -166,8 +188,79 @@ public class DetailETHTransactionActivity extends BaseActivity {
         return imageId;
     }
 
+    private void localDetailData(String detailMsg) {
+        Gson gson = new Gson();
+        TransactionSummaryVo listBean = gson.fromJson(detailMsg, TransactionSummaryVo.class);
+        String showStatus;
+        int showStatusType;
+        try {
+            showStatus = listBean.getShowStatus().get(1).toString().replace("。", "");
+            showStatusType = ((Number) listBean.getShowStatus().get(0)).intValue();
+        } catch (Exception e) {
+            showStatus = getString(R.string.unknown);
+            showStatusType = 1;
+        }
+        textTxStatus.setText(showStatus.replace("。", ""));
+        imgTxStatus.setImageDrawable(
+                ResourcesCompat.getDrawable(
+                        getResources(), getTxStatusImage(showStatusType), getTheme()));
+        String amount = listBean.getAmount();
+        if (listBean.getInputAddr() != null && listBean.getInputAddr().size() != 0) {
+            String address = listBean.getInputAddr().get(0);
+            if (!TextUtils.isEmpty(address)) {
+                textSendAddress.setText(address);
+            } else {
+                textSendAddress.setText(getString(R.string.line));
+            }
+        }
+        if (listBean.getOutputAddr() != null && listBean.getOutputAddr().size() != 0) {
+            String outputAddr = listBean.getOutputAddr().get(0);
+            textReceiveAddress.setText(outputAddr);
+        }
+        String txStatus = listBean.getStatus();
+        txid = listBean.getTxId();
+        textTxAmount.setText(
+                String.format(
+                        "%s %s",
+                        new BigDecimal(listBean.getAmount().trim())
+                                .stripTrailingZeros()
+                                .toPlainString(),
+                        listBean.getAmountUnit()));
+        if (txStatus.contains("confirmations")) {
+            String confirms = txStatus.substring(0, txStatus.indexOf(" ")).replace("。", "");
+            textConfirmNum.setText(confirms);
+        } else {
+            textConfirmNum.setText(txStatus.replace("。", ""));
+        }
+        textTxNum.setText(txid);
+        String fee = listBean.getFee();
+        if (fee.contains(" (")) {
+            String txFee = fee.substring(0, fee.indexOf(" ("));
+            try {
+                String[] txFeeSplit = txFee.split(" ");
+                textFee.setText(
+                        String.format(
+                                "%s %s",
+                                new BigDecimal(txFeeSplit[0].trim())
+                                        .stripTrailingZeros()
+                                        .toPlainString(),
+                                txFeeSplit[1]));
+            } catch (Exception e) {
+                textFee.setText(txFee);
+            }
+            textFee.setText(txFee);
+        }
+        String description = "";
+        if (!TextUtils.isEmpty(description)) {
+            textRemarks.setText(description);
+        } else {
+            textRemarks.setText("-");
+        }
+        txBlockHeight = String.valueOf(listBean.getHeight());
+        textBlockHigh.setText(txBlockHeight);
+    }
+
     private void jsonDetailData(String detailMsg) {
-        Log.i("detailMsg====", "jsonDetailData--: " + detailMsg);
         Gson gson = new Gson();
         TransactionETHInfoBean listBean = gson.fromJson(detailMsg, TransactionETHInfoBean.class);
         String showStatus;

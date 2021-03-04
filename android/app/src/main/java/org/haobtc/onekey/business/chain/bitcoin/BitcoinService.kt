@@ -7,15 +7,11 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.tencent.bugly.crashreport.CrashReport
 import org.haobtc.onekey.activities.base.MyApplication
-import org.haobtc.onekey.bean.MaintrsactionlistEvent
 import org.haobtc.onekey.bean.TransactionSummaryVo
 import org.haobtc.onekey.business.chain.TransactionListType
 import org.haobtc.onekey.constant.Vm
 import org.haobtc.onekey.utils.Daemon
 import org.haobtc.onekey.utils.internet.NetUtil
-import java.math.BigDecimal
-import java.math.RoundingMode
-import kotlin.jvm.Throws
 
 class BitcoinService {
   private val mGson by lazy {
@@ -40,35 +36,11 @@ class BitcoinService {
     return try {
       val historyTx = request(status, position, limit)
       historyTx?.toString()?.let {
-        val listBeans: ArrayList<TransactionSummaryVo> = ArrayList(limit)
-        mGson.fromJson<List<MaintrsactionlistEvent>>(it, object : TypeToken<List<MaintrsactionlistEvent>>() {}.type).forEach { it ->
-          if ("history" == it.type) {
-            // format date
-            val formatDate = if (it.date.contains("-")) {
-              val str = it.date.substring(5)
-              val strs = str.substring(0, str.length - 3)
-              strs.replace("-", "/")
-            } else {
-              it.date
-            }
-
-            // format amount 0.012029 BTC (2,904.02 CNY)
-            val amountSplit = it.amount.split(" ")
-            val amountStr = amountSplit.getOrNull(0)?.let { amount ->
-              BigDecimal(amount).setScale(8, RoundingMode.DOWN).stripTrailingZeros().toPlainString()
-            } ?: "0"
-
-            val amountUnit = amountSplit.getOrNull(1)?.trim() ?: "BTC"
-
-            val amountFiat = amountSplit.getOrNull(2)?.trim()?.replace("(", "") ?: "0.00"
-
-            val amountFiatUnit = amountSplit.getOrNull(3)?.trim()?.replace(")", "") ?: "CNY"
-
-            val item = TransactionSummaryVo(Vm.CoinType.BTC, it.txHash, it.isMine, it.type, it.address, formatDate, it.txStatus.replace("。", ""), amountStr, amountUnit, amountFiat, amountFiatUnit)
-            listBeans.add(item)
+        mGson.fromJson<List<TransactionSummaryVo>>(it, object : TypeToken<List<TransactionSummaryVo>>() {}.type).apply {
+          forEach {
+            it.coinType = Vm.CoinType.BTC
           }
         }
-        listBeans
       } ?: arrayListOf()
     } catch (e: Exception) {
       e.printStackTrace()
