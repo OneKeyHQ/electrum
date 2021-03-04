@@ -199,7 +199,7 @@
 "The password cannot be empty" = "密码不能为空";
 "Wallet deleted successfully" = "删除账户成功";
 "Does not support FaceID" = "不支持FaceID";
-"Please enter the transfer address" = "请输入转账地址";
+"Please enter the transfer address" = "请输入收款账号";
 "Please enter the transfer amount" = "请输入转账金额";
 "Lack of balance" = "余额不足";
 "Send a success" = "发送成功";

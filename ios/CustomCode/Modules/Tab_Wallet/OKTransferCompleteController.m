@@ -15,17 +15,17 @@
 @property (weak, nonatomic) IBOutlet UIView *showDetailBgView;
 @property (weak, nonatomic) IBOutlet UILabel *showDetailLabel;
 @property (weak, nonatomic) IBOutlet UIButton *completeBtn;
-@property (nonatomic,strong)NSDictionary *dict;
+@property (nonatomic,strong)NSString *amount;
 @property (nonatomic,copy)ViewTxDetailsBlock block;
 - (IBAction)completeBtnClick:(UIButton *)sender;
 
 @end
 
 @implementation OKTransferCompleteController
-+ (instancetype)transferCompleteController:(NSDictionary *)dict block:(ViewTxDetailsBlock)block
++ (instancetype)transferCompleteController:(NSString *)amount block:(ViewTxDetailsBlock)block
 {
     OKTransferCompleteController *vc = [[UIStoryboard storyboardWithName:@"Tab_Wallet" bundle:nil]instantiateViewControllerWithIdentifier:@"OKTransferCompleteController"];
-    vc.dict = dict;
+    vc.amount = amount;
     vc.block = block;
     return vc;
 }
@@ -45,7 +45,7 @@
     [self.showDetailBgView setLayerRadius:15];
     self.showDetailLabel.text = MyLocalizedString(@"View Transaction Details", nil);
     [self.completeBtn setLayerRadius:30];
-    NSArray *arrayAmount = [[_dict safeStringForKey:@"amount"]componentsSeparatedByString:@" "];
+    NSArray *arrayAmount = [_amount componentsSeparatedByString:@" "];
     self.amountLabel.text = [NSString stringWithFormat:@"%@ %@",[arrayAmount firstObject],[kWalletManager.currentWalletInfo.coinType uppercaseString]];
 }
 - (void)viewTransactionDetails

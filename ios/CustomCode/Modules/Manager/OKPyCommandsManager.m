@@ -308,12 +308,17 @@ static dispatch_once_t once;
     }else if([method isEqualToString:kInterfaceget_default_fee_info]){
         NSString *feerate = [parameter safeStringForKey:@"feerate"];
         NSString *coin = [parameter safeStringForKey:@"coin"]?:@"btc";
+        NSString *eth_tx_info = [parameter safeStringForKey:@"eth_tx_info"];
         PyObject *args =  Py_BuildValue("()");
         PyObject *kwargs;
-        if (feerate.length == 0 || feerate == nil) {
-            kwargs = Py_BuildValue("{s:s}", "coin", [coin UTF8String]);
+        if (eth_tx_info.length != 0) {
+            kwargs = Py_BuildValue("{s:s,s:s}", "coin", [coin UTF8String],"eth_tx_info",[eth_tx_info UTF8String]);
         }else{
-            kwargs = Py_BuildValue("{s:s,s:s}", "feerate", [feerate UTF8String],"coin",[coin UTF8String]);
+            if (feerate.length == 0 || feerate == nil) {
+                kwargs = Py_BuildValue("{s:s}", "coin", [coin UTF8String]);
+            }else{
+                kwargs = Py_BuildValue("{s:s,s:s}", "feerate", [feerate UTF8String],"coin",[coin UTF8String]);
+            }
         }
         PyObject *myobject_method = PyObject_GetAttrString(self.pyInstance, [kInterfaceget_default_fee_info UTF8String]);
         result = PyObject_Call(myobject_method, args, kwargs);
@@ -543,6 +548,32 @@ static dispatch_once_t once;
         result = PyObject_CallMethod(self.pyInstance, [kInterfaceget_tx_info_from_raw UTF8String], "(s)",[raw_tx UTF8String]);
     }else if ([method isEqualToString:kInterfaceset_recovery_flag]){
         result = PyObject_CallMethod(self.pyInstance, [kInterfaceset_recovery_flag UTF8String], "()",NULL);
+    }else if ([method isEqualToString:kInterfacesign_eth_tx]){
+
+        NSString *to_addr = [parameter safeStringForKey:@"to_addr"];
+        NSString *value = [parameter safeStringForKey:@"value"];
+        NSString *path = [parameter safeStringForKey:@"path"];
+        NSString *password = [parameter safeStringForKey:@"password"];
+        NSString *contract_addr = [parameter safeStringForKey:@"contract_addr"];
+        NSString *gas_price = [parameter safeStringForKey:@"gas_price"];
+        NSString *gas_limit = [parameter safeStringForKey:@"gas_limit"];
+        PyObject *args =  Py_BuildValue("()");
+        PyObject *kwargs;
+        if (path.length == 0) {
+            if (contract_addr.length == 0) {
+                kwargs = Py_BuildValue("{s:s,s:s,s:s,s:s,s:s}", "to_addr", [to_addr UTF8String],"value",[value UTF8String],"password",[password UTF8String],"gas_price",[gas_price UTF8String],"gas_limit",[gas_limit UTF8String]);
+            }else{
+                kwargs = Py_BuildValue("{s:s,s:s,s:s,s:s,s:s,s:s}", "to_addr", [to_addr UTF8String],"value",[value UTF8String],"password",[password UTF8String],"contract_addr",[contract_addr UTF8String],"gas_price",[gas_price UTF8String],"gas_limit",[gas_limit UTF8String]);
+            }
+        }else{
+            if (contract_addr.length == 0) {
+                kwargs = Py_BuildValue("{s:s,s:s,s:s,s:s,s:s}", "to_addr", [to_addr UTF8String],"value",[value UTF8String],"password",[password UTF8String],gas_price,[gas_price UTF8String],gas_limit,[gas_limit UTF8String],"path",[kBluetooth_iOS UTF8String]);
+            }else{
+                kwargs = Py_BuildValue("{s:s,s:s,s:s,s:s,s:s,s:s,s:s}", "to_addr", [to_addr UTF8String],"value",[value UTF8String],"password",[password UTF8String],"contract_addr",[contract_addr UTF8String],"gas_price",[gas_price UTF8String],"gas_limit",[gas_limit UTF8String],"path",[kBluetooth_iOS UTF8String]);
+            }
+        }
+        PyObject *myobject_method = PyObject_GetAttrString(self.pyInstance, [kInterfacesign_eth_tx UTF8String]);
+        result = PyObject_Call(myobject_method, args, kwargs);
     }
 
 

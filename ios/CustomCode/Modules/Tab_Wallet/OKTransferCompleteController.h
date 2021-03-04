@@ -13,7 +13,7 @@ typedef void (^ViewTxDetailsBlock) (void);
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OKTransferCompleteController : BaseViewController
-+ (instancetype)transferCompleteController:(NSDictionary *)dict block:(ViewTxDetailsBlock)block;
++ (instancetype)transferCompleteController:(NSString *)amount block:(ViewTxDetailsBlock)block;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -5,7 +5,6 @@
 //  Created by xiaoliang on 2020/10/16.
 //  Copyright © 2020 OneKey. All rights reserved..
 //
-
 typedef enum {
     OKFeeTypeSlow,
     OKFeeTypeRecommend,
@@ -124,7 +123,7 @@ typedef enum {
 @property (nonatomic,strong)OKDefaultFeeInfoModel *defaultFeeInfoModel;
 //存储UI展示的自定义数据
 @property (nonatomic,strong)OKSendFeeModel *customFeeModel;
-
+@property (nonatomic,strong)NSTimer* ethTimer;
 @end
 
 @implementation OKSendCoinViewController
@@ -136,69 +135,87 @@ typedef enum {
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    [self setNavigationBarBackgroundColorWithClearColor];
-    self.title = MyLocalizedString(@"transfer", nil);
-    self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName:[UIColor blackColor]};
+    OKWeakSelf(self)
+    [weakself setNavigationBarBackgroundColorWithClearColor];
+    weakself.title = MyLocalizedString(@"transfer", nil);
+    weakself.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName:[UIColor blackColor]};
     _custom = NO;
     _isClickBiggest = NO;
-    [self stupUI];
-    [self changeFeeType:OKFeeTypeRecommend];
-    [self getNoDataRates];
+    [weakself stupUI];
+    [weakself changeFeeType:OKFeeTypeRecommend];
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(refreshBalance:) name:kNotiUpdate_status object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textChange:) name:UITextFieldTextDidChangeNotification object:nil];
-    self.addressTextField.text = self.address;
+    weakself.addressTextField.text = weakself.address;
+
+    if ([[weakself.coinType uppercaseString] isEqualToString:COIN_ETH]) {
+        weakself.ethTimer = [NSTimer scheduledTimerWithTimeInterval:30.0 TimerDo:^{
+            [weakself getNoDataRates];
+        }];
+        [weakself.ethTimer fire];
+    }else{
+        [weakself getNoDataRates];
+    }
 }
 
-//获取没有输入内容时候的默认费率
+#pragma mark - 获取 BTC默认费率 ETH实时费率
 - (void)getNoDataRates
 {
+    OKWeakSelf(self)
+    NSString *address = [weakself.addressTextField.text copy];
+    NSString *amount = [weakself.amountTextField.text copy];
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        NSDictionary *dict = [kPyCommandsManager callInterface:kInterfaceget_default_fee_info parameter:@{@"coin":[self.coinType lowercaseString]}];
+        NSDictionary *paramter = @{@"coin":[weakself.coinType lowercaseString]};
+        if ([weakself.coinType isEqualToString:COIN_ETH] && address.length > 0 && amount.length > 0) {
+            NSDictionary *eth_tx_info = @{@"to_address":address,@"value":amount};
+            paramter = @{@"coin":[weakself.coinType lowercaseString],@"eth_tx_info":[eth_tx_info mj_JSONString]};
+        }
+        NSDictionary *dict = [kPyCommandsManager callInterface:kInterfaceget_default_fee_info parameter:paramter];
         if (dict == nil || dict.count == 0) {
             [kTools tipMessage:MyLocalizedString(@"Failed to get the rate", nil)];
             return;
         }
-        self.defaultFeeInfoModel = [OKDefaultFeeInfoModel mj_objectWithKeyValues:dict];
+        weakself.defaultFeeInfoModel = [OKDefaultFeeInfoModel mj_objectWithKeyValues:dict];
         dispatch_async(dispatch_get_main_queue(), ^{
             //刷新默认fee值
-            [self refreshFeeSelect];
+            [weakself refreshFeeSelect];
         });
     });
 }
-
+#pragma mark - 初始化UI
 - (void)stupUI
 {
-    [self.shoukuanLabelBg setLayerRadius:12];
-    [self.amountBg setLayerRadius:12];
-    [self.feeLabelBg setLayerRadius:12];
-    [self.moreBtn setLayerRadius:8];
-    [self.moreBtn setBackgroundColor:RGBA(196, 196, 196, 0.2)];
-    [self.feeTypeBgView setLayerBoarderColor:HexColor(0xE5E5E5) width:1 radius:20];
-    [self.slowBottomLabelBg setLayerRadius:20];
-    [self.recommendBottomLabelBg setLayerRadius:20];
-    [self.fastBottomLabelBg setLayerRadius:20];
-    [self.customBottomLabelBg setLayerRadius:20];
-    [self.custom_BGView shadowWithLayerCornerRadius:20 borderColor:HexColor(RGB_THEME_GREEN) borderWidth:2 shadowColor:RGBA(0, 0, 0, 0.1) shadowOffset:CGSizeMake(0, 4) shadowOpacity:1 shadowRadius:10];
-    [self.sendBtn setLayerDefaultRadius];
+    OKWeakSelf(self)
+    [weakself.shoukuanLabelBg setLayerRadius:12];
+    [weakself.amountBg setLayerRadius:12];
+    [weakself.feeLabelBg setLayerRadius:12];
+    [weakself.moreBtn setLayerRadius:8];
+    [weakself.moreBtn setBackgroundColor:RGBA(196, 196, 196, 0.2)];
+    [weakself.feeTypeBgView setLayerBoarderColor:HexColor(0xE5E5E5) width:1 radius:20];
+    [weakself.slowBottomLabelBg setLayerRadius:20];
+    [weakself.recommendBottomLabelBg setLayerRadius:20];
+    [weakself.fastBottomLabelBg setLayerRadius:20];
+    [weakself.customBottomLabelBg setLayerRadius:20];
+    [weakself.custom_BGView shadowWithLayerCornerRadius:20 borderColor:HexColor(RGB_THEME_GREEN) borderWidth:2 shadowColor:RGBA(0, 0, 0, 0.1) shadowOffset:CGSizeMake(0, 4) shadowOpacity:1 shadowRadius:10];
+    [weakself.sendBtn setLayerDefaultRadius];
 
 
-    self.slowTitleLabel.text = MyLocalizedString(@"slow", nil);
-    self.slowCoinAmountLabel.text = [NSString stringWithFormat:@"0 %@",[kWalletManager getUnitForCoinType]];
-    self.slowTimeLabel.text = MyLocalizedString(@"About 0 minutes", nil);
+    weakself.slowTitleLabel.text = MyLocalizedString(@"slow", nil);
+    weakself.slowCoinAmountLabel.text = [NSString stringWithFormat:@"0 %@",[kWalletManager getUnitForCoinType]];
+    weakself.slowTimeLabel.text = MyLocalizedString(@"About 0 minutes", nil);
 
-    self.recommendTitleLabel.text = MyLocalizedString(@"recommended", nil);
-    self.recommendCoinAmountLabel.text = [NSString stringWithFormat:@"0 %@",[kWalletManager getUnitForCoinType]];
-    self.recommendTimeLabel.text = MyLocalizedString(@"About 0 minutes", nil);
+    weakself.recommendTitleLabel.text = MyLocalizedString(@"recommended", nil);
+    weakself.recommendCoinAmountLabel.text = [NSString stringWithFormat:@"0 %@",[kWalletManager getUnitForCoinType]];
+    weakself.recommendTimeLabel.text = MyLocalizedString(@"About 0 minutes", nil);
 
-    self.fastTitleLabel.text = MyLocalizedString(@"fast", nil);
-    self.fastCoinAmountLabel.text = [NSString stringWithFormat:@"0 %@",[kWalletManager getUnitForCoinType]];
-    self.fastTimeLabel.text = MyLocalizedString(@"About 0 minutes", nil);
-    [self.coinTypeBtn setTitle:[kWalletManager getUnitForCoinType] forState:UIControlStateNormal];
+    weakself.fastTitleLabel.text = MyLocalizedString(@"fast", nil);
+    weakself.fastCoinAmountLabel.text = [NSString stringWithFormat:@"0 %@",[kWalletManager getUnitForCoinType]];
+    weakself.fastTimeLabel.text = MyLocalizedString(@"About 0 minutes", nil);
+    [weakself.coinTypeBtn setTitle:[kWalletManager getUnitForCoinType] forState:UIControlStateNormal];
 
-    self.customTitleLabel.text = MyLocalizedString(@"The custom", nil);
-    self.customCoinAmountLabel.text = [NSString stringWithFormat:@"0 %@",[kWalletManager getUnitForCoinType]];
-    self.customTimeLabel.text = MyLocalizedString(@"About 0 minutes", nil);
-    [self.coinTypeBtn setTitle:[kWalletManager getUnitForCoinType] forState:UIControlStateNormal];
+    weakself.customTitleLabel.text = MyLocalizedString(@"The custom", nil);
+    weakself.customCoinAmountLabel.text = [NSString stringWithFormat:@"0 %@",[kWalletManager getUnitForCoinType]];
+    weakself.customTimeLabel.text = MyLocalizedString(@"About 0 minutes", nil);
+    [weakself.coinTypeBtn setTitle:[kWalletManager getUnitForCoinType] forState:UIControlStateNormal];
 
     BOOL isBackUp = [[kPyCommandsManager callInterface:kInterfaceget_backup_info parameter:@{@"name":kWalletManager.currentWalletInfo.name}] boolValue];
     if (!isBackUp) {
@@ -215,116 +232,121 @@ typedef enum {
         } vc:self conLabel:MyLocalizedString(@"confirm", nil) isOneBtn:NO];
     }
     //刷新自定义界面
-    [self changUIForCustom];
+    [weakself changUIForCustom];
     //刷新确定按钮状态
-    [self changeBtn];
+    [weakself changeBtn];
 }
 
-/// 刷新余额
-/// @param noti 通知
+#pragma mark - 刷新余额
 - (void)refreshBalance:(NSNotification *)noti
 {
+    OKWeakSelf(self)
     NSDictionary *dict = noti.object;
     dispatch_async(dispatch_get_main_queue(), ^{
        // UI更新代码
-        self.balanceLabel.text =  [dict safeStringForKey:@"balance"];
-        self.coinTypeLabel.text = [kWalletManager getUnitForCoinType];
+        weakself.balanceLabel.text =  [dict safeStringForKey:@"balance"];
+        weakself.coinTypeLabel.text = [kWalletManager getUnitForCoinType];
     });
 }
 
-/// 刷新矿工费UI数据
+#pragma mark - 刷新矿工费UI数据
 - (void)refreshFeeSelect
 {
-    NSLog(@"refreshFeeSelect , %@",[self.defaultFeeInfoModel mj_JSONObject]);
+    OKWeakSelf(self)
+    NSLog(@"refreshFeeSelect , %@",[weakself.defaultFeeInfoModel mj_JSONObject]);
     NSString *fiatS = kWalletManager.currentFiatSymbol;
     if (_custom) {
-        if (self.customFeeModel == nil) {
+        if (weakself.customFeeModel == nil) {
             return;
         }
-        self.customTitleLabel.text = MyLocalizedString(@"The custom", nil);
-        NSString *fee = self.customFeeModel.fee;
+        weakself.customTitleLabel.text = MyLocalizedString(@"The custom", nil);
+        NSString *fee = weakself.customFeeModel.fee;
         if (fee == nil) {
             fee = @"--";
         }
-        self.customCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",fee,[kWalletManager getUnitForCoinType]];
-        self.customTimeLabel.text = [NSString stringWithFormat:@"%@%@%@",MyLocalizedString(@"sendcoin.about", nil),self.customFeeModel.time?:@"--",MyLocalizedString(@"sendcoin.minutes", nil)];
-        NSString *fiat = [[self.customFeeModel.fiat componentsSeparatedByString:@" "] firstObject];
-        self.customMoneyAmountLabel.text = [NSString stringWithFormat:@"%@ %@",fiatS,fiat];
+        weakself.customCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",fee,[kWalletManager getUnitForCoinType]];
+        weakself.customTimeLabel.text = [NSString stringWithFormat:@"%@%@%@",MyLocalizedString(@"sendcoin.about", nil),weakself.customFeeModel.time?:@"--",MyLocalizedString(@"sendcoin.minutes", nil)];
+        NSString *fiat = [[weakself.customFeeModel.fiat componentsSeparatedByString:@" "] firstObject];
+        weakself.customMoneyAmountLabel.text = [NSString stringWithFormat:@"%@ %@",fiatS,fiat];
     }else{
-        if (self.defaultFeeInfoModel.slow == nil || self.defaultFeeInfoModel.normal == nil || self.defaultFeeInfoModel.fast == nil) {
+        if (weakself.defaultFeeInfoModel.slow == nil || weakself.defaultFeeInfoModel.normal == nil || weakself.defaultFeeInfoModel.fast == nil) {
             return;
         }
-        self.slowTitleLabel.text = MyLocalizedString(@"slow", nil);
-        NSString *feeslow = self.defaultFeeInfoModel.slow.fee;
+        weakself.slowTitleLabel.text = MyLocalizedString(@"slow", nil);
+        NSString *feeslow = weakself.defaultFeeInfoModel.slow.fee;
         if (feeslow == nil) {
             feeslow = @"-";
         }
-        self.slowCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",feeslow,[kWalletManager getUnitForCoinType]];
-        self.slowTimeLabel.text = [NSString stringWithFormat:@"%@%@%@",MyLocalizedString(@"sendcoin.about", nil),self.defaultFeeInfoModel.slow.time?:@"--",MyLocalizedString(@"sendcoin.minutes", nil)];
-        NSString *slowfiat = [[self.defaultFeeInfoModel.slow.fiat componentsSeparatedByString:@" "] firstObject];
-        self.slowMoneyAmountLabel.text = [NSString stringWithFormat:@"%@ %@",fiatS,slowfiat];
+        weakself.slowCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",feeslow,[kWalletManager getUnitForCoinType]];
+        weakself.slowTimeLabel.text = [NSString stringWithFormat:@"%@%@%@",MyLocalizedString(@"sendcoin.about", nil),weakself.defaultFeeInfoModel.slow.time?:@"--",MyLocalizedString(@"sendcoin.minutes", nil)];
+        NSString *slowfiat = [[weakself.defaultFeeInfoModel.slow.fiat componentsSeparatedByString:@" "] firstObject];
+        weakself.slowMoneyAmountLabel.text = [NSString stringWithFormat:@"%@ %@",fiatS,slowfiat];
 
 
-        self.recommendTitleLabel.text = MyLocalizedString(@"recommended", nil);
-        NSString *feerecommend = self.defaultFeeInfoModel.normal.fee;
+        weakself.recommendTitleLabel.text = MyLocalizedString(@"recommended", nil);
+        NSString *feerecommend = weakself.defaultFeeInfoModel.normal.fee;
         if (feerecommend == nil) {
             feerecommend = @"-";
         }
-        self.recommendCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",feerecommend,[kWalletManager getUnitForCoinType]];
-        self.recommendTimeLabel.text = [NSString stringWithFormat:@"%@%@%@",MyLocalizedString(@"sendcoin.about", nil),self.defaultFeeInfoModel.normal.time?:@"--",MyLocalizedString(@"sendcoin.minutes", nil)];
-        NSString *recommendfiat = [[self.defaultFeeInfoModel.normal.fiat componentsSeparatedByString:@" "] firstObject];
-        self.recommendMoneyAmountLabel.text = [NSString stringWithFormat:@"%@ %@",fiatS,recommendfiat];
+        weakself.recommendCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",feerecommend,[kWalletManager getUnitForCoinType]];
+        weakself.recommendTimeLabel.text = [NSString stringWithFormat:@"%@%@%@",MyLocalizedString(@"sendcoin.about", nil),weakself.defaultFeeInfoModel.normal.time?:@"--",MyLocalizedString(@"sendcoin.minutes", nil)];
+        NSString *recommendfiat = [[weakself.defaultFeeInfoModel.normal.fiat componentsSeparatedByString:@" "] firstObject];
+        weakself.recommendMoneyAmountLabel.text = [NSString stringWithFormat:@"%@ %@",fiatS,recommendfiat];
 
-        self.fastTitleLabel.text = MyLocalizedString(@"fast", nil);
-        NSString *feefast = self.defaultFeeInfoModel.fast.fee;
+        weakself.fastTitleLabel.text = MyLocalizedString(@"fast", nil);
+        NSString *feefast = weakself.defaultFeeInfoModel.fast.fee;
         if (feefast == nil) {
             feefast = @"-";
         }
-        self.fastCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",feefast,[kWalletManager getUnitForCoinType]];
-        self.fastTimeLabel.text = [NSString stringWithFormat:@"%@%@%@",MyLocalizedString(@"sendcoin.about", nil),self.defaultFeeInfoModel.fast.time?: @"--",MyLocalizedString(@"sendcoin.minutes", nil)];
-        NSString *fastfiat = [[self.defaultFeeInfoModel.fast.fiat componentsSeparatedByString:@" "] firstObject];
-        self.fastMoneyAmountLabel.text = [NSString stringWithFormat:@"%@ %@",fiatS,fastfiat];
+        weakself.fastCoinAmountLabel.text = [NSString stringWithFormat:@"%@ %@",feefast,[kWalletManager getUnitForCoinType]];
+        weakself.fastTimeLabel.text = [NSString stringWithFormat:@"%@%@%@",MyLocalizedString(@"sendcoin.about", nil),weakself.defaultFeeInfoModel.fast.time?: @"--",MyLocalizedString(@"sendcoin.minutes", nil)];
+        NSString *fastfiat = [[weakself.defaultFeeInfoModel.fast.fiat componentsSeparatedByString:@" "] firstObject];
+        weakself.fastMoneyAmountLabel.text = [NSString stringWithFormat:@"%@ %@",fiatS,fastfiat];
     }
-    [self changUIForCustom];
+    [weakself changUIForCustom];
 }
-///刷新矿工费自定义UI数据
+
+#pragma mark - 刷新自定义矿工费UI数据
 - (void)changUIForCustom
 {
-    self.custom_BGView.hidden = !_custom;
-    self.slowBg.hidden = _custom;
-    self.fastBg.hidden = _custom;
-    self.recommendedBg.hidden = _custom;
-    self.restoreDefaultBgView.hidden = !_custom;
+    OKWeakSelf(self)
+    weakself.custom_BGView.hidden = !_custom;
+    weakself.slowBg.hidden = _custom;
+    weakself.fastBg.hidden = _custom;
+    weakself.recommendedBg.hidden = _custom;
+    weakself.restoreDefaultBgView.hidden = !_custom;
+    if (_custom && [weakself.coinType isEqualToString:COIN_ETH]) {
+        [weakself.ethTimer standBy];
+    }else{
+        [weakself.ethTimer resume];
+    }
 }
-
+#pragma mark - 地址簿
+//（暂时隐藏了）
 - (IBAction)addressbookBtnClick:(UIButton *)sender {
 
-
 }
 
+#pragma mark - 最大 按钮被点击
 - (IBAction)moreBtnClick:(UIButton *)sender {
-    if (self.balanceLabel.text.length == 0) {
+    OKWeakSelf(self)
+    if (![weakself checkAddress:YES]) {
         return;
     }
+    NSString *address = [weakself.addressTextField.text copy];
     NSString *fee = @"";
-    if (self.custom) {
-        fee = [self.customFeeDict safeStringForKey:@"fee"]?:self.customFeeModel.fee;
-    }else{
-        switch (self.currentFeeType) {
-            case OKFeeTypeSlow:
-                fee = [self.lowFeeDict safeStringForKey:@"fee"]?:self.defaultFeeInfoModel.slow.fee;
-                break;
-            case OKFeeTypeRecommend:
-                fee = [self.recommendFeeDict safeStringForKey:@"fee"]?:self.defaultFeeInfoModel.normal.fee;
-                break;
-            case OKFeeTypeFast:
-                fee = [self.fastFeeDict safeStringForKey:@"fee"]?:self.defaultFeeInfoModel.fast.fee;
-                break;
-            default:
-                break;
-        }
+    if ([weakself.coinType isEqualToString:COIN_BTC]) {
+        [weakself loadBiggestFeeDict:address];
+        fee = [weakself.biggestFeeDict safeStringForKey:@"fee"];
+
+    }else if([weakself.coinType isEqualToString:COIN_ETH]){
+        fee = [weakself getCurrentDefaultFee];
     }
-    NSDecimalNumber *balanceNum = [NSDecimalNumber decimalNumberWithString:self.balanceLabel.text];
+    if (fee.length == 0 || fee == nil) {
+        [kTools tipMessage:MyLocalizedString(@"Failed to get the rate", nil)];
+        return;
+    }
+    NSDecimalNumber *balanceNum = [NSDecimalNumber decimalNumberWithString:weakself.balanceLabel.text];
     NSDecimalNumber *feeNum = [NSDecimalNumber decimalNumberWithString:fee];
     NSDecimalNumber *resultNum = [balanceNum decimalNumberBySubtracting:feeNum];
     if ([resultNum compare:[NSDecimalNumber decimalNumberWithString:@"0"]] == NSOrderedAscending) {
@@ -332,36 +354,38 @@ typedef enum {
         return;
     }
     NSString *biggestAmount = [NSString stringWithFormat:@"%@",resultNum.stringValue];
-    self.amountTextField.text = biggestAmount;
+    weakself.amountTextField.text = biggestAmount;
     _isClickBiggest = YES;
-    [self changeBtn];
+    [weakself changeBtn];
 }
+#pragma mark - 币种类型按钮被点击
 - (IBAction)coinTypeBtnClick:(UIButton *)sender {
 
 }
+#pragma mark - 自定义 按钮被点击
 - (IBAction)customBtnClick:(UIButton *)sender {
+    OKWeakSelf(self)
     NSString *dsize = @"";
     NSString *feerate = @"";
-    switch (self.currentFeeType) {
+    switch (weakself.currentFeeType) {
         case OKFeeTypeFast:
-            feerate = self.defaultFeeInfoModel.fast.feerate;
-            dsize = self.defaultFeeInfoModel.fast.size;
+            feerate = weakself.defaultFeeInfoModel.fast.feerate;
+            dsize = weakself.defaultFeeInfoModel.fast.size;
             break;
         case OKFeeTypeRecommend:
-            feerate = self.defaultFeeInfoModel.normal.feerate;
-            dsize = self.defaultFeeInfoModel.normal.size;
+            feerate = weakself.defaultFeeInfoModel.normal.feerate;
+            dsize = weakself.defaultFeeInfoModel.normal.size;
             break;
         case OKFeeTypeSlow:
-            feerate = self.defaultFeeInfoModel.slow.feerate;
-            dsize = self.defaultFeeInfoModel.slow.size;
+            feerate = weakself.defaultFeeInfoModel.slow.feerate;
+            dsize = weakself.defaultFeeInfoModel.slow.size;
             break;
 
         default:
             break;
     }
-    NSString *lowest = self.defaultFeeInfoModel.slow.feerate;
-    OKWeakSelf(self)
-    [OKWalletInputFeeView showWalletCustomFeeDsize:dsize feerate:feerate lowfeerate:lowest coinType:self.coinType sure:^(NSDictionary *customFeeDict, NSString *fiat, NSString *feeBit) {
+    NSString *lowest = weakself.defaultFeeInfoModel.slow.feerate;
+    [OKWalletInputFeeView showWalletCustomFeeDsize:dsize feerate:feerate lowfeerate:lowest coinType:weakself.coinType sure:^(NSDictionary *customFeeDict, NSString *fiat, NSString *feeBit) {
         weakself.customFeeDict = customFeeDict;
         weakself.customFeeModel = [OKSendFeeModel mj_objectWithKeyValues:customFeeDict];
         weakself.custom = YES;
@@ -372,57 +396,49 @@ typedef enum {
         }
     } Cancel:nil];
 }
-
+#pragma mark - 刷新 确认按钮
 - (void)changeBtn
 {
-    if (self.addressTextField.text.length > 0 && self.amountTextField.text.length > 0) {
-        self.sendBtn.alpha = 1.0;
-        self.sendBtn.userInteractionEnabled = YES;
+    OKWeakSelf(self)
+    if (weakself.addressTextField.text.length > 0 && weakself.amountTextField.text.length > 0) {
+        weakself.sendBtn.alpha = 1.0;
+        weakself.sendBtn.userInteractionEnabled = YES;
     }else{
-        self.sendBtn.alpha = 0.5;
-        self.sendBtn.userInteractionEnabled = NO;
+        weakself.sendBtn.alpha = 0.5;
+        weakself.sendBtn.userInteractionEnabled = NO;
     }
 }
 
-
+#pragma mark - 检查文本框合法性
 - (BOOL)checkTextField:(BOOL)isShowTips
 {
-    if (self.addressTextField.text.length == 0) {
-        if (isShowTips) {
-            [kTools tipMessage:MyLocalizedString(@"Please enter the transfer address", nil)];
-        }
+    OKWeakSelf(self)
+    if (![weakself checkAddress:isShowTips]) {
         return NO;
     }
 
-    if (isShowTips) {
-        id result =  [kPyCommandsManager callInterface:kInterfaceverify_legality parameter:@{@"data":self.addressTextField.text,@"flag":@"address"}];
-        if (result == nil) {
-            return NO;
-        }
-    }
-
-    if (self.amountTextField.text.length == 0) {
+    if (weakself.amountTextField.text.length == 0) {
         if (isShowTips) {
             [kTools tipMessage:MyLocalizedString(@"Please enter the transfer amount", nil)];
         }
         return NO;
     }
 
-    if ([self.amountTextField.text doubleValue] <= 0) {
+    if ([weakself.amountTextField.text doubleValue] <= 0) {
         if (isShowTips) {
             [kTools tipMessage:MyLocalizedString(@"The transfer amount cannot be zero", nil)];
         }
         return NO;
     }
 
-    if ([self.balanceLabel.text doubleValue] < [self.amountTextField.text doubleValue]) {
+    if ([weakself.balanceLabel.text doubleValue] < [weakself.amountTextField.text doubleValue]) {
         if (isShowTips) {
             [kTools tipMessage:MyLocalizedString(@"Lack of balance", nil)];
         }
         return NO;
     }
 
-    if ([self.amountTextField.text doubleValue] < [[kWalletManager getFeeBaseWithSat:@"546"] doubleValue]) {
+    if ([weakself.amountTextField.text doubleValue] < [[kWalletManager getFeeBaseWithSat:@"546"] doubleValue]) {
         if (isShowTips) {
             [kTools tipMessage:MyLocalizedString(@"The minimum amount must not be less than 546 sat", nil)];
         }
@@ -430,80 +446,75 @@ typedef enum {
     }
     return YES;
 }
+#pragma mark - 检查地址合法性
+- (BOOL)checkAddress:(BOOL)isShowTips
+{
+    OKWeakSelf(self)
+    if (weakself.addressTextField.text.length == 0) {
+        if (isShowTips) {
+            [kTools tipMessage:MyLocalizedString(@"Please enter the transfer address", nil)];
+        }
+        return NO;
+    }
+
+    if (isShowTips) {
+        id result =  [kPyCommandsManager callInterface:kInterfaceverify_legality parameter:@{@"data":weakself.addressTextField.text,@"flag":@"address",@"coin":[weakself.coinType lowercaseString]}];
+        if (result == nil) {
+            return NO;
+        }
+    }
+    return YES;
+}
+#pragma mark - 发送按钮
 - (IBAction)sendBtnClick:(OKButton *)sender {
-    if (![self checkTextField:YES]) {
+    OKWeakSelf(self)
+    if (![weakself checkTextField:YES]) {
         return;
     }
-    if ([[self.coinType uppercaseString] isEqualToString:COIN_BTC]) {
-        [self loadFee:^(void) {
-            OKWeakSelf(self)
-            __block  NSDictionary *dict = [NSDictionary dictionary];
-            if (weakself.isClickBiggest) {
-                dict = self.biggestFeeDict;
-            }else{
-                if (weakself.custom) {
-                    dict = self.customFeeDict;
-                }else{
-                    switch (weakself.currentFeeType) {
-                        case OKFeeTypeSlow:
-                            dict = weakself.lowFeeDict;
-                            break;
-                        case OKFeeTypeRecommend:
-                            dict = weakself.recommendFeeDict;
-                            break;
-                        case OKFeeTypeFast:
-                            dict = weakself.fastFeeDict;
-                            break;
-                        default:
-                            break;
-                    }
-                }
+    __block  NSDictionary *dict = [NSDictionary dictionary];
+    dict = [weakself getTxDict];
+    if ([kWalletManager getWalletDetailType] == OKWalletTypeHardware) {
+        [MBProgressHUD showHUDAddedTo:weakself.view animated:YES];
+        [OKHwNotiManager sharedInstance].delegate = self;
+        weakself.hwPredata = dict;
+        weakself.hwFiat = [weakself getCurrentFiat];
+        NSString *feerateTx = [dict safeStringForKey:@"tx"];
+        NSDictionary *dict1 =  [kPyCommandsManager callInterface:kInterfaceMktx parameter:@{@"tx":feerateTx}];
+        NSString *unSignStr = [dict1 safeStringForKey:@"tx"];
+        NSString *tx = unSignStr;
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            NSDictionary *signTxDict =  [kPyCommandsManager callInterface:kInterfaceSign_tx parameter:@{@"tx":tx}];
+            if (signTxDict != nil) {
+                weakself.hwSignData = signTxDict;
+                [[NSNotificationCenter defaultCenter]postNotificationName:kNotiHwBroadcastiComplete object:nil];
             }
-            if ([kWalletManager getWalletDetailType] == OKWalletTypeHardware) {
-                [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-                [OKHwNotiManager sharedInstance].delegate = self;
-                self.hwPredata = dict;
-                self.hwFiat = [self getCurrentFiat];
-                NSString *feerateTx = [dict safeStringForKey:@"tx"];
-                NSDictionary *dict1 =  [kPyCommandsManager callInterface:kInterfaceMktx parameter:@{@"tx":feerateTx}];
-                NSString *unSignStr = [dict1 safeStringForKey:@"tx"];
-                NSString *tx = unSignStr;
-                dispatch_async(dispatch_get_global_queue(0, 0), ^{
-                    NSDictionary *signTxDict =  [kPyCommandsManager callInterface:kInterfaceSign_tx parameter:@{@"tx":tx}];
-                    if (signTxDict != nil) {
-                        weakself.hwSignData = signTxDict;
-                        [[NSNotificationCenter defaultCenter]postNotificationName:kNotiHwBroadcastiComplete object:nil];
-                    }
-                });
-                return;
-            }
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self showPreInfoView:dict fiat:[self getCurrentFiat]];
-            });
-        }];
-    }else if ([[self.coinType uppercaseString] isEqualToString:COIN_ETH]){
-
+        });
+        return;
     }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [weakself showPreInfoView:dict fiat:[weakself getCurrentFiat]];
+    });
 }
+#pragma mark - 预览交易信息
 - (void)showPreInfoView:(NSDictionary *)dict fiat:(NSString *)fiat
 {
+    OKWeakSelf(self)
     OKSendTxPreInfoViewController *sendVc = [OKSendTxPreInfoViewController initViewControllerWithStoryboardName:@"Tab_Wallet"];
     OKSendTxPreModel *model = [OKSendTxPreModel new];
-    NSString *amount = self.amountTextField.text;
+    NSString *amount = weakself.amountTextField.text;
     if (_isClickBiggest) {
-        NSDecimalNumber *blance = [NSDecimalNumber decimalNumberWithString:self.balanceLabel.text];
+        NSDecimalNumber *blance = [NSDecimalNumber decimalNumberWithString:weakself.balanceLabel.text];
         NSDecimalNumber *fee = [NSDecimalNumber decimalNumberWithString:[dict safeStringForKey:@"fee"]];
         amount = [[blance decimalNumberBySubtracting:fee] stringValue];
     }
     model.amount = amount;
-    model.coinType = self.coinTypeLabel.text;
+    model.coinType = weakself.coinTypeLabel.text;
     model.walletName = kWalletManager.currentWalletInfo.label;
     model.sendAddress = kWalletManager.currentWalletInfo.addr;
-    model.rAddress = self.addressTextField.text;
+    model.rAddress = weakself.addressTextField.text;
     model.txType = @"";
-    model.fee = [NSString stringWithFormat:@"%@ %@ ≈ %@%@",[dict safeStringForKey:@"fee"],[kWalletManager currentBitcoinUnit],kWalletManager.currentFiatSymbol,fiat];
+    model.fee = [NSString stringWithFormat:@"%@ %@ ≈ %@%@",[dict safeStringForKey:@"fee"],[kWalletManager getUnitForCoinType],kWalletManager.currentFiatSymbol,fiat];
     sendVc.info = model;
-    OKWeakSelf(self)
     [sendVc showOnWindowWithParentViewController:self block:^(NSString * _Nonnull str) {
 
         if ([kWalletManager getWalletDetailType] == OKWalletTypeObserve) {
@@ -514,7 +525,7 @@ typedef enum {
         }
 
         if ([kWalletManager getWalletDetailType] == OKWalletTypeHardware) {
-            [weakself broadcast_tx:weakself.hwSignData dict:dict];
+            [weakself broadcast_tx:weakself.hwSignData dict:[dict copy]];
             return;
         }
 
@@ -539,15 +550,40 @@ typedef enum {
 }
 - (void)sendTxPwd:(NSString *)pwd dict:(NSDictionary *)dict
 {
-    NSLog(@"pwd = %@ dict ==== %@",pwd,dict);
-    NSString *feerateTx = [dict safeStringForKey:@"tx"];
-    NSDictionary *dict1 =  [kPyCommandsManager callInterface:kInterfaceMktx parameter:@{@"tx":feerateTx}];
-    NSString *unSignStr = [dict1 safeStringForKey:@"tx"];
-    NSString *tx = unSignStr;
-    NSString *password = pwd;
-    NSDictionary *signTxDict =  [kPyCommandsManager callInterface:kInterfaceSign_tx parameter:@{@"tx":tx,@"password":password}];
-    [self broadcast_tx:signTxDict dict:dict];
+    OKWeakSelf(self)
+    if ([weakself.coinType isEqualToString:COIN_BTC]) {
+        NSString *feerateTx = [dict safeStringForKey:@"tx"];
+        NSDictionary *dict1 =  [kPyCommandsManager callInterface:kInterfaceMktx parameter:@{@"tx":feerateTx}];
+        NSString *unSignStr = [dict1 safeStringForKey:@"tx"];
+        NSString *tx = unSignStr;
+        NSString *password = pwd;
+        NSDictionary *signTxDict =  [kPyCommandsManager callInterface:kInterfaceSign_tx parameter:@{@"tx":tx,@"password":password}];
+        [weakself broadcast_tx:signTxDict dict:dict];
+    }else if ([weakself.coinType isEqualToString:COIN_ETH]){
+        NSDictionary *paramter = @{
+            @"to_addr":weakself.addressTextField.text,
+            @"value":weakself.amountTextField.text,
+            @"password":pwd,
+            @"gas_price":[dict safeStringForKey:@"gas_price"],
+            @"gas_limit":[dict safeStringForKey:@"gas_limit"],
+        };
+        id result =  [kPyCommandsManager callInterface:kInterfacesign_eth_tx parameter:paramter];
+        if (result != nil) {
+            OKWeakSelf(self)
+            [[NSNotificationCenter defaultCenter]postNotificationName:kNotiSendTxComplete object:nil];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                OKTransferCompleteController *transferCompleteVc = [OKTransferCompleteController transferCompleteController:[paramter safeStringForKey:@"value"] block:^{
+                    OKTxDetailViewController *txDetailVc = [OKTxDetailViewController txDetailViewController];
+                    txDetailVc.tx_hash = result;
+                    [weakself.navigationController pushViewController:txDetailVc animated:YES];
+                }];
+                [weakself.navigationController pushViewController:transferCompleteVc animated:YES];
+            });
+        }
+    }
 }
+
+#pragma mark - 广播交易接口  （BTC会用到）
 - (void)broadcast_tx:(NSDictionary *)signTxDict dict:(NSDictionary *)dict
 {
     NSString *signTx = [signTxDict safeStringForKey:@"tx"];
@@ -556,12 +592,12 @@ typedef enum {
         OKWeakSelf(self)
         [[NSNotificationCenter defaultCenter]postNotificationName:kNotiSendTxComplete object:nil];
         dispatch_async(dispatch_get_main_queue(), ^{
-            OKTransferCompleteController *transferCompleteVc = [OKTransferCompleteController transferCompleteController:dict block:^{
+            OKTransferCompleteController *transferCompleteVc = [OKTransferCompleteController transferCompleteController:[dict safeStringForKey:@"amount"] block:^{
                 OKTxDetailViewController *txDetailVc = [OKTxDetailViewController txDetailViewController];
                 txDetailVc.tx_hash = [signTxDict safeStringForKey:@"txid"];
                 [weakself.navigationController pushViewController:txDetailVc animated:YES];
             }];
-            [self.navigationController pushViewController:transferCompleteVc animated:YES];
+            [weakself.navigationController pushViewController:transferCompleteVc animated:YES];
         });
     }
 }
@@ -572,8 +608,8 @@ typedef enum {
     OKWeakSelf(self)
     if (type == OKHWNotiTypeSendCoinConfirm) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [MBProgressHUD hideHUDForView:self.view animated:YES];
-            [self showPreInfoView:self.hwPredata fiat:self.hwFiat];
+            [MBProgressHUD hideHUDForView:weakself.view animated:YES];
+            [weakself showPreInfoView:weakself.hwPredata fiat:weakself.hwFiat];
         });
     }else if(type == OKHWNotiTypePin_Current){
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -595,189 +631,206 @@ typedef enum {
     }
 }
 
+#pragma mark - 加载矿工费（BTC）
 - (void)loadFee:(void(^)(void))block
 {
-    NSString *address = [self.addressTextField.text copy];
-    NSString *amount = [self.amountTextField.text copy];
+    OKWeakSelf(self)
+    NSString *address = [weakself.addressTextField.text copy];
+    NSString *amount = [weakself.amountTextField.text copy];
+
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
     dispatch_group_t group = dispatch_group_create();
     dispatch_group_async(group, queue, ^{
-        [self loadZeroFee:address amount:amount];
+        [weakself loadZeroFee:address amount:amount];
     });
     dispatch_group_async(group, queue, ^{
-        [self loadReRecommendFee:address amount:amount];
+        [weakself loadReRecommendFee:address amount:amount];
     });
     dispatch_group_async(group, queue, ^{
-        [self loadFastFee:address amount:amount];
+        [weakself loadFastFee:address amount:amount];
     });
-    if (_isClickBiggest) {
+    if (weakself.custom) {
         dispatch_group_async(group, queue, ^{
-            [self loadBiggestFeeDict:address];
-        });
-    }
-    if (self.custom) {
-        dispatch_group_async(group, queue, ^{
-            [self loadCustomFee:address amount:amount];
+            [weakself loadCustomFee:address amount:amount];
         });
     }
     dispatch_group_notify(group,dispatch_get_main_queue(), ^{
-        if (self.custom) {
-            if (block && self.customFeeDict) {
+        if (weakself.custom) {
+            if (block && weakself.customFeeDict) {
                 block();
             }
         }else{
-            if (block && self.lowFeeDict && self.recommendFeeDict && self.fastFeeDict) {
+            if (block && weakself.lowFeeDict && weakself.recommendFeeDict && weakself.fastFeeDict) {
                 block();
             }
         }
     });
 }
+#pragma mark - 加载快矿工费（BTC）
 - (void)loadFastFee:(NSString *)address amount:(NSString *)amount
 {
-    NSString *status = [NSString stringWithFormat:@"%zd",[self.defaultFeeInfoModel.fast.feerate integerValue] * 2];
+    OKWeakSelf(self)
+    NSString *status = [NSString stringWithFormat:@"%zd",[weakself.defaultFeeInfoModel.fast.feerate integerValue] * 2];
     //输入地址和转账额度 获取fee
     NSDictionary *outputsDict = @{address:amount};
     NSArray *outputsArray = @[outputsDict];
     NSString *outputs = [outputsArray mj_JSONString];
     NSString *memo = @"";
     NSDictionary *dict =  [kPyCommandsManager callInterface:kInterfaceGet_fee_by_feerate parameter:@{@"outputs":outputs,@"message":memo,@"feerate":status}];
-    self.fastFeeDict = dict;
+    weakself.fastFeeDict = dict;
     if (dict == nil) {
         return;
     }
     NSString *feesat = [dict safeStringForKey:@"fee"];
-    self.defaultFeeInfoModel.fast.fee = feesat;
-    self.defaultFeeInfoModel.fast.time = [dict safeStringForKey:@"time"];
-    self.defaultFeeInfoModel.fast.size = [dict safeStringForKey:@"size"];
-    self.defaultFeeInfoModel.fast.fiat =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":feesat == nil ? @"0":feesat}];;
+    weakself.defaultFeeInfoModel.fast.fee = feesat;
+    weakself.defaultFeeInfoModel.fast.time = [dict safeStringForKey:@"time"];
+    weakself.defaultFeeInfoModel.fast.size = [dict safeStringForKey:@"size"];
+    weakself.defaultFeeInfoModel.fast.fiat =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":feesat == nil ? @"0":feesat}];;
 }
-
+#pragma mark - 加载推荐矿工费（BTC）
 - (void)loadReRecommendFee:(NSString *)address amount:(NSString *)amount
 {
+    OKWeakSelf(self)
     //输入地址和转账额度 获取fee
     NSDictionary *outputsDict = @{address:amount};
     NSArray *outputsArray = @[outputsDict];
     NSString *outputs = [outputsArray mj_JSONString];
     NSString *memo = @"";
-    NSDictionary *dict =  [kPyCommandsManager callInterface:kInterfaceGet_fee_by_feerate parameter:@{@"outputs":outputs,@"message":memo,@"feerate":self.defaultFeeInfoModel.normal.feerate}];
-    self.recommendFeeDict = dict;
+    NSDictionary *dict =  [kPyCommandsManager callInterface:kInterfaceGet_fee_by_feerate parameter:@{@"outputs":outputs,@"message":memo,@"feerate":weakself.defaultFeeInfoModel.normal.feerate}];
+    weakself.recommendFeeDict = dict;
     if (dict == nil) {
         return;
     }
     NSString *feesat = [dict safeStringForKey:@"fee"];
-    self.defaultFeeInfoModel.normal.fee = feesat;
-    self.defaultFeeInfoModel.normal.time = [dict safeStringForKey:@"time"];
-    self.defaultFeeInfoModel.normal.size = [dict safeStringForKey:@"size"];
-    self.defaultFeeInfoModel.normal.fiat =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":feesat == nil ? @"0":feesat}];
+    weakself.defaultFeeInfoModel.normal.fee = feesat;
+    weakself.defaultFeeInfoModel.normal.time = [dict safeStringForKey:@"time"];
+    weakself.defaultFeeInfoModel.normal.size = [dict safeStringForKey:@"size"];
+    weakself.defaultFeeInfoModel.normal.fiat =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":feesat == nil ? @"0":feesat}];
 }
-
+#pragma mark - 加载慢矿工费（BTC）
 - (void)loadZeroFee:(NSString *)address amount:(NSString *)amount
 {
+    OKWeakSelf(self)
     //输入地址和转账额度 获取fee
     NSDictionary *outputsDict = @{address:amount};
     NSArray *outputsArray = @[outputsDict];
     NSString *outputs = [outputsArray mj_JSONString];
     NSString *memo = @"";
-    NSDictionary *dict =  [kPyCommandsManager callInterface:kInterfaceGet_fee_by_feerate parameter:@{@"outputs":outputs,@"message":memo,@"feerate":self.defaultFeeInfoModel.slow.feerate}];
-    self.lowFeeDict = dict;
+    NSDictionary *dict =  [kPyCommandsManager callInterface:kInterfaceGet_fee_by_feerate parameter:@{@"outputs":outputs,@"message":memo,@"feerate":weakself.defaultFeeInfoModel.slow.feerate}];
+    weakself.lowFeeDict = dict;
     if (dict == nil) {
         return;
     }
     NSString *feesat = [dict safeStringForKey:@"fee"];
-    self.defaultFeeInfoModel.slow.fee = feesat;
-    self.defaultFeeInfoModel.slow.time = [dict safeStringForKey:@"time"];
-    self.defaultFeeInfoModel.slow.size = [dict safeStringForKey:@"size"];
-    self.defaultFeeInfoModel.slow.fiat =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":feesat == nil ? @"0":feesat}];
+    weakself.defaultFeeInfoModel.slow.fee = feesat;
+    weakself.defaultFeeInfoModel.slow.time = [dict safeStringForKey:@"time"];
+    weakself.defaultFeeInfoModel.slow.size = [dict safeStringForKey:@"size"];
+    weakself.defaultFeeInfoModel.slow.fiat =  [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":feesat == nil ? @"0":feesat}];
 }
-
+#pragma mark - 加载自定义矿工费（BTC）
 - (void)loadCustomFee:(NSString *)address amount:(NSString *)amount
 {
-    NSString *status = self.feeBit;
+    OKWeakSelf(self)
+    NSString *status = weakself.feeBit;
     //输入地址和转账额度 获取fee
     NSDictionary *outputsDict = @{address:amount};
     NSArray *outputsArray = @[outputsDict];
     NSString *outputs = [outputsArray mj_JSONString];
     NSString *memo = @"";
     NSDictionary *dict =  [kPyCommandsManager callInterface:kInterfaceGet_fee_by_feerate parameter:@{@"outputs":outputs,@"message":memo,@"feerate":status}];
-    self.customFeeDict = dict;
+    weakself.customFeeDict = dict;
     if (dict == nil) {
         return;
     }
-    self.customFeeModel = [OKSendFeeModel mj_objectWithKeyValues:dict];
+    weakself.customFeeModel = [OKSendFeeModel mj_objectWithKeyValues:dict];
     NSString *feesat = [dict safeStringForKey:@"fee"];
-    self.customFeeModel.fee = feesat;
-    self.customFeeModel.time = [dict safeStringForKey:@"time"];
-    self.customFeeModel.size = [dict safeStringForKey:@"size"];
-    self.customFeeModel.fiat = [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":feesat == nil ? @"0":feesat}];;
+    weakself.customFeeModel.fee = feesat;
+    weakself.customFeeModel.time = [dict safeStringForKey:@"time"];
+    weakself.customFeeModel.size = [dict safeStringForKey:@"size"];
+    weakself.customFeeModel.fiat = [kPyCommandsManager callInterface:kInterfaceget_exchange_currency parameter:@{@"type":kExchange_currencyTypeBase,@"amount":feesat == nil ? @"0":feesat}];;
 }
 
-
+#pragma mark - 加载最大矿工费（BTC）
 - (void)loadBiggestFeeDict:(NSString *)address
 {
+    OKWeakSelf(self)
     NSDictionary *outputsDict = @{address:@"!"};
     NSArray *outputsArray = @[outputsDict];
     NSString *outputs = [outputsArray mj_JSONString];
     NSString *memo = @"";
-    NSString *feerate = self.feeBit;
-    if (!self.custom) {
-        feerate = [self getCurrentFiat];
+    NSString *feerate = weakself.feeBit;
+    if (!weakself.custom) {
+        feerate = [weakself getCurrentFiat];
     }
     NSDictionary *dict =  [kPyCommandsManager callInterface:kInterfaceGet_fee_by_feerate parameter:@{@"outputs":outputs,@"message":memo,@"feerate":feerate}];
-    self.biggestFeeDict = dict;
+    weakself.biggestFeeDict = dict;
 }
 
 - (IBAction)tapSlowBgClick:(UITapGestureRecognizer *)sender {
-    if (self.currentFeeType != OKFeeTypeSlow) {
-        [self changeFeeType:OKFeeTypeSlow];
+    OKWeakSelf(self)
+    if (weakself.currentFeeType != OKFeeTypeSlow) {
+        [weakself changeFeeType:OKFeeTypeSlow];
+        if (_isClickBiggest) {
+            [weakself moreBtnClick:nil];
+        }
     }
 }
 
 - (IBAction)tapRecommendBgClick:(UITapGestureRecognizer *)sender
 {
-    if (self.currentFeeType != OKFeeTypeRecommend) {
-        [self changeFeeType:OKFeeTypeRecommend];
+    OKWeakSelf(self)
+    if (weakself.currentFeeType != OKFeeTypeRecommend) {
+        [weakself changeFeeType:OKFeeTypeRecommend];
+        if (_isClickBiggest) {
+            [weakself moreBtnClick:nil];
+        }
     }
 }
 - (IBAction)tapFastBgClick:(UITapGestureRecognizer *)sender
 {
-    if (self.currentFeeType != OKFeeTypeFast) {
-        [self changeFeeType:OKFeeTypeFast];
+    OKWeakSelf(self)
+    if (weakself.currentFeeType != OKFeeTypeFast) {
+        [weakself changeFeeType:OKFeeTypeFast];
+        if (_isClickBiggest) {
+            [weakself moreBtnClick:nil];
+        }
     }
 }
 
 #pragma mark - OKFeeType
 - (void)changeFeeType:(OKFeeType)feeType
 {
+    OKWeakSelf(self)
     _currentFeeType = feeType;
     switch (_currentFeeType) {
         case OKFeeTypeSlow:
         {
-            self.slowSelectBtn.hidden = NO;
-            self.recommendSelectBtn.hidden = YES;
-            self.fastSelectBtn.hidden = YES;
-            [self.slowBg shadowWithLayerCornerRadius:20 borderColor:HexColor(RGB_THEME_GREEN) borderWidth:2 shadowColor:RGBA(0, 0, 0, 0.1) shadowOffset:CGSizeMake(0, 4) shadowOpacity:1 shadowRadius:10];
-            [self.recommendedBg shadowWithLayerCornerRadius:20 borderColor:nil borderWidth:0 shadowColor:RGBA(0, 0, 0, 0.1) shadowOffset:CGSizeMake(0, 4) shadowOpacity:1 shadowRadius:10];
-            [self.fastBg shadowWithLayerCornerRadius:20 borderColor:nil borderWidth:0 shadowColor:RGBA(0, 0, 0, 0.1) shadowOffset:CGSizeMake(0, 4) shadowOpacity:1 shadowRadius:10];
+            weakself.slowSelectBtn.hidden = NO;
+            weakself.recommendSelectBtn.hidden = YES;
+            weakself.fastSelectBtn.hidden = YES;
+            [weakself.slowBg shadowWithLayerCornerRadius:20 borderColor:HexColor(RGB_THEME_GREEN) borderWidth:2 shadowColor:RGBA(0, 0, 0, 0.1) shadowOffset:CGSizeMake(0, 4) shadowOpacity:1 shadowRadius:10];
+            [weakself.recommendedBg shadowWithLayerCornerRadius:20 borderColor:nil borderWidth:0 shadowColor:RGBA(0, 0, 0, 0.1) shadowOffset:CGSizeMake(0, 4) shadowOpacity:1 shadowRadius:10];
+            [weakself.fastBg shadowWithLayerCornerRadius:20 borderColor:nil borderWidth:0 shadowColor:RGBA(0, 0, 0, 0.1) shadowOffset:CGSizeMake(0, 4) shadowOpacity:1 shadowRadius:10];
         }
             break;
         case OKFeeTypeRecommend:
         {
-            self.slowSelectBtn.hidden = YES;
-            self.recommendSelectBtn.hidden = NO;
-            self.fastSelectBtn.hidden = YES;
-            [self.slowBg shadowWithLayerCornerRadius:20 borderColor:nil borderWidth:0 shadowColor:RGBA(0, 0, 0, 0.1) shadowOffset:CGSizeMake(0, 4) shadowOpacity:1 shadowRadius:10];
-            [self.recommendedBg shadowWithLayerCornerRadius:20 borderColor:HexColor(RGB_THEME_GREEN) borderWidth:2 shadowColor:RGBA(0, 0, 0, 0.1) shadowOffset:CGSizeMake(0, 4) shadowOpacity:1 shadowRadius:10];
-            [self.fastBg shadowWithLayerCornerRadius:20 borderColor:nil borderWidth:0 shadowColor:RGBA(0, 0, 0, 0.1) shadowOffset:CGSizeMake(0, 4) shadowOpacity:1 shadowRadius:10];
+            weakself.slowSelectBtn.hidden = YES;
+            weakself.recommendSelectBtn.hidden = NO;
+            weakself.fastSelectBtn.hidden = YES;
+            [weakself.slowBg shadowWithLayerCornerRadius:20 borderColor:nil borderWidth:0 shadowColor:RGBA(0, 0, 0, 0.1) shadowOffset:CGSizeMake(0, 4) shadowOpacity:1 shadowRadius:10];
+            [weakself.recommendedBg shadowWithLayerCornerRadius:20 borderColor:HexColor(RGB_THEME_GREEN) borderWidth:2 shadowColor:RGBA(0, 0, 0, 0.1) shadowOffset:CGSizeMake(0, 4) shadowOpacity:1 shadowRadius:10];
+            [weakself.fastBg shadowWithLayerCornerRadius:20 borderColor:nil borderWidth:0 shadowColor:RGBA(0, 0, 0, 0.1) shadowOffset:CGSizeMake(0, 4) shadowOpacity:1 shadowRadius:10];
         }
             break;
         case OKFeeTypeFast:
         {
-            self.slowSelectBtn.hidden = YES;
-            self.recommendSelectBtn.hidden = YES;
-            self.fastSelectBtn.hidden = NO;
-            [self.slowBg shadowWithLayerCornerRadius:20 borderColor:nil borderWidth:0 shadowColor:RGBA(0, 0, 0, 0.1) shadowOffset:CGSizeMake(0, 4) shadowOpacity:1 shadowRadius:10];
-            [self.recommendedBg shadowWithLayerCornerRadius:20 borderColor:nil borderWidth:0 shadowColor:RGBA(0, 0, 0, 0.1) shadowOffset:CGSizeMake(0, 4) shadowOpacity:1 shadowRadius:10];
-            [self.fastBg shadowWithLayerCornerRadius:20 borderColor:HexColor(RGB_THEME_GREEN) borderWidth:2 shadowColor:RGBA(0, 0, 0, 0.1) shadowOffset:CGSizeMake(0, 4) shadowOpacity:1 shadowRadius:10];
+            weakself.slowSelectBtn.hidden = YES;
+            weakself.recommendSelectBtn.hidden = YES;
+            weakself.fastSelectBtn.hidden = NO;
+            [weakself.slowBg shadowWithLayerCornerRadius:20 borderColor:nil borderWidth:0 shadowColor:RGBA(0, 0, 0, 0.1) shadowOffset:CGSizeMake(0, 4) shadowOpacity:1 shadowRadius:10];
+            [weakself.recommendedBg shadowWithLayerCornerRadius:20 borderColor:nil borderWidth:0 shadowColor:RGBA(0, 0, 0, 0.1) shadowOffset:CGSizeMake(0, 4) shadowOpacity:1 shadowRadius:10];
+            [weakself.fastBg shadowWithLayerCornerRadius:20 borderColor:HexColor(RGB_THEME_GREEN) borderWidth:2 shadowColor:RGBA(0, 0, 0, 0.1) shadowOffset:CGSizeMake(0, 4) shadowOpacity:1 shadowRadius:10];
         }
             break;
         default:
@@ -788,15 +841,19 @@ typedef enum {
 #pragma mark - UITextFieldDelegate
 - (void)textChange:(NSString *)str
 {
-    [self changeBtn];
-    if (![self checkTextField:NO])
+    OKWeakSelf(self)
+    _isClickBiggest = NO;
+    [weakself changeBtn];
+    if (![weakself checkTextField:NO])
     {
-        [self getNoDataRates];
+        [weakself getNoDataRates];
         return;
     }
-    [self loadFee:^(void) {
-        [self refreshFeeSelect];
-    }];
+    if ([weakself.coinType isEqualToString:COIN_BTC]) {
+        [weakself loadFee:^(void) {
+            [weakself refreshFeeSelect];
+        }];
+    }
 }
 - (IBAction)restoreDefaultOptionsBtnClick:(UIButton *)sender {
     _custom = NO;
@@ -820,37 +877,124 @@ typedef enum {
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter]removeObserver:self];
+    if (self.ethTimer) {
+        [self.ethTimer stop];
+    }
 }
 
-
-
+#pragma mark - 获取当前的Fiat（BTC）
 - (NSString *)getCurrentFiat
 {
+    OKWeakSelf(self)
     NSString *fiat = @"";
     if (_custom) {
-        fiat = self.customFeeModel.fiat;
+        fiat = weakself.customFeeModel.fiat;
     }else{
         switch (_currentFeeType) {
             case OKFeeTypeSlow:
             {
-                fiat = self.defaultFeeInfoModel.slow.fiat;
+                fiat = weakself.defaultFeeInfoModel.slow.fiat;
             }
                 break;
             case OKFeeTypeRecommend:
             {
-                fiat = self.defaultFeeInfoModel.normal.fiat;
+                fiat = weakself.defaultFeeInfoModel.normal.fiat;
             }
                 break;
             case OKFeeTypeFast:
             {
-                fiat = self.defaultFeeInfoModel.fast.fiat;
+                fiat = weakself.defaultFeeInfoModel.fast.fiat;
             }
                 break;
             default:
-                fiat = self.defaultFeeInfoModel.normal.fiat;
+                fiat = weakself.defaultFeeInfoModel.normal.fiat;
                 break;
         }
     }
     return fiat;
+}
+#pragma mark - 获取当前的Fee（BTC）
+- (NSString *)getCurrentDefaultFee
+{
+    OKWeakSelf(self)
+    NSString *fee = @"";
+    if (_custom) {
+        fee = weakself.customFeeModel.fee;
+    }else{
+        switch (_currentFeeType) {
+            case OKFeeTypeSlow:
+            {
+                fee = weakself.defaultFeeInfoModel.slow.fee;
+            }
+                break;
+            case OKFeeTypeRecommend:
+            {
+                fee = weakself.defaultFeeInfoModel.normal.fee;
+            }
+                break;
+            case OKFeeTypeFast:
+            {
+                fee = weakself.defaultFeeInfoModel.fast.fee;
+            }
+                break;
+            default:
+                fee = weakself.defaultFeeInfoModel.normal.fee;
+                break;
+        }
+    }
+    return fee;
+}
+#pragma mark - 获取当前的交易构造字典
+- (NSDictionary *)getTxDict
+{
+    OKWeakSelf(self)
+    NSDictionary *dict = [NSDictionary dictionary];
+    if ([weakself.coinType isEqualToString:COIN_ETH]) {
+        if (weakself.custom) {
+            dict = [weakself.customFeeModel mj_JSONObject];
+        }else{
+            switch (weakself.currentFeeType) {
+                case OKFeeTypeSlow:
+                    dict = [weakself.defaultFeeInfoModel.slow mj_JSONObject];
+                    break;
+                case OKFeeTypeRecommend:
+                    dict = [weakself.defaultFeeInfoModel.normal mj_JSONObject];
+                    break;
+                case OKFeeTypeFast:
+                    dict = [weakself.defaultFeeInfoModel.fast mj_JSONObject];;
+                    break;
+                default:
+                    break;
+            }
+        }
+    }else if ([weakself.coinType isEqualToString:COIN_BTC]){
+        if (weakself.isClickBiggest) {
+            dict = weakself.biggestFeeDict;
+        }else{
+            if (weakself.custom) {
+                dict = weakself.customFeeDict;
+            }else{
+                switch (weakself.currentFeeType) {
+                    case OKFeeTypeSlow:
+                        dict = weakself.lowFeeDict;
+                        break;
+                    case OKFeeTypeRecommend:
+                        dict = weakself.recommendFeeDict;
+                        break;
+                    case OKFeeTypeFast:
+                        dict = weakself.fastFeeDict;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+    return dict;
+}
+
+- (NSString *)coinType
+{
+    return [_coinType uppercaseString];
 }
 @end
