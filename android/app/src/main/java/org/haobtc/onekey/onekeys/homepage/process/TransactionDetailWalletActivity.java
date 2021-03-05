@@ -97,6 +97,7 @@ public class TransactionDetailWalletActivity extends BaseActivity
     private AppWalletViewModel mAppWalletViewModel;
     private AccountManager mAccountManager;
     private DeviceManager mDeviceManager;
+    private String mWalletId;
     private int mAssetsId;
     private WalletAccountInfo mWalletAccountInfo;
     private Assets mCurrentAssets;
@@ -111,8 +112,8 @@ public class TransactionDetailWalletActivity extends BaseActivity
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
 
-        String walletId = getIntent().getStringExtra(EXT_WALLET_ID);
-        if (walletId == null) {
+        mWalletId = getIntent().getStringExtra(EXT_WALLET_ID);
+        if (mWalletId == null) {
             finish();
             return;
         }
@@ -123,27 +124,24 @@ public class TransactionDetailWalletActivity extends BaseActivity
 
         mAppWalletViewModel =
                 new ViewModelProvider(MyApplication.getInstance()).get(AppWalletViewModel.class);
-        listenerViewModel();
 
         if (mAppWalletViewModel.currentWalletAssetsList.getValue() == null
                 || mAppWalletViewModel.currentWalletAssetsList.getValue().size() == 0) {
             finish();
         }
 
-        LocalWalletInfo localWalletByName = mAccountManager.getLocalWalletByName(walletId);
+        LocalWalletInfo localWalletByName = mAccountManager.getLocalWalletByName(mWalletId);
         mWalletAccountInfo = AppWalletViewModel.Companion.convert(localWalletByName);
 
-        mCurrentAssets =
-                mAppWalletViewModel
-                        .currentWalletAssetsList
-                        .getValue()
-                        .getByUniqueIdOrZero(mAssetsId);
-
-        mTvTokenName.setText(mCurrentAssets.getName());
-        mCurrentAssets.getLogo().intoTarget(mImgTokenLogo);
+        listenerViewModel();
     }
 
     private void listenerViewModel() {
+        mAppWalletViewModel.currentWalletAccountInfo.observe(
+                this,
+                walletAccountInfo -> {
+                    initTransactionList();
+                });
         mAppWalletViewModel.currentWalletAssetsList.observe(
                 this,
                 assetsList -> {
@@ -169,12 +167,17 @@ public class TransactionDetailWalletActivity extends BaseActivity
                                         "≈ %s %s",
                                         mCurrentAssets.getBalanceFiat().getSymbol(),
                                         mCurrentAssets.getBalanceFiat().getBalanceFormat()));
+
+                        mTvTokenName.setText(mCurrentAssets.getName());
+                        mCurrentAssets.getLogo().intoTarget(mImgTokenLogo);
                     }
                 });
     }
 
     @Override
-    public void initData() {
+    public void initData() {}
+
+    private void initTransactionList() {
         List<Fragment> fragments = new ArrayList<>();
         fragments.add(
                 TransactionListFragment.getInstance(
@@ -270,9 +273,10 @@ public class TransactionDetailWalletActivity extends BaseActivity
                         startActivity(intent2);
                         break;
                     case ETH:
-                        if (value != null)
+                        if (value != null) {
                             SendEthActivity.start(
                                     mContext, value.getId(), mCurrentAssets.uniqueId());
+                        }
                         break;
                 }
 
