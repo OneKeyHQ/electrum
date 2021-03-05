@@ -224,13 +224,11 @@
 		881424D225B18EAA00961668 /* OKTradeSettingViewCellModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 8814234C25B18EA900961668 /* OKTradeSettingViewCellModel.m */; };
 		881424D325B18EAA00961668 /* OKLanguageCellModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 8814234D25B18EA900961668 /* OKLanguageCellModel.m */; };
 		881424D425B18EAA00961668 /* OKMineTableViewCellModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 8814234E25B18EA900961668 /* OKMineTableViewCellModel.h */; };
-		881424D525B18EAA00961668 /* OKAllAssetsTableViewCellModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 8814234F25B18EA900961668 /* OKAllAssetsTableViewCellModel.h */; };
 		881424D625B18EAA00961668 /* OKUnitTableViewCellModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 8814235025B18EA900961668 /* OKUnitTableViewCellModel.m */; };
 		881424D725B18EAA00961668 /* OKAboutTableViewCellModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 8814235125B18EA900961668 /* OKAboutTableViewCellModel.m */; };
 		881424D825B18EAA00961668 /* OKTradeSettingViewCellModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 8814235225B18EA900961668 /* OKTradeSettingViewCellModel.h */; };
 		881424D925B18EAA00961668 /* OKLanguageCellModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 8814235325B18EA900961668 /* OKLanguageCellModel.h */; };
 		881424DA25B18EAA00961668 /* OKUnitTableViewCellModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 8814235425B18EA900961668 /* OKUnitTableViewCellModel.h */; };
-		881424DB25B18EAA00961668 /* OKAllAssetsTableViewCellModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 8814235525B18EA900961668 /* OKAllAssetsTableViewCellModel.m */; };
 		881424DC25B18EAA00961668 /* OKMineTableViewCellModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 8814235625B18EA900961668 /* OKMineTableViewCellModel.m */; };
 		881424DD25B18EAA00961668 /* OKMineTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8814235825B18EA900961668 /* OKMineTableViewCell.m */; };
 		881424DE25B18EAA00961668 /* OKAllAssetsTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8814235925B18EA900961668 /* OKAllAssetsTableViewCell.m */; };
@@ -456,6 +454,8 @@
 		A27C452B9C4F198A51666502 /* lru.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F0444273AE5FE13617678202 /* lru.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		AA3E43ADB13FEEECDE4E2D42 /* OKClickTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0E69481895D9636B448B1235 /* OKClickTextView.m */; };
 		AB3F4EEE868AEEB2FD3E7365 /* UIImage+OneKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 1DA841F082704F0871382A1F /* UIImage+OneKey.m */; };
+		B000CA6C25F0EF58007B3985 /* OKAllAssetsCellModel.h in Headers */ = {isa = PBXBuildFile; fileRef = B000CA6A25F0EF58007B3985 /* OKAllAssetsCellModel.h */; };
+		B000CA6D25F0EF58007B3985 /* OKAllAssetsCellModel.m in Sources */ = {isa = PBXBuildFile; fileRef = B000CA6B25F0EF58007B3985 /* OKAllAssetsCellModel.m */; };
 		B016510625BFE0810037C6B4 /* OKDeviceConfirmController.h in Headers */ = {isa = PBXBuildFile; fileRef = B016510025BFE0810037C6B4 /* OKDeviceConfirmController.h */; };
 		B016510725BFE0810037C6B4 /* OKDeviceChangePINController.m in Sources */ = {isa = PBXBuildFile; fileRef = B016510125BFE0810037C6B4 /* OKDeviceChangePINController.m */; };
 		B016510825BFE0810037C6B4 /* OKDeviceShowXPUBController.m in Sources */ = {isa = PBXBuildFile; fileRef = B016510225BFE0810037C6B4 /* OKDeviceShowXPUBController.m */; };
@@ -842,13 +842,11 @@
 		8814234C25B18EA900961668 /* OKTradeSettingViewCellModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKTradeSettingViewCellModel.m; sourceTree = "<group>"; };
 		8814234D25B18EA900961668 /* OKLanguageCellModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKLanguageCellModel.m; sourceTree = "<group>"; };
 		8814234E25B18EA900961668 /* OKMineTableViewCellModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKMineTableViewCellModel.h; sourceTree = "<group>"; };
-		8814234F25B18EA900961668 /* OKAllAssetsTableViewCellModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKAllAssetsTableViewCellModel.h; sourceTree = "<group>"; };
 		8814235025B18EA900961668 /* OKUnitTableViewCellModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKUnitTableViewCellModel.m; sourceTree = "<group>"; };
 		8814235125B18EA900961668 /* OKAboutTableViewCellModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKAboutTableViewCellModel.m; sourceTree = "<group>"; };
 		8814235225B18EA900961668 /* OKTradeSettingViewCellModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKTradeSettingViewCellModel.h; sourceTree = "<group>"; };
 		8814235325B18EA900961668 /* OKLanguageCellModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKLanguageCellModel.h; sourceTree = "<group>"; };
 		8814235425B18EA900961668 /* OKUnitTableViewCellModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKUnitTableViewCellModel.h; sourceTree = "<group>"; };
-		8814235525B18EA900961668 /* OKAllAssetsTableViewCellModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKAllAssetsTableViewCellModel.m; sourceTree = "<group>"; };
 		8814235625B18EA900961668 /* OKMineTableViewCellModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKMineTableViewCellModel.m; sourceTree = "<group>"; };
 		8814235825B18EA900961668 /* OKMineTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKMineTableViewCell.m; sourceTree = "<group>"; };
 		8814235925B18EA900961668 /* OKAllAssetsTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKAllAssetsTableViewCell.m; sourceTree = "<group>"; };
@@ -1077,6 +1075,8 @@
 		A911430B96FB9633A857ACAD /* OKNSObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OKNSObject.h; path = ../CustomCode/OKNSObject.h; sourceTree = SOURCE_ROOT; };
 		ADE84D3B8618BCED31CD7B34 /* _ghash_portable.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = _ghash_portable.framework; path = ../Resources/Dylib/_ghash_portable.framework; sourceTree = SOURCE_ROOT; };
 		AEDA460185C8F9419C9E3D4C /* UIView+YCExtension.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "UIView+YCExtension.m"; path = "../CustomCode/Categories/UIView+YCExtension.m"; sourceTree = SOURCE_ROOT; };
+		B000CA6A25F0EF58007B3985 /* OKAllAssetsCellModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKAllAssetsCellModel.h; sourceTree = "<group>"; };
+		B000CA6B25F0EF58007B3985 /* OKAllAssetsCellModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKAllAssetsCellModel.m; sourceTree = "<group>"; };
 		B016510025BFE0810037C6B4 /* OKDeviceConfirmController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKDeviceConfirmController.h; sourceTree = "<group>"; };
 		B016510125BFE0810037C6B4 /* OKDeviceChangePINController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKDeviceChangePINController.m; sourceTree = "<group>"; };
 		B016510225BFE0810037C6B4 /* OKDeviceShowXPUBController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKDeviceShowXPUBController.m; sourceTree = "<group>"; };
@@ -1715,39 +1715,39 @@
 		8814231425B18EA900961668 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
-				8814231525B18EA900961668 /* OKDeleteBackUpTipsController.m */,
-				8814231625B18EA900961668 /* OKFiatSelectViewController.h */,
-				8814231725B18EA900961668 /* OKMineViewController.m */,
-				8814231825B18EA900961668 /* OKHDWalletViewController.h */,
-				8814231925B18EA900961668 /* OKAllAssetsViewController.h */,
-				8814231A25B18EA900961668 /* OKMonetaryUnitViewController.m */,
-				8814231B25B18EA900961668 /* OKNetworkViewController.h */,
-				8814231C25B18EA900961668 /* OKDeleteWalletTipsViewController.h */,
 				8814231D25B18EA900961668 /* OKAboutViewController.h */,
-				8814231E25B18EA900961668 /* Tab_Mine.storyboard */,
+				8814232A25B18EA900961668 /* OKAboutViewController.m */,
+				8814231925B18EA900961668 /* OKAllAssetsViewController.h */,
+				8814232D25B18EA900961668 /* OKAllAssetsViewController.m */,
+				8814232225B18EA900961668 /* OKChangePwdViewController.h */,
+				8814233125B18EA900961668 /* OKChangePwdViewController.m */,
 				B08CCEA025E118DE003D12E8 /* OKCSViewController.h */,
 				B08CCEA125E118DE003D12E8 /* OKCSViewController.m */,
+				8814232725B18EA900961668 /* OKDeleteBackUpTipsController.h */,
+				8814231525B18EA900961668 /* OKDeleteBackUpTipsController.m */,
+				8814231C25B18EA900961668 /* OKDeleteWalletTipsViewController.h */,
+				8814232925B18EA900961668 /* OKDeleteWalletTipsViewController.m */,
+				8814232325B18EA900961668 /* OKDontScreenshotTipsViewController.h */,
+				8814233025B18EA900961668 /* OKDontScreenshotTipsViewController.m */,
+				8814231625B18EA900961668 /* OKFiatSelectViewController.h */,
+				8814232625B18EA900961668 /* OKFiatSelectViewController.m */,
+				8814231825B18EA900961668 /* OKHDWalletViewController.h */,
+				8814232425B18EA900961668 /* OKHDWalletViewController.m */,
+				8814232825B18EA900961668 /* OKLanguageViewController.h */,
+				8814231F25B18EA900961668 /* OKLanguageViewController.m */,
+				8814232125B18EA900961668 /* OKManagerHDViewController.h */,
+				8814232E25B18EA900961668 /* OKManagerHDViewController.m */,
+				8814232525B18EA900961668 /* OKMineViewController.h */,
+				8814231725B18EA900961668 /* OKMineViewController.m */,
+				8814232C25B18EA900961668 /* OKMonetaryUnitViewController.h */,
+				8814231A25B18EA900961668 /* OKMonetaryUnitViewController.m */,
+				8814231B25B18EA900961668 /* OKNetworkViewController.h */,
+				8814232B25B18EA900961668 /* OKNetworkViewController.m */,
 				B03A1A4125C90835004137F1 /* OKPINInputMethodController.h */,
 				B03A1A4225C90835004137F1 /* OKPINInputMethodController.m */,
-				8814231F25B18EA900961668 /* OKLanguageViewController.m */,
 				8814232025B18EA900961668 /* OKTradeSettingViewController.h */,
-				8814232125B18EA900961668 /* OKManagerHDViewController.h */,
-				8814232225B18EA900961668 /* OKChangePwdViewController.h */,
-				8814232325B18EA900961668 /* OKDontScreenshotTipsViewController.h */,
-				8814232425B18EA900961668 /* OKHDWalletViewController.m */,
-				8814232525B18EA900961668 /* OKMineViewController.h */,
-				8814232625B18EA900961668 /* OKFiatSelectViewController.m */,
-				8814232725B18EA900961668 /* OKDeleteBackUpTipsController.h */,
-				8814232825B18EA900961668 /* OKLanguageViewController.h */,
-				8814232925B18EA900961668 /* OKDeleteWalletTipsViewController.m */,
-				8814232A25B18EA900961668 /* OKAboutViewController.m */,
-				8814232B25B18EA900961668 /* OKNetworkViewController.m */,
-				8814232C25B18EA900961668 /* OKMonetaryUnitViewController.h */,
-				8814232D25B18EA900961668 /* OKAllAssetsViewController.m */,
-				8814232E25B18EA900961668 /* OKManagerHDViewController.m */,
 				8814232F25B18EA900961668 /* OKTradeSettingViewController.m */,
-				8814233025B18EA900961668 /* OKDontScreenshotTipsViewController.m */,
-				8814233125B18EA900961668 /* OKChangePwdViewController.m */,
+				8814231E25B18EA900961668 /* Tab_Mine.storyboard */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -1786,17 +1786,17 @@
 			isa = PBXGroup;
 			children = (
 				8814234B25B18EA900961668 /* OKAboutTableViewCellModel.h */,
-				8814234C25B18EA900961668 /* OKTradeSettingViewCellModel.m */,
+				8814235125B18EA900961668 /* OKAboutTableViewCellModel.m */,
+				B000CA6A25F0EF58007B3985 /* OKAllAssetsCellModel.h */,
+				B000CA6B25F0EF58007B3985 /* OKAllAssetsCellModel.m */,
+				8814235325B18EA900961668 /* OKLanguageCellModel.h */,
 				8814234D25B18EA900961668 /* OKLanguageCellModel.m */,
 				8814234E25B18EA900961668 /* OKMineTableViewCellModel.h */,
-				8814234F25B18EA900961668 /* OKAllAssetsTableViewCellModel.h */,
-				8814235025B18EA900961668 /* OKUnitTableViewCellModel.m */,
-				8814235125B18EA900961668 /* OKAboutTableViewCellModel.m */,
-				8814235225B18EA900961668 /* OKTradeSettingViewCellModel.h */,
-				8814235325B18EA900961668 /* OKLanguageCellModel.h */,
-				8814235425B18EA900961668 /* OKUnitTableViewCellModel.h */,
-				8814235525B18EA900961668 /* OKAllAssetsTableViewCellModel.m */,
 				8814235625B18EA900961668 /* OKMineTableViewCellModel.m */,
+				8814235225B18EA900961668 /* OKTradeSettingViewCellModel.h */,
+				8814234C25B18EA900961668 /* OKTradeSettingViewCellModel.m */,
+				8814235425B18EA900961668 /* OKUnitTableViewCellModel.h */,
+				8814235025B18EA900961668 /* OKUnitTableViewCellModel.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -1804,22 +1804,22 @@
 		8814235725B18EA900961668 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				8814236025B18EA900961668 /* OKAboutTableViewCell.h */,
+				8814235B25B18EA900961668 /* OKAboutTableViewCell.m */,
+				8814236225B18EA900961668 /* OKAllAssetsTableViewCell.h */,
+				8814235925B18EA900961668 /* OKAllAssetsTableViewCell.m */,
+				8814236125B18EA900961668 /* OKLanguageTableViewCell.h */,
+				8814235A25B18EA900961668 /* OKLanguageTableViewCell.m */,
+				8814236325B18EA900961668 /* OKMineTableViewCell.h */,
+				8814235825B18EA900961668 /* OKMineTableViewCell.m */,
+				8814235F25B18EA900961668 /* OKMoreBtn.h */,
+				8814235C25B18EA900961668 /* OKMoreBtn.m */,
 				B03A1A4525C91601004137F1 /* OKPINInputMethodCell.h */,
 				B03A1A4625C91601004137F1 /* OKPINInputMethodCell.m */,
-				8814235825B18EA900961668 /* OKMineTableViewCell.m */,
-				8814235925B18EA900961668 /* OKAllAssetsTableViewCell.m */,
-				8814235A25B18EA900961668 /* OKLanguageTableViewCell.m */,
-				8814235B25B18EA900961668 /* OKAboutTableViewCell.m */,
-				8814235C25B18EA900961668 /* OKMoreBtn.m */,
-				8814235D25B18EA900961668 /* OKUnitTableViewCell.m */,
 				8814235E25B18EA900961668 /* OKTradeSettingViewCell.h */,
-				8814235F25B18EA900961668 /* OKMoreBtn.h */,
-				8814236025B18EA900961668 /* OKAboutTableViewCell.h */,
-				8814236125B18EA900961668 /* OKLanguageTableViewCell.h */,
-				8814236225B18EA900961668 /* OKAllAssetsTableViewCell.h */,
-				8814236325B18EA900961668 /* OKMineTableViewCell.h */,
-				8814236425B18EA900961668 /* OKUnitTableViewCell.h */,
 				8814236525B18EA900961668 /* OKTradeSettingViewCell.m */,
+				8814236425B18EA900961668 /* OKUnitTableViewCell.h */,
+				8814235D25B18EA900961668 /* OKUnitTableViewCell.m */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -2522,6 +2522,7 @@
 				881424D925B18EAA00961668 /* OKLanguageCellModel.h in Headers */,
 				8814247D25B18EAA00961668 /* WebViewVC.h in Headers */,
 				54204F48878D23256D06F5F5 /* OneKeyImport.h in Headers */,
+				B000CA6C25F0EF58007B3985 /* OKAllAssetsCellModel.h in Headers */,
 				B016510625BFE0810037C6B4 /* OKDeviceConfirmController.h in Headers */,
 				881424A425B18EAA00961668 /* OKDeleteWalletTipsViewController.h in Headers */,
 				8814244825B18EAA00961668 /* Base64.h in Headers */,
@@ -2572,7 +2573,6 @@
 				8814247225B18EAA00961668 /* InternalApis.h in Headers */,
 				B04F6E0825DE573500FF377E /* OKBTCAddressTypeSelectController.h in Headers */,
 				8814256725B18EAA00961668 /* OKCreateSelectWalletTypeModel.h in Headers */,
-				881424D525B18EAA00961668 /* OKAllAssetsTableViewCellModel.h in Headers */,
 				6BDF47D5862FBD1B0521C6EA /* UIImage+OneKey.h in Headers */,
 				8814252525B18EAA00961668 /* OKOneKeyPwdManager.h in Headers */,
 				C8574A30A933FF1860B9ECE8 /* UIView+Helper.h in Headers */,
@@ -2908,7 +2908,6 @@
 				02F741609824FB47EF141ABE /* OKNSObject.m in Sources */,
 				8814242B25B18EAA00961668 /* OKPrivateImportViewController.m in Sources */,
 				8814255025B18EAA00961668 /* OKReadyToStartViewController.m in Sources */,
-				881424DB25B18EAA00961668 /* OKAllAssetsTableViewCellModel.m in Sources */,
 				881424B725B18EAA00961668 /* OKTradeSettingViewController.m in Sources */,
 				881424EA25B18EAA00961668 /* OKTradeSettingViewCell.m in Sources */,
 				8814255525B18EAA00961668 /* OKTakeCareMnemonicViewController.m in Sources */,
@@ -3127,6 +3126,7 @@
 				881425A625B2E44100961668 /* OKDeviceReadyToStartViewController.m in Sources */,
 				8814255625B18EAA00961668 /* OKWordCheckViewController.m in Sources */,
 				BEA2428F980CDB93F6B81AB8 /* UIView+Toast.m in Sources */,
+				B000CA6D25F0EF58007B3985 /* OKAllAssetsCellModel.m in Sources */,
 				8814247925B18EAA00961668 /* JSBUtil.m in Sources */,
 				8814243D25B18EAA00961668 /* CLPasswordView.m in Sources */,
 				8814244425B18EAA00961668 /* OKValidationPwdController.m in Sources */,

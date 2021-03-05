@@ -7,7 +7,7 @@
 //
 
 #import "OKAllAssetsTableViewCell.h"
-#import "OKAllAssetsTableViewCellModel.h"
+#import "OKAllAssetsCellModel.h"
 
 @interface OKAllAssetsTableViewCell()
 
@@ -21,28 +21,14 @@
 
 @implementation OKAllAssetsTableViewCell
 
-- (void)setModel:(OKAllAssetsTableViewCellModel *)model
-{
+- (void)setModel:(OKAllAssetsCellModel *)model {
     _model = model;
-    
+
     self.iconImageView.image = [UIImage imageNamed:@"token_btc"];
-    self.cointypeLabel.text = model.name;
-    self.balanceLabel.text = model.btc;
+    self.cointypeLabel.text = model.coin;
+    self.balanceLabel.text = model.balance;
     self.moneyLabel.text = model.fiat;
-    
-}
 
-
-- (void)awakeFromNib {
-    [super awakeFromNib];
-    // Initialization code
-    
-}
-
-- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
-    [super setSelected:selected animated:animated];
-
-    // Configure the view for the selected state
 }
 
 @end

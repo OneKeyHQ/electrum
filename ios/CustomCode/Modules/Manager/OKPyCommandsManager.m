@@ -302,8 +302,8 @@ static dispatch_once_t once;
         NSString *name = [parameter safeStringForKey:@"name"];
         result = PyObject_CallMethod(self.pyInstance, [kInterfaceexport_seed UTF8String], "(s,s)",[password UTF8String],[name UTF8String]);
 
-    }else if([method isEqualToString:kInterfaceget_all_wallet_balance]){
-        result = PyObject_CallMethod(self.pyInstance, [kInterfaceget_all_wallet_balance UTF8String], "()",NULL);
+    }else if([method isEqualToString:kInterface_get_all_wallet_balance]){
+        result = PyObject_CallMethod(self.pyInstance, [kInterface_get_all_wallet_balance UTF8String], "()",NULL);
 
     }else if([method isEqualToString:kInterfaceget_default_fee_info]){
         NSString *feerate = [parameter safeStringForKey:@"feerate"];

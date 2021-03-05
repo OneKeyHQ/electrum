@@ -7,11 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
-@class OKAllAssetsTableViewCellModel;
+@class OKAllAssetsCellModel;
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OKAllAssetsTableViewCell : UITableViewCell
-@property (nonatomic,strong)OKAllAssetsTableViewCellModel *model;
+@property (weak, nonatomic) IBOutlet UIView *separator;
+@property (nonatomic,strong)OKAllAssetsCellModel *model;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -55,7 +55,7 @@
 #define kInterfaceexport_seed            @"export_seed"   //导出助记词
 
 
-#define kInterfaceget_all_wallet_balance @"get_all_wallet_balance" //获取全部资产
+#define kInterface_get_all_wallet_balance @"get_all_wallet_balance" //获取全部资产
 #define kInterfacerename_wallet          @"rename_wallet"  //修改名称
 #define kInterfaceexport_privkey         @"export_privkey" //导出私钥
 

@@ -535,6 +535,8 @@
 "token.blance" = "余额";
 "token.select" = "选择代币";
 
+"assets.search.placeholder" = "搜索账户或代币";
+
 "This operation only supports BACKUP ONLY special devices" = "该操作仅支持backup only特殊设备";
 "Signature error or cancellation" = "签名出错或取消";
 
