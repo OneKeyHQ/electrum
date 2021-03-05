@@ -1076,7 +1076,8 @@ public final class PyEnv {
                                     PyConstant.VERIFY_MESSAGE_SIGNATURE,
                                     address,
                                     message,
-                                    signature)
+                                    signature,
+                                    new Kwarg("path", MyApplication.getInstance().getDeviceWay()))
                             .toBoolean();
             response.setResult(verified);
         } catch (Exception e) {
@@ -1114,7 +1115,6 @@ public final class PyEnv {
         try {
             sCommands.callAttr(PyConstant.VERIFY_SOFT_PASS, passwd);
         } catch (Exception e) {
-            System.out.println("verify xxxxxxx");
             Exception exception = HardWareExceptions.exceptionConvert(e);
             response.setErrors(exception.getMessage());
             e.printStackTrace();
