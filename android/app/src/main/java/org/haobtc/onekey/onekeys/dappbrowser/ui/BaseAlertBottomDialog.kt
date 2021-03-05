@@ -78,8 +78,8 @@ open class BaseAlertBottomDialog(context: Context) : Dialog(context) {
     Glide.with(mBinding.ivDialogLogo)
         .load(url)
         .centerCrop()
-        .placeholder(R.drawable.logo_app)
-        .error(R.drawable.logo_app)
+        .placeholder(R.mipmap.ic_launcher_foreground)
+        .error(R.mipmap.ic_launcher_foreground)
         .fitCenter()
         .into(mBinding.ivDialogLogo)
   }
