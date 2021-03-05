@@ -243,6 +243,9 @@ class Abstract_Eth_Wallet(ABC):
         self.save_db()
 
     def get_contract_token(self, contract_address) -> Eth_Contract:
+        if not contract_address:
+            return None
+
         contract_address = PyWalib.web3.toChecksumAddress(contract_address)
         return self.contacts.get(contract_address)
 

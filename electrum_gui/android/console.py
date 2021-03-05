@@ -971,7 +971,11 @@ class AndroidCommands(commands.Commands):
 
         if not gas_limit:
             gas_limit = self.pywalib.estimate_gas_limit(
-                from_address, to_address, self.wallet.get_contract_token(contract_address), value, data
+                from_address,
+                to_address,
+                self.wallet.get_contract_token(contract_address),
+                value,
+                data,
             )
 
         gas_limit = Decimal(gas_limit)
