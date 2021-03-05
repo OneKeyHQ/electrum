@@ -37,6 +37,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (UIColor *)TintRed;   // FF3B30
 + (UIColor *)TintYellow;    // FFCC00
 + (UIColor *)TintBlue;  // 007AFF
+
+// Special
+// 特殊色用于协助类组件（如分隔线、遮罩、把手）的颜色填充。
+
++ (UIColor *)SP_Separator;  // 3C3C43 .12
 @end
 
 NS_ASSUME_NONNULL_END

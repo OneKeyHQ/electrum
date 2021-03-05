@@ -8,9 +8,12 @@
 
 #import "BaseViewController.h"
 
+static const CGFloat showNavBarSeparatorScrollViewOffsetThreshold = 5;
+
 @interface BaseViewController ()
 {
     BOOL _interactivePopEnable;
+    UIImageView *_navBarSeparator;
 }
 @end
 
@@ -35,7 +38,11 @@
     if ([self.navigationController.viewControllers count] > 1) {
         self.navigationItem.leftBarButtonItem = [UIBarButtonItem backBarButtonItemWithTarget:self selector:@selector(backToPrevious)];
     };
-    [self findHairlineImageViewUnder:self.navigationController.navigationBar].hidden = YES;
+    _navBarSeparator = [self findHairlineImageViewUnder:self.navigationController.navigationBar];
+    UIView *separator = [[UIView alloc] initWithFrame:_navBarSeparator.bounds];
+    separator.backgroundColor = HexColor(0xceced3);
+    [_navBarSeparator addSubview:separator];
+    _navBarSeparator.hidden = YES;
     self.navigationController.navigationBar.translucent = NO;
     [self.navigationController.navigationBar setBarTintColor:[self navBarTintColor]];
 
@@ -75,6 +82,7 @@
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
+    _navBarSeparator.hidden = YES;
     [super viewDidDisappear:animated];
 }
 
@@ -129,5 +137,10 @@
 
 - (UIColor *)navBarTintColor {
     return [UIColor whiteColor];
+}
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    CGFloat offsetY = scrollView.contentOffset.y;
+    _navBarSeparator.hidden = offsetY < showNavBarSeparatorScrollViewOffsetThreshold;
 }
 @end

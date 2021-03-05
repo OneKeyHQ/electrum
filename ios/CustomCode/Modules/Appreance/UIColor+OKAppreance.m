@@ -28,4 +28,6 @@ OKAppreanceColor(TintGreen, 34C759, 1)
 OKAppreanceColor(TintRed, FF3B30, 1)
 OKAppreanceColor(TintYellow, FFCC00, 1)
 OKAppreanceColor(TintBlue, 007AFF, 1)
+
+OKAppreanceColor(SP_Separator, 3C3C43, .12)
 @end

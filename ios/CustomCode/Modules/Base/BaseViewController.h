@@ -22,6 +22,9 @@ NS_ASSUME_NONNULL_BEGIN
 // override
 - (UIColor *)navBarTintColor;
 
+// 当实现了 <UIScrollViewDelegate> 且 scrollView 向上滚动时显示 navbar 分割线，子类重写时需要调用 super
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView NS_REQUIRES_SUPER;
+
 - (void)backButtonWhiteColor;
 - (void)hideBackBtn;
 - (void)setNavigationBarBackgroundColorWithClearColor;
