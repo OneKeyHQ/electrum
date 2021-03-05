@@ -131,12 +131,13 @@ public class TransactionListFragment extends BaseLazyFragment
         onekeyTxListAdapter.setOnItemClickListener(
                 (adapter, itemView, position) -> {
                     TransactionSummaryVo item = listBeans.get(position);
-                    String jsonStr = new Gson().toJson(item);
                     switch (item.getCoinType()) {
                         case BTC:
-                            DetailTransactionActivity.start(requireContext(), jsonStr);
+                            DetailTransactionActivity.start(
+                                    requireContext(), item.getTxId(), item.getDate());
                             break;
                         case ETH:
+                            String jsonStr = new Gson().toJson(item);
                             DetailETHTransactionActivity.start(requireContext(), jsonStr);
                             break;
                     }

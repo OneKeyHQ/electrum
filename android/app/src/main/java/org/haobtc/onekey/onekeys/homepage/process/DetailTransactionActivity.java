@@ -282,9 +282,10 @@ public class DetailTransactionActivity extends BaseActivity {
             textConfirmNum.setText(txStatus);
         }
         textTxNum.setText(txid);
-        if (fee.contains(" (")) {
-            String txFee = fee.substring(0, fee.indexOf(" ("));
-            textFee.setText(txFee);
+        if (!TextUtils.isEmpty(fee)) {
+            textFee.setText(fee);
+        } else {
+            textFee.setText("-");
         }
         String description = "";
         if (!TextUtils.isEmpty(description)) {
@@ -294,6 +295,7 @@ public class DetailTransactionActivity extends BaseActivity {
         }
         txBlockHeight = String.valueOf(listBean.getHeight());
         textBlockHigh.setText(txBlockHeight);
+        textTxTime.setText(listBean.getDate());
     }
 
     private void jsonDetailData(String detailMsg) {

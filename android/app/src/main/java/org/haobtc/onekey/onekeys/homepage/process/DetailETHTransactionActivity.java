@@ -234,7 +234,7 @@ public class DetailETHTransactionActivity extends BaseActivity {
         }
         textTxNum.setText(txid);
         String fee = listBean.getFee();
-        if (fee.contains(" (")) {
+        if (!TextUtils.isEmpty(fee) && fee.contains(" (")) {
             String txFee = fee.substring(0, fee.indexOf(" ("));
             try {
                 String[] txFeeSplit = txFee.split(" ");
@@ -246,9 +246,10 @@ public class DetailETHTransactionActivity extends BaseActivity {
                                         .toPlainString(),
                                 txFeeSplit[1]));
             } catch (Exception e) {
-                textFee.setText(txFee);
+                textFee.setText("-");
             }
-            textFee.setText(txFee);
+        } else {
+            textFee.setText("-");
         }
         String description = "";
         if (!TextUtils.isEmpty(description)) {
@@ -258,6 +259,7 @@ public class DetailETHTransactionActivity extends BaseActivity {
         }
         txBlockHeight = String.valueOf(listBean.getHeight());
         textBlockHigh.setText(txBlockHeight);
+        textTxTime.setText(listBean.getDate());
     }
 
     private void jsonDetailData(String detailMsg) {
