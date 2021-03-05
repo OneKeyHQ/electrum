@@ -49,13 +49,13 @@ public final class PyConstant {
 
     public static final String TAG = "BLE";
 
-    public static final int BUTTON_REQUEST_9 = 9;
+    public static final int BUTTON_REQUEST_9 = 109;
     /** 按键确认 */
-    public static final int BUTTON_REQUEST_7 = 7;
+    public static final int BUTTON_REQUEST_7 = 107;
     /** 发币确认 */
-    public static final int BUTTON_REQUEST_8 = 8;
+    public static final int BUTTON_REQUEST_8 = 108;
     /** 恢复出厂设置 */
-    public static final int BUTTON_REQUEST_6 = 6;
+    public static final int BUTTON_REQUEST_6 = 106;
     /** 验证当前PIN */
     public static final int PIN_CURRENT = 1;
     /** 设置新PIN */
@@ -66,7 +66,7 @@ public final class PyConstant {
     public static final int PASS_PASSPHRASS = 3;
 
     /** 校验地址确认 */
-    public static final int VERIFY_ADDRESS_CONFIRM = 10;
+    public static final int VERIFY_ADDRESS_CONFIRM = 110;
     /** 原生隔离见证地址（bech32） */
     public static final String ADDRESS_TYPE_P2WPKH = "p2wpkh";
     /** 普通地址() */
