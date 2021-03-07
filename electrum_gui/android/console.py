@@ -58,7 +58,6 @@ from electrum.util import (
     NotEnoughFunds,
     NotEnoughFundsStr,
     NotSupportExportSeed,
-    ReplaceWatchonlyWallet,
     Ticker,
     UnavaiableHdWallet,
     UnavailableBtcAddr,
@@ -671,12 +670,14 @@ class AndroidCommands(commands.Commands):
                 wallet.set_derived_master_xpub(self.hw_info["xpub"])
             else:
                 wallet = Standard_Eth_Wallet(db, storage, config=self.config, index=index)
-            self.check_exist_file(wallet)
+            wallet.coin = coin
+            wallet_storage_path = self._wallet_path(wallet.identity)
+            if self.daemon.get_wallet(wallet_storage_path) is not None:
+                raise BaseException(FileAlreadyExist())
             wallet.status_flag = "btc-hw-%s-%s" % (self.m, self.n)
             wallet.hide_type = hide_type
             wallet.set_name(name)
-            wallet.coin = coin
-            wallet.storage.set_path(self._wallet_path(wallet.identity))
+            wallet.storage.set_path(wallet_storage_path)
             wallet.save_db()
             self.daemon.add_wallet(wallet)
             wallet.update_password(old_pw=None, new_pw=None, str_pw=self.android_id, encrypt_storage=True)
@@ -2720,7 +2721,6 @@ class AndroidCommands(commands.Commands):
     ):
         try:
             wallet.set_name(name)
-            wallet.coin = coin
             wallet.save_db()
             wallet.update_password(old_pw=None, new_pw=password, str_pw=self.android_id, encrypt_storage=True)
             self.daemon.add_wallet(wallet)
@@ -2930,24 +2930,26 @@ class AndroidCommands(commands.Commands):
                 wallet = Standard_Wallet(db, storage, config=self.config)
             elif coin in self.coins:
                 wallet = Standard_Eth_Wallet(db, storage, config=self.config, index=int(index))
-        wallet.storage.set_path(self._wallet_path(wallet.identity))
-        try:
-            self.check_exist_file(wallet)
-        except ReplaceWatchonlyWallet:
-            self.update_replace_info(
-                str(ReplaceWatchonlyWallet.message),
-                wallet,
-                name=name,
-                seed=seed,
-                password=password,
-                coin=coin,
-                wallet_type=wallet_type,
-                derived_flag=derived_flag,
-                bip39_derivation=bip39_derivation,
-            )
-            raise BaseException("Replace Watch-olny wallet:%s" % wallet.identity)
-        except BaseException as e:
-            raise e
+        wallet.coin = coin
+        wallet_storage_path = self._wallet_path(wallet.identity)
+        exist_wallet = self.daemon.get_wallet(wallet_storage_path)
+        if exist_wallet is not None:
+            if exist_wallet.is_watching_only() and not wallet.is_watching_only():
+                self.update_replace_info(
+                    str(exist_wallet),  # essentially exist_wallet.base_name()
+                    wallet,
+                    name=name,
+                    seed=seed,
+                    password=password,
+                    coin=coin,
+                    wallet_type=wallet_type,
+                    derived_flag=derived_flag,
+                    bip39_derivation=bip39_derivation,
+                )
+                raise BaseException("Replace Watch-olny wallet:%s" % wallet.identity)
+            else:
+                raise BaseException(FileAlreadyExist())
+        wallet.storage.set_path(wallet_storage_path)
         try:
             self.create_new_wallet_update(
                 name=name,
@@ -3095,11 +3097,7 @@ class AndroidCommands(commands.Commands):
         show_info["blance"] = str(balance)
         show_info["name"] = str(wallet_obj)
         show_info["label"] = label
-        try:
-            self.check_exist_file(wallet_obj)
-            show_info["exist"] = "0"
-        except BaseException:
-            show_info["exist"] = "1"
+        show_info["exist"] = "1" if self.daemon.get_wallet(self._wallet_path(wallet_obj.identity)) is not None else "0"
         recovery_list.append(show_info)
 
     def filter_wallet(self):
@@ -3270,7 +3268,7 @@ class AndroidCommands(commands.Commands):
 
     def filter_wallet_with_account_is_zero(self):
         wallet_list = []
-        for name, wallet_info in self.recovery_wallets.items():
+        for wallet_id, wallet_info in self.recovery_wallets.items():
             try:
                 wallet = wallet_info["wallet"]
                 coin = wallet.coin
@@ -3280,11 +3278,7 @@ class AndroidCommands(commands.Commands):
                 if account_id != 0:
                     continue
                 if coin in self.coins or purpose == 49:
-                    try:
-                        self.check_exist_file(wallet)
-                        exist = 0
-                    except BaseException:
-                        exist = 1
+                    exist = 1 if self.daemon.get_wallet(self._wallet_path(wallet_id)) is not None else 0
                     wallet_info = CreateWalletInfo.create_wallet_info(
                         coin_type="btc" if purpose == 49 else coin, name=str(wallet), exist=exist
                     )
@@ -3554,15 +3548,6 @@ class AndroidCommands(commands.Commands):
             return json.dumps(out, cls=DecimalEncoder)
         except BaseException as e:
             raise e
-
-    def check_exist_file(self, wallet_obj):
-        for _path, exist_wallet in self.daemon._wallets.items():
-            if wallet_obj.get_addresses()[0] != exist_wallet.get_addresses()[0]:
-                continue
-            if exist_wallet.is_watching_only() and not wallet_obj.is_watching_only():
-                raise ReplaceWatchonlyWallet(exist_wallet)
-            elif exist_wallet.coin == wallet_obj.coin:
-                raise BaseException(FileAlreadyExist())
 
     def set_rbf(self, status_rbf):
         """
