@@ -59,6 +59,7 @@ from .util import (profiler,
                    UserCancel)
 from .util import get_backup_dir
 from .simple_config import SimpleConfig
+from . import keystore
 from .keystore import load_keystore, Hardware_KeyStore, KeyStore, KeyStoreWithMPK, AddressIndexGeneric
 from .storage import StorageEncryptionVersion, WalletStorage
 from .wallet_db import WalletDB
@@ -826,6 +827,28 @@ class Imported_Eth_Wallet(Simple_Eth_Wallet):
             addresses = pubkey_or_addresses.split()
 
         return cls._from_addresses(coin, config, addresses)
+
+    @classmethod
+    def from_privkeys(cls, coin: str, config: SimpleConfig, privkeys: str):
+        db = WalletDB("", manual_upgrades=False)
+        db.put("keystore", keystore.Imported_KeyStore({}).dump())
+        wallet = cls(db, None, config=config)
+        wallet.coin = coin
+        wallet.wallet_type = f"{coin}_imported"
+        keys = keystore.get_eth_private_key(privkeys, allow_spaces_inside_key=False)
+        good_addrs, _bad_keys = wallet.import_private_keys(keys, None, write_to_disk=False)
+        # FIXME tell user about bad_inputs
+        if not good_addrs:
+            raise BaseException(_("No private key available."))
+        return wallet
+
+    @classmethod
+    def from_keystores(cls, coin: str, config: SimpleConfig, keystores: str, password: str):
+        try:
+            privkeys = Account.decrypt(keystores, password).hex()
+        except ValueError:
+            raise InvalidPassword()
+        return cls.from_privkeys(coin, config, privkeys)
 
     def __init__(self, db, storage, *, config):
         Abstract_Eth_Wallet.__init__(self, db, storage, config=config)

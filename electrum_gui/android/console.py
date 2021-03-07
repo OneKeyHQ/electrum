@@ -2795,6 +2795,13 @@ class AndroidCommands(commands.Commands):
         elif privkeys is not None and coin == "btc":
             wallet_type = f"{coin}-private-standard"
             wallet = Imported_Wallet.from_privkeys(coin, self.config, privkeys, purpose)
+        elif coin in self.coins and (privkeys is not None or keystores is not None):
+            wallet_type = f"{coin}-private-standard"
+            if keystores is not None:
+                # keystores always has higher priority
+                wallet = Imported_Eth_Wallet.from_keystores(coin, self.config, keystores, keystore_password)
+            else:
+                wallet = Imported_Eth_Wallet.from_privkeys(coin, self.config, privkeys)
 
         if wallet:
             wallet.set_name(name)
@@ -2821,32 +2828,12 @@ class AndroidCommands(commands.Commands):
                 "derived_info": [],
             }
             return json.dumps(ret)
-
-        # TODO: cleanup and move the below codes up
-        new_seed = ""
-        wallet_type = "%s-standard" % coin
-        db = WalletDB("", manual_upgrades=False)
-        db.put("coin", coin)
-        if privkeys is not None or keystores is not None:
-            if coin in self.coins:
-                if keystores is not None:
-                    try:
-                        from eth_account import Account
-
-                        privkeys = Account.decrypt(keystores, keystore_password).hex()
-                    except ValueError:
-                        raise InvalidPassword()
-                k = keystore.Imported_KeyStore({})
-                db.put("keystore", k.dump())
-                wallet = Imported_Eth_Wallet(db, None, config=self.config)
-                wallet.wallet_type = "%s_imported" % coin
-                keys = keystore.get_eth_private_key(privkeys, allow_spaces_inside_key=False)
-            good_inputs, bad_inputs = wallet.import_private_keys(keys, None, write_to_disk=False)
-            # FIXME tell user about bad_inputs
-            if not good_inputs:
-                raise BaseException(_("No private key available."))
-            wallet_type = "%s-private-standard" % coin
         else:
+            # TODO: cleanup and move the below codes up
+            new_seed = ""
+            wallet_type = "%s-standard" % coin
+            db = WalletDB("", manual_upgrades=False)
+            db.put("coin", coin)
             if bip39_derivation is not None:
                 if keystore.is_seed(seed):
                     ks = keystore.from_seed(seed, passphrase, False)
