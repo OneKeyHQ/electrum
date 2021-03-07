@@ -53,7 +53,7 @@ from .util import (NotEnoughFunds, UserCancelled, profiler,
                    format_satoshis, format_fee_satoshis, NoDynamicFeeEstimates,
                    WalletFileException, BitcoinException, MultipleSpendMaxTxOutputs,
                    InvalidPassword, format_time, timestamp_to_datetime, Satoshis, UserCancel,
-                   Fiat, bfh, bh2u, TxMinedInfo, quantize_feerate, create_bip21_uri, OrderedDictWithIndex)
+                   Fiat, bfh, bh2u, TxMinedInfo, quantize_feerate, create_bip21_uri, OrderedDictWithIndex, FileAlreadyExist)
 from .util import get_backup_dir
 from .simple_config import SimpleConfig
 from .bitcoin import COIN, TYPE_ADDRESS
@@ -317,6 +317,16 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
             # crypto.sha256 returns a bytes object
             self._identity = sha256(prefix + self.get_addresses()[0]).hex()
         return self._identity
+
+    def ensure_storage(self, path: str) -> None:
+        # create a WalletStorage for the newly created wallet
+        # called before self.save_db() or self.update_password()
+        if self.storage is None:
+            self.storage = WalletStorage(path)
+            if not self.storage.file_exists():
+                return
+
+        raise FileAlreadyExist()
 
     def set_derived_master_xpub(self, xpub):
         self.derived_master_xpub = xpub

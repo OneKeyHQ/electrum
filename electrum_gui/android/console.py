@@ -2721,7 +2721,7 @@ class AndroidCommands(commands.Commands):
     ):
         try:
             wallet.set_name(name)
-            wallet.save_db()
+            wallet.ensure_storage(self._wallet_path(wallet.identity))
             wallet.update_password(old_pw=None, new_pw=password, str_pw=self.android_id, encrypt_storage=True)
             self.daemon.add_wallet(wallet)
             if coin == "btc":
@@ -2801,16 +2801,11 @@ class AndroidCommands(commands.Commands):
         new_seed = ""
         derived_flag = False
         wallet_type = "%s-standard" % coin
-        temp_path = helpers.get_temp_file()
-        path = self._wallet_path(temp_path)
-        if exists(path):
-            raise BaseException(FileAlreadyExist())
-        storage = WalletStorage(path)
         db = WalletDB("", manual_upgrades=False)
         db.put("coin", coin)
         if addresses is not None:
             if coin == "btc":
-                wallet = Imported_Wallet(db, storage, config=self.config)
+                wallet = Imported_Wallet(db, None, config=self.config)
                 addresses = addresses.split()
                 if not bitcoin.is_address(addresses[0]):
                     try:
@@ -2819,7 +2814,7 @@ class AndroidCommands(commands.Commands):
                     except BaseException:
                         raise BaseException(_("Incorrect address or pubkey."))
             elif coin in self.coins:
-                wallet = Imported_Eth_Wallet(db, storage, config=self.config)
+                wallet = Imported_Eth_Wallet(db, None, config=self.config)
                 wallet.wallet_type = "%s_imported" % coin
                 try:
                     from eth_keys import keys
@@ -2840,7 +2835,7 @@ class AndroidCommands(commands.Commands):
             if coin == "btc":
                 ks = keystore.Imported_KeyStore({})
                 db.put("keystore", ks.dump())
-                wallet = Imported_Wallet(db, storage, config=self.config)
+                wallet = Imported_Wallet(db, None, config=self.config)
                 try:
                     # TODO:need script(p2pkh/p2wpkh/p2wpkh-p2sh)
                     if privkeys[0:2] == "0x":
@@ -2872,7 +2867,7 @@ class AndroidCommands(commands.Commands):
                         raise InvalidPassword()
                 k = keystore.Imported_KeyStore({})
                 db.put("keystore", k.dump())
-                wallet = Imported_Eth_Wallet(db, storage, config=self.config)
+                wallet = Imported_Eth_Wallet(db, None, config=self.config)
                 wallet.wallet_type = "%s_imported" % coin
                 keys = keystore.get_eth_private_key(privkeys, allow_spaces_inside_key=False)
             good_inputs, bad_inputs = wallet.import_private_keys(keys, None, write_to_disk=False)
@@ -2927,9 +2922,9 @@ class AndroidCommands(commands.Commands):
                     )
             db.put("keystore", ks.dump())
             if coin == "btc":
-                wallet = Standard_Wallet(db, storage, config=self.config)
+                wallet = Standard_Wallet(db, None, config=self.config)
             elif coin in self.coins:
-                wallet = Standard_Eth_Wallet(db, storage, config=self.config, index=int(index))
+                wallet = Standard_Eth_Wallet(db, None, config=self.config, index=int(index))
         wallet.coin = coin
         wallet_storage_path = self._wallet_path(wallet.identity)
         exist_wallet = self.daemon.get_wallet(wallet_storage_path)
@@ -2949,7 +2944,6 @@ class AndroidCommands(commands.Commands):
                 raise BaseException("Replace Watch-olny wallet:%s" % wallet.identity)
             else:
                 raise BaseException(FileAlreadyExist())
-        wallet.storage.set_path(wallet_storage_path)
         try:
             self.create_new_wallet_update(
                 name=name,

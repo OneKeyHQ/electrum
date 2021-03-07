@@ -53,6 +53,7 @@ from .bip32 import convert_bip32_intpath_to_strpath, convert_bip32_path_to_list_
 from .crypto import sha256
 from .util import (profiler,
                    WalletFileException,
+                   FileAlreadyExist,
                    InvalidPassword,
                    UserCancelled,
                    UserCancel)
@@ -163,6 +164,16 @@ class Abstract_Eth_Wallet(ABC):
             # crypto.sha256 returns a bytes object
             self._identity = sha256(prefix + self.get_addresses()[0]).hex()
         return self._identity
+
+    def ensure_storage(self, path: str) -> None:
+        # create a WalletStorage for the newly created wallet
+        # called before self.save_db() or self.update_password()
+        if self.storage is None:
+            self.storage = WalletStorage(path)
+            if not self.storage.file_exists():
+                return
+
+        raise FileAlreadyExist()
 
     def set_address_index(self, index):
         self.address_index = index
