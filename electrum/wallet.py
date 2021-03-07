@@ -53,7 +53,8 @@ from .util import (NotEnoughFunds, UserCancelled, profiler,
                    format_satoshis, format_fee_satoshis, NoDynamicFeeEstimates,
                    WalletFileException, BitcoinException, MultipleSpendMaxTxOutputs,
                    InvalidPassword, format_time, timestamp_to_datetime, Satoshis, UserCancel,
-                   Fiat, bfh, bh2u, TxMinedInfo, quantize_feerate, create_bip21_uri, OrderedDictWithIndex, FileAlreadyExist)
+                   Fiat, bfh, bh2u, TxMinedInfo, quantize_feerate, create_bip21_uri, OrderedDictWithIndex,
+                   FileAlreadyExist, UnavailablePrivateKey)
 from .util import get_backup_dir
 from .simple_config import SimpleConfig
 from .bitcoin import COIN, TYPE_ADDRESS
@@ -90,6 +91,12 @@ TX_STATUS = [
     _('Not Verified'),
     _('Local'),
 ]
+
+_PURPOSE_TO_ADDRESS_TYPE = {
+    44: 'p2pkh',
+    49: 'p2wpkh-p2sh',
+    84: 'p2wpkh',
+}
 
 
 async def _append_utxos_to_inputs(*, inputs: List[PartialTxInput], network: 'Network',
@@ -2268,6 +2275,32 @@ class Imported_Wallet(Simple_Wallet):
             return cls._from_pubkey(coin, config, addresses[0])
         else:
             return cls._from_addresses(coin, config, addresses)
+
+    @classmethod
+    def from_privkeys(cls, coin: str, config: SimpleConfig, privkeys: str, purpose: int):
+        if privkeys[:2] == "0x":
+            privkeys = privkeys[2:]
+        try:
+            # TODO:need script(p2pkh/p2wpkh/p2wpkh-p2sh)
+            ecc.ECPrivkey(bfh(privkeys))
+            keys = [privkeys]
+        except Exception:
+            addr_type = _PURPOSE_TO_ADDRESS_TYPE.get(purpose)
+            if addr_type is not None:
+                privkeys = f"{addr_type}:{privkeys}"
+            keys = keystore.get_private_keys(privkeys, allow_spaces_inside_key=False)
+            if keys is None:
+                raise BaseException(UnavailablePrivateKey())
+
+        db = WalletDB("", manual_upgrades=False)
+        db.put("keystore", keystore.Imported_KeyStore({}).dump())
+        wallet = cls(db, None, config=config)
+        wallet.coin = coin
+        good_addrs, _bad_keys = wallet.import_private_keys(keys, None, write_to_disk=False)
+        # FIXME tell user about bad_inputs
+        if not good_addrs:
+            raise BaseException(_("No private key available."))
+        return wallet
 
     def __init__(self, db, storage, *, config):
         Abstract_Wallet.__init__(self, db, storage, config=config)

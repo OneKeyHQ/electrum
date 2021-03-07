@@ -2781,8 +2781,10 @@ class AndroidCommands(commands.Commands):
             raise e
 
         wallet = None
+        watch_only = False
 
         if addresses is not None:
+            watch_only = True
             wallet_type = f"{coin}-watch-standard"
             if coin == "btc":
                 wallet = Imported_Wallet.from_pubkey_or_addresses(coin, self.config, addresses)
@@ -2790,12 +2792,25 @@ class AndroidCommands(commands.Commands):
                 wallet = Imported_Eth_Wallet.from_pubkey_or_addresses(coin, self.config, addresses)
             else:
                 raise BaseException("Only support BTC/ETH")
+        elif privkeys is not None and coin == "btc":
+            wallet_type = f"{coin}-private-standard"
+            wallet = Imported_Wallet.from_privkeys(coin, self.config, privkeys, purpose)
 
         if wallet:
             wallet.set_name(name)
             exist_wallet = self.daemon.get_wallet(self._wallet_path(wallet.identity))
             if exist_wallet is not None:
-                raise BaseException(FileAlreadyExist())
+                if not watch_only and exist_wallet.is_watching_only():
+                    self.update_replace_info(
+                        wallet,
+                        seed=seed,
+                        password=password,
+                        wallet_type=wallet_type,
+                        bip39_derivation=bip39_derivation,
+                    )
+                    raise BaseException("Replace Watch-olny wallet:%s" % wallet.identity)
+                else:
+                    raise BaseException(FileAlreadyExist())
 
             self.create_new_wallet_update(
                 wallet=wallet, seed=seed, password=password, wallet_type=wallet_type, bip39_derivation=bip39_derivation
@@ -2813,32 +2828,7 @@ class AndroidCommands(commands.Commands):
         db = WalletDB("", manual_upgrades=False)
         db.put("coin", coin)
         if privkeys is not None or keystores is not None:
-            if coin == "btc":
-                ks = keystore.Imported_KeyStore({})
-                db.put("keystore", ks.dump())
-                wallet = Imported_Wallet(db, None, config=self.config)
-                try:
-                    # TODO:need script(p2pkh/p2wpkh/p2wpkh-p2sh)
-                    if privkeys[0:2] == "0x":
-                        privkeys = privkeys[2:]
-                    ecc.ECPrivkey(bfh(privkeys))
-                    keys = [privkeys]
-                except BaseException:
-                    addr_type = (
-                        "p2pkh"
-                        if purpose == 44
-                        else "p2wpkh"
-                        if purpose == 84
-                        else "p2wpkh-p2sh"
-                        if purpose == 49
-                        else ""
-                    )
-                    if addr_type != "":
-                        privkeys = "%s:%s" % (addr_type, privkeys)
-                    keys = keystore.get_private_keys(privkeys, allow_spaces_inside_key=False)
-                    if keys is None:
-                        raise BaseException(UnavailablePrivateKey())
-            elif coin in self.coins:
+            if coin in self.coins:
                 if keystores is not None:
                     try:
                         from eth_account import Account
