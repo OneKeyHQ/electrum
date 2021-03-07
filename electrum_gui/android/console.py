@@ -2407,7 +2407,7 @@ class AndroidCommands(commands.Commands):
         :return: Mnemonic as string
         """
         try:
-            wallet = self.daemon._wallets[self._wallet_path(name)]
+            wallet = self.daemon.get_wallet(self._wallet_path(name))
             if not wallet.has_seed():
                 raise BaseException(NotSupportExportSeed())
             keystore = wallet.get_keystore()
@@ -2498,7 +2498,7 @@ class AndroidCommands(commands.Commands):
         return json.dumps(out)
 
     def get_wallet_by_name(self, name):
-        return self.daemon._wallets[self._wallet_path(name)]
+        return self.daemon.get_wallet(self._wallet_path(name))
 
     def get_xpub_by_name(self, name, wallet_obj):
         if self.wallet_context.is_hd(name):
@@ -3001,7 +3001,7 @@ class AndroidCommands(commands.Commands):
         :return:None
         """
         self._assert_daemon_running()
-        for name, wallet in self.daemon._wallets.items():
+        for _name, wallet in self.daemon._wallets.items():
             wallet.update_password(old_pw=old_password, new_pw=new_password, str_pw=self.android_id)
 
     def check_password(self, password):
@@ -3072,7 +3072,7 @@ class AndroidCommands(commands.Commands):
                 try:
                     if -1 != info["type"].find("-derived-") and -1 == info["type"].find("-hw-"):
                         key_in_daemon = self._wallet_path(wallet_id)
-                        wallet_obj = self.daemon._wallets[key_in_daemon]
+                        wallet_obj = self.daemon.get_wallet(key_in_daemon)
                         self.delete_wallet_devired_info(wallet_obj)
                         self.delete_wallet_from_deamon(key_in_daemon)
                         self.wallet_context.remove_type_info(wallet_id)
@@ -3823,7 +3823,7 @@ class AndroidCommands(commands.Commands):
             if old_name is None or new_name is None:
                 raise BaseException(("Please enter the correct file name."))
             else:
-                wallet = self.daemon._wallets[self._wallet_path(old_name)]
+                wallet = self.daemon.get_wallet(self._wallet_path(old_name))
                 wallet.set_name(new_name)
                 wallet.db.set_modified(True)
                 wallet.save_db()
@@ -3862,7 +3862,7 @@ class AndroidCommands(commands.Commands):
         if name is None:
             raise FailedToSwitchWallet()
 
-        self.wallet = self.daemon._wallets[self._wallet_path(name)]
+        self.wallet = self.daemon.get_wallet(self._wallet_path(name))
         self.wallet.use_change = self.config.get("use_change", False)
 
         coin = self.wallet.coin
@@ -3955,7 +3955,7 @@ class AndroidCommands(commands.Commands):
             if name is None:
                 self.wallet = None
             else:
-                self.wallet = self.daemon._wallets[self._wallet_path(name)]
+                self.wallet = self.daemon.get_wallet(self._wallet_path(name))
 
             self.wallet.use_change = self.config.get("use_change", False)
 
@@ -4037,8 +4037,8 @@ class AndroidCommands(commands.Commands):
             raise BaseException(_("Unsupported coin types"))
 
         wallet_infos = []
-        for key, wallet_type in self.wallet_context.get_stored_wallets_types(generic_wallet_type, coin):
-            wallet = self.daemon.wallets[self._wallet_path(key)]
+        for wallet_id, wallet_type in self.wallet_context.get_stored_wallets_types(generic_wallet_type, coin):
+            wallet = self.daemon.get_wallet(self._wallet_path(wallet_id))
             if isinstance(wallet.keystore, Hardware_KeyStore):
                 device_id = wallet.get_device_info()
             else:
@@ -4046,7 +4046,7 @@ class AndroidCommands(commands.Commands):
 
             wallet_infos.append(
                 {
-                    key: {
+                    wallet_id: {
                         "type": wallet_type,
                         "addr": wallet.get_addresses()[0],
                         "name": wallet.identity,
@@ -4114,7 +4114,7 @@ class AndroidCommands(commands.Commands):
         """
 
         try:
-            wallet = self.daemon._wallets[self._wallet_path(name)]
+            wallet = self.daemon.get_wallet(self._wallet_path(name))
 
             if not wallet.is_watching_only() and not self.wallet_context.is_hw(name):
                 self.check_password(password=password)
