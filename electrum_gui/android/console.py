@@ -323,7 +323,7 @@ class AndroidCommands(commands.Commands):
         if not self.wallet:
             return
 
-        coin = self._detect_wallet_coin(self.wallet)
+        coin = self.wallet.coin
         address = self.wallet.get_addresses()[0]
         out = dict()
 
@@ -675,6 +675,7 @@ class AndroidCommands(commands.Commands):
             wallet.status_flag = "btc-hw-%s-%s" % (self.m, self.n)
             wallet.hide_type = hide_type
             wallet.set_name(name)
+            wallet.coin = coin
             new_name = helpers.get_unique_wallet_filename(wallet)
             wallet.storage.set_path(self._wallet_path(new_name))
             wallet.save_db()
@@ -1989,7 +1990,7 @@ class AndroidCommands(commands.Commands):
         self._assert_wallet_isvalid()
         address = address.strip()
         message = message.strip()
-        coin = self._detect_wallet_coin(self.wallet)
+        coin = self.wallet.coin
         if coin in self.coins:
             if not self.pywalib.web3.isAddress(address):
                 raise UnavailableEthAddr()
@@ -2720,6 +2721,7 @@ class AndroidCommands(commands.Commands):
     ):
         try:
             wallet.set_name(name)
+            wallet.coin = coin
             wallet.save_db()
             wallet.update_password(old_pw=None, new_pw=password, str_pw=self.android_id, encrypt_storage=True)
             self.daemon.add_wallet(wallet)
@@ -3041,7 +3043,7 @@ class AndroidCommands(commands.Commands):
                     wallet.save_db()
                     if not hw:
                         self.set_hd_wallet(wallet)
-                    coin = self._detect_wallet_coin(wallet)
+                    coin = wallet.coin
                     if coin in self.coins:
                         wallet_type = "%s-hw-derived-%s-%s" % (coin, 1, 1) if hw else ("%s-derived-standard" % coin)
                         self.update_devired_wallet_info(
@@ -3106,7 +3108,7 @@ class AndroidCommands(commands.Commands):
         for name, wallet_info in self.recovery_wallets.items():
             try:
                 wallet = wallet_info["wallet"]
-                coin = self._detect_wallet_coin(wallet)
+                coin = wallet.coin
                 if coin in self.coins:
                     with self.pywalib.override_server(self.coins[coin]):
                         address = wallet.get_addresses()[0]
@@ -3170,6 +3172,7 @@ class AndroidCommands(commands.Commands):
                 else:
                     wallet = Wallet(db, storage, config=self.config)
                 wallet.set_name(name)
+                wallet.coin = coin
                 wallet.hide_type = True
                 new_name = helpers.get_unique_wallet_filename(wallet)
                 wallet.storage.set_path(self._wallet_path(new_name))
@@ -3273,7 +3276,7 @@ class AndroidCommands(commands.Commands):
         for name, wallet_info in self.recovery_wallets.items():
             try:
                 wallet = wallet_info["wallet"]
-                coin = self._detect_wallet_coin(wallet)
+                coin = wallet.coin
                 derivation = helpers.get_derivation_path(wallet, wallet.get_addresses()[0])
                 account_id = int(self.get_account_id(derivation, coin if coin in self.coins else "btc"))
                 purpose = int(derivation.split("/")[PURPOSE_POS].split("'")[0])
@@ -3403,6 +3406,7 @@ class AndroidCommands(commands.Commands):
             wallet = Standard_Wallet(db, storage, config=self.config)
         wallet.hide_type = True
         wallet.set_name(name)
+        wallet.coin = coin
         new_name = helpers.get_unique_wallet_filename(wallet)
         wallet.storage.set_path(self._wallet_path(new_name))
         self.recovery_wallets[new_name] = self.update_recovery_wallet(
@@ -3424,7 +3428,7 @@ class AndroidCommands(commands.Commands):
 
     def delete_devired_wallet_info(self, wallet_obj, hw=False):
         derivation = helpers.get_derivation_path(wallet_obj, wallet_obj.get_addresses()[0])
-        coin = self._detect_wallet_coin(wallet_obj)
+        coin = wallet_obj.coin
         account_id = self.get_account_id(derivation, coin)
 
         if hw:
@@ -3488,7 +3492,7 @@ class AndroidCommands(commands.Commands):
             for wallet in self.daemon.get_wallets().values():
                 wallet_info = {"name": wallet.get_name(), "label": str(wallet)}
                 sum_fiat = Decimal(0)
-                coin = self._detect_wallet_coin(wallet)
+                coin = wallet.coin
                 if coin in self.coins:
                     with self.pywalib.override_server(self.coins[coin]):
                         checksum_from_address = self.pywalib.web3.toChecksumAddress(wallet.get_addresses()[0])
@@ -3561,7 +3565,7 @@ class AndroidCommands(commands.Commands):
                 continue
             if exist_wallet.is_watching_only() and not wallet_obj.is_watching_only():
                 raise ReplaceWatchonlyWallet(exist_wallet)
-            elif self._detect_wallet_coin(exist_wallet) == self._detect_wallet_coin(wallet_obj):
+            elif exist_wallet.coin == wallet_obj.coin:
                 raise BaseException(FileAlreadyExist())
 
     def set_rbf(self, status_rbf):
@@ -3844,15 +3848,6 @@ class AndroidCommands(commands.Commands):
         except BaseException as e:
             raise e
 
-    @staticmethod
-    def _detect_wallet_coin(wallet):
-        assert wallet
-        coin = getattr(wallet, "coin", None)
-        if not coin:
-            coin = wallet.wallet_type[:3]
-
-        return coin
-
     def switch_wallet(self, name):
         """
         Switching to a specific wallet
@@ -3874,7 +3869,7 @@ class AndroidCommands(commands.Commands):
         self.wallet = self.daemon._wallets[self._wallet_path(name)]
         self.wallet.use_change = self.config.get("use_change", False)
 
-        coin = self._detect_wallet_coin(self.wallet)
+        coin = self.wallet.coin
         if coin in self.coins:
             PyWalib.set_server(self.coins[coin])
             contract_info = self.wallet.get_contract_symbols_with_address()
@@ -3906,7 +3901,7 @@ class AndroidCommands(commands.Commands):
         }
         """
         self._assert_wallet_isvalid()
-        coin = self._detect_wallet_coin(self.wallet)
+        coin = self.wallet.coin
         if coin in self.coins:
             addrs = self.wallet.get_addresses()
             checksum_from_address = self.pywalib.web3.toChecksumAddress(addrs[0])
@@ -3968,7 +3963,7 @@ class AndroidCommands(commands.Commands):
 
             self.wallet.use_change = self.config.get("use_change", False)
 
-            coin = self._detect_wallet_coin(self.wallet)
+            coin = self.wallet.coin
             if coin in self.coins:
                 PyWalib.set_server(self.coins[coin])
                 addrs = self.wallet.get_addresses()
@@ -4074,7 +4069,7 @@ class AndroidCommands(commands.Commands):
             raise BaseException(e)
 
     def has_history_wallet(self, wallet_obj):
-        coin = self._detect_wallet_coin(wallet_obj)
+        coin = wallet_obj.coin
         if coin in self.coins:
             txids = self.pywalib.get_all_txid(wallet_obj.get_addresses()[0])
             return bool(txids)

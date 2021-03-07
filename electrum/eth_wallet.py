@@ -107,6 +107,7 @@ class Abstract_Eth_Wallet(ABC):
         # load addresses needs to be called before constructor for sanity checks
         db.load_addresses(self.wallet_type)
         self.keystore = None  # type: Optional[KeyStore]  # will be set by load_keystore
+        self._chain_code = None
         self.lock = threading.RLock()
         self.load_and_cleanup()
         # saved fields
@@ -134,10 +135,24 @@ class Abstract_Eth_Wallet(ABC):
             except Exception as e:
                 _logger.exception(f"Error in recovering contracts. contract_addr: {addr}, error: {e}")
 
-        self.coin = db.get("coin")
-        if self.coin is None:
-            db.put("coin", "eth")
-            self.coin = db.get("coin")
+    @property
+    def coin(self) -> str:
+        # NOTE: this should be "chain_code" instead of "coin", however both
+        # the upper-level caller and the lower-level db both use the term
+        # "coin", just keep it the same here.
+        if self._chain_code is None:
+            chain_code = self.db.get("coin")
+            if chain_code is None:
+                chain_code = "eth"  # default to eth
+                self.db.put("coin", chain_code)
+            self._chain_code = chain_code
+        return self._chain_code
+
+    @coin.setter
+    def coin(self, chain_code: str) -> None:
+        if self._chain_code is None and self.db.get("coin") is None:
+            self._chain_code = chain_code
+            self.db.put("coin", chain_code)
 
     def set_address_index(self, index):
         self.address_index = index

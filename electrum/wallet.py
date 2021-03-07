@@ -258,6 +258,7 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
         # load addresses needs to be called before constructor for sanity checks
         db.load_addresses(self.wallet_type)
         self.keystore = None  # type: Optional[KeyStore]  # will be set by load_keystore
+        self._chain_code = None
         AddressSynchronizer.__init__(self, db)
 
         # saved fields
@@ -281,11 +282,6 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
         if self.db.get('derived_master_xpub') is None:
             self.set_derived_master_xpub("")
 
-        self.coin = db.get("coin")
-        if self.coin is None:
-            db.put("coin", "btc")
-            self.coin = db.get("coin")
-
         self.contacts = Contacts(self.db)
         self._coin_price_cache = {}
         # lightning
@@ -293,6 +289,25 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
         self.name = self.db.get("name")
         self.lnworker = LNWallet(self, ln_xprv) if ln_xprv else None
         self.lnbackups = LNBackups(self)
+
+    @property
+    def coin(self) -> str:
+        # NOTE: this should be "chain_code" instead of "coin", however both
+        # the upper-level caller and the lower-level db both use the term
+        # "coin", just keep it the same here.
+        if self._chain_code is None:
+            chain_code = self.db.get("coin")
+            if chain_code is None:
+                chain_code = "btc"  # default to btc
+                self.db.put("coin", chain_code)
+            self._chain_code = chain_code
+        return self._chain_code
+
+    @coin.setter
+    def coin(self, chain_code: str) -> None:
+        if self._chain_code is None and self.db.get("coin") is None:
+            self._chain_code = chain_code
+            self.db.put("coin", chain_code)
 
     def set_derived_master_xpub(self, xpub):
         self.derived_master_xpub = xpub
