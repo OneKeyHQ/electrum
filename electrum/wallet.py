@@ -2241,6 +2241,34 @@ class Imported_Wallet(Simple_Wallet):
     wallet_type = 'imported'
     txin_type = 'address'
 
+    @classmethod
+    def _from_addresses(cls, coin: str, config: SimpleConfig, addresses: List[str]):
+        db = WalletDB("", manual_upgrades=False)
+        wallet = cls(db, None, config=config)
+        wallet.coin = coin
+        good_addrs, _bad_addrs = wallet.import_addresses(addresses, write_to_disk=False)
+        # FIXME tell user about bad_inputs
+        if not good_addrs:
+            raise BaseException(_("No address available."))
+        return wallet
+
+    @classmethod
+    def _from_pubkey(cls, coin: str, config: SimpleConfig, pubkey: str):
+        try:
+            pubkey = ecc.ECPubkey(bfh(pubkey)).get_public_key_hex()
+            addresses = [bitcoin.pubkey_to_address("p2wpkh", pubkey)]
+        except Exception:
+            raise BaseException(_("Incorrect pubkey."))
+        return cls._from_addresses(coin, config, addresses)
+
+    @classmethod
+    def from_pubkey_or_addresses(cls, coin: str, config: SimpleConfig, pubkey_or_addresses: str):
+        addresses = pubkey_or_addresses.split()
+        if not bitcoin.is_address(addresses[0]):
+            return cls._from_pubkey(coin, config, addresses[0])
+        else:
+            return cls._from_addresses(coin, config, addresses)
+
     def __init__(self, db, storage, *, config):
         Abstract_Wallet.__init__(self, db, storage, config=config)
 

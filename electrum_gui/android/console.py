@@ -2780,21 +2780,35 @@ class AndroidCommands(commands.Commands):
         except BaseException as e:
             raise e
 
+        wallet = None
+
+        if addresses is not None and coin == "btc":
+            wallet = Imported_Wallet.from_pubkey_or_addresses(coin, self.config, addresses)
+            wallet_type = "btc-watch-standard"
+
+        if wallet:
+            wallet.set_name(name)
+            exist_wallet = self.daemon.get_wallet(self._wallet_path(wallet.identity))
+            if exist_wallet is not None:
+                raise BaseException(FileAlreadyExist())
+
+            self.create_new_wallet_update(
+                wallet=wallet, seed=seed, password=password, wallet_type=wallet_type, bip39_derivation=bip39_derivation
+            )
+            ret = {
+                "seed": "",
+                "wallet_info": [{"coin_type": coin, "name": wallet.identity, "exist": 0}],
+                "derived_info": [],
+            }
+            return json.dumps(ret)
+
+        # TODO: cleanup and move the below codes up
         new_seed = ""
         wallet_type = "%s-standard" % coin
         db = WalletDB("", manual_upgrades=False)
         db.put("coin", coin)
         if addresses is not None:
-            if coin == "btc":
-                wallet = Imported_Wallet(db, None, config=self.config)
-                addresses = addresses.split()
-                if not bitcoin.is_address(addresses[0]):
-                    try:
-                        pubkey = ecc.ECPubkey(bfh(addresses[0])).get_public_key_hex()
-                        addresses = [bitcoin.pubkey_to_address("p2wpkh", pubkey)]
-                    except BaseException:
-                        raise BaseException(_("Incorrect address or pubkey."))
-            elif coin in self.coins:
+            if coin in self.coins:
                 wallet = Imported_Eth_Wallet(db, None, config=self.config)
                 wallet.wallet_type = "%s_imported" % coin
                 try:
