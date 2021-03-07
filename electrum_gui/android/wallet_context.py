@@ -27,8 +27,8 @@ def _get_wallet_priority_by_type(wallet_type: str) -> int:
         return 4
 
 
-def _type_info_basic_filter_func(address_digest: str, stored_wallets: List[str]) -> bool:
-    return address_digest in stored_wallets and ".tmp." not in address_digest and ".tmptest." not in address_digest
+def _type_info_basic_filter_func(wallet_id: str, stored_wallets: List[str]) -> bool:
+    return wallet_id in stored_wallets and ".tmp." not in wallet_id and ".tmptest." not in wallet_id
 
 
 def _type_info_default_extra_filter_func(_wallet_type: str) -> bool:
@@ -104,14 +104,14 @@ class WalletContext(object):
         saved_info = self.config.get('all_wallet_type_info', {})
         new_info = {}
 
-        for address_digest, info in saved_info.items():
-            if address_digest not in stored_wallets:
+        for wallet_id, info in saved_info.items():
+            if wallet_id not in stored_wallets:
                 continue
             if 'time' not in info:
                 info['time'] = time.time()
             if 'xpubs' not in info:
                 info['xpubs'] = []
-            new_info[address_digest] = info
+            new_info[wallet_id] = info
 
         return new_info
 
@@ -150,34 +150,34 @@ class WalletContext(object):
             unknowns = list(zip(stored_wallets - set(self._type_info.keys()), itertools.repeat('unknow')))
 
         saved_type_info = {
-            address_digest: type_info
-            for address_digest, type_info in self._type_info.items()
-            if (_type_info_basic_filter_func(address_digest, stored_wallets) and extra_filter_func(type_info["type"]))
+            wallet_id: type_info
+            for wallet_id, type_info in self._type_info.items()
+            if (_type_info_basic_filter_func(wallet_id, stored_wallets) and extra_filter_func(type_info["type"]))
         }
         saved = [(kv[0], kv[1]['type']) for kv in sorted(saved_type_info.items(), key=sort_func, reverse=True)]
 
         return unknowns + saved
 
-    def set_wallet_type(self, address_digest: str, wallet_type: str) -> None:
-        self._type_info[address_digest] = {'type': wallet_type, 'time': time.time()}
+    def set_wallet_type(self, wallet_id: str, wallet_type: str) -> None:
+        self._type_info[wallet_id] = {'type': wallet_type, 'time': time.time()}
         self._save_type_info()
 
-    def remove_type_info(self, address_digest: str) -> None:
-        if self._type_info.pop(address_digest, None) is not None:
+    def remove_type_info(self, wallet_id: str) -> None:
+        if self._type_info.pop(wallet_id, None) is not None:
             self._save_type_info()
 
-    def is_hd(self, address_digest: str) -> bool:
+    def is_hd(self, wallet_id: str) -> bool:
         # Essentially, this method equals a simple return of:
-        # return not self.is_hw(address_digest) and self.is_derived(address_digest)
-        wallet_type = self._type_info.get(address_digest, {}).get('type', '')
+        # return not self.is_hw(wallet_id) and self.is_derived(wallet_id)
+        wallet_type = self._type_info.get(wallet_id, {}).get('type', '')
         return _type_info_wallet_type_is_hd(wallet_type)
 
-    def is_derived(self, address_digest: str) -> bool:
-        wallet_type = self._type_info.get(address_digest, {}).get('type', '')
+    def is_derived(self, wallet_id: str) -> bool:
+        wallet_type = self._type_info.get(wallet_id, {}).get('type', '')
         return '-derived-' in wallet_type
 
-    def is_hw(self, address_digest: str) -> bool:
-        wallet_type = self._type_info.get(address_digest, {}).get('type', '')
+    def is_hw(self, wallet_id: str) -> bool:
+        wallet_type = self._type_info.get(wallet_id, {}).get('type', '')
         return _type_info_wallet_type_is_hw(wallet_type)
 
     def _save_backup_info(self) -> None:

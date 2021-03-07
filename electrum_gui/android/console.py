@@ -676,8 +676,7 @@ class AndroidCommands(commands.Commands):
             wallet.hide_type = hide_type
             wallet.set_name(name)
             wallet.coin = coin
-            new_name = helpers.get_unique_wallet_filename(wallet)
-            wallet.storage.set_path(self._wallet_path(new_name))
+            wallet.storage.set_path(self._wallet_path(wallet.identity))
             wallet.save_db()
             self.daemon.add_wallet(wallet)
             wallet.update_password(old_pw=None, new_pw=None, str_pw=self.android_id, encrypt_storage=True)
@@ -689,7 +688,7 @@ class AndroidCommands(commands.Commands):
             wallet_type = "%s-hw-derived-%s-%s" % (coin, self.m, self.n)
 
             if not hide_type:
-                self.wallet_context.set_wallet_type(helpers.get_unique_wallet_filename(wallet), wallet_type)
+                self.wallet_context.set_wallet_type(wallet.identity, wallet_type)
             self.wallet = wallet
             self.wallet_name = wallet.basename()
             print("console:create_multi_wallet:wallet_name = %s---------" % self.wallet_name)
@@ -2727,7 +2726,7 @@ class AndroidCommands(commands.Commands):
             self.daemon.add_wallet(wallet)
             if coin == "btc":
                 wallet.start_network(self.daemon.network)
-            self.wallet_context.set_wallet_type(helpers.get_unique_wallet_filename(wallet), wallet_type)
+            self.wallet_context.set_wallet_type(wallet.identity, wallet_type)
             if derived_flag:
                 self.set_hd_wallet(wallet)
                 self.update_devired_wallet_info(
@@ -2931,8 +2930,7 @@ class AndroidCommands(commands.Commands):
                 wallet = Standard_Wallet(db, storage, config=self.config)
             elif coin in self.coins:
                 wallet = Standard_Eth_Wallet(db, storage, config=self.config, index=int(index))
-        new_name = helpers.get_unique_wallet_filename(wallet)
-        wallet.storage.set_path(self._wallet_path(new_name))
+        wallet.storage.set_path(self._wallet_path(wallet.identity))
         try:
             self.check_exist_file(wallet)
         except ReplaceWatchonlyWallet:
@@ -2947,7 +2945,7 @@ class AndroidCommands(commands.Commands):
                 derived_flag=derived_flag,
                 bip39_derivation=bip39_derivation,
             )
-            raise BaseException("Replace Watch-olny wallet:%s" % new_name)
+            raise BaseException("Replace Watch-olny wallet:%s" % wallet.identity)
         except BaseException as e:
             raise e
         try:
@@ -3064,19 +3062,20 @@ class AndroidCommands(commands.Commands):
                             wallet.get_name(),
                             coin,
                         )
-                    self.wallet_context.set_wallet_type(helpers.get_unique_wallet_filename(wallet), wallet_type)
+                    self.wallet_context.set_wallet_type(wallet.identity, wallet_type)
         self.recovery_wallets.clear()
 
     def delete_derived_wallet(self):
-        wallet = json.loads(self.list_wallets())
-        for wallet_info in wallet:
-            for key, info in wallet_info.items():
+        wallets = json.loads(self.list_wallets())
+        for wallet_info in wallets:
+            for wallet_id, info in wallet_info.items():
                 try:
                     if -1 != info["type"].find("-derived-") and -1 == info["type"].find("-hw-"):
-                        wallet_obj = self.daemon._wallets[self._wallet_path(key)]
+                        key_in_daemon = self._wallet_path(wallet_id)
+                        wallet_obj = self.daemon._wallets[key_in_daemon]
                         self.delete_wallet_devired_info(wallet_obj)
-                        self.delete_wallet_from_deamon(self._wallet_path(key))
-                        self.wallet_context.remove_type_info(key)
+                        self.delete_wallet_from_deamon(key_in_daemon)
+                        self.wallet_context.remove_type_info(wallet_id)
                 except Exception as e:
                     raise BaseException(e)
         self.hd_wallet = None
@@ -3174,12 +3173,11 @@ class AndroidCommands(commands.Commands):
                 wallet.set_name(name)
                 wallet.coin = coin
                 wallet.hide_type = True
-                new_name = helpers.get_unique_wallet_filename(wallet)
-                wallet.storage.set_path(self._wallet_path(new_name))
+                wallet.storage.set_path(self._wallet_path(wallet.identity))
                 wallet.update_password(old_pw=None, new_pw=None, str_pw=self.android_id, encrypt_storage=True)
                 if coin == "btc":
                     wallet.start_network(self.daemon.network)
-                self.recovery_wallets[new_name] = self.update_recovery_wallet(
+                self.recovery_wallets[wallet.identity] = self.update_recovery_wallet(
                     xpubs + coin.lower(), wallet, self.get_coin_derived_path(i, coin), name, coin
                 )
                 self.wizard = None
@@ -3244,8 +3242,7 @@ class AndroidCommands(commands.Commands):
         if self.hd_wallet is None:
             wallets = self.daemon.get_wallets()
             for key, wallet in wallets.items():
-                address_digest = helpers.get_unique_wallet_filename(wallet)
-                if self.wallet_context.is_hd(address_digest):
+                if self.wallet_context.is_hd(wallet.identity):
                     self.hd_wallet = wallet
                     break
             else:
@@ -3407,9 +3404,8 @@ class AndroidCommands(commands.Commands):
         wallet.hide_type = True
         wallet.set_name(name)
         wallet.coin = coin
-        new_name = helpers.get_unique_wallet_filename(wallet)
-        wallet.storage.set_path(self._wallet_path(new_name))
-        self.recovery_wallets[new_name] = self.update_recovery_wallet(
+        wallet.storage.set_path(self._wallet_path(wallet.identity))
+        self.recovery_wallets[wallet.identity] = self.update_recovery_wallet(
             self.get_hd_wallet_encode_seed(seed=seed, coin=coin), wallet, bip39_derivation, name, coin
         )
         wallet.update_password(old_pw=None, new_pw=password, str_pw=self.android_id, encrypt_storage=True)
@@ -4053,7 +4049,7 @@ class AndroidCommands(commands.Commands):
                     key: {
                         "type": wallet_type,
                         "addr": wallet.get_addresses()[0],
-                        "name": helpers.get_unique_wallet_filename(wallet),
+                        "name": wallet.identity,
                         "label": wallet.get_name(),
                         "device_id": device_id,
                     }

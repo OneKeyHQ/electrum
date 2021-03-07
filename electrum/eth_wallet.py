@@ -50,6 +50,7 @@ from eth_utils import add_0x_prefix
 from electrum_gui.common.basic.functional.text import force_text
 from .i18n import _
 from .bip32 import convert_bip32_intpath_to_strpath, convert_bip32_path_to_list_of_uint32
+from .crypto import sha256
 from .util import (profiler,
                    WalletFileException,
                    InvalidPassword,
@@ -108,6 +109,7 @@ class Abstract_Eth_Wallet(ABC):
         db.load_addresses(self.wallet_type)
         self.keystore = None  # type: Optional[KeyStore]  # will be set by load_keystore
         self._chain_code = None
+        self._identity = None
         self.lock = threading.RLock()
         self.load_and_cleanup()
         # saved fields
@@ -153,6 +155,14 @@ class Abstract_Eth_Wallet(ABC):
         if self._chain_code is None and self.db.get("coin") is None:
             self._chain_code = chain_code
             self.db.put("coin", chain_code)
+
+    @property
+    def identity(self) -> str:
+        if self._identity is None:
+            prefix = self.coin if self.coin != "eth" else ""
+            # crypto.sha256 returns a bytes object
+            self._identity = sha256(prefix + self.get_addresses()[0]).hex()
+        return self._identity
 
     def set_address_index(self, index):
         self.address_index = index

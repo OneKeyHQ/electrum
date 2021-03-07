@@ -259,6 +259,7 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
         db.load_addresses(self.wallet_type)
         self.keystore = None  # type: Optional[KeyStore]  # will be set by load_keystore
         self._chain_code = None
+        self._identity = None
         AddressSynchronizer.__init__(self, db)
 
         # saved fields
@@ -308,6 +309,14 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
         if self._chain_code is None and self.db.get("coin") is None:
             self._chain_code = chain_code
             self.db.put("coin", chain_code)
+
+    @property
+    def identity(self) -> str:
+        if self._identity is None:
+            prefix = self.coin if self.coin != "btc" else ""
+            # crypto.sha256 returns a bytes object
+            self._identity = sha256(prefix + self.get_addresses()[0]).hex()
+        return self._identity
 
     def set_derived_master_xpub(self, xpub):
         self.derived_master_xpub = xpub

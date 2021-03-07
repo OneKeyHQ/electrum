@@ -1,4 +1,3 @@
-import hashlib
 import random
 import string
 
@@ -28,10 +27,6 @@ def get_show_addr(addr):
 
 def get_temp_file():
     return "".join(random.sample(string.ascii_letters + string.digits, 8)) + ".unique.file"
-
-
-def get_unique_wallet_filename(wallet):
-    return hashlib.sha256(wallet.get_addresses()[0].encode()).hexdigest()
 
 
 def get_path_info(path, pos):
