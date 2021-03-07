@@ -2782,9 +2782,14 @@ class AndroidCommands(commands.Commands):
 
         wallet = None
 
-        if addresses is not None and coin == "btc":
-            wallet = Imported_Wallet.from_pubkey_or_addresses(coin, self.config, addresses)
-            wallet_type = "btc-watch-standard"
+        if addresses is not None:
+            wallet_type = f"{coin}-watch-standard"
+            if coin == "btc":
+                wallet = Imported_Wallet.from_pubkey_or_addresses(coin, self.config, addresses)
+            elif coin in self.coins:
+                wallet = Imported_Eth_Wallet.from_pubkey_or_addresses(coin, self.config, addresses)
+            else:
+                raise BaseException("Only support BTC/ETH")
 
         if wallet:
             wallet.set_name(name)
@@ -2807,26 +2812,7 @@ class AndroidCommands(commands.Commands):
         wallet_type = "%s-standard" % coin
         db = WalletDB("", manual_upgrades=False)
         db.put("coin", coin)
-        if addresses is not None:
-            if coin in self.coins:
-                wallet = Imported_Eth_Wallet(db, None, config=self.config)
-                wallet.wallet_type = "%s_imported" % coin
-                try:
-                    from eth_keys import keys
-                    from hexbytes import HexBytes
-
-                    pubkey = keys.PublicKey(HexBytes(addresses))
-                    addresses = pubkey.to_address()
-                except BaseException:
-                    addresses = addresses.split()
-            else:
-                raise BaseException("Only support BTC/ETH")
-            good_inputs, bad_inputs = wallet.import_addresses(addresses, write_to_disk=False)
-            # FIXME tell user about bad_inputs
-            if not good_inputs:
-                raise BaseException(_("No address available."))
-            wallet_type = "%s-watch-standard" % coin
-        elif privkeys is not None or keystores is not None:
+        if privkeys is not None or keystores is not None:
             if coin == "btc":
                 ks = keystore.Imported_KeyStore({})
                 db.put("keystore", ks.dump())

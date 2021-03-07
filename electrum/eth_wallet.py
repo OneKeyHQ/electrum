@@ -69,7 +69,9 @@ from .eth_contract import Eth_Contract
 from .logging import get_logger
 from eth_account import Account
 from eth_utils.address import to_checksum_address
+from eth_keys import keys
 from eth_keys.utils.address import public_key_bytes_to_address
+import hexbytes
 if TYPE_CHECKING:
     from .network import Network
 from .pywalib import PyWalib
@@ -802,6 +804,28 @@ class Imported_Eth_Wallet(Simple_Eth_Wallet):
     # wallet made of imported addresses
 
     wallet_type = 'eth_imported'
+
+    @classmethod
+    def _from_addresses(cls, coin: str, config: SimpleConfig, addresses: List[str]):
+        db = WalletDB("", manual_upgrades=False)
+        wallet = cls(db, None, config=config)
+        wallet.coin = coin
+        wallet.wallet_type = f"{coin}_imported"
+        good_addrs, _bad_addrs = wallet.import_addresses(addresses, write_to_disk=False)
+        # FIXME tell user about bad_inputs
+        if not good_addrs:
+            raise BaseException(_("No address available."))
+        return wallet
+
+    @classmethod
+    def from_pubkey_or_addresses(cls, coin: str, config: SimpleConfig, pubkey_or_addresses: str):
+        try:
+            pubkey = keys.PublicKey(hexbytes.HexBytes(pubkey_or_addresses))
+            addresses = pubkey.to_address()
+        except Exception:
+            addresses = pubkey_or_addresses.split()
+
+        return cls._from_addresses(coin, config, addresses)
 
     def __init__(self, db, storage, *, config):
         Abstract_Eth_Wallet.__init__(self, db, storage, config=config)
