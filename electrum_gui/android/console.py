@@ -2670,70 +2670,52 @@ class AndroidCommands(commands.Commands):
         :param replace:True/False as bool
         :return: wallet key as string
         """
+        wallet = self.replace_wallet_info["wallet"]
         if replace:
-            self.delete_wallet(password=self.replace_wallet_info["password"], name=self.replace_wallet_info["old_key"])
+            self.delete_wallet(password=self.replace_wallet_info["password"], name=wallet.identity)
             self.create_new_wallet_update(
-                wallet=self.replace_wallet_info["wallet"],
-                name=self.replace_wallet_info["name"],
+                wallet=wallet,
                 seed=self.replace_wallet_info["seed"],
                 password=self.replace_wallet_info["password"],
-                coin=self.replace_wallet_info["coin"],
                 wallet_type=self.replace_wallet_info["wallet_type"],
-                derived_flag=self.replace_wallet_info["derived_flag"],
                 bip39_derivation=self.replace_wallet_info["bip39_derivation"],
             )
-        wallet = self.replace_wallet_info["wallet"]
         self.replace_wallet_info = {}
         return str(wallet)
 
     def update_replace_info(
         self,
-        old_key,
-        new_wallet,
-        name=None,
+        wallet_obj,
         seed=None,
         password=None,
-        coin="btc",
         wallet_type=None,
-        derived_flag=None,
         bip39_derivation=None,
     ):
-        self.replace_wallet_info["old_key"] = old_key
-        self.replace_wallet_info["wallet"] = new_wallet
-        self.replace_wallet_info["name"] = name
+        self.replace_wallet_info["wallet"] = wallet_obj
         self.replace_wallet_info["seed"] = seed
         self.replace_wallet_info["password"] = password
-        self.replace_wallet_info["coin"] = coin
         self.replace_wallet_info["wallet_type"] = wallet_type
-        self.replace_wallet_info["derived_flag"] = derived_flag
         self.replace_wallet_info["bip39_derivation"] = bip39_derivation
 
     def create_new_wallet_update(
         self,
         wallet=None,
-        name=None,
         seed=None,
         password=None,
-        coin="btc",
         wallet_type=None,
-        derived_flag=False,
         bip39_derivation=None,
     ):
-        try:
-            wallet.set_name(name)
-            wallet.ensure_storage(self._wallet_path(wallet.identity))
-            wallet.update_password(old_pw=None, new_pw=password, str_pw=self.android_id, encrypt_storage=True)
-            self.daemon.add_wallet(wallet)
-            if coin == "btc":
-                wallet.start_network(self.daemon.network)
-            self.wallet_context.set_wallet_type(wallet.identity, wallet_type)
-            if derived_flag:
-                self.set_hd_wallet(wallet)
-                self.update_devired_wallet_info(
-                    bip39_derivation, self.get_hd_wallet_encode_seed(seed=seed, coin=coin), name, coin
-                )
-        except BaseException as e:
-            raise e
+        wallet.ensure_storage(self._wallet_path(wallet.identity))
+        wallet.update_password(old_pw=None, new_pw=password, str_pw=self.android_id, encrypt_storage=True)
+        self.daemon.add_wallet(wallet)
+        if wallet.coin == "btc":
+            wallet.start_network(self.daemon.network)
+        self.wallet_context.set_wallet_type(wallet.identity, wallet_type)
+        if bip39_derivation is not None:
+            self.set_hd_wallet(wallet)
+            self.update_devired_wallet_info(
+                bip39_derivation, self.get_hd_wallet_encode_seed(seed=seed, coin=wallet.coin), wallet.name, wallet.coin
+            )
 
     def create(  # noqa
         self,
@@ -2799,7 +2781,6 @@ class AndroidCommands(commands.Commands):
             raise e
 
         new_seed = ""
-        derived_flag = False
         wallet_type = "%s-standard" % coin
         db = WalletDB("", manual_upgrades=False)
         db.put("coin", coin)
@@ -2889,7 +2870,6 @@ class AndroidCommands(commands.Commands):
                         util.get_keystore_path(bip39_derivation) if coin in self.coins else bip39_derivation,
                     )
                 wallet_type = "%s-derived-standard" % coin
-                derived_flag = True
                 if coin in self.coins:
                     index = helpers.get_path_info(bip39_derivation, INDEX_POS)
 
@@ -2926,37 +2906,28 @@ class AndroidCommands(commands.Commands):
             elif coin in self.coins:
                 wallet = Standard_Eth_Wallet(db, None, config=self.config, index=int(index))
         wallet.coin = coin
+        wallet.set_name(name)
         wallet_storage_path = self._wallet_path(wallet.identity)
         exist_wallet = self.daemon.get_wallet(wallet_storage_path)
         if exist_wallet is not None:
             if exist_wallet.is_watching_only() and not wallet.is_watching_only():
                 self.update_replace_info(
-                    str(exist_wallet),  # essentially exist_wallet.base_name()
                     wallet,
-                    name=name,
                     seed=seed,
                     password=password,
-                    coin=coin,
                     wallet_type=wallet_type,
-                    derived_flag=derived_flag,
                     bip39_derivation=bip39_derivation,
                 )
                 raise BaseException("Replace Watch-olny wallet:%s" % wallet.identity)
             else:
                 raise BaseException(FileAlreadyExist())
-        try:
-            self.create_new_wallet_update(
-                name=name,
-                seed=seed,
-                password=password,
-                wallet=wallet,
-                coin=coin,
-                wallet_type=wallet_type,
-                derived_flag=derived_flag,
-                bip39_derivation=bip39_derivation,
-            )
-        except BaseException as e:
-            raise e
+        self.create_new_wallet_update(
+            wallet=wallet,
+            seed=seed,
+            password=password,
+            wallet_type=wallet_type,
+            bip39_derivation=bip39_derivation,
+        )
         if new_seed:
             self.wallet_context.set_backup_info(wallet.keystore.xpub)
         wallet_info = CreateWalletInfo.create_wallet_info(coin_type=coin, name=wallet.__str__())
