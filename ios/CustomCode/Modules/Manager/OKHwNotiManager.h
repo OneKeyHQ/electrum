@@ -11,7 +11,7 @@ typedef NS_ENUM(NSInteger,OKHWNotiType) {
     OKHWNotiTypePin_New_First = 2, //设置新PIN
     OKHWNotiTypePass_Phrass = 3, //验证passphrass
     OKHWNotiTypeFactoryReset = 6, //恢复出厂设置
-    OKHWNotiTypeKeyConfirm = 7, //按键确认
+    OKHWNotiTypeKeyConfirm = 107, //按键确认
     OKHWNotiTypeSendCoinConfirm = 8,//发币确认
     OKHWNotiTypeVerify_Address_Confirm = 10 //校验地址确认
 };
