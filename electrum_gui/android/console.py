@@ -2782,6 +2782,7 @@ class AndroidCommands(commands.Commands):
 
         wallet = None
         watch_only = False
+        new_seed = False
 
         if addresses is not None:
             watch_only = True
@@ -2802,92 +2803,40 @@ class AndroidCommands(commands.Commands):
                 wallet = Imported_Eth_Wallet.from_keystores(coin, self.config, keystores, keystore_password)
             else:
                 wallet = Imported_Eth_Wallet.from_privkeys(coin, self.config, privkeys)
-
-        if wallet:
-            wallet.set_name(name)
-            exist_wallet = self.daemon.get_wallet(self._wallet_path(wallet.identity))
-            if exist_wallet is not None:
-                if not watch_only and exist_wallet.is_watching_only():
-                    self.update_replace_info(
-                        wallet,
-                        seed=seed,
-                        password=password,
-                        wallet_type=wallet_type,
-                        bip39_derivation=bip39_derivation,
-                    )
-                    raise BaseException("Replace Watch-olny wallet:%s" % wallet.identity)
-                else:
-                    raise BaseException(FileAlreadyExist())
-
-            self.create_new_wallet_update(
-                wallet=wallet, seed=seed, password=password, wallet_type=wallet_type, bip39_derivation=bip39_derivation
-            )
-            ret = {
-                "seed": "",
-                "wallet_info": [{"coin_type": coin, "name": wallet.identity, "exist": 0}],
-                "derived_info": [],
-            }
-            return json.dumps(ret)
-        else:
-            # TODO: cleanup and move the below codes up
-            new_seed = ""
-            wallet_type = "%s-standard" % coin
-            db = WalletDB("", manual_upgrades=False)
-            db.put("coin", coin)
-            if bip39_derivation is not None:
-                if keystore.is_seed(seed):
-                    ks = keystore.from_seed(seed, passphrase, False)
-                else:
-                    is_checksum, is_wordlist = keystore.bip39_is_checksum_valid(seed)
-                    if not is_checksum:
-                        raise BaseException(InvalidBip39Seed())
-                    ks = keystore.from_bip39_seed(
-                        seed,
-                        passphrase,
-                        util.get_keystore_path(bip39_derivation) if coin in self.coins else bip39_derivation,
-                    )
-                wallet_type = "%s-derived-standard" % coin
-                if coin in self.coins:
-                    index = helpers.get_path_info(bip39_derivation, INDEX_POS)
-
-            elif master is not None:
-                ks = keystore.from_master_key(master)
-            else:
-                if seed is None:
-                    seed = Mnemonic("english").generate(strength=strength)
-                    # seed = mnemonic.Mnemonic('en').make_seed(seed_type=seed_type)
-                    new_seed = seed
-                    print('Your wallet generation seed is:\n"%s"' % seed)
-                    print("seed type = %s" % type(seed))
-                if keystore.is_seed(seed):
-                    ks = keystore.from_seed(seed, passphrase, False)
-                else:
-                    is_checksum, is_wordlist = keystore.bip39_is_checksum_valid(seed)
-                    if not is_checksum:
-                        raise BaseException(InvalidBip39Seed())
-                    if coin == "btc":
-                        derivation = bip44_derivation(0, purpose)
-                    elif coin in self.coins:
-                        index = 0
-                        derivation = bip44_eth_derivation(
-                            0, self.coins[coin]["addressType"], cointype=self.coins[coin]["coinId"]
-                        )
-                    ks = keystore.from_bip39_seed(
-                        seed,
-                        passphrase,
-                        derivation=util.get_keystore_path(derivation) if coin in self.coins else derivation,
-                    )
-            db.put("keystore", ks.dump())
+        elif bip39_derivation is not None and seed is not None:
+            wallet_type = f"{coin}-derived-standard"
             if coin == "btc":
-                wallet = Standard_Wallet(db, None, config=self.config)
+                wallet = Standard_Wallet.from_seed_or_bip39(coin, self.config, seed, passphrase, bip39_derivation)
             elif coin in self.coins:
-                wallet = Standard_Eth_Wallet(db, None, config=self.config, index=int(index))
-        wallet.coin = coin
+                derivation = util.get_keystore_path(bip39_derivation)
+                index = int(helpers.get_path_info(bip39_derivation, INDEX_POS))
+                wallet = Standard_Eth_Wallet.from_seed_or_bip39(coin, index, self.config, seed, passphrase, derivation)
+        elif master is not None:
+            # TODO: master is only for btc?
+            wallet_type = "btc-standard"
+            wallet = Standard_Wallet.from_master_key("btc", self.config, master)
+        else:
+            wallet_type = f"{coin}-standard"
+            if seed is None:
+                seed = Mnemonic("english").generate(strength=strength)
+                new_seed = True
+                print('Your wallet generation seed is:\n"%s"' % seed)
+                print("seed type = %s" % type(seed))
+            if coin == "btc":
+                wallet = Standard_Wallet.from_seed_or_bip39(
+                    coin, self.config, seed, passphrase, bip44_derivation(0, purpose)
+                )
+            elif coin in self.coins:
+                derivation = util.get_keystore_path(
+                    bip44_eth_derivation(0, self.coins[coin]["addressType"], cointype=self.coins[coin]["coinId"])
+                )
+                index = 0
+                wallet = Standard_Eth_Wallet.from_seed_or_bip39(coin, index, self.config, seed, passphrase, derivation)
+
         wallet.set_name(name)
-        wallet_storage_path = self._wallet_path(wallet.identity)
-        exist_wallet = self.daemon.get_wallet(wallet_storage_path)
+        exist_wallet = self.daemon.get_wallet(self._wallet_path(wallet.identity))
         if exist_wallet is not None:
-            if exist_wallet.is_watching_only() and not wallet.is_watching_only():
+            if not watch_only and exist_wallet.is_watching_only():
                 self.update_replace_info(
                     wallet,
                     seed=seed,
@@ -2898,18 +2847,18 @@ class AndroidCommands(commands.Commands):
                 raise BaseException("Replace Watch-olny wallet:%s" % wallet.identity)
             else:
                 raise BaseException(FileAlreadyExist())
+
         self.create_new_wallet_update(
-            wallet=wallet,
-            seed=seed,
-            password=password,
-            wallet_type=wallet_type,
-            bip39_derivation=bip39_derivation,
+            wallet=wallet, seed=seed, password=password, wallet_type=wallet_type, bip39_derivation=bip39_derivation
         )
         if new_seed:
             self.wallet_context.set_backup_info(wallet.keystore.xpub)
-        wallet_info = CreateWalletInfo.create_wallet_info(coin_type=coin, name=wallet.__str__())
-        out = self.get_create_info_by_json(new_seed, wallet_info)
-        return json.dumps(out)
+        ret = {
+            "seed": seed if new_seed else "",
+            "wallet_info": [{"coin_type": coin, "name": wallet.identity, "exist": 0}],
+            "derived_info": [],
+        }
+        return json.dumps(ret)
 
     def get_create_info_by_json(self, seed="", wallet_info=None, derived_info=None):
         from electrum_gui.android.create_wallet_info import CreateWalletInfo

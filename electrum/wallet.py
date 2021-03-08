@@ -54,7 +54,7 @@ from .util import (NotEnoughFunds, UserCancelled, profiler,
                    WalletFileException, BitcoinException, MultipleSpendMaxTxOutputs,
                    InvalidPassword, format_time, timestamp_to_datetime, Satoshis, UserCancel,
                    Fiat, bfh, bh2u, TxMinedInfo, quantize_feerate, create_bip21_uri, OrderedDictWithIndex,
-                   FileAlreadyExist, UnavailablePrivateKey)
+                   FileAlreadyExist, UnavailablePrivateKey, InvalidBip39Seed)
 from .util import get_backup_dir
 from .simple_config import SimpleConfig
 from .bitcoin import COIN, TYPE_ADDRESS
@@ -2715,6 +2715,31 @@ class Simple_Deterministic_Wallet(Simple_Wallet, Deterministic_Wallet):
 
 class Standard_Wallet(Simple_Deterministic_Wallet):
     wallet_type = 'standard'
+
+    @classmethod
+    def _from_keystore(cls, coin: str, config: SimpleConfig, keystore: KeyStore):
+        db = WalletDB("", manual_upgrades=False)
+        db.put("keystore", keystore.dump())
+        wallet = cls(db, None, config=config)
+        wallet.coin = coin
+        return wallet
+
+    @classmethod
+    def from_seed_or_bip39(cls, coin: str, config: SimpleConfig, seed: str, passphrase: str, derivation: str):
+        if keystore.is_seed(seed):
+            ks = keystore.from_seed(seed)
+        else:
+            is_checksum_valid, _is_wordlist_valid = keystore.bip39_is_checksum_valid(seed)
+            if not is_checksum_valid:
+                raise BaseException(InvalidBip39Seed())
+            ks = keystore.from_bip39_seed(seed, passphrase, derivation)
+
+        return cls._from_keystore(coin, config, ks)
+
+    @classmethod
+    def from_master_key(cls, coin: str, config: SimpleConfig, master_key: str):
+        ks = keystore.from_master_key(master_key)
+        return cls._from_keystore(coin, config, ks)
 
     def pubkeys_to_address(self, pubkeys):
         pubkey = pubkeys[0]

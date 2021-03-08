@@ -54,6 +54,7 @@ from .crypto import sha256
 from .util import (profiler,
                    WalletFileException,
                    FileAlreadyExist,
+                   InvalidBip39Seed,
                    InvalidPassword,
                    UserCancelled,
                    UserCancel)
@@ -1179,6 +1180,29 @@ class Simple_Eth_Deterministic_Wallet(Simple_Eth_Wallet, Deterministic_Eth_Walle
 
 class Standard_Eth_Wallet(Simple_Eth_Deterministic_Wallet):
     wallet_type = 'eth_standard'
+
+    @classmethod
+    def _from_keystore(cls, coin: str, index: int, config: SimpleConfig, keystore: KeyStore):
+        db = WalletDB("", manual_upgrades=False)
+        db.put("keystore", keystore.dump())
+        wallet = cls(db, None, config=config, index=index)
+        wallet.coin = coin
+        wallet.wallet_type = f"{coin}_standard"
+        return wallet
+
+    @classmethod
+    def from_seed_or_bip39(
+        cls, coin: str, index: int, config: SimpleConfig, seed: str, passphrase: str, derivation: str
+    ):
+        if keystore.is_seed(seed):
+            ks = keystore.from_seed(seed)
+        else:
+            is_checksum_valid, _is_wordlist_valid = keystore.bip39_is_checksum_valid(seed)
+            if not is_checksum_valid:
+                raise BaseException(InvalidBip39Seed())
+            ks = keystore.from_bip39_seed(seed, passphrase, derivation)
+
+        return cls._from_keystore(coin, index, config, ks)
 
     def __init__(self, db, storage, *, config, index=0):
         Simple_Eth_Deterministic_Wallet.__init__(self, db, storage, config=config, index=index)
