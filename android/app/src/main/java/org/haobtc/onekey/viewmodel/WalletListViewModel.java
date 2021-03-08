@@ -30,7 +30,7 @@ public class WalletListViewModel extends AndroidViewModel {
 
     public WalletListViewModel(@NonNull Application application) {
         super(application);
-        mDeviceManager = new DeviceManager();
+        mDeviceManager = DeviceManager.getInstance();
         getAllWallets(Constant.HD);
         getBtcWallets(Constant.BTC);
         getEthWallets(Constant.ETH);

@@ -1,7 +1,17 @@
 package cn.com.heaton.blelibrary.ble.callback;
 
+import android.bluetooth.BluetoothGattService;
+import java.util.List;
+
 /** Created by LiuLei on 2017/10/23. */
-public abstract class BleConnectCallback<T> {
+public abstract class BleGlobalConnectCallback<T> {
+
+    /**
+     * The callback is disconnected or connected when the connection is changed
+     *
+     * @param device ble device object
+     */
+    public abstract void onConnectionChanged(T device);
 
     public void onConnectCancel(T device) {}
 
@@ -22,4 +32,11 @@ public abstract class BleConnectCallback<T> {
     public void onConnectException(T device, int errorCode) {}
 
     public void onConnectTimeOut(T device) {}
+
+    /**
+     * Set the notification here when the service finds a callback setNotify
+     *
+     * @param device
+     */
+    public void onServicesDiscovered(T device, List<BluetoothGattService> gattServices) {}
 }

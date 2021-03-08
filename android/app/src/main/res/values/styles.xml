@@ -148,4 +148,8 @@
         <item name="colorPrimaryDark">@color/onekey</item>
     </style>
 
+    <style name="AnimBottomPop" parent="@android:style/Animation">
+        <item name="android:windowEnterAnimation">@anim/anim_bottom_pop_in</item>
+        <item name="android:windowExitAnimation">@anim/anim_bottom_pop_out</item>
+    </style>
 </resources>

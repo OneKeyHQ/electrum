@@ -120,7 +120,7 @@ public class TransactionDetailWalletActivity extends BaseActivity
 
         mAssetsId = getIntent().getIntExtra(EXT_ASSETS_ID, -1);
         mAccountManager = new AccountManager(this);
-        mDeviceManager = new DeviceManager();
+        mDeviceManager = DeviceManager.getInstance();
 
         mAppWalletViewModel =
                 new ViewModelProvider(MyApplication.getInstance()).get(AppWalletViewModel.class);

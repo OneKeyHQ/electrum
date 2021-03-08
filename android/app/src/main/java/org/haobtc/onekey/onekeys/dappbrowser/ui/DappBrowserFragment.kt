@@ -31,6 +31,8 @@ import org.haobtc.onekey.BuildConfig
 import org.haobtc.onekey.R
 import org.haobtc.onekey.activities.base.MyApplication
 import org.haobtc.onekey.business.assetsLogo.AssetsLogo
+import org.haobtc.onekey.business.wallet.DeviceException
+import org.haobtc.onekey.constant.Vm
 import org.haobtc.onekey.databinding.FragmentDappBrowserBinding
 import org.haobtc.onekey.onekeys.dappbrowser.URLLoadInterface
 import org.haobtc.onekey.onekeys.dappbrowser.Web3View
@@ -146,6 +148,7 @@ class DappBrowserFragment : BaseFragment(),
   // 弹窗
   private var resultDialog: DappResultAlertDialog? = null
   private var confirmationDialog: DappActionSheetDialog? = null
+  private var connectDeviceDialog: ConnectDeviceDialog? = null
 
   // 选择上传图片相关
   private var mUploadMessage: ValueCallback<Array<Uri>>? = null
@@ -340,7 +343,7 @@ class DappBrowserFragment : BaseFragment(),
   /**
    * 处理 SignMessage 授权回调
    */
-  override fun gotAuthorisation(pwd: String, gotAuth: Boolean) {
+  override fun gotAuthorisation(pwd: String?, gotAuth: Boolean) {
     if (gotAuth && dAppFunction != null) {
       Logger.e("==signMessage==:${HexUtils.byteArrayToHexString(messageTBS?.prehash)}")
       // todo sign message
@@ -356,7 +359,7 @@ class DappBrowserFragment : BaseFragment(),
    * Endpoint from PIN/Swipe authorisation
    * @param gotAuth
    */
-  fun pinAuthorisation(pwd: String, gotAuth: Boolean) {
+  fun pinAuthorisation(pwd: String?, gotAuth: Boolean) {
     if (confirmationDialog != null && confirmationDialog?.isShowing == true) {
       confirmationDialog?.completeSignRequest(pwd, gotAuth)
     }
@@ -368,12 +371,48 @@ class DappBrowserFragment : BaseFragment(),
   // endregion
 
 
+  // region 处理硬件链接
+  private fun getHardwareAuthorisation(deviceId: String) {
+    if (connectDeviceDialog == null || connectDeviceDialog?.isShowing() == false) {
+      connectDeviceDialog = context?.let { ConnectDeviceDialog(it) }?.apply {
+        setOnConnectListener({
+          // todo 验证权限
+          pinAuthorisation(null, true)
+        }, { e ->
+          when (e) {
+            is DeviceException.OnCancelError -> {
+              // ignore
+            }
+            is DeviceException.OnTimeoutError -> {
+              showErrorDialog(
+                  getString(R.string.hint_device_connect_timeout),
+                  getString(R.string.hint_device_connect_error_title))
+            }
+            else -> {
+              showErrorDialog(
+                  getString(R.string.hint_device_connect_error),
+                  getString(R.string.hint_device_connect_error_title))
+            }
+          }
+        })
+        show()
+      }
+    }
+  }
+
+  // endregion
+
   // region 处理 Dapp 弹窗 DappActionSheetCallback 回调操作
   /**
    * 获取签字权限和密码
    * 弹窗 UI
    */
   override fun getAuthorisation(callback: SignAuthenticationCallback) {
+    val walletInfo = mAppWalletViewModel.currentWalletAccountInfo.value
+    if (walletInfo?.walletType == Vm.WalletType.HARDWARE) {
+      getHardwareAuthorisation(walletInfo.deviceId!!)
+      return
+    }
     showPasswordDialog(success = {
       // todo 如果是硬件先连接硬件
       pinAuthorisation(it, true)
@@ -382,7 +421,7 @@ class DappBrowserFragment : BaseFragment(),
     })
   }
 
-  override fun signTransaction(pwd: String, finalTx: Web3Transaction) {
+  override fun signTransaction(pwd: String?, finalTx: Web3Transaction) {
     val callback: SignTransactionInterface = object : SignTransactionInterface {
       override fun transactionSuccess(web3Tx: Web3Transaction, rawTx: String) {
         confirmationDialog?.transactionWritten(rawTx)
@@ -400,7 +439,7 @@ class DappBrowserFragment : BaseFragment(),
     // signTransaction(finalTx, networkInfo.chainId, callback);
   }
 
-  override fun sendTransaction(pwd: String, finalTx: Web3Transaction) {
+  override fun sendTransaction(pwd: String?, finalTx: Web3Transaction) {
     val callback: SendTransactionInterface = object : SendTransactionInterface {
       override fun transactionSuccess(web3Tx: Web3Transaction, hashData: String) {
         confirmationDialog?.transactionWritten(hashData)
@@ -548,6 +587,24 @@ class DappBrowserFragment : BaseFragment(),
           }
         })
         .show(childFragmentManager, "passwordDialog")
+  }
+
+  private fun showErrorDialog(message: String, title: String? = null) {
+    if (resultDialog?.isShowing == true) resultDialog?.dismiss()
+    context?.let {
+      resultDialog = DappResultAlertDialog(it).apply {
+        setIcon(DappResultAlertDialog.ERROR)
+        if (title == null) {
+          setTitle(R.string.reansaction_error)
+        } else {
+          setTitle(title)
+        }
+        setMessage(message)
+        setButtonText(R.string.confirm)
+        setButtonListener { v -> resultDialog?.dismiss() }
+        show()
+      }
+    }
   }
 
   /**

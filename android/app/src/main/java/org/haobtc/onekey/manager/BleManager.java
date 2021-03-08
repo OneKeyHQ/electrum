@@ -9,9 +9,11 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import androidx.annotation.WorkerThread;
 import androidx.fragment.app.FragmentActivity;
 import cn.com.heaton.blelibrary.ble.Ble;
 import cn.com.heaton.blelibrary.ble.callback.BleConnectCallback;
+import cn.com.heaton.blelibrary.ble.callback.BleGlobalConnectCallback;
 import cn.com.heaton.blelibrary.ble.callback.BleMtuCallback;
 import cn.com.heaton.blelibrary.ble.callback.BleNotiftCallback;
 import cn.com.heaton.blelibrary.ble.callback.BleScanCallback;
@@ -23,6 +25,7 @@ import io.reactivex.disposables.Disposable;
 import java.util.Objects;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
+import org.haobtc.onekey.business.wallet.OnekeyBleConnectCallback;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.BleConnectionEx;
 import org.haobtc.onekey.event.BleScanStopEvent;
@@ -65,11 +68,13 @@ public final class BleManager {
         }
         return sInstance;
     }
+
     /** init ble */
     public void initBle() {
         if (mBle == null) {
             mBle = Ble.getInstance();
         }
+        Ble.getInstance().setGlobalConnectStatusCallback(mConnectCallback);
         if (mBleScanCallBack == null) {
             mBleScanCallBack =
                     new BleScanCallback<BleDevice>() {
@@ -182,7 +187,7 @@ public final class BleManager {
             PyEnv.mExecutorService.execute(
                     () -> {
                         currentAddress = device.getBleAddress();
-                        Ble.getInstance().connect(device, mConnectCallback);
+                        Ble.getInstance().connect(device, null);
                     });
         }
     }
@@ -195,6 +200,109 @@ public final class BleManager {
         } catch (Exception ignored) {
         }
     }
+
+    public void cancelConnect(String macAddress) {
+        BleDevice bleDevice = Ble.getInstance().getBleDevice(macAddress);
+        cancelConnect(bleDevice);
+    }
+
+    public void cancelConnect(BleDevice device) {
+        try {
+            Ble.getInstance().cancelConnectting(device);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @WorkerThread
+    public void connDevByMac(String device, OnekeyBleConnectCallback callback) {
+        connecting = true;
+        synchronized (BleManager.class) {
+            // targetDevice.isConnected() 状态不及时，有 1-2 秒的延迟。未来看情况删掉该判断
+            BleDevice targetDevice = Ble.getInstance().getBleDevice(device);
+            if (targetDevice != null && targetDevice.isConnected()) {
+                EventBus.getDefault().postSticky(new NotifySuccessfulEvent());
+                connecting = false;
+                callback.onSuccess(targetDevice);
+                return;
+            }
+
+            disconnectAllOther(device);
+            PyEnv.mExecutorService.execute(
+                    () -> {
+                        currentAddress = device;
+                        Ble.getInstance()
+                                .connect(
+                                        device,
+                                        new BleConnectCallback<BleDevice>() {
+
+                                            @Override
+                                            public void onReady(BleDevice device) {
+                                                super.onReady(device);
+                                                setNotify(
+                                                        device,
+                                                        new BleNotiftCallback<BleDevice>() {
+                                                            @Override
+                                                            public void onChanged(
+                                                                    BleDevice device,
+                                                                    BluetoothGattCharacteristic
+                                                                            characteristic) {}
+
+                                                            @Override
+                                                            public void onNotifySuccess(
+                                                                    BleDevice device) {
+                                                                super.onNotifySuccess(device);
+                                                                callback.onSuccess(device);
+                                                            }
+
+                                                            @Override
+                                                            public void onNotifyCanceled(
+                                                                    BleDevice device) {
+                                                                super.onNotifyCanceled(device);
+                                                                callback.onConnectCancel(device);
+                                                            }
+                                                        });
+                                                callback.onReady(device);
+                                            }
+
+                                            @Override
+                                            public void onConnectException(
+                                                    BleDevice device, int errorCode) {
+                                                super.onConnectException(device, errorCode);
+                                                connecting = false;
+                                                if (Objects.equals(
+                                                        currentAddress, device.getBleName())) {
+                                                    EventBus.getDefault()
+                                                            .post(
+                                                                    BleConnectionEx
+                                                                            .BLE_CONNECTION_EX_OTHERS);
+                                                    EventBus.getDefault().post(new ExitEvent());
+                                                    PyEnv.cancelAll();
+                                                }
+                                                callback.onConnectException(device, errorCode);
+                                            }
+
+                                            @Override
+                                            public void onConnectTimeOut(BleDevice device) {
+                                                super.onConnectTimeOut(device);
+                                                connecting = false;
+                                                EventBus.getDefault()
+                                                        .post(
+                                                                BleConnectionEx
+                                                                        .BLE_CONNECTION_EX_TIMEOUT);
+                                                callback.onConnectTimeOut(device);
+                                            }
+
+                                            @Override
+                                            public void onConnectCancel(BleDevice device) {
+                                                super.onConnectCancel(device);
+                                                callback.onConnectCancel(device);
+                                            }
+                                        });
+                    });
+        }
+    }
+
     /**
      * conn ble device by mac address
      *
@@ -220,14 +328,14 @@ public final class BleManager {
             PyEnv.mExecutorService.execute(
                     () -> {
                         currentAddress = device;
-                        Ble.getInstance().connect(device, mConnectCallback);
+                        Ble.getInstance().connect(device, null);
                     });
         }
     }
 
     /** ble call back */
-    private final BleConnectCallback<BleDevice> mConnectCallback =
-            new BleConnectCallback<BleDevice>() {
+    private final BleGlobalConnectCallback<BleDevice> mConnectCallback =
+            new BleGlobalConnectCallback<BleDevice>() {
                 @Override
                 public void onConnectionChanged(BleDevice device) {
                     if (device.isDisconnected()
@@ -260,6 +368,52 @@ public final class BleManager {
                     EventBus.getDefault().post(BleConnectionEx.BLE_CONNECTION_EX_TIMEOUT);
                 }
             };
+
+    private void setNotify(BleDevice device, BleNotiftCallback<BleDevice> callback) {
+        // buffered a proportion of response
+        StringBuffer buffer = new StringBuffer();
+        Ble.getInstance()
+                .enableNotify(
+                        device,
+                        true,
+                        new BleNotiftCallback<BleDevice>() {
+                            @Override
+                            public void onChanged(
+                                    BleDevice device, BluetoothGattCharacteristic characteristic) {
+                                dealBleResponse(characteristic, buffer);
+                                callback.onChanged(device, characteristic);
+                            }
+
+                            @Override
+                            public void onNotifySuccess(BleDevice device) {
+                                super.onNotifySuccess(device);
+                                Ble.getInstance()
+                                        .setMTU(
+                                                device.getBleAddress(),
+                                                512,
+                                                new BleMtuCallback<BleDevice>() {
+                                                    @Override
+                                                    public void onMtuChanged(
+                                                            BleDevice device, int mtu, int status) {
+                                                        super.onMtuChanged(device, mtu, status);
+                                                        PyEnv.bleEnable(device, mWriteCallBack);
+                                                        EventBus.getDefault()
+                                                                .post(new NotifySuccessfulEvent());
+                                                        connecting = false;
+                                                    }
+                                                });
+                                currentAddress = device.getBleAddress();
+                                currentBleName = device.getBleName();
+                                callback.onNotifySuccess(device);
+                            }
+
+                            @Override
+                            public void onNotifyCanceled(BleDevice device) {
+                                super.onNotifyCanceled(device);
+                                callback.onNotifyCanceled(device);
+                            }
+                        });
+    }
 
     /**
      * setNotify set up notifications when connection is established
@@ -308,6 +462,7 @@ public final class BleManager {
                             }
                         });
     }
+
     /** 整合数据超过MTU引起的的分包数据 */
     private void dealBleResponse(BluetoothGattCharacteristic characteristic, StringBuffer buffer) {
         buffer.append(CommonUtils.bytes2hex(characteristic.getValue()));
@@ -326,6 +481,7 @@ public final class BleManager {
             buffer.delete(0, buffer.length());
         }
     }
+
     /** 定位功能监控 */
     private final LocationListener locationListener =
             new LocationListener() {

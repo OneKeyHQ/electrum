@@ -2,6 +2,7 @@ package cn.com.heaton.blelibrary.ble.proxy;
 
 import cn.com.heaton.blelibrary.ble.BleLog;
 import cn.com.heaton.blelibrary.ble.callback.BleConnectCallback;
+import cn.com.heaton.blelibrary.ble.callback.BleDisConnectCallback;
 import cn.com.heaton.blelibrary.ble.callback.BleMtuCallback;
 import cn.com.heaton.blelibrary.ble.callback.BleNotiftCallback;
 import cn.com.heaton.blelibrary.ble.callback.BleReadCallback;
@@ -97,7 +98,7 @@ public class RequestImpl<T extends BleDevice> implements RequestLisenter<T> {
     }
 
     @Override
-    public void disconnect(T device, BleConnectCallback<T> callback) {
+    public void disconnect(T device, BleDisConnectCallback<T> callback) {
         ConnectRequest<T> request = Rproxy.getRequest(ConnectRequest.class);
         BleLog.BluetoothState("disconnect", device);
         //        Log.e(BleLog.TAG, Log.getStackTraceString(new Throwable()));

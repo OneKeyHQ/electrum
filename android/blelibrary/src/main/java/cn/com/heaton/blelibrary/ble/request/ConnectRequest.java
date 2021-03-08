@@ -12,6 +12,8 @@ import cn.com.heaton.blelibrary.ble.BleRequestImpl;
 import cn.com.heaton.blelibrary.ble.BleStates;
 import cn.com.heaton.blelibrary.ble.annotation.Implement;
 import cn.com.heaton.blelibrary.ble.callback.BleConnectCallback;
+import cn.com.heaton.blelibrary.ble.callback.BleDisConnectCallback;
+import cn.com.heaton.blelibrary.ble.callback.BleGlobalConnectCallback;
 import cn.com.heaton.blelibrary.ble.callback.wrapper.BleWrapperCallback;
 import cn.com.heaton.blelibrary.ble.callback.wrapper.ConnectWrapperCallback;
 import cn.com.heaton.blelibrary.ble.model.BleDevice;
@@ -19,6 +21,7 @@ import cn.com.heaton.blelibrary.ble.queue.ConnectQueue;
 import cn.com.heaton.blelibrary.ble.queue.RequestTask;
 import cn.com.heaton.blelibrary.ble.utils.ThreadUtils;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -28,7 +31,10 @@ public class ConnectRequest<T extends BleDevice> implements ConnectWrapperCallba
 
     private static final String TAG = "ConnectRequest";
     private static final long DEFALUT_CONNECT_DELAY = 2000L;
-    private BleConnectCallback<T> connectCallback;
+    private HashMap<String, BleConnectCallback<T>> mConnectCallback = new HashMap<>();
+    private HashMap<String, BleDisConnectCallback<T>> mDisConnectCallback = new HashMap<>();
+    private String disDeviceMacAddress;
+    private BleGlobalConnectCallback<T> globalConnectStatusCallback;
     private ArrayList<T> devices = new ArrayList<>();
     private ArrayList<T> connetedDevices = new ArrayList<>();
     private ArrayList<T> autoDevices = new ArrayList<>();
@@ -43,15 +49,26 @@ public class ConnectRequest<T extends BleDevice> implements ConnectWrapperCallba
     public boolean reconnect(String address) {
         for (T device : autoDevices) {
             if (TextUtils.equals(address, device.getBleAddress()) && device.isAutoConnect()) {
-                return connect(device, connectCallback);
+                return connect(device, mConnectCallback.get(device.getBleAddress()));
             }
         }
         return false;
     }
 
+    private void addConnectCallBack(T device, BleConnectCallback<T> callback) {
+        if (device != null) {
+            mConnectCallback.put(device.getBleAddress(), callback);
+        }
+    }
+
+    private void addDisConnectCallBack(String address, BleDisConnectCallback<T> callback) {
+        mDisConnectCallback.put(address, callback);
+    }
+
     public boolean connect(T device, BleConnectCallback<T> callback) {
         addBleDevice(device);
-        connectCallback = callback;
+
+        addConnectCallBack(device, callback);
         boolean result = false;
 
         if (bleRequest != null) {
@@ -99,25 +116,29 @@ public class ConnectRequest<T extends BleDevice> implements ConnectWrapperCallba
         boolean connectting = device.isConnectting();
         boolean ready_connect = task.isContains(device);
         if (connectting || ready_connect) {
-            if (null != connectCallback) {
-                connectCallback.onConnectCancel(device);
+            if (mConnectCallback.containsKey(device.getBleAddress())) {
+                BleConnectCallback<T> callback = mConnectCallback.get(device.getBleAddress());
+                if (callback != null) {
+                    callback.onConnectCancel(device);
+                }
+                mConnectCallback.remove(device.getBleAddress());
+            }
+            if (globalConnectStatusCallback != null) {
+                globalConnectStatusCallback.onConnectCancel(device);
             }
             if (connectting) {
                 disconnect(device.getBleAddress());
                 bleRequest.cancelTimeout(device.getBleAddress());
                 device.setConnectionState(BleStates.BleStatus.DISCONNECT);
-                connectCallback.onConnectionChanged(device);
+                if (globalConnectStatusCallback != null) {
+                    globalConnectStatusCallback.onConnectionChanged(device);
+                }
             }
             if (ready_connect) {
                 task.cancelOne(device);
             }
         }
-    }
-
-    public void cancelConnecttings(List<T> devices) {
-        for (T device : devices) {
-            cancelConnectting(device);
-        }
+        removeAutoPool(device);
     }
 
     /**
@@ -156,10 +177,11 @@ public class ConnectRequest<T extends BleDevice> implements ConnectWrapperCallba
      *
      * @param device 设备对象
      */
-    public void disconnect(BleDevice device, BleConnectCallback<T> callback) {
+    public void disconnect(BleDevice device, BleDisConnectCallback<T> callback) {
         if (device != null) {
+            disDeviceMacAddress = device.getBleAddress();
             disconnect(device.getBleAddress());
-            connectCallback = callback;
+            addDisConnectCallBack(device.getBleAddress(), callback);
         }
     }
 
@@ -168,10 +190,10 @@ public class ConnectRequest<T extends BleDevice> implements ConnectWrapperCallba
     public void disconnectBluetooth() {
         if (!connetedDevices.isEmpty()) {
             for (T device : connetedDevices) {
-                if (null != connectCallback) {
-                    device.setConnectionState(BleStates.BleStatus.DISCONNECT);
-                    BleLog.e(TAG, "System Bluetooth is disconnected>>>> " + device.getBleName());
-                    connectCallback.onConnectionChanged(device);
+                device.setConnectionState(BleStates.BleStatus.DISCONNECT);
+                BleLog.e(TAG, "System Bluetooth is disconnected>>>> " + device.getBleName());
+                if (globalConnectStatusCallback != null) {
+                    globalConnectStatusCallback.onConnectionChanged(device);
                 }
             }
             bleRequest.close();
@@ -187,7 +209,22 @@ public class ConnectRequest<T extends BleDevice> implements ConnectWrapperCallba
     @Override
     public void onConnectionChanged(final T bleDevice) {
         //        final T bleDevice = getBleDevice(device);
-        if (bleDevice == null) return;
+        if (bleDevice == null) {
+            return;
+        }
+        if (disDeviceMacAddress != null
+                && bleDevice.getBleAddress().equals(disDeviceMacAddress)
+                && bleDevice.isDisconnected()) {
+            if (mDisConnectCallback.containsKey(bleDevice.getBleAddress())) {
+                BleDisConnectCallback<T> callback =
+                        mDisConnectCallback.get(bleDevice.getBleAddress());
+                if (callback != null) {
+                    callback.onDisConnect(bleDevice);
+                }
+                mDisConnectCallback.remove(bleDevice.getBleAddress());
+            }
+            disDeviceMacAddress = null;
+        }
         if (bleDevice.isConnected()) {
             connetedDevices.add(bleDevice);
             BleLog.d(TAG, "connected>>>> " + bleDevice.getBleName());
@@ -206,8 +243,8 @@ public class ConnectRequest<T extends BleDevice> implements ConnectWrapperCallba
                 new Runnable() {
                     @Override
                     public void run() {
-                        if (null != connectCallback) {
-                            connectCallback.onConnectionChanged(bleDevice);
+                        if (globalConnectStatusCallback != null) {
+                            globalConnectStatusCallback.onConnectionChanged(bleDevice);
                         }
                         bleWrapperCallback.onConnectionChanged(bleDevice);
                     }
@@ -217,7 +254,9 @@ public class ConnectRequest<T extends BleDevice> implements ConnectWrapperCallba
     @Override
     public void onConnectException(final T bleDevice) {
         //        final T bleDevice = getBleDevice(device);
-        if (bleDevice == null) return;
+        if (bleDevice == null) {
+            return;
+        }
         final int errorCode;
         if (bleDevice.isConnected()) { // Mcu connection is broken or the signal is weak and other
             // reasons disconnect
@@ -232,8 +271,16 @@ public class ConnectRequest<T extends BleDevice> implements ConnectWrapperCallba
                 new Runnable() {
                     @Override
                     public void run() {
-                        if (null != connectCallback) {
-                            connectCallback.onConnectException(bleDevice, errorCode);
+                        if (mConnectCallback.containsKey(bleDevice.getBleAddress())) {
+                            BleConnectCallback<T> callback =
+                                    mConnectCallback.get(bleDevice.getBleAddress());
+                            if (callback != null) {
+                                callback.onConnectException(bleDevice, errorCode);
+                            }
+                            mConnectCallback.remove(bleDevice.getBleAddress());
+                        }
+                        if (globalConnectStatusCallback != null) {
+                            globalConnectStatusCallback.onConnectException(bleDevice, errorCode);
                         }
                     }
                 });
@@ -242,14 +289,24 @@ public class ConnectRequest<T extends BleDevice> implements ConnectWrapperCallba
     @Override
     public void onConnectTimeOut(final T bleDevice) {
         //        final T bleDevice = getBleDevice(device);
-        if (bleDevice == null) return;
+        if (bleDevice == null) {
+            return;
+        }
         BleLog.e(TAG, "ConnectTimeOut>>>> " + bleDevice.getBleName());
         runOnUiThread(
                 new Runnable() {
                     @Override
                     public void run() {
-                        if (null != connectCallback) {
-                            connectCallback.onConnectTimeOut(bleDevice);
+                        if (mConnectCallback.containsKey(bleDevice.getBleAddress())) {
+                            BleConnectCallback<T> callback =
+                                    mConnectCallback.get(bleDevice.getBleAddress());
+                            if (callback != null) {
+                                callback.onConnectTimeOut(bleDevice);
+                            }
+                            mConnectCallback.remove(bleDevice.getBleAddress());
+                        }
+                        if (globalConnectStatusCallback != null) {
+                            globalConnectStatusCallback.onConnectTimeOut(bleDevice);
                         }
                     }
                 });
@@ -260,14 +317,24 @@ public class ConnectRequest<T extends BleDevice> implements ConnectWrapperCallba
     @Override
     public void onReady(final T bleDevice) {
         //        final T bleDevice = getBleDevice(device);
-        if (bleDevice == null) return;
+        if (bleDevice == null) {
+            return;
+        }
         BleLog.d(TAG, "onReady>>>> " + bleDevice.getBleName());
         runOnUiThread(
                 new Runnable() {
                     @Override
                     public void run() {
-                        if (null != connectCallback) {
-                            connectCallback.onReady(bleDevice);
+                        if (mConnectCallback.containsKey(bleDevice.getBleAddress())) {
+                            BleConnectCallback<T> callback =
+                                    mConnectCallback.get(bleDevice.getBleAddress());
+                            if (callback != null) {
+                                callback.onReady(bleDevice);
+                            }
+                            mConnectCallback.remove(bleDevice.getBleAddress());
+                        }
+                        if (globalConnectStatusCallback != null) {
+                            globalConnectStatusCallback.onReady(bleDevice);
                         }
                         bleWrapperCallback.onReady(bleDevice);
                     }
@@ -278,14 +345,16 @@ public class ConnectRequest<T extends BleDevice> implements ConnectWrapperCallba
     public void onServicesDiscovered(
             final T device, final List<BluetoothGattService> gattServices) {
         BleLog.d(TAG, "onServicesDiscovered>>>> " + device.getBleName());
-        if (null != connectCallback) {
-            connectCallback.onServicesDiscovered(device, gattServices);
+        if (null != globalConnectStatusCallback) {
+            globalConnectStatusCallback.onServicesDiscovered(device, gattServices);
         }
         bleWrapperCallback.onServicesDiscovered(device, gattServices);
     }
 
     private void addBleDevice(T device) {
-        if (device == null) throw new IllegalArgumentException("device is not null");
+        if (device == null) {
+            throw new IllegalArgumentException("device is not null");
+        }
         if (getBleDevice(device.getBleAddress()) == null) {
             devices.add(device);
             BleLog.d(TAG, "addBleDevice>>>> Added a device to the device pool");
@@ -335,7 +404,9 @@ public class ConnectRequest<T extends BleDevice> implements ConnectWrapperCallba
      * @param device Device object
      */
     private void removeAutoPool(BleDevice device) {
-        if (device == null) return;
+        if (device == null) {
+            return;
+        }
         Iterator<T> iterator = autoDevices.iterator();
         while (iterator.hasNext()) {
             BleDevice item = iterator.next();
@@ -351,7 +422,9 @@ public class ConnectRequest<T extends BleDevice> implements ConnectWrapperCallba
      * @param device Device object
      */
     private void addAutoPool(T device) {
-        if (device == null) return;
+        if (device == null) {
+            return;
+        }
         BluetoothDevice remoteDevice =
                 BluetoothAdapter.getDefaultAdapter().getRemoteDevice(device.getBleAddress());
         if (device.isAutoConnect() && remoteDevice.getBondState() == BluetoothDevice.BOND_BONDED) {
@@ -365,7 +438,9 @@ public class ConnectRequest<T extends BleDevice> implements ConnectWrapperCallba
     }
 
     public void resetReConnect(T device, boolean autoConnect) {
-        if (device == null) return;
+        if (device == null) {
+            return;
+        }
         device.setAutoConnect(autoConnect);
         if (!autoConnect) {
             removeAutoPool(device);
@@ -375,5 +450,9 @@ public class ConnectRequest<T extends BleDevice> implements ConnectWrapperCallba
         } else { // 重连
             addAutoPool(device);
         }
+    }
+
+    public void setGlobalConnectStatusCallback(BleGlobalConnectCallback<T> callback) {
+        globalConnectStatusCallback = callback;
     }
 }

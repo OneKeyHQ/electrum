@@ -81,7 +81,7 @@ class SelectAccountBottomSheetDialog : BottomSheetDialogFragment() {
   }
 
   private val mDeviceManager by lazy {
-    DeviceManager()
+    DeviceManager.getInstance()
   }
 
   override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {

@@ -1274,4 +1274,10 @@
     <string name="re_input">请重新输入</string>
     <string name="main_account">主账户</string>
     <string name="hint_in_development">开发中敬请期待</string>
+    <string name="hint_device_connecting">连接中</string>
+    <string name="hint_device_connect_error_title">设备异常</string>
+    <string name="hint_device_connecting_keep_ble">请保持蓝牙连接稳定</string>
+    <string name="hint_device_connect_timeout">硬件连接超时</string>
+    <string name="hint_device_connect_cancel">硬件连接已取消</string>
+    <string name="hint_device_connect_error">硬件连接失败</string>
 </resources>
