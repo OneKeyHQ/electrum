@@ -3505,6 +3505,7 @@ class AndroidCommands(commands.Commands):
             all_wallet_info = []
             for wallet in self.daemon.get_wallets().values():
                 wallet_info = {"name": wallet.get_name(), "label": str(wallet)}
+                sum_fiat = Decimal(0)
                 coin = self._detect_wallet_coin(wallet)
                 if coin in self.coins:
                     with self.pywalib.override_server(self.coins[coin]):
@@ -3529,9 +3530,11 @@ class AndroidCommands(commands.Commands):
                             }
                             wallet_balances.append(copied_info)
                             fiat = Decimal(copied_info["fiat"].split()[0].replace(",", ""))
+                            sum_fiat += fiat
                             all_balance += fiat
 
                         wallet_info["wallets"] = wallet_balances
+                        wallet_info["sum_fiat"] = sum_fiat
                         all_wallet_info.append(wallet_info)
                 else:
                     c, u, x = wallet.get_balance()
@@ -3541,10 +3544,16 @@ class AndroidCommands(commands.Commands):
                     wallet_info["btc"] = self.format_amount(c + u)  # fixme deprecated field
                     wallet_info["fiat"] = balance  # fixme deprecated field
                     wallet_info["wallets"] = [
-                        {"coin": "btc", "balance": wallet_info["btc"], "fiat": wallet_info["fiat"]}
+                        {
+                            "coin": "btc",
+                            "balance": wallet_info["btc"],
+                            "fiat": wallet_info["fiat"],
+                        }
                     ]
+                    wallet_info["sum_fiat"] = Decimal(wallet_info["fiat"].split()[0].replace(",", ""))
                     all_wallet_info.append(wallet_info)
 
+            all_wallet_info = sorted(all_wallet_info, key=lambda i: i["sum_fiat"], reverse=True)
             out["all_balance"] = "%s %s" % (all_balance, self.ccy)
             out["wallet_info"] = all_wallet_info
             return json.dumps(out, cls=DecimalEncoder)
