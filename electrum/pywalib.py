@@ -11,11 +11,13 @@ from os.path import expanduser
 from typing import List
 from urllib.parse import urljoin
 
+from eth_typing import HexStr
+
 from electrum.util import Ticker, make_aiohttp_session
 import requests
 # from eth_accounts.account_utils import AccountUtils
 from eth_keyfile import keyfile
-from eth_utils import to_checksum_address
+from eth_utils import to_checksum_address, remove_0x_prefix, add_0x_prefix
 from web3 import HTTPProvider, Web3
 
 from electrum_gui.common.provider.manager import get_provider_by_chain
@@ -25,6 +27,7 @@ from electrum_gui.common.provider.clients import eth as eth_clients
 from electrum_gui.common.provider.interfaces import ProviderInterface
 from . import util
 from .eth_transaction import Eth_Transaction
+from eth_account._utils.transactions import Transaction
 from decimal import Decimal
 import sqlite3
 from .network import Network
@@ -428,7 +431,7 @@ class PyWalib:
             return 40000
 
     def get_transaction(self, from_address, to_address, value,
-                        contract=None, gas_price=None, none=None, gas_limit=None, data=None):
+                        contract=None, gas_price=None, nonce=None, gas_limit=None, data=None):
         if (
             not self.web3.isAddress(from_address)
             or not self.web3.isAddress(to_address)
@@ -448,8 +451,8 @@ class PyWalib:
 
             gas_price = DEFAULT_GAS_PRICE_WEI if gas_price is None else self.web3.toWei(gas_price, "gwei")
 
-            assert value > 0
-            assert gas_price > 0
+            assert value >= 0
+            assert gas_price >= 0
 
             if gas_limit:
                 gas_limit = int(gas_limit)
@@ -463,7 +466,7 @@ class PyWalib:
             if value > erc20_balance:
                 raise InsufficientERC20FundsException()
 
-        nonce = self.get_nonce(from_address) if none is None else int(none)
+        nonce = self.get_nonce(from_address) if nonce is None else int(nonce)
 
         tx_payload = dict(chain_id=int(PyWalib.chain_id), gas_price=gas_price, nonce=nonce,
                           to_address=contract.get_address() if contract else to_address,
@@ -524,16 +527,54 @@ class PyWalib:
     def is_contract(self, address) -> bool:
         return len(self.web3.eth.getCode(self.web3.toChecksumAddress(address))) > 0
 
-    def sign_and_send_tx(self, account, tx_dict):
-        tx_hex = Eth_Transaction.sign_transaction(account, tx_dict)
-        return self._send_tx(tx_hex)
+    @staticmethod
+    def sign_tx(account, tx_dict):
+        return Eth_Transaction.sign_transaction(account, tx_dict)
 
-    def serialize_and_send_tx(self, tx_dict, vrs):
-        tx_hex = Eth_Transaction.serialize_tx(tx_dict, vrs)
-        return self._send_tx(tx_hex)
+    @staticmethod
+    def serialize_tx(tx_dict, vrs):
+        return Eth_Transaction.serialize_tx(tx_dict, vrs)
+
+    @staticmethod
+    def decode_signed_tx(signed_tx_hex: str) -> dict:
+        signed_tx_hex = remove_0x_prefix(HexStr(signed_tx_hex))
+
+        tx = Transaction.from_bytes(bytes.fromhex(signed_tx_hex))
+        return {
+            "raw": add_0x_prefix(signed_tx_hex),
+            "tx": {
+                "nonce": hex(tx.nonce),
+                "gasPrice": hex(tx.gasPrice),
+                "gas": hex(tx.gas),
+                "value": hex(tx.value),
+                "to": add_0x_prefix(tx.to.hex()),
+                "data": add_0x_prefix(tx.data.hex()),
+                "v": hex(tx.v),
+                "r": hex(tx.r),
+                "s": hex(tx.s),
+                "hash": tx.hash().hex()
+            }
+        }
+
+    def get_rpc_info(cls) -> dict:
+        rpc, chain_id = None, None
+
+        for config in (cls.server_config.get("Provider") or ()):
+            if cls.chain_type in config:
+                rpc = config[cls.chain_type]
+                chain_id = int(config["chainid"])
+                break
+
+        assert rpc is not None
+        assert chain_id is not None
+
+        return {
+            "rpc": rpc,
+            "chain_id": chain_id,
+        }
 
     @classmethod
-    def _send_tx(cls, tx_hex: str) -> str:
+    def send_tx(cls, tx_hex: str) -> str:
         receipt = cls.get_provider().broadcast_transaction(tx_hex)
         if not receipt.is_success:
             raise Exception(f"Transaction send fail. error_message: {receipt.receipt_message}", tx_hex)

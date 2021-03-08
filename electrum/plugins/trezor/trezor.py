@@ -99,7 +99,7 @@ class TrezorKeyStore(Hardware_KeyStore):
         msg_sig = self.plugin.client.sign_message(address_path, message, script_type=script_type)
         return msg_sig.signature
 
-    def sign_eth_message(self, sequence, message, password):
+    def sign_eth_message(self, sequence, message):
         self.wallet_pair_with_hw()
         address_path = self.get_derivation_prefix() + "/%d/%d" % sequence
         msg_sig = self.plugin.client.sign_eth_message(address_path, message)

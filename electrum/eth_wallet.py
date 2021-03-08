@@ -45,7 +45,9 @@ from abc import ABC, abstractmethod
 import itertools
 
 from aiorpcx import TaskGroup
+from eth_utils import add_0x_prefix
 
+from electrum_gui.common.basic.functional.text import force_text
 from .i18n import _
 from .bip32 import convert_bip32_intpath_to_strpath, convert_bip32_path_to_list_of_uint32
 from .util import (profiler,
@@ -668,9 +670,28 @@ class Abstract_Eth_Wallet(ABC):
     def _update_password_for_keystore(self, old_pw: Optional[str], new_pw: Optional[str]) -> None:
         pass
 
-    def sign_message(self, address, message, password):
-        index = self.get_address_index(address)
-        return self.keystore.sign_eth_message(index, message, password)
+    def sign_message(self, address: str, message: str, password: str = None):
+        if self.is_watching_only():
+            raise Exception("Watch-only wallet can't sign message")
+
+        if message.startswith("0x"):
+            message_bytes = bytes.fromhex(message[2:])
+        else:
+            message_bytes = message.encode()
+            preamble = f"\x19Ethereum Signed Message:\n{len(message_bytes)}"
+            message_bytes = preamble.encode() + message_bytes
+
+        message_hash = PyWalib.web3.keccak(message_bytes)
+
+        if isinstance(self.keystore, Hardware_KeyStore):
+            index = self.get_address_index(address)
+            signature = self.keystore.sign_eth_message(index, message).hex()
+        elif isinstance(self, (Standard_Eth_Wallet, Imported_Eth_Wallet)):
+            signature = Account.signHash(message_hash, self.get_account(address, password).privateKey).signature.hex()
+        else:
+            raise Exception("Illegal Exception")
+
+        return add_0x_prefix(force_text(signature))
 
     def verify_message(self, address, message, sig):
         return self.keystore.verify_eth_message(address, message, sig)

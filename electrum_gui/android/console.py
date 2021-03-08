@@ -76,6 +76,7 @@ from electrum.wallet_db import WalletDB
 from electrum_gui.android import hardware, wallet_context
 from electrum_gui.common import the_begging
 
+from ..common.basic.functional.text import force_text
 from .create_wallet_info import CreateWalletInfo
 from .derived_info import DerivedInfo
 from .tx_db import TxDb
@@ -2041,37 +2042,33 @@ class AndroidCommands(commands.Commands):
         :param message: message need be signed as string
         :param path: NFC/android_usb/bluetooth as str, used by hardware
         :param password: as string
-        :return: Base64 encrypted as string
+        :return: signature string
         """
-        try:
-            if path:
-                self.trezor_manager.ensure_client(path)
-            self._assert_wallet_isvalid()
-            address = address.strip()
-            message = message.strip()
-            coin = self._detect_wallet_coin(self.wallet)
-            if coin in self.coins:
-                if not self.pywalib.web3.isAddress(address):
-                    raise UnavailableEthAddr()
-            elif coin == 'btc':
-                if not bitcoin.is_address(address):
-                    raise UnavailableBtcAddr()
-                txin_type = self.wallet.get_txin_type(address)
-                if txin_type not in ["p2pkh", "p2wpkh", "p2wpkh-p2sh"]:
-                    raise BaseException(_("Current wallet does not support signature message:{}".format(txin_type)))
-            else:
-                raise UnsupportedCurrencyCoin()
-            if self.wallet.is_watching_only():
-                raise BaseException(_("This is a watching-only wallet."))
-            if not self.wallet.is_mine(address):
-                raise BaseException(_("The address is not in the current wallet."))
+        if path:
+            self.trezor_manager.ensure_client(path)
+        self._assert_wallet_isvalid()
+        address = address.strip()
+        message = message.strip()
+        coin = self._detect_wallet_coin(self.wallet)
+        if coin in self.coins:
+            if not self.pywalib.web3.isAddress(address):
+                raise UnavailableEthAddr()
+        elif coin == 'btc':
+            if not bitcoin.is_address(address):
+                raise UnavailableBtcAddr()
+            txin_type = self.wallet.get_txin_type(address)
+            if txin_type not in ["p2pkh", "p2wpkh", "p2wpkh-p2sh"]:
+                raise BaseException(_("Current wallet does not support signature message:{}".format(txin_type)))
+        else:
+            raise UnsupportedCurrencyCoin()
+        if self.wallet.is_watching_only():
+            raise BaseException(_("This is a watching-only wallet."))
+        if not self.wallet.is_mine(address):
+            raise BaseException(_("The address is not in the current wallet."))
 
-            sig = self.wallet.sign_message(address, message, password)
-            import base64
+        sig = self.wallet.sign_message(address, message, password)
 
-            return base64.b64encode(sig).decode("ascii")
-        except Exception as e:
-            raise BaseException(e)
+        return force_text(sig)
 
     def verify_message(self, address, message, signature, coin='btc', path="android_usb"):
         """
@@ -2092,12 +2089,8 @@ class AndroidCommands(commands.Commands):
         else:
             raise UnsupportedCurrencyCoin()
         try:
-            # This can throw on invalid base64
-            import base64
-
-            sig = base64.b64decode(str(signature))
             self.trezor_manager.ensure_client(path)
-            verified = self.wallet.verify_message(address, message, sig)
+            verified = self.wallet.verify_message(address, message, signature)
         except Exception:
             verified = False
         return verified
@@ -2194,6 +2187,8 @@ class AndroidCommands(commands.Commands):
         gas_price=None,
         gas_limit=None,
         data=None,
+        nonce=None,
+        auto_send_tx=True,
     ):
         """
         Send for eth, for eth/bsc only
@@ -2205,24 +2200,37 @@ class AndroidCommands(commands.Commands):
         :param gas_price: as string, unit is Gwei
         :param gas_limit: as string
         :param data: eth tx custom data, as hex string
+        :param nonce: from address nonce
         :return: tx_hash as string
         """
         from_address = self.wallet.get_addresses()[0]
         if contract_addr is None:
             tx_dict = self.pywalib.get_transaction(
-                from_address, to_addr, value, gas_price=gas_price, gas_limit=gas_limit, data=data
+                from_address, to_addr, value, gas_price=gas_price, gas_limit=gas_limit, data=data, nonce=nonce
             )
         else:
             contract_addr = self.pywalib.web3.toChecksumAddress(contract_addr)
             contract = self.wallet.get_contract_token(contract_addr)
             assert contract is not None
             tx_dict = self.pywalib.get_transaction(
-                from_address, to_addr, value, contract=contract, gas_price=gas_price, gas_limit=gas_limit, data=data
+                from_address,
+                to_addr,
+                value,
+                contract=contract,
+                gas_price=gas_price,
+                gas_limit=gas_limit,
+                data=data,
+                nonce=nonce,
             )
+
+        signed_tx_hex = None
+
         if isinstance(self.wallet.get_keystore(), Hardware_KeyStore):
             if path:
                 address_path = self.get_derivation_path(self.wallet, from_address)
                 address_n = parse_path(address_path)
+
+                self.trezor_manager.ensure_client(path)
 
                 (v, r, s) = self.wallet.sign_transaction(
                     address_n,
@@ -2238,9 +2246,51 @@ class AndroidCommands(commands.Commands):
 
                 r = big_endian_to_int(r)
                 s = big_endian_to_int(s)
-                return self.pywalib.serialize_and_send_tx(tx_dict, vrs=(v, r, s))
+                signed_tx_hex = self.pywalib.serialize_tx(tx_dict, vrs=(v, r, s))
         else:
-            return self.pywalib.sign_and_send_tx(self.wallet.get_account(from_address, password), tx_dict)
+            signed_tx_hex = self.pywalib.sign_tx(self.wallet.get_account(from_address, password), tx_dict)
+
+        if signed_tx_hex and auto_send_tx:
+            return self.pywalib.send_tx(signed_tx_hex)
+
+        return signed_tx_hex
+
+    def dapp_eth_sign_tx(
+        self,
+        transaction: str,
+        path="android_usb",
+        password=None,
+    ):
+        transaction = json.loads(transaction)
+        current_address = self.wallet.get_addresses()[0]
+
+        if transaction.get("from") and transaction["from"].lower() != current_address.lower():
+            raise Exception(f"current wallet address is {current_address}, not {transaction['from']}")
+
+        if not transaction.get("to"):
+            raise Exception("'to' address not found")
+
+        signed_tx_hex = self.sign_eth_tx(
+            to_addr=transaction["to"],
+            value=self.pywalib.web3.fromWei(transaction["value"], "ether") if transaction.get("value") else 0,
+            gas_price=self.pywalib.web3.fromWei(transaction["gasPrice"], "gwei")
+            if transaction.get("gasPrice")
+            else None,
+            gas_limit=transaction.get("gas"),
+            data=transaction.get("data"),
+            nonce=transaction.get("nonce"),
+            path=path,
+            password=password,
+            auto_send_tx=False,
+        )
+        signed_tx_info = self.pywalib.decode_signed_tx(signed_tx_hex)
+        return json.dumps(signed_tx_info)
+
+    def dapp_eth_send_tx(self, tx_hex: str):
+        return self.pywalib.send_tx(tx_hex)
+
+    def dapp_eth_rpc_info(self):
+        return json.dumps(PyWalib.get_rpc_info())
 
     def sign_tx(self, tx, path=None, password=None):
         """

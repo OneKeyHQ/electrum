@@ -25,7 +25,7 @@
 #   - Imported_Wallet: imported addresses or single keys, 0 or 1 keystore
 #   - Standard_Wallet: one HD keystore, P2PKH-like scripts
 #   - Multisig_Wallet: several HD keystores, M-of-N OP_CHECKMULTISIG scripts
-
+import base64
 import os
 import sys
 import random
@@ -1996,9 +1996,11 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
 
     def sign_message(self, address, message, password):
         index = self.get_address_index(address)
-        return self.keystore.sign_message(index, message, password, txin_type=self.txin_type)
+        signature = self.keystore.sign_message(index, message, password, txin_type=self.txin_type)
+        return base64.b64encode(signature).decode()
 
     def verify_message(self, address,message, sig):
+        sig = base64.b64decode(str(sig))
         return self.keystore.verify_message(address, message, sig)
 
     def decrypt_message(self, pubkey: str, message, password) -> bytes:
