@@ -250,6 +250,10 @@ class Abstract_Eth_Wallet(ABC):
         return self.contacts.get(contract_address)
 
     def delete_contract_token(self, contract_address):
+        if not contract_address:
+            return
+
+        contract_address = PyWalib.web3.toChecksumAddress(contract_address)
         self.contacts.pop(contract_address, None)
         self.db.put("contracts", {addr: c.symbol for addr, c in self.contacts.items()})
         self.save_db()
