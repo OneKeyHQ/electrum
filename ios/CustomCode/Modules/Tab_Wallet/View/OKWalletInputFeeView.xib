@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -76,7 +76,7 @@
                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FZD-Qy-sSM">
                                             <rect key="frame" x="177.5" y="38" width="120.5" height="60"/>
                                             <subviews>
-                                                <textField opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="tmW-BF-8ty" userLabel="size" customClass="OKDeleteTextField">
+                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="tmW-BF-8ty" userLabel="size" customClass="OKDeleteTextField">
                                                     <rect key="frame" x="15" y="0.0" width="105.5" height="60"/>
                                                     <color key="textColor" red="0.62415844200000004" green="0.65038901569999996" blue="0.67843610050000003" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
@@ -217,6 +217,8 @@
                 <outlet property="equaltoLabel" destination="7Sf-dG-D5A" id="FnJ-Is-ABL"/>
                 <outlet property="feeBgView" destination="ICK-6e-8Lq" id="J78-Yl-yKu"/>
                 <outlet property="feeTF" destination="RPm-8V-ZIK" id="cWf-HV-nJN"/>
+                <outlet property="leftTitleLabel" destination="PKn-ay-o1m" id="ro9-9L-FlQ"/>
+                <outlet property="rightTitleLabel" destination="AGT-Xu-KmW" id="LrD-nq-Fwy"/>
                 <outlet property="sizeBgView" destination="FZD-Qy-sSM" id="SmC-QN-ocd"/>
                 <outlet property="sizeTF" destination="tmW-BF-8ty" id="QNP-M3-FVx"/>
                 <outlet property="sureBtn" destination="sSL-Nd-c6u" id="4ti-03-K0r"/>

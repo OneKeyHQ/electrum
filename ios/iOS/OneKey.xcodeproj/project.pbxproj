@@ -444,6 +444,8 @@
 		8864AEB225E6081100459C4E /* OKSelectAssetTypeModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 8864AEAA25E6081100459C4E /* OKSelectAssetTypeModel.m */; };
 		8864AEB325E6081100459C4E /* OKSelectAssetTypeTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8864AEAC25E6081100459C4E /* OKSelectAssetTypeTableViewCell.m */; };
 		8864AEB425E6081100459C4E /* OKSelectAssetTypeTableViewCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 8864AEAD25E6081100459C4E /* OKSelectAssetTypeTableViewCell.h */; };
+		88D0414825F61DAF0056C7F0 /* OKWalletInputFeeViewCallBackModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 88D0414625F61DAF0056C7F0 /* OKWalletInputFeeViewCallBackModel.h */; };
+		88D0414925F61DAF0056C7F0 /* OKWalletInputFeeViewCallBackModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 88D0414725F61DAF0056C7F0 /* OKWalletInputFeeViewCallBackModel.m */; };
 		88F89FBE25CB9E4700EFC641 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 88F89FBC25CB9E4700EFC641 /* Localizable.strings */; };
 		8BA64C7EB8F197124BEFC4B9 /* BTCBrowser.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2B8A43CE94718C2C5184C2DC /* BTCBrowser.plist */; };
 		92534669BFCAE1EF0EC2F024 /* UIViewController+Extension.m in Sources */ = {isa = PBXBuildFile; fileRef = 468549E8AF41F4FF1257667D /* UIViewController+Extension.m */; };
@@ -1063,6 +1065,8 @@
 		8864AEAA25E6081100459C4E /* OKSelectAssetTypeModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKSelectAssetTypeModel.m; sourceTree = "<group>"; };
 		8864AEAC25E6081100459C4E /* OKSelectAssetTypeTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKSelectAssetTypeTableViewCell.m; sourceTree = "<group>"; };
 		8864AEAD25E6081100459C4E /* OKSelectAssetTypeTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKSelectAssetTypeTableViewCell.h; sourceTree = "<group>"; };
+		88D0414625F61DAF0056C7F0 /* OKWalletInputFeeViewCallBackModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKWalletInputFeeViewCallBackModel.h; sourceTree = "<group>"; };
+		88D0414725F61DAF0056C7F0 /* OKWalletInputFeeViewCallBackModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKWalletInputFeeViewCallBackModel.m; sourceTree = "<group>"; };
 		88D7404B9FF067F44DABF936 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = None; name = LaunchScreen.storyboard; path = ../Resources/LaunchScreen.storyboard; sourceTree = SOURCE_ROOT; };
 		88F89FBD25CB9E4700EFC641 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = Localizable.strings; sourceTree = "<group>"; };
 		90BF4B77B7BC2B3709FC7726 /* NSString+OKAdd.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "NSString+OKAdd.h"; path = "../CustomCode/Categories/NSString+OKAdd.h"; sourceTree = SOURCE_ROOT; };
@@ -1386,15 +1390,15 @@
 		8814228725B18EA900961668 /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
-				8814228825B18EA900961668 /* OKObserveImportViewController.m */,
 				8814228925B18EA900961668 /* OKMnemonicImportViewController.h */,
-				8814228A25B18EA900961668 /* OKPrivateImportViewController.m */,
-				8814228B25B18EA900961668 /* OKKeystoreImportViewController.m */,
-				8814228C25B18EA900961668 /* Import.storyboard */,
 				8814228D25B18EA900961668 /* OKMnemonicImportViewController.m */,
 				8814228E25B18EA900961668 /* OKObserveImportViewController.h */,
+				8814228825B18EA900961668 /* OKObserveImportViewController.m */,
 				8814228F25B18EA900961668 /* OKPrivateImportViewController.h */,
+				8814228A25B18EA900961668 /* OKPrivateImportViewController.m */,
 				8814229025B18EA900961668 /* OKKeystoreImportViewController.h */,
+				8814228B25B18EA900961668 /* OKKeystoreImportViewController.m */,
+				8814228C25B18EA900961668 /* Import.storyboard */,
 			);
 			path = ViewController;
 			sourceTree = "<group>";
@@ -1419,8 +1423,8 @@
 		8814229325B18EA900961668 /* YZAuthID */ = {
 			isa = PBXGroup;
 			children = (
-				8814229425B18EA900961668 /* YZAuthID.m */,
 				8814229525B18EA900961668 /* YZAuthID.h */,
+				8814229425B18EA900961668 /* YZAuthID.m */,
 			);
 			path = YZAuthID;
 			sourceTree = "<group>";
@@ -1429,9 +1433,9 @@
 			isa = PBXGroup;
 			children = (
 				8814229925B18EA900961668 /* OKPwdViewController.h */,
-				8814229A25B18EA900961668 /* OKBiologicalViewController.h */,
-				8814229B25B18EA900961668 /* OKPwd.storyboard */,
 				8814229C25B18EA900961668 /* OKPwdViewController.m */,
+				8814229B25B18EA900961668 /* OKPwd.storyboard */,
+				8814229A25B18EA900961668 /* OKBiologicalViewController.h */,
 				8814229D25B18EA900961668 /* OKBiologicalViewController.m */,
 			);
 			path = Controller;
@@ -1440,9 +1444,9 @@
 		8814229F25B18EA900961668 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				881422A225B18EA900961668 /* CLPasswordView.h */,
 				881422A025B18EA900961668 /* CLPasswordView.m */,
 				881422A125B18EA900961668 /* CLPasswordInputView.h */,
-				881422A225B18EA900961668 /* CLPasswordView.h */,
 				881422A325B18EA900961668 /* CLPasswordInputView.m */,
 			);
 			path = View;
@@ -1463,11 +1467,11 @@
 				B0E3FEDE25F08CD200BE4B7F /* OKShareActivity.h */,
 				B0E3FEDD25F08CD200BE4B7F /* OKShareActivity.m */,
 				881422AA25B18EA900961668 /* OKSystemShareView.h */,
-				881422AB25B18EA900961668 /* OKTools.h */,
-				881422AC25B18EA900961668 /* Sha256.h */,
-				881422AD25B18EA900961668 /* AESCrypt-ObjC */,
 				881422B725B18EA900961668 /* OKSystemShareView.m */,
+				881422AC25B18EA900961668 /* Sha256.h */,
 				881422B825B18EA900961668 /* Sha256.m */,
+				881422AD25B18EA900961668 /* AESCrypt-ObjC */,
+				881422AB25B18EA900961668 /* OKTools.h */,
 				881422B925B18EA900961668 /* OKTools.m */,
 			);
 			path = Tools;
@@ -1477,14 +1481,14 @@
 			isa = PBXGroup;
 			children = (
 				881422AE25B18EA900961668 /* Base64.h */,
+				881422B425B18EA900961668 /* Base64.m */,
+				881422B325B18EA900961668 /* AESCrypt.h */,
 				881422AF25B18EA900961668 /* AESCrypt.m */,
 				881422B025B18EA900961668 /* PBKDF2.h */,
-				881422B125B18EA900961668 /* NSData+CommonCrypto.h */,
-				881422B225B18EA900961668 /* README.md */,
-				881422B325B18EA900961668 /* AESCrypt.h */,
-				881422B425B18EA900961668 /* Base64.m */,
-				881422B525B18EA900961668 /* NSData+CommonCrypto.m */,
 				881422B625B18EA900961668 /* PBKDF2.m */,
+				881422B125B18EA900961668 /* NSData+CommonCrypto.h */,
+				881422B525B18EA900961668 /* NSData+CommonCrypto.m */,
+				881422B225B18EA900961668 /* README.md */,
 			);
 			path = "AESCrypt-ObjC";
 			sourceTree = "<group>";
@@ -1538,8 +1542,8 @@
 		881422CB25B18EA900961668 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				881422CC25B18EA900961668 /* OKDeviceInfoModel.m */,
 				881422CD25B18EA900961668 /* OKDeviceInfoModel.h */,
+				881422CC25B18EA900961668 /* OKDeviceInfoModel.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -1547,8 +1551,8 @@
 		881422CE25B18EA900961668 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				881422CF25B18EA900961668 /* OK_PassWordView.m */,
 				881422D025B18EA900961668 /* OK_PassWordView.h */,
+				881422CF25B18EA900961668 /* OK_PassWordView.m */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -1827,39 +1831,39 @@
 		8814236625B18EA900961668 /* Tab_Wallet */ = {
 			isa = PBXGroup;
 			children = (
-				8814236725B18EA900961668 /* OKReceiveCoinViewController.h */,
-				8814236825B18EA900961668 /* OKSendCoinViewController.m */,
-				8814236925B18EA900961668 /* OKTxViewController.m */,
-				8814236A25B18EA900961668 /* OKEditWalletNameViewController.m */,
 				8814236B25B18EA900961668 /* OKDeleteWalletConfirmController.h */,
+				8814238725B18EA900961668 /* OKDeleteWalletConfirmController.m */,
+				8814236725B18EA900961668 /* OKReceiveCoinViewController.h */,
+				8814237725B18EA900961668 /* OKReceiveCoinViewController.m */,
+				8814237625B18EA900961668 /* OKSendCoinViewController.h */,
+				8814236825B18EA900961668 /* OKSendCoinViewController.m */,
+				8814237525B18EA900961668 /* OKTxViewController.h */,
+				8814236925B18EA900961668 /* OKTxViewController.m */,
+				8814239625B18EA900961668 /* OKEditWalletNameViewController.h */,
+				8814236A25B18EA900961668 /* OKEditWalletNameViewController.m */,
+				8814237925B18EA900961668 /* OKTxDetailViewController.h */,
 				8814236C25B18EA900961668 /* OKTxDetailViewController.m */,
+				8814239925B18EA900961668 /* OKExportTipsViewController.h */,
 				8814236D25B18EA900961668 /* OKExportTipsViewController.m */,
-				8814236E25B18EA900961668 /* OKPrivateKeyExportViewController.m */,
-				8814236F25B18EA900961668 /* OKWalletViewController.h */,
+				8814239725B18EA900961668 /* OKWalletDetailViewController.h */,
 				8814237025B18EA900961668 /* OKWalletDetailViewController.m */,
 				8814237125B18EA900961668 /* OKTxListViewController.h */,
+				8814239E25B18EA900961668 /* OKTxListViewController.m */,
 				8814237225B18EA900961668 /* OKLookWalletTipsViewController.h */,
+				8814239D25B18EA900961668 /* OKLookWalletTipsViewController.m */,
+				8814239C25B18EA900961668 /* OKSendTxPreInfoViewController.h */,
 				8814237325B18EA900961668 /* OKSendTxPreInfoViewController.m */,
-				8814237425B18EA900961668 /* OKFirstUseViewController.h */,
-				8814237525B18EA900961668 /* OKTxViewController.h */,
-				8814237625B18EA900961668 /* OKSendCoinViewController.h */,
-				8814237725B18EA900961668 /* OKReceiveCoinViewController.m */,
 				8814237825B18EA900961668 /* Tab_Wallet.storyboard */,
-				8814237925B18EA900961668 /* OKTxDetailViewController.h */,
 				881425FB25BFF0A400961668 /* OKTransferCompleteController.h */,
 				881425FC25BFF0A400961668 /* OKTransferCompleteController.m */,
 				8814237A25B18EA900961668 /* Model */,
-				8814238725B18EA900961668 /* OKDeleteWalletConfirmController.m */,
 				8814238825B18EA900961668 /* View */,
-				8814239625B18EA900961668 /* OKEditWalletNameViewController.h */,
-				8814239725B18EA900961668 /* OKWalletDetailViewController.h */,
 				8814239825B18EA900961668 /* OKPrivateKeyExportViewController.h */,
-				8814239925B18EA900961668 /* OKExportTipsViewController.h */,
+				8814236E25B18EA900961668 /* OKPrivateKeyExportViewController.m */,
+				8814237425B18EA900961668 /* OKFirstUseViewController.h */,
 				8814239A25B18EA900961668 /* OKFirstUseViewController.m */,
+				8814236F25B18EA900961668 /* OKWalletViewController.h */,
 				8814239B25B18EA900961668 /* OKWalletViewController.mm */,
-				8814239C25B18EA900961668 /* OKSendTxPreInfoViewController.h */,
-				8814239D25B18EA900961668 /* OKLookWalletTipsViewController.m */,
-				8814239E25B18EA900961668 /* OKTxListViewController.m */,
 			);
 			path = Tab_Wallet;
 			sourceTree = "<group>";
@@ -1881,6 +1885,8 @@
 				8814238625B18EA900961668 /* OKAssetTableViewCellModel.m */,
 				885798C825E7982F00C16059 /* OKSendFeeModel.h */,
 				885798C925E7982F00C16059 /* OKSendFeeModel.m */,
+				88D0414625F61DAF0056C7F0 /* OKWalletInputFeeViewCallBackModel.h */,
+				88D0414725F61DAF0056C7F0 /* OKWalletInputFeeViewCallBackModel.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -1909,18 +1915,18 @@
 			isa = PBXGroup;
 			children = (
 				881423A125B18EA900961668 /* OKLocalizableManager.h */,
+				881423A925B18EA900961668 /* OKLocalizableManager.m */,
+				881423AC25B18EAA00961668 /* OKDocument.h */,
 				881423A225B18EA900961668 /* OKDocument.m */,
+				881423AB25B18EA900961668 /* OKUserSettingManager.h */,
 				881423A325B18EA900961668 /* OKUserSettingManager.m */,
-				881423A425B18EA900961668 /* OKOneKeyPwdManager.h */,
 				881423A625B18EA900961668 /* OKPyCommandsManager.h */,
 				881423AE25B18EAA00961668 /* OKPyCommandsManager.m */,
-				881423A725B18EA900961668 /* OKWalletManager.m */,
-				881423A825B18EA900961668 /* OKStorageManager.h */,
-				881423A925B18EA900961668 /* OKLocalizableManager.m */,
-				881423AB25B18EA900961668 /* OKUserSettingManager.h */,
-				881423AC25B18EAA00961668 /* OKDocument.h */,
 				881423AD25B18EAA00961668 /* OKWalletManager.h */,
+				881423A725B18EA900961668 /* OKWalletManager.m */,
+				881423A425B18EA900961668 /* OKOneKeyPwdManager.h */,
 				881423B025B18EAA00961668 /* OKOneKeyPwdManager.m */,
+				881423A825B18EA900961668 /* OKStorageManager.h */,
 				881423B125B18EAA00961668 /* OKStorageManager.m */,
 				8814259B25B1900600961668 /* OKHwNotiManager.h */,
 				8814259C25B1900600961668 /* OKHwNotiManager.m */,
@@ -1940,8 +1946,8 @@
 			isa = PBXGroup;
 			children = (
 				881423B425B18EAA00961668 /* OKShareView.h */,
-				881423B525B18EAA00961668 /* OKShareView.xib */,
 				881423B625B18EAA00961668 /* OKShareView.m */,
+				881423B525B18EAA00961668 /* OKShareView.xib */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -1969,8 +1975,8 @@
 		881423BC25B18EAA00961668 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				881423BD25B18EAA00961668 /* OKBluetoothViewCell.m */,
 				881423BE25B18EAA00961668 /* OKBluetoothViewCell.h */,
+				881423BD25B18EAA00961668 /* OKBluetoothViewCell.m */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -1979,16 +1985,16 @@
 			isa = PBXGroup;
 			children = (
 				881423C125B18EAA00961668 /* OKWalletScanVC.h */,
-				881423C225B18EAA00961668 /* OKAppAuthorityManager.h */,
-				881423C325B18EAA00961668 /* OKQRCodeGenerateManager.h */,
-				881423C425B18EAA00961668 /* OKQRCodeScanManager.h */,
-				881423C525B18EAA00961668 /* OKScanView.m */,
 				881423C625B18EAA00961668 /* OKWalletScanVC.m */,
-				881423C725B18EAA00961668 /* Scan.storyboard */,
-				881423C825B18EAA00961668 /* OKQRCodeScanManager.m */,
-				881423C925B18EAA00961668 /* OKQRCodeGenerateManager.m */,
+				881423C225B18EAA00961668 /* OKAppAuthorityManager.h */,
 				881423CA25B18EAA00961668 /* OKAppAuthorityManager.m */,
+				881423C325B18EAA00961668 /* OKQRCodeGenerateManager.h */,
+				881423C925B18EAA00961668 /* OKQRCodeGenerateManager.m */,
+				881423C425B18EAA00961668 /* OKQRCodeScanManager.h */,
+				881423C825B18EAA00961668 /* OKQRCodeScanManager.m */,
 				881423CB25B18EAA00961668 /* OKScanView.h */,
+				881423C525B18EAA00961668 /* OKScanView.m */,
+				881423C725B18EAA00961668 /* Scan.storyboard */,
 			);
 			path = ScanQR;
 			sourceTree = "<group>";
@@ -2007,26 +2013,26 @@
 			isa = PBXGroup;
 			children = (
 				881423CE25B18EAA00961668 /* OKBackUpViewController.h */,
-				881423CF25B18EAA00961668 /* OKYouareDoneViewController.h */,
-				881423D025B18EAA00961668 /* OKTakeCareMnemonicViewController.h */,
-				881423D125B18EAA00961668 /* OKWordCheckViewController.h */,
-				881423D225B18EAA00961668 /* OKBackUpTipsViewController.h */,
-				881423D325B18EAA00961668 /* OKFindFollowingWalletController.h */,
-				881423D425B18EAA00961668 /* OKScreenshotsTipsController.m */,
-				881423D525B18EAA00961668 /* importWords.storyboard */,
-				881423D625B18EAA00961668 /* OKWordWrongViewController.m */,
-				881423D725B18EAA00961668 /* OKReadyToStartViewController.m */,
-				881423D825B18EAA00961668 /* OKWordImportVC.h */,
 				881423D925B18EAA00961668 /* OKBackUpViewController.m */,
-				881423DA25B18EAA00961668 /* OKYouareDoneViewController.m */,
-				881423DB25B18EAA00961668 /* OKScreenshotsTipsController.h */,
-				881423DC25B18EAA00961668 /* OKTakeCareMnemonicViewController.m */,
-				881423DD25B18EAA00961668 /* OKWordCheckViewController.m */,
+				881423D225B18EAA00961668 /* OKBackUpTipsViewController.h */,
 				881423DE25B18EAA00961668 /* OKBackUpTipsViewController.m */,
+				881423CF25B18EAA00961668 /* OKYouareDoneViewController.h */,
+				881423DA25B18EAA00961668 /* OKYouareDoneViewController.m */,
+				881423D125B18EAA00961668 /* OKWordCheckViewController.h */,
+				881423DD25B18EAA00961668 /* OKWordCheckViewController.m */,
+				881423D325B18EAA00961668 /* OKFindFollowingWalletController.h */,
 				881423DF25B18EAA00961668 /* OKFindFollowingWalletController.m */,
+				881423D525B18EAA00961668 /* importWords.storyboard */,
+				881423E225B18EAA00961668 /* OKWordWrongViewController.h */,
+				881423D625B18EAA00961668 /* OKWordWrongViewController.m */,
+				881423DB25B18EAA00961668 /* OKScreenshotsTipsController.h */,
+				881423D425B18EAA00961668 /* OKScreenshotsTipsController.m */,
+				881423D025B18EAA00961668 /* OKTakeCareMnemonicViewController.h */,
+				881423DC25B18EAA00961668 /* OKTakeCareMnemonicViewController.m */,
+				881423D825B18EAA00961668 /* OKWordImportVC.h */,
 				881423E025B18EAA00961668 /* OKWordImportVC.m */,
 				881423E125B18EAA00961668 /* OKReadyToStartViewController.h */,
-				881423E225B18EAA00961668 /* OKWordWrongViewController.h */,
+				881423D725B18EAA00961668 /* OKReadyToStartViewController.m */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -2034,8 +2040,8 @@
 		881423E325B18EAA00961668 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				881423E425B18EAA00961668 /* OKFindWalletTableViewCellModel.m */,
 				881423E525B18EAA00961668 /* OKFindWalletTableViewCellModel.h */,
+				881423E425B18EAA00961668 /* OKFindWalletTableViewCellModel.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -2043,14 +2049,14 @@
 		881423E625B18EAA00961668 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				881423E725B18EAA00961668 /* OKDeleteTextField.h */,
 				881423E825B18EAA00961668 /* OKCheckWordView.h */,
-				881423E925B18EAA00961668 /* OKFindWalletTableViewCell.h */,
-				881423EA25B18EAA00961668 /* OKWordImportView.m */,
-				881423EB25B18EAA00961668 /* OKDeleteTextField.m */,
 				881423EC25B18EAA00961668 /* OKCheckWordView.m */,
-				881423ED25B18EAA00961668 /* OKFindWalletTableViewCell.m */,
 				881423EE25B18EAA00961668 /* OKWordImportView.h */,
+				881423EA25B18EAA00961668 /* OKWordImportView.m */,
+				881423E725B18EAA00961668 /* OKDeleteTextField.h */,
+				881423EB25B18EAA00961668 /* OKDeleteTextField.m */,
+				881423E925B18EAA00961668 /* OKFindWalletTableViewCell.h */,
+				881423ED25B18EAA00961668 /* OKFindWalletTableViewCell.m */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -2191,8 +2197,8 @@
 		897B470BBDFF6189764A28B1 /* CommonView */ = {
 			isa = PBXGroup;
 			children = (
-				0E69481895D9636B448B1235 /* OKClickTextView.m */,
 				881C49CA9B3FEEE96D160552 /* OKClickTextView.h */,
+				0E69481895D9636B448B1235 /* OKClickTextView.m */,
 			);
 			name = CommonView;
 			path = ../CustomCode/CommonView;
@@ -2201,6 +2207,7 @@
 		A4724BF794CB79703D16775D /* Categories */ = {
 			isa = PBXGroup;
 			children = (
+				90BF4B77B7BC2B3709FC7726 /* NSString+OKAdd.h */,
 				72FF4539A963089D04591408 /* NSString+OKAdd.m */,
 				B094AE7125CBEE9400DCA01E /* NSArray+OKAdd.h */,
 				B094AE7225CBEE9400DCA01E /* NSArray+OKAdd.m */,
@@ -2208,31 +2215,30 @@
 				B058D8C325B5567B000EB27C /* NSArray+OKKeyPath.m */,
 				B058D8C225B5567B000EB27C /* NSDictionary+OKKeyPath.h */,
 				B058D8C025B5567A000EB27C /* NSDictionary+OKKeyPath.m */,
-				9F9A4247AB8A2B51FBFA4D67 /* UIButton+OneKey.m */,
-				8340442285C2533BDEF0F385 /* NSTimer+TimerBlock.m */,
-				E5934BE097D42F2211A29E44 /* UIView+YCExtension.h */,
-				9EBC4196AF908E120030CED3 /* NSObject+OneKey.m */,
-				DCE54182BD3D917E002D2021 /* UILabel+OneKey.h */,
-				EF0D4C4AA11EA1F767CE4BC5 /* NSDictionary+OneKey.h */,
-				EA4C4BAD83E4872A213FFDD8 /* UIImage+OneKey.h */,
-				468549E8AF41F4FF1257667D /* UIViewController+Extension.m */,
-				61764E51B1FAA870869F779D /* UIBarButtonItem+CustomBarButtonItem.m */,
-				1B074B2A8E67E94BE57AD92A /* UIView+Helper.h */,
-				CC3044DFB660FFA92105EDCB /* NSData+StringToData.h */,
-				EA4D4D8A87A3A5B419E122B1 /* UIView+Toast.h */,
-				43A847D9800B3CB2D1A833BB /* NSTimer+TimerBlock.h */,
-				AEDA460185C8F9419C9E3D4C /* UIView+YCExtension.m */,
 				CC004DBB9E6C199191D6DD02 /* UIButton+OneKey.h */,
-				90BF4B77B7BC2B3709FC7726 /* NSString+OKAdd.h */,
-				4CEF49689D30B9655F65C2ED /* NSDictionary+OneKey.m */,
-				1DA841F082704F0871382A1F /* UIImage+OneKey.m */,
+				9F9A4247AB8A2B51FBFA4D67 /* UIButton+OneKey.m */,
+				E5934BE097D42F2211A29E44 /* UIView+YCExtension.h */,
+				AEDA460185C8F9419C9E3D4C /* UIView+YCExtension.m */,
+				DCE54182BD3D917E002D2021 /* UILabel+OneKey.h */,
 				07244BEEA90C23C6C415DBED /* UILabel+OneKey.m */,
-				85784DDE8A3CF46BC40516EE /* NSObject+OneKey.h */,
-				E99849BBBC879DEBBD322706 /* NSData+StringToData.m */,
-				673F4ADBAC9C5220887AABE9 /* UIView+Helper.m */,
+				EA4C4BAD83E4872A213FFDD8 /* UIImage+OneKey.h */,
+				1DA841F082704F0871382A1F /* UIImage+OneKey.m */,
 				E2D04E87859EC39B6C6E56E9 /* UIViewController+Extension.h */,
-				A7AC4065BEBD7FBEB713225D /* UIBarButtonItem+CustomBarButtonItem.h */,
+				468549E8AF41F4FF1257667D /* UIViewController+Extension.m */,
+				CC3044DFB660FFA92105EDCB /* NSData+StringToData.h */,
+				E99849BBBC879DEBBD322706 /* NSData+StringToData.m */,
+				EA4D4D8A87A3A5B419E122B1 /* UIView+Toast.h */,
 				D9344854932E3E157FE99DA1 /* UIView+Toast.m */,
+				43A847D9800B3CB2D1A833BB /* NSTimer+TimerBlock.h */,
+				8340442285C2533BDEF0F385 /* NSTimer+TimerBlock.m */,
+				EF0D4C4AA11EA1F767CE4BC5 /* NSDictionary+OneKey.h */,
+				4CEF49689D30B9655F65C2ED /* NSDictionary+OneKey.m */,
+				85784DDE8A3CF46BC40516EE /* NSObject+OneKey.h */,
+				9EBC4196AF908E120030CED3 /* NSObject+OneKey.m */,
+				1B074B2A8E67E94BE57AD92A /* UIView+Helper.h */,
+				673F4ADBAC9C5220887AABE9 /* UIView+Helper.m */,
+				A7AC4065BEBD7FBEB713225D /* UIBarButtonItem+CustomBarButtonItem.h */,
+				61764E51B1FAA870869F779D /* UIBarButtonItem+CustomBarButtonItem.m */,
 			);
 			name = Categories;
 			path = ../CustomCode/Categories;
@@ -2708,6 +2714,7 @@
 				8814244125B18EAA00961668 /* OKWalletInfoModel.h in Headers */,
 				8814246125B18EAA00961668 /* OKVerifyOnTheDeviceController.h in Headers */,
 				B058D8B525B55663000EB27C /* OKDeviceUpdateInstallController.h in Headers */,
+				88D0414825F61DAF0056C7F0 /* OKWalletInputFeeViewCallBackModel.h in Headers */,
 				95AC401EBD351386F061C3F1 /* UIBarButtonItem+CustomBarButtonItem.h in Headers */,
 				8814245E25B18EAA00961668 /* OKPINCodeViewController.h in Headers */,
 			);
@@ -2897,6 +2904,7 @@
 			files = (
 				8814253525B18EAA00961668 /* OKShareView.m in Sources */,
 				8814256125B18EAA00961668 /* OKWordImportView.m in Sources */,
+				88D0414925F61DAF0056C7F0 /* OKWalletInputFeeViewCallBackModel.m in Sources */,
 				8814253925B18EAA00961668 /* OKBluetoothViewCell.m in Sources */,
 				881424AE25B18EAA00961668 /* OKFiatSelectViewController.m in Sources */,
 				B058D8AF25B55663000EB27C /* OKDeviceVerifyResultController.m in Sources */,

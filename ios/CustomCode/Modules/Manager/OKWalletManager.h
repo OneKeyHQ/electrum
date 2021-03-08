@@ -70,6 +70,12 @@ typedef NS_ENUM(NSInteger, OKBTCAddressType) {
     OKBTCAddressTypeNativeSegwit = 84,   // 原生隔离见证地址，以 bc1 开头
 };
 
+//矿工费类型
+typedef enum {
+    OKFeeTypeSlow,
+    OKFeeTypeRecommend,
+    OKFeeTypeFast
+}OKFeeType;
 
 //创建和导入的钱包类型
 typedef enum {

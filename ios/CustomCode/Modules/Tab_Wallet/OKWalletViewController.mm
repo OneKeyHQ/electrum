@@ -195,6 +195,8 @@
         NSDictionary *value = dict[name];
         [kWalletManager setCurrentWalletInfo:[OKWalletInfoModel mj_objectWithKeyValues:value]];
     }
+    OKWeakSelf(self)
+    [MBProgressHUD showHUDAddedTo:weakself.view animated:YES];
     [kPyCommandsManager callInterface:kInterface_switch_wallet parameter:@{@"name":kWalletManager.currentWalletInfo.name}];
     dispatch_sync(dispatch_get_global_queue(0, 0), ^{
         NSDictionary* result = [kPyCommandsManager callInterface:kInterface_get_wallet_balance parameter:@{}];
@@ -204,17 +206,23 @@
             NSString *balance = [bDict safeStringForKey:@"balance"];
             NSString *fiat = [bDict safeStringForKey:@"fiat"];
             [self updateStatus:@{@"balance":balance,@"fiat":fiat}];;
+        }else{
+            dispatch_sync(dispatch_get_main_queue(), ^{
+                [MBProgressHUD hideHUDForView:weakself.view animated:YES];
+            });
         }
     });
 }
 
 - (void)updateStatus:(NSDictionary *)dict
 {
+    OKWeakSelf(self)
     self.model.balance = [dict safeStringForKey:@"balance"];
     self.model.coinType = kWalletManager.currentWalletInfo.coinType;
     self.model.iconImage = [NSString stringWithFormat:@"token_%@",[kWalletManager.currentWalletInfo.coinType lowercaseString]];
     self.model.money = [dict safeStringForKey:@"fiat"];
     dispatch_async(dispatch_get_main_queue(), ^{
+        [MBProgressHUD hideHUDForView:weakself.view animated:YES];
        // UI更新代码
         NSArray *barray = [self.model.money componentsSeparatedByString:@" "];
         NSString *bStr = [NSString stringWithFormat:@"%@ %@",kWalletManager.currentFiatSymbol,[barray firstObject]];

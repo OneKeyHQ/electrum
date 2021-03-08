@@ -488,6 +488,7 @@
 "Import failure" = "导入失败";
 "Matching failure" = "配对失败";
 "The rate is lower than the minimum for the current network. Please reenter" = "费率低于当前网络的最小值，请重新输入";
+"GasPrice is lower than the minimum value. Please re-enter" = "Gas Price 低于最小值请，重新输入";
 "Backup to inactive devices only" = "只能备份到未激活的设备";
 "The HD wallet already exists locally. The BACKUP mode hardware wallet cannot be connected again" = "本地已存在HD钱包，无法再连接 backup 模式的硬件钱包";
 "The wallet already exists" = "该钱包已存在";
@@ -547,3 +548,4 @@
 "sendcoin.minutes" = "分钟";
 "Expected time:" = "预计时间：";
 "The minimum amount must not be less than 546 sat" = "最低转账金额不得低于546 sat";
+"Please enter the Gas Price" = "请输入 Gas Price";

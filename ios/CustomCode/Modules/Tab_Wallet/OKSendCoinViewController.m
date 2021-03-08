@@ -5,11 +5,6 @@
 //  Created by xiaoliang on 2020/10/16.
 //  Copyright © 2020 OneKey. All rights reserved..
 //
-typedef enum {
-    OKFeeTypeSlow,
-    OKFeeTypeRecommend,
-    OKFeeTypeFast
-}OKFeeType;
 
 
 #import "OKSendCoinViewController.h"
@@ -365,31 +360,11 @@ typedef enum {
 #pragma mark - 自定义 按钮被点击
 - (IBAction)customBtnClick:(UIButton *)sender {
     OKWeakSelf(self)
-    NSString *dsize = @"";
-    NSString *feerate = @"";
-    switch (weakself.currentFeeType) {
-        case OKFeeTypeFast:
-            feerate = weakself.defaultFeeInfoModel.fast.feerate;
-            dsize = weakself.defaultFeeInfoModel.fast.size;
-            break;
-        case OKFeeTypeRecommend:
-            feerate = weakself.defaultFeeInfoModel.normal.feerate;
-            dsize = weakself.defaultFeeInfoModel.normal.size;
-            break;
-        case OKFeeTypeSlow:
-            feerate = weakself.defaultFeeInfoModel.slow.feerate;
-            dsize = weakself.defaultFeeInfoModel.slow.size;
-            break;
-
-        default:
-            break;
-    }
-    NSString *lowest = weakself.defaultFeeInfoModel.slow.feerate;
-    [OKWalletInputFeeView showWalletCustomFeeDsize:dsize feerate:feerate lowfeerate:lowest coinType:weakself.coinType sure:^(NSDictionary *customFeeDict, NSString *fiat, NSString *feeBit) {
-        weakself.customFeeDict = customFeeDict;
-        weakself.customFeeModel = [OKSendFeeModel mj_objectWithKeyValues:customFeeDict];
+    [OKWalletInputFeeView showWalletCustomFeeModel:weakself.defaultFeeInfoModel feetype:weakself.currentFeeType coinType:weakself.coinType sure:^(OKWalletInputFeeViewCallBackModel *callBackModel) {
+        weakself.customFeeDict = callBackModel.customFeeDict;
+        weakself.customFeeModel = [OKSendFeeModel mj_objectWithKeyValues:callBackModel.customFeeDict];
         weakself.custom = YES;
-        weakself.feeBit = feeBit;
+        weakself.feeBit = callBackModel.feeTfStr;
         [weakself refreshFeeSelect];
         if (weakself.isClickBiggest) {
             [weakself moreBtnClick:nil];
@@ -472,28 +447,30 @@ typedef enum {
         return;
     }
     __block  NSDictionary *dict = [NSDictionary dictionary];
-    dict = [weakself getTxDict];
-    if ([kWalletManager getWalletDetailType] == OKWalletTypeHardware) {
-        [MBProgressHUD showHUDAddedTo:weakself.view animated:YES];
-        [OKHwNotiManager sharedInstance].delegate = self;
-        weakself.hwPredata = dict;
-        weakself.hwFiat = [weakself getCurrentFiat];
-        NSString *feerateTx = [dict safeStringForKey:@"tx"];
-        NSDictionary *dict1 =  [kPyCommandsManager callInterface:kInterfaceMktx parameter:@{@"tx":feerateTx}];
-        NSString *unSignStr = [dict1 safeStringForKey:@"tx"];
-        NSString *tx = unSignStr;
-        dispatch_async(dispatch_get_global_queue(0, 0), ^{
-            NSDictionary *signTxDict =  [kPyCommandsManager callInterface:kInterfaceSign_tx parameter:@{@"tx":tx}];
-            if (signTxDict != nil) {
-                weakself.hwSignData = signTxDict;
-                [[NSNotificationCenter defaultCenter]postNotificationName:kNotiHwBroadcastiComplete object:nil];
-            }
+    [weakself loadFee:^{
+        dict = [weakself getTxDict];
+        if ([kWalletManager getWalletDetailType] == OKWalletTypeHardware) {
+            [MBProgressHUD showHUDAddedTo:weakself.view animated:YES];
+            [OKHwNotiManager sharedInstance].delegate = self;
+            weakself.hwPredata = dict;
+            weakself.hwFiat = [weakself getCurrentFiat];
+            NSString *feerateTx = [dict safeStringForKey:@"tx"];
+            NSDictionary *dict1 =  [kPyCommandsManager callInterface:kInterfaceMktx parameter:@{@"tx":feerateTx}];
+            NSString *unSignStr = [dict1 safeStringForKey:@"tx"];
+            NSString *tx = unSignStr;
+            dispatch_async(dispatch_get_global_queue(0, 0), ^{
+                NSDictionary *signTxDict =  [kPyCommandsManager callInterface:kInterfaceSign_tx parameter:@{@"tx":tx}];
+                if (signTxDict != nil) {
+                    weakself.hwSignData = signTxDict;
+                    [[NSNotificationCenter defaultCenter]postNotificationName:kNotiHwBroadcastiComplete object:nil];
+                }
+            });
+            return;
+        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [weakself showPreInfoView:dict fiat:[weakself getCurrentFiat]];
         });
-        return;
-    }
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [weakself showPreInfoView:dict fiat:[weakself getCurrentFiat]];
-    });
+    }];
 }
 #pragma mark - 预览交易信息
 - (void)showPreInfoView:(NSDictionary *)dict fiat:(NSString *)fiat
@@ -640,18 +617,19 @@ typedef enum {
 
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
     dispatch_group_t group = dispatch_group_create();
-    dispatch_group_async(group, queue, ^{
-        [weakself loadZeroFee:address amount:amount];
-    });
-    dispatch_group_async(group, queue, ^{
-        [weakself loadReRecommendFee:address amount:amount];
-    });
-    dispatch_group_async(group, queue, ^{
-        [weakself loadFastFee:address amount:amount];
-    });
     if (weakself.custom) {
         dispatch_group_async(group, queue, ^{
             [weakself loadCustomFee:address amount:amount];
+        });
+    }else{
+        dispatch_group_async(group, queue, ^{
+            [weakself loadZeroFee:address amount:amount];
+        });
+        dispatch_group_async(group, queue, ^{
+            [weakself loadReRecommendFee:address amount:amount];
+        });
+        dispatch_group_async(group, queue, ^{
+            [weakself loadFastFee:address amount:amount];
         });
     }
     dispatch_group_notify(group,dispatch_get_main_queue(), ^{
@@ -968,6 +946,9 @@ typedef enum {
             }
         }
     }else if ([weakself.coinType isEqualToString:COIN_BTC]){
+        [weakself loadFee:^{
+
+        }];
         if (weakself.isClickBiggest) {
             dict = weakself.biggestFeeDict;
         }else{

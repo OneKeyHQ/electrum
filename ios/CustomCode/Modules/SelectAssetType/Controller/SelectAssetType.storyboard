@@ -110,7 +110,7 @@
                                     <constraint firstAttribute="height" constant="60" id="02h-XI-yab"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" name="PingFangSC-Semibold" family="PingFang SC" pointSize="16"/>
-                                <state key="normal" title="恢复">
+                                <state key="normal" title=".add">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </state>
                                 <userDefinedRuntimeAttributes>

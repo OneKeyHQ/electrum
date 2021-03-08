@@ -6,13 +6,16 @@
 //  Copyright © 2020 OneKey. All rights reserved..
 //
 #import <UIKit/UIKit.h>
+#import "OKWalletInputFeeViewCallBackModel.h"
 
+@class OKDefaultFeeInfoModel;
 typedef void(^CancelBlock)(void);
-typedef void(^SureBlock)(NSDictionary *customFeeDict,NSString *fiat,NSString *feeBit);
+typedef void(^SureBlock)(OKWalletInputFeeViewCallBackModel *callBackModel);
 
 @interface OKWalletInputFeeView : UIView
 @property (nonatomic, copy) CancelBlock cancelBlock;
 @property (nonatomic, copy) SureBlock sureBlock;
-+ (void)showWalletCustomFeeDsize:(NSString *)dsize feerate:(NSString *)feerate lowfeerate:(NSString *)lowfeerate coinType:(NSString *)coinType sure:(SureBlock)sureBlock  Cancel:(CancelBlock)cancelBlock;
+
++ (void)showWalletCustomFeeModel:(OKDefaultFeeInfoModel *)model feetype:(OKFeeType)feetype coinType:(NSString *)coinType sure:(SureBlock)sureBlock  Cancel:(CancelBlock)cancelBlock;
 
 @end
