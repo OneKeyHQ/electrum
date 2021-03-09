@@ -68,7 +68,7 @@
     }
 }
 - (void)tipMessage:(NSString *)msg {
-        dispatch_main_async_safe(
+    ok_dispatch_main_async_safe(
             if (msg == nil || ![msg isKindOfClass:[NSString class]] ||msg.length == 0) {
             return;
             }

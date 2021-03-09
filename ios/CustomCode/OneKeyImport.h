@@ -45,6 +45,7 @@
 #import "OKTools.h"
 #import "BaseTableViewController.h"
 #import "OKWalletManager.h"
+#import "OKTokenManager.h"
 #import "OKValidationPwdController.h"
 #import "NSTimer+TimerBlock.h"
 #import "OKWalletScanVC.h"
@@ -69,5 +70,6 @@
 #import "UIColor+OKAppreance.h"
 #import "UIFont+OKAppreance.h"
 #import "MJRefresh.h"
+#import <SDWebImage/SDWebImage.h>
 
 #endif /* OneKeyImport_h */

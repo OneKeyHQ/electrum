@@ -27,13 +27,18 @@
     [self.view addSubview:self.mask];
 
     self.sheet = [OKAddTokenSheet getView];
+    self.sheet.token = self.token;
     self.sheet.hidden = YES;
     [self.sheet setLayerRadius:13];
     OKWeakSelf(self)
     self.sheet.cancel = ^{
         [weakself dismiss];
     };
-    self.sheet.addTokenCallback = self.addTokenCallback;
+    self.sheet.addTokenCallback = ^{
+        [kOKTokenManager addToken:weakself.token];
+        [kTools tipMessage:@"token.add.success".localized];
+        [weakself dismiss];
+    };
     [self.view addSubview:self.sheet];
 
 //    UIPanGestureRecognizer *panGes = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(move:)];
@@ -53,7 +58,6 @@
     CGFloat sheetHeight = 347 + self.view.safeAreaInsets.bottom;
     self.sheet.bounds = CGRectMake(0, 0, self.view.width, sheetHeight);
     self.sheet.centerX = self.view.centerX;
-
 }
 
 //- (void)move:(UIPanGestureRecognizer *)sender {

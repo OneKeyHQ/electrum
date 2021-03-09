@@ -25,8 +25,11 @@
     return nil;
 }
 
-- (void)awakeFromNib {
-    [super awakeFromNib];
+- (void)setToken:(OKToken *)token {
+    _token = token;
+    self.coinNameLabel.text = self.token.symbol;
+    self.addressLabel.text = self.token.address;
+    [self.coinIcon sd_setImageWithURL:self.token.logoURI.toURL placeholderImage:[UIImage imageNamed:@"icon_ph"]];
 }
 
 - (IBAction)cancel:(id)sender {

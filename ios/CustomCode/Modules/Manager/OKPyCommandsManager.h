@@ -119,15 +119,28 @@
 #define kInterface_switch_wallet        @"switch_wallet" //切换钱包
 #define kInterface_get_wallet_balance   @"get_wallet_balance"//获取余额
 
+
+// Token 请透过OKTokenManager调用，不要直接调用
+#define kInterface_add_token                    @"add_token"                    // 添加代币
+#define kInterface_delete_token                 @"delete_token"                 //
+#define kInterface_get_all_token_info           @"get_all_token_info"           // 获取Token总列表
+#define kInterface_get_cur_wallet_token_address @"get_cur_wallet_token_address" // 获取已添加的Token列表
+#define kInterface_get_all_customer_token_info  @"get_all_customer_token_info"  // 获取用户自定义的Token
+#define kInterface_get_customer_token_info      @"get_customer_token_info"      // 获取用户自定义的Token
+
+
 #define kPyCommandsManager (OKPyCommandsManager.sharedInstance)
 NS_ASSUME_NONNULL_BEGIN
+typedef void(^OKPYResultCallback)(id result);
+
 @interface OKPyCommandsManager : NSObject
 + (OKPyCommandsManager *)sharedInstance;
 + (void)setNetwork;
 - (id)callInterface:(NSString *)method parameter:(NSDictionary *)parameter;
 - (void)cancel; // 取消上一个操作，让其立即返回, 可以重复调用
 - (void)cancelPIN; // 取消输入PIN操作
-- (void)asyncCall:(NSString *)method parameter:(NSDictionary *)parameter callback:(void(^)(id result))callback; // callback will be dispatched to main queue.
+- (void)asyncCall:(NSString *)method parameter:(NSDictionary *)parameter callback:(nullable OKPYResultCallback) callback; // callback will be dispatched to main queue.
+- (void)asyncCall:(NSString *)method parameter:(NSDictionary *)parameter asyncCallback:(nullable OKPYResultCallback) callback;
 @property (nonatomic,assign)PyObject *pyInstance;
 //硬件实例
 @property (nonatomic,assign)PyObject *pyHwInstance;

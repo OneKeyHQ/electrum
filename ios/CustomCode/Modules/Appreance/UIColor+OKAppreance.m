@@ -30,4 +30,5 @@ OKAppreanceColor(TintYellow, FFCC00, 1)
 OKAppreanceColor(TintBlue, 007AFF, 1)
 
 OKAppreanceColor(SP_Separator, 3C3C43, .12)
+OKAppreanceColor(SP_NavBarSeparator, CECED3, 1)
 @end

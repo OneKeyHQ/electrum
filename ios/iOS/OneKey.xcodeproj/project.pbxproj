@@ -462,6 +462,8 @@
 		AB3F4EEE868AEEB2FD3E7365 /* UIImage+OneKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 1DA841F082704F0871382A1F /* UIImage+OneKey.m */; };
 		B000CA6C25F0EF58007B3985 /* OKAllAssetsCellModel.h in Headers */ = {isa = PBXBuildFile; fileRef = B000CA6A25F0EF58007B3985 /* OKAllAssetsCellModel.h */; };
 		B000CA6D25F0EF58007B3985 /* OKAllAssetsCellModel.m in Sources */ = {isa = PBXBuildFile; fileRef = B000CA6B25F0EF58007B3985 /* OKAllAssetsCellModel.m */; };
+		B000CA9E25F5D41D007B3985 /* OKTokenManager.h in Headers */ = {isa = PBXBuildFile; fileRef = B000CA9C25F5D41D007B3985 /* OKTokenManager.h */; };
+		B000CA9F25F5D41D007B3985 /* OKTokenManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B000CA9D25F5D41D007B3985 /* OKTokenManager.m */; };
 		B016510625BFE0810037C6B4 /* OKDeviceConfirmController.h in Headers */ = {isa = PBXBuildFile; fileRef = B016510025BFE0810037C6B4 /* OKDeviceConfirmController.h */; };
 		B016510725BFE0810037C6B4 /* OKDeviceChangePINController.m in Sources */ = {isa = PBXBuildFile; fileRef = B016510125BFE0810037C6B4 /* OKDeviceChangePINController.m */; };
 		B016510825BFE0810037C6B4 /* OKDeviceShowXPUBController.m in Sources */ = {isa = PBXBuildFile; fileRef = B016510225BFE0810037C6B4 /* OKDeviceShowXPUBController.m */; };
@@ -1089,6 +1091,8 @@
 		AEDA460185C8F9419C9E3D4C /* UIView+YCExtension.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "UIView+YCExtension.m"; path = "../CustomCode/Categories/UIView+YCExtension.m"; sourceTree = SOURCE_ROOT; };
 		B000CA6A25F0EF58007B3985 /* OKAllAssetsCellModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKAllAssetsCellModel.h; sourceTree = "<group>"; };
 		B000CA6B25F0EF58007B3985 /* OKAllAssetsCellModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKAllAssetsCellModel.m; sourceTree = "<group>"; };
+		B000CA9C25F5D41D007B3985 /* OKTokenManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKTokenManager.h; sourceTree = "<group>"; };
+		B000CA9D25F5D41D007B3985 /* OKTokenManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKTokenManager.m; sourceTree = "<group>"; };
 		B016510025BFE0810037C6B4 /* OKDeviceConfirmController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKDeviceConfirmController.h; sourceTree = "<group>"; };
 		B016510125BFE0810037C6B4 /* OKDeviceChangePINController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKDeviceChangePINController.m; sourceTree = "<group>"; };
 		B016510225BFE0810037C6B4 /* OKDeviceShowXPUBController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKDeviceShowXPUBController.m; sourceTree = "<group>"; };
@@ -2367,10 +2371,12 @@
 		B0A8FFE225E4EEC600513B8E /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				B067DE6C25E8E66400E98881 /* OKTokenManModel.h */,
-				B067DE6D25E8E66400E98881 /* OKTokenManModel.m */,
 				B0A8FFE325E4EF2300513B8E /* OKToken.h */,
 				B0A8FFE425E4EF2300513B8E /* OKToken.m */,
+				B000CA9C25F5D41D007B3985 /* OKTokenManager.h */,
+				B000CA9D25F5D41D007B3985 /* OKTokenManager.m */,
+				B067DE6C25E8E66400E98881 /* OKTokenManModel.h */,
+				B067DE6D25E8E66400E98881 /* OKTokenManModel.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -2727,6 +2733,7 @@
 				B016510B25BFE0810037C6B4 /* OKDeviceChangePINController.h in Headers */,
 				8814244125B18EAA00961668 /* OKWalletInfoModel.h in Headers */,
 				8814246125B18EAA00961668 /* OKVerifyOnTheDeviceController.h in Headers */,
+				B000CA9E25F5D41D007B3985 /* OKTokenManager.h in Headers */,
 				B058D8B525B55663000EB27C /* OKDeviceUpdateInstallController.h in Headers */,
 				88D0414825F61DAF0056C7F0 /* OKWalletInputFeeViewCallBackModel.h in Headers */,
 				95AC401EBD351386F061C3F1 /* UIBarButtonItem+CustomBarButtonItem.h in Headers */,
@@ -3112,6 +3119,7 @@
 				B058D8C425B5567B000EB27C /* NSDictionary+OKKeyPath.m in Sources */,
 				B067DE7325E90E3E00E98881 /* OKIndexView.m in Sources */,
 				8814255825B18EAA00961668 /* OKFindFollowingWalletController.m in Sources */,
+				B000CA9F25F5D41D007B3985 /* OKTokenManager.m in Sources */,
 				B0E3FEDC25EF7B5500BE4B7F /* OKAddTokenSheetController.m in Sources */,
 				8814256825B18EAA00961668 /* OKWalletListCollectionViewCellModel.m in Sources */,
 				B058D8A925B55663000EB27C /* OKDeviceOffController.m in Sources */,

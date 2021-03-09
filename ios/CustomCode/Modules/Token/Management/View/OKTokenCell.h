@@ -14,7 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OKTokenCell : UITableViewCell
 @property (nonatomic, assign)BOOL isTop;
 @property (nonatomic, assign)BOOL isBottom;
-@property (nonatomic, strong)OKTokenModel *model;
+@property (nonatomic, assign)BOOL isOn;
+@property (nonatomic, strong)OKToken *model;
 @end
 
 NS_ASSUME_NONNULL_END

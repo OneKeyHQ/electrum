@@ -11,6 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OKButtonView : UIView
+@property (nonatomic, assign) BOOL disable;
 @property (nonatomic, copy) void(^buttonClick)(void);
 @end
 

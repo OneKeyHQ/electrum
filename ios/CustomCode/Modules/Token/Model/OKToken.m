@@ -11,6 +11,3 @@
 @implementation OKToken
 
 @end
-
-@implementation OKTokenModel
-@end

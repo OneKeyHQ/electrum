@@ -12,8 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OKTokenManModel : NSObject
 @property (nonatomic, strong)NSArray *data;
-@property (nonatomic, strong)NSArray<OKTokenModel *> *hot;
-@property (nonatomic, strong)NSArray<OKTokenModel *> *more;
+@property (nonatomic, strong)NSArray<OKToken *> *hot;
+@property (nonatomic, strong)NSArray<OKToken *> *more;
 
 - (NSInteger)indexOfTableViewIndexTitle:(NSString *)title;
 - (nullable NSArray<NSString *> *)sectionIndexTitles;

@@ -15,6 +15,7 @@ static const CGFloat showNavBarSeparatorScrollViewOffsetThreshold = 5;
     BOOL _interactivePopEnable;
     UIImageView *_navBarSeparator;
 }
+@property (nonatomic, assign) BOOL showNavbarSeparator;
 @end
 
 @implementation BaseViewController
@@ -40,9 +41,8 @@ static const CGFloat showNavBarSeparatorScrollViewOffsetThreshold = 5;
     };
     _navBarSeparator = [self findHairlineImageViewUnder:self.navigationController.navigationBar];
     UIView *separator = [[UIView alloc] initWithFrame:_navBarSeparator.bounds];
-    separator.backgroundColor = HexColor(0xceced3);
+    separator.backgroundColor = UIColor.SP_NavBarSeparator;
     [_navBarSeparator addSubview:separator];
-    _navBarSeparator.hidden = YES;
     self.navigationController.navigationBar.translucent = NO;
     [self.navigationController.navigationBar setBarTintColor:[self navBarTintColor]];
 
@@ -64,6 +64,7 @@ static const CGFloat showNavBarSeparatorScrollViewOffsetThreshold = 5;
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    _navBarSeparator.hidden = !self.showNavbarSeparator;
     [self.navigationController.navigationBar setBarTintColor:[self navBarTintColor]];
 }
 
@@ -81,11 +82,6 @@ static const CGFloat showNavBarSeparatorScrollViewOffsetThreshold = 5;
     }
 }
 
-- (void)viewDidDisappear:(BOOL)animated {
-    _navBarSeparator.hidden = YES;
-    [super viewDidDisappear:animated];
-}
-
 - (void)backButtonWhiteColor {
     UIImage *whiteImage = [[UIImage imageNamed:@"arrow_left_white"] imageWithColor:[UIColor whiteColor]];
     [(UIButton *)self.navigationItem.leftBarButtonItem.customView setImage:whiteImage forState:UIControlStateNormal];
@@ -96,8 +92,7 @@ static const CGFloat showNavBarSeparatorScrollViewOffsetThreshold = 5;
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] init];
 }
 
-- (void)AT_setExtraCellHide:(UITableView *)aTableView
-{
+- (void)AT_setExtraCellHide:(UITableView *)aTableView {
      aTableView.tableFooterView = [[UIView alloc] init];
 }
 
@@ -139,8 +134,13 @@ static const CGFloat showNavBarSeparatorScrollViewOffsetThreshold = 5;
     return [UIColor whiteColor];
 }
 
+- (void)setShowNavbarSeparator:(BOOL)showNavbarSeparator {
+    _showNavbarSeparator = showNavbarSeparator;
+    _navBarSeparator.hidden = !showNavbarSeparator;
+}
+
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
     CGFloat offsetY = scrollView.contentOffset.y;
-    _navBarSeparator.hidden = offsetY < showNavBarSeparatorScrollViewOffsetThreshold;
+    self.showNavbarSeparator = offsetY > showNavBarSeparatorScrollViewOffsetThreshold;
 }
 @end

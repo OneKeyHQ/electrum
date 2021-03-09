@@ -143,8 +143,8 @@ dispatch_async(queue, ^{block});\
 }
 #endif
 
-#ifndef dispatch_main_async_safe
-#define dispatch_main_async_safe(block) dispatch_queue_async_safe(dispatch_get_main_queue(), block)
+#ifndef ok_dispatch_main_async_safe
+#define ok_dispatch_main_async_safe(block) dispatch_queue_async_safe(dispatch_get_main_queue(), block)
 #endif
 
 #pragma mark -- 组请求

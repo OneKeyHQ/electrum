@@ -7,12 +7,13 @@
 //
 
 #import "OKTokenManModel.h"
+#import "OKTokenManager.h"
 
 @implementation OKTokenManModel
 - (NSInteger)indexOfTableViewIndexTitle:(NSString *)title {
 
     for (int i = 0; i < self.more.count; i++) {
-        if ([self.more[i].name hasPrefix:title]) {
+        if ([self.more[i].symbol.uppercaseString hasPrefix:title]) {
             NSLog(@"%d",i);
             return i + self.hot.count + 2;
         }
@@ -22,8 +23,8 @@
 
 - (nullable NSArray<NSString *> *)sectionIndexTitles {
     NSMutableSet *set = [[NSMutableSet alloc] init];
-    for (OKTokenModel *token in self.more) {
-        NSString *prefix = [token.name substringToIndex:1];
+    for (OKToken *token in self.more) {
+        NSString *prefix = [token.symbol substringToIndex:1];
         if (prefix.length) {
             if ([prefix isEqualToString:@"0"] || prefix.integerValue > 0) {
                 [set addObject:@"#"];
@@ -46,61 +47,32 @@
     return alphabet;
 }
 
--(NSArray *)data {
-    if (!_data) {
-        NSMutableArray *mutData = [[NSMutableArray alloc] init];
-        [mutData addObject:@"热门代币"];
-        [mutData addObjectsFromArray:self.hot];
-        [mutData addObject:@"更多"];
-        [mutData addObjectsFromArray:self.more];
-        _data = mutData;
-    }
-    return _data;
-}
-
-- (NSArray<OKTokenModel *> *)hot {
-    static int c = 0;
+- (NSArray *)data {
     NSMutableArray *mutData = [[NSMutableArray alloc] init];
-    for (int i = 0; i < 10; i++) {
-        OKTokenModel *token = [[OKTokenModel alloc] init];
-        token.name = [NSString stringWithFormat:@"ETH%i", c++];
-        token.address = @"fwefnqerkjnviueanviqcu";
-        token.blance = @(222222);
-        token.isOn = NO;
-        [mutData addObject:token];
-    }
-
+    [mutData addObject:@"热门代币"];
+    [mutData addObjectsFromArray:self.hot];
+    [mutData addObject:@"更多"];
+    [mutData addObjectsFromArray:self.more];
     return mutData;
 }
 
-- (NSArray<OKTokenModel *> *)more {
-    if (!_more) {
-        static int c = 0;
-        NSMutableArray *mutData = [@[] mutableCopy];
-
-        NSMutableArray *alphabet = [@[@"1",@"5"] mutableCopy];
-        for (char c = 'A'; c <= 'Z'; c++) {
-            [alphabet addObject: [NSString stringWithFormat:@"%c", c]];
-        }
-        [alphabet removeObject:@"C"];
-        [alphabet removeObject:@"L"];
-        [alphabet removeObject:@"G"];
-        [alphabet removeObject:@"H"];
-
-
-        for (int i = 0; i < 50; i++) {
-            OKTokenModel *token = [[OKTokenModel alloc] init];
-            token.name = [NSString stringWithFormat:@"%@ BTC%i",alphabet[MIN(i/2, 20)], c++];
-            token.address = @"fwefnqerkjnviueanviqcu";
-            token.blance = @(222222);
-            token.isOn = NO;
-            [mutData addObject:token];
-        }
-        _more = mutData;
+- (NSArray<OKToken *> *)hot {
+    NSArray *tokens = [OKTokenManager sharedInstance].tokens;
+    if (tokens.count < 10) {
+        return @[];
     }
+    return [tokens subarrayWithRange:NSMakeRange(0, 10)];
+}
 
-
-    return _more;
+- (NSArray<OKToken *> *)more {
+    NSArray *tokens = [OKTokenManager sharedInstance].tokens;
+    if (tokens.count < 50) {
+        return @[];
+    }
+    NSArray<OKToken *> *moreArr = [tokens subarrayWithRange:NSMakeRange(0, 50)];
+    moreArr = [moreArr arrayByAddingObjectsFromArray:kOKTokenManager.customTokens];
+    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"symbol" ascending:YES];
+    return [moreArr sortedArrayUsingDescriptors:[NSArray arrayWithObjects:sortDescriptor, nil]];
 }
 
 @end

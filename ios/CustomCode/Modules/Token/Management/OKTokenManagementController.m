@@ -14,6 +14,7 @@
 #import "OKIndexView.h"
 #import "OKTokenNoResultView.h"
 #import "OKAddTokenController.h"
+#import "OKTokenManager.h"
 
 
 @interface OKTokenManagementController () <UITableViewDataSource , UITableViewDelegate, UISearchResultsUpdating>
@@ -69,6 +70,7 @@
         [weakself.navigationController pushViewController:vc animated:YES];
     };
     [self.view addSubview:self.noResultView];
+    [OKTokenManager sharedInstance];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -111,6 +113,7 @@
     if (cell == nil) {
         cell = [[OKTokenCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ID];
     }
+
     if (self.searchMode) {
         cell.isTop = indexPath.row == 0;
         cell.isBottom = indexPath.row == self.filteredData.count - 1;
@@ -141,9 +144,7 @@
     if (searchText) {
         if (searchText.length != 0) {
             self.searchMode = YES;
-            self.filteredData = [self.model.more ok_filter:^BOOL(id obj) {
-                return [((OKTokenModel *)obj).name containsString:searchText];
-            }];
+            self.filteredData = [[OKTokenManager sharedInstance] tokensFilterWith:searchText];
         } else {
             self.searchMode = NO;
             self.filteredData = self.model.data;

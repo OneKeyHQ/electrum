@@ -7,6 +7,12 @@
 //
 
 #import "OKPyCommandsManager.h"
+
+#define OKPY_METHOD_CASE(methodName)\
+    else if([method isEqualToString:methodName])
+#define OKPY_SIMPLE_CALL_WITH_NOARGS \
+    result = PyObject_CallMethod(self.pyInstance, [method UTF8String], "()",NULL);
+
 @interface OKPyCommandsManager()
 @property (nonatomic,assign)PyObject *pyClass;
 //硬件实例
@@ -587,7 +593,22 @@ static dispatch_once_t once;
     }else if([method isEqualToString:kInterface_get_wallet_balance]){
         result = PyObject_CallMethod(self.pyInstance, [method UTF8String], "()",NULL);
     }
-
+    OKPY_METHOD_CASE(kInterface_add_token) {
+        NSString *symbol = [parameter safeStringForKey:@"symbol"];
+        NSString *contract_addr = [parameter safeStringForKey:@"contract_addr"];
+        result = PyObject_CallMethod(self.pyInstance, [method UTF8String], "(s,s)", [symbol UTF8String], [contract_addr UTF8String]);
+    }
+    OKPY_METHOD_CASE(kInterface_delete_token) {
+        const char *contract_addr = [parameter safeStringForKey:@"contract_addr"].UTF8String;
+        result = PyObject_CallMethod(self.pyInstance, [method UTF8String], "(s)", contract_addr);
+    }
+    OKPY_METHOD_CASE(kInterface_get_all_token_info) { OKPY_SIMPLE_CALL_WITH_NOARGS }
+    OKPY_METHOD_CASE(kInterface_get_cur_wallet_token_address) { OKPY_SIMPLE_CALL_WITH_NOARGS }
+    OKPY_METHOD_CASE(kInterface_get_all_customer_token_info) { OKPY_SIMPLE_CALL_WITH_NOARGS }
+    OKPY_METHOD_CASE(kInterface_get_customer_token_info) {
+        const char *contract_addr = [parameter safeStringForKey:@"contract_address"].UTF8String;
+        result = PyObject_CallMethod(self.pyInstance, [method UTF8String], "(s)", contract_addr);
+    }
 
     if (result == NULL) {
         if (PyErr_Occurred()) {
@@ -601,7 +622,7 @@ static dispatch_once_t once;
             // 释放GIL ！！！！！
             PyGILState_Release(state);
             if (![method isEqualToString: kInterfaceSet_currency] && ![method isEqualToString: kInterfaceSet_base_uint]) {
-                dispatch_main_async_safe(
+                ok_dispatch_main_async_safe(
                     [kTools tipMessage:[NSString stringWithCString:msg encoding:NSUTF8StringEncoding]];
                 );
             }
@@ -618,7 +639,6 @@ static dispatch_once_t once;
     }
     return object;
 }
-
 
 + (void)setNetwork
 {
@@ -694,6 +714,15 @@ static dispatch_once_t once;
         dispatch_async(dispatch_get_main_queue(), ^{
             callback(result);
         });
+    });
+}
+
+- (void)asyncCall:(NSString *)method parameter:(NSDictionary *)parameter asyncCallback:(void(^)(id result))callback {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        id result = [self callInterface:method parameter:parameter];
+        if (callback) {
+            callback(result);
+        }
     });
 }
 //数组等过于复杂的类型  传递json字符串

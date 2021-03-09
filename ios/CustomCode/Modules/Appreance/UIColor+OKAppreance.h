@@ -42,6 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 // 特殊色用于协助类组件（如分隔线、遮罩、把手）的颜色填充。
 
 + (UIColor *)SP_Separator;  // 3C3C43 .12
++ (UIColor *)SP_NavBarSeparator;  // CECED3
 @end
 
 NS_ASSUME_NONNULL_END

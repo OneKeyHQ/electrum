@@ -22,6 +22,12 @@
     }
 }
 
+- (void)setDisable:(BOOL)disable {
+    _disable = disable;
+    self.userInteractionEnabled = !disable;
+    self.alpha = disable ? 0.6 : 1;
+}
+
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     [super touchesBegan:touches withEvent:event];
     [UIView animateWithDuration:0.1 animations:^{
