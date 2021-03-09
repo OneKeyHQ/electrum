@@ -677,7 +677,7 @@ class PyWalib:
     def get_transaction_info(cls, txid) -> dict:
         tx = cls.get_provider().get_transaction_by_txid(txid)
         last_price = Decimal(cls.get_coin_price(cls.coin_symbol) or "0")
-        amount = Decimal(cls.web3.fromWei(tx.value, "ether"))
+        amount = Decimal(cls.web3.fromWei(tx.outputs[0].value, "ether"))
         fiat = last_price * amount
         fee = Decimal(cls.web3.fromWei(tx.fee.usage * tx.fee.price_per_unit, "ether"))
         fee_fiat = last_price * fee
@@ -706,8 +706,8 @@ class PyWalib:
             'tx_status': tx_status,
             "show_status": show_status,
             'sign_status': None,
-            'output_addr': [tx.target],
-            'input_addr': [tx.source],
+            'output_addr': [tx.outputs[0].address],
+            'input_addr': [tx.inputs[0].address],
             'height': tx.block_header.block_number if tx.block_header else -2,
             'cosigner': [],
             'tx': tx.raw_tx,
