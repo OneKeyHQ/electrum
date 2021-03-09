@@ -29,8 +29,9 @@
 #import "OKTakeCareMnemonicViewController.h"
 #import "OKMatchingInCirclesViewController.h"
 #import "OKSelectAssetTypeController.h"
-
+#import "OKTokenManagementController.h"
 #import "OKURLSchemeHandler.h"
+#import "OKNotiAssetModel.h"
 
 @interface OKWalletViewController ()<UITableViewDelegate,UITableViewDataSource,UINavigationControllerDelegate,UIGestureRecognizerDelegate>
 
@@ -98,10 +99,10 @@
 
 @property (nonatomic,strong)NSArray *listWallets;
 
-@property (nonatomic,strong)OKAssetTableViewCellModel *model;
-
 @property (nonatomic,assign)BOOL isCanSideBack;
 
+@property (nonatomic,strong)OKNotiAssetModel *notiAssetModel;
+@property (nonatomic,strong)NSArray *allAssetData;
 @end
 
 @implementation OKWalletViewController
@@ -216,17 +217,32 @@
 
 - (void)updateStatus:(NSDictionary *)dict
 {
+    self.notiAssetModel = [OKNotiAssetModel mj_objectWithKeyValues:dict];
+    NSMutableArray *arrayM = [NSMutableArray array];
+    OKAssetTableViewCellModel *coinModel = [OKAssetTableViewCellModel new];
+    coinModel.balance = self.notiAssetModel.balance;
+    coinModel.coinType = self.notiAssetModel.coin;
+    coinModel.money = self.notiAssetModel.fiat;
+    coinModel.iconImage = [NSString stringWithFormat:@"token_%@",[kWalletManager.currentWalletInfo.coinType lowercaseString]];
+    [arrayM addObject:coinModel];
+    if (self.notiAssetModel.tokens.count != 0) {
+        for (OKTokenAssetModel *model in self.notiAssetModel.tokens) {
+            OKAssetTableViewCellModel *tokenModel = [OKAssetTableViewCellModel new];
+            tokenModel.balance = model.balance;
+            tokenModel.coinType = model.coin;
+            tokenModel.money = model.fiat;
+            tokenModel.iconImage = [NSString stringWithFormat:@"token_%@",[kWalletManager.currentWalletInfo.coinType lowercaseString]];
+            [arrayM addObject:tokenModel];
+        }
+    }
+    self.allAssetData = arrayM;
     OKWeakSelf(self)
-    self.model.balance = [dict safeStringForKey:@"balance"];
-    self.model.coinType = kWalletManager.currentWalletInfo.coinType;
-    self.model.iconImage = [NSString stringWithFormat:@"token_%@",[kWalletManager.currentWalletInfo.coinType lowercaseString]];
-    self.model.money = [dict safeStringForKey:@"fiat"];
     dispatch_async(dispatch_get_main_queue(), ^{
         [MBProgressHUD hideHUDForView:weakself.view animated:YES];
        // UI更新代码
-        NSArray *barray = [self.model.money componentsSeparatedByString:@" "];
+        NSArray *barray = [self.notiAssetModel.sum_fiat componentsSeparatedByString:@" "];
         NSString *bStr = [NSString stringWithFormat:@"%@ %@",kWalletManager.currentFiatSymbol,[barray firstObject]];
-        if (self.model.money.length == 0) {
+        if (self.notiAssetModel.sum_fiat.length == 0) {
             bStr = @"--";
         }
         if (kWalletManager.showAsset) {
@@ -235,7 +251,7 @@
         self.balance.text = bStr;
         self.walletName.text = kWalletManager.currentWalletInfo.label.length > 0 ? kWalletManager.currentWalletInfo.label : MyLocalizedString(@"No purse", nil);
         if (kWalletManager.currentWalletInfo.label.length > 0) {
-            [self.coinImage setImage:[UIImage imageNamed:self.model.iconImage] forState:UIControlStateNormal];
+            [self.coinImage setImage:[UIImage imageNamed:coinModel.iconImage] forState:UIControlStateNormal];
         }else{
             [self.coinImage setImage:[UIImage imageNamed:@"loco_round"] forState:UIControlStateNormal];
         }
@@ -247,7 +263,6 @@
 #pragma mark -  初始化UI
 - (void)stupUI
 {
-    self.model = [OKAssetTableViewCellModel new];
     [self.topView setLayerDefaultRadius];
     [self.bottomView setLayerDefaultRadius];
     [self.leftViewBg setLayerRadius:14];
@@ -419,9 +434,9 @@
     [kWalletManager setShowAsset:isShowAsset];
     if (!isShowAsset) {
         self.eyeBtn.image = [UIImage imageNamed:@"eyehome"];
-        NSString *money =  [[self.model.money componentsSeparatedByString:@" "] firstObject];
+        NSString *money =  [[self.notiAssetModel.sum_fiat componentsSeparatedByString:@" "] firstObject];
         NSString *bStr = [NSString stringWithFormat:@"%@ %@",kWalletManager.currentFiatSymbol,money];
-        if (self.model.money.length == 0) {
+        if (self.notiAssetModel.sum_fiat.length == 0) {
             bStr = @"--";
         }
         self.balance.text = bStr;
@@ -531,14 +546,12 @@
             return cell;
         }
     }
-
-    //assetTableView
     static NSString *ID = @"OKAssetTableViewCell";
     OKAssetTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:ID];
     if (cell == nil) {
         cell = [[OKAssetTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ID];
     }
-    cell.model = self.model;
+    cell.model = self.allAssetData[indexPath.row];
     return cell;
 }
 
@@ -586,7 +599,7 @@
         return;
     }
     OKTxListViewController *txListVc = [OKTxListViewController initViewControllerWithStoryboardName:@"Tab_Wallet"];
-    txListVc.model = self.model;
+    txListVc.model = self.allAssetData[indexPath.row];
     txListVc.coinType = [kWalletManager.currentWalletInfo.coinType uppercaseString];
     [self.navigationController pushViewController:txListVc animated:YES];
 }
@@ -678,7 +691,8 @@
 }
 #pragma mark - 添加Token
 - (IBAction)tableViewHeaderAddBtnClick:(UIButton *)sender {
-    //NSLog(@"添加Token");
+    OKTokenManagementController *tokenVc = [OKTokenManagementController controllerWithStoryboard];
+    [self.navigationController pushViewController:tokenVc animated:YES];
 }
 
 #pragma mark - NotiWalletCreateComplete

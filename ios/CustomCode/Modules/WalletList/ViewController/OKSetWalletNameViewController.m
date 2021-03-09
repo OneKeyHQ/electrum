@@ -161,7 +161,7 @@
             [OKHwNotiManager  sharedInstance].delegate = self;
             [MBProgressHUD showHUDAddedTo:self.view animated:YES];
             dispatch_async(dispatch_get_global_queue(0, 0), ^{
-               NSString *xpub = [kPyCommandsManager callInterface:kInterfacecreate_hw_derived_wallet parameter:@{@"purpose": @(self.btcAddressType)}];
+                NSString *xpub = [kPyCommandsManager callInterface:kInterfacecreate_hw_derived_wallet parameter:@{@"purpose": @(self.btcAddressType),@"coin":[self.coinType lowercaseString]}];
                 if (xpub == nil) {
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [self.OK_TopViewController dismissViewControllerWithCount:1 animated:YES complete:^{
@@ -177,7 +177,7 @@
                 }
                 NSArray *array = @[@[xpub,kOKBlueManager.currentDeviceID]];
                 NSString *xpubs = [array mj_JSONString];
-                create = [kPyCommandsManager callInterface:kInterfaceimport_create_hw_wallet parameter:@{@"name":name,@"m":@"1",@"n":@"1",@"xpubs":xpubs,@"hd":@"0"}];
+                create = [kPyCommandsManager callInterface:kInterfaceimport_create_hw_wallet parameter:@{@"name":name,@"m":@"1",@"n":@"1",@"xpubs":xpubs,@"hd":@"0",@"coin":[weakself.coinType lowercaseString]}];
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [weakself createComplete:create isInit:isInit pwd:pwd isHw:YES];
                 });

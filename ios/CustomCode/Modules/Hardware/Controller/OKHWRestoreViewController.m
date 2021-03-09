@@ -54,7 +54,7 @@
     __block NSDictionary* create = nil;
     [OKHwNotiManager  sharedInstance].delegate = self;
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        NSString *xpub = [kPyCommandsManager callInterface:kInterfacecreate_hw_derived_wallet parameter:@{}];
+        NSString *xpub = [kPyCommandsManager callInterface:kInterfacecreate_hw_derived_wallet parameter:@{@"is_creating":@"0"}];
         if (xpub == nil) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.OK_TopViewController dismissViewControllerWithCount:1 animated:YES complete:^{

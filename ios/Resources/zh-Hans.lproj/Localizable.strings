@@ -549,3 +549,4 @@
 "Expected time:" = "预计时间：";
 "The minimum amount must not be less than 546 sat" = "最低转账金额不得低于546 sat";
 "Please enter the Gas Price" = "请输入 Gas Price";
+"list.Hardware wallet" = "硬件钱包";

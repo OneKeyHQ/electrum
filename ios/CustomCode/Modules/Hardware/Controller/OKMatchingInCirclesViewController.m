@@ -382,6 +382,7 @@
                 if (deviceModel.deviceInfo.initialized && !deviceModel.deviceInfo.backup_only&& [deviceModel.deviceInfo.device_id isEqualToString:kWalletManager.currentWalletInfo.device_id]) {
                     [MBProgressHUD hideHUDForView:self.view animated:YES];
                     OKSendCoinViewController *sendCoinVc = [OKSendCoinViewController sendCoinViewController];
+                    sendCoinVc.coinType = kWalletManager.currentWalletInfo.coinType;
                     [self.navigationController pushViewController:sendCoinVc animated:YES];
                 }else{
                     if (![deviceModel.deviceInfo.device_id isEqualToString:kWalletManager.currentWalletInfo.device_id]) {

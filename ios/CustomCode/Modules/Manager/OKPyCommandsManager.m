@@ -434,34 +434,42 @@ static dispatch_once_t once;
 
 
     }else if([method isEqualToString:kInterfacecreate_hw_derived_wallet]){
-//        def create_hw_derived_wallet(self, path="android_usb", _type="p2wpkh", is_creating=True, coin="btc"):
-//            """
-//            Create derived wallet by hardware, used by hardware
-//            :param path: NFC/android_usb/bluetooth as string
-//            :param _type: p2wsh/p2wsh/p2pkh/p2wpkh-p2sh as string
-//            :coin: btc/eth as string
-//            :return: xpub as string
-//            """
-        NSString *path = kBluetooth_iOS;
-        NSInteger purpose = [[parameter objectForKey:@"purpose"] integerValue];
-        NSString *type = @"p2wpkh";
-        if (purpose == OKBTCAddressTypeNormal) {
-            type = @"p2pkh";
-        } else if (purpose == OKBTCAddressTypeSegwit) {
-            type = @"p2wpkh-p2sh";
+        NSString *is_creating = [parameter safeStringForKey:@"is_creating"];
+        if ([is_creating isEqualToString:@"0"]) {
+            NSString *path = kBluetooth_iOS;
+            PyObject *args =  Py_BuildValue("()", NULL);
+            PyObject *kwargs;
+            kwargs = Py_BuildValue("{s:s}", "path", [path UTF8String]);
+            PyObject *myobject_method = PyObject_GetAttrString(self.pyInstance, [kInterfacecreate_hw_derived_wallet UTF8String]);
+            result = PyObject_Call(myobject_method, args, kwargs);
+        }else{
+            NSString *path = kBluetooth_iOS;
+            NSInteger purpose = [[parameter objectForKey:@"purpose"] integerValue];
+            NSString *type = @"p2wpkh";
+            NSString *coin = [parameter safeStringForKey:@"coin"];
+            if (purpose == OKBTCAddressTypeNormal) {
+                type = @"p2pkh";
+            } else if (purpose == OKBTCAddressTypeSegwit) {
+                type = @"p2wpkh-p2sh";
+            }
+            PyObject *args =  Py_BuildValue("()", NULL);
+            PyObject *kwargs;
+            kwargs = Py_BuildValue("{s:s,s:s,s:s}", "path", [path UTF8String],"_type",[type UTF8String],"coin",[coin UTF8String]);
+            PyObject *myobject_method = PyObject_GetAttrString(self.pyInstance, [kInterfacecreate_hw_derived_wallet UTF8String]);
+            result = PyObject_Call(myobject_method, args, kwargs);
         }
-        result = PyObject_CallMethod(self.pyInstance, [kInterfacecreate_hw_derived_wallet UTF8String], "(s,s)",[path UTF8String],[type UTF8String]);
 
     }else if ([method isEqualToString:kInterfaceimport_create_hw_wallet]){
         NSString *name = [parameter safeStringForKey:@"name"];
         NSString *m  = [parameter safeStringForKey:@"m"];
         NSString *n = [parameter safeStringForKey:@"n"];
         NSString *xpubs = [parameter safeStringForKey:@"xpubs"];
+        NSString *coin = [parameter safeStringForKey:@"coin"];
         BOOL hd = [[parameter safeStringForKey:@"hd"] boolValue];
         NSString *path = kBluetooth_iOS;
         PyObject *args =  Py_BuildValue("(s)", [name UTF8String]);
         PyObject *kwargs;
-        kwargs = Py_BuildValue("{s:i,s:i,s:s,s:s,s:i}", "m", [m integerValue],"n",[n integerValue],"path",[path UTF8String],"xpubs",[xpubs UTF8String],"hd",hd);
+        kwargs = Py_BuildValue("{s:i,s:i,s:s,s:s,s:i,s:s}", "m", [m integerValue],"n",[n integerValue],"path",[path UTF8String],"xpubs",[xpubs UTF8String],"hd",hd,"coin",[coin UTF8String]);
         PyObject *myobject_method = PyObject_GetAttrString(self.pyInstance, [kInterfaceimport_create_hw_wallet UTF8String]);
         result = PyObject_Call(myobject_method, args, kwargs);
     }else if ([method isEqualToString:kInterfaceset_pin]){

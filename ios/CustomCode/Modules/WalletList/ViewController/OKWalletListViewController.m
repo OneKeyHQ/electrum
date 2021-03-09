@@ -30,7 +30,7 @@
 
 
 #define kDefaultType  @"HD"
-
+#define kHWType       @"HW"
 @interface OKWalletListViewController ()<UITableViewDelegate,UITableViewDataSource,UICollectionViewDelegate,UICollectionViewDataSource>
 
 @property (weak, nonatomic) IBOutlet UIView *bottomBgView;
@@ -154,7 +154,7 @@
 
     self.countLabel.text = [NSString stringWithFormat:@"%zd",self.showList.count];
     self.headerWalletTypeLabel.text = [self headerWalletType:walletType];
-    if([kWalletManager.currentSelectCoinType isEqualToString:kDefaultType]){
+    if([kWalletManager.currentSelectCoinType isEqualToString:kDefaultType]||[kWalletManager.currentSelectCoinType isEqualToString:kHWType]){
         self.footBgView.hidden = self.showList.count == 0 ? YES : NO;
     }else{
         self.footBgView.hidden = YES;
@@ -400,7 +400,14 @@
         model2.iconName = @"cointype_eth";
         model2.isSelected = [kWalletManager.currentSelectCoinType isEqualToString:model2.coinType];
         model2.headerWaletType = MyLocalizedString(@"ETH wallet", nil);
-        _allCoinTypeArray = @[model0,model1,model2];
+
+        OKWalletListCollectionViewCellModel *model3 = [OKWalletListCollectionViewCellModel new];
+        model3.coinType = @"HW";
+        model3.iconName = @"hw_icon";
+        model3.isSelected = [kWalletManager.currentSelectCoinType isEqualToString:model3.coinType];
+        model3.headerWaletType = MyLocalizedString(@"list.Hardware wallet", nil);
+
+        _allCoinTypeArray = @[model0,model1,model2,model3];
     }
     return _allCoinTypeArray;
 }
@@ -450,9 +457,15 @@
 }
 #pragma mark - 点击添加钱包
 - (IBAction)addWalletClick:(UIButton *)sender {
-    OKSelectCoinTypeViewController *selectVc = [OKSelectCoinTypeViewController selectCoinTypeViewController];
-    selectVc.addType = OKAddTypeCreateHDDerived;
-    selectVc.where = OKWhereToSelectTypeWalletList;
-    [self.navigationController pushViewController:selectVc animated:YES];
+    OKWeakSelf(self)
+    NSString *walletType =  [OKStorageManager loadFromUserDefaults:kSelectedWalletListType];
+    if ([walletType isEqualToString:kDefaultType]) {
+        OKSelectCoinTypeViewController *selectVc = [OKSelectCoinTypeViewController selectCoinTypeViewController];
+        selectVc.addType = OKAddTypeCreateHDDerived;
+        selectVc.where = OKWhereToSelectTypeWalletList;
+        [weakself.navigationController pushViewController:selectVc animated:YES];
+    }else{
+        [weakself macthWalletBtnClick:nil];
+    }
 }
 @end
