@@ -3553,7 +3553,20 @@ class AndroidCommands(commands.Commands):
                     wallet_info["sum_fiat"] = Decimal(wallet_info["fiat"].split()[0].replace(",", ""))
                     all_wallet_info.append(wallet_info)
 
-            all_wallet_info = sorted(all_wallet_info, key=lambda i: i["sum_fiat"], reverse=True)
+            no_zero_balance_wallets = (i for i in all_wallet_info if i["sum_fiat"] > 0)
+            no_zero_balance_wallets = sorted(
+                no_zero_balance_wallets, key=lambda i: i["sum_fiat"], reverse=True
+            )  # sort no-zero balance wallet by fiat currency in reverse order
+
+            zero_balance_wallets = (i for i in all_wallet_info if i["sum_fiat"] <= 0)
+            zero_balance_wallets_dict = {i["label"]: i for i in zero_balance_wallets}
+            sorted_wallet_labels = (i[0] for i in self.wallet_context.get_stored_wallets_types())
+            zero_balance_wallets = [
+                zero_balance_wallets_dict[i] for i in sorted_wallet_labels if i in zero_balance_wallets_dict
+            ]  # sort zero balance wallet by created time in reverse order
+
+            all_wallet_info = [*no_zero_balance_wallets, *zero_balance_wallets]
+
             out["all_balance"] = "%s %s" % (all_balance, self.ccy)
             out["wallet_info"] = all_wallet_info
             return json.dumps(out, cls=DecimalEncoder)
