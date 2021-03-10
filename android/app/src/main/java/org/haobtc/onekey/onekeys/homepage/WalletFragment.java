@@ -20,13 +20,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import butterknife.BindView;
 import butterknife.OnClick;
-import com.alibaba.fastjson.JSON;
 import com.google.common.base.Strings;
-import com.orhanobut.logger.Logger;
 import com.scwang.smartrefresh.layout.util.SmartUtil;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -201,7 +202,22 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
     }
 
     private void initRefresh() {
-        mSwipeRefreshLayout.setOnRefreshListener(() -> mAppWalletViewModel.refreshWalletInfo());
+        mSwipeRefreshLayout.setOnRefreshListener(
+                () -> {
+                    Single.fromCallable(
+                                    () -> {
+                                        mAppWalletViewModel.refreshWalletInfo();
+                                        return true;
+                                    })
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                    t -> {
+                                        mSwipeRefreshLayout.setRefreshing(false);
+                                    },
+                                    t -> {})
+                            .isDisposed();
+                });
     }
 
     private void initPrivacyMode() {
@@ -277,7 +293,7 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
                         this,
                         state -> {
                             if (state) {
-                                mAppWalletViewModel.refresh();
+                                mAppWalletViewModel.submit(mAppWalletViewModel::refresh);
                             }
                         });
         mAppWalletViewModel.existsWallet.observe(
@@ -337,8 +353,6 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
         mAppWalletViewModel.currentWalletAssetsList.observe(
                 this,
                 assets -> {
-                    mSwipeRefreshLayout.setRefreshing(false);
-                    Logger.d("刷新-->" + JSON.toJSONString(assets.toList()));
                     mWalletAssetsAdapter.submitList(assets.toList());
                 });
     }
@@ -513,7 +527,7 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void fixName(FixWalletNameEvent event) {
-        mAppWalletViewModel.refreshWalletInfo();
+        mAppWalletViewModel.submit(mAppWalletViewModel::refreshWalletInfo);
     }
 
     @SingleClick(value = 1000L)
@@ -621,7 +635,7 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onRefresh(RefreshEvent refreshEvent) {
         if (shouldResponsePassEvent()) {
-            mAppWalletViewModel.refresh();
+            mAppWalletViewModel.submit(mAppWalletViewModel::refresh);
         }
     }
 

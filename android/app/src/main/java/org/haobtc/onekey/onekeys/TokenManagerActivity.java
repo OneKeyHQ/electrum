@@ -280,7 +280,9 @@ public class TokenManagerActivity extends BaseActivity
                         || allToken.symbol.startsWith(search.toUpperCase())
                         || allToken.name.startsWith(search.toLowerCase())
                         || allToken.name.startsWith(search.toUpperCase())) {
-                    if (!isContainsToken(allToken, tempData)) tempData.add(allToken);
+                    if (!isContainsToken(allToken, tempData)) {
+                        tempData.add(allToken);
+                    }
                 }
             }
         }
@@ -419,7 +421,7 @@ public class TokenManagerActivity extends BaseActivity
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 result -> {
-                                    mAppWalletViewModel.refresh();
+                                    mAppWalletViewModel.submit(mAppWalletViewModel::refresh);
                                     if (!Strings.isNullOrEmpty(result.getErrors())) {
                                         mToast(result.getErrors());
                                     }
@@ -446,7 +448,7 @@ public class TokenManagerActivity extends BaseActivity
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 result -> {
-                                    mAppWalletViewModel.refresh();
+                                    mAppWalletViewModel.submit(mAppWalletViewModel::refresh);
                                     if (!Strings.isNullOrEmpty(result.getErrors())) {
                                         mToast(result.getErrors());
                                     }

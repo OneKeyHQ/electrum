@@ -67,6 +67,10 @@ class AppWalletViewModel : ViewModel() {
   @Deprecated("")
   val currentWalletBalance = MutableLiveData(AssetsBalance(BigDecimal("0"), "BTC"))
 
+  fun submit(runnable: Runnable) {
+    mExecutorService.submit(runnable)
+  }
+
   @WorkerThread
   fun refresh() {
     refreshExistsWallet()
@@ -75,20 +79,18 @@ class AppWalletViewModel : ViewModel() {
 
   @WorkerThread
   fun refreshExistsWallet() {
-    mExecutorService.execute { existsWallet.postValue(mAccountManager.existsWallets()) }
+    existsWallet.postValue(mAccountManager.existsWallets())
   }
 
   @WorkerThread
   fun refreshWalletInfo() {
-    mExecutorService.execute {
-      val currentWalletName = mAccountManager.currentWalletName
-      var localWallet = mAccountManager.getLocalWalletByName(currentWalletName)
-      if (localWallet == null) {
-        // 容错处理：如果本地信息存储错误，则随机选择一下钱包账户。
-        localWallet = mAccountManager.autoSelectNextWallet()
-      }
-      setCurrentWalletInfo(localWallet)
+    val currentWalletName = mAccountManager.currentWalletName
+    var localWallet = mAccountManager.getLocalWalletByName(currentWalletName)
+    if (localWallet == null) {
+      // 容错处理：如果本地信息存储错误，则随机选择一下钱包账户。
+      localWallet = mAccountManager.autoSelectNextWallet()
     }
+    setCurrentWalletInfo(localWallet)
   }
 
   private fun refreshAssets(walletAccountInfo: WalletAccountInfo?): AssetsList? {
@@ -185,32 +187,28 @@ class AppWalletViewModel : ViewModel() {
    *
    * @param name 钱包名称
    */
+  @WorkerThread
   fun changeCurrentWallet(name: String) {
-    mExecutorService.execute {
-      val localWalletInfo = mAccountManager.selectWallet(name)
-      if (localWalletInfo == null) {
-        mSystemConfigManager.passWordType = SystemConfigManager.SoftHdPassType.SHORT
-      }
-      mMainHandler.post {
-        setCurrentWalletInfo(localWalletInfo)
-        refreshExistsWallet()
-      }
+    val localWalletInfo = mAccountManager.selectWallet(name)
+    if (localWalletInfo == null) {
+      mSystemConfigManager.passWordType = SystemConfigManager.SoftHdPassType.SHORT
     }
+    setCurrentWalletInfo(localWalletInfo)
+    refreshExistsWallet()
   }
 
   /**
    * 自动选择并切换一个钱包
    */
+  @WorkerThread
   fun autoSelectWallet() {
-    mExecutorService.execute {
-      val localWalletInfo = mAccountManager.autoSelectNextWallet()
-      if (localWalletInfo == null) {
-        mSystemConfigManager.passWordType = SystemConfigManager.SoftHdPassType.SHORT
-      }
-      mMainHandler.post {
-        setCurrentWalletInfo(localWalletInfo)
-        refreshExistsWallet()
-      }
+    val localWalletInfo = mAccountManager.autoSelectNextWallet()
+    if (localWalletInfo == null) {
+      mSystemConfigManager.passWordType = SystemConfigManager.SoftHdPassType.SHORT
+    }
+    mMainHandler.post {
+      setCurrentWalletInfo(localWalletInfo)
+      refreshExistsWallet()
     }
   }
 
@@ -219,7 +217,7 @@ class AppWalletViewModel : ViewModel() {
    */
   @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
   fun event(event: LoadOtherWalletEvent?) {
-    autoSelectWallet()
+    submit(::autoSelectWallet)
   }
 
   @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
@@ -305,7 +303,7 @@ class AppWalletViewModel : ViewModel() {
     return false
   }
 
-  @Subscribe(threadMode = ThreadMode.MAIN)
+  @Subscribe(threadMode = ThreadMode.ASYNC)
   fun onCreateWalletSuccess(event: CreateSuccessEvent) {
     PyEnv.loadLocalWalletInfo(MyApplication.getInstance())
     if (TextUtils.isEmpty(event.name)) {
@@ -324,6 +322,19 @@ class AppWalletViewModel : ViewModel() {
 
   private fun setCurrentWalletInfo(info: WalletAccountInfo?) {
     currentWalletAccountInfo.postValue(info)
+
+    refreshAssets(info)?.let {
+      if (info?.id != mOldAccountName) {
+        // 切换账户清零总金额
+        mOldAccountName = info?.id
+        val currentFiatUnitSymbol = mSystemConfigManager.currentFiatUnitSymbol
+        currentWalletTotalBalanceFiat.postValue(AssetsBalanceFiat(
+            DEF_WALLET_FIAT_BALANCE.balance,
+            currentFiatUnitSymbol.unit,
+            currentFiatUnitSymbol.symbol))
+      }
+      refreshBalance(info, it)
+    }
   }
 
   private fun setCurrentWalletInfo(info: LocalWalletInfo?) {
@@ -333,23 +344,6 @@ class AppWalletViewModel : ViewModel() {
   init {
     EventBus.getDefault().register(this)
     refresh()
-    currentWalletAccountInfo
-        .observeForever { walletAccountInfo: WalletAccountInfo? ->
-          mExecutorService.execute {
-            refreshAssets(walletAccountInfo)?.let {
-              if (walletAccountInfo?.id != mOldAccountName) {
-                // 切换账户清零总金额
-                mOldAccountName = walletAccountInfo?.id
-                val currentFiatUnitSymbol = mSystemConfigManager.currentFiatUnitSymbol
-                currentWalletTotalBalanceFiat.postValue(AssetsBalanceFiat(
-                    DEF_WALLET_FIAT_BALANCE.balance,
-                    currentFiatUnitSymbol.unit,
-                    currentFiatUnitSymbol.symbol))
-              }
-              refreshBalance(walletAccountInfo, it)
-            }
-          }
-        }
   }
 
   companion object {
@@ -358,11 +352,11 @@ class AppWalletViewModel : ViewModel() {
         null
       } else {
         convert(
-            info.type,
-            info.addr,
-            info.name,
-            info.label,
-            info.deviceId
+            info.type ?: "",
+            info.addr ?: "",
+            info.name ?: "",
+            info.label ?: "",
+            info.deviceId ?: null
         )
       }
     }

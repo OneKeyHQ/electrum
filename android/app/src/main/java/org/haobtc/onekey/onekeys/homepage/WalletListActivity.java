@@ -41,6 +41,7 @@ import org.haobtc.onekey.viewmodel.WalletListViewModel;
 /** @author jinxiaomin */
 public class WalletListActivity extends BaseActivity
         implements BaseQuickAdapter.OnItemChildClickListener {
+
     @BindView(R.id.recl_wallet_detail)
     LinearLayout reclWalletDetail;
 
@@ -255,8 +256,11 @@ public class WalletListActivity extends BaseActivity
         } else if (id == R.id.rel_background) {
             WalletInfo data = (WalletInfo) adapter.getItem(position);
             String name = data.name;
-            mAppWalletViewModel.changeCurrentWallet(name);
-            mIntent(HomeOneKeyActivity.class);
+            mAppWalletViewModel.submit(
+                    () -> {
+                        mAppWalletViewModel.changeCurrentWallet(name);
+                        mIntent(HomeOneKeyActivity.class);
+                    });
         } else if (id == R.id.recl_add_hardware_wallet) {
             EventBus.getDefault().removeAllStickyEvents();
             Intent intent = new Intent(this, SearchDevicesActivity.class);
