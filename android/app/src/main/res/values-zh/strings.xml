@@ -1280,4 +1280,12 @@
     <string name="hint_device_connect_timeout">硬件连接超时</string>
     <string name="hint_device_connect_cancel">硬件连接已取消</string>
     <string name="hint_device_connect_error">硬件连接失败</string>
+    <string name="action_dapp_setting_switch_account">切换账户</string>
+    <string name="action_dapp_setting_collect">收藏</string>
+    <string name="action_dapp_setting_command">Onekey 口令</string>
+    <string name="action_dapp_setting_floating_window">浮窗</string>
+    <string name="action_dapp_setting_refresh">刷新</string>
+    <string name="action_dapp_setting_share">分享</string>
+    <string name="action_dapp_setting_copy">复制 URL</string>
+    <string name="action_dapp_setting_browser">浏览器打开</string>
 </resources>

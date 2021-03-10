@@ -49,8 +49,15 @@ import org.haobtc.onekey.onekeys.dappbrowser.listener.OnSignMessageListener
 import org.haobtc.onekey.onekeys.dappbrowser.listener.OnSignPersonalMessageListener
 import org.haobtc.onekey.onekeys.dappbrowser.listener.OnSignTransactionListener
 import org.haobtc.onekey.onekeys.dappbrowser.listener.OnSignTypedMessageListener
+import org.haobtc.onekey.onekeys.dappbrowser.ui.DappSettingSheetDialog.ClickType.Companion.CLICK_BROWSER
+import org.haobtc.onekey.onekeys.dappbrowser.ui.DappSettingSheetDialog.ClickType.Companion.CLICK_COPY_URL
+import org.haobtc.onekey.onekeys.dappbrowser.ui.DappSettingSheetDialog.ClickType.Companion.CLICK_REFRESH
+import org.haobtc.onekey.onekeys.dappbrowser.ui.DappSettingSheetDialog.ClickType.Companion.CLICK_SHARE
+import org.haobtc.onekey.onekeys.dappbrowser.ui.DappSettingSheetDialog.ClickType.Companion.CLICK_SWITCH_ACCOUNT
 import org.haobtc.onekey.ui.activity.SoftPassDialog
 import org.haobtc.onekey.ui.base.BaseFragment
+import org.haobtc.onekey.ui.dialog.SelectAccountBottomSheetDialog
+import org.haobtc.onekey.utils.ClipboardUtils
 import org.haobtc.onekey.utils.HexUtils
 import org.haobtc.onekey.viewmodel.AppWalletViewModel
 import org.web3j.utils.Numeric
@@ -246,7 +253,37 @@ class DappBrowserFragment : BaseFragment(),
   private fun setupClickListener() {
     mBinding.ivBack.setOnClickListener { goToPreviousPage() }
     mBinding.ivClose.setOnClickListener { mOnFinishOrBackCallback?.finish() }
-    mBinding.ivShare.setOnClickListener { showToast(R.string.hint_in_development) }
+    mBinding.ivShare.setOnClickListener {
+      DappSettingSheetDialog.newInstance()
+          .setOnSettingHandleClickCallback {
+            when (it) {
+              CLICK_SWITCH_ACCOUNT -> {
+                SelectAccountBottomSheetDialog.newInstance(Vm.CoinType.ETH)
+                    .show(childFragmentManager, "SelectAccount")
+              }
+              CLICK_BROWSER -> {
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(web3.url)))
+              }
+              CLICK_REFRESH -> {
+                refreshEvent()
+              }
+              CLICK_COPY_URL -> {
+                // copy text
+                ClipboardUtils.copyText(requireContext(), web3.url)
+              }
+              CLICK_SHARE -> {
+                val shareIntent = Intent(Intent.ACTION_SEND).also { intent ->
+                  intent.type = "text/*"
+                  intent.putExtra(Intent.EXTRA_TEXT, web3.url)
+                  intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                  Intent.createChooser(intent, getString(R.string.share_to))
+                }
+                startActivity(shareIntent)
+              }
+            }
+          }
+          .show(childFragmentManager, "Setting")
+    }
   }
 
   /**
