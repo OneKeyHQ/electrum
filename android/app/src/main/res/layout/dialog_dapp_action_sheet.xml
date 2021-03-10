@@ -3,49 +3,70 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@drawable/shape_bg_bottom_sheet"
+    android:orientation="vertical">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/dp_20"
-        android:background="@drawable/white_back_tuo"
-        android:paddingStart="@dimen/dp_24"
-        android:paddingEnd="@dimen/dp_10">
+        android:layout_height="56dp">
+
+        <ImageView
+            android:id="@+id/img_cancel"
+            android:layout_width="@dimen/dp_46"
+            android:layout_height="@dimen/dp_46"
+            android:padding="@dimen/dp_16"
+            android:src="@drawable/close_big_black"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
             android:layout_gravity="center"
-            android:layout_marginTop="@dimen/dp_30"
             android:text="@string/trans_details"
             android:textColor="@color/text_two"
             android:textSize="@dimen/sp_18"
             android:textStyle="normal"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/color_select_wallet_divider"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/dp_20"
+        android:paddingStart="@dimen/dp_16"
+        android:paddingEnd="@dimen/dp_16">
+
         <ImageView
-            android:id="@+id/img_cancel"
-            android:layout_width="@dimen/dp_50"
-            android:layout_height="@dimen/dp_50"
-            android:layout_marginTop="@dimen/dp_7"
-            android:layout_marginEnd="@dimen/dp_7"
-            android:padding="@dimen/dp_10"
-            android:src="@drawable/close_dark_small"
-            app:layout_constraintRight_toRightOf="parent"
+            android:id="@+id/iv_tx_state"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="24dp"
+            android:src="@drawable/send_"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/text_tx_amount"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/text"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="@dimen/dp_25"
+            android:layout_marginTop="@dimen/dp_6"
             android:autoSizeMaxTextSize="26sp"
             android:autoSizeTextType="uniform"
             android:gravity="center"
@@ -54,7 +75,7 @@
             android:textSize="26sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/text"
+            app:layout_constraintTop_toBottomOf="@+id/iv_tx_state"
             tools:text="0.001BTC" />
 
         <LinearLayout
@@ -76,18 +97,17 @@
                     android:id="@+id/textView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/dp_10"
                     android:text="@string/sender"
-                    android:textColor="@color/text_six"
-                    android:textSize="@dimen/sp_14" />
+                    android:textColor="@color/text_color2"
+                    android:textSize="@dimen/sp_17" />
 
                 <TextView
                     android:id="@+id/text_send_address"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="38dp"
-                    android:layout_marginEnd="@dimen/dp_14"
+                    android:layout_marginStart="24dp"
                     android:layout_toEndOf="@+id/textView"
+                    android:gravity="end"
                     android:textColor="@color/text_three"
                     android:textSize="@dimen/sp_14"
                     tools:text="sdfjsbkdbskjndksnjfkjsnkejnfksnjkdnjahbjhbdjhbajsdbkasjndkajnsdk" />
@@ -97,11 +117,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/dp_28"
                     android:layout_below="@+id/text_send_address"
+                    android:layout_alignParentEnd="true"
                     android:layout_marginStart="38dp"
-                    android:layout_marginTop="@dimen/dp_5"
-                    android:layout_toEndOf="@+id/textView"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginEnd="1dp"
                     android:background="@drawable/green_bacj"
                     android:gravity="center"
+                    android:includeFontPadding="false"
                     android:paddingStart="@dimen/sp_13"
                     android:paddingEnd="@dimen/sp_13"
                     android:textColor="@color/onekey"
@@ -113,7 +135,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/line_hight"
                     android:layout_below="@+id/text_send_name"
-                    android:layout_marginTop="@dimen/dp_15"
+                    android:layout_marginTop="@dimen/dp_10"
                     android:background="@color/line_color" />
 
             </RelativeLayout>
@@ -121,24 +143,23 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_15">
+                android:layout_marginTop="@dimen/dp_10">
 
                 <TextView
                     android:id="@+id/textView1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/dp_10"
                     android:text="@string/receiver"
-                    android:textColor="@color/text_six"
-                    android:textSize="@dimen/sp_14" />
+                    android:textColor="@color/text_color2"
+                    android:textSize="@dimen/sp_17" />
 
                 <TextView
                     android:id="@+id/text_receive_address"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="38dp"
-                    android:layout_marginEnd="@dimen/dp_14"
+                    android:layout_marginStart="24dp"
                     android:layout_toEndOf="@+id/textView1"
+                    android:gravity="end"
                     android:textColor="@color/text_three"
                     android:textSize="@dimen/sp_14"
                     tools:text="sdfjsbkdbskjndksnjfkjsnkejnfksnjkdnjahbjhbdjhbajsdbkasjndkajnsdk" />
@@ -148,7 +169,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/line_hight"
                     android:layout_below="@+id/text_receive_address"
-                    android:layout_marginTop="@dimen/dp_15"
+                    android:layout_marginTop="@dimen/dp_10"
                     android:background="@color/line_color" />
 
             </RelativeLayout>
@@ -156,24 +177,23 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_15">
+                android:layout_marginTop="@dimen/dp_10">
 
                 <TextView
                     android:id="@+id/textView2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/dp_10"
                     android:text="@string/transaction_fee"
-                    android:textColor="@color/text_six"
-                    android:textSize="@dimen/sp_14" />
+                    android:textColor="@color/text_color2"
+                    android:textSize="@dimen/sp_17" />
 
                 <TextView
                     android:id="@+id/text_tx_fee"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="38dp"
-                    android:layout_marginEnd="@dimen/dp_14"
+                    android:layout_marginStart="24dp"
                     android:layout_toEndOf="@+id/textView2"
+                    android:gravity="end"
                     android:textColor="@color/text_three"
                     android:textSize="@dimen/sp_14"
                     tools:text="0.00019 ETH ≈ $ 0.12" />
@@ -184,12 +204,11 @@
                 android:id="@+id/btn_confirm_pay"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/dp_50"
-                android:layout_marginHorizontal="@dimen/dp_10"
-                android:layout_marginTop="@dimen/dp_50"
+                android:layout_marginTop="@dimen/dp_46"
                 android:layout_marginBottom="@dimen/dp_36"
                 android:background="@drawable/selector_btn_small_round"
                 android:enabled="false"
-                android:text="@string/confirm_pay"
+                android:text="@string/next"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"
                 android:textSize="@dimen/sp_20" />

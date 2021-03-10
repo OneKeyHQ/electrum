@@ -65,6 +65,7 @@ public class DappActionSheetDialog extends BottomSheetDialog
 
         balance = findViewById(R.id.text_balance);
         amount = findViewById(R.id.text_tx_amount);
+        TextView txFee = findViewById(R.id.text_tx_fee);
 
         TextView walletNameTextView = findViewById(R.id.text_send_name);
         walletNameTextView.setText(wallet.getName());
@@ -76,7 +77,13 @@ public class DappActionSheetDialog extends BottomSheetDialog
         receiveAddressTextView.setText(tx.recipient.toString());
 
         BigDecimal bigDecimal = Convert.fromWei(new BigDecimal(tx.value), Convert.Unit.ETHER);
-        amount.setText(bigDecimal.stripTrailingZeros().toPlainString() + "ETH");
+        amount.setText(bigDecimal.stripTrailingZeros().toPlainString() + " ETH");
+
+        BigDecimal feeBigDecimal =
+                Convert.fromWei(
+                        new BigDecimal(tx.gasLimit).multiply(new BigDecimal(tx.gasPrice)),
+                        Convert.Unit.ETHER);
+        txFee.setText(feeBigDecimal.stripTrailingZeros().toPlainString() + " ETH");
 
         nextButton = findViewById(R.id.btn_confirm_pay);
         cancelButton = findViewById(R.id.img_cancel);

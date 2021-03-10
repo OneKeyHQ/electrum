@@ -19,6 +19,8 @@ import android.webkit.ValueCallback
 import android.webkit.WebBackForwardList
 import android.webkit.WebChromeClient
 import android.webkit.WebChromeClient.FileChooserParams
+import android.webkit.WebResourceError
+import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
@@ -27,9 +29,12 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.orhanobut.logger.Logger
+import com.zy.multistatepage.MultiStatePage
+import com.zy.multistatepage.state.SuccessState
 import org.haobtc.onekey.BuildConfig
 import org.haobtc.onekey.R
 import org.haobtc.onekey.activities.base.MyApplication
+import org.haobtc.onekey.bean.DAppBrowserBean
 import org.haobtc.onekey.business.assetsLogo.AssetsLogo
 import org.haobtc.onekey.business.wallet.DeviceException
 import org.haobtc.onekey.constant.Vm
@@ -57,6 +62,7 @@ import org.haobtc.onekey.onekeys.dappbrowser.ui.DappSettingSheetDialog.ClickType
 import org.haobtc.onekey.ui.activity.SoftPassDialog
 import org.haobtc.onekey.ui.base.BaseFragment
 import org.haobtc.onekey.ui.dialog.SelectAccountBottomSheetDialog
+import org.haobtc.onekey.ui.status.BrowserLoadError
 import org.haobtc.onekey.utils.ClipboardUtils
 import org.haobtc.onekey.utils.HexUtils
 import org.haobtc.onekey.viewmodel.AppWalletViewModel
@@ -111,12 +117,14 @@ class DappBrowserFragment : BaseFragment(),
 
     private const val EXT_CURRENT_URL = "current_url"
     private const val EXT_URL = "url"
+    private const val EXT_DAPP_BEAN = "data"
 
     @JvmStatic
-    fun start(url: String): Fragment {
+    fun start(url: String, dAppBrowserBean: DAppBrowserBean?): Fragment {
       val dappBrowserFragment = DappBrowserFragment()
       dappBrowserFragment.arguments = Bundle().apply {
         putString(EXT_URL, url)
+        putParcelable(EXT_DAPP_BEAN, dAppBrowserBean)
       }
       return dappBrowserFragment
     }
@@ -131,6 +139,16 @@ class DappBrowserFragment : BaseFragment(),
         } else {
           GOOGLE_SEARCH_PREFIX + url
         }
+      }
+    }
+
+    private fun removeHTTPProtocol(url: String?): String {
+      return if (url != null && URLUtil.isHttpsUrl(url)) {
+        url.replace("https://", "")
+      } else if (url != null && URLUtil.isHttpUrl(url)) {
+        url.replace("http://", "")
+      } else {
+        url ?: ""
       }
     }
 
@@ -170,11 +188,18 @@ class DappBrowserFragment : BaseFragment(),
   private var mOnFinishOrBackCallback: OnFinishOrBackCallback? = null
 
   private lateinit var mBinding: FragmentDappBrowserBinding
+  private val mMultiStateContainer by lazy {
+    MultiStatePage.bindMultiState(mBinding.viewWeb3view)
+  }
+
   private val mAssetsLogo = AssetsLogo()
   private val web3: Web3View
     get() = mBinding.viewWeb3view
   private val mAppWalletViewModel by lazy {
     ViewModelProvider(MyApplication.getInstance()).get(AppWalletViewModel::class.java)
+  }
+  private val mDAppBean by lazy {
+    arguments?.getParcelable(EXT_DAPP_BEAN) as DAppBrowserBean?
   }
 
   override fun enableViewBinding() = true
@@ -253,13 +278,16 @@ class DappBrowserFragment : BaseFragment(),
   private fun setupClickListener() {
     mBinding.ivBack.setOnClickListener { goToPreviousPage() }
     mBinding.ivClose.setOnClickListener { mOnFinishOrBackCallback?.finish() }
+    mBinding.layoutChangeAccount.setOnClickListener { showChangeAccountDialog() }
     mBinding.ivShare.setOnClickListener {
-      DappSettingSheetDialog.newInstance()
+      val dappName = mDAppBean?.name ?: getString(R.string.app_name)
+      val content = mDAppBean?.subtitle ?: ""
+      val imageLogo = mDAppBean?.getLogoImage() ?: ""
+      DappSettingSheetDialog.newInstance(dappName, content, imageLogo)
           .setOnSettingHandleClickCallback {
             when (it) {
               CLICK_SWITCH_ACCOUNT -> {
-                SelectAccountBottomSheetDialog.newInstance(Vm.CoinType.ETH)
-                    .show(childFragmentManager, "SelectAccount")
+                showChangeAccountDialog()
               }
               CLICK_BROWSER -> {
                 startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(web3.url)))
@@ -330,6 +358,10 @@ class DappBrowserFragment : BaseFragment(),
       }
     }
     web3.setWebViewClient(object : WebViewClient() {
+      override fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: WebResourceError?) {
+        super.onReceivedError(view, request, error)
+      }
+
       override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
         val prefixCheck = url.split(":").toTypedArray()
         if (prefixCheck.size > 1) {
@@ -360,7 +392,7 @@ class DappBrowserFragment : BaseFragment(),
           }
         }
 
-        mBinding.tvTitle.text = url
+        setDappTitle(url)
         return false
       }
     })
@@ -370,7 +402,7 @@ class DappBrowserFragment : BaseFragment(),
     web3.setOnSignTypedMessageListener(this)
     if (mLoadOnInit != null) {
       web3.loadUrl(formatUrl(mLoadOnInit), getWeb3Headers())
-      mBinding.tvTitle.setText(formatUrl(mLoadOnInit))
+      setDappTitle(formatUrl(mLoadOnInit))
     }
   }
 
@@ -610,6 +642,14 @@ class DappBrowserFragment : BaseFragment(),
 
   // region 获取密码权限，硬件链接等弹窗
   /**
+   * 展示账户切换弹窗
+   */
+  private fun showChangeAccountDialog() {
+    SelectAccountBottomSheetDialog.newInstance(Vm.CoinType.ETH)
+        .show(childFragmentManager, "SelectAccount")
+  }
+
+  /**
    * 弹出密码弹窗
    */
   private fun showPasswordDialog(success: (String) -> Unit, cancel: (() -> Unit)? = null) {
@@ -688,14 +728,35 @@ class DappBrowserFragment : BaseFragment(),
 
 
   // region 浏览器前进、刷新、后退、加载等操作方法
+
+  fun setDappTitle(title: String?) {
+    if (mDAppBean == null) {
+      mBinding.tvTitle.text = removeHTTPProtocol(title ?: web3.url)
+    }
+    mDAppBean?.let { dappBean ->
+      if (title != null && mDAppBean?.url?.contains(title) == true) {
+        mBinding.tvTitle.text = mDAppBean?.name
+      } else {
+        mBinding.tvTitle.text = removeHTTPProtocol(title ?: web3.url)
+      }
+    }
+  }
+
+  override fun onWebpageBeginLoad(url: String?, title: String?) {
+    mMultiStateContainer.show(SuccessState::class.java)
+  }
+
   override fun onWebpageLoaded(url: String?, title: String?) {
     if (context == null) return  //could be a late return from dead fragment
-
     onWebpageLoadComplete()
   }
 
   override fun onWebpageLoadComplete() {
     runOnUiThread { setBackForwardButtons() }
+  }
+
+  override fun onWebpageLoadError() {
+    mMultiStateContainer.show(BrowserLoadError::class.java)
   }
 
   override fun onBackPressed(): Boolean {
@@ -715,7 +776,7 @@ class DappBrowserFragment : BaseFragment(),
     web3.clearHistory()
     web3.stopLoading()
     web3.loadUrl(mLoadOnInit, getWeb3Headers())
-    mBinding.tvTitle.text = mLoadOnInit
+    setDappTitle(mLoadOnInit)
 
     //blank forward / backward arrows
     setBackForwardButtons()
@@ -725,9 +786,7 @@ class DappBrowserFragment : BaseFragment(),
    * 刷新网页
    */
   fun refreshEvent() {
-    if (web3.getScrollY() == 0) {
-      loadUrl(web3.getUrl())
-    }
+    web3.reload()
   }
 
   /**
@@ -742,7 +801,7 @@ class DappBrowserFragment : BaseFragment(),
       //load homepage
       mHomePressed = true
       web3.loadUrl(mLoadOnInit, getWeb3Headers())
-      mBinding.tvTitle.text = mLoadOnInit
+      setDappTitle(mLoadOnInit)
       web3.clearHistory()
     }
     setBackForwardButtons()
@@ -789,7 +848,7 @@ class DappBrowserFragment : BaseFragment(),
 
   private fun loadUrl(urlText: String): Boolean {
     web3.loadUrl(formatUrl(urlText), getWeb3Headers())
-    mBinding.tvTitle.setText(formatUrl(urlText))
+    setDappTitle(formatUrl(urlText))
     web3.requestFocus()
     return true
   }
@@ -819,7 +878,7 @@ class DappBrowserFragment : BaseFragment(),
     if (newIndex < sessionHistory.size) {
       val newItem = sessionHistory.getItemAtIndex(newIndex)
       if (newItem != null) {
-        mBinding.tvTitle.text = newItem.url
+        setDappTitle(newItem.url)
       }
     }
   }

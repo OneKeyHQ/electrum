@@ -1288,4 +1288,14 @@
     <string name="action_dapp_setting_share">分享</string>
     <string name="action_dapp_setting_copy">复制 URL</string>
     <string name="action_dapp_setting_browser">浏览器打开</string>
+    <string name="hint_browser_load_failed">抱歉，访问失败，请重试或检查网络</string>
+    <string name="title_sign_message_details">签名消息</string>
+    <string name="hint_message_account">签名账户</string>
+    <string name="hint_message_details">消息详情</string>
+    <string name="title_account_unavailable">切换到 %s 账户?</string>
+    <string name="hint_account_unavailable_content">当前 DApp 只支持 %s 账户</string>
+    <string name="tab_found">发现</string>
+    <string name="title_frist_use_dapp">即将访问%s </string>
+    <string name="title_frist_use_dapp_privacy">您在第三方 DApp 上的使用行为将适用于第三方 DApp 的《隐私政策》和《用户协议》，由 %s 直接并单独向您承担责任</string>
+    <string name="title_does_not_support">不支持 %s</string>
 </resources>

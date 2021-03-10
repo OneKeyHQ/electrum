@@ -46,7 +46,7 @@ public class Vm {
                     return item;
                 }
             }
-            return CoinType.BTC;
+            return null;
         }
 
         public static CoinType convertByCallFlag(String callFlag) {

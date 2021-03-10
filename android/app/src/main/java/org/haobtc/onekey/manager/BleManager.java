@@ -53,6 +53,7 @@ public final class BleManager {
 
     private BleManager(FragmentActivity fragmentActivity) {
         this.fragmentActivity = fragmentActivity;
+        Ble.getInstance().setGlobalConnectStatusCallback(mConnectCallback);
     }
 
     public static BleManager getInstance(FragmentActivity fragmentActivity) {
@@ -74,7 +75,6 @@ public final class BleManager {
         if (mBle == null) {
             mBle = Ble.getInstance();
         }
-        Ble.getInstance().setGlobalConnectStatusCallback(mConnectCallback);
         if (mBleScanCallBack == null) {
             mBleScanCallBack =
                     new BleScanCallback<BleDevice>() {

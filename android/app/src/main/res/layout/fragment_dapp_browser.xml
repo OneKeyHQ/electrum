@@ -44,6 +44,7 @@
                 android:visibility="gone" />
 
             <LinearLayout
+                android:id="@+id/layout_change_account"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginStart="4dp"
@@ -63,6 +64,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="2dp"
                     android:includeFontPadding="false"
+                    android:maxLength="4"
                     android:textColor="@color/text_color2"
                     android:textSize="12sp"
                     android:textStyle="bold"
@@ -82,7 +84,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
-            android:maxWidth="132dp"
+            android:maxWidth="120dp"
             android:maxLines="1"
             android:textColor="@color/text_color2"
             android:textSize="17sp"
@@ -151,5 +153,5 @@
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/view_web3view" />
+        app:layout_constraintTop_toBottomOf="@id/layout_top_bar" />
 </androidx.constraintlayout.widget.ConstraintLayout>

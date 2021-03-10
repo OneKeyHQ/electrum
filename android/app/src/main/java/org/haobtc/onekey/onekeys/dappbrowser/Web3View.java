@@ -252,6 +252,9 @@ public class Web3View extends WebView {
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             super.onPageStarted(view, url, favicon);
+            if (loadInterface != null) {
+                loadInterface.onWebpageBeginLoad(url, view.getTitle());
+            }
         }
 
         @Override
@@ -264,6 +267,8 @@ public class Web3View extends WebView {
                 }
             } else if (!loadingError && loadInterface != null) {
                 loadInterface.onWebpageLoadComplete();
+            } else if (loadingError && loadInterface != null) {
+                loadInterface.onWebpageLoadError();
             }
 
             redirect = false;

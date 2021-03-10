@@ -18,6 +18,7 @@ import org.haobtc.onekey.ui.widget.tablayout.OnTabSelectListener;
 
 /** @author liyan */
 public class HomeOneKeyActivity extends BaseActivity {
+
     public static final String EXT_RESTART = "ext_restart";
 
     @BindView(R.id.scrollView)
@@ -29,8 +30,12 @@ public class HomeOneKeyActivity extends BaseActivity {
     private long firstTime = 0;
 
     private String[] mTitles;
-    private int[] mIconUnSelectIds = {R.drawable.wallet_normal, R.mipmap.mindno};
-    private int[] mIconSelectIds = {R.drawable.wallet_highlight, R.mipmap.mindyes};
+    private int[] mIconUnSelectIds = {
+        R.drawable.wallet_normal, R.drawable.wallet_tab_find_un, R.mipmap.mindno
+    };
+    private int[] mIconSelectIds = {
+        R.drawable.wallet_highlight, R.drawable.wallet_tab_find, R.mipmap.mindyes
+    };
     private FragmentMainAdapter fragmentMainAdapter;
     private ArrayList<CustomTabEntity> mTabEntities;
     private AutoCheckUpdate mAutoCheckUpdate;
@@ -61,7 +66,12 @@ public class HomeOneKeyActivity extends BaseActivity {
     }
 
     private void initPage() {
-        mTitles = new String[] {getString(R.string.wallet), getString(R.string.mind)};
+        mTitles =
+                new String[] {
+                    getString(R.string.wallet),
+                    getString(R.string.tab_found),
+                    getString(R.string.mind)
+                };
         mTabEntities = new ArrayList<>();
         fragmentMainAdapter = new FragmentMainAdapter(getSupportFragmentManager(), mTitles);
         for (int i = 0; i < mTitles.length; i++) {

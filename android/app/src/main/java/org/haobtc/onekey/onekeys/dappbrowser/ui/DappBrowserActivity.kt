@@ -3,6 +3,7 @@ package org.haobtc.onekey.onekeys.dappbrowser.ui
 import android.content.Context
 import android.content.Intent
 import org.haobtc.onekey.R
+import org.haobtc.onekey.bean.DAppBrowserBean
 import org.haobtc.onekey.ui.base.BaseActivity
 
 /**
@@ -14,13 +15,26 @@ import org.haobtc.onekey.ui.base.BaseActivity
 class DappBrowserActivity : BaseActivity(), OnFinishOrBackCallback {
   companion object {
     const val EXT_URL = "url"
+    const val EXT_DAPP_BEAN = "bean"
+
+    @JvmField
+    val DEFAULT_URL = "https://app.uniswap.org/#/swap"
 //    @JvmField val DEFAULT_URL = "http://uniswap.defiplot.com/#/swap"
-    @JvmField val DEFAULT_URL = "https://js-eth-sign.surge.sh/"
+//    @JvmField val DEFAULT_URL = "https://js-eth-sign.surge.sh/"
 
     @JvmStatic
     fun start(context: Context, url: String) {
       Intent(context, DappBrowserActivity::class.java).apply {
         putExtra(EXT_URL, url)
+        context.startActivity(this)
+      }
+    }
+
+    @JvmStatic
+    fun start(context: Context, bean: DAppBrowserBean) {
+      Intent(context, DappBrowserActivity::class.java).apply {
+        putExtra(EXT_DAPP_BEAN, bean)
+        putExtra(EXT_URL, bean.url)
         context.startActivity(this)
       }
     }
@@ -32,7 +46,9 @@ class DappBrowserActivity : BaseActivity(), OnFinishOrBackCallback {
   override fun init() {
     supportFragmentManager.beginTransaction()
         .add(R.id.fragment_container_view,
-            DappBrowserFragment.start(intent.getStringExtra(EXT_URL) ?: DEFAULT_URL))
+            DappBrowserFragment.start(
+                intent.getStringExtra(EXT_URL) ?: DEFAULT_URL,
+                intent.getParcelableExtra(EXT_DAPP_BEAN) as DAppBrowserBean?))
         .commit()
   }
 
