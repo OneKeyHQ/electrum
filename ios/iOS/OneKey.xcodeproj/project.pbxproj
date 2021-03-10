@@ -475,6 +475,10 @@
 		B01CB1C625C1141C0099F931 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B01CB1C525C1141B0099F931 /* CFNetwork.framework */; };
 		B01CB1D425C12F9A0099F931 /* WKWebView+Bypass.h in Headers */ = {isa = PBXBuildFile; fileRef = B01CB1D225C12F9A0099F931 /* WKWebView+Bypass.h */; };
 		B01CB1D525C12F9A0099F931 /* WKWebView+Bypass.m in Sources */ = {isa = PBXBuildFile; fileRef = B01CB1D325C12F9A0099F931 /* WKWebView+Bypass.m */; };
+		B024EEED25F798250089B265 /* OKTokenSelectController.h in Headers */ = {isa = PBXBuildFile; fileRef = B024EEEB25F798250089B265 /* OKTokenSelectController.h */; };
+		B024EEEE25F798250089B265 /* OKTokenSelectController.m in Sources */ = {isa = PBXBuildFile; fileRef = B024EEEC25F798250089B265 /* OKTokenSelectController.m */; };
+		B024EEF125F874A80089B265 /* UITableView+OKRoundSection.h in Headers */ = {isa = PBXBuildFile; fileRef = B024EEEF25F874A80089B265 /* UITableView+OKRoundSection.h */; };
+		B024EEF225F874A80089B265 /* UITableView+OKRoundSection.m in Sources */ = {isa = PBXBuildFile; fileRef = B024EEF025F874A80089B265 /* UITableView+OKRoundSection.m */; };
 		B03A1A4325C90835004137F1 /* OKPINInputMethodController.h in Headers */ = {isa = PBXBuildFile; fileRef = B03A1A4125C90835004137F1 /* OKPINInputMethodController.h */; };
 		B03A1A4425C90835004137F1 /* OKPINInputMethodController.m in Sources */ = {isa = PBXBuildFile; fileRef = B03A1A4225C90835004137F1 /* OKPINInputMethodController.m */; };
 		B03A1A4725C91601004137F1 /* OKPINInputMethodCell.h in Headers */ = {isa = PBXBuildFile; fileRef = B03A1A4525C91601004137F1 /* OKPINInputMethodCell.h */; };
@@ -1105,6 +1109,10 @@
 		B01CB1C525C1141B0099F931 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		B01CB1D225C12F9A0099F931 /* WKWebView+Bypass.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "WKWebView+Bypass.h"; sourceTree = "<group>"; };
 		B01CB1D325C12F9A0099F931 /* WKWebView+Bypass.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "WKWebView+Bypass.m"; sourceTree = "<group>"; };
+		B024EEEB25F798250089B265 /* OKTokenSelectController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKTokenSelectController.h; sourceTree = "<group>"; };
+		B024EEEC25F798250089B265 /* OKTokenSelectController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKTokenSelectController.m; sourceTree = "<group>"; };
+		B024EEEF25F874A80089B265 /* UITableView+OKRoundSection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UITableView+OKRoundSection.h"; sourceTree = "<group>"; };
+		B024EEF025F874A80089B265 /* UITableView+OKRoundSection.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UITableView+OKRoundSection.m"; sourceTree = "<group>"; };
 		B03A1A4125C90835004137F1 /* OKPINInputMethodController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKPINInputMethodController.h; sourceTree = "<group>"; };
 		B03A1A4225C90835004137F1 /* OKPINInputMethodController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKPINInputMethodController.m; sourceTree = "<group>"; };
 		B03A1A4525C91601004137F1 /* OKPINInputMethodCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKPINInputMethodCell.h; sourceTree = "<group>"; };
@@ -1761,6 +1769,8 @@
 				8814232B25B18EA900961668 /* OKNetworkViewController.m */,
 				B03A1A4125C90835004137F1 /* OKPINInputMethodController.h */,
 				B03A1A4225C90835004137F1 /* OKPINInputMethodController.m */,
+				B024EEEB25F798250089B265 /* OKTokenSelectController.h */,
+				B024EEEC25F798250089B265 /* OKTokenSelectController.m */,
 				8814232025B18EA900961668 /* OKTradeSettingViewController.h */,
 				8814232F25B18EA900961668 /* OKTradeSettingViewController.m */,
 				8814231E25B18EA900961668 /* Tab_Mine.storyboard */,
@@ -2420,6 +2430,8 @@
 				B0A8FFFD25E6261800513B8E /* UIColor+OKAppreance.m */,
 				B0A8000025E6262700513B8E /* UIFont+OKAppreance.h */,
 				B0A8000125E6262700513B8E /* UIFont+OKAppreance.m */,
+				B024EEEF25F874A80089B265 /* UITableView+OKRoundSection.h */,
+				B024EEF025F874A80089B265 /* UITableView+OKRoundSection.m */,
 			);
 			path = Appreance;
 			sourceTree = "<group>";
@@ -2549,6 +2561,7 @@
 				54204F48878D23256D06F5F5 /* OneKeyImport.h in Headers */,
 				B000CA6C25F0EF58007B3985 /* OKAllAssetsCellModel.h in Headers */,
 				B016510625BFE0810037C6B4 /* OKDeviceConfirmController.h in Headers */,
+				B024EEF125F874A80089B265 /* UITableView+OKRoundSection.h in Headers */,
 				881424A425B18EAA00961668 /* OKDeleteWalletTipsViewController.h in Headers */,
 				8814244825B18EAA00961668 /* Base64.h in Headers */,
 				8814243825B18EAA00961668 /* OKBiologicalViewController.h in Headers */,
@@ -2649,6 +2662,7 @@
 				8814258F25B18EAA00961668 /* OKTextField.h in Headers */,
 				881424FD25B18EAA00961668 /* OKTxDetailViewController.h in Headers */,
 				881424E725B18EAA00961668 /* OKAllAssetsTableViewCell.h in Headers */,
+				B024EEED25F798250089B265 /* OKTokenSelectController.h in Headers */,
 				B058D8A825B55663000EB27C /* OKDeviceDeleteController.h in Headers */,
 				B0E3FEC825EF4BA000BE4B7F /* OKAddTokenSheet.h in Headers */,
 				B058D8B725B55663000EB27C /* OKResetDeviceWarningViewController.h in Headers */,
@@ -2970,6 +2984,7 @@
 				8814250925B18EAA00961668 /* OKAssetTableViewCellModel.m in Sources */,
 				8814251D25B18EAA00961668 /* OKWalletViewController.mm in Sources */,
 				8814255C25B18EAA00961668 /* OKFindWalletTableViewCellModel.m in Sources */,
+				B024EEEE25F798250089B265 /* OKTokenSelectController.m in Sources */,
 				B0A8000325E6262700513B8E /* UIFont+OKAppreance.m in Sources */,
 				8814244F25B18EAA00961668 /* NSData+CommonCrypto.m in Sources */,
 				881425AA25B302E500961668 /* OKChangeMnemonicLenController.m in Sources */,
@@ -2981,6 +2996,7 @@
 				881424F725B18EAA00961668 /* OKSendTxPreInfoViewController.m in Sources */,
 				8814259325B18EAA00961668 /* BaseNavigationController.m in Sources */,
 				8814257425B18EAA00961668 /* OKWalletListNoHDTableViewCell.m in Sources */,
+				B024EEF225F874A80089B265 /* UITableView+OKRoundSection.m in Sources */,
 				8814257125B18EAA00961668 /* OKWalletListNoHDTableViewCellModel.m in Sources */,
 				B058D8CF25B5A64F000EB27C /* OKDeviceModel.m in Sources */,
 				881424D725B18EAA00961668 /* OKAboutTableViewCellModel.m in Sources */,

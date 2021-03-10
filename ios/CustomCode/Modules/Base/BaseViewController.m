@@ -143,4 +143,23 @@ static const CGFloat showNavBarSeparatorScrollViewOffsetThreshold = 5;
     CGFloat offsetY = scrollView.contentOffset.y;
     self.showNavbarSeparator = offsetY > showNavBarSeparatorScrollViewOffsetThreshold;
 }
+
+- (UIView *)loadingIndicator {
+    if (!_loadingIndicator) {
+        _loadingIndicator = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 80, 80)];
+        _loadingIndicator.backgroundColor = HexColorA(0x444444, 0.7);
+        _loadingIndicator.center = self.view.center;
+        _loadingIndicator.centerY = self.view.centerY * 0.7;
+        [_loadingIndicator setLayerRadius:10];
+
+        UIActivityIndicatorView *actView = [[UIActivityIndicatorView alloc] initWithFrame:_loadingIndicator.bounds];
+        actView.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhiteLarge;
+        [actView startAnimating];
+        [_loadingIndicator addSubview:actView];
+        [self.view addSubview:_loadingIndicator];
+        _loadingIndicator.hidden = YES;
+    }
+    [self.view bringSubviewToFront:_loadingIndicator];
+    return _loadingIndicator;
+}
 @end

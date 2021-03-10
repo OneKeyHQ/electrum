@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy)NSString *coin;
 @property (nonatomic, copy)NSString *balance;
 @property (nonatomic, copy)NSString *fiat;
+@property (nonatomic, copy)NSString *address;
 @end
 
 @interface OKAllAssetsSectionModel : NSObject <NSCopying>

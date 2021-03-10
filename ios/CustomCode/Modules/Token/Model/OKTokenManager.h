@@ -25,6 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)delToken:(NSString *)address;
 
 - (NSArray <OKToken *> *)tokensFilterWith:(NSString *)text;
+- (nullable OKToken *)tokensWithAddress:(NSString *)address;
 @end
 
 #define kOKTokenManager ([OKTokenManager sharedInstance])

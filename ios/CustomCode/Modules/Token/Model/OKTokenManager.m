@@ -107,4 +107,14 @@ static dispatch_once_t once;
     }
     return mutArray;
 }
+
+- (OKToken *)tokensWithAddress:(NSString *)address {
+    NSString *addr = address.lowercaseString;
+    for (OKToken *model in self.tokens) {
+        if ([model.address.lowercaseString containsString:addr]) {
+            return model;
+        }
+    }
+    return nil;
+}
 @end

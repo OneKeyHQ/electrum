@@ -59,17 +59,14 @@
 - (NSArray<OKToken *> *)hot {
     NSArray *tokens = [OKTokenManager sharedInstance].tokens;
     if (tokens.count < 10) {
-        return @[];
+        return tokens;
     }
     return [tokens subarrayWithRange:NSMakeRange(0, 10)];
 }
 
 - (NSArray<OKToken *> *)more {
     NSArray *tokens = [OKTokenManager sharedInstance].tokens;
-    if (tokens.count < 50) {
-        return @[];
-    }
-    NSArray<OKToken *> *moreArr = [tokens subarrayWithRange:NSMakeRange(0, 50)];
+    NSArray<OKToken *> *moreArr = tokens.count < 50 ? tokens : [tokens subarrayWithRange:NSMakeRange(0, 50)];
     moreArr = [moreArr arrayByAddingObjectsFromArray:kOKTokenManager.customTokens];
     NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"symbol" ascending:YES];
     return [moreArr sortedArrayUsingDescriptors:[NSArray arrayWithObjects:sortDescriptor, nil]];
