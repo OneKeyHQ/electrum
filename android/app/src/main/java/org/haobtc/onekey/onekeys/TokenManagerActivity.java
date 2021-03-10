@@ -155,8 +155,12 @@ public class TokenManagerActivity extends BaseActivity
                                                         PyResponse<List<TokenList.ERCToken>>,
                                                         ObservableSource<PyResponse<String>>>)
                                                 listPyResponse -> {
-                                                    moreTokens.addAll(listPyResponse.getResult());
-                                                    mAllTokens.addAll(listPyResponse.getResult());
+                                                    List<TokenList.ERCToken> customList =
+                                                            listPyResponse.getResult();
+                                                    moreTokens.removeAll(customList);
+                                                    moreTokens.addAll(customList);
+                                                    mAllTokens.removeAll(customList);
+                                                    mAllTokens.addAll(customList);
                                                     return getSelectTokenAddress();
                                                 })
                                 .subscribeOn(Schedulers.io())
@@ -203,6 +207,7 @@ public class TokenManagerActivity extends BaseActivity
                     }
                 }
                 mHotTokens.addAll(tokenList.subList(0, 10));
+                sortByName();
                 mMoreTokenAdapter = new MoreTokenAdapter(moreTokens, this);
                 mSearchAdapter = new HotTokenAdapter(mSearchTokens, this);
                 mBinding.searchRecyclerview.setAdapter(mSearchAdapter);
@@ -350,6 +355,7 @@ public class TokenManagerActivity extends BaseActivity
             if (isChecked) {
                 if (!isContainsToken(item, moreTokens)) {
                     moreTokens.add(item);
+                    sortByName();
                 } else {
                     for (TokenList.ERCToken moreToken : moreTokens) {
                         if (item.address.equalsIgnoreCase(moreToken.address)) {
@@ -471,6 +477,7 @@ public class TokenManagerActivity extends BaseActivity
             if (!isContainsToken(token, moreTokens)) {
                 mAllTokens.add(token);
                 moreTokens.add(token);
+                sortByName();
                 mAppWalletViewModel.refresh();
             }
         }
