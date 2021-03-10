@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import org.haobtc.onekey.bean.Assets
 import org.haobtc.onekey.databinding.HomeItemBinding
+import org.haobtc.onekey.utils.CoinDisplayUtils
 
 
 class WalletAssetsAdapter : ListAdapter<Assets, WalletAssetsAdapter.AssetsViewHolder>(AssetsDiff()) {
@@ -44,13 +45,13 @@ class WalletAssetsAdapter : ListAdapter<Assets, WalletAssetsAdapter.AssetsViewHo
     val item = getItem(position)
     item.logo.intoTarget(holder.bind.ivAssetsLogo)
     holder.bind.tvAssetsName.text = item.name
-
-    val amount: String = item.balance.getBalanceFormat(8)
-    holder.bind.textAssetsAmount.text = amount
+    holder.bind.textAssetsAmount.text = CoinDisplayUtils.getCoinBalanceDisplay(item)
 
     holder.bind.textDollar.setText(
-        String.format(
-            "%s %s", item.balanceFiat.symbol, item.balanceFiat.balanceFormat))
+      String.format(
+        "%s %s", item.balanceFiat.symbol, item.balanceFiat.balanceFormat
+      )
+    )
 
     if (mPrivacyMode) {
       holder.bind.textAssetsAmountStars.visibility = View.VISIBLE
@@ -76,8 +77,7 @@ class WalletAssetsAdapter : ListAdapter<Assets, WalletAssetsAdapter.AssetsViewHo
     } else {
       val bundle = payloads[0] as Bundle
       if (bundle.getInt(EXT_PAYLOAD_AMOUNT, 0) == PAYLOAD_FLAG) {
-        val amount: String = item.balance.getBalanceFormat(8)
-        holder.bind.textAssetsAmount.text = amount
+        holder.bind.textAssetsAmount.text = CoinDisplayUtils.getCoinBalanceDisplay(item)
       }
       if (bundle.getInt(EXT_PAYLOAD_AMOUNT_FIAT, 0) == PAYLOAD_FLAG) {
         holder.bind.textDollar.setText(

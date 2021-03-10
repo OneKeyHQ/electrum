@@ -5,7 +5,6 @@ import android.content.Intent
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.google.gson.Gson
-import com.orhanobut.logger.Logger
 import com.yzq.zxinglibrary.android.CaptureActivity
 import com.yzq.zxinglibrary.bean.ZxingConfig
 import com.yzq.zxinglibrary.common.Constant

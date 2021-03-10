@@ -25,8 +25,10 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import butterknife.OnFocusChange;
 import butterknife.OnTextChanged;
+import com.alibaba.fastjson.JSON;
 import com.google.common.base.Strings;
 import com.lxj.xpopup.XPopup;
+import com.orhanobut.logger.Logger;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.bean.ZxingConfig;
@@ -84,6 +86,7 @@ import org.haobtc.onekey.ui.dialog.custom.CustomWatchWalletDialog;
 import org.haobtc.onekey.ui.widget.PasteEditText;
 import org.haobtc.onekey.ui.widget.PointLengthFilter;
 import org.haobtc.onekey.utils.ClipboardUtils;
+import org.haobtc.onekey.utils.CoinDisplayUtils;
 import org.haobtc.onekey.viewmodel.AppWalletViewModel;
 import org.jetbrains.annotations.NotNull;
 
@@ -238,6 +241,7 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
     private SharedPreferences preferences;
     private String hdWalletName;
     private String baseUnit;
+    private String tokenUnit;
     private String currencySymbols;
     //    private String showWalletType;
     private String signedTx;
@@ -248,8 +252,10 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
     private String tempSlowTransaction;
     private String tempRecommendTransaction;
     private double currentFeeRate;
-    //    private BigDecimal minAmount;
-    private BigDecimal decimalBalance;
+    // 账户余额
+    private BigDecimal coinAssetBalance;
+    // token 余额
+    private BigDecimal tokenBalance;
     private int scale;
     private boolean addressInvalid;
     private String amount;
@@ -379,35 +385,38 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
         preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         currencySymbols = mSystemConfigManager.getCurrentFiatSymbol();
         String mWalletID = getIntent().getStringExtra(EXT_WALLET_ID);
-        LocalWalletInfo localWalletByName = mAccountManager.getLocalWalletByName(mWalletID);
-        walletInfo = AppWalletViewModel.Companion.convert(localWalletByName);
-        baseUnit = mSystemConfigManager.getCurrentBaseUnit(localWalletByName.getCoinType());
-        scale = localWalletByName.getCoinType().digits;
         walletName.setText(Vm.CoinType.ETH.coinName);
+        walletInfo = mAppWalletViewModel.currentWalletAccountInfo.getValue();
+        scale = walletInfo.getCoinType().digits;
+        baseUnit = walletInfo.getCoinType().defUnit;
+        contractAddress = walletInfo.getAddress();
+        Logger.json(JSON.toJSONString(walletInfo));
         mAssetsID = getIntent().getIntExtra(EXT_ASSETS_ID, -1);
         mAppWalletViewModel.currentWalletAssetsList.observe(
                 this,
                 assets -> {
+                    Logger.json(JSON.toJSONString(assets));
                     Assets mAssets = assets.getByUniqueIdOrZero(mAssetsID);
+                    coinAssetBalance = assets.getCoinAsset().getBalance().getBalance();
                     initAssetBalance(mAssets);
                     hdWalletName = mAssets.getName();
                     walletName.setText(hdWalletName);
                     if (mAssets instanceof ERC20Assets) {
                         ERC20Assets erc20Assets = (ERC20Assets) mAssets;
-                        decimalBalance = new BigDecimal(mAssets.getBalanceFiat().getBalance());
+                        tokenBalance = erc20Assets.getBalance().getBalance();
                         contractAddress = erc20Assets.getContractAddress();
+                        scale = erc20Assets.getDigits();
+                        tokenUnit = erc20Assets.getBalance().getUnit();
                         isToken = true;
                     } else if (mAssets instanceof CoinAssets) {
                         CoinAssets coinAssets = (CoinAssets) mAssets;
-                        decimalBalance = coinAssets.getBalance().getBalance();
-                        contractAddress = localWalletByName.getAddr();
                         isToken = false;
                     }
                 });
     }
 
     private void initAssetBalance(Assets mAssets) {
-        String balance = mAssets.getBalance().getBalance().toPlainString();
+        String balance = CoinDisplayUtils.getCoinBalanceDisplay(mAssets);
         textBalance.setText(String.format("%s %s", balance, mAssets.getBalance().getUnit()));
     }
 
@@ -463,11 +472,14 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
                     showToast(R.string.input_number);
                 } else {
                     // 先取最大值再刷新View
-                    if (decimalBalance.compareTo(BigDecimal.ZERO) > 0
-                            && Strings.isNullOrEmpty(mCurrentFee)) {
+
+                    if (coinAssetBalance.compareTo(BigDecimal.ZERO) > 0) {
                         maxAmount =
-                                decimalBalance.subtract(
-                                        BigDecimal.valueOf(Double.parseDouble(mCurrentFee)));
+                                isToken
+                                        ? tokenBalance
+                                        : coinAssetBalance.subtract(
+                                                BigDecimal.valueOf(
+                                                        Double.parseDouble(mCurrentFee)));
                         if (maxAmount.compareTo(BigDecimal.ZERO) > 0) {
                             isSetBig = true;
                             editAmount.setText(maxAmount.toPlainString());
@@ -800,7 +812,8 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
             }
         }
 
-        String mSendAmounts = String.format(Locale.ENGLISH, "%s %s", amount, baseUnit);
+        String mSendAmounts =
+                String.format(Locale.ENGLISH, "%s %s", amount, isToken ? tokenUnit : baseUnit);
         Bundle bundle = new Bundle();
         bundle.putString(Constant.TRANSACTION_SENDER, contractAddress);
         bundle.putString(Constant.TRANSACTION_RECEIVER, receiver);
@@ -862,7 +875,10 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
                                                 Vm.CoinType.ETH,
                                                 signText,
                                                 String.format(
-                                                        Locale.ENGLISH, "%s %s", amount, baseUnit));
+                                                        Locale.ENGLISH,
+                                                        "%s %s",
+                                                        amount,
+                                                        isToken ? tokenUnit : baseUnit));
                                         finish();
 
                                     } else {
@@ -961,7 +977,7 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
         if (addressInvalid && isFeeValid && !Strings.isNullOrEmpty(amount)) {
             BigDecimal decimal = BigDecimal.valueOf(Double.parseDouble(amount));
             if (decimal.compareTo(BigDecimal.ZERO) <= 0
-                    || decimalBalance.compareTo(BigDecimal.ZERO) <= 0) {
+                    || coinAssetBalance.compareTo(BigDecimal.ZERO) <= 0) {
                 btnNext.setEnabled(false);
             } else {
                 btnNext.setEnabled(true);
@@ -1167,7 +1183,7 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
                     isToken = true;
                     ERC20Assets erc20Assets = (ERC20Assets) mAssets;
                     address = erc20Assets.getContractAddress();
-                    decimalBalance = new BigDecimal(erc20Assets.getBalanceFiat().getBalance());
+                    coinAssetBalance = new BigDecimal(erc20Assets.getBalanceFiat().getBalance());
                 } else if (mAssets instanceof CoinAssets) {
                     isToken = false;
                     String walletID =
@@ -1175,7 +1191,7 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
                     LocalWalletInfo localWalletByName =
                             mAccountManager.getLocalWalletByName(walletID);
                     address = localWalletByName.getAddr();
-                    decimalBalance = ((CoinAssets) mAssets).getBalance().getBalance();
+                    coinAssetBalance = ((CoinAssets) mAssets).getBalance().getBalance();
                 }
                 if (!address.equals(contractAddress)) {
                     contractAddress = address;
@@ -1259,7 +1275,7 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
         if (!focused) {
             if (!Strings.isNullOrEmpty(amount) && Double.parseDouble(amount) > 0) {
                 BigDecimal decimal = BigDecimal.valueOf(Double.parseDouble(amount));
-                if (decimal.compareTo(decimalBalance) >= 0) {
+                if (decimal.compareTo(coinAssetBalance) >= 0) {
                     if (addressInvalid) {
                         doDealMaxAmount();
                     }
@@ -1417,10 +1433,15 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
             showToast(errorMsg);
         }
     }
+
     /** 如果当前是最大模式，那么需要根据当前选中的费率，计算最大值 */
     private void doDealMaxAmount() {
         // 查看输入的值是否大于最大值
-        maxAmount = decimalBalance.subtract(BigDecimal.valueOf(Double.parseDouble(mCurrentFee)));
+        maxAmount =
+                isToken
+                        ? tokenBalance
+                        : coinAssetBalance.subtract(
+                                BigDecimal.valueOf(Double.parseDouble(mCurrentFee)));
         if (maxAmount.compareTo(BigDecimal.ZERO) > 0) {
             if (isSetBig) {
                 editAmount.setText(maxAmount.toPlainString());
@@ -1487,6 +1508,7 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
             subscribe.dispose();
         }
     }
+
     // 自定义费率完成的回调
     @Override
     public void onCustomComplete(CustomizeFeeRateEvent event) {

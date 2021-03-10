@@ -41,6 +41,7 @@ import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.BleConnectedEvent;
 import org.haobtc.onekey.manager.BleManager;
 import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
+import org.haobtc.onekey.utils.CoinDisplayUtils;
 import org.haobtc.onekey.viewmodel.AppWalletViewModel;
 import org.jetbrains.annotations.NotNull;
 
@@ -153,13 +154,8 @@ public class TransactionDetailWalletActivity extends BaseActivity
                                         .getBalance()
                                         .stripTrailingZeros()
                                         .toPlainString();
-                        String amount =
-                                mCurrentAssets
-                                        .getBalance()
-                                        .getBalance()
-                                        .stripTrailingZeros()
-                                        .toPlainString();
-                        textWalletAmount.setText(amount);
+                        textWalletAmount.setText(
+                                CoinDisplayUtils.getCoinBalanceDisplay(mCurrentAssets));
                         textWalletAmountUnit.setText(mCurrentAssets.getBalance().getUnit());
 
                         textWalletDollar.setText(

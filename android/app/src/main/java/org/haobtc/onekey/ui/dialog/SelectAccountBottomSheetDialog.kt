@@ -111,6 +111,7 @@ class SelectAccountBottomSheetDialog : BottomSheetDialogFragment() {
           mSwitchDisposable = Single
               .fromCallable {
                 mAppWalletViewModel.changeCurrentWallet(walletInfo.id)
+                Thread.sleep(400)
               }
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())

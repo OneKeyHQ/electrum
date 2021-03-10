@@ -6,6 +6,8 @@ import android.text.TextUtils
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.alibaba.fastjson.JSON
+import com.orhanobut.logger.Logger
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -63,9 +65,6 @@ class AppWalletViewModel : ViewModel() {
   @JvmField
   val currentWalletTotalBalanceFiat = MutableLiveData(DEF_WALLET_FIAT_BALANCE)
 
-  @JvmField
-  @Deprecated("")
-  val currentWalletBalance = MutableLiveData(AssetsBalance(BigDecimal("0"), "BTC"))
 
   fun submit(runnable: Runnable) {
     mExecutorService.submit(runnable)

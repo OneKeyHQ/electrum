@@ -35,7 +35,18 @@ class AssetsList(initialCapacity: Int = 15) : Collection<AliasT> {
   fun get(index: Int): AliasT? {
     mReadWriteLock.read {
       return mIndexList.getOrNull(index)
-          ?.let { mAssetStorage.get(it) }
+        ?.let { mAssetStorage.get(it) }
+    }
+  }
+
+  /**
+   * 获取当前钱包的平台币，默认索引0为平台币
+   */
+  fun getCoinAsset(): CoinAssets {
+    mReadWriteLock.read {
+      return mIndexList.getOrNull(0).let {
+        it?.let { it1 -> mAssetStorage.get(it1) } as CoinAssets
+      }
     }
   }
 
