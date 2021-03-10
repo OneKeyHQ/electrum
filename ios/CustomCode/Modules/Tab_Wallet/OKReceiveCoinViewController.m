@@ -74,6 +74,7 @@
 {
     self.titleNavLabel.text = MyLocalizedString(@"ok collection", nil);
     self.titleLabel.text = [NSString stringWithFormat:@"%@%@",MyLocalizedString(@"Scan goes to", nil),[self.coinType uppercaseString]];
+    self.coinTypeImageView.image = [UIImage imageNamed:[NSString stringWithFormat:@"token_%@",[self.coinType lowercaseString]]];
     self.walletAddressTitleLabel.text = MyLocalizedString(@"The wallet address", nil);
     [self.bgView setLayerDefaultRadius];
     [self setNavigationBarBackgroundColorWithClearColor];
@@ -129,7 +130,7 @@
     [OKHwNotiManager sharedInstance].delegate = self;
     OKWeakSelf(self)
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        id result = [kPyCommandsManager callInterface:kInterfaceshow_address parameter:@{@"address":[self.qrDataDict safeStringForKey:@"addr"]}];
+        id result = [kPyCommandsManager callInterface:kInterfaceshow_address parameter:@{@"address":[self.qrDataDict safeStringForKey:@"addr"],@"coin":[weakself.coinType lowercaseString]}];
         if (result != nil) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 weakself.hwBgView.hidden = YES;

@@ -21,7 +21,7 @@
 - (void)setModel:(OKAssetTableViewCellModel *)model
 {
     _model = model;
-    self.iconImageView.image = [UIImage imageNamed:model.iconImage == nil ? @"token_btc" :model.iconImage];
+    [self.iconImageView sd_setImageWithURL:model.iconImage.toURL placeholderImage:[UIImage imageNamed:model.iconImage]];
     self.coinTypeLabel.text = [model.coinType uppercaseString];
     if (!kWalletManager.showAsset) {
         self.balanceLabel.text = [NSString stringWithFormat:@"%@",model.balance];
@@ -32,7 +32,7 @@
         }else{
             self.moneyLabel.text = @"";
         }
-        
+
     }else{
         self.balanceLabel.text = @"****";
         self.moneyLabel.text = @"****";

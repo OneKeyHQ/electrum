@@ -119,6 +119,8 @@
 //存储UI展示的自定义数据
 @property (nonatomic,strong)OKSendFeeModel *customFeeModel;
 @property (nonatomic,strong)NSTimer* ethTimer;
+
+@property (nonatomic,strong)OKSendTxPreInfoViewController *sendTxPreInfoVc;
 @end
 
 @implementation OKSendCoinViewController
@@ -355,7 +357,7 @@
 }
 #pragma mark - 币种类型按钮被点击
 - (IBAction)coinTypeBtnClick:(UIButton *)sender {
-
+    NSLog(@"切换币种");
 }
 #pragma mark - 自定义 按钮被点击
 - (IBAction)customBtnClick:(UIButton *)sender {
@@ -454,18 +456,47 @@
             [OKHwNotiManager sharedInstance].delegate = self;
             weakself.hwPredata = dict;
             weakself.hwFiat = [weakself getCurrentFiat];
-            NSString *feerateTx = [dict safeStringForKey:@"tx"];
-            NSDictionary *dict1 =  [kPyCommandsManager callInterface:kInterfaceMktx parameter:@{@"tx":feerateTx}];
-            NSString *unSignStr = [dict1 safeStringForKey:@"tx"];
-            NSString *tx = unSignStr;
-            dispatch_async(dispatch_get_global_queue(0, 0), ^{
-                NSDictionary *signTxDict =  [kPyCommandsManager callInterface:kInterfaceSign_tx parameter:@{@"tx":tx}];
-                if (signTxDict != nil) {
-                    weakself.hwSignData = signTxDict;
-                    [[NSNotificationCenter defaultCenter]postNotificationName:kNotiHwBroadcastiComplete object:nil];
-                }
-            });
-            return;
+            if ([self.coinType isEqualToString:COIN_BTC]) {
+                NSString *feerateTx = [dict safeStringForKey:@"tx"];
+                NSDictionary *dict1 =  [kPyCommandsManager callInterface:kInterfaceMktx parameter:@{@"tx":feerateTx}];
+                NSString *unSignStr = [dict1 safeStringForKey:@"tx"];
+                NSString *tx = unSignStr;
+                dispatch_async(dispatch_get_global_queue(0, 0), ^{
+                    NSDictionary *signTxDict =  [kPyCommandsManager callInterface:kInterfaceSign_tx parameter:@{@"tx":tx}];
+                    if (signTxDict != nil) {
+                        weakself.hwSignData = signTxDict;
+                        [[NSNotificationCenter defaultCenter]postNotificationName:kNotiHwBroadcastiComplete object:nil];
+                    }
+                });
+                return;
+            }else{
+                NSDictionary *paramter = @{
+                    @"to_addr":weakself.addressTextField.text,
+                    @"value":weakself.amountTextField.text,
+                    @"gas_price":[dict safeStringForKey:@"gas_price"],
+                    @"gas_limit":[dict safeStringForKey:@"gas_limit"],
+                    @"path":kBluetooth_iOS
+                };
+                dispatch_async(dispatch_get_global_queue(0, 0), ^{
+                    id result =  [kPyCommandsManager callInterface:kInterfacesign_eth_tx parameter:paramter];
+                    if (result != nil) {
+                        OKWeakSelf(self)
+                        [[NSNotificationCenter defaultCenter]postNotificationName:kNotiSendTxComplete object:nil];
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            if (weakself.sendTxPreInfoVc != nil) {
+                                [weakself.sendTxPreInfoVc closeView];
+                            }
+                            OKTransferCompleteController *transferCompleteVc = [OKTransferCompleteController transferCompleteController:[paramter safeStringForKey:@"value"] block:^{
+                                OKTxDetailViewController *txDetailVc = [OKTxDetailViewController txDetailViewController];
+                                txDetailVc.tx_hash = result;
+                                [weakself.navigationController pushViewController:txDetailVc animated:YES];
+                            }];
+                            [weakself.navigationController pushViewController:transferCompleteVc animated:YES];
+                        });
+                    }
+                });
+                return;
+            }
         }
         dispatch_async(dispatch_get_main_queue(), ^{
             [weakself showPreInfoView:dict fiat:[weakself getCurrentFiat]];
@@ -477,6 +508,7 @@
 {
     OKWeakSelf(self)
     OKSendTxPreInfoViewController *sendVc = [OKSendTxPreInfoViewController initViewControllerWithStoryboardName:@"Tab_Wallet"];
+    weakself.sendTxPreInfoVc = sendVc;
     OKSendTxPreModel *model = [OKSendTxPreModel new];
     NSString *amount = weakself.amountTextField.text;
     if (_isClickBiggest) {
@@ -523,6 +555,9 @@
                 [weakself sendTxPwd:pwd dict:dict];
             }];
         }
+    } cancle:^{
+        [kPyCommandsManager callInterface:kInterface_set_user_cancel parameter:@{}];
+        weakself.sendTxPreInfoVc = nil;
     }];
 }
 - (void)sendTxPwd:(NSString *)pwd dict:(NSDictionary *)dict
@@ -549,6 +584,9 @@
             OKWeakSelf(self)
             [[NSNotificationCenter defaultCenter]postNotificationName:kNotiSendTxComplete object:nil];
             dispatch_async(dispatch_get_main_queue(), ^{
+                if (weakself.sendTxPreInfoVc != nil) {
+                    [weakself.sendTxPreInfoVc closeView];
+                }
                 OKTransferCompleteController *transferCompleteVc = [OKTransferCompleteController transferCompleteController:[paramter safeStringForKey:@"value"] block:^{
                     OKTxDetailViewController *txDetailVc = [OKTxDetailViewController txDetailViewController];
                     txDetailVc.tx_hash = result;
@@ -583,7 +621,7 @@
 - (void)hwNotiManagerDekegate:(OKHwNotiManager *)hwNoti type:(OKHWNotiType)type
 {
     OKWeakSelf(self)
-    if (type == OKHWNotiTypeSendCoinConfirm) {
+    if (type == OKHWNotiTypeSendCoinConfirm && weakself.sendTxPreInfoVc == nil) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [MBProgressHUD hideHUDForView:weakself.view animated:YES];
             [weakself showPreInfoView:weakself.hwPredata fiat:weakself.hwFiat];
@@ -611,6 +649,11 @@
 #pragma mark - 加载矿工费（BTC）
 - (void)loadFee:(void(^)(void))block
 {
+    if ([self.coinType isEqualToString:COIN_ETH]) {
+        block();
+        return;
+    }
+
     OKWeakSelf(self)
     NSString *address = [weakself.addressTextField.text copy];
     NSString *amount = [weakself.amountTextField.text copy];
@@ -946,9 +989,6 @@
             }
         }
     }else if ([weakself.coinType isEqualToString:COIN_BTC]){
-        [weakself loadFee:^{
-
-        }];
         if (weakself.isClickBiggest) {
             dict = weakself.biggestFeeDict;
         }else{
@@ -977,5 +1017,9 @@
 - (NSString *)coinType
 {
     return [_coinType uppercaseString];
+}
+- (UIColor *)navBarTintColor
+{
+    return UIColor.BG_W02;
 }
 @end

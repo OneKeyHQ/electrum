@@ -279,7 +279,7 @@ typedef enum {
             [weakself broadcast_tx:weakself.hwSignData dict:dict];
             return;
         }
-    }];
+    } cancle:nil];
 }
 - (void)broadcast_tx:(NSDictionary *)signTxDict dict:(NSDictionary *)dict
 {

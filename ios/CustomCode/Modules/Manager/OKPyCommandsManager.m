@@ -530,7 +530,12 @@ static dispatch_once_t once;
     }else if ([method isEqualToString:kInterfaceshow_address]){
         NSString *address = [parameter safeStringForKey:@"address"];
         NSString *path = kBluetooth_iOS;
-        result = PyObject_CallMethod(self.pyInstance, [kInterfaceshow_address UTF8String], "(s,s)",[address UTF8String],[path UTF8String]);
+        NSString *coin = [parameter safeStringForKey:@"coin"];
+        PyObject *args =  Py_BuildValue("()",NULL);
+        PyObject *kwargs;
+        kwargs = Py_BuildValue("{s:s,s:s,s:s}", "address", [address UTF8String],"path",[path UTF8String],"coin",[coin UTF8String]);
+        PyObject *myobject_method = PyObject_GetAttrString(self.pyInstance, [kInterfaceshow_address UTF8String]);
+        result = PyObject_Call(myobject_method, args, kwargs);
     }else if ([method isEqualToString: kInterfacefirmware_update]){
         NSString *filename = [parameter safeStringForKey:@"filename"];
         NSString *path = kBluetooth_iOS;
@@ -582,9 +587,9 @@ static dispatch_once_t once;
             }
         }else{
             if (contract_addr.length == 0) {
-                kwargs = Py_BuildValue("{s:s,s:s,s:s,s:s,s:s}", "to_addr", [to_addr UTF8String],"value",[value UTF8String],"password",[password UTF8String],gas_price,[gas_price UTF8String],gas_limit,[gas_limit UTF8String],"path",[kBluetooth_iOS UTF8String]);
+                kwargs = Py_BuildValue("{s:s,s:s,s:s,s:s,s:s}", "to_addr", [to_addr UTF8String],"value",[value UTF8String],"gas_price",[gas_price UTF8String],"gas_limit",[gas_limit UTF8String],"path",[kBluetooth_iOS UTF8String]);
             }else{
-                kwargs = Py_BuildValue("{s:s,s:s,s:s,s:s,s:s,s:s,s:s}", "to_addr", [to_addr UTF8String],"value",[value UTF8String],"password",[password UTF8String],"contract_addr",[contract_addr UTF8String],"gas_price",[gas_price UTF8String],"gas_limit",[gas_limit UTF8String],"path",[kBluetooth_iOS UTF8String]);
+                kwargs = Py_BuildValue("{s:s,s:s,s:s,s:s,s:s,s:s}", "to_addr", [to_addr UTF8String],"value",[value UTF8String],"contract_addr",[contract_addr UTF8String],"gas_price",[gas_price UTF8String],"gas_limit",[gas_limit UTF8String],"path",[kBluetooth_iOS UTF8String]);
             }
         }
         PyObject *myobject_method = PyObject_GetAttrString(self.pyInstance, [kInterfacesign_eth_tx UTF8String]);

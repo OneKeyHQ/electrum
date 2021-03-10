@@ -17,6 +17,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *createButton;
 - (IBAction)createButtonClick:(UIButton *)sender;
 @property (nonatomic,copy)BtnClickBlock clickBlock;
+@property (nonatomic,copy)CancleClickBlock cancleBlock;
 @property (weak, nonatomic) IBOutlet UILabel *sendFromLabel;
 @property (weak, nonatomic) IBOutlet UILabel *sendFromRightLabel;
 @property (weak, nonatomic) IBOutlet UILabel *walletNameLabel;
@@ -48,10 +49,11 @@
     }];
 }
 
-- (void)showOnWindowWithParentViewController:(UIViewController *)viewController block:(BtnClickBlock)block{
+- (void)showOnWindowWithParentViewController:(UIViewController *)viewController block:(BtnClickBlock)block cancle:(nonnull CancleClickBlock)cancleBlock{
     [[[UIApplication sharedApplication] keyWindow] addSubview:self.view];
     [viewController addChildViewController:self];
     self.clickBlock = block;
+    self.cancleBlock = cancleBlock;
     self.contentViewBottomConstraint.constant = -400;
     [self stupUI];
 }
@@ -99,6 +101,9 @@
 - (IBAction)closeView:(id)sender {
     [self.view removeFromSuperview];
     [self removeFromParentViewController];
+    if (self.cancleBlock) {
+        self.cancleBlock();
+    }
 }
 
 - (IBAction)createButtonClick:(UIButton *)sender {
@@ -106,5 +111,9 @@
         [self closeView:nil];
         self.clickBlock(@"---");
     }
+}
+- (void)closeView
+{
+    [self closeView:nil];
 }
 @end

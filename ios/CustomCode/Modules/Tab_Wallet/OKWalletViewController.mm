@@ -231,7 +231,14 @@
             tokenModel.balance = model.balance;
             tokenModel.coinType = model.coin;
             tokenModel.money = model.fiat;
-            tokenModel.iconImage = [NSString stringWithFormat:@"token_%@",[kWalletManager.currentWalletInfo.coinType lowercaseString]];
+            NSArray *tokens = [[OKTokenManager sharedInstance]tokensFilterWith:model.address];
+            NSString *imageName = [NSString stringWithFormat:@"token_%@",[kWalletManager.currentWalletInfo.coinType lowercaseString]];
+            if (tokens.count == 0) {
+                tokenModel.iconImage = imageName;
+            }else{
+                OKToken *t = [tokens firstObject];
+                tokenModel.iconImage = t.logoURI.length ?t.logoURI:imageName;
+            }
             [arrayM addObject:tokenModel];
         }
     }
@@ -255,7 +262,13 @@
         }else{
             [self.coinImage setImage:[UIImage imageNamed:@"loco_round"] forState:UIControlStateNormal];
         }
-
+        if (self.allAssetData.count > 4) {
+            self.footerViewBlank.hidden = YES;
+            self.tableViewFooterView.frame = CGRectMake(0, 0, SCREEN_WIDTH, 74);
+        }else{
+            self.footerViewBlank.hidden = NO;
+            self.tableViewFooterView.frame = CGRectMake(0, 0, SCREEN_WIDTH, 194);
+        }
         [self.assetTableView reloadData];
     });
 }
@@ -366,7 +379,7 @@
     }
 
     if ([kWalletManager getWalletDetailType] == OKWalletTypeHardware) {
-        self.signatureBtn.hidden = NO;
+        self.signatureBtn.hidden = [kWalletManager.currentWalletInfo.coinType isEqualToString:COIN_BTC]?NO:YES;
         self.hwBgView.hidden = NO;
         OKDeviceModel *deviceModel = [[OKDevicesManager sharedInstance]getDeviceModelWithID:kWalletManager.currentWalletInfo.device_id];
         if (deviceModel.deviceInfo.label.length > 0 && deviceModel.deviceInfo.label != nil) {
@@ -379,6 +392,11 @@
     }else{
         self.signatureBtn.hidden = YES;
         self.hwBgView.hidden = YES;
+    }
+    if ([[kWalletManager.currentWalletInfo.coinType uppercaseString] isEqualToString:COIN_ETH]) {
+        self.tableViewHeaderAddBtn.hidden = NO;
+    }else{
+        self.tableViewHeaderAddBtn.hidden = YES;
     }
 }
 
@@ -521,7 +539,7 @@
     if (tableView == self.selectCreateTableView) {
         return self.allData.count;
     }
-    return  1;
+    return  self.allAssetData.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
