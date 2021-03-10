@@ -9,5 +9,13 @@
 #import "OKFindWalletTableViewCellModel.h"
 
 @implementation OKFindWalletTableViewCellModel
-
+- (void)setBlance:(NSString *)blance
+{
+    if ([blance containsString:@"("]) {
+        NSArray *array = [blance componentsSeparatedByString:@"("];
+        _blance = [array firstObject];
+    }else{
+        _blance = blance;
+    }
+}
 @end

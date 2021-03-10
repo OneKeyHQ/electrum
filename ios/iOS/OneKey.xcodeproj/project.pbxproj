@@ -1600,10 +1600,10 @@
 		881422D625B18EA900961668 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				881422DA25B18EA900961668 /* OKSignatureViewController.h */,
 				881422D725B18EA900961668 /* OKSignatureViewController.m */,
 				881422D825B18EA900961668 /* OKVerifySignatureViewController.m */,
 				881422D925B18EA900961668 /* OKVerifySignatureResultController.m */,
-				881422DA25B18EA900961668 /* OKSignatureViewController.h */,
 				881422DB25B18EA900961668 /* Signature.storyboard */,
 				881422DC25B18EA900961668 /* OKVerifySignatureViewController.h */,
 				881422DD25B18EA900961668 /* OKVerifySignatureResultController.h */,

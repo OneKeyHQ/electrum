@@ -411,6 +411,7 @@
                     [self.navigationController pushViewController:receiveCoinVc animated:YES];
                 }else{
                     if (![deviceModel.deviceInfo.device_id isEqualToString:kWalletManager.currentWalletInfo.device_id]) {
+                        NSLog(@"kWalletManager.currentWalletInfo.device_id== %@",kWalletManager.currentWalletInfo.device_id);
                         OKDeviceIdInconsistentViewController *deviceIdVc = [OKDeviceIdInconsistentViewController deviceIdInconsistentViewController];
                         deviceIdVc.modalPresentationStyle = UIModalPresentationOverFullScreen;
                         [weakself.OK_TopViewController presentViewController:deviceIdVc animated:NO completion:nil];

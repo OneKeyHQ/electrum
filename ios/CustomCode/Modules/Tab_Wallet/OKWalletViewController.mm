@@ -247,9 +247,10 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         [MBProgressHUD hideHUDForView:weakself.view animated:YES];
        // UI更新代码
-        NSArray *barray = [self.notiAssetModel.sum_fiat componentsSeparatedByString:@" "];
+        NSString *fiatStr = [[kWalletManager.currentWalletInfo.coinType uppercaseString] isEqualToString:COIN_ETH]?self.notiAssetModel.sum_fiat:self.notiAssetModel.fiat;
+        NSArray *barray = [fiatStr componentsSeparatedByString:@" "];
         NSString *bStr = [NSString stringWithFormat:@"%@ %@",kWalletManager.currentFiatSymbol,[barray firstObject]];
-        if (self.notiAssetModel.sum_fiat.length == 0) {
+        if (fiatStr.length == 0) {
             bStr = @"--";
         }
         if (kWalletManager.showAsset) {
@@ -379,7 +380,7 @@
     }
 
     if ([kWalletManager getWalletDetailType] == OKWalletTypeHardware) {
-        self.signatureBtn.hidden = [kWalletManager.currentWalletInfo.coinType isEqualToString:COIN_BTC]?NO:YES;
+        self.signatureBtn.hidden = [[kWalletManager.currentWalletInfo.coinType uppercaseString] isEqualToString:COIN_BTC]?NO:YES;
         self.hwBgView.hidden = NO;
         OKDeviceModel *deviceModel = [[OKDevicesManager sharedInstance]getDeviceModelWithID:kWalletManager.currentWalletInfo.device_id];
         if (deviceModel.deviceInfo.label.length > 0 && deviceModel.deviceInfo.label != nil) {

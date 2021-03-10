@@ -17,6 +17,7 @@
 #import "OKHwNotiManager.h"
 #import "OKTransferCompleteController.h"
 #import "OKTxDetailViewController.h"
+#import "OKTokenSelectController.h"
 
 
 @interface OKSendCoinViewController ()<UITextFieldDelegate,OKHwNotiManagerDelegate>
@@ -36,7 +37,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *balanceTitleLabel;
 @property (weak, nonatomic) IBOutlet UILabel *balanceLabel;
 @property (weak, nonatomic) IBOutlet UILabel *coinTypeLabel;
-@property (weak, nonatomic) IBOutlet UIButton *coinTypeBtn;
+@property (weak, nonatomic) IBOutlet OKButton *coinTypeBtn;
 - (IBAction)coinTypeBtnClick:(UIButton *)sender;
 //Bottom
 @property (weak, nonatomic) IBOutlet UIView *feeLabelBg;
@@ -121,6 +122,7 @@
 @property (nonatomic,strong)NSTimer* ethTimer;
 
 @property (nonatomic,strong)OKSendTxPreInfoViewController *sendTxPreInfoVc;
+@property (nonatomic,strong)NSArray *tokensArray;
 @end
 
 @implementation OKSendCoinViewController
@@ -194,7 +196,7 @@
     [weakself.customBottomLabelBg setLayerRadius:20];
     [weakself.custom_BGView shadowWithLayerCornerRadius:20 borderColor:HexColor(RGB_THEME_GREEN) borderWidth:2 shadowColor:RGBA(0, 0, 0, 0.1) shadowOffset:CGSizeMake(0, 4) shadowOpacity:1 shadowRadius:10];
     [weakself.sendBtn setLayerDefaultRadius];
-
+    [weakself.coinTypeBtn status:OKButtonStatusDisabled];
 
     weakself.slowTitleLabel.text = MyLocalizedString(@"slow", nil);
     weakself.slowCoinAmountLabel.text = [NSString stringWithFormat:@"0 %@",[kWalletManager getUnitForCoinType]];
@@ -239,8 +241,10 @@
 {
     OKWeakSelf(self)
     NSDictionary *dict = noti.object;
+    weakself.tokensArray = [dict objectForKey:@"tokens"];
     dispatch_async(dispatch_get_main_queue(), ^{
-       // UI更新代码
+        // UI更新代码
+        [weakself.coinTypeBtn status:OKButtonStatusEnabled];
         weakself.balanceLabel.text =  [dict safeStringForKey:@"balance"];
         weakself.coinTypeLabel.text = [kWalletManager getUnitForCoinType];
     });
@@ -357,7 +361,12 @@
 }
 #pragma mark - 币种类型按钮被点击
 - (IBAction)coinTypeBtnClick:(UIButton *)sender {
-    NSLog(@"切换币种");
+    OKTokenSelectController *tokenSelectVc = [OKTokenSelectController controllerWithStoryboard];
+    tokenSelectVc.data = self.tokensArray;
+    tokenSelectVc.selectCallback = ^(OKAllAssetsCellModel * _Nonnull selected) {
+
+    };
+    [self.navigationController pushViewController:tokenSelectVc animated:YES];
 }
 #pragma mark - 自定义 按钮被点击
 - (IBAction)customBtnClick:(UIButton *)sender {

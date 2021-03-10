@@ -626,7 +626,7 @@ static dispatch_once_t once;
             NSLog(@"错误信息  %s  method = %@ parameter = %@", msg ,method,parameter);
             // 释放GIL ！！！！！
             PyGILState_Release(state);
-            if (![method isEqualToString: kInterfaceSet_currency] && ![method isEqualToString: kInterfaceSet_base_uint]) {
+            if (![method isEqualToString: kInterfaceSet_currency] && ![method isEqualToString: kInterfaceSet_base_uint] && ![method isEqualToString:kInterfaceget_tx_info_from_raw]) {
                 ok_dispatch_main_async_safe(
                     [kTools tipMessage:[NSString stringWithCString:msg encoding:NSUTF8StringEncoding]];
                 );

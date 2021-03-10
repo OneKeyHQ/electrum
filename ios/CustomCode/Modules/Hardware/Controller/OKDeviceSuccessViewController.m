@@ -17,6 +17,9 @@
 @property (weak, nonatomic) IBOutlet UILabel *descLabel;
 @property (weak, nonatomic) IBOutlet UIButton *completeBtn;
 - (IBAction)completeBtnClick:(UIButton *)sender;
+@property (weak, nonatomic) IBOutlet OKButton *backBtn;
+- (IBAction)backBtnClick:(OKButton *)sender;
+
 @property (nonatomic,assign)OKDeviceSuccessType type;
 @property (nonatomic,copy)NSString *deviceName;
 @end
@@ -43,7 +46,7 @@
         case OKDeviceSuccessActivate:
         {
             self.title = MyLocalizedString(@"Activate hardware wallet", nil);
-            self.title = MyLocalizedString(@"Wallet activation successful", nil);
+            self.titleLabel.text = MyLocalizedString(@"Wallet activation successful", nil);
             [self.descLabel setText:MyLocalizedString(@"Your hardware wallet has been successfully activated and we have nothing to remind you of. In a word, please take good care of it. No one can help you get it back. I wish you play in the chain of blocks in the world happy", nil) lineSpacing:20];
         }
             break;
@@ -70,7 +73,7 @@
             [[NSNotificationCenter defaultCenter]postNotificationName:kNotiBackUPWalletComplete object:nil];
             [[NSNotificationCenter defaultCenter]postNotificationName:kNotiHwInfoUpdate object:nil];
             [self.OK_TopViewController dismissToViewControllerWithClassName:@"OKWalletViewController" animated:YES complete:^{
-                
+
             }];
         }
             break;
@@ -93,4 +96,10 @@
 }
 
 
+- (IBAction)backBtnClick:(OKButton *)sender {
+    [[NSNotificationCenter defaultCenter]postNotificationName:kNotiHwInfoUpdate object:nil];
+    [self.OK_TopViewController dismissToViewControllerWithClassName:@"OKWalletViewController" animated:YES complete:^{
+
+    }];
+}
 @end

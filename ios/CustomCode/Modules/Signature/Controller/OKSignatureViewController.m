@@ -216,28 +216,35 @@ typedef enum {
     switch (_type) {
         case OKSegmentTypeMsg:
         {
+            [MBProgressHUD showHUDAddedTo:self.view animated:YES];
             NSString *message = self.textView.text;
             [OKHwNotiManager sharedInstance].delegate = self;
             OKWeakSelf(self)
             dispatch_async(dispatch_get_global_queue(0, 0), ^{
                id result = [kPyCommandsManager callInterface:kInterfacesign_message parameter:@{@"address":kWalletManager.currentWalletInfo.addr,@"message":message}];
-                if (result != nil) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        NSLog(@"dispatch_async");
-                        OKVerifySignatureViewController *verifySignatureVc = [OKVerifySignatureViewController initWithStoryboardName:@"Signature" identifier:@"OKVerifySignatureViewController"];
-                        NSDictionary *dict = @{@"message":weakself.textView.text,@"address":kWalletManager.currentWalletInfo.addr,@"signature":result};
-                        verifySignatureVc.signMessageInfo = dict;
-                        [self.navigationController pushViewController:verifySignatureVc animated:YES];
-                    });
-                }else{
-                    [kTools tipMessage:MyLocalizedString(@"Signature error or cancellation", nil)];
-                }
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (result != nil) {
+                            [MBProgressHUD hideHUDForView:self.view animated:YES];
+                            OKVerifySignatureViewController *verifySignatureVc = [OKVerifySignatureViewController initWithStoryboardName:@"Signature" identifier:@"OKVerifySignatureViewController"];
+                            NSDictionary *dict = @{@"message":weakself.textView.text,@"address":kWalletManager.currentWalletInfo.addr,@"signature":result};
+                            verifySignatureVc.signMessageInfo = dict;
+                            [self.navigationController pushViewController:verifySignatureVc animated:YES];
+                    }else{
+                        [MBProgressHUD hideHUDForView:self.view animated:YES];
+                        [kTools tipMessage:MyLocalizedString(@"Signature error or cancellation", nil)];
+                    }
+                });
             });
         }
             break;
         case OKSegmentTypeTrad:
         {
             NSString *tx = self.textView.text;
+            NSDictionary* result =  [kPyCommandsManager callInterface:kInterfaceget_tx_info_from_raw parameter:@{@"raw_tx":tx}];
+            if (result == nil) {
+                [kTools tipMessage:MyLocalizedString(@"Transaction format error", nil)];
+                return;
+            }
             [OKHwNotiManager sharedInstance].delegate = self;
             dispatch_async(dispatch_get_global_queue(0, 0), ^{
                 NSDictionary *signTxDict =  [kPyCommandsManager callInterface:kInterfaceSign_tx parameter:@{@"tx":tx}];
