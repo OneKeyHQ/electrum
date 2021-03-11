@@ -10,16 +10,10 @@ echo ""
 check_env
 set +x
 if [ -d iOS ]; then
-  echo "Warning: 'iOS' directory exists. All modifications will be lost if you continue."
-  echo "Continue? [y/N]?"
-  read -r reply
-  if [ "${reply}" != "y" ]; then
-    echo "Fair enough. Exiting..."
-    exit 0
-  fi
   echo "Cleaning up old iOS dir..."
-  rm -rf tmp
-  mkdir tmp
+  if [ ! -d tmp ]; then
+    mkdir tmp
+  fi
   cp -fRa iOS/"${compact_name}".xcodeproj tmp/
   cp -fRa iOS/podfile tmp/
   rm -rf iOS
