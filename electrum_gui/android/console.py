@@ -77,6 +77,8 @@ from electrum_gui.android import hardware, wallet_context
 from electrum_gui.common import the_begging
 
 from ..common.basic.functional.text import force_text
+from ..common.basic.orm.database import db
+from ..common.coin import manager as coin_manager
 from .create_wallet_info import CreateWalletInfo
 from .derived_info import DerivedInfo
 from .tx_db import TxDb
@@ -2149,22 +2151,31 @@ class AndroidCommands(commands.Commands):
         :param contract_addr: coin address
         :return: raise except if error
         """
-        try:
-            if not contract_addr:
-                raise BaseException("Contract address cannot be empty")
-            chain_code = PyWalib.get_chain_code()
-            if contract_addr.lower() in list(self.token_list_by_chain.get(chain_code))[50:]:
-                self.wallet_context.add_customer_token_info(
-                    self.token_list_by_chain.get(chain_code)[contract_addr.lower()], chain_code
-                )
-            elif contract_addr.lower() not in self.token_list_by_chain.get(chain_code):
-                token_info = PyWalib.get_token_info("", contract_addr)
+        if not contract_addr:
+            raise BaseException("Contract address cannot be empty")
+
+        chain_code = PyWalib.get_chain_code()
+        contract_addr = contract_addr.lower()
+
+        token_info = self.token_list_by_chain.get(chain_code, {}).get(contract_addr) or PyWalib.get_token_info(
+            symbol, contract_addr
+        )
+
+        with db.atomic():
+            coin_manager.add_coin(
+                chain_code,
+                contract_addr,
+                token_info["symbol"],
+                token_info["decimals"],
+                token_info.get("name"),
+                token_info.get("logoURI"),
+            )
+
+            if contract_addr not in list(self.token_list_by_chain.get(chain_code, {}).keys())[:50]:
                 self.wallet_context.add_customer_token_info(token_info, chain_code)
 
             contract_addr = self.pywalib.web3.toChecksumAddress(contract_addr)
             self.wallet.add_contract_token(symbol, contract_addr)
-        except BaseException as e:
-            raise e
 
     def delete_token(self, contract_addr):
         """

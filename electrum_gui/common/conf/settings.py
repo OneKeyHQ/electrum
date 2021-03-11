@@ -30,7 +30,9 @@ DATABASE = {
     },
 }
 
-DB_MODULES = []
+DB_MODULES = [
+    "electrum_gui.common.coin",
+]
 
 ENABLED_CHAIN_COINS = [
     codes.ETH,
