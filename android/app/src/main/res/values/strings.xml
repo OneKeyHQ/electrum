@@ -1356,4 +1356,6 @@
     <string name="title_frist_use_dapp">即将访问%s </string>
     <string name="title_frist_use_dapp_privacy">您在第三方 DApp 上的使用行为将适用于第三方 DApp 的《隐私政策》和《用户协议》，由 %s 直接并单独向您承担责任</string>
     <string name="title_does_not_support">不支持 %s</string>
+    <string name="title_signature">签字中</string>
+    <string name="hint_signature_confirm_hardware">请在硬件上确认</string>
 </resources>

@@ -31,14 +31,21 @@ import androidx.lifecycle.ViewModelProvider
 import com.orhanobut.logger.Logger
 import com.zy.multistatepage.MultiStatePage
 import com.zy.multistatepage.state.SuccessState
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import org.haobtc.onekey.BuildConfig
 import org.haobtc.onekey.R
 import org.haobtc.onekey.activities.base.MyApplication
 import org.haobtc.onekey.bean.DAppBrowserBean
 import org.haobtc.onekey.business.assetsLogo.AssetsLogo
+import org.haobtc.onekey.business.wallet.DappWeb3Manager
 import org.haobtc.onekey.business.wallet.DeviceException
+import org.haobtc.onekey.constant.PyConstant
 import org.haobtc.onekey.constant.Vm
 import org.haobtc.onekey.databinding.FragmentDappBrowserBinding
+import org.haobtc.onekey.event.ButtonRequestEvent
+import org.haobtc.onekey.event.ChangePinEvent
+import org.haobtc.onekey.manager.PyEnv
 import org.haobtc.onekey.onekeys.dappbrowser.URLLoadInterface
 import org.haobtc.onekey.onekeys.dappbrowser.Web3View
 import org.haobtc.onekey.onekeys.dappbrowser.bean.Address
@@ -60,6 +67,7 @@ import org.haobtc.onekey.onekeys.dappbrowser.ui.DappSettingSheetDialog.ClickType
 import org.haobtc.onekey.onekeys.dappbrowser.ui.DappSettingSheetDialog.ClickType.Companion.CLICK_SHARE
 import org.haobtc.onekey.onekeys.dappbrowser.ui.DappSettingSheetDialog.ClickType.Companion.CLICK_SWITCH_ACCOUNT
 import org.haobtc.onekey.ui.activity.SoftPassDialog
+import org.haobtc.onekey.ui.activity.VerifyPinActivity
 import org.haobtc.onekey.ui.base.BaseFragment
 import org.haobtc.onekey.ui.dialog.SelectAccountBottomSheetDialog
 import org.haobtc.onekey.ui.status.BrowserLoadError
@@ -193,6 +201,7 @@ class DappBrowserFragment : BaseFragment(),
   }
 
   private val mAssetsLogo = AssetsLogo()
+  private val mDappWeb3Manager = DappWeb3Manager()
   private val web3: Web3View
     get() = mBinding.viewWeb3view
   private val mAppWalletViewModel by lazy {
@@ -201,6 +210,8 @@ class DappBrowserFragment : BaseFragment(),
   private val mDAppBean by lazy {
     arguments?.getParcelable(EXT_DAPP_BEAN) as DAppBrowserBean?
   }
+
+  override fun needEvents() = true
 
   override fun enableViewBinding() = true
 
@@ -267,10 +278,13 @@ class DappBrowserFragment : BaseFragment(),
       mBinding.tvWalletName.text = it?.name ?: getString(R.string.title_select_account)
 
       it?.let {
-        web3.chainId = 3
+        mDappWeb3Manager.getPRCInfo()?.apply {
+          web3.setRpcUrl(rpc)
+          web3.chainId = chainId
+        }
         web3.setWalletAddress(it.address)
-        // web3.setRpcUrl(rpcUrl)
         setupWeb3()
+        refreshEvent()
       }
     }
   }
@@ -415,9 +429,27 @@ class DappBrowserFragment : BaseFragment(),
   override fun gotAuthorisation(pwd: String?, gotAuth: Boolean) {
     if (gotAuth && dAppFunction != null) {
       Logger.e("==signMessage==:${HexUtils.byteArrayToHexString(messageTBS?.prehash)}")
-      // todo sign message
-      // completeAuthentication()
-      // signMessage(messageTBS, dAppFunction)
+      // complete Authentication
+      val walletInfo = mAppWalletViewModel.currentWalletAccountInfo.value
+      val messageHexString = HexUtils.byteArrayToHexString(messageTBS?.prehash)
+      if (messageHexString != null && walletInfo?.walletType == Vm.WalletType.HARDWARE) {
+        confirmationDialog?.showHardwareProgress()
+        mDappWeb3Manager.signMessageByHardware(walletInfo.address, messageHexString, null, success = {
+          dAppFunction?.DAppReturn(HexUtils.hexStringToByteArray(it), messageTBS)
+        }, error = {
+          dAppFunction?.DAppError(it, messageTBS)
+        })
+      } else if (messageHexString != null && walletInfo != null && walletInfo.walletType != Vm.WalletType.IMPORT_WATCH) {
+        confirmationDialog?.showProgress()
+        mDappWeb3Manager.signMessage(walletInfo.address, messageHexString, pwd, null, success = {
+          confirmationDialog?.hideProgress()
+          dAppFunction?.DAppReturn(HexUtils.hexStringToByteArray(it), messageTBS)
+        }, error = {
+          confirmationDialog?.dismiss()
+          dAppFunction?.DAppError(it, messageTBS)
+        })
+      }
+
     } else if (confirmationDialog != null && confirmationDialog?.isShowing == true) {
       if (messageTBS != null) web3.onSignCancel(messageTBS!!.callbackId)
       confirmationDialog?.dismiss()
@@ -469,6 +501,33 @@ class DappBrowserFragment : BaseFragment(),
     }
   }
 
+  @Subscribe(threadMode = ThreadMode.MAIN)
+  fun onChangePin(event: ChangePinEvent) {
+    // 回写PIN码
+    PyEnv.setPin(event.toString())
+  }
+
+  /**
+   * 接收硬件的按键事件
+   */
+  @Subscribe(threadMode = ThreadMode.MAIN)
+  fun onButtonRequest(event: ButtonRequestEvent) {
+    when (event.type) {
+      PyConstant.PIN_CURRENT -> {
+        val intent = Intent(requireContext(), VerifyPinActivity::class.java)
+        startActivity(intent)
+      }
+      PyConstant.BUTTON_REQUEST_7 -> {
+        // 确认键
+      }
+      PyConstant.BUTTON_REQUEST_8 -> {
+        // 转账确认键
+      }
+      else -> {
+      }
+    }
+  }
+
   // endregion
 
   // region 处理 Dapp 弹窗 DappActionSheetCallback 回调操作
@@ -493,35 +552,44 @@ class DappBrowserFragment : BaseFragment(),
   override fun signTransaction(pwd: String?, finalTx: Web3Transaction) {
     val callback: SignTransactionInterface = object : SignTransactionInterface {
       override fun transactionSuccess(web3Tx: Web3Transaction, rawTx: String) {
+        confirmationDialog?.hideProgress()
         confirmationDialog?.transactionWritten(rawTx)
         web3.onSignTransactionSuccessful(web3Tx, rawTx)
       }
 
       override fun transactionError(callbackId: Long, error: Throwable) {
+        confirmationDialog?.hideProgress()
         confirmationDialog?.dismiss()
         txError(error)
         web3.onSignCancel(callbackId)
       }
     }
-    Logger.e("==signTransaction==:$finalTx")
-    // todo sign Transaction
-    // signTransaction(finalTx, networkInfo.chainId, callback);
+    val walletInfo = mAppWalletViewModel.currentWalletAccountInfo.value
+    if (walletInfo?.walletType == Vm.WalletType.HARDWARE) {
+      mDappWeb3Manager.signTxByHardware(walletInfo.address, finalTx, null, callback)
+      confirmationDialog?.showHardwareProgress()
+    } else if (walletInfo != null && walletInfo.walletType != Vm.WalletType.IMPORT_WATCH) {
+      mDappWeb3Manager.signTx(walletInfo.address, finalTx, pwd, null, callback)
+      confirmationDialog?.showProgress()
+    }
   }
 
   override fun sendTransaction(pwd: String?, finalTx: Web3Transaction) {
     val callback: SendTransactionInterface = object : SendTransactionInterface {
       override fun transactionSuccess(web3Tx: Web3Transaction, hashData: String) {
+        confirmationDialog?.hideProgress()
         confirmationDialog?.transactionWritten(hashData)
         web3.onSignTransactionSuccessful(web3Tx, hashData)
       }
 
       override fun transactionError(callbackId: Long, error: Throwable) {
+        confirmationDialog?.hideProgress()
         confirmationDialog?.dismiss()
         txError(error)
         web3.onSignCancel(callbackId)
       }
     }
-    Logger.e("==sendTransaction==:$finalTx")
+    confirmationDialog?.showProgress()
     // todo createTransactionWithSig
     // createTransactionWithSig(finalTx, networkInfo.chainId, callback);
   }

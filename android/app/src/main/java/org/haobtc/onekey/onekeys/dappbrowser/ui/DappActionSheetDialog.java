@@ -2,6 +2,8 @@ package org.haobtc.onekey.onekeys.dappbrowser.ui;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -35,6 +37,9 @@ public class DappActionSheetDialog extends BottomSheetDialog
     private final ImageView cancelButton;
     private final Button nextButton;
 
+    private final View layoutProgress;
+    private final View layoutHardwareProgress;
+
     private final Web3Transaction candidateTransaction;
     private final DappActionSheetCallback actionSheetCallback;
     private SignAuthenticationCallback signCallback;
@@ -43,6 +48,7 @@ public class DappActionSheetDialog extends BottomSheetDialog
 
     private String txHash = null;
     private boolean actionCompleted;
+    private Handler mHandler = new Handler(Looper.getMainLooper());
 
     /**
      * 处理交易签字
@@ -63,6 +69,8 @@ public class DappActionSheetDialog extends BottomSheetDialog
             delegate.setBackgroundColor(Color.TRANSPARENT);
         }
 
+        layoutProgress = findViewById(R.id.layout_progress);
+        layoutHardwareProgress = findViewById(R.id.layout_hardware_progress);
         balance = findViewById(R.id.text_balance);
         amount = findViewById(R.id.text_tx_amount);
         TextView txFee = findViewById(R.id.text_tx_fee);
@@ -123,6 +131,9 @@ public class DappActionSheetDialog extends BottomSheetDialog
         if (delegate != null) {
             delegate.setBackgroundColor(Color.TRANSPARENT);
         }
+
+        layoutProgress = findViewById(R.id.layout_progress);
+        layoutHardwareProgress = findViewById(R.id.layout_hardware_progress);
 
         TextView walletNameTextView = findViewById(R.id.text_send_name);
         walletNameTextView.setText(wallet.getName());
@@ -389,5 +400,33 @@ public class DappActionSheetDialog extends BottomSheetDialog
 
     public void success() {
         dismiss();
+    }
+
+    public void showProgress() {
+        mHandler.post(
+                () -> {
+                    layoutProgress.setVisibility(View.VISIBLE);
+                });
+    }
+
+    public void showHardwareProgress() {
+        mHandler.post(
+                () -> {
+                    layoutHardwareProgress.setVisibility(View.VISIBLE);
+                });
+    }
+
+    public void hideProgress() {
+        mHandler.post(
+                () -> {
+                    layoutProgress.setVisibility(View.GONE);
+                    layoutHardwareProgress.setVisibility(View.GONE);
+                });
+    }
+
+    @Override
+    public void onDetachedFromWindow() {
+        mHandler.removeCallbacksAndMessages(null);
+        super.onDetachedFromWindow();
     }
 }

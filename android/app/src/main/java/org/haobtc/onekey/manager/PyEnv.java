@@ -23,6 +23,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.orhanobut.logger.Logger;
 import dr.android.utils.LogUtil;
@@ -51,6 +52,8 @@ import org.haobtc.onekey.bean.CurrentWalletBalanceBean;
 import org.haobtc.onekey.bean.HardwareFeatures;
 import org.haobtc.onekey.bean.MakeTxResponseBean;
 import org.haobtc.onekey.bean.PyResponse;
+import org.haobtc.onekey.bean.RPCInfoBean;
+import org.haobtc.onekey.bean.SignTxResponseBean;
 import org.haobtc.onekey.bean.SwitchWalletBean;
 import org.haobtc.onekey.bean.TemporaryTxInfo;
 import org.haobtc.onekey.bean.TokenList;
@@ -1827,6 +1830,61 @@ public final class PyEnv {
             TokenList.ERCToken token = JSON.parseObject(result, TokenList.ERCToken.class);
             response.setResult(token);
         } catch (Exception e) {
+            Exception exception = HardWareExceptions.exceptionConvert(e);
+            response.setErrors(exception.getMessage());
+        }
+        return response;
+    }
+
+    public static PyResponse<RPCInfoBean> getRpcInfo(Vm.CoinType coinType) {
+        PyResponse<RPCInfoBean> response = new PyResponse<>();
+        try {
+            String result = sCommands.callAttr("dapp_eth_rpc_info").toString();
+            RPCInfoBean token = new Gson().fromJson(result, RPCInfoBean.class);
+            response.setResult(token);
+        } catch (Exception e) {
+            Exception exception = HardWareExceptions.exceptionConvert(e);
+            response.setErrors(exception.getMessage());
+        }
+        return response;
+    }
+
+    public static PyResponse<SignTxResponseBean> signTx(
+            Vm.CoinType coinType, JsonObject transaction, String pwd, String path) {
+        PyResponse<SignTxResponseBean> response = new PyResponse<>();
+        try {
+            List<Kwarg> argList = new LinkedList<>();
+            argList.add(new Kwarg("transaction", transaction.toString()));
+            argList.add(new Kwarg("path", path));
+            argList.add(new Kwarg("password", pwd));
+
+            String result =
+                    sCommands
+                            .callAttr("dapp_eth_sign_tx", argList.toArray(new Object[0]))
+                            .toString();
+            Logger.e("==signTx==:" + result);
+            SignTxResponseBean token = new Gson().fromJson(result, SignTxResponseBean.class);
+            response.setResult(token);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Exception exception = HardWareExceptions.exceptionConvert(e);
+            response.setErrors(exception.getMessage());
+        }
+        return response;
+    }
+
+    public static PyResponse<String> signMessage(
+            Vm.CoinType coinType, String fromAddress, String messageHex, String pwd, String path) {
+        PyResponse<String> response = new PyResponse<>();
+        try {
+            String result =
+                    sCommands
+                            .callAttr("sign_message", fromAddress, messageHex, pwd, path)
+                            .toString();
+            Logger.e("==signMessage==:" + result);
+            response.setResult(result);
+        } catch (Exception e) {
+            e.printStackTrace();
             Exception exception = HardWareExceptions.exceptionConvert(e);
             response.setErrors(exception.getMessage());
         }

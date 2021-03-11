@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.text.TextUtils
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -14,9 +15,12 @@ import androidx.lifecycle.ViewModelProvider
 import cn.com.heaton.blelibrary.ble.model.BleDevice
 import org.haobtc.onekey.R
 import org.haobtc.onekey.activities.base.MyApplication
+import org.haobtc.onekey.bean.HardwareFeatures
 import org.haobtc.onekey.business.wallet.DeviceException
 import org.haobtc.onekey.business.wallet.DeviceManager
 import org.haobtc.onekey.databinding.DialogConnectDeviceBinding
+import org.haobtc.onekey.exception.HardWareExceptions
+import org.haobtc.onekey.manager.PyEnv
 import org.haobtc.onekey.viewmodel.AppWalletViewModel
 
 /**
@@ -38,7 +42,7 @@ class ConnectDeviceDialog(context: Context) : Dialog(context) {
   }
 
   private var isDoneConnect = false
-  private var success: (() -> Unit)? = null
+  private var success: ((HardwareFeatures) -> Unit)? = null
   private var error: ((Exception) -> Unit)? = null
 
 
@@ -83,7 +87,13 @@ class ConnectDeviceDialog(context: Context) : Dialog(context) {
       deviceManager.connectDeviceByDeviceId(deviceId, object : DeviceManager.OnConnectDeviceListener<BleDevice> {
         override fun onSuccess(t: BleDevice) {
           isDoneConnect = true
-          success?.invoke()
+          PyEnv.getFeature(context) {
+            if (TextUtils.isEmpty(it.errors)) {
+              success?.invoke(it.result)
+            } else {
+              error?.invoke(HardWareExceptions.exceptionConvert(Exception(it.errors)))
+            }
+          }
           dismiss()
         }
 
@@ -128,7 +138,7 @@ class ConnectDeviceDialog(context: Context) : Dialog(context) {
     mBinding.tvButton.setOnClickListener(listener)
   }
 
-  fun setOnConnectListener(success: () -> Unit, error: (Exception) -> Unit) {
+  fun setOnConnectListener(success: (HardwareFeatures) -> Unit, error: (Exception) -> Unit) {
     this.success = success
     this.error = error
   }

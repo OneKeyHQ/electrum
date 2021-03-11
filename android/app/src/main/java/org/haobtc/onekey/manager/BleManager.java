@@ -20,11 +20,13 @@ import cn.com.heaton.blelibrary.ble.callback.BleScanCallback;
 import cn.com.heaton.blelibrary.ble.callback.BleWriteCallback;
 import cn.com.heaton.blelibrary.ble.model.BleDevice;
 import com.lxj.xpopup.XPopup;
+import com.orhanobut.logger.Logger;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import io.reactivex.disposables.Disposable;
 import java.util.Objects;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
+import org.haobtc.onekey.bean.HardwareFeatures;
 import org.haobtc.onekey.business.wallet.OnekeyBleConnectCallback;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.BleConnectionEx;
@@ -50,6 +52,8 @@ public final class BleManager {
     private volatile boolean connecting;
     private String currentAddress;
     public static String currentBleName;
+    private HardwareFeatures mHardwareFeatures;
+    private volatile boolean mShieldingGlobalCallback = false;
 
     private BleManager(FragmentActivity fragmentActivity) {
         this.fragmentActivity = fragmentActivity;
@@ -228,6 +232,7 @@ public final class BleManager {
             }
 
             disconnectAllOther(device);
+            mShieldingGlobalCallback = true;
             PyEnv.mExecutorService.execute(
                     () -> {
                         currentAddress = device;
@@ -239,28 +244,43 @@ public final class BleManager {
                                             @Override
                                             public void onReady(BleDevice device) {
                                                 super.onReady(device);
-                                                setNotify(
-                                                        device,
-                                                        new BleNotiftCallback<BleDevice>() {
-                                                            @Override
-                                                            public void onChanged(
-                                                                    BleDevice device,
-                                                                    BluetoothGattCharacteristic
-                                                                            characteristic) {}
+                                                PyEnv.mExecutorService.execute(
+                                                        () -> {
+                                                            setNotify(
+                                                                    device,
+                                                                    new BleNotiftCallback<
+                                                                            BleDevice>() {
+                                                                        @Override
+                                                                        public void onChanged(
+                                                                                BleDevice device,
+                                                                                BluetoothGattCharacteristic
+                                                                                        characteristic) {}
 
-                                                            @Override
-                                                            public void onNotifySuccess(
-                                                                    BleDevice device) {
-                                                                super.onNotifySuccess(device);
-                                                                callback.onSuccess(device);
-                                                            }
+                                                                        @Override
+                                                                        public void onNotifySuccess(
+                                                                                BleDevice device) {
+                                                                            super.onNotifySuccess(
+                                                                                    device);
+                                                                            mShieldingGlobalCallback =
+                                                                                    false;
+                                                                            callback.onSuccess(
+                                                                                    device);
+                                                                        }
 
-                                                            @Override
-                                                            public void onNotifyCanceled(
-                                                                    BleDevice device) {
-                                                                super.onNotifyCanceled(device);
-                                                                callback.onConnectCancel(device);
-                                                            }
+                                                                        @Override
+                                                                        public void
+                                                                                onNotifyCanceled(
+                                                                                        BleDevice
+                                                                                                device) {
+                                                                            super.onNotifyCanceled(
+                                                                                    device);
+                                                                            mShieldingGlobalCallback =
+                                                                                    false;
+                                                                            callback
+                                                                                    .onConnectCancel(
+                                                                                            device);
+                                                                        }
+                                                                    });
                                                         });
                                                 callback.onReady(device);
                                             }
@@ -276,6 +296,7 @@ public final class BleManager {
                                                             .post(
                                                                     BleConnectionEx
                                                                             .BLE_CONNECTION_EX_OTHERS);
+                                                    mShieldingGlobalCallback = false;
                                                     EventBus.getDefault().post(new ExitEvent());
                                                     PyEnv.cancelAll();
                                                 }
@@ -290,12 +311,14 @@ public final class BleManager {
                                                         .post(
                                                                 BleConnectionEx
                                                                         .BLE_CONNECTION_EX_TIMEOUT);
+                                                mShieldingGlobalCallback = false;
                                                 callback.onConnectTimeOut(device);
                                             }
 
                                             @Override
                                             public void onConnectCancel(BleDevice device) {
                                                 super.onConnectCancel(device);
+                                                mShieldingGlobalCallback = false;
                                                 callback.onConnectCancel(device);
                                             }
                                         });
@@ -347,7 +370,9 @@ public final class BleManager {
                 @Override
                 public void onReady(BleDevice device) {
                     super.onReady(device);
-                    setNotify(device);
+                    if (!mShieldingGlobalCallback) {
+                        setNotify(device);
+                    }
                 }
 
                 @Override
@@ -371,6 +396,7 @@ public final class BleManager {
 
     private void setNotify(BleDevice device, BleNotiftCallback<BleDevice> callback) {
         // buffered a proportion of response
+        Logger.e("setNotify device");
         StringBuffer buffer = new StringBuffer();
         Ble.getInstance()
                 .enableNotify(
@@ -400,11 +426,11 @@ public final class BleManager {
                                                         EventBus.getDefault()
                                                                 .post(new NotifySuccessfulEvent());
                                                         connecting = false;
+                                                        callback.onNotifySuccess(device);
                                                     }
                                                 });
                                 currentAddress = device.getBleAddress();
                                 currentBleName = device.getBleName();
-                                callback.onNotifySuccess(device);
                             }
 
                             @Override
@@ -423,6 +449,7 @@ public final class BleManager {
     private void setNotify(BleDevice device) {
         // buffered a proportion of response
         StringBuffer buffer = new StringBuffer();
+        Logger.e("setNotify device");
         Ble.getInstance()
                 .enableNotify(
                         device,
@@ -432,6 +459,7 @@ public final class BleManager {
                             public void onChanged(
                                     BleDevice device, BluetoothGattCharacteristic characteristic) {
                                 dealBleResponse(characteristic, buffer);
+                                Logger.e("setNotify onChanged");
                             }
 
                             @Override
@@ -454,11 +482,13 @@ public final class BleManager {
                                                 });
                                 currentAddress = device.getBleAddress();
                                 currentBleName = device.getBleName();
+                                Logger.e("setNotify onNotifySuccess");
                             }
 
                             @Override
                             public void onNotifyCanceled(BleDevice device) {
                                 super.onNotifyCanceled(device);
+                                Logger.e("setNotify onNotifyCanceled");
                             }
                         });
     }
