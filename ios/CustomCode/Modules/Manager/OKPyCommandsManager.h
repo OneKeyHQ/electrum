@@ -56,6 +56,7 @@
 #define kInterface_get_all_wallet_balance @"get_all_wallet_balance" //获取全部资产
 #define kInterfacerename_wallet          @"rename_wallet"  //修改名称
 #define kInterfaceexport_privkey         @"export_privkey" //导出私钥
+#define kInterface_export_keystore       @"export_keystore" //导出keyStore
 
 #define kInterfaceget_exchange_currency  @"get_exchange_currency" //BTC和法币之间的转换
 #define kExchange_currencyTypeBase       @"base"

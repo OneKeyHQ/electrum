@@ -45,7 +45,8 @@
 {
     [self setNavigationBarBackgroundColorWithClearColor];
     self.title = self.coinType;
-    self.navigationItem.rightBarButtonItem = [UIBarButtonItem barButtonItemWithImage:[UIImage imageNamed:@"token_btc"] frame:CGRectMake(0, 0, 30, 30) target:self selector:@selector(rightBarButtonItemClick)];
+
+    self.navigationItem.rightBarButtonItem = [UIBarButtonItem barButtonItemWithImage:[UIImage imageNamed:[NSString stringWithFormat:@"token_%@",[self.coinType lowercaseString]]] frame:CGRectMake(0, 0, 30, 30) target:self selector:@selector(rightBarButtonItemClick)];
 
     [self.sendCoinBtn setLayerRadius:15];
     [self.reciveCoinBtn setLayerRadius:15];
@@ -68,10 +69,24 @@
 
 - (void)Setupthedata:(NSDictionary *)dict
 {
+    OKWeakSelf(self)
     dispatch_async(dispatch_get_main_queue(), ^{
        // UI更新代码
-        self.textBalanceLabel.text =  [NSString stringWithFormat:@"%@ %@",[dict safeStringForKey:@"balance"],[kWalletManager getUnitForCoinType]];
-        self.textMoneyLabel.text = [NSString stringWithFormat:@"≈%@",[dict safeStringForKey:@"fiat"]];
+        NSDictionary *dataDict = [dict copy];
+        if ([kWalletManager isETHClassification:kWalletManager.currentWalletInfo.coinType] && ![kWalletManager isETHClassification:weakself.model.coinType]) {
+            NSArray *tokens = dict[@"tokens"];
+            for (NSDictionary *subDict in tokens) {
+                if ([[subDict safeStringForKey:@"coin"] isEqualToString:weakself.model.coinType]) {
+                    dataDict = subDict;
+                    break;
+                }
+            }
+            self.textBalanceLabel.text =  [NSString stringWithFormat:@"%@ %@",[dataDict safeStringForKey:@"balance"],[self.model.coinType uppercaseString]];
+            self.textMoneyLabel.text = [NSString stringWithFormat:@"≈%@",[dataDict safeStringForKey:@"fiat"]];
+        }else{
+            self.textBalanceLabel.text =  [NSString stringWithFormat:@"%@ %@",[dict safeStringForKey:@"balance"],[self.coinType uppercaseString]];
+            self.textMoneyLabel.text = [NSString stringWithFormat:@"≈%@",[dict safeStringForKey:@"fiat"]];;
+        }
     });
 }
 
@@ -94,14 +109,20 @@
     NSMutableArray *arr = [NSMutableArray array];
     OKTxViewController *txAllVc = [OKTxViewController txViewController];
     txAllVc.searchType = @"";
+    txAllVc.assetTableViewCellModel = self.model;
+    txAllVc.coinType = self.coinType;
     [arr addObject:txAllVc];
 
     OKTxViewController *txInVc = [OKTxViewController txViewController];
     txInVc.searchType = @"receive";
+    txInVc.assetTableViewCellModel = self.model;
+    txInVc.coinType = self.coinType;
     [arr addObject:txInVc];
 
     OKTxViewController *txOutVc = [OKTxViewController txViewController];
     txOutVc.searchType = @"send";
+    txOutVc.assetTableViewCellModel = self.model;
+    txOutVc.coinType = self.coinType;
     [arr addObject:txOutVc];
 
     return arr;

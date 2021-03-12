@@ -556,3 +556,4 @@
 "list.Hardware wallet" = "硬件钱包";
 "Transaction format error" = "交易格式错误";
 "selectAccount" = "选择账户";
+"Keystore export" = "Keystore 导出";

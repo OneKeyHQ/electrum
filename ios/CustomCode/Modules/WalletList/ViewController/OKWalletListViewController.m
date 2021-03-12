@@ -27,6 +27,7 @@
 #import "OKCreateResultModel.h"
 #import "OKCreateResultWalletInfoModel.h"
 #import "OKMatchingInCirclesViewController.h"
+#import "OKSelectAssetTypeController.h"
 
 
 #define kDefaultType  @"HD"
@@ -292,30 +293,10 @@
 
 + (void)createWallet:(NSString *)pwd isInit:(BOOL)isInit
 {
-    NSString *seed = @"";
-    NSString *createHD = @"";
-    NSArray *words = [NSArray array];
-    NSDictionary *create =  [kPyCommandsManager callInterface:kInterfaceCreate_hd_wallet parameter:@{@"password":pwd,@"seed":seed}];
-    OKCreateResultModel *createResultModel = [OKCreateResultModel mj_objectWithKeyValues:create];
-    words = [createHD componentsSeparatedByString:@" "];
-    if (words.count > 0) {
-        OKCreateResultWalletInfoModel *createResultWalletInfoModel = [createResultModel.wallet_info firstObject];
-        OKWalletInfoModel *infoModel = [kWalletManager getCurrentWalletAddress:createResultWalletInfoModel.name];
-        [kWalletManager setCurrentWalletInfo:infoModel];
-        if (kUserSettingManager.currentSelectPwdType.length > 0 && kUserSettingManager.currentSelectPwdType !=  nil) {
-            [kUserSettingManager setIsLongPwd:[kUserSettingManager.currentSelectPwdType boolValue]];
-        }
-        if (!kWalletManager.isOpenAuthBiological && isInit) {
-            OKBiologicalViewController *biologicalVc = [OKBiologicalViewController biologicalViewController:@"OKWalletViewController" pwd:pwd biologicalViewBlock:^{
-                [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":pwd,@"backupshow":@"1"}];
-            }];
-            [self.OK_TopViewController.navigationController pushViewController:biologicalVc animated:YES];
-        }else{
-            [self.OK_TopViewController dismissToViewControllerWithClassName:@"OKWalletViewController" animated:YES complete:^{
-                [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":pwd,@"backupshow":@"1"}];
-            }];
-        }
-    }
+    OKSelectAssetTypeController *selectAssetTypeVc = [OKSelectAssetTypeController selectAssetTypeController];
+    selectAssetTypeVc.pwd = pwd;
+    selectAssetTypeVc.isInit = isInit;
+    [self.OK_TopViewController.navigationController pushViewController:selectAssetTypeVc animated:YES];
 }
 
 - (IBAction)macthWalletBtnClick:(OKWalletListBottomBtn *)sender {

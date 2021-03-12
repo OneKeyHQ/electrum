@@ -23,7 +23,6 @@
 #import "OKBiologicalViewController.h"
 #import "OKReadyToStartViewController.h"
 #import "OKTxDetailViewController.h"
-#import "OKFindFollowingWalletController.h"
 #import "OKCreateResultModel.h"
 #import "OKCreateResultWalletInfoModel.h"
 #import "OKTakeCareMnemonicViewController.h"
@@ -233,6 +232,7 @@
             tokenModel.balance = model.balance;
             tokenModel.coinType = model.coin;
             tokenModel.money = model.fiat;
+            tokenModel.contract_addr = model.address;
             NSArray *tokens = [[OKTokenManager sharedInstance]tokensFilterWith:model.address];
             NSString *imageName = [NSString stringWithFormat:@"token_%@",[kWalletManager.currentWalletInfo.coinType lowercaseString]];
             if (tokens.count == 0) {
@@ -249,7 +249,7 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         [MBProgressHUD hideHUDForView:weakself.view animated:YES];
        // UI更新代码
-        NSString *fiatStr = [[kWalletManager.currentWalletInfo.coinType uppercaseString] isEqualToString:COIN_ETH]?self.notiAssetModel.sum_fiat:self.notiAssetModel.fiat;
+        NSString *fiatStr = [kWalletManager isETHClassification:kWalletManager.currentWalletInfo.coinType ]?self.notiAssetModel.sum_fiat:self.notiAssetModel.fiat;
         NSArray *barray = [fiatStr componentsSeparatedByString:@" "];
         NSString *bStr = [NSString stringWithFormat:@"%@ %@",kWalletManager.currentFiatSymbol,[barray firstObject]];
         if (fiatStr.length == 0) {
@@ -396,7 +396,7 @@
         self.signatureBtn.hidden = YES;
         self.hwBgView.hidden = YES;
     }
-    if ([[kWalletManager.currentWalletInfo.coinType uppercaseString] isEqualToString:COIN_ETH]) {
+    if ([kWalletManager isETHClassification:kWalletManager.currentWalletInfo.coinType]) {
         self.tableViewHeaderAddBtn.hidden = NO;
     }else{
         self.tableViewHeaderAddBtn.hidden = YES;
@@ -641,7 +641,7 @@
     }
     OKTxListViewController *txListVc = [OKTxListViewController initViewControllerWithStoryboardName:@"Tab_Wallet"];
     txListVc.model = self.allAssetData[indexPath.row];
-    txListVc.coinType = [kWalletManager.currentWalletInfo.coinType uppercaseString];
+    txListVc.coinType = kWalletManager.currentWalletInfo.coinType;
     [self.navigationController pushViewController:txListVc animated:YES];
 }
 

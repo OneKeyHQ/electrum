@@ -61,8 +61,12 @@
         [kTools tipMessage:MyLocalizedString(@"KeyStore cannot be empty", nil)];
         return;
     }
+    if (self.pwdTextField.text.length == 0) {
+        [kTools tipMessage:MyLocalizedString(@"The password cannot be empty", nil)];
+        return;
+    }
 
-    id result = [kPyCommandsManager callInterface:kInterfaceverify_legality parameter:@{@"data":self.textView.text,@"flag":@"keystore"}];
+    id result = [kPyCommandsManager callInterface:kInterfaceverify_legality parameter:@{@"data":self.textView.text,@"flag":@"keystore",@"password":self.pwdTextField.text,@"coin":[self.coinType lowercaseString]}];
     if (result != nil) {
         OKSetWalletNameViewController *setNameVc = [OKSetWalletNameViewController setWalletNameViewController];
         setNameVc.addType = self.importType;
@@ -76,7 +80,17 @@
 #pragma mark - 扫描
 - (void)scanBtnClick
 {
-    NSLog(@"scanBtnClick");
+    OKWeakSelf(self)
+    OKWalletScanVC *vc = [OKWalletScanVC initViewControllerWithStoryboardName:@"Scan"];
+    vc.scanningType = ScanningTypeImportKeyStore;
+    vc.scanningCompleteBlock = ^(OKWalletScanVC *vc,NSString* result) {
+        if (result && result.length > 0) {
+            weakself.textView.text = result;
+            weakself.textPlacehoderLabel.hidden = YES;
+            [weakself textChange];
+        }
+    };
+    [vc authorizePushOn:self];
 }
 #pragma mark - TextView
 - (void)textViewDidChange:(UITextView *)textView

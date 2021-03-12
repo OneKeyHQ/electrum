@@ -9,9 +9,11 @@
 #import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
-
+@class OKAssetTableViewCellModel;
 @interface OKTxViewController : UIViewController
 @property (nonatomic,copy)NSString *searchType;
+@property (nonatomic,strong)OKAssetTableViewCellModel *assetTableViewCellModel;
+@property (nonatomic,copy)NSString *coinType;
 + (instancetype)txViewController;
 @end
 

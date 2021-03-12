@@ -123,6 +123,10 @@
 
 @property (nonatomic,strong)OKSendTxPreInfoViewController *sendTxPreInfoVc;
 @property (nonatomic,strong)NSArray *tokensArray;
+
+//当前选择的Token模型
+@property (nonatomic,strong)OKAllAssetsCellModel *selectedToken;
+
 @end
 
 @implementation OKSendCoinViewController
@@ -146,7 +150,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textChange:) name:UITextFieldTextDidChangeNotification object:nil];
     weakself.addressTextField.text = weakself.address;
 
-    if ([[weakself.coinType uppercaseString] isEqualToString:COIN_ETH]) {
+    if ([kWalletManager isETHClassification:weakself.coinType]) {
         weakself.ethTimer = [NSTimer scheduledTimerWithTimeInterval:30.0 TimerDo:^{
             [weakself getNoDataRates];
         }];
@@ -164,8 +168,13 @@
     NSString *amount = [weakself.amountTextField.text copy];
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         NSDictionary *paramter = @{@"coin":[weakself.coinType lowercaseString]};
-        if ([weakself.coinType isEqualToString:COIN_ETH] && address.length > 0 && amount.length > 0) {
-            NSDictionary *eth_tx_info = @{@"to_address":address,@"value":amount};
+        if ([kWalletManager isETHClassification:weakself.coinType] && address.length > 0 && amount.length > 0) {
+            NSMutableDictionary *eth_tx_info = [@{@"to_address":address,@"value":amount} mutableCopy];
+            if (weakself.selectedToken != nil) {
+                [eth_tx_info addEntriesFromDictionary:@{
+                    @"contract_address":weakself.selectedToken.address
+                }];
+            }
             paramter = @{@"coin":[weakself.coinType lowercaseString],@"eth_tx_info":[eth_tx_info mj_JSONString]};
         }
         NSDictionary *dict = [kPyCommandsManager callInterface:kInterfaceget_default_fee_info parameter:paramter];
@@ -241,12 +250,30 @@
 {
     OKWeakSelf(self)
     NSDictionary *dict = noti.object;
+    NSLog(@"dict === %@",dict);
     weakself.tokensArray = [dict objectForKey:@"tokens"];
     dispatch_async(dispatch_get_main_queue(), ^{
         // UI更新代码
-        [weakself.coinTypeBtn status:OKButtonStatusEnabled];
-        weakself.balanceLabel.text =  [dict safeStringForKey:@"balance"];
-        weakself.coinTypeLabel.text = [kWalletManager getUnitForCoinType];
+        if (weakself.tokensArray != nil && weakself.tokensArray.count > 0 ) {
+            [weakself.coinTypeBtn status:OKButtonStatusEnabled];
+        }else{
+            [weakself.coinTypeBtn status:OKButtonStatusDisabled];
+        }
+        if ([kWalletManager isETHClassification:weakself.coinType] && ![kWalletManager isETHClassification:weakself.coinTypeBtn.currentTitle]) {
+            NSDictionary *tokenDict;
+            for (NSDictionary *sub in weakself.tokensArray) {
+                NSString *coin = [sub safeStringForKey:@"coin"];
+                if ([coin isEqualToString:weakself.selectedToken.coin]) {
+                    tokenDict = sub;
+                    break;
+                }
+            }
+            weakself.balanceLabel.text =  [tokenDict safeStringForKey:@"balance"];
+            weakself.coinTypeLabel.text = [[tokenDict safeStringForKey:@"coin"] uppercaseString];
+        }else{
+            weakself.balanceLabel.text =  [dict safeStringForKey:@"balance"];
+            weakself.coinTypeLabel.text = [kWalletManager getUnitForCoinType];
+        }
     });
 }
 
@@ -316,7 +343,7 @@
     weakself.fastBg.hidden = _custom;
     weakself.recommendedBg.hidden = _custom;
     weakself.restoreDefaultBgView.hidden = !_custom;
-    if (_custom && [weakself.coinType isEqualToString:COIN_ETH]) {
+    if (_custom && [kWalletManager isETHClassification:weakself.coinType]) {
         [weakself.ethTimer standBy];
     }else{
         [weakself.ethTimer resume];
@@ -340,7 +367,7 @@
         [weakself loadBiggestFeeDict:address];
         fee = [weakself.biggestFeeDict safeStringForKey:@"fee"];
 
-    }else if([weakself.coinType isEqualToString:COIN_ETH]){
+    }else if([kWalletManager isETHClassification:weakself.coinType]){
         fee = [weakself getCurrentDefaultFee];
     }
     if (fee.length == 0 || fee == nil) {
@@ -361,10 +388,16 @@
 }
 #pragma mark - 币种类型按钮被点击
 - (IBAction)coinTypeBtnClick:(UIButton *)sender {
+    OKWeakSelf(self)
     OKTokenSelectController *tokenSelectVc = [OKTokenSelectController controllerWithStoryboard];
     tokenSelectVc.data = self.tokensArray;
     tokenSelectVc.selectCallback = ^(OKAllAssetsCellModel * _Nonnull selected) {
-
+        weakself.selectedToken = selected;
+        [weakself.coinTypeBtn setTitle:selected.coin forState:UIControlStateNormal];
+        weakself.balanceLabel.text =  selected.balance;
+        weakself.coinTypeLabel.text = [selected.coin uppercaseString];
+        [weakself getNoDataRates];
+        [weakself.navigationController popViewControllerAnimated:YES];
     };
     [self.navigationController pushViewController:tokenSelectVc animated:YES];
 }
@@ -424,7 +457,7 @@
         return NO;
     }
 
-    if ([weakself.amountTextField.text doubleValue] < [[kWalletManager getFeeBaseWithSat:@"546"] doubleValue]) {
+    if ([self.coinType isEqualToString:COIN_BTC] && [weakself.amountTextField.text doubleValue] < [[kWalletManager getFeeBaseWithSat:@"546"] doubleValue]) {
         if (isShowTips) {
             [kTools tipMessage:MyLocalizedString(@"The minimum amount must not be less than 546 sat", nil)];
         }
@@ -479,13 +512,18 @@
                 });
                 return;
             }else{
-                NSDictionary *paramter = @{
+                NSMutableDictionary *paramter = [@{
                     @"to_addr":weakself.addressTextField.text,
                     @"value":weakself.amountTextField.text,
                     @"gas_price":[dict safeStringForKey:@"gas_price"],
                     @"gas_limit":[dict safeStringForKey:@"gas_limit"],
                     @"path":kBluetooth_iOS
-                };
+                } mutableCopy];
+                if (weakself.selectedToken != nil) {
+                    [paramter addEntriesFromDictionary:@{
+                        @"contract_addr":weakself.selectedToken.address
+                    }];
+                }
                 dispatch_async(dispatch_get_global_queue(0, 0), ^{
                     id result =  [kPyCommandsManager callInterface:kInterfacesign_eth_tx parameter:paramter];
                     if (result != nil) {
@@ -495,7 +533,7 @@
                             if (weakself.sendTxPreInfoVc != nil) {
                                 [weakself.sendTxPreInfoVc closeView];
                             }
-                            OKTransferCompleteController *transferCompleteVc = [OKTransferCompleteController transferCompleteController:[paramter safeStringForKey:@"value"] block:^{
+                            OKTransferCompleteController *transferCompleteVc = [OKTransferCompleteController transferCompleteController:[paramter safeStringForKey:@"value"] coinType:weakself.coinTypeLabel.text block:^{
                                 OKTxDetailViewController *txDetailVc = [OKTxDetailViewController txDetailViewController];
                                 txDetailVc.tx_hash = result;
                                 [weakself.navigationController pushViewController:txDetailVc animated:YES];
@@ -580,14 +618,19 @@
         NSString *password = pwd;
         NSDictionary *signTxDict =  [kPyCommandsManager callInterface:kInterfaceSign_tx parameter:@{@"tx":tx,@"password":password}];
         [weakself broadcast_tx:signTxDict dict:dict];
-    }else if ([weakself.coinType isEqualToString:COIN_ETH]){
-        NSDictionary *paramter = @{
+    }else if ([kWalletManager isETHClassification:weakself.coinType]){
+        NSMutableDictionary *paramter = [@{
             @"to_addr":weakself.addressTextField.text,
             @"value":weakself.amountTextField.text,
-            @"password":pwd,
             @"gas_price":[dict safeStringForKey:@"gas_price"],
             @"gas_limit":[dict safeStringForKey:@"gas_limit"],
-        };
+            @"path":kBluetooth_iOS
+        } mutableCopy];
+        if (weakself.selectedToken != nil) {
+            [paramter addEntriesFromDictionary:@{
+                @"contract_addr":weakself.selectedToken.address
+            }];
+        }
         id result =  [kPyCommandsManager callInterface:kInterfacesign_eth_tx parameter:paramter];
         if (result != nil) {
             OKWeakSelf(self)
@@ -596,7 +639,7 @@
                 if (weakself.sendTxPreInfoVc != nil) {
                     [weakself.sendTxPreInfoVc closeView];
                 }
-                OKTransferCompleteController *transferCompleteVc = [OKTransferCompleteController transferCompleteController:[paramter safeStringForKey:@"value"] block:^{
+                OKTransferCompleteController *transferCompleteVc = [OKTransferCompleteController transferCompleteController:[paramter safeStringForKey:@"value"] coinType:weakself.coinTypeLabel.text block:^{
                     OKTxDetailViewController *txDetailVc = [OKTxDetailViewController txDetailViewController];
                     txDetailVc.tx_hash = result;
                     [weakself.navigationController pushViewController:txDetailVc animated:YES];
@@ -616,7 +659,7 @@
         OKWeakSelf(self)
         [[NSNotificationCenter defaultCenter]postNotificationName:kNotiSendTxComplete object:nil];
         dispatch_async(dispatch_get_main_queue(), ^{
-            OKTransferCompleteController *transferCompleteVc = [OKTransferCompleteController transferCompleteController:[dict safeStringForKey:@"amount"] block:^{
+            OKTransferCompleteController *transferCompleteVc = [OKTransferCompleteController transferCompleteController:[dict safeStringForKey:@"amount"] coinType:weakself.coinTypeLabel.text block:^{
                 OKTxDetailViewController *txDetailVc = [OKTxDetailViewController txDetailViewController];
                 txDetailVc.tx_hash = [signTxDict safeStringForKey:@"txid"];
                 [weakself.navigationController pushViewController:txDetailVc animated:YES];
@@ -658,7 +701,7 @@
 #pragma mark - 加载矿工费（BTC）
 - (void)loadFee:(void(^)(void))block
 {
-    if ([self.coinType isEqualToString:COIN_ETH]) {
+    if ([kWalletManager isETHClassification:self.coinType]) {
         block();
         return;
     }
@@ -943,7 +986,7 @@
     }
     return fiat;
 }
-#pragma mark - 获取当前的Fee（BTC）
+#pragma mark - 获取当前的Fee
 - (NSString *)getCurrentDefaultFee
 {
     OKWeakSelf(self)
@@ -979,7 +1022,7 @@
 {
     OKWeakSelf(self)
     NSDictionary *dict = [NSDictionary dictionary];
-    if ([weakself.coinType isEqualToString:COIN_ETH]) {
+    if ([kWalletManager isETHClassification:weakself.coinType]) {
         if (weakself.custom) {
             dict = [weakself.customFeeModel mj_JSONObject];
         }else{
@@ -1021,6 +1064,16 @@
         }
     }
     return dict;
+}
+- (NSInteger)getDotNum
+{
+    if ([self.coinType isEqualToString:COIN_BTC]) {
+        return 8;
+    }else if ([kWalletManager isETHClassification:self.coinType]){
+        return 18;
+    }else{
+        return 4;
+    }
 }
 
 - (NSString *)coinType

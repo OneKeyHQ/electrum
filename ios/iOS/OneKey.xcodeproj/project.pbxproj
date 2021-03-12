@@ -1873,6 +1873,8 @@
 				8814236825B18EA900961668 /* OKSendCoinViewController.m */,
 				8814237525B18EA900961668 /* OKTxViewController.h */,
 				8814236925B18EA900961668 /* OKTxViewController.m */,
+				8814237125B18EA900961668 /* OKTxListViewController.h */,
+				8814239E25B18EA900961668 /* OKTxListViewController.m */,
 				8814239625B18EA900961668 /* OKEditWalletNameViewController.h */,
 				8814236A25B18EA900961668 /* OKEditWalletNameViewController.m */,
 				8814237925B18EA900961668 /* OKTxDetailViewController.h */,
@@ -1881,8 +1883,6 @@
 				8814236D25B18EA900961668 /* OKExportTipsViewController.m */,
 				8814239725B18EA900961668 /* OKWalletDetailViewController.h */,
 				8814237025B18EA900961668 /* OKWalletDetailViewController.m */,
-				8814237125B18EA900961668 /* OKTxListViewController.h */,
-				8814239E25B18EA900961668 /* OKTxListViewController.m */,
 				8814237225B18EA900961668 /* OKLookWalletTipsViewController.h */,
 				8814239D25B18EA900961668 /* OKLookWalletTipsViewController.m */,
 				8814239C25B18EA900961668 /* OKSendTxPreInfoViewController.h */,
@@ -1934,16 +1934,16 @@
 			children = (
 				8814238925B18EA900961668 /* OKCreateHDCell.h */,
 				8814238A25B18EA900961668 /* OKAssetTableViewCell.h */,
-				8814238B25B18EA900961668 /* OKWalletInputFeeView.h */,
 				8814238C25B18EA900961668 /* OKBottomCustomBtn.h */,
 				8814238D25B18EA900961668 /* OKWalletDetailTableViewCell.h */,
 				8814238E25B18EA900961668 /* OKWalletInputFeeView.xib */,
+				8814239425B18EA900961668 /* OKTxTableViewCell.h */,
 				8814238F25B18EA900961668 /* OKTxTableViewCell.m */,
 				8814239025B18EA900961668 /* OKCreateHDCell.m */,
 				8814239125B18EA900961668 /* OKAssetTableViewCell.m */,
 				8814239225B18EA900961668 /* OKBottomCustomBtn.m */,
+				8814238B25B18EA900961668 /* OKWalletInputFeeView.h */,
 				8814239325B18EA900961668 /* OKWalletInputFeeView.m */,
-				8814239425B18EA900961668 /* OKTxTableViewCell.h */,
 				8814239525B18EA900961668 /* OKWalletDetailTableViewCell.m */,
 			);
 			path = View;
@@ -3448,6 +3448,7 @@
 				STRIP_INSTALLED_PRODUCT = NO;
 				STRIP_STYLE = debugging;
 				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
 				USER_HEADER_SEARCH_PATHS = "";
 				WRAPPER_EXTENSION = app;
 			};
@@ -3552,6 +3553,7 @@
 				STRIP_INSTALLED_PRODUCT = NO;
 				STRIP_STYLE = debugging;
 				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

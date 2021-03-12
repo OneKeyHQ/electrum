@@ -167,7 +167,23 @@
         case OKClickTypeExportKeystore:
         {
             OKExportTipsViewController *exportTipsVc = [OKExportTipsViewController exportTipsViewController:^{
-
+                if (kWalletManager.isOpenAuthBiological) {
+                    [[YZAuthID sharedInstance]yz_showAuthIDWithDescribe:MyLocalizedString(@"OenKey request enabled", nil) BlockState:^(YZAuthIDState state, NSError *error) {
+                        if (state == YZAuthIDStateNotSupport
+                            || state == YZAuthIDStatePasswordNotSet || state == YZAuthIDStateTouchIDNotSet) { // 不支持TouchID/FaceID
+                            [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
+                                [weakself exportKeyStorePwd:pwd];
+                            }];
+                        } else if (state == YZAuthIDStateSuccess) {
+                            NSString *pwd = [kOneKeyPwdManager getOneKeyPassWord];
+                            [weakself exportKeyStorePwd:pwd];
+                        }
+                    }];
+                }else{
+                    [OKValidationPwdController showValidationPwdPageOn:self isDis:NO complete:^(NSString * _Nonnull pwd) {
+                        [weakself exportKeyStorePwd:pwd];
+                    }];
+                }
             }];
             exportTipsVc.modalPresentationStyle = UIModalPresentationOverFullScreen;
             [self.OK_TopViewController presentViewController:exportTipsVc animated:NO completion:nil];
@@ -246,9 +262,25 @@
     NSString *result =  [kPyCommandsManager callInterface:kInterfaceexport_privkey parameter:@{@"password":pwd}];
      if (result != nil) {
          OKPrivateKeyExportViewController *privateKeyExportVc = [OKPrivateKeyExportViewController privateKeyExportViewController];
-         privateKeyExportVc.privateKey = result;
+         privateKeyExportVc.keyStr = result;
+         privateKeyExportVc.exportType = OKExportTypePrivate;
          [weakself.OK_TopViewController.navigationController pushViewController:privateKeyExportVc animated:YES];
     }
+}
+
+- (void)exportKeyStorePwd:(NSString *)pwd
+{
+    OKWeakSelf(self)
+    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    [kPyCommandsManager asyncCall:kInterface_export_keystore parameter:@{@"password":pwd} callback:^(id  _Nonnull result) {
+        [MBProgressHUD hideHUDForView:weakself.view animated:YES];
+        if (result != nil) {
+            OKPrivateKeyExportViewController *privateKeyExportVc = [OKPrivateKeyExportViewController privateKeyExportViewController];
+            privateKeyExportVc.keyStr = [result mj_JSONString];
+            privateKeyExportVc.exportType = OKExportTypeKeyStore;
+            [weakself.OK_TopViewController.navigationController pushViewController:privateKeyExportVc animated:YES];
+       }
+    }];
 }
 
 - (void)deleteWalletPwd:(NSString *)pwd
@@ -356,10 +388,11 @@
             modelS3.rightLabelColor = HexColor(0x00B812);
             if (![kWalletManager.currentWalletInfo.type containsString:@"private-standard"]) {
                 [securityGroup addObject:modelS1];
+                [securityGroup addObject:modelS2];
             }else{
                 [securityGroup addObject:modelS2];
             }
-            if ([kWalletManager.currentWalletInfo.coinType isEqualToString:COIN_ETH]) {
+            if ([kWalletManager isETHClassification:kWalletManager.currentWalletInfo.coinType]) {
                 [securityGroup addObject:modelS3];
             }
             [allDataM addObject:securityGroup];

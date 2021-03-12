@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,copy) NSString* coinType;
 @property (nonatomic,copy) NSString* balance;
 @property (nonatomic,copy) NSString* money;
+@property (nonatomic,copy) NSString* contract_addr;
 @end
 
 NS_ASSUME_NONNULL_END

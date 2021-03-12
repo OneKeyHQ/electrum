@@ -25,12 +25,11 @@
     self.statusImageView.image = [UIImage imageNamed:[model.is_mine boolValue] == YES ?@"txout":@"txin"];
     self.statusLabel.text = model.tx_status;
     self.timeLabel.text = model.date;
-    NSLog(@"model = date %@  %@",model.date,model.amount);
     NSArray *amountArray = [model.amount componentsSeparatedByString:@"("];
     NSString *bStr = [NSString stringWithFormat:@"%@%@",[model.is_mine boolValue] == NO ? @"+":@"-" ,[amountArray firstObject]];
     self.amountLabel.text = bStr;
     self.addressLabel.text = model.address;
-    
+
     if ([model.is_mine boolValue]) {
         self.amountLabel.textColor = HexColor(0x3E70F2);
     }else{

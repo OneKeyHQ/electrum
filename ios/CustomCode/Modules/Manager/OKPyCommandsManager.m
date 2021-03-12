@@ -17,6 +17,7 @@
 @property (nonatomic,assign)PyObject *pyClass;
 //硬件实例
 @property (nonatomic,assign)PyObject *pyHwClass;
+@property (nonatomic,strong)NSArray *noTipsInterface;
 @end
 
 @implementation OKPyCommandsManager
@@ -197,12 +198,17 @@ static dispatch_once_t once;
     }else if([method isEqualToString:kInterfaceGet_all_tx_list]){
         NSString *search_type = [parameter safeStringForKey:@"search_type"];
         NSString *coin = [parameter safeStringForKey:@"coin"];
+        NSString *contract_address = [parameter safeStringForKey:@"contract_address"];
         if (coin.length == 0 || coin == nil) {
             coin = @"btc";
         }
         PyObject *args =  Py_BuildValue("()");
         PyObject *kwargs;
-        kwargs = Py_BuildValue("{s:s,s:s}", "coin", [coin UTF8String],"search_type",[search_type UTF8String]);
+        if (contract_address.length > 0) {
+            kwargs = Py_BuildValue("{s:s,s:s,s:s}", "coin", [coin UTF8String],"search_type",[search_type UTF8String],"contract_address",[contract_address UTF8String]);
+        }else{
+            kwargs = Py_BuildValue("{s:s,s:s}", "coin", [coin UTF8String],"search_type",[search_type UTF8String]);
+        }
         PyObject *myobject_method = PyObject_GetAttrString(self.pyInstance, [kInterfaceGet_all_tx_list UTF8String]);
         result = PyObject_Call(myobject_method, args, kwargs);
 
@@ -613,6 +619,9 @@ static dispatch_once_t once;
     OKPY_METHOD_CASE(kInterface_get_customer_token_info) {
         const char *contract_addr = [parameter safeStringForKey:@"contract_address"].UTF8String;
         result = PyObject_CallMethod(self.pyInstance, [method UTF8String], "(s)", contract_addr);
+    }else if ([method isEqualToString:kInterface_export_keystore]){
+        NSString *password = [parameter safeStringForKey:@"password"];
+        result = PyObject_CallMethod(self.pyInstance, [method UTF8String], "(s)", [password UTF8String]);
     }
 
     if (result == NULL) {
@@ -626,7 +635,7 @@ static dispatch_once_t once;
             NSLog(@"错误信息  %s  method = %@ parameter = %@", msg ,method,parameter);
             // 释放GIL ！！！！！
             PyGILState_Release(state);
-            if (![method isEqualToString: kInterfaceSet_currency] && ![method isEqualToString: kInterfaceSet_base_uint] && ![method isEqualToString:kInterfaceget_tx_info_from_raw]) {
+            if (![self.noTipsInterface containsObject:method]) {
                 ok_dispatch_main_async_safe(
                     [kTools tipMessage:[NSString stringWithCString:msg encoding:NSUTF8StringEncoding]];
                 );
@@ -730,13 +739,13 @@ static dispatch_once_t once;
         }
     });
 }
-//数组等过于复杂的类型  传递json字符串
-//else if ([tp_name isEqualToString:@"list"]){ //数组
-//    for (int i = 0; i < PyList_Size(result); i++) {
-//        char *string  = NULL;
-//        PyObject *item = PyList_GetItem(result,i);
-//        PyArg_Parse(item, "s" , &string);
-//        NSLog(@"string == %s",string);
-//    }
-//}
+
+- (NSArray *)noTipsInterface
+{
+    if (!_noTipsInterface) {
+        _noTipsInterface = @[kInterfaceSet_currency,kInterfaceSet_base_uint,kInterfaceget_tx_info_from_raw,kInterfaceget_default_fee_info];
+    }
+    return _noTipsInterface;;
+}
+
 @end

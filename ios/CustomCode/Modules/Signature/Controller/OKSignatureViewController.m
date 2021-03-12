@@ -296,7 +296,7 @@ typedef enum {
         OKWeakSelf(self)
         [[NSNotificationCenter defaultCenter]postNotificationName:kNotiSendTxComplete object:nil];
         dispatch_async(dispatch_get_main_queue(), ^{
-            OKTransferCompleteController *transferCompleteVc = [OKTransferCompleteController transferCompleteController:dict block:^{
+            OKTransferCompleteController *transferCompleteVc = [OKTransferCompleteController transferCompleteController:[dict safeStringForKey:@"amount"] coinType:kWalletManager.currentWalletInfo.coinType block:^{
                 OKTxDetailViewController *txDetailVc = [OKTxDetailViewController txDetailViewController];
                 txDetailVc.tx_hash = [dict safeStringForKey:@"txid"];
                 [weakself.navigationController pushViewController:txDetailVc animated:YES];

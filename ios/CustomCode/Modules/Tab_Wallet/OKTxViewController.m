@@ -10,6 +10,7 @@
 #import "OKTxTableViewCell.h"
 #import "OKTxTableViewCellModel.h"
 #import "OKTxDetailViewController.h"
+#import "OKAssetTableViewCellModel.h"
 
 @interface OKTxViewController ()<UITableViewDelegate,UITableViewDataSource>
 + (instancetype)txViewController;
@@ -34,8 +35,15 @@
 
 - (void)loadList
 {
+    OKWeakSelf(self)
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        NSArray *resultArray = [kPyCommandsManager callInterface:kInterfaceGet_all_tx_list parameter:@{@"search_type":self.searchType,@"coin":[kWalletManager.currentWalletInfo.coinType lowercaseString]}];
+        NSMutableDictionary *params = [@{@"search_type":self.searchType,@"coin":[weakself.coinType lowercaseString]} mutableCopy];
+        if (weakself.assetTableViewCellModel.contract_addr.length > 0) {
+            [params addEntriesFromDictionary:@{
+                @"contract_address":weakself.assetTableViewCellModel.contract_addr
+            }];
+        }
+        NSArray *resultArray = [kPyCommandsManager callInterface:kInterfaceGet_all_tx_list parameter:params];
         self.txListArray = [OKTxTableViewCellModel mj_objectArrayWithKeyValuesArray:resultArray];
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.tableView reloadData];

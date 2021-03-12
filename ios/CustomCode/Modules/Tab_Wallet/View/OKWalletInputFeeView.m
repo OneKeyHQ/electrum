@@ -101,7 +101,7 @@
             self.feeTF.text = selectModel.feerate;
             [self textChange:self.feeTF.text];
         }
-    }else if ([self.coinType isEqualToString:COIN_ETH]){
+    }else if ([kWalletManager isETHClassification:self.coinType]){
         self.lowNum = self.model.slow.gas_price;
         self.sizeTF.userInteractionEnabled = YES;
         self.sizeTF.textColor = HexColor(0x000000);
@@ -192,7 +192,7 @@
         NSDictionary *dict = [kPyCommandsManager callInterface:kInterfaceget_default_fee_info parameter:@{@"feerate":self.feeTF.text,@"coin":[self.coinType lowercaseString]}];
         self.customFeeDict = dict[@"customer"];
         [self refreshFeeUI];
-    }else if ([self.coinType isEqualToString:COIN_ETH]){
+    }else if ([kWalletManager isETHClassification:self.coinType]){
         [self refreshFeeUI];
     }
 }
@@ -205,7 +205,7 @@
         self.equaltoLabel.text = [NSString stringWithFormat:@"%@ %@ ≈ %@%@",[self.customFeeDict safeStringForKey:@"fee"],[kWalletManager getUnitForCoinType],kWalletManager.currentFiatSymbol,[self.customFeeDict safeStringForKey:@"fiat"]];
         self.timeStrLabel.text = [NSString stringWithFormat:@"%@%@%@%@",MyLocalizedString(@"Expected time:", nil),MyLocalizedString(@"sendcoin.about", nil),[self.customFeeDict safeStringForKey:@"time"],MyLocalizedString(@"sendcoin.minutes", nil)];
 
-    }else if ([self.coinType isEqualToString:COIN_ETH]){
+    }else if ([kWalletManager isETHClassification:self.coinType]){
         self.leftTitleLabel.text = @"Gas Price(gwei)";
         self.rightTitleLabel.text = @"Gas Limit(gas)";
         NSString *ethFee = [self getETHFee];
@@ -269,7 +269,7 @@
 {
     if ([self.coinType isEqualToString:COIN_BTC]) {
         return self.customFeeDict;
-    }else if ([self.coinType isEqualToString:COIN_ETH]){
+    }else if ([kWalletManager isETHClassification:self.coinType]){
         NSMutableDictionary *dictM = [NSMutableDictionary dictionary];
         NSString *ethfee  = [self getETHFee];
         NSString *ethFiat = [self getEthFiat:ethfee];

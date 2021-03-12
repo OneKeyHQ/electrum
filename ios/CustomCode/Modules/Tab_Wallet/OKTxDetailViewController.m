@@ -12,22 +12,14 @@
 @property (weak, nonatomic) IBOutlet UIImageView *statusIcon;
 @property (weak, nonatomic) IBOutlet UILabel *statusLabel;
 @property (weak, nonatomic) IBOutlet UILabel *amountLabel;
-
 @property (weak, nonatomic) IBOutlet UIView *fromBg;
 @property (weak, nonatomic) IBOutlet UILabel *fromTitleLabel;
 @property (weak, nonatomic) IBOutlet UIView *fromAddressBg;
-
-
 @property (weak, nonatomic) IBOutlet UIView *toBg;
 @property (weak, nonatomic) IBOutlet UILabel *toTitleLabel;
 @property (weak, nonatomic) IBOutlet UIView *toAddressBg;
-
 @property (weak, nonatomic) IBOutlet TYAttributedLabel *fromAddressLabel;
-
 @property (weak, nonatomic) IBOutlet TYAttributedLabel *toAddressLabel;
-
-
-
 //Bottom
 @property (weak, nonatomic) IBOutlet UILabel *leftTitleLabel1;
 @property (weak, nonatomic) IBOutlet UILabel *leftTitleLabel2;
@@ -116,7 +108,7 @@
         [self.toAddressLabel appendText:[output_addr_dict safeStringForKey:@"addr"]];
         [self.toAddressLabel appendImage:[UIImage imageNamed:@"copy_small"]];
 
-    }else if ([coinType isEqualToString:COIN_ETH]){
+    }else if ([kWalletManager isETHClassification:coinType]){
         NSArray *input_addr_array = self.txInfo[@"input_addr"];
         NSString *input_addr = [input_addr_array firstObject];
         [self.fromAddressLabel appendText:input_addr];

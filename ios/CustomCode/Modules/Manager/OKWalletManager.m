@@ -83,6 +83,15 @@ static dispatch_once_t once;
     return _supportCoinArray;
 }
 
+- (NSArray *)ethClassification
+{
+    if (!_ethClassification) {
+        _ethClassification = @[COIN_ETH];
+    }
+    return _ethClassification;
+}
+
+
 - (BOOL)showAsset
 {
     return [[OKStorageManager loadFromUserDefaults:kShowAssetKey] boolValue];
@@ -241,6 +250,20 @@ static dispatch_once_t once;
     return _supportFiatsSymbol;
 }
 
+- (BOOL)isETHClassification:(NSString *)coinType
+{
+    if (coinType == nil || coinType.length == 0) {
+        return NO;
+    }
+    NSString *coin = [coinType uppercaseString];
+    if ([self.ethClassification containsObject:coin]) {
+        return YES;
+    }else{
+        return NO;
+    }
+}
+
+
 - (BOOL)checkWalletName:(NSString *)name
 {
     if (name == nil || name.length == 0 || name.length > 15) {
@@ -315,8 +338,8 @@ static dispatch_once_t once;
     NSString *coinType = [kWalletManager.currentWalletInfo.coinType uppercaseString];
     if ([coinType isEqualToString:COIN_BTC]) {
         return kWalletManager.currentBitcoinUnit;
-    }else if ([coinType isEqualToString:COIN_ETH]){
-        return @"ETH";
+    }else if ([kWalletManager isETHClassification:kWalletManager.currentWalletInfo.coinType]){
+        return [kWalletManager.currentWalletInfo.coinType uppercaseString];
     }else{
         return @"";
     }
