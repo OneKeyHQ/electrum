@@ -131,13 +131,17 @@ public class CustomEthFeeDialog extends BottomPopupView {
                 dismiss();
                 break;
             case R.id.btn_next:
-                // 如果费率小于限制，不可创建
-                //                boolean isGasPricePass =
-                // judgeGasPrice(editFeeByte.getText().toString());
-                // gas_limit 不能小于默认值，不能大于10倍
-                //                boolean isGasLimit = judgeGasLimit(textSize.getText().toString());
+                boolean isGasPricePass = judgeGasPrice(editFeeByte.getText().toString());
+                if (!isGasPricePass) {
+                    return;
+                }
+                boolean isGasLimit = judgeGasLimit(textSize.getText().toString());
+                if (!isGasLimit) {
+                    return;
+                }
 
                 if (mOnCustomInterface != null) {
+
                     CustomizeFeeRateEvent customizeFeeRateEvent =
                             new CustomizeFeeRateEvent(
                                     editFeeByte.getText().toString(),
@@ -148,9 +152,8 @@ public class CustomEthFeeDialog extends BottomPopupView {
                             Integer.parseInt(textSize.getText().toString()));
                     customizeFeeRateEvent.setGasPrice(editFeeByte.getText().toString().trim());
                     mOnCustomInterface.onCustomComplete(customizeFeeRateEvent);
+                    dismiss();
                 }
-                dismiss();
-
                 break;
         }
     }
@@ -159,14 +162,11 @@ public class CustomEthFeeDialog extends BottomPopupView {
     public void onSizeChanged(CharSequence text) {
         String gasLimitString = text.toString();
 
-        if (!Strings.isNullOrEmpty(gasLimitString) && Integer.parseInt(gasLimitString) > 0) {
-            if (!Strings.isNullOrEmpty(editFeeByte.getText().toString())
-                    && Double.parseDouble(editFeeByte.getText().toString()) > 0) {
-                judgeGasLimit(gasLimitString);
-                judgeGasPrice(editFeeByte.getText().toString());
-
-                calculateData(editFeeByte.getText().toString().trim(), gasLimitString);
-            }
+        if (!Strings.isNullOrEmpty(gasLimitString)
+                && Long.parseLong(gasLimitString) > 0
+                && !Strings.isNullOrEmpty(editFeeByte.getText().toString())
+                && Double.parseDouble(editFeeByte.getText().toString()) > 0) {
+            calculateData(editFeeByte.getText().toString().trim(), gasLimitString);
         } else {
             cleanShow();
         }
@@ -179,14 +179,7 @@ public class CustomEthFeeDialog extends BottomPopupView {
                 && Double.parseDouble(feeRate) > 0
                 && !Strings.isNullOrEmpty(textSize.getText().toString())
                 && Double.parseDouble(textSize.getText().toString()) > 0) {
-            judgeGasPrice(feeRate);
-            judgeGasLimit(textSize.getText().toString());
             calculateData(feeRate, textSize.getText().toString().trim());
-            //            if (mPricePass && mSizePass) {
-            //                calculateData(feeRate, textSize.getText().toString().trim());
-            //            } else {
-            //                btnNext.setEnabled(false);
-            //            }
         } else {
             cleanShow();
         }
@@ -307,46 +300,47 @@ public class CustomEthFeeDialog extends BottomPopupView {
         }
     }
 
-    private void judgeGasLimit(String gasLimit) {
-        int limitSize = Integer.parseInt(gasLimit);
+    private boolean judgeGasLimit(String gasLimit) {
+        long limitSize = Long.parseLong(gasLimit);
         if (limitSize < size) {
-            textSize.setText(String.valueOf(size));
-            textSize.setSelection(String.valueOf(size).length());
             ToastUtils.toast(
                     String.format(
                             Locale.getDefault(),
                             mContext.getString(R.string.gas_limit_small),
                             size));
-        }
-        if (limitSize > size * 10) {
-            textSize.setText(String.valueOf(size * 10));
-            textSize.setSelection(String.valueOf(size * 10).length());
+            return false;
+        } else if (limitSize > size * 10) {
             ToastUtils.toast(
                     String.format(
                             Locale.getDefault(),
                             mContext.getString(R.string.gas_limit_large),
                             size * 10));
+
+            return false;
+        } else {
+            return true;
         }
     }
 
-    private void judgeGasPrice(String gasPrice) {
+    private boolean judgeGasPrice(String gasPrice) {
         double feeRate1 = Double.parseDouble(gasPrice);
         if (feeRate1 < feeRateMin) {
-            editFeeByte.setText(String.valueOf(feeRateMin));
-            editFeeByte.setSelection(String.valueOf(feeRateMin).length());
             ToastUtils.toast(
                     String.format(
                             Locale.getDefault(),
                             mContext.getString(R.string.gas_price_small),
                             String.valueOf(feeRateMin)));
-        }
-        if (feeRate1 > feeRateMax) {
-            editFeeByte.setText(String.valueOf(feeRateMax));
-            editFeeByte.setSelection(String.valueOf(feeRateMax).length());
+
+            return false;
+        } else if (feeRate1 > feeRateMax) {
             ToastUtils.toast(
                     String.format(
                             mContext.getString(R.string.gas_price_large),
                             String.valueOf(feeRateMax)));
+
+            return false;
+        } else {
+            return true;
         }
     }
 }

@@ -528,7 +528,6 @@ public final class PyEnv {
         PyResponse<AllWalletBalanceInfoDTO> pyResponse = new PyResponse<>();
         try {
             String info = sCommands.callAttr("get_all_wallet_balance").toString();
-            Logger.json(info);
             AllWalletBalanceInfoDTO allWalletBalanceInfoDTO =
                     new Gson().fromJson(info, AllWalletBalanceInfoDTO.class);
             pyResponse.setResult(allWalletBalanceInfoDTO);
@@ -1595,7 +1594,8 @@ public final class PyEnv {
             @NotNull String value,
             String path,
             @NotNull String gasPrice,
-            @NotNull String gasLimit) {
+            @NotNull String gasLimit,
+            String tokenAddress) {
         PyResponse<String> response = new PyResponse<>();
         try {
             String res =
@@ -1606,6 +1606,7 @@ public final class PyEnv {
                                     value,
                                     new Kwarg("path", path),
                                     new Kwarg("gas_price", gasPrice),
+                                    new Kwarg("contract_addr", tokenAddress),
                                     new Kwarg("gas_limit", gasLimit))
                             .toString();
             response.setResult(res);

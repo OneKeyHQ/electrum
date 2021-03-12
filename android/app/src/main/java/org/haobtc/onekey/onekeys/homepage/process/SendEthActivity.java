@@ -926,7 +926,8 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
                                                             MyApplication.getInstance()
                                                                     .getDeviceWay(),
                                                             String.valueOf(currentFeeRate),
-                                                            String.valueOf(mGasLimit));
+                                                            String.valueOf(mGasLimit),
+                                                            isToken ? contractAddress : null);
                                             emitter.onNext(response);
                                             emitter.onComplete();
                                         })

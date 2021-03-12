@@ -353,6 +353,7 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
         mAppWalletViewModel.currentWalletAssetsList.observe(
                 this,
                 assets -> {
+                    mSwipeRefreshLayout.setRefreshing(false);
                     mWalletAssetsAdapter.submitList(assets.toList());
                 });
     }
