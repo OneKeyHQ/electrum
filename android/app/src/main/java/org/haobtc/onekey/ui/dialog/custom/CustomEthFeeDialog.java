@@ -216,7 +216,7 @@ public class CustomEthFeeDialog extends BottomPopupView {
      */
     private void calculateData(String gasPrice, String gasLimit) {
         double price = Double.parseDouble(gasPrice);
-        int limit = Integer.parseInt(gasLimit);
+        long limit = Long.parseLong(gasLimit);
         fee = BigDecimal.valueOf(price * limit / Math.pow(10, 9)).toPlainString(); // 当前Eth的数量
         double cash =
                 Double.parseDouble(
