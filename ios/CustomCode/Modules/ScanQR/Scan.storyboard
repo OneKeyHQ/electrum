@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina4_0" orientation="portrait" appearance="light"/>
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -13,17 +14,17 @@
             <objects>
                 <viewController storyboardIdentifier="OKWalletScanVC" hidesBottomBarWhenPushed="YES" id="t4j-Xp-130" customClass="OKWalletScanVC" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="IsJ-vj-qRb">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rar-LS-ZQ0" customClass="OKScanView">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8EX-Gg-m8u" userLabel="borderView">
-                                        <rect key="frame" x="60" y="184" width="200" height="200"/>
+                                        <rect key="frame" x="60" y="301" width="294" height="294"/>
                                         <subviews>
                                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="QRCode_finder" translatesAutoresizingMaskIntoConstraints="NO" id="nAG-j9-0WZ">
-                                                <rect key="frame" x="-32" y="-32" width="264" height="264"/>
+                                                <rect key="frame" x="15" y="15" width="264" height="264"/>
                                             </imageView>
                                         </subviews>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -34,14 +35,14 @@
                                         </constraints>
                                     </view>
                                     <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XYr-8d-Ky9">
-                                        <rect key="frame" x="152" y="464" width="16" height="25"/>
+                                        <rect key="frame" x="199" y="675" width="16" height="25"/>
                                         <state key="normal" image="QRCode_Light"/>
                                         <connections>
                                             <action selector="lightBtnAction:" destination="rar-LS-ZQ0" eventType="touchUpInside" id="yR9-Zm-7Cw"/>
                                         </connections>
                                     </button>
                                     <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="u8n-E6-Kaq">
-                                        <rect key="frame" x="131" y="494" width="58" height="20"/>
+                                        <rect key="frame" x="178" y="705" width="58" height="20"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="20" id="BXH-Yq-Cdz"/>
                                         </constraints>
@@ -92,9 +93,59 @@
             </objects>
             <point key="canvasLocation" x="5374" y="129"/>
         </scene>
+        <!--Scan Result Controller-->
+        <scene sceneID="nfM-0n-xU0">
+            <objects>
+                <viewController storyboardIdentifier="OKQRScanResultController" id="Qeu-if-joI" customClass="OKQRScanResultController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="AzX-eg-j7F">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" id="s7A-Wh-kfz">
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="H6A-E6-Uz6" customClass="OKCopyLabel">
+                                        <rect key="frame" x="16" y="16" width="381" height="81.5"/>
+                                        <string key="text">86104984e0a84160a780c5677ba7afc8f3d28edf486c4057cc51310c9f61eb3de7e6f181134602177286104984e0a84160a780c5677ba7afc8f3d28edf486c4057cc51310c9f61eb3de7e6f181</string>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstItem="H6A-E6-Uz6" firstAttribute="top" secondItem="IzE-Yn-PD5" secondAttribute="top" constant="16" id="4tD-Cj-YQh"/>
+                                    <constraint firstItem="H6A-E6-Uz6" firstAttribute="leading" secondItem="IzE-Yn-PD5" secondAttribute="leading" constant="16" id="aqy-d4-YCw"/>
+                                    <constraint firstItem="IzE-Yn-PD5" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="H6A-E6-Uz6" secondAttribute="trailing" constant="16" id="ino-Eq-9fP"/>
+                                </constraints>
+                                <viewLayoutGuide key="contentLayoutGuide" id="Gzc-V9-95S"/>
+                                <viewLayoutGuide key="frameLayoutGuide" id="IzE-Yn-PD5"/>
+                            </scrollView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="Fu9-KQ-yP1"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="s7A-Wh-kfz" firstAttribute="trailing" secondItem="Fu9-KQ-yP1" secondAttribute="trailing" id="Ktj-OK-y6L"/>
+                            <constraint firstItem="s7A-Wh-kfz" firstAttribute="leading" secondItem="Fu9-KQ-yP1" secondAttribute="leading" id="RrP-4U-Fqt"/>
+                            <constraint firstItem="s7A-Wh-kfz" firstAttribute="top" secondItem="AzX-eg-j7F" secondAttribute="top" id="c5U-ed-Elq"/>
+                            <constraint firstAttribute="bottom" secondItem="s7A-Wh-kfz" secondAttribute="bottom" id="wEg-s2-w9x"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="resultLabel" destination="H6A-E6-Uz6" id="XtF-g5-5Wf"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="JC9-56-7df" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="6128.985507246377" y="128.57142857142856"/>
+        </scene>
     </scenes>
     <resources>
         <image name="QRCode_Light" width="16" height="25"/>
         <image name="QRCode_finder" width="264" height="264"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
     </resources>
 </document>

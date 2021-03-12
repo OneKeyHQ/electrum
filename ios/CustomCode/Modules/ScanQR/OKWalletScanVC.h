@@ -7,10 +7,12 @@
 //
 
 #import "BaseViewController.h"
+#import "OKQRCodeScanManager.h"
 
 #define MnenomicPrefix @"OneKeyMnemonic:"
 
-typedef void(^ScanningCompleteBlock)(id result);
+@class OKWalletScanVC;
+typedef void(^ScanningCompleteBlock)(OKWalletScanVC *vc, id result);
 
 typedef NS_ENUM(NSInteger, ScanningType) {
     ScanningTypeAddress = 0,   //导入地址
@@ -18,7 +20,14 @@ typedef NS_ENUM(NSInteger, ScanningType) {
     ScanningTypeImportPrivateKey, //导入私钥
     ScanningTypeImportKeyStore,  //导入keyStore
     ScanningTypeImportObserver,   //导入观察者钱包
-    ScanningTypeAll
+    ScanningTypeAll,
+    ScanningTypeAddressInplace,
+};
+
+typedef NS_ENUM(NSInteger, OKQRParseType) {
+    OKQRParseTypeAddress = 1,
+    OKQRParseTypeTx = 2,
+    OKQRParseTypeOthers = 3,
 };
 
 @interface OKWalletScanVC : BaseViewController
@@ -26,6 +35,7 @@ typedef NS_ENUM(NSInteger, ScanningType) {
 @property (nonatomic, strong) UIViewController *popToVC;
 @property (nonatomic, copy) NSString *password;
 @property (assign, nonatomic) BOOL isReturnHome;
+@property (nonatomic, strong) OKQRCodeScanManager *scanManager;
 
 @property (nonatomic) ScanningType scanningType;
 @property (nonatomic, copy) ScanningCompleteBlock scanningCompleteBlock;

@@ -150,7 +150,7 @@
 "I know the" = "我知道了";
 "The wallet name cannot be empty" = "钱包名称不能为空";
 "delete" = "删除";
-
+"HD" = "主钱包";
 "Change master password" = "修改主密码";
 "Enter your original password" = "输入您的原密码";
 "After changing the password, your original biometrics (face, fingerprint) will become invalid and need to be reset" = "修改完密码后，您原先的生物识别（面部、指纹）将会失效，需要重新设置。";
@@ -167,6 +167,7 @@
 "Set the wallet name" = "设置账户名称";
 //OKScanVc
 "Scan QR Code" = "扫描二维码";
+"scan.result" = "扫描结果";
 "Photo Album" = "相册";
 "Put QR code in the frame. Scan it." = "请从相册选择助记词二维码或扫码识别";
 "Gentle Hint" = "温馨提示";
@@ -286,7 +287,7 @@
 "Independent wallet mnemonic" = "独立账户助记词";
 "Hardware recovery for HD Wallet" = "硬件恢复的主钱包";
 "Hardware derived" = "硬件派生";
-"To observe the" = "观察";
+"Observation" = "观察";
 "Delete a separate wallet" = "删除独立账户";
 "Once deleted: 1. The wallet will be erased from the App. 2. Please make sure that the mnemonic of the independent wallet has been copied and kept before deletion. You can use it to recover the wallet, so as to recover the assets." = "一旦删除：\n\n1. 该账户将会从 App 中被抹除。\n\n2. 请您在删除前务必确认该账户的助记词已经抄写并保管好，您可以使用它进行恢复，从而找回资产。 ";
 "OenKey request enabled" = "OneKey请求开启";
@@ -536,6 +537,8 @@
 "token.find.title" = "找到<placeholder1>个结果";
 "token.blance" = "余额";
 "token.select" = "选择代币";
+"token.hot" = "热门代币";
+"token.more" = "更多";
 
 "assets.search.placeholder" = "搜索账户或代币";
 
@@ -552,3 +555,4 @@
 "Please enter the Gas Price" = "请输入 Gas Price";
 "list.Hardware wallet" = "硬件钱包";
 "Transaction format error" = "交易格式错误";
+"selectAccount" = "选择账户";

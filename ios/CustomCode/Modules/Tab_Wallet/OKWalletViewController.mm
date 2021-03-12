@@ -32,6 +32,8 @@
 #import "OKTokenManagementController.h"
 #import "OKURLSchemeHandler.h"
 #import "OKNotiAssetModel.h"
+#import "OKChangeWalletController.h"
+#import "OKQRScanResultController.h"
 
 @interface OKWalletViewController ()<UITableViewDelegate,UITableViewDataSource,UINavigationControllerDelegate,UIGestureRecognizerDelegate>
 
@@ -491,38 +493,58 @@
 {
     OKWeakSelf(self)
     OKWalletScanVC *vc = [OKWalletScanVC initViewControllerWithStoryboardName:@"Scan"];
-    vc.scanningType = ScanningTypeAddress;
-    vc.scanningCompleteBlock = ^(id result) {
-        if (result) {
-            NSDictionary *typeDict = [kPyCommandsManager callInterface:kInterfaceparse_pr parameter:@{@"data":result}];
-            if (typeDict != nil) {
-                NSInteger type = [typeDict[@"type"] integerValue];
-                switch (type) {
-                    case 1:
-                    {
-                        NSDictionary *data = typeDict[@"data"];
-                        NSString *address = [data safeStringForKey:@"address"];
+    vc.scanningType = ScanningTypeAddressInplace;
+    vc.scanningCompleteBlock = ^(OKWalletScanVC *scanVC, id result) {
+        if (!result) {
+            return;
+        }
+
+        NSDictionary *typeDict = [kPyCommandsManager callInterface:kInterfaceparse_pr parameter:@{@"data":result}];
+
+        if (!typeDict) {
+            OKQRScanResultController *resultVC = [OKQRScanResultController controllerWithStoryboard];
+            resultVC.resultText = result;
+            [weakself.navigationController pushViewController:resultVC animated:YES];
+        }
+
+        OKQRParseType type = (OKQRParseType)[typeDict[@"type"] integerValue];
+        switch (type) {
+            case OKQRParseTypeAddress: {
+                NSDictionary *data = typeDict[@"data"];
+                NSString *address = [data safeStringForKey:@"address"];
+                NSString *coin = [data safeStringForKey:@"coin"];
+                OKChangeWalletController *changeVC = [OKChangeWalletController controllerWithStoryboard];
+                changeVC.chianType = [coin isEqualToString:@"eth"] ? OKWalletChainTypeETHLike : OKWalletChainTypeBTC;
+                changeVC.cancelCallback = ^(BOOL selected) {
+                    if (!selected) {
+                        [scanVC.scanManager sessionStartRunning];
+                    }
+                };
+                changeVC.walletChangedCallback = ^(OKWalletInfoModel * _Nonnull wallet) {
+                    [kWalletManager setCurrentWalletInfo:wallet];
+                    [kPyCommandsManager asyncCall:kInterface_switch_wallet
+                                        parameter:@{@"name":kWalletManager.currentWalletInfo.name}
+                                         callback:^(id  _Nonnull result) {
+                        if (!result) {
+                            return;
+                        }
+                        [[NSNotificationCenter defaultCenter] postNotificationName:kNotiSelectWalletComplete object:nil];
                         OKSendCoinViewController *sendCoinVc = [OKSendCoinViewController sendCoinViewController];
                         sendCoinVc.address = address;
                         sendCoinVc.coinType = kWalletManager.currentWalletInfo.coinType;
                         [weakself.navigationController pushViewController:sendCoinVc animated:YES];
-                    }
-                        break;
-                    case 2:
-                    {
-//                        NSDictionary *data = typeDict[@"data"];
-//                        OKTxDetailViewController *txDetail = [OKTxDetailViewController txDetailViewController];
-//                        txDetail.tx_hash = [data safeStringForKey:@"txid"];
-//                        [weakself.navigationController pushViewController:txDetail animated:YES];
-                    }
-                        break;
-                    default:
-                        [kTools tipMessage:result];
-                        break;
-                }
-            }else{
-                [kTools tipMessage:result];
-            }
+                    }];
+                };
+                changeVC.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+                [weakself.navigationController presentViewController:changeVC animated:NO completion:nil];
+            } break;
+            default: {
+                OKQRScanResultController *resultVC = [OKQRScanResultController controllerWithStoryboard];
+                resultVC.resultText = result;
+                [weakself.navigationController pushViewController:resultVC animated:YES];
+            } break;
+
+
         }
     };
     [vc authorizePushOn:self];

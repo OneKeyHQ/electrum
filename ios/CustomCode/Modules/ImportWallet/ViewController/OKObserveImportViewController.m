@@ -60,7 +60,7 @@
     OKWeakSelf(self)
     OKWalletScanVC *vc = [OKWalletScanVC initViewControllerWithStoryboardName:@"Scan"];
     vc.scanningType = ScanningTypeAddress;
-    vc.scanningCompleteBlock = ^(id result) {
+    vc.scanningCompleteBlock = ^(OKWalletScanVC *vc, id result) {
         if (result) {
             NSDictionary *typeDict = [kPyCommandsManager callInterface:kInterfaceparse_pr parameter:@{@"data":result}];
             if (typeDict != nil) {

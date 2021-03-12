@@ -9,18 +9,6 @@
 #import "OKTokenCell.h"
 #import "OKTokenManager.h"
 
-@implementation NSString(OKAddressFormatted)
-- (NSString *)addressFormatted {
-    if (self.length < 20) {
-        return [@"error: " stringByAppendingString:self];
-    }
-    NSString *head = [self substringToIndex:8];
-    NSString *tail = [self substringFromIndex:self.length - 8];
-    return [NSString stringWithFormat:@"%@...%@", head, tail];
-}
-@end
-
-
 @interface OKTokenCell()
 @property (weak, nonatomic) IBOutlet UIView *bg;
 @property (weak, nonatomic) IBOutlet UIImageView *icon;

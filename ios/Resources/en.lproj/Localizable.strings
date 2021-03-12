@@ -1,4 +1,4 @@
-/* 
+/*
   Localizable.strings
   OneKey
 
@@ -283,7 +283,7 @@
 "Independent wallet mnemonic" = "Independent Wallet Mnemonic";
 "Hardware recovery for HD Wallet" = "Hardware recovery HD wallet";
 "Hardware derived" = "Hardware Derivation";
-"To observe the" = "Observation";
+"Observation" = "Observation";
 /* "Delete a separate wallet" = "删除独立钱包"; */
 /* "Once deleted: 1. The wallet will be erased from the App. 2. Please make sure that the mnemonic of the independent wallet has been copied and kept before deletion. You can use it to recover the wallet, so as to recover the assets." = "一旦删除： \n\n\n\n1. 该钱包将会从 App 中被抹除。 \n\n\n\n2. 请您在删除前务必确认该独立钱包的助记词已经抄写并保管好，您可以使用它对钱包进行恢复，从而找回资产。"; */
 /* "OenKey request enabled" = "OneKey请求开启"; */
@@ -322,4 +322,3 @@
 // Hardware Wallet Associated - start
 "hardwareWallet.update.currentDesc" = "Current framework version <frameworkVersion> \n当前蓝牙固件版本 <bluetoothVersion> \n升级固件前务必备份好钱包，否则可能造成资产损失";
 // Hardware Wallet Associated - end
-

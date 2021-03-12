@@ -136,11 +136,13 @@ typedef void(^OKPYResultCallback)(id result);
 @interface OKPyCommandsManager : NSObject
 + (OKPyCommandsManager *)sharedInstance;
 + (void)setNetwork;
-- (id)callInterface:(NSString *)method parameter:(NSDictionary *)parameter;
+- (id)callInterface:(NSString *)method parameter:(nullable NSDictionary *)parameter;
 - (void)cancel; // 取消上一个操作，让其立即返回, 可以重复调用
 - (void)cancelPIN; // 取消输入PIN操作
-- (void)asyncCall:(NSString *)method parameter:(NSDictionary *)parameter callback:(nullable OKPYResultCallback) callback; // callback will be dispatched to main queue.
-- (void)asyncCall:(NSString *)method parameter:(NSDictionary *)parameter asyncCallback:(nullable OKPYResultCallback) callback;
+
+// callback will be dispatched to main queue.
+- (void)asyncCall:(NSString *)method parameter:(nullable NSDictionary *)parameter callback:(nullable OKPYResultCallback) callback;
+- (void)asyncCall:(NSString *)method parameter:(nullable NSDictionary *)parameter asyncCallback:(nullable OKPYResultCallback) callback;
 @property (nonatomic,assign)PyObject *pyInstance;
 //硬件实例
 @property (nonatomic,assign)PyObject *pyHwInstance;

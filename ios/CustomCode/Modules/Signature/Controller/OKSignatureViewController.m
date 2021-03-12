@@ -179,7 +179,7 @@ typedef enum {
     OKWeakSelf(self)
     OKWalletScanVC *vc = [OKWalletScanVC initViewControllerWithStoryboardName:@"Scan"];
     vc.scanningType = ScanningTypeAll;
-    vc.scanningCompleteBlock = ^(NSString* result) {
+    vc.scanningCompleteBlock = ^(OKWalletScanVC *vc, NSString* result) {
         if (result && result.length > 0) {
             weakself.textView.text = result;
             weakself.placeLabel.hidden = YES;

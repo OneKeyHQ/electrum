@@ -144,4 +144,17 @@
 - (NSString *)localized {
     return MyLocalizedString(self, nil);
 }
+
+- (BOOL)ignoreCaseCointain:(NSString *)subStr {
+    return [self.lowercaseString containsString:subStr.lowercaseString];
+}
+
+- (NSString *)addressFormatted {
+    if (self.length < 20) {
+        return [@"error: " stringByAppendingString:self];
+    }
+    NSString *head = [self substringToIndex:8];
+    NSString *tail = [self substringFromIndex:self.length - 8];
+    return [NSString stringWithFormat:@"%@...%@", head, tail];
+}
 @end

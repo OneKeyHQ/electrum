@@ -7,14 +7,12 @@
 
 #import "OKWalletScanVC.h"
 #import "OKScanView.h"
-#import "OKQRCodeScanManager.h"
 #import "UIBarButtonItem+CustomBarButtonItem.h"
 #import "OKAppAuthorityManager.h"
 #import <AVFoundation/AVFoundation.h>
 
 @interface OKWalletScanVC () <OKQRCodeScanManagerDelegate>
 
-@property (nonatomic, strong) OKQRCodeScanManager *scanManager;
 @property (weak, nonatomic) IBOutlet OKScanView *scanView;
 
 @end
@@ -120,8 +118,10 @@
     switch (self.scanningType) {
         case ScanningTypeAddress: {
             [self.navigationController popViewControllerAnimated:YES];
+        } // fall thought
+        case ScanningTypeAddressInplace: {
             if (self.scanningCompleteBlock) {
-                self.scanningCompleteBlock(result);
+                self.scanningCompleteBlock(self, result);
             }
         }
             break;
@@ -139,7 +139,7 @@
 - (void)scanFinish:(id)message {
     [self.navigationController popViewControllerAnimated:NO];
     if (self.scanningCompleteBlock) {
-        self.scanningCompleteBlock(message);
+        self.scanningCompleteBlock(self, message);
     }
 }
 - (void)captureDidOutput:(CGFloat)brightnessValue {

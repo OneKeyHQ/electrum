@@ -111,7 +111,7 @@ static dispatch_once_t once;
 - (OKToken *)tokensWithAddress:(NSString *)address {
     NSString *addr = address.lowercaseString;
     for (OKToken *model in self.tokens) {
-        if ([model.address.lowercaseString containsString:addr]) {
+        if ([model.address.lowercaseString isEqualToString:addr]) {
             return model;
         }
     }

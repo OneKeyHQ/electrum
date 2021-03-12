@@ -49,9 +49,9 @@
 
 - (NSArray *)data {
     NSMutableArray *mutData = [[NSMutableArray alloc] init];
-    [mutData addObject:@"热门代币"];
+    [mutData addObject:@"token.hot".localized];
     [mutData addObjectsFromArray:self.hot];
-    [mutData addObject:@"更多"];
+    [mutData addObject:@"token.more".localized];
     [mutData addObjectsFromArray:self.more];
     return mutData;
 }

@@ -113,27 +113,29 @@ static dispatch_once_t once;
  */
 - (OKWalletType)getWalletDetailType
 {
-    NSString *type = self.currentWalletInfo.type;
-    NSString *coinType = self.currentWalletInfo.coinType;
-    if ([type isEqualToString:[NSString stringWithFormat:@"%@-hd-standard",coinType]]) {
-        return OKWalletTypeHD;
-    }else if ([type isEqualToString:[NSString stringWithFormat:@"%@-standard",coinType]]){
-        return OKWalletTypeIndependent;
-    }else if ([type isEqualToString:[NSString stringWithFormat:@"%@-derived-standard",coinType]]){
-        return OKWalletTypeHD;
-    }else if ([type isEqualToString:[NSString stringWithFormat:@"%@-hw-m-n",coinType]]){
-        return OKWalletTypeMultipleSignature;
-    }else if ([type isEqualToString:[NSString stringWithFormat:@"%@-hd-hw-1-1",coinType]]){
-        return OKWalletTypeHardware;
-    }else if([type isEqualToString:[NSString stringWithFormat:@"%@-hw-derived-1-1",coinType]]){
-        return OKWalletTypeHardware;
-    }else if([type isEqualToString:[NSString stringWithFormat:@"%@-watch-standard",coinType]]){
-        return OKWalletTypeObserve;
-    }else if([type isEqualToString:[NSString stringWithFormat:@"%@-private-standard",coinType]]){
-        return OKWalletTypeIndependent;
-    }else{
-        return OKWalletTypeHD;
-    }
+    return self.currentWalletInfo.walletType;
+
+//    NSString *type = self.currentWalletInfo.type;
+//    NSString *coinType = self.currentWalletInfo.coinType;
+//    if ([type isEqualToString:[NSString stringWithFormat:@"%@-hd-standard",coinType]]) {
+//        return OKWalletTypeHD;
+//    }else if ([type isEqualToString:[NSString stringWithFormat:@"%@-standard",coinType]]){
+//        return OKWalletTypeIndependent;
+//    }else if ([type isEqualToString:[NSString stringWithFormat:@"%@-derived-standard",coinType]]){
+//        return OKWalletTypeHD;
+//    }else if ([type isEqualToString:[NSString stringWithFormat:@"%@-hw-m-n",coinType]]){
+//        return OKWalletTypeMultipleSignature;
+//    }else if ([type isEqualToString:[NSString stringWithFormat:@"%@-hd-hw-1-1",coinType]]){
+//        return OKWalletTypeHardware;
+//    }else if([type isEqualToString:[NSString stringWithFormat:@"%@-hw-derived-1-1",coinType]]){
+//        return OKWalletTypeHardware;
+//    }else if([type isEqualToString:[NSString stringWithFormat:@"%@-watch-standard",coinType]]){
+//        return OKWalletTypeObserve;
+//    }else if([type isEqualToString:[NSString stringWithFormat:@"%@-private-standard",coinType]]){
+//        return OKWalletTypeIndependent;
+//    }else{
+//        return OKWalletTypeHD;
+//    }
 }
 
 - (NSString *)getFeeBaseWithSat:(NSString *)sat
@@ -170,11 +172,11 @@ static dispatch_once_t once;
     NSRange range = [type rangeOfString:@"-"];
     NSString *walletTypeStr = [type substringFromIndex:range.location + range.length];
     if ([walletTypeStr isEqualToString:@"hd-standard"]) {
-        return @"HD";
+        return @"HD".localized;
     }else if ([walletTypeStr isEqualToString:@"standard"]){
         return @"";
     }else if ([walletTypeStr isEqualToString:@"derived-standard"]){
-        return @"HD";
+        return @"HD".localized;
     }else if ([walletTypeStr isEqualToString:@"hw-1-1"]){
         return MyLocalizedString(@"hardware", nil);
     }else if ([walletTypeStr isEqualToString:@"hd-hw-1-1"]){
@@ -182,7 +184,7 @@ static dispatch_once_t once;
     }else if([walletTypeStr isEqualToString:@"hw-derived-1-1"]){
         return MyLocalizedString(@"hardware", nil);
     }else if ([walletTypeStr isEqualToString:@"watch-standard"]){
-        return MyLocalizedString(@"To observe the", nil);
+        return MyLocalizedString(@"Observation", nil);
     }else{
         return @"";
     }
@@ -320,4 +322,22 @@ static dispatch_once_t once;
     }
 }
 
+- (NSArray<OKWalletInfoModel *> *)listWallets {
+    NSArray *listDictArray =  [kPyCommandsManager callInterface:kInterfaceList_wallets parameter:nil];
+    NSMutableArray *mutArray = [[NSMutableArray alloc] init];
+    for (NSDictionary *dict in listDictArray) {
+        for (NSString *key in dict) {
+            OKWalletInfoModel *model = [OKWalletInfoModel mj_objectWithKeyValues:dict[key]];
+            model.walletKey = key;
+            [mutArray addObject:model];
+        }
+    }
+    return mutArray;
+}
+
+- (NSArray <OKWalletInfoModel *>*)listWalletsChainType:(OKWalletChainType)type {
+    return [self.listWallets ok_filter:^BOOL(id obj) {
+        return ((OKWalletInfoModel *)obj).chainType == type;
+    }];
+}
 @end

@@ -479,6 +479,10 @@
 		B024EEEE25F798250089B265 /* OKTokenSelectController.m in Sources */ = {isa = PBXBuildFile; fileRef = B024EEEC25F798250089B265 /* OKTokenSelectController.m */; };
 		B024EEF125F874A80089B265 /* UITableView+OKRoundSection.h in Headers */ = {isa = PBXBuildFile; fileRef = B024EEEF25F874A80089B265 /* UITableView+OKRoundSection.h */; };
 		B024EEF225F874A80089B265 /* UITableView+OKRoundSection.m in Sources */ = {isa = PBXBuildFile; fileRef = B024EEF025F874A80089B265 /* UITableView+OKRoundSection.m */; };
+		B024EEF625F8BC550089B265 /* OKChangeWalletController.h in Headers */ = {isa = PBXBuildFile; fileRef = B024EEF425F8BC550089B265 /* OKChangeWalletController.h */; };
+		B024EEF725F8BC550089B265 /* OKChangeWalletController.m in Sources */ = {isa = PBXBuildFile; fileRef = B024EEF525F8BC550089B265 /* OKChangeWalletController.m */; };
+		B024EF1125F9F52F0089B265 /* OKChangeWalletCell.h in Headers */ = {isa = PBXBuildFile; fileRef = B024EF0F25F9F52F0089B265 /* OKChangeWalletCell.h */; };
+		B024EF1225F9F52F0089B265 /* OKChangeWalletCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B024EF1025F9F52F0089B265 /* OKChangeWalletCell.m */; };
 		B03A1A4325C90835004137F1 /* OKPINInputMethodController.h in Headers */ = {isa = PBXBuildFile; fileRef = B03A1A4125C90835004137F1 /* OKPINInputMethodController.h */; };
 		B03A1A4425C90835004137F1 /* OKPINInputMethodController.m in Sources */ = {isa = PBXBuildFile; fileRef = B03A1A4225C90835004137F1 /* OKPINInputMethodController.m */; };
 		B03A1A4725C91601004137F1 /* OKPINInputMethodCell.h in Headers */ = {isa = PBXBuildFile; fileRef = B03A1A4525C91601004137F1 /* OKPINInputMethodCell.h */; };
@@ -558,6 +562,8 @@
 		B0E3FEDC25EF7B5500BE4B7F /* OKAddTokenSheetController.m in Sources */ = {isa = PBXBuildFile; fileRef = B0E3FEDA25EF7B5500BE4B7F /* OKAddTokenSheetController.m */; };
 		B0E3FEDF25F08CD300BE4B7F /* OKShareActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = B0E3FEDD25F08CD200BE4B7F /* OKShareActivity.m */; };
 		B0E3FEE025F08CD300BE4B7F /* OKShareActivity.h in Headers */ = {isa = PBXBuildFile; fileRef = B0E3FEDE25F08CD200BE4B7F /* OKShareActivity.h */; };
+		B0EB9B8625FA24270098092B /* OKQRScanResultController.h in Headers */ = {isa = PBXBuildFile; fileRef = B0EB9B8425FA24270098092B /* OKQRScanResultController.h */; };
+		B0EB9B8725FA24270098092B /* OKQRScanResultController.m in Sources */ = {isa = PBXBuildFile; fileRef = B0EB9B8525FA24270098092B /* OKQRScanResultController.m */; };
 		B1224B57B4D99A578C974400 /* _raw_cbc.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 55E241F594223A4D0246CAB6 /* _raw_cbc.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B29C483197B6698004570F27 /* OKNSObject.h in Headers */ = {isa = PBXBuildFile; fileRef = A911430B96FB9633A857ACAD /* OKNSObject.h */; settings = {ATTRIBUTES = (project, ); }; };
 		B2EE47BDB57AA751FFE38EF0 /* _raw_ecb.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1A4144F991D1C48D86723572 /* _raw_ecb.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -1113,6 +1119,10 @@
 		B024EEEC25F798250089B265 /* OKTokenSelectController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKTokenSelectController.m; sourceTree = "<group>"; };
 		B024EEEF25F874A80089B265 /* UITableView+OKRoundSection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UITableView+OKRoundSection.h"; sourceTree = "<group>"; };
 		B024EEF025F874A80089B265 /* UITableView+OKRoundSection.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UITableView+OKRoundSection.m"; sourceTree = "<group>"; };
+		B024EEF425F8BC550089B265 /* OKChangeWalletController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKChangeWalletController.h; sourceTree = "<group>"; };
+		B024EEF525F8BC550089B265 /* OKChangeWalletController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKChangeWalletController.m; sourceTree = "<group>"; };
+		B024EF0F25F9F52F0089B265 /* OKChangeWalletCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKChangeWalletCell.h; sourceTree = "<group>"; };
+		B024EF1025F9F52F0089B265 /* OKChangeWalletCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKChangeWalletCell.m; sourceTree = "<group>"; };
 		B03A1A4125C90835004137F1 /* OKPINInputMethodController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKPINInputMethodController.h; sourceTree = "<group>"; };
 		B03A1A4225C90835004137F1 /* OKPINInputMethodController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKPINInputMethodController.m; sourceTree = "<group>"; };
 		B03A1A4525C91601004137F1 /* OKPINInputMethodCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKPINInputMethodCell.h; sourceTree = "<group>"; };
@@ -1193,6 +1203,8 @@
 		B0E3FEDA25EF7B5500BE4B7F /* OKAddTokenSheetController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKAddTokenSheetController.m; sourceTree = "<group>"; };
 		B0E3FEDD25F08CD200BE4B7F /* OKShareActivity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKShareActivity.m; sourceTree = "<group>"; };
 		B0E3FEDE25F08CD200BE4B7F /* OKShareActivity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKShareActivity.h; sourceTree = "<group>"; };
+		B0EB9B8425FA24270098092B /* OKQRScanResultController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKQRScanResultController.h; sourceTree = "<group>"; };
+		B0EB9B8525FA24270098092B /* OKQRScanResultController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKQRScanResultController.m; sourceTree = "<group>"; };
 		B73C4F1B98EDFBC9B4F96E3E /* _chacha20.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = _chacha20.framework; path = ../Resources/Dylib/_chacha20.framework; sourceTree = SOURCE_ROOT; };
 		B7414DFCA31369C5738DFF3D /* _cpuid_c.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = _cpuid_c.framework; path = ../Resources/Dylib/_cpuid_c.framework; sourceTree = SOURCE_ROOT; };
 		BA0B7AC325AC560000F26B0C /* electrum_gui */ = {isa = PBXFileReference; lastKnownFileType = folder; name = electrum_gui; path = ../../electrum_gui; sourceTree = "<group>"; };
@@ -2020,6 +2032,8 @@
 				881423C825B18EAA00961668 /* OKQRCodeScanManager.m */,
 				881423CB25B18EAA00961668 /* OKScanView.h */,
 				881423C525B18EAA00961668 /* OKScanView.m */,
+				B0EB9B8425FA24270098092B /* OKQRScanResultController.h */,
+				B0EB9B8525FA24270098092B /* OKQRScanResultController.m */,
 				881423C725B18EAA00961668 /* Scan.storyboard */,
 			);
 			path = ScanQR;
@@ -2090,6 +2104,7 @@
 		881423EF25B18EAA00961668 /* WalletList */ = {
 			isa = PBXGroup;
 			children = (
+				B024EEF325F8BB4A0089B265 /* ChangeWallet */,
 				881423F025B18EAA00961668 /* Model */,
 				881423FD25B18EAA00961668 /* View */,
 				8814240C25B18EAA00961668 /* ViewController */,
@@ -2279,6 +2294,17 @@
 				B01CB1D325C12F9A0099F931 /* WKWebView+Bypass.m */,
 			);
 			path = Proxy;
+			sourceTree = "<group>";
+		};
+		B024EEF325F8BB4A0089B265 /* ChangeWallet */ = {
+			isa = PBXGroup;
+			children = (
+				B024EEF425F8BC550089B265 /* OKChangeWalletController.h */,
+				B024EEF525F8BC550089B265 /* OKChangeWalletController.m */,
+				B024EF0F25F9F52F0089B265 /* OKChangeWalletCell.h */,
+				B024EF1025F9F52F0089B265 /* OKChangeWalletCell.m */,
+			);
+			path = ChangeWallet;
 			sourceTree = "<group>";
 		};
 		B058D88125B55662000EB27C /* HardwareSetting */ = {
@@ -2690,15 +2716,18 @@
 				B067DE6E25E8E66400E98881 /* OKTokenManModel.h in Headers */,
 				8814257D25B18EAA00961668 /* OKCreateSelectWalletTypeCell.h in Headers */,
 				B058D8BC25B55663000EB27C /* OKDeviceSettingsViewController.h in Headers */,
+				B024EEF625F8BC550089B265 /* OKChangeWalletController.h in Headers */,
 				8814259D25B1900600961668 /* OKHwNotiManager.h in Headers */,
 				881424B425B18EAA00961668 /* OKMonetaryUnitViewController.h in Headers */,
 				8814255425B18EAA00961668 /* OKScreenshotsTipsController.h in Headers */,
 				881424A025B18EAA00961668 /* OKHDWalletViewController.h in Headers */,
 				F6994A4E9A519CE1B696A034 /* NSString+OKAdd.h in Headers */,
+				B0EB9B8625FA24270098092B /* OKQRScanResultController.h in Headers */,
 				B058D8AD25B55663000EB27C /* OKDeviceVerifyResultController.h in Headers */,
 				8814253325B18EAA00961668 /* OKShareView.h in Headers */,
 				8814253725B18EAA00961668 /* OKBluetoothViewCellModel.h in Headers */,
 				8814253625B18EAA00961668 /* OKBlueManager.h in Headers */,
+				B024EF1125F9F52F0089B265 /* OKChangeWalletCell.h in Headers */,
 				8814247625B18EAA00961668 /* JSBWebEventDelegate.h in Headers */,
 				881424C825B18EAA00961668 /* OKBrowserBTCTableViewController.h in Headers */,
 				8814247425B18EAA00961668 /* JSBUtil.h in Headers */,
@@ -2963,6 +2992,7 @@
 				881424C725B18EAA00961668 /* OKNetSetingViewController.m in Sources */,
 				AA3E43ADB13FEEECDE4E2D42 /* OKClickTextView.m in Sources */,
 				8814259225B18EAA00961668 /* BaseViewController.m in Sources */,
+				B0EB9B8725FA24270098092B /* OKQRScanResultController.m in Sources */,
 				8814245825B18EAA00961668 /* OKVerifyOnTheDeviceController.m in Sources */,
 				881424F225B18EAA00961668 /* OKPrivateKeyExportViewController.m in Sources */,
 				881424ED25B18EAA00961668 /* OKTxViewController.m in Sources */,
@@ -3081,6 +3111,7 @@
 				8814245525B18EAA00961668 /* OKSetPINPreViewController.m in Sources */,
 				881424FF25B18EAA00961668 /* OKDefaultFeeInfoSubModel.m in Sources */,
 				8814252025B18EAA00961668 /* OKTxListViewController.m in Sources */,
+				B024EF1225F9F52F0089B265 /* OKChangeWalletCell.m in Sources */,
 				B016510A25BFE0810037C6B4 /* OKDeviceConfirmController.m in Sources */,
 				881424FB25B18EAA00961668 /* OKReceiveCoinViewController.m in Sources */,
 				8814245B25B18EAA00961668 /* OKSetDeviceNameViewController.m in Sources */,
@@ -3185,6 +3216,7 @@
 				8814243325B18EAA00961668 /* YZAuthID.m in Sources */,
 				B058D8AB25B55663000EB27C /* OKDeviceInfoViewController.m in Sources */,
 				881424DE25B18EAA00961668 /* OKAllAssetsTableViewCell.m in Sources */,
+				B024EEF725F8BC550089B265 /* OKChangeWalletController.m in Sources */,
 				881424DF25B18EAA00961668 /* OKLanguageTableViewCell.m in Sources */,
 				881424CF25B18EAA00961668 /* OKElectrumNodeTableViewCell.m in Sources */,
 				8814254425B18EAA00961668 /* OKQRCodeGenerateManager.m in Sources */,

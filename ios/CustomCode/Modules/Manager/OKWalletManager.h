@@ -53,15 +53,6 @@
 #define kWalletManager (OKWalletManager.sharedInstance)
 NS_ASSUME_NONNULL_BEGIN
 
-//展示的钱包类型
-typedef enum {
-    OKWalletTypeHD,                 //HD钱包
-    OKWalletTypeIndependent,        //独立钱包
-    OKWalletTypeHardware,           //硬件钱包
-    OKWalletTypeMultipleSignature,  //多签钱包
-    OKWalletTypeObserve             //观察钱包
-}OKWalletType;
-
 // BTC 地址类型
 typedef NS_ENUM(NSInteger, OKBTCAddressType) {
     OKBTCAddressTypeNotBTC = 0,          // 非 BTC 地址
@@ -142,6 +133,9 @@ typedef enum{
 - (OKWalletInfoModel *)getCurrentWalletAddress:(NSString *)wallletName;
 
 - (NSString *)getUnitForCoinType;
+
+- (NSArray <OKWalletInfoModel *>*)listWallets;
+- (NSArray <OKWalletInfoModel *>*)listWalletsChainType:(OKWalletChainType)type;
 @end
 
 NS_ASSUME_NONNULL_END
