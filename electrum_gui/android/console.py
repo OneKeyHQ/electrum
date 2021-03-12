@@ -14,6 +14,7 @@ from decimal import Decimal
 from enum import Enum
 from os.path import exists, join
 
+import eth_utils
 from eth_account import Account
 from eth_keys import keys
 from hexbytes import HexBytes
@@ -2230,7 +2231,7 @@ class AndroidCommands(commands.Commands):
                     tx_dict["gas"],
                     str(tx_dict["to"]),
                     tx_dict["value"],
-                    data=(tx_dict["data"] if contract_addr is not None else None),
+                    data=bytes.fromhex(eth_utils.remove_0x_prefix(tx_dict["data"])) if tx_dict.get("data") else None,
                     chain_id=tx_dict["chainId"],
                 )
                 from eth_utils.encoding import big_endian_to_int
