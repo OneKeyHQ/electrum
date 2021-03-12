@@ -647,6 +647,8 @@ class PyWalib:
                 )
                 show_status = [3, _("Confirmed")]
 
+            show_address = action["to"] if action["from"].lower() == address else action["from"]
+
             output_tx = {
                 "type": "history",
                 "coin": contract.symbol if contract else cls.coin_symbol,
@@ -661,7 +663,7 @@ class PyWalib:
                 "confirmations": block_header.confirmations if block_header else 0,
                 'input_addr': [action["from"]],
                 'output_addr': [action["to"]],
-                "address": f"{target_address[:6]}...{target_address[-6:]}",
+                "address": f"{show_address[:6]}...{show_address[-6:]}",
                 "amount": amount,
                 "fiat": fiat
             }
