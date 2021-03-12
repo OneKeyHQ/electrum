@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Set
 
 from electrum_gui.common.basic.orm.database import db
 from electrum_gui.common.coin.data import CoinInfo
@@ -14,6 +14,11 @@ def add_coin(*coins: CoinInfo):
 def get_coin_info(coin_code: str) -> Optional[CoinInfo]:
     model = CoinModel.get_or_none(CoinModel.code == coin_code)
     return model.to_dataclass() if model else None
+
+
+def query_coins_by_codes(coin_codes: Set[str]) -> List[CoinInfo]:
+    models = CoinModel.select().where(CoinModel.code << coin_codes)
+    return [i.to_dataclass() for i in models]
 
 
 def get_all_coins() -> List[CoinInfo]:

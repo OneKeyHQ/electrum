@@ -1,5 +1,10 @@
 [
   {
+    "chain_code": "btc",
+    "name": "Bitcoin",
+    "fee_code": "btc"
+  },
+  {
     "chain_code": "eth",
     "name": "Ethereum",
     "fee_code": "eth",

@@ -32,6 +32,7 @@ DATABASE = {
 
 DB_MODULES = [
     "electrum_gui.common.coin",
+    "electrum_gui.common.price",
 ]
 
 ENABLED_CHAIN_COINS = [
@@ -39,6 +40,19 @@ ENABLED_CHAIN_COINS = [
     codes.BSC,
     codes.HECO,
 ]  # TODO enable specific test coin on dev env?
+
+PRICING_COIN_MAPPING = {
+    codes.TETH: codes.ETH,
+    codes.TBSC: codes.BSC,
+    codes.THECO: codes.HECO,
+}  # Map the price of the mainnet coin to the testnet coin
+
+COINGECKO_API_HOST = "https://api.coingecko.com"
+COINGECKO_IDS = {
+    codes.ETH: "ethereum",
+    codes.BSC: "binancecoin",
+    codes.HECO: "huobi-token",
+}  # Map the coin code to coingecko id
 
 # loading local_settings.py on project root
 try:

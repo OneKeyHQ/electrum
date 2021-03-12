@@ -42,6 +42,20 @@ def get_coin_info(coin_code: str, nullable: bool = False) -> Optional[CoinInfo]:
     return coin
 
 
+def query_coins_by_codes(coin_codes: List[str]) -> List[CoinInfo]:
+    """
+    Query coins by codes
+    :param coin_codes: list of coin codes
+    :return: list of CoinInfo found
+    """
+    coin_codes = set(coin_codes)
+    coins = list(i for i in registry.coin_dict.values() if i.code in coin_codes)
+    coins.extend(daos.query_coins_by_codes(coin_codes))
+
+    coins = _deduplicate_coins(coins)
+    return coins
+
+
 def get_all_chains() -> List[ChainInfo]:
     """
     Get all chains info

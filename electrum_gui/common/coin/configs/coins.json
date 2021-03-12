@@ -1,4 +1,13 @@
 {
+  "btc": [
+    {
+      "code": "btc",
+      "symbol": "BTC",
+      "name": "Bitcoin",
+      "decimals": 8,
+      "icon": "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579"
+    }
+  ],
   "eth": [
     {
       "code": "eth",
