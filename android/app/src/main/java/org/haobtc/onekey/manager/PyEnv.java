@@ -1862,7 +1862,6 @@ public final class PyEnv {
                     sCommands
                             .callAttr("dapp_eth_sign_tx", argList.toArray(new Object[0]))
                             .toString();
-            Logger.e("==signTx==:" + result);
             SignTxResponseBean token = new Gson().fromJson(result, SignTxResponseBean.class);
             response.setResult(token);
         } catch (Exception e) {
@@ -1881,7 +1880,6 @@ public final class PyEnv {
                     sCommands
                             .callAttr("sign_message", fromAddress, messageHex, pwd, path)
                             .toString();
-            Logger.e("==signMessage==:" + result);
             response.setResult(result);
         } catch (Exception e) {
             e.printStackTrace();

@@ -68,6 +68,7 @@ class SelectAccountBottomSheetDialog : BottomSheetDialogFragment() {
   }
   private val mBalanceManager by lazy {
     BalanceManager()
+    BalanceManager()
   }
 
   fun setOnSelectAccountCallback(onCall: OnSelectAccountCallback): SelectAccountBottomSheetDialog {
@@ -100,7 +101,10 @@ class SelectAccountBottomSheetDialog : BottomSheetDialogFragment() {
 
   override fun onStart() {
     super.onStart()
-    dialog?.setOnDismissListener { dialog -> mOnDismissListener?.onDismiss(dialog) }
+    dialog?.setOnDismissListener { dialog ->
+      onDismiss(dialog)
+      mOnDismissListener?.onDismiss(dialog)
+    }
     initData()
   }
 

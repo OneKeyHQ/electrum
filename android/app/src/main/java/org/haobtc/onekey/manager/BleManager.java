@@ -20,7 +20,6 @@ import cn.com.heaton.blelibrary.ble.callback.BleScanCallback;
 import cn.com.heaton.blelibrary.ble.callback.BleWriteCallback;
 import cn.com.heaton.blelibrary.ble.model.BleDevice;
 import com.lxj.xpopup.XPopup;
-import com.orhanobut.logger.Logger;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import io.reactivex.disposables.Disposable;
 import java.util.Objects;
@@ -396,7 +395,6 @@ public final class BleManager {
 
     private void setNotify(BleDevice device, BleNotiftCallback<BleDevice> callback) {
         // buffered a proportion of response
-        Logger.e("setNotify device");
         StringBuffer buffer = new StringBuffer();
         Ble.getInstance()
                 .enableNotify(
@@ -449,7 +447,6 @@ public final class BleManager {
     private void setNotify(BleDevice device) {
         // buffered a proportion of response
         StringBuffer buffer = new StringBuffer();
-        Logger.e("setNotify device");
         Ble.getInstance()
                 .enableNotify(
                         device,
@@ -459,7 +456,6 @@ public final class BleManager {
                             public void onChanged(
                                     BleDevice device, BluetoothGattCharacteristic characteristic) {
                                 dealBleResponse(characteristic, buffer);
-                                Logger.e("setNotify onChanged");
                             }
 
                             @Override
@@ -482,13 +478,11 @@ public final class BleManager {
                                                 });
                                 currentAddress = device.getBleAddress();
                                 currentBleName = device.getBleName();
-                                Logger.e("setNotify onNotifySuccess");
                             }
 
                             @Override
                             public void onNotifyCanceled(BleDevice device) {
                                 super.onNotifyCanceled(device);
-                                Logger.e("setNotify onNotifyCanceled");
                             }
                         });
     }

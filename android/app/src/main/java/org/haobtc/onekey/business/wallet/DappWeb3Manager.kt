@@ -6,7 +6,9 @@ import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import org.haobtc.onekey.activities.base.MyApplication
 import org.haobtc.onekey.bean.RPCInfoBean
+import org.haobtc.onekey.bean.SignTxResponseBean
 import org.haobtc.onekey.constant.Vm
+import org.haobtc.onekey.exception.PyEnvException
 import org.haobtc.onekey.manager.PyEnv
 import org.haobtc.onekey.onekeys.dappbrowser.bean.Web3Transaction
 import org.haobtc.onekey.onekeys.dappbrowser.ui.SignTransactionInterface
@@ -24,7 +26,7 @@ class DappWeb3Manager {
   @JvmOverloads
   fun signTx(from: String, transaction: Web3Transaction, pwd: String?, mode: String? = null, callback: SignTransactionInterface) {
     Single
-        .fromCallable {
+        .create<SignTxResponseBean> {
           val jsonTransaction = JsonObject().apply {
             addProperty("from", from)
             addProperty("to", transaction.recipient.toString())
@@ -38,7 +40,12 @@ class DappWeb3Manager {
               addProperty("nonce", transaction.nonce)
             }
           }
-          PyEnv.signTx(Vm.CoinType.ETH, jsonTransaction, pwd, mode).result
+          val signTx = PyEnv.signTx(Vm.CoinType.ETH, jsonTransaction, pwd, mode)
+          if (signTx.result == null || signTx.errors?.isNotEmpty() == true) {
+            it.onError(RuntimeException(signTx.errors))
+          } else {
+            it.onSuccess(signTx.result)
+          }
         }
         .map {
           if (it.raw == null) {
@@ -51,7 +58,7 @@ class DappWeb3Manager {
         .subscribe({
           callback.transactionSuccess(transaction, it.raw)
         }, {
-          callback.transactionError(transaction.leafPosition, it)
+          callback.transactionError(transaction.leafPosition, PyEnvException.convert(it))
         })
   }
 
@@ -62,8 +69,13 @@ class DappWeb3Manager {
   @JvmOverloads
   fun signMessage(from: String, messageHex: String, pwd: String?, mode: String? = null, success: (String) -> Unit, error: (Exception) -> Unit) {
     Single
-        .fromCallable {
-          PyEnv.signMessage(Vm.CoinType.ETH, from, messageHex, pwd, mode).result
+        .create<String> {
+          val signTx = PyEnv.signMessage(Vm.CoinType.ETH, from, messageHex, pwd, mode)
+          if (signTx.result == null || signTx.errors?.isNotEmpty() == true) {
+            it.onError(RuntimeException(signTx.errors))
+          } else {
+            it.onSuccess(signTx.result)
+          }
         }
         .map {
           if (it == null) {
@@ -76,7 +88,7 @@ class DappWeb3Manager {
         .subscribe({
           success.invoke(it)
         }, {
-          error.invoke(Exception(it))
+          error.invoke(PyEnvException.convert(it))
         })
     return
   }

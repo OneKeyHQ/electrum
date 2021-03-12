@@ -50,7 +50,7 @@ public enum HardWareExceptions {
         return e;
     }
 
-    public static String getExceptionString(Exception e) {
+    public static String getExceptionString(Throwable e) {
         if (Objects.requireNonNull(e.getMessage()).contains(BASE_EXCEPTION_PREFIX)) {
             return e.getMessage().substring(e.getMessage().indexOf(BASE_EXCEPTION_PREFIX) + 1);
         }

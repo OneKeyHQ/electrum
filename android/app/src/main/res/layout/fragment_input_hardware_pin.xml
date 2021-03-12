@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
+    android:background="@drawable/shape_bg_bottom_sheet"
     android:orientation="vertical">
-<include layout="@layout/title_layout"/>
+
     <TextView
         android:id="@+id/promote"
         android:layout_width="match_parent"
@@ -34,11 +35,11 @@
 
         <org.haobtc.onekey.ui.custom.PwdInputView
             android:id="@+id/pwd_edit_text"
-            android:visibility="gone"
             android:layout_width="@dimen/dp_300"
             android:layout_height="@dimen/dp_50"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/dp_40" />
+            android:layout_marginTop="@dimen/dp_40"
+            android:visibility="gone" />
 
         <EditText
             android:id="@+id/edit_pass_long"
@@ -62,9 +63,9 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_marginLeft="@dimen/dp_20"
         android:layout_marginTop="@dimen/dp_20"
-        android:layout_gravity="center"
         android:layout_marginRight="@dimen/dp_20"
         android:text="@string/hint_hardware_pin_input_warn"
         android:textColor="#546370"

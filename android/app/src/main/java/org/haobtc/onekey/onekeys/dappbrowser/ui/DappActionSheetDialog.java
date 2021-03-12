@@ -15,6 +15,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import java.math.BigDecimal;
 import java.util.Locale;
 import org.haobtc.onekey.R;
+import org.haobtc.onekey.aop.ClickUtil;
 import org.haobtc.onekey.bean.WalletAccountInfo;
 import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.onekeys.dappbrowser.bean.Signable;
@@ -290,7 +291,9 @@ public class DappActionSheetDialog extends BottomSheetDialog
     private void setupNextListener() {
         nextButton.setOnClickListener(
                 v -> {
-                    handleClick(null, 0);
+                    if (!ClickUtil.isFastDoubleClick(v, 300)) {
+                        handleClick(null, 0);
+                    }
                 });
     }
 
@@ -321,7 +324,6 @@ public class DappActionSheetDialog extends BottomSheetDialog
                     @Override
                     public void cancelAuthentication() {}
                 };
-
         actionSheetCallback.getAuthorisation(signCallback);
     }
 
@@ -403,14 +405,14 @@ public class DappActionSheetDialog extends BottomSheetDialog
     }
 
     public void showProgress() {
-        mHandler.post(
+        mHandler.postAtFrontOfQueue(
                 () -> {
                     layoutProgress.setVisibility(View.VISIBLE);
                 });
     }
 
     public void showHardwareProgress() {
-        mHandler.post(
+        mHandler.postAtFrontOfQueue(
                 () -> {
                     layoutHardwareProgress.setVisibility(View.VISIBLE);
                 });

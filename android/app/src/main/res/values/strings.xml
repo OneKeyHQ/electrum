@@ -1358,4 +1358,6 @@
     <string name="title_does_not_support">不支持 %s</string>
     <string name="title_signature">签字中</string>
     <string name="hint_signature_confirm_hardware">请在硬件上确认</string>
+    <string name="hint_please_switch_account_observe">请切换到其他账户</string>
+    <string name="hint_account_observe_unavailable_content">观察钱包无法使用 Dapp 功能</string>
 </resources>

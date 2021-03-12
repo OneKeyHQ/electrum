@@ -2,15 +2,19 @@ package org.haobtc.onekey.onekeys.dappbrowser.ui
 
 import android.app.Dialog
 import android.content.Context
+import android.content.DialogInterface
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.TextUtils
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
 import android.view.WindowManager
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
 import cn.com.heaton.blelibrary.ble.model.BleDevice
 import org.haobtc.onekey.R
@@ -20,7 +24,9 @@ import org.haobtc.onekey.business.wallet.DeviceException
 import org.haobtc.onekey.business.wallet.DeviceManager
 import org.haobtc.onekey.databinding.DialogConnectDeviceBinding
 import org.haobtc.onekey.exception.HardWareExceptions
+import org.haobtc.onekey.manager.BleManager
 import org.haobtc.onekey.manager.PyEnv
+import org.haobtc.onekey.utils.Utils
 import org.haobtc.onekey.viewmodel.AppWalletViewModel
 
 /**
@@ -44,6 +50,7 @@ class ConnectDeviceDialog(context: Context) : Dialog(context) {
   private var isDoneConnect = false
   private var success: ((HardwareFeatures) -> Unit)? = null
   private var error: ((Exception) -> Unit)? = null
+  private var mHandler = Handler(Looper.getMainLooper())
 
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -89,12 +96,17 @@ class ConnectDeviceDialog(context: Context) : Dialog(context) {
           isDoneConnect = true
           PyEnv.getFeature(context) {
             if (TextUtils.isEmpty(it.errors)) {
+              try {
+                BleManager.getInstance(Utils.getTopActivity() as FragmentActivity).hardwareFeatures = it.result
+              } catch (ignore: Exception) {
+              }
+              mHandler.postAtFrontOfQueue { dismiss() }
               success?.invoke(it.result)
             } else {
+              mHandler.postAtFrontOfQueue { dismiss() }
               error?.invoke(HardWareExceptions.exceptionConvert(Exception(it.errors)))
             }
           }
-          dismiss()
         }
 
         override fun onException(t: BleDevice?, e: Exception) {
@@ -107,6 +119,14 @@ class ConnectDeviceDialog(context: Context) : Dialog(context) {
     } ?: error?.invoke(DeviceException.OnConnectError())
   }
 
+  override fun setOnDismissListener(listener: DialogInterface.OnDismissListener?) {
+    super.setOnDismissListener(listener)
+  }
+
+  override fun onDetachedFromWindow() {
+    mHandler.removeCallbacksAndMessages(null)
+    super.onDetachedFromWindow()
+  }
 
   fun makeWide() {
     context?.resources?.displayMetrics?.density?.let { scale ->

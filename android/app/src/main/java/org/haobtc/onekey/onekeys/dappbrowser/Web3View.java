@@ -36,6 +36,7 @@ public class Web3View extends WebView {
     private static final String JS_PROTOCOL_CANCELLED = "cancelled";
     private static final String JS_PROTOCOL_ON_SUCCESSFUL = "executeCallback(%1$s, null, \"%2$s\")";
     private static final String JS_PROTOCOL_ON_FAILURE = "executeCallback(%1$s, \"%2$s\", null)";
+    public static final long JS_SING_ID = 8888;
 
     @Nullable private OnSignTransactionListener onSignTransactionListener;
     @Nullable private OnSignMessageListener onSignMessageListener;

@@ -66,13 +66,16 @@ import org.haobtc.onekey.onekeys.dappbrowser.ui.DappSettingSheetDialog.ClickType
 import org.haobtc.onekey.onekeys.dappbrowser.ui.DappSettingSheetDialog.ClickType.Companion.CLICK_REFRESH
 import org.haobtc.onekey.onekeys.dappbrowser.ui.DappSettingSheetDialog.ClickType.Companion.CLICK_SHARE
 import org.haobtc.onekey.onekeys.dappbrowser.ui.DappSettingSheetDialog.ClickType.Companion.CLICK_SWITCH_ACCOUNT
+import org.haobtc.onekey.ui.activity.HardwarePinDialog
+import org.haobtc.onekey.ui.activity.HardwarePinFragment
+import org.haobtc.onekey.ui.activity.InputPinOnHardware
 import org.haobtc.onekey.ui.activity.SoftPassDialog
-import org.haobtc.onekey.ui.activity.VerifyPinActivity
 import org.haobtc.onekey.ui.base.BaseFragment
 import org.haobtc.onekey.ui.dialog.SelectAccountBottomSheetDialog
 import org.haobtc.onekey.ui.status.BrowserLoadError
 import org.haobtc.onekey.utils.ClipboardUtils
 import org.haobtc.onekey.utils.HexUtils
+import org.haobtc.onekey.utils.Utils
 import org.haobtc.onekey.viewmodel.AppWalletViewModel
 import org.web3j.utils.Numeric
 import java.util.*
@@ -182,6 +185,7 @@ class DappBrowserFragment : BaseFragment(),
   private var resultDialog: DappResultAlertDialog? = null
   private var confirmationDialog: DappActionSheetDialog? = null
   private var connectDeviceDialog: ConnectDeviceDialog? = null
+  private var hardwarePinDialog: HardwarePinDialog? = null
 
   // 选择上传图片相关
   private var mUploadMessage: ValueCallback<Array<Uri>>? = null
@@ -278,12 +282,6 @@ class DappBrowserFragment : BaseFragment(),
       mBinding.tvWalletName.text = it?.name ?: getString(R.string.title_select_account)
 
       it?.let {
-        mDappWeb3Manager.getPRCInfo()?.apply {
-          web3.setRpcUrl(rpc)
-          web3.chainId = chainId
-        }
-        web3.setWalletAddress(it.address)
-        setupWeb3()
         refreshEvent()
       }
     }
@@ -335,6 +333,14 @@ class DappBrowserFragment : BaseFragment(),
     web3.setActivity(activity)
     web3.setWebLoadCallback(this)
 
+    mDappWeb3Manager.getPRCInfo()?.apply {
+      web3.setRpcUrl(rpc)
+      web3.chainId = chainId
+    }
+    mAppWalletViewModel.currentWalletAccountInfo.value?.address?.let {
+      web3.setWalletAddress(it)
+    }
+
     web3.webChromeClient = object : WebChromeClient() {
       override fun onProgressChanged(webview: WebView, newProgress: Int) {
         if (newProgress == 100) {
@@ -350,14 +356,18 @@ class DappBrowserFragment : BaseFragment(),
         mCurrentWebpageTitle = title
       }
 
-      override fun onGeolocationPermissionsShowPrompt(origin: String,
-                                                      callback: GeolocationPermissions.Callback) {
+      override fun onGeolocationPermissionsShowPrompt(
+          origin: String,
+          callback: GeolocationPermissions.Callback
+      ) {
         super.onGeolocationPermissionsShowPrompt(origin, callback)
         requestGeoPermission(origin, callback)
       }
 
-      override fun onShowFileChooser(webView: WebView, filePathCallback: ValueCallback<Array<Uri>>?,
-                                     fCParams: FileChooserParams): Boolean {
+      override fun onShowFileChooser(
+          webView: WebView, filePathCallback: ValueCallback<Array<Uri>>?,
+          fCParams: FileChooserParams
+      ): Boolean {
         if (filePathCallback == null) return true
         mUploadMessage = filePathCallback
         mFileChooserParams = fCParams
@@ -432,24 +442,27 @@ class DappBrowserFragment : BaseFragment(),
       // complete Authentication
       val walletInfo = mAppWalletViewModel.currentWalletAccountInfo.value
       val messageHexString = HexUtils.byteArrayToHexString(messageTBS?.prehash)
-      if (messageHexString != null && walletInfo?.walletType == Vm.WalletType.HARDWARE) {
-        confirmationDialog?.showHardwareProgress()
-        mDappWeb3Manager.signMessageByHardware(walletInfo.address, messageHexString, null, success = {
-          dAppFunction?.DAppReturn(HexUtils.hexStringToByteArray(it), messageTBS)
-        }, error = {
-          dAppFunction?.DAppError(it, messageTBS)
-        })
-      } else if (messageHexString != null && walletInfo != null && walletInfo.walletType != Vm.WalletType.IMPORT_WATCH) {
-        confirmationDialog?.showProgress()
-        mDappWeb3Manager.signMessage(walletInfo.address, messageHexString, pwd, null, success = {
-          confirmationDialog?.hideProgress()
-          dAppFunction?.DAppReturn(HexUtils.hexStringToByteArray(it), messageTBS)
-        }, error = {
-          confirmationDialog?.dismiss()
-          dAppFunction?.DAppError(it, messageTBS)
-        })
+      val success: (String) -> Unit = {
+        confirmationDialog?.hideProgress()
+        dAppFunction?.DAppReturn(HexUtils.hexStringToByteArray(it), messageTBS)
+      }
+      val error: (Exception) -> Unit = {
+        // if (error is PyEnvException.UserCancelException
+        //    || error is PyEnvException.PinOperationTimeoutException
+        //    || error is PyEnvException.PassphraseOperationTimeoutException) {
+        hardwarePinDialog?.onFinish()
+        // }
+        confirmationDialog?.dismiss()
+        dAppFunction?.DAppError(it, messageTBS)
       }
 
+      if (messageHexString != null && walletInfo?.walletType == Vm.WalletType.HARDWARE) {
+        confirmationDialog?.showHardwareProgress()
+        mDappWeb3Manager.signMessageByHardware(walletInfo.address, messageHexString, null, success, error)
+      } else if (messageHexString != null && walletInfo != null && walletInfo.walletType != Vm.WalletType.IMPORT_WATCH) {
+        confirmationDialog?.showProgress()
+        mDappWeb3Manager.signMessage(walletInfo.address, messageHexString, pwd, null, success, error)
+      }
     } else if (confirmationDialog != null && confirmationDialog?.isShowing == true) {
       if (messageTBS != null) web3.onSignCancel(messageTBS!!.callbackId)
       confirmationDialog?.dismiss()
@@ -487,12 +500,14 @@ class DappBrowserFragment : BaseFragment(),
             is DeviceException.OnTimeoutError -> {
               showErrorDialog(
                   getString(R.string.hint_device_connect_timeout),
-                  getString(R.string.hint_device_connect_error_title))
+                  getString(R.string.hint_device_connect_error_title)
+              )
             }
             else -> {
               showErrorDialog(
                   getString(R.string.hint_device_connect_error),
-                  getString(R.string.hint_device_connect_error_title))
+                  getString(R.string.hint_device_connect_error_title)
+              )
             }
           }
         })
@@ -514,8 +529,18 @@ class DappBrowserFragment : BaseFragment(),
   fun onButtonRequest(event: ButtonRequestEvent) {
     when (event.type) {
       PyConstant.PIN_CURRENT -> {
-        val intent = Intent(requireContext(), VerifyPinActivity::class.java)
-        startActivity(intent)
+        hardwarePinDialog?.dismiss()
+        hardwarePinDialog = HardwarePinDialog.newInstance(HardwarePinFragment.PinActionType.VERIFY_PIN)
+        hardwarePinDialog?.setOnInputSuccessListener(object : HardwarePinDialog.OnInputSuccessListener {
+          override fun onSuccess() {
+
+          }
+
+          override fun onCancel() {
+            web3.onCallFunctionError(Web3View.JS_SING_ID, "User cancelled")
+          }
+        })
+        hardwarePinDialog?.show(childFragmentManager, "HardwarePinDialog")
       }
       PyConstant.BUTTON_REQUEST_7 -> {
         // 确认键
@@ -537,6 +562,15 @@ class DappBrowserFragment : BaseFragment(),
    */
   override fun getAuthorisation(callback: SignAuthenticationCallback) {
     val walletInfo = mAppWalletViewModel.currentWalletAccountInfo.value
+    // 观察钱包无法使用
+    if (walletInfo?.walletType == Vm.WalletType.IMPORT_WATCH) {
+      val dialog = BaseAlertBottomDialog(requireContext())
+      dialog.show()
+      dialog.setTitle(R.string.hint_please_switch_account_observe)
+      dialog.setMessage(R.string.hint_account_observe_unavailable_content)
+      return
+    }
+    // 硬件钱包授权
     if (walletInfo?.walletType == Vm.WalletType.HARDWARE) {
       getHardwareAuthorisation(walletInfo.deviceId!!)
       return
@@ -560,17 +594,26 @@ class DappBrowserFragment : BaseFragment(),
       override fun transactionError(callbackId: Long, error: Throwable) {
         confirmationDialog?.hideProgress()
         confirmationDialog?.dismiss()
+        // if (error is PyEnvException.UserCancelException
+        //    || error is PyEnvException.PinOperationTimeoutException
+        //    || error is PyEnvException.PassphraseOperationTimeoutException) {
+        try {
+          Utils.finishActivity(InputPinOnHardware::class.java)
+        } catch (e: Exception) {
+        }
+        hardwarePinDialog?.onFinish()
+        // }
         txError(error)
         web3.onSignCancel(callbackId)
       }
     }
     val walletInfo = mAppWalletViewModel.currentWalletAccountInfo.value
     if (walletInfo?.walletType == Vm.WalletType.HARDWARE) {
-      mDappWeb3Manager.signTxByHardware(walletInfo.address, finalTx, null, callback)
       confirmationDialog?.showHardwareProgress()
+      mDappWeb3Manager.signTxByHardware(walletInfo.address, finalTx, null, callback)
     } else if (walletInfo != null && walletInfo.walletType != Vm.WalletType.IMPORT_WATCH) {
-      mDappWeb3Manager.signTx(walletInfo.address, finalTx, pwd, null, callback)
       confirmationDialog?.showProgress()
+      mDappWeb3Manager.signTx(walletInfo.address, finalTx, pwd, null, callback)
     }
   }
 
@@ -585,11 +628,15 @@ class DappBrowserFragment : BaseFragment(),
       override fun transactionError(callbackId: Long, error: Throwable) {
         confirmationDialog?.hideProgress()
         confirmationDialog?.dismiss()
+        // if (error is PyEnvException.UserCancelException
+        //    || error is PyEnvException.PinOperationTimeoutException
+        //    || error is PyEnvException.PassphraseOperationTimeoutException) {
+        hardwarePinDialog?.onFinish()
+        // }
         txError(error)
         web3.onSignCancel(callbackId)
       }
     }
-    confirmationDialog?.showProgress()
     // todo createTransactionWithSig
     // createTransactionWithSig(finalTx, networkInfo.chainId, callback);
   }
@@ -619,7 +666,8 @@ class DappBrowserFragment : BaseFragment(),
       val transactionSuccess = transaction.recipient.equals(Address.EMPTY) && transaction.payload != null
           || !transaction.recipient.equals(Address.EMPTY) && (transaction.payload != null || transaction.value != null)
       if ((confirmationDialog == null || confirmationDialog?.isShowing == false) &&
-          transactionSuccess) {
+          transactionSuccess
+      ) {
         val currentWallet = mAppWalletViewModel.currentWalletAccountInfo.value
         if (currentWallet == null) {
           web3.onSignCancel(transaction.leafPosition)
@@ -854,6 +902,7 @@ class DappBrowserFragment : BaseFragment(),
    * 刷新网页
    */
   fun refreshEvent() {
+    setupWeb3()
     web3.reload()
   }
 
@@ -895,7 +944,8 @@ class DappBrowserFragment : BaseFragment(),
     sessionHistory = web3.copyBackForwardList()
     val url: String = web3.getUrl()
     canBrowseBack = web3.canGoBack()
-    canBrowseForward = web3.canGoForward() || sessionHistory != null && sessionHistory.currentIndex < sessionHistory.size - 1
+    canBrowseForward =
+        web3.canGoForward() || sessionHistory != null && sessionHistory.currentIndex < sessionHistory.size - 1
 
     if (canBrowseBack) {
       mBinding.ivBack.visibility = View.VISIBLE
@@ -984,7 +1034,12 @@ class DappBrowserFragment : BaseFragment(),
 
   // region 权限检查、功能检查
   private fun checkReadPermission(): Boolean {
-    return if (activity?.applicationContext?.let { ContextCompat.checkSelfPermission(it, Manifest.permission.READ_EXTERNAL_STORAGE) }
+    return if (activity?.applicationContext?.let {
+          ContextCompat.checkSelfPermission(
+              it,
+              Manifest.permission.READ_EXTERNAL_STORAGE
+          )
+        }
         == PackageManager.PERMISSION_GRANTED) {
       true
     } else {
@@ -996,7 +1051,12 @@ class DappBrowserFragment : BaseFragment(),
 
   private fun requestGeoPermission(origin: String, callback: GeolocationPermissions.Callback) {
 
-    if (activity?.applicationContext?.let { ContextCompat.checkSelfPermission(it, Manifest.permission.ACCESS_FINE_LOCATION) }
+    if (activity?.applicationContext?.let {
+          ContextCompat.checkSelfPermission(
+              it,
+              Manifest.permission.ACCESS_FINE_LOCATION
+          )
+        }
         != PackageManager.PERMISSION_GRANTED) {
       mGeoCallback = callback
       mGeoOrigin = origin

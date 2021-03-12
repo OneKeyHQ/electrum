@@ -3,6 +3,7 @@ package org.haobtc.onekey.event;
 import androidx.annotation.NonNull;
 
 public class ChangePinEvent {
+    private String action;
     private String pinOrigin;
     private String pinNew;
 
@@ -10,6 +11,7 @@ public class ChangePinEvent {
         this.pinOrigin = pinOrigin;
         this.pinNew = pinNew;
     }
+
     public void setPinNew(String pinNew) {
         this.pinNew = pinNew;
     }
@@ -24,6 +26,14 @@ public class ChangePinEvent {
 
     public String getPinOrigin() {
         return pinOrigin;
+    }
+
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
     }
 
     @NonNull
