@@ -1175,6 +1175,13 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
                 if (mAssets == null) {
                     return;
                 }
+                coinAssetBalance =
+                        mAppWalletViewModel
+                                .currentWalletAssetsList
+                                .getValue()
+                                .getCoinAsset()
+                                .getBalance()
+                                .getBalance();
                 hdWalletName = mAssets.getName();
                 walletName.setText(hdWalletName);
                 initAssetBalance(mAssets);
@@ -1183,7 +1190,8 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
                     isToken = true;
                     ERC20Assets erc20Assets = (ERC20Assets) mAssets;
                     address = erc20Assets.getContractAddress();
-                    coinAssetBalance = new BigDecimal(erc20Assets.getBalanceFiat().getBalance());
+                    tokenBalance = erc20Assets.getBalance().getBalance();
+
                 } else if (mAssets instanceof CoinAssets) {
                     isToken = false;
                     String walletID =
@@ -1191,7 +1199,6 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
                     LocalWalletInfo localWalletByName =
                             mAccountManager.getLocalWalletByName(walletID);
                     address = localWalletByName.getAddr();
-                    coinAssetBalance = ((CoinAssets) mAssets).getBalance().getBalance();
                 }
                 if (!address.equals(contractAddress)) {
                     contractAddress = address;
