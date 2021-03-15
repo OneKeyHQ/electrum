@@ -47,7 +47,7 @@ static const CGFloat MASK_ALPHA = 0.4;
     [self.handleView setLayerRadius:20];
     self.mask.alpha = 0;
 
-    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(dismiss)];
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismiss)];
     [self.mask addGestureRecognizer:tap];
     UIPanGestureRecognizer *panGes = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(move:)];
     UIPanGestureRecognizer *panGes2 = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(move:)];

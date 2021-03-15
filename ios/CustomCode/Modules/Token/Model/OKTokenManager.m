@@ -20,8 +20,16 @@ static dispatch_once_t once;
     dispatch_once(&once, ^{
         _sharedInstance = [[OKTokenManager alloc] init];
         [_sharedInstance updateTokenList];
+        [[NSNotificationCenter defaultCenter] addObserver:_sharedInstance selector:@selector(walletChanged) name:kNotiSelectWalletComplete object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:_sharedInstance selector:@selector(walletChanged) name:kNotiWalletCreateComplete object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:_sharedInstance selector:@selector(walletChanged) name:kNotiDeleteWalletComplete object:nil];
     });
     return _sharedInstance;
+}
+
+- (void)walletChanged {
+    self.needUpdateCcustomTokens = YES;
+    self.needUpdateCurrentAddress = YES;
 }
 
 - (void)addToken:(OKToken *)token {
