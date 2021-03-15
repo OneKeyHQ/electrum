@@ -1,6 +1,7 @@
 import functools
 import itertools
 import os
+import re
 import time
 from typing import Generator, List, Optional, Tuple
 
@@ -11,7 +12,14 @@ _COIN_PRIORITY = {
     "btc": 3,
     "eth": 2,
     "bsc": 1,
+    "heco": 1,
 }
+
+_WALLET_TYPE_DIVIDE_PATTERN = re.compile(r"[_\-]")
+
+
+def split_coin_from_wallet_type(wallet_type: str) -> str:
+    return re.split(_WALLET_TYPE_DIVIDE_PATTERN, wallet_type)[0]
 
 
 def _get_wallet_priority_by_type(wallet_type: str) -> int:
@@ -44,7 +52,7 @@ def _type_info_wallet_type_is_hw(wallet_type: str) -> bool:
 
 
 def _type_info_filter_wallet_type_by_coin(coin: str, wallet_type: str) -> bool:
-    return wallet_type[0:3] == coin
+    return split_coin_from_wallet_type(wallet_type) == coin
 
 
 def _type_info_default_sort_func(type_info_item: Tuple[str, dict]) -> float:
@@ -52,7 +60,7 @@ def _type_info_default_sort_func(type_info_item: Tuple[str, dict]) -> float:
 
 
 def _type_info_by_coin_and_time_sort_func(type_info_item: Tuple[str, dict]) -> Tuple[int, float]:
-    return _COIN_PRIORITY.get(type_info_item[1]["type"][:3], 0), type_info_item[1]["time"]
+    return _COIN_PRIORITY.get(split_coin_from_wallet_type(type_info_item[1]["type"]), 0), type_info_item[1]["time"]
 
 
 def _type_info_by_type_and_time_sort_func(type_info_item: Tuple[str, dict]) -> Tuple[int, float]:

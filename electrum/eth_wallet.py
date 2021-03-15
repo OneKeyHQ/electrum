@@ -111,6 +111,10 @@ class Abstract_Eth_Wallet(ABC):
         self.storage = storage
         self.storage_pw = None
         # load addresses needs to be called before constructor for sanity checks
+        if self.db.get('wallet_type') is None:
+            self.db.put('wallet_type', self.wallet_type)
+        else:
+            self.wallet_type = self.db.get("wallet_type")
         db.load_addresses(self.wallet_type)
         self.keystore = None  # type: Optional[KeyStore]  # will be set by load_keystore
         self._chain_code = None
@@ -128,8 +132,6 @@ class Abstract_Eth_Wallet(ABC):
         self.total_balance = {}
         self.calc_unused_change_addresses()
         # save wallet type the first time
-        if self.db.get('wallet_type') is None:
-            self.db.put('wallet_type', self.wallet_type)
         if self.db.get('address_index') is None:
             self.set_address_index(0)
         self.name = self.db.get("name")
@@ -254,7 +256,7 @@ class Abstract_Eth_Wallet(ABC):
         }
         for contract_address, contract in self.contacts.items():
             symbol, balance = PyWalib.get_balance(wallet_address, contract)
-            token_last_price = PyWalib.get_coin_price(from_coin, contract_address=contract_address)
+            token_last_price = PyWalib.get_coin_price(from_coin, contract_address=contract_address) or "0"
             balance_info[contract_address] = {
                 'symbol': symbol,
                 'address': contract_address,
@@ -786,7 +788,7 @@ class Simple_Eth_Wallet(Abstract_Eth_Wallet):
 
     def _update_password_for_keystore(self, old_pw, new_pw):
         if self.keystore and self.keystore.may_have_password():
-            self.keystore.update_password(old_pw, new_pw, eth_status='eth' if -1 != self.wallet_type.find('eth') else None)
+            self.keystore.update_password(old_pw, new_pw, eth_status=True)
             self.save_keystore()
 
     def save_keystore(self):
@@ -810,9 +812,10 @@ class Imported_Eth_Wallet(Simple_Eth_Wallet):
     @classmethod
     def _from_addresses(cls, coin: str, config: SimpleConfig, addresses: List[str]):
         db = WalletDB("", manual_upgrades=False)
+        db.put("wallet_type", f"{coin}_imported")
+
         wallet = cls(db, None, config=config)
         wallet.coin = coin
-        wallet.wallet_type = f"{coin}_imported"
         good_addrs, _bad_addrs = wallet.import_addresses(addresses, write_to_disk=False)
         # FIXME tell user about bad_inputs
         if not good_addrs:
@@ -833,9 +836,10 @@ class Imported_Eth_Wallet(Simple_Eth_Wallet):
     def from_privkeys(cls, coin: str, config: SimpleConfig, privkeys: str):
         db = WalletDB("", manual_upgrades=False)
         db.put("keystore", keystore.Imported_KeyStore({}).dump())
+        db.put("wallet_type", f"{coin}_imported")
+
         wallet = cls(db, None, config=config)
         wallet.coin = coin
-        wallet.wallet_type = f"{coin}_imported"
         keys = keystore.get_eth_private_key(privkeys, allow_spaces_inside_key=False)
         good_addrs, _bad_keys = wallet.import_private_keys(keys, None, write_to_disk=False)
         # FIXME tell user about bad_inputs
@@ -1185,9 +1189,10 @@ class Standard_Eth_Wallet(Simple_Eth_Deterministic_Wallet):
     def _from_keystore(cls, coin: str, index: int, config: SimpleConfig, keystore: KeyStore):
         db = WalletDB("", manual_upgrades=False)
         db.put("keystore", keystore.dump())
+        db.put("wallet_type", f"{coin}_standard")
+
         wallet = cls(db, None, config=config, index=index)
         wallet.coin = coin
-        wallet.wallet_type = f"{coin}_standard"
         return wallet
 
     @classmethod
@@ -1272,7 +1277,15 @@ def register_wallet_type(category):
 wallet_constructors = {
     'eth_standard': Standard_Eth_Wallet,
     'eth_xpub': Standard_Eth_Wallet,
-    'eth_imported': Imported_Eth_Wallet
+    'eth_imported': Imported_Eth_Wallet,
+
+    'bsc_standard': Standard_Eth_Wallet,
+    'bsc_xpub': Standard_Eth_Wallet,
+    'bsc_imported': Imported_Eth_Wallet,
+
+    'heco_standard': Standard_Eth_Wallet,
+    'heco_xpub': Standard_Eth_Wallet,
+    'heco_imported': Imported_Eth_Wallet,
 }
 
 def register_constructor(wallet_type, constructor):

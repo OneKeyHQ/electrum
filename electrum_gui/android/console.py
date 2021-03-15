@@ -525,14 +525,16 @@ class AndroidCommands(commands.Commands):
             if db.get_action():
                 return
             wallet_type = db.data["wallet_type"]
-            if wallet_type[0:3] in self.coins:
-                if "importe" in wallet_type:
-                    wallet = Eth_Wallet(db, storage, config=self.config)
-                else:
-                    index = 0
-                    if "address_index" in db.data:
-                        index = db.data["address_index"]
-                    wallet = Standard_Eth_Wallet(db, storage, config=self.config, index=index)
+            coin = wallet_context.split_coin_from_wallet_type(wallet_type)
+            if coin in self.coins:
+                with self.pywalib.override_server(self.coins[coin]):
+                    if "importe" in wallet_type:
+                        wallet = Eth_Wallet(db, storage, config=self.config)
+                    else:
+                        index = 0
+                        if "address_index" in db.data:
+                            index = db.data["address_index"]
+                        wallet = Standard_Eth_Wallet(db, storage, config=self.config, index=index)
             else:
                 wallet = Wallet(db, storage, config=self.config)
                 wallet.start_network(self.network)
@@ -1742,7 +1744,8 @@ class AndroidCommands(commands.Commands):
             if bitcoin.is_address(self.show_addr):
                 data = util.create_bip21_uri(self.show_addr, "", "")
             elif self.pywalib.web3.isAddress(self.show_addr):
-                data = f"ethereum:{self.show_addr}"
+                prefix = "ethereum" if self.wallet.coin == "eth" else self.wallet.coin
+                data = f"{prefix}:{self.show_addr}"
             else:
                 data = self.show_addr
         except Exception as e:
@@ -3213,9 +3216,6 @@ class AndroidCommands(commands.Commands):
         # if coin_manager.is_derived_wallet_supported(coin):
         #     raise BaseException(f"Derived wallet of {coin} isn't supported.")
         # ```
-        if coin not in ("btc", "eth"):
-            raise BaseException("coin must btc/eth")
-
         try:
             self.check_password(password)
         except BaseException as e:
@@ -3864,7 +3864,7 @@ class AndroidCommands(commands.Commands):
     def list_wallets(self, type_=None):
         """
         List available wallets
-        :param type: None/hw/hd/btc/eth/bsc
+        :param type: None/hw/hd/btc/eth/bsc/heco
         :return: json like "[{"wallet_key":{'type':"", "addr":"", "name":"", "label":"", "device_id": ""}}, ...]"
         exp:
             all_list = testcommond.list_wallets()
@@ -3878,7 +3878,7 @@ class AndroidCommands(commands.Commands):
         generic_wallet_type = None
         if type_ in ("hw", "hd"):
             generic_wallet_type = type_
-        elif type_ in ("btc", "eth", "bsc"):
+        elif type_ in ("btc", "eth", "bsc", "heco"):
             coin = type_
         elif type_ is not None:
             raise BaseException(_("Unsupported coin types"))

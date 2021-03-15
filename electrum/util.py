@@ -947,7 +947,8 @@ def parse_URI(uri: str, on_pr: Callable = None, *, loop=None) -> dict:
     if bitcoin.is_address(address):
         res["coin"] = "btc"
     elif PyWalib.web3.isAddress(address):
-        res["coin"] = "eth"
+        coin = u.scheme if u.scheme in ("eth", "bsc", "heco") else "eth"
+        res["coin"] = coin
 
     qs = {k: v[0] for k, v in urllib.parse.parse_qs(query).items() if k and v}
 

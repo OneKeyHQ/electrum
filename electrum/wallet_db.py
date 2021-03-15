@@ -1121,7 +1121,7 @@ class WalletDB(JsonDB):
 
     def load_addresses(self, wallet_type):
         """ called from Abstract_Wallet.__init__ """
-        if wallet_type == 'imported' or wallet_type == "eth_imported":
+        if "imported" in wallet_type:
             self.imported_addresses = self.get_dict('addresses')  # type: Dict[str, dict]
         else:
             self.get_dict('addresses')
