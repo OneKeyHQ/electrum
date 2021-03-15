@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-02-03 17:03+0800\n"
+"POT-Creation-Date: 2021-03-15 11:56+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -330,7 +330,7 @@ msgid "Address is frozen"
 msgstr ""
 
 #: electrum/gui/qt/main_window.py:2474 electrum/plugins/hw_wallet/plugin.py:129
-#: electrum/wallet.py:541 electrum/wallet.py:1860
+#: electrum/wallet.py:555 electrum/wallet.py:1874
 msgid "Address not in wallet."
 msgstr ""
 
@@ -573,7 +573,7 @@ msgstr ""
 #: electrum/gui/qt/main_window.py:964 electrum/gui/qt/history_list.py:409
 #: electrum/gui/qt/address_list.py:126 electrum/gui/qt/address_list.py:127
 #: electrum/gui/text.py:118 electrum/gui/text.py:152 electrum/gui/stdio.py:112
-#: electrum/gui/stdio.py:124 electrum_gui/android/console.py:351
+#: electrum/gui/stdio.py:124
 msgid "Balance"
 msgstr ""
 
@@ -637,6 +637,8 @@ msgstr ""
 msgid "Blockchain"
 msgstr ""
 
+#: trezor/python-trezor/build/lib/trezorlib/transport/bluetooth.py:56
+#: trezor/python-trezor/build/lib/trezorlib/transport/bluetooth_ios.py:52
 #: trezor/python-trezor/src/trezorlib/transport/bluetooth.py:56
 #: trezor/python-trezor/src/trezorlib/transport/bluetooth_ios.py:52
 msgid "Bluetooth device not available"
@@ -689,7 +691,7 @@ msgstr ""
 msgid "CLTV expiry"
 msgstr ""
 
-#: electrum_gui/android/console.py:3874
+#: electrum_gui/android/console.py:3700
 msgid "CPFP(Child Pays For Parent) fails because it does not get the fee intormation of the original transaction."
 msgstr ""
 
@@ -721,6 +723,10 @@ msgstr ""
 msgid "Can't CPFP: unknown fee for parent transaction."
 msgstr ""
 
+#: electrum/plugins/trezor/trezor.py:386
+msgid "Can't Pair With Your Device"
+msgstr ""
+
 #: electrum/gui/kivy/uix/dialogs/tx_dialog.py:235
 #: electrum/gui/qt/main_window.py:3158
 msgid "Can't bump fee: unknown fee for original transaction."
@@ -750,16 +756,16 @@ msgstr ""
 msgid "Cannot broadcast transaction"
 msgstr ""
 
-#: electrum_gui/android/console.py:1981
+#: electrum_gui/android/console.py:2005
 msgid "Cannot broadcast transaction due to network connected exceptions"
 msgstr ""
 
 #. all outputs are is_mine and none of them are change.
 #. we bail out as it's unclear what the user would want!
 #. the coinchooser bump fee method is probably not a good idea in this case
-#: electrum/wallet.py:1326 electrum/wallet.py:1333 electrum/wallet.py:1337
-#: electrum/wallet.py:1381 electrum/wallet.py:1388 electrum/wallet.py:1428
-#: electrum/wallet.py:1448
+#: electrum/wallet.py:1340 electrum/wallet.py:1347 electrum/wallet.py:1351
+#: electrum/wallet.py:1395 electrum/wallet.py:1402 electrum/wallet.py:1442
+#: electrum/wallet.py:1462
 msgid "Cannot bump fee"
 msgstr ""
 
@@ -893,7 +899,7 @@ msgid "Check this box to request a new secret. You will need to retype your seed
 msgstr ""
 
 #: electrum/plugins/keepkey/clientbase.py:27
-#: electrum/plugins/trezor/clientbase.py:38
+#: electrum/plugins/trezor/clientbase.py:40
 #: electrum/plugins/safe_t/clientbase.py:29
 msgid "Check your {} device to continue"
 msgstr ""
@@ -957,7 +963,7 @@ msgid "Choose how to initialize your Digital Bitbox:"
 msgstr ""
 
 #. Initialization method
-#: electrum/plugins/trezor/trezor.py:224
+#: electrum/plugins/trezor/trezor.py:242
 msgid "Choose how you want to initialize your {}."
 msgstr ""
 
@@ -972,7 +978,7 @@ msgid ""
 "For the last two methods you input secrets on your keyboard and upload them to your {}, and so you should only do those on a computer you know to be trustworthy and free of malware."
 msgstr ""
 
-#: electrum/plugins/trezor/clientbase.py:35
+#: electrum/plugins/trezor/clientbase.py:37
 #: electrum/plugins/safe_t/clientbase.py:28
 msgid "Choose on your {} device where to enter your passphrase"
 msgstr ""
@@ -1083,7 +1089,7 @@ msgstr ""
 msgid "Combine"
 msgstr ""
 
-#: electrum/plugins/trezor/clientbase.py:23
+#: electrum/plugins/trezor/clientbase.py:25
 msgid "Complete the initialization process on your {} device"
 msgstr ""
 
@@ -1138,7 +1144,7 @@ msgstr ""
 msgid "Confirm action"
 msgstr ""
 
-#: electrum/plugins/trezor/clientbase.py:187
+#: electrum/plugins/trezor/clientbase.py:196
 msgid "Confirm anti_counterfeiting_verify on your {} device"
 msgstr ""
 
@@ -1156,83 +1162,83 @@ msgid "Confirm new password"
 msgstr ""
 
 #: electrum/plugins/keepkey/clientbase.py:23
-#: electrum/plugins/trezor/clientbase.py:29
+#: electrum/plugins/trezor/clientbase.py:31
 #: electrum/plugins/safe_t/clientbase.py:24
 msgid "Confirm on your {} device the message to sign"
 msgstr ""
 
 #: electrum/plugins/keepkey/clientbase.py:194
-#: electrum/plugins/trezor/clientbase.py:219
+#: electrum/plugins/trezor/clientbase.py:228
 #: electrum/plugins/safe_t/clientbase.py:196
 msgid "Confirm on your {} device to change your PIN"
 msgstr ""
 
 #: electrum/plugins/keepkey/clientbase.py:187
-#: electrum/plugins/trezor/clientbase.py:208
+#: electrum/plugins/trezor/clientbase.py:217
 #: electrum/plugins/safe_t/clientbase.py:189
 msgid "Confirm on your {} device to change your home screen"
 msgstr ""
 
 #: electrum/plugins/keepkey/clientbase.py:192
-#: electrum/plugins/trezor/clientbase.py:217
+#: electrum/plugins/trezor/clientbase.py:226
 #: electrum/plugins/safe_t/clientbase.py:194
 msgid "Confirm on your {} device to disable PIN protection"
 msgstr ""
 
 #: electrum/plugins/keepkey/clientbase.py:176
-#: electrum/plugins/trezor/clientbase.py:192
+#: electrum/plugins/trezor/clientbase.py:201
 #: electrum/plugins/safe_t/clientbase.py:178
 msgid "Confirm on your {} device to disable passphrases"
 msgstr ""
 
 #: electrum/plugins/keepkey/clientbase.py:178
-#: electrum/plugins/trezor/clientbase.py:194
+#: electrum/plugins/trezor/clientbase.py:203
 #: electrum/plugins/safe_t/clientbase.py:180
 msgid "Confirm on your {} device to enable passphrases"
 msgstr ""
 
 #: electrum/plugins/keepkey/clientbase.py:196
-#: electrum/plugins/trezor/clientbase.py:221
+#: electrum/plugins/trezor/clientbase.py:230
 #: electrum/plugins/safe_t/clientbase.py:198
 msgid "Confirm on your {} device to set a PIN"
 msgstr ""
 
 #: electrum/plugins/keepkey/clientbase.py:22
-#: electrum/plugins/trezor/clientbase.py:27
+#: electrum/plugins/trezor/clientbase.py:29
 #: electrum/plugins/safe_t/clientbase.py:23
 msgid "Confirm on your {} that you want to wipe it clean"
 msgstr ""
 
 #: electrum/plugins/keepkey/clientbase.py:183
-#: electrum/plugins/trezor/clientbase.py:204
+#: electrum/plugins/trezor/clientbase.py:213
 #: electrum/plugins/safe_t/clientbase.py:185
 msgid "Confirm the new label on your {} device"
 msgstr ""
 
-#: electrum/plugins/trezor/clientbase.py:200
+#: electrum/plugins/trezor/clientbase.py:209
 msgid "Confirm the new language on your {} device"
 msgstr ""
 
 #: electrum/plugins/keepkey/clientbase.py:24
-#: electrum/plugins/trezor/clientbase.py:31
+#: electrum/plugins/trezor/clientbase.py:33
 #: electrum/plugins/safe_t/clientbase.py:25
 msgid "Confirm the total amount spent and the transaction fee on your {} device"
 msgstr ""
 
 #: electrum/plugins/keepkey/clientbase.py:19
-#: electrum/plugins/trezor/clientbase.py:21
+#: electrum/plugins/trezor/clientbase.py:23
 #: electrum/plugins/safe_t/clientbase.py:20
 msgid "Confirm the transaction output on your {} device"
 msgstr ""
 
 #: electrum/plugins/keepkey/clientbase.py:26
-#: electrum/plugins/trezor/clientbase.py:33
+#: electrum/plugins/trezor/clientbase.py:35
 #: electrum/plugins/safe_t/clientbase.py:27
 msgid "Confirm wallet address on your {} device"
 msgstr ""
 
-#: electrum/pywalib.py:511 electrum/pywalib.py:551 electrum/pywalib.py:553
-#: electrum_gui/android/console.py:1462
+#: electrum/pywalib.py:646 electrum/pywalib.py:648 electrum/pywalib.py:694
+#: electrum/pywalib.py:696 electrum_gui/android/console.py:1483
 msgid "Confirmed"
 msgstr ""
 
@@ -1411,7 +1417,7 @@ msgstr ""
 msgid "Current wallet does not support exporting Mnemonic."
 msgstr ""
 
-#: electrum_gui/android/console.py:2035
+#: electrum_gui/android/console.py:2060
 msgid "Current wallet does not support signature message:{}"
 msgstr ""
 
@@ -1625,7 +1631,7 @@ msgstr ""
 msgid "Distributed by Electrum Technologies GmbH"
 msgstr ""
 
-#: electrum_gui/android/console.py:127
+#: electrum_gui/android/console.py:126
 msgid "Do not enter code here that you don't understand. Executing the wrong code could lead to your coins being irreversibly lost."
 msgstr ""
 
@@ -1693,7 +1699,7 @@ msgstr ""
 msgid "Due to a bug, old versions of Electrum will NOT be creating the same wallet as newer versions or other software."
 msgstr ""
 
-#: electrum_gui/android/console.py:859
+#: electrum_gui/android/console.py:863
 msgid "Dust transaction"
 msgstr ""
 
@@ -1877,7 +1883,7 @@ msgstr ""
 msgid "Encryption and decryption are currently not supported for {}"
 msgstr ""
 
-#: electrum/plugins/keepkey/keepkey.py:38 electrum/plugins/trezor/trezor.py:76
+#: electrum/plugins/keepkey/keepkey.py:38 electrum/plugins/trezor/trezor.py:75
 #: electrum/plugins/safe_t/safe_t.py:36
 msgid "Encryption and decryption are not implemented by {}"
 msgstr ""
@@ -1946,7 +1952,7 @@ msgid "Enter a list of outputs in the 'Pay to' field."
 msgstr ""
 
 #: electrum/plugins/keepkey/clientbase.py:52
-#: electrum/plugins/trezor/clientbase.py:336
+#: electrum/plugins/trezor/clientbase.py:372
 #: electrum/plugins/safe_t/clientbase.py:54
 msgid "Enter a new PIN for your {}:"
 msgstr ""
@@ -1956,7 +1962,7 @@ msgid "Enter a new password below."
 msgstr ""
 
 #: electrum/plugins/keepkey/clientbase.py:69
-#: electrum/plugins/trezor/clientbase.py:362
+#: electrum/plugins/trezor/clientbase.py:398
 #: electrum/plugins/safe_t/clientbase.py:74
 msgid "Enter a passphrase to generate this wallet.  Each time you use this wallet your {} will prompt you for the passphrase.  If you forget the passphrase you cannot access the bitcoins in the wallet."
 msgstr ""
@@ -2009,7 +2015,7 @@ msgid "Enter the master private key beginning with xprv:"
 msgstr ""
 
 #: electrum/plugins/keepkey/clientbase.py:74
-#: electrum/plugins/trezor/clientbase.py:370
+#: electrum/plugins/trezor/clientbase.py:406
 #: electrum/plugins/safe_t/clientbase.py:79
 msgid "Enter the passphrase to unlock this wallet:"
 msgstr ""
@@ -2060,7 +2066,7 @@ msgid "Enter your PIN code to proceed"
 msgstr ""
 
 #: electrum/plugins/keepkey/clientbase.py:57
-#: electrum/plugins/trezor/clientbase.py:347
+#: electrum/plugins/trezor/clientbase.py:383
 #: electrum/plugins/safe_t/clientbase.py:59
 msgid "Enter your current {} PIN:"
 msgstr ""
@@ -2164,7 +2170,7 @@ msgstr ""
 msgid "Estimate"
 msgstr ""
 
-#: electrum_gui/android/console.py:3913
+#: electrum_gui/android/console.py:3742
 msgid "Exceeding the Maximum fee limit."
 msgstr ""
 
@@ -2262,19 +2268,19 @@ msgstr ""
 msgid "Failed to display QR code."
 msgstr ""
 
-#: electrum/util.py:192
+#: electrum/util.py:200
 msgid "Failed to export to file."
 msgstr ""
 
-#: electrum_gui/android/console.py:1685
+#: electrum_gui/android/console.py:1713
 msgid "Failed to get transaction details."
 msgstr ""
 
-#: electrum/util.py:176
+#: electrum/util.py:184
 msgid "Failed to get transaction."
 msgstr ""
 
-#: electrum/util.py:184
+#: electrum/util.py:192
 msgid "Failed to import from file."
 msgstr ""
 
@@ -2283,12 +2289,16 @@ msgstr ""
 msgid "Failed to load file {}"
 msgstr ""
 
-#: electrum_gui/android/console.py:1875
-msgid "Failed to open file."
+#: electrum_gui/android/console.py:1903
+msgid "Failed to open file.{}"
 msgstr ""
 
 #: electrum/plugins/cosigner_pool/qt.py:189
 msgid "Failed to send transaction to cosigning pool"
+msgstr ""
+
+#: electrum/util.py:152
+msgid "Failed to switch wallets"
 msgstr ""
 
 #: electrum/gui/qt/main_window.py:2245
@@ -2333,7 +2343,7 @@ msgstr ""
 msgid "File Backup"
 msgstr ""
 
-#: electrum/util.py:172
+#: electrum/util.py:180
 msgid "File already exists."
 msgstr ""
 
@@ -2362,7 +2372,7 @@ msgstr ""
 msgid "Firmware Version"
 msgstr ""
 
-#: electrum_gui/android/console.py:2600
+#: electrum_gui/android/hardware.py:427
 msgid "Firmware not compatible with your equipment, Aborting."
 msgstr ""
 
@@ -2692,7 +2702,7 @@ msgstr ""
 msgid "If you lose your wallet file, the only thing you can do with a backup is to request your channel to be closed, so that your funds will be sent on-chain."
 msgstr ""
 
-#: electrum/wallet.py:2144
+#: electrum/wallet.py:2161
 msgid ""
 "If you received this transaction from an untrusted device, do not accept to sign it more than once,\n"
 "otherwise you could end up paying a different fee."
@@ -2798,23 +2808,23 @@ msgstr ""
 msgid "Incorrect Bip39 mnemonic format."
 msgstr ""
 
-#: electrum_gui/android/console.py:3050
+#: electrum_gui/android/console.py:2830
 msgid "Incorrect address or pubkey."
 msgstr ""
 
-#: electrum/util.py:148
+#: electrum/util.py:156
 msgid "Incorrect bitcoin address."
 msgstr ""
 
-#: electrum/util.py:152
+#: electrum/util.py:160
 msgid "Incorrect eth address."
 msgstr ""
 
-#: electrum_gui/android/console.py:2920
+#: electrum_gui/android/console.py:2659
 msgid "Incorrect eth keystore."
 msgstr ""
 
-#: electrum_gui/android/console.py:2893
+#: electrum_gui/android/console.py:2632
 msgid "Incorrect mnemonic format."
 msgstr ""
 
@@ -2826,11 +2836,11 @@ msgstr ""
 msgid "Incorrect password."
 msgstr ""
 
-#: electrum/util.py:164
+#: electrum/util.py:172
 msgid "Incorrect private key."
 msgstr ""
 
-#: electrum/util.py:160
+#: electrum/util.py:168
 msgid "Incorrect public key."
 msgstr ""
 
@@ -2868,7 +2878,7 @@ msgid "Initialization of Ledger HW devices is currently disabled."
 msgstr ""
 
 #: electrum/plugins/keepkey/keepkey.py:224
-#: electrum/plugins/trezor/trezor.py:245 electrum/plugins/safe_t/safe_t.py:186
+#: electrum/plugins/trezor/trezor.py:263 electrum/plugins/safe_t/safe_t.py:186
 msgid "Initialize Device"
 msgstr ""
 
@@ -2937,7 +2947,7 @@ msgid "Invalid Bitcoin address"
 msgstr ""
 
 #: electrum/gui/qt/main_window.py:2468 electrum/gui/qt/main_window.py:2496
-#: electrum/wallet.py:1858
+#: electrum/wallet.py:1872
 msgid "Invalid Bitcoin address."
 msgstr ""
 
@@ -2945,7 +2955,7 @@ msgstr ""
 msgid "Invalid Fee"
 msgstr ""
 
-#: electrum/util.py:1099
+#: electrum/util.py:1111
 msgid "Invalid JSON code."
 msgstr ""
 
@@ -2956,6 +2966,10 @@ msgstr ""
 #: electrum/gui/kivy/main_window.py:1110
 #: electrum/gui/kivy/uix/dialogs/tx_dialog.py:267
 msgid "Invalid PIN"
+msgstr ""
+
+#: trezor/python-trezor/src/trezorlib/client.py:180
+msgid "Invalid PIN provided"
 msgstr ""
 
 #: electrum/gui/qt/main_window.py:2572
@@ -3108,7 +3122,7 @@ msgstr ""
 
 #. Must be short as QT doesn't word-wrap radio button text
 #: electrum/plugins/keepkey/keepkey.py:207
-#: electrum/plugins/trezor/trezor.py:227 electrum/plugins/safe_t/safe_t.py:169
+#: electrum/plugins/trezor/trezor.py:245 electrum/plugins/safe_t/safe_t.py:169
 msgid "Let the device generate a completely new seed randomly"
 msgstr ""
 
@@ -3213,7 +3227,7 @@ msgstr ""
 
 #: electrum/gui/kivy/uix/dialogs/lightning_channels.py:447
 #: electrum/gui/qt/channels_list.py:42 electrum/wallet.py:91
-#: electrum/wallet.py:599
+#: electrum/wallet.py:613
 msgid "Local"
 msgstr ""
 
@@ -3332,7 +3346,7 @@ msgid "Missing previous tx for legacy input."
 msgstr ""
 
 #: electrum/plugins/bitbox02/bitbox02.py:369
-#: electrum/plugins/trezor/trezor.py:97
+#: electrum/plugins/trezor/trezor.py:114
 msgid "Missing previous tx."
 msgstr ""
 
@@ -3428,7 +3442,7 @@ msgstr ""
 msgid "No"
 msgstr ""
 
-#: electrum/util.py:271 electrum/util.py:277
+#: electrum/util.py:279 electrum/util.py:285
 msgid "No Data"
 msgstr ""
 
@@ -3440,7 +3454,7 @@ msgstr ""
 msgid "No Wallet"
 msgstr ""
 
-#: electrum_gui/android/console.py:3066
+#: electrum_gui/android/console.py:2847
 msgid "No address available."
 msgstr ""
 
@@ -3488,7 +3502,7 @@ msgstr ""
 msgid "No path found"
 msgstr ""
 
-#: electrum_gui/android/console.py:3101
+#: electrum_gui/android/console.py:2891
 msgid "No private key available."
 msgstr ""
 
@@ -3514,7 +3528,7 @@ msgid "Nodes"
 msgstr ""
 
 #: electrum/gui/kivy/main_window.py:134 electrum/gui/qt/history_list.py:475
-#: electrum/gui/qt/settings_dialog.py:353 electrum_gui/android/console.py:427
+#: electrum/gui/qt/settings_dialog.py:353 electrum_gui/android/console.py:434
 msgid "None"
 msgstr ""
 
@@ -3557,7 +3571,11 @@ msgstr ""
 msgid "Not enough funds on address."
 msgstr ""
 
-#: electrum/wallet.py:588
+#: electrum/plugins/trezor/trezor.py:213
+msgid "Not found the point device"
+msgstr ""
+
+#: electrum/wallet.py:602
 msgid "Not verified"
 msgstr ""
 
@@ -3621,7 +3639,7 @@ msgid "OR"
 msgstr ""
 
 #: electrum/gui/kivy/main_window.py:889 electrum/gui/qt/main_window.py:944
-#: electrum/gui/text.py:146 electrum_gui/android/console.py:338
+#: electrum/gui/text.py:146
 msgid "Offline"
 msgstr ""
 
@@ -3723,7 +3741,7 @@ msgid "Outdated device firmware"
 msgstr ""
 
 #: electrum/plugins/keepkey/keepkey.py:170
-#: electrum/plugins/trezor/trezor.py:312 electrum/plugins/safe_t/safe_t.py:132
+#: electrum/plugins/trezor/trezor.py:330 electrum/plugins/safe_t/safe_t.py:132
 msgid "Outdated {} firmware for device labelled {}. Please download the updated firmware from {}"
 msgstr ""
 
@@ -3784,7 +3802,7 @@ msgstr ""
 msgid "Paid"
 msgstr ""
 
-#: electrum/wallet.py:607
+#: electrum/wallet.py:621
 msgid "Partially signed"
 msgstr ""
 
@@ -3962,7 +3980,7 @@ msgstr ""
 msgid "Please confirm"
 msgstr ""
 
-#: electrum/util.py:156
+#: electrum/util.py:164
 msgid "Please create HD wallet first."
 msgstr ""
 
@@ -3987,7 +4005,7 @@ msgstr ""
 msgid "Please enter your e-mail address"
 msgstr ""
 
-#: electrum/plugins/trezor/clientbase.py:37
+#: electrum/plugins/trezor/clientbase.py:39
 msgid "Please enter your passphrase on the {} device"
 msgstr ""
 
@@ -4071,7 +4089,7 @@ msgstr ""
 msgid "Please type your seed phrase using the virtual keyboard."
 msgstr ""
 
-#: electrum_gui/android/console.py:1024
+#: electrum_gui/android/console.py:1044
 msgid "Please use unconfirmed utxo."
 msgstr ""
 
@@ -4250,7 +4268,7 @@ msgstr ""
 msgid "R/W error accessing path"
 msgstr ""
 
-#: electrum_gui/android/console.py:3787
+#: electrum_gui/android/console.py:3615
 msgid "RBF(Replace-By-Fee) fails because it does not get the fee intormation of the original transaction."
 msgstr ""
 
@@ -4267,7 +4285,7 @@ msgid "Raw Transaction"
 msgstr ""
 
 #: electrum/plugins/keepkey/clientbase.py:54
-#: electrum/plugins/trezor/clientbase.py:341
+#: electrum/plugins/trezor/clientbase.py:377
 #: electrum/plugins/safe_t/clientbase.py:56
 msgid ""
 "Re-enter the new PIN for your {}.\n"
@@ -4321,7 +4339,7 @@ msgid "Recipient of the funds."
 msgstr ""
 
 #: electrum/plugins/keepkey/keepkey.py:208
-#: electrum/plugins/trezor/trezor.py:228 electrum/plugins/safe_t/safe_t.py:170
+#: electrum/plugins/trezor/trezor.py:246 electrum/plugins/safe_t/safe_t.py:170
 msgid "Recover from a seed you have previously written down"
 msgstr ""
 
@@ -4698,8 +4716,9 @@ msgstr ""
 msgid "Sending crash report..."
 msgstr ""
 
-#: electrum/pywalib.py:506 electrum/pywalib.py:545 electrum/pywalib.py:546
-#: electrum_gui/android/console.py:1462 electrum_gui/android/console.py:1577
+#: electrum/pywalib.py:640 electrum/pywalib.py:641 electrum/pywalib.py:688
+#: electrum/pywalib.py:689 electrum_gui/android/console.py:1485
+#: electrum_gui/android/console.py:1600
 msgid "Sending failure"
 msgstr ""
 
@@ -4731,7 +4750,6 @@ msgid "Server hosting your email account"
 msgstr ""
 
 #: electrum/gui/kivy/main_window.py:899 electrum/gui/qt/main_window.py:960
-#: electrum_gui/android/console.py:348
 msgid "Server is lagging ({} blocks)"
 msgstr ""
 
@@ -4882,7 +4900,7 @@ msgstr ""
 msgid "Signature verified"
 msgstr ""
 
-#: electrum/wallet.py:603
+#: electrum/wallet.py:617
 msgid "Signed"
 msgstr ""
 
@@ -4998,12 +5016,12 @@ msgid "Status:"
 msgstr ""
 
 #: electrum/plugins/keepkey/clientbase.py:89
-#: electrum/plugins/trezor/clientbase.py:404
+#: electrum/plugins/trezor/clientbase.py:440
 #: electrum/plugins/safe_t/clientbase.py:97
 msgid "Step {}/24.  Enter seed word as explained on your {}:"
 msgstr ""
 
-#: electrum_gui/android/console.py:3911
+#: electrum_gui/android/console.py:3740
 msgid "Sub-transaction fee error."
 msgstr ""
 
@@ -5056,13 +5074,12 @@ msgstr ""
 msgid "Sweep private keys"
 msgstr ""
 
-#: electrum_gui/android/console.py:2565
+#: electrum_gui/android/hardware.py:394
 msgid "Switch the device to bootloader mode."
 msgstr ""
 
 #: electrum/gui/kivy/main_window.py:897 electrum/gui/qt/main_window.py:957
 #: electrum/gui/text.py:149 electrum/gui/stdio.py:121
-#: electrum_gui/android/console.py:346
 msgid "Synchronizing..."
 msgstr ""
 
@@ -5129,7 +5146,7 @@ msgid ""
 msgstr ""
 
 #: electrum/plugins/keepkey/clientbase.py:61
-#: electrum/plugins/trezor/clientbase.py:353
+#: electrum/plugins/trezor/clientbase.py:389
 #: electrum/plugins/safe_t/clientbase.py:63
 msgid "The PIN cannot be longer than 9 characters."
 msgstr ""
@@ -5138,7 +5155,7 @@ msgstr ""
 msgid "The SSL certificate provided by the main server did not match the fingerprint passed in with the --serverfingerprint option."
 msgstr ""
 
-#: electrum_gui/android/console.py:2032
+#: electrum_gui/android/console.py:2066
 msgid "The address is not in the current wallet."
 msgstr ""
 
@@ -5150,7 +5167,7 @@ msgstr ""
 msgid "The amount will be displayed in red if you do not have enough funds in your wallet."
 msgstr ""
 
-#: electrum_gui/android/console.py:4238
+#: electrum_gui/android/console.py:4159
 msgid "The background process does not start and it is recommended to restart the application."
 msgstr ""
 
@@ -5163,12 +5180,12 @@ msgid "The description is not sent to the recipient of the funds. It is stored i
 msgstr ""
 
 #: electrum/plugins/keepkey/keepkey.py:246
-#: electrum/plugins/trezor/trezor.py:273 electrum/plugins/trezor/qt.py:265
+#: electrum/plugins/trezor/trezor.py:291 electrum/plugins/trezor/qt.py:265
 #: electrum/plugins/safe_t/safe_t.py:217
 msgid "The device was disconnected."
 msgstr ""
 
-#: electrum/wallet.py:2138
+#: electrum/wallet.py:2155
 msgid ""
 "The fee could not be verified. Signing non-segwit inputs is risky:\n"
 "if this transaction was maliciously modified before you sign,\n"
@@ -5207,13 +5224,13 @@ msgstr ""
 msgid "The following inputs could not be imported"
 msgstr ""
 
-#: electrum/wallet.py:2133
+#: electrum/wallet.py:2150
 msgid ""
 "The input amounts could not be verified as the previous transactions are missing.\n"
 "The amount of money being spent CANNOT be verified."
 msgstr ""
 
-#: electrum/wallet.py:1337
+#: electrum/wallet.py:1351
 msgid "The new fee rate needs to be higher than the old fee rate."
 msgstr ""
 
@@ -5221,7 +5238,7 @@ msgstr ""
 msgid "The next step will generate the seed of your wallet.  This seed will NOT be saved in your computer, and it must be stored on paper.  To be safe from malware, you may want to do this on an offline computer, and move your wallet later to an online computer."
 msgstr ""
 
-#: electrum/util.py:168
+#: electrum/util.py:176
 msgid "The number of wallets created is limited, currently up to 20 HD wallets can be created."
 msgstr ""
 
@@ -5348,12 +5365,12 @@ msgstr ""
 msgid "This invoice has expired"
 msgstr ""
 
-#: electrum/gui/qt/main_window.py:2719 electrum/wallet.py:537
+#: electrum/gui/qt/main_window.py:2719 electrum/wallet.py:551
 msgid "This is a watching-only wallet"
 msgstr ""
 
 #: electrum/gui/qt/main_window.py:2471 electrum/gui/qt/main_window.py:2551
-#: electrum_gui/android/console.py:2030
+#: electrum_gui/android/console.py:2064
 msgid "This is a watching-only wallet."
 msgstr ""
 
@@ -5430,7 +5447,7 @@ msgstr ""
 #: electrum/plugins/keepkey/keepkey.py:290
 #: electrum/plugins/bitbox02/bitbox02.py:618
 #: electrum/plugins/coldcard/coldcard.py:535
-#: electrum/plugins/trezor/trezor.py:327 electrum/plugins/safe_t/safe_t.py:264
+#: electrum/plugins/trezor/trezor.py:345 electrum/plugins/safe_t/safe_t.py:264
 msgid "This type of script is not supported with {}."
 msgstr ""
 
@@ -5549,7 +5566,7 @@ msgid "Toggle Encryption"
 msgstr ""
 
 #: electrum/plugins/keepkey/clientbase.py:83
-#: electrum/plugins/trezor/clientbase.py:381
+#: electrum/plugins/trezor/clientbase.py:417
 #: electrum/plugins/safe_t/clientbase.py:88
 msgid "Too long passphrase ({} > 50 chars)."
 msgstr ""
@@ -5600,7 +5617,7 @@ msgstr ""
 msgid "Transaction exported successfully"
 msgstr ""
 
-#: electrum_gui/android/console.py:1983
+#: electrum_gui/android/console.py:2007
 msgid "Transaction formatter error"
 msgstr ""
 
@@ -5612,7 +5629,7 @@ msgstr ""
 msgid "Transaction is unrelated to this wallet."
 msgstr ""
 
-#: electrum_gui/android/console.py:1422
+#: electrum_gui/android/console.py:1443
 msgid "Transaction not related to the current wallet."
 msgstr ""
 
@@ -5651,6 +5668,10 @@ msgstr ""
 
 #: electrum/plugins/trezor/__init__.py:6
 msgid "Trezor wallet"
+msgstr ""
+
+#: electrum_gui/android/hardware.py:425
+msgid "Trezorctl doesn't know your device version. Aborting."
 msgstr ""
 
 #: electrum/gui/qt/main_window.py:2308
@@ -5740,13 +5761,13 @@ msgstr ""
 msgid "Unable to send report"
 msgstr ""
 
-#: electrum/MutiBase.py:138
+#: electrum/MutiBase.py:111
 msgid "Unavailable xpub"
 msgstr ""
 
-#: electrum/pywalib.py:504 electrum/pywalib.py:542 electrum/pywalib.py:543
-#: electrum/wallet.py:88 electrum/wallet.py:590
-#: electrum_gui/android/console.py:1440 electrum_gui/android/console.py:1460
+#: electrum/pywalib.py:637 electrum/pywalib.py:638 electrum/pywalib.py:685
+#: electrum/pywalib.py:686 electrum/wallet.py:88 electrum/wallet.py:604
+#: electrum_gui/android/console.py:1461 electrum_gui/android/console.py:1481
 msgid "Unconfirmed"
 msgstr ""
 
@@ -5795,7 +5816,7 @@ msgstr ""
 #. a make_tx, so the txid is unreliable, hence:
 #: electrum/gui/qt/invoice_list.py:115
 #: electrum/gui/qt/transaction_dialog.py:426 electrum/lnutil.py:281
-#: electrum/pywalib.py:517 electrum/util.py:777 electrum/invoices.py:46
+#: electrum/pywalib.py:657 electrum/util.py:789 electrum/invoices.py:46
 msgid "Unknown"
 msgstr ""
 
@@ -5812,12 +5833,16 @@ msgstr ""
 msgid "Unrealized gains"
 msgstr ""
 
-#: electrum/wallet.py:607
+#: electrum/wallet.py:621
 msgid "Unsigned"
 msgstr ""
 
 #: electrum_gui/android/sort_wallet_list.py:73
 msgid "Unsupported coin types"
+msgstr ""
+
+#: electrum/util.py:148
+msgid "Unsupported coin types."
 msgstr ""
 
 #: electrum/crypto.py:175
@@ -5837,7 +5862,7 @@ msgstr ""
 msgid "Update check failed"
 msgstr ""
 
-#: electrum_gui/android/console.py:2621
+#: electrum_gui/android/hardware.py:40
 msgid "Update failed: {}"
 msgstr ""
 
@@ -5992,7 +6017,7 @@ msgstr ""
 msgid "WARNING"
 msgstr ""
 
-#: electrum_gui/android/console.py:126
+#: electrum_gui/android/console.py:123
 msgid "WARNING!"
 msgstr ""
 
@@ -6020,6 +6045,8 @@ msgstr ""
 msgid "Waiting for TrustedCoin server to sign transaction..."
 msgstr ""
 
+#: trezor/python-trezor/build/lib/trezorlib/transport/bluetooth.py:73
+#: trezor/python-trezor/build/lib/trezorlib/transport/bluetooth_ios.py:66
 #: trezor/python-trezor/src/trezorlib/transport/bluetooth.py:73
 #: trezor/python-trezor/src/trezorlib/transport/bluetooth_ios.py:66
 msgid "Waiting for send timeout"
@@ -6101,8 +6128,8 @@ msgstr ""
 #: electrum/gui/qt/transaction_dialog.py:231
 #: electrum/gui/qt/transaction_dialog.py:480
 #: electrum/plugins/revealer/qt.py:133 electrum/plugins/revealer/qt.py:186
-#: electrum/plugins/revealer/qt.py:219 electrum/wallet.py:2132
-#: electrum/wallet.py:2137 electrum/wallet.py:2143
+#: electrum/plugins/revealer/qt.py:219 electrum/wallet.py:2149
+#: electrum/wallet.py:2154 electrum/wallet.py:2160
 msgid "Warning"
 msgstr ""
 
@@ -6176,7 +6203,7 @@ msgid "Would you like to be notified when there is a newer version of Electrum a
 msgstr ""
 
 #: electrum/plugins/keepkey/clientbase.py:21
-#: electrum/plugins/trezor/clientbase.py:25
+#: electrum/plugins/trezor/clientbase.py:27
 #: electrum/plugins/safe_t/clientbase.py:22
 msgid "Write down the seed word shown on your {}"
 msgstr ""
@@ -6190,7 +6217,7 @@ msgid "Wrong PIN"
 msgstr ""
 
 #: electrum/base_wizard.py:528 electrum/base_wizard.py:536
-#: electrum/MutiBase.py:176
+#: electrum/MutiBase.py:149
 msgid "Wrong key type"
 msgstr ""
 
@@ -6270,7 +6297,7 @@ msgstr ""
 msgid "You have multiple consecutive whitespaces or leading/trailing whitespaces in your passphrase."
 msgstr ""
 
-#: electrum_gui/android/console.py:4248
+#: electrum_gui/android/console.py:4170
 msgid "You haven't chosen a wallet yet."
 msgstr ""
 
@@ -6303,7 +6330,7 @@ msgstr ""
 msgid "You need to create a separate Electrum wallet for each passphrase you use as they each generate different addresses.  Changing your passphrase does not lose other wallets, each is still accessible behind its own passphrase."
 msgstr ""
 
-#: electrum_gui/android/console.py:2595
+#: electrum_gui/android/hardware.py:421
 msgid "You need to upgrade the bootloader immediately."
 msgstr ""
 
@@ -6320,7 +6347,7 @@ msgstr ""
 msgid "You should enable PIN protection.  Your PIN is the only protection for your bitcoins if your device is lost or stolen."
 msgstr ""
 
-#: electrum/plugins/trezor/trezor.py:263 electrum/plugins/safe_t/safe_t.py:206
+#: electrum/plugins/trezor/trezor.py:281 electrum/plugins/safe_t/safe_t.py:206
 msgid ""
 "You will be asked to enter 24 words regardless of your seed's actual length.  If you enter a word incorrectly or misspell it, you cannot change it or go back - you will need to start again from the beginning.\n"
 "\n"
@@ -6361,7 +6388,7 @@ msgstr ""
 msgid "Your device might not have support for this functionality."
 msgstr ""
 
-#: electrum_gui/android/console.py:2593
+#: electrum_gui/android/hardware.py:419
 msgid "Your device's firmware version is too low. Aborting."
 msgstr ""
 
@@ -6494,7 +6521,7 @@ msgstr ""
 msgid "add invoice timed out"
 msgstr ""
 
-#: electrum/eth_wallet.py:782 electrum/wallet.py:2246
+#: electrum/eth_wallet.py:820 electrum/wallet.py:2263
 msgid "address already in wallet"
 msgstr ""
 
@@ -6526,11 +6553,11 @@ msgstr ""
 msgid "cosigner"
 msgstr ""
 
-#: electrum/wallet.py:1448
+#: electrum/wallet.py:1462
 msgid "could not find suitable outputs"
 msgstr ""
 
-#: electrum/wallet.py:1333
+#: electrum/wallet.py:1347
 msgid "current fee unknown"
 msgstr ""
 
@@ -6542,11 +6569,11 @@ msgstr ""
 msgid "initialized"
 msgstr ""
 
-#: electrum/eth_wallet.py:778 electrum/wallet.py:2243
+#: electrum/eth_wallet.py:816 electrum/wallet.py:2260
 msgid "invalid address"
 msgstr ""
 
-#: electrum/eth_wallet.py:824 electrum/wallet.py:2325
+#: electrum/eth_wallet.py:858 electrum/wallet.py:2342
 msgid "invalid private key"
 msgstr ""
 
@@ -6570,7 +6597,7 @@ msgstr ""
 msgid "more information at <a href=\"https://revealer.cc/faq\">https://revealer.cc/faq</a>"
 msgstr ""
 
-#: electrum/wallet.py:2328
+#: electrum/wallet.py:2345
 msgid "not implemented type"
 msgstr ""
 
@@ -6594,6 +6621,8 @@ msgstr ""
 msgid "proxy enabled"
 msgstr ""
 
+#: trezor/python-trezor/build/lib/trezorlib/transport/bluetooth.py:92
+#: trezor/python-trezor/build/lib/trezorlib/transport/bluetooth_ios.py:85
 #: trezor/python-trezor/src/trezorlib/transport/bluetooth.py:92
 #: trezor/python-trezor/src/trezorlib/transport/bluetooth_ios.py:85
 msgid "read ble response timeout"
@@ -6615,11 +6644,12 @@ msgstr ""
 msgid "seed"
 msgstr ""
 
+#: trezor/python-trezor/build/lib/trezorlib/transport/bluetooth.py:70
 #: trezor/python-trezor/src/trezorlib/transport/bluetooth.py:70
 msgid "send failed"
 msgstr ""
 
-#: electrum/wallet.py:1326
+#: electrum/wallet.py:1340
 msgid "transaction is final"
 msgstr ""
 
@@ -6629,7 +6659,7 @@ msgstr ""
 
 #: electrum/gui/kivy/uix/dialogs/tx_dialog.py:183
 #: electrum/gui/kivy/uix/dialogs/tx_dialog.py:184
-#: electrum/gui/qt/transaction_dialog.py:474 electrum/wallet.py:1055
+#: electrum/gui/qt/transaction_dialog.py:474 electrum/wallet.py:1069
 msgid "unknown"
 msgstr ""
 
@@ -6637,7 +6667,7 @@ msgstr ""
 msgid "unknown parser {!r} (choices: {})"
 msgstr ""
 
-#: electrum/plugins/trezor/clientbase.py:212
+#: electrum/plugins/trezor/clientbase.py:221
 msgid "used in oneKey app only"
 msgstr ""
 
@@ -6675,7 +6705,7 @@ msgstr ""
 msgid "{} channels"
 msgstr ""
 
-#: electrum/pywalib.py:509 electrum/pywalib.py:549 electrum/wallet.py:586
+#: electrum/pywalib.py:644 electrum/pywalib.py:692 electrum/wallet.py:600
 msgid "{} confirmations"
 msgstr ""
 
