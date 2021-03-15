@@ -23,14 +23,13 @@ try:
     import trezorlib
     import trezorlib.transport
     from trezorlib.transport.bridge import BridgeTransport, call_bridge
-
     from .clientbase import TrezorClientBase
 
     from trezorlib.messages import (
         Capability, BackupType, RecoveryDeviceType, HDNodeType, HDNodePathType,
         InputScriptType, OutputScriptType, MultisigRedeemScriptType,
         TxInputType, TxOutputType, TxOutputBinType, TransactionType, SignTx)
-
+    from trezorlib.exceptions import PinException, TrezorException
     from trezorlib.client import PASSPHRASE_ON_DEVICE
 
     TREZORLIB = True
@@ -79,8 +78,7 @@ class TrezorKeyStore(Hardware_KeyStore):
         if not self.plugin.client:
             raise Exception("client is None")
         derivation = self.get_derivation_prefix()
-        if not self.plugin.force_pair_with_xpub(self.plugin.client, self.xpub, derivation):
-            raise Exception("Can't Pair With You Device")
+        self.plugin.force_pair_with_xpub(self.plugin.client, self.xpub, derivation)
 
     def verify_message(self, address, message, sig):
         self.wallet_pair_with_hw()
@@ -120,6 +118,7 @@ class TrezorKeyStore(Hardware_KeyStore):
 
     def sign_eth_tx(self, *args, **kwargs):
         return self.plugin.sign_eth_tx(self, *args, **kwargs)
+
 
 class TrezorInitSettings(NamedTuple):
     word_count: int
@@ -192,26 +191,24 @@ class TrezorPlugin(HW_PluginBase):
         try:
             self.logger.info(f"connecting to device at {device.path}")
             transport = trezorlib.transport.get_transport(device.path)
-        except BaseException as e:
+        except Exception as e:
             self.logger.info(f"cannot connect at {device.path} {e}")
-            return None
-
-        if not transport:
-            self.logger.info(f"cannot connect at {device.path}")
-            return
-
-        self.logger.info(f"connected to device at {device.path}")
-        # note that this call can still raise!
-        return TrezorClientBase(transport, handler, self)
+            raise TrezorException(_("The point device is not available"))
+        else:
+            if not transport:
+                self.logger.info(f"cannot connect at {device.path}")
+                raise TrezorException(_("The point device is not available"))
+            self.logger.info(f"connected to device at {device.path}")
+            # note that this call can still raise!
+            return TrezorClientBase(transport, handler, self)
 
     def get_client(self, path='android_usb', ui=None, force_pair=None) -> 'TrezorClientBase':
         if self.client is not None and self.path == path:
             return self.client
-        # plugin = self.plugin.get_plugin("trezor")
         client_list = self.enumerate()
         _logger.info(f"total device find====={client_list}=====point device=={path}")
         device = [cli for cli in client_list if cli.path == path or cli.path == 'android_usb']
-        assert len(device) != 0, "Not found the point device"
+        assert len(device) != 0, _("Not found the point device")
         client = self.create_client(device[0], ui)
         if not client.features.bootloader_mode:
             if client.features.onekey_version or client.features.major_version > 1 or (
@@ -377,13 +374,15 @@ class TrezorPlugin(HW_PluginBase):
         if client:
             try:
                 client_xpub = client.get_xpub(derivation, xtype)
-            except (UserCancelled, RuntimeError):
-                # Bad / cancelled PIN / passphrase
-                client_xpub = None
-            if client_xpub == xpub:
-                return True
+            except PinException:
+                # may one of PinInvalid, PinCancelled, PinExpected.
+                raise
+            except TrezorException:
+                # may occur when user cancel input
+                raise UserCancelled()
             else:
-                return False
+                if client_xpub != xpub:
+                    raise Exception(_("Can't Pair With Your Device"))
 
     def sign_transaction(self, keystore, tx: PartialTransaction, prev_tx):
         prev_tx = {bfh(txhash): self.electrum_tx_to_txtype(tx) for txhash, tx in prev_tx.items()}
@@ -391,8 +390,7 @@ class TrezorPlugin(HW_PluginBase):
             raise Exception("client is None")
         xpub = keystore.xpub
         derivation = keystore.get_derivation_prefix()
-        if not self.force_pair_with_xpub(self.client, xpub, derivation):
-            raise Exception("Can't Pair With You Device When Sign tx")
+        self.force_pair_with_xpub(self.client, xpub, derivation)
         inputs = self.tx_inputs(tx, for_sig=True, keystore=keystore)
         outputs = self.tx_outputs(tx, keystore=keystore)
         details = SignTx(lock_time=tx.locktime, version=tx.version)
@@ -406,8 +404,7 @@ class TrezorPlugin(HW_PluginBase):
             raise Exception("client is None")
         xpub = keystore.xpub
         derivation = keystore.get_derivation_prefix()
-        if not self.force_pair_with_xpub(self.client, xpub, derivation):
-            raise Exception("Can't Pair With You Device When Sign tx")
+        self.force_pair_with_xpub(self.client, xpub, derivation)
         signature = self.client.sign_eth_tx(*args, **kwargs)
         return signature
 
@@ -416,8 +413,11 @@ class TrezorPlugin(HW_PluginBase):
             keystore = wallet.get_keystore()
         if not self.show_address_helper(wallet, address, keystore):
             return
+        if self.client is None:
+            self.get_client(path=path, ui=ui)
         deriv_suffix = wallet.get_address_index(address)
         derivation = keystore.get_derivation_prefix()
+        self.force_pair_with_xpub(self.client, keystore.xpub, derivation)
         address_path = "%s/%d/%d" % (derivation, *deriv_suffix)
         script_type = None
         if coin == 'btc':
@@ -433,9 +433,7 @@ class TrezorPlugin(HW_PluginBase):
                 [(xpub, deriv_suffix) for pubkey, xpub in sorted_pairs])
         else:
             multisig = None
-
-        client = self.get_client(path=path, ui=ui)
-        client.show_address(address_path, script_type, multisig, coin=coin)
+        self.client.show_address(address_path, script_type, multisig, coin=coin)
 
     def tx_inputs(self, tx: Transaction, *, for_sig=False, keystore: 'TrezorKeyStore' = None):
         inputs = []

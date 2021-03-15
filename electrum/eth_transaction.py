@@ -34,6 +34,7 @@ class Eth_Transaction:
                           ):
         """Collects all necessary data to build transaction dict."""
         if data is None:  # tx dict for sending ETH
+            # TODO: use data filed to verify the transaction type is not correct
             transaction = {
                 # Note that the address must be in checksum format:
                 'to': to_address,
@@ -99,6 +100,7 @@ class Eth_Transaction:
         """
         # 1. create hex of called function in solidity and take first 4 bytes
         # ERC20 transfer function will always produce a9059cbb.....
+        # TODO: in this case, use a const str 0xa9059cbb instead is more suit
         transfer_hex = public_key_to_keccak256(b'transfer(address,uint256)').hex()[:8]
 
         # 2. create 32 byte number (length 64)
