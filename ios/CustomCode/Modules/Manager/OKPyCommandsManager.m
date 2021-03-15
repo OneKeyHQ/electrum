@@ -651,9 +651,7 @@ static dispatch_once_t once;
             // 释放GIL ！！！！！
             PyGILState_Release(state);
             if (![self.noTipsInterface containsObject:method]) {
-                ok_dispatch_main_async_safe(
-                    [kTools tipMessage:[NSString stringWithCString:msg encoding:NSUTF8StringEncoding]];
-                );
+                [kTools debugTipMessage:[NSString stringWithCString:msg encoding:NSUTF8StringEncoding]];
             }
             return nil;
         }

@@ -40,10 +40,10 @@ static dispatch_once_t once;
     if (!address.length || !symbol.length) {
         return;
     }
-    [kPyCommandsManager callInterface:kInterface_add_token parameter:@{
+    [kPyCommandsManager asyncCall:kInterface_add_token parameter:@{
         @"symbol": symbol,
         @"contract_addr": address
-    }];
+    } callback:nil];
     self.needUpdateCurrentAddress = YES;
     self.needUpdateCcustomTokens = YES;
 }

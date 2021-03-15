@@ -58,11 +58,16 @@
 }
 
 - (IBAction)switchTo:(UISwitch *)sender {
+
+    if (self.tokenSwitched) {
+        self.tokenSwitched(sender.isOn, self.model);
+    }
     if (sender.isOn) {
         [kOKTokenManager addToken:self.model.address symbol:self.model.symbol];
     } else {
         [kOKTokenManager delToken:self.model.address];
     }
+
 }
 
 @end

@@ -121,6 +121,10 @@
         cell.isTop = indexPath.row == 1 || indexPath.row == self.model.hot.count + 2;
         cell.isBottom = indexPath.row == self.filteredData.count - 1 || indexPath.row == self.model.hot.count;
     }
+    OKWeakSelf(self)
+    cell.tokenSwitched = ^(BOOL isOn, OKToken * _Nonnull model) {
+        [weakself token:model switchedTo:isOn];
+    };
     cell.model = model;
     return cell;
 }
@@ -153,5 +157,16 @@
     }
 }
 
-
+- (void)token:(OKToken *)model switchedTo:(BOOL)isOn {
+    NSArray *cells = [self.tableView visibleCells];
+    for (id cell in cells) {
+        if (![cell isKindOfClass:[OKTokenCell class]]) {
+            continue;
+        }
+        OKTokenCell *tokenCell = (OKTokenCell *)cell;
+        if ([tokenCell.model.address isEqualToString:model.address]) {
+            tokenCell.isOn = isOn;
+        }
+    }
+}
 @end

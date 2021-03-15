@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign)BOOL isBottom;
 @property (nonatomic, assign)BOOL isOn;
 @property (nonatomic, strong)OKToken *model;
+@property (nonatomic, strong)void(^tokenSwitched)(BOOL isOn, OKToken *model);
 @end
 
 NS_ASSUME_NONNULL_END
