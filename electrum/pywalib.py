@@ -534,7 +534,11 @@ class PyWalib:
 
     @classmethod
     def _send_tx(cls, tx_hex: str) -> str:
-        return cls.get_provider().broadcast_transaction(tx_hex).txid
+        receipt = cls.get_provider().broadcast_transaction(tx_hex)
+        if not receipt.is_success:
+            raise Exception(f"Transaction send fail. error_message: {receipt.receipt_message}", tx_hex)
+        else:
+            return receipt.txid
 
     @classmethod
     def get_balance(cls, wallet_address, contract=None):
