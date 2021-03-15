@@ -1,5 +1,5 @@
 from functools import partial
-from typing import List
+from typing import Any, List
 
 from electrum_gui.common.basic.functional.require import require
 from electrum_gui.common.basic.functional.text import force_text
@@ -11,6 +11,7 @@ from electrum_gui.common.provider.data import (
     EstimatedTimeOnPrice,
     PricePerUnit,
     ProviderInfo,
+    Token,
     Transaction,
     TransactionFee,
     TransactionInput,
@@ -47,6 +48,23 @@ class Geth(ProviderInterface):
             ]
         )  # Maybe __LAST_BLOCK__ refers to a different blocks in some case
         return Address(address=address, balance=_hex2int(balance), nonce=_hex2int(nonce))
+
+    def get_balance(self, address: str, token: Token = None) -> int:
+        if not token:
+            return super(Geth, self).get_balance(address)
+        else:
+            call_balance_of = (
+                "0x70a08231000000000000000000000000" + address[2:]
+            )  # method_selector(balance_of) + byte32_pad(address)
+            resp = self.eth_call({"to": token.contract, "data": call_balance_of})
+
+            try:
+                return _hex2int(resp)
+            except ValueError:
+                return 0
+
+    def eth_call(self, call_data: dict) -> Any:
+        return self.rpc.call("eth_call", [call_data, self.__LAST_BLOCK__])
 
     def get_transaction_by_txid(self, txid: str) -> Transaction:
         tx, receipt = self.rpc.batch_call(
