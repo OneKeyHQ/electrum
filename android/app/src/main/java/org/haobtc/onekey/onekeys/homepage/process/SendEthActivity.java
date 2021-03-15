@@ -25,10 +25,8 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import butterknife.OnFocusChange;
 import butterknife.OnTextChanged;
-import com.alibaba.fastjson.JSON;
 import com.google.common.base.Strings;
 import com.lxj.xpopup.XPopup;
-import com.orhanobut.logger.Logger;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.bean.ZxingConfig;
@@ -277,7 +275,6 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
     // 钱包类型：btc || eth
     private static final String walletType = Vm.CoinType.ETH.callFlag;
     private int mGasLimit = 0;
-    private int mCusGasLimit = 0;
     private CustomEthFeeDialog mCustomEthFeeDialog;
     private String mCusFeeRate;
     // 作为定时轮询的
@@ -390,12 +387,10 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
         scale = walletInfo.getCoinType().digits;
         baseUnit = walletInfo.getCoinType().defUnit;
         contractAddress = walletInfo.getAddress();
-        Logger.json(JSON.toJSONString(walletInfo));
         mAssetsID = getIntent().getIntExtra(EXT_ASSETS_ID, -1);
         mAppWalletViewModel.currentWalletAssetsList.observe(
                 this,
                 assets -> {
-                    Logger.json(JSON.toJSONString(assets));
                     Assets mAssets = assets.getByUniqueIdOrZero(mAssetsID);
                     coinAssetBalance = assets.getCoinAsset().getBalance().getBalance();
                     initAssetBalance(mAssets);
@@ -468,19 +463,19 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
                         new Intent(mContext, SelectTokenActivity.class), SELECT_TOKEN);
                 break;
             case R.id.text_max_amount:
+                String name = null;
+
                 if (Strings.isNullOrEmpty(editReceiverAddress.getText().toString())) {
                     showToast(R.string.input_number);
                 } else {
                     // 先取最大值再刷新View
 
-                    if (coinAssetBalance.compareTo(BigDecimal.ZERO) > 0) {
+                    if (coinAssetBalance.doubleValue() > 0) {
                         maxAmount =
                                 isToken
                                         ? tokenBalance
-                                        : coinAssetBalance.subtract(
-                                                BigDecimal.valueOf(
-                                                        Double.parseDouble(mCurrentFee)));
-                        if (maxAmount.compareTo(BigDecimal.ZERO) > 0) {
+                                        : coinAssetBalance.subtract(new BigDecimal(mCurrentFee));
+                        if (maxAmount.doubleValue() > 0) {
                             isSetBig = true;
                             editAmount.setText(maxAmount.toPlainString());
                             refreshFeeView();
@@ -508,7 +503,8 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
                                     mGasLimit,
                                     mCurrentFeeDetails.getFast().getGasPrice() * 10,
                                     hdWalletName,
-                                    feeRate);
+                                    feeRate,
+                                    mAppWalletViewModel);
                     mCustomEthFeeDialog.setOnCustomInterface(this);
                     mCustomEthFeeDialog.setCurrentFeeDetails(mCurrentFeeDetails);
                     new XPopup.Builder(mContext).asCustom(mCustomEthFeeDialog).show();
@@ -656,7 +652,7 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
             showToast(R.string.input_out_number);
             return false;
         }
-        return !(Double.parseDouble(amount) <= 0);
+        return !(new BigDecimal(amount).doubleValue() <= 0);
     }
 
     /** 获取费率详情，首次刷新页面需要loading */
@@ -667,7 +663,10 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
                         .doFinally(this::dismissProgress)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(response -> doDefaultInfo(response, false));
+                        .subscribe(
+                                response -> {
+                                    doDefaultInfo(response, false);
+                                });
         mCompositeDisposable.add(disposable);
     }
 
@@ -709,7 +708,11 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
                         getString(R.string.minute)));
         textFeeInBtc0.setText(
                 String.format(
-                        Locale.ENGLISH, "%s %s", mCurrentFeeDetails.getSlow().getFee(), baseUnit));
+                        Locale.ENGLISH,
+                        "%s %s",
+                        CoinDisplayUtils.getCoinFeeDisplay(
+                                mCurrentFeeDetails.getSlow().getFee(), walletInfo.getCoinType()),
+                        baseUnit));
         textFeeInCash0.setText(
                 String.format(
                         Locale.ENGLISH,
@@ -730,7 +733,8 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
                 String.format(
                         Locale.ENGLISH,
                         "%s %s",
-                        mCurrentFeeDetails.getNormal().getFee(),
+                        CoinDisplayUtils.getCoinFeeDisplay(
+                                mCurrentFeeDetails.getNormal().getFee(), walletInfo.getCoinType()),
                         baseUnit));
         textFeeInCash1.setText(
                 String.format(
@@ -750,7 +754,11 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
                         getString(R.string.minute)));
         textFeeInBtc2.setText(
                 String.format(
-                        Locale.ENGLISH, "%s %s", mCurrentFeeDetails.getFast().getFee(), baseUnit));
+                        Locale.ENGLISH,
+                        "%s %s",
+                        CoinDisplayUtils.getCoinFeeDisplay(
+                                mCurrentFeeDetails.getFast().getFee(), walletInfo.getCoinType()),
+                        baseUnit));
         textFeeInCash2.setText(
                 String.format(
                         Locale.ENGLISH,
@@ -899,7 +907,7 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
                     mContext,
                     Vm.CoinType.ETH,
                     signedTx,
-                    String.format(Locale.ENGLISH, "%s %s", amount, baseUnit));
+                    String.format(Locale.ENGLISH, "%s %s", amount, isToken ? tokenUnit : baseUnit));
             finish();
         } else if (walletInfo.getWalletType() == Vm.WalletType.IMPORT_WATCH) {
             showWatchQrDialog();
@@ -976,9 +984,7 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
     /** 改变发送按钮状态 */
     private void changeButton() {
         if (addressInvalid && isFeeValid && !Strings.isNullOrEmpty(amount)) {
-            BigDecimal decimal = BigDecimal.valueOf(Double.parseDouble(amount));
-            if (decimal.compareTo(BigDecimal.ZERO) <= 0
-                    || coinAssetBalance.compareTo(BigDecimal.ZERO) <= 0) {
+            if (new BigDecimal(amount).doubleValue() <= 0 || maxAmount.doubleValue() <= 0) {
                 btnNext.setEnabled(false);
             } else {
                 btnNext.setEnabled(true);
@@ -1192,6 +1198,7 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
                     ERC20Assets erc20Assets = (ERC20Assets) mAssets;
                     address = erc20Assets.getContractAddress();
                     tokenBalance = erc20Assets.getBalance().getBalance();
+                    tokenUnit = erc20Assets.getBalance().getUnit();
 
                 } else if (mAssets instanceof CoinAssets) {
                     isToken = false;
@@ -1281,9 +1288,8 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
     @OnFocusChange(value = R.id.edit_amount)
     public void onEditAmountFocusChange(boolean focused) {
         if (!focused) {
-            if (!Strings.isNullOrEmpty(amount) && Double.parseDouble(amount) > 0) {
-                BigDecimal decimal = BigDecimal.valueOf(Double.parseDouble(amount));
-                if (decimal.compareTo(coinAssetBalance) >= 0) {
+            if (!Strings.isNullOrEmpty(amount) && new BigDecimal(amount).doubleValue() > 0) {
+                if (new BigDecimal(amount).compareTo(coinAssetBalance) >= 0) {
                     if (addressInvalid) {
                         doDealMaxAmount();
                     }
@@ -1295,8 +1301,7 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
     /** 获取三种不同费率对应的临时交易 */
     private void refreshFeeView() {
         if (isCustom) {
-            int tempLimit = Math.max(mCusGasLimit, mGasLimit);
-            calculateData(mGasPrice, tempLimit);
+            calculateData(mGasPrice, mGasLimit);
         } else {
             // 刷新3个view 并判断最大值
             Disposable disposable =
@@ -1312,32 +1317,30 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
     }
 
     private void calculateData(String gasPrice, int gasLimit) {
-        double price = Double.parseDouble(gasPrice);
         mCurrentFee =
-                BigDecimal.valueOf(price * gasLimit / Math.pow(10, 9)).toPlainString(); // 当前Eth的数量
-        double cash =
-                Double.parseDouble(
+                BigDecimal.valueOf(
+                                new BigDecimal(gasPrice).doubleValue() * gasLimit / Math.pow(10, 9))
+                        .toPlainString(); // 当前Eth的数量
+        BigDecimal cash =
+                new BigDecimal(
                         mCurrentFeeDetails
                                 .getFast()
                                 .getFiat()
                                 .substring(0, mCurrentFeeDetails.getFast().getFiat().indexOf(" ")));
-        double fiatDouble =
-                Double.parseDouble(mCurrentFee)
-                        / Double.parseDouble(mCurrentFeeDetails.getFast().getFee())
-                        * cash;
         BigDecimal bigDecimal =
-                new BigDecimal(
+                BigDecimal.valueOf(
                         Double.parseDouble(mCurrentFee)
                                 / Double.parseDouble(mCurrentFeeDetails.getFast().getFee())
-                                * cash);
+                                * cash.doubleValue());
         mCusFeeRate =
                 bigDecimal
                         .setScale(2, RoundingMode.DOWN)
                         .stripTrailingZeros()
                         .toPlainString(); // 当前展示的法币
         int timeTemp;
-        if (Double.parseDouble(mCurrentFee)
-                >= Double.parseDouble(mCurrentFeeDetails.getFast().getFee())) {
+        if (new BigDecimal(mCurrentFee)
+                        .compareTo(new BigDecimal(mCurrentFeeDetails.getFast().getFee()))
+                >= 0) {
             timeTemp = mCurrentFeeDetails.getFast().getTime();
         } else if (Double.parseDouble(mCurrentFee)
                 >= Double.parseDouble(mCurrentFeeDetails.getNormal().getFee())) {
@@ -1408,56 +1411,17 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
                 });
     }
 
-    /**
-     * 处理Eth 自定义视图渲染
-     *
-     * @param pyResponse
-     */
-    private void dealWithCommonFeeInfo(PyResponse<TemporaryTxInfo> pyResponse) {
-        String errorMsg = pyResponse.getErrors();
-        if (Strings.isNullOrEmpty(errorMsg)) {
-            TemporaryTxInfo temporaryTxInfo = pyResponse.getResult();
-            mCurrentFee = BigDecimal.valueOf(temporaryTxInfo.getFee()).toPlainString();
-            mCusFeeRate = temporaryTxInfo.getFiat();
-            String time = getTransferTime(temporaryTxInfo.getTime());
-            String temp = temporaryTxInfo.getTx();
-            if (isCustom) {
-                textCustomizeSpendTime.setText(time);
-                textFeeCustomizeInBtc.setText(
-                        String.format(Locale.ENGLISH, "%s %s", mCurrentFee, baseUnit));
-                textFeeCustomizeInCash.setText(
-                        String.format(
-                                Locale.ENGLISH,
-                                "%s %s",
-                                mSystemConfigManager.getCurrentFiatSymbol(),
-                                temporaryTxInfo
-                                        .getFiat()
-                                        .substring(0, temporaryTxInfo.getFiat().indexOf(" "))));
-            }
-            isFeeValid = true;
-            doDealMaxAmount();
-            changeButton();
-        } else {
-            showToast(errorMsg);
-        }
-    }
-
     /** 如果当前是最大模式，那么需要根据当前选中的费率，计算最大值 */
     private void doDealMaxAmount() {
         // 查看输入的值是否大于最大值
-        maxAmount =
-                isToken
-                        ? tokenBalance
-                        : coinAssetBalance.subtract(
-                                BigDecimal.valueOf(Double.parseDouble(mCurrentFee)));
-        if (maxAmount.compareTo(BigDecimal.ZERO) > 0) {
+        maxAmount = isToken ? tokenBalance : coinAssetBalance.subtract(new BigDecimal(mCurrentFee));
+        if (maxAmount.doubleValue() > 0) {
             if (isSetBig) {
                 editAmount.setText(maxAmount.toPlainString());
             } else {
                 // 不能大于最大值，
-                if (!Strings.isNullOrEmpty(amount) && Double.parseDouble(amount) > 0) {
-                    BigDecimal decimal = BigDecimal.valueOf(Double.parseDouble(amount));
-                    if (decimal.compareTo(maxAmount) >= 0) {
+                if (!Strings.isNullOrEmpty(amount) && new BigDecimal(amount).doubleValue() > 0) {
+                    if (new BigDecimal(amount).compareTo(maxAmount) >= 0) {
                         editAmount.setText(maxAmount.toPlainString());
                     }
                 }
@@ -1522,7 +1486,7 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
     public void onCustomComplete(CustomizeFeeRateEvent event) {
         myLoopDisposable.dispose();
         isCustom = true;
-        mCusGasLimit = event.getGasLimit();
+        mGasLimit = event.getGasLimit();
         mGasPrice = event.getGasPrice();
         mCurrentFee = event.getFee();
         mCusFeeRate = event.getCash() + " " + mSystemConfigManager.getCurrentFiatUnit();
@@ -1533,8 +1497,9 @@ public class SendEthActivity extends BaseActivity implements CustomEthFeeDialog.
                 String.format(
                         Locale.ENGLISH,
                         "%s %s",
-                        event.getFee(),
-                        mSystemConfigManager.getCurrentBaseUnit(Vm.convertCoinType(Constant.ETH))));
+                        CoinDisplayUtils.getCoinFeeDisplay(
+                                event.getFee(), walletInfo.getCoinType()),
+                        baseUnit));
         textFeeCustomizeInCash.setText(
                 String.format(
                         Locale.ENGLISH,

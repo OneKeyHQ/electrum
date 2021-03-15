@@ -118,6 +118,7 @@
                     android:gravity="center_vertical"
                     android:maxLines="1"
                     android:maxLength="10"
+                    android:inputType="number"
                     android:paddingStart="@dimen/dp_20"
                     android:paddingEnd="@dimen/dp_20"
                     android:singleLine="true"

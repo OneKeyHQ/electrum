@@ -16,6 +16,7 @@ import com.google.common.base.Strings;
 import com.lxj.xpopup.core.BottomPopupView;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.Locale;
 import org.haobtc.onekey.R;
@@ -26,6 +27,7 @@ import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.event.CustomizeFeeRateEvent;
 import org.haobtc.onekey.utils.MyDialog;
 import org.haobtc.onekey.utils.ToastUtils;
+import org.haobtc.onekey.viewmodel.AppWalletViewModel;
 
 /** @Description: 自定义Eth费率弹框 @Author: peter Qin */
 public class CustomEthFeeDialog extends BottomPopupView {
@@ -72,6 +74,8 @@ public class CustomEthFeeDialog extends BottomPopupView {
     private CompositeDisposable mDisposable;
     private String mAddress;
     private String mSendAmount;
+    private AppWalletViewModel mAppWalletViewModel;
+    private BigDecimal coinBalance;
 
     public void setCurrentFeeDetails(CurrentFeeDetails currentFeeDetails) {
         this.mCurrentFeeDetails = currentFeeDetails;
@@ -85,13 +89,15 @@ public class CustomEthFeeDialog extends BottomPopupView {
             int size,
             double feeRateMax,
             String walletName,
-            double nowRate) {
+            double nowRate,
+            AppWalletViewModel appWalletViewModel) {
         super(context);
         this.size = size;
         this.feeRateMax = feeRateMax;
         this.mWalletName = walletName;
         this.feeRate = nowRate;
         this.mContext = context;
+        this.mAppWalletViewModel = appWalletViewModel;
     }
 
     public CustomEthFeeDialog(@NonNull Context context) {
@@ -105,6 +111,13 @@ public class CustomEthFeeDialog extends BottomPopupView {
     @Override
     protected void onCreate() {
         super.onCreate();
+        coinBalance =
+                mAppWalletViewModel
+                        .currentWalletAssetsList
+                        .getValue()
+                        .getCoinAsset()
+                        .getBalance()
+                        .getBalance();
         bind = ButterKnife.bind(this);
         mDisposable = new CompositeDisposable();
         titleLeft.setText(R.string.eth_gas_fee);
@@ -131,17 +144,13 @@ public class CustomEthFeeDialog extends BottomPopupView {
                 dismiss();
                 break;
             case R.id.btn_next:
-                boolean isGasPricePass = judgeGasPrice(editFeeByte.getText().toString());
-                if (!isGasPricePass) {
+                if (!judgeGasPrice(editFeeByte.getText().toString())) {
                     return;
                 }
-                boolean isGasLimit = judgeGasLimit(textSize.getText().toString());
-                if (!isGasLimit) {
+                if (!judgeGasLimit(textSize.getText().toString())) {
                     return;
                 }
-
                 if (mOnCustomInterface != null) {
-
                     CustomizeFeeRateEvent customizeFeeRateEvent =
                             new CustomizeFeeRateEvent(
                                     editFeeByte.getText().toString(),
@@ -149,7 +158,7 @@ public class CustomEthFeeDialog extends BottomPopupView {
                                     fiat,
                                     String.valueOf(time));
                     customizeFeeRateEvent.setGasLimit(
-                            Integer.parseInt(textSize.getText().toString()));
+                            new BigInteger(textSize.getText().toString()).intValue());
                     customizeFeeRateEvent.setGasPrice(editFeeByte.getText().toString().trim());
                     mOnCustomInterface.onCustomComplete(customizeFeeRateEvent);
                     dismiss();
@@ -161,11 +170,10 @@ public class CustomEthFeeDialog extends BottomPopupView {
     @OnTextChanged(value = R.id.text_size, callback = OnTextChanged.Callback.AFTER_TEXT_CHANGED)
     public void onSizeChanged(CharSequence text) {
         String gasLimitString = text.toString();
-
         if (!Strings.isNullOrEmpty(gasLimitString)
-                && Long.parseLong(gasLimitString) > 0
+                && new BigInteger(gasLimitString).intValue() > 0
                 && !Strings.isNullOrEmpty(editFeeByte.getText().toString())
-                && Double.parseDouble(editFeeByte.getText().toString()) > 0) {
+                && new BigDecimal(editFeeByte.getText().toString()).doubleValue() > 0) {
             calculateData(editFeeByte.getText().toString().trim(), gasLimitString);
         } else {
             cleanShow();
@@ -176,9 +184,9 @@ public class CustomEthFeeDialog extends BottomPopupView {
     public void onTextChanged(CharSequence text) {
         String feeRate = text.toString();
         if (!Strings.isNullOrEmpty(feeRate)
-                && Double.parseDouble(feeRate) > 0
+                && BigDecimal.valueOf(feeRateMax).doubleValue() > 0
                 && !Strings.isNullOrEmpty(textSize.getText().toString())
-                && Double.parseDouble(textSize.getText().toString()) > 0) {
+                && new BigInteger(textSize.getText().toString()).intValue() > 0) {
             calculateData(feeRate, textSize.getText().toString().trim());
         } else {
             cleanShow();
@@ -209,40 +217,51 @@ public class CustomEthFeeDialog extends BottomPopupView {
     }
 
     /**
-     * 本地计算
+     * local calculate
      *
      * @param gasPrice
      * @param gasLimit
      */
     private void calculateData(String gasPrice, String gasLimit) {
-        double price = Double.parseDouble(gasPrice);
-        long limit = Long.parseLong(gasLimit);
-        fee = BigDecimal.valueOf(price * limit / Math.pow(10, 9)).toPlainString(); // 当前Eth的数量
-        double cash =
-                Double.parseDouble(
+        if (!judgeGasPrice(gasPrice)) {
+            btnNext.setEnabled(false);
+            return;
+        }
+        if (!judgeGasLimit(gasLimit)) {
+            btnNext.setEnabled(false);
+            return;
+        }
+        fee =
+                BigDecimal.valueOf(
+                                (new BigDecimal(gasLimit).multiply(new BigDecimal(gasPrice)))
+                                                .doubleValue()
+                                        / Math.pow(10, 9))
+                        .toPlainString();
+        BigDecimal cash =
+                new BigDecimal(
                         mCurrentFeeDetails
                                 .getFast()
                                 .getFiat()
                                 .substring(0, mCurrentFeeDetails.getFast().getFiat().indexOf(" ")));
-        double fiatDouble =
-                Double.parseDouble(fee)
-                        / Double.parseDouble(mCurrentFeeDetails.getFast().getFee())
-                        * cash;
+
         BigDecimal bigDecimal =
-                new BigDecimal(
-                        Double.parseDouble(fee)
-                                / Double.parseDouble(mCurrentFeeDetails.getFast().getFee())
-                                * cash);
+                BigDecimal.valueOf(
+                        new BigDecimal(fee).doubleValue()
+                                / new BigDecimal(mCurrentFeeDetails.getFast().getFee())
+                                        .doubleValue()
+                                * cash.doubleValue());
         fiat =
                 bigDecimal
                         .setScale(2, RoundingMode.DOWN)
                         .stripTrailingZeros()
                         .toPlainString(); // 当前展示的法币
         int timeTemp;
-        if (Double.parseDouble(fee) >= Double.parseDouble(mCurrentFeeDetails.getFast().getFee())) {
+        if (new BigDecimal(fee).compareTo(new BigDecimal(mCurrentFeeDetails.getFast().getFee()))
+                >= 0) {
             timeTemp = mCurrentFeeDetails.getFast().getTime();
-        } else if (Double.parseDouble(fee)
-                >= Double.parseDouble(mCurrentFeeDetails.getNormal().getFee())) {
+        } else if (new BigDecimal(fee)
+                        .compareTo(new BigDecimal(mCurrentFeeDetails.getNormal().getFee()))
+                >= 0) {
             timeTemp = mCurrentFeeDetails.getNormal().getTime();
         } else {
             timeTemp = mCurrentFeeDetails.getSlow().getTime();
@@ -267,21 +286,13 @@ public class CustomEthFeeDialog extends BottomPopupView {
                         "≈ %s %s",
                         mSystemConfigManager.getCurrentFiatSymbol(),
                         fiat));
-        btnNext.setEnabled(true);
-    }
-
-    public void showProgress() {
-        dismissProgress();
-        mProgressDialog = MyDialog.showDialog(mContext);
-        mProgressDialog.show();
-        mProgressDialog.onTouchOutside(false);
-    }
-
-    public void dismissProgress() {
-        if (mProgressDialog != null && mProgressDialog.isShowing()) {
-            mProgressDialog.dismiss();
-            mProgressDialog = null;
+        double balance = new BigDecimal(fee).subtract(coinBalance).doubleValue();
+        if (new BigDecimal(fee).subtract(coinBalance).doubleValue() >= 0) {
+            ToastUtils.toast(mContext.getString(R.string.balance_zero));
+            btnNext.setEnabled(false);
+            return;
         }
+        btnNext.setEnabled(true);
     }
 
     private String getTransferTime(double time) {
@@ -301,15 +312,15 @@ public class CustomEthFeeDialog extends BottomPopupView {
     }
 
     private boolean judgeGasLimit(String gasLimit) {
-        long limitSize = Long.parseLong(gasLimit);
-        if (limitSize < size) {
+        BigInteger bigLimit = new BigInteger(gasLimit);
+        if (bigLimit.compareTo(BigInteger.valueOf(size)) < 0) {
             ToastUtils.toast(
                     String.format(
                             Locale.getDefault(),
                             mContext.getString(R.string.gas_limit_small),
                             size));
             return false;
-        } else if (limitSize > size * 10) {
+        } else if (bigLimit.compareTo(BigInteger.valueOf(size * 10)) > 0) {
             ToastUtils.toast(
                     String.format(
                             Locale.getDefault(),
@@ -323,8 +334,8 @@ public class CustomEthFeeDialog extends BottomPopupView {
     }
 
     private boolean judgeGasPrice(String gasPrice) {
-        double feeRate1 = Double.parseDouble(gasPrice);
-        if (feeRate1 < feeRateMin) {
+        BigDecimal feeRate1 = new BigDecimal(gasPrice);
+        if (feeRate1.compareTo(BigDecimal.valueOf(feeRateMin)) < 0) {
             ToastUtils.toast(
                     String.format(
                             Locale.getDefault(),
@@ -332,7 +343,7 @@ public class CustomEthFeeDialog extends BottomPopupView {
                             String.valueOf(feeRateMin)));
 
             return false;
-        } else if (feeRate1 > feeRateMax) {
+        } else if (feeRate1.compareTo(BigDecimal.valueOf(feeRateMax)) > 0) {
             ToastUtils.toast(
                     String.format(
                             mContext.getString(R.string.gas_price_large),
