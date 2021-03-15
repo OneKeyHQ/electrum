@@ -37,7 +37,6 @@ import org.haobtc.onekey.bean.LocalWalletInfo;
 import org.haobtc.onekey.bean.WalletAccountInfo;
 import org.haobtc.onekey.business.wallet.AccountManager;
 import org.haobtc.onekey.business.wallet.DeviceManager;
-import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.BleConnectedEvent;
 import org.haobtc.onekey.manager.BleManager;
 import org.haobtc.onekey.ui.activity.SearchDevicesActivity;
@@ -245,7 +244,6 @@ public class TransactionDetailWalletActivity extends BaseActivity
                     intent2.putExtra(
                             org.haobtc.onekey.constant.Constant.SEARCH_DEVICE_MODE,
                             org.haobtc.onekey.constant.Constant.SearchDeviceMode.MODE_PREPARE);
-                    intent2.putExtra(Constant.DEVICE_ID, deviceInfo.getDeviceId());
                     startActivity(intent2);
                     BleManager.getInstance(this).connDevByMac(deviceBleMacAddress);
                 }

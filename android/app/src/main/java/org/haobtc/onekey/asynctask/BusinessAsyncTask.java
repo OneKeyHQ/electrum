@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import com.chaquo.python.Kwarg;
 import com.orhanobut.logger.Logger;
 import java.util.Objects;
+import java.util.concurrent.Semaphore;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.event.CheckReceiveAddress;
 import org.haobtc.onekey.event.OperationTimeoutEvent;
@@ -48,6 +49,8 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
     /** used as callback */
     private Helper helper;
 
+    private static final Semaphore semaphore = new Semaphore(1);
+
     public BusinessAsyncTask setHelper(Helper helper) {
         this.helper = helper;
         return this;
@@ -56,6 +59,10 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
+        if (!semaphore.tryAcquire()) {
+            Logger.d("concurrent async task");
+            cancel(true);
+        }
         helper.onPreExecute();
     }
 
@@ -254,6 +261,7 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
     }
 
     private void onException(Exception e) {
+        semaphore.release();
         if (Objects.nonNull(e.getMessage())
                         && HardWareExceptions.PASSPHRASE_OPERATION_TIMEOUT
                                 .getMessage()
@@ -276,6 +284,9 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
     @Override
     protected void onCancelled() {
         super.onCancelled();
+        if (!semaphore.tryAcquire()) {
+            return;
+        }
         helper.onCancelled();
     }
 
@@ -283,6 +294,7 @@ public class BusinessAsyncTask extends AsyncTask<String, Void, String> {
     protected void onPostExecute(String s) {
         super.onPostExecute(s);
         helper.onResult(s);
+        semaphore.release();
     }
 
     public interface Helper {

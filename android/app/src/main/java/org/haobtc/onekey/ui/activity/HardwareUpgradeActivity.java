@@ -50,6 +50,7 @@ import org.haobtc.onekey.event.ChangePinEvent;
 import org.haobtc.onekey.event.ExceptionEvent;
 import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.event.NotifySuccessfulEvent;
+import org.haobtc.onekey.event.PinInputComplete;
 import org.haobtc.onekey.event.UpdateEvent;
 import org.haobtc.onekey.event.UpdatingEvent;
 import org.haobtc.onekey.exception.HardWareExceptions;
@@ -228,7 +229,7 @@ public class HardwareUpgradeActivity extends BaseActivity {
         nrfUrl = bundle.getString(Constant.TAG_NRF_DOWNLOAD_URL);
         mac = bundle.getString(Constant.BLE_MAC);
         label = bundle.getString(Constant.TAG_LABEL);
-        deviceId = bundle.getString(Constant.DEVICE_ID);
+        deviceId = bundle.getString(Constant.SERIAL_NUM);
         cacheDir = getExternalCacheDir().getPath();
         isForceUpdate = bundle.getBoolean(Constant.FORCE_UPDATE, false);
         String features = devices.getString(deviceId, "");
@@ -431,6 +432,8 @@ public class HardwareUpgradeActivity extends BaseActivity {
             if (Objects.nonNull(fragment.getProgressBar())) {
                 if (fragment.getProgressBar().isIndeterminate()) {
                     fragment.getProgressBar().setIndeterminate(false);
+                    // 当在硬件上输入PIN时，退出提醒页面
+                    EventBus.getDefault().post(new PinInputComplete());
                 }
                 fragment.getProgressBar()
                         .setProgress(Integer.parseInt(((progresses[0]).toString())));
@@ -458,7 +461,7 @@ public class HardwareUpgradeActivity extends BaseActivity {
                 if (HardWareExceptions.FILE_FORMAT_ERROR
                         .getMessage()
                         .equals(response.getErrors())) {
-                    Optional.ofNullable(file).ifPresent(File::delete);
+                    Optional.of(file).ifPresent(File::delete);
                     // clear state
                     PyEnv.clearUpdateStatus();
                 }

@@ -23,7 +23,6 @@ import io.reactivex.disposables.Disposable;
 import java.util.Objects;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
-import org.haobtc.onekey.bean.HardwareFeatures;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.BleConnectionEx;
 import org.haobtc.onekey.event.BleScanStopEvent;
@@ -48,7 +47,6 @@ public final class BleManager {
     private volatile boolean connecting;
     private String currentAddress;
     public static String currentBleName;
-    private HardwareFeatures mHardwareFeatures;
 
     private BleManager(FragmentActivity fragmentActivity) {
         this.fragmentActivity = fragmentActivity;
@@ -136,19 +134,6 @@ public final class BleManager {
         if (mBle != null) {
             mBle.turnOnBlueTooth(fragmentActivity);
         }
-    }
-
-    /**
-     * 将连接的硬件信息保存在单例中
-     *
-     * @param hardwareFeatures 硬件信息的Bean
-     */
-    public void setHardwareFeatures(HardwareFeatures hardwareFeatures) {
-        this.mHardwareFeatures = hardwareFeatures;
-    }
-
-    public HardwareFeatures getHardwareFeatures() {
-        return mHardwareFeatures;
     }
 
     /** search ble devices */

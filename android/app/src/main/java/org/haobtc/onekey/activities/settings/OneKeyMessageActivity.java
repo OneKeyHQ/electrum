@@ -2,7 +2,9 @@ package org.haobtc.onekey.activities.settings;
 
 import android.view.View;
 import android.widget.TextView;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -12,23 +14,21 @@ import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.FixBixinkeyNameEvent;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-
-/**
- * @author xiaomin
- */
+/** @author xiaomin */
 public class OneKeyMessageActivity extends BaseActivity {
 
     @BindView(R.id.tet_keyName)
     TextView tetKeyName;
+
     @BindView(R.id.tet_code)
     TextView tetCode;
+
     @BindView(R.id.tet_Bluetoose)
     TextView tetBluetooth;
+
     @BindView(R.id.text_systom_hardware)
     TextView textSystomHardware;
+
     @BindView(R.id.text_bluetooth_hardware)
     TextView textBluetoothHardware;
 
@@ -47,7 +47,7 @@ public class OneKeyMessageActivity extends BaseActivity {
     private void inits() {
         String label = getIntent().getStringExtra(Constant.TAG_LABEL);
         String bleName = getIntent().getStringExtra(Constant.TAG_BLE_NAME);
-        String deviceId = getIntent().getStringExtra(Constant.DEVICE_ID);
+        String deviceId = getIntent().getStringExtra(Constant.SERIAL_NUM);
         String firmwareVersion = getIntent().getStringExtra(Constant.TAG_FIRMWARE_VERSION);
         String nrfVersion = getIntent().getStringExtra(Constant.TAG_NRF_VERSION);
         textSystomHardware.setText(firmwareVersion);
@@ -58,9 +58,7 @@ public class OneKeyMessageActivity extends BaseActivity {
     }
 
     @Override
-    public void initData() {
-
-    }
+    public void initData() {}
 
     @SingleClick
     @OnClick({R.id.img_back, R.id.tet_keyName})
@@ -86,5 +84,4 @@ public class OneKeyMessageActivity extends BaseActivity {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
     }
-
 }

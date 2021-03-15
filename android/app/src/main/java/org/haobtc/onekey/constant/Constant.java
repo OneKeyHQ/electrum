@@ -91,7 +91,7 @@ public final class Constant {
     /** 搜索模式 */
     public static final String SEARCH_DEVICE_MODE = "search_device_mode";
     /** 设备id */
-    public static final String DEVICE_ID = "device_id";
+    public static final String SERIAL_NUM = "serial_num";
     /** 自动关机时间 */
     public static final String AUTO_SHUT_DOWN_TIME = "shut_down_time";
     /** 蓝牙Mac地址 */
@@ -234,4 +234,6 @@ public final class Constant {
     public static final String HDWALLET_NAME = "hdWalletName";
     /** 蓝牙最早版本号 */
     public static final String BLE_OLDEST_VER = "s132_";
+
+    public static final String SERIAL_NUM_PREFIX = "Bixin";
 }

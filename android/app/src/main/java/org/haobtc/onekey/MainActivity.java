@@ -1,5 +1,11 @@
 package org.haobtc.onekey;
 
+import static org.haobtc.onekey.activities.service.CommunicationModeSelector.executorService;
+import static org.haobtc.onekey.constant.Constant.BITCOIN_NETWORK_TYPE_0;
+import static org.haobtc.onekey.constant.Constant.BITCOIN_NETWORK_TYPE_1;
+import static org.haobtc.onekey.constant.Constant.BITCOIN_NETWORK_TYPE_2;
+import static org.haobtc.onekey.constant.Constant.ONE_KEY_WEBSITE;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -8,7 +14,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
@@ -23,17 +28,16 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
@@ -49,7 +53,19 @@ import com.thirdgoddess.tnt.viewpager_adapter.ViewPagerFragmentStateAdapter;
 import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.bean.ZxingConfig;
 import com.yzq.zxinglibrary.common.Constant;
-
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -79,45 +95,21 @@ import org.haobtc.onekey.fragment.mainwheel.AddViewFragment;
 import org.haobtc.onekey.fragment.mainwheel.CheckHideWalletFragment;
 import org.haobtc.onekey.fragment.mainwheel.WheelViewpagerFragment;
 import org.haobtc.onekey.utils.Daemon;
-import org.haobtc.onekey.utils.MyDialog;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-
-import static org.haobtc.onekey.activities.service.CommunicationModeSelector.executorService;
-import static org.haobtc.onekey.constant.Constant.BITCOIN_NETWORK_TYPE_0;
-import static org.haobtc.onekey.constant.Constant.BITCOIN_NETWORK_TYPE_1;
-import static org.haobtc.onekey.constant.Constant.BITCOIN_NETWORK_TYPE_2;
-import static org.haobtc.onekey.constant.Constant.ONE_KEY_WEBSITE;
-
-
+@Deprecated
 public class MainActivity extends BaseActivity implements View.OnClickListener, OnRefreshListener {
 
     @BindView(R.id.recl_un_backup)
     RecyclerView reclUnBackup;
+
     private ViewPager viewPager;
     SharedPreferences sharedPreferences;
     public static Python py;
     private RecyclerView recy_data;
-    //remeber first back time
+    // remeber first back time
     private long firstTime = 0;
     private TextView tetNone;
     private ArrayList<MaintrsactionlistEvent> maintrsactionlistEvents;
@@ -132,7 +124,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private SmartRefreshLayout refreshLayout;
     private ArrayList<AddressEvent> walletnameList;
     private String strType;
-    private int scrollPos = 0;//scrollPos --> recyclerview position != The last one || second to last
+    private int scrollPos =
+            0; // scrollPos --> recyclerview position != The last one || second to last
     PyObject getWalletsListInfo = null;
     private SharedPreferences.Editor edit;
     public static boolean isBacked;
@@ -147,13 +140,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     @Override
     public void initView() {
         ButterKnife.bind(this);
-        registerReceiver(languageReceiver, new IntentFilter(Intent.ACTION_LOCALE_CHANGED));//Register broadcast
-        //Eventbus register
+        registerReceiver(
+                languageReceiver,
+                new IntentFilter(Intent.ACTION_LOCALE_CHANGED)); // Register broadcast
+        // Eventbus register
         EventBus.getDefault().register(this);
         sharedPreferences = getSharedPreferences("Preferences", MODE_PRIVATE);
         edit = sharedPreferences.edit();
 
-        //FIRST_RUN,if frist run
+        // FIRST_RUN,if frist run
         String firstRun = "is_first_run";
         edit.putBoolean(firstRun, true);
         edit.apply();
@@ -163,7 +158,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private void init() {
         boolean userAgreement = sharedPreferences.getBoolean("user_agreement", false);
         if (!userAgreement) {
-            //User agreement dialog
+            // User agreement dialog
             userAgreementDialog();
         }
         rxPermissions = new RxPermissions(this);
@@ -185,51 +180,51 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         refreshLayout.setEnableRefresh(true);
         refreshLayout.setOnRefreshListener(this);
 
-        //wallet name and balance list
+        // wallet name and balance list
         walletnameList = new ArrayList<>();
     }
 
     @Override
     public void initData() {
-        softList = new ArrayList<>();//soft wallet num
+        softList = new ArrayList<>(); // soft wallet num
         maintrsactionlistEvents = new ArrayList<>();
         fragmentList = new ArrayList<>();
-        //Binder Adapter
+        // Binder Adapter
         trsactionlistAdapter = new MaindowndatalistAdapetr(maintrsactionlistEvents);
         recy_data.setAdapter(trsactionlistAdapter);
-        //Rolling Wallet
+        // Rolling Wallet
         mWheelplanting();
         if (ApplicationObserver.tryUpdate) {
             ApplicationObserver.tryUpdate = false;
             getUpdateInfo();
         }
-
     }
 
     private void mWheelplanting() {
         softList.clear();
         walletnameList.clear();
         fragmentList.clear();
-        //wallet list
+        // wallet list
         if (Daemon.commands == null) {
             finishAndRemoveTask();
             System.exit(0);
         }
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                //wallet list
-                try {
-                    getWalletsListInfo = Daemon.commands.callAttr("list_wallets");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    cardBuyKey.setVisibility(View.VISIBLE);
-                    addwalletFragment();
-                    return;
-                }
-                mainhandler.sendEmptyMessage(1);
-            }
-        });
+        executorService.execute(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        // wallet list
+                        try {
+                            getWalletsListInfo = Daemon.commands.callAttr("list_wallets");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            cardBuyKey.setVisibility(View.VISIBLE);
+                            addwalletFragment();
+                            return;
+                        }
+                        mainhandler.sendEmptyMessage(1);
+                    }
+                });
     }
 
     private void showWalletList() {
@@ -237,14 +232,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             String toStrings = getWalletsListInfo.toString();
             Log.i("mWheelplanting", "toStrings: " + toStrings);
             if (toStrings.length() != 2) {
-                com.alibaba.fastjson.JSONArray jsons = com.alibaba.fastjson.JSONObject.parseArray(toStrings);
+                com.alibaba.fastjson.JSONArray jsons =
+                        com.alibaba.fastjson.JSONObject.parseArray(toStrings);
                 for (int i = 0; i < jsons.size(); i++) {
                     Map jsonToMap = (Map) jsons.get(i);
                     Set keySets = jsonToMap.keySet();
                     Iterator ki = keySets.iterator();
                     AddressEvent addressEvent = new AddressEvent();
                     while (ki.hasNext()) {
-                        //get key
+                        // get key
                         String key = (String) ki.next();
                         String value = jsonToMap.get(key).toString();
                         addressEvent.setName(key);
@@ -276,7 +272,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     fragmentList.add(new CheckHideWalletFragment());
                     viewPager.setOffscreenPageLimit(4);
                     viewPager.setPageMargin(40);
-                    viewPager.setAdapter(new ViewPagerFragmentStateAdapter(getSupportFragmentManager(), fragmentList));
+                    viewPager.setAdapter(
+                            new ViewPagerFragmentStateAdapter(
+                                    getSupportFragmentManager(), fragmentList));
                 } else {
                     cardBuyKey.setVisibility(View.VISIBLE);
                     addwalletFragment();
@@ -286,75 +284,79 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 addwalletFragment();
             }
         }
-        //scroll
+        // scroll
         viewPagerScroll(walletnameList.size());
     }
 
-    //no wallet show fragment
+    // no wallet show fragment
     private void addwalletFragment() {
         reclUnBackup.setVisibility(View.GONE);
         fragmentList.add(new AddViewFragment());
         fragmentList.add(new CheckHideWalletFragment());
         viewPager.setOffscreenPageLimit(4);
         viewPager.setPageMargin(40);
-        viewPager.setAdapter(new ViewPagerFragmentStateAdapter(getSupportFragmentManager(), fragmentList));
-        //trsaction list data
+        viewPager.setAdapter(
+                new ViewPagerFragmentStateAdapter(getSupportFragmentManager(), fragmentList));
+        // trsaction list data
         tetNone.setText(getString(R.string.no_records));
         tetNone.setVisibility(View.VISIBLE);
         recy_data.setVisibility(View.GONE);
     }
 
-    //viewPagerScroll
+    // viewPagerScroll
     private void viewPagerScroll(int size) {
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-            }
+        viewPager.addOnPageChangeListener(
+                new ViewPager.OnPageChangeListener() {
+                    @Override
+                    public void onPageScrolled(
+                            int position, float positionOffset, int positionOffsetPixels) {}
 
-            @Override
-            public void onPageSelected(int position) {
-                scrollPos = position;
-                if (position == (fragmentList.size() - 1) || position == (fragmentList.size() - 2)) {
-                    refreshLayout.setEnableRefresh(false);
-                    reclUnBackup.setVisibility(View.GONE);
-                    if (position == (fragmentList.size() - 1)) {
-                        tetNone.setText(getString(R.string.hide_wallet_tips));
-                        tetNone.setVisibility(View.VISIBLE);
-                        recy_data.setVisibility(View.GONE);
-                    } else {
-                        tetNone.setText(getString(R.string.no_records));
-                        tetNone.setVisibility(View.VISIBLE);
-                        recy_data.setVisibility(View.GONE);
+                    @Override
+                    public void onPageSelected(int position) {
+                        scrollPos = position;
+                        if (position == (fragmentList.size() - 1)
+                                || position == (fragmentList.size() - 2)) {
+                            refreshLayout.setEnableRefresh(false);
+                            reclUnBackup.setVisibility(View.GONE);
+                            if (position == (fragmentList.size() - 1)) {
+                                tetNone.setText(getString(R.string.hide_wallet_tips));
+                                tetNone.setVisibility(View.VISIBLE);
+                                recy_data.setVisibility(View.GONE);
+                            } else {
+                                tetNone.setText(getString(R.string.no_records));
+                                tetNone.setVisibility(View.VISIBLE);
+                                recy_data.setVisibility(View.GONE);
+                            }
+
+                        } else {
+                            refreshLayout.setEnableRefresh(true);
+                            strNames = walletnameList.get(position).getName();
+                            strType = walletnameList.get(position).getType();
+                            Handler handler = new Handler();
+                            handler.postDelayed(
+                                    new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Log.i("huxianoanid", "refreshListrefreshList: ");
+                                            // refresh only wallet
+                                            ((WheelViewpagerFragment) fragmentList.get(position))
+                                                    .refreshList();
+                                        }
+                                    },
+                                    500);
+                        }
                     }
 
-                } else {
-                    refreshLayout.setEnableRefresh(true);
-                    strNames = walletnameList.get(position).getName();
-                    strType = walletnameList.get(position).getType();
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            Log.i("huxianoanid", "refreshListrefreshList: ");
-                            //refresh only wallet
-                            ((WheelViewpagerFragment) fragmentList.get(position)).refreshList();
-                        }
-                    }, 500);
-                }
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
+                    @Override
+                    public void onPageScrollStateChanged(int state) {}
+                });
     }
 
     private void downMainListdata() {
         maintrsactionlistEvents.clear();
         PyObject getHistoryTx = null;
         try {
-            //get transaction json
+            // get transaction json
             getHistoryTx = Daemon.commands.callAttr("get_all_tx_list");
         } catch (Exception e) {
             e.printStackTrace();
@@ -363,10 +365,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             tetNone.setText(getString(R.string.no_records));
             tetNone.setVisibility(View.VISIBLE);
             recy_data.setVisibility(View.GONE);
-//            Log.i("downMainListdata", "downMaina===: " + e.getMessage());
+            //            Log.i("downMainListdata", "downMaina===: " + e.getMessage());
             return;
         }
-        //get transaction list
+        // get transaction list
         if (getHistoryTx != null) {
             tetNone.setVisibility(View.GONE);
             recy_data.setVisibility(View.VISIBLE);
@@ -377,7 +379,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 tetNone.setVisibility(View.VISIBLE);
                 recy_data.setVisibility(View.GONE);
             } else {
-                //show trsaction list
+                // show trsaction list
                 showTrsactionlist(strHistory);
             }
         } else {
@@ -387,10 +389,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             recy_data.setVisibility(View.GONE);
         }
         trsactionlistAdapter.notifyDataSetChanged();
-
     }
 
-    //show trsaction list
+    // show trsaction list
     private void showTrsactionlist(String strHistory) {
         maintrsactionlistEvents.clear();
         try {
@@ -401,13 +402,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 String type = jsonObject.getString("type");
                 String txHash = jsonObject.getString("tx_hash");
                 String amount = jsonObject.getString("amount");
-                //false ->get   true ->push
+                // false ->get   true ->push
                 is_mine = jsonObject.getBoolean("is_mine");
                 date = jsonObject.getString("date");
                 String txStatus = jsonObject.getString("tx_status");
                 if ("history".equals(type)) {
                     String confirmations = jsonObject.getString("confirmations");
-                    //add attribute
+                    // add attribute
                     maintrsactionlistEvent.setTxHash(txHash);
                     maintrsactionlistEvent.setDate(date);
                     maintrsactionlistEvent.setAmount(amount);
@@ -417,8 +418,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     maintrsactionlistEvent.setTxStatus(txStatus);
                     maintrsactionlistEvents.add(maintrsactionlistEvent);
                 } else {
-                    String invoiceId = jsonObject.getString("invoice_id");//delete use
-                    //add attribute
+                    String invoiceId = jsonObject.getString("invoice_id"); // delete use
+                    // add attribute
                     maintrsactionlistEvent.setTxHash(txHash);
                     maintrsactionlistEvent.setDate(date);
                     maintrsactionlistEvent.setAmount(amount);
@@ -430,84 +431,100 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 }
             }
             trsactionlistAdapter.notifyDataSetChanged();
-            trsactionlistAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
-                private String txHash1;
-                private boolean status = false;
+            trsactionlistAdapter.setOnItemChildClickListener(
+                    new BaseQuickAdapter.OnItemChildClickListener() {
+                        private String txHash1;
+                        private boolean status = false;
 
-                @SingleClick(value = 500)
-                @Override
-                public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
-                    Log.i("onItemChildClick", "onItemChildClick: " + position);
-                    String typeDele = null;
-                    try {
-                        typeDele = maintrsactionlistEvents.get(position).getType();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        return;
-                    }
-                    switch (view.getId()) {
-                        case R.id.lin_Item:
+                        @SingleClick(value = 500)
+                        @Override
+                        public void onItemChildClick(
+                                BaseQuickAdapter adapter, View view, int position) {
+                            Log.i("onItemChildClick", "onItemChildClick: " + position);
+                            String typeDele = null;
                             try {
-                                JSONObject jsonObject = jsonArray.getJSONObject(position);
-                                txHash1 = jsonObject.getString("tx_hash");
-                                is_mine = jsonObject.getBoolean("is_mine");
-                                date = jsonObject.getString("date");
-                                Intent intent = new Intent(MainActivity.this, TransactionDetailsActivity.class);
-                                if ("tx".equals(typeDele)) {
-                                    String txOnclick = jsonObject.getString("tx");
-                                    intent.putExtra("keyValue", "B");
-                                    intent.putExtra("tx_hash", txHash1);
-                                    intent.putExtra("is_mine", is_mine);
-                                    intent.putExtra("strwalletType", strType);
-                                    intent.putExtra("listTxStatus", maintrsactionlistEvents.get(position).getTxStatus());
-                                    intent.putExtra("listType", typeDele);
-                                    intent.putExtra("dataTime", date);
-                                    intent.putExtra("txCreatTrsaction", txOnclick);
-                                    startActivity(intent);
-
-                                } else {
-                                    intent.putExtra("tx_hash", txHash1);
-                                    intent.putExtra("is_mine", is_mine);
-                                    intent.putExtra("dataTime", date);
-                                    intent.putExtra("listTxStatus", maintrsactionlistEvents.get(position).getTxStatus());
-                                    intent.putExtra("strwalletType", strType);
-                                    intent.putExtra("keyValue", "B");
-                                    intent.putExtra("listType", typeDele);
-                                    startActivity(intent);
-                                }
-
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                            break;
-                        case R.id.txt_delete:
-                            try {
-                                maintrsactionlistEvents.remove(position);
-                                trsactionlistAdapter.notifyDataSetChanged();
-                                JSONObject jsonObject = jsonArray.getJSONObject(position);
-                                txHash1 = jsonObject.getString("tx_hash");
-                                status = Daemon.commands.callAttr("get_remove_flag", txHash1).toBoolean();
+                                typeDele = maintrsactionlistEvents.get(position).getType();
                             } catch (Exception e) {
                                 e.printStackTrace();
-                                mToast(getString(R.string.delete_fail));
                                 return;
                             }
-                            if (status) {
-                                try {
-                                    Daemon.commands.callAttr("remove_local_tx", txHash1);
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                    mToast(getString(R.string.delete_fail));
-                                    return;
-                                }
+                            switch (view.getId()) {
+                                case R.id.lin_Item:
+                                    try {
+                                        JSONObject jsonObject = jsonArray.getJSONObject(position);
+                                        txHash1 = jsonObject.getString("tx_hash");
+                                        is_mine = jsonObject.getBoolean("is_mine");
+                                        date = jsonObject.getString("date");
+                                        Intent intent =
+                                                new Intent(
+                                                        MainActivity.this,
+                                                        TransactionDetailsActivity.class);
+                                        if ("tx".equals(typeDele)) {
+                                            String txOnclick = jsonObject.getString("tx");
+                                            intent.putExtra("keyValue", "B");
+                                            intent.putExtra("tx_hash", txHash1);
+                                            intent.putExtra("is_mine", is_mine);
+                                            intent.putExtra("strwalletType", strType);
+                                            intent.putExtra(
+                                                    "listTxStatus",
+                                                    maintrsactionlistEvents
+                                                            .get(position)
+                                                            .getTxStatus());
+                                            intent.putExtra("listType", typeDele);
+                                            intent.putExtra("dataTime", date);
+                                            intent.putExtra("txCreatTrsaction", txOnclick);
+                                            startActivity(intent);
+
+                                        } else {
+                                            intent.putExtra("tx_hash", txHash1);
+                                            intent.putExtra("is_mine", is_mine);
+                                            intent.putExtra("dataTime", date);
+                                            intent.putExtra(
+                                                    "listTxStatus",
+                                                    maintrsactionlistEvents
+                                                            .get(position)
+                                                            .getTxStatus());
+                                            intent.putExtra("strwalletType", strType);
+                                            intent.putExtra("keyValue", "B");
+                                            intent.putExtra("listType", typeDele);
+                                            startActivity(intent);
+                                        }
+
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                    break;
+                                case R.id.txt_delete:
+                                    try {
+                                        maintrsactionlistEvents.remove(position);
+                                        trsactionlistAdapter.notifyDataSetChanged();
+                                        JSONObject jsonObject = jsonArray.getJSONObject(position);
+                                        txHash1 = jsonObject.getString("tx_hash");
+                                        status =
+                                                Daemon.commands
+                                                        .callAttr("get_remove_flag", txHash1)
+                                                        .toBoolean();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                        mToast(getString(R.string.delete_fail));
+                                        return;
+                                    }
+                                    if (status) {
+                                        try {
+                                            Daemon.commands.callAttr("remove_local_tx", txHash1);
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                            mToast(getString(R.string.delete_fail));
+                                            return;
+                                        }
+                                    }
+                                    // transaction list data
+                                    downMainListdata();
+                                    break;
+                                default:
                             }
-                            //transaction list data
-                            downMainListdata();
-                            break;
-                        default:
-                    }
-                }
-            });
+                        }
+                    });
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -519,7 +536,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         isBacked = true;
         SharedPreferences devices = getSharedPreferences("devices", MODE_PRIVATE);
         Map<String, ?> devicesAll = devices.getAll();
-        //key
+        // key
         for (Object info : devicesAll.values()) {
             HardwareFeatures hardwareFeatures = HardwareFeatures.objectFromData((String) info);
             if (hardwareFeatures.isNeedsBackup()) {
@@ -528,11 +545,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         }
         if (!deviceValue.isEmpty()) {
             try {
-                String strDeviceId = Daemon.commands.callAttr("get_device_info").toString().replaceAll("\"", "");
+                String strDeviceId =
+                        Daemon.commands.callAttr("get_device_info").toString().replaceAll("\"", "");
                 if (!Strings.isNullOrEmpty(strDeviceId)) {
                     for (HardwareFeatures entity : deviceValue) {
                         if (strDeviceId.equals(entity.getDeviceId())) {
-                            unBackupKeyList.add(Optional.ofNullable(entity.getLabel()).orElse(entity.getBleName()));
+                            unBackupKeyList.add(
+                                    Optional.ofNullable(entity.getLabel())
+                                            .orElse(entity.getBleName()));
                         }
                     }
                 }
@@ -542,15 +562,19 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     reclUnBackup.setVisibility(View.VISIBLE);
                     UnbackupKeyAdapter unbackupKeyAdapter = new UnbackupKeyAdapter(unBackupKeyList);
                     reclUnBackup.setAdapter(unbackupKeyAdapter);
-                    unbackupKeyAdapter.setOnItemChildClickListener((adapter, view, position) -> {
-                        if (view.getId() == R.id.test_go_to_backup) {
-                            CommunicationModeSelector.backupTip = true;
-                            Intent intent = new Intent(MainActivity.this, BackupRecoveryActivity.class);
-                            intent.putExtra("home_un_backup", "home_un_backup");
-                            intent.putExtra("contrastDeviceId", strDeviceId);
-                            startActivity(intent);
-                        }
-                    });
+                    unbackupKeyAdapter.setOnItemChildClickListener(
+                            (adapter, view, position) -> {
+                                if (view.getId() == R.id.test_go_to_backup) {
+                                    CommunicationModeSelector.backupTip = true;
+                                    Intent intent =
+                                            new Intent(
+                                                    MainActivity.this,
+                                                    BackupRecoveryActivity.class);
+                                    intent.putExtra("home_un_backup", "home_un_backup");
+                                    intent.putExtra("contrastDeviceId", strDeviceId);
+                                    startActivity(intent);
+                                }
+                            });
                 } else {
                     reclUnBackup.setVisibility(View.GONE);
                 }
@@ -562,15 +586,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         } else {
             reclUnBackup.setVisibility(View.GONE);
         }
-
     }
 
-    /**
-     * set white background and black text
-     */
+    /** set white background and black text */
     @Override
     public void mInitState() {
-        ImmersionBar.with(this).keyboardEnable(false).statusBarDarkFont(true, 0.2f).navigationBarColor(R.color.button_bk_ddake).init();
+        ImmersionBar.with(this)
+                .keyboardEnable(false)
+                .statusBarDarkFont(true, 0.2f)
+                .navigationBarColor(R.color.button_bk_ddake)
+                .init();
     }
 
     @SingleClick(value = 1000)
@@ -580,23 +605,29 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             case R.id.img_sweep:
                 rxPermissions
                         .request(Manifest.permission.CAMERA)
-                        .subscribe(granted -> {
-                            if (granted) { // Always true pre-M
-                                //If you have already authorized it, you can directly jump to the QR code scanning interface
-                                Intent intent2 = new Intent(this, CaptureActivity.class);
-                                ZxingConfig config = new ZxingConfig();
-                                config.setPlayBeep(true);
-                                config.setShake(true);
-                                config.setDecodeBarCode(false);
-                                config.setFullScreenScan(true);
-                                config.setShowAlbum(false);
-                                config.setShowbottomLayout(false);
-                                intent2.putExtra(Constant.INTENT_ZXING_CONFIG, config);
-                                startActivityForResult(intent2, REQUEST_CODE);
-                            } else { // Oups permission denied
-                                Toast.makeText(this, R.string.photopersion, Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                        .subscribe(
+                                granted -> {
+                                    if (granted) { // Always true pre-M
+                                        // If you have already authorized it, you can directly jump
+                                        // to the QR code scanning interface
+                                        Intent intent2 = new Intent(this, CaptureActivity.class);
+                                        ZxingConfig config = new ZxingConfig();
+                                        config.setPlayBeep(true);
+                                        config.setShake(true);
+                                        config.setDecodeBarCode(false);
+                                        config.setFullScreenScan(true);
+                                        config.setShowAlbum(false);
+                                        config.setShowbottomLayout(false);
+                                        intent2.putExtra(Constant.INTENT_ZXING_CONFIG, config);
+                                        startActivityForResult(intent2, REQUEST_CODE);
+                                    } else { // Oups permission denied
+                                        Toast.makeText(
+                                                        this,
+                                                        R.string.photopersion,
+                                                        Toast.LENGTH_SHORT)
+                                                .show();
+                                    }
+                                });
                 break;
             case R.id.img_setting:
                 Intent intent1 = new Intent(this, SettingActivity.class);
@@ -605,7 +636,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
             case R.id.textView_more:
                 Intent intent2 = new Intent(this, TransactionRecordsActivity.class);
                 intent2.putExtra("strwalletType", strType);
-                if (scrollPos == (fragmentList.size() - 1) || scrollPos == (fragmentList.size() - 2)) {
+                if (scrollPos == (fragmentList.size() - 1)
+                        || scrollPos == (fragmentList.size() - 2)) {
                     intent2.putExtra("noneData", "none_data");
                 }
                 startActivity(intent2);
@@ -628,12 +660,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         String msgVote = updataHint.getMsg();
         switch (msgVote) {
             case "11":
-                //Rolling Wallet
+                // Rolling Wallet
                 mWheelplanting();
                 break;
             case "22":
-                if (scrollPos != (fragmentList.size() - 1) && scrollPos != (fragmentList.size() - 2)) {//scrollPos --> recyclerview position != The last one || second to last
-                    //transaction list data
+                if (scrollPos != (fragmentList.size() - 1)
+                        && scrollPos
+                                != (fragmentList.size()
+                                        - 2)) { // scrollPos --> recyclerview position != The last
+                    // one || second to last
+                    // transaction list data
                     downMainListdata();
                 }
                 break;
@@ -644,7 +680,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                 break;
             case "load_wallet_finish":
                 reclUnBackup.setVisibility(View.VISIBLE);
-                //get unBackupKey
+                // get unBackupKey
                 getunBackupKey();
                 break;
             case "load_wallet_finish_visible":
@@ -659,10 +695,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     public void event(SecondEvent updataHint) {
         String msgVote = updataHint.getMsg();
         if (!TextUtils.isEmpty(msgVote) && msgVote.length() != 2 && msgVote.contains("{")) {
-            //Rolling Wallet
+            // Rolling Wallet
             if (fragmentList != null && fragmentList.size() > scrollPos) {
                 if (hasWindowFocus()) {
-                    Optional.ofNullable(fragmentList.get(scrollPos)).ifPresent(fragment -> ((WheelViewpagerFragment) fragment).setValue(msgVote));
+                    Optional.ofNullable(fragmentList.get(scrollPos))
+                            .ifPresent(
+                                    fragment ->
+                                            ((WheelViewpagerFragment) fragment).setValue(msgVote));
                 }
             }
         }
@@ -692,49 +731,59 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         OkHttpClient okHttpClient = new OkHttpClient();
         Request request = new Request.Builder().url(url).build();
         Call call = okHttpClient.newCall(request);
-        call.enqueue(new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, IOException e) {
-                Log.e("Main", "获取更新信息失败");
-            }
+        call.enqueue(
+                new Callback() {
+                    @Override
+                    public void onFailure(@NonNull Call call, IOException e) {
+                        Log.e("Main", "获取更新信息失败");
+                    }
 
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                assert response.body() != null;
-                SharedPreferences preferences = getSharedPreferences("Preferences", MODE_PRIVATE);
-                String locate = preferences.getString("language", "");
-                String info = response.body().string();
-                UpdateInfo updateInfo = null;
-                try {
-                    updateInfo = UpdateInfo.objectFromData(info);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    if (e instanceof JsonSyntaxException) {
-                    }
-                    return;
-                }
-                String oldInfo = preferences.getString("upgrade_info", null);
-                UpdateInfo finalUpdateInfo = updateInfo;
-                Optional.ofNullable(oldInfo).ifPresent((s) -> {
-                    UpdateInfo old = UpdateInfo.objectFromData(s);
-                    if (!old.getStm32().getUrl().equals(finalUpdateInfo.getStm32().getUrl())) {
-                        finalUpdateInfo.getStm32().setNeedUpload(true);
-                    }
-                    if (!old.getNrf().getUrl().equals(finalUpdateInfo.getNrf().getUrl())) {
-                        finalUpdateInfo.getNrf().setNeedUpload(true);
+                    @Override
+                    public void onResponse(@NonNull Call call, @NonNull Response response)
+                            throws IOException {
+                        assert response.body() != null;
+                        SharedPreferences preferences =
+                                getSharedPreferences("Preferences", MODE_PRIVATE);
+                        String locate = preferences.getString("language", "");
+                        String info = response.body().string();
+                        UpdateInfo updateInfo = null;
+                        try {
+                            updateInfo = UpdateInfo.objectFromData(info);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            if (e instanceof JsonSyntaxException) {}
+                            return;
+                        }
+                        String oldInfo = preferences.getString("upgrade_info", null);
+                        UpdateInfo finalUpdateInfo = updateInfo;
+                        Optional.ofNullable(oldInfo)
+                                .ifPresent(
+                                        (s) -> {
+                                            UpdateInfo old = UpdateInfo.objectFromData(s);
+                                            if (!old.getStm32()
+                                                    .getUrl()
+                                                    .equals(finalUpdateInfo.getStm32().getUrl())) {
+                                                finalUpdateInfo.getStm32().setNeedUpload(true);
+                                            }
+                                            if (!old.getNrf()
+                                                    .getUrl()
+                                                    .equals(finalUpdateInfo.getNrf().getUrl())) {
+                                                finalUpdateInfo.getNrf().setNeedUpload(true);
+                                            }
+                                        });
+                        preferences.edit().putString("upgrade_info", updateInfo.toString()).apply();
+                        String url = updateInfo.getAPK().getUrl();
+                        String versionName = updateInfo.getAPK().getVersionName();
+                        int versionCode = updateInfo.getAPK().getVersionCode();
+                        String size = updateInfo.getAPK().getSize().replace("M", "");
+                        String description =
+                                "English".equals(locate)
+                                        ? updateInfo.getAPK().getChangelogEn()
+                                        : updateInfo.getAPK().getChangelogCn();
+                        boolean force = updateInfo.getAPK().getForceUpdate();
                     }
                 });
-                preferences.edit().putString("upgrade_info", updateInfo.toString()).apply();
-                String url = updateInfo.getAPK().getUrl();
-                String versionName = updateInfo.getAPK().getVersionName();
-                int versionCode = updateInfo.getAPK().getVersionCode();
-                String size = updateInfo.getAPK().getSize().replace("M", "");
-                String description = "English".equals(locate) ? updateInfo.getAPK().getChangelogEn() : updateInfo.getAPK().getChangelogCn();
-                boolean force = updateInfo.getAPK().getForceUpdate();
-            }
-        });
     }
-
 
     @Override
     public void onDestroy() {
@@ -749,9 +798,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         // Scan QR code / barcode return
         if (requestCode == 0 && resultCode == RESULT_OK) {
             if (data != null) {
-//                Log.i("PyObject", "parse_qr-----:  " + data);
+                //                Log.i("PyObject", "parse_qr-----:  " + data);
                 String content = data.getStringExtra(Constant.CODED_CONTENT);
-                //bitcoin:mhZ5dTc91TxttEvFJifBNPNqwLAD5CxhYF
+                // bitcoin:mhZ5dTc91TxttEvFJifBNPNqwLAD5CxhYF
                 if (!TextUtils.isEmpty(content)) {
                     PyObject parseQr;
                     try {
@@ -760,7 +809,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                     } catch (Exception e) {
                         e.printStackTrace();
                         mToast(getString(R.string.address_wrong));
-//                        Log.i("PyObject", "parse_qr+++++++:  " + e.getMessage());
+                        //                        Log.i("PyObject", "parse_qr+++++++:  " +
+                        // e.getMessage());
                         return;
                     }
                     if (parseQr != null) {
@@ -771,20 +821,27 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
                             int type = jsonObject.getInt("type");
                             Gson gson = new Gson();
                             if (type == 1) {
-                                MainSweepcodeBean mainSweepcodeBean = gson.fromJson(strParse, MainSweepcodeBean.class);
+                                MainSweepcodeBean mainSweepcodeBean =
+                                        gson.fromJson(strParse, MainSweepcodeBean.class);
                                 MainSweepcodeBean.DataBean listData = mainSweepcodeBean.getData();
                                 String address = listData.getAddress();
                                 String sendAmount = listData.getAmount();
                                 String message = listData.getMessage();
-                                //address  -->  intent  send  activity
-                                Intent intent = new Intent(MainActivity.this, SendOne2OneMainPageActivity.class);
+                                // address  -->  intent  send  activity
+                                Intent intent =
+                                        new Intent(
+                                                MainActivity.this,
+                                                SendOne2OneMainPageActivity.class);
                                 intent.putExtra("sendAdress", address);
                                 intent.putExtra("sendamount", sendAmount);
                                 intent.putExtra("sendmessage", message);
                                 intent.putExtra("wallet_name", strNames);
                                 startActivity(intent);
                             } else if (type == 2) {
-                                Intent intent = new Intent(MainActivity.this, TransactionDetailsActivity.class);
+                                Intent intent =
+                                        new Intent(
+                                                MainActivity.this,
+                                                TransactionDetailsActivity.class);
                                 intent.putExtra("strParse", strParse);
                                 intent.putExtra("keyValue", "B");
                                 intent.putExtra("listType", "scan");
@@ -806,15 +863,18 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     private void userAgreementDialog() {
         View view1 = LayoutInflater.from(this).inflate(R.layout.user_agreement, null, false);
         AlertDialog alertDialog = new AlertDialog.Builder(this).setView(view1).create();
-        Objects.requireNonNull(alertDialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        view1.findViewById(R.id.btn_agree).setOnClickListener(v -> {
-            edit.putBoolean("user_agreement", true);
-            edit.apply();
-            alertDialog.dismiss();
-        });
+        Objects.requireNonNull(alertDialog.getWindow())
+                .setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        view1.findViewById(R.id.btn_agree)
+                .setOnClickListener(
+                        v -> {
+                            edit.putBoolean("user_agreement", true);
+                            edit.apply();
+                            alertDialog.dismiss();
+                        });
         alertDialog.setCanceledOnTouchOutside(false);
         alertDialog.show();
-        //show center
+        // show center
         Window dialogWindow = alertDialog.getWindow();
         WindowManager m = getWindowManager();
         Display d = m.getDefaultDisplay();
@@ -824,15 +884,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         dialogWindow.setAttributes(p);
     }
 
-    /**
-     * onclick dowble exit
-     */
+    /** onclick dowble exit */
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
             long secondTime = System.currentTimeMillis();
             if (secondTime - firstTime > 2000) {
-                Toast.makeText(MainActivity.this, R.string.dowbke_to_exit, Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, R.string.dowbke_to_exit, Toast.LENGTH_SHORT)
+                        .show();
                 firstTime = secondTime;
             } else {
                 System.exit(0);
@@ -844,47 +903,48 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void fixName(FixWalletNameEvent event) {
-        //Rolling Wallet
+        // Rolling Wallet
         mWheelplanting();
     }
 
-
     @Override
     public void onRefresh(@NonNull RefreshLayout refreshLayout) {
-        //trsaction list data
+        // trsaction list data
         downMainListdata();
     }
 
     @SuppressLint("HandlerLeak")
-    Handler mainhandler = new Handler() {
-        @Override
-        public void handleMessage(@NonNull Message msg) {
-            super.handleMessage(msg);
-            if (msg.what == 1) {
-                showWalletList();
-            }
-        }
-    };
+    Handler mainhandler =
+            new Handler() {
+                @Override
+                public void handleMessage(@NonNull Message msg) {
+                    super.handleMessage(msg);
+                    if (msg.what == 1) {
+                        showWalletList();
+                    }
+                }
+            };
 
     @Override
     protected void onRestart() {
         super.onRestart();
         if (!"standard".equals(strType) || !TextUtils.isEmpty(strType)) {
-            //get unBackupKey
+            // get unBackupKey
             getunBackupKey();
         }
     }
 
-    //Turn off all activities when switching system languages
-    private BroadcastReceiver languageReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            assert action != null;
-            if (action.equals(Intent.ACTION_LOCALE_CHANGED)) {
-                //The current system voice has been changed
-                finishAffinity();
-            }
-        }
-    };
+    // Turn off all activities when switching system languages
+    private BroadcastReceiver languageReceiver =
+            new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    String action = intent.getAction();
+                    assert action != null;
+                    if (action.equals(Intent.ACTION_LOCALE_CHANGED)) {
+                        // The current system voice has been changed
+                        finishAffinity();
+                    }
+                }
+            };
 }

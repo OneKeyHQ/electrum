@@ -162,22 +162,22 @@ public class CreatePersonalWalletActivity extends BaseActivity implements Busine
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onCreateWallet(CreateWalletEvent event) {
+        String walletName = event.getName();
+        String xpubs = "[[\"" + xpub + "\", \"" + PyEnv.currentHwFeatures.getSerialNum() + "\"]]";
+        String callFlag = "";
         switch (coinType) {
             case Constant.COIN_TYPE_BTC:
-                String walletName = event.getName();
-                String xpubs =
-                        "[[\"" + xpub + "\", \"" + FindNormalDeviceActivity.deviceId + "\"]]";
-                createWallet(walletName, xpubs, Vm.CoinType.BTC.callFlag);
+                callFlag = Vm.CoinType.BTC.callFlag;
                 break;
             case Constant.COIN_TYPE_ETH:
-                String name = event.getName();
-                String ethXpubs =
-                        "[[\"" + xpub + "\", \"" + FindNormalDeviceActivity.deviceId + "\"]]";
-                createWallet(event.getName(), ethXpubs, Vm.CoinType.ETH.callFlag);
+                callFlag = Vm.CoinType.ETH.callFlag;
                 break;
             case Constant.COIN_TYPE_EOS:
                 break;
             default:
+        }
+        if (!Strings.isNullOrEmpty(callFlag)) {
+            createWallet(walletName, xpubs, callFlag);
         }
     }
 

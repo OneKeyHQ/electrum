@@ -1,14 +1,18 @@
 package org.haobtc.onekey.activities;
 
+import static org.haobtc.onekey.activities.service.CommunicationModeSelector.features;
+import static org.haobtc.onekey.activities.service.CommunicationModeSelector.isNFC;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import com.google.common.base.Strings;
-
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.haobtc.onekey.R;
@@ -19,20 +23,12 @@ import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.event.BackupFinishEvent;
 import org.haobtc.onekey.event.FinishEvent;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-
-import static org.haobtc.onekey.activities.service.CommunicationModeSelector.features;
-import static org.haobtc.onekey.activities.service.CommunicationModeSelector.isNFC;
-
-/**
- * @author liyan
- */
-
+/** @author liyan */
+@Deprecated
 public class ConfirmPINPrompt extends BaseActivity {
     @BindView(R.id.img_back)
     ImageView imgBack;
+
     @BindView(R.id.backup)
     Button backup;
 
@@ -48,9 +44,8 @@ public class ConfirmPINPrompt extends BaseActivity {
     }
 
     @Override
-    public void initData() {
+    public void initData() {}
 
-    }
     @SingleClick(value = 1000)
     @OnClick({R.id.img_back, R.id.backup})
     public void onViewClicked(View view) {
@@ -84,13 +79,21 @@ public class ConfirmPINPrompt extends BaseActivity {
     public void onBackupFinish(BackupFinishEvent event) {
         SharedPreferences backup = getSharedPreferences("backup", Context.MODE_PRIVATE);
         SharedPreferences devices = getSharedPreferences("devices", Context.MODE_PRIVATE);
-        backup.edit().putString(features.getDeviceId(), Strings.isNullOrEmpty(features.getLabel()) ?
-                features.getBleName() + ":" + event.getMessage()
-                : features.getLabel() + ":" + event.getMessage()).apply();
+        backup.edit()
+                .putString(
+                        features.getDeviceId(),
+                        Strings.isNullOrEmpty(features.getLabel())
+                                ? features.getBleName() + ":" + event.getMessage()
+                                : features.getLabel() + ":" + event.getMessage())
+                .apply();
         features.setNeedsBackup(false);
         devices.edit().putString(features.getDeviceId(), features.toString()).apply();
         Intent intent = new Intent(this, BackupMessageActivity.class);
-        intent.putExtra("label", Strings.isNullOrEmpty(features.getLabel()) ? features.getBleName() : features.getLabel());
+        intent.putExtra(
+                "label",
+                Strings.isNullOrEmpty(features.getLabel())
+                        ? features.getBleName()
+                        : features.getLabel());
         intent.putExtra("tag", "backup");
         intent.putExtra("message", event.getMessage());
         startActivity(intent);

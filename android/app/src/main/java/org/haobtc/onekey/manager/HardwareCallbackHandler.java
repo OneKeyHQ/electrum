@@ -8,18 +8,16 @@ import static org.haobtc.onekey.constant.PyConstant.PASS_PASSPHRASS;
 import static org.haobtc.onekey.constant.PyConstant.PIN_CURRENT;
 import static org.haobtc.onekey.constant.PyConstant.PIN_NEW_FIRST;
 import static org.haobtc.onekey.constant.PyConstant.VERIFY_ADDRESS_CONFIRM;
+import static org.haobtc.onekey.manager.PyEnv.currentHwFeatures;
 
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
-import com.alibaba.fastjson.JSON;
 import com.google.common.base.Strings;
-import com.orhanobut.logger.Logger;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.activities.service.CommunicationModeSelector;
-import org.haobtc.onekey.bean.HardwareFeatures;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.ButtonRequestEvent;
 import org.haobtc.onekey.ui.activity.InputPinOnHardware;
@@ -91,12 +89,9 @@ public class HardwareCallbackHandler extends Handler {
      * >1 就不支持在硬件上输入Pin
      */
     private boolean getBleMajorVersion() {
-        HardwareFeatures hardwareFeatures =
-                BleManager.getInstance(fragmentActivity).getHardwareFeatures();
-        Logger.json(JSON.toJSONString(hardwareFeatures));
-        if (hardwareFeatures != null) {
-            if (Strings.isNullOrEmpty(hardwareFeatures.getOneKeyVersion())) {
-                return hardwareFeatures.getMajorVersion() > 1;
+        if (currentHwFeatures != null) {
+            if (Strings.isNullOrEmpty(currentHwFeatures.getOneKeyVersion())) {
+                return currentHwFeatures.getMajorVersion() > 1;
             } else {
                 return true;
             }

@@ -3,9 +3,10 @@ package org.haobtc.onekey.ui.activity;
 import android.content.Intent;
 import android.view.View;
 import android.widget.ImageView;
-
+import butterknife.BindView;
+import butterknife.OnClick;
 import com.google.common.base.Strings;
-
+import java.util.List;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.haobtc.onekey.R;
@@ -18,7 +19,6 @@ import org.haobtc.onekey.constant.PyConstant;
 import org.haobtc.onekey.event.ButtonRequestEvent;
 import org.haobtc.onekey.event.ChangePinEvent;
 import org.haobtc.onekey.event.CreateMultiSigWalletEvent;
-import org.haobtc.onekey.event.CreateSuccessEvent;
 import org.haobtc.onekey.event.DeviceSearchEvent;
 import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.event.GetXpubEvent;
@@ -32,37 +32,31 @@ import org.haobtc.onekey.ui.fragment.CreateMultiSigWalletFragment3;
 import org.haobtc.onekey.ui.fragment.DevicePINFragment;
 import org.haobtc.onekey.ui.fragment.ReadingXpubFragment;
 
-import java.util.List;
-
-import butterknife.BindView;
-import butterknife.OnClick;
-
 /**
  * @author liyan
  * @date 11/24/20
  */
-
 public class CreateMultiSigWalletActivity extends BaseActivity implements BusinessAsyncTask.Helper {
 
     @BindView(R.id.img_back)
     ImageView imgBack;
+
     private int coSignerNum;
     private CreateMultiSigWalletFragment2 fragment2;
     private String walletName;
     private int sigNum;
     private String currentMethod;
 
-    /**
-     * init
-     */
+    /** init */
     @Override
     public void init() {
         updateTitle(R.string.creat_ggwallet);
         startFragment(new CreateMultiSigWalletFragment());
     }
 
-    /***
-     * init layout
+    /**
+     * * init layout
+     *
      * @return
      */
     @Override
@@ -76,9 +70,7 @@ public class CreateMultiSigWalletActivity extends BaseActivity implements Busine
     }
 
     @Override
-    public void onPreExecute() {
-
-    }
+    public void onPreExecute() {}
 
     @Override
     public void onException(Exception e) {
@@ -94,15 +86,11 @@ public class CreateMultiSigWalletActivity extends BaseActivity implements Busine
                 new ValidateXpubDialog(s).show(getSupportFragmentManager(), "");
                 break;
             default:
-
         }
-
     }
 
     @Override
-    public void onCancelled() {
-
-    }
+    public void onCancelled() {}
 
     @Override
     public void currentMethod(String methodName) {
@@ -112,7 +100,8 @@ public class CreateMultiSigWalletActivity extends BaseActivity implements Busine
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     public void onSearchDeviceEvent(DeviceSearchEvent event) {
         Intent intent = new Intent(this, SearchDevicesActivity.class);
-        intent.putExtra(Constant.SEARCH_DEVICE_MODE, Constant.SearchDeviceMode.MODE_BIND_ADMIN_PERSON);
+        intent.putExtra(
+                Constant.SEARCH_DEVICE_MODE, Constant.SearchDeviceMode.MODE_BIND_ADMIN_PERSON);
         startActivity(intent);
     }
 
@@ -121,12 +110,13 @@ public class CreateMultiSigWalletActivity extends BaseActivity implements Busine
         getXpubP2wsh();
     }
 
-    /**
-     * 获取用于个人钱包的扩展公钥
-     */
+    /** 获取用于个人钱包的扩展公钥 */
     private void getXpubP2wsh() {
-        new BusinessAsyncTask().setHelper(this).execute(BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY,
-                MyApplication.getInstance().getDeviceWay());
+        new BusinessAsyncTask()
+                .setHelper(this)
+                .execute(
+                        BusinessAsyncTask.GET_EXTEND_PUBLIC_KEY,
+                        MyApplication.getInstance().getDeviceWay());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -153,9 +143,13 @@ public class CreateMultiSigWalletActivity extends BaseActivity implements Busine
         StringBuilder builder = new StringBuilder();
         builder.append("[");
         for (XpubItem item : xpubList) {
-            builder.append("[\"").append(item.getXpub()).append("\", \"").append(FindNormalDeviceActivity.deviceId).append("\"],");
+            builder.append("[\"")
+                    .append(item.getXpub())
+                    .append("\", \"")
+                    .append(PyEnv.currentHwFeatures.getSerialNum())
+                    .append("\"],");
         }
-        builder.deleteCharAt(builder.length()-1);
+        builder.deleteCharAt(builder.length() - 1);
         builder.append("]");
         String name = PyEnv.createWallet(this, walletName, sigNum, coSignerNum, builder.toString());
         if (!Strings.isNullOrEmpty(name)) {
@@ -175,7 +169,6 @@ public class CreateMultiSigWalletActivity extends BaseActivity implements Busine
         if (PyConstant.PIN_CURRENT == event.getType()) {
             startFragment(new DevicePINFragment(PyConstant.PIN_CURRENT));
         }
-
     }
 
     @SingleClick
@@ -184,11 +177,9 @@ public class CreateMultiSigWalletActivity extends BaseActivity implements Busine
         finish();
     }
 
-    /**
-     * 子fragment返回请求响应
-     * */
+    /** 子fragment返回请求响应 */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onFinish(ExitEvent exitEvent) {
-       finish();
+        finish();
     }
 }

@@ -143,7 +143,11 @@ public class RecoveryHardwareOnceWallet extends BaseActivity implements OnFindWa
         return Single.create(
                 emitter -> {
                     String xpubs =
-                            "[[\"" + string + "\", \"" + FindNormalDeviceActivity.deviceId + "\"]]";
+                            "[[\""
+                                    + string
+                                    + "\", \""
+                                    + PyEnv.currentHwFeatures.getSerialNum()
+                                    + "\"]]";
                     PyResponse<CreateWalletBean> response = PyEnv.recoveryXpubWallet(xpubs, true);
                     if (Strings.isNullOrEmpty(response.getErrors())) {
                         emitter.onSuccess(response);

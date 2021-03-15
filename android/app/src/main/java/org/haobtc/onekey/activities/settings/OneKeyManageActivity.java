@@ -9,7 +9,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,12 +62,15 @@ public class OneKeyManageActivity extends BaseActivity {
         deviceValue = new ArrayList<>();
         Map<String, ?> devicesAll = PreferencesManager.getAll(this, Constant.DEVICES);
         // key
-        for (Map.Entry<String, ?> entry : devicesAll.entrySet()) {
-            String mapValue = (String) entry.getValue();
-            HardwareFeatures hardwareFeatures =
-                    new Gson().fromJson(mapValue, HardwareFeatures.class);
-            deviceValue.add(hardwareFeatures);
-        }
+        devicesAll.entrySet().stream()
+                .filter(entry -> entry.getKey().contains(Constant.SERIAL_NUM_PREFIX))
+                .forEach(
+                        entry -> {
+                            String mapValue = (String) entry.getValue();
+                            HardwareFeatures hardwareFeatures =
+                                    new Gson().fromJson(mapValue, HardwareFeatures.class);
+                            deviceValue.add(hardwareFeatures);
+                        });
         if (deviceValue != null) {
             BixinkeyManagerAdapter bixinkeyManagerAdapter = new BixinkeyManagerAdapter(deviceValue);
             reclBixinKeyList.setAdapter(bixinkeyManagerAdapter);
@@ -96,9 +98,8 @@ public class OneKeyManageActivity extends BaseActivity {
                                                                         .getPatchVersion());
                                 String nrfVersion = deviceValue.get(position).getBleVer();
                                 String label =
-                                        Strings.isNullOrEmpty(deviceValue.get(position).getLabel())
-                                                ? deviceValue.get(position).getBleName()
-                                                : deviceValue.get(position).getLabel();
+                                        Optional.ofNullable(deviceValue.get(position).getLabel())
+                                                .orElse(deviceValue.get(position).getBleName());
                                 Intent intent =
                                         new Intent(
                                                 OneKeyManageActivity.this,
@@ -110,8 +111,8 @@ public class OneKeyManageActivity extends BaseActivity {
                                 intent.putExtra(Constant.TAG_FIRMWARE_VERSION, firmwareVersion);
                                 intent.putExtra(Constant.TAG_NRF_VERSION, nrfVersion);
                                 intent.putExtra(
-                                        Constant.DEVICE_ID,
-                                        deviceValue.get(position).getDeviceId());
+                                        Constant.SERIAL_NUM,
+                                        deviceValue.get(position).getSerialNum());
                                 intent.putExtra(
                                         Constant.TAG_HARDWARE_VERIFY,
                                         deviceValue.get(position).isVerify());

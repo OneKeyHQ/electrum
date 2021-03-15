@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -105,6 +106,9 @@ public final class PyEnv {
         sCustomerUI =
                 Global.py.getModule(PyConstant.TREZORLIB_CUSTOMER_UI).get(PyConstant.CUSTOMER_UI);
     }
+
+    public static HardwareFeatures currentHwFeatures;
+    public static volatile Semaphore semaphore = new Semaphore(1);
 
     public static void init(@NonNull Context context) {
         if (BuildConfig.net_type.equals(context.getString(R.string.TestNet))) {
@@ -220,6 +224,10 @@ public final class PyEnv {
     public static void getFeature(
             Context context, Consumer<PyResponse<HardwareFeatures>> callback) {
         Logger.d("get feature");
+        if (!semaphore.tryAcquire()) {
+            Logger.d("concurrent get feature");
+            return;
+        }
         PyResponse<HardwareFeatures> response = new PyResponse<>();
         ListenableFuture<String> listenableFuture =
                 Futures.withTimeout(
@@ -238,6 +246,7 @@ public final class PyEnv {
                 new FutureCallback<String>() {
                     @Override
                     public void onSuccess(String result) {
+                        semaphore.release();
                         Logger.json(result);
                         HardwareFeatures features =
                                 dealWithConnectedDevice(
@@ -248,6 +257,7 @@ public final class PyEnv {
 
                     @Override
                     public void onFailure(@NonNull Throwable t) {
+                        semaphore.release();
                         Logger.e(t.getMessage());
                         if (sBle != null) {
                             cancelAll();
@@ -266,19 +276,20 @@ public final class PyEnv {
     /** 处理当前链接硬件的设备信息并保存 1. 已激活，并且有备份信息或已验证的不能直接覆盖 2. 除上中情形，直接覆盖原有信息 */
     private static HardwareFeatures dealWithConnectedDevice(
             Context context, HardwareFeatures features) {
+        String deviceIdentifier =
+                Optional.ofNullable(features.getSerialNum()).orElse(features.getDeviceId());
         if (features.isInitialized()) {
             HardwareFeatures old;
             String backupMessage = "";
             boolean isVerified = false;
-            if (PreferencesManager.contains(context, Constant.DEVICES, features.getDeviceId())) {
+            boolean onceUsed =
+                    PreferencesManager.contains(context, Constant.DEVICES, deviceIdentifier);
+            if (onceUsed) {
                 old =
                         HardwareFeatures.objectFromData(
                                 (String)
                                         PreferencesManager.get(
-                                                context,
-                                                Constant.DEVICES,
-                                                features.getDeviceId(),
-                                                ""));
+                                                context, Constant.DEVICES, deviceIdentifier, ""));
                 backupMessage = old.getBackupMessage();
                 isVerified = old.isVerify();
             }
@@ -290,10 +301,16 @@ public final class PyEnv {
             }
         } else if (features.isBootloaderMode()) {
             features.setBleName(BleManager.currentBleName);
+            currentHwFeatures = features;
             return features;
         }
-        PreferencesManager.put(
-                context, Constant.DEVICES, features.getDeviceId(), features.toString());
+        Optional.ofNullable(features.getSerialNum())
+                .ifPresent(
+                        (serial) -> {
+                            PreferencesManager.put(
+                                    context, Constant.DEVICES, serial, features.toString());
+                            currentHwFeatures = features;
+                        });
         return features;
     }
 
@@ -1066,26 +1083,42 @@ public final class PyEnv {
      * @param message 原始信息
      * @param signature 签名
      */
-    public static PyResponse<Boolean> verifySignature(
-            String address, String message, String signature) {
+    public static void verifySignature(
+            String address,
+            String message,
+            String signature,
+            Consumer<PyResponse<Boolean>> callback) {
         PyResponse<Boolean> response = new PyResponse<>();
-        try {
-            boolean verified =
-                    sCommands
-                            .callAttr(
-                                    PyConstant.VERIFY_MESSAGE_SIGNATURE,
-                                    address,
-                                    message,
-                                    signature,
-                                    new Kwarg("path", MyApplication.getInstance().getDeviceWay()))
-                            .toBoolean();
-            response.setResult(verified);
-        } catch (Exception e) {
-            Exception exception = HardWareExceptions.exceptionConvert(e);
-            response.setErrors(exception.getMessage());
-            e.printStackTrace();
+        if (semaphore.tryAcquire()) {
+            mExecutorService.submit(
+                    () -> {
+                        try {
+                            boolean verified =
+                                    sCommands
+                                            .callAttr(
+                                                    PyConstant.VERIFY_MESSAGE_SIGNATURE,
+                                                    address,
+                                                    message,
+                                                    signature,
+                                                    new Kwarg(
+                                                            "path",
+                                                            MyApplication.getInstance()
+                                                                    .getDeviceWay()))
+                                            .toBoolean();
+                            response.setResult(verified);
+                        } catch (Exception e) {
+                            Exception exception = HardWareExceptions.exceptionConvert(e);
+                            response.setErrors(exception.getMessage());
+                            e.printStackTrace();
+                        } finally {
+                            callback.accept(response);
+                            semaphore.release();
+                        }
+                    });
+        } else {
+            Logger.d("concurrent signature verify");
+            callback.accept(null);
         }
-        return response;
     }
 
     /**

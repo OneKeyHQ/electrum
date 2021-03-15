@@ -1183,8 +1183,8 @@
     <string name="input_on_app">App 上输入</string>
     <string name="un_init_device_support_less">设备未激活不支持该操作</string>
     <string name="select_correct_item_in_device_list">当前选择设备的设备ID与所连接的设备ID不符，请在设备列表选择正确的项目</string>
-    <string name="device_id_about">设备 ID 不一致</string>
-    <string name="device_id_about_details">检测到当前连接设备的设备 ID 发生了变化，可能是因为该设备曾进行过重置。这将导致此刻展示的设备状态与您的设备真实状态有差异。请退回到上一页重新选择。</string>
+    <string name="device_id_about">请连接原设备</string>
+    <string name="device_id_about_details"> 设备序列号不一致。可能是连接了错误的设备。请连接创建钱包时使用的硬件设备。</string>
     <string name="input_pin_on_device">在设备上输入 PIN 码</string>
     <string name="input_pin_on_device_">请在您的硬件设备上完成 PIN 码的输入。</string>
     <string name="pass_change_success">密码修改成功</string>

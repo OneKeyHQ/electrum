@@ -59,12 +59,11 @@ public class SearchDevicesActivity extends BaseActivity
 
     public static final int REQUEST_ID = 65578;
 
-    public static void startSearchADevice(Activity activity, String deviceId, int requestCode) {
+    public static void startSearchADevice(Activity activity, int requestCode) {
         Intent intent = new Intent(activity, SearchDevicesActivity.class);
         intent.putExtra(
                 org.haobtc.onekey.constant.Constant.SEARCH_DEVICE_MODE,
                 org.haobtc.onekey.constant.Constant.SearchDeviceMode.MODE_PREPARE);
-        intent.putExtra(org.haobtc.onekey.constant.Constant.DEVICE_ID, deviceId);
         activity.startActivityForResult(intent, requestCode);
     }
 
@@ -98,7 +97,7 @@ public class SearchDevicesActivity extends BaseActivity
     private BleManager bleManager;
     private VersionManager mVersionManager;
     private CenterPopupView dialog;
-    private String deviceId = "";
+    private String serialNum = "";
 
     @Override
     public void init() {
@@ -107,7 +106,7 @@ public class SearchDevicesActivity extends BaseActivity
                         .getIntExtra(
                                 Constant.SEARCH_DEVICE_MODE,
                                 Constant.SearchDeviceMode.MODE_PAIR_WALLET_TO_COLD);
-        deviceId = getIntent().getStringExtra(Constant.DEVICE_ID);
+        serialNum = getIntent().getStringExtra(Constant.SERIAL_NUM);
         addBleView();
         bleManager = BleManager.getInstance(this);
         if (mSearchMode != Constant.SearchDeviceMode.MODE_PREPARE) {
@@ -273,11 +272,10 @@ public class SearchDevicesActivity extends BaseActivity
         HardwareFeatures features;
         String errors = response.getErrors();
         features = response.getResult();
-        bleManager.setHardwareFeatures(features);
         runOnUiThread(
                 () -> {
                     if (Strings.isNullOrEmpty(errors) && Objects.nonNull(features)) {
-                        if (Strings.isNullOrEmpty(features.getOneKeyVersion())
+                        if (Strings.isNullOrEmpty(features.getSerialNum())
                                 || features.isBootloaderMode()) {
                             update(features);
                             finish();
@@ -323,8 +321,8 @@ public class SearchDevicesActivity extends BaseActivity
                             // 仅连接蓝牙
                         case Constant.SearchDeviceMode.MODE_PREPARE:
                             if (features.isInitialized() && !features.isBackupOnly()) {
-                                if (!Strings.isNullOrEmpty(deviceId)
-                                        && !Objects.equals(features.getDeviceId(), deviceId)) {
+                                if (!Strings.isNullOrEmpty(serialNum)
+                                        && !Objects.equals(features.getSerialNum(), serialNum)) {
                                     new InvalidDeviceIdWarningDialog()
                                             .show(getSupportFragmentManager(), "");
                                     return;
@@ -366,9 +364,6 @@ public class SearchDevicesActivity extends BaseActivity
                             // 配对过来的逻辑
                             if (!features.isInitialized()) {
                                 Logger.e(features.toString());
-                                // todo 重构硬件连接
-                                // 要删除的，不能这么写。为了解决激活后再继续创建钱包，硬件 ID 为空。
-                                FindNormalDeviceActivity.deviceId = features.getDeviceId();
                                 startActivity(new Intent(this, FindUnInitDeviceActivity.class));
                                 finish();
                             } else if (features.isBackupOnly()) {
@@ -387,9 +382,7 @@ public class SearchDevicesActivity extends BaseActivity
                                 }
                                 finish();
                             } else {
-                                Intent intent = new Intent(this, FindNormalDeviceActivity.class);
-                                intent.putExtra(Constant.DEVICE_ID, features.getDeviceId());
-                                startActivity(intent);
+                                startActivity(new Intent(this, FindNormalDeviceActivity.class));
                                 finish();
                             }
                     }
@@ -482,7 +475,7 @@ public class SearchDevicesActivity extends BaseActivity
         String nrfVersion = features.getBleVer();
         String bleName = features.getBleName();
         String label = features.getLabel();
-        String deviceId = features.getDeviceId();
+        String serialNum = features.getSerialNum();
         String bleMac =
                 PreferencesManager.get(
                                 this, org.haobtc.onekey.constant.Constant.BLE_INFO, bleName, "")
@@ -493,7 +486,7 @@ public class SearchDevicesActivity extends BaseActivity
         bundle.putString(Constant.TAG_BLE_NAME, bleName);
         bundle.putString(Constant.BLE_MAC, bleMac);
         bundle.putString(Constant.TAG_LABEL, label);
-        bundle.putString(Constant.DEVICE_ID, deviceId);
+        bundle.putString(Constant.SERIAL_NUM, serialNum);
         bundle.putBoolean(Constant.FORCE_UPDATE, true);
         Intent intent = new Intent(this, HardwareUpgradeActivity.class);
         intent.putExtras(bundle);

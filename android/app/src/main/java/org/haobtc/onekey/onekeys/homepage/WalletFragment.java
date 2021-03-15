@@ -28,6 +28,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.schedulers.Schedulers;
+import java.util.Optional;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -40,6 +41,7 @@ import org.haobtc.onekey.bean.WalletAccountInfo;
 import org.haobtc.onekey.business.assetsLogo.AssetsLogo;
 import org.haobtc.onekey.business.wallet.AccountManager;
 import org.haobtc.onekey.business.wallet.SystemConfigManager;
+import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.constant.StringConstant;
 import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.event.BackupCompleteEvent;
@@ -177,7 +179,7 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
     private BackupDialog mBackupDialog;
     private AccountManager mAccountManager;
     private AssetsLogo mAssetsLogo;
-    private String currentDeviceId = "";
+    private String currentDeviceSer = "";
     private final WalletAssetsAdapter mWalletAssetsAdapter = new WalletAssetsAdapter();
 
     /**
@@ -382,13 +384,13 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
             } else {
                 linearSign.setVisibility(View.GONE);
             }
-            String deviceId = localWalletInfo.getDeviceId();
-            currentDeviceId = deviceId;
+            String walletIdentity = localWalletInfo.getDeviceId();
+            currentDeviceSer = walletIdentity;
             String deviceInfo =
                     PreferencesManager.get(
                                     getContext(),
                                     org.haobtc.onekey.constant.Constant.DEVICES,
-                                    deviceId,
+                                    walletIdentity,
                                     "")
                             .toString();
             if (!Strings.isNullOrEmpty(deviceInfo)) {
@@ -402,9 +404,9 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
                                         bleName,
                                         "")
                                 .toString();
-                textHard.setText(Strings.isNullOrEmpty(label) ? bleName : label);
+                textHard.setText(Optional.ofNullable(label).orElse(bleName));
             } else {
-                textHard.setText(deviceId);
+                textHard.setText(walletIdentity);
             }
         } else {
             linearSign.setVisibility(View.GONE);
@@ -456,7 +458,7 @@ public class WalletFragment extends BaseFragment implements TextWatcher {
                 intent2.putExtra(
                         org.haobtc.onekey.constant.Constant.SEARCH_DEVICE_MODE,
                         org.haobtc.onekey.constant.Constant.SearchDeviceMode.MODE_PREPARE);
-                intent2.putExtra(org.haobtc.onekey.constant.Constant.DEVICE_ID, currentDeviceId);
+                intent2.putExtra(Constant.SERIAL_NUM, currentDeviceSer);
                 startActivity(intent2);
                 EventBus.getDefault().removeAllStickyEvents();
                 BleManager.getInstance(getActivity()).connDevByMac(bleMac);

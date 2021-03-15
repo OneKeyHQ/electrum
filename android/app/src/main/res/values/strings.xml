@@ -1213,8 +1213,8 @@
     <string name="input_on_app">Enter on App</string>
     <string name="un_init_device_support_less">This operation is not supported if the device is not activated</string>
     <string name="select_correct_item_in_device_list">The device ID of the currently selected device does not match the connected device ID, please select the correct item in the device list</string>
-    <string name="device_id_about">Device ID inconsistency</string>
-    <string name="device_id_about_details">A change in the device ID of the currently connected device is detected, possibly because the device has been reset. This will cause the device status displayed at this moment to differ from the real status of your device. Please go back to the previous page and reselect</string>
+    <string name="device_id_about"></string>
+    <string name="device_id_about_details"></string>
     <string name="input_pin_on_device">Enter PIN code on the device</string>
     <string name="input_pin_on_device_">Please complete the PIN code entry on your hardware device</string>
     <string name="pass_change_success">Password Change Success</string>
@@ -1241,7 +1241,7 @@
     <string name="qr_exception">The transaction amount is too large to generate a QR code</string>
     <string name="already_has_local_hd">The HD wallet already exists locally and cannot be connected to the hardware wallet in backup mode</string>
     <string name="watch_wallet_receive_tip">Currently it is an observation wallet，sure you want to initiate receiving using the wallet\'s address?</string>
-    <string name="connecting_1">Connecting...</string>
+    <string name="connecting_1">Connecting…</string>
     <string name="ble_connect_error">Bluetooth connection abnormal</string>
     <string name="feerate_failure">Rate acquisition failed, please try again</string>
     <string name="updates">Upgrade</string>

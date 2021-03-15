@@ -1,125 +1,134 @@
 package org.haobtc.onekey.bean;
 
 import androidx.annotation.NonNull;
-
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
-
 import java.math.BigInteger;
 import java.util.List;
 
-/**
- * @author liyan
- */
+/** @author liyan */
 public class HardwareFeatures {
     /**
-     * vendor : trezor.io
-     * bootloader_mode:
-     * major_version : 1
-     * minor_version : 9
-     * patch_version : 2
-     * device_id : 0B00000059B244CA5875D78F
-     * pin_protection : false
-     * passphrase_protection : true
-     * language : en-US
-     * label : BiXinKEY
-     * initialized : true
-     * revision : 641932dd27a887c1042501566494758e99bd8a77
-     * bootloader_hash : 003590dab9bf34e04180f2fa1b1c69826c0dd81eb5e2132c40347df839d60a51
-     * imported : false
-     * pin_cached : false
-     * needs_backup : false
-     * flags : 4294967295
-     * model : 1
-     * unfinished_backup : false
-     * no_backup : false
-     * capabilities : ["Bitcoin","Bitcoin_like","Crypto","Ethereum","Lisk","NEM","Stellar","U2F"]
-     * wipe_code_protection : false
-     * session_id : 9e77cabf6d9c8d605a7dcf2bbda3693ce11fa59284bf639dfbb3d056d1abbd0b
-     * ble_name : BixinKEY1114131433
-     * ble_ver : 1.0.5
-     * ble_enable: true
-     * se_enable: false
-     * se_version: ""
-     * auto_lock_delay_ms: 600000
-     * backup_only: false
-     * onekey_version: ""
-     * backup_message: ""
-     * is_verify: false
+     * vendor : trezor.io bootloader_mode: major_version : 1 minor_version : 9 patch_version : 2
+     * device_id : 0B00000059B244CA5875D78F pin_protection : false passphrase_protection : true
+     * language : en-US label : BiXinKEY initialized : true revision :
+     * 641932dd27a887c1042501566494758e99bd8a77 bootloader_hash :
+     * 003590dab9bf34e04180f2fa1b1c69826c0dd81eb5e2132c40347df839d60a51 imported : false pin_cached
+     * : false needs_backup : false flags : 4294967295 model : 1 unfinished_backup : false no_backup
+     * : false capabilities :
+     * ["Bitcoin","Bitcoin_like","Crypto","Ethereum","Lisk","NEM","Stellar","U2F"]
+     * wipe_code_protection : false session_id :
+     * 9e77cabf6d9c8d605a7dcf2bbda3693ce11fa59284bf639dfbb3d056d1abbd0b ble_name :
+     * BixinKEY1114131433 ble_ver : 1.0.5 ble_enable: true se_enable: false se_version: ""
+     * auto_lock_delay_ms: 600000 backup_only: false onekey_version: "" backup_message: ""
+     * is_verify: false serial_num: ""
      */
-
     @SerializedName("vendor")
     private String vendor;
+
     @SerializedName("major_version")
     private int majorVersion;
+
     @SerializedName("minor_version")
     private int minorVersion;
+
     @SerializedName("patch_version")
     private int patchVersion;
+
     @SerializedName("device_id")
     private String deviceId;
+
     @SerializedName("pin_protection")
     private boolean pinProtection;
+
     @SerializedName("passphrase_protection")
     private boolean passphraseProtection;
+
     @SerializedName("language")
     private String language;
+
     @SerializedName("label")
     private String label;
+
     @SerializedName("initialized")
     private boolean initialized;
+
     @SerializedName("revision")
     private String revision;
+
     @SerializedName("bootloader_hash")
     private String bootloaderHash;
+
     @SerializedName("imported")
     private boolean imported;
+
     @SerializedName("pin_cached")
     private boolean pinCached;
+
     @SerializedName("needs_backup")
     private boolean needsBackup;
+
     @SerializedName("flags")
     private long flags;
+
     @SerializedName("model")
     private String model;
+
     @SerializedName("unfinished_backup")
     private boolean unfinishedBackup;
+
     @SerializedName("no_backup")
     private boolean noBackup;
+
     @SerializedName("wipe_code_protection")
     private boolean wipeCodeProtection;
+
     @SerializedName("session_id")
     private String sessionId;
+
     @SerializedName("ble_name")
     private String bleName;
+
     @SerializedName("ble_ver")
     private String bleVer;
+
     @SerializedName("capabilities")
     private List<String> capabilities;
+
     @SerializedName("bootloader_mode")
     private boolean bootloaderMode;
+
     @SerializedName("ble_enable")
     private boolean bleEnable;
+
     @SerializedName("se_enable")
     private boolean seEnable;
+
     @SerializedName("se_version")
     private String seVersion;
+
     @SerializedName("backup_only")
     private boolean backupOnly;
+
     @SerializedName("backup_message")
     private String backupMessage;
+
     @SerializedName("auto_lock_delay_ms")
     private BigInteger autoLock;
+
     @SerializedName("is_verify")
     private boolean isVerify;
+
     @SerializedName("onekey_version")
     private String oneKeyVersion;
+
+    @SerializedName("serial_num")
+    private String serialNum;
 
     public static HardwareFeatures objectFromData(String str) {
 
         return new Gson().fromJson(str, HardwareFeatures.class);
     }
-
 
     public String getVendor() {
         return vendor;
@@ -375,6 +384,14 @@ public class HardwareFeatures {
 
     public void setOneKeyVersion(String oneKeyVersion) {
         this.oneKeyVersion = oneKeyVersion;
+    }
+
+    public String getSerialNum() {
+        return serialNum;
+    }
+
+    public void setSerialNum(String serialNum) {
+        this.serialNum = serialNum;
     }
 
     @NonNull

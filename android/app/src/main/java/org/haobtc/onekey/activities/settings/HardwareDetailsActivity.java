@@ -111,7 +111,7 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
 
     public static boolean dismiss;
     private String bleName;
-    private String deviceId;
+    private String serialNum;
     private String label;
     private String bleMac;
     private String firmwareVersion;
@@ -144,7 +144,7 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
                         new Intent(HardwareDetailsActivity.this, OneKeyMessageActivity.class);
                 intent.putExtra(Constant.TAG_BLE_NAME, bleName);
                 intent.putExtra(Constant.TAG_LABEL, label);
-                intent.putExtra(Constant.DEVICE_ID, deviceId);
+                intent.putExtra(Constant.SERIAL_NUM, serialNum);
                 intent.putExtra(Constant.TAG_FIRMWARE_VERSION, firmwareVersion);
                 intent.putExtra(Constant.TAG_NRF_VERSION, nrfVersion);
                 startActivity(intent);
@@ -185,7 +185,7 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
                         .asCustom(
                                 new DeleteLocalDeviceDialog(
                                         mContext,
-                                        deviceId,
+                                        serialNum,
                                         new DeleteLocalDeviceDialog.onClick() {
                                             @Override
                                             public void onBack() {
@@ -345,7 +345,7 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
         bundle.putString(Constant.TAG_NRF_VERSION, nrfVersion);
         bundle.putString(Constant.BLE_MAC, bleMac);
         bundle.putString(Constant.TAG_LABEL, label);
-        bundle.putString(Constant.DEVICE_ID, deviceId);
+        bundle.putString(Constant.SERIAL_NUM, serialNum);
         return bundle;
     }
 
@@ -403,17 +403,16 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
         HardwareFeatures features;
         String errors = response.getErrors();
         features = response.getResult();
-        BleManager.getInstance(this).setHardwareFeatures(features);
         runOnUiThread(
                 () -> {
                     if (Strings.isNullOrEmpty(errors) && Objects.nonNull(features)) {
-                        if (!deviceId.equals(features.getDeviceId())
+                        if (!Objects.equals(serialNum, features.getSerialNum())
                                 && !features.isBootloaderMode()) {
                             new InvalidDeviceIdWarningDialog()
                                     .show(getSupportFragmentManager(), "");
                             return;
                         } else if (features.isBootloaderMode()
-                                && !PyConstant.FIRMWARE_UPDATE.equals(currentMethod)) {
+                                && !Objects.equals(PyConstant.FIRMWARE_UPDATE, currentMethod)) {
                             new InvalidDeviceIdWarningDialog()
                                     .show(getSupportFragmentManager(), "");
                             return;
@@ -442,7 +441,8 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
                             break;
                         case BusinessAsyncTask.COUNTER_VERIFICATION:
                             Intent intent1 = new Intent(this, VerifyHardwareActivity.class);
-                            intent1.putExtra(Constant.BLE_INFO, Optional.of(label).orElse(bleName));
+                            intent1.putExtra(
+                                    Constant.BLE_INFO, Optional.ofNullable(label).orElse(bleName));
                             startActivity(intent1);
                             new Handler()
                                     .postDelayed(
@@ -540,7 +540,7 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
                         PreferencesManager.get(
                                         HardwareDetailsActivity.this,
                                         Constant.DEVICES,
-                                        deviceId,
+                                        serialNum,
                                         "")
                                 .toString();
                 HardwareFeatures features = HardwareFeatures.objectFromData(str);
@@ -548,7 +548,7 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
                 PreferencesManager.put(
                         HardwareDetailsActivity.this,
                         Constant.DEVICES,
-                        deviceId,
+                        serialNum,
                         features.toString());
             } else {
                 EventBus.getDefault()
@@ -574,7 +574,7 @@ public class HardwareDetailsActivity extends BaseActivity implements BusinessAsy
             hideWalletLayout.setVisibility(View.GONE);
         }
         bleName = intent.getStringExtra(Constant.TAG_BLE_NAME);
-        deviceId = intent.getStringExtra(Constant.DEVICE_ID);
+        serialNum = intent.getStringExtra(Constant.SERIAL_NUM);
         label = intent.getStringExtra(Constant.TAG_LABEL);
         firmwareVersion = getIntent().getStringExtra(Constant.TAG_FIRMWARE_VERSION);
         nrfVersion = getIntent().getStringExtra(Constant.TAG_NRF_VERSION);

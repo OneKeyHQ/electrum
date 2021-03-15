@@ -9,24 +9,24 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.annotation.LayoutRes;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chaquo.python.PyObject;
 import com.google.gson.Gson;
 import com.yzq.zxinglibrary.encode.CodeCreator;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -38,7 +38,6 @@ import org.haobtc.onekey.adapter.WalletDetailKeyAdapter;
 import org.haobtc.onekey.aop.SingleClick;
 import org.haobtc.onekey.bean.CurrentAddressDetail;
 import org.haobtc.onekey.bean.HardwareFeatures;
-import org.haobtc.onekey.event.FirstEvent;
 import org.haobtc.onekey.event.FixWalletNameEvent;
 import org.haobtc.onekey.event.WalletAddressEvent;
 import org.haobtc.onekey.event.WalletDetailBixinKeyEvent;
@@ -47,39 +46,42 @@ import org.haobtc.onekey.utils.MyDialog;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-
+@Deprecated
 public class WalletDetailsActivity extends BaseActivity {
 
     @BindView(R.id.img_back)
     ImageView imgBack;
+
     @BindView(R.id.tet_Name)
     TextView tetName;
+
     @BindView(R.id.tet_deleteWallet)
     Button tetDeleteWallet;
+
     @BindView(R.id.recl_wallet_addr)
     RecyclerView reclWalletAddr;
+
     @BindView(R.id.recl_publicPerson)
     RecyclerView reclPublicPerson;
+
     @BindView(R.id.text_fix_name)
     TextView textFixName;
+
     @BindView(R.id.test_no_key)
     TextView testNoKey;
+
     @BindView(R.id.card_three_public)
     CardView cardThreePublic;
+
     @BindView(R.id.test_no_address)
     TextView testNoAddress;
+
     @BindView(R.id.ima_receive_code)
     ImageView imaReceiveCode;
+
     @BindView(R.id.text_addr)
     TextView textAddr;
+
     private String walletName;
     private Dialog dialogBtom;
     private MyDialog myDialog;
@@ -107,17 +109,15 @@ public class WalletDetailsActivity extends BaseActivity {
             getBixinKeyList();
         }
         tetName.setText(walletName);
-
     }
 
     @Override
     public void initData() {
         walletAddressList = new ArrayList<>();
-        //get wallet address
+        // get wallet address
         getAllFundedAddress();
-        //Generate QR code
+        // Generate QR code
         mGeneratecode();
-
     }
 
     private void mGeneratecode() {
@@ -132,24 +132,25 @@ public class WalletDetailsActivity extends BaseActivity {
             String strCode = walletAddressShowUi.toString();
             Log.i("strCode", "mGenerate--: " + strCode);
             Gson gson = new Gson();
-            CurrentAddressDetail currentAddressDetail = gson.fromJson(strCode, CurrentAddressDetail.class);
+            CurrentAddressDetail currentAddressDetail =
+                    gson.fromJson(strCode, CurrentAddressDetail.class);
             String qrData = currentAddressDetail.getQrData();
             String addr = currentAddressDetail.getAddr();
             textAddr.setText(addr);
-            Bitmap  bitmap = CodeCreator.createQRCode(qrData, 250, 250, null);
+            Bitmap bitmap = CodeCreator.createQRCode(qrData, 250, 250, null);
             imaReceiveCode.setImageBitmap(bitmap);
         }
-
     }
 
     private void getBixinKeyList() {
         List<HardwareFeatures> deviceValue = new ArrayList<>();
         SharedPreferences devices = getSharedPreferences("devices", MODE_PRIVATE);
         Map<String, ?> devicesAll = devices.getAll();
-        //key
+        // key
         for (Map.Entry<String, ?> entry : devicesAll.entrySet()) {
             String mapValue = (String) entry.getValue();
-            HardwareFeatures hardwareFeatures = new Gson().fromJson(mapValue, HardwareFeatures.class);
+            HardwareFeatures hardwareFeatures =
+                    new Gson().fromJson(mapValue, HardwareFeatures.class);
             deviceValue.add(hardwareFeatures);
         }
         try {
@@ -158,7 +159,8 @@ public class WalletDetailsActivity extends BaseActivity {
             if (!TextUtils.isEmpty(strDeviceId)) {
                 for (HardwareFeatures entity : deviceValue) {
                     if (strDeviceId.contains(entity.getDeviceId())) {
-                        WalletDetailBixinKeyEvent addBixinKeyEvent = new WalletDetailBixinKeyEvent();
+                        WalletDetailBixinKeyEvent addBixinKeyEvent =
+                                new WalletDetailBixinKeyEvent();
                         if (!TextUtils.isEmpty(entity.getLabel())) {
                             addBixinKeyEvent.setLabel(entity.getLabel());
                         } else {
@@ -172,21 +174,40 @@ public class WalletDetailsActivity extends BaseActivity {
                         addEventsDatas.add(addBixinKeyEvent);
                     }
                 }
-                WalletDetailKeyAdapter publicPersonAdapter = new WalletDetailKeyAdapter(addEventsDatas);
+                WalletDetailKeyAdapter publicPersonAdapter =
+                        new WalletDetailKeyAdapter(addEventsDatas);
                 reclPublicPerson.setAdapter(publicPersonAdapter);
-                publicPersonAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                        String firmwareVersion = "V" + addEventsDatas.get(position).getMajorVersion() + "." + addEventsDatas.get(position).getMinorVersion() + "." + addEventsDatas.get(position).getPatchVersion();
-                        Intent intent = new Intent(WalletDetailsActivity.this, HardwareDetailsActivity.class);
-                        intent.putExtra("label", addEventsDatas.get(position).getLabel());
-                        intent.putExtra("ble_name", addEventsDatas.get(position).getBleName());
-                        intent.putExtra("firmware_version", firmwareVersion);
-                        intent.putExtra("ble_version", "V" + addEventsDatas.get(position).getMajorVersion() + "." + addEventsDatas.get(position).getPatchVersion());
-                        intent.putExtra("device_id", addEventsDatas.get(position).getDeviceId());
-                        startActivity(intent);
-                    }
-                });
+                publicPersonAdapter.setOnItemClickListener(
+                        new BaseQuickAdapter.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(
+                                    BaseQuickAdapter adapter, View view, int position) {
+                                String firmwareVersion =
+                                        "V"
+                                                + addEventsDatas.get(position).getMajorVersion()
+                                                + "."
+                                                + addEventsDatas.get(position).getMinorVersion()
+                                                + "."
+                                                + addEventsDatas.get(position).getPatchVersion();
+                                Intent intent =
+                                        new Intent(
+                                                WalletDetailsActivity.this,
+                                                HardwareDetailsActivity.class);
+                                intent.putExtra("label", addEventsDatas.get(position).getLabel());
+                                intent.putExtra(
+                                        "ble_name", addEventsDatas.get(position).getBleName());
+                                intent.putExtra("firmware_version", firmwareVersion);
+                                intent.putExtra(
+                                        "ble_version",
+                                        "V"
+                                                + addEventsDatas.get(position).getMajorVersion()
+                                                + "."
+                                                + addEventsDatas.get(position).getPatchVersion());
+                                intent.putExtra(
+                                        "device_id", addEventsDatas.get(position).getDeviceId());
+                                startActivity(intent);
+                            }
+                        });
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -208,7 +229,8 @@ public class WalletDetailsActivity extends BaseActivity {
                     walletAddressEvent.setBalance(jsonObject.getString("balance"));
                     walletAddressList.add(walletAddressEvent);
                 }
-                WalletAddressAdapter walletAddressAdapter = new WalletAddressAdapter(walletAddressList);
+                WalletAddressAdapter walletAddressAdapter =
+                        new WalletAddressAdapter(walletAddressList);
                 reclWalletAddr.setAdapter(walletAddressAdapter);
             } else {
                 reclWalletAddr.setVisibility(View.GONE);
@@ -230,7 +252,6 @@ public class WalletDetailsActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.tet_deleteWallet:
-
                 break;
             case R.id.text_fix_name:
                 Intent intent = new Intent(WalletDetailsActivity.this, FixWalletNameActivity.class);
@@ -238,16 +259,18 @@ public class WalletDetailsActivity extends BaseActivity {
                 startActivity(intent);
                 break;
             case R.id.text_copy:
-                //copy text
-                ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                // copy text
+                ClipboardManager cm =
+                        (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                 // The text is placed on the system clipboard.
-                Objects.requireNonNull(cm, "ClipboardManager not available").setPrimaryClip(ClipData.newPlainText(null, textAddr.getText()));
-                Toast.makeText(WalletDetailsActivity.this, R.string.copysuccess, Toast.LENGTH_LONG).show();
+                Objects.requireNonNull(cm, "ClipboardManager not available")
+                        .setPrimaryClip(ClipData.newPlainText(null, textAddr.getText()));
+                Toast.makeText(WalletDetailsActivity.this, R.string.copysuccess, Toast.LENGTH_LONG)
+                        .show();
                 break;
             default:
         }
     }
-
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void fixName(FixWalletNameEvent event) {

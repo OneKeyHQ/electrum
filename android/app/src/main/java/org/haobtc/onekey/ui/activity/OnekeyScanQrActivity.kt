@@ -150,7 +150,7 @@ class OnekeyScanQrActivity : CaptureActivity() {
             Toast.LENGTH_SHORT)
             .show()
       } else {
-        SearchDevicesActivity.startSearchADevice(this, wallet.deviceId, REQUEST_CONNECT_DEVICE)
+        SearchDevicesActivity.startSearchADevice(this, REQUEST_CONNECT_DEVICE)
         BleManager.getInstance(this).connDevByMac(bleMac)
       }
       mTempDataBean = dataBean
