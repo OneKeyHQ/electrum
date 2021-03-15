@@ -10,11 +10,9 @@ import androidx.lifecycle.ViewModelProvider;
 import butterknife.BindView;
 import com.github.lzyzsd.jsbridge.BridgeWebView;
 import com.google.gson.Gson;
-import com.orhanobut.logger.Logger;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.schedulers.Schedulers;
-import org.haobtc.onekey.BuildConfig;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.bean.DAppBrowserBean;
@@ -61,6 +59,7 @@ public class FindFragment extends BaseFragment {
                 new ViewModelProvider(MyApplication.getInstance()).get(AppWalletViewModel.class);
 
         webview.loadUrl("https://dapp.onekey.so/");
+        webview.getSettings().setDomStorageEnabled(true);
         webview.registerHandler(
                 "callNativeMethod",
                 (data, function) -> {
@@ -73,25 +72,11 @@ public class FindFragment extends BaseFragment {
                             checkAccount(params);
                             break;
                     }
-                    Logger.e("open dapp: " + data);
                     function.onCallBack(
                             mGson.toJson(
                                     new JsBridgeResponseBean(
                                             jsBridgeRequestBean.getId(), "success")));
                 });
-        btn.setOnClickListener(
-                v -> {
-                    webview.callHandler(
-                            "callJavaScriptMethod",
-                            "hello web!",
-                            data -> {
-                                showToast("Web Receive the success: " + data);
-                            });
-                });
-
-        if (BuildConfig.DEBUG) {
-            // btn.setVisibility(View.VISIBLE);
-        }
     }
 
     private void checkAccount(String data) {

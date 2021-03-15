@@ -1876,11 +1876,14 @@ public final class PyEnv {
     public static PyResponse<String> signMessage(
             Vm.CoinType coinType, String fromAddress, String messageHex, String pwd, String path) {
         PyResponse<String> response = new PyResponse<>();
+        List<Kwarg> argList = new LinkedList<>();
+        argList.add(new Kwarg("address", fromAddress));
+        argList.add(new Kwarg("message", messageHex));
+        argList.add(new Kwarg("path", path));
+        argList.add(new Kwarg("password", pwd));
         try {
             String result =
-                    sCommands
-                            .callAttr("sign_message", fromAddress, messageHex, pwd, path)
-                            .toString();
+                    sCommands.callAttr("sign_message", argList.toArray(new Object[0])).toString();
             response.setResult(result);
         } catch (Exception e) {
             e.printStackTrace();

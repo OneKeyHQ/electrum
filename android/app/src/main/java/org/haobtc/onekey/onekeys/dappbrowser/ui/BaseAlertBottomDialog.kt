@@ -76,13 +76,11 @@ open class BaseAlertBottomDialog(context: Context) : Dialog(context) {
     mBinding.progressBar.visibility = View.GONE
     mBinding.ivDialogLogo.visibility = View.VISIBLE
     Glide.with(mBinding.ivDialogLogo)
-        .setDefaultRequestOptions(RequestOptions()
-            .centerCrop()
-            .placeholder(R.drawable.logo_app)
-            .error(R.drawable.logo_app)
-            .fitCenter()
-        )
         .load(url)
+        .centerCrop()
+        .placeholder(R.drawable.logo_app)
+        .error(R.drawable.logo_app)
+        .fitCenter()
         .into(mBinding.ivDialogLogo)
   }
 
