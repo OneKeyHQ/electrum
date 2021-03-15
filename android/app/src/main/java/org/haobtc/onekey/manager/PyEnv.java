@@ -68,6 +68,7 @@ import org.haobtc.onekey.event.ExitEvent;
 import org.haobtc.onekey.event.RefreshEvent;
 import org.haobtc.onekey.exception.AccountException;
 import org.haobtc.onekey.exception.HardWareExceptions;
+import org.haobtc.onekey.exception.PyEnvException;
 import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
 import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.utils.Daemon;
@@ -1843,7 +1844,7 @@ public final class PyEnv {
             RPCInfoBean token = new Gson().fromJson(result, RPCInfoBean.class);
             response.setResult(token);
         } catch (Exception e) {
-            Exception exception = HardWareExceptions.exceptionConvert(e);
+            Exception exception = PyEnvException.convert(e);
             response.setErrors(exception.getMessage());
         }
         return response;
@@ -1866,7 +1867,7 @@ public final class PyEnv {
             response.setResult(token);
         } catch (Exception e) {
             e.printStackTrace();
-            Exception exception = HardWareExceptions.exceptionConvert(e);
+            Exception exception = PyEnvException.convert(e);
             response.setErrors(exception.getMessage());
         }
         return response;
@@ -1883,7 +1884,7 @@ public final class PyEnv {
             response.setResult(result);
         } catch (Exception e) {
             e.printStackTrace();
-            Exception exception = HardWareExceptions.exceptionConvert(e);
+            Exception exception = PyEnvException.convert(e);
             response.setErrors(exception.getMessage());
         }
         return response;

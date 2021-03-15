@@ -142,7 +142,7 @@ class DappBrowserFragment : BaseFragment(),
 
     // utils fun
     private fun formatUrl(url: String?): String {
-      return if (url != null && (URLUtil.isHttpsUrl(url) || URLUtil.isHttpUrl(url))) {
+      return if (url != null && (URLUtil.isHttpsUrl(url) || URLUtil.isHttpUrl(url) || URLUtil.isAssetUrl(url))) {
         url
       } else {
         if (url != null && isValidUrl(url)) {
@@ -444,14 +444,19 @@ class DappBrowserFragment : BaseFragment(),
       val messageHexString = HexUtils.byteArrayToHexString(messageTBS?.prehash)
       val success: (String) -> Unit = {
         confirmationDialog?.hideProgress()
+        try {
+          Utils.finishActivity(InputPinOnHardware::class.java)
+        } catch (e: Exception) {
+        }
         dAppFunction?.DAppReturn(HexUtils.hexStringToByteArray(it), messageTBS)
       }
       val error: (Exception) -> Unit = {
-        // if (error is PyEnvException.UserCancelException
-        //    || error is PyEnvException.PinOperationTimeoutException
-        //    || error is PyEnvException.PassphraseOperationTimeoutException) {
         hardwarePinDialog?.onFinish()
-        // }
+        try {
+          Utils.finishActivity(InputPinOnHardware::class.java)
+        } catch (e: Exception) {
+        }
+        it.message?.let { it1 -> showErrorDialog(it1, getString(R.string.hint_message_signature_failed)) }
         confirmationDialog?.dismiss()
         dAppFunction?.DAppError(it, messageTBS)
       }
@@ -490,7 +495,6 @@ class DappBrowserFragment : BaseFragment(),
     if (connectDeviceDialog == null || connectDeviceDialog?.isShowing() == false) {
       connectDeviceDialog = context?.let { ConnectDeviceDialog(it) }?.apply {
         setOnConnectListener({
-          // todo 验证权限
           pinAuthorisation(null, true)
         }, { e ->
           when (e) {
@@ -586,23 +590,26 @@ class DappBrowserFragment : BaseFragment(),
   override fun signTransaction(pwd: String?, finalTx: Web3Transaction) {
     val callback: SignTransactionInterface = object : SignTransactionInterface {
       override fun transactionSuccess(web3Tx: Web3Transaction, rawTx: String) {
+        // 处理 Dapp 交易签字成功
         confirmationDialog?.hideProgress()
         confirmationDialog?.transactionWritten(rawTx)
+        try {
+          Utils.finishActivity(InputPinOnHardware::class.java)
+        } catch (e: Exception) {
+        }
         web3.onSignTransactionSuccessful(web3Tx, rawTx)
       }
 
       override fun transactionError(callbackId: Long, error: Throwable) {
+        // 处理 Dapp 消息签字取消
+        error.printStackTrace()
         confirmationDialog?.hideProgress()
         confirmationDialog?.dismiss()
-        // if (error is PyEnvException.UserCancelException
-        //    || error is PyEnvException.PinOperationTimeoutException
-        //    || error is PyEnvException.PassphraseOperationTimeoutException) {
         try {
           Utils.finishActivity(InputPinOnHardware::class.java)
         } catch (e: Exception) {
         }
         hardwarePinDialog?.onFinish()
-        // }
         txError(error)
         web3.onSignCancel(callbackId)
       }
@@ -628,11 +635,7 @@ class DappBrowserFragment : BaseFragment(),
       override fun transactionError(callbackId: Long, error: Throwable) {
         confirmationDialog?.hideProgress()
         confirmationDialog?.dismiss()
-        // if (error is PyEnvException.UserCancelException
-        //    || error is PyEnvException.PinOperationTimeoutException
-        //    || error is PyEnvException.PassphraseOperationTimeoutException) {
         hardwarePinDialog?.onFinish()
-        // }
         txError(error)
         web3.onSignCancel(callbackId)
       }
@@ -727,11 +730,13 @@ class DappBrowserFragment : BaseFragment(),
     messageTBS = message
     dAppFunction = object : DAppFunction {
       override fun DAppError(error: Throwable?, message: Signable) {
+        // 处理 Dapp 消息签字取消或失败
         web3.onSignCancel(message.callbackId)
         confirmationDialog?.dismiss()
       }
 
       override fun DAppReturn(data: ByteArray?, message: Signable) {
+        // 处理 Dapp 消息签字正确
         val signHex: String = Numeric.toHexString(data)
         Log.d(TAG, "Initial Msg: " + message.getMessage())
         web3.onSignMessageSuccessful(message, signHex)
@@ -741,6 +746,7 @@ class DappBrowserFragment : BaseFragment(),
         confirmationDialog?.success()
       }
     }
+    Log.d(TAG, "handle Sign Message: " + message.getMessage())
     if (confirmationDialog == null || confirmationDialog?.isShowing == false) {
       val currentWallet = mAppWalletViewModel.currentWalletAccountInfo.value
       if (currentWallet == null) {
@@ -810,7 +816,7 @@ class DappBrowserFragment : BaseFragment(),
         setIcon(DappResultAlertDialog.ERROR)
         setTitle(R.string.reansaction_error)
         setMessage(throwable.message)
-        setButtonText(R.string.button_ok)
+        setButtonText(R.string.confirm)
         setButtonListener { v -> resultDialog?.dismiss() }
         show()
       }
@@ -827,13 +833,13 @@ class DappBrowserFragment : BaseFragment(),
         setIcon(DappResultAlertDialog.ERROR)
         setTitle(getString(R.string.transaction_parse_error))
         if (transaction.recipient.equals(Address.EMPTY) && (transaction.payload == null || transaction.value != null)) {
-          setMessage("没有发送者")
+          setMessage(R.string.hint_transaction_no_sender)
         } else if (transaction.payload == null && transaction.value == null) {
-          setMessage("没有填写金额")
+          setMessage(R.string.hint_transaction_no_send_amount)
         } else {
-          setMessage("没有数据")
+          setMessage(R.string.hint_transaction_no_payload)
         }
-        setButtonText(R.string.button_ok)
+        setButtonText(R.string.confirm)
         setButtonListener { v -> resultDialog?.dismiss() }
         setCancelable(true)
         show()

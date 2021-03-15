@@ -18,9 +18,7 @@ class DappBrowserActivity : BaseActivity(), OnFinishOrBackCallback {
     const val EXT_DAPP_BEAN = "bean"
 
     @JvmField
-    val DEFAULT_URL = "https://app.uniswap.org/#/swap"
-//    @JvmField val DEFAULT_URL = "http://uniswap.defiplot.com/#/swap"
-//    @JvmField val DEFAULT_URL = "https://js-eth-sign.surge.sh/"
+    val DEFAULT_URL = "file:///android_asset/test/local_test.html"
 
     @JvmStatic
     fun start(context: Context, url: String) {

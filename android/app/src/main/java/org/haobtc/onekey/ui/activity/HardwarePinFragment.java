@@ -1,9 +1,5 @@
 package org.haobtc.onekey.ui.activity;
 
-import static org.haobtc.onekey.ui.activity.HardwarePinFragment.PinActionType.CHANGE_PIN;
-import static org.haobtc.onekey.ui.activity.HardwarePinFragment.PinActionType.NEW_PIN;
-import static org.haobtc.onekey.ui.activity.HardwarePinFragment.PinActionType.VERIFY_PIN;
-
 import android.content.Context;
 import android.inputmethodservice.Keyboard;
 import android.os.Bundle;
@@ -39,7 +35,7 @@ import org.haobtc.onekey.utils.NumKeyboardUtil;
  */
 public class HardwarePinFragment extends BaseFragment implements NumKeyboardUtil.CallBack {
 
-    @StringDef({CHANGE_PIN, VERIFY_PIN, NEW_PIN})
+    @StringDef({PinActionType.CHANGE_PIN, PinActionType.VERIFY_PIN, PinActionType.NEW_PIN})
     public @interface PinActionType {
 
         String CHANGE_PIN = BusinessAsyncTask.CHANGE_PIN;
@@ -136,18 +132,18 @@ public class HardwarePinFragment extends BaseFragment implements NumKeyboardUtil
 
     private void changeTitleContent() {
         switch (action) {
-            case NEW_PIN:
+            case PinActionType.NEW_PIN:
                 if (Strings.isNullOrEmpty(originPin)) {
                     promote.setText(R.string.set_pin);
                 } else {
                     promote.setText(R.string.change_pin_promote);
                 }
-            case CHANGE_PIN:
+            case PinActionType.CHANGE_PIN:
                 if (mHardwareTitleChangeCallback != null) {
                     mHardwareTitleChangeCallback.setTitle(getString(R.string.change_pin));
                 }
                 break;
-            case VERIFY_PIN:
+            case PinActionType.VERIFY_PIN:
                 if (mHardwareTitleChangeCallback != null) {
                     mHardwareTitleChangeCallback.setTitle(getString(R.string.verify_pin_onkey));
                 }
@@ -175,16 +171,16 @@ public class HardwarePinFragment extends BaseFragment implements NumKeyboardUtil
                 return;
             }
             Logger.e(action);
-            if (!action.equalsIgnoreCase(CHANGE_PIN)) {
+            if (!action.equalsIgnoreCase(PinActionType.CHANGE_PIN)) {
                 mRelativeLayoutKey.setVisibility(View.GONE);
                 mKeyboardUtil.hideKeyboard();
             }
             switch (action) {
-                case CHANGE_PIN:
+                case PinActionType.CHANGE_PIN:
                     originPin = pin;
-                    changeInputType(NEW_PIN);
+                    changeInputType(PinActionType.NEW_PIN);
                     break;
-                case NEW_PIN:
+                case PinActionType.NEW_PIN:
                     if (mOnHardwarePinSuccessCallback != null) {
                         ChangePinEvent changePinEvent =
                                 new ChangePinEvent(
@@ -194,7 +190,7 @@ public class HardwarePinFragment extends BaseFragment implements NumKeyboardUtil
                         mOnHardwarePinSuccessCallback.onSuccess(changePinEvent);
                     }
                     break;
-                case VERIFY_PIN:
+                case PinActionType.VERIFY_PIN:
                     if (mOnHardwarePinSuccessCallback != null) {
                         ChangePinEvent changePinEvent = new ChangePinEvent(pin, "");
                         changePinEvent.setAction(action);

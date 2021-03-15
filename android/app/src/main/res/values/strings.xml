@@ -1360,4 +1360,10 @@
     <string name="hint_signature_confirm_hardware">请在硬件上确认</string>
     <string name="hint_please_switch_account_observe">请切换到其他账户</string>
     <string name="hint_account_observe_unavailable_content">观察钱包无法使用 Dapp 功能</string>
+    <string name="hint_error_user_cancelled">用户取消</string>
+    <string name="hint_error_operation_cancelled">操作被取消</string>
+    <string name="hint_message_signature_failed">消息签字失败</string>
+    <string name="hint_transaction_no_sender">没有填写发送者</string>
+    <string name="hint_transaction_no_send_amount">没有填写发送金额</string>
+    <string name="hint_transaction_no_payload">没有填写交易内容</string>
 </resources>
