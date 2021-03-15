@@ -30,24 +30,29 @@
 {
     self.tableView.tableFooterView = [UIView new];
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notiSendTxComplete) name:kNotiSendTxComplete object:nil];
-    [self loadList];
+
+    if ([[self.coinType uppercaseString]isEqualToString:COIN_BTC]) {
+        [self loadList];
+    }else{
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+            [self loadList];
+        });
+    }
 }
 
 - (void)loadList
 {
     OKWeakSelf(self)
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        NSMutableDictionary *params = [@{@"search_type":self.searchType,@"coin":[weakself.coinType lowercaseString]} mutableCopy];
-        if (weakself.assetTableViewCellModel.contract_addr.length > 0) {
-            [params addEntriesFromDictionary:@{
-                @"contract_address":weakself.assetTableViewCellModel.contract_addr
-            }];
-        }
-        NSArray *resultArray = [kPyCommandsManager callInterface:kInterfaceGet_all_tx_list parameter:params];
-        self.txListArray = [OKTxTableViewCellModel mj_objectArrayWithKeyValuesArray:resultArray];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.tableView reloadData];
-        });
+    NSMutableDictionary *params = [@{@"search_type":self.searchType,@"coin":[weakself.coinType lowercaseString]} mutableCopy];
+    if (weakself.assetTableViewCellModel.contract_addr.length > 0) {
+        [params addEntriesFromDictionary:@{
+            @"contract_address":weakself.assetTableViewCellModel.contract_addr
+        }];
+    }
+    NSArray *resultArray = [kPyCommandsManager callInterface:kInterfaceGet_all_tx_list parameter:params];
+    self.txListArray = [OKTxTableViewCellModel mj_objectArrayWithKeyValuesArray:resultArray];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.tableView reloadData];
     });
 }
 

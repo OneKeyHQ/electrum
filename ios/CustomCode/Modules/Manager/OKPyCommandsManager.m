@@ -207,7 +207,11 @@ static dispatch_once_t once;
         if (contract_address.length > 0) {
             kwargs = Py_BuildValue("{s:s,s:s,s:s}", "coin", [coin UTF8String],"search_type",[search_type UTF8String],"contract_address",[contract_address UTF8String]);
         }else{
-            kwargs = Py_BuildValue("{s:s,s:s}", "coin", [coin UTF8String],"search_type",[search_type UTF8String]);
+            if (search_type.length == 0) {
+                kwargs = Py_BuildValue("{s:s}", "coin", [coin UTF8String]);
+            }else{
+                kwargs = Py_BuildValue("{s:s,s:s}", "coin", [coin UTF8String],"search_type",[search_type UTF8String]);
+            }
         }
         PyObject *myobject_method = PyObject_GetAttrString(self.pyInstance, [kInterfaceGet_all_tx_list UTF8String]);
         result = PyObject_Call(myobject_method, args, kwargs);
@@ -564,10 +568,21 @@ static dispatch_once_t once;
         result = PyObject_CallMethod(self.pyInstance, [kInterfacesign_message UTF8String], "(s,s,s)",[address UTF8String],[message UTF8String],[path UTF8String]);
 
     }else if ([method isEqualToString:kInterfaceverify_message]){
+
         NSString *address = [parameter safeStringForKey:@"address"];
         NSString *message = [parameter safeStringForKey:@"message"];
         NSString *signature = [parameter safeStringForKey:@"signature"];
-        result = PyObject_CallMethod(self.pyInstance, [kInterfaceverify_message UTF8String], "(s,s,s)",[address UTF8String],[message UTF8String],[signature UTF8String]);
+        NSString *path = kBluetooth_iOS;
+        PyObject *args =  Py_BuildValue("()",NULL);
+        PyObject *kwargs;
+        if (path.length == 0) {
+            kwargs = Py_BuildValue("{s:s,s:s,s:s}", "address", [address UTF8String],"message",[message UTF8String],"signature",[signature UTF8String]);
+        }else{
+            kwargs = Py_BuildValue("{s:s,s:s,s:s,s:s}", "address", [address UTF8String],"message",[message UTF8String],"signature",[signature UTF8String],"path",[path UTF8String]);
+        }
+        PyObject *myobject_method = PyObject_GetAttrString(self.pyInstance, [method UTF8String]);
+        result = PyObject_Call(myobject_method, args, kwargs);
+
     }else if ([method isEqualToString:kInterfaceget_tx_info_from_raw]){
         NSString *raw_tx = [parameter safeStringForKey:@"raw_tx"];
         result = PyObject_CallMethod(self.pyInstance, [kInterfaceget_tx_info_from_raw UTF8String], "(s)",[raw_tx UTF8String]);

@@ -137,6 +137,9 @@
         model.backColor = [OKWalletListTableViewCellModel getBackColor:model.walletType];
         model.iconName = [OKWalletListTableViewCellModel getBgImageName:model.walletType];
         model.isCurrent = [kWalletManager.currentWalletInfo.name isEqualToString:model.walletName];
+        NSArray *arrayType= [model.walletType componentsSeparatedByString:@"-"];
+        NSString *coinType = [arrayType firstObject];
+        model.index = [kWalletManager.supportCoinArray indexOfObject:[coinType uppercaseString]];
         [walletArray addObject:model];
     }
     self.walletListArray = walletArray;
@@ -151,8 +154,9 @@
     }else{
         predicate = [NSPredicate predicateWithFormat:@"walletType contains %@",[walletType lowercaseString]];
     }
-    self.showList = [self.walletListArray filteredArrayUsingPredicate:predicate];
-
+    NSArray *listArray = [self.walletListArray filteredArrayUsingPredicate:predicate];
+    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"index" ascending:YES];
+    self.showList = [listArray sortedArrayUsingDescriptors:@[sortDescriptor]];
     self.countLabel.text = [NSString stringWithFormat:@"%zd",self.showList.count];
     self.headerWalletTypeLabel.text = [self headerWalletType:walletType];
     if([kWalletManager.currentSelectCoinType isEqualToString:kDefaultType]||[kWalletManager.currentSelectCoinType isEqualToString:kHWType]){

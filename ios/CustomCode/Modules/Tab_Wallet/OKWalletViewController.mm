@@ -221,7 +221,7 @@
     self.notiAssetModel = [OKNotiAssetModel mj_objectWithKeyValues:dict];
     NSMutableArray *arrayM = [NSMutableArray array];
     OKAssetTableViewCellModel *coinModel = [OKAssetTableViewCellModel new];
-    coinModel.balance = self.notiAssetModel.balance;
+    coinModel.balance = [kTools decimalNumberHandlerWithValue:[NSDecimalNumber decimalNumberWithString:self.notiAssetModel.balance] roundingMode:NSRoundDown scale:[kWalletManager getPrecision:self.notiAssetModel.coin]].stringValue;
     coinModel.coinType = self.notiAssetModel.coin;
     coinModel.money = self.notiAssetModel.fiat;
     coinModel.iconImage = [NSString stringWithFormat:@"token_%@",[kWalletManager.currentWalletInfo.coinType lowercaseString]];
@@ -229,7 +229,8 @@
     if (self.notiAssetModel.tokens.count != 0) {
         for (OKTokenAssetModel *model in self.notiAssetModel.tokens) {
             OKAssetTableViewCellModel *tokenModel = [OKAssetTableViewCellModel new];
-            tokenModel.balance = model.balance;
+            NSString *key = [NSString stringWithFormat:@"token_%@",model.coin];
+            tokenModel.balance = [kTools decimalNumberHandlerWithValue:[NSDecimalNumber decimalNumberWithString:model.balance] roundingMode:NSRoundDown scale:[kWalletManager getPrecision:key]].stringValue;
             tokenModel.coinType = model.coin;
             tokenModel.money = model.fiat;
             tokenModel.contract_addr = model.address;

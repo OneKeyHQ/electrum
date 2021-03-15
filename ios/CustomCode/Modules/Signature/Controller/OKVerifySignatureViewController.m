@@ -53,7 +53,7 @@
     self.topTextView.delegate = self;
     self.midTextView.delegate = self;
     self.bottomTextView.delegate = self;
-    
+
     if (self.signMessageInfo != nil) {
         self.topTextView.text = [self.signMessageInfo safeStringForKey:@"message"];
         self.midTextView.text = [self.signMessageInfo safeStringForKey:@"address"];
@@ -68,19 +68,26 @@
     [self refreshConfirmBtn];
 }
 - (IBAction)confirmBtnClick:(UIButton *)sender {
-
-    NSDictionary *dict = [NSDictionary dictionary];
-    if (self.signMessageInfo != nil) {
-        dict = self.signMessageInfo;
+    OKWeakSelf(self)
+    NSMutableDictionary *params = [@{
+    } mutableCopy];
+    if (weakself.signMessageInfo != nil) {
+        [params addEntriesFromDictionary:weakself.signMessageInfo];
     }else{
-        dict = @{@"message":self.topTextView.text,@"address":self.midTextView.text,@"signature":self.bottomTextView.text};
+        [params addEntriesFromDictionary:@{@"message":weakself.topTextView.text,@"address":weakself.midTextView.text,@"signature":weakself.bottomTextView.text}];
     }
-    id result =  [kPyCommandsManager callInterface:kInterfaceverify_message parameter:dict];
-    if (result != nil) {
-        OKVerifySignatureResultController *verifySignatureVc = [OKVerifySignatureResultController initWithStoryboardName:@"Signature" identifier:@"OKVerifySignatureResultController"];
-        verifySignatureVc.type = [result boolValue] == YES ? OKVerifySignatureTypeSuccess : OKVerifySignatureTypeFailure;
-        [self.navigationController pushViewController:verifySignatureVc animated:YES];
+    if (kWalletManager.currentWalletInfo.walletType == OKWalletTypeHardware) {
+        [params addEntriesFromDictionary:@{@"path":kBluetooth_iOS}];
     }
+    [MBProgressHUD showHUDAddedTo:weakself.view animated:YES];
+    [kPyCommandsManager asyncCall:kInterfaceverify_message parameter:params callback:^(id  _Nonnull result) {
+        [MBProgressHUD hideHUDForView:weakself.view animated:YES];
+        if (result != nil) {
+            OKVerifySignatureResultController *verifySignatureVc = [OKVerifySignatureResultController initWithStoryboardName:@"Signature" identifier:@"OKVerifySignatureResultController"];
+            verifySignatureVc.type = [result boolValue] == YES ? OKVerifySignatureTypeSuccess : OKVerifySignatureTypeFailure;
+            [self.navigationController pushViewController:verifySignatureVc animated:YES];
+        }
+    }];
 }
 
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(nonnull NSString *)text {

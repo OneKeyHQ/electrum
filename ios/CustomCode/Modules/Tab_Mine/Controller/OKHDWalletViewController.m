@@ -110,10 +110,15 @@
         model.backColor = [OKWalletListTableViewCellModel getBackColor:model.walletType];
         model.iconName = [OKWalletListTableViewCellModel getBgImageName:model.walletType];
         model.isCurrent = [kWalletManager.currentWalletInfo.name isEqualToString:model.walletName];
+        NSArray *arrayType= [model.walletType componentsSeparatedByString:@"-"];
+        NSString *coinType = [arrayType firstObject];
+        model.index = [kWalletManager.supportCoinArray indexOfObject:[coinType uppercaseString]];
         [walletArray addObject:model];
     }
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"walletType contains %@ || walletType contains %@",[@"HD" lowercaseString],[@"derived-standard" lowercaseString]];
-    self.showList = [walletArray filteredArrayUsingPredicate:predicate];
+    NSArray *listArray = [walletArray filteredArrayUsingPredicate:predicate];
+    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"index" ascending:YES];
+    self.showList = [listArray sortedArrayUsingDescriptors:@[sortDescriptor]];
     OKWalletListTableViewCellModel *hdModel = [self.showList firstObject];
     self.HDWalletName = hdModel.walletName;
     self.countLabel.text = [NSString stringWithFormat:@"%zd",self.showList.count];

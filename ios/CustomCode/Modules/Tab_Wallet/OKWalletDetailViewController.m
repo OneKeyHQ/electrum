@@ -60,6 +60,7 @@
 - (void)loadUI
 {
     self.title = MyLocalizedString(@"Wallet Detail", nil);
+    self.iconCoinTypeImage.image = [UIImage imageNamed:[NSString stringWithFormat:@"token_%@",[kWalletManager.currentWalletInfo.coinType lowercaseString]]];
     self.nameLabel.text = kWalletManager.currentWalletInfo.label;
 }
 

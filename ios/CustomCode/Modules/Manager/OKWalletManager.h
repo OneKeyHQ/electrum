@@ -104,7 +104,6 @@ typedef enum{
     OKMnemonicLengthType24
 }OKMnemonicLengthType;
 
-
 @interface OKWalletManager : NSObject
 
 @property (nonatomic,copy)NSString *currentSelectCoinType;
@@ -116,6 +115,7 @@ typedef enum{
 @property (nonatomic,strong)NSArray *ethClassification;
 @property (nonatomic,strong) NSArray *supportFiatArray;
 @property (nonatomic,strong) NSArray *supportFiatsSymbol;
+@property (nonatomic,strong) NSDictionary *precisionDict;
 @property (nonatomic,assign)BOOL showAsset;
 @property (nonatomic,assign)BOOL isOpenAuthBiological;
 - (BOOL)showAsset;
@@ -136,6 +136,7 @@ typedef enum{
 - (NSArray <OKWalletInfoModel *>*)listWallets;
 - (NSArray <OKWalletInfoModel *>*)listWalletsChainType:(OKWalletChainType)type;
 - (BOOL)isETHClassification:(NSString *)coinType;
+- (NSInteger)getPrecision:(NSString *)key;
 @end
 
 NS_ASSUME_NONNULL_END

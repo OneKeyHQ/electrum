@@ -363,4 +363,22 @@ static dispatch_once_t once;
         return ((OKWalletInfoModel *)obj).chainType == type;
     }];
 }
+
+- (NSDictionary *)precisionDict
+{
+    if (!_precisionDict) {
+        _precisionDict = @{@"btc":@"8",@"eth":@"6",@"token_eth":@"4"};
+    }
+    return _precisionDict;
+}
+
+- (NSInteger)getPrecision:(NSString *)key
+{
+    NSString *p = [self.precisionDict safeStringForKey:[key lowercaseString]];
+    if (p.length == 0) {
+        return 8;
+    }
+    return [p integerValue];
+}
+
 @end
