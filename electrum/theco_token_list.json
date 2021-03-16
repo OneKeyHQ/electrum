@@ -1,0 +1,232 @@
+{
+  "name": "CoinGecko",
+  "logoURI": "https://www.coingecko.com/assets/thumbnail-007177f3eca19695592f0b8b0eabbdae282b54154e1be912285c9034ea6cbaf2.png",
+  "keywords": [
+    "defi"
+  ],
+  "timestamp": "2021-02-25T10:18:27.589+00:00",
+  "tokens": [
+    {
+      "name": "Heco-Peg HBTC Token",
+      "symbol": "HBTC",
+      "logoURI": "https://hecoinfo.com/token/images/HBTC_32.png",
+      "address": "0x66a79d23e58475d2738179ca52cd0b41d73f0bea",
+      "decimals": 18
+    },
+    {
+      "name": "Heco-Peg ETH Token",
+      "symbol": "ETH",
+      "logoURI": "https://hecoinfo.com/token/images/HETH_32.png",
+      "address": "0x64ff637fb478863b7468bc97d30a5bf3a428a1fd",
+      "decimals": 18
+    },
+    {
+      "name": "Heco-Peg HDOT Token",
+      "symbol": "HDOT",
+      "logoURI": "https://hecoinfo.com/token/images/HDOT_32.png",
+      "address": "0xa2c49cee16a5e5bdefde931107dc1fae9f7773e3",
+      "decimals": 18
+    },
+    {
+      "name": "Heco-Peg USDTHECO Token",
+      "symbol": "USDTHECO",
+      "logoURI": "https://hecoinfo.com/token/images/USDTHECO_32.png",
+      "address": "0xa71edc38d189767582c38a3145b5873052c3e47a",
+      "decimals": 18
+    },
+    {
+      "name": "Heco-Peg HLTC Token",
+      "symbol": "HLTC",
+      "logoURI": "https://hecoinfo.com/token/images/HLTC_32.png",
+      "address": "0xecb56cf772b5c9a6907fb7d32387da2fcbfb63b4",
+      "decimals": 18
+    },
+    {
+      "name": "Heco-Peg HBCH Token",
+      "symbol": "HBCH",
+      "logoURI": "https://hecoinfo.com/token/images/HBCH_32.png",
+      "address": "0xef3cebd77e0c52cb6f60875d9306397b5caca375",
+      "decimals": 18
+    },
+    {
+      "name": "Heco-Peg AAVE Token",
+      "symbol": "AAVE",
+      "logoURI": "https://hecoinfo.com/token/images/aave_32.png",
+      "address": "0x202b4936fe1a82a4965220860ae46d7d3939bb25",
+      "decimals": 18
+    },
+    {
+      "name": "Heco-Peg HBSV Token",
+      "symbol": "HBSV",
+      "logoURI": "https://hecoinfo.com/token/images/HBSV_32.png",
+      "address": "0xc2cb6b5357ccce1b99cd22232942d9a225ea4eb1",
+      "decimals": 18
+    },
+    {
+      "name": "Heco-Peg HXTZ Token",
+      "symbol": "HXTZ",
+      "logoURI": "https://hecoinfo.com/token/images/HXZT_32.png",
+      "address": "0x45e97dad828ad735af1df0473fc2735f0fd5330c",
+      "decimals": 18
+    },
+    {
+      "name": "Wrapped HT",
+      "symbol": "WHT",
+      "logoURI": "https://hecoinfo.com/token/images/HT_32.png",
+      "address": "0x5545153ccfca01fbd7dd11c0b23ba694d9509a6f",
+      "decimals": 18
+    },
+    {
+      "name": "Heco-Peg HFIL Token",
+      "symbol": "HFIL",
+      "logoURI": "https://hecoinfo.com/token/images/HFIL_32.png?v1",
+      "address": "0xae3a768f9ab104c69a7cd6041fe16ffa235d1810",
+      "decimals": 18
+    },
+    {
+      "name": "Heco-Peg HUSD Token",
+      "symbol": "HUSD",
+      "logoURI": "https://hecoinfo.com/token/images/HUSD_32.png",
+      "address": "0x0298c2b32eae4da002a15f36fdf7615bea3da047",
+      "decimals": 8
+    },
+    {
+      "name": "MDX Token",
+      "symbol": "MDX",
+      "logoURI": "https://hecoinfo.com/token/images/mdex_32.png",
+      "address": "0x25d2e80cb6b86881fd7e07dd263fb79f4abe033c",
+      "decimals": 18
+    },
+    {
+      "name": "Heco-Peg ARPA Token",
+      "symbol": "ARPA",
+      "logoURI": "https://hecoinfo.com/token/images/arpa_32.png",
+      "address": "0x5a6b72dd6209a770ae1c02a7a2e1900636072d0b",
+      "decimals": 18
+    },
+    {
+      "name": "Heco-Peg HPT Token",
+      "symbol": "HPT",
+      "logoURI": "https://hecoinfo.com/token/images/HPT_32.png",
+      "address": "0xe499ef4616993730ced0f31fa2703b92b50bb536",
+      "decimals": 18
+    },
+    {
+      "name": "Heco-Peg BAL Token",
+      "symbol": "BAL",
+      "logoURI": "https://hecoinfo.com/token/images/bal_32.png",
+      "address": "0x045de15ca76e76426e8fc7cba8392a3138078d0f",
+      "decimals": 18
+    },
+    {
+      "name": "Heco-Peg BETH Token",
+      "symbol": "BETH",
+      "logoURI": "https://hecoinfo.com/token/images/beth_32.png?v=1",
+      "address": "0xb6f4c418514dd4680f76d5caa3bb42db4a893acb",
+      "decimals": 18
+    },
+    {
+      "name": "Heco-Peg CNNS Token",
+      "symbol": "CNNS",
+      "logoURI": "https://hecoinfo.com/token/images/cnns_32.png",
+      "address": "0x4bf06f76c68d81bde1f87535fdcb60adadb01cf5",
+      "decimals": 18
+    },
+    {
+      "name": "Heco-Peg DAIHECO Token",
+      "symbol": "DAI-HECO",
+      "logoURI": "https://hecoinfo.com/images/main/empty-token.png",
+      "address": "0x3d760a45d0887dfd89a2f5385a236b29cb46ed2a",
+      "decimals": 18
+    },
+    {
+      "name": "Heco-Peg GOF Token",
+      "symbol": "GOF",
+      "logoURI": "https://hecoinfo.com/token/images/gof_32.png",
+      "address": "0x2aafe3c9118db36a20dd4a942b6ff3e78981dce1",
+      "decimals": 18
+    },
+    {
+      "name": "Heco-Peg HBC Token",
+      "symbol": "HBC",
+      "logoURI": "https://hecoinfo.com/token/images/hbc_32.png",
+      "address": "0x894b2917c783514c9e4c24229bf60f3cb4c9c905",
+      "decimals": 18
+    },
+    {
+      "name": "Heco-Peg LAMB Token",
+      "symbol": "LAMB",
+      "logoURI": "https://hecoinfo.com/token/images/lamb_32.png",
+      "address": "0xe131f048d85f0391a24435eefb7763199b587d0e",
+      "decimals": 18
+    },
+    {
+      "name": "Heco-Peg LINK Token",
+      "symbol": "LINK",
+      "logoURI": "https://hecoinfo.com/token/images/chainlink_32.png",
+      "address": "0x9e004545c59d359f6b7bfb06a26390b087717b42",
+      "decimals": 18
+    },
+    {
+      "name": "Heco-Peg LRC Token",
+      "symbol": "LRC",
+      "logoURI": "https://hecoinfo.com/token/images/lrc_32.png",
+      "address": "0xbf22f76657601a522cf9ac832718a3404302d6bc",
+      "decimals": 18
+    },
+    {
+      "name": "Heco-Peg PAXHECO Token",
+      "symbol": "PAX-HECO",
+      "logoURI": "https://hecoinfo.com/images/main/empty-token.png",
+      "address": "0x62057691dd4970dd109231b2658ff201e15e767a",
+      "decimals": 18
+    },
+    {
+      "name": "Heco-Peg SKM Token",
+      "symbol": "SKM",
+      "logoURI": "https://hecoinfo.com/token/images/skm_32.png",
+      "address": "0x96674f8da3f9c6acb4a56b393af9a490d70d16d0",
+      "decimals": 18
+    },
+    {
+      "name": "Heco-Peg SNX Token",
+      "symbol": "SNX",
+      "logoURI": "https://hecoinfo.com/token/images/snx_32.png",
+      "address": "0x777850281719d5a96c29812ab72f822e0e09f3da",
+      "decimals": 18
+    },
+    {
+      "name": "Heco-Peg SWFTC Token",
+      "symbol": "SWFTC",
+      "logoURI": "https://hecoinfo.com/token/images/swftc_32.png",
+      "address": "0x329dda64cbc4dfd5fa5072b447b3941ce054ebb3",
+      "decimals": 8
+    },
+    {
+      "name": "Heco-Peg UNI Token",
+      "symbol": "UNI",
+      "logoURI": "https://hecoinfo.com/token/images/uni_32.png",
+      "address": "0x22c54ce8321a4015740ee1109d9cbc25815c46e6",
+      "decimals": 18
+    },
+    {
+      "name": "Heco-Peg USDCHECO Token",
+      "symbol": "USDC-HECO",
+      "logoURI": "https://hecoinfo.com/images/main/empty-token.png",
+      "address": "0x9362bbef4b8313a8aa9f0c9808b80577aa26b73b",
+      "decimals": 6
+    },
+    {
+      "name": "Heco-Peg YFI Token",
+      "symbol": "YFI",
+      "logoURI": "https://hecoinfo.com/token/images/yfi_32.png",
+      "address": "0xb4f019beac758abbee2f906033aaa2f0f6dacb35",
+      "decimals": 18
+    }
+  ],
+  "version": {
+    "major": 132,
+    "minor": 0,
+    "patch": 0
+  }
+}

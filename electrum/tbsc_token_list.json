@@ -5,8 +5,8 @@
 	"timestamp": "2021-02-25T10:18:27.589+00:00",
 	"tokens": [{
 		"chainId": 3,
-		"address": "0x9a42d6dcd2519e94d037439c447a7a752ba9f66c",
-		"name": "ETH TTT",
+		"address": "0x6f91a5a9b113c87d0d7c049f811f5101553bbb48",
+		"name": "BSC TTT",
 		"symbol": "TTT",
 		"decimals": 18,
 		"logoURI": "",
