@@ -1197,7 +1197,7 @@ class Standard_Eth_Wallet(Simple_Eth_Deterministic_Wallet):
         cls, coin: str, index: int, config: SimpleConfig, seed: str, passphrase: str, derivation: str
     ):
         if keystore.is_seed(seed):
-            ks = keystore.from_seed(seed)
+            ks = keystore.from_seed(seed, passphrase)
         else:
             is_checksum_valid, _is_wordlist_valid = keystore.bip39_is_checksum_valid(seed)
             if not is_checksum_valid:

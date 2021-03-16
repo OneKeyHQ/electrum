@@ -2727,7 +2727,7 @@ class Standard_Wallet(Simple_Deterministic_Wallet):
     @classmethod
     def from_seed_or_bip39(cls, coin: str, config: SimpleConfig, seed: str, passphrase: str, derivation: str):
         if keystore.is_seed(seed):
-            ks = keystore.from_seed(seed)
+            ks = keystore.from_seed(seed, passphrase)
         else:
             is_checksum_valid, _is_wordlist_valid = keystore.bip39_is_checksum_valid(seed)
             if not is_checksum_valid:
