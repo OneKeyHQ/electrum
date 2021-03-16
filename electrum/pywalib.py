@@ -57,7 +57,8 @@ class InsufficientFundsException(Exception):
     """
     Raised when user want to send funds and have insufficient balance on address
     """
-    pass
+    def __init__(self, *args):
+        super(InsufficientFundsException, self).__init__(_("Insufficient balance"), *args)
 
 
 class InsufficientERC20FundsException(Exception):
@@ -65,7 +66,8 @@ class InsufficientERC20FundsException(Exception):
     Raised when user want to send ERC20 contract tokens and have insufficient balance
     of these tokens on wallet's address
     """
-    pass
+    def __init__(self, *args):
+        super(InsufficientERC20FundsException, self).__init__(_("Insufficient ERC20 token balance"), *args)
 
 
 class ERC20NotExistsException(Exception):
@@ -86,13 +88,15 @@ class InvalidValueException(Exception):
     """
     Raised when some of expected values is not correct.
     """
-    pass
+    def __init__(self, *args):
+        super(InvalidValueException, self).__init__(_("Invalid Value"), *args)
 
 class InvalidAddress(ValueError):
     """
     The supplied address does not have a valid checksum, as defined in EIP-55
     """
-    pass
+    def __init__(self, *args):
+        super(InvalidAddress, self).__init__(_("Unavailable eth addresses"), *args)
 
 class InvalidPasswordException(Exception):
     """
