@@ -33,6 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)localized;
 - (BOOL)ignoreCaseCointain:(NSString *)subStr;
 - (NSString *)addressFormatted;
+- (NSString *)numStrPrecition:(NSUInteger)scale;
 @end
 
 NS_ASSUME_NONNULL_END

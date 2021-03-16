@@ -651,6 +651,8 @@ static dispatch_once_t once;
             // 释放GIL ！！！！！
             PyGILState_Release(state);
             if (![self.noTipsInterface containsObject:method]) {
+                [kTools tipMessage:[NSString stringWithCString:msg encoding:NSUTF8StringEncoding]];
+            } else {
                 [kTools debugTipMessage:[NSString stringWithCString:msg encoding:NSUTF8StringEncoding]];
             }
             return nil;
@@ -756,7 +758,13 @@ static dispatch_once_t once;
 - (NSArray *)noTipsInterface
 {
     if (!_noTipsInterface) {
-        _noTipsInterface = @[kInterfaceSet_currency,kInterfaceSet_base_uint,kInterfaceget_tx_info_from_raw,kInterfaceget_default_fee_info];
+        _noTipsInterface = @[
+            kInterfaceSet_currency,
+            kInterfaceSet_base_uint,
+            kInterfaceget_tx_info_from_raw,
+            kInterfaceget_default_fee_info,
+            kInterface_add_token
+        ];
     }
     return _noTipsInterface;;
 }

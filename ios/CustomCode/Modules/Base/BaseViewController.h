@@ -14,7 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BOOL isRoot;
 @property (nonatomic) BOOL forbidInteractivePopGestureRecognizer;
 @property (nonatomic, strong) UIView *loadingIndicator;
-@property (nonatomic, copy) void(^backToPreviousCallback)(void);
+@property (nonatomic, strong, nullable) UIColor *titleColor;
+@property (nonatomic, copy, nullable) void(^backToPreviousCallback)(void);
 
 + (__kindof BaseViewController *)initWithStoryboardName:(NSString *)storyboardName identifier:(NSString *)identifier;
 

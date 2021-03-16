@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OKChangeWalletController : UIViewController
+@interface OKChangeWalletController : BaseViewController
 @property (nonatomic, assign)OKWalletChainType chianType;
 @property (nonatomic, copy) void(^walletChangedCallback)(OKWalletInfoModel *wallet);
 @property (nonatomic, copy) void(^cancelCallback)(BOOL selected);

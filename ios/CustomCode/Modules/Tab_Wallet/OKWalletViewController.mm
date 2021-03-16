@@ -522,19 +522,18 @@
                     }
                 };
                 changeVC.walletChangedCallback = ^(OKWalletInfoModel * _Nonnull wallet) {
-                    [kWalletManager setCurrentWalletInfo:wallet];
-                    [kPyCommandsManager asyncCall:kInterface_switch_wallet
-                                        parameter:@{@"name":kWalletManager.currentWalletInfo.name}
-                                         callback:^(id  _Nonnull result) {
-                        if (!result) {
-                            return;
-                        }
-                        [[NSNotificationCenter defaultCenter] postNotificationName:kNotiSelectWalletComplete object:nil];
+                    if ([kWalletManager getWalletDetailType] == OKWalletTypeHardware) {
+                        OKMatchingInCirclesViewController *matchingVc = [OKMatchingInCirclesViewController matchingInCirclesViewController];
+                        matchingVc.type = OKMatchingTypeTransfer;
+                        matchingVc.where = OKMatchingFromWhereNav;
+                        matchingVc.addressForTransfer = address;
+                        [weakself.navigationController pushViewController:matchingVc animated:YES];
+                    } else {
                         OKSendCoinViewController *sendCoinVc = [OKSendCoinViewController sendCoinViewController];
                         sendCoinVc.address = address;
                         sendCoinVc.coinType = kWalletManager.currentWalletInfo.coinType;
                         [weakself.navigationController pushViewController:sendCoinVc animated:YES];
-                    }];
+                    }
                 };
                 changeVC.modalPresentationStyle = UIModalPresentationOverCurrentContext;
                 [weakself.navigationController presentViewController:changeVC animated:NO completion:nil];

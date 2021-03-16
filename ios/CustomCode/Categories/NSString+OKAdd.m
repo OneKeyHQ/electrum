@@ -157,4 +157,19 @@
     NSString *tail = [self substringFromIndex:self.length - 8];
     return [NSString stringWithFormat:@"%@...%@", head, tail];
 }
+
+- (NSString *)numStrPrecition:(NSUInteger)scale {
+    NSArray *nums = [self split:@"."];
+    if (nums.count != 2) {
+        return self;
+    }
+    NSString *decs = nums.lastObject;
+    if (decs.length > scale) {
+        decs = [decs substringToIndex:scale];
+    }
+    while (decs.length && [[decs substringFromIndex:decs.length - 1] isEqualToString:@"0"]) {
+        decs = [decs substringToIndex:decs.length - 1];
+    }
+    return decs.length ? [NSString stringWithFormat:@"%@.%@", nums[0], decs] : nums[0];
+}
 @end

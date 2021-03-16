@@ -34,7 +34,6 @@ static const NSUInteger titleColorRed = 0xeb5757;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic, strong) NSArray<OKDeviceSettingsModel *>* listData;
 @property (strong, nonatomic) NSString *deviceId;
-@property (strong, nonatomic) UIView *loadingView;
 @end
 
 @implementation OKDeviceSettingsViewController
@@ -50,8 +49,6 @@ static const NSUInteger titleColorRed = 0xeb5757;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.title = self.deviceModel.deviceInfo.label.length ? self.deviceModel.deviceInfo.label : self.deviceModel.deviceInfo.ble_name;
     self.deviceId = self.deviceModel.deviceInfo.device_id;
-    [self.view addSubview:self.loadingView];
-    self.loadingView.hidden = YES;
     [self reloadListData];
 }
 
@@ -148,17 +145,17 @@ static const NSUInteger titleColorRed = 0xeb5757;
 
 - (void)ensureDeviceMatch:(void(^)(BOOL needUpdate))callback {
     if (!callback || !self.deviceId) {
-        [kTools tipMessage:@"蓝牙连接失败"];
-        self.loadingView.hidden = YES;
+        [kTools tipMessage:@"bluetooth.connection.fail".localized];
+        self.loadingIndicator.hidden = YES;
         return;
     }
-    self.loadingView.hidden = NO;
+    self.loadingIndicator.hidden = NO;
     OKWeakSelf(self)
     [kOKBlueManager startScanAndConnectWithName:self.deviceModel.deviceInfo.ble_name complete:^(BOOL isSuccess) {
         if (!isSuccess) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                [kTools tipMessage:@"蓝牙连接超时"];
-                self.loadingView.hidden = YES;
+                [kTools tipMessage:@"bluetooth.connection.timeout".localized];
+                self.loadingIndicator.hidden = YES;
             });
             return;
         }
@@ -173,7 +170,7 @@ static const NSUInteger titleColorRed = 0xeb5757;
             NSString *currentDeviceVersion = device.deviceInfo.deviceSysVersion;
             [[OKDevicesManager sharedInstance] addDevices:device];
             dispatch_async(dispatch_get_main_queue(), ^{
-                weakself.loadingView.hidden = YES;
+                weakself.loadingIndicator.hidden = YES;
                 if ([currentDeviceId isEqualToString:weakself.deviceId]) {
                     callback([weakself checkNeedUpdate:currentDeviceVersion]);
                     return;
@@ -183,21 +180,6 @@ static const NSUInteger titleColorRed = 0xeb5757;
             });
         });
     }];
-}
-
-- (UIView *)loadingView {
-    if (!_loadingView) {
-        _loadingView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 80, 80)];
-        _loadingView.backgroundColor = HexColorA(0x444444, 0.7);
-        _loadingView.center = self.view.center;
-        [_loadingView setLayerRadius:10];
-
-        UIActivityIndicatorView *actView = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(0, 0, 80, 80)];
-        actView.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhiteLarge;
-        [actView startAnimating];
-        [_loadingView addSubview:actView];
-    }
-    return _loadingView;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {

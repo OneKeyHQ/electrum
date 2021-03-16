@@ -33,7 +33,7 @@ static const CGFloat showNavBarSeparatorScrollViewOffsetThreshold = 5;
 - (void)viewDidLoad {
     [super viewDidLoad];
     if (@available(iOS 13.0, *)) {
-            self.modalInPresentation = YES;
+        self.modalInPresentation = YES;
     }
     // 替换返回按钮
     if ([self.navigationController.viewControllers count] > 1) {
@@ -47,19 +47,6 @@ static const CGFloat showNavBarSeparatorScrollViewOffsetThreshold = 5;
     [self.navigationController.navigationBar setBarTintColor:[self navBarTintColor]];
 
     _interactivePopEnable = self.navigationController.interactivePopGestureRecognizer.isEnabled;
-}
-
-- (UIImageView *)findHairlineImageViewUnder:(UIView *)view {
-   if ([view isKindOfClass:UIImageView.class] && view.bounds.size.height <= 1.0) {
-       return (UIImageView *)view;
-   }
-   for (UIView *subview in view.subviews) {
-       UIImageView *imageView = [self findHairlineImageViewUnder:subview];
-       if (imageView) {
-           return imageView;
-       }
-   }
-   return nil;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -82,6 +69,24 @@ static const CGFloat showNavBarSeparatorScrollViewOffsetThreshold = 5;
     }
 }
 
+- (void)AT_setExtraCellHide:(UITableView *)aTableView {
+     aTableView.tableFooterView = [[UIView alloc] init];
+}
+
+#pragma mark - Navbar appearence
+- (UIImageView *)findHairlineImageViewUnder:(UIView *)view {
+   if ([view isKindOfClass:UIImageView.class] && view.bounds.size.height <= 1.0) {
+       return (UIImageView *)view;
+   }
+   for (UIView *subview in view.subviews) {
+       UIImageView *imageView = [self findHairlineImageViewUnder:subview];
+       if (imageView) {
+           return imageView;
+       }
+   }
+   return nil;
+}
+
 - (void)backButtonWhiteColor {
     UIImage *whiteImage = [[UIImage imageNamed:@"arrow_left_white"] imageWithColor:[UIColor whiteColor]];
     [(UIButton *)self.navigationItem.leftBarButtonItem.customView setImage:whiteImage forState:UIControlStateNormal];
@@ -90,10 +95,6 @@ static const CGFloat showNavBarSeparatorScrollViewOffsetThreshold = 5;
 
 - (void)hideBackBtn {
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] init];
-}
-
-- (void)AT_setExtraCellHide:(UITableView *)aTableView {
-     aTableView.tableFooterView = [[UIView alloc] init];
 }
 
 - (void)backToPrevious {
@@ -130,6 +131,13 @@ static const CGFloat showNavBarSeparatorScrollViewOffsetThreshold = 5;
     [self presentViewController:nav animated:animated completion:completion];
 }
 
+- (void)setTitleColor:(UIColor *)titleColor {
+    _titleColor = titleColor;
+    NSMutableDictionary<NSAttributedStringKey, id> *titleTextAttributes = [self.navigationController.navigationBar.titleTextAttributes mutableCopy];
+    [titleTextAttributes setObject:self.titleColor forKey:NSForegroundColorAttributeName];
+    self.navigationController.navigationBar.titleTextAttributes = titleTextAttributes;
+}
+
 - (UIColor *)navBarTintColor {
     return [UIColor whiteColor];
 }
@@ -144,13 +152,14 @@ static const CGFloat showNavBarSeparatorScrollViewOffsetThreshold = 5;
     self.showNavbarSeparator = offsetY > showNavBarSeparatorScrollViewOffsetThreshold;
 }
 
+#pragma mark - Loading indicator view
 - (UIView *)loadingIndicator {
     if (!_loadingIndicator) {
         _loadingIndicator = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 80, 80)];
-        _loadingIndicator.backgroundColor = HexColorA(0x444444, 0.7);
+        _loadingIndicator.backgroundColor = HexColorA(0x444444, 0.6);
         _loadingIndicator.center = self.view.center;
-        _loadingIndicator.centerY = self.view.centerY * 0.7;
-        [_loadingIndicator setLayerRadius:10];
+        _loadingIndicator.centerY = self.view.centerY * 0.85;
+        [_loadingIndicator setLayerRadius:5];
 
         UIActivityIndicatorView *actView = [[UIActivityIndicatorView alloc] initWithFrame:_loadingIndicator.bounds];
         actView.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhiteLarge;

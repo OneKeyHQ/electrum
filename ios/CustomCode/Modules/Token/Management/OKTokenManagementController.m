@@ -36,6 +36,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.title = @"token.management".localized;
+    self.titleColor = UIColor.blackColor;
     self.model = [OKTokenManModel new];
     self.filteredData = self.model.data;
 

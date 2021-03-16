@@ -104,12 +104,27 @@ static const CGFloat MASK_ALPHA = 0.4;
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     if (tableView == self.tableView) {
         OKWalletInfoModel *model = self.wallets[indexPath.row];
+        [self changeWalletTo:model];
+    }
+}
+
+- (void)changeWalletTo:(OKWalletInfoModel *)wallet {
+    self.loadingIndicator.hidden = NO;
+    [kWalletManager setCurrentWalletInfo:wallet];
+    [kPyCommandsManager asyncCall:kInterface_switch_wallet
+                        parameter:@{@"name":kWalletManager.currentWalletInfo.name}
+                         callback:^(id  _Nonnull result) {
+        if (!result) {
+            return;
+        }
+        [[NSNotificationCenter defaultCenter] postNotificationName:kNotiSelectWalletComplete object:nil];
         self.walletSelected = YES;
+        self.loadingIndicator.hidden = YES;
         [self dismiss];
         if (self.walletChangedCallback) {
-            self.walletChangedCallback(model);
+            self.walletChangedCallback(wallet);
         }
-    }
+    }];
 }
 
 #pragma mark - Animation

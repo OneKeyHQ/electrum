@@ -367,7 +367,7 @@ static dispatch_once_t once;
 - (NSDictionary *)precisionDict
 {
     if (!_precisionDict) {
-        _precisionDict = @{@"btc":@"8",@"eth":@"6",@"token_eth":@"4"};
+        _precisionDict = @{@"fiat":@"2",@"btc":@"8",@"eth":@"6",@"token_eth":@"4"};
     }
     return _precisionDict;
 }

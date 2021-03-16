@@ -13,6 +13,8 @@
 @property (weak, nonatomic) IBOutlet UILabel *addressLabel;
 @property (weak, nonatomic) IBOutlet UILabel *balanceLabel;
 @property (weak, nonatomic) IBOutlet UIImageView *selectImageView;
+@property (weak, nonatomic) IBOutlet UIView *badge;
+@property (weak, nonatomic) IBOutlet UILabel *badgeLabel;
 @end
 
 @implementation OKChangeWalletCell
@@ -20,6 +22,7 @@
 - (void)awakeFromNib {
     [super awakeFromNib];
     [self.bgView setLayerRadius:13];
+    [self.badge setLayerRadius:9];
     self.bgView.backgroundColor = HexColor(0xF7931B);
 }
 
@@ -27,11 +30,16 @@
     _model = model;
     self.addressLabel.text = model.addr.addressFormatted;
     self.nameLabel.text = model.label;
+    self.badgeLabel.attributedText = model.walletTypeDesc;
     self.selectImageView.hidden = ![model.name isEqualToString:kWalletManager.currentWalletInfo.name];
+    NSInteger precision = [kWalletManager getPrecision:@"btc"];
     if (model.chainType == OKWalletChainTypeETHLike) {
+        precision = [kWalletManager getPrecision:@"eth"];
         self.bgView.backgroundColor = HexColor(0x3E5BF2);
     }
     NSString *balance = [model.additionalData objectForKey:@"balance"];
+    balance = [balance numStrPrecition:precision];
+
     self.balanceLabel.text = balance ?: @"0";
 }
 

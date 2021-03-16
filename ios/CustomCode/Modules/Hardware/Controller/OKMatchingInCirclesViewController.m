@@ -383,6 +383,7 @@
                     [MBProgressHUD hideHUDForView:self.view animated:YES];
                     OKSendCoinViewController *sendCoinVc = [OKSendCoinViewController sendCoinViewController];
                     sendCoinVc.coinType = kWalletManager.currentWalletInfo.coinType;
+                    sendCoinVc.address = self.addressForTransfer;
                     [self.navigationController pushViewController:sendCoinVc animated:YES];
                 }else{
                     if (![deviceModel.deviceInfo.device_id isEqualToString:kWalletManager.currentWalletInfo.device_id]) {

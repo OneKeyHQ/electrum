@@ -462,6 +462,9 @@
 
 "hardwareWallet.id_not_match" = "设备 ID 不一致";
 
+"bluetooth.connection.fail" = "蓝牙连接失败";
+"bluetooth.connection.timeout" = "蓝牙连接超时";
+
 // Hardware Wallet Associated - end
 "success" = "成功";
 "fail" = "失败";

@@ -34,16 +34,35 @@
     self.walletType = walletType;
 }
 
-- (NSString *)walletTypeDesc {
-    if (!_walletTypeDesc) {
-        switch (self.walletType) {
-            case OKWalletTypeHD: _walletTypeDesc = @"HD".localized; break;
-            case OKWalletTypeHardware: _walletTypeDesc = @"hardware".localized; break;
-            case OKWalletTypeObserve: _walletTypeDesc = @"Observation".localized; break;
-            default: _walletTypeDesc = @""; break;
-        }
+- (NSAttributedString *)walletTypeDesc {
+    NSString *desc;
+    switch (self.walletType) {
+        case OKWalletTypeHD: desc = @"HD".localized; break;
+        case OKWalletTypeHardware: {
+            NSString *deviceName = [[OKDevicesManager sharedInstance] getDeviceModelWithID:self.device_id].deviceInfo.label;
+            if (deviceName.length) {
+                desc = [NSString stringWithFormat:@" %@", deviceName];;
+                if (desc.length > 15) {
+                    desc = [desc substringToIndex:15];
+                }
+            } else {
+                desc = @"hardware".localized;
+            }
+        } break;
+        case OKWalletTypeObserve: desc = @"Observation".localized; break;
+        default: desc = @""; break;
     }
-    return _walletTypeDesc;
+
+    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:desc];
+    if (self.walletType == OKWalletTypeHardware) {
+        NSTextAttachment *attchment = [[NSTextAttachment alloc] init];
+        attchment.bounds = CGRectMake(0,-2,8,12);
+        attchment.image = [UIImage imageNamed:@"device_white"];
+        NSAttributedString *attchmentStr = [NSAttributedString attributedStringWithAttachment:attchment];
+        [attributedString insertAttributedString:attchmentStr atIndex:0];
+    }
+
+    return attributedString;
 }
 
 - (OKWalletCoinType)walletCoinType {

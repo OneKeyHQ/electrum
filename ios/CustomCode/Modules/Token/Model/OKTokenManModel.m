@@ -11,11 +11,14 @@
 
 @implementation OKTokenManModel
 - (NSInteger)indexOfTableViewIndexTitle:(NSString *)title {
+    NSInteger base = self.hot.count + 2;
+    if ([title isEqualToString:@"#"]) {
+        return base;
+    }
 
     for (int i = 0; i < self.more.count; i++) {
         if ([self.more[i].symbol.uppercaseString hasPrefix:title]) {
-            NSLog(@"%d",i);
-            return i + self.hot.count + 2;
+            return i + base;
         }
     }
     return 0;
