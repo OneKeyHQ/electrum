@@ -25,7 +25,6 @@ import io.reactivex.disposables.Disposable;
 import java.util.Objects;
 import org.greenrobot.eventbus.EventBus;
 import org.haobtc.onekey.R;
-import org.haobtc.onekey.bean.HardwareFeatures;
 import org.haobtc.onekey.business.wallet.OnekeyBleConnectCallback;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.BleConnectionEx;
@@ -51,7 +50,6 @@ public final class BleManager {
     private volatile boolean connecting;
     private String currentAddress;
     public static String currentBleName;
-    private HardwareFeatures mHardwareFeatures;
     private volatile boolean mShieldingGlobalCallback = false;
 
     private BleManager(FragmentActivity fragmentActivity) {

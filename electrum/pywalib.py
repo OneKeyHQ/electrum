@@ -556,6 +556,7 @@ class PyWalib:
             }
         }
 
+    @classmethod
     def get_rpc_info(cls) -> dict:
         rpc, chain_id = None, None
 

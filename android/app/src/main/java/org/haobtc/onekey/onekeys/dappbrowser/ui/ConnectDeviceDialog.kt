@@ -96,10 +96,6 @@ class ConnectDeviceDialog(context: Context) : Dialog(context) {
           isDoneConnect = true
           PyEnv.getFeature(context) {
             if (TextUtils.isEmpty(it.errors)) {
-              try {
-                BleManager.getInstance(Utils.getTopActivity() as FragmentActivity).hardwareFeatures = it.result
-              } catch (ignore: Exception) {
-              }
               mHandler.postAtFrontOfQueue { dismiss() }
               success?.invoke(it.result)
             } else {
