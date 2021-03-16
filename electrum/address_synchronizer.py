@@ -149,6 +149,19 @@ class AddressSynchronizer(Logger):
                     return addr
         return None
 
+    def get_txin_address_and_value(self, txin: TxInput) -> Tuple[str, int]:
+        if isinstance(txin, PartialTxInput):
+            if txin.value_sats() is not None and txin.address:
+                return txin.address, txin.value_sats()
+        prevout_hash = txin.prevout.txid.hex()
+        prevout_n = txin.prevout.out_idx
+        for addr in self.db.get_txo_addresses(prevout_hash):
+            l = self.db.get_txo_addr(prevout_hash, addr)
+            for n, v, _is_cb in l:
+                if n == prevout_n:
+                    return addr, v
+        return None, 0
+
     def get_txout_address(self, txo: TxOutput) -> Optional[str]:
         return txo.address
 

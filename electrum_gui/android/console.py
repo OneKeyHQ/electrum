@@ -1277,28 +1277,31 @@ class AndroidCommands(commands.Commands):
         data = self.get_details_info(tx, tx_list=tx_list)
         return data
 
-    def get_input_info(self, tx, all=None):
+    def _get_input_info(self, tx, all_input_info=False):
         input_list = []
         local_addr = self.txdb.get_received_tx_input_info(tx.txid())
-        if len(local_addr) != 0:
-            local_addr = json.loads(local_addr[0][1])
-            if len(local_addr) != 0:
-                return local_addr
+        if local_addr:
+            addr_info = json.loads(local_addr[0][1])
+            if (all_input_info and len(addr_info) > 1) or (not all_input_info and len(addr_info) == 1):
+                return addr_info
         for txin in tx.inputs():
             input_info = {}
-            addr = self.wallet.get_txin_address(txin)
-            if addr is None:
+            addr, value = self.wallet.get_txin_address_and_value(txin)
+
+            if not addr:
                 import asyncio
 
                 try:
-                    addr = asyncio.run_coroutine_threadsafe(
+                    addr, value = asyncio.run_coroutine_threadsafe(
                         self.gettransaction(txin.prevout.txid.hex(), txin.prevout.out_idx), self.network.asyncio_loop
                     ).result()
                 except BaseException:
-                    addr = ""
-            input_info["address"] = addr
+                    addr, value = "", 0
+
+            input_info['address'] = addr
+            input_info['amount'] = self.format_amount(value)
             input_list.append(input_info)
-            if all is None:
+            if not all_input_info:
                 break
         self.txdb.add_received_tx_input_info(tx.txid(), json.dumps(input_list))
         return input_list
@@ -1356,7 +1359,7 @@ class AndroidCommands(commands.Commands):
                 s = r = len(self.wallet.get_keystores())
             else:
                 s, r = self.wallet.wallet_type.split("of", 1)
-        in_list = self.get_input_info(tx)
+        in_list = self._get_input_info(tx)
         out_list = []
         for index, o in enumerate(tx.outputs()):
             address, value = o.address, o.value
@@ -1476,7 +1479,8 @@ class AndroidCommands(commands.Commands):
         if tx.txid() != txid:
             raise Exception("Mismatching txid")
         addr = tx._outputs[n].address
-        return addr
+        value = tx._outputs[n].value
+        return addr, value
 
     def get_btc_tx_list(self, start=None, end=None, search_type=None):  # noqa
         history_data = []
@@ -1575,21 +1579,24 @@ class AndroidCommands(commands.Commands):
         return json.dumps(txs, cls=DecimalEncoder)
 
     def get_detail_tx_info_by_hash(self, tx_hash):
+        """
+        Show detailed inputs and outputs
+        :param tx_hash:
+        :return: {
+                "input_list": [{"address":"", "amount":""},...]
+                "output_list": [{"address":"", "amount":""},...]
+                }
+        """
+        self._assert_wallet_isvalid()
+        tx = self.get_btc_raw_tx(tx_hash)
         try:
-            self._assert_wallet_isvalid()
-            tx = self.get_btc_raw_tx(tx_hash)
-            in_list = self.get_input_info(tx, all=True)
-            out_list = []
-            for index, o in enumerate(tx.outputs()):
-                address, value = o.address, o.value
-                out_info = {}
-                out_info["addr"] = address
-                out_info["amount"] = self.format_amount_and_units(value)
-                out_list.append(out_info)
-            out = {"input_list": in_list, "output_list": out_list}
-            return json.dumps(out)
-        except BaseException as e:
-            raise e
+            in_list = self._get_input_info(tx, all_input_info=True)
+        except Exception:
+            in_list = []
+
+        out_list = [{"address": output.address, "amount": self.format_amount(output.value)} for output in tx.outputs()]
+
+        return json.dumps({"input_list": in_list, "output_list": out_list})
 
     def get_all_tx_list(self, search_type=None, coin="btc", contract_address=None, start=None, end=None):
         """
@@ -1633,17 +1640,14 @@ class AndroidCommands(commands.Commands):
         list_info.append(info)
 
     def get_btc_raw_tx(self, tx_hash):
-        try:
-            self._assert_wallet_isvalid()
-        except Exception as e:
-            raise BaseException(e)
+        self._assert_wallet_isvalid()
         tx = self.wallet.db.get_transaction(tx_hash)
         if not tx:
             local_tx = self.txdb.get_tx_info(self.wallet.get_addresses()[0])
             for temp_tx in local_tx:
                 if temp_tx[0] == tx_hash:
                     return self.get_tx_info_from_raw(temp_tx[3])
-            raise BaseException(_("Failed to get transaction details."))
+            raise Exception(_("Failed to get transaction details."))
         # tx = PartialTransaction.from_tx(tx)
         tx = copy.deepcopy(tx)
         try:
