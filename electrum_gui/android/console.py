@@ -2242,6 +2242,14 @@ class AndroidCommands(commands.Commands):
     def dapp_eth_rpc_info(self):
         return json.dumps(PyWalib.get_rpc_info())
 
+    def dapp_eth_keccak(self, message: str) -> str:
+        if message.startswith("0x"):
+            message_bytes = bytes.fromhex(eth_utils.remove_0x_prefix(message))
+        else:
+            message_bytes = message.encode()
+
+        return PyWalib.web3.keccak(message_bytes).hex()
+
     def sign_tx(self, tx, path=None, password=None):
         """
         Sign one transaction, for btc only
