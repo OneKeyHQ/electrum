@@ -268,8 +268,6 @@ public class Web3View extends WebView {
                 }
             } else if (!loadingError && loadInterface != null) {
                 loadInterface.onWebpageLoadComplete();
-            } else if (loadingError && loadInterface != null) {
-                loadInterface.onWebpageLoadError();
             }
 
             redirect = false;
@@ -288,8 +286,26 @@ public class Web3View extends WebView {
         public void onReceivedError(
                 WebView view, WebResourceRequest request, WebResourceError error) {
             loadingError = true;
+            if (request.isForMainFrame()) {
+                loadInterface.onWebpageLoadError();
+            }
             if (externalClient != null) {
                 externalClient.onReceivedError(view, request, error);
+            }
+        }
+
+        @Override
+        public void onReceivedHttpError(
+                WebView view, WebResourceRequest request, WebResourceResponse errorResponse) {
+            if (request.isForMainFrame() && request.getUrl().getPath().equals(view.getUrl())) {
+                int statusCode = errorResponse.getStatusCode();
+                if (404 == statusCode || 500 == statusCode) {
+                    loadingError = true;
+                    loadInterface.onWebpageLoadError();
+                }
+            }
+            if (externalClient != null) {
+                externalClient.onReceivedHttpError(view, request, errorResponse);
             }
         }
 
