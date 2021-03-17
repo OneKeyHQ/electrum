@@ -29,12 +29,12 @@
     NSString *fiatStr = [[model.fiat split:@" "].firstObject numStrPrecition:[kWalletManager getPrecision:@"fiat"]];
     self.moneyLabel.text = [NSString stringWithFormat:@"%@ %@", kWalletManager.currentFiatSymbol, fiatStr];
 
-    if (model.address.length && !model.isNativeToken) {
-        self.balanceLabel.text = [model.balance numStrPrecition:[kWalletManager getPrecision:model.coin]];
+    if (model.address.length && !model.isNativeToken) { // erc tokens
+        self.balanceLabel.text = [model.balance numStrPrecition:[kWalletManager getPrecision:@"token_eth"]];
         OKToken *token = [kOKTokenManager tokensWithAddress:model.address];
         [self.iconImageView sd_setImageWithURL:token.logoURI.toURL placeholderImage:[UIImage imageNamed:@"icon_ph"]];
-    } else {
-        self.balanceLabel.text = [model.balance numStrPrecition:[kWalletManager getPrecision:@"token_eth"]];
+    } else { // native tokens
+        self.balanceLabel.text = [model.balance numStrPrecition:[kWalletManager getPrecision:model.coin]];
         NSString *iconImageName = @"icon_ph";
         if ([model.coin.lowercaseString isEqualToString:@"btc"]) {
             iconImageName = @"token_btc";
