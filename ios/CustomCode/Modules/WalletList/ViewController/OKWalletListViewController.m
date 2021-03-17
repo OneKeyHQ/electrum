@@ -286,11 +286,13 @@
     OKWeakSelf(self)
     [MBProgressHUD showHUDAddedTo:weakself.view animated:YES];
     [kPyCommandsManager asyncCall:kInterface_switch_wallet parameter:@{@"name":kWalletManager.currentWalletInfo.name} callback:^(id  _Nonnull result) {
-        [MBProgressHUD showHUDAddedTo:weakself.view animated:YES];
+        [MBProgressHUD hideHUDForView:weakself.view animated:YES];
         if (result != nil) {
             [[NSNotificationCenter defaultCenter]postNotificationName:kNotiSelectWalletComplete object:nil];
             [self refreshListData];
-            [self dismissViewControllerAnimated:YES completion:nil];
+            [self dismissViewControllerAnimated:YES completion:^{
+
+            }];
         }
     }];
 }

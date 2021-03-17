@@ -9,10 +9,11 @@
 #import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
-
+@class OKTxTableViewCellModel;
 @interface OKTxDetailViewController : BaseViewController
 @property (nonatomic,copy)NSString *txDate;
 @property (nonatomic,copy)NSString *tx_hash;
+@property (nonatomic,strong)OKTxTableViewCellModel *model;
 + (instancetype)txDetailViewController;
 
 @end

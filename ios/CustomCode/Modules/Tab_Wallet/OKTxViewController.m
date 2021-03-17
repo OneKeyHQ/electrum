@@ -81,6 +81,11 @@
         cell = [[OKTxTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ID];
     }
     OKTxTableViewCellModel *model = self.txListArray[indexPath.row];
+    if (self.assetTableViewCellModel.contract_addr.length > 0) {
+        model.coinType = [NSString stringWithFormat:@"token_%@",self.coinType];
+    }else{
+        model.coinType = self.coinType;
+    }
     cell.model = model;
     return cell;
 }
@@ -88,6 +93,7 @@
 {
     OKTxTableViewCellModel *model = self.txListArray[indexPath.row];
     OKTxDetailViewController *txDetailVc = [OKTxDetailViewController txDetailViewController];
+    txDetailVc.model = model;
     txDetailVc.tx_hash = model.tx_hash;
     txDetailVc.txDate = model.date;
     [self.navigationController pushViewController:txDetailVc animated:YES];

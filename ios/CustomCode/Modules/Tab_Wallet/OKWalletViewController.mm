@@ -642,6 +642,11 @@
     OKTxListViewController *txListVc = [OKTxListViewController initViewControllerWithStoryboardName:@"Tab_Wallet"];
     txListVc.model = self.allAssetData[indexPath.row];
     txListVc.coinType = kWalletManager.currentWalletInfo.coinType;
+    if ([[kWalletManager.currentWalletInfo.coinType lowercaseString]isEqualToString:[txListVc.model.coinType lowercaseString]]) {
+        txListVc.tokenType = @"";
+    }else{
+        txListVc.tokenType = [txListVc.model.coinType uppercaseString];
+    }
     [self.navigationController pushViewController:txListVc animated:YES];
 }
 

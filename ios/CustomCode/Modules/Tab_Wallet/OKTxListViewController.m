@@ -30,6 +30,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *textMoneyLabel;
 @property (weak, nonatomic) IBOutlet UIView *topBgView;
 @property (nonatomic,assign)NSInteger count;
+@property (nonatomic,strong)OKButton *rightBtn;
 @end
 
 @implementation OKTxListViewController
@@ -44,12 +45,38 @@
 - (void)stupUI
 {
     [self setNavigationBarBackgroundColorWithClearColor];
-    self.title = self.coinType;
+    self.title = [self.model.coinType uppercaseString];
 
-    self.navigationItem.rightBarButtonItem = [UIBarButtonItem barButtonItemWithImage:[UIImage imageNamed:[NSString stringWithFormat:@"token_%@",[self.coinType lowercaseString]]] frame:CGRectMake(0, 0, 30, 30) target:self selector:@selector(rightBarButtonItemClick)];
+    _rightBtn = [OKButton buttonWithType:UIButtonTypeCustom];
+    _rightBtn.frame = CGRectMake(0, 0, 44, 44);
+    _rightBtn.layer.cornerRadius = 44 * 0.5;
+    _rightBtn.layer.masksToBounds = YES;
+    [_rightBtn addTarget:self action:@selector(handleRightBtnClicked:) forControlEvents:UIControlEventTouchUpInside];
+    [_rightBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.width.height.equalTo(@44);
+    }];
+
+    UIBarButtonItem *rightItem = [[UIBarButtonItem alloc] initWithCustomView:self.rightBtn];
+    self.navigationItem.rightBarButtonItem = rightItem;
+    NSArray *tokens = [[OKTokenManager sharedInstance]tokensFilterWith:(self.model.contract_addr ?:@"")];
+    NSString *imageName = [NSString stringWithFormat:@"token_%@",[self.coinType lowercaseString]];
+    if (tokens.count == 0) {
+        [self.rightBtn setImage:[UIImage imageNamed:imageName] forState:UIControlStateNormal];
+    }else{
+        OKToken *t = [tokens firstObject];
+        NSString *iconName = t.logoURI.length ?t.logoURI:imageName;
+        [self.rightBtn sd_setImageWithURL:[NSURL URLWithString:iconName]
+                               forState:UIControlStateNormal
+                       placeholderImage:[UIImage imageNamed:imageName]];;
+    }
 
     [self.sendCoinBtn setLayerRadius:15];
     [self.reciveCoinBtn setLayerRadius:15];
+}
+
+- (void)handleRightBtnClicked:(OKButton*)btn
+{
+    NSLog(@"handleRightBtnClicked");
 }
 
 - (void)viewDidLayoutSubviews
@@ -72,21 +99,12 @@
     OKWeakSelf(self)
     dispatch_async(dispatch_get_main_queue(), ^{
        // UI更新代码
-        NSDictionary *dataDict = [dict copy];
-        if ([kWalletManager isETHClassification:kWalletManager.currentWalletInfo.coinType] && ![kWalletManager isETHClassification:weakself.model.coinType]) {
-            NSArray *tokens = dict[@"tokens"];
-            for (NSDictionary *subDict in tokens) {
-                if ([[subDict safeStringForKey:@"coin"] isEqualToString:weakself.model.coinType]) {
-                    dataDict = subDict;
-                    break;
-                }
-            }
-            self.textBalanceLabel.text =  [NSString stringWithFormat:@"%@ %@",[dataDict safeStringForKey:@"balance"],[self.model.coinType uppercaseString]];
-            self.textMoneyLabel.text = [NSString stringWithFormat:@"≈%@",[dataDict safeStringForKey:@"fiat"]];
-        }else{
-            self.textBalanceLabel.text =  [NSString stringWithFormat:@"%@ %@",[dict safeStringForKey:@"balance"],[self.coinType uppercaseString]];
-            self.textMoneyLabel.text = [NSString stringWithFormat:@"≈%@",[dict safeStringForKey:@"fiat"]];;
+        NSString *coinType = [weakself.coinType uppercaseString];
+        if (weakself.tokenType.length > 0) {
+            coinType = [weakself.coinType uppercaseString];
         }
+        self.textBalanceLabel.text =  [NSString stringWithFormat:@"%@ %@",[dict safeStringForKey:@"balance"],coinType];
+        self.textMoneyLabel.text = [NSString stringWithFormat:@"≈%@",[dict safeStringForKey:@"fiat"]];
     });
 }
 
@@ -203,10 +221,12 @@
         OKMatchingInCirclesViewController *matchingVc = [OKMatchingInCirclesViewController matchingInCirclesViewController];
         matchingVc.type = OKMatchingTypeTransfer;
         matchingVc.where = OKMatchingFromWhereNav;
+        matchingVc.tokenCoinType = self.tokenType?:@"";
         [self.navigationController pushViewController:matchingVc animated:YES];
     }else{
         OKSendCoinViewController *sendCoinVc = [OKSendCoinViewController sendCoinViewController];
         sendCoinVc.coinType = kWalletManager.currentWalletInfo.coinType;
+        sendCoinVc.tokenCoinType = self.tokenType?:@"";
         [self.navigationController pushViewController:sendCoinVc animated:YES];
     }
 }
@@ -215,11 +235,13 @@
         OKMatchingInCirclesViewController *matchingVc = [OKMatchingInCirclesViewController matchingInCirclesViewController];
         matchingVc.type = OKMatchingTypeReceiveCoin;
         matchingVc.where = OKMatchingFromWhereNav;
+        matchingVc.tokenCoinType = self.tokenType?:@"";
         [self.navigationController pushViewController:matchingVc animated:YES];
     }else{
         OKReceiveCoinViewController *receiveCoinVc = [OKReceiveCoinViewController receiveCoinViewController];
         receiveCoinVc.coinType = kWalletManager.currentWalletInfo.coinType;
         receiveCoinVc.walletType = [kWalletManager getWalletDetailType];
+        receiveCoinVc.tokenCoinType = self.tokenType?:@"";
         [self.navigationController pushViewController:receiveCoinVc animated:YES];
     }
 }

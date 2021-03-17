@@ -372,6 +372,9 @@ static dispatch_once_t once;
     return _precisionDict;
 }
 
+
+/// key
+/// @param key    币种类型     如果是token   key = token_coinType   eg: token_eth
 - (NSInteger)getPrecision:(NSString *)key
 {
     NSString *p = [self.precisionDict safeStringForKey:[key lowercaseString]];

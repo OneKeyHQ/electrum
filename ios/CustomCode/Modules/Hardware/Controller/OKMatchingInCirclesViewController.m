@@ -297,6 +297,7 @@
             [MBProgressHUD hideHUDForView:self.view animated:YES];
             OKDeviceUpdateViewController *vc = [OKDeviceUpdateViewController controllerWithStoryboard];
             vc.mode = OKDeviceFirmwareInstallModeBootloader;
+            vc.forbidInteractivePopGestureRecognizer = YES;
             [weakself.navigationController pushViewController:vc animated:YES];
         });
         return;
@@ -384,6 +385,7 @@
                     OKSendCoinViewController *sendCoinVc = [OKSendCoinViewController sendCoinViewController];
                     sendCoinVc.coinType = kWalletManager.currentWalletInfo.coinType;
                     sendCoinVc.address = self.addressForTransfer;
+                    sendCoinVc.tokenCoinType = self.tokenCoinType;
                     [self.navigationController pushViewController:sendCoinVc animated:YES];
                 }else{
                     if (![deviceModel.deviceInfo.device_id isEqualToString:kWalletManager.currentWalletInfo.device_id]) {
@@ -409,6 +411,7 @@
                     OKReceiveCoinViewController *receiveCoinVc = [OKReceiveCoinViewController receiveCoinViewController];
                     receiveCoinVc.coinType = kWalletManager.currentWalletInfo.coinType;
                     receiveCoinVc.walletType = [kWalletManager getWalletDetailType];
+                    receiveCoinVc.tokenCoinType = self.tokenCoinType;
                     [self.navigationController pushViewController:receiveCoinVc animated:YES];
                 }else{
                     if (![deviceModel.deviceInfo.device_id isEqualToString:kWalletManager.currentWalletInfo.device_id]) {

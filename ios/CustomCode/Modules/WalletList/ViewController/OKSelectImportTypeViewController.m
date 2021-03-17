@@ -119,8 +119,11 @@
         OKSelectCoinTypeTableViewCellModel *model2 = [OKSelectCoinTypeTableViewCellModel new];
         model2.titleString = MyLocalizedString(@"Keystore import", nil);
         model2.iconName = @"keystore_import";
-
-        _coinTypeListArray = @[model,model1,model3,model2];
+        if ([kWalletManager isETHClassification:self.coinType]) {
+            _coinTypeListArray = @[model,model1,model3,model2];
+        }else{
+            _coinTypeListArray = @[model,model1,model3];
+        }
     }
     return _coinTypeListArray;
 }

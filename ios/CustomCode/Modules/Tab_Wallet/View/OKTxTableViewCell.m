@@ -27,7 +27,7 @@
     self.timeLabel.text = model.date;
     NSArray *amountArray = [model.amount componentsSeparatedByString:@"("];
     NSString *bStr = [NSString stringWithFormat:@"%@%@",[model.is_mine boolValue] == NO ? @"+":@"-" ,[amountArray firstObject]];
-    self.amountLabel.text = bStr;
+    self.amountLabel.text = [kTools decimalNumberHandlerWithValue:[NSDecimalNumber decimalNumberWithString:bStr] roundingMode:NSRoundDown scale:[kWalletManager getPrecision:model.coinType]].stringValue;
     self.addressLabel.text = model.address;
 
     if ([model.is_mine boolValue]) {

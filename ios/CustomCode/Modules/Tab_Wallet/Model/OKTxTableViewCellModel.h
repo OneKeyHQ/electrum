@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,copy) NSString* history;
 @property (nonatomic,copy) NSString* tx_status;
 @property (nonatomic,copy) NSString* address;
+@property (nonatomic,copy) NSString *coinType;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -179,7 +179,7 @@
         }
         NSDictionary *dict = [kPyCommandsManager callInterface:kInterfaceget_default_fee_info parameter:paramter];
         if (dict == nil || dict.count == 0) {
-            [kTools tipMessage:MyLocalizedString(@"Failed to get the rate", nil)];
+            //[kTools tipMessage:MyLocalizedString(@"Failed to get the rate", nil)];
             return;
         }
         weakself.defaultFeeInfoModel = [OKDefaultFeeInfoModel mj_objectWithKeyValues:dict];
@@ -257,6 +257,7 @@
         // UI更新代码
         if (tokensArray != nil && tokensArray.count > 0 ) {
             [weakself.coinTypeBtn status:OKButtonStatusEnabled];
+
         }else{
             [weakself.coinTypeBtn status:OKButtonStatusDisabled];
         }
@@ -377,6 +378,9 @@
     }
     NSDecimalNumber *balanceNum = [NSDecimalNumber decimalNumberWithString:weakself.balanceLabel.text];
     NSDecimalNumber *feeNum = [NSDecimalNumber decimalNumberWithString:fee];
+    if (weakself.selectedToken != nil && [kWalletManager isETHClassification:weakself.coinType]) {
+        feeNum = [NSDecimalNumber decimalNumberWithString:@"0"];
+    }
     NSDecimalNumber *resultNum = [balanceNum decimalNumberBySubtracting:feeNum];
     if ([resultNum compare:[NSDecimalNumber decimalNumberWithString:@"0"]] == NSOrderedAscending) {
         [kTools tipMessage:MyLocalizedString(@"Lack of balance", nil)];
@@ -393,7 +397,11 @@
     OKTokenSelectController *tokenSelectVc = [OKTokenSelectController controllerWithStoryboard];
     tokenSelectVc.data = self.tokensDict;
     tokenSelectVc.selectCallback = ^(OKAllAssetsCellModel * _Nonnull selected) {
-        weakself.selectedToken = selected;
+        if (selected.isNativeToken == NO) {
+            weakself.selectedToken = selected;
+        }else{
+            weakself.selectedToken = nil;
+        }
         [weakself.coinTypeBtn setTitle:selected.coin forState:UIControlStateNormal];
         weakself.balanceLabel.text =  selected.balance;
         weakself.coinTypeLabel.text = [selected.coin uppercaseString];
@@ -541,6 +549,10 @@
                             }];
                             [weakself.navigationController pushViewController:transferCompleteVc animated:YES];
                         });
+                    }else{
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [MBProgressHUD hideHUDForView:weakself.view animated:YES];
+                        });
                     }
                 });
                 return;
@@ -625,18 +637,19 @@
             @"value":weakself.amountTextField.text,
             @"gas_price":[dict safeStringForKey:@"gas_price"],
             @"gas_limit":[dict safeStringForKey:@"gas_limit"],
-            @"path":kBluetooth_iOS
+            @"password":pwd
         } mutableCopy];
         if (weakself.selectedToken != nil) {
             [paramter addEntriesFromDictionary:@{
                 @"contract_addr":weakself.selectedToken.address
             }];
         }
-        id result =  [kPyCommandsManager callInterface:kInterfacesign_eth_tx parameter:paramter];
-        if (result != nil) {
-            OKWeakSelf(self)
-            [[NSNotificationCenter defaultCenter]postNotificationName:kNotiSendTxComplete object:nil];
-            dispatch_async(dispatch_get_main_queue(), ^{
+        [MBProgressHUD showHUDAddedTo:weakself.view animated:YES];
+        [kPyCommandsManager asyncCall:kInterfacesign_eth_tx parameter:paramter callback:^(id  _Nonnull result) {
+            [MBProgressHUD hideHUDForView:weakself.view animated:YES];
+            if (result != nil) {
+                OKWeakSelf(self)
+                [[NSNotificationCenter defaultCenter]postNotificationName:kNotiSendTxComplete object:nil];
                 if (weakself.sendTxPreInfoVc != nil) {
                     [weakself.sendTxPreInfoVc closeView];
                 }
@@ -646,8 +659,8 @@
                     [weakself.navigationController pushViewController:txDetailVc animated:YES];
                 }];
                 [weakself.navigationController pushViewController:transferCompleteVc animated:YES];
-            });
-        }
+            }
+        }];
     }
 }
 
@@ -702,12 +715,16 @@
 #pragma mark - 加载矿工费（BTC）
 - (void)loadFee:(void(^)(void))block
 {
+    OKWeakSelf(self)
     if ([kWalletManager isETHClassification:self.coinType]) {
         block();
         return;
     }
+    if (weakself.isClickBiggest) {
+        block();
+        return;
+    }
 
-    OKWeakSelf(self)
     NSString *address = [weakself.addressTextField.text copy];
     NSString *amount = [weakself.amountTextField.text copy];
 
@@ -740,6 +757,8 @@
         }
     });
 }
+
+
 #pragma mark - 加载快矿工费（BTC）
 - (void)loadFastFee:(NSString *)address amount:(NSString *)amount
 {

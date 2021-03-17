@@ -147,6 +147,7 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
 
     [self.view addSubview:self.loadingView];
     self.loadingView.hidden = NO;
+
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -206,6 +207,9 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
             vc.framewareDownloadURL = url;
             vc.type = type;
             vc.doneCallback = ^(BOOL sucess) {
+                if (!sucess) {
+                    [kOKBlueManager disconnectAllPeripherals];
+                }
                 [weakself.navigationController popViewControllerAnimated:YES];
             };
             BaseNavigationController *nav = [[BaseNavigationController alloc]initWithRootViewController:vc];
@@ -262,6 +266,12 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
     [self.tableView reloadData];
 }
 
-
+- (void)backToPrevious
+{
+    if (self.mode == OKDeviceFirmwareInstallModeBootloader) {
+        [self.navigationController popViewControllerAnimated:YES];
+        [kOKBlueManager disconnectAllPeripherals];
+    }
+}
 
 @end

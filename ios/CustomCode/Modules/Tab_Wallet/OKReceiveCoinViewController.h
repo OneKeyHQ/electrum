@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OKReceiveCoinViewController : BaseViewController
 + (instancetype)receiveCoinViewController;
 @property (nonatomic,copy)NSString *coinType;
+@property (nonatomic,copy)NSString *tokenCoinType;
 @property (nonatomic,assign)OKWalletType walletType;
 @end
 

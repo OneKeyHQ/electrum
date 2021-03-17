@@ -7,6 +7,7 @@
 //
 
 #import "OKTxDetailViewController.h"
+#import "OKTxTableViewCellModel.h"
 
 @interface OKTxDetailViewController ()
 @property (weak, nonatomic) IBOutlet UIImageView *statusIcon;
@@ -91,8 +92,12 @@
 
 - (void)refreshUI
 {
-    NSString *amountStr = [[[self.txInfo safeStringForKey:@"amount"] componentsSeparatedByString:@" ("]firstObject];
-    self.amountLabel.text = [amountStr containsString:@"-"] ? amountStr : [NSString stringWithFormat:@"+%@",amountStr];
+    NSString *amountStr = [[self.model.amount componentsSeparatedByString:@" ("]firstObject];
+    if ([amountStr doubleValue] <= 0) {
+        self.amountLabel.text = amountStr;
+    }else{
+        self.amountLabel.text = [self.model.is_mine integerValue] == NO ? [NSString stringWithFormat:@"+%@",amountStr] : [NSString stringWithFormat:@"-%@",amountStr];
+    }
     self.statusLabel.text = [self getStatusLabel:[self.txInfo safeStringForKey:@"tx_status"]];
     self.txNumLabel.text = [self.txInfo safeStringForKey:@"txid"];
 
@@ -109,16 +114,26 @@
         [self.toAddressLabel appendImage:[UIImage imageNamed:@"copy_small"]];
 
     }else if ([kWalletManager isETHClassification:coinType]){
-        NSArray *input_addr_array = self.txInfo[@"input_addr"];
-        NSString *input_addr = [input_addr_array firstObject];
-        [self.fromAddressLabel appendText:input_addr];
+        NSDictionary *tx = [self.txInfo[@"tx"] mj_JSONObject];
+
+        NSArray *vinArray =  tx[@"vin"];
+        NSDictionary *vin = [vinArray firstObject];
+        NSArray *vinaddress = vin[@"addresses"];
+        [self.fromAddressLabel appendText:[vinaddress firstObject]];
         [self.fromAddressLabel appendImage:[UIImage imageNamed:@"copy_small"]];
 
-        NSArray *output_addr_array = self.txInfo[@"output_addr"];
-        NSString *output_addr = [output_addr_array firstObject];
-        [self.toAddressLabel appendText:output_addr];
-        [self.toAddressLabel appendImage:[UIImage imageNamed:@"copy_small"]];
-
+        NSArray *tokenTransfersArray = [tx[@"tokenTransfers"] mj_JSONObject];
+        if (tokenTransfersArray.count == 0 || tokenTransfersArray == nil) {
+            NSArray *voutArray =  tx[@"vout"];
+            NSDictionary *vout = [voutArray firstObject];
+            NSArray *voutaddress = vout[@"addresses"];
+            [self.toAddressLabel appendText:[voutaddress firstObject]];
+            [self.toAddressLabel appendImage:[UIImage imageNamed:@"copy_small"]];
+        }else{
+            NSDictionary *tokenInfo = [tokenTransfersArray firstObject];
+            [self.toAddressLabel appendText:tokenInfo[@"to"]];
+            [self.toAddressLabel appendImage:[UIImage imageNamed:@"copy_small"]];
+        }
     }
     self.blockNumLabel.text = [self.txInfo safeStringForKey:@"height"];
     NSString *feeresult = [self.txInfo safeStringForKey:@"fee"];
