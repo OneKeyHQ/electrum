@@ -120,10 +120,10 @@ static const CGFloat MASK_ALPHA = 0.4;
         [[NSNotificationCenter defaultCenter] postNotificationName:kNotiSelectWalletComplete object:nil];
         self.walletSelected = YES;
         self.loadingIndicator.hidden = YES;
-        [self dismiss];
         if (self.walletChangedCallback) {
             self.walletChangedCallback(wallet);
         }
+        [self dismiss];
     }];
 }
 

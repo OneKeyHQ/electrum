@@ -55,6 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL backup_only; // 是否是特殊设备，只用来备份，没有额外功能支持
 @property (nonatomic, copy) NSString *onekey_version; // 硬件的软件版本（俗称固件），仅供APP使用（从2.0.1开始加入）
 @property (nonatomic, strong)NSArray *capabilities;
+@property (nonatomic, copy) NSString *serial_num; // since 2.0.7
 
 @property (nonatomic, copy) NSString *deviceSysVersion; // 合成的系统固件版本号 i.e. @"1.2.3"
 @property (nonatomic, assign) BOOL verifiedDevice;

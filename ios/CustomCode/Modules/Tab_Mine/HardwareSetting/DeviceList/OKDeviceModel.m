@@ -40,6 +40,7 @@
         if (newValue == oldValue || [newValue isEqual:oldValue]) {
             continue;
         }
+
         [_deviceInfo setValue:newValue forKey:key];
         [_json setValue:newValue forKey:key];
         changed = YES;

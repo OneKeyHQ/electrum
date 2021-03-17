@@ -40,6 +40,11 @@
   [JPUSHService registerDeviceToken:deviceToken];
 }
 
+- (void)applicationDidBecomeActive:(UIApplication *)application {
+    UIApplication.sharedApplication.applicationIconBadgeNumber = 0;
+    [JPUSHService setBadge:0];
+}
+
 - (void)setupLanague
 {
     if (![[NSUserDefaults standardUserDefaults] objectForKey:kOnekey_language]) {

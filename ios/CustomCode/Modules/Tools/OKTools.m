@@ -91,7 +91,7 @@
 }
 - (void)debugTipMessage:(NSString *)msg {
 #ifdef DEBUG
-    [self tipMessage:[@"DEBUG: " stringByAppendingString:msg]];
+    [self tipMessage:[@"⚠️DEBUG: " stringByAppendingString:msg]];
 #endif
 }
 

@@ -17,4 +17,13 @@
     return [NSString stringWithFormat:@"%li.%li.%li", (long)self.major_version, (long)self.minor_version, (long)self.patch_version];
 }
 
+#pragma mark - Override
+- (id)valueForUndefinedKey:(NSString *)key {
+    [kTools debugTipMessage:[NSString stringWithFormat:@"OKDeviceInfoModel valueForUndefinedKey %@",key]];
+    return nil;
+}
+
+- (void)setValue:(id)value forUndefinedKey:(NSString *)key {
+    [kTools debugTipMessage:[NSString stringWithFormat:@"OKDeviceInfoModel setValue:forUndefinedKey: %@ = %@",key,value]];
+}
 @end
