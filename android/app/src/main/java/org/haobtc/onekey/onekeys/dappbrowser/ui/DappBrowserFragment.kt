@@ -862,9 +862,8 @@ class DappBrowserFragment : BaseFragment(),
   fun setDappTitle(title: String?) {
     if (mDAppBean == null) {
       mBinding.tvTitle.text = removeHTTPProtocol(title ?: web3.url)
-    }
-    mDAppBean?.let { dappBean ->
-      if (title != null && mDAppBean?.url?.contains(title) == true) {
+    } else {
+      if (title != null) {
         mBinding.tvTitle.text = mDAppBean?.name
       } else {
         mBinding.tvTitle.text = removeHTTPProtocol(title ?: web3.url)
