@@ -17,6 +17,7 @@ import org.haobtc.onekey.activities.base.MyApplication
 import org.haobtc.onekey.bean.WalletAccountInfo
 import org.haobtc.onekey.business.assetsLogo.AssetsLogo
 import org.haobtc.onekey.databinding.DialogDappSettingSheetBinding
+import org.haobtc.onekey.extensions.cutTheLast
 import org.haobtc.onekey.viewmodel.AppWalletViewModel
 
 class DappSettingSheetDialog : BottomSheetDialogFragment(), View.OnClickListener {
@@ -110,7 +111,7 @@ class DappSettingSheetDialog : BottomSheetDialogFragment(), View.OnClickListener
   }
 
   private fun setAccount(walletInfo: WalletAccountInfo) {
-    mBinding.tvWalletName.text = walletInfo.name
+    mBinding.tvWalletName.text = walletInfo.address.cutTheLast(4)
     mAssetsLogo.getLogoResources(walletInfo.coinType).apply {
       mBinding.ivTokenLogo.setImageDrawable(ResourcesCompat.getDrawable(resources, this, null))
     }

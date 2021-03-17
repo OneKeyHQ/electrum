@@ -19,3 +19,15 @@ fun String.interceptDecimal(decimal: Int = SHOW_DECIMAL_PLACES): String {
     this
   }
 }
+
+/**
+ * 截取字符串后 N 位
+ */
+@JvmOverloads
+fun String.cutTheLast(digits: Int = 4): String {
+  if (this.length > digits) {
+    return this.substring(this.length - digits)
+  } else {
+    return this
+  }
+}

@@ -46,6 +46,7 @@ import org.haobtc.onekey.databinding.FragmentDappBrowserBinding
 import org.haobtc.onekey.event.ButtonRequestEvent
 import org.haobtc.onekey.event.ChangePinEvent
 import org.haobtc.onekey.exception.PyEnvException
+import org.haobtc.onekey.extensions.cutTheLast
 import org.haobtc.onekey.manager.PyEnv
 import org.haobtc.onekey.onekeys.dappbrowser.URLLoadInterface
 import org.haobtc.onekey.onekeys.dappbrowser.Web3View
@@ -280,7 +281,7 @@ class DappBrowserFragment : BaseFragment(),
     mAppWalletViewModel.currentWalletAccountInfo.observe(viewLifecycleOwner) {
       val drawable = ResourcesCompat.getDrawable(resources, mAssetsLogo.getLogoResources(it?.coinType), null)
       mBinding.ivTokenLogo.setImageDrawable(drawable)
-      mBinding.tvWalletName.text = it?.name ?: getString(R.string.title_select_account)
+      mBinding.tvWalletName.text = it?.address?.cutTheLast(4) ?: getString(R.string.title_select_account)
 
       it?.let {
         refreshEvent()

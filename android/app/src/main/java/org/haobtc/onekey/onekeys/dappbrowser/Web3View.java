@@ -76,8 +76,13 @@ public class Web3View extends WebView {
         webViewClient = new Web3ViewClient(jsInjectorClient, new UrlHandlerManager());
         WebSettings webSettings = getSettings();
         webSettings.setJavaScriptEnabled(true);
+        if (BuildConfig.DEBUG) {
+            webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+        }
+        webSettings.setJavaScriptEnabled(true);
         webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
-        webSettings.setBuiltInZoomControls(true);
+        webSettings.setSupportZoom(false);
+        webSettings.setBuiltInZoomControls(false);
         webSettings.setDisplayZoomControls(false);
         webSettings.setUseWideViewPort(true);
         webSettings.setLoadWithOverviewMode(true);
