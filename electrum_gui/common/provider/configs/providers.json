@@ -73,7 +73,7 @@
   "theco": [
     {
       "class": "Geth",
-      "url": "https://http-testnet.hecochain.com"
+      "url": "http://47.243.17.171:18545"
     }
   ]
 }

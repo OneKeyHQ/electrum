@@ -34,5 +34,49 @@
       {"cgk": "https://api.coingecko.com"}
     ],
     "GasServer": "https://www.gasnow.org/api/v3/gas/price?utm_source=onekey"
+  },
+  "heco": {
+    "id": "heco",
+    "name": "Huobi ECO Chain",
+    "coinId": 60,
+    "addressType": 44,
+    "symbol": "HECO",
+    "decimals": 18,
+    "blockchain": "Heco",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "derived_info": "",
+    "Provider": [
+      {"mainnet": "https://http-mainnet-node.huobichain.com", "chainid": "128"},
+      {"testnet": "http://47.243.17.171:18545", "chainid": "128"}
+    ],
+    "TxliServer": [
+      {"onekey-mainnet": "https://heco1.onekey.so/api/v2/"}
+    ],
+    "Market": [
+    ],
+    "GasServer": ""
+  },
+  "bsc": {
+    "id": "bsc",
+    "name": "Binance Smart Chain",
+    "coinId": 60,
+    "addressType": 44,
+    "symbol": "BSC",
+    "decimals": 18,
+    "blockchain": "Bsc",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1Extended",
+    "derived_info": "",
+    "Provider": [
+      {"mainnet": "https://bsc-dataseed1.binance.org", "chainid": "56"},
+      {"testnet": "https://data-seed-prebsc-2-s1.binance.org:8545", "chainid": "97"}
+    ],
+    "TxliServer": [
+      {"onekey-mainnet": "https://bsc1.onekey.so/api/v2/"}
+    ],
+    "Market": [
+    ],
+    "GasServer": ""
   }
 }

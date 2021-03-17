@@ -13,8 +13,8 @@
   },
   {
     "chain_code": "theco",
-    "name": "Huobi ECO Chain Test Network",
+    "name": "Fork Huobi ECO Chain",
     "fee_code": "theco",
-    "chain_id": "256"
+    "chain_id": "128"
   }
 ]
