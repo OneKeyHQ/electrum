@@ -31,6 +31,7 @@
 @property (weak, nonatomic) IBOutlet UIView *topBgView;
 @property (nonatomic,assign)NSInteger count;
 @property (nonatomic,strong)OKButton *rightBtn;
+
 @end
 
 @implementation OKTxListViewController
@@ -51,6 +52,7 @@
     _rightBtn.frame = CGRectMake(0, 0, 44, 44);
     _rightBtn.layer.cornerRadius = 44 * 0.5;
     _rightBtn.layer.masksToBounds = YES;
+    _rightBtn.imageView.contentMode = UIViewContentModeScaleToFill;
     [_rightBtn addTarget:self action:@selector(handleRightBtnClicked:) forControlEvents:UIControlEventTouchUpInside];
     [_rightBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.width.height.equalTo(@44);
@@ -99,12 +101,26 @@
     OKWeakSelf(self)
     dispatch_async(dispatch_get_main_queue(), ^{
        // UI更新代码
-        NSString *coinType = [weakself.coinType uppercaseString];
-        if (weakself.tokenType.length > 0) {
-            coinType = [weakself.coinType uppercaseString];
+        NSDictionary *dataDict = [dict copy];
+        if ([kWalletManager isETHClassification:kWalletManager.currentWalletInfo.coinType] && ![kWalletManager isETHClassification:weakself.model.coinType]) {
+            NSArray *tokens = dict[@"tokens"];
+            for (NSDictionary *subDict in tokens) {
+                if ([[subDict safeStringForKey:@"coin"] isEqualToString:weakself.model.coinType]) {
+                    dataDict = subDict;
+                    break;
+                }
+            }
+            NSString *amountStr = [NSString stringWithFormat:@"%@ %@",[dataDict safeStringForKey:@"balance"],[self.model.coinType uppercaseString]];
+            NSString *coinTypeStr = [[[amountStr componentsSeparatedByString:@" "] lastObject] uppercaseString];
+            NSString *key = [NSString stringWithFormat:@"token_%@",[weakself.coinType lowercaseString]];
+            self.textBalanceLabel.text =  [NSString stringWithFormat:@"%@ %@",[kTools decimalNumberHandlerWithValue:[NSDecimalNumber decimalNumberWithString:amountStr] roundingMode:NSRoundDown scale:[kWalletManager getPrecision:key]].stringValue,coinTypeStr];
+            self.textMoneyLabel.text = [NSString stringWithFormat:@"≈%@",[dataDict safeStringForKey:@"fiat"]];
+        }else{
+            NSString *amountStr = [NSString stringWithFormat:@"%@ %@",[dict safeStringForKey:@"balance"],[self.coinType uppercaseString]];
+            NSString *coinTypeStr = [[[amountStr componentsSeparatedByString:@" "] lastObject] uppercaseString];
+            self.textBalanceLabel.text =  [NSString stringWithFormat:@"%@ %@",[kTools decimalNumberHandlerWithValue:[NSDecimalNumber decimalNumberWithString:amountStr] roundingMode:NSRoundDown scale:[kWalletManager getPrecision:[self.coinType lowercaseString]]].stringValue,coinTypeStr];
+            self.textMoneyLabel.text = [NSString stringWithFormat:@"≈%@",[dict safeStringForKey:@"fiat"]];
         }
-        self.textBalanceLabel.text =  [NSString stringWithFormat:@"%@ %@",[dict safeStringForKey:@"balance"],coinType];
-        self.textMoneyLabel.text = [NSString stringWithFormat:@"≈%@",[dict safeStringForKey:@"fiat"]];
     });
 }
 
@@ -236,12 +252,14 @@
         matchingVc.type = OKMatchingTypeReceiveCoin;
         matchingVc.where = OKMatchingFromWhereNav;
         matchingVc.tokenCoinType = self.tokenType?:@"";
+        matchingVc.tokenAddr = self.model.contract_addr.length>0 ? self.model.contract_addr:@"";
         [self.navigationController pushViewController:matchingVc animated:YES];
     }else{
         OKReceiveCoinViewController *receiveCoinVc = [OKReceiveCoinViewController receiveCoinViewController];
         receiveCoinVc.coinType = kWalletManager.currentWalletInfo.coinType;
         receiveCoinVc.walletType = [kWalletManager getWalletDetailType];
         receiveCoinVc.tokenCoinType = self.tokenType?:@"";
+        receiveCoinVc.tokenCoinAddr = self.model.contract_addr.length>0 ? self.model.contract_addr:@"";
         [self.navigationController pushViewController:receiveCoinVc animated:YES];
     }
 }

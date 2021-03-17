@@ -31,10 +31,22 @@ static dispatch_once_t once;
     return [OKStorageManager loadFromUserDefaults:kCurrentBtcBrowser];
 }
 
+- (void)setCurrentEthBrowser:(NSString *)currentEthBrowser
+{
+    [OKStorageManager saveToUserDefaults:currentEthBrowser key:kCurrentEthBrowser];
+}
+
+- (NSString *)currentEthBrowser
+{
+    return [OKStorageManager loadFromUserDefaults:kCurrentEthBrowser];
+}
+
+
 - (void)setCurrentMarketSource:(NSString *)currentMarketSource
 {
     [OKStorageManager saveToUserDefaults:currentMarketSource key:kCurrentMarketSource];
 }
+
 - (NSString *)currentMarketSource
 {
     return [OKStorageManager loadFromUserDefaults:kCurrentMarketSource];
@@ -113,6 +125,15 @@ static dispatch_once_t once;
     }
     return _btcBrowserList;
 }
+
+- (NSArray *)ethBrowserList
+{
+    if (!_ethBrowserList) {
+        _ethBrowserList = [NSArray arrayWithContentsOfFile:[[NSBundle mainBundle]pathForResource:@"ETHBrowser" ofType:@"plist"]];
+    }
+    return _ethBrowserList;
+}
+
 
 - (void)setPinInputMethod:(OKDevicePINInputMethod)pinInputMethod {
     [OKStorageManager saveToUserDefaults:@(pinInputMethod) key:kPinInputMethod];

@@ -57,8 +57,9 @@
 
 - (void)backToPrevious
 {
+    OKWeakSelf(self)
     [self.OK_TopViewController dismissViewControllerWithCount:1 animated:YES complete:^{
-
+        [weakself.navigationController popToRootViewControllerAnimated:YES];
     }];
 }
 
@@ -136,7 +137,9 @@
                 }];
                 [self.OK_TopViewController.navigationController pushViewController:biologicalVc animated:YES];
             }else{
+                OKWeakSelf(self)
                 [self.OK_TopViewController dismissToViewControllerWithClassName:@"OKWalletViewController" animated:YES complete:^{
+                    [weakself.navigationController popToRootViewControllerAnimated:YES];
                     [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"pwd":weakself.pwd,@"backupshow":@"1"}];
                 }];
             }

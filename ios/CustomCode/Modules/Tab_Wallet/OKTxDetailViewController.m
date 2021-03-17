@@ -190,6 +190,9 @@
 {
     NSString *txId = [self.txInfo safeStringForKey:@"txid"];
     NSString *url = [NSString stringWithFormat:@"%@%@",kUserSettingManager.currentBtcBrowser,txId];
+    if ([kWalletManager isETHClassification:kWalletManager.currentWalletInfo.coinType]) {
+        url = [NSString stringWithFormat:@"%@%@",kUserSettingManager.currentEthBrowser,txId];
+    }
     WebViewVC *vc = [WebViewVC loadWebViewControllerWithTitle:nil url:url];
     [self.navigationController pushViewController:vc animated:YES];
 }

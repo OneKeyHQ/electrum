@@ -160,11 +160,15 @@
     }
 
 
-    //设置默认的浏览器
+    //设置默认的BTC浏览器
     if (kUserSettingManager.currentBtcBrowser == nil || kUserSettingManager.currentBtcBrowser.length == 0) {
         [kUserSettingManager setCurrentBtcBrowser:kUserSettingManager.btcBrowserList.firstObject];
     }
 
+    //设置默认的ETH浏览器
+    if (kUserSettingManager.currentEthBrowser == nil || kUserSettingManager.currentEthBrowser.length == 0) {
+        [kUserSettingManager setCurrentEthBrowser:kUserSettingManager.ethBrowserList.firstObject];
+    }
 
     [kPyCommandsManager callInterface:kInterfaceset_rbf parameter:@{@"status_rbf":@"1"}];
     [kPyCommandsManager callInterface:kInterfaceset_unconf parameter:@{@"x":@"1"}];
@@ -229,7 +233,7 @@
     if (self.notiAssetModel.tokens.count != 0) {
         for (OKTokenAssetModel *model in self.notiAssetModel.tokens) {
             OKAssetTableViewCellModel *tokenModel = [OKAssetTableViewCellModel new];
-            NSString *key = [NSString stringWithFormat:@"token_%@",model.coin];
+            NSString *key = [NSString stringWithFormat:@"token_%@",[coinModel.coinType lowercaseString]];
             tokenModel.balance = [kTools decimalNumberHandlerWithValue:[NSDecimalNumber decimalNumberWithString:model.balance] roundingMode:NSRoundDown scale:[kWalletManager getPrecision:key]].stringValue;
             tokenModel.coinType = model.coin;
             tokenModel.money = model.fiat;

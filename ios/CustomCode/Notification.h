@@ -37,6 +37,7 @@
 
 #define kUserSetingSysServerComplete            @"kUserSetingSysServerComplete"
 #define kUserSetingBtcBComplete                 @"kUserSetingBtcBComplete"
+#define kUserSetingEthBComplete                 @"kUserSetingEthBComplete"
 #define kUserSetingMarketSource                 @"kUserSetingMarketSource"
 #define kUserSetingElectrumServer               @"kUserSetingElectrumServer"
 

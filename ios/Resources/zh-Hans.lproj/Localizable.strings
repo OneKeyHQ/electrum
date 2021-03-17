@@ -560,3 +560,6 @@
 "Transaction format error" = "交易格式错误";
 "selectAccount" = "选择账户";
 "Keystore export" = "Keystore 导出";
+"The Bluetooth connection is abnormal. Please try again" = "蓝牙连接异常，请重试";
+"Block Browser (ETH)" = "区块浏览器（ETH）";
+"Block Browser (ETH) USES your favorite browser to view transactions on the chain" = "区块浏览器（ETH） \n\n使用您喜欢的浏览器查看链上交易信息";

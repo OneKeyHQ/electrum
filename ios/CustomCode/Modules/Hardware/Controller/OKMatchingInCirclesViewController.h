@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 // 当 type = OKMatchingTypeTransfer 时使用
 @property (nonatomic, copy, nullable)NSString *addressForTransfer;
 @property (nonatomic,copy)NSString *tokenCoinType;
+@property (nonatomic,copy)NSString *tokenAddr;
 
 @end
 

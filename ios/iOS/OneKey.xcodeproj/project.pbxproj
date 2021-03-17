@@ -446,6 +446,9 @@
 		8864AEB225E6081100459C4E /* OKSelectAssetTypeModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 8864AEAA25E6081100459C4E /* OKSelectAssetTypeModel.m */; };
 		8864AEB325E6081100459C4E /* OKSelectAssetTypeTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8864AEAC25E6081100459C4E /* OKSelectAssetTypeTableViewCell.m */; };
 		8864AEB425E6081100459C4E /* OKSelectAssetTypeTableViewCell.h in Headers */ = {isa = PBXBuildFile; fileRef = 8864AEAD25E6081100459C4E /* OKSelectAssetTypeTableViewCell.h */; };
+		88B4AAE32601DA2A0048DA3E /* ETHBrowser.plist in Resources */ = {isa = PBXBuildFile; fileRef = 88B4AAE22601DA2A0048DA3E /* ETHBrowser.plist */; };
+		88B4AAE62601DA580048DA3E /* OKBrowserETHTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88B4AAE42601DA580048DA3E /* OKBrowserETHTableViewController.m */; };
+		88B4AAE72601DA580048DA3E /* OKBrowserETHTableViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 88B4AAE52601DA580048DA3E /* OKBrowserETHTableViewController.h */; };
 		88D0414825F61DAF0056C7F0 /* OKWalletInputFeeViewCallBackModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 88D0414625F61DAF0056C7F0 /* OKWalletInputFeeViewCallBackModel.h */; };
 		88D0414925F61DAF0056C7F0 /* OKWalletInputFeeViewCallBackModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 88D0414725F61DAF0056C7F0 /* OKWalletInputFeeViewCallBackModel.m */; };
 		88F80BF425F72C480095954F /* OKTokenAssetModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 88F80BF225F72C480095954F /* OKTokenAssetModel.h */; };
@@ -1083,6 +1086,9 @@
 		8864AEAA25E6081100459C4E /* OKSelectAssetTypeModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKSelectAssetTypeModel.m; sourceTree = "<group>"; };
 		8864AEAC25E6081100459C4E /* OKSelectAssetTypeTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKSelectAssetTypeTableViewCell.m; sourceTree = "<group>"; };
 		8864AEAD25E6081100459C4E /* OKSelectAssetTypeTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKSelectAssetTypeTableViewCell.h; sourceTree = "<group>"; };
+		88B4AAE22601DA2A0048DA3E /* ETHBrowser.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = ETHBrowser.plist; sourceTree = "<group>"; };
+		88B4AAE42601DA580048DA3E /* OKBrowserETHTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKBrowserETHTableViewController.m; sourceTree = "<group>"; };
+		88B4AAE52601DA580048DA3E /* OKBrowserETHTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKBrowserETHTableViewController.h; sourceTree = "<group>"; };
 		88D0414625F61DAF0056C7F0 /* OKWalletInputFeeViewCallBackModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKWalletInputFeeViewCallBackModel.h; sourceTree = "<group>"; };
 		88D0414725F61DAF0056C7F0 /* OKWalletInputFeeViewCallBackModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKWalletInputFeeViewCallBackModel.m; sourceTree = "<group>"; };
 		88D7404B9FF067F44DABF936 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = None; name = LaunchScreen.storyboard; path = ../Resources/LaunchScreen.storyboard; sourceTree = SOURCE_ROOT; };
@@ -1794,28 +1800,30 @@
 			isa = PBXGroup;
 			children = (
 				8814233325B18EA900961668 /* OKNetSetingViewController.h */,
-				8814233425B18EA900961668 /* OKElectrumNodeViewController.m */,
-				8814233525B18EA900961668 /* OKElectrumNodeModel.m */,
-				8814233625B18EA900961668 /* OKNetTableViewCell.h */,
-				8814233725B18EA900961668 /* OKProxyServerModel.m */,
-				8814233825B18EA900961668 /* OKProxyServerTableViewController.m */,
-				8814233925B18EA900961668 /* OKBrowserBTCTableViewController.m */,
-				8814233A25B18EA900961668 /* OKElectrumNodeTableViewCell.h */,
-				8814233B25B18EA900961668 /* OKTheMarketViewController.h */,
-				8814233C25B18EA900961668 /* OKNetTableViewCellModel.m */,
-				8814233D25B18EA900961668 /* OKSocketTypeSelectController.m */,
-				8814233E25B18EA900961668 /* OKElectrumNodeModel.h */,
-				8814233F25B18EA900961668 /* OKElectrumNodeViewController.h */,
 				8814234025B18EA900961668 /* OKNetSetingViewController.m */,
-				8814234125B18EA900961668 /* OKBrowserBTCTableViewController.h */,
+				8814233F25B18EA900961668 /* OKElectrumNodeViewController.h */,
+				8814233425B18EA900961668 /* OKElectrumNodeViewController.m */,
+				8814234925B18EA900961668 /* OKSocketTypeSelectController.h */,
+				8814233D25B18EA900961668 /* OKSocketTypeSelectController.m */,
+				8814233625B18EA900961668 /* OKNetTableViewCell.h */,
+				8814234525B18EA900961668 /* OKNetTableViewCell.m */,
 				8814234225B18EA900961668 /* OKProxyServerTableViewController.h */,
+				8814233825B18EA900961668 /* OKProxyServerTableViewController.m */,
+				8814234125B18EA900961668 /* OKBrowserBTCTableViewController.h */,
+				8814233925B18EA900961668 /* OKBrowserBTCTableViewController.m */,
+				88B4AAE52601DA580048DA3E /* OKBrowserETHTableViewController.h */,
+				88B4AAE42601DA580048DA3E /* OKBrowserETHTableViewController.m */,
+				8814233B25B18EA900961668 /* OKTheMarketViewController.h */,
+				8814234725B18EA900961668 /* OKTheMarketViewController.m */,
+				8814233E25B18EA900961668 /* OKElectrumNodeModel.h */,
+				8814233525B18EA900961668 /* OKElectrumNodeModel.m */,
 				8814234325B18EA900961668 /* NetSeting.storyboard */,
 				8814234425B18EA900961668 /* OKProxyServerModel.h */,
-				8814234525B18EA900961668 /* OKNetTableViewCell.m */,
+				8814233725B18EA900961668 /* OKProxyServerModel.m */,
 				8814234625B18EA900961668 /* OKNetTableViewCellModel.h */,
-				8814234725B18EA900961668 /* OKTheMarketViewController.m */,
+				8814233C25B18EA900961668 /* OKNetTableViewCellModel.m */,
+				8814233A25B18EA900961668 /* OKElectrumNodeTableViewCell.h */,
 				8814234825B18EA900961668 /* OKElectrumNodeTableViewCell.m */,
-				8814234925B18EA900961668 /* OKSocketTypeSelectController.h */,
 			);
 			path = NetSeting;
 			sourceTree = "<group>";
@@ -2494,6 +2502,7 @@
 				26BE4677ACE54545EAE9C2BB /* Dylib */,
 				3AE4479B84FDD63FF0A4327D /* Images */,
 				2B8A43CE94718C2C5184C2DC /* BTCBrowser.plist */,
+				88B4AAE22601DA2A0048DA3E /* ETHBrowser.plist */,
 				943948EBB61DA7BD862F18EF /* QRCodeScanSound.caf */,
 				F5704669880110AF25BCD194 /* OneKeyImages.xcassets */,
 			);
@@ -2710,6 +2719,7 @@
 				8814251E25B18EAA00961668 /* OKSendTxPreInfoViewController.h in Headers */,
 				8814248825B18EAA00961668 /* UIView+ViewController.h in Headers */,
 				8814245725B18EAA00961668 /* OKActivateDeviceSelectViewController.h in Headers */,
+				88B4AAE72601DA580048DA3E /* OKBrowserETHTableViewController.h in Headers */,
 				8814248D25B18EAA00961668 /* qrinput.h in Headers */,
 				8814254625B18EAA00961668 /* OKScanView.h in Headers */,
 				882F8B5225F749FF004099D7 /* OKNotiAssetModel.h in Headers */,
@@ -2860,6 +2870,7 @@
 				812142E19DF1FB35EA7403A9 /* LaunchScreen.storyboard in Resources */,
 				0FFC44B6B9A070A7FCC3CD96 /* screenlogo_onekey.png in Resources */,
 				CEFD442880FCA34F880163D7 /* screenlogo.png in Resources */,
+				88B4AAE32601DA2A0048DA3E /* ETHBrowser.plist in Resources */,
 				B0A8FFE925E4F47B00513B8E /* Tokens.storyboard in Resources */,
 				8814246E25B18EAA00961668 /* Signature.storyboard in Resources */,
 				88F89FBE25CB9E4700EFC641 /* Localizable.strings in Resources */,
@@ -2991,6 +3002,7 @@
 				8814245325B18EAA00961668 /* OKTools.m in Sources */,
 				881424C725B18EAA00961668 /* OKNetSetingViewController.m in Sources */,
 				AA3E43ADB13FEEECDE4E2D42 /* OKClickTextView.m in Sources */,
+				88B4AAE62601DA580048DA3E /* OKBrowserETHTableViewController.m in Sources */,
 				8814259225B18EAA00961668 /* BaseViewController.m in Sources */,
 				B0EB9B8725FA24270098092B /* OKQRScanResultController.m in Sources */,
 				8814245825B18EAA00961668 /* OKVerifyOnTheDeviceController.m in Sources */,

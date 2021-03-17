@@ -12,12 +12,14 @@
 #import "OKBrowserBTCTableViewController.h"
 #import "OKElectrumNodeViewController.h"
 #import "OKProxyServerTableViewController.h"
+#import "OKBrowserETHTableViewController.h"
 
 @interface OKNetworkViewController ()
 @property (weak, nonatomic) IBOutlet UILabel *sysServerLabel;
 @property (weak, nonatomic) IBOutlet UILabel *marketLabel;
 @property (weak, nonatomic) IBOutlet UILabel *btcBLabel;
 @property (weak, nonatomic) IBOutlet UILabel *electrumNodeLabel;
+@property (weak, nonatomic) IBOutlet UILabel *ethBLabel;
 
 
 @end
@@ -31,18 +33,21 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     self.title = MyLocalizedString(@"network", nil);
-    
+
 
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(userSetingSysServerComplete) name:kUserSetingSysServerComplete object:nil];
     [self userSetingSysServerComplete];
-    
+
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(userSetingBtcBComplete) name:kUserSetingBtcBComplete object:nil];
     [self userSetingBtcBComplete];
-    
+
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(userSetingBtcBComplete) name:kUserSetingEthBComplete object:nil];
+    [self userSetingEthBComplete];
+
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(userSetingMarketSource) name:kUserSetingMarketSource object:nil];
     [self userSetingMarketSource];
-    
-    
+
+
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(userSetingElectrumServer) name:kUserSetingElectrumServer object:nil];
     [self userSetingElectrumServer];
 }
@@ -70,11 +75,17 @@
             break;
         case 7:
         {
+            OKBrowserETHTableViewController *browserETH = [OKBrowserETHTableViewController browserETHTableViewController];
+            [self.navigationController pushViewController:browserETH animated:YES];
+        }
+            break;
+        case 9:
+        {
             OKElectrumNodeViewController *electrumNodeVc = [OKElectrumNodeViewController electrumNodeViewController];
             [self.navigationController pushViewController:electrumNodeVc animated:YES];
         }
             break;
-        case 9:
+        case 11:
         {
             OKProxyServerTableViewController *proxyServerVc = [OKProxyServerTableViewController proxyServerTableViewController];
             [self.navigationController pushViewController:proxyServerVc animated:YES];
@@ -97,6 +108,11 @@
 - (void)userSetingBtcBComplete
 {
     self.btcBLabel.text = kUserSettingManager.currentBtcBrowser;
+}
+
+- (void)userSetingEthBComplete
+{
+    self.ethBLabel.text = kUserSettingManager.currentEthBrowser;
 }
 
 - (void)userSetingElectrumServer

@@ -13,11 +13,18 @@ typedef enum {
     OKNetTableViewCellModelTypeM
 }OKNetTableViewCellModelType;
 
+
+typedef enum {
+    OKNetTableViewCellModelTypeBBtc,
+    OKNetTableViewCellModelTypeBEth
+}OKNetTableViewCellModelTypeBro;
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OKNetTableViewCellModel : NSObject
 @property (nonatomic,copy) NSString * titleStr;
 @property (nonatomic,assign) OKNetTableViewCellModelType  type;
+@property (nonatomic,assign) OKNetTableViewCellModelTypeBro typeB;
 @end
 
 NS_ASSUME_NONNULL_END

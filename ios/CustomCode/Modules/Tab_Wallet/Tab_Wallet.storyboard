@@ -1631,7 +1631,7 @@
                                                         </constraints>
                                                     </view>
                                                     <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="输入转出金额" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="D3o-Az-aNm">
-                                                        <rect key="frame" x="20" y="69" width="86" height="30"/>
+                                                        <rect key="frame" x="20" y="69" width="308" height="30"/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="30" id="HNU-91-Pxo"/>
                                                         </constraints>
@@ -1698,6 +1698,7 @@
                                                     <constraint firstItem="A4S-J8-elJ" firstAttribute="centerY" secondItem="U07-Tj-ThP" secondAttribute="centerY" id="0bX-x1-6nz"/>
                                                     <constraint firstItem="aPt-LU-eyh" firstAttribute="centerY" secondItem="D3o-Az-aNm" secondAttribute="centerY" id="46s-sz-XjE"/>
                                                     <constraint firstItem="1fn-Tm-WYu" firstAttribute="leading" secondItem="A4S-J8-elJ" secondAttribute="trailing" constant="5" id="4kS-SA-z4y"/>
+                                                    <constraint firstItem="aPt-LU-eyh" firstAttribute="leading" secondItem="D3o-Az-aNm" secondAttribute="trailing" constant="30" id="5I0-o4-Fgh"/>
                                                     <constraint firstItem="U07-Tj-ThP" firstAttribute="top" secondItem="F2U-Tj-90H" secondAttribute="top" constant="15" id="6uQ-82-On1"/>
                                                     <constraint firstItem="jeq-fN-EMS" firstAttribute="leading" secondItem="9M4-Vi-wMm" secondAttribute="leading" id="9ri-gB-sDN"/>
                                                     <constraint firstItem="D3o-Az-aNm" firstAttribute="top" secondItem="U07-Tj-ThP" secondAttribute="bottom" constant="30" id="Ky0-zj-BjF"/>

@@ -282,8 +282,9 @@
     }
     if (jsonDict == nil) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [kTools tipMessage:MyLocalizedString(@"This operation is not supported if the current device is not active, or if the special device is backed up", nil)];
+            [kTools tipMessage:MyLocalizedString(@"The Bluetooth connection is abnormal. Please try again", nil)];
             [MBProgressHUD hideHUDForView:self.view animated:YES];
+            [kOKBlueManager disconnectAllPeripherals];
             [weakself.navigationController popViewControllerAnimated:YES];
         });
         return;
@@ -412,6 +413,7 @@
                     receiveCoinVc.coinType = kWalletManager.currentWalletInfo.coinType;
                     receiveCoinVc.walletType = [kWalletManager getWalletDetailType];
                     receiveCoinVc.tokenCoinType = self.tokenCoinType;
+                    receiveCoinVc.tokenCoinAddr = self.tokenAddr;
                     [self.navigationController pushViewController:receiveCoinVc animated:YES];
                 }else{
                     if (![deviceModel.deviceInfo.device_id isEqualToString:kWalletManager.currentWalletInfo.device_id]) {

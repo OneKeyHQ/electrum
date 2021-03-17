@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 
 #define kCurrentBtcBrowser              @"kCurrentBtcBrowser"
+#define kCurrentEthBrowser              @"kCurrentEthBrowser"
 #define kCurrentMarketSource            @"kCurrentMarketSource"
 
 #define KUserPwdType                    @"KUserPwdType"
@@ -36,7 +37,9 @@ typedef NS_ENUM(NSInteger, OKDevicePINInputMethod) {
 + (OKUserSettingManager *)sharedInstance;
 @property (nonatomic,copy)NSString *currentSynchronousServer;
 @property (nonatomic,strong)NSArray *btcBrowserList;
+@property (nonatomic,strong)NSArray *ethBrowserList;
 @property (nonatomic,copy)NSString *currentBtcBrowser;
+@property (nonatomic,copy)NSString *currentEthBrowser;
 @property (nonatomic,copy)NSString *currentMarketSource;
 @property (nonatomic,copy)NSString *electrum_server;
 @property (nonatomic,assign)BOOL rbfFlag;

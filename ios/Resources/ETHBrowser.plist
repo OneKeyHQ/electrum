@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<string>https://cn.etherscan.com/tx/</string>
+	<string>https://etherscan.io/tx/</string>
+	<string>https://www.oklink.com/eth/tx/</string>
+	<string>https://www.blockchain.com/eth/tx/</string>
+	<string>https://blockchair.com/ethereum/transaction/</string>
+	<string>https://tradeblock.com/ethereum/tx/</string>
+	<string>https://bitpay.com/ETH/mainnet/tx/</string>
+	<string>https://eth.bitaps.com/</string>
+	<string>https://blockexplorer.one/eth/mainnet/tx/</string>
+</array>
+</plist>

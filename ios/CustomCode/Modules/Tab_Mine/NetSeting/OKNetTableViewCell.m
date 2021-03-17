@@ -26,11 +26,25 @@
         case OKNetTableViewCellModelTypeB:
         {
             self.titleLabel.text = model.titleStr;
-            if ([kUserSettingManager.currentBtcBrowser isEqualToString:model.titleStr]) {
-                self.checkImageView.hidden = NO;
-            }else{
-                self.checkImageView.hidden = YES;
+            switch (model.typeB) {
+                case OKNetTableViewCellModelTypeBBtc:
+                    if ([kUserSettingManager.currentBtcBrowser isEqualToString:model.titleStr]) {
+                        self.checkImageView.hidden = NO;
+                    }else{
+                        self.checkImageView.hidden = YES;
+                    }
+                    break;
+                case OKNetTableViewCellModelTypeBEth:
+                    if ([kUserSettingManager.currentEthBrowser isEqualToString:model.titleStr]) {
+                        self.checkImageView.hidden = NO;
+                    }else{
+                        self.checkImageView.hidden = YES;
+                    }
+                    break;
+                default:
+                    break;
             }
+
         }
             break;
         case OKNetTableViewCellModelTypeM:

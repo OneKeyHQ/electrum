@@ -73,8 +73,21 @@
 - (void)stupUI
 {
     self.titleNavLabel.text = MyLocalizedString(@"ok collection", nil);
-    self.titleLabel.text = [NSString stringWithFormat:@"%@%@",MyLocalizedString(@"Scan goes to", nil),[self.coinType uppercaseString]];
-    self.coinTypeImageView.image = [UIImage imageNamed:[NSString stringWithFormat:@"token_%@",[self.coinType lowercaseString]]];
+    NSString *typeStr = @"";
+    if (self.tokenCoinType.length == 0 || self.tokenCoinType == nil) {
+        typeStr = [self.coinType uppercaseString];
+    }else{
+        typeStr = [self.tokenCoinType uppercaseString];
+    }
+    self.titleLabel.text = [NSString stringWithFormat:@"%@%@",MyLocalizedString(@"Scan goes to", nil),typeStr];
+
+    OKToken *token = [[OKTokenManager sharedInstance]tokensWithAddress:self.tokenCoinAddr];
+    NSString *imageName = [NSString stringWithFormat:@"token_%@",[self.coinType lowercaseString]];
+    if (token == nil) {
+        self.coinTypeImageView.image = [UIImage imageNamed:imageName];
+    }else{
+        [self.coinTypeImageView sd_setImageWithURL:[NSURL URLWithString:token.logoURI] placeholderImage:[UIImage imageNamed:imageName]];
+    }
     self.walletAddressTitleLabel.text = MyLocalizedString(@"The wallet address", nil);
     [self.bgView setLayerDefaultRadius];
     [self setNavigationBarBackgroundColorWithClearColor];
