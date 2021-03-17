@@ -28,6 +28,7 @@ open class PyEnvException : RuntimeException {
   class OperationCancelException() : PyEnvException(R.string.hint_error_operation_cancelled)
   class PairUserCancelException() : PyEnvException(R.string.hint_error_user_cancelled)
   class LackOfBalanceException() : PyEnvException(R.string.balance_zero)
+  class ForcedHardwareUpgradeException() : PyEnvException(R.string.hint_forced_hardware_upgrade)
   class SoftwareException(message: String) : RuntimeException(message)
 
   companion object {

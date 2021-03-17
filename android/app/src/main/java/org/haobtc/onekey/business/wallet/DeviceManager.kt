@@ -160,6 +160,15 @@ class DeviceManager private constructor(private val context: Context) {
         }
       }
     }
+
+    @JvmStatic
+    fun forceUpdate(features: HardwareFeatures): Boolean {
+      if (Strings.isNullOrEmpty(features.getSerialNum())
+          || features.isBootloaderMode()) {
+        return true
+      }
+      return false
+    }
   }
 }
 

@@ -1366,4 +1366,6 @@
     <string name="hint_transaction_no_sender">没有填写发送者</string>
     <string name="hint_transaction_no_send_amount">没有填写发送金额</string>
     <string name="hint_transaction_no_payload">没有填写交易内容</string>
+    <string name="hint_device_connect_hardware_upgrade_error_title">设备固件版本过低</string>
+    <string name="hint_forced_hardware_upgrade">请先升级硬件</string>
 </resources>

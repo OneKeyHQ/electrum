@@ -14,7 +14,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
 import android.view.WindowManager
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
 import cn.com.heaton.blelibrary.ble.model.BleDevice
 import org.haobtc.onekey.R
@@ -22,11 +21,10 @@ import org.haobtc.onekey.activities.base.MyApplication
 import org.haobtc.onekey.bean.HardwareFeatures
 import org.haobtc.onekey.business.wallet.DeviceException
 import org.haobtc.onekey.business.wallet.DeviceManager
+import org.haobtc.onekey.business.wallet.DeviceManager.Companion.forceUpdate
 import org.haobtc.onekey.databinding.DialogConnectDeviceBinding
-import org.haobtc.onekey.exception.HardWareExceptions
-import org.haobtc.onekey.manager.BleManager
+import org.haobtc.onekey.exception.PyEnvException
 import org.haobtc.onekey.manager.PyEnv
-import org.haobtc.onekey.utils.Utils
 import org.haobtc.onekey.viewmodel.AppWalletViewModel
 
 /**
@@ -72,6 +70,7 @@ class ConnectDeviceDialog(context: Context) : Dialog(context) {
       }
       setWindowAnimations(R.style.AnimBottomPop)
     }
+    setCanceledOnTouchOutside(true)
 
     mBinding.tvButton.setOnClickListener { v: View? -> dismiss() }
     setTitle(R.string.hint_device_connecting)
@@ -95,12 +94,18 @@ class ConnectDeviceDialog(context: Context) : Dialog(context) {
         override fun onSuccess(t: BleDevice) {
           isDoneConnect = true
           PyEnv.getFeature(context) {
-            if (TextUtils.isEmpty(it.errors)) {
-              mHandler.postAtFrontOfQueue { dismiss() }
-              success?.invoke(it.result)
-            } else {
-              mHandler.postAtFrontOfQueue { dismiss() }
-              error?.invoke(HardWareExceptions.exceptionConvert(Exception(it.errors)))
+            mHandler.postAtFrontOfQueue {
+              if (TextUtils.isEmpty(it.errors)) {
+                dismiss()
+                if (forceUpdate(it.result)) {
+                  success?.invoke(it.result)
+                } else {
+                  error?.invoke(PyEnvException.ForcedHardwareUpgradeException())
+                }
+              } else {
+                dismiss()
+                error?.invoke(PyEnvException.convert(Exception(it.errors)))
+              }
             }
           }
         }

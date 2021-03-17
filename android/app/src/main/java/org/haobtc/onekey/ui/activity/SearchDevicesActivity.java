@@ -37,6 +37,7 @@ import org.haobtc.onekey.bean.PyResponse;
 import org.haobtc.onekey.bean.UpdateInfo;
 import org.haobtc.onekey.business.language.LanguageManager;
 import org.haobtc.onekey.business.version.VersionManager;
+import org.haobtc.onekey.business.wallet.DeviceManager;
 import org.haobtc.onekey.constant.Constant;
 import org.haobtc.onekey.event.BleConnectedEvent;
 import org.haobtc.onekey.event.BleConnectionEx;
@@ -275,8 +276,7 @@ public class SearchDevicesActivity extends BaseActivity
         runOnUiThread(
                 () -> {
                     if (Strings.isNullOrEmpty(errors) && Objects.nonNull(features)) {
-                        if (Strings.isNullOrEmpty(features.getSerialNum())
-                                || features.isBootloaderMode()) {
+                        if (DeviceManager.forceUpdate(features)) {
                             update(features);
                             finish();
                             return;

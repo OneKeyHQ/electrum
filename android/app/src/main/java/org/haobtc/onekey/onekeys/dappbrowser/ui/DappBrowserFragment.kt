@@ -45,6 +45,7 @@ import org.haobtc.onekey.constant.Vm
 import org.haobtc.onekey.databinding.FragmentDappBrowserBinding
 import org.haobtc.onekey.event.ButtonRequestEvent
 import org.haobtc.onekey.event.ChangePinEvent
+import org.haobtc.onekey.exception.PyEnvException
 import org.haobtc.onekey.manager.PyEnv
 import org.haobtc.onekey.onekeys.dappbrowser.URLLoadInterface
 import org.haobtc.onekey.onekeys.dappbrowser.Web3View
@@ -507,6 +508,13 @@ class DappBrowserFragment : BaseFragment(),
                   getString(R.string.hint_device_connect_error_title)
               )
             }
+            is PyEnvException.ForcedHardwareUpgradeException -> {
+              showErrorDialog(
+                  getString(R.string.hint_device_connect_hardware_upgrade_error_title),
+                  getString(R.string.hint_forced_hardware_upgrade),
+                  DappResultAlertDialog.WARNING
+              )
+            }
             else -> {
               showErrorDialog(
                   getString(R.string.hint_device_connect_error),
@@ -788,11 +796,11 @@ class DappBrowserFragment : BaseFragment(),
         .show(childFragmentManager, "passwordDialog")
   }
 
-  private fun showErrorDialog(message: String, title: String? = null) {
+  private fun showErrorDialog(message: String, title: String? = null, icon: Int? = null) {
     if (resultDialog?.isShowing == true) resultDialog?.dismiss()
     context?.let {
       resultDialog = DappResultAlertDialog(it).apply {
-        setIcon(DappResultAlertDialog.ERROR)
+        setIcon(icon ?: DappResultAlertDialog.ERROR)
         if (title == null) {
           setTitle(R.string.reansaction_error)
         } else {
