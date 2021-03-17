@@ -763,7 +763,8 @@ static dispatch_once_t once;
             kInterfaceSet_base_uint,
             kInterfaceget_tx_info_from_raw,
             kInterfaceget_default_fee_info,
-            kInterface_add_token
+            kInterface_add_token,
+            kInterface_get_customer_token_info
         ];
     }
     return _noTipsInterface;;

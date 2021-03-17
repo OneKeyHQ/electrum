@@ -105,6 +105,7 @@
         NSDictionary *innerDict = outerModelDict[model.walletName];
         model.walletType = [innerDict safeStringForKey:@"type"];
         model.walletTypeShowStr = [kWalletManager getWalletTypeShowStr:model.walletType];
+        model.device_id = [innerDict safeStringForKey:@"device_id"];
         model.address = [innerDict safeStringForKey:@"addr"];
         model.label = [innerDict safeStringForKey:@"label"];
         model.backColor = [OKWalletListTableViewCellModel getBackColor:model.walletType];

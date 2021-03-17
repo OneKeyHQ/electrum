@@ -9,14 +9,7 @@
 #import "OKWalletInfoModel.h"
 
 @implementation OKWalletInfoModel
-
-- (void)setType:(NSString *)type {
-    _type = type;
-    if ([type ignoreCaseCointain:@"eth"]) {
-        self.chainType = OKWalletChainTypeETHLike;
-    } else {
-        self.chainType = OKWalletChainTypeBTC;
-    }
++ (OKWalletType)walletTypeWithStr:(NSString *)type {
 
     OKWalletType walletType = OKWalletTypeHD;
     #define OK_WALLET_TYPE_CASE(argTypeStr,argType) \
@@ -27,11 +20,21 @@
     OK_WALLET_TYPE_CASE(@"derived-standard",    OKWalletTypeHD)
     OK_WALLET_TYPE_CASE(@"private-standard",    OKWalletTypeIndependent)
     OK_WALLET_TYPE_CASE(@"watch-standard",      OKWalletTypeObserve)
-    OK_WALLET_TYPE_CASE(@"hw-derived-1-1",      OKWalletTypeHardware)
-    OK_WALLET_TYPE_CASE(@"hd-hw-1-1",           OKWalletTypeHardware)
-    OK_WALLET_TYPE_CASE(@"hw-m-n",              OKWalletTypeMultipleSignature)
+    OK_WALLET_TYPE_CASE(@"hw-derived-",         OKWalletTypeHardware)
+    OK_WALLET_TYPE_CASE(@"hd-hw-",              OKWalletTypeHardware)
+    OK_WALLET_TYPE_CASE(@"hw-",                 OKWalletTypeMultipleSignature)
     OK_WALLET_TYPE_CASE(@"standard",            OKWalletTypeIndependent)
-    self.walletType = walletType;
+    return walletType;
+}
+
+- (void)setType:(NSString *)type {
+    _type = type;
+    if ([type ignoreCaseCointain:@"eth"]) {
+        self.chainType = OKWalletChainTypeETHLike;
+    } else {
+        self.chainType = OKWalletChainTypeBTC;
+    }
+    self.walletType = [OKWalletInfoModel walletTypeWithStr:type];
 }
 
 - (NSAttributedString *)walletTypeDesc {
@@ -41,9 +44,9 @@
         case OKWalletTypeHardware: {
             NSString *deviceName = [[OKDevicesManager sharedInstance] getDeviceModelWithID:self.device_id].deviceInfo.label;
             if (deviceName.length) {
-                desc = [NSString stringWithFormat:@" %@", deviceName];;
-                if (desc.length > 15) {
-                    desc = [desc substringToIndex:15];
+                desc = [NSString stringWithFormat:@"  %@", deviceName];;
+                if (desc.length > 16) {
+                    desc = [desc substringToIndex:16];
                 }
             } else {
                 desc = @"hardware".localized;
@@ -59,7 +62,7 @@
         attchment.bounds = CGRectMake(0,-2,8,12);
         attchment.image = [UIImage imageNamed:@"device_white"];
         NSAttributedString *attchmentStr = [NSAttributedString attributedStringWithAttachment:attchment];
-        [attributedString insertAttributedString:attchmentStr atIndex:0];
+        [attributedString insertAttributedString:attchmentStr atIndex:1];
     }
 
     return attributedString;

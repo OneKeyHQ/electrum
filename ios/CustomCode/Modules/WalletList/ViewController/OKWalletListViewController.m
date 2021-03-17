@@ -133,6 +133,7 @@
         }
         model.walletTypeShowStr = [kWalletManager getWalletTypeShowStr:model.walletType];
         model.address = [innerDict safeStringForKey:@"addr"];
+        model.device_id = [innerDict safeStringForKey:@"device_id"];
         model.label = [innerDict safeStringForKey:@"label"];
         model.backColor = [OKWalletListTableViewCellModel getBackColor:model.walletType];
         model.iconName = [OKWalletListTableViewCellModel getBgImageName:model.walletType];

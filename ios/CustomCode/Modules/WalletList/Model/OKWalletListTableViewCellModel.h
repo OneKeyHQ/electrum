@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,copy) NSString *label;
 @property (nonatomic,assign)BOOL isCurrent;
 @property (nonatomic,assign)NSInteger index;
+@property (nonatomic,copy,nullable) NSString* device_id;
 + (UIColor *)getBackColor:(NSString *)type;
 + (NSString *)getBgImageName:(NSString *)type;
 @end

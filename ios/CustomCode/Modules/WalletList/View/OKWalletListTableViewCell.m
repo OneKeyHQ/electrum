@@ -45,7 +45,26 @@
     }
     self.addressLabel.text = address;
     self.rightCoinTypeBgImageView.image = [UIImage imageNamed:model.iconName];
-    self.walletTypeLabel.text = model.walletTypeShowStr;
+    if (model.device_id.length) {
+        NSString *deviceName = [[OKDevicesManager sharedInstance] getDeviceModelWithID:model.device_id].deviceInfo.label;
+        if (deviceName.length) {
+            NSString *desc = [NSString stringWithFormat:@"  %@", deviceName];;
+            if (desc.length > 16) {
+                desc = [desc substringToIndex:16];
+            }
+            NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:desc];
+            NSTextAttachment *attchment = [[NSTextAttachment alloc] init];
+            attchment.bounds = CGRectMake(0,0,8,12);
+            attchment.image = [UIImage imageNamed:@"device_white"];
+            NSAttributedString *attchmentStr = [NSAttributedString attributedStringWithAttachment:attchment];
+            [attributedString insertAttributedString:attchmentStr atIndex:1];
+            self.walletTypeLabel.attributedText = attributedString;
+        } else {
+            self.walletTypeLabel.text = @"hardware".localized;
+        }
+    } else {
+        self.walletTypeLabel.text = model.walletTypeShowStr;
+    }
     self.walletTypeBgView.hidden = model.walletTypeShowStr.length == 0;
     self.selectedBtn.hidden = !model.isCurrent;
 }

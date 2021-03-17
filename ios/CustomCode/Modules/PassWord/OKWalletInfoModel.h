@@ -47,6 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,copy) NSDictionary *additionalData;
 
 - (NSAttributedString *)walletTypeDesc;
++ (OKWalletType)walletTypeWithStr:(NSString *)type;
 @end
 
 NS_ASSUME_NONNULL_END
