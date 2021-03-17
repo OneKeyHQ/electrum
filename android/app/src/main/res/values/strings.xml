@@ -997,8 +997,8 @@
     <string name="quotation_choose">Price Quotes</string>
     <string name="price_quotation_tip">Selecting the right quote source \n only affects the price display of BTC and ETH.</string>
     <string name="recovery_default_">Restore</string>
-    <string name="block_choose">Block Browser (BTC)</string>
-    <string name="block_choose_tip">Block Browser (BTC) \nUse your favorite browser to view the on chain transactions information</string>
+    <string name="block_choose">Block Browser (%s)</string>
+    <string name="block_choose_tip">Block Browser (%s) \nUse your favorite browser to view the on chain transactions information</string>
     <string name="choose_recovery_wallet">Please select the wallet you want to recover.</string>
     <string name="input_username">Enter User Name</string>
     <string name="input_password">Enter Password</string>

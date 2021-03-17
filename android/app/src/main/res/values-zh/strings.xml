@@ -967,8 +967,8 @@
     <string name="quotation_choose">价格行情</string>
     <string name="price_quotation_tip">选择适合的行情来源\n只影响 BTC 和 ETH 的价格显示</string>
     <string name="recovery_default_">恢复默认</string>
-    <string name="block_choose">区块浏览器（BTC）</string>
-    <string name="block_choose_tip">区块浏览器（BTC）\n使用您喜欢的浏览器查看链上交易信息</string>
+    <string name="block_choose">区块浏览器（%s）</string>
+    <string name="block_choose_tip">区块浏览器（%s）\n使用您喜欢的浏览器查看链上交易信息</string>
     <string name="choose_recovery_wallet">请选择要恢复的钱包</string>
     <string name="input_username">输入用户名</string>
     <string name="input_password">输入密码</string>

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -21,6 +22,7 @@ import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.event.FirstEvent;
 
 public class BlockChooseActivity extends BaseActivity {
+
     private static final String EXT_COIN_TYPE = "EXT_COIN_TYPE";
 
     public static void start(Context context, Vm.CoinType coinType) {
@@ -31,6 +33,9 @@ public class BlockChooseActivity extends BaseActivity {
 
     @BindView(R.id.img_back)
     ImageView imgBack;
+
+    @BindView(R.id.tv_title)
+    TextView tvTitle;
 
     @BindView(R.id.recl_Quetation)
     RecyclerView reclQuetation;
@@ -46,6 +51,8 @@ public class BlockChooseActivity extends BaseActivity {
     public void initView() {
         mCoinType = Vm.CoinType.convertByCallFlag(getIntent().getStringExtra(EXT_COIN_TYPE));
         ButterKnife.bind(this);
+
+        tvTitle.setText(String.format(getString(R.string.block_choose), mCoinType.coinName));
     }
 
     @Override
@@ -80,7 +87,10 @@ public class BlockChooseActivity extends BaseActivity {
     }
 
     private View generateHeadView() {
-        return View.inflate(this, R.layout.view_block_browser_hint, null);
+        View inflate = View.inflate(this, R.layout.view_block_browser_hint, null);
+        TextView text = inflate.findViewById(R.id.tv_content);
+        text.setText(String.format(getString(R.string.block_choose_tip), mCoinType.coinName));
+        return inflate;
     }
 
     @SingleClick
