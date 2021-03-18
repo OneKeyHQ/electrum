@@ -38,3 +38,12 @@ def update_coin_info(coin_code: str, name: str = None, icon: str = None):
         payload["icon"] = icon
 
     CoinModel.update(payload).where(CoinModel.code == coin_code).execute()
+
+
+def query_coins_by_token_addresses(chain_code: str, token_addresses: List[str]) -> List[CoinInfo]:
+    return list(
+        CoinModel.select().where(
+            CoinModel.chain_code == chain_code,
+            CoinModel.token_address << token_addresses,
+        )
+    )

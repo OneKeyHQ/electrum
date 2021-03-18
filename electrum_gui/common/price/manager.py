@@ -4,6 +4,7 @@ from decimal import Decimal
 from typing import Callable, Dict, Iterable, List, Sequence, Set, Tuple
 
 from electrum_gui.common.basic.functional.timing import timing_logger
+from electrum_gui.common.basic.functional.wraps import cache_it
 from electrum_gui.common.basic.orm.database import db
 from electrum_gui.common.basic.ticker.utils import on_interval
 from electrum_gui.common.coin import codes
@@ -45,8 +46,8 @@ def pricing(coin_codes: List[str] = None):
             logger.exception(f"Error in running channel. channel_type: {channel_type}, error: {e}")
 
 
+@cache_it(timeout=5 * 60)
 def get_last_price(coin_code: str, unit: str, default: Decimal = 0) -> Decimal:
-    # TODO: Cache data for a period of time
     coin_code = settings.PRICING_COIN_MAPPING.get(coin_code) or coin_code
     unit = settings.PRICING_COIN_MAPPING.get(unit) or unit
 

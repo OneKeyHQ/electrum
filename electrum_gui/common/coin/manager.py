@@ -166,3 +166,7 @@ def _deduplicate_coins(coins: List[CoinInfo]) -> List[CoinInfo]:
         deduplicate_coins.append(i)
 
     return deduplicate_coins
+
+
+def query_coins_by_token_addresses(chain_code: str, token_addresses: List[str]) -> List[CoinInfo]:
+    return daos.query_coins_by_token_addresses(chain_code, token_addresses)
