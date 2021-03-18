@@ -1,4 +1,13 @@
 {
+  "tbtc": [
+    {
+      "code": "tbtc",
+      "symbol": "TBTC",
+      "name": "Bitcoin TestNet3",
+      "decimals": 8,
+      "icon": "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579"
+    }
+  ],
   "teth": [
     {
       "code": "teth",

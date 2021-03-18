@@ -1,4 +1,5 @@
 BTC = "btc"
+TBTC = "tbtc"
 ETH = "eth"
 TETH = "teth"
 BSC = "bsc"

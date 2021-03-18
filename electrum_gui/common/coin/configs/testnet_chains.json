@@ -1,5 +1,10 @@
 [
   {
+    "chain_code": "tbtc",
+    "name": "Bitcoin TestNet3",
+    "fee_code": "tbtc"
+  },
+  {
     "chain_code": "teth",
     "name": "Ethereum Ropsten Test Network",
     "fee_code": "teth",

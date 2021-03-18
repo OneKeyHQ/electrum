@@ -42,6 +42,7 @@ ENABLED_CHAIN_COINS = [
 ]  # TODO enable specific test coin on dev env?
 
 PRICING_COIN_MAPPING = {
+    codes.TBTC: codes.BTC,
     codes.TETH: codes.ETH,
     codes.TBSC: codes.BSC,
     codes.THECO: codes.HECO,
