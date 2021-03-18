@@ -49,6 +49,7 @@ import org.haobtc.onekey.bean.BalanceCoinInfo;
 import org.haobtc.onekey.bean.BalanceInfoDTO;
 import org.haobtc.onekey.bean.CreateWalletBean;
 import org.haobtc.onekey.bean.CurrentAddressDetail;
+import org.haobtc.onekey.bean.CurrentFeeDetails;
 import org.haobtc.onekey.bean.CurrentWalletBalanceBean;
 import org.haobtc.onekey.bean.HardwareFeatures;
 import org.haobtc.onekey.bean.MakeTxResponseBean;
@@ -1887,6 +1888,50 @@ public final class PyEnv {
             String result =
                     sCommands.callAttr("sign_message", argList.toArray(new Object[0])).toString();
             response.setResult(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Exception exception = PyEnvException.convert(e);
+            response.setErrors(exception.getMessage());
+        }
+        return response;
+    }
+
+    public static PyResponse<CurrentFeeDetails> getDefFeeInfo(
+            @NonNull Vm.CoinType coinType, String receiver, String amount, String data) {
+        PyResponse<CurrentFeeDetails> response = new PyResponse<>();
+        try {
+            String info;
+            if (!Strings.isNullOrEmpty(receiver)) {
+                Map<String, String> map = new HashMap<>();
+                map.put("to_address", receiver);
+                if (!Strings.isNullOrEmpty(amount)) {
+                    map.put("value", amount);
+                }
+                if (!Strings.isNullOrEmpty(data)) {
+                    map.put("data", data);
+                }
+                info =
+                        sCommands
+                                .callAttr(
+                                        PyConstant.GET_DEFAULT_FEE_DETAILS,
+                                        new Kwarg("coin", coinType.callFlag),
+                                        new Kwarg("eth_tx_info", new Gson().toJson(map)))
+                                .toString();
+            } else {
+                info =
+                        sCommands
+                                .callAttr(
+                                        PyConstant.GET_DEFAULT_FEE_DETAILS,
+                                        new Kwarg("coin", coinType.callFlag))
+                                .toString();
+            }
+            try {
+                CurrentFeeDetails currentFeeDetails = CurrentFeeDetails.objectFromDate(info);
+                Logger.json(info);
+                response.setResult(currentFeeDetails);
+            } catch (Exception e) {
+                response.setErrors("error");
+            }
         } catch (Exception e) {
             e.printStackTrace();
             Exception exception = PyEnvException.convert(e);

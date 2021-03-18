@@ -1274,8 +1274,8 @@
     <string name="hd_wallet">HD Wallet</string>
     <string name="transaction_set">Trading Setup (Advanced)</string>
     <string name="import_private">Import Private Key ( Enter or scan code ）</string>
-    <string name="eth_gas_fee">Gas Price (gwei)</string>
-    <string name="eth_gas_limit">Gas Limit (gas)</string>
+    <string name="eth_gas_fee">Gas Price (Gwei)</string>
+    <string name="eth_gas_limit">Gas Limit (Gas)</string>
     <string name="erase">抹除</string>
     <string name="hd_wallet_account">主钱包账户</string>
     <string name="single">独立</string>
@@ -1372,4 +1372,7 @@
     <string name="coin_heco">HECO</string>
     <string name="title_coin_name">%s钱包</string>
     <string name="account">账户</string>
+    <string name="wait_fee_loading_recommend">请等待手续费估算完成后在选择</string>
+    <string name="title_warning">Warning</string>
+    <string name="hint_gas_limit_too_little">Gas Limit 太少将会导致交易失败，是否继续？</string>
 </resources>

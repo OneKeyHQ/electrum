@@ -13,16 +13,8 @@ import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.GeolocationPermissions
-import android.webkit.URLUtil
-import android.webkit.ValueCallback
-import android.webkit.WebBackForwardList
-import android.webkit.WebChromeClient
+import android.webkit.*
 import android.webkit.WebChromeClient.FileChooserParams
-import android.webkit.WebResourceError
-import android.webkit.WebResourceRequest
-import android.webkit.WebView
-import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
@@ -31,6 +23,9 @@ import androidx.lifecycle.ViewModelProvider
 import com.orhanobut.logger.Logger
 import com.zy.multistatepage.MultiStatePage
 import com.zy.multistatepage.state.SuccessState
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.schedulers.Schedulers
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.haobtc.onekey.BuildConfig
@@ -50,13 +45,7 @@ import org.haobtc.onekey.extensions.cutTheLast
 import org.haobtc.onekey.manager.PyEnv
 import org.haobtc.onekey.onekeys.dappbrowser.URLLoadInterface
 import org.haobtc.onekey.onekeys.dappbrowser.Web3View
-import org.haobtc.onekey.onekeys.dappbrowser.bean.Address
-import org.haobtc.onekey.onekeys.dappbrowser.bean.DAppFunction
-import org.haobtc.onekey.onekeys.dappbrowser.bean.EthereumMessage
-import org.haobtc.onekey.onekeys.dappbrowser.bean.EthereumTypedMessage
-import org.haobtc.onekey.onekeys.dappbrowser.bean.SignMessageType
-import org.haobtc.onekey.onekeys.dappbrowser.bean.Signable
-import org.haobtc.onekey.onekeys.dappbrowser.bean.Web3Transaction
+import org.haobtc.onekey.onekeys.dappbrowser.bean.*
 import org.haobtc.onekey.onekeys.dappbrowser.callback.DappActionSheetCallback
 import org.haobtc.onekey.onekeys.dappbrowser.callback.SignAuthenticationCallback
 import org.haobtc.onekey.onekeys.dappbrowser.listener.OnSignMessageListener
@@ -79,7 +68,10 @@ import org.haobtc.onekey.utils.ClipboardUtils
 import org.haobtc.onekey.utils.HexUtils
 import org.haobtc.onekey.utils.Utils
 import org.haobtc.onekey.viewmodel.AppWalletViewModel
+import org.web3j.utils.Convert
 import org.web3j.utils.Numeric
+import java.math.BigDecimal
+import java.math.BigInteger
 import java.util.*
 
 /**
@@ -686,14 +678,28 @@ class DappBrowserFragment : BaseFragment(),
           web3.onSignCancel(transaction.leafPosition)
           return
         }
-        confirmationDialog = activity?.let { DappActionSheetDialog(it, transaction, currentWallet, this,this) }
+        confirmationDialog = activity?.let { DappActionSheetDialog(it, transaction, currentWallet, this, this) }
         confirmationDialog?.apply {
           setSignOnly()
           setURL(url)
           setCanceledOnTouchOutside(false)
           show()
         }
-        // todo 计算手续费
+        // 请求手续费
+        Single
+            .fromCallable { PyEnv.getDefFeeInfo(currentWallet.coinType, transaction.recipient.toString(), "", transaction.payload).result }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ currentFeeDetails ->
+              if (transaction.gasLimit.compareTo(BigInteger.ZERO) == 0) {
+                transaction.gasLimit = BigInteger.valueOf(currentFeeDetails.normal.gasLimit.toLong())
+              }
+              if (transaction.gasPrice.compareTo(BigInteger.ZERO) == 0) {
+                transaction.gasPrice = Convert.toWei(BigDecimal(currentFeeDetails.normal.gasPrice.toString()), Convert.Unit.ETHER).toBigInteger()
+              }
+              val recommend = (transaction.gasLimit.compareTo(BigInteger.ZERO) == 0 && transaction.gasPrice.compareTo(BigInteger.ZERO) == 0)
+              confirmationDialog?.setFeeDetails(currentFeeDetails, recommend)
+            }) { throwable: Throwable? -> }.isDisposed
         return
       }
     } catch (e: Exception) {

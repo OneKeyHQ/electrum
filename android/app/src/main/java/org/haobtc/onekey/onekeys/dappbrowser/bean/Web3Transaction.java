@@ -14,8 +14,8 @@ public class Web3Transaction implements Parcelable {
     public final Address recipient;
     public final Address contract;
     public final BigInteger value;
-    public final BigInteger gasPrice;
-    public final BigInteger gasLimit;
+    public BigInteger gasPrice;
+    public BigInteger gasLimit;
     public final long nonce;
     public final String payload;
     public final long leafPosition;

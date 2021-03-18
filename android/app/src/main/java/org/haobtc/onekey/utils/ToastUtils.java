@@ -11,4 +11,10 @@ public class ToastUtils {
         toast.setText(msg);
         toast.show();
     }
+
+    public static void toastLong(String msg) {
+        Toast toast = Toast.makeText(MyApplication.getInstance(), msg, Toast.LENGTH_LONG);
+        toast.setText(msg);
+        toast.show();
+    }
 }

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linear_slow"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/white_back_"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/dp_10"
+        android:text="@string/slow"
+        android:textColor="@color/text_two"
+        android:textSize="@dimen/sp_14" />
+
+    <CheckBox
+        android:id="@+id/checkbox_slow"
+        android:layout_width="@dimen/dp_16"
+        android:layout_height="@dimen/dp_16"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="13dp"
+        android:layout_marginEnd="@dimen/dp_8"
+        android:background="@drawable/circle_checkbox"
+        android:button="@null"
+        android:checked="true"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/tv_fee_amount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_title"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/dp_6"
+        android:text="@string/str_0_00"
+        android:textColor="@color/text_six"
+        android:textSize="@dimen/sp_10" />
+
+    <TextView
+        android:id="@+id/tv_fee_amount_fiat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_fee_amount"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/dp_6"
+        android:gravity="center_vertical"
+        android:text="@string/_0_dollar"
+        android:textColor="@color/text_six"
+        android:textSize="@dimen/sp_10"
+        tools:ignore="NestedWeights" />
+
+    <TextView
+        android:id="@+id/tv_speed"
+        android:layout_width="match_parent"
+        android:layout_height="37dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="@dimen/dp_6"
+        android:layout_marginBottom="1dp"
+        android:background="@drawable/laft_gray_tuo"
+        android:gravity="center"
+        android:text="@string/about_"
+        android:textColor="@color/text_two"
+        android:textSize="@dimen/sp_10" />
+
+    <View
+        android:id="@+id/view_slow"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/green_broken_"
+        android:visibility="gone" />
+
+</RelativeLayout>

@@ -115,8 +115,8 @@
                     android:layout_marginStart="24dp"
                     android:layout_toEndOf="@+id/textView"
                     android:gravity="end"
-                    android:textColor="@color/text_three"
-                    android:textSize="@dimen/sp_14"
+                    android:textColor="@color/text_color3"
+                    android:textSize="@dimen/sp_17"
                     tools:text="sdfjsbkdbskjndksnjfkjsnkejnfksnjkdnjahbjhbdjhbajsdbkasjndkajnsdk" />
 
                 <TextView
@@ -147,10 +147,15 @@
 
             </RelativeLayout>
 
-            <RelativeLayout
-                android:layout_width="match_parent"
+            <LinearLayout
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_10">
+                android:minHeight="68dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/layout_expanded">
 
                 <TextView
                     android:id="@+id/textView1"
@@ -162,29 +167,30 @@
 
                 <TextView
                     android:id="@+id/text_receive_address"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
-                    android:layout_toEndOf="@+id/textView1"
+                    android:layout_weight="1"
                     android:gravity="end"
-                    android:textColor="@color/text_three"
-                    android:textSize="@dimen/sp_14"
+                    android:textColor="@color/color_007AFF"
+                    android:textSize="@dimen/sp_17"
                     tools:text="sdfjsbkdbskjndksnjfkjsnkejnfksnjkdnjahbjhbdjhbajsdbkasjndkajnsdk" />
 
+            </LinearLayout>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/line_hight"
-                    android:layout_below="@+id/text_receive_address"
-                    android:layout_marginTop="@dimen/dp_10"
-                    android:background="@color/line_color" />
-
-            </RelativeLayout>
-
-            <RelativeLayout
+            <View
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_10">
+                android:layout_height="@dimen/line_hight"
+                android:background="@color/line_color" />
+
+            <LinearLayout
+                android:id="@+id/layout_gas_price"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:gravity="center"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/layout_expanded">
 
                 <TextView
                     android:id="@+id/textView2"
@@ -196,16 +202,21 @@
 
                 <TextView
                     android:id="@+id/text_tx_fee"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
                     android:layout_marginStart="24dp"
-                    android:layout_toEndOf="@+id/textView2"
-                    android:gravity="end"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:gravity="end|center"
                     android:textColor="@color/text_three"
                     android:textSize="@dimen/sp_14"
-                    tools:text="0.00019 ETH ≈ $ 0.12" />
+                    tools:text="0.00019 ETH" />
 
-            </RelativeLayout>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/jiantou" />
+            </LinearLayout>
 
             <Button
                 android:id="@+id/btn_confirm_pay"

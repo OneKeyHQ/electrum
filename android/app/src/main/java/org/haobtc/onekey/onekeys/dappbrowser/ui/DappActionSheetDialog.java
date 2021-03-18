@@ -10,13 +10,16 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Locale;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.aop.ClickUtil;
+import org.haobtc.onekey.bean.CurrentFeeDetails;
 import org.haobtc.onekey.bean.WalletAccountInfo;
 import org.haobtc.onekey.business.wallet.SystemConfigManager;
 import org.haobtc.onekey.constant.Vm;
@@ -25,6 +28,8 @@ import org.haobtc.onekey.onekeys.dappbrowser.bean.Web3Transaction;
 import org.haobtc.onekey.onekeys.dappbrowser.callback.DappActionSheetCallback;
 import org.haobtc.onekey.onekeys.dappbrowser.callback.SignAuthenticationCallback;
 import org.haobtc.onekey.onekeys.homepage.process.TransactionCompletion;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.web3j.utils.Convert;
 
 /**
@@ -43,7 +48,9 @@ public class DappActionSheetDialog extends BottomSheetDialog
     private final View layoutProgress;
     private final View layoutHardwareProgress;
 
-    private final Web3Transaction candidateTransaction;
+    private Web3Transaction candidateTransaction;
+    private CurrentFeeDetails mCurrentFeeDetails;
+    private @FeeType Integer mFeeType;
     private final DappActionSheetCallback actionSheetCallback;
     private SignAuthenticationCallback signCallback;
     private ActionSheetMode mode;
@@ -98,16 +105,6 @@ public class DappActionSheetDialog extends BottomSheetDialog
                         + mSystemConfigManager.getCurrentBaseUnit(
                                 coinTypeProvider.currentCoinType()));
 
-        BigDecimal feeBigDecimal =
-                Convert.fromWei(
-                        new BigDecimal(tx.gasLimit).multiply(new BigDecimal(tx.gasPrice)),
-                        Convert.Unit.ETHER);
-        txFee.setText(
-                feeBigDecimal.stripTrailingZeros().toPlainString()
-                        + " "
-                        + mSystemConfigManager.getCurrentBaseUnit(
-                                coinTypeProvider.currentCoinType()));
-
         nextButton = findViewById(R.id.btn_confirm_pay);
         cancelButton = findViewById(R.id.img_cancel);
         mode = ActionSheetMode.SEND_TRANSACTION;
@@ -121,8 +118,42 @@ public class DappActionSheetDialog extends BottomSheetDialog
         candidateTransaction = tx;
         callbackId = tx.leafPosition;
 
+        fillFeeTextView();
+
         setupCancelListeners();
         setupNextListener();
+        txFee.setOnClickListener(
+                v -> {
+                    DappFeeCustomSheetDialog dappFeeCustomSheetDialog =
+                            DappFeeCustomSheetDialog.newInstance(
+                                    mCurrentCoinTypeProvider.currentCoinType(),
+                                    tx.recipient.toString(),
+                                    tx.payload);
+                    dappFeeCustomSheetDialog.setOnFeeSelectCallback(
+                            new DappFeeCustomSheetDialog.OnFeeSelectCallback() {
+                                @Override
+                                public void onInit(@NotNull OnInitDataInterface init) {
+                                    init.onDataInit(
+                                            mFeeType,
+                                            mCurrentFeeDetails,
+                                            tx.gasLimit,
+                                            new BigDecimal(tx.gasPrice));
+                                }
+
+                                @Override
+                                public void onSelectFee(
+                                        @FeeType int feeType,
+                                        @NotNull BigInteger gasPrice,
+                                        @NotNull BigInteger gas) {
+                                    mFeeType = feeType;
+                                    candidateTransaction.gasLimit = gas;
+                                    candidateTransaction.gasPrice = gasPrice;
+                                    fillFeeTextView();
+                                }
+                            });
+                    dappFeeCustomSheetDialog.show(
+                            ((AppCompatActivity) activity).getSupportFragmentManager(), "Ssss");
+                });
     }
 
     /**
@@ -176,6 +207,28 @@ public class DappActionSheetDialog extends BottomSheetDialog
 
         setupCancelListeners();
         setupNextListener();
+    }
+
+    public void setFeeDetails(@Nullable CurrentFeeDetails currentFeeDetails, boolean recommend) {
+        mCurrentFeeDetails = currentFeeDetails;
+        if (recommend) {
+            mFeeType = FeeType.NORMAL;
+        }
+        fillFeeTextView();
+    }
+
+    private void fillFeeTextView() {
+        TextView txFee = findViewById(R.id.text_tx_fee);
+        BigDecimal feeBigDecimal =
+                Convert.fromWei(
+                        new BigDecimal(candidateTransaction.gasLimit)
+                                .multiply(new BigDecimal(candidateTransaction.gasPrice)),
+                        Convert.Unit.ETHER);
+        txFee.setText(
+                feeBigDecimal.stripTrailingZeros().toPlainString()
+                        + " "
+                        + mSystemConfigManager.getCurrentBaseUnit(
+                                mCurrentCoinTypeProvider.currentCoinType()));
     }
 
     public void setSignOnly() {
