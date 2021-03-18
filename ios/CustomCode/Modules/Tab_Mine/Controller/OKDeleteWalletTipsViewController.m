@@ -30,7 +30,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    
+
     switch (self.deleteType) {
         case OKWhereToDeleteTypeMine:
         {
@@ -54,13 +54,13 @@
             self.descLabel.text = MyLocalizedString(@"This will delete all the data in the App, including the currently created wallet and custom Settings. This operation is irrevocable. Please make a backup of your wallet before deleting it so that you can recover your assets", nil);
             [self.titleLabel setTitle:MyLocalizedString(@"⚠️ risk warning", nil) forState:UIControlStateNormal];
             [self.deleteBtn setTitle:MyLocalizedString(@"Reset the App", nil) forState:UIControlStateNormal];
-            
+
         }
             break;
         default:
             break;
     }
-    
+
     [self.iAgree setTitle:[NSString stringWithFormat:@" %@",MyLocalizedString(@"I am aware of the above risks", nil)] forState:UIControlStateNormal];
     [self.iAgree setImage:[UIImage imageNamed:@"notselected"] forState:UIControlStateNormal];
     [self.iAgree setImage:[UIImage imageNamed:@"isselected"] forState:UIControlStateSelected];
@@ -85,23 +85,9 @@
         {
             BOOL isBackUp = [[kPyCommandsManager callInterface:kInterfaceget_backup_info parameter:@{@"name":self.walletName}] boolValue];
             if (isBackUp) {
-                if (kWalletManager.isOpenAuthBiological) {
-                    [[YZAuthID sharedInstance]yz_showAuthIDWithDescribe:MyLocalizedString(@"OenKey request enabled", nil) BlockState:^(YZAuthIDState state, NSError *error) {
-                        if (state == YZAuthIDStateNotSupport
-                            || state == YZAuthIDStatePasswordNotSet || state == YZAuthIDStateTouchIDNotSet) { // 不支持TouchID/FaceID
-                            [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
-                                [weakself deleteWallet:pwd];
-                            }];
-                        } else if (state == YZAuthIDStateSuccess) {
-                            NSString *pwd = [kOneKeyPwdManager getOneKeyPassWord];
-                            [weakself deleteWallet:pwd];
-                        }
-                    }];
-                }else{
-                    [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
-                        [weakself deleteWallet:pwd];
-                    }];
-                }
+                [OKValidationPwdController showValidationPwdPageOn:self isDis:YES complete:^(NSString * _Nonnull pwd) {
+                    [weakself deleteWallet:pwd];
+                }];
             }else{
                 OKWeakSelf(self)
                 OKDeleteBackUpTipsController *tipsVc = [OKDeleteBackUpTipsController deleteBackUpTipsController:^{
@@ -133,7 +119,7 @@
     [kWalletManager clearCurrentWalletInfo];
     [[NSNotificationCenter defaultCenter]postNotificationName:kNotiDeleteWalletComplete object:nil];
     [kTools tipMessage:MyLocalizedString(@"Wallet deleted successfully", nil)];
-    
+
     if (weakself.deleteType == OKWhereToDeleteTypeMine) {
         for (int i = 0; i < weakself.navigationController.viewControllers.count; i++) {
             UIViewController *vc = weakself.navigationController.viewControllers[i];
@@ -161,7 +147,7 @@
         [kTools alertTips:MyLocalizedString(@"prompt", nil) desc:MyLocalizedString(@"Reset successful, please restart the application.", nil) confirm:^{
             [weakself exitApplication];
         } cancel:^{
-            
+
         } vc:self conLabel:MyLocalizedString(@"determine", nil) isOneBtn:YES];
     }
 }
