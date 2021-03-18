@@ -2,7 +2,7 @@ import json
 import os
 from typing import Dict
 
-from electrum_gui.common.coin.data import ChainInfo, CoinInfo
+from electrum_gui.common.coin.data import ChainInfo, ChainModel, CoinInfo
 
 
 def _load_chains(chains_json_name: str) -> Dict[str, ChainInfo]:
@@ -10,6 +10,7 @@ def _load_chains(chains_json_name: str) -> Dict[str, ChainInfo]:
     ret = {}
 
     for config in raw_chains:
+        config["chain_model"] = ChainModel[config["chain_model"].upper()]
         chain_info = ChainInfo(**config)
         ret[chain_info.chain_code] = chain_info
 

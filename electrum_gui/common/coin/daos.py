@@ -44,6 +44,6 @@ def query_coins_by_token_addresses(chain_code: str, token_addresses: List[str]) 
     return list(
         CoinModel.select().where(
             CoinModel.chain_code == chain_code,
-            CoinModel.token_address << token_addresses,
+            CoinModel.token_address.collate("NOCASE") << token_addresses,
         )
     )
