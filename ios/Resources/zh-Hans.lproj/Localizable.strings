@@ -16,7 +16,7 @@
 "Begin to use" = "开始使用";
 "Create a new wallet" = "创建账户";
 "Create HD Wallet" = "创建主钱包";
-"Recover HD Wallet" = "恢复主钱包";
+"Recover HD Wallet" = "恢复";
 "Paired hardware wallet" = "连接硬件设备";
 "Paired hardware" = "连接硬件";
 "Add wallet" = "添加";
@@ -70,7 +70,7 @@
 "A standalone wallet does not support backing up to a hardware device" = "独立钱包不支持备份到硬件设备";
 "Ready to star" = "准备开始";
 "Backup the purse" = "备份钱包";
-"Select wallet Type" = "选择钱包类型";
+"Select wallet Type" = "选择账户类型";
 "Independent wallet" = "独立账户";
 "Independent" = "独立";
 "With the HD logo, derived from the wallet root mnemonic (the mnemonic you copied when you first created your wallet), a mnemonic can create an infinite number of wallets in multiple currencies. It can also be used to recover all derived wallets, save time, effort and security, is the core bitcoin protocol BIP44 implementation" = "带有 HD 标识，基于主钱包助记词派生。";
@@ -339,7 +339,7 @@
 "More child wallets are derived from mnemonics" = "通过助记词派生出更多子账户";
 "easy to use" = "多公链、简单、安全、好用";
 "HD derived wallet" = "主钱包";
-"Derivations based on HD Root Mnemonics (recommended)" = "主钱包（推荐）";
+"Derivations based on HD Root Mnemonics (recommended)" = "主钱包账户（推荐）";
 "The HD root mnemonic is derived" = "导出主钱包的助记词";
 "Delete all HD-derived wallets" = "抹除主钱包";
 "Enter the password" = "输入密码";
