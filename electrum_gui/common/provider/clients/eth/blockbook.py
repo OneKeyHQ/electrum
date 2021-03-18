@@ -65,7 +65,11 @@ class BlockBook(ProviderInterface):
             return super(BlockBook, self).get_balance(address)
         else:
             resp = self._get_raw_address_info(address, details="tokenBalances")
-            tokens = {i["contract"].lower(): i["balance"] for i in resp.get("tokens", ())}
+            tokens = {
+                token_dict["contract"].lower(): token_dict["balance"]
+                for token_dict in (resp.get("tokens") or ())
+                if token_dict.get("contract") and token_dict.get("balance")
+            }
             balance = tokens.get(token.contract.lower(), 0)
             return int(balance)
 
