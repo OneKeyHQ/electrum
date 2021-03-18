@@ -8,9 +8,9 @@ from electrum_gui.common.basic.dataclass.dataclass import DataClassMixin
 @unique
 class TransactionStatus(IntEnum):
     UNKNOWN = 0
-    IN_MEMPOOL = 10
-    REVERED = 99
-    CONFIRMED = 100
+    PENDING = 10
+    CONFIRM_REVERTED = 99
+    CONFIRM_SUCCESS = 100
 
 
 @unique
@@ -41,7 +41,7 @@ class BlockHeader(DataClassMixin):
 @dataclass
 class TransactionFee(DataClassMixin):
     limit: int
-    usage: int
+    used: int
     price_per_unit: int = 1
 
 
@@ -68,6 +68,7 @@ class Transaction(DataClassMixin):
     fee: TransactionFee = None
     block_header: BlockHeader = None
     raw_tx: str = ""
+    nonce: int = -1
 
 
 @dataclass

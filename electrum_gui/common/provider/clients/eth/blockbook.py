@@ -28,9 +28,9 @@ from electrum_gui.common.provider.interfaces import ProviderInterface
 
 class BlockBook(ProviderInterface):
     __raw_tx_status_mapping__ = {
-        -1: TransactionStatus.IN_MEMPOOL,
-        0: TransactionStatus.REVERED,
-        1: TransactionStatus.CONFIRMED,
+        -1: TransactionStatus.PENDING,
+        0: TransactionStatus.CONFIRM_REVERTED,
+        1: TransactionStatus.CONFIRM_SUCCESS,
     }
 
     def __init__(self, url: str):
@@ -102,11 +102,19 @@ class BlockBook(ProviderInterface):
         gas_limit = ethereum_data.get("gasLimit", 0)
         fee = TransactionFee(
             limit=int(gas_limit),
-            usage=int(ethereum_data.get("gasUsed") or gas_limit),
+            used=int(ethereum_data.get("gasUsed") or gas_limit),
             price_per_unit=int(ethereum_data.get("gasPrice", 1)),
         )
-        sender = raw_tx["vin"][0]["addresses"][0]
-        receiver = raw_tx["vout"][0]["addresses"][0]
+        sender = (
+            raw_tx["vin"][0]["addresses"][0].lower()
+            if raw_tx.get("vin") and raw_tx["vin"][0].get("isAddress") and raw_tx["vin"][0].get("addresses")
+            else ""
+        )
+        receiver = (
+            raw_tx["vout"][0]["addresses"][0].lower()
+            if raw_tx.get("vout") and raw_tx["vout"][0].get("isAddress") and raw_tx["vout"][0].get("addresses")
+            else ""
+        )
         value = int(raw_tx["vout"][0]["value"])
 
         return Transaction(
@@ -114,7 +122,11 @@ class BlockBook(ProviderInterface):
             inputs=[
                 TransactionInput(address=sender, value=value),
                 *(
-                    TransactionInput(address=i.get("from"), value=int(i.get("value") or 0), token_address=i["token"])
+                    TransactionInput(
+                        address=i.get("from", "").lower(),
+                        value=int(i.get("value") or 0),
+                        token_address=i["token"].lower(),
+                    )
                     for i in token_transfers
                     if i.get("token")
                 ),
@@ -122,7 +134,11 @@ class BlockBook(ProviderInterface):
             outputs=[
                 TransactionOutput(address=receiver, value=value),
                 *(
-                    TransactionOutput(address=i.get("to"), value=int(i.get("value") or 0), token_address=i["token"])
+                    TransactionOutput(
+                        address=i.get("to", "").lower(),
+                        value=int(i.get("value") or 0),
+                        token_address=i["token"].lower(),
+                    )
                     for i in token_transfers
                     if i.get("token")
                 ),
@@ -131,6 +147,7 @@ class BlockBook(ProviderInterface):
             block_header=block_header,
             fee=fee,
             raw_tx=json.dumps(raw_tx),
+            nonce=int(ethereum_data["nonce"]),
         )
 
     def search_txs_by_address(

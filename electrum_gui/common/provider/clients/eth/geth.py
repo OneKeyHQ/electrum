@@ -84,21 +84,25 @@ class Geth(ProviderInterface):
                 block_number=_hex2int(receipt.get("blockNumber", "0x0")),
                 block_time=0,
             )
-            status = TransactionStatus.CONFIRMED if receipt.get("status") == "0x1" else TransactionStatus.REVERED
-            gas_usage = _hex2int(receipt.get("gasUsed", "0x0"))
+            status = (
+                TransactionStatus.CONFIRM_SUCCESS
+                if receipt.get("status") == "0x1"
+                else TransactionStatus.CONFIRM_REVERTED
+            )
+            gas_used = _hex2int(receipt.get("gasUsed", "0x0"))
         else:
             block_header = None
-            status = TransactionStatus.IN_MEMPOOL
-            gas_usage = None
+            status = TransactionStatus.PENDING
+            gas_used = None
 
         gas_limit = _hex2int(tx.get("gas", "0x0"))
         fee = TransactionFee(
             limit=gas_limit,
-            usage=gas_usage or gas_limit,
+            used=gas_used or gas_limit,
             price_per_unit=_hex2int(tx.get("gasPrice", "0x0")),
         )
-        sender = tx.get("from", "")
-        receiver = tx.get("to", "")
+        sender = tx.get("from", "").lower()
+        receiver = tx.get("to", "").lower()
         value = _hex2int(tx.get("value", "0x0"))
 
         return Transaction(
@@ -108,6 +112,7 @@ class Geth(ProviderInterface):
             status=status,
             block_header=block_header,
             fee=fee,
+            nonce=_hex2int(tx["nonce"]),
         )
 
     def broadcast_transaction(self, raw_tx: str) -> TxBroadcastReceipt:
