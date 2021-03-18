@@ -33,6 +33,7 @@ DATABASE = {
 DB_MODULES = [
     "electrum_gui.common.coin",
     "electrum_gui.common.price",
+    "electrum_gui.common.transaction",
 ]
 
 ENABLED_CHAIN_COINS = [
