@@ -30,7 +30,14 @@
     _model = model;
     self.addressLabel.text = model.addr.addressFormatted;
     self.nameLabel.text = model.label;
-    self.badgeLabel.attributedText = model.walletTypeDesc;
+    if (model.walletType == OKWalletTypeHardware) {
+        self.badgeLabel.text = nil;
+        self.badgeLabel.attributedText = [self hwWalletTypeDesc];
+    } else {
+        self.badgeLabel.attributedText = nil;
+        self.badgeLabel.text = model.walletTypeDesc;
+        self.badge.hidden = !self.badgeLabel.text.length;
+    }
     self.selectImageView.hidden = ![model.name isEqualToString:kWalletManager.currentWalletInfo.name];
     NSInteger precision = [kWalletManager getPrecision:@"btc"];
     if (model.chainType == OKWalletChainTypeETHLike) {
@@ -39,8 +46,29 @@
     }
     NSString *balance = [model.additionalData objectForKey:@"balance"];
     balance = [balance numStrPrecition:precision];
-
     self.balanceLabel.text = balance ?: @"0";
+}
+
+- (NSAttributedString *)hwWalletTypeDesc {
+    NSString *desc;
+    NSString *deviceName = [[OKDevicesManager sharedInstance] getDeviceModelWithID:self.model.device_id].deviceInfo.label;
+    if (deviceName.length) {
+        desc = [NSString stringWithFormat:@"  %@", deviceName];;
+        if (desc.length > 16) {
+            desc = [desc substringToIndex:16];
+        }
+    } else {
+        desc = [NSString stringWithFormat:@"  %@", @"hardware".localized];;
+    }
+
+    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:desc];
+    NSTextAttachment *attchment = [[NSTextAttachment alloc] init];
+    attchment.bounds = CGRectMake(0,-2,8,12);
+    attchment.image = [UIImage imageNamed:@"device_white"];
+    NSAttributedString *attchmentStr = [NSAttributedString attributedStringWithAttachment:attchment];
+    [attributedString insertAttributedString:attchmentStr atIndex:1];
+
+    return attributedString;
 }
 
 @end

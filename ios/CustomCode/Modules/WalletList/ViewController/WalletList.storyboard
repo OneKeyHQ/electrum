@@ -1328,7 +1328,7 @@
                                             </constraints>
                                         </view>
                                         <prototypes>
-                                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="OKChangeWalletCell" id="8BC-4w-iMw" customClass="OKChangeWalletCell">
+                                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="OKChangeWalletCell" id="8BC-4w-iMw" customClass="OKChangeWalletCell">
                                                 <rect key="frame" x="0.0" y="72" width="349" height="72"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="8BC-4w-iMw" id="U80-MY-MKM">
@@ -1433,7 +1433,7 @@
                                             <constraint firstAttribute="width" constant="64" id="1Rz-Vc-N9q"/>
                                         </constraints>
                                         <prototypes>
-                                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="OKChangeWalletSubCell" id="ZDr-Ts-7cn" customClass="OKChangeWalletSubCell">
+                                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="OKChangeWalletSubCell" id="ZDr-Ts-7cn" customClass="OKChangeWalletSubCell">
                                                 <rect key="frame" x="0.0" y="28" width="64" height="48"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="ZDr-Ts-7cn" id="Nfe-WS-PBS">
