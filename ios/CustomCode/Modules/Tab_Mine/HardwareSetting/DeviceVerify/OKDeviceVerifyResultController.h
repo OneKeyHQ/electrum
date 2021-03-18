@@ -8,10 +8,16 @@
 
 #import <UIKit/UIKit.h>
 
+typedef NS_ENUM(NSInteger, OKDeviceVerifyResult) {
+    OKDeviceVerifyResultPass,
+    OKDeviceVerifyResultFail,
+    OKDeviceVerifyResultNetworkError
+};
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OKDeviceVerifyResultController : BaseViewController
-@property (nonatomic, assign) BOOL isPassed;
+@property (nonatomic, assign) OKDeviceVerifyResult verifyResult;
 @property (nonatomic, strong) NSString *name;
 @property (nonatomic, copy) void(^doneCallback)(void);
 + (instancetype)controllerWithStoryboard;

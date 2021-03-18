@@ -428,6 +428,7 @@
 "hardwareWallet.verify.fail" = "验证失败";
 "hardwareWallet.verify.passDesc" = "这是 OneKey 官方出品\n内置官方固件\n请放心使用";
 "hardwareWallet.verify.failDesc" = "这台设备并未运行官方固件\n可能被篡改\n如果这不是您自己的行为\n请联系销售方处理";
+"hardwareWallet.verify.netErr" = "连接 OneKey 认证服务器失败，\n请检查你的网络";
 "hardwareWallet.verify.return" = "返回设备";
 
 "hardwareWallet.pin" = "修改 PIN 码";

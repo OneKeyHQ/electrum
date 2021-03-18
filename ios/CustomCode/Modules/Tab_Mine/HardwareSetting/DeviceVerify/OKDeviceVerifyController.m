@@ -23,6 +23,7 @@
 @property (weak, nonatomic) IBOutlet UIImageView *stage2ImageView;
 @property (weak, nonatomic) IBOutlet UIImageView *stage3ImageView;
 @property (strong, nonatomic) CABasicAnimation* rotationAnimation;
+@property (assign, nonatomic) BOOL netErr;
 @end
 
 @implementation OKDeviceVerifyController
@@ -70,6 +71,8 @@
             result = json.toDict;
         } else if ([json isKindOfClass:NSDictionary.class]) {
             result = (NSDictionary *)json;
+        } else {
+            self.netErr = YES;
         }
         BOOL is_bixinkey = [result objectForKey:@"is_bixinkey"];
         BOOL is_verified = [result objectForKey:@"is_verified"];
@@ -86,7 +89,11 @@
 - (void)showResult:(BOOL)isPassed {
     self.phase = OKDeviceVerifyPhaseDone;
     OKDeviceVerifyResultController *vc = [OKDeviceVerifyResultController controllerWithStoryboard];
-    vc.isPassed = isPassed;
+    if (self.netErr) {
+        vc.verifyResult = OKDeviceVerifyResultNetworkError;
+    } else {
+        vc.verifyResult = isPassed ? OKDeviceVerifyResultPass : OKDeviceVerifyResultFail;
+    }
     if (isPassed) {
         OKDeviceModel *deviceModel = [[OKDevicesManager sharedInstance] getDeviceModelWithID:self.deviceId];
         deviceModel.verifiedDevice = YES;

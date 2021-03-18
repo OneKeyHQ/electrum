@@ -31,15 +31,20 @@
 
     self.title = @"hardwareWallet.verify".localized;
     NSString *descLabelText;
-    if (self.isPassed) {
+    if (self.verifyResult == OKDeviceVerifyResultPass) {
         self.resultLabel.text = @"hardwareWallet.verify.pass".localized;
         self.resultLabel.textColor = HexColor(0x00b812);
         descLabelText = @"hardwareWallet.verify.passDesc".localized;
         self.deviceImageView.image = [UIImage imageNamed:@"device_success"];
-    } else {
+    } else if (self.verifyResult == OKDeviceVerifyResultFail) {
         self.resultLabel.text = @"hardwareWallet.verify.fail".localized;
         self.resultLabel.textColor = HexColor(0xeb5757);
         descLabelText = @"hardwareWallet.verify.failDesc".localized;
+        self.deviceImageView.image = [UIImage imageNamed:@"device_failed"];
+    } else {
+        self.resultLabel.text = @"hardwareWallet.verify.fail".localized;
+        self.resultLabel.textColor = HexColor(0xeb5757);
+        descLabelText = @"hardwareWallet.verify.netErr".localized;
         self.deviceImageView.image = [UIImage imageNamed:@"device_failed"];
     }
     self.descLabel.attributedText = [NSString lineSpacing:16 content:descLabelText];
