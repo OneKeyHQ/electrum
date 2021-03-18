@@ -80,23 +80,23 @@ class Etherscan(ProviderInterface):
         else:
             receipt = None
 
-        status = TransactionStatus.IN_MEMPOOL
+        status = TransactionStatus.PENDING
         receipt_status = receipt["status"] if receipt else None
         if receipt_status == "0x0":
-            status = TransactionStatus.REVERED
+            status = TransactionStatus.CONFIRM_REVERTED
         elif receipt_status == "0x1":
-            status = TransactionStatus.CONFIRMED
+            status = TransactionStatus.CONFIRM_SUCCESS
 
         gas_limit = int(raw_tx["gas"], base=16)
-        gas_usage = int(receipt["gasUsed"], 0) if receipt else None
-        gas_usage = gas_usage or gas_limit
+        gas_used = int(receipt["gasUsed"], 0) if receipt else None
+        gas_used = gas_used or gas_limit
         fee = TransactionFee(
             limit=gas_limit,
-            usage=gas_usage,
+            used=gas_used,
             price_per_unit=int(raw_tx["gasPrice"], base=16),
         )
-        sender = raw_tx.get("from", "")
-        receiver = raw_tx.get("to", "")
+        sender = raw_tx.get("from", "").lower()
+        receiver = raw_tx.get("to", "").lower()
         value = int(raw_tx.get("value", "0x0"), base=16)
 
         return Transaction(
@@ -107,6 +107,7 @@ class Etherscan(ProviderInterface):
             status=status,
             fee=fee,
             raw_tx=json.dumps(raw_tx),
+            nonce=int(raw_tx["nonce"], base=16),
         )
 
     @staticmethod
@@ -138,18 +139,18 @@ class Etherscan(ProviderInterface):
                 block_time=int(raw_tx["timeStamp"]),
             )
 
-            status = TransactionStatus.IN_MEMPOOL
+            status = TransactionStatus.PENDING
             receipt_status = raw_tx.get("txreceipt_status")
             if receipt_status == "0":
-                status = TransactionStatus.REVERED
+                status = TransactionStatus.CONFIRM_REVERTED
             elif receipt_status == "1":
-                status = TransactionStatus.CONFIRMED
+                status = TransactionStatus.CONFIRM_SUCCESS
 
             gas_limit = int(raw_tx["gas"])
-            gas_usage = int(raw_tx.get("gasUsed")) or gas_limit
-            fee = TransactionFee(limit=gas_limit, usage=gas_usage, price_per_unit=int(raw_tx["gasPrice"]))
-            sender = raw_tx.get("from", "")
-            receiver = raw_tx.get("to", "")
+            gas_used = int(raw_tx.get("gasUsed")) or gas_limit
+            fee = TransactionFee(limit=gas_limit, used=gas_used, price_per_unit=int(raw_tx["gasPrice"]))
+            sender = raw_tx.get("from", "").lower()
+            receiver = raw_tx.get("to", "").lower()
             value = int(raw_tx.get("value", "0x0"), base=16)
 
             tx = Transaction(
@@ -160,6 +161,7 @@ class Etherscan(ProviderInterface):
                 status=status,
                 fee=fee,
                 raw_tx=json.dumps(raw_tx),
+                nonce=int(raw_tx["nonce"], base=16),
             )
             txs.append(tx)
 

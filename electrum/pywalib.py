@@ -558,10 +558,10 @@ class PyWalib:
 
             tx_status = _("Unconfirmed")
             show_status = [1, _("Unconfirmed")]
-            if action["status"] == TransactionStatus.REVERED:
+            if action["status"] == TransactionStatus.CONFIRM_REVERTED:
                 tx_status = _("Sending failure")
                 show_status = [2, _("Sending failure")]
-            elif action["status"] == TransactionStatus.CONFIRMED:
+            elif action["status"] == TransactionStatus.CONFIRM_SUCCESS:
                 tx_status = (
                     _("{} confirmations").format(block_header.confirmations)
                     if block_header and block_header.confirmations > 0
@@ -599,14 +599,14 @@ class PyWalib:
     def get_transaction_info(cls, txid) -> dict:
         tx = cls.get_provider().get_transaction_by_txid(txid)
         amount = Decimal(cls.web3.fromWei(tx.outputs[0].value, "ether"))
-        fee = Decimal(cls.web3.fromWei(tx.fee.usage * tx.fee.price_per_unit, "ether"))
+        fee = Decimal(cls.web3.fromWei(tx.fee.used * tx.fee.price_per_unit, "ether"))
 
         tx_status = _("Unconfirmed")
         show_status = [1, _("Unconfirmed")]
-        if tx.status == TransactionStatus.REVERED:
+        if tx.status == TransactionStatus.CONFIRM_REVERTED:
             tx_status = _("Sending failure")
             show_status = [2, _("Sending failure")]
-        elif tx.status == TransactionStatus.CONFIRMED:
+        elif tx.status == TransactionStatus.CONFIRM_SUCCESS:
             tx_status = (
                 _("{} confirmations").format(tx.block_header.confirmations)
                 if tx.block_header and tx.block_header.confirmations > 0
