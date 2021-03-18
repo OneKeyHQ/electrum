@@ -48,7 +48,7 @@
     "derived_info": "",
     "Provider": [
       {"mainnet": "https://http-mainnet-node.huobichain.com", "chainid": "128"},
-      {"testnet": "http://47.243.17.171:18545", "chainid": "128"}
+      {"testnet": "https://testnode.onekey.so/heco", "chainid": "128"}
     ],
     "TxliServer": [
       {"onekey-mainnet": "https://heco1.onekey.so/api/v2/"}

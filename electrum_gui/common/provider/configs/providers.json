@@ -73,7 +73,7 @@
   "theco": [
     {
       "class": "Geth",
-      "url": "http://47.243.17.171:18545"
+      "url": "https://testnode.onekey.so/heco"
     }
   ]
 }
