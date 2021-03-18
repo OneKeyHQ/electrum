@@ -2,24 +2,28 @@
   {
     "chain_code": "tbtc",
     "name": "Bitcoin TestNet3",
-    "fee_code": "tbtc"
+    "fee_code": "tbtc",
+    "chain_model": "utxo"
   },
   {
     "chain_code": "teth",
     "name": "Ethereum Ropsten Test Network",
     "fee_code": "teth",
+    "chain_model": "account",
     "chain_id": "3"
   },
   {
     "chain_code": "tbsc",
     "name": "Binance Smart Chain Test Network",
     "fee_code": "tbsc",
+    "chain_model": "account",
     "chain_id": "97"
   },
   {
     "chain_code": "theco",
     "name": "Fork Huobi ECO Chain",
     "fee_code": "theco",
+    "chain_model": "account",
     "chain_id": "128"
   }
 ]
