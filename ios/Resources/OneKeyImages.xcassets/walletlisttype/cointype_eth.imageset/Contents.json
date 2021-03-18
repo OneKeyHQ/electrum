@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "eth_icon.png",
+      "filename" : "Off.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "eth_icon@2x.png",
+      "filename" : "Off@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "eth_icon@3x.png",
+      "filename" : "Off@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

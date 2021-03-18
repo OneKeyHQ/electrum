@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "hw_normal_icon.png",
+      "filename" : "hw_icon.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "hw_normal_icon@2x.png",
+      "filename" : "hw_icon@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "hw_normal_icon@3x.png",
+      "filename" : "hw_icon@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
