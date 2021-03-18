@@ -205,9 +205,7 @@
             switch (indexPath.row) {
                 case 0: //密码
                 {
-                    NSArray *listDictArray =  [kPyCommandsManager callInterface:kInterfaceList_wallets parameter:@{}];
-                    if (listDictArray.count > 0) {
-
+                    if (kWalletManager.checkIsHavePwd) {
                         OKChangePwdViewController *changePwd = [OKChangePwdViewController changePwdViewController];
                         [self.navigationController pushViewController:changePwd animated:YES];
                     }else{
