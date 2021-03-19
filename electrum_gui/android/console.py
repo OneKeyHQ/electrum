@@ -3711,8 +3711,8 @@ class AndroidCommands(commands.Commands):
             "name": "",
             "label": "",
             "wallets": [
-            {"coin": "eth", "address": ""},
-            {"coin": "usdt", "address": ""}
+            {"coin": "usdt", "address": ""},
+            ...
             ]
         }
         """
@@ -3736,7 +3736,7 @@ class AndroidCommands(commands.Commands):
             info = {
                 "name": name,
                 "label": self.wallet.get_name(),
-                "wallets": [{"coin": "btc", "address": ""}],
+                "wallets": [],
             }
             if self.label_flag and self.wallet.wallet_type != "standard":
                 self.label_plugin.load_wallet(self.wallet)
