@@ -39,7 +39,7 @@ static const CGFloat showNavBarSeparatorScrollViewOffsetThreshold = 5;
     if ([self.navigationController.viewControllers count] > 1) {
         self.navigationItem.leftBarButtonItem = [UIBarButtonItem backBarButtonItemWithTarget:self selector:@selector(backToPrevious)];
     };
-    _navBarSeparator = [self findHairlineImageViewUnder:self.navigationController.navigationBar];
+    _navBarSeparator = self.navigationController.navigationBar.ok_separator;
     UIView *separator = [[UIView alloc] initWithFrame:_navBarSeparator.bounds];
     separator.backgroundColor = UIColor.SP_NavBarSeparator;
     [_navBarSeparator addSubview:separator];
