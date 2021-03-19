@@ -96,7 +96,8 @@ class DappBrowserFragment : BaseFragment(),
     OnSignTypedMessageListener,
     OnSignMessageListener,
     DappActionSheetCallback,
-    SignAuthenticationCallback {
+    SignAuthenticationCallback,
+    CurrentCoinTypeProvider {
   companion object {
     val TAG: String = DappBrowserFragment::class.java.simpleName
 
@@ -280,7 +281,8 @@ class DappBrowserFragment : BaseFragment(),
     mAppWalletViewModel.currentWalletAccountInfo.observe(viewLifecycleOwner) {
       val drawable = ResourcesCompat.getDrawable(resources, AssetsLogo.getLogoResources(it?.coinType), null)
       mBinding.ivTokenLogo.setImageDrawable(drawable)
-      mBinding.tvWalletName.text = it?.address?.cutTheLast(4) ?: getString(R.string.title_select_account)
+      mBinding.tvWalletName.text = it?.address?.cutTheLast(4)
+          ?: getString(R.string.title_select_account)
 
       it?.let {
         refreshEvent()
@@ -359,7 +361,7 @@ class DappBrowserFragment : BaseFragment(),
 
       override fun onGeolocationPermissionsShowPrompt(
           origin: String,
-          callback: GeolocationPermissions.Callback
+          callback: GeolocationPermissions.Callback,
       ) {
         super.onGeolocationPermissionsShowPrompt(origin, callback)
         requestGeoPermission(origin, callback)
@@ -367,7 +369,7 @@ class DappBrowserFragment : BaseFragment(),
 
       override fun onShowFileChooser(
           webView: WebView, filePathCallback: ValueCallback<Array<Uri>>?,
-          fCParams: FileChooserParams
+          fCParams: FileChooserParams,
       ): Boolean {
         if (filePathCallback == null) return true
         mUploadMessage = filePathCallback
@@ -684,7 +686,7 @@ class DappBrowserFragment : BaseFragment(),
           web3.onSignCancel(transaction.leafPosition)
           return
         }
-        confirmationDialog = activity?.let { DappActionSheetDialog(it, transaction, currentWallet, this) }
+        confirmationDialog = activity?.let { DappActionSheetDialog(it, transaction, currentWallet, this,this) }
         confirmationDialog?.apply {
           setSignOnly()
           setURL(url)
@@ -770,7 +772,10 @@ class DappBrowserFragment : BaseFragment(),
   // endregion
 
 
-  // region 获取密码权限，硬件链接等弹窗
+  override fun currentCoinType(): Vm.CoinType? {
+    return mAppWalletViewModel.currentWalletAccountInfo.value?.coinType
+  }
+
   /**
    * 展示账户切换弹窗
    */

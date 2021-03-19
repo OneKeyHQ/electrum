@@ -24,12 +24,10 @@ public class JsInjectorClient {
     private static final String DEFAULT_CHARSET = "utf-8";
     private static final String DEFAULT_MIME_TYPE = "text/html";
     private static final String JS_TAG_TEMPLATE =
-            "<script type=\"text/javascript\">%1$s%2$s</script>";
+            "<script type=\"text/javascript\">%1$s</script><script type=\"text/javascript\">%2$s</script>";
 
     private static final String DEF_RPC_URL =
             "https://ropsten.infura.io/v3/f001ce716b6e4a33a557f74df6fe8eff";
-    //    private final static String DEF_RPC_URL =
-    // "https://mainnet.infura.io/v3/f001ce716b6e4a33a557f74df6fe8eff";
 
     private final Context context;
     private final OkHttpClient httpClient;

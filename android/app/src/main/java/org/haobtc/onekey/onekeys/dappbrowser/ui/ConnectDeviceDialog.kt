@@ -98,9 +98,9 @@ class ConnectDeviceDialog(context: Context) : Dialog(context) {
               if (TextUtils.isEmpty(it.errors)) {
                 dismiss()
                 if (forceUpdate(it.result)) {
-                  success?.invoke(it.result)
-                } else {
                   error?.invoke(PyEnvException.ForcedHardwareUpgradeException())
+                } else {
+                  success?.invoke(it.result)
                 }
               } else {
                 dismiss()

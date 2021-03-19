@@ -6,6 +6,7 @@ import android.text.TextUtils
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.orhanobut.logger.Logger
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -88,7 +89,7 @@ class AppWalletViewModel : ViewModel() {
     setCurrentWalletInfo(localWallet)
   }
 
-  private fun refreshAssets(walletAccountInfo: WalletAccountInfo?): AssetsList? {
+  private fun refreshAssets(walletAccountInfo: WalletAccountInfo?, changeWallet: Boolean = false): AssetsList? {
     if (walletAccountInfo == null) {
       return null
     }
@@ -97,6 +98,11 @@ class AppWalletViewModel : ViewModel() {
         walletAccountInfo.coinType)
 
     val walletAssets = mAccountManager.getWalletAssets(walletAccountInfo.id)
+
+    if (changeWallet) {
+      currentWalletAccountInfo.postValue(walletAccountInfo)
+    }
+
     val assets = AssetsList()
     val coinAssets = CoinAssets(
         walletAccountInfo.coinType,
@@ -317,9 +323,7 @@ class AppWalletViewModel : ViewModel() {
   }
 
   private fun setCurrentWalletInfo(info: WalletAccountInfo?) {
-    currentWalletAccountInfo.postValue(info)
-
-    refreshAssets(info)?.let {
+    refreshAssets(info, true)?.let {
       if (info?.id != mOldAccountName) {
         // 切换账户清零总金额
         mOldAccountName = info?.id

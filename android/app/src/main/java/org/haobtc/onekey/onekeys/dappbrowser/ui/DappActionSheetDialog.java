@@ -15,8 +15,10 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import java.math.BigDecimal;
 import java.util.Locale;
 import org.haobtc.onekey.R;
+import org.haobtc.onekey.activities.base.MyApplication;
 import org.haobtc.onekey.aop.ClickUtil;
 import org.haobtc.onekey.bean.WalletAccountInfo;
+import org.haobtc.onekey.business.wallet.SystemConfigManager;
 import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.onekeys.dappbrowser.bean.Signable;
 import org.haobtc.onekey.onekeys.dappbrowser.bean.Web3Transaction;
@@ -49,7 +51,10 @@ public class DappActionSheetDialog extends BottomSheetDialog
 
     private String txHash = null;
     private boolean actionCompleted;
-    private Handler mHandler = new Handler(Looper.getMainLooper());
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
+    private CurrentCoinTypeProvider mCurrentCoinTypeProvider;
+    private final SystemConfigManager mSystemConfigManager =
+            new SystemConfigManager(MyApplication.getInstance());
 
     /**
      * 处理交易签字
@@ -62,14 +67,15 @@ public class DappActionSheetDialog extends BottomSheetDialog
             @NonNull Activity activity,
             Web3Transaction tx,
             WalletAccountInfo wallet,
-            DappActionSheetCallback aCallBack) {
+            DappActionSheetCallback aCallBack,
+            CurrentCoinTypeProvider coinTypeProvider) {
         super(activity);
         setContentView(R.layout.dialog_dapp_action_sheet);
         View delegate = findViewById(com.google.android.material.R.id.design_bottom_sheet);
         if (delegate != null) {
             delegate.setBackgroundColor(Color.TRANSPARENT);
         }
-
+        mCurrentCoinTypeProvider = coinTypeProvider;
         layoutProgress = findViewById(R.id.layout_progress);
         layoutHardwareProgress = findViewById(R.id.layout_hardware_progress);
         balance = findViewById(R.id.text_balance);
@@ -86,13 +92,21 @@ public class DappActionSheetDialog extends BottomSheetDialog
         receiveAddressTextView.setText(tx.recipient.toString());
 
         BigDecimal bigDecimal = Convert.fromWei(new BigDecimal(tx.value), Convert.Unit.ETHER);
-        amount.setText(bigDecimal.stripTrailingZeros().toPlainString() + " ETH");
+        amount.setText(
+                bigDecimal.stripTrailingZeros().toPlainString()
+                        + " "
+                        + mSystemConfigManager.getCurrentBaseUnit(
+                                coinTypeProvider.currentCoinType()));
 
         BigDecimal feeBigDecimal =
                 Convert.fromWei(
                         new BigDecimal(tx.gasLimit).multiply(new BigDecimal(tx.gasPrice)),
                         Convert.Unit.ETHER);
-        txFee.setText(feeBigDecimal.stripTrailingZeros().toPlainString() + " ETH");
+        txFee.setText(
+                feeBigDecimal.stripTrailingZeros().toPlainString()
+                        + " "
+                        + mSystemConfigManager.getCurrentBaseUnit(
+                                coinTypeProvider.currentCoinType()));
 
         nextButton = findViewById(R.id.btn_confirm_pay);
         cancelButton = findViewById(R.id.img_cancel);
@@ -264,13 +278,21 @@ public class DappActionSheetDialog extends BottomSheetDialog
         showTransactionSuccess();
     }
 
+    private Vm.CoinType getCurrentCoinType() {
+        if (mCurrentCoinTypeProvider != null) {
+            return mCurrentCoinTypeProvider.currentCoinType();
+        } else {
+            throw new RuntimeException("Please set up setCurrentCoinProvider");
+        }
+    }
+
     private void showTransactionSuccess() {
         switch (mode) {
             case SEND_TRANSACTION:
                 // Display transaction success dialog
                 TransactionCompletion.start(
                         getContext(),
-                        Vm.CoinType.ETH,
+                        getCurrentCoinType(),
                         txHash,
                         String.format(Locale.ENGLISH, "%s %s", amount, "" /* Unit */));
                 dismiss();
