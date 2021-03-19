@@ -17,7 +17,7 @@
 @property (nonatomic,assign)PyObject *pyClass;
 //硬件实例
 @property (nonatomic,assign)PyObject *pyHwClass;
-@property (nonatomic,strong)NSArray *noTipsInterface;
+@property (nonatomic,strong)NSSet *noTipsInterface;
 @end
 
 @implementation OKPyCommandsManager
@@ -735,7 +735,7 @@ static dispatch_once_t once;
 }
 
 - (void)asyncCall:(NSString *)method parameter:(NSDictionary *)parameter callback:(void(^)(id result))callback {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         id result = [self callInterface:method parameter:parameter];
         if (!callback) {
             return;
@@ -747,7 +747,7 @@ static dispatch_once_t once;
 }
 
 - (void)asyncCall:(NSString *)method parameter:(NSDictionary *)parameter asyncCallback:(void(^)(id result))callback {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         id result = [self callInterface:method parameter:parameter];
         if (callback) {
             callback(result);
@@ -755,17 +755,17 @@ static dispatch_once_t once;
     });
 }
 
-- (NSArray *)noTipsInterface
+- (NSSet *)noTipsInterface
 {
     if (!_noTipsInterface) {
-        _noTipsInterface = @[
+        _noTipsInterface = [[NSSet alloc] initWithArray:@[
             kInterfaceSet_currency,
             kInterfaceSet_base_uint,
             kInterfaceget_tx_info_from_raw,
             kInterfaceget_default_fee_info,
             kInterface_add_token,
             kInterface_get_customer_token_info
-        ];
+        ]];
     }
     return _noTipsInterface;;
 }
