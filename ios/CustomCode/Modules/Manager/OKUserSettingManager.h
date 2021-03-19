@@ -53,6 +53,7 @@ typedef NS_ENUM(NSInteger, OKDevicePINInputMethod) {
 
 @property (nonatomic,copy)NSString* currentSelectPwdType;
 
+- (void)setDefaultSetings;
 @end
 
 NS_ASSUME_NONNULL_END

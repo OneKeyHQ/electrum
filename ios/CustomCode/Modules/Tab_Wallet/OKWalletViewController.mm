@@ -33,6 +33,7 @@
 #import "OKNotiAssetModel.h"
 #import "OKChangeWalletController.h"
 #import "OKQRScanResultController.h"
+#import "OKSwitchWalletModel.h"
 
 @interface OKWalletViewController ()<UITableViewDelegate,UITableViewDataSource,UINavigationControllerDelegate,UIGestureRecognizerDelegate>
 
@@ -75,33 +76,24 @@
 @property (strong, nonatomic) UIRefreshControl* refreshControl;
 @property (weak, nonatomic) IBOutlet UIView *hwBgView;
 @property (weak, nonatomic) IBOutlet UILabel *hwWalletNameLabel;
-
 //备份提醒
 @property (weak, nonatomic) IBOutlet UIView *backupBgView;
 @property (weak, nonatomic) IBOutlet UILabel *backupTitleLabel;
 @property (weak, nonatomic) IBOutlet UILabel *backupDescLabel;
-
 @property (weak, nonatomic) IBOutlet UIStackView *stackView;
-
 //assetTableViewHeader
 @property (weak, nonatomic) IBOutlet UIView *assettableViewHeader;
 @property (weak, nonatomic) IBOutlet UILabel *tableViewHeaderTitleLabel;
 @property (weak, nonatomic) IBOutlet UITextField *tableViewHeaderSearch;
 @property (weak, nonatomic) IBOutlet UIButton *tableViewHeaderAddBtn;
 - (IBAction)tableViewHeaderAddBtnClick:(UIButton *)sender;
-
 - (IBAction)assetListBtnClick:(UIButton *)sender;
-
 @property (weak, nonatomic) IBOutlet UIView *tableViewHeaderView;
 @property (weak, nonatomic) IBOutlet UIView *tableViewFooterView;
 @property (weak, nonatomic) IBOutlet UIView *footerViewlow;
 @property (weak, nonatomic) IBOutlet UIView *footerViewBlank;
-
-
 @property (nonatomic,strong)NSArray *listWallets;
-
 @property (nonatomic,assign)BOOL isCanSideBack;
-
 @property (nonatomic,strong)OKNotiAssetModel *notiAssetModel;
 @property (nonatomic,strong)NSArray *allAssetData;
 @end
@@ -119,80 +111,15 @@
 
     [self stupUI];
     [self showFirstUse];
-    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notiWalletCreateComplete:) name:kNotiWalletCreateComplete object:nil];
-    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notiSelectWalletComplete) name:kNotiSelectWalletComplete object:nil];
-    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notiUpdate_status:) name:kNotiUpdate_status object:nil];
-    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notiDeleteWalletComplete) name:kNotiDeleteWalletComplete object:nil];
-    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notiBackUPWalletComplete) name:kNotiBackUPWalletComplete object:nil];
-    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notiHwInfoUpdate) name:kNotiHwInfoUpdate object:nil];
+    [self addNotifications];
 
     [OKPyCommandsManager sharedInstance];
-
     [kPyCommandsManager callInterface:kInterfaceLoad_all_wallet parameter:@{}];
-
-    [self loadWalletList];
-    [self refreshUI];
-    dispatch_after(1.0, dispatch_get_global_queue(0, 0), ^{
-        [self setDefault];
-    });
-}
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter]removeObserver:self];
-}
-- (void)setDefault
-{
-    //设置默认法币
-    if (kWalletManager.currentFiat == nil || kWalletManager.currentFiat.length == 0) {
-        [kWalletManager setCurrentFiat:@"CNY"];
-        [kWalletManager setCurrentFiatSymbol:kWalletManager.supportFiatsSymbol[0]];
-        [kPyCommandsManager callInterface:kInterfaceSet_currency parameter:@{@"ccy":@"CNY"}];
-    }else{
-        [kPyCommandsManager callInterface:kInterfaceSet_currency parameter:@{@"ccy":kWalletManager.currentFiat}];
-    }
-
-    //设置默认BTC单位
-    if (kWalletManager.currentBitcoinUnit == nil || kWalletManager.currentBitcoinUnit.length == 0) {
-        [kWalletManager setCurrentBitcoinUnit:@"BTC"];
-        [kPyCommandsManager callInterface:kInterfaceSet_base_uint parameter:@{@"base_unit":@"BTC"}];
-    }else{
-        [kPyCommandsManager callInterface:kInterfaceSet_base_uint parameter:@{@"base_unit":kWalletManager.currentBitcoinUnit}];
-    }
-
-
-    //设置默认的BTC浏览器
-    if (kUserSettingManager.currentBtcBrowser == nil || kUserSettingManager.currentBtcBrowser.length == 0) {
-        [kUserSettingManager setCurrentBtcBrowser:kUserSettingManager.btcBrowserList.firstObject];
-    }
-
-    //设置默认的ETH浏览器
-    if (kUserSettingManager.currentEthBrowser == nil || kUserSettingManager.currentEthBrowser.length == 0) {
-        [kUserSettingManager setCurrentEthBrowser:kUserSettingManager.ethBrowserList.firstObject];
-    }
-
-    [kPyCommandsManager callInterface:kInterfaceset_rbf parameter:@{@"status_rbf":@"1"}];
-    [kPyCommandsManager callInterface:kInterfaceset_unconf parameter:@{@"x":@"1"}];
-    [kUserSettingManager setUnconfFlag:YES];
-    [kUserSettingManager setRbfFlag:YES];
-
-
-    if (kUserSettingManager.currentMarketSource == nil || kUserSettingManager.currentMarketSource.length == 0) {
-        NSArray *marketSource =  [kPyCommandsManager callInterface:kInterfaceget_exchanges parameter:@{}];
-        NSString *first =  marketSource.firstObject;
-        [kUserSettingManager setCurrentMarketSource:first];
-        [kPyCommandsManager callInterface:kInterfaceset_exchange parameter:@{@"exchange":first}];
-    }
-
-    if (kUserSettingManager.electrum_server == nil || kUserSettingManager.electrum_server.length == 0) {
-       NSDictionary *dict =   [kPyCommandsManager callInterface:kInterfaceget_default_server parameter:@{}];
-        if (dict != nil) {
-            NSString *electrumNode = [NSString stringWithFormat:@"%@:%@",[dict safeStringForKey:@"host"],[dict safeStringForKey:@"port"]];
-            [kUserSettingManager setElectrum_server:electrumNode];
-        }
-    }
+    [self checkWalletResetUI];
+    [kUserSettingManager setDefaultSetings];
 }
 
-- (void)selectWallet
+- (void)switchWallet
 {
     NSString *name = kWalletManager.currentWalletInfo.name;
     if ((name == nil || name.length == 0) && self.listWallets.count > 0 ) {
@@ -203,15 +130,10 @@
     }
     OKWeakSelf(self)
     [MBProgressHUD showHUDAddedTo:weakself.view animated:YES];
-    [kPyCommandsManager callInterface:kInterface_switch_wallet parameter:@{@"name":kWalletManager.currentWalletInfo.name}];
     dispatch_sync(dispatch_get_global_queue(0, 0), ^{
-        NSDictionary* result = [kPyCommandsManager callInterface:kInterface_get_wallet_balance parameter:@{}];
+        id result = [kPyCommandsManager callInterface:kInterface_switch_wallet parameter:@{@"name":kWalletManager.currentWalletInfo.name}];
         if (result != nil) {
-            NSArray *bArray = result[@"wallets"];
-            NSDictionary *bDict = [bArray firstObject];
-            NSString *balance = [bDict safeStringForKey:@"balance"];
-            NSString *fiat = [bDict safeStringForKey:@"fiat"];
-            [self updateStatus:@{@"balance":balance,@"fiat":fiat}];;
+            [self updateDataList:result isPush:NO];
         }else{
             dispatch_sync(dispatch_get_main_queue(), ^{
                 [MBProgressHUD hideHUDForView:weakself.view animated:YES];
@@ -220,23 +142,58 @@
     });
 }
 
-- (void)updateStatus:(NSDictionary *)dict
+- (void)getBalance
 {
-    self.notiAssetModel = [OKNotiAssetModel mj_objectWithKeyValues:dict];
+    dispatch_sync(dispatch_get_global_queue(0, 0), ^{
+        NSDictionary* result = [kPyCommandsManager callInterface:kInterface_get_wallet_balance parameter:@{}];
+        if (result != nil) {
+            NSMutableDictionary *dictM = [NSMutableDictionary dictionaryWithDictionary:result];
+            [dictM setValue:[result safeStringForKey:@"all_balance"] forKey:@"sum_fiat"];
+            [dictM setValue:[result safeStringForKey:@"all_balance"] forKey:@"fiat"];
+            [dictM setValue:kWalletManager.currentWalletInfo.addr forKey:@"address"];
+            [dictM setValue:kWalletManager.currentWalletInfo.coinType forKey:@"coin"];
+            NSMutableArray *walletM = [NSMutableArray arrayWithArray:result[@"wallets"]];
+            if (walletM.count > 0) {
+                NSDictionary *walletD = [walletM firstObject];
+                if ([walletD safeStringForKey:@"address"].length == 0) {
+                    [dictM setValue:[walletD safeStringForKey:@"balance"] forKey:@"balance"];
+                    [walletM removeObject:walletD];
+                }
+            }
+            dictM[@"tokens"] = walletM;
+            [self updateDataList:dictM isPush:YES];
+        }
+    });
+}
+
+- (void)updateDataList:(NSDictionary *)dict isPush:(BOOL)push
+{
     NSMutableArray *arrayM = [NSMutableArray array];
+    NSArray *tokens = [NSArray array];
     OKAssetTableViewCellModel *coinModel = [OKAssetTableViewCellModel new];
-    coinModel.balance = [kTools decimalNumberHandlerWithValue:[NSDecimalNumber decimalNumberWithString:self.notiAssetModel.balance] roundingMode:NSRoundDown scale:[kWalletManager getPrecision:self.notiAssetModel.coin]].stringValue;
-    coinModel.coinType = self.notiAssetModel.coin;
-    coinModel.money = self.notiAssetModel.fiat;
-    coinModel.iconImage = [NSString stringWithFormat:@"token_%@",[kWalletManager.currentWalletInfo.coinType lowercaseString]];
-    [arrayM addObject:coinModel];
-    if (self.notiAssetModel.tokens.count != 0) {
-        for (OKTokenAssetModel *model in self.notiAssetModel.tokens) {
+    if (push) {
+        self.notiAssetModel = [OKNotiAssetModel mj_objectWithKeyValues:dict];
+        tokens = self.notiAssetModel.tokens;
+        coinModel.balance = self.notiAssetModel.balance;
+        coinModel.coinType = self.notiAssetModel.coin;
+        coinModel.money = self.notiAssetModel.fiat;
+        coinModel.iconImage = [NSString stringWithFormat:@"token_%@",[kWalletManager.currentWalletInfo.coinType lowercaseString]];
+        [arrayM addObject:coinModel];
+    }else{
+        OKSwitchWalletModel *switchWalletModel = [OKSwitchWalletModel mj_objectWithKeyValues:dict];
+        tokens = switchWalletModel.wallets;
+        coinModel.balance = @"0";
+        coinModel.coinType = kWalletManager.currentWalletInfo.coinType;
+        coinModel.money = @"0";
+        coinModel.iconImage = [NSString stringWithFormat:@"token_%@",[coinModel.coinType lowercaseString]];
+        [arrayM addObject:coinModel];
+    }
+    if (tokens.count != 0) {
+        for (OKTokenAssetModel *model in tokens) {
             OKAssetTableViewCellModel *tokenModel = [OKAssetTableViewCellModel new];
-            NSString *key = [NSString stringWithFormat:@"token_%@",[coinModel.coinType lowercaseString]];
-            tokenModel.balance = [kTools decimalNumberHandlerWithValue:[NSDecimalNumber decimalNumberWithString:model.balance] roundingMode:NSRoundDown scale:[kWalletManager getPrecision:key]].stringValue;
+            tokenModel.balance = model.balance;
             tokenModel.coinType = model.coin;
-            tokenModel.money = model.fiat;
+            tokenModel.money = model.fiat?:@"";
             tokenModel.contract_addr = model.address;
             NSArray *tokens = [[OKTokenManager sharedInstance]tokensFilterWith:model.address];
             NSString *imageName = [NSString stringWithFormat:@"token_%@",[kWalletManager.currentWalletInfo.coinType lowercaseString]];
@@ -281,101 +238,40 @@
     });
 }
 
-#pragma mark -  初始化UI
-- (void)stupUI
-{
-    [self.topView setLayerDefaultRadius];
-    [self.bottomView setLayerDefaultRadius];
-    [self.leftViewBg setLayerRadius:14];
-    [self.hwBgView setLayerRadius:15];
-    [self.scanBtn addTarget:self action:@selector(scanBtnClick) forControlEvents:UIControlEventTouchUpInside];
-    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapGestureClick)];
-    [self.leftView addGestureRecognizer:tapGesture];
-    self.navigationController.delegate = self;
-
-    [self.coinImage addTarget:self action:@selector(tapGestureClick) forControlEvents:UIControlEventTouchUpInside];
-
-    //asset界面
-    [self.walletTopBgView setCornerWith:20 side:OKCornerPathTopLeft|OKCornerPathTopRight withSize:CGSizeMake(SCREEN_WIDTH - 40, 168)];
-    [self.srBgView setCornerWith:20 side:OKCornerPathBottomLeft|OKCornerPathBottomRight withSize:CGSizeMake(SCREEN_WIDTH - 40, 68)];
-    [self.assettableViewHeader setCornerWith:20 side:OKCornerPathTopLeft|OKCornerPathTopRight withSize:CGSizeMake(SCREEN_WIDTH - 40, 74)];
-    [self.footerViewlow setCornerWith:20 side:OKCornerPathBottomLeft|OKCornerPathBottomRight withSize:CGSizeMake(SCREEN_WIDTH - 40, 74)];
-    [self.backupBgView setLayerDefaultRadius];
-    [self.tableViewHeaderSearch setLayerBoarderColor:HexColor(0xF2F2F2) width:1 radius:self.tableViewHeaderSearch.height * 0.5];
-    self.assetTableView.rowHeight = 75;
-
-    _refreshControl = [[UIRefreshControl alloc]init];
-    _refreshControl.tintColor = [UIColor lightGrayColor];
-    _refreshControl.attributedTitle = [[NSAttributedString alloc]initWithString:@""];
-    [_refreshControl addTarget:self action:@selector(onRefresh) forControlEvents:UIControlEventValueChanged];
-    self.assetTableView.refreshControl = _refreshControl;
-
-    if (@available(iOS 11.0, *)) {
-        [self.stackView setCustomSpacing:0 afterView:self.walletTopBgView];
-    } else {
-        // Fallback on earlier versions
-    }
-
-
-    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(backUpBgClick)];
-    [self.backupBgView addGestureRecognizer:tap];
-
-
-    UITapGestureRecognizer *tapWalletTopBgView = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapWalletTopBgViewClick)];
-
-    [self.walletTopBgView addGestureRecognizer:tapWalletTopBgView];
-
-    UITapGestureRecognizer *tapeye = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapEyeClick)];
-    self.eyeBtn.userInteractionEnabled = YES;
-    [self.eyebgView addGestureRecognizer:tapeye];
-    [self changeEye];
-
-    UITapGestureRecognizer *tapBanner = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapBanner)];
-    self.bannerImageView.userInteractionEnabled = YES;
-    [self.bannerImageView addGestureRecognizer:tapBanner];
-}
 - (void)onRefresh
 {
     [self performSelector:@selector(loadData) withObject:nil afterDelay:1.5];
 }
 - (void)loadData
 {
+    [self getBalance];
     [_refreshControl endRefreshing];
 }
 #pragma mark - 检查钱包状态并重置UI
 - (void)checkWalletResetUI
 {
-    [self loadWalletList];
-    [self refreshUI];
-}
-- (void)loadWalletList
-{
     self.listWallets = [kPyCommandsManager callInterface:kInterfaceList_wallets parameter:@{}];
     if (self.listWallets.count > 0) {
-        [self selectWallet];
-        self.scanBtn.hidden = NO;
+        [self switchWallet];
     }else{
-        self.scanBtn.hidden = YES;
         dispatch_async(dispatch_get_main_queue(), ^{
             self.walletName.text = MyLocalizedString(@"No purse", nil);
             [self.coinImage setImage:[UIImage imageNamed:@"loco_round"] forState:UIControlStateNormal];
         });
-    }
-}
-- (void)refreshUI
-{
+    };
     BOOL isBackUp = YES;
     //是否创建过钱包
     if (self.listWallets.count > 0) { //创建过
+        self.scanBtn.hidden = NO;
         self.createBgView.hidden = YES;
         self.walletHomeBgView.hidden = NO;
         isBackUp = [[kPyCommandsManager callInterface:kInterfaceget_backup_info parameter:@{@"name":kWalletManager.currentWalletInfo.name}] boolValue];
     }else{
+        self.scanBtn.hidden = YES;
         self.walletName.text = MyLocalizedString(@"No purse", nil);
         self.createBgView.hidden = NO;
         self.walletHomeBgView.hidden = YES;
     }
-
     if (isBackUp) {
         self.backupBgView.hidden = YES;
         self.tableViewHeaderView.frame = CGRectMake(0, 0, SCREEN_WIDTH, 348);
@@ -405,7 +301,7 @@
         self.tableViewHeaderAddBtn.hidden = NO;
     }else{
         self.tableViewHeaderAddBtn.hidden = YES;
-    }
+    };
 }
 
 - (void)showFirstUse
@@ -643,8 +539,12 @@
         }
         return;
     }
+    OKAssetTableViewCellModel *model = self.allAssetData[indexPath.row];
+    if (model.coinType.length == 0 || model.coinType == nil) {
+        return;
+    }
     OKTxListViewController *txListVc = [OKTxListViewController initViewControllerWithStoryboardName:@"Tab_Wallet"];
-    txListVc.model = self.allAssetData[indexPath.row];
+    txListVc.model = model;
     txListVc.coinType = kWalletManager.currentWalletInfo.coinType;
     if ([[kWalletManager.currentWalletInfo.coinType lowercaseString]isEqualToString:[txListVc.model.coinType lowercaseString]]) {
         txListVc.tokenType = @"";
@@ -788,7 +688,7 @@
 - (void)notiUpdate_status:(NSNotification *)noti
 {
     NSDictionary * infoDic = [noti object];
-    [self updateStatus:infoDic];
+    [self updateDataList:infoDic isPush:YES];
 }
 
 - (void)notiDeleteWalletComplete
@@ -844,4 +744,73 @@
     return self.isCanSideBack;
 }
 
+
+- (void)addNotifications
+{
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notiWalletCreateComplete:) name:kNotiWalletCreateComplete object:nil];
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notiSelectWalletComplete) name:kNotiSelectWalletComplete object:nil];
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notiUpdate_status:) name:kNotiUpdate_status object:nil];
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notiDeleteWalletComplete) name:kNotiDeleteWalletComplete object:nil];
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notiBackUPWalletComplete) name:kNotiBackUPWalletComplete object:nil];
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notiHwInfoUpdate) name:kNotiHwInfoUpdate object:nil];
+}
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter]removeObserver:self];
+}
+
+
+#pragma mark -  初始化UI
+- (void)stupUI
+{
+    [self.topView setLayerDefaultRadius];
+    [self.bottomView setLayerDefaultRadius];
+    [self.leftViewBg setLayerRadius:14];
+    [self.hwBgView setLayerRadius:15];
+    [self.scanBtn addTarget:self action:@selector(scanBtnClick) forControlEvents:UIControlEventTouchUpInside];
+    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapGestureClick)];
+    [self.leftView addGestureRecognizer:tapGesture];
+    self.navigationController.delegate = self;
+
+    [self.coinImage addTarget:self action:@selector(tapGestureClick) forControlEvents:UIControlEventTouchUpInside];
+
+    //asset界面
+    [self.walletTopBgView setCornerWith:20 side:OKCornerPathTopLeft|OKCornerPathTopRight withSize:CGSizeMake(SCREEN_WIDTH - 40, 168)];
+    [self.srBgView setCornerWith:20 side:OKCornerPathBottomLeft|OKCornerPathBottomRight withSize:CGSizeMake(SCREEN_WIDTH - 40, 68)];
+    [self.assettableViewHeader setCornerWith:20 side:OKCornerPathTopLeft|OKCornerPathTopRight withSize:CGSizeMake(SCREEN_WIDTH - 40, 74)];
+    [self.footerViewlow setCornerWith:20 side:OKCornerPathBottomLeft|OKCornerPathBottomRight withSize:CGSizeMake(SCREEN_WIDTH - 40, 74)];
+    [self.backupBgView setLayerDefaultRadius];
+    [self.tableViewHeaderSearch setLayerBoarderColor:HexColor(0xF2F2F2) width:1 radius:self.tableViewHeaderSearch.height * 0.5];
+    self.assetTableView.rowHeight = 75;
+
+    _refreshControl = [[UIRefreshControl alloc]init];
+    _refreshControl.tintColor = [UIColor lightGrayColor];
+    _refreshControl.attributedTitle = [[NSAttributedString alloc]initWithString:@""];
+    [_refreshControl addTarget:self action:@selector(onRefresh) forControlEvents:UIControlEventValueChanged];
+    self.assetTableView.refreshControl = _refreshControl;
+
+    if (@available(iOS 11.0, *)) {
+        [self.stackView setCustomSpacing:0 afterView:self.walletTopBgView];
+    } else {
+        // Fallback on earlier versions
+    }
+
+
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(backUpBgClick)];
+    [self.backupBgView addGestureRecognizer:tap];
+
+
+    UITapGestureRecognizer *tapWalletTopBgView = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapWalletTopBgViewClick)];
+
+    [self.walletTopBgView addGestureRecognizer:tapWalletTopBgView];
+
+    UITapGestureRecognizer *tapeye = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapEyeClick)];
+    self.eyeBtn.userInteractionEnabled = YES;
+    [self.eyebgView addGestureRecognizer:tapeye];
+    [self changeEye];
+
+    UITapGestureRecognizer *tapBanner = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapBanner)];
+    self.bannerImageView.userInteractionEnabled = YES;
+    [self.bannerImageView addGestureRecognizer:tapBanner];
+}
 @end

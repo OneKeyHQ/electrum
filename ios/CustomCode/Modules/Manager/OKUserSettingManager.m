@@ -143,4 +143,59 @@ static dispatch_once_t once;
     return OKDevicePINInputMethodOnApp;
 }
 
+
+
+- (void)setDefaultSetings
+{
+    //设置默认法币
+    if (kWalletManager.currentFiat == nil || kWalletManager.currentFiat.length == 0) {
+        [kWalletManager setCurrentFiat:@"CNY"];
+        [kWalletManager setCurrentFiatSymbol:kWalletManager.supportFiatsSymbol[0]];
+        [kPyCommandsManager callInterface:kInterfaceSet_currency parameter:@{@"ccy":@"CNY"}];
+    }else{
+        [kPyCommandsManager callInterface:kInterfaceSet_currency parameter:@{@"ccy":kWalletManager.currentFiat}];
+    }
+
+    //设置默认BTC单位
+    if (kWalletManager.currentBitcoinUnit == nil || kWalletManager.currentBitcoinUnit.length == 0) {
+        [kWalletManager setCurrentBitcoinUnit:@"BTC"];
+        [kPyCommandsManager callInterface:kInterfaceSet_base_uint parameter:@{@"base_unit":@"BTC"}];
+    }else{
+        [kPyCommandsManager callInterface:kInterfaceSet_base_uint parameter:@{@"base_unit":kWalletManager.currentBitcoinUnit}];
+    }
+
+
+    //设置默认的BTC浏览器
+    if (kUserSettingManager.currentBtcBrowser == nil || kUserSettingManager.currentBtcBrowser.length == 0) {
+        [kUserSettingManager setCurrentBtcBrowser:kUserSettingManager.btcBrowserList.firstObject];
+    }
+
+    //设置默认的ETH浏览器
+    if (kUserSettingManager.currentEthBrowser == nil || kUserSettingManager.currentEthBrowser.length == 0) {
+        [kUserSettingManager setCurrentEthBrowser:kUserSettingManager.ethBrowserList.firstObject];
+    }
+
+    [kPyCommandsManager callInterface:kInterfaceset_rbf parameter:@{@"status_rbf":@"1"}];
+    [kPyCommandsManager callInterface:kInterfaceset_unconf parameter:@{@"x":@"1"}];
+    [kUserSettingManager setUnconfFlag:YES];
+    [kUserSettingManager setRbfFlag:YES];
+
+
+    if (kUserSettingManager.currentMarketSource == nil || kUserSettingManager.currentMarketSource.length == 0) {
+        NSArray *marketSource =  [kPyCommandsManager callInterface:kInterfaceget_exchanges parameter:@{}];
+        NSString *first =  marketSource.firstObject;
+        [kUserSettingManager setCurrentMarketSource:first];
+        [kPyCommandsManager callInterface:kInterfaceset_exchange parameter:@{@"exchange":first}];
+    }
+
+    if (kUserSettingManager.electrum_server == nil || kUserSettingManager.electrum_server.length == 0) {
+       NSDictionary *dict =   [kPyCommandsManager callInterface:kInterfaceget_default_server parameter:@{}];
+        if (dict != nil) {
+            NSString *electrumNode = [NSString stringWithFormat:@"%@:%@",[dict safeStringForKey:@"host"],[dict safeStringForKey:@"port"]];
+            [kUserSettingManager setElectrum_server:electrumNode];
+        }
+    }
+}
+
+
 @end

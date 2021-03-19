@@ -24,7 +24,8 @@
     [self.iconImageView sd_setImageWithURL:model.iconImage.toURL placeholderImage:[UIImage imageNamed:model.iconImage]];
     self.coinTypeLabel.text = [model.coinType uppercaseString];
     if (!kWalletManager.showAsset) {
-        self.balanceLabel.text = [NSString stringWithFormat:@"%@",model.balance];
+        NSString *key = model.contract_addr.length > 0 ? [NSString stringWithFormat:@"token_%@",[kWalletManager.currentWalletInfo.coinType lowercaseString]]:[kWalletManager.currentWalletInfo.coinType lowercaseString];
+        self.balanceLabel.text = model.balance?[kTools decimalNumberHandlerWithValue:[NSDecimalNumber decimalNumberWithString:model.balance] roundingMode:NSRoundDown scale:[kWalletManager getPrecision:key]].stringValue:@"0";
         NSArray *moneyArray = [model.money componentsSeparatedByString:@" "];
         NSString *money = [moneyArray firstObject];
         if (money.length > 0 && money != nil) {

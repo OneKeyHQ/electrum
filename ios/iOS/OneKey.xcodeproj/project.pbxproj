@@ -437,6 +437,8 @@
 		8822105125D003F500BC7819 /* OKDeviceIdInconsistentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8822104F25D003F400BC7819 /* OKDeviceIdInconsistentViewController.m */; };
 		882F8B5225F749FF004099D7 /* OKNotiAssetModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 882F8B5025F749FF004099D7 /* OKNotiAssetModel.h */; };
 		882F8B5325F749FF004099D7 /* OKNotiAssetModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 882F8B5125F749FF004099D7 /* OKNotiAssetModel.m */; };
+		8832128F260496D100A0314E /* OKSwitchWalletModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 8832128D260496D100A0314E /* OKSwitchWalletModel.h */; };
+		88321290260496D100A0314E /* OKSwitchWalletModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 8832128E260496D100A0314E /* OKSwitchWalletModel.m */; };
 		885798CA25E7982F00C16059 /* OKSendFeeModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 885798C825E7982F00C16059 /* OKSendFeeModel.h */; };
 		885798CB25E7982F00C16059 /* OKSendFeeModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 885798C925E7982F00C16059 /* OKSendFeeModel.m */; };
 		8864AEAE25E6081100459C4E /* SelectAssetType.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8864AEA525E6081100459C4E /* SelectAssetType.storyboard */; };
@@ -1077,6 +1079,8 @@
 		8822104F25D003F400BC7819 /* OKDeviceIdInconsistentViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKDeviceIdInconsistentViewController.m; sourceTree = "<group>"; };
 		882F8B5025F749FF004099D7 /* OKNotiAssetModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKNotiAssetModel.h; sourceTree = "<group>"; };
 		882F8B5125F749FF004099D7 /* OKNotiAssetModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKNotiAssetModel.m; sourceTree = "<group>"; };
+		8832128D260496D100A0314E /* OKSwitchWalletModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKSwitchWalletModel.h; sourceTree = "<group>"; };
+		8832128E260496D100A0314E /* OKSwitchWalletModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKSwitchWalletModel.m; sourceTree = "<group>"; };
 		885798C825E7982F00C16059 /* OKSendFeeModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKSendFeeModel.h; sourceTree = "<group>"; };
 		885798C925E7982F00C16059 /* OKSendFeeModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKSendFeeModel.m; sourceTree = "<group>"; };
 		8864AEA525E6081100459C4E /* SelectAssetType.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = SelectAssetType.storyboard; sourceTree = "<group>"; };
@@ -1933,6 +1937,8 @@
 				88F80BF325F72C480095954F /* OKTokenAssetModel.m */,
 				882F8B5025F749FF004099D7 /* OKNotiAssetModel.h */,
 				882F8B5125F749FF004099D7 /* OKNotiAssetModel.m */,
+				8832128D260496D100A0314E /* OKSwitchWalletModel.h */,
+				8832128E260496D100A0314E /* OKSwitchWalletModel.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -2529,6 +2535,7 @@
 				8814248C25B18EAA00961668 /* mask.h in Headers */,
 				881424CB25B18EAA00961668 /* OKProxyServerModel.h in Headers */,
 				B058D8B625B55663000EB27C /* OKDeviceUpdateModel.h in Headers */,
+				8832128F260496D100A0314E /* OKSwitchWalletModel.h in Headers */,
 				8822105025D003F500BC7819 /* OKDeviceIdInconsistentViewController.h in Headers */,
 				8814242A25B18EAA00961668 /* OKMnemonicImportViewController.h in Headers */,
 				8814255D25B18EAA00961668 /* OKFindWalletTableViewCellModel.h in Headers */,
@@ -3055,6 +3062,7 @@
 				8814244E25B18EAA00961668 /* Base64.m in Sources */,
 				B08CCEA325E118DE003D12E8 /* OKCSViewController.m in Sources */,
 				881424BF25B18EAA00961668 /* OKProxyServerTableViewController.m in Sources */,
+				88321290260496D100A0314E /* OKSwitchWalletModel.m in Sources */,
 				881424C025B18EAA00961668 /* OKBrowserBTCTableViewController.m in Sources */,
 				B0CA023A25EE2D47002EAB56 /* OKAddTokenController.m in Sources */,
 				8814243625B18EAA00961668 /* OKWalletInfoModel.m in Sources */,

@@ -9,7 +9,6 @@
 #import "OKNotiAssetModel.h"
 
 @implementation OKNotiAssetModel
-
 +(NSDictionary *)mj_objectClassInArray
 {
     return @{@"tokens":[OKTokenAssetModel class]};
