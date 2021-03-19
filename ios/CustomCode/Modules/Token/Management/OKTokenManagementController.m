@@ -86,6 +86,10 @@
     return UIColor.BG_W02;
 }
 
+- (UIScrollView *)scrollViewForNavbar {
+    return self.tableView;
+}
+
 - (void)setSearchMode:(BOOL)searchMode {
     _searchMode = searchMode;
     self.indexView.hidden = searchMode;

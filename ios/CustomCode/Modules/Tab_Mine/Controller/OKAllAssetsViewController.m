@@ -41,6 +41,10 @@
     return UIColor.BG_W02;
 }
 
+- (UIScrollView *)scrollViewForNavbar {
+    return self.tableView;
+}
+
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
     [self.searchBar endEditing:YES];
 }

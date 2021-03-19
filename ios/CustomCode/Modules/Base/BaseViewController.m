@@ -74,19 +74,6 @@ static const CGFloat showNavBarSeparatorScrollViewOffsetThreshold = 5;
 }
 
 #pragma mark - Navbar appearence
-- (UIImageView *)findHairlineImageViewUnder:(UIView *)view {
-   if ([view isKindOfClass:UIImageView.class] && view.bounds.size.height <= 1.0) {
-       return (UIImageView *)view;
-   }
-   for (UIView *subview in view.subviews) {
-       UIImageView *imageView = [self findHairlineImageViewUnder:subview];
-       if (imageView) {
-           return imageView;
-       }
-   }
-   return nil;
-}
-
 - (void)backButtonWhiteColor {
     UIImage *whiteImage = [[UIImage imageNamed:@"arrow_left_white"] imageWithColor:[UIColor whiteColor]];
     [(UIButton *)self.navigationItem.leftBarButtonItem.customView setImage:whiteImage forState:UIControlStateNormal];
@@ -147,7 +134,15 @@ static const CGFloat showNavBarSeparatorScrollViewOffsetThreshold = 5;
     _navBarSeparator.hidden = !showNavbarSeparator;
 }
 
+- (UIScrollView *)scrollViewForNavbar {
+    return nil;
+}
+
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    UIScrollView *targetScrollView = [self scrollViewForNavbar];
+    if (scrollView != targetScrollView) {
+        return;
+    }
     CGFloat offsetY = scrollView.contentOffset.y;
     self.showNavbarSeparator = offsetY > showNavBarSeparatorScrollViewOffsetThreshold;
 }

@@ -14,4 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+
+@interface UINavigationBar (OKAppreance)
+- (nullable UIImageView *)ok_separator;
+@end
 NS_ASSUME_NONNULL_END

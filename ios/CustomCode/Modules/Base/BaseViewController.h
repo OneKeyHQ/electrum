@@ -21,16 +21,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (__kindof BaseViewController *)initViewControllerWithStoryboardName:(NSString *)name;
 
-// override
+/// override
 - (UIColor *)navBarTintColor;
 
-// 当实现了 <UIScrollViewDelegate> 且 scrollView 向上滚动时显示 navbar 分割线，子类重写时需要调用 super
+/// 当实现了 <UIScrollViewDelegate> 且 scrollView 向上滚动时显示 navbar 分割线，子类重写时需要调用 super
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView NS_REQUIRES_SUPER;
+
+/// 返回的 ScrollView 作为判断 navbar 样式的依据。
+- (UIScrollView *)scrollViewForNavbar;
 
 - (void)backButtonWhiteColor;
 - (void)hideBackBtn;
 - (void)setNavigationBarBackgroundColorWithClearColor;
 - (void)backToPrevious;
+- (void)setUpNavBar;
 @end
 
 NS_ASSUME_NONNULL_END
