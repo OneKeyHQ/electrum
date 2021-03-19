@@ -317,13 +317,14 @@ class PyWalib:
     @classmethod
     @contextmanager
     def override_server(cls, config):
-        cur_config = cls.server_config
+        cache_config = cls.server_config
 
         try:
             cls.set_server(config)
             yield
         finally:
-            cls.set_server(cur_config)
+            if cls.server_config.get("id") == config.get("id"):
+                cls.set_server(cache_config)
 
     @staticmethod
     def get_coin_price(from_cur, contract_address=None):
