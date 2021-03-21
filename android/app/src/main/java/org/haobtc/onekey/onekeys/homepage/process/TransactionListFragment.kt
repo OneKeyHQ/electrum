@@ -35,6 +35,7 @@ import org.haobtc.onekey.ui.base.BaseLazyFragment
 import org.haobtc.onekey.ui.status.LoadErrorGoBrowserState
 import org.haobtc.onekey.ui.status.LoadProgressState
 import org.haobtc.onekey.ui.status.NoRecordState
+import org.haobtc.onekey.utils.NavUtils
 import org.haobtc.onekey.viewmodel.AppWalletViewModel
 import java.util.*
 import java.util.concurrent.Callable
@@ -108,7 +109,7 @@ class TransactionListFragment : BaseLazyFragment(), OnRefreshListener, OnLoadMor
             requireContext(), item.txId, item.getDate())
         CoinType.ETH.chainType -> {
           val jsonStr = Gson().toJson(item)
-          DetailETHTransactionActivity.start(requireContext(), jsonStr)
+          DetailETHTransactionActivity.start(requireContext(),item.coinType, jsonStr)
         }
       }
     }

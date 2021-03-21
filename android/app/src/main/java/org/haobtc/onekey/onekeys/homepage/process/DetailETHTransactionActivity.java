@@ -33,18 +33,21 @@ import org.haobtc.onekey.utils.Daemon;
 
 public class DetailETHTransactionActivity extends BaseActivity {
 
+    private static final String EXT_COIN_TYPE = "coin_type";
     private static final String EXT_TX_ID = "tx_id";
     private static final String EXT_TX_DETAILS = "ext_tx_details";
     private static final String EXT_TX_TIME = "tx_time";
 
-    public static void start(Context context, String txDetails) {
+    public static void start(Context context, Vm.CoinType coinType, String txDetails) {
         Intent intent = new Intent(context, DetailETHTransactionActivity.class);
+        intent.putExtra(EXT_COIN_TYPE, coinType.name());
         intent.putExtra(EXT_TX_DETAILS, txDetails);
         context.startActivity(intent);
     }
 
-    public static void start(Context context, String txid, String txTime) {
+    public static void start(Context context, Vm.CoinType coinType, String txid, String txTime) {
         Intent intent = new Intent(context, DetailETHTransactionActivity.class);
+        intent.putExtra(EXT_COIN_TYPE, coinType.name());
         intent.putExtra(EXT_TX_ID, txid);
         intent.putExtra(EXT_TX_TIME, txTime);
         context.startActivity(intent);
@@ -83,6 +86,7 @@ public class DetailETHTransactionActivity extends BaseActivity {
     @BindView(R.id.text_tx_num)
     TextView textTxNum;
 
+    private Vm.CoinType mCoinType;
     private String hashDetail;
     private String txDetail;
     private String txTime;
@@ -98,6 +102,7 @@ public class DetailETHTransactionActivity extends BaseActivity {
     @Override
     public void initView() {
         ButterKnife.bind(this);
+        mCoinType = Vm.CoinType.convertByCoinName(getIntent().getStringExtra(EXT_COIN_TYPE));
         hashDetail = getIntent().getStringExtra(EXT_TX_ID);
         txDetail = getIntent().getStringExtra(EXT_TX_DETAILS);
         txTime = getIntent().getStringExtra(EXT_TX_TIME);
@@ -380,14 +385,14 @@ public class DetailETHTransactionActivity extends BaseActivity {
                         this,
                         getString(R.string.check_trsaction),
                         BlockBrowserManager.INSTANCE.browseBlockUrl(
-                                Vm.CoinType.ETH, txBlockHeight));
+                                mCoinType, txBlockHeight));
                 break;
             case R.id.text_tx_num:
                 CheckChainDetailWebActivity.startWebUrl(
                         this,
                         getString(R.string.check_trsaction),
                         BlockBrowserManager.INSTANCE.browseTransactionDetailsUrl(
-                                Vm.CoinType.ETH, txid));
+                                mCoinType, txid));
                 break;
         }
     }

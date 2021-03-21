@@ -11,6 +11,7 @@ import butterknife.OnClick;
 import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.BaseActivity;
 import org.haobtc.onekey.constant.Vm;
+import org.haobtc.onekey.utils.NavUtils;
 
 public class TransactionCompletion extends BaseActivity {
     private static final String EXT_TX_DETAIL = "ext_tx_detail";
@@ -64,15 +65,7 @@ public class TransactionCompletion extends BaseActivity {
                 finish();
                 break;
             case R.id.text_check_detail:
-                switch (mCoinType) {
-                    case BTC:
-                        DetailTransactionActivity.startRawTx(TransactionCompletion.this, txDetail);
-                        break;
-                    case ETH:
-                        DetailETHTransactionActivity.start(
-                                TransactionCompletion.this, txDetail, "");
-                        break;
-                }
+                NavUtils.gotoTransactionDetails(TransactionCompletion.this, mCoinType, txDetail,"");
                 finish();
                 break;
             case R.id.btn_next:

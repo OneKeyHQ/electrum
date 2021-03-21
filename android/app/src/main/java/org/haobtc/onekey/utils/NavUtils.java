@@ -3,12 +3,16 @@ package org.haobtc.onekey.utils;
 import android.content.Context;
 import android.content.Intent;
 import androidx.annotation.Nullable;
+import org.haobtc.onekey.R;
 import org.haobtc.onekey.activities.base.LunchActivity;
+import org.haobtc.onekey.activities.transaction.CheckChainDetailWebActivity;
+import org.haobtc.onekey.bean.Assets;
+import org.haobtc.onekey.bean.ERC20Assets;
+import org.haobtc.onekey.business.blockBrowser.BlockBrowserManager;
 import org.haobtc.onekey.constant.Vm;
 import org.haobtc.onekey.onekeys.HomeOneKeyActivity;
 import org.haobtc.onekey.onekeys.dialog.recovery.importmethod.ImportWalletSetNameActivity;
-import org.haobtc.onekey.onekeys.homepage.process.SendEthActivity;
-import org.haobtc.onekey.onekeys.homepage.process.SendHdActivity;
+import org.haobtc.onekey.onekeys.homepage.process.*;
 import org.haobtc.onekey.ui.activity.SoftPassActivity;
 import org.jetbrains.annotations.NotNull;
 
@@ -76,8 +80,8 @@ public class NavUtils {
     /**
      * @param context
      * @param walletID BTC useless
-     * @param assetID BTC useless
-     * @param vm type
+     * @param assetID  BTC useless
+     * @param vm       type
      */
     public static void gotoTransferActivity(
             Context context, @NotNull String walletID, int assetID, Vm.CoinType vm) {
@@ -85,6 +89,17 @@ public class NavUtils {
             SendHdActivity.start(context, walletID, assetID);
         } else if (vm.chainType.equalsIgnoreCase(Vm.CoinType.ETH.chainType)) {
             SendEthActivity.start(context, walletID, assetID);
+        }
+    }
+
+    public static void gotoTransactionDetails(
+            Context context, Vm.CoinType coinType, String txId, String txTime
+    ) {
+        if(coinType.chainType.equalsIgnoreCase(Vm.CoinType.BTC.chainType)){
+            DetailTransactionActivity.startRawTx(context, txId);
+        }else if(coinType.chainType.equalsIgnoreCase(Vm.CoinType.ETH.chainType)){
+            DetailETHTransactionActivity.start(
+                    context, coinType, txId, txTime);
         }
     }
 }

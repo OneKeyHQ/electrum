@@ -40,7 +40,7 @@ class EthService {
       historyTx?.toString()?.let {
         mGson.fromJson<List<TransactionSummaryVo>>(it, object : TypeToken<List<TransactionSummaryVo>>() {}.type).apply {
           forEach {
-            it.coinType = Vm.CoinType.ETH
+            it.coinType = coinType
           }
         }
       } ?: arrayListOf()
