@@ -21,3 +21,9 @@ def initialize():
 
     # start ticker
     ticker.start_default_ticker(seconds=60)  # every 1 min
+
+
+def terminate():
+    from electrum_gui.common.basic import ticker
+
+    ticker.cancel_default_ticker()

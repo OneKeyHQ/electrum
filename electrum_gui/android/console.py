@@ -190,7 +190,7 @@ class AndroidCommands(commands.Commands):
     _recovery_flag = True
 
     def __init__(self, android_id=None, config=None, user_dir=None, callback=None, chain_type="mainnet"):
-        self.asyncio_loop, self._stop_loop, self._loop_thread = create_and_start_event_loop()  # TODO:close loop
+        self.asyncio_loop, self._stop_loop, self._loop_thread = create_and_start_event_loop()
         self.config = config or simple_config.SimpleConfig({"auto_connect": True})
         if user_dir is None:
             self.user_dir = get_dir()
@@ -488,8 +488,12 @@ class AndroidCommands(commands.Commands):
         except Exception as e:
             raise BaseException(e)
         self.daemon.stop()
-        self.daemon.join()
         self.daemon_running = False
+        self.stop_loop()
+        self.plugin.stop()
+        global ticker
+        ticker.cancel()
+        the_begging.terminate()
 
     def set_hd_wallet(self, wallet_obj):
         if self.hd_wallet is None:

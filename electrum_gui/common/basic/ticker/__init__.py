@@ -15,3 +15,8 @@ def start_default_ticker(seconds: int):
 
     _ticker = ticker.Ticker(seconds, signals.ticker_signal)
     _ticker.start()
+
+
+def cancel_default_ticker():
+    global _ticker
+    _ticker.cancel()
