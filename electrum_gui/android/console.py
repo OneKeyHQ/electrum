@@ -11,7 +11,6 @@ import threading
 from code import InteractiveConsole
 from collections import OrderedDict
 from decimal import Decimal
-from enum import Enum
 from os.path import exists, join
 
 import eth_utils
@@ -103,17 +102,6 @@ PURPOSE_TO_ADDRESS_TYPE = {
     49: 'p2wpkh-p2sh',
     84: 'p2wpkh',
 }
-
-
-class Status(Enum):
-    net = 1
-    broadcast = 2
-    sign = 3
-    update_wallet = 4
-    update_status = 5
-    update_history = 6
-    update_interfaces = 7
-    create_wallet_error = 8
 
 
 class AndroidConsole(InteractiveConsole):
