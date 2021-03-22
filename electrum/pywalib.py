@@ -1,37 +1,31 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import http
-import math
-import os
 import json
-import time
+import os
+import sqlite3
 from contextlib import contextmanager
-from enum import Enum
+from decimal import Decimal
 from os.path import expanduser
 from typing import List
-from urllib.parse import urljoin
 
-from eth_typing import HexStr
-
-from electrum.util import Ticker, make_aiohttp_session
 import requests
-# from eth_accounts.account_utils import AccountUtils
-from eth_keyfile import keyfile
-from eth_utils import to_checksum_address, remove_0x_prefix, add_0x_prefix
+import urllib3
+from eth_account._utils.transactions import Transaction
+from eth_typing import HexStr
+from eth_utils import add_0x_prefix, remove_0x_prefix
 from web3 import HTTPProvider, Web3
 
-from electrum_gui.common.provider.manager import get_provider_by_chain
-from .i18n import _
+from electrum.util import make_aiohttp_session
 from electrum_gui.common.provider.data import Token, TransactionStatus
-from electrum_gui.common.provider.clients import eth as eth_clients
 from electrum_gui.common.provider.interfaces import ProviderInterface
+from electrum_gui.common.provider.manager import get_provider_by_chain
+
 from . import util
 from .eth_transaction import Eth_Transaction
-from eth_account._utils.transactions import Transaction
-from decimal import Decimal
-import sqlite3
+from .i18n import _
 from .network import Network
-from electrum.constants import read_json
+
 eth_servers = {}
 
 ETHERSCAN_API_KEY = "R796P9T31MEA24P8FNDZBCA88UHW8YCNVW"
@@ -50,13 +44,15 @@ KEYSTORE_DIR_SUFFIX = ".electrum/eth/keystore/"
 #     "User-Agent": "https://github.com/AndreMiras/PyWallet",
 # }
 
-import urllib3
+
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
 
 class InsufficientFundsException(Exception):
     """
     Raised when user want to send funds and have insufficient balance on address
     """
+
     def __init__(self, *args):
         super(InsufficientFundsException, self).__init__(_("Insufficient balance"), *args)
 
@@ -66,6 +62,7 @@ class InsufficientERC20FundsException(Exception):
     Raised when user want to send ERC20 contract tokens and have insufficient balance
     of these tokens on wallet's address
     """
+
     def __init__(self, *args):
         super(InsufficientERC20FundsException, self).__init__(_("Insufficient ERC20 token balance"), *args)
 
@@ -74,6 +71,7 @@ class ERC20NotExistsException(Exception):
     """
     Raised when user want manipulate with token which doesn't exist in wallet.
     """
+
     pass
 
 
@@ -81,6 +79,7 @@ class InvalidTransactionNonceException(Exception):
     """
     Raised when duplicated nonce occur or any other problem with nonce
     """
+
     pass
 
 
@@ -88,20 +87,25 @@ class InvalidValueException(Exception):
     """
     Raised when some of expected values is not correct.
     """
+
     def __init__(self, *args):
         super(InvalidValueException, self).__init__(_("Invalid Value"), *args)
+
 
 class InvalidAddress(ValueError):
     """
     The supplied address does not have a valid checksum, as defined in EIP-55
     """
+
     def __init__(self, *args):
         super(InvalidAddress, self).__init__(_("Unavailable eth addresses"), *args)
+
 
 class InvalidPasswordException(Exception):
     """
     Raised when invalid password was entered.
     """
+
     pass
 
 
@@ -109,6 +113,7 @@ class InfuraErrorException(Exception):
     """
     Raised when wallet cannot connect to infura node.
     """
+
 
 class UnknownEtherscanException(Exception):
     pass
@@ -125,6 +130,7 @@ def get_abi_json():
         fitcoin = json.load(f)
     return fitcoin
 
+
 def handle_etherscan_response_json(response_json):
     """Raises an exception on unexpected response json."""
     status = response_json["status"]
@@ -134,7 +140,7 @@ def handle_etherscan_response_json(response_json):
             raise NoTransactionFoundException()
         else:
             raise UnknownEtherscanException(response_json)
-    #assert message == "OK"
+    # assert message == "OK"
 
 
 def handle_etherscan_response_status(status_code):
@@ -155,9 +161,11 @@ def requests_get(url):
     except BaseException as e:
         raise e
 
+
 headers = {
-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36"
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36"
 }
+
 
 class PyWalib:
     server_config = None
@@ -171,6 +179,7 @@ class PyWalib:
     chain_id = None
     conn = None
     cursor = None
+
     def __init__(self, config, chain_type="mainnet", path=""):
         PyWalib.chain_type = chain_type
         PyWalib.config = config
@@ -179,7 +188,9 @@ class PyWalib:
         self.create_db()
 
     def create_db(self):
-        PyWalib.cursor.execute("CREATE TABLE IF NOT EXISTS txlist (tx_hash TEXT PRIMARY KEY, address TEXT, time INTEGER, tx TEXT)")
+        PyWalib.cursor.execute(
+            "CREATE TABLE IF NOT EXISTS txlist (tx_hash TEXT PRIMARY KEY, address TEXT, time INTEGER, tx TEXT)"
+        )
 
     @classmethod
     def get_json(cls, url):
@@ -244,19 +255,14 @@ class PyWalib:
             obj = response.json()
             out = dict()
             if obj['code'] == 200:
-                estimated_time = {
-                    "rapid": 0.25,
-                    "fast": 1,
-                    "standard": 3,
-                    "slow": 10
-                }
-                out.update({
-                    key: {
-                        "gas_price": int(self.web3.fromWei(price, "gwei")),
-                        "time": estimated_time[key]
+                estimated_time = {"rapid": 0.25, "fast": 1, "standard": 3, "slow": 10}
+                out.update(
+                    {
+                        key: {"gas_price": int(self.web3.fromWei(price, "gwei")), "time": estimated_time[key]}
+                        for key, price in obj["data"].items()
+                        if key in estimated_time
                     }
-                    for key, price in obj["data"].items() if key in estimated_time
-                })
+                )
 
             if "standard" in out:
                 out["normal"] = out["standard"]
@@ -266,7 +272,6 @@ class PyWalib:
     def get_max_use_gas(self, gas_price):
         gas = gas_price * DEFAULT_GAS_LIMIT
         return self.web3.fromWei(gas * GWEI_BASE, 'ether')
-
 
     @classmethod
     def get_best_time_by_gas_price(cls, gas_price: float, estimate_gas_prices: dict) -> float:
@@ -288,18 +293,17 @@ class PyWalib:
             to_address = self.web3.toChecksumAddress(to_address)
 
             if contract:
-                data = Eth_Transaction.get_tx_erc20_data_field(to_address,
-                                                               int(Decimal(value) * pow(10, contract.get_decimals())))
-                estimate_payload.update({
-                    "to": contract.get_address(),
-                    "data": data,
-                    "value": 0
-                })
+                data = Eth_Transaction.get_tx_erc20_data_field(
+                    to_address, int(Decimal(value) * pow(10, contract.get_decimals()))
+                )
+                estimate_payload.update({"to": contract.get_address(), "data": data, "value": 0})
             elif data or self.is_contract(to_address):
-                estimate_payload.update({
-                    "to": to_address,
-                    "value": self.web3.toWei(value, "ether"),
-                })
+                estimate_payload.update(
+                    {
+                        "to": to_address,
+                        "value": self.web3.toWei(value, "ether"),
+                    }
+                )
                 if data:
                     estimate_payload["data"] = data
 
@@ -310,11 +314,12 @@ class PyWalib:
             gas_limit = self.web3.eth.estimateGas(estimate_payload)
             gas_limit = int(gas_limit * 1.2)
             return gas_limit
-        except Exception as e:
+        except Exception:
             return 40000
 
-    def get_transaction(self, from_address, to_address, value,
-                        contract=None, gas_price=None, nonce=None, gas_limit=None, data=None):
+    def get_transaction(
+        self, from_address, to_address, value, contract=None, gas_price=None, nonce=None, gas_limit=None, data=None
+    ):
         if (
             not self.web3.isAddress(from_address)
             or not self.web3.isAddress(to_address)
@@ -351,9 +356,13 @@ class PyWalib:
 
         nonce = self.get_nonce(from_address) if nonce is None else int(nonce)
 
-        tx_payload = dict(chain_id=int(PyWalib.chain_id), gas_price=gas_price, nonce=nonce,
-                          to_address=contract.get_address() if contract else to_address,
-                          value=0 if contract else value)
+        tx_payload = dict(
+            chain_id=int(PyWalib.chain_id),
+            gas_price=gas_price,
+            nonce=nonce,
+            to_address=contract.get_address() if contract else to_address,
+            value=0 if contract else value,
+        )
 
         if not data and contract:
             data = Eth_Transaction.get_tx_erc20_data_field(to_address, value)
@@ -390,21 +399,22 @@ class PyWalib:
     @classmethod
     def get_token_info(cls, symbol, contract_address):
         from .eth_contract import Eth_Contract
+
         contract_address = PyWalib.web3.toChecksumAddress(contract_address)
         contract = Eth_Contract(symbol, contract_address)
         token_info = {
             "chain_id": PyWalib.chain_id,
-            "decimals" : contract.get_decimals(),
-            "address" : contract_address,
-            "symbol" : contract.get_symbol(),
-            "name" : contract.get_name(),
+            "decimals": contract.get_decimals(),
+            "address": contract_address,
+            "symbol": contract.get_symbol(),
+            "name": contract.get_name(),
             "logoURI": "",
-            "rank": 0
+            "rank": 0,
         }
         return token_info
 
     @classmethod
-    def get_nonce(cls,  address):
+    def get_nonce(cls, address):
         return cls.get_provider().get_address(address).nonce
 
     def is_contract(self, address) -> bool:
@@ -435,15 +445,15 @@ class PyWalib:
                 "v": hex(tx.v),
                 "r": hex(tx.r),
                 "s": hex(tx.s),
-                "hash": tx.hash().hex()
-            }
+                "hash": tx.hash().hex(),
+            },
         }
 
     @classmethod
     def get_rpc_info(cls) -> dict:
         rpc, chain_id = None, None
 
-        for config in (cls.server_config.get("Provider") or ()):
+        for config in cls.server_config.get("Provider") or ():
             if cls.chain_type in config:
                 rpc = config[cls.chain_type]
                 chain_id = int(config["chainid"])
@@ -477,8 +487,9 @@ class PyWalib:
     @classmethod
     def _get_balance_inner(cls, address: str, contract=None):
         try:
-            return cls.get_provider().get_balance(address,
-                                                  token=None if not contract else Token(contract=contract.get_address()))
+            return cls.get_provider().get_balance(
+                address, token=None if not contract else Token(contract=contract.get_address())
+            )
         except Exception:
             return 0
 
