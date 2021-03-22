@@ -151,15 +151,30 @@ public class ConnectRequest<T extends BleDevice> implements ConnectWrapperCallba
             // Traverse the connected device collection to disconnect automatically cancel the
             // automatic connection
             ArrayList<T> connetedDevices = getConnetedDevices();
-            for (T bleDevice : connetedDevices) {
+            Iterator<T> iterator = connetedDevices.iterator();
+            while (iterator.hasNext()) {
+                BleDevice bleDevice = iterator.next();
                 if (bleDevice.getBleAddress().equals(address)) {
                     bleDevice.setAutoConnect(false);
+                    iterator.remove();
+                    bleRequest.disconnect(address);
+                    break;
                 }
             }
-            bleRequest.disconnect(address);
         }
     }
 
+    public void disconnectAll() {
+        if (bleRequest != null) {
+            // Traverse the connected device collection to disconnect automatically cancel the
+            // automatic connection
+            for (T bleDevice : connetedDevices) {
+                bleDevice.setAutoConnect(false);
+                bleRequest.disconnect(bleDevice.getBleAddress());
+            }
+            connetedDevices.clear();
+        }
+    }
     /**
      * 无回调的断开
      *
@@ -167,7 +182,6 @@ public class ConnectRequest<T extends BleDevice> implements ConnectWrapperCallba
      */
     public void disconnect(BleDevice device) {
         if (device != null) {
-            connetedDevices.remove(device);
             disconnect(device.getBleAddress());
         }
     }

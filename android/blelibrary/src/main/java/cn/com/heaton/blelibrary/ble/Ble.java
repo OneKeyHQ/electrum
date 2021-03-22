@@ -205,12 +205,7 @@ public final class Ble<T extends BleDevice> {
     }
 
     public void disconnectAll() {
-        List<T> connetedDevices = getConnetedDevices();
-        if (!connetedDevices.isEmpty()) {
-            for (T device : connetedDevices) {
-                request.disconnect(device);
-            }
-        }
+        request.disconnectAll();
     }
 
     /**

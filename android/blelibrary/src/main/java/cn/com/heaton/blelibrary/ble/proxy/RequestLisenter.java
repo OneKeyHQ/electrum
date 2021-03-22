@@ -40,6 +40,8 @@ public interface RequestLisenter<T> {
 
     void disconnect(T device, BleDisConnectCallback<T> callback);
 
+    void disconnectAll();
+
     boolean read(T device, BleReadCallback<T> callback);
 
     boolean readByUuid(

@@ -106,6 +106,12 @@ public class RequestImpl<T extends BleDevice> implements RequestLisenter<T> {
     }
 
     @Override
+    public void disconnectAll() {
+        ConnectRequest<T> request = Rproxy.getRequest(ConnectRequest.class);
+        request.disconnectAll();
+    }
+
+    @Override
     public boolean read(T device, BleReadCallback<T> callback) {
         ReadRequest<T> request = Rproxy.getRequest(ReadRequest.class);
         BleLog.BluetoothState("read", device);
