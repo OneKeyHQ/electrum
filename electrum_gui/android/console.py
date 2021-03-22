@@ -949,7 +949,7 @@ class AndroidCommands(commands.Commands):
             )
 
         gas_limit = Decimal(gas_limit)
-        last_price = price_manager.get_last_price(self.wallet.chain_code, self.ccy)
+        last_price = price_manager.get_last_price(self._coin_to_chain_code(self.wallet.coin), self.ccy)
 
         for val in estimate_gas_prices.values():
             val["gas_limit"] = gas_limit
@@ -1555,9 +1555,10 @@ class AndroidCommands(commands.Commands):
             contract=contract,
             search_type=search_type,
         )
-        main_coin_price = price_manager.get_last_price(wallet_obj.chain_code, self.ccy)
+        chain_code = self._coin_to_chain_code(wallet_obj.coin)
+        main_coin_price = price_manager.get_last_price(chain_code, self.ccy)
         if contract:
-            coins = coin_manager.query_coins_by_token_addresses(wallet_obj.chain_code, [contract.address.lower()])
+            coins = coin_manager.query_coins_by_token_addresses(chain_code, [contract.address.lower()])
             amount_coin_price = price_manager.get_last_price(coins[0].code, self.ccy) if coins else Decimal(0)
         else:
             amount_coin_price = main_coin_price
@@ -1686,7 +1687,7 @@ class AndroidCommands(commands.Commands):
 
     def get_eth_tx_info(self, tx_hash) -> str:
         tx = self.pywalib.get_transaction_info(tx_hash)
-        main_coin_price = price_manager.get_last_price(self.wallet.chain_code, self.ccy)
+        main_coin_price = price_manager.get_last_price(self._coin_to_chain_code(self.wallet.coin), self.ccy)
         fiat = Decimal(tx["amount"]) * main_coin_price
         fee_fiat = Decimal(tx["fee"]) * main_coin_price
 
