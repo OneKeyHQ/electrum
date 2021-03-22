@@ -415,25 +415,6 @@ class AndroidCommands(commands.Commands):
         wallet_info["name"] = self.wallet.get_name()
         return json.dumps(wallet_info)
 
-    def update_interfaces(self):
-        net_params = self.network.get_parameters()
-        self.num_nodes = len(self.network.get_interfaces())
-        self.num_chains = len(self.network.get_blockchains())
-        chain = self.network.blockchain()
-        self.blockchain_forkpoint = chain.get_max_forkpoint()
-        self.blockchain_name = chain.get_name()
-        interface = self.network.interface
-        if interface:
-            self.server_host = interface.host
-        else:
-            self.server_host = str(net_params.server.host) + " (connecting...)"
-        self.proxy_config = net_params.proxy or {}
-        mode = self.proxy_config.get("mode")
-        host = self.proxy_config.get("host")
-        port = self.proxy_config.get("port")
-        self.proxy_str = (host + ":" + port) if mode else _("None")
-        # self.callbackIntent.onCallback("update_interfaces")
-
     def update_wallet(self):
         self.update_status()
         # self.callbackIntent.onCallback("update_wallet")
@@ -441,7 +422,6 @@ class AndroidCommands(commands.Commands):
     def on_network_event(self, event, *args):
         if self.wallet is not None:
             if event == "network_updated":
-                self.update_interfaces()
                 self.update_status()
             elif event == "wallet_updated":
                 self.update_status()
@@ -462,7 +442,6 @@ class AndroidCommands(commands.Commands):
     def ticker_action(self):
         if self.wallet is not None:
             self.update_wallet()
-            self.update_interfaces()
 
     def daemon_action(self):
         self.daemon_running = True
