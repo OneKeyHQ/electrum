@@ -79,9 +79,10 @@ public class HardwareUpgradingFragment extends BaseFragment {
         complete.setEnabled(true);
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void onUpdating(UpdatingEvent event) {
-        if (progressPromote != null) {
+        EventBus.getDefault().removeStickyEvent(event);
+        if (Objects.nonNull(progressPromote)) {
             progressPromote.setText(R.string.updating);
         }
     }

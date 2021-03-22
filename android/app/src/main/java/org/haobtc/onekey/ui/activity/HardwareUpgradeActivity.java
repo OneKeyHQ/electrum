@@ -453,7 +453,7 @@ public class HardwareUpgradeActivity extends BaseActivity {
         }
 
         private void doUpdate(String path) {
-            EventBus.getDefault().post(new UpdatingEvent());
+            EventBus.getDefault().postSticky(new UpdatingEvent());
             File file = new File(path);
             PyEnv.setProgressReporter(this);
             PyResponse<Void> response = PyEnv.firmwareUpdate(path);
