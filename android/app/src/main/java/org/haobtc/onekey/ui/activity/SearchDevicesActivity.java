@@ -52,7 +52,6 @@ import org.haobtc.onekey.manager.PyEnv;
 import org.haobtc.onekey.ui.adapter.BleDeviceAdapter;
 import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.ui.dialog.ConnectingDialog;
-import org.haobtc.onekey.ui.dialog.InvalidDeviceIdWarningDialog;
 import org.haobtc.onekey.utils.ValueAnimatorUtil;
 
 /** @author liyan */
@@ -321,12 +320,6 @@ public class SearchDevicesActivity extends BaseActivity
                             // 仅连接蓝牙
                         case Constant.SearchDeviceMode.MODE_PREPARE:
                             if (features.isInitialized() && !features.isBackupOnly()) {
-                                if (!Strings.isNullOrEmpty(serialNum)
-                                        && !Objects.equals(features.getSerialNum(), serialNum)) {
-                                    new InvalidDeviceIdWarningDialog()
-                                            .show(getSupportFragmentManager(), "");
-                                    return;
-                                }
                                 setResult(Activity.RESULT_OK);
                                 EventBus.getDefault().post(new BleConnectedEvent());
                             } else {
