@@ -78,6 +78,7 @@ from electrum_gui.common import the_begging
 from ..common.basic.functional.text import force_text
 from ..common.basic.orm.database import db
 from ..common.coin import manager as coin_manager
+from ..common.price import manager as price_manager
 from .create_wallet_info import CreateWalletInfo
 from .derived_info import DerivedInfo
 from .tx_db import TxDb
@@ -329,15 +330,14 @@ class AndroidCommands(commands.Commands):
         if coin in self.coins:  # eth base
             address = self.pywalib.web3.toChecksumAddress(address)
             balance_info = self.wallet.get_all_balance(address, self.coins[coin]["symbol"])
+            balance_info = self._fill_balance_info_with_fiat(self.wallet.coin, balance_info)
             sum_fiat = sum(i.get("fiat", 0) for i in balance_info.values())
             main_coin_balance_info = balance_info.pop(coin, dict())
 
             out["coin"] = coin
             out["address"] = address
             out["balance"] = main_coin_balance_info.get("balance", "0")
-            out["fiat"] = (
-                self.daemon.fx.format_amount_and_units(main_coin_balance_info.get("fiat", 0) * COIN) or f"0 {self.ccy}"
-            )
+            out["fiat"] = f"{self.daemon.fx.ccy_amount_str(main_coin_balance_info.get('fiat') or 0, True)} {self.ccy}"
             sorted_tokens = sorted(
                 balance_info.values(),
                 key=lambda i: (Decimal(i.get("fiat", 0)), Decimal(i.get("balance", 0))),
@@ -348,11 +348,11 @@ class AndroidCommands(commands.Commands):
                     "coin": i.get("symbol"),
                     "address": i.get("address"),
                     "balance": i.get("balance", "0"),
-                    "fiat": self.daemon.fx.format_amount_and_units(i.get("fiat", 0) * COIN) or f"0 {self.ccy}",
+                    "fiat": f"{self.daemon.fx.ccy_amount_str(i.get('fiat') or 0, True)} {self.ccy}",
                 }
                 for i in sorted_tokens
             ]
-            out["sum_fiat"] = self.daemon.fx.format_amount_and_units(sum_fiat * COIN) or f"0 {self.ccy}"
+            out["sum_fiat"] = f"{self.daemon.fx.ccy_amount_str(sum_fiat, True)} {self.ccy}"
         elif (
             self.network
             and self.network.is_connected()
@@ -949,15 +949,14 @@ class AndroidCommands(commands.Commands):
             )
 
         gas_limit = Decimal(gas_limit)
-        last_price = PyWalib.get_coin_price(self.pywalib.coin_symbol) or "0"
+        last_price = price_manager.get_last_price(self.wallet.chain_code, self.ccy)
 
         for val in estimate_gas_prices.values():
             val["gas_limit"] = gas_limit
             val["fee"] = self.pywalib.web3.fromWei(
                 gas_limit * self.pywalib.web3.toWei(val["gas_price"], "gwei"), "ether"
             )
-            val["fiat"] = Decimal(val["fee"]) * Decimal(last_price)
-            val["fiat"] = self.daemon.fx.format_amount_and_units(val["fiat"] * COIN) or f"0 {self.ccy}"
+            val["fiat"] = f"{self.daemon.fx.ccy_amount_str(Decimal(val['fee']) * last_price, True)} {self.ccy}"
 
         return estimate_gas_prices
 
@@ -1191,16 +1190,6 @@ class AndroidCommands(commands.Commands):
             elif type == "fiat":
                 text = self.format_amount((int(Decimal(amount) / Decimal(rate) * COIN)))
             return text
-
-    def get_coin_exchange_currency(self, value, from_coin):
-        try:
-            last_price = PyWalib.get_coin_price(from_coin.upper())
-            data = (
-                self.daemon.fx.format_amount_and_units(self.get_amount(value * last_price)) if self.daemon.fx else None
-            )
-            return data
-        except BaseException as e:
-            raise e
 
     def set_base_uint(self, base_unit):
         """
@@ -1566,14 +1555,21 @@ class AndroidCommands(commands.Commands):
             contract=contract,
             search_type=search_type,
         )
+        main_coin_price = price_manager.get_last_price(wallet_obj.chain_code, self.ccy)
+        if contract:
+            coins = coin_manager.query_coins_by_token_addresses(wallet_obj.chain_code, [contract.address.lower()])
+            amount_coin_price = price_manager.get_last_price(coins[0].code, self.ccy) if coins else Decimal(0)
+        else:
+            amount_coin_price = main_coin_price
 
         for tx in txs:
-            fiat = self.daemon.fx.format_amount_and_units(Decimal(tx.get("fiat") or 0) * COIN) or f"0 {self.ccy}"
-            fee_fiat = (
-                self.daemon.fx.format_amount_and_units(Decimal(tx.get("fee_fiat") or 0) * COIN) or f"0 {self.ccy}"
+            fiat = Decimal(tx["amount"]) * amount_coin_price
+            fee_fiat = Decimal(tx["fee"]) * main_coin_price
+            tx["amount"] = f"{tx['amount']} {tx['coin']} ({self.daemon.fx.ccy_amount_str(fiat, True)} {self.ccy})"
+            tx["fee"] = (
+                f"{tx['fee']} {self.pywalib.coin_symbol} "
+                f"({self.daemon.fx.ccy_amount_str(fee_fiat, True)} {self.ccy})"
             )
-            tx["amount"] = f"{tx['amount']} {tx['coin']} ({fiat})"
-            tx["fee"] = f"{tx['fee']} {self.pywalib.coin_symbol} ({fee_fiat})"
 
         return json.dumps(txs, cls=DecimalEncoder)
 
@@ -1690,10 +1686,16 @@ class AndroidCommands(commands.Commands):
 
     def get_eth_tx_info(self, tx_hash) -> str:
         tx = self.pywalib.get_transaction_info(tx_hash)
-        fiat = self.daemon.fx.format_amount_and_units(tx.pop("fiat") * COIN) or f"0 {self.ccy}"
-        fee_fiat = self.daemon.fx.format_amount_and_units(tx.pop("fee_fiat") * COIN) or f"0 {self.ccy}"
-        tx["amount"] = f"{tx['amount']} {self.pywalib.coin_symbol} ({fiat})"
-        tx["fee"] = f"{tx['fee']} {self.pywalib.coin_symbol} ({fee_fiat})"
+        main_coin_price = price_manager.get_last_price(self.wallet.chain_code, self.ccy)
+        fiat = Decimal(tx["amount"]) * main_coin_price
+        fee_fiat = Decimal(tx["fee"]) * main_coin_price
+
+        tx[
+            "amount"
+        ] = f"{tx['amount']} {self.pywalib.coin_symbol} ({self.daemon.fx.ccy_amount_str(fiat, True)} {self.ccy})"
+        tx[
+            "fee"
+        ] = f"{tx['fee']} {self.pywalib.coin_symbol} ({self.daemon.fx.ccy_amount_str(fee_fiat, True)} {self.ccy})"
 
         return json.dumps(tx, cls=DecimalEncoder)
 
@@ -2990,14 +2992,13 @@ class AndroidCommands(commands.Commands):
 
                         if txids:
                             balance_info = wallet.get_all_balance(address, self.coins[coin]["symbol"])
-                            balance_info = balance_info.get(coin)
                             if not balance_info:
                                 continue
 
-                            fiat = (
-                                self.daemon.fx.format_amount_and_units(balance_info["fiat"] * COIN) or f"0 {self.ccy}"
-                            )
-                            balance = f"{balance_info['balance']} ({fiat})"
+                            balance_info = self._fill_balance_info_with_fiat(wallet.coin, balance_info)
+                            balance_info = balance_info.get(coin)
+                            fiat_str = self.daemon.fx.ccy_amount_str(balance_info.get("fiat") or 0, True)
+                            balance = f"{balance_info.get('balance', '0')} ({fiat_str} {self.ccy})"
                             self.update_recover_list(recovery_list, balance, wallet, wallet.get_name(), coin)
                             continue
                 else:
@@ -3361,6 +3362,7 @@ class AndroidCommands(commands.Commands):
                     with self.pywalib.override_server(self.coins[coin]):
                         checksum_from_address = self.pywalib.web3.toChecksumAddress(wallet.get_addresses()[0])
                         balances_info = wallet.get_all_balance(checksum_from_address, self.coins[coin]["symbol"])
+                        balances_info = self._fill_balance_info_with_fiat(wallet.coin, balances_info)
                         sorted_balances = [balances_info.pop(coin, {})]
                         sorted_balances.extend(
                             sorted(
@@ -3371,15 +3373,14 @@ class AndroidCommands(commands.Commands):
                         )
                         wallet_balances = []
                         for info in sorted_balances:
+                            fiat = info.get("fiat") or 0
                             copied_info = {
                                 "coin": info.get("symbol") or coin,
                                 "address": info.get("address"),
                                 "balance": info.get("balance", "0"),
-                                "fiat": self.daemon.fx.format_amount_and_units(info.get("fiat", 0) * COIN)
-                                or f"0 {self.ccy}",
+                                "fiat": f"{self.daemon.fx.ccy_amount_str(fiat, True)} {self.ccy}",
                             }
                             wallet_balances.append(copied_info)
-                            fiat = Decimal(copied_info["fiat"].split()[0].replace(",", ""))
                             sum_fiat += fiat
                             all_balance += fiat
 
@@ -3760,8 +3761,9 @@ class AndroidCommands(commands.Commands):
             addrs = self.wallet.get_addresses()
             checksum_from_address = self.pywalib.web3.toChecksumAddress(addrs[0])
             balance_info = self.wallet.get_all_balance(checksum_from_address, self.coins[coin]["symbol"])
+            balance_info = self._fill_balance_info_with_fiat(self.wallet.coin, balance_info)
             sum_fiat = sum(i.get("fiat", 0) for i in balance_info.values())
-            sum_fiat = self.daemon.fx.format_amount_and_units(sum_fiat * COIN) or f"0 {self.ccy}"
+            sum_fiat = f"{self.daemon.fx.ccy_amount_str(sum_fiat, True)} {self.ccy}"
 
             sorted_balances = [balance_info.pop(coin, {})]
             sorted_balances.extend(
@@ -3776,7 +3778,7 @@ class AndroidCommands(commands.Commands):
                     "coin": i.get("symbol") or coin,
                     "address": i.get("address"),
                     "balance": i.get("balance", "0"),
-                    "fiat": self.daemon.fx.format_amount_and_units(i.get("fiat", 0) * COIN) or f"0 {self.ccy}",
+                    "fiat": f"{self.daemon.fx.ccy_amount_str(i.get('fiat') or 0, True)} {self.ccy}",
                 }
                 for i in sorted_balances
             ]
@@ -3823,6 +3825,7 @@ class AndroidCommands(commands.Commands):
                 addrs = self.wallet.get_addresses()
                 checksum_from_address = self.pywalib.web3.toChecksumAddress(addrs[0])
                 balance_info = self.wallet.get_all_balance(checksum_from_address, self.coins[coin]["symbol"])
+                balance_info = self._fill_balance_info_with_fiat(self.wallet.coin, balance_info)
                 sorted_balances = [balance_info.pop(coin, {})]
                 sorted_balances.extend(
                     sorted(
@@ -3835,8 +3838,8 @@ class AndroidCommands(commands.Commands):
                     {
                         "coin": i.get("symbol") or coin,
                         "address": i.get("address"),
-                        "balance": i.get("balance", "0"),
-                        "fiat": self.daemon.fx.format_amount_and_units(i.get("fiat", 0) * COIN) or f"0 {self.ccy}",
+                        "balance": i.get("balance") or "0",
+                        "fiat": f"{self.daemon.fx.ccy_amount_str(i.get('fiat') or 0, True)} {self.ccy}",
                     }
                     for i in sorted_balances
                 ]
@@ -3860,6 +3863,25 @@ class AndroidCommands(commands.Commands):
                 return json.dumps(info, cls=DecimalEncoder)
         except BaseException as e:
             raise BaseException(e)
+
+    def _fill_balance_info_with_fiat(self, coin: str, balance_info: dict) -> dict:
+        main_coin_price = price_manager.get_last_price(coin, self.ccy)
+        token_addresses = [i["address"].lower() for i in balance_info.values() if i.get("address")]
+        chain_code = self._coin_to_chain_code(coin)
+        tokens = coin_manager.query_coins_by_token_addresses(chain_code, token_addresses)
+        token_prices = {i.token_address.lower(): price_manager.get_last_price(i.code, self.ccy) for i in tokens}
+
+        new_balance_info = {}
+        for k, v in balance_info.items():
+            price = main_coin_price if not v.get("address") else token_prices.get(v["address"].lower())
+            price = price or Decimal(0)
+            new_balance_info[k] = {**v, "fiat": Decimal(v.get("balance") or 0) * price}
+
+        return new_balance_info
+
+    def _coin_to_chain_code(self, coin: str) -> str:
+        chain_code = f"t{coin}" if PyWalib.chain_type == "testnet" else coin
+        return chain_code
 
     def list_wallets(self, type_=None):
         """

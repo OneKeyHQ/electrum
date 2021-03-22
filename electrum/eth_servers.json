@@ -24,15 +24,6 @@
          {"trezor-testnet": "https://eth1.ropsten1.trezor.io/api/v2/"},
          {"trezor-testnet1": "https://eth2.ropsten1.trezor.io/api/v2/"}
       ],
-    "Market": [
-      {"coinbase": "https://api.coinbase.com/v2/exchange-rates?currency="},
-      {"bixin": "https://mkline.bixin.com/api/v1/ticker?symbol="},
-      {"binance": "https://api.binance.com/api/v1/ticker/24hr?symbol="},
-      {"ok": "https://mkline.bixin.com/api/v1/ticker?symbol="},
-      {"huobi": "https://api.huobi.pro/market/detail/merged?symbol="},
-      {"cmc":  "https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest"},
-      {"cgk": "https://api.coingecko.com"}
-    ],
     "GasServer": "https://www.gasnow.org/api/v3/gas/price?utm_source=onekey"
   },
   "heco": {
@@ -53,8 +44,6 @@
     "TxliServer": [
       {"onekey-mainnet": "https://heco1.onekey.so/api/v2/"}
     ],
-    "Market": [
-    ],
     "GasServer": ""
   },
   "bsc": {
@@ -74,8 +63,6 @@
     ],
     "TxliServer": [
       {"onekey-mainnet": "https://bsc1.onekey.so/api/v2/"}
-    ],
-    "Market": [
     ],
     "GasServer": ""
   }

@@ -163,8 +163,6 @@ class PyWalib:
     server_config = None
     coin_symbol = None
     web3 = None
-    market_server = None
-    market_server_dict = None
     tx_list_server = None
     gas_server = None
     symbols_price = {}
@@ -179,30 +177,9 @@ class PyWalib:
         PyWalib.conn = sqlite3.connect(path)
         PyWalib.cursor = self.conn.cursor()
         self.create_db()
-        self.init_symbols()
 
     def create_db(self):
         PyWalib.cursor.execute("CREATE TABLE IF NOT EXISTS txlist (tx_hash TEXT PRIMARY KEY, address TEXT, time INTEGER, tx TEXT)")
-
-    def init_symbols(self):
-        symbol_list = self.config.get("symbol_list", {'ETH':'','HT':'', 'BNB': ''})
-        for cache_key in symbol_list:
-            from_cur, contract_address = cache_key.split(":") if ":" in cache_key else (cache_key, None)
-            PyWalib.symbols_price[cache_key] = PyWalib.get_currency(from_cur, 'BTC', contract_address=contract_address)
-
-        global symbol_ticker
-        symbol_ticker = Ticker(5*60, self.get_symbols_price)
-        symbol_ticker.start()
-
-    def get_symbols_price(self):
-        try:
-            for cache_key, price in PyWalib.symbols_price.items():
-                from_cur, contract_address = cache_key.split(":") if ":" in cache_key else (cache_key, None)
-                PyWalib.symbols_price[cache_key] = self.get_currency(from_cur, 'BTC', contract_address=contract_address)
-                PyWalib.config.set_key("symbol_list", PyWalib.symbols_price)
-                time.sleep(1)
-        except BaseException as e:
-            raise e
 
     @classmethod
     def get_json(cls, url):
@@ -214,93 +191,12 @@ class PyWalib:
                 # set content_type to None to disable checking MIME type
                 return response.json(content_type=None)
 
-    @classmethod
-    def get_currency(cls, from_cur, to_cur, contract_address=None):
-        if (
-                from_cur
-                and from_cur.lower() == "eth"
-                and contract_address
-                and PyWalib.market_server_dict
-                and PyWalib.market_server_dict.get("cgk")
-        ):
-            try:
-                contract_address = contract_address.lower()
-                url = urljoin(PyWalib.market_server_dict["cgk"], "/api/v3/simple/token_price/ethereum")
-                response = requests.get(
-                    url, params={"vs_currencies": "btc", "contract_addresses": contract_address}
-                ).json()
-                if not response or not response.get(contract_address) or not response[contract_address].get("btc"):
-                    return 0
-                else:
-                    return response[contract_address]["btc"]
-            except Exception:
-                return 0
-
-        try:
-            out_price = {}
-            for server in PyWalib.market_server:
-                for name, url in server.items():
-                    if name == "coinbase":
-                        try:
-                            url += from_cur
-                            response = requests.get(url, timeout=5, verify=False)
-                            json = response.json()
-                            return [str(Decimal(rate)) for (ccy, rate) in json["data"]["rates"].items()
-                                    if ccy == to_cur][0]
-                        except BaseException:
-                            pass
-                    # if name == "binance":
-                    #     url += from_cur.upper()+to_cur.upper()
-                    #     try:
-                    #         response = requests.get(url, timeout=3, verify=False)
-                    #         obj = response.json()
-                    #         out_price[name] = obj['data']['lastprice']
-                    #     except BaseException as e:
-                    #         pass
-                    elif name == 'bixin':
-                        url += from_cur.upper() + '/' + to_cur.upper()
-                        try:
-                            response = requests.get(url, timeout=3, verify=False)
-                            obj = response.json()
-                            #out_price[name] = obj['data']['price']
-                            return obj['data']['price']
-                        except BaseException:
-                            pass
-                    # elif name == 'huobi':
-                    #     url += from_cur.lower() + to_cur.lower()
-                    #     try:
-                    #         response = requests.get(url, timeout=3, verify=False)
-                    #         obj = response.json()
-                    #         out_price[name] = (obj['data']['bid'][0] + obj['data']['ask'][0])/2.0
-                    #     except BaseException as e:
-                    #         pass
-                    # elif name == 'ok':
-                    #     print("TODO")
-                    elif name == "cmc":
-                        try:
-                            response = requests.get(url, headers={"X-CMC_PRO_API_KEY": CMC_API_KEY},
-                                                    params={"symbol": from_cur, "convert": to_cur}).json()
-                            price = response["data"][from_cur.upper()][0]["quote"][to_cur.upper()]["price"]
-                            return price
-                        except BaseException:
-                            pass
-
-            # return_price = 0.0
-            # for price in out_price.values():
-            #     return_price += float(price)
-            # return return_price/len(out_price)
-        except BaseException as e:
-            print(f"get symbol price error {e}")
-            pass
-
     @staticmethod
     def get_web3():
         return PyWalib.web3
 
     @staticmethod
     def set_server(info):
-        PyWalib.market_server = info['Market']
-        PyWalib.market_server_dict = {list(i.keys())[0]: list(i.values())[0] for i in info['Market'] if i}
         PyWalib.tx_list_server = info['TxliServer']
         PyWalib.gas_server = info['GasServer']
         PyWalib.coin_symbol = info["symbol"]
@@ -325,24 +221,6 @@ class PyWalib:
         finally:
             if cls.server_config.get("id") == config.get("id"):
                 cls.set_server(cache_config)
-
-    @staticmethod
-    def get_coin_price(from_cur, contract_address=None):
-        try:
-            from_cur = from_cur.upper()
-            cache_key = f"{from_cur}:{contract_address}" if contract_address else from_cur
-
-            if cache_key in PyWalib.symbols_price:
-                symbol_price = PyWalib.symbols_price[cache_key]
-                return (symbol_price if symbol_price is not None
-                        else PyWalib.get_currency(from_cur, 'BTC', contract_address=contract_address))
-            else:
-                symbol_price = PyWalib.get_currency(from_cur, 'BTC', contract_address=contract_address)
-                PyWalib.symbols_price[cache_key] = symbol_price
-                PyWalib.config.set_key("symbol_list", PyWalib.symbols_price)
-                return symbol_price
-        except BaseException as e:
-            return '0'
 
     def get_gas_price(self, coin) -> dict:
         if coin in ("bsc", "heco"):
@@ -668,22 +546,15 @@ class PyWalib:
         actions = list(actions)
         output_txs = []
 
-        eth_last_price = Decimal(cls.get_coin_price(cls.coin_symbol) or 0)
-
         if contract:
-            coin_last_price = Decimal(cls.get_coin_price(cls.coin_symbol, contract_address=contract.address) or 0)
             decimal_multiply = pow(10, Decimal(contract.contract_decimals))
         else:
-            coin_last_price = eth_last_price
             decimal_multiply = pow(10, Decimal(18))
 
         for action in actions:
             block_header = action["block_header"]
-            target_address = action["to"]
             amount = Decimal(action["value"]) / decimal_multiply
-            fiat = amount * coin_last_price
             fee = Decimal(cls.web3.fromWei(action["fee"].usage * action["fee"].price_per_unit, "ether"))
-            fee_fiat = eth_last_price * fee
 
             tx_status = _("Unconfirmed")
             show_status = [1, _("Unconfirmed")]
@@ -706,7 +577,6 @@ class PyWalib:
                 "tx_status": tx_status,
                 "show_status": show_status,
                 'fee': fee,
-                'fee_fiat': fee_fiat,
                 "date": util.format_time(block_header.block_time) if block_header else _("Unknown"),
                 "tx_hash": action["txid"],
                 "is_mine": action["from"].lower() == address,
@@ -716,7 +586,6 @@ class PyWalib:
                 'output_addr': [action["to"]],
                 "address": f"{show_address[:6]}...{show_address[-6:]}",
                 "amount": amount,
-                "fiat": fiat
             }
             output_txs.append(output_tx)
 
@@ -729,11 +598,8 @@ class PyWalib:
     @classmethod
     def get_transaction_info(cls, txid) -> dict:
         tx = cls.get_provider().get_transaction_by_txid(txid)
-        last_price = Decimal(cls.get_coin_price(cls.coin_symbol) or "0")
         amount = Decimal(cls.web3.fromWei(tx.outputs[0].value, "ether"))
-        fiat = last_price * amount
         fee = Decimal(cls.web3.fromWei(tx.fee.usage * tx.fee.price_per_unit, "ether"))
-        fee_fiat = last_price * fee
 
         tx_status = _("Unconfirmed")
         show_status = [1, _("Unconfirmed")]
@@ -752,9 +618,7 @@ class PyWalib:
             'txid': txid,
             'can_broadcast': False,
             'amount': amount,
-            "fiat": fiat,
             'fee': fee,
-            'fee_fiat': fee_fiat,
             'description': "",
             'tx_status': tx_status,
             "show_status": show_status,
