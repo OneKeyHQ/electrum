@@ -74,6 +74,11 @@
     [OKTokenManager sharedInstance];
 }
 
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kNotiSwitchWalletNeed object:nil];
+}
+
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
     self.indexView.right = self.view.width;

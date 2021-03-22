@@ -96,6 +96,7 @@
 @property (nonatomic,assign)BOOL isCanSideBack;
 @property (nonatomic,strong)OKNotiAssetModel *notiAssetModel;
 @property (nonatomic,strong)NSArray *allAssetData;
+@property (nonatomic,assign)BOOL isRefreshing;
 @end
 
 @implementation OKWalletViewController
@@ -112,10 +113,13 @@
     [self stupUI];
     [self showFirstUse];
     [self addNotifications];
-
     [OKPyCommandsManager sharedInstance];
-    [kPyCommandsManager callInterface:kInterfaceLoad_all_wallet parameter:@{}];
-    [self checkWalletResetUI];
+    id result =  [kPyCommandsManager callInterface:kInterfaceLoad_all_wallet parameter:@{}];
+    if (result == nil) {
+        [kTools debugTipMessage:@"load接口失败"];
+    }else{
+        [self checkWalletResetUI];
+    }
     [kUserSettingManager setDefaultSetings];
 }
 
@@ -127,6 +131,9 @@
         name = [[dict allKeys] firstObject];
         NSDictionary *value = dict[name];
         [kWalletManager setCurrentWalletInfo:[OKWalletInfoModel mj_objectWithKeyValues:value]];
+    }
+    if (name.length == 0 || name == nil) {
+        return;
     }
     OKWeakSelf(self)
     [MBProgressHUD showHUDAddedTo:weakself.view animated:YES];
@@ -144,8 +151,13 @@
 
 - (void)getBalance
 {
+    OKWeakSelf(self)
+    weakself.isRefreshing = YES;
     dispatch_sync(dispatch_get_global_queue(0, 0), ^{
         NSDictionary* result = [kPyCommandsManager callInterface:kInterface_get_wallet_balance parameter:@{}];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [weakself.refreshControl endRefreshing];
+        });
         if (result != nil) {
             NSMutableDictionary *dictM = [NSMutableDictionary dictionaryWithDictionary:result];
             [dictM setValue:[result safeStringForKey:@"all_balance"] forKey:@"sum_fiat"];
@@ -172,6 +184,9 @@
     NSArray *tokens = [NSArray array];
     OKAssetTableViewCellModel *coinModel = [OKAssetTableViewCellModel new];
     if (push) {
+        if (self.isRefreshing) {
+            return;
+        }
         self.notiAssetModel = [OKNotiAssetModel mj_objectWithKeyValues:dict];
         tokens = self.notiAssetModel.tokens;
         coinModel.balance = self.notiAssetModel.balance;
@@ -215,7 +230,7 @@
         NSArray *barray = [fiatStr componentsSeparatedByString:@" "];
         NSString *bStr = [NSString stringWithFormat:@"%@ %@",kWalletManager.currentFiatSymbol,[barray firstObject]];
         if (fiatStr.length == 0) {
-            bStr = @"--";
+            bStr = @"0";
         }
         if (kWalletManager.showAsset) {
             bStr = @"****";
@@ -235,6 +250,9 @@
             self.tableViewFooterView.frame = CGRectMake(0, 0, SCREEN_WIDTH, 194);
         }
         [self.assetTableView reloadData];
+        if (!push) {
+            weakself.isRefreshing = NO;
+        }
     });
 }
 
@@ -642,6 +660,7 @@
 #pragma mark - 添加Token
 - (IBAction)tableViewHeaderAddBtnClick:(UIButton *)sender {
     OKTokenManagementController *tokenVc = [OKTokenManagementController controllerWithStoryboard];
+    self.isRefreshing = YES;
     [self.navigationController pushViewController:tokenVc animated:YES];
 }
 
@@ -721,6 +740,13 @@
     });
 }
 
+#pragma mark - notiSwitchWalletNeed
+- (void)notiSwitchWalletNeed
+{
+    [self switchWallet];
+}
+
+
 -(void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     self.isCanSideBack = NO; //关闭ios右滑返回
@@ -729,6 +755,7 @@
     }
 
 }
+
 - (void)viewDidDisappear:(BOOL)animated {
 
     [super viewDidDisappear:animated];
@@ -753,6 +780,7 @@
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notiDeleteWalletComplete) name:kNotiDeleteWalletComplete object:nil];
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notiBackUPWalletComplete) name:kNotiBackUPWalletComplete object:nil];
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notiHwInfoUpdate) name:kNotiHwInfoUpdate object:nil];
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(notiSwitchWalletNeed) name:kNotiSwitchWalletNeed object:nil];
 }
 - (void)dealloc
 {

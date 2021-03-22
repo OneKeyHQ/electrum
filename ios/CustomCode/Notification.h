@@ -25,6 +25,8 @@
 #define kNotiDeleteWalletComplete               @"kNotiDeleteWalletComplete"
 //备份钱包完成
 #define kNotiBackUPWalletComplete               @"kNotiBackUPWalletComplete"
+//需要调用首页切换接口刷新数据
+#define kNotiSwitchWalletNeed                   @"kNotiSwitchWalletNeed"
 
 #define kNotiUpdate_status                      @"kNotiUpdate_status"
 

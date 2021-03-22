@@ -45,7 +45,6 @@
     self.descLabel.text = MyLocalizedString(@"Easy for you to identify", nil);
     [self.nameBgView setLayerBoarderColor:HexColor(0xDBDEE7) width:1 radius:20];
     [self.createBtn setLayerDefaultRadius];
-    [self.walletNameTextfield becomeFirstResponder];
     self.walletNameTextfield.delegate = self;
 }
 
