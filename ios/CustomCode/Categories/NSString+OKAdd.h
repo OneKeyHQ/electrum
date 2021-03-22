@@ -34,6 +34,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)ignoreCaseCointain:(NSString *)subStr;
 - (NSString *)addressFormatted;
 - (NSString *)numStrPrecition:(NSUInteger)scale;
+- (NSString *)keccak256;
+
 @end
 
 NS_ASSUME_NONNULL_END

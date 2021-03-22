@@ -7,8 +7,8 @@
 
 #import "MainViewController.h"
 #import "OKWalletViewController.h"
-#import "OKDiscoverViewController.h"
 #import "OKMineViewController.h"
+#import "OneKey-Swift.h"
 
 #define ItemSelectedColor        UIColorFromRGB(RGB_THEME_GREEN)
 #define ItemUnSelectedColor      UIColorFromRGB(0x14293B)
@@ -40,7 +40,7 @@
 {
     NSMutableArray *viewControllers = [[NSMutableArray alloc] init];
     [viewControllers addObject:self.walletVC];
-//    [viewControllers addObject:self.discoverVC];
+    [viewControllers addObject:self.discoverVC];
     [viewControllers addObject:self.mineVC];
     [self.tab setViewControllers:viewControllers animated:NO];
     [self.view addSubview:self.tab.view];
@@ -98,8 +98,8 @@
 
 - (BaseNavigationController *)discoverVC {
     if (_discoverVC == nil) {
-        _discoverVC = [[BaseNavigationController alloc] initWithRootViewController:[OKDiscoverViewController discoverViewController]];
-        _discoverVC.tabBarItem.title = @"发现";
+        _discoverVC = [[BaseNavigationController alloc] initWithRootViewController:[OKDiscoverViewController instance]];
+        _discoverVC.tabBarItem.title = @"Discover".localized;
         _discoverVC.tabBarItem.selectedImage = [[UIImage imageNamed:@"discovery_highlight"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
         _discoverVC.tabBarItem.image = [[UIImage imageNamed:@"discovery_normal"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
     }

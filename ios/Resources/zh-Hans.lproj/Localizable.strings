@@ -564,3 +564,26 @@
 "The Bluetooth connection is abnormal. Please try again" = "蓝牙连接异常，请重试";
 "Block Browser (ETH)" = "区块浏览器（ETH）";
 "Block Browser (ETH) USES your favorite browser to view transactions on the chain" = "区块浏览器（ETH） \n\n使用您喜欢的浏览器查看链上交易信息";
+
+// Discover Associated - start
+
+"Discover" = "发现";
+"Operation name" = "操作名称";
+"Payment account" = "付款账户";
+"Receiving address" = "收款地址";
+"Signed message" = "签名消息";
+"Connecting" = "连接中";
+"Please unlock the hardware wallet and keep it within the effective range of the mobile phone’s Bluetooth" = "请解锁硬件钱包，并保持其在手机蓝牙有效范围内";
+
+"Failed to send transaction" = "发送交易失败";
+"Signature error" = "签名出错";
+"Cancel operation" = "取消操作";
+"Missing transaction data" = "交易数据缺失";
+"Your use of third-party DApps will be applicable to the third-party DApp’s \"Privacy Policy\" and \"User Agreement\", and %@ will be directly and solely liable to you" = "您在第三方 DApp 上的使用行为将适用于第三方 DApp 的《隐私政策》和《用户协议》，由 %@ 直接并单独向您承担责任";
+"Continue to visit" = "继续访问";
+"Switch to %@ account?" = "切换到 %@ 账户 ？";
+"Current DApp only supports %@ account" = "当前 DApp 只支持 %@  账户";
+"Stay tuned" = "敬请期待";
+"Sorry, access failed, please try again or check the network" = "抱歉，访问失败，请重试或检查网络";
+
+// Discover Associated - end

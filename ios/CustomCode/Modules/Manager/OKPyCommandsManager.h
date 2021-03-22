@@ -129,21 +129,25 @@
 #define kInterface_get_all_customer_token_info  @"get_all_customer_token_info"  // 获取用户自定义的Token
 #define kInterface_get_customer_token_info      @"get_customer_token_info"      // 获取用户自定义的Token
 
+#define kInterface_dapp_eth_sign_tx            @"dapp_eth_sign_tx"  // dapp eth sign tx
+#define kInterface_dapp_eth_send_tx            @"dapp_eth_send_tx"  // send eth signed tx
+#define kInterface_dapp_eth_rpc_info           @"dapp_eth_rpc_info" // dapp eth get rpc
+#define kInterface_dapp_eth_keccak             @"dapp_eth_keccak"   // eth keccak hash
 
 #define kPyCommandsManager (OKPyCommandsManager.sharedInstance)
 NS_ASSUME_NONNULL_BEGIN
-typedef void(^OKPYResultCallback)(id result);
+typedef void(^OKPYResultCallback)(id __nullable result);
 
 @interface OKPyCommandsManager : NSObject
 + (OKPyCommandsManager *)sharedInstance;
 + (void)setNetwork;
-- (id)callInterface:(NSString *)method parameter:(nullable NSDictionary *)parameter;
+- (nullable id)callInterface:(NSString *)method parameter:(nullable NSDictionary *)parameter;
 - (void)cancel; // 取消上一个操作，让其立即返回, 可以重复调用
 - (void)cancelPIN; // 取消输入PIN操作
 
 // callback will be dispatched to main queue.
-- (void)asyncCall:(NSString *)method parameter:(nullable NSDictionary *)parameter callback:(nullable OKPYResultCallback) callback;
-- (void)asyncCall:(NSString *)method parameter:(nullable NSDictionary *)parameter asyncCallback:(nullable OKPYResultCallback) callback;
+- (void)asyncCall:(NSString *)method parameter:(nullable NSDictionary *)parameter callback:(nullable OKPYResultCallback)callback;
+- (void)asyncCall:(NSString *)method parameter:(nullable NSDictionary *)parameter asyncCallback:(nullable OKPYResultCallback)callback;
 @property (nonatomic,assign)PyObject *pyInstance;
 //硬件实例
 @property (nonatomic,assign)PyObject *pyHwInstance;

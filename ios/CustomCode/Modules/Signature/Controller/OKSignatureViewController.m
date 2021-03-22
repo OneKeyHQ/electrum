@@ -221,7 +221,7 @@ typedef enum {
             [OKHwNotiManager sharedInstance].delegate = self;
             OKWeakSelf(self)
             dispatch_async(dispatch_get_global_queue(0, 0), ^{
-               id result = [kPyCommandsManager callInterface:kInterfacesign_message parameter:@{@"address":kWalletManager.currentWalletInfo.addr,@"message":message}];
+                id result = [kPyCommandsManager callInterface:kInterfacesign_message parameter:@{@"address":kWalletManager.currentWalletInfo.addr,@"message":message, @"path":kBluetooth_iOS}];
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if (result != nil) {
                             [MBProgressHUD hideHUDForView:self.view animated:YES];

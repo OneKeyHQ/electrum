@@ -114,8 +114,6 @@
 		8814246425B18EAA00961668 /* OKDeviceInfoModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 881422CD25B18EA900961668 /* OKDeviceInfoModel.h */; };
 		8814246525B18EAA00961668 /* OK_PassWordView.m in Sources */ = {isa = PBXBuildFile; fileRef = 881422CF25B18EA900961668 /* OK_PassWordView.m */; };
 		8814246625B18EAA00961668 /* OK_PassWordView.h in Headers */ = {isa = PBXBuildFile; fileRef = 881422D025B18EA900961668 /* OK_PassWordView.h */; };
-		8814246725B18EAA00961668 /* OKDiscoverViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 881422D225B18EA900961668 /* OKDiscoverViewController.m */; };
-		8814246825B18EAA00961668 /* OKDiscoverViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 881422D325B18EA900961668 /* OKDiscoverViewController.h */; };
 		8814246925B18EAA00961668 /* Tab_Discover.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 881422D425B18EA900961668 /* Tab_Discover.storyboard */; };
 		8814246A25B18EAA00961668 /* OKSignatureViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 881422D725B18EA900961668 /* OKSignatureViewController.m */; };
 		8814246B25B18EAA00961668 /* OKVerifySignatureViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 881422D825B18EA900961668 /* OKVerifySignatureViewController.m */; };
@@ -433,14 +431,25 @@
 		881425FA25B9216700961668 /* OKSpecialEquipmentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 881425F825B9216700961668 /* OKSpecialEquipmentViewController.m */; };
 		881425FD25BFF0A400961668 /* OKTransferCompleteController.h in Headers */ = {isa = PBXBuildFile; fileRef = 881425FB25BFF0A400961668 /* OKTransferCompleteController.h */; };
 		881425FE25BFF0A400961668 /* OKTransferCompleteController.m in Sources */ = {isa = PBXBuildFile; fileRef = 881425FC25BFF0A400961668 /* OKTransferCompleteController.m */; };
+		881BA8F625FE0B8400721FCE /* OKTradeInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881BA8F525FE0B8400721FCE /* OKTradeInfoViewController.swift */; };
+		881BA90525FE621500721FCE /* OKModalNavView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 881BA90425FE621500721FCE /* OKModalNavView.xib */; };
+		881BA90725FE622200721FCE /* OKModalNavView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881BA90625FE622200721FCE /* OKModalNavView.swift */; };
 		8822105025D003F500BC7819 /* OKDeviceIdInconsistentViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 8822104E25D003F400BC7819 /* OKDeviceIdInconsistentViewController.h */; };
 		8822105125D003F500BC7819 /* OKDeviceIdInconsistentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8822104F25D003F400BC7819 /* OKDeviceIdInconsistentViewController.m */; };
 		882F8B5225F749FF004099D7 /* OKNotiAssetModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 882F8B5025F749FF004099D7 /* OKNotiAssetModel.h */; };
 		882F8B5325F749FF004099D7 /* OKNotiAssetModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 882F8B5125F749FF004099D7 /* OKNotiAssetModel.m */; };
 		8832128F260496D100A0314E /* OKSwitchWalletModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 8832128D260496D100A0314E /* OKSwitchWalletModel.h */; };
 		88321290260496D100A0314E /* OKSwitchWalletModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 8832128E260496D100A0314E /* OKSwitchWalletModel.m */; };
+		883FFA8B2605C9550079DC96 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 883FFA8A2605C9550079DC96 /* ViewController.swift */; };
+		883FFB62260618D20079DC96 /* PanModalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 883FFB61260618D20079DC96 /* PanModalViewController.swift */; };
+		883FFB6426061CA30079DC96 /* PanModalNavViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 883FFB6326061CA30079DC96 /* PanModalNavViewController.swift */; };
+		884AB4F12601087500A7FC70 /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884AB4F02601087500A7FC70 /* Data.swift */; };
+		884AB5112602559000A7FC70 /* OKSignMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884AB5102602559000A7FC70 /* OKSignMessageViewController.swift */; };
+		884AB5132602692500A7FC70 /* OKWebViewAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884AB5122602692500A7FC70 /* OKWebViewAction.swift */; };
+		884AB5172602739800A7FC70 /* OKWebJSParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884AB5162602739800A7FC70 /* OKWebJSParams.swift */; };
 		885798CA25E7982F00C16059 /* OKSendFeeModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 885798C825E7982F00C16059 /* OKSendFeeModel.h */; };
 		885798CB25E7982F00C16059 /* OKSendFeeModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 885798C925E7982F00C16059 /* OKSendFeeModel.m */; };
+		886359062607896E006CE167 /* OKTradeFeeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 886359052607896E006CE167 /* OKTradeFeeViewController.swift */; };
 		8864AEAE25E6081100459C4E /* SelectAssetType.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8864AEA525E6081100459C4E /* SelectAssetType.storyboard */; };
 		8864AEAF25E6081100459C4E /* OKSelectAssetTypeController.h in Headers */ = {isa = PBXBuildFile; fileRef = 8864AEA625E6081100459C4E /* OKSelectAssetTypeController.h */; };
 		8864AEB025E6081100459C4E /* OKSelectAssetTypeController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8864AEA725E6081100459C4E /* OKSelectAssetTypeController.m */; };
@@ -451,11 +460,27 @@
 		88B4AAE32601DA2A0048DA3E /* ETHBrowser.plist in Resources */ = {isa = PBXBuildFile; fileRef = 88B4AAE22601DA2A0048DA3E /* ETHBrowser.plist */; };
 		88B4AAE62601DA580048DA3E /* OKBrowserETHTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 88B4AAE42601DA580048DA3E /* OKBrowserETHTableViewController.m */; };
 		88B4AAE72601DA580048DA3E /* OKBrowserETHTableViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 88B4AAE52601DA580048DA3E /* OKBrowserETHTableViewController.h */; };
+		88B8A531260650FA00F38ADA /* PanBottomAlertViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B8A52F260650FA00F38ADA /* PanBottomAlertViewController.swift */; };
+		88B8A532260650FA00F38ADA /* PanBottomAlertViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88B8A530260650FA00F38ADA /* PanBottomAlertViewController.xib */; };
+		88B8A5342606727500F38ADA /* UIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B8A5332606727500F38ADA /* UIViewController.swift */; };
+		88B8A5362606732D00F38ADA /* Dispatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B8A5352606732D00F38ADA /* Dispatch.swift */; };
+		88B8A5382606775500F38ADA /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B8A5372606775500F38ADA /* UserDefaults.swift */; };
+		88B8A53A26067B2000F38ADA /* NetworkErrorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 88B8A53926067B2000F38ADA /* NetworkErrorView.xib */; };
+		88B8A53C26067B3000F38ADA /* NetworkErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B8A53B26067B3000F38ADA /* NetworkErrorView.swift */; };
+		88B8A53E260682DA00F38ADA /* UIControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B8A53D260682DA00F38ADA /* UIControl.swift */; };
 		88D0414825F61DAF0056C7F0 /* OKWalletInputFeeViewCallBackModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 88D0414625F61DAF0056C7F0 /* OKWalletInputFeeViewCallBackModel.h */; };
 		88D0414925F61DAF0056C7F0 /* OKWalletInputFeeViewCallBackModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 88D0414725F61DAF0056C7F0 /* OKWalletInputFeeViewCallBackModel.m */; };
+		88D2B37B25F7C459009D8FBC /* OKDiscoverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D2B37A25F7C459009D8FBC /* OKDiscoverViewController.swift */; };
+		88D2B38425F7C633009D8FBC /* UIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D2B38325F7C633009D8FBC /* UIView.swift */; };
 		88F80BF425F72C480095954F /* OKTokenAssetModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 88F80BF225F72C480095954F /* OKTokenAssetModel.h */; };
 		88F80BF525F72C480095954F /* OKTokenAssetModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 88F80BF325F72C480095954F /* OKTokenAssetModel.m */; };
 		88F89FBE25CB9E4700EFC641 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 88F89FBC25CB9E4700EFC641 /* Localizable.strings */; };
+		88FAC50325F673A00019CFF6 /* DAppMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88FAC4FF25F6739F0019CFF6 /* DAppMethod.swift */; };
+		88FAC50425F673A00019CFF6 /* WKUserScriptConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88FAC50025F6739F0019CFF6 /* WKUserScriptConfig.swift */; };
+		88FAC50525F673A00019CFF6 /* WKWebView+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88FAC50125F673A00019CFF6 /* WKWebView+Extensions.swift */; };
+		88FAC50625F673A00019CFF6 /* WKScriptMessage+JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88FAC50225F673A00019CFF6 /* WKScriptMessage+JSON.swift */; };
+		88FAC50825F673AD0019CFF6 /* OKDAppWebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88FAC50725F673AD0019CFF6 /* OKDAppWebViewController.swift */; };
+		88FAC53D25F6758E0019CFF6 /* OneKey-Bridging-Header.h in Headers */ = {isa = PBXBuildFile; fileRef = 88FAC4FB25F672D50019CFF6 /* OneKey-Bridging-Header.h */; };
 		8BA64C7EB8F197124BEFC4B9 /* BTCBrowser.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2B8A43CE94718C2C5184C2DC /* BTCBrowser.plist */; };
 		92534669BFCAE1EF0EC2F024 /* UIViewController+Extension.m in Sources */ = {isa = PBXBuildFile; fileRef = 468549E8AF41F4FF1257667D /* UIViewController+Extension.m */; };
 		95AC401EBD351386F061C3F1 /* UIBarButtonItem+CustomBarButtonItem.h in Headers */ = {isa = PBXBuildFile; fileRef = A7AC4065BEBD7FBEB713225D /* UIBarButtonItem+CustomBarButtonItem.h */; settings = {ATTRIBUTES = (project, ); }; };
@@ -587,6 +612,22 @@
 		BEA2428F980CDB93F6B81AB8 /* UIView+Toast.m in Sources */ = {isa = PBXBuildFile; fileRef = D9344854932E3E157FE99DA1 /* UIView+Toast.m */; };
 		BFDB4680B6FC3A8FD220F384 /* _strxor.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 63BA4FF386CE8330F1F7CFCB /* _strxor.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C8574A30A933FF1860B9ECE8 /* UIView+Helper.h in Headers */ = {isa = PBXBuildFile; fileRef = 1B074B2A8E67E94BE57AD92A /* UIView+Helper.h */; settings = {ATTRIBUTES = (project, ); }; };
+		CE10669B25FF58F60018AC4F /* OKSwiftHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = CE10669925FF58F60018AC4F /* OKSwiftHelper.h */; };
+		CE10669C25FF58F60018AC4F /* OKSwiftHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = CE10669A25FF58F60018AC4F /* OKSwiftHelper.m */; };
+		CE1066BC25FF8D610018AC4F /* Dictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1066BB25FF8D610018AC4F /* Dictionary.swift */; };
+		CE27A48D25F722A100728BBB /* onekey-min.js in Resources */ = {isa = PBXBuildFile; fileRef = CE27A48C25F722A100728BBB /* onekey-min.js */; };
+		CE326DEB260070DC00CA54E2 /* String.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE326DEA260070DC00CA54E2 /* String.swift */; };
+		CE326E0A2601DE8B00CA54E2 /* DAppWebManage.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE326E092601DE8B00CA54E2 /* DAppWebManage.swift */; };
+		CE326E0D2601FD4B00CA54E2 /* DAppTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE326E0C2601FD4B00CA54E2 /* DAppTransaction.swift */; };
+		CE326E34260217AC00CA54E2 /* WKWebViewObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE326E33260217AC00CA54E2 /* WKWebViewObserver.swift */; };
+		CE78641E2608CA9F00142DEF /* UIButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE78641D2608CA9E00142DEF /* UIButton.swift */; };
+		CE98546126087A8F00368E02 /* OKWallertTranferConnect.h in Headers */ = {isa = PBXBuildFile; fileRef = CE98545F26087A8F00368E02 /* OKWallertTranferConnect.h */; };
+		CE98546226087A8F00368E02 /* OKWallertTranferConnect.m in Sources */ = {isa = PBXBuildFile; fileRef = CE98546026087A8F00368E02 /* OKWallertTranferConnect.m */; };
+		CED40A4F260481BF0095D600 /* Int.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED40A4E260481BF0095D600 /* Int.swift */; };
+		CED40A5F2604AFFE0095D600 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED40A5E2604AFFE0095D600 /* Error.swift */; };
+		CED40A612604CC690095D600 /* Bundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED40A602604CC690095D600 /* Bundle.swift */; };
+		CEE2E1FB26035686009BF502 /* OKHelperUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = CEE2E1F926035686009BF502 /* OKHelperUtils.h */; };
+		CEE2E1FC26035686009BF502 /* OKHelperUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = CEE2E1FA26035686009BF502 /* OKHelperUtils.m */; };
 		CEFD442880FCA34F880163D7 /* screenlogo.png in Resources */ = {isa = PBXBuildFile; fileRef = 93734F80A12802A0BFBA1477 /* screenlogo.png */; };
 		D50C4AB38DB4B2AD6D02C262 /* UIButton+OneKey.h in Headers */ = {isa = PBXBuildFile; fileRef = CC004DBB9E6C199191D6DD02 /* UIButton+OneKey.h */; settings = {ATTRIBUTES = (project, ); }; };
 		DAD34816A1E761DAD4225B06 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 67A94913A0ABEE0B48ACAF79 /* AppDelegate.m */; };
@@ -755,8 +796,6 @@
 		881422CD25B18EA900961668 /* OKDeviceInfoModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKDeviceInfoModel.h; sourceTree = "<group>"; };
 		881422CF25B18EA900961668 /* OK_PassWordView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OK_PassWordView.m; sourceTree = "<group>"; };
 		881422D025B18EA900961668 /* OK_PassWordView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OK_PassWordView.h; sourceTree = "<group>"; };
-		881422D225B18EA900961668 /* OKDiscoverViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKDiscoverViewController.m; sourceTree = "<group>"; };
-		881422D325B18EA900961668 /* OKDiscoverViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKDiscoverViewController.h; sourceTree = "<group>"; };
 		881422D425B18EA900961668 /* Tab_Discover.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Tab_Discover.storyboard; sourceTree = "<group>"; };
 		881422D725B18EA900961668 /* OKSignatureViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKSignatureViewController.m; sourceTree = "<group>"; };
 		881422D825B18EA900961668 /* OKVerifySignatureViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKVerifySignatureViewController.m; sourceTree = "<group>"; };
@@ -1074,6 +1113,9 @@
 		881425F825B9216700961668 /* OKSpecialEquipmentViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKSpecialEquipmentViewController.m; sourceTree = "<group>"; };
 		881425FB25BFF0A400961668 /* OKTransferCompleteController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKTransferCompleteController.h; sourceTree = "<group>"; };
 		881425FC25BFF0A400961668 /* OKTransferCompleteController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKTransferCompleteController.m; sourceTree = "<group>"; };
+		881BA8F525FE0B8400721FCE /* OKTradeInfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OKTradeInfoViewController.swift; sourceTree = "<group>"; };
+		881BA90425FE621500721FCE /* OKModalNavView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = OKModalNavView.xib; sourceTree = "<group>"; };
+		881BA90625FE622200721FCE /* OKModalNavView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OKModalNavView.swift; sourceTree = "<group>"; };
 		881C49CA9B3FEEE96D160552 /* OKClickTextView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OKClickTextView.h; path = ../CustomCode/CommonView/OKClickTextView.h; sourceTree = SOURCE_ROOT; };
 		8822104E25D003F400BC7819 /* OKDeviceIdInconsistentViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKDeviceIdInconsistentViewController.h; sourceTree = "<group>"; };
 		8822104F25D003F400BC7819 /* OKDeviceIdInconsistentViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKDeviceIdInconsistentViewController.m; sourceTree = "<group>"; };
@@ -1081,8 +1123,16 @@
 		882F8B5125F749FF004099D7 /* OKNotiAssetModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKNotiAssetModel.m; sourceTree = "<group>"; };
 		8832128D260496D100A0314E /* OKSwitchWalletModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKSwitchWalletModel.h; sourceTree = "<group>"; };
 		8832128E260496D100A0314E /* OKSwitchWalletModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKSwitchWalletModel.m; sourceTree = "<group>"; };
+		883FFA8A2605C9550079DC96 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		883FFB61260618D20079DC96 /* PanModalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanModalViewController.swift; sourceTree = "<group>"; };
+		883FFB6326061CA30079DC96 /* PanModalNavViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanModalNavViewController.swift; sourceTree = "<group>"; };
+		884AB4F02601087500A7FC70 /* Data.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
+		884AB5102602559000A7FC70 /* OKSignMessageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OKSignMessageViewController.swift; sourceTree = "<group>"; };
+		884AB5122602692500A7FC70 /* OKWebViewAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OKWebViewAction.swift; sourceTree = "<group>"; };
+		884AB5162602739800A7FC70 /* OKWebJSParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OKWebJSParams.swift; sourceTree = "<group>"; };
 		885798C825E7982F00C16059 /* OKSendFeeModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKSendFeeModel.h; sourceTree = "<group>"; };
 		885798C925E7982F00C16059 /* OKSendFeeModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKSendFeeModel.m; sourceTree = "<group>"; };
+		886359052607896E006CE167 /* OKTradeFeeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OKTradeFeeViewController.swift; sourceTree = "<group>"; };
 		8864AEA525E6081100459C4E /* SelectAssetType.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = SelectAssetType.storyboard; sourceTree = "<group>"; };
 		8864AEA625E6081100459C4E /* OKSelectAssetTypeController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKSelectAssetTypeController.h; sourceTree = "<group>"; };
 		8864AEA725E6081100459C4E /* OKSelectAssetTypeController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKSelectAssetTypeController.m; sourceTree = "<group>"; };
@@ -1093,12 +1143,28 @@
 		88B4AAE22601DA2A0048DA3E /* ETHBrowser.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = ETHBrowser.plist; sourceTree = "<group>"; };
 		88B4AAE42601DA580048DA3E /* OKBrowserETHTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OKBrowserETHTableViewController.m; sourceTree = "<group>"; };
 		88B4AAE52601DA580048DA3E /* OKBrowserETHTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OKBrowserETHTableViewController.h; sourceTree = "<group>"; };
+		88B8A52F260650FA00F38ADA /* PanBottomAlertViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanBottomAlertViewController.swift; sourceTree = "<group>"; };
+		88B8A530260650FA00F38ADA /* PanBottomAlertViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PanBottomAlertViewController.xib; sourceTree = "<group>"; };
+		88B8A5332606727500F38ADA /* UIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewController.swift; sourceTree = "<group>"; };
+		88B8A5352606732D00F38ADA /* Dispatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dispatch.swift; sourceTree = "<group>"; };
+		88B8A5372606775500F38ADA /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
+		88B8A53926067B2000F38ADA /* NetworkErrorView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NetworkErrorView.xib; sourceTree = "<group>"; };
+		88B8A53B26067B3000F38ADA /* NetworkErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkErrorView.swift; sourceTree = "<group>"; };
+		88B8A53D260682DA00F38ADA /* UIControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIControl.swift; sourceTree = "<group>"; };
 		88D0414625F61DAF0056C7F0 /* OKWalletInputFeeViewCallBackModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKWalletInputFeeViewCallBackModel.h; sourceTree = "<group>"; };
 		88D0414725F61DAF0056C7F0 /* OKWalletInputFeeViewCallBackModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKWalletInputFeeViewCallBackModel.m; sourceTree = "<group>"; };
+		88D2B37A25F7C459009D8FBC /* OKDiscoverViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OKDiscoverViewController.swift; sourceTree = "<group>"; };
+		88D2B38325F7C633009D8FBC /* UIView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIView.swift; sourceTree = "<group>"; };
 		88D7404B9FF067F44DABF936 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = None; name = LaunchScreen.storyboard; path = ../Resources/LaunchScreen.storyboard; sourceTree = SOURCE_ROOT; };
 		88F80BF225F72C480095954F /* OKTokenAssetModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKTokenAssetModel.h; sourceTree = "<group>"; };
 		88F80BF325F72C480095954F /* OKTokenAssetModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKTokenAssetModel.m; sourceTree = "<group>"; };
 		88F89FBD25CB9E4700EFC641 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = Localizable.strings; sourceTree = "<group>"; };
+		88FAC4FB25F672D50019CFF6 /* OneKey-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "OneKey-Bridging-Header.h"; sourceTree = "<group>"; };
+		88FAC4FF25F6739F0019CFF6 /* DAppMethod.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DAppMethod.swift; sourceTree = "<group>"; };
+		88FAC50025F6739F0019CFF6 /* WKUserScriptConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WKUserScriptConfig.swift; sourceTree = "<group>"; };
+		88FAC50125F673A00019CFF6 /* WKWebView+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "WKWebView+Extensions.swift"; sourceTree = "<group>"; };
+		88FAC50225F673A00019CFF6 /* WKScriptMessage+JSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "WKScriptMessage+JSON.swift"; sourceTree = "<group>"; };
+		88FAC50725F673AD0019CFF6 /* OKDAppWebViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OKDAppWebViewController.swift; sourceTree = "<group>"; };
 		90BF4B77B7BC2B3709FC7726 /* NSString+OKAdd.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "NSString+OKAdd.h"; path = "../CustomCode/Categories/NSString+OKAdd.h"; sourceTree = SOURCE_ROOT; };
 		93734F80A12802A0BFBA1477 /* screenlogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = screenlogo.png; path = ../Resources/Images/screenlogo.png; sourceTree = SOURCE_ROOT; };
 		943948EBB61DA7BD862F18EF /* QRCodeScanSound.caf */ = {isa = PBXFileReference; lastKnownFileType = None; name = QRCodeScanSound.caf; path = ../Resources/QRCodeScanSound.caf; sourceTree = SOURCE_ROOT; };
@@ -1229,6 +1295,22 @@
 		CB7B46A7B3A8ECB571CE7211 /* _raw_ctr.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = _raw_ctr.framework; path = ../Resources/Dylib/_raw_ctr.framework; sourceTree = SOURCE_ROOT; };
 		CC004DBB9E6C199191D6DD02 /* UIButton+OneKey.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "UIButton+OneKey.h"; path = "../CustomCode/Categories/UIButton+OneKey.h"; sourceTree = SOURCE_ROOT; };
 		CC3044DFB660FFA92105EDCB /* NSData+StringToData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "NSData+StringToData.h"; path = "../CustomCode/Categories/NSData+StringToData.h"; sourceTree = SOURCE_ROOT; };
+		CE10669925FF58F60018AC4F /* OKSwiftHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKSwiftHelper.h; sourceTree = "<group>"; };
+		CE10669A25FF58F60018AC4F /* OKSwiftHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKSwiftHelper.m; sourceTree = "<group>"; };
+		CE1066BB25FF8D610018AC4F /* Dictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dictionary.swift; sourceTree = "<group>"; };
+		CE27A48C25F722A100728BBB /* onekey-min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "onekey-min.js"; sourceTree = "<group>"; };
+		CE326DEA260070DC00CA54E2 /* String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = String.swift; sourceTree = "<group>"; };
+		CE326E092601DE8B00CA54E2 /* DAppWebManage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppWebManage.swift; sourceTree = "<group>"; };
+		CE326E0C2601FD4B00CA54E2 /* DAppTransaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DAppTransaction.swift; sourceTree = "<group>"; };
+		CE326E33260217AC00CA54E2 /* WKWebViewObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WKWebViewObserver.swift; sourceTree = "<group>"; };
+		CE78641D2608CA9E00142DEF /* UIButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIButton.swift; sourceTree = "<group>"; };
+		CE98545F26087A8F00368E02 /* OKWallertTranferConnect.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKWallertTranferConnect.h; sourceTree = "<group>"; };
+		CE98546026087A8F00368E02 /* OKWallertTranferConnect.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKWallertTranferConnect.m; sourceTree = "<group>"; };
+		CED40A4E260481BF0095D600 /* Int.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Int.swift; sourceTree = "<group>"; };
+		CED40A5E2604AFFE0095D600 /* Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
+		CED40A602604CC690095D600 /* Bundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bundle.swift; sourceTree = "<group>"; };
+		CEE2E1F926035686009BF502 /* OKHelperUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OKHelperUtils.h; sourceTree = "<group>"; };
+		CEE2E1FA26035686009BF502 /* OKHelperUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OKHelperUtils.m; sourceTree = "<group>"; };
 		CF98402B8EBB896363DC0BA3 /* OKNSObject.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = OKNSObject.m; path = ../CustomCode/OKNSObject.m; sourceTree = SOURCE_ROOT; };
 		D5A34408B3741570B2187811 /* _SHA1.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = _SHA1.framework; path = ../Resources/Dylib/_SHA1.framework; sourceTree = SOURCE_ROOT; };
 		D8AF435680E41DF1C6BC56E7 /* OneKeyDefine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OneKeyDefine.h; path = ../CustomCode/OneKeyDefine.h; sourceTree = SOURCE_ROOT; };
@@ -1602,8 +1684,15 @@
 		881422D125B18EA900961668 /* Tab_Discover */ = {
 			isa = PBXGroup;
 			children = (
-				881422D225B18EA900961668 /* OKDiscoverViewController.m */,
-				881422D325B18EA900961668 /* OKDiscoverViewController.h */,
+				CE326E322602179B00CA54E2 /* Helper */,
+				CE326E0B2601FD2E00CA54E2 /* Models */,
+				881BA8F025FE01DE00721FCE /* Views */,
+				88FAC4FE25F673620019CFF6 /* DAppBrowser */,
+				88FAC50725F673AD0019CFF6 /* OKDAppWebViewController.swift */,
+				88D2B37A25F7C459009D8FBC /* OKDiscoverViewController.swift */,
+				881BA8F525FE0B8400721FCE /* OKTradeInfoViewController.swift */,
+				884AB5102602559000A7FC70 /* OKSignMessageViewController.swift */,
+				886359052607896E006CE167 /* OKTradeFeeViewController.swift */,
 				881422D425B18EA900961668 /* Tab_Discover.storyboard */,
 			);
 			path = Tab_Discover;
@@ -2207,8 +2296,18 @@
 				8814242225B18EAA00961668 /* OKLabel.m */,
 				8814241D25B18EAA00961668 /* OKTextField.h */,
 				8814242325B18EAA00961668 /* OKTextField.m */,
+				883FFA8A2605C9550079DC96 /* ViewController.swift */,
 			);
 			path = Base;
+			sourceTree = "<group>";
+		};
+		881BA8F025FE01DE00721FCE /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				881BA90425FE621500721FCE /* OKModalNavView.xib */,
+				881BA90625FE622200721FCE /* OKModalNavView.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 		8864AEA325E6081100459C4E /* SelectAssetType */ = {
@@ -2249,11 +2348,49 @@
 			path = View;
 			sourceTree = "<group>";
 		};
+		88D2B34525F67F65009D8FBC /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				CE78641D2608CA9E00142DEF /* UIButton.swift */,
+				884AB4F02601087500A7FC70 /* Data.swift */,
+				88D2B38325F7C633009D8FBC /* UIView.swift */,
+				CE1066BB25FF8D610018AC4F /* Dictionary.swift */,
+				CE326DEA260070DC00CA54E2 /* String.swift */,
+				CED40A4E260481BF0095D600 /* Int.swift */,
+				CED40A5E2604AFFE0095D600 /* Error.swift */,
+				CED40A602604CC690095D600 /* Bundle.swift */,
+				88B8A5332606727500F38ADA /* UIViewController.swift */,
+				88B8A5352606732D00F38ADA /* Dispatch.swift */,
+				88B8A5372606775500F38ADA /* UserDefaults.swift */,
+				88B8A53D260682DA00F38ADA /* UIControl.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		88FAC4FE25F673620019CFF6 /* DAppBrowser */ = {
+			isa = PBXGroup;
+			children = (
+				CE27A48B25F7229200728BBB /* js */,
+				88FAC4FF25F6739F0019CFF6 /* DAppMethod.swift */,
+				88FAC50225F673A00019CFF6 /* WKScriptMessage+JSON.swift */,
+				88FAC50025F6739F0019CFF6 /* WKUserScriptConfig.swift */,
+				88FAC50125F673A00019CFF6 /* WKWebView+Extensions.swift */,
+				CE326E092601DE8B00CA54E2 /* DAppWebManage.swift */,
+			);
+			path = DAppBrowser;
+			sourceTree = "<group>";
+		};
 		897B470BBDFF6189764A28B1 /* CommonView */ = {
 			isa = PBXGroup;
 			children = (
 				881C49CA9B3FEEE96D160552 /* OKClickTextView.h */,
 				0E69481895D9636B448B1235 /* OKClickTextView.m */,
+				88B8A53B26067B3000F38ADA /* NetworkErrorView.swift */,
+				88B8A53926067B2000F38ADA /* NetworkErrorView.xib */,
+				883FFB61260618D20079DC96 /* PanModalViewController.swift */,
+				883FFB6326061CA30079DC96 /* PanModalNavViewController.swift */,
+				88B8A52F260650FA00F38ADA /* PanBottomAlertViewController.swift */,
+				88B8A530260650FA00F38ADA /* PanBottomAlertViewController.xib */,
 			);
 			name = CommonView;
 			path = ../CustomCode/CommonView;
@@ -2479,24 +2616,58 @@
 		CBB14A08A299E78F0950E8FA /* CustomCode */ = {
 			isa = PBXGroup;
 			children = (
+				88D2B34525F67F65009D8FBC /* Extensions */,
 				8814228525B18EA900961668 /* Modules */,
 				59A544C0AFB5DBAF4A4C8EEB /* Notification.h */,
 				5E4F455E95D3B43D3A094929 /* AppDelegate.h */,
-				67A94913A0ABEE0B48ACAF79 /* AppDelegate.m */,
 				897B470BBDFF6189764A28B1 /* CommonView */,
 				557E4A389FE9AA72CB44E5B1 /* OKComMarco.h */,
 				D8AF435680E41DF1C6BC56E7 /* OneKeyDefine.h */,
 				1F39433BAEECE65A7A5AC6F5 /* Main.storyboard */,
-				6C12447AB6E226E6A392EA08 /* MainViewController.h */,
 				40344ECA83C60D9D5365CD5F /* MainViewController.m */,
 				B0D7435FBD7BF7C736F29F8F /* OKColors.h */,
 				5ECA44D898AC06784730EF60 /* OneKeyImport.h */,
 				A911430B96FB9633A857ACAD /* OKNSObject.h */,
 				CF98402B8EBB896363DC0BA3 /* OKNSObject.m */,
+				67A94913A0ABEE0B48ACAF79 /* AppDelegate.m */,
+				6C12447AB6E226E6A392EA08 /* MainViewController.h */,
+				CEE2E1F926035686009BF502 /* OKHelperUtils.h */,
+				CEE2E1FA26035686009BF502 /* OKHelperUtils.m */,
+				CE10669925FF58F60018AC4F /* OKSwiftHelper.h */,
+				CE10669A25FF58F60018AC4F /* OKSwiftHelper.m */,
+				88FAC4FB25F672D50019CFF6 /* OneKey-Bridging-Header.h */,
 				A4724BF794CB79703D16775D /* Categories */,
 			);
 			name = CustomCode;
 			path = ../CustomCode;
+			sourceTree = "<group>";
+		};
+		CE27A48B25F7229200728BBB /* js */ = {
+			isa = PBXGroup;
+			children = (
+				CE27A48C25F722A100728BBB /* onekey-min.js */,
+			);
+			path = js;
+			sourceTree = "<group>";
+		};
+		CE326E0B2601FD2E00CA54E2 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				CE326E0C2601FD4B00CA54E2 /* DAppTransaction.swift */,
+				884AB5122602692500A7FC70 /* OKWebViewAction.swift */,
+				884AB5162602739800A7FC70 /* OKWebJSParams.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		CE326E322602179B00CA54E2 /* Helper */ = {
+			isa = PBXGroup;
+			children = (
+				CE326E33260217AC00CA54E2 /* WKWebViewObserver.swift */,
+				CE98545F26087A8F00368E02 /* OKWallertTranferConnect.h */,
+				CE98546026087A8F00368E02 /* OKWallertTranferConnect.m */,
+			);
+			path = Helper;
 			sourceTree = "<group>";
 		};
 		D0EB44649E54870256226F15 /* Resources */ = {
@@ -2552,7 +2723,6 @@
 				8814257A25B18EAA00961668 /* OKWalletListNoHDTableViewCell.h in Headers */,
 				B03A1A4725C91601004137F1 /* OKPINInputMethodCell.h in Headers */,
 				BE674FDD991CD488615B3B16 /* AppDelegate.h in Headers */,
-				8814246825B18EAA00961668 /* OKDiscoverViewController.h in Headers */,
 				881425FD25BFF0A400961668 /* OKTransferCompleteController.h in Headers */,
 				6BF5481D9407079B03FE8AD6 /* OKClickTextView.h in Headers */,
 				B067DE7225E90E3E00E98881 /* OKIndexView.h in Headers */,
@@ -2588,6 +2758,7 @@
 				B03A1A4325C90835004137F1 /* OKPINInputMethodController.h in Headers */,
 				B0E3FED725EF6B3700BE4B7F /* OKButtonView.h in Headers */,
 				881424C625B18EAA00961668 /* OKElectrumNodeViewController.h in Headers */,
+				CEE2E1FB26035686009BF502 /* OKHelperUtils.h in Headers */,
 				8814252E25B18EAA00961668 /* OKWalletManager.h in Headers */,
 				881425F925B9216700961668 /* OKSpecialEquipmentViewController.h in Headers */,
 				881424E525B18EAA00961668 /* OKAboutTableViewCell.h in Headers */,
@@ -2651,6 +2822,7 @@
 				B0A8FFFE25E6261800513B8E /* UIColor+OKAppreance.h in Headers */,
 				881424A325B18EAA00961668 /* OKNetworkViewController.h in Headers */,
 				8814247225B18EAA00961668 /* InternalApis.h in Headers */,
+				CE10669B25FF58F60018AC4F /* OKSwiftHelper.h in Headers */,
 				B04F6E0825DE573500FF377E /* OKBTCAddressTypeSelectController.h in Headers */,
 				8814256725B18EAA00961668 /* OKCreateSelectWalletTypeModel.h in Headers */,
 				6BDF47D5862FBD1B0521C6EA /* UIImage+OneKey.h in Headers */,
@@ -2732,6 +2904,7 @@
 				882F8B5225F749FF004099D7 /* OKNotiAssetModel.h in Headers */,
 				B067DE6E25E8E66400E98881 /* OKTokenManModel.h in Headers */,
 				8814257D25B18EAA00961668 /* OKCreateSelectWalletTypeCell.h in Headers */,
+				88FAC53D25F6758E0019CFF6 /* OneKey-Bridging-Header.h in Headers */,
 				B058D8BC25B55663000EB27C /* OKDeviceSettingsViewController.h in Headers */,
 				B024EEF625F8BC550089B265 /* OKChangeWalletController.h in Headers */,
 				8814259D25B1900600961668 /* OKHwNotiManager.h in Headers */,
@@ -2795,6 +2968,7 @@
 				8814246125B18EAA00961668 /* OKVerifyOnTheDeviceController.h in Headers */,
 				B000CA9E25F5D41D007B3985 /* OKTokenManager.h in Headers */,
 				B058D8B525B55663000EB27C /* OKDeviceUpdateInstallController.h in Headers */,
+				CE98546126087A8F00368E02 /* OKWallertTranferConnect.h in Headers */,
 				88D0414825F61DAF0056C7F0 /* OKWalletInputFeeViewCallBackModel.h in Headers */,
 				95AC401EBD351386F061C3F1 /* UIBarButtonItem+CustomBarButtonItem.h in Headers */,
 				8814245E25B18EAA00961668 /* OKPINCodeViewController.h in Headers */,
@@ -2867,10 +3041,13 @@
 				8814253425B18EAA00961668 /* OKShareView.xib in Resources */,
 				BA9CB38E25AC7499002DD64A /* trezor in Resources */,
 				BA0B7AC525AC560000F26B0C /* electrum_gui in Resources */,
+				881BA90525FE621500721FCE /* OKModalNavView.xib in Resources */,
+				88B8A53A26067B2000F38ADA /* NetworkErrorView.xib in Resources */,
 				8864AEAE25E6081100459C4E /* SelectAssetType.storyboard in Resources */,
 				8814247A25B18EAA00961668 /* dsbridge.js in Resources */,
 				8814242D25B18EAA00961668 /* Import.storyboard in Resources */,
 				BA0B7AC625AC560000F26B0C /* electrum in Resources */,
+				CE27A48D25F722A100728BBB /* onekey-min.js in Resources */,
 				8814245A25B18EAA00961668 /* Hardware.storyboard in Resources */,
 				6380410EBCF844A6CF19397D /* Localizable.strings in Resources */,
 				8814247E25B18EAA00961668 /* no_network.png in Resources */,
@@ -2894,6 +3071,7 @@
 				8814243925B18EAA00961668 /* OKPwd.storyboard in Resources */,
 				881424FC25B18EAA00961668 /* Tab_Wallet.storyboard in Resources */,
 				BAA858DA25AD52FB00A51CDE /* InfoPlist.strings in Resources */,
+				88B8A532260650FA00F38ADA /* PanBottomAlertViewController.xib in Resources */,
 				881424CA25B18EAA00961668 /* NetSeting.storyboard in Resources */,
 				BA578E2F25ACA68700EFE0AA /* Images.xcassets in Resources */,
 				BA578E2B25ACA43D00EFE0AA /* OneKey-Info.plist in Resources */,
@@ -2996,6 +3174,7 @@
 				B058D8B325B55663000EB27C /* OKDeviceUpdateModel.m in Sources */,
 				8814256325B18EAA00961668 /* OKCheckWordView.m in Sources */,
 				02F741609824FB47EF141ABE /* OKNSObject.m in Sources */,
+				88B8A5362606732D00F38ADA /* Dispatch.swift in Sources */,
 				8814242B25B18EAA00961668 /* OKPrivateImportViewController.m in Sources */,
 				8814255025B18EAA00961668 /* OKReadyToStartViewController.m in Sources */,
 				881424B725B18EAA00961668 /* OKTradeSettingViewController.m in Sources */,
@@ -3014,6 +3193,7 @@
 				B0EB9B8725FA24270098092B /* OKQRScanResultController.m in Sources */,
 				8814245825B18EAA00961668 /* OKVerifyOnTheDeviceController.m in Sources */,
 				881424F225B18EAA00961668 /* OKPrivateKeyExportViewController.m in Sources */,
+				88B8A531260650FA00F38ADA /* PanBottomAlertViewController.swift in Sources */,
 				881424ED25B18EAA00961668 /* OKTxViewController.m in Sources */,
 				B03A1A4425C90835004137F1 /* OKPINInputMethodController.m in Sources */,
 				8814253125B18EAA00961668 /* OKOneKeyPwdManager.m in Sources */,
@@ -3028,14 +3208,19 @@
 				8814245D25B18EAA00961668 /* OKActivateDeviceSelectViewController.m in Sources */,
 				881424BB25B18EAA00961668 /* OKElectrumNodeViewController.m in Sources */,
 				8814242E25B18EAA00961668 /* OKMnemonicImportViewController.m in Sources */,
+				CED40A5F2604AFFE0095D600 /* Error.swift in Sources */,
+				CE326E0D2601FD4B00CA54E2 /* DAppTransaction.swift in Sources */,
 				8814245025B18EAA00961668 /* PBKDF2.m in Sources */,
 				8814248225B18EAA00961668 /* MLMSegmentHead.m in Sources */,
 				8814250925B18EAA00961668 /* OKAssetTableViewCellModel.m in Sources */,
+				884AB5172602739800A7FC70 /* OKWebJSParams.swift in Sources */,
 				8814251D25B18EAA00961668 /* OKWalletViewController.mm in Sources */,
 				8814255C25B18EAA00961668 /* OKFindWalletTableViewCellModel.m in Sources */,
 				B024EEEE25F798250089B265 /* OKTokenSelectController.m in Sources */,
+				884AB5132602692500A7FC70 /* OKWebViewAction.swift in Sources */,
 				B0A8000325E6262700513B8E /* UIFont+OKAppreance.m in Sources */,
 				8814244F25B18EAA00961668 /* NSData+CommonCrypto.m in Sources */,
+				CE98546226087A8F00368E02 /* OKWallertTranferConnect.m in Sources */,
 				881425AA25B302E500961668 /* OKChangeMnemonicLenController.m in Sources */,
 				8814246025B18EAA00961668 /* OKDeviceSuccessViewController.m in Sources */,
 				B058D8BA25B55663000EB27C /* OKDeviceSettingsViewController.m in Sources */,
@@ -3043,6 +3228,7 @@
 				8814252425B18EAA00961668 /* OKUserSettingManager.m in Sources */,
 				8814245425B18EAA00961668 /* OKMatchingInCirclesViewController.m in Sources */,
 				881424F725B18EAA00961668 /* OKSendTxPreInfoViewController.m in Sources */,
+				88FAC50425F673A00019CFF6 /* WKUserScriptConfig.swift in Sources */,
 				8814259325B18EAA00961668 /* BaseNavigationController.m in Sources */,
 				8814257425B18EAA00961668 /* OKWalletListNoHDTableViewCell.m in Sources */,
 				B024EEF225F874A80089B265 /* UITableView+OKRoundSection.m in Sources */,
@@ -3054,9 +3240,12 @@
 				DAD34816A1E761DAD4225B06 /* AppDelegate.m in Sources */,
 				B058D8B125B55663000EB27C /* OKDeviceUpdateViewController.m in Sources */,
 				8814257825B18EAA00961668 /* OKSelectCoinTypeTableViewCell.m in Sources */,
+				88B8A53C26067B3000F38ADA /* NetworkErrorView.swift in Sources */,
+				886359062607896E006CE167 /* OKTradeFeeViewController.swift in Sources */,
 				8814252A25B18EAA00961668 /* OKLocalizableManager.m in Sources */,
 				B016517425C057920037C6B4 /* OKURLSchemeHandler.m in Sources */,
 				8814257525B18EAA00961668 /* OKCreateSelectWalletTypeCell.m in Sources */,
+				883FFA8B2605C9550079DC96 /* ViewController.swift in Sources */,
 				BA578E2D25ACA43D00EFE0AA /* main.m in Sources */,
 				8814243A25B18EAA00961668 /* OKPwdViewController.m in Sources */,
 				8814244E25B18EAA00961668 /* Base64.m in Sources */,
@@ -3066,10 +3255,12 @@
 				881424C025B18EAA00961668 /* OKBrowserBTCTableViewController.m in Sources */,
 				B0CA023A25EE2D47002EAB56 /* OKAddTokenController.m in Sources */,
 				8814243625B18EAA00961668 /* OKWalletInfoModel.m in Sources */,
+				CE10669C25FF58F60018AC4F /* OKSwiftHelper.m in Sources */,
 				881424EC25B18EAA00961668 /* OKSendCoinViewController.m in Sources */,
 				881424C425B18EAA00961668 /* OKSocketTypeSelectController.m in Sources */,
 				8814256625B18EAA00961668 /* OKSelectCoinTypeTableViewCellModel.m in Sources */,
 				8814255325B18EAA00961668 /* OKYouareDoneViewController.m in Sources */,
+				CED40A4F260481BF0095D600 /* Int.swift in Sources */,
 				8814251F25B18EAA00961668 /* OKLookWalletTipsViewController.m in Sources */,
 				B04F6E0925DE573500FF377E /* OKBTCAddressTypeSelectController.m in Sources */,
 				B058D8AE25B55663000EB27C /* OKDeviceVerifyController.m in Sources */,
@@ -3092,6 +3283,7 @@
 				882F8B5325F749FF004099D7 /* OKNotiAssetModel.m in Sources */,
 				881425FA25B9216700961668 /* OKSpecialEquipmentViewController.m in Sources */,
 				881424CE25B18EAA00961668 /* OKTheMarketViewController.m in Sources */,
+				CED40A612604CC690095D600 /* Bundle.swift in Sources */,
 				8814244925B18EAA00961668 /* AESCrypt.m in Sources */,
 				8814251525B18EAA00961668 /* OKWalletInputFeeView.m in Sources */,
 				8814246525B18EAA00961668 /* OK_PassWordView.m in Sources */,
@@ -3109,7 +3301,6 @@
 				B058D8BF25B55663000EB27C /* OKDeviceLanguageViewController.m in Sources */,
 				8814259E25B1900600961668 /* OKHwNotiManager.m in Sources */,
 				885798CB25E7982F00C16059 /* OKSendFeeModel.m in Sources */,
-				8814246725B18EAA00961668 /* OKDiscoverViewController.m in Sources */,
 				8814248325B18EAA00961668 /* UIView+ViewController.m in Sources */,
 				881424BC25B18EAA00961668 /* OKElectrumNodeModel.m in Sources */,
 				881424DC25B18EAA00961668 /* OKMineTableViewCellModel.m in Sources */,
@@ -3119,14 +3310,17 @@
 				8814250325B18EAA00961668 /* OKSendTxPreModel.m in Sources */,
 				3BE1457292868A66CC6B701F /* UIView+YCExtension.m in Sources */,
 				8814254D25B18EAA00961668 /* OKScreenshotsTipsController.m in Sources */,
+				88B8A5342606727500F38ADA /* UIViewController.swift in Sources */,
 				8814247C25B18EAA00961668 /* WebViewVC.m in Sources */,
 				8814246A25B18EAA00961668 /* OKSignatureViewController.m in Sources */,
 				8814245625B18EAA00961668 /* OKPINCodeViewController.m in Sources */,
 				8814256F25B18EAA00961668 /* OKSelectCellModel.m in Sources */,
 				8864AEB025E6081100459C4E /* OKSelectAssetTypeController.m in Sources */,
+				CE1066BC25FF8D610018AC4F /* Dictionary.swift in Sources */,
 				B058D8CB25B572C7000EB27C /* OKDevicesManager.m in Sources */,
 				881424B525B18EAA00961668 /* OKAllAssetsViewController.m in Sources */,
 				8822105125D003F500BC7819 /* OKDeviceIdInconsistentViewController.m in Sources */,
+				88FAC50325F673A00019CFF6 /* DAppMethod.swift in Sources */,
 				881424B325B18EAA00961668 /* OKNetworkViewController.m in Sources */,
 				8814245525B18EAA00961668 /* OKSetPINPreViewController.m in Sources */,
 				881424FF25B18EAA00961668 /* OKDefaultFeeInfoSubModel.m in Sources */,
@@ -3138,6 +3332,7 @@
 				881424D625B18EAA00961668 /* OKUnitTableViewCellModel.m in Sources */,
 				881424F125B18EAA00961668 /* OKExportTipsViewController.m in Sources */,
 				8814255225B18EAA00961668 /* OKBackUpViewController.m in Sources */,
+				88D2B37B25F7C459009D8FBC /* OKDiscoverViewController.swift in Sources */,
 				B03A1A4825C91601004137F1 /* OKPINInputMethodCell.m in Sources */,
 				8814254325B18EAA00961668 /* OKQRCodeScanManager.m in Sources */,
 				8814251725B18EAA00961668 /* OKWalletDetailTableViewCell.m in Sources */,
@@ -3152,16 +3347,21 @@
 				8814257625B18EAA00961668 /* OKSelectTableViewCell.m in Sources */,
 				B0E3FEC925EF4BA000BE4B7F /* OKAddTokenSheet.m in Sources */,
 				881424B225B18EAA00961668 /* OKAboutViewController.m in Sources */,
+				CEE2E1FC26035686009BF502 /* OKHelperUtils.m in Sources */,
 				8814249125B18EAA00961668 /* split.c in Sources */,
 				8814256425B18EAA00961668 /* OKFindWalletTableViewCell.m in Sources */,
 				8814245225B18EAA00961668 /* Sha256.m in Sources */,
 				8814255925B18EAA00961668 /* OKWordImportVC.m in Sources */,
 				8814256225B18EAA00961668 /* OKDeleteTextField.m in Sources */,
 				8814257925B18EAA00961668 /* OKWalletListCollectionViewCell.m in Sources */,
+				88D2B38425F7C633009D8FBC /* UIView.swift in Sources */,
+				883FFB6426061CA30079DC96 /* PanModalNavViewController.swift in Sources */,
 				8814248F25B18EAA00961668 /* qrencode.c in Sources */,
 				4C044852BFC349E22BCD4336 /* UILabel+OneKey.m in Sources */,
 				8814256C25B18EAA00961668 /* OKCreateSelectWalletTypeModel.m in Sources */,
+				CE326E0A2601DE8B00CA54E2 /* DAppWebManage.swift in Sources */,
 				404D4A3F8F073EC7E7FFA53B /* NSData+StringToData.m in Sources */,
+				881BA8F625FE0B8400721FCE /* OKTradeInfoViewController.swift in Sources */,
 				881424CC25B18EAA00961668 /* OKNetTableViewCell.m in Sources */,
 				8814254F25B18EAA00961668 /* OKWordWrongViewController.m in Sources */,
 				B094AE7425CBEE9400DCA01E /* NSArray+OKAdd.m in Sources */,
@@ -3171,20 +3371,26 @@
 				8814250725B18EAA00961668 /* OKDefaultFeeInfoModel.m in Sources */,
 				B058D8BB25B55663000EB27C /* OKHardwareListBaseCell.m in Sources */,
 				8814257325B18EAA00961668 /* OKWalletListBottomBtn.m in Sources */,
+				CE326DEB260070DC00CA54E2 /* String.swift in Sources */,
 				8814251425B18EAA00961668 /* OKBottomCustomBtn.m in Sources */,
 				8814254025B18EAA00961668 /* OKScanView.m in Sources */,
 				8814248425B18EAA00961668 /* MLMSegmentScroll.m in Sources */,
 				8814242C25B18EAA00961668 /* OKKeystoreImportViewController.m in Sources */,
 				B0A8FFF225E509A000513B8E /* OKTokenCell.m in Sources */,
+				CE78641E2608CA9F00142DEF /* UIButton.swift in Sources */,
 				8814258325B18EAA00961668 /* OKWalletListViewController.m in Sources */,
+				883FFB62260618D20079DC96 /* PanModalViewController.swift in Sources */,
+				88B8A5382606775500F38ADA /* UserDefaults.swift in Sources */,
 				8814249D25B18EAA00961668 /* OKDeleteBackUpTipsController.m in Sources */,
 				881424E025B18EAA00961668 /* OKAboutTableViewCell.m in Sources */,
 				8814248525B18EAA00961668 /* UIView+EasyFrame.m in Sources */,
 				8814247B25B18EAA00961668 /* DWKWebView.m in Sources */,
 				8814246C25B18EAA00961668 /* OKVerifySignatureResultController.m in Sources */,
 				8814249325B18EAA00961668 /* QRCodeGenerator.m in Sources */,
+				CE326E34260217AC00CA54E2 /* WKWebViewObserver.swift in Sources */,
 				B058D8C425B5567B000EB27C /* NSDictionary+OKKeyPath.m in Sources */,
 				B067DE7325E90E3E00E98881 /* OKIndexView.m in Sources */,
+				88FAC50825F673AD0019CFF6 /* OKDAppWebViewController.swift in Sources */,
 				8814255825B18EAA00961668 /* OKFindFollowingWalletController.m in Sources */,
 				B000CA9F25F5D41D007B3985 /* OKTokenManager.m in Sources */,
 				B0E3FEDC25EF7B5500BE4B7F /* OKAddTokenSheetController.m in Sources */,
@@ -3194,6 +3400,7 @@
 				8814254125B18EAA00961668 /* OKWalletScanVC.m in Sources */,
 				881425A225B2DF7200961668 /* OKDiscoverNewDeviceViewController.m in Sources */,
 				881425B225B5BD2C00961668 /* OKHWCompleteCopyViewController.m in Sources */,
+				88B8A53E260682DA00F38ADA /* UIControl.swift in Sources */,
 				8814258D25B18EAA00961668 /* OKAddBottomViewController.m in Sources */,
 				881424D225B18EAA00961668 /* OKTradeSettingViewCellModel.m in Sources */,
 				881424A725B18EAA00961668 /* OKLanguageViewController.m in Sources */,
@@ -3209,9 +3416,11 @@
 				8814251225B18EAA00961668 /* OKCreateHDCell.m in Sources */,
 				B058D8B225B55663000EB27C /* OKDeviceUpdateInstallController.m in Sources */,
 				8814249F25B18EAA00961668 /* OKMineViewController.m in Sources */,
+				88FAC50625F673A00019CFF6 /* WKScriptMessage+JSON.swift in Sources */,
 				B016510725BFE0810037C6B4 /* OKDeviceChangePINController.m in Sources */,
 				8814257025B18EAA00961668 /* OKWalletListTableViewCellModel.m in Sources */,
 				8814248E25B18EAA00961668 /* bitstream.c in Sources */,
+				884AB5112602559000A7FC70 /* OKSignMessageViewController.swift in Sources */,
 				8814248025B18EAA00961668 /* KeyChainSaveUUID.m in Sources */,
 				8814247825B18EAA00961668 /* InternalApis.m in Sources */,
 				881424B825B18EAA00961668 /* OKDontScreenshotTipsViewController.m in Sources */,
@@ -3220,8 +3429,10 @@
 				8814249625B18EAA00961668 /* mask.c in Sources */,
 				B058D8A325B55662000EB27C /* OKResetDeviceWarningViewController.m in Sources */,
 				8814253B25B18EAA00961668 /* OKBlueManager.m in Sources */,
+				881BA90725FE622200721FCE /* OKModalNavView.swift in Sources */,
 				8814254525B18EAA00961668 /* OKAppAuthorityManager.m in Sources */,
 				8814251325B18EAA00961668 /* OKAssetTableViewCell.m in Sources */,
+				884AB4F12601087500A7FC70 /* Data.swift in Sources */,
 				881425A625B2E44100961668 /* OKDeviceReadyToStartViewController.m in Sources */,
 				8814255625B18EAA00961668 /* OKWordCheckViewController.m in Sources */,
 				BEA2428F980CDB93F6B81AB8 /* UIView+Toast.m in Sources */,
@@ -3233,6 +3444,7 @@
 				8814253225B18EAA00961668 /* OKStorageManager.m in Sources */,
 				8814242925B18EAA00961668 /* OKObserveImportViewController.m in Sources */,
 				8814243B25B18EAA00961668 /* OKBiologicalViewController.m in Sources */,
+				88FAC50525F673A00019CFF6 /* WKWebView+Extensions.swift in Sources */,
 				8814243325B18EAA00961668 /* YZAuthID.m in Sources */,
 				B058D8AB25B55663000EB27C /* OKDeviceInfoViewController.m in Sources */,
 				881424DE25B18EAA00961668 /* OKAllAssetsTableViewCell.m in Sources */,
@@ -3381,12 +3593,14 @@
 					arm64,
 				);
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = ../Support/OneKey.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 4000003;
 				DEVELOPMENT_TEAM = 6M2QF4T7XG;
+				DEFINES_MODULE = YES;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3467,6 +3681,8 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				STRIP_INSTALLED_PRODUCT = NO;
 				STRIP_STYLE = debugging;
+				SWIFT_OBJC_BRIDGING_HEADER = "${PROJECT_DIR}/../CustomCode/OneKey-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 				USER_HEADER_SEARCH_PATHS = "";
@@ -3483,12 +3699,14 @@
 					arm64,
 				);
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = ../Support/OneKey.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 4000003;
 				DEVELOPMENT_TEAM = 6M2QF4T7XG;
+				DEFINES_MODULE = YES;
 				ENABLE_BITCODE = NO;
 				ENABLE_TESTABILITY = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -3572,6 +3790,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				STRIP_INSTALLED_PRODUCT = NO;
 				STRIP_STYLE = debugging;
+				SWIFT_OBJC_BRIDGING_HEADER = "${PROJECT_DIR}/../CustomCode/OneKey-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;

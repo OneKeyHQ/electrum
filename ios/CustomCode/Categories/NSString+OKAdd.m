@@ -172,4 +172,12 @@
     }
     return decs.length ? [NSString stringWithFormat:@"%@.%@", nums[0], decs] : nums[0];
 }
+
+- (NSString *)keccak256 {
+    if (!self.length) { return  @""; }
+    NSString *result = [kPyCommandsManager callInterface:kInterface_dapp_eth_keccak
+                                               parameter:@{@"message":self}];
+    return result.length ? result : @"";
+}
+
 @end

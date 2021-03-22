@@ -19,6 +19,10 @@ pod 'iOSDFULibrary', '4.9.0'
 pod 'JPush', '3.4.0'
 pod 'ZendeskSupportSDK', '5.2.0'
 pod 'MJRefresh','3.5.0'
+pod 'WKWebViewJavascriptBridge', '1.2.1'
+pod 'Reusable', '4.1.1'
+pod 'PanModal', '1.2.7'
+
 end
 post_install do |installer|
      installer.pods_project.targets.each do |target|

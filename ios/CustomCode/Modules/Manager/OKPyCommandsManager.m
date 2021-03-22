@@ -564,9 +564,9 @@ static dispatch_once_t once;
     }else if ([method isEqualToString:kInterfacesign_message]){
         NSString *address = [parameter safeStringForKey:@"address"];
         NSString *message = [parameter safeStringForKey:@"message"];
-        NSString *path = kBluetooth_iOS;
-        result = PyObject_CallMethod(self.pyInstance, [kInterfacesign_message UTF8String], "(s,s,s)",[address UTF8String],[message UTF8String],[path UTF8String]);
-
+        NSString *path = [parameter safeStringForKey:@"path"];
+        NSString *password = [parameter safeStringForKey:@"password"];
+        result = PyObject_CallMethod(self.pyInstance, [kInterfacesign_message UTF8String], "(s,s,s,s)",[address UTF8String], [message UTF8String], [path UTF8String], [password UTF8String]);
     }else if ([method isEqualToString:kInterfaceverify_message]){
 
         NSString *address = [parameter safeStringForKey:@"address"];
@@ -618,6 +618,21 @@ static dispatch_once_t once;
 
     }else if([method isEqualToString:kInterface_get_wallet_balance]){
         result = PyObject_CallMethod(self.pyInstance, [method UTF8String], "()",NULL);
+    } else if ([method isEqualToString:kInterface_dapp_eth_sign_tx]){
+        NSString *transaction = [parameter safeStringForKey:@"transaction"];
+        NSString *path = [parameter safeStringForKey:@"path"];
+        NSString *password = [parameter safeStringForKey:@"password"];
+        result = PyObject_CallMethod(self.pyInstance, [kInterface_dapp_eth_sign_tx UTF8String], "(s,s,s)",[transaction UTF8String], [path UTF8String], [password UTF8String]);
+    }else if ([method isEqualToString:kInterface_dapp_eth_send_tx]){
+        NSString *tx_hex = [parameter safeStringForKey:@"tx_hex"];
+        result = PyObject_CallMethod(self.pyInstance, [kInterface_dapp_eth_send_tx UTF8String], "(s)", [tx_hex UTF8String]);
+    }
+    else if ([method isEqualToString:kInterface_dapp_eth_rpc_info]){
+        result = PyObject_CallMethod(self.pyInstance, [kInterface_dapp_eth_rpc_info UTF8String], "()", NULL);
+    }
+    else if ([method isEqualToString:kInterface_dapp_eth_keccak]){
+        NSString *message = [parameter safeStringForKey:@"message"];
+        result = PyObject_CallMethod(self.pyInstance, [kInterface_dapp_eth_keccak UTF8String], "(s)", [message UTF8String]);
     }
     OKPY_METHOD_CASE(kInterface_add_token) {
         NSString *symbol = [parameter safeStringForKey:@"symbol"];

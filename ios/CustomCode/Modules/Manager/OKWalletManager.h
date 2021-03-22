@@ -107,7 +107,7 @@ typedef enum{
 @interface OKWalletManager : NSObject
 
 @property (nonatomic,copy)NSString *currentSelectCoinType;
-@property (nonatomic,strong)OKWalletInfoModel *currentWalletInfo;
+@property (nonatomic,strong, nullable)OKWalletInfoModel *currentWalletInfo;
 @property (nonatomic,copy)NSString *currentFiat;
 @property (nonatomic,copy)NSString *currentFiatSymbol;
 @property (nonatomic,copy)NSString *currentBitcoinUnit;

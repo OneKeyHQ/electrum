@@ -322,3 +322,24 @@
 // Hardware Wallet Associated - start
 "hardwareWallet.update.currentDesc" = "Current framework version <frameworkVersion> \n当前蓝牙固件版本 <bluetoothVersion> \n升级固件前务必备份好钱包，否则可能造成资产损失";
 // Hardware Wallet Associated - end
+
+// Discover Associated - start
+
+"Discover" = "Discover";
+"Operation name" = "Operation name";
+"Payment account" = "Payment account";
+"Receiving address" = "Receiving address";
+"Signed message" = "Signed message";
+"Connecting" = "Connecting";
+"Please unlock the hardware wallet and keep it within the effective range of the mobile phone’s Bluetooth" = "Please unlock the hardware wallet and keep it within the effective range of the mobile phone’s Bluetooth";
+"Failed to send transaction" = "Failed to send transaction";
+"Signature error" = "Signature error";
+"Cancel operation" = "Cancel operation";
+"Missing transaction data" = "Missing transaction data";
+"Your use of third-party DApps will be applicable to the third-party DApp’s \"Privacy Policy\" and \"User Agreement\", and %@ will be directly and solely liable to you" = "Your use of third-party DApps will be applicable to the third-party DApp’s \"Privacy Policy\" and \"User Agreement\", and %@ will be directly and solely liable to you";
+"Continue to visit" = "Continue to visit" ;
+"Switch to %@ account?" = "Switch to %@ account?";
+"Current DApp only supports %@ account" = "Current DApp only supports %@ account";
+"Stay tuned" = "Stay tuned";
+"Sorry, access failed, please try again or check the network" = "Sorry, access failed, please try again or check the network";
+// Discover Associated - end
