@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Optional
 
 from electrum_gui.common.provider.data import (
     Address,
@@ -9,6 +9,7 @@ from electrum_gui.common.provider.data import (
     Transaction,
     TransactionStatus,
     TxBroadcastReceipt,
+    TxPaginate,
 )
 from electrum_gui.common.provider.exceptions import TransactionNotFound
 
@@ -67,19 +68,28 @@ class ProviderInterface(ABC):
         except TransactionNotFound:
             return TransactionStatus.UNKNOWN
 
-    @abstractmethod
-    def search_txs_by_address(self, address: str) -> List[Transaction]:
+    def search_txs_by_address(
+        self,
+        address: str,
+        paginate: Optional[TxPaginate] = None,
+    ) -> List[Transaction]:
         """
         Search transactions by address
-        todo paging? token?
         :param address: address
+        :param paginate: paginate supports, optional
         :return: list of Transaction
         """
+        return []
 
-    def search_txids_by_address(self, address: str) -> List[str]:
+    def search_txids_by_address(
+        self,
+        address: str,
+        paginate: Optional[TxPaginate] = None,
+    ) -> List[str]:
         """
         Search transaction hash by address
         :param address: address
+        :param paginate: paginate supports, optional
         :return: list of txid
         """
         txs = self.search_txs_by_address(address)

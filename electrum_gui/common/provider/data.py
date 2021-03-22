@@ -71,6 +71,13 @@ class Transaction(DataClassMixin):
 
 
 @dataclass
+class TxPaginate(DataClassMixin):
+    start_block_number: int
+    page_number: int = 1  # start from 1
+    items_per_page: int = None
+
+
+@dataclass
 class Address(DataClassMixin):
     address: str
     balance: int

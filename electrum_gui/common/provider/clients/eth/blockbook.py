@@ -1,6 +1,6 @@
 import json
 from decimal import Decimal
-from typing import List
+from typing import List, Optional
 
 from electrum_gui.common.basic.functional.require import require
 from electrum_gui.common.basic.functional.text import force_text
@@ -20,6 +20,7 @@ from electrum_gui.common.provider.data import (
     TransactionStatus,
     TxBroadcastReceipt,
     TxBroadcastReceiptCode,
+    TxPaginate,
 )
 from electrum_gui.common.provider.exceptions import TransactionNotFound
 from electrum_gui.common.provider.interfaces import ProviderInterface
@@ -132,17 +133,38 @@ class BlockBook(ProviderInterface):
             raw_tx=json.dumps(raw_tx),
         )
 
-    def search_txs_by_address(self, address: str) -> List[Transaction]:
-        resp = self._get_raw_address_info(address, details="txs")
+    def search_txs_by_address(
+        self,
+        address: str,
+        paginate: Optional[TxPaginate] = None,
+    ) -> List[Transaction]:
+        resp = self._get_raw_address_info(address, details="txs", **self._paging(paginate))
         txs = [self._populate_transaction(i) for i in resp.get("transactions", ())]
 
         return txs
 
-    def search_txids_by_address(self, address: str) -> List[str]:
-        resp = self._get_raw_address_info(address, details="txids")
+    def search_txids_by_address(self, address: str, paginate: Optional[TxPaginate] = None) -> List[str]:
+        resp = self._get_raw_address_info(address, details="txids", **self._paging(paginate))
         txids = [i for i in resp.get("txids", ())]
 
         return txids
+
+    @staticmethod
+    def _paging(paginate: Optional[TxPaginate]) -> dict:
+        payload = {}
+        if paginate is None:
+            return payload
+
+        if paginate.start_block_number is not None:
+            payload["from"] = paginate.start_block_number
+
+        if paginate.page_number is not None:
+            payload["page"] = paginate.page_number
+
+        if paginate.items_per_page is not None:
+            payload["pageSize"] = paginate.items_per_page
+
+        return payload
 
     def broadcast_transaction(self, raw_tx: str) -> TxBroadcastReceipt:
         if not raw_tx.startswith("0x"):

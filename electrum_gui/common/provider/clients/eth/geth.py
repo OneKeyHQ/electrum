@@ -1,5 +1,5 @@
 from functools import partial
-from typing import Any, List
+from typing import Any
 
 from electrum_gui.common.basic.functional.require import require
 from electrum_gui.common.basic.functional.text import force_text
@@ -109,9 +109,6 @@ class Geth(ProviderInterface):
             block_header=block_header,
             fee=fee,
         )
-
-    def search_txs_by_address(self, address: str) -> List[Transaction]:
-        return []  # Cannot get TXs from Geth by address
 
     def broadcast_transaction(self, raw_tx: str) -> TxBroadcastReceipt:
         txid, is_success, receipt_code, receipt_message = None, False, TxBroadcastReceiptCode.UNKNOWN, ""

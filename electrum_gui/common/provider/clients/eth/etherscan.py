@@ -1,5 +1,5 @@
 import json
-from typing import List
+from typing import List, Optional
 
 from electrum_gui.common.basic.request.restful import RestfulRequest
 from electrum_gui.common.provider.data import (
@@ -16,6 +16,7 @@ from electrum_gui.common.provider.data import (
     TransactionStatus,
     TxBroadcastReceipt,
     TxBroadcastReceiptCode,
+    TxPaginate,
 )
 from electrum_gui.common.provider.interfaces import ProviderInterface
 
@@ -108,8 +109,25 @@ class Etherscan(ProviderInterface):
             raw_tx=json.dumps(raw_tx),
         )
 
-    def search_txs_by_address(self, address: str) -> List[Transaction]:
-        resp = self._call_action("account", "txlist", address=address, sort="desc")
+    @staticmethod
+    def _paging(paginate: Optional[TxPaginate]) -> dict:
+        payload = {}
+        if paginate is None:
+            return payload
+
+        if paginate.start_block_number is not None:
+            payload["startblock"] = paginate.start_block_number
+
+        if paginate.page_number is not None:
+            payload["page"] = paginate.page_number
+
+        if paginate.items_per_page is not None:
+            payload["offset"] = paginate.items_per_page
+
+        return payload
+
+    def search_txs_by_address(self, address: str, paginate: Optional[TxPaginate] = None) -> List[Transaction]:
+        resp = self._call_action("account", "txlist", address=address, sort="desc", **self._paging(paginate))
         raw_txs = resp["result"]
 
         txs = []
