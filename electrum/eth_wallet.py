@@ -45,7 +45,7 @@ from abc import ABC, abstractmethod
 import itertools
 
 from aiorpcx import TaskGroup
-from eth_utils import add_0x_prefix
+from eth_utils import add_0x_prefix, remove_0x_prefix
 
 from electrum_gui.common.basic.functional.text import force_text
 from .i18n import _
@@ -733,6 +733,7 @@ class Abstract_Eth_Wallet(ABC):
         return add_0x_prefix(force_text(signature))
 
     def verify_message(self, address, message, sig):
+        sig = bytes.fromhex(remove_0x_prefix(sig))
         return self.keystore.verify_eth_message(address, message, sig)
 
     def decrypt_message(self, pubkey: str, message, password) -> bytes:
