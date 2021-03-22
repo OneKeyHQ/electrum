@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.text.TextUtils;
+import androidx.annotation.CheckResult;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
@@ -112,7 +113,7 @@ public final class PyEnv {
     }
 
     public static HardwareFeatures currentHwFeatures;
-    public static volatile Semaphore semaphore = new Semaphore(1);
+    public static Semaphore semaphore = new Semaphore(1);
 
     public static void init(@NonNull Context context) {
         if (BuildConfig.net_type.equals(context.getString(R.string.TestNet))) {
@@ -228,7 +229,7 @@ public final class PyEnv {
     public static void getFeature(
             Context context, Consumer<PyResponse<HardwareFeatures>> callback) {
         Logger.d("get feature");
-        if (!semaphore.tryAcquire()) {
+        if (!tryAcquire()) {
             Logger.d("concurrent get feature");
             return;
         }
@@ -250,7 +251,7 @@ public final class PyEnv {
                 new FutureCallback<String>() {
                     @Override
                     public void onSuccess(String result) {
-                        semaphore.release();
+                        release();
                         Logger.json(result);
                         HardwareFeatures features =
                                 dealWithConnectedDevice(
@@ -261,7 +262,7 @@ public final class PyEnv {
 
                     @Override
                     public void onFailure(@NonNull Throwable t) {
-                        semaphore.release();
+                        release();
                         Logger.e(t.getMessage());
                         if (sBle != null) {
                             cancelAll();
@@ -313,8 +314,8 @@ public final class PyEnv {
                         (serial) -> {
                             PreferencesManager.put(
                                     context, Constant.DEVICES, serial, features.toString());
-                            currentHwFeatures = features;
                         });
+        currentHwFeatures = features;
         return features;
     }
 
@@ -1093,7 +1094,7 @@ public final class PyEnv {
             String signature,
             Consumer<PyResponse<Boolean>> callback) {
         PyResponse<Boolean> response = new PyResponse<>();
-        if (semaphore.tryAcquire()) {
+        if (tryAcquire()) {
             mExecutorService.submit(
                     () -> {
                         try {
@@ -1116,7 +1117,7 @@ public final class PyEnv {
                             e.printStackTrace();
                         } finally {
                             callback.accept(response);
-                            semaphore.release();
+                            release();
                         }
                     });
         } else {
@@ -1892,5 +1893,16 @@ public final class PyEnv {
             response.setErrors(exception.getMessage());
         }
         return response;
+    }
+
+    @CheckResult
+    public static boolean tryAcquire() {
+        Logger.d("try acquire form>>>>>");
+        return semaphore.tryAcquire();
+    }
+
+    public static void release() {
+        Logger.d("try release form<<<<");
+        semaphore.release();
     }
 }
