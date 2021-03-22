@@ -271,6 +271,8 @@ MyLocalizedString([@"hardwareWallet.update." stringByAppendingString:(key)], nil
     if (self.mode == OKDeviceFirmwareInstallModeBootloader) {
         [self.navigationController popViewControllerAnimated:YES];
         [kOKBlueManager disconnectAllPeripherals];
+    } else {
+        [super backToPrevious];
     }
 }
 
