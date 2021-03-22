@@ -267,7 +267,7 @@ class AndroidCommands(commands.Commands):
         self.token_list_by_chain = OrderedDict()
         self.config.set_key("auto_connect", True, True)
         global ticker
-        ticker = Ticker(5.0, self.ticker_action)
+        ticker = Ticker(5.0, self.update_status)
         ticker.start()
         if IS_ANDROID:
             if callback is not None:
@@ -310,9 +310,7 @@ class AndroidCommands(commands.Commands):
     #     self.update_history()
 
     def on_quotes(self, d):
-        if self.wallet is not None:
-            self.update_status()
-        # self.update_history()
+        self.update_status()
 
     def on_history(self, d):
         if self.wallet:
@@ -320,7 +318,7 @@ class AndroidCommands(commands.Commands):
         # self.update_history()
 
     def update_status(self):
-        if not self.wallet:
+        if self.wallet is None:
             return
 
         coin = self.wallet.coin
@@ -415,33 +413,18 @@ class AndroidCommands(commands.Commands):
         wallet_info["name"] = self.wallet.get_name()
         return json.dumps(wallet_info)
 
-    def update_wallet(self):
-        self.update_status()
-        # self.callbackIntent.onCallback("update_wallet")
-
     def on_network_event(self, event, *args):
-        if self.wallet is not None:
-            if event == "network_updated":
-                self.update_status()
-            elif event == "wallet_updated":
-                self.update_status()
-                self.update_wallet()
-            elif event == "blockchain_updated":
-                # to update number of confirmations in history
-                self.update_wallet()
-            elif event == "status":
-                self.update_status()
-            elif event == "new_transaction":
-                self.update_wallet()
-            elif event == "verified":
-                self.update_wallet()
-            elif event == "set_server_status":
-                if self.callbackIntent is not None:
-                    self.callbackIntent.onCallback("set_server_status=%s" % args[0])
-
-    def ticker_action(self):
-        if self.wallet is not None:
-            self.update_wallet()
+        if event == "set_server_status" and self.callbackIntent is not None:
+            self.callbackIntent.onCallback("set_server_status=%s" % args[0])
+        elif event in (
+            "network_updated",
+            "wallet_updated",
+            "blockchain_updated",
+            "status",
+            "new_transaction",
+            "verified",
+        ):
+            self.update_status()
 
     def daemon_action(self):
         self.daemon_running = True
