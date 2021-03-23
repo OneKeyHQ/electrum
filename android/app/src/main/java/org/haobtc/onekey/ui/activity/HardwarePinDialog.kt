@@ -46,8 +46,6 @@ class HardwarePinDialog : DialogFragment(), HardwarePinFragment.HardwareTitleCha
     dialog?.setCanceledOnTouchOutside(false)
     dialog?.window?.apply {
       setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-      addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-      setNavigationBarColor(Color.WHITE)
       decorView.setPadding(0, 0, 0, 0)
       attributes?.apply {
         width = WindowManager.LayoutParams.MATCH_PARENT
