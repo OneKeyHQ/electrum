@@ -17,8 +17,6 @@
 @property (weak, nonatomic) IBOutlet UIButton *btnCopy;
 - (IBAction)btnCopyClick:(UIButton *)sender;
 @property (weak, nonatomic) IBOutlet UIButton *selectedBtn;
-@property (weak, nonatomic) IBOutlet UIImageView *rightCoinTypeBgImageView;
-
 @property (weak, nonatomic) IBOutlet UIView *cellBgView;
 
 
@@ -44,7 +42,6 @@
         address = [NSString stringWithFormat:@"%@...%@",[model.address substringToIndex:6],[model.address substringFromIndex:model.address.length - 6]];
     }
     self.addressLabel.text = address;
-    self.rightCoinTypeBgImageView.image = [UIImage imageNamed:model.iconName];
     if (model.device_id.length) {
         NSString *deviceName = [[OKDevicesManager sharedInstance] getDeviceModelWithID:model.device_id].deviceInfo.label;
         if (deviceName.length) {

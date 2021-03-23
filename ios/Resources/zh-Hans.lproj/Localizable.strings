@@ -145,6 +145,8 @@
 "HD wallet account" = "主钱包账户";
 "BTC wallet" = "比特币账户";
 "ETH wallet" = "以太坊账户";
+"HECO wallet" = "HECO账户";
+"BSC wallet" = "BSC账户";
 "HD wallets are known as Hierarchical Deterministic wallets in Chinese. It is by far the best and most convenient deterministic wallet" = "同一台设备至多只有一个主钱包，但其下可以有多个账户。它的底层技术是「分层确定性」，这种钱包格式先进、好用，方便，未来普及率高，兼容性极好。";
 "What is HD Wallet" = "什么是主钱包？";
 "I know the" = "我知道了";

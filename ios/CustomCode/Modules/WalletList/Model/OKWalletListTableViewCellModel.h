@@ -15,14 +15,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,copy) NSString* walletType;
 @property (nonatomic,copy) NSString* walletTypeShowStr;
 @property (nonatomic,copy) NSString* address;
-@property (nonatomic,copy) NSString* iconName;
 @property (nonatomic,copy) UIColor* backColor;
 @property (nonatomic,copy) NSString *label;
 @property (nonatomic,assign)BOOL isCurrent;
 @property (nonatomic,assign)NSInteger index;
 @property (nonatomic,copy,nullable) NSString* device_id;
 + (UIColor *)getBackColor:(NSString *)type;
-+ (NSString *)getBgImageName:(NSString *)type;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -31,4 +31,9 @@ OKAppreanceColor(TintBlue, 007AFF, 1)
 
 OKAppreanceColor(SP_Separator, 3C3C43, .12)
 OKAppreanceColor(SP_NavBarSeparator, CECED3, 1)
+
+OKAppreanceColor(CG_BTC, FF9C00, 1)
+OKAppreanceColor(CG_ETH, 454E5D, 1)
+OKAppreanceColor(CG_BSC, FCC414, 1)
+OKAppreanceColor(CG_HECO, 01943F, 1)
 @end

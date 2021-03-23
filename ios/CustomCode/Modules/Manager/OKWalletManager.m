@@ -78,7 +78,7 @@ static dispatch_once_t once;
 - (NSArray *)supportCoinArray
 {
     if (!_supportCoinArray) {
-        _supportCoinArray = @[COIN_BTC,COIN_ETH];
+        _supportCoinArray = @[COIN_BTC,COIN_ETH,COIN_HECO,COIN_BSC];
     }
     return _supportCoinArray;
 }
@@ -86,7 +86,7 @@ static dispatch_once_t once;
 - (NSArray *)ethClassification
 {
     if (!_ethClassification) {
-        _ethClassification = @[COIN_ETH];
+        _ethClassification = @[COIN_ETH,COIN_HECO,COIN_BSC];
     }
     return _ethClassification;
 }
@@ -367,7 +367,7 @@ static dispatch_once_t once;
 - (NSDictionary *)precisionDict
 {
     if (!_precisionDict) {
-        _precisionDict = @{@"fiat":@"2",@"btc":@"8",@"eth":@"6",@"token_eth":@"4"};
+        _precisionDict = @{@"fiat":@"2",@"btc":@"8",@"eth":@"6",@"token_eth":@"4",@"heco":@"6",@"token_heco":@"4",@"token_bsc":@"4",@"bsc":@"6"};
     }
     return _precisionDict;
 }

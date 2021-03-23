@@ -298,27 +298,18 @@
                                                             </constraints>
                                                             <state key="normal" image="iconwriteselect"/>
                                                         </button>
-                                                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="W4U-vj-GmU">
-                                                            <rect key="frame" x="269" y="30" width="50" height="50"/>
-                                                            <constraints>
-                                                                <constraint firstAttribute="width" constant="50" id="JYw-lk-JZK"/>
-                                                                <constraint firstAttribute="height" constant="50" id="eah-3M-CCK"/>
-                                                            </constraints>
-                                                        </imageView>
                                                     </subviews>
                                                     <color key="backgroundColor" red="0.96398705240000004" green="0.58187872169999999" blue="0.1055415794" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                     <constraints>
                                                         <constraint firstItem="EII-qg-8Ok" firstAttribute="leading" secondItem="jA1-ea-LKZ" secondAttribute="leading" constant="20" id="Bj9-U5-Za1"/>
-                                                        <constraint firstAttribute="trailing" secondItem="W4U-vj-GmU" secondAttribute="trailing" constant="-10" id="C8M-Y7-XSQ"/>
+                                                        <constraint firstAttribute="trailing" secondItem="K8t-hW-eCW" secondAttribute="trailing" constant="49" id="GdQ-wd-RMy"/>
                                                         <constraint firstItem="K8t-hW-eCW" firstAttribute="centerY" secondItem="jA1-ea-LKZ" secondAttribute="centerY" constant="-4" id="MW8-lj-m6c"/>
                                                         <constraint firstItem="jSL-yw-gxe" firstAttribute="centerY" secondItem="EII-qg-8Ok" secondAttribute="centerY" id="Ogm-st-BVN"/>
                                                         <constraint firstItem="hvr-b5-maF" firstAttribute="leading" secondItem="EII-qg-8Ok" secondAttribute="leading" id="QKj-KR-n3h"/>
-                                                        <constraint firstAttribute="bottom" secondItem="W4U-vj-GmU" secondAttribute="bottom" constant="-10" id="SeV-ib-l9n"/>
                                                         <constraint firstItem="rOf-iw-iy7" firstAttribute="leading" secondItem="hvr-b5-maF" secondAttribute="trailing" constant="15" id="TPV-Dt-5bT"/>
                                                         <constraint firstItem="jSL-yw-gxe" firstAttribute="leading" secondItem="EII-qg-8Ok" secondAttribute="trailing" constant="5" id="VkF-QJ-DBB"/>
                                                         <constraint firstItem="EII-qg-8Ok" firstAttribute="top" secondItem="jA1-ea-LKZ" secondAttribute="top" constant="8" id="bx0-92-TYq"/>
                                                         <constraint firstItem="hvr-b5-maF" firstAttribute="top" secondItem="EII-qg-8Ok" secondAttribute="bottom" constant="5" id="ke6-RI-qV8"/>
-                                                        <constraint firstItem="W4U-vj-GmU" firstAttribute="leading" secondItem="K8t-hW-eCW" secondAttribute="trailing" constant="9" id="pka-Fh-iVl"/>
                                                         <constraint firstItem="rOf-iw-iy7" firstAttribute="centerY" secondItem="hvr-b5-maF" secondAttribute="centerY" id="sO0-tw-6Ve"/>
                                                     </constraints>
                                                 </view>
@@ -335,7 +326,6 @@
                                             <outlet property="addressLabel" destination="hvr-b5-maF" id="6BF-Qy-rtV"/>
                                             <outlet property="btnCopy" destination="rOf-iw-iy7" id="8Rn-ui-sFA"/>
                                             <outlet property="cellBgView" destination="jA1-ea-LKZ" id="4BP-F7-dlk"/>
-                                            <outlet property="rightCoinTypeBgImageView" destination="W4U-vj-GmU" id="EUL-hN-kle"/>
                                             <outlet property="selectedBtn" destination="K8t-hW-eCW" id="TTk-g9-0Ra"/>
                                             <outlet property="walletNameLabel" destination="EII-qg-8Ok" id="32S-YM-4VF"/>
                                             <outlet property="walletTypeBgView" destination="jSL-yw-gxe" id="USR-rS-WXb"/>

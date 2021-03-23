@@ -109,7 +109,6 @@
         model.address = [innerDict safeStringForKey:@"addr"];
         model.label = [innerDict safeStringForKey:@"label"];
         model.backColor = [OKWalletListTableViewCellModel getBackColor:model.walletType];
-        model.iconName = [OKWalletListTableViewCellModel getBgImageName:model.walletType];
         model.isCurrent = [kWalletManager.currentWalletInfo.name isEqualToString:model.walletName];
         NSArray *arrayType= [model.walletType componentsSeparatedByString:@"-"];
         NSString *coinType = [arrayType firstObject];

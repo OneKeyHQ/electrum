@@ -272,12 +272,17 @@
     OKWeakSelf(self)
     NSString *chUUID = [NSString stringWithFormat:@"%@",ch.UUID];
     if ([chUUID isEqualToString:kDEVICEINFOCHARACTERISTIC]) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [MBProgressHUD hideHUDForView:self.view animated:YES];
-            OKDeviceUpdateViewController *vc = [OKDeviceUpdateViewController controllerWithStoryboard];
-            vc.mode = OKDeviceFirmwareInstallModeBLEDFU;
-            [weakself.navigationController pushViewController:vc animated:YES];
-        });
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            if ([kOKBlueManager isConnectedCurrentDevice]) {
+                [MBProgressHUD hideHUDForView:self.view animated:YES];
+                OKDeviceUpdateViewController *vc = [OKDeviceUpdateViewController controllerWithStoryboard];
+                vc.mode = OKDeviceFirmwareInstallModeBLEDFU;
+                [weakself.navigationController pushViewController:vc animated:YES];
+            }else{
+                [MBProgressHUD hideHUDForView:self.view animated:YES];
+                [kTools tipMessage:MyLocalizedString(@"The Bluetooth connection is abnormal. Please try again", nil)];
+            }
+         });
         return;
     }
     if (jsonDict == nil) {

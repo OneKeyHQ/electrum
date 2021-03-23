@@ -136,7 +136,6 @@
         model.device_id = [innerDict safeStringForKey:@"device_id"];
         model.label = [innerDict safeStringForKey:@"label"];
         model.backColor = [OKWalletListTableViewCellModel getBackColor:model.walletType];
-        model.iconName = [OKWalletListTableViewCellModel getBgImageName:model.walletType];
         model.isCurrent = [kWalletManager.currentWalletInfo.name isEqualToString:model.walletName];
         NSArray *arrayType= [model.walletType componentsSeparatedByString:@"-"];
         NSString *coinType = [arrayType firstObject];
@@ -395,7 +394,22 @@
         model3.isSelected = [kWalletManager.currentSelectCoinType isEqualToString:model3.coinType];
         model3.headerWaletType = MyLocalizedString(@"list.Hardware wallet", nil);
 
-        _allCoinTypeArray = @[model0,model1,model2,model3];
+
+        OKWalletListCollectionViewCellModel *model4 = [OKWalletListCollectionViewCellModel new];
+        model4.coinType = @"HECO";
+        model4.iconName = @"cointype_heco";
+        model4.isSelected = [kWalletManager.currentSelectCoinType isEqualToString:model4.coinType];
+        model4.headerWaletType = MyLocalizedString(@"HECO wallet", nil);
+
+
+        OKWalletListCollectionViewCellModel *model5 = [OKWalletListCollectionViewCellModel new];
+        model5.coinType = @"BSC";
+        model5.iconName = @"cointype_bsc";
+        model5.isSelected = [kWalletManager.currentSelectCoinType isEqualToString:model3.coinType];
+        model5.headerWaletType = MyLocalizedString(@"BSC wallet", nil);
+
+
+        _allCoinTypeArray = @[model0,model3,model1,model2,model4,model5];
     }
     return _allCoinTypeArray;
 }

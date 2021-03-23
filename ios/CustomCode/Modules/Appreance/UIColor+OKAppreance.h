@@ -43,6 +43,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (UIColor *)SP_Separator;  // 3C3C43 .12
 + (UIColor *)SP_NavBarSeparator;  // CECED3
+
+
+//Chain
+//App 中主链或代币的主题色。
++(UIColor *)CG_BTC;
++(UIColor *)CG_ETH;
++(UIColor *)CG_BSC;
++(UIColor *)CG_HECO;
+
 @end
 
 NS_ASSUME_NONNULL_END

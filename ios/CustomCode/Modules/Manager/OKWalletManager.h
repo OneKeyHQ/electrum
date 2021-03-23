@@ -11,6 +11,8 @@
 
 #define COIN_BTC             @"BTC"
 #define COIN_ETH             @"ETH"
+#define COIN_HECO            @"HECO"
+#define COIN_BSC             @"BSC"
 
 
 #define kCNY                 @"CNY"  //人民币
