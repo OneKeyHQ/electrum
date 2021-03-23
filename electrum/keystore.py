@@ -527,6 +527,10 @@ class Xpub(MasterPublicKeyMixin):
                 self.xpub_receive = xpub
         return self.get_pubkey_from_xpub(xpub, (n,), compressed)
 
+    def get_pubkey_from_master_xpub(self, compressed=True) -> bytes:
+        node = BIP32Node.from_xkey(self.xpub)
+        return node.eckey.get_public_key_bytes(compressed=compressed)
+
     @classmethod
     def get_pubkey_from_xpub(self, xpub: str, sequence, compressed=True) -> bytes:
         node = BIP32Node.from_xkey(xpub).subkey_at_public_derivation(sequence)
@@ -880,16 +884,15 @@ def bip39_is_checksum_valid(mnemonic: str) -> Tuple[bool, bool]:
     return checksum == calculated_checksum, True
 
 
-def from_eth_bip39_seed(seed, passphrase, derivation, xtype=None, create=False):
-    k = BIP32_KeyStore({})
-    if create:
-        k.add_seed(seed)
-        k.passphrase = passphrase
-    bip32_seed = bip39_to_seed(seed, passphrase)
-    if xtype is None:
-        xtype = xtype_from_derivation(derivation)
-    k.add_xprv_from_seed(bip32_seed, xtype, derivation)
-    return k, bip32_seed
+def from_seed_or_bip39(seed, passphrase, derivation, xtype=None, create=False):
+    if is_seed(seed):
+        ks = from_seed(seed, passphrase)
+    else:
+        is_checksum_valid, _is_wordlist_valid = bip39_is_checksum_valid(seed)
+        if not is_checksum_valid:
+            raise BaseException(InvalidBip39Seed())
+        ks = from_bip39_seed(seed, passphrase, derivation)
+    return ks
 
 def from_bip39_seed(seed, passphrase, derivation, xtype=None):
     k = BIP32_KeyStore({})
@@ -1020,7 +1023,7 @@ def bip44_derivation(account_id, bip43_purpose=44):
     der = "m/%d'/%d'/%d'" % (bip43_purpose, cointype, int(account_id))
     return normalize_bip32_derivation(der)
 
-def bip44_eth_derivation(index, bip43_purpose=44, cointype=None):
+def bip44_eth_derivation(index, bip43_purpose=44, cointype=60):
     der = "m/%d'/%d'/0'/0/%s" % (bip43_purpose, cointype, index)
     return normalize_bip32_derivation(der)
 

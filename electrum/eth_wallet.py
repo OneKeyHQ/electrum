@@ -846,6 +846,27 @@ class Imported_Eth_Wallet(Simple_Eth_Wallet):
         return wallet
 
     @classmethod
+    def _create_customer_wallet(cls, ks, config, coin):
+
+        def import_seed_to_address(pubkey: str):
+            addr = PyWalib.web3.toChecksumAddress(pubkey.to_address())
+            wallet.db.add_imported_address(addr, {'pubkey': str(pubkey)})
+
+        db = WalletDB("", manual_upgrades=False)
+        db.put("keystore", ks.dump())
+        wallet = cls(db, None, config=config)
+        wallet.coin = coin
+        pubkey = ks.get_pubkey_from_master_xpub()
+        pubkey = keys.PublicKey.from_compressed_bytes(pubkey)
+        import_seed_to_address(pubkey)
+        return wallet
+
+    @classmethod
+    def from_seed(cls, coin: str, config: SimpleConfig, seed: str, passphrase: str, derivation: str):
+        ks = keystore.from_seed_or_bip39(seed, passphrase, derivation)
+        return cls._create_customer_wallet(ks, config, coin)
+
+    @classmethod
     def from_keystores(cls, coin: str, config: SimpleConfig, keystores: str, password: str):
         try:
             privkeys = Account.decrypt(keystores, password).hex()
@@ -985,6 +1006,8 @@ class Imported_Eth_Wallet(Simple_Eth_Wallet):
         # this is significantly faster than the implementation in the superclass
         return self.keystore.decrypt_message(pubkey, message, password)
 
+    def get_derivation_path(self, address):
+        return self.keystore.get_derivation_prefix()
 
 class Deterministic_Eth_Wallet(Abstract_Eth_Wallet):
 
@@ -1197,14 +1220,7 @@ class Standard_Eth_Wallet(Simple_Eth_Deterministic_Wallet):
     def from_seed_or_bip39(
         cls, coin: str, index: int, config: SimpleConfig, seed: str, passphrase: str, derivation: str
     ):
-        if keystore.is_seed(seed):
-            ks = keystore.from_seed(seed, passphrase)
-        else:
-            is_checksum_valid, _is_wordlist_valid = keystore.bip39_is_checksum_valid(seed)
-            if not is_checksum_valid:
-                raise BaseException(InvalidBip39Seed())
-            ks = keystore.from_bip39_seed(seed, passphrase, derivation)
-
+        ks = keystore.from_seed_or_bip39(seed, passphrase, derivation)
         return cls._from_keystore(coin, index, config, ks)
 
     def __init__(self, db, storage, *, config, index=0):
@@ -1266,6 +1282,11 @@ class Standard_Eth_Wallet(Simple_Eth_Deterministic_Wallet):
         path = self.db.get_address_index(address)
         private_key = self.export_private_key_for_path(path, password)
         return "0x%s" %private_key
+
+    def get_derivation_path(self, address):
+        derivation = self.keystore.get_derivation_prefix()
+        deriv_suffix = self.get_address_index(address)
+        return "%s/%d/%d" % (derivation, *deriv_suffix)
 
 wallet_types = ['standard', 'multisig', 'imported']
 

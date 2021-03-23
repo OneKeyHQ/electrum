@@ -2263,7 +2263,7 @@ class AndroidCommands(commands.Commands):
 
         if isinstance(self.wallet.get_keystore(), Hardware_KeyStore):
             if path:
-                address_path = helpers.get_derivation_path(self.wallet, from_address)
+                address_path = self.wallet.get_derivation_path(from_address)
                 address_n = parse_path(address_path)
 
                 self.trezor_manager.ensure_client(path)
@@ -2816,6 +2816,7 @@ class AndroidCommands(commands.Commands):
         keystores=None,
         keystore_password=None,
         strength=128,
+        customized_path=False,
     ):
         """
         Create or restore a new wallet
@@ -2884,7 +2885,7 @@ class AndroidCommands(commands.Commands):
                 wallet = Imported_Eth_Wallet.from_keystores(coin, self.config, keystores, keystore_password)
             else:
                 wallet = Imported_Eth_Wallet.from_privkeys(coin, self.config, privkeys)
-        elif bip39_derivation is not None and seed is not None:
+        elif bip39_derivation is not None and seed is not None and not customized_path:
             wallet_type = f"{coin}-derived-standard"
             if coin == "btc":
                 wallet = Standard_Wallet.from_seed_or_bip39(coin, self.config, seed, passphrase, bip39_derivation)
@@ -2892,6 +2893,21 @@ class AndroidCommands(commands.Commands):
                 derivation = util.get_keystore_path(bip39_derivation)
                 index = int(helpers.get_path_info(bip39_derivation, INDEX_POS))
                 wallet = Standard_Eth_Wallet.from_seed_or_bip39(coin, index, self.config, seed, passphrase, derivation)
+        elif bip39_derivation is not None and seed is not None and customized_path:
+            wallet_type = f"{coin}-customer-standard"
+            if coin == "btc":
+                wallet = Imported_Wallet.from_seed(
+                    coin,
+                    self.config,
+                    seed,
+                    passphrase,
+                    PURPOSE_TO_ADDRESS_TYPE.get(
+                        int(helpers.get_path_info(bip39_derivation, PURPOSE_POS)) or "p2wpkh-p2sh"
+                    ),
+                    bip39_derivation,
+                )
+            elif coin in self.coins:
+                wallet = Imported_Eth_Wallet.from_seed(coin, self.config, seed, passphrase, bip39_derivation)
         elif master is not None:
             # TODO: master is only for btc?
             wallet_type = "btc-standard"
@@ -3190,7 +3206,7 @@ class AndroidCommands(commands.Commands):
             try:
                 wallet = wallet_info["wallet"]
                 coin = wallet.coin
-                derivation = helpers.get_derivation_path(wallet, wallet.get_addresses()[0])
+                derivation = wallet.get_derivation_path(wallet.get_addresses()[0])
                 account_id = int(self.get_account_id(derivation, coin if coin in self.coins else "btc"))
                 purpose = int(derivation.split("/")[PURPOSE_POS].split("'")[0])
                 if account_id != 0:
@@ -3386,7 +3402,7 @@ class AndroidCommands(commands.Commands):
         return self.wallet_context.get_derived_num(xpub)
 
     def delete_devired_wallet_info(self, wallet_obj, hw=False):
-        derivation = helpers.get_derivation_path(wallet_obj, wallet_obj.get_addresses()[0])
+        derivation = wallet_obj.get_derivation_path(wallet_obj.get_addresses()[0])
         coin = wallet_obj.coin
         account_id = self.get_account_id(derivation, coin)
 

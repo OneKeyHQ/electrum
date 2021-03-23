@@ -31,10 +31,3 @@ def get_temp_file():
 
 def get_path_info(path, pos):
     return path.split("/")[pos].split("'")[0]
-
-
-def get_derivation_path(wallet, address):
-    deriv_suffix = wallet.get_address_index(address)
-    derivation = wallet.keystore.get_derivation_prefix()
-    address_path = "%s/%d/%d" % (derivation, *deriv_suffix)
-    return address_path

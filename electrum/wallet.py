@@ -2256,7 +2256,6 @@ class Simple_Wallet(Abstract_Wallet):
     def get_witness_script(self, address: str) -> Optional[str]:
         return None
 
-
 class Imported_Wallet(Simple_Wallet):
     # wallet made of imported addresses
 
@@ -2290,6 +2289,27 @@ class Imported_Wallet(Simple_Wallet):
             return cls._from_pubkey(coin, config, addresses[0])
         else:
             return cls._from_addresses(coin, config, addresses)
+
+    @classmethod
+    def _create_customer_wallet(cls, ks, config, coin, purpose):
+
+        def import_seed_to_address(pubkey: str, purpose: Optional[str]):
+            addr = bitcoin.pubkey_to_address(purpose, pubkey)
+            wallet.db.add_imported_address(addr, {'type': purpose, 'pubkey': ""})
+            wallet.add_address(addr)
+
+        db = WalletDB("", manual_upgrades=False)
+        db.put("keystore", ks.dump())
+        wallet = cls(db, None, config=config)
+        wallet.coin = coin
+        pubkey = ks.get_pubkey_from_master_xpub().hex()
+        import_seed_to_address(pubkey, purpose)
+        return wallet
+
+    @classmethod
+    def from_seed(cls, coin: str, config: SimpleConfig, seed: str, passphrase: str, purpose: int, derivation: str):
+        ks = keystore.from_seed_or_bip39(seed, passphrase, derivation)
+        return cls._create_customer_wallet(ks, config, coin, purpose)
 
     @classmethod
     def from_privkeys(cls, coin: str, config: SimpleConfig, privkeys: str, purpose: int):
@@ -2499,6 +2519,10 @@ class Imported_Wallet(Simple_Wallet):
     def decrypt_message(self, pubkey: str, message, password) -> bytes:
         # this is significantly faster than the implementation in the superclass
         return self.keystore.decrypt_message(pubkey, message, password)
+
+    def get_derivation_path(self, address):
+        return self.keystore.get_derivation_prefix()
+
 
 
 class Deterministic_Wallet(Abstract_Wallet):
@@ -2741,14 +2765,7 @@ class Standard_Wallet(Simple_Deterministic_Wallet):
 
     @classmethod
     def from_seed_or_bip39(cls, coin: str, config: SimpleConfig, seed: str, passphrase: str, derivation: str):
-        if keystore.is_seed(seed):
-            ks = keystore.from_seed(seed, passphrase)
-        else:
-            is_checksum_valid, _is_wordlist_valid = keystore.bip39_is_checksum_valid(seed)
-            if not is_checksum_valid:
-                raise BaseException(InvalidBip39Seed())
-            ks = keystore.from_bip39_seed(seed, passphrase, derivation)
-
+        ks = keystore.from_seed_or_bip39(seed, passphrase, derivation)
         return cls._from_keystore(coin, config, ks)
 
     @classmethod
@@ -2759,6 +2776,11 @@ class Standard_Wallet(Simple_Deterministic_Wallet):
     def pubkeys_to_address(self, pubkeys):
         pubkey = pubkeys[0]
         return bitcoin.pubkey_to_address(self.txin_type, pubkey)
+
+    def get_derivation_path(self, address):
+        derivation = self.keystore.get_derivation_prefix()
+        deriv_suffix = self.get_address_index(address)
+        return "%s/%d/%d" % (derivation, *deriv_suffix)
 
 class Multisig_Wallet(Deterministic_Wallet):
     # generic m of n
