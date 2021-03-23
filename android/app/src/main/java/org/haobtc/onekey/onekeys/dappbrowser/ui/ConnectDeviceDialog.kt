@@ -62,6 +62,8 @@ class ConnectDeviceDialog(context: Context) : Dialog(context) {
       setLayout(
           ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
       setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+      addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+      navigationBarColor = Color.WHITE
       attributes?.apply {
         width = WindowManager.LayoutParams.MATCH_PARENT
         height = WindowManager.LayoutParams.WRAP_CONTENT

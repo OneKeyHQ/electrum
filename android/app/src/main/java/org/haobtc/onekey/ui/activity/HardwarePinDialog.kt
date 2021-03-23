@@ -5,13 +5,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.TextUtils
-import android.view.Gravity
-import android.view.KeyEvent
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.Window
-import android.view.WindowManager
+import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
@@ -52,6 +46,8 @@ class HardwarePinDialog : DialogFragment(), HardwarePinFragment.HardwareTitleCha
     dialog?.setCanceledOnTouchOutside(false)
     dialog?.window?.apply {
       setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+      addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+      setNavigationBarColor(Color.WHITE)
       decorView.setPadding(0, 0, 0, 0)
       attributes?.apply {
         width = WindowManager.LayoutParams.MATCH_PARENT

@@ -11,6 +11,8 @@
         <item name="colorAccent">@color/onekey</item>
         <!--Needed by MaterialAlertDialog-->
         <item name="colorSurface">@android:color/white</item>
+        <!-- 底部导航条的颜色 -->
+        <item name="android:navigationBarColor">@android:color/white</item>
     </style>
 
     <style name="code_text_style">

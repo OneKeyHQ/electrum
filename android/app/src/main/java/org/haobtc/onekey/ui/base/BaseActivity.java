@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -172,6 +173,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
             window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
         window.setStatusBarColor(Color.TRANSPARENT);
+        setNavigationBarColor(Color.WHITE);
         window.getDecorView()
                 .setSystemUiVisibility(
                         View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
@@ -186,6 +188,12 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         getWindow().setStatusBarColor(colorId);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+    }
+
+    public void setNavigationBarColor(int colorId) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
+            getWindow().setNavigationBarColor(colorId);
+        }
     }
 
     @Override
