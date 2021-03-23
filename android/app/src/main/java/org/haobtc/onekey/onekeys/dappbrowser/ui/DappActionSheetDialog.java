@@ -2,6 +2,7 @@ package org.haobtc.onekey.onekeys.dappbrowser.ui;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
@@ -23,6 +24,7 @@ import org.haobtc.onekey.bean.CurrentFeeDetails;
 import org.haobtc.onekey.bean.WalletAccountInfo;
 import org.haobtc.onekey.business.wallet.SystemConfigManager;
 import org.haobtc.onekey.constant.Vm;
+import org.haobtc.onekey.extensions.DialogKt;
 import org.haobtc.onekey.onekeys.dappbrowser.bean.Signable;
 import org.haobtc.onekey.onekeys.dappbrowser.bean.Web3Transaction;
 import org.haobtc.onekey.onekeys.dappbrowser.callback.DappActionSheetCallback;
@@ -76,7 +78,7 @@ public class DappActionSheetDialog extends BottomSheetDialog
             WalletAccountInfo wallet,
             DappActionSheetCallback aCallBack,
             CurrentCoinTypeProvider coinTypeProvider) {
-        super(activity);
+        super(activity,R.style.BottomSheetDialogTheme);
         setContentView(R.layout.dialog_dapp_action_sheet);
         View delegate = findViewById(com.google.android.material.R.id.design_bottom_sheet);
         if (delegate != null) {
@@ -170,7 +172,7 @@ public class DappActionSheetDialog extends BottomSheetDialog
             DappActionSheetCallback aCallback,
             SignAuthenticationCallback sCallback,
             Signable message) {
-        super(activity);
+        super(activity,R.style.BottomSheetDialogTheme);
         setContentView(R.layout.dialog_dapp_action_sheet_sign);
 
         View delegate = findViewById(com.google.android.material.R.id.design_bottom_sheet);
@@ -228,7 +230,7 @@ public class DappActionSheetDialog extends BottomSheetDialog
                 feeBigDecimal.stripTrailingZeros().toPlainString()
                         + " "
                         + mSystemConfigManager.getCurrentBaseUnit(
-                                mCurrentCoinTypeProvider.currentCoinType()));
+                        mCurrentCoinTypeProvider.currentCoinType()));
     }
 
     public void setSignOnly() {

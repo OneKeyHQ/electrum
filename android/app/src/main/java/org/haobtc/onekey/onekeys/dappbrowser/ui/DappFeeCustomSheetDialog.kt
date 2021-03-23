@@ -77,10 +77,7 @@ class DappFeeCustomSheetDialog private constructor() : BottomSheetDialogFragment
     ViewModelProvider(this).get(CustomFeeViewModel::class.java)
   }
 
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    setStyle(DialogFragment.STYLE_NORMAL, R.style.BottomSheetEdit)
-  }
+  override fun getTheme() = R.style.BottomSheetEdit
 
   override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
     val dialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog

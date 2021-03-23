@@ -270,15 +270,20 @@ class DappBrowserFragment : BaseFragment(),
   }
 
   private fun setupViewModule() {
+    if(mAppWalletViewModel.currentWalletAccountInfo.value == null){
+      val drawable = ResourcesCompat.getDrawable(resources, AssetsLogo.getLogoResources(null), null)
+      mBinding.ivTokenLogo.setImageDrawable(drawable)
+      mBinding.tvWalletName.text = getString(R.string.title_select_account)
+      refreshEvent()
+    }
+
     mAppWalletViewModel.currentWalletAccountInfo.observe(viewLifecycleOwner) {
       val drawable = ResourcesCompat.getDrawable(resources, AssetsLogo.getLogoResources(it?.coinType), null)
       mBinding.ivTokenLogo.setImageDrawable(drawable)
       mBinding.tvWalletName.text = it?.address?.cutTheLast(4)
           ?: getString(R.string.title_select_account)
 
-      it?.let {
-        refreshEvent()
-      }
+      refreshEvent()
     }
   }
 

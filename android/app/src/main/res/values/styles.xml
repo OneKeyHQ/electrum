@@ -155,9 +155,19 @@
         <item name="android:windowExitAnimation">@anim/anim_bottom_pop_out</item>
     </style>
 
-    <style name="BottomSheetEdit" parent="Theme.Design.Light.BottomSheetDialog">
-        <item name="android:windowIsFloating">false</item>
+    <style name="BottomSheetEdit" parent="BottomSheetDialogTheme">
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowSoftInputMode">adjustResize</item>
+    </style>
+
+    <style name="BottomSheet" parent="@style/Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/shape_bg_bottom_sheet</item>
+    </style>
+
+    <style name="BottomSheetDialogTheme" parent="Theme.MaterialComponents.Light.BottomSheetDialog">
+        <item name="android:windowIsFloating">false</item> <!-- This is important -->
+        <item name="android:statusBarColor">@color/transparent</item> <!-- And then this will be needed -->
+        <item name="android:navigationBarColor">@color/white</item>
+        <item name="bottomSheetStyle">@style/BottomSheet</item>
     </style>
 </resources>

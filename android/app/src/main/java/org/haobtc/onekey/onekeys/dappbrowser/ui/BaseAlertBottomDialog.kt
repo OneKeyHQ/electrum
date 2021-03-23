@@ -13,6 +13,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import org.haobtc.onekey.R
 import org.haobtc.onekey.databinding.DialogBaseBottomBinding
+import org.haobtc.onekey.extensions.setCustomNavigationBar
 
 
 /**
@@ -46,8 +47,9 @@ open class BaseAlertBottomDialog(context: Context) : Dialog(context) {
         attributes = this
       }
       setWindowAnimations(R.style.AnimBottom)
+      addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+      navigationBarColor = Color.WHITE
     }
-
     mBinding.tvButtonSecondary.setOnClickListener { v: View? ->
       mSecondaryButtonListener?.onClick(v)
       dismiss()

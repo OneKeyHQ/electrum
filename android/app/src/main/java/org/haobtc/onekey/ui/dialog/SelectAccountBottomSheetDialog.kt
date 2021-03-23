@@ -6,7 +6,9 @@ import android.content.DialogInterface
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import android.view.WindowManager
 import android.widget.TextView
+import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -32,6 +34,7 @@ import org.haobtc.onekey.business.assetsLogo.AssetsLogo
 import org.haobtc.onekey.business.wallet.BalanceManager
 import org.haobtc.onekey.business.wallet.DeviceManager
 import org.haobtc.onekey.constant.Vm
+import org.haobtc.onekey.extensions.setCustomNavigationBar
 import org.haobtc.onekey.manager.PyEnv
 import org.haobtc.onekey.viewmodel.AppWalletViewModel
 
@@ -88,6 +91,8 @@ class SelectAccountBottomSheetDialog : BottomSheetDialogFragment() {
   private val mDeviceManager by lazy {
     DeviceManager.getInstance()
   }
+
+  override fun getTheme(): Int = R.style.BottomSheetDialogTheme
 
   override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
     val dialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog

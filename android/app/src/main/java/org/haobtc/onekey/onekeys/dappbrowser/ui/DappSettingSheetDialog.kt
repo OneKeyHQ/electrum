@@ -4,8 +4,10 @@ import android.app.Dialog
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import android.view.WindowManager
 import androidx.annotation.IntDef
 import androidx.core.content.res.ResourcesCompat
+import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
@@ -18,6 +20,7 @@ import org.haobtc.onekey.bean.WalletAccountInfo
 import org.haobtc.onekey.business.assetsLogo.AssetsLogo
 import org.haobtc.onekey.databinding.DialogDappSettingSheetBinding
 import org.haobtc.onekey.extensions.cutTheLast
+import org.haobtc.onekey.extensions.setCustomNavigationBar
 import org.haobtc.onekey.viewmodel.AppWalletViewModel
 
 class DappSettingSheetDialog : BottomSheetDialogFragment(), View.OnClickListener {
@@ -65,6 +68,7 @@ class DappSettingSheetDialog : BottomSheetDialogFragment(), View.OnClickListener
   }
   private var mOnSettingHandleClick: OnSettingHandleClick? = null
 
+  override fun getTheme(): Int = R.style.BottomSheetDialogTheme
 
   override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
     val dialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
@@ -84,12 +88,12 @@ class DappSettingSheetDialog : BottomSheetDialogFragment(), View.OnClickListener
     mBinding.layoutActionCopyUrl.setOnClickListener(this)
     mBinding.layoutActionShare.setOnClickListener(this)
     mBinding.layoutActionBrowser.setOnClickListener(this)
-    mAppWalletViewModel.currentWalletAccountInfo.observe(
-        this, {
-      if (it != null) {
-        setAccount(it)
-      }
-    })
+    mAppWalletViewModel.currentWalletAccountInfo.observe(this) {
+      setAccount(it)
+    }
+    if (mAppWalletViewModel.currentWalletAccountInfo.value == null) {
+      setAccount(null)
+    }
     arguments?.getString(EXT_DAPP_NAME)?.let {
       mBinding.tvDappName.text = it
     }
@@ -108,9 +112,10 @@ class DappSettingSheetDialog : BottomSheetDialogFragment(), View.OnClickListener
     return this
   }
 
-  private fun setAccount(walletInfo: WalletAccountInfo) {
-    mBinding.tvWalletName.text = walletInfo.address.cutTheLast(4)
-    AssetsLogo.getLogoResources(walletInfo.coinType).apply {
+  private fun setAccount(walletInfo: WalletAccountInfo?) {
+    mBinding.tvWalletName.text = walletInfo?.address?.cutTheLast(4)
+        ?: getString(R.string.title_select_account)
+    AssetsLogo.getLogoResources(walletInfo?.coinType).apply {
       mBinding.ivTokenLogo.setImageDrawable(ResourcesCompat.getDrawable(resources, this, null))
     }
   }
