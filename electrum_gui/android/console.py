@@ -78,6 +78,7 @@ from electrum_gui.common import the_begging
 
 from ..common.basic.functional.text import force_text
 from ..common.basic.orm.database import db
+from ..common.coin import codes
 from ..common.coin import manager as coin_manager
 from ..common.price import manager as price_manager
 from ..common.wallet import manager as wallet_manager
@@ -349,12 +350,14 @@ class AndroidCommands(commands.Commands):
             and self.wallet.up_to_date
         ):  # btc
             c, u, x = self.wallet.get_balance()
-            show_balance = c + u
+            balance = c + u
+            fiat = Decimal(balance) / COIN * price_manager.get_last_price(coin, self.ccy)
+            fiat_str = f"{self.daemon.fx.ccy_amount_str(fiat, True)} {self.ccy}"
 
             out["coin"] = "btc"
             out["address"] = address
-            out["balance"] = self.format_amount(show_balance)
-            out["fiat"] = self.daemon.fx.format_amount_and_units(show_balance) if self.daemon.fx else None
+            out["balance"] = self.format_amount(balance)
+            out["fiat"] = fiat_str
 
             if u:
                 out["unconfirmed"] = self.format_amount(u, is_diff=True).strip()
@@ -822,11 +825,13 @@ class AndroidCommands(commands.Commands):
 
     def format_return_data(self, feerate, size, block):
         fee = float(feerate / 1000) * size
+        fiat = Decimal(fee) / COIN * price_manager.get_last_price(self.wallet.coin, self.ccy)
+        fiat_str = f"{self.daemon.fx.ccy_amount_str(fiat, True)} {self.ccy}"
         ret_data = {
             "fee": self.format_amount(fee),
             "feerate": feerate / 1000,
             "time": block * BTC_BLOCK_INTERVAL_TIME,
-            "fiat": self.daemon.fx.format_amount_and_units(fee) if self.daemon.fx else None,
+            "fiat": fiat_str,
             "size": size,
         }
         return ret_data
@@ -1166,9 +1171,9 @@ class AndroidCommands(commands.Commands):
         except Exception as e:
             raise BaseException(e)
         text = self.format_amount(amount) + " " + self.base_unit
-        x = self.daemon.fx.format_amount_and_units(amount) if self.daemon.fx else None
-        if text and x:
-            text += " (%s)" % x
+        fiat = Decimal(amount) / COIN * price_manager.get_last_price(codes.BTC, self.ccy)
+        fiat_str = f"{self.daemon.fx.ccy_amount_str(fiat, True)} {self.ccy}"
+        text += " (%s)" % fiat_str
         return text
 
     # #proxy
@@ -1498,12 +1503,15 @@ class AndroidCommands(commands.Commands):
                 if amount[0] == "-":
                     amount = amount[1:]
                 fee = data["fee"].split(" ")[0]
-                fait = self.daemon.fx.format_amount_and_units(float(amount) + float(fee)) if self.daemon.fx else None
+                fiat = (
+                    (Decimal(amount) + Decimal(fee)) / COIN * price_manager.get_last_price(self.wallet.coin, self.ccy)
+                )
+                fiat_str = f"{self.daemon.fx.ccy_amount_str(fiat, True)} {self.ccy}"
                 show_amount = "%.8f" % (float(amount) + float(fee))
                 show_amount = str(show_amount).rstrip("0")
                 if show_amount[-1] == ".":
                     show_amount = show_amount[0:-1]
-                i["amount"] = "%s %s (%s)" % (show_amount, self.base_unit, fait)
+                i["amount"] = "%s %s (%s)" % (show_amount, self.base_unit, fiat_str)
                 all_data.append(i)
 
             all_data.sort(reverse=True, key=lambda info: info["date"])
@@ -3434,11 +3442,12 @@ class AndroidCommands(commands.Commands):
                         all_wallet_info.append(wallet_info)
                 else:
                     c, u, x = wallet.get_balance()
-                    balance = self.daemon.fx.format_amount_and_units(c + u) or f"0 {self.ccy}"
-                    fiat = Decimal(balance.split()[0].replace(",", ""))
+                    balance = c + u
+                    fiat = Decimal(balance) / COIN * price_manager.get_last_price(coin, self.ccy)
+                    fiat_str = f"{self.daemon.fx.ccy_amount_str(fiat, True)} {self.ccy}"
                     all_balance += fiat
-                    wallet_info["btc"] = self.format_amount(c + u)  # fixme deprecated field
-                    wallet_info["fiat"] = balance  # fixme deprecated field
+                    wallet_info["btc"] = self.format_amount(balance)  # fixme deprecated field
+                    wallet_info["fiat"] = fiat_str  # fixme deprecated field
                     wallet_info["wallets"] = [
                         {
                             "coin": "btc",
@@ -3446,7 +3455,7 @@ class AndroidCommands(commands.Commands):
                             "fiat": wallet_info["fiat"],
                         }
                     ]
-                    wallet_info["sum_fiat"] = Decimal(wallet_info["fiat"].split()[0].replace(",", ""))
+                    wallet_info["sum_fiat"] = fiat
                     all_wallet_info.append(wallet_info)
 
             no_zero_balance_wallets = (i for i in all_wallet_info if i["sum_fiat"] > 0)
@@ -3832,11 +3841,11 @@ class AndroidCommands(commands.Commands):
         else:
             c, u, x = self.wallet.get_balance()
             balance = c + u
-            fait = self.daemon.fx.format_amount_and_units(balance) if self.daemon.fx else None
-            fait = fait or f"0 {self.ccy}"
+            fiat = Decimal(balance) / COIN * price_manager.get_last_price(coin, self.ccy)
+            fiat_str = f"{self.daemon.fx.ccy_amount_str(fiat, True)} {self.ccy}"
             info = {
-                "all_balance": "%s" % fait,  # fixme deprecated field
-                "wallets": [{"coin": "btc", "balance": self.format_amount(balance), "fiat": fait}],
+                "all_balance": fiat_str,  # fixme deprecated field
+                "wallets": [{"coin": "btc", "balance": self.format_amount(balance), "fiat": fiat_str}],
             }
             if self.label_flag and self.wallet.wallet_type != "standard":
                 self.label_plugin.load_wallet(self.wallet)
@@ -3895,13 +3904,13 @@ class AndroidCommands(commands.Commands):
                 util.trigger_callback("wallet_updated", self.wallet)
 
                 balance = c + u
-                fait = self.daemon.fx.format_amount_and_units(balance) if self.daemon.fx else None
-                fait = fait or f"0 {self.ccy}"
+                fiat = Decimal(balance) / COIN * price_manager.get_last_price(coin, self.ccy)
+                fiat_str = f"{self.daemon.fx.ccy_amount_str(fiat, True)} {self.ccy}"
                 info = {
-                    "balance": self.format_amount(balance) + " (%s)" % fait,  # fixme deprecated field
+                    "balance": self.format_amount(balance) + " (%s)" % fiat_str,  # fixme deprecated field
                     "name": name,
                     "label": self.wallet.get_name(),
-                    "wallets": [{"coin": "btc", "balance": self.format_amount(balance), "fiat": fait}],
+                    "wallets": [{"coin": "btc", "balance": self.format_amount(balance), "fiat": fiat_str}],
                 }
                 if self.label_flag and self.wallet.wallet_type != "standard":
                     self.label_plugin.load_wallet(self.wallet)
