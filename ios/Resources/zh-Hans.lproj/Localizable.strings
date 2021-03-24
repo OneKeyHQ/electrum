@@ -598,8 +598,13 @@
 "Share" = "分享";
 "Copy URL" = "复制URL";
 "Browser opens" = "浏览器打开";
-"GasPrice is less than the minimum limit" = "GasPrice不足最小限额";
-"GasPrice exceeds the maximum limit" = "GasPrice超过最大限额";
-"GasLimit is less than the minimum limit" = "GasLimit不足最小限额";
-"GasLimit exceeds the maximum limit" = "GasLimit超过最大限额";
+"The minimum limit of Gas Price %@ gwei" = "Gas Price 的最小限额 %@ gwei";
+"Gas Price maximum limit %@ gwei" = "Gas Price 的最大限额 %@ gwei";
+"The minimum gas limit %@" = "Gas Limit 的最小限额 %@";
+"The maximum gas limit %@" = "Gas Limit 的最大限额 %@";
+"Too little Gas Limit will cause the transaction to fail. Do you want to continue?" = "Gas Limit 太少将会导致交易失败，是否继续？";
+"Gas Limit is too much, do you want to continue?" = "Gas Limit 太多，是否继续？";
+"Too little Gas Price will cause the transaction to fail. Do you want to continue?" = "Gas Price 太少将会导致交易失败，是否继续？";
+"Gas Price is too much, do you want to continue?" = "Gas Price 太多，是否继续？";
+"Continue" = "继续";
 // Discover Associated - end

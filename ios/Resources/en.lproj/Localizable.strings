@@ -350,8 +350,13 @@
 "Share" = "Share";
 "Copy URL" = "Copy URL";
 "Browser opens" = "Browser opens";
-"GasPrice is less than the minimum limit" = "GasPrice is less than the minimum limit";
-"GasPrice exceeds the maximum limit" = "GasPrice is less than the minimum limit";
-"GasLimit is less than the minimum limit" = "GasPrice is less than the minimum limit";
-"GasLimit exceeds the maximum limit" = "GasPrice is less than the minimum limit";
+"The minimum limit of Gas Price %@ gwei" = "The minimum limit of Gas Price %@ gwei";
+"Gas Price maximum limit %@ gwei" = "Gas Price maximum limit %@ gwei";
+"The minimum gas limit %@" = "The minimum gas limit %@";
+"The maximum gas limit %@" = "The maximum gas limit %@";
+"Too little Gas Limit will cause the transaction to fail. Do you want to continue?" = "Too little Gas Limit will cause the transaction to fail. Do you want to continue?";
+"Gas Limit is too much, do you want to continue?" = "Gas Limit is too much, do you want to continue?";
+"Too little Gas Price will cause the transaction to fail. Do you want to continue?" = "Too little Gas Price will cause the transaction to fail. Do you want to continue?";
+"Gas Price is too much, do you want to continue?" = "Gas Price is too much, do you want to continue?";
+"Continue" = "Continue";
 // Discover Associated - end
