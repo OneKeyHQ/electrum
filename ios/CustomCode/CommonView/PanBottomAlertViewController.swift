@@ -23,7 +23,7 @@ class PanBottomAlertViewController: PanModalViewController {
     @IBOutlet weak var leftButtonTrailing: NSLayoutConstraint!
     @IBOutlet weak var titleLabelTop: NSLayoutConstraint!
     @IBOutlet weak var contentLabelTop: NSLayoutConstraint!
-    @IBOutlet weak var alertBottom: NSLayoutConstraint!
+    @IBOutlet weak var contentHeight: NSLayoutConstraint!
 
     private var icon: OKBottomAlertViewIcon?
     private var alertTitle: String = ""
@@ -102,7 +102,22 @@ class PanBottomAlertViewController: PanModalViewController {
     }
 
     private func configContentLabel(string: String) {
-        contentLabel.setText(string, lineSpacing: 1.2)
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = 1.2
+        paragraphStyle.alignment = .center
+        let attributedString = NSAttributedString(
+            string: string,
+            attributes: [
+                NSAttributedString.Key.paragraphStyle : paragraphStyle,
+                NSAttributedString.Key.font: UIFont.init(name: "PingFang SC", size: 15) ?? .systemFont(ofSize: 15)]
+        )
+        contentLabel.numberOfLines = 0
+        contentLabel.attributedText = attributedString
+        let height = attributedString.boundingRect(
+            with: CGSize(width: UIScreen.main.bounds.size.width - 32, height: .infinity),
+            options: [.usesFontLeading, .usesLineFragmentOrigin],
+            context: nil).size.height
+        contentHeight.constant = ceil(height)
     }
 
     private func configButtons(

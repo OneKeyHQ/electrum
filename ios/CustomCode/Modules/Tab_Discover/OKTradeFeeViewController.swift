@@ -53,10 +53,12 @@ class OKTradeFeeViewController: PanModalViewController {
     @IBOutlet weak var custunFeeGasPriceTextFiled: UITextField!
     @IBOutlet weak var custumFeeFoldView: UIView!
     @IBOutlet weak var custumFeeFoldTitle: UILabel!
+    @IBOutlet weak var custumFeeTipLabel: UILabel!
 
     var model: OKDefaultFeeInfoModel?
     var selectGasType: OKTradeFeeSelect = .medium
     var feeModel: OKSendFeeModel?
+    var alertTipsContent: String = ""
 
     var callBackFee: ((OKTradeFeeSelect, OKSendFeeModel?) -> Void)?
 
@@ -66,9 +68,18 @@ class OKTradeFeeViewController: PanModalViewController {
     private var perRmb: NSDecimalNumber?
     private var perFee: NSDecimalNumber?
     private var allValue: NSDecimalNumber?
+    private var keyboardDistance: CGFloat = 10
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        IQKeyboardManager.shared().keyboardDistanceFromTextField = keyboardDistance
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        keyboardDistance = IQKeyboardManager.shared().keyboardDistanceFromTextField
+        IQKeyboardManager.shared().keyboardDistanceFromTextField = 30
 
         navView.setNavTitle(string: "Miners fee".localized)
         slowFeeSpeed.text = "slow".localized
@@ -88,10 +99,7 @@ class OKTradeFeeViewController: PanModalViewController {
 
         navView.setNavPop { [weak self] in
             guard let self = self else { return }
-            if (self.model != nil) {
-                self.callBackFee?(self.selectGasType, self.feeModel)
-            }
-            self.navigationController?.popViewController(animated: true)
+            self.popAction()
         }
 
         slowFeeView.addTapGestureRecognizer { [weak self] in
@@ -211,6 +219,25 @@ class OKTradeFeeViewController: PanModalViewController {
         custumFeeFoldView.isHidden = isSelectedCustum
     }
 
+    private func popAction() {
+        func callBack() {
+            if (model != nil) {
+                callBackFee?(self.selectGasType, self.feeModel)
+            }
+            navigationController?.popViewController(animated: true)
+        }
+        if (alertTipsContent.isEmpty || selectGasType != .custum) {
+            callBack()
+        } else {
+            let alert = UIAlertController(title: "prompt".localized, message: self.alertTipsContent,  preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "cancel".localized, style: .cancel,  handler: { _ in
+            }))
+            alert.addAction(UIAlertAction(title: "Continue".localized, style: .default,  handler: { _ in
+                callBack()
+            }))
+            present(alert, animated: true, completion: nil)
+        }
+    }
 
     // MARK: - Pan Modal Presentable
 
@@ -234,7 +261,11 @@ class OKTradeFeeViewController: PanModalViewController {
         func rest() {
             custumFeeValue.text = "--"
             custumFeeTime.text = "--"
+            custumFeeTipLabel.text = ""
+            alertTipsContent = ""
             selectGasType = .medium
+            custunFeeGasTextFiled.textColor = .fg_B01()
+            custunFeeGasPriceTextFiled.textColor = .fg_B01()
         }
         rest()
 
@@ -244,24 +275,34 @@ class OKTradeFeeViewController: PanModalViewController {
            let gas = custunFeeGasTextFiled.text, !gas.isEmpty,
            let allValue = allValue, let perTime = perTime, let perRmb = perRmb,  let perFee = perFee
         {
+
             let gasLimitDecimalNumber = NSDecimalNumber(string:gas)
             let gasPriceDecimalNumber = NSDecimalNumber(string: gasPrice)
-            if gasPriceDecimalNumber.floatValue < 1 {
-                OKTools.sharedInstance().tipMessage("GasPrice is less than the minimum limit".localized)
-                return
-            }
-            if gasPriceDecimalNumber.floatValue > (Float(model.fast.gas_price) ?? 0) * 10 {
-                OKTools.sharedInstance().tipMessage("GasPrice exceeds the maximum limit".localized)
-                return
-            }
             if gasLimitDecimalNumber.floatValue < (Float(model.normal.gas_limit) ?? 0) {
-                OKTools.sharedInstance().tipMessage("GasLimit is less than the minimum limit".localized)
-                return
+                custunFeeGasTextFiled.textColor = .tintRed()
+                alertTipsContent = "Too little Gas Limit will cause the transaction to fail. Do you want to continue?".localized
+                custumFeeTipLabel.text = String(format: "The minimum gas limit %@".localized, String(model.normal.gas_limit))
             }
             if gasLimitDecimalNumber.floatValue > (Float(model.normal.gas_limit) ?? 0) * 10 {
-                OKTools.sharedInstance().tipMessage("GasLimit exceeds the maximum limit".localized)
+                custunFeeGasTextFiled.textColor = .tintRed()
+                alertTipsContent = "Gas Limit is too much, do you want to continue?".localized
+                custumFeeTipLabel.text = String(format: "The maximum gas limit %@".localized, String((Int(model.normal.gas_limit) ?? 0) * 10))
+            }
+            if gasPriceDecimalNumber.floatValue < 1 {
+                custunFeeGasPriceTextFiled.textColor = .tintRed()
+                alertTipsContent = "Too little Gas Price will cause the transaction to fail. Do you want to continue?".localized
+                custumFeeTipLabel.text = String(format: "The minimum limit of Gas Price %@ gwei".localized, "1")
+            }
+            if gasPriceDecimalNumber.floatValue > (Float(model.fast.gas_price) ?? 0) * 10 {
+                custunFeeGasPriceTextFiled.textColor = .tintRed()
+                alertTipsContent = "Gas Price is too much, do you want to continue?".localized
+                custumFeeTipLabel.text = String(format: "Gas Price maximum limit %@ gwei".localized, String((Int(model.fast.gas_price) ?? 0) * 10))
+            }
+
+            if gasPrice == "0" || gas == "0" {
                 return
             }
+
             func behavior(scale: Int16) -> NSDecimalNumberHandler {
                 return NSDecimalNumberHandler(
                     roundingMode: .down,

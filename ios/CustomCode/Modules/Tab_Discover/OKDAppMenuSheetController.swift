@@ -47,7 +47,8 @@ final class OKDAppMenuSheetController: PanModalViewController {
 
         if let model = model?.jsParams() {
             dappTitle.text = model.name ?? "DApp"
-            dappDes.text = model.description ?? "--"
+            let des =  model.description ?? ""
+            dappDes.text = des.isEmpty ? (model.subtitle ?? "") : des
             dappIcon.setNetImage(url: (model.img ?? "").addHttps)
         }
 

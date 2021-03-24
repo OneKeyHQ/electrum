@@ -101,8 +101,8 @@
                                                         </constraints>
                                                     </imageView>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="--" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xf7-nr-veF">
-                                                        <rect key="frame" x="30.5" y="8.5" width="32.5" height="15"/>
-                                                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="12"/>
+                                                        <rect key="frame" x="30.5" y="7.5" width="32.5" height="17"/>
+                                                        <fontDescription key="fontDescription" name="PingFangSC-Medium" family="PingFang SC" pointSize="12"/>
                                                         <color key="textColor" red="0.10196078431372549" green="0.10196078431372549" blue="0.10196078431372549" alpha="1" colorSpace="calibratedRGB"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
@@ -159,18 +159,24 @@
                                                     <constraint firstAttribute="width" constant="0.5" id="JaL-MB-gJi"/>
                                                 </constraints>
                                             </view>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fxA-1q-8I8">
-                                                <rect key="frame" x="44" y="0.0" width="43" height="32"/>
-                                                <state key="normal" image="discover_dapp_home"/>
-                                                <connections>
-                                                    <action selector="tapCloseButton:" destination="WON-8B-vaD" eventType="touchUpInside" id="q7d-fR-TcN"/>
-                                                </connections>
-                                            </button>
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="discover_dapp_home" translatesAutoresizingMaskIntoConstraints="NO" id="8Fs-8A-UOf">
+                                                <rect key="frame" x="56.5" y="7.5" width="17.5" height="17.5"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" secondItem="8Fs-8A-UOf" secondAttribute="height" multiplier="1:1" id="peB-Lw-a8E"/>
+                                                    <constraint firstAttribute="width" constant="17.5" id="qhF-vd-iqb"/>
+                                                </constraints>
+                                            </imageView>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="33C-Dh-fsl">
                                                 <rect key="frame" x="0.0" y="0.0" width="43.5" height="32"/>
                                                 <state key="normal" image="discover_dapp_share"/>
                                                 <connections>
                                                     <action selector="tapMenuButton:" destination="WON-8B-vaD" eventType="touchUpInside" id="oxb-FX-Tgs"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fxA-1q-8I8">
+                                                <rect key="frame" x="44" y="0.0" width="43" height="32"/>
+                                                <connections>
+                                                    <action selector="tapCloseButton:" destination="WON-8B-vaD" eventType="touchUpInside" id="q7d-fR-TcN"/>
                                                 </connections>
                                             </button>
                                         </subviews>
@@ -180,9 +186,11 @@
                                             <constraint firstAttribute="bottom" secondItem="fxA-1q-8I8" secondAttribute="bottom" id="DoP-RD-viH"/>
                                             <constraint firstItem="sIt-ep-Kqp" firstAttribute="leading" secondItem="33C-Dh-fsl" secondAttribute="trailing" id="Ga1-5B-qpW"/>
                                             <constraint firstItem="33C-Dh-fsl" firstAttribute="top" secondItem="wGA-xs-Lzv" secondAttribute="top" id="NJf-2p-axd"/>
+                                            <constraint firstItem="8Fs-8A-UOf" firstAttribute="centerY" secondItem="fxA-1q-8I8" secondAttribute="centerY" id="Qto-Yv-dW9"/>
                                             <constraint firstItem="sIt-ep-Kqp" firstAttribute="centerX" secondItem="wGA-xs-Lzv" secondAttribute="centerX" id="afw-5t-dAt"/>
                                             <constraint firstAttribute="width" constant="87" id="d8Z-dW-oEi"/>
                                             <constraint firstAttribute="height" constant="32" id="eXM-Yf-xwf"/>
+                                            <constraint firstItem="8Fs-8A-UOf" firstAttribute="centerX" secondItem="fxA-1q-8I8" secondAttribute="centerX" id="gzC-IL-ia7"/>
                                             <constraint firstItem="33C-Dh-fsl" firstAttribute="leading" secondItem="wGA-xs-Lzv" secondAttribute="leading" id="hqF-Z2-XqJ"/>
                                             <constraint firstAttribute="trailing" secondItem="fxA-1q-8I8" secondAttribute="trailing" id="lYf-pG-XKa"/>
                                             <constraint firstItem="fxA-1q-8I8" firstAttribute="top" secondItem="wGA-xs-Lzv" secondAttribute="top" id="pXJ-Tn-JdR"/>
@@ -1148,6 +1156,12 @@
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
                             </view>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Gas Price (GWEI)" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7ut-ji-bej">
+                                <rect key="frame" x="16" y="455" width="382" height="17"/>
+                                <fontDescription key="fontDescription" name="PingFangSC-Regular" family="PingFang SC" pointSize="12"/>
+                                <color key="textColor" red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.29999999999999999" colorSpace="custom" customColorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="yxn-mh-wbd"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -1155,12 +1169,15 @@
                             <constraint firstItem="yxn-mh-wbd" firstAttribute="trailing" secondItem="2zP-fY-nNM" secondAttribute="trailing" constant="16" id="4II-5D-t7O"/>
                             <constraint firstItem="OFm-fy-F6t" firstAttribute="leading" secondItem="INZ-GU-HFT" secondAttribute="leading" id="5Ef-UF-c4m"/>
                             <constraint firstItem="0g4-Gu-mte" firstAttribute="top" secondItem="Vte-vE-8Vl" secondAttribute="bottom" id="6wj-bN-xll"/>
+                            <constraint firstItem="7ut-ji-bej" firstAttribute="leading" secondItem="yxn-mh-wbd" secondAttribute="leading" constant="16" id="7ec-77-6JZ"/>
                             <constraint firstItem="Vte-vE-8Vl" firstAttribute="leading" secondItem="LHC-Cr-Y8I" secondAttribute="leading" id="AnJ-m3-eAF"/>
                             <constraint firstItem="OFm-fy-F6t" firstAttribute="top" secondItem="INZ-GU-HFT" secondAttribute="top" id="Cul-tn-UoU"/>
                             <constraint firstItem="yxn-mh-wbd" firstAttribute="trailing" secondItem="0g4-Gu-mte" secondAttribute="trailing" id="IWT-pE-OOo"/>
                             <constraint firstItem="yxn-mh-wbd" firstAttribute="trailing" secondItem="Vte-vE-8Vl" secondAttribute="trailing" id="Q8t-gP-cdc"/>
+                            <constraint firstItem="yxn-mh-wbd" firstAttribute="trailing" secondItem="7ut-ji-bej" secondAttribute="trailing" constant="16" id="RMm-Rb-JL1"/>
                             <constraint firstItem="2zP-fY-nNM" firstAttribute="leading" secondItem="yxn-mh-wbd" secondAttribute="leading" constant="16" id="S5y-cA-bzN"/>
                             <constraint firstItem="Vte-vE-8Vl" firstAttribute="top" secondItem="yxn-mh-wbd" secondAttribute="top" id="Zh6-uD-vat"/>
+                            <constraint firstItem="7ut-ji-bej" firstAttribute="top" secondItem="2zP-fY-nNM" secondAttribute="bottom" constant="12" id="bsy-gU-dQN"/>
                             <constraint firstItem="2zP-fY-nNM" firstAttribute="top" secondItem="0g4-Gu-mte" secondAttribute="bottom" constant="20" id="d6l-hR-drK"/>
                             <constraint firstItem="OFm-fy-F6t" firstAttribute="trailing" secondItem="INZ-GU-HFT" secondAttribute="trailing" id="j91-fE-9SQ"/>
                             <constraint firstItem="0g4-Gu-mte" firstAttribute="leading" secondItem="yxn-mh-wbd" secondAttribute="leading" id="z4o-G3-GO8"/>
@@ -1171,6 +1188,7 @@
                         <outlet property="custumFeeFoldView" destination="OFm-fy-F6t" id="zEr-FJ-4og"/>
                         <outlet property="custumFeeSelected" destination="a1L-Ys-iwM" id="hdg-I3-qih"/>
                         <outlet property="custumFeeTime" destination="zR8-eu-k7b" id="FNi-2V-g1D"/>
+                        <outlet property="custumFeeTipLabel" destination="7ut-ji-bej" id="hdL-cW-1lP"/>
                         <outlet property="custumFeeTitle" destination="img-A9-zOw" id="oxW-Sh-KRn"/>
                         <outlet property="custumFeeValue" destination="RNN-hi-8aR" id="ycb-5X-UiJ"/>
                         <outlet property="custumFeeView" destination="2zP-fY-nNM" id="gcp-os-gYh"/>
