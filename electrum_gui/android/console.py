@@ -320,7 +320,7 @@ class AndroidCommands(commands.Commands):
             sum_fiat = sum(i.get("fiat", 0) for i in balance_info.values())
             main_coin_balance_info = balance_info.pop(coin, dict())
 
-            out["coin"] = coin
+            out["coin"] = main_coin_balance_info.get("symbol")
             out["address"] = address
             out["balance"] = main_coin_balance_info.get("balance", "0")
             out["fiat"] = f"{self.daemon.fx.ccy_amount_str(main_coin_balance_info.get('fiat') or 0, True)} {self.ccy}"
