@@ -13,7 +13,7 @@ final class OKDAppWebViewController: UIViewController {
     @IBOutlet weak var leftSplitLine: UIView!
     @IBOutlet weak var leftSpliteLineWidth: NSLayoutConstraint!
     @IBOutlet weak var accountName: UILabel!
-    
+
     private  var networkErrorView: NetworkErrorView?
 
     private  var requestAccountsId: Int64 = 0
@@ -38,14 +38,14 @@ final class OKDAppWebViewController: UIViewController {
         progressView.trackTintColor = UIColor.tintBrand().withAlphaComponent(0.1)
         return progressView
     }()
-    
+
     private var webView: WKWebView!
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: animated)
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setUpWebView()
@@ -89,7 +89,7 @@ final class OKDAppWebViewController: UIViewController {
             topConstant: 44,
             heightConstant: 2
         )
-        
+
         networkErrorView = NetworkErrorView.addParentView(
             parentView: webView,
             handler: { [weak self] in
@@ -141,7 +141,7 @@ final class OKDAppWebViewController: UIViewController {
 
     @IBAction func selectAccount(_ sender: Any) {
         let page = OKChangeWalletController.withStoryboard()
-        page.chianType = .ethLike
+        page.chianType = [.ETH]
         page.walletChangedCallback = { [weak self] value in
             if value.addr != self?.address {
                 self?.updateAccount()
@@ -153,13 +153,13 @@ final class OKDAppWebViewController: UIViewController {
     }
 
     @IBAction func tapMenuButton(_ sender: Any) {
-        
+
     }
-    
+
     @IBAction func tapCloseButton(_ sender: Any) {
         self.dismiss(animated: true, completion: nil)
     }
-    
+
     private func updateWebViewCanGoBack(flag: Bool) {
         leftButton.isEnabled = flag
         leftButton.isHidden = !flag
@@ -179,7 +179,7 @@ final class OKDAppWebViewController: UIViewController {
         guard let scriptConfig = DAppWebManage.fetchScriptConfig() else { return }
         webView.configuration.userContentController.addUserScript(scriptConfig.injectedScript)
     }
-    
+
 }
 
 extension OKDAppWebViewController: WKScriptMessageHandler {
@@ -305,13 +305,13 @@ extension OKDAppWebViewController: WKScriptMessageHandler {
     }
 
 }
-    
+
 extension OKDAppWebViewController: WKNavigationDelegate {
 
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
         print("webViewDidStartLoad")
     }
-    
+
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         print("webViewDidFinishLoad")
     }

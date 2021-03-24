@@ -21,8 +21,12 @@ static const CGFloat MASK_ALPHA = 0.4;
 @property (weak, nonatomic) IBOutlet UIView *mask;
 @property (weak, nonatomic) IBOutlet UIView *handle;
 @property (weak, nonatomic) IBOutlet UILabel *headerLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *panelBottom;
 
 @property (nonatomic, strong)NSArray <OKWalletInfoModel *>*wallets;
+@property (nonatomic, strong)NSMutableArray <NSArray <OKWalletInfoModel *>*>*walletsList;
+@property (nonatomic, strong)NSMutableArray <NSNumber *>*walletCoinTypes;
+@property (nonatomic, assign)NSUInteger currentWalletIndex;
 @property (nonatomic, assign)BOOL walletSelected;
 
 @end
@@ -34,10 +38,10 @@ static const CGFloat MASK_ALPHA = 0.4;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.walletCoinTypes = [[NSMutableArray alloc] init];
 
-    self.headerLabel.text = self.chianType == OKWalletChainTypeBTC ? @"BTC wallet".localized : @"ETH wallet".localized;
+    self.panelBottom.constant = - self.panel.height - 30;
     [self.handle setLayerRadius:2];
-    self.subTableView.mj_insetT = 8;
 
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
@@ -54,14 +58,15 @@ static const CGFloat MASK_ALPHA = 0.4;
     [self.view addGestureRecognizer:panGes];
     [self.panel addGestureRecognizer:panGes2];
 
-    self.wallets = [kWalletManager listWalletsChainType:self.chianType];
+    self.wallets = self.walletsList.firstObject;
+    self.currentWalletIndex = 0;
 
-    [kPyCommandsManager asyncCall:kInterface_get_all_wallet_balance parameter:@{} callback:^(id  _Nonnull result) {
+    [kPyCommandsManager asyncCall:kInterface_get_all_wallet_balance parameter:nil callback:^(id  _Nonnull result) {
         NSDictionary *dict = result;
         NSArray *wallet_info = dict[@"wallet_info"];
         NSArray *array = [OKAllAssetsSectionModel mj_objectArrayWithKeyValuesArray:wallet_info];
         for (OKAllAssetsSectionModel *assetModel in array) {
-            for (OKWalletInfoModel *wallet in self.wallets) {
+            for (OKWalletInfoModel *wallet in [self getWalletsFlatList]) {
                 if ([wallet.name isEqualToString:assetModel.label]) {
                     NSString *balance = assetModel.wallets.firstObject.balance;
                     wallet.additionalData = @{@"balance": balance ?: @"?"};
@@ -79,9 +84,56 @@ static const CGFloat MASK_ALPHA = 0.4;
     [self show];
 }
 
+- (NSMutableArray <NSArray <OKWalletInfoModel *>*>*)walletsList {
+    if (!_walletsList) {
+
+        _walletsList = [[NSMutableArray alloc] init];
+        NSArray<OKWalletInfoModel *> *listWallets = [kWalletManager listWallets];
+        OKChangeWalletChainType type = self.chianType;
+
+        #define WALLET_ADD_TYPE(ARG_ChainType, ARG_WalletCoinType) \
+        if (type & (ARG_ChainType)) {\
+            NSArray *wallets = [listWallets ok_filter:^BOOL(id obj) {\
+                return ((OKWalletInfoModel *)obj).walletCoinType == (ARG_WalletCoinType);\
+            }];\
+            [_walletsList addObject:wallets];\
+            [self.walletCoinTypes addObject:@(ARG_WalletCoinType)];\
+        }
+        WALLET_ADD_TYPE(OKChangeWalletChainTypeBTC, OKWalletCoinTypeBTC)
+        WALLET_ADD_TYPE(OKChangeWalletChainTypeETH, OKWalletCoinTypeETH)
+        WALLET_ADD_TYPE(OKChangeWalletChainTypeBSC, OKWalletCoinTypeBSC)
+        WALLET_ADD_TYPE(OKChangeWalletChainTypeHECO, OKWalletCoinTypeHECO)
+    }
+    return _walletsList;
+}
+
+- (NSArray <OKWalletInfoModel *>*)getWalletsFlatList {
+    NSMutableArray *walletsFlatList = [[NSMutableArray alloc] init];
+    for (NSArray *wallets in self.walletsList) {
+        for (OKWalletInfoModel *wallet in wallets) {
+            [walletsFlatList addObject:wallet];
+        }
+    }
+    return walletsFlatList;
+}
+
+- (void)setCurrentWalletIndex:(NSUInteger)currentWalletIndex {
+    _currentWalletIndex = currentWalletIndex;
+    OKWalletCoinType coinType = [self.walletCoinTypes[currentWalletIndex] integerValue];
+    NSString *walletName = @"BTC wallet";
+
+    switch (coinType) {
+        case OKWalletCoinTypeETH:  walletName = @"ETH wallet"; break;
+        case OKWalletCoinTypeBSC:  walletName = @"BSC wallet"; break;
+        case OKWalletCoinTypeHECO: walletName = @"HECO wallet"; break;
+        default: break;
+    }
+    self.headerLabel.text = walletName.localized;
+}
+
 #pragma mark - UITableViewDelegate, UITableViewDataSource
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return tableView == self.tableView ? self.wallets.count : 1;
+    return tableView == self.tableView ? self.wallets.count : self.walletsList.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -95,7 +147,8 @@ static const CGFloat MASK_ALPHA = 0.4;
         static NSString *ID = @"OKChangeWalletSubCell";
         OKChangeWalletSubCell *cell = [tableView dequeueReusableCellWithIdentifier:ID];
         cell = cell ?: [[OKChangeWalletSubCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ID];
-        cell.type = self.chianType == OKWalletChainTypeBTC ? OKWalletCoinTypeBTC : OKWalletCoinTypeETH;
+        cell.chosen = indexPath.row == self.currentWalletIndex;
+        cell.type = [self.walletCoinTypes[indexPath.row] integerValue];
         return cell;
     }
 }
@@ -105,6 +158,14 @@ static const CGFloat MASK_ALPHA = 0.4;
     if (tableView == self.tableView) {
         OKWalletInfoModel *model = self.wallets[indexPath.row];
         [self changeWalletTo:model];
+    } else {
+        if (indexPath.row == self.currentWalletIndex) {
+            return;
+        }
+        self.currentWalletIndex = indexPath.row;
+        self.wallets = self.walletsList[indexPath.row];
+        [self.tableView reloadData];
+        [self.subTableView reloadData];
     }
 }
 
@@ -132,6 +193,8 @@ static const CGFloat MASK_ALPHA = 0.4;
     [UIView animateWithDuration:ANIMATION_DURATION animations:^{
         self.mask.alpha = MASK_ALPHA;
         self.panel.top = self.view.height - self.panel.height;
+    } completion:^(BOOL finished) {
+        self.panelBottom.constant = 0;
     }];
 }
 
@@ -163,6 +226,7 @@ static const CGFloat MASK_ALPHA = 0.4;
         self.mask.alpha = 0;
         self.panel.centerY = self.view.height + self.panel.height * 0.5 + 20;
     } completion:^(BOOL finished) {
+        self.panelBottom.constant = - self.panel.height - 30;
         if (self.cancelCallback) {
             self.cancelCallback(self.walletSelected);
         }

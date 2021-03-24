@@ -28,6 +28,9 @@
 }
 
 - (void)setType:(NSString *)type {
+    if (type == _type || [type isEqualToString:_type]) {
+        return;
+    }
     _type = type;
     if ([type ignoreCaseCointain:@"eth"]) {
         self.chainType = OKWalletChainTypeETHLike;
@@ -47,12 +50,16 @@
 }
 
 - (OKWalletCoinType)walletCoinType {
-    NSString *coinType = self.coinType;
+    NSString *coinType = self.type.lowercaseString;
     OKWalletCoinType type = OKWalletCoinTypeUnknown;
-    if ([coinType ignoreCaseCointain:@"btc"]) {
+    if ([coinType hasPrefix:@"btc"]) {
         type = OKWalletCoinTypeBTC;
-    } else if ([coinType ignoreCaseCointain:@"eth"]) {
+    } else if ([coinType hasPrefix:@"eth"]) {
         type = OKWalletCoinTypeETH;
+    } else if ([coinType hasPrefix:@"bsc"]) {
+        type = OKWalletCoinTypeBSC;
+    } else if ([coinType hasPrefix:@"heco"]) {
+        type = OKWalletCoinTypeHECO;
     }
     return type;
 }

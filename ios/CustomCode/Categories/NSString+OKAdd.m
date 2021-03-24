@@ -149,6 +149,10 @@
     return [self.lowercaseString containsString:subStr.lowercaseString];
 }
 
+- (BOOL)ignoreCaseEqual:(NSString *)str {
+    return [self.lowercaseString isEqualToString:str.lowercaseString];
+}
+
 - (NSString *)addressFormatted {
     if (self.length < 20) {
         return [@"error: " stringByAppendingString:self];

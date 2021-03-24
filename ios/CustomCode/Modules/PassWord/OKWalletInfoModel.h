@@ -18,6 +18,7 @@ typedef NS_ENUM(NSInteger, OKWalletCoinType) {
     OKWalletCoinTypeBTC,
     OKWalletCoinTypeETH,
     OKWalletCoinTypeBSC,
+    OKWalletCoinTypeHECO,
 };
 
 // 展示的钱包类型

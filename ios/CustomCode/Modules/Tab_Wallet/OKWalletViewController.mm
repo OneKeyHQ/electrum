@@ -433,7 +433,7 @@
                 NSString *address = [data safeStringForKey:@"address"];
                 NSString *coin = [data safeStringForKey:@"coin"];
                 OKChangeWalletController *changeVC = [OKChangeWalletController controllerWithStoryboard];
-                changeVC.chianType = [coin isEqualToString:@"eth"] ? OKWalletChainTypeETHLike : OKWalletChainTypeBTC;
+                changeVC.chianType = [coin isEqualToString:@"btc"] ? OKChangeWalletChainTypeBTC : OKChangeWalletChainTypeETHLike;
                 changeVC.cancelCallback = ^(BOOL selected) {
                     if (!selected) {
                         [scanVC.scanManager sessionStartRunning];

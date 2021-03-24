@@ -31,6 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSArray<NSString *>*)split:(NSString *)sparator;
 + (NSString *)stringFromHexString:(NSString *)hexString;
 - (NSString *)localized;
+- (BOOL)ignoreCaseEqual:(NSString *)str;
 - (BOOL)ignoreCaseCointain:(NSString *)subStr;
 - (NSString *)addressFormatted;
 - (NSString *)numStrPrecition:(NSUInteger)scale;

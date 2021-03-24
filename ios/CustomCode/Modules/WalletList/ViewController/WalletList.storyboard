@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <device id="retina6_0" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
@@ -15,11 +15,11 @@
             <objects>
                 <viewController storyboardIdentifier="OKWalletListViewController" id="N4V-Vq-0uB" customClass="OKWalletListViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="cRo-Le-Svs">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="D9S-QM-J7W">
-                                <rect key="frame" x="0.0" y="45" width="64" height="766"/>
+                                <rect key="frame" x="0.0" y="45" width="64" height="714"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="64" id="IHv-hH-Hax"/>
@@ -59,20 +59,20 @@
                                 </cells>
                             </collectionView>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="lcE-dI-bRc">
-                                <rect key="frame" x="65" y="45" width="349" height="766"/>
+                                <rect key="frame" x="65" y="45" width="325" height="714"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <view key="tableHeaderView" contentMode="scaleToFill" id="cdD-Cm-uTa">
-                                    <rect key="frame" x="0.0" y="0.0" width="349" height="62"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="325" height="62"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="HD钱包" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Mtl-Dl-4c2">
-                                            <rect key="frame" x="15" y="22.5" width="49" height="17"/>
+                                            <rect key="frame" x="15" y="22.666666666666668" width="49" height="17.000000000000004"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                             <color key="textColor" red="0.32941176470588235" green="0.38823529411764707" blue="0.4392156862745098" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <stackView opaque="NO" contentMode="scaleToFill" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="7rX-N4-QGS">
-                                            <rect key="frame" x="70" y="13.5" width="119" height="35"/>
+                                            <rect key="frame" x="70" y="13.666666666666664" width="119" height="35"/>
                                             <subviews>
                                                 <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yRL-bR-0YR">
                                                     <rect key="frame" x="0.0" y="0.0" width="24" height="35"/>
@@ -125,7 +125,7 @@
                                             </constraints>
                                         </stackView>
                                         <label opaque="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="详情" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ind-IT-yED">
-                                            <rect key="frame" x="260" y="5" width="29" height="52"/>
+                                            <rect key="frame" x="236.33333333333334" y="5" width="28.666666666666657" height="52"/>
                                             <gestureRecognizers/>
                                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                             <color key="textColor" red="0.62352941176470589" green="0.65098039215686276" blue="0.67843137254901964" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
@@ -135,7 +135,7 @@
                                             </connections>
                                         </label>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yxf-cJ-Fuj">
-                                            <rect key="frame" x="289" y="11" width="40" height="40"/>
+                                            <rect key="frame" x="265" y="11" width="40" height="40"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="40" id="F89-a2-FqC"/>
                                                 <constraint firstAttribute="width" constant="40" id="rYd-KB-L3E"/>
@@ -146,7 +146,7 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pf9-hV-gbY">
-                                            <rect key="frame" x="305" y="19" width="24" height="24"/>
+                                            <rect key="frame" x="281" y="19" width="24" height="24"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="24" id="djn-Go-GWJ"/>
                                                 <constraint firstAttribute="width" constant="24" id="vVL-tN-ugq"/>
@@ -174,11 +174,11 @@
                                     </constraints>
                                 </view>
                                 <view key="tableFooterView" contentMode="scaleToFill" id="rrb-Yh-f95">
-                                    <rect key="frame" x="0.0" y="278" width="349" height="106"/>
+                                    <rect key="frame" x="0.0" y="278" width="325" height="106"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <subviews>
                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="L2b-rD-Eir">
-                                            <rect key="frame" x="20" y="18" width="309" height="70"/>
+                                            <rect key="frame" x="20" y="18" width="285" height="70"/>
                                             <subviews>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9ZZ-cc-53z">
                                                     <rect key="frame" x="16" y="12" width="24" height="24"/>
@@ -189,19 +189,19 @@
                                                     <state key="normal" image="bottom_add_11"/>
                                                 </button>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="添加钱包" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eac-A5-I5c">
-                                                    <rect key="frame" x="43" y="15.5" width="57.5" height="17"/>
+                                                    <rect key="frame" x="43" y="15.666666666666664" width="57.333333333333343" height="17"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="支持BTC、ETH等多种主链" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="V5a-bV-KQE">
-                                                    <rect key="frame" x="16" y="39" width="169" height="17"/>
+                                                    <rect key="frame" x="16" y="39" width="168.66666666666666" height="17"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="99M-na-NZa">
-                                                    <rect key="frame" x="0.0" y="0.0" width="309" height="70"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="285" height="70"/>
                                                     <connections>
                                                         <action selector="addWalletClick:" destination="N4V-Vq-0uB" eventType="touchUpInside" id="vkp-lf-j7l"/>
                                                     </connections>
@@ -232,17 +232,17 @@
                                 </view>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="OKWalletListTableViewCell" rowHeight="90" id="apV-5K-w8G" customClass="OKWalletListTableViewCell">
-                                        <rect key="frame" x="0.0" y="90" width="349" height="90"/>
+                                        <rect key="frame" x="0.0" y="90" width="325" height="90"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="apV-5K-w8G" id="heJ-U1-aUQ">
-                                            <rect key="frame" x="0.0" y="0.0" width="349" height="90"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="325" height="90"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jA1-ea-LKZ">
-                                                    <rect key="frame" x="20" y="10" width="309" height="70"/>
+                                                    <rect key="frame" x="20" y="10" width="285" height="70"/>
                                                     <subviews>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EII-qg-8Ok">
-                                                            <rect key="frame" x="20" y="8" width="47.5" height="32"/>
+                                                            <rect key="frame" x="20.000000000000004" y="8" width="47.333333333333343" height="32"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="height" constant="32" id="CM8-LZ-Z8g"/>
                                                                 <constraint firstAttribute="width" relation="lessThanOrEqual" constant="160" id="StX-UZ-eGz"/>
@@ -252,10 +252,10 @@
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jSL-yw-gxe">
-                                                            <rect key="frame" x="72.5" y="14" width="55.5" height="20"/>
+                                                            <rect key="frame" x="72.333333333333329" y="14" width="55.333333333333329" height="20"/>
                                                             <subviews>
                                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SYu-59-VbQ">
-                                                                    <rect key="frame" x="7" y="0.0" width="41.5" height="20"/>
+                                                                    <rect key="frame" x="7" y="0.0" width="41.333333333333336" height="20"/>
                                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                     <nil key="highlightedColor"/>
@@ -271,7 +271,7 @@
                                                             </constraints>
                                                         </view>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="3Psadafqwfascxzcef" lineBreakMode="clip" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hvr-b5-maF">
-                                                            <rect key="frame" x="20" y="45" width="130" height="19.5"/>
+                                                            <rect key="frame" x="20" y="45" width="130" height="19.333333333333329"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="width" constant="130" id="MWu-vh-egf"/>
                                                             </constraints>
@@ -280,7 +280,7 @@
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rOf-iw-iy7">
-                                                            <rect key="frame" x="165" y="35" width="40" height="40"/>
+                                                            <rect key="frame" x="165" y="34.666666666666664" width="40" height="39.999999999999993"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="width" constant="40" id="hfv-Ei-Bed"/>
                                                                 <constraint firstAttribute="height" constant="40" id="yeG-sF-Jkm"/>
@@ -291,13 +291,20 @@
                                                             </connections>
                                                         </button>
                                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="K8t-hW-eCW">
-                                                            <rect key="frame" x="243" y="24.5" width="17" height="13"/>
+                                                            <rect key="frame" x="219" y="24.666666666666664" width="17" height="13"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="height" constant="13" id="XPo-eh-R49"/>
                                                                 <constraint firstAttribute="width" constant="17" id="lH1-PF-X31"/>
                                                             </constraints>
                                                             <state key="normal" image="iconwriteselect"/>
                                                         </button>
+                                                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="W4U-vj-GmU">
+                                                            <rect key="frame" x="245" y="30" width="50" height="50"/>
+                                                            <constraints>
+                                                                <constraint firstAttribute="width" constant="50" id="JYw-lk-JZK"/>
+                                                                <constraint firstAttribute="height" constant="50" id="eah-3M-CCK"/>
+                                                            </constraints>
+                                                        </imageView>
                                                     </subviews>
                                                     <color key="backgroundColor" red="0.96398705240000004" green="0.58187872169999999" blue="0.1055415794" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                     <constraints>
@@ -333,14 +340,14 @@
                                         </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="OKWalletListNoHDTableViewCell" rowHeight="70" id="8UD-IP-hIL" customClass="OKWalletListNoHDTableViewCell">
-                                        <rect key="frame" x="0.0" y="180" width="349" height="70"/>
+                                        <rect key="frame" x="0.0" y="180" width="325" height="70"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="8UD-IP-hIL" id="vgh-fM-DO6">
-                                            <rect key="frame" x="0.0" y="0.0" width="349" height="70"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="325" height="70"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="g1x-Ks-xOO">
-                                                    <rect key="frame" x="20" y="8" width="309" height="52"/>
+                                                    <rect key="frame" x="20" y="8" width="285" height="52"/>
                                                     <subviews>
                                                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="8AM-ts-haE">
                                                             <rect key="frame" x="19" y="8" width="24" height="24"/>
@@ -350,13 +357,13 @@
                                                             </constraints>
                                                         </imageView>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Lly-Vg-lLy">
-                                                            <rect key="frame" x="48" y="11.5" width="36" height="17"/>
+                                                            <rect key="frame" x="48" y="11.666666666666668" width="36" height="17"/>
                                                             <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
                                                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9jS-y5-63k">
-                                                            <rect key="frame" x="19" y="37" width="31" height="14.5"/>
+                                                            <rect key="frame" x="19" y="37" width="31" height="14.333333333333336"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                                             <color key="textColor" red="1" green="1" blue="1" alpha="0.75428082191780821" colorSpace="custom" customColorSpace="displayP3"/>
                                                             <nil key="highlightedColor"/>
@@ -390,10 +397,10 @@
                                 </prototypes>
                             </tableView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kMm-GL-mCT">
-                                <rect key="frame" x="0.0" y="811" width="414" height="85"/>
+                                <rect key="frame" x="0.0" y="759" width="390" height="85"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oId-uT-pgl" customClass="OKWalletListBottomBtn">
-                                        <rect key="frame" x="212" y="10" width="182" height="50"/>
+                                        <rect key="frame" x="200" y="10" width="170" height="50"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="50" id="eib-HQ-LAj"/>
                                         </constraints>
@@ -406,14 +413,14 @@
                                         </connections>
                                     </button>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9iy-ge-3h4">
-                                        <rect key="frame" x="0.0" y="0.0" width="414" height="1"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="390" height="1"/>
                                         <color key="backgroundColor" red="0.94901960784313721" green="0.94901960784313721" blue="0.94901960784313721" alpha="0.75090967465753422" colorSpace="custom" customColorSpace="displayP3"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="1" id="cdt-qa-YDw"/>
                                         </constraints>
                                     </view>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="V9T-NU-8OU" customClass="OKWalletListBottomBtn">
-                                        <rect key="frame" x="20" y="10" width="182" height="50"/>
+                                        <rect key="frame" x="20" y="10" width="170" height="50"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="50" id="fCO-b0-vME"/>
                                         </constraints>
@@ -441,14 +448,14 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GVK-Dv-QEs" userLabel="Line">
-                                <rect key="frame" x="64" y="45" width="1" height="766"/>
+                                <rect key="frame" x="64" y="45" width="1" height="714"/>
                                 <color key="backgroundColor" red="0.94901960784313721" green="0.94901960784313721" blue="0.94901960784313721" alpha="0.75090967465753422" colorSpace="custom" customColorSpace="displayP3"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="1" id="tac-y2-7v5"/>
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="TAh-R7-Nx1">
-                                <rect key="frame" x="0.0" y="44" width="414" height="1"/>
+                                <rect key="frame" x="0.0" y="44" width="390" height="1"/>
                                 <color key="backgroundColor" red="0.94901960784313721" green="0.94901960784313721" blue="0.94901960784313721" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="1" id="jRz-UT-JHW"/>
@@ -510,24 +517,24 @@
             <objects>
                 <viewController storyboardIdentifier="OKSelectCoinTypeViewController" id="MzP-87-w5p" customClass="OKSelectCoinTypeViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="1wY-4B-poO">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="选择币种" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="f33-SQ-FYU">
-                                <rect key="frame" x="146.5" y="78" width="121" height="36"/>
+                                <rect key="frame" x="134.66666666666666" y="78" width="121" height="36"/>
                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="30"/>
                                 <color key="textColor" red="0.078431372549019607" green="0.16470588235294117" blue="0.23137254901960785" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="6N2-5e-gzu">
-                                <rect key="frame" x="0.0" y="141" width="414" height="755"/>
+                                <rect key="frame" x="0.0" y="141" width="390" height="703"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="OKSelectCoinTypeTableViewCell" rowHeight="74" id="5KY-vC-UEQ" customClass="OKSelectCoinTypeTableViewCell">
-                                        <rect key="frame" x="0.0" y="28" width="414" height="74"/>
+                                        <rect key="frame" x="0.0" y="28" width="390" height="74"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="5KY-vC-UEQ" id="czG-4f-duU">
-                                            <rect key="frame" x="0.0" y="0.0" width="414" height="74"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="390" height="74"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="token_btc" translatesAutoresizingMaskIntoConstraints="NO" id="66v-3O-JAW">
@@ -538,13 +545,13 @@
                                                     </constraints>
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="比特币" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tVe-kg-YPK">
-                                                    <rect key="frame" x="66" y="27.5" width="49" height="19"/>
+                                                    <rect key="frame" x="66" y="27.666666666666671" width="49" height="19"/>
                                                     <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
                                                     <color key="textColor" red="0.078431372549019607" green="0.16470588235294117" blue="0.23137254901960785" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="right_arrow_small" translatesAutoresizingMaskIntoConstraints="NO" id="Z6m-SD-9z8">
-                                                    <rect key="frame" x="370" y="25" width="24" height="24"/>
+                                                    <rect key="frame" x="346" y="25" width="24" height="24"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="24" id="IPD-cG-jgM"/>
                                                         <constraint firstAttribute="height" constant="24" id="KoX-Oh-ywO"/>
@@ -597,26 +604,26 @@
             <objects>
                 <viewController storyboardIdentifier="OKSetWalletNameViewController" id="XJB-8O-sQn" customClass="OKSetWalletNameViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="xgu-uS-whR">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="设置钱包名称" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0b2-Vy-Kit">
-                                <rect key="frame" x="116" y="78" width="182" height="36"/>
+                                <rect key="frame" x="104" y="78" width="182" height="36"/>
                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="30"/>
                                 <color key="textColor" red="0.078431372550000003" green="0.1647058824" blue="0.23137254900000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="方便您轻松识别" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EGy-eE-fFO">
-                                <rect key="frame" x="146.5" y="129" width="121" height="21"/>
+                                <rect key="frame" x="134.66666666666666" y="129" width="121" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="uNl-7f-MWZ">
-                                <rect key="frame" x="34" y="176" width="346" height="60"/>
+                                <rect key="frame" x="34" y="176" width="322" height="60"/>
                                 <subviews>
                                     <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="wgD-wj-Zha">
-                                        <rect key="frame" x="20" y="0.0" width="306" height="60"/>
+                                        <rect key="frame" x="20" y="0.0" width="282" height="60"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <textInputTraits key="textInputTraits"/>
                                     </textField>
@@ -632,7 +639,7 @@
                                 </constraints>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CS3-NS-hEh">
-                                <rect key="frame" x="34" y="271" width="346" height="60"/>
+                                <rect key="frame" x="34" y="271" width="322" height="60"/>
                                 <color key="backgroundColor" red="0.0010134851330000001" green="0.7278487682" blue="0.070087678730000005" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="60" id="a8E-Rf-4hl"/>
@@ -678,24 +685,24 @@
             <objects>
                 <viewController storyboardIdentifier="OKSelectImportTypeViewController" id="7Bi-LR-Qh2" customClass="OKSelectImportTypeViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="FQg-B4-cIc">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="选择您的导入方式" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mNP-c5-0Sv">
-                                <rect key="frame" x="85.5" y="78" width="243" height="36"/>
+                                <rect key="frame" x="73.666666666666686" y="78" width="243" height="36"/>
                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="30"/>
                                 <color key="textColor" red="0.078431372550000003" green="0.1647058824" blue="0.23137254900000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="QC4-eB-bcO">
-                                <rect key="frame" x="0.0" y="141" width="414" height="755"/>
+                                <rect key="frame" x="0.0" y="141" width="390" height="703"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="OKSelectCoinTypeTableViewCell" rowHeight="74" id="ETC-dt-W51" customClass="OKSelectCoinTypeTableViewCell">
-                                        <rect key="frame" x="0.0" y="28" width="414" height="74"/>
+                                        <rect key="frame" x="0.0" y="28" width="390" height="74"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="ETC-dt-W51" id="F22-bh-Zlh">
-                                            <rect key="frame" x="0.0" y="0.0" width="414" height="74"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="390" height="74"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="token_btc" translatesAutoresizingMaskIntoConstraints="NO" id="Q3W-0K-EHG">
@@ -706,13 +713,13 @@
                                                     </constraints>
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="私钥导入" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lsH-QZ-uhH">
-                                                    <rect key="frame" x="66" y="27.5" width="65.5" height="19"/>
+                                                    <rect key="frame" x="66" y="27.666666666666671" width="65.666666666666686" height="19"/>
                                                     <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
                                                     <color key="textColor" red="0.078431372550000003" green="0.1647058824" blue="0.23137254900000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="right_arrow_small" translatesAutoresizingMaskIntoConstraints="NO" id="6gq-vo-kyf">
-                                                    <rect key="frame" x="370" y="25" width="24" height="24"/>
+                                                    <rect key="frame" x="346" y="25" width="24" height="24"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="24" id="0Ze-od-384"/>
                                                         <constraint firstAttribute="height" constant="24" id="abq-S7-vHf"/>
@@ -769,14 +776,14 @@
                         <viewControllerLayoutGuide type="bottom" id="nay-sP-6oB"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="wMI-cj-5xK">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="T3s-6F-ilC">
-                                <rect key="frame" x="10" y="604" width="394" height="262"/>
+                                <rect key="frame" x="10" y="552" width="370" height="262"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="center" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="G3f-Kq-lKK">
-                                        <rect key="frame" x="341" y="20" width="40" height="40"/>
+                                        <rect key="frame" x="317" y="20" width="40" height="40"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="40" id="H3x-vE-zss"/>
                                             <constraint firstAttribute="height" constant="40" id="rPB-C9-pn7"/>
@@ -787,7 +794,7 @@
                                         </connections>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="添加钱包" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="eto-T7-yvI">
-                                        <rect key="frame" x="50" y="30" width="294" height="25"/>
+                                        <rect key="frame" x="50" y="30" width="270" height="25"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="25" id="suG-xt-APJ"/>
                                         </constraints>
@@ -796,7 +803,7 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cZ8-5c-ILk">
-                                        <rect key="frame" x="25" y="87" width="344" height="60"/>
+                                        <rect key="frame" x="25" y="87" width="320" height="60"/>
                                         <color key="backgroundColor" red="0.0010134851330000001" green="0.7278487682" blue="0.070087678730000005" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="60" id="cI4-4X-P8N"/>
@@ -810,7 +817,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mlG-Ig-PTR">
-                                        <rect key="frame" x="25" y="167" width="344" height="60"/>
+                                        <rect key="frame" x="25" y="167" width="320" height="60"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="60" id="BlX-hw-Wmn"/>
@@ -866,24 +873,24 @@
             <objects>
                 <viewController storyboardIdentifier="OKCreateSelectWalletTypeController" id="42g-bO-iHh" customClass="OKCreateSelectWalletTypeController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="egC-j4-MWf">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="选择钱包类型" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3CL-X6-oZA">
-                                <rect key="frame" x="116" y="78" width="182" height="36"/>
+                                <rect key="frame" x="104" y="78" width="182" height="36"/>
                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="30"/>
                                 <color key="textColor" red="0.078431372550000003" green="0.1647058824" blue="0.23137254900000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="oqD-Si-Pgs">
-                                <rect key="frame" x="0.0" y="141" width="414" height="755"/>
+                                <rect key="frame" x="0.0" y="141" width="390" height="703"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="OKCreateSelectWalletTypeCell" rowHeight="123" id="aXr-Ik-qpf" customClass="OKCreateSelectWalletTypeCell">
-                                        <rect key="frame" x="0.0" y="28" width="414" height="123"/>
+                                        <rect key="frame" x="0.0" y="28" width="390" height="123"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="aXr-Ik-qpf" id="XJY-nu-xwk">
-                                            <rect key="frame" x="0.0" y="0.0" width="414" height="123"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="390" height="123"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="token_btc" translatesAutoresizingMaskIntoConstraints="NO" id="T8a-Fq-EWm">
@@ -894,20 +901,20 @@
                                                     </constraints>
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="独立钱包" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cdw-46-wUE">
-                                                    <rect key="frame" x="66" y="28.5" width="65.5" height="19"/>
+                                                    <rect key="frame" x="66" y="28.666666666666671" width="65.666666666666686" height="19"/>
                                                     <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
                                                     <color key="textColor" red="0.078431372550000003" green="0.1647058824" blue="0.23137254900000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="right_arrow_small" translatesAutoresizingMaskIntoConstraints="NO" id="hyV-b5-Zoj">
-                                                    <rect key="frame" x="370" y="26" width="24" height="24"/>
+                                                    <rect key="frame" x="346" y="26" width="24" height="24"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="24" id="WVU-gs-r90"/>
                                                         <constraint firstAttribute="height" constant="24" id="sKT-WN-vw6"/>
                                                     </constraints>
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="独立的钱包，由本地加密算法生成独立私钥。需要重新抄写助记词，一切都不与 HD 钱包共享。" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OYo-It-85u">
-                                                    <rect key="frame" x="20" y="69" width="374" height="34"/>
+                                                    <rect key="frame" x="20" y="69" width="350" height="34"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                                     <color key="textColor" red="0.62352941176470589" green="0.65098039215686276" blue="0.67843137254901964" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                     <nil key="highlightedColor"/>
@@ -968,30 +975,30 @@
                         <viewControllerLayoutGuide type="bottom" id="PPt-Rn-swa"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="iSx-LB-Kwa">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="CK7-ru-Ilt">
-                                <rect key="frame" x="0.0" y="565" width="414" height="331"/>
+                                <rect key="frame" x="0.0" y="513" width="390" height="331"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="wQT-A1-j9v">
-                                        <rect key="frame" x="0.0" y="238" width="414" height="73"/>
+                                        <rect key="frame" x="0.0" y="238" width="390" height="73"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="iZ8-8Q-cnN">
-                                                <rect key="frame" x="0.0" y="0.0" width="414" height="1"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="390" height="1"/>
                                                 <color key="backgroundColor" red="0.94509803921568625" green="0.94509803921568625" blue="0.94509803921568625" alpha="1" colorSpace="calibratedRGB"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="1" id="TUh-35-s92"/>
                                                 </constraints>
                                             </view>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="wallet.btc.normalAddr" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kLh-mC-J5t" customClass="OKLabel">
-                                                <rect key="frame" x="124.5" y="17" width="165" height="19.5"/>
+                                                <rect key="frame" x="112.66666666666669" y="17" width="165" height="19.666666666666671"/>
                                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
                                                 <nil key="textColor"/>
                                                 <color key="highlightedColor" red="0.078431372549019607" green="0.16470588235294117" blue="0.23137254901960785" alpha="1" colorSpace="calibratedRGB"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="wallet.btc.normalAddrDesc" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PWl-pI-sZk" customClass="OKLabel">
-                                                <rect key="frame" x="128" y="41.5" width="158" height="14.5"/>
+                                                <rect key="frame" x="116" y="41.666666666666629" width="158" height="14.333333333333336"/>
                                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="12"/>
                                                 <color key="textColor" red="0.62352941176470589" green="0.65098039215686276" blue="0.67843137254901964" alpha="1" colorSpace="calibratedRGB"/>
                                                 <nil key="highlightedColor"/>
@@ -1010,23 +1017,23 @@
                                         </constraints>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VC1-gE-mki">
-                                        <rect key="frame" x="0.0" y="165" width="414" height="73"/>
+                                        <rect key="frame" x="0.0" y="165" width="390" height="73"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="3RU-Zb-5rL">
-                                                <rect key="frame" x="0.0" y="0.0" width="414" height="1"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="390" height="1"/>
                                                 <color key="backgroundColor" red="0.94509803920000002" green="0.94509803920000002" blue="0.94509803920000002" alpha="1" colorSpace="calibratedRGB"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="1" id="wt2-5k-APa"/>
                                                 </constraints>
                                             </view>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="wallet.btc.nativeSegwit" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="K5M-qQ-c2p" customClass="OKLabel">
-                                                <rect key="frame" x="120.5" y="17" width="173" height="19.5"/>
+                                                <rect key="frame" x="108.66666666666669" y="17" width="173" height="19.666666666666671"/>
                                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
                                                 <nil key="textColor"/>
                                                 <color key="highlightedColor" red="0.078431372550000003" green="0.1647058824" blue="0.23137254900000001" alpha="1" colorSpace="calibratedRGB"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="wallet.btc.nativeSegwitDesc" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hvg-SH-iTP" customClass="OKLabel">
-                                                <rect key="frame" x="124.5" y="41.5" width="165" height="14.5"/>
+                                                <rect key="frame" x="112.66666666666669" y="41.666666666666629" width="165" height="14.333333333333336"/>
                                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="12"/>
                                                 <color key="textColor" red="0.62352941179999999" green="0.65098039220000004" blue="0.67843137249999996" alpha="1" colorSpace="calibratedRGB"/>
                                                 <nil key="highlightedColor"/>
@@ -1046,32 +1053,32 @@
                                         </constraints>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="twY-gF-bTt">
-                                        <rect key="frame" x="0.0" y="92" width="414" height="73"/>
+                                        <rect key="frame" x="0.0" y="92" width="390" height="73"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mrf-9b-52H">
-                                                <rect key="frame" x="0.0" y="0.0" width="414" height="1"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="390" height="1"/>
                                                 <color key="backgroundColor" red="0.94509803920000002" green="0.94509803920000002" blue="0.94509803920000002" alpha="1" colorSpace="calibratedRGB"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="1" id="cm0-3r-G1I"/>
                                                 </constraints>
                                             </view>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="wallet.btc.segwit" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tWo-bs-9dB" customClass="OKLabel">
-                                                <rect key="frame" x="143.5" y="17" width="127" height="19.5"/>
+                                                <rect key="frame" x="131.66666666666666" y="17" width="126.99999999999997" height="19.666666666666671"/>
                                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
                                                 <nil key="textColor"/>
                                                 <color key="highlightedColor" red="0.078431372550000003" green="0.1647058824" blue="0.23137254900000001" alpha="1" colorSpace="calibratedRGB"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="wallet.btc.segwitDesc" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GCS-Og-cEw" customClass="OKLabel">
-                                                <rect key="frame" x="142.5" y="41.5" width="129" height="14.5"/>
+                                                <rect key="frame" x="130.66666666666666" y="41.666666666666629" width="128.99999999999997" height="14.333333333333336"/>
                                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="12"/>
                                                 <color key="textColor" red="0.62352941179999999" green="0.65098039220000004" blue="0.67843137249999996" alpha="1" colorSpace="calibratedRGB"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FoB-O5-Qz0">
-                                                <rect key="frame" x="275.5" y="16.5" width="97.5" height="20.5"/>
+                                                <rect key="frame" x="263.66666666666669" y="16.666666666666629" width="97.333333333333314" height="20.333333333333329"/>
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="recommended" textAlignment="natural" lineBreakMode="clip" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RnZ-gp-uNb" customClass="OKLabel">
-                                                        <rect key="frame" x="8" y="3" width="81.5" height="14.5"/>
+                                                        <rect key="frame" x="8" y="3.0000000000000009" width="81.333333333333329" height="14.333333333333336"/>
                                                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
@@ -1101,13 +1108,13 @@
                                         </constraints>
                                     </view>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="wallet.btc.selectAddrType" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TjL-e3-6jz" customClass="OKLabel">
-                                        <rect key="frame" x="82.5" y="24" width="249" height="24"/>
+                                        <rect key="frame" x="70.666666666666686" y="24" width="249" height="24"/>
                                         <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="wallet.btc.selectAddrTypeTip" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0BN-gF-AcC" customClass="OKLabel">
-                                        <rect key="frame" x="122.5" y="50" width="169" height="14.5"/>
+                                        <rect key="frame" x="110.66666666666669" y="50" width="169" height="14.666666666666671"/>
                                         <fontDescription key="fontDescription" type="system" weight="medium" pointSize="12"/>
                                         <color key="textColor" red="0.62352941179999999" green="0.65098039220000004" blue="0.67843137249999996" alpha="1" colorSpace="calibratedRGB"/>
                                         <nil key="highlightedColor"/>
@@ -1160,14 +1167,14 @@
                         <viewControllerLayoutGuide type="bottom" id="Wck-qF-gAX"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="w99-pu-OCo">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="7Ez-yy-2aB">
-                                <rect key="frame" x="10" y="618.5" width="394" height="247.5"/>
+                                <rect key="frame" x="10" y="566.66666666666663" width="370" height="247.33333333333337"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="什么是HD钱包？" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="6ER-lJ-uOl">
-                                        <rect key="frame" x="50" y="30" width="294" height="25"/>
+                                        <rect key="frame" x="50" y="30" width="270" height="25"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="25" id="FHe-ev-wJW"/>
                                         </constraints>
@@ -1176,7 +1183,7 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Gyy-RU-GLb">
-                                        <rect key="frame" x="25" y="157.5" width="344" height="60"/>
+                                        <rect key="frame" x="25" y="157.33333333333337" width="320" height="60"/>
                                         <color key="backgroundColor" red="0.0039215686269999999" green="0.72941176470000002" blue="0.070588235289999995" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="60" id="xqo-ax-9E6"/>
@@ -1190,13 +1197,13 @@
                                         </connections>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="HD钱包即 Hierarchical Deterministic Wallet，中文称为分层确定性钱包。它是目前来说最好用的、最方便的确定性钱包。" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lgh-Gt-LMx">
-                                        <rect key="frame" x="20" y="75" width="354" height="50.5"/>
+                                        <rect key="frame" x="20" y="75" width="330" height="50.333333333333343"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <color key="textColor" red="0.078431372550000003" green="0.1647058824" blue="0.23137254900000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <button opaque="NO" contentMode="center" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="K5a-uR-wV6">
-                                        <rect key="frame" x="341" y="10" width="40" height="40"/>
+                                        <rect key="frame" x="317" y="10" width="40" height="40"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="40" id="KCY-lH-nSB"/>
                                             <constraint firstAttribute="width" constant="40" id="gwe-VB-ynF"/>
@@ -1248,21 +1255,21 @@
             <objects>
                 <viewController storyboardIdentifier="OKChangeWalletController" id="LUU-9m-UV0" customClass="OKChangeWalletController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="tX4-mM-C78">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Nda-dE-i1g">
-                                <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                                <rect key="frame" x="0.0" y="0.0" width="390" height="844"/>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ms8-l0-Aev">
-                                <rect key="frame" x="0.0" y="366" width="414" height="530"/>
+                                <rect key="frame" x="0.0" y="314" width="390" height="530"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ruf-eu-Doc">
-                                        <rect key="frame" x="0.0" y="-20" width="414" height="40"/>
+                                        <rect key="frame" x="0.0" y="-20" width="390" height="40"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bVm-5Y-P78">
-                                                <rect key="frame" x="183" y="8" width="48" height="4"/>
+                                                <rect key="frame" x="171" y="8" width="48" height="4"/>
                                                 <color key="backgroundColor" red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.12" colorSpace="custom" customColorSpace="calibratedRGB"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="4" id="FsM-XX-hpy"/>
@@ -1278,10 +1285,10 @@
                                         </constraints>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QNw-DK-VGa">
-                                        <rect key="frame" x="0.0" y="0.0" width="414" height="48"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="390" height="48"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="selectAccount" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qIM-jx-ARq" customClass="OKLabel">
-                                                <rect key="frame" x="142.5" y="12" width="129.5" height="24"/>
+                                                <rect key="frame" x="130.66666666666666" y="12" width="128.99999999999997" height="24"/>
                                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="20"/>
                                                 <color key="textColor" red="0.1019607843" green="0.1019607843" blue="0.1019607843" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <nil key="highlightedColor"/>
@@ -1295,14 +1302,14 @@
                                         </constraints>
                                     </view>
                                     <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="72" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="aGQ-BL-7f7">
-                                        <rect key="frame" x="65" y="49" width="349" height="481"/>
+                                        <rect key="frame" x="65" y="49" width="325" height="481"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <view key="tableHeaderView" contentMode="scaleToFill" id="UJF-4W-wU6">
-                                            <rect key="frame" x="0.0" y="0.0" width="349" height="44"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="325" height="44"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="XXX 账户" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XGg-y1-D0E">
-                                                    <rect key="frame" x="16" y="16" width="69.5" height="22"/>
+                                                    <rect key="frame" x="16" y="16" width="69.666666666666671" height="22"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="22" id="4d0-hR-JkP"/>
                                                     </constraints>
@@ -1319,14 +1326,14 @@
                                         </view>
                                         <prototypes>
                                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="OKChangeWalletCell" id="8BC-4w-iMw" customClass="OKChangeWalletCell">
-                                                <rect key="frame" x="0.0" y="72" width="349" height="72"/>
+                                                <rect key="frame" x="0.0" y="72" width="325" height="72"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="8BC-4w-iMw" id="U80-MY-MKM">
-                                                    <rect key="frame" x="0.0" y="0.0" width="349" height="72"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="325" height="72"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <subviews>
                                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="t4D-lu-ZB8">
-                                                            <rect key="frame" x="16" y="4" width="317" height="64"/>
+                                                            <rect key="frame" x="16" y="4" width="293" height="64"/>
                                                             <subviews>
                                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="ETH-1" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="erb-Ns-0dl">
                                                                     <rect key="frame" x="12" y="12" width="41" height="20"/>
@@ -1338,7 +1345,7 @@
                                                                     <nil key="highlightedColor"/>
                                                                 </label>
                                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0x923a...3d451a" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="REg-m5-OBv">
-                                                                    <rect key="frame" x="12" y="38" width="108.5" height="14"/>
+                                                                    <rect key="frame" x="12.000000000000007" y="38" width="108.66666666666669" height="14"/>
                                                                     <constraints>
                                                                         <constraint firstAttribute="height" constant="14" id="ugs-Se-09O"/>
                                                                     </constraints>
@@ -1347,7 +1354,7 @@
                                                                     <nil key="highlightedColor"/>
                                                                 </label>
                                                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="checkmark.circle.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="EkZ-Bt-Zm5">
-                                                                    <rect key="frame" x="289" y="36.5" width="19" height="18"/>
+                                                                    <rect key="frame" x="265" y="37" width="19" height="17.666666666666671"/>
                                                                     <color key="tintColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="0.29999999999999999" colorSpace="custom" customColorSpace="sRGB"/>
                                                                     <constraints>
                                                                         <constraint firstAttribute="height" constant="19" id="jRT-Ow-P9S"/>
@@ -1355,7 +1362,7 @@
                                                                     </constraints>
                                                                 </imageView>
                                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0.00" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5RU-nd-oZk">
-                                                                    <rect key="frame" x="275" y="12" width="30" height="20"/>
+                                                                    <rect key="frame" x="251" y="12" width="30" height="20"/>
                                                                     <constraints>
                                                                         <constraint firstAttribute="height" constant="20" id="I3A-xo-qwX"/>
                                                                     </constraints>
@@ -1367,7 +1374,7 @@
                                                                     <rect key="frame" x="61" y="12" width="47" height="18"/>
                                                                     <subviews>
                                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Rpl-8J-5Py">
-                                                                            <rect key="frame" x="8" y="1.5" width="31" height="15"/>
+                                                                            <rect key="frame" x="8" y="1.6666666666666679" width="31" height="15"/>
                                                                             <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                                                             <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                             <nil key="highlightedColor"/>
@@ -1416,22 +1423,22 @@
                                             </tableViewCell>
                                         </prototypes>
                                     </tableView>
-                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="48" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="vKb-Bl-V8h">
+                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="64" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="vKb-Bl-V8h">
                                         <rect key="frame" x="0.0" y="49" width="64" height="481"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="64" id="1Rz-Vc-N9q"/>
                                         </constraints>
                                         <prototypes>
-                                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="OKChangeWalletSubCell" id="ZDr-Ts-7cn" customClass="OKChangeWalletSubCell">
-                                                <rect key="frame" x="0.0" y="28" width="64" height="48"/>
+                                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="OKChangeWalletSubCell" rowHeight="64" id="ZDr-Ts-7cn" customClass="OKChangeWalletSubCell">
+                                                <rect key="frame" x="0.0" y="28" width="64" height="64"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="ZDr-Ts-7cn" id="Nfe-WS-PBS">
-                                                    <rect key="frame" x="0.0" y="0.0" width="64" height="48"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="64" height="64"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <subviews>
                                                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="cointype_eth_selected" translatesAutoresizingMaskIntoConstraints="NO" id="AKM-0A-whX">
-                                                            <rect key="frame" x="16" y="8" width="32" height="32"/>
+                                                            <rect key="frame" x="16" y="16" width="32" height="32"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="height" constant="32" id="QAp-nx-APe"/>
                                                                 <constraint firstAttribute="width" constant="32" id="uw4-G7-Zeg"/>
@@ -1487,6 +1494,7 @@
                         <outlet property="headerLabel" destination="XGg-y1-D0E" id="2UK-Uz-lsM"/>
                         <outlet property="mask" destination="Nda-dE-i1g" id="res-Lw-cAA"/>
                         <outlet property="panel" destination="Ms8-l0-Aev" id="oCX-sJ-zTk"/>
+                        <outlet property="panelBottom" destination="cpL-SP-hv6" id="s5j-Be-9bg"/>
                         <outlet property="subTableView" destination="vKb-Bl-V8h" id="zgB-gs-Kcb"/>
                         <outlet property="tableView" destination="aGQ-BL-7f7" id="1xe-tn-e2p"/>
                     </connections>
@@ -1504,7 +1512,7 @@
         <image name="close" width="24" height="24"/>
         <image name="cointype_eth_selected" width="36" height="36"/>
         <image name="copy_white" width="16" height="16"/>
-        <image name="iconwriteselect" width="16.5" height="12.5"/>
+        <image name="iconwriteselect" width="16.666666030883789" height="12.333333015441895"/>
         <image name="info_tips" width="16" height="16"/>
         <image name="match_device" width="24" height="24"/>
         <image name="right_arrow_small" width="24" height="24"/>

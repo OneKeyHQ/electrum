@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OKChangeWalletSubCell : UITableViewCell
 @property (nonatomic, assign)OKWalletCoinType type;
+@property (nonatomic, assign)BOOL chosen;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -80,13 +80,15 @@
 
 @implementation OKChangeWalletSubCell
 - (void)setType:(OKWalletCoinType)type {
-    NSString *iconName = @"cointype_eth_selected";
+    NSString *iconName = @"cointype_eth";
     switch (type) {
-        case OKWalletCoinTypeBTC:
-            iconName = @"cointype_btc_selected";
-            break;
-        default:
-            break;
+        case OKWalletCoinTypeBTC: iconName = @"cointype_btc"; break;
+        case OKWalletCoinTypeBSC: iconName = @"cointype_bsc"; break;
+        case OKWalletCoinTypeHECO: iconName = @"cointype_heco"; break;
+        default: break;
+    }
+    if (self.chosen) {
+        iconName = [iconName stringByAppendingString:@"_selected"];
     }
     self.icon.image = [UIImage imageNamed:iconName];
 }

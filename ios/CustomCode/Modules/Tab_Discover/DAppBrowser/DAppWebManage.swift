@@ -106,7 +106,7 @@ class DAppWebManage {
             }
         }
     }
-    
+
     static func signMessage(
         wallet: OKWalletInfoModel,
         data: Data,
@@ -127,12 +127,12 @@ class DAppWebManage {
             completion(signed)
         }
     }
-    
+
     static func ethereumMessage(for data: Data) -> Data {
         let prefix = "\u{19}Ethereum Signed Message:\n\(data.count)".data(using: .utf8)!
         return prefix + data
     }
-    
+
     static func supportDAppCoinTypes() -> [String] {
         return ["ETH", "HECO", "BSC"]
     }
@@ -144,9 +144,9 @@ class DAppWebManage {
         guard let data = model.jsParams() else { return }
         guard let chain = data.chain else { return }
         guard let url = data.url, !url.isEmpty else { return }
-        
+
         let dappCoinType = chain.uppercased()
-        
+
         if !DAppWebManage.supportDAppCoinTypes().contains(dappCoinType) {
             PanBottomAlertViewController.show(
                 icon: nil,
@@ -159,7 +159,7 @@ class DAppWebManage {
             )
             return
         }
-        
+
         guard let wallet = OKWalletManager.sharedInstance().currentWalletInfo else { return }
 
         if wallet.coinType.uppercased() != dappCoinType || wallet.walletType == .observe {
@@ -170,7 +170,7 @@ class DAppWebManage {
                 leftAction: .init(normalTitle: "cancel".localized, onTap: nil),
                 rightAction: .init(highlightTitle: "determine".localized, onTap: {
                     let page = OKChangeWalletController.withStoryboard()
-                    page.chianType = .ethLike
+                    page.chianType = [.ETH]
                     page.walletChangedCallback = { _ in }
                     page.modalPresentationStyle = .overCurrentContext
                     OKTools.ok_TopViewController().present(page, animated: false, completion: nil)
@@ -203,7 +203,7 @@ class DAppWebManage {
         }
 
     }
-    
+
     static func dealSignMessage(
         data: Data,
         personal: Bool,
@@ -224,7 +224,7 @@ class DAppWebManage {
             page?.dismiss(animated: true, completion: nil)
             completion(.failure(.cancel))
         }
-        
+
         page.finishWithPassword = { [weak page] password in
 
             let isHardwareWallet = wallet.walletType == .hardware
@@ -272,7 +272,7 @@ class DAppWebManage {
         }
         OKTools.ok_TopViewController().presentPanModal(page)
     }
-    
+
     static func dealTransaction(
         json: [String : Any],
         completion: @escaping (Result<String, EthSignAndSendTxError>) -> Void
@@ -324,9 +324,9 @@ class DAppWebManage {
             page?.dismiss(animated: true)
             completion(.failure(.cancel))
         }
-        
+
         var password = ""
-        
+
         let group = DispatchGroup()
 
         // gas 为空接口获取
@@ -357,7 +357,7 @@ class DAppWebManage {
         }
 
         group.notify(queue: .main) {
-            
+
             let isHardwareWallet = wallet.walletType == .hardware
             var hardwareAlert: PanBottomAlertViewController?
 
