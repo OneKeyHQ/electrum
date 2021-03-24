@@ -9,7 +9,6 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -66,6 +65,7 @@ import org.haobtc.onekey.ui.dialog.SelectAccountBottomSheetDialog
 import org.haobtc.onekey.ui.status.BrowserLoadError
 import org.haobtc.onekey.utils.ClipboardUtils
 import org.haobtc.onekey.utils.HexUtils
+import org.haobtc.onekey.utils.URLUtils
 import org.haobtc.onekey.utils.Utils
 import org.haobtc.onekey.viewmodel.AppWalletViewModel
 import org.web3j.utils.Convert
@@ -133,35 +133,6 @@ class DappBrowserFragment : BaseFragment(),
         putParcelable(EXT_DAPP_BEAN, dAppBrowserBean)
       }
       return dappBrowserFragment
-    }
-
-    // utils fun
-    private fun formatUrl(url: String?): String {
-      return if (url != null && (URLUtil.isHttpsUrl(url) || URLUtil.isHttpUrl(url) || URLUtil.isAssetUrl(url))) {
-        url
-      } else {
-        if (url != null && isValidUrl(url)) {
-          HTTPS_PREFIX + url
-        } else {
-          GOOGLE_SEARCH_PREFIX + url
-        }
-      }
-    }
-
-    private fun removeHTTPProtocol(url: String?): String {
-      return if (url != null && URLUtil.isHttpsUrl(url)) {
-        url.replace("https://", "")
-      } else if (url != null && URLUtil.isHttpUrl(url)) {
-        url.replace("http://", "")
-      } else {
-        url ?: ""
-      }
-    }
-
-    private fun isValidUrl(url: String): Boolean {
-      val p = Patterns.WEB_URL
-      val m = p.matcher(url.toLowerCase(Locale.ROOT))
-      return m.matches()
     }
   }
 
@@ -289,7 +260,7 @@ class DappBrowserFragment : BaseFragment(),
     mBinding.ivShare.setOnClickListener {
       val dappName = mDAppBean?.name ?: getString(R.string.app_name)
       val content = mDAppBean?.subtitle ?: ""
-      val imageLogo = mDAppBean?.getLogoImage() ?: ""
+      val imageLogo = mDAppBean?.getLogoImage() ?: URLUtils.getWebFavicon(web3.url)
       DappSettingSheetDialog.newInstance(dappName, content, imageLogo)
           .setOnSettingHandleClickCallback {
             when (it) {
@@ -420,8 +391,8 @@ class DappBrowserFragment : BaseFragment(),
     web3.setOnSignTransactionListener(this)
     web3.setOnSignTypedMessageListener(this)
     if (mLoadOnInit != null) {
-      web3.loadUrl(formatUrl(mLoadOnInit), getWeb3Headers())
-      setDappTitle(formatUrl(mLoadOnInit))
+      web3.loadUrl(URLUtils.formatUrl(mLoadOnInit), getWeb3Headers())
+      setDappTitle(URLUtils.formatUrl(mLoadOnInit))
     }
   }
 
@@ -883,12 +854,12 @@ class DappBrowserFragment : BaseFragment(),
 
   fun setDappTitle(title: String?) {
     if (mDAppBean == null) {
-      mBinding.tvTitle.text = removeHTTPProtocol(title ?: web3.url)
+      mBinding.tvTitle.text = URLUtils.removeHTTPProtocol(title ?: web3.url)
     } else {
       if (title != null) {
         mBinding.tvTitle.text = mDAppBean?.name
       } else {
-        mBinding.tvTitle.text = removeHTTPProtocol(title ?: web3.url)
+        mBinding.tvTitle.text = URLUtils.removeHTTPProtocol(title ?: web3.url)
       }
     }
   }
@@ -1000,8 +971,8 @@ class DappBrowserFragment : BaseFragment(),
   }
 
   private fun loadUrl(urlText: String): Boolean {
-    web3.loadUrl(formatUrl(urlText), getWeb3Headers())
-    setDappTitle(formatUrl(urlText))
+    web3.loadUrl(URLUtils.formatUrl(urlText), getWeb3Headers())
+    setDappTitle(URLUtils.formatUrl(urlText))
     web3.requestFocus()
     return true
   }

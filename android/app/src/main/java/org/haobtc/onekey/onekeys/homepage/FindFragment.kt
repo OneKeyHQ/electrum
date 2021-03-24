@@ -73,6 +73,10 @@ class FindFragment : BaseFragment(), OnBackPressedCallback {
             }
           })
         }
+        "openURL"->{
+          start(requireContext(), params)
+          function.onCallBack(mGson.toJson(JsBridgeResponseBean(id, "success")))
+        }
         else -> function.onCallBack(
             mGson.toJson(JsBridgeResponseBean(id, "error")))
       }
