@@ -139,6 +139,7 @@ typedef enum{
 - (NSArray <OKWalletInfoModel *>*)listWalletsChainType:(OKWalletChainType)type;
 - (BOOL)isETHClassification:(NSString *)coinType;
 - (NSInteger)getPrecision:(NSString *)key;
+- (NSString *)getBrowseAddressUrlTxHash:(NSString *)txHash;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -372,6 +372,21 @@ static dispatch_once_t once;
     return _precisionDict;
 }
 
+-  (NSString *)getBrowseAddressUrlTxHash:(NSString *)txHash
+{
+    NSString *coinType = [kWalletManager.currentWalletInfo.coinType uppercaseString];
+    if ([coinType isEqualToString:COIN_BTC]) {
+        return [NSString stringWithFormat:@"%@%@",kUserSettingManager.currentBtcBrowser,txHash];;
+    }else if ([coinType isEqualToString:COIN_ETH]){
+        return [NSString stringWithFormat:@"%@%@",kUserSettingManager.currentEthBrowser,txHash];;
+    }else if ([coinType isEqualToString:COIN_HECO]){
+        return [NSString stringWithFormat:@"https://hecoinfo.com/tx/%@",txHash];
+    }else if ([coinType isEqualToString:COIN_BSC]){
+        return [NSString stringWithFormat:@"https://bscscan.com/tx/%@",txHash];
+    }else{
+        return @"";
+    }
+}
 
 /// key
 /// @param key    币种类型     如果是token   key = token_coinType   eg: token_eth

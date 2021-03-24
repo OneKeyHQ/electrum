@@ -27,6 +27,7 @@
 #endif
 
     [self setupLanague];
+    [Bugly startWithAppId:@"3ab5a79d05"];
     [self setupJPUSH:launchOptions];
     [self setupZendesk];
 

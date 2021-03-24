@@ -22,6 +22,7 @@ pod 'MJRefresh','3.5.0'
 pod 'WKWebViewJavascriptBridge', '1.2.1'
 pod 'Reusable', '4.1.1'
 pod 'PanModal', '1.2.7'
+pod 'Bugly', '2.5.71'
 
 end
 post_install do |installer|

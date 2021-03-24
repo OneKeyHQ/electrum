@@ -77,6 +77,11 @@
 
     UITapGestureRecognizer *tapTo = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapTo)];
     [self.toAddressLabel addGestureRecognizer:tapTo];
+
+
+    UITapGestureRecognizer *tapUrl = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(urlToWeb)];
+    [self.txNumLabel addGestureRecognizer:tapUrl];
+    [self.blockNumLabel addGestureRecognizer:tapUrl];
 }
 
 - (void)loadList
@@ -189,10 +194,7 @@
 - (void)urlToWeb
 {
     NSString *txId = [self.txInfo safeStringForKey:@"txid"];
-    NSString *url = [NSString stringWithFormat:@"%@%@",kUserSettingManager.currentBtcBrowser,txId];
-    if ([kWalletManager isETHClassification:kWalletManager.currentWalletInfo.coinType]) {
-        url = [NSString stringWithFormat:@"%@%@",kUserSettingManager.currentEthBrowser,txId];
-    }
+    NSString *url = [kWalletManager getBrowseAddressUrlTxHash:txId];
     WebViewVC *vc = [WebViewVC loadWebViewControllerWithTitle:nil url:url];
     [self.navigationController pushViewController:vc animated:YES];
 }
