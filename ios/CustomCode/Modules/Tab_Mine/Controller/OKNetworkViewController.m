@@ -41,7 +41,7 @@
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(userSetingBtcBComplete) name:kUserSetingBtcBComplete object:nil];
     [self userSetingBtcBComplete];
 
-    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(userSetingBtcBComplete) name:kUserSetingEthBComplete object:nil];
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(userSetingEthBComplete) name:kUserSetingEthBComplete object:nil];
     [self userSetingEthBComplete];
 
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(userSetingMarketSource) name:kUserSetingMarketSource object:nil];

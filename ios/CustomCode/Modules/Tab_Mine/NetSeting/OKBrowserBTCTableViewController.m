@@ -45,7 +45,7 @@
     OKNetTableViewCellModel *model = [OKNetTableViewCellModel new];
     model.titleStr = kUserSettingManager.btcBrowserList[indexPath.row];
     model.type = OKNetTableViewCellModelTypeB;
-    model.typeB = OKNetTableViewCellModelTypeBEth;
+    model.typeB = OKNetTableViewCellModelTypeBBtc;
     cell.model = model;
     return cell;
 }
